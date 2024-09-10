@@ -193,7 +193,6 @@ class FlxFilteredSprite extends FlxSprite
     }
     else
     {
-      trace("GAGAGA");
       resetFrame();
       filtered = false;
     }

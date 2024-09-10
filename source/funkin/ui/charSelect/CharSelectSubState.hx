@@ -125,6 +125,11 @@ class CharSelectSubState extends MusicBeatSubState
 
   override public function create():Void
   {
+    openSubState(new IntroSubState());
+    subStateClosed.addOnce((_) -> {
+      camera.flash();
+      checkNewChar();
+    });
     super.create();
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
@@ -287,6 +292,7 @@ class CharSelectSubState extends MusicBeatSubState
     selectSound.volume = 0.7;
 
     FlxG.sound.defaultSoundGroup.add(selectSound);
+    FlxG.sound.list.add(selectSound);
 
     unlockSound = new FunkinSound();
     unlockSound.loadEmbedded(Paths.sound('CS_unlock'));
@@ -296,6 +302,7 @@ class CharSelectSubState extends MusicBeatSubState
     unlockSound.play(true);
 
     FlxG.sound.defaultSoundGroup.add(unlockSound);
+    FlxG.sound.list.add(unlockSound);
 
     // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
     // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
@@ -360,6 +367,32 @@ class CharSelectSubState extends MusicBeatSubState
       });
   }
 
+  function checkNewChar():Void
+  {
+    if (nonLocks.length > 0) selectTimer.start(0.5, (_) -> {
+      unLock();
+    });
+    else
+    {
+      FunkinSound.playMusic('stayFunky',
+        {
+          startingVolume: 1,
+          overrideExisting: true,
+          restartTrack: true,
+          onLoad: function() {
+            @:privateAccess
+            gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+            #if desktop
+            // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+            // So we want to manually change it!
+            @:privateAccess
+            gfChill.analyzer.fftN = 512;
+            #end
+          }
+        });
+    }
+  }
+
   var grpIcons:FlxSpriteGroup;
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
@@ -404,30 +437,13 @@ class CharSelectSubState extends MusicBeatSubState
     updateIconPositions();
 
     grpIcons.scrollFactor.set();
-
-    if (nonLocks.length > 0) unLock();
-    else
-      FunkinSound.playMusic('stayFunky',
-        {
-          startingVolume: 1,
-          overrideExisting: true,
-          restartTrack: true,
-          onLoad: function() {
-            @:privateAccess
-            gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-            #if desktop
-            // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-            // So we want to manually change it!
-            @:privateAccess
-            gfChill.analyzer.fftN = 512;
-            #end
-          }
-        });
   }
 
   function unLock()
   {
     var index = nonLocks[0];
+
+    // pressedSelect = true;
 
     var copy = 3;
 
@@ -448,7 +464,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     nonLocks.shift();
 
-    selectTimer.start(1, function(_) {
+    selectTimer.start(0.5, function(_) {
       var lock:Lock = cast grpIcons.group.members[index];
 
       lock.anim.getFrameLabel("unlockAnim").add(function() {
@@ -460,7 +476,12 @@ class CharSelectSubState extends MusicBeatSubState
       unlockSound.volume = 0.7;
       unlockSound.play(true);
 
+      syncLock = lock;
+
+      // sync = true;
+
       lock.onAnimationComplete.addOnce(function(_) {
+        syncLock = null;
         var char = availableChars.get(index);
         camera.flash(0xFFFFFFFF, 0.1);
         playerChill.playAnimation("unlock");
@@ -482,15 +503,18 @@ class CharSelectSubState extends MusicBeatSubState
         bopPlay = true;
 
         updateIconPositions();
+        playerChillOut.onAnimationComplete.addOnce((_) -> if (_ == "death")
+        {
+          sync = false;
+          playerChillOut.visible = false;
+          playerChillOut.switchChar(char);
+        });
 
+        Save.instance.addCharacterSeen(char);
         if (nonLocks.length == 0)
         {
-          playerChillOut.onAnimationComplete.addOnce((_) -> {
-            playerChillOut.visible = false;
-            playerChillOut.switchChar(char);
-          });
+          pressedSelect = false;
           @:bypassAccessor curChar = char;
-          Save.instance.addCharacterSeen(char);
           FunkinSound.playMusic('stayFunky',
             {
               startingVolume: 1,
@@ -533,6 +557,38 @@ class CharSelectSubState extends MusicBeatSubState
 
       member.x += grpIcons.x;
       member.y += grpIcons.y;
+    }
+  }
+
+  var sync:Bool = false;
+
+  var syncLock:Lock = null;
+
+  var audioBizz:Float = 0;
+
+  function syncAudio(elapsed:Float):Void
+  {
+    @:privateAccess
+    if (sync && !unlockSound.paused)
+    {
+      // if (playerChillOut.anim.framerate > 0)
+      // {
+      //   if (syncLock != null) syncLock.anim.framerate = 0;
+      //   playerChillOut.anim.framerate = 0;
+      // }
+
+      playerChillOut.anim._tick = 0;
+      if (syncLock != null) syncLock.anim._tick = 0;
+
+      trace(unlockSound.time);
+
+      if ((unlockSound.time - audioBizz) >= (delay * 1000))
+      {
+        if (syncLock != null) syncLock.anim._tick = delay;
+
+        playerChillOut.anim._tick = delay;
+        audioBizz += delay * 1000;
+      }
     }
   }
 
@@ -589,71 +645,76 @@ class CharSelectSubState extends MusicBeatSubState
 
     if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R) selectSound.pitch = 1;
 
-    if (controls.UI_UP) holdTmrUp += elapsed;
-    if (controls.UI_UP_R)
+    syncAudio(elapsed);
+
+    if (!pressedSelect)
     {
-      holdTmrUp = 0;
-      spamUp = false;
-    }
+      if (controls.UI_UP) holdTmrUp += elapsed;
+      if (controls.UI_UP_R)
+      {
+        holdTmrUp = 0;
+        spamUp = false;
+      }
 
-    if (controls.UI_DOWN) holdTmrDown += elapsed;
-    if (controls.UI_DOWN_R)
-    {
-      holdTmrDown = 0;
-      spamDown = false;
-    }
+      if (controls.UI_DOWN) holdTmrDown += elapsed;
+      if (controls.UI_DOWN_R)
+      {
+        holdTmrDown = 0;
+        spamDown = false;
+      }
 
-    if (controls.UI_LEFT) holdTmrLeft += elapsed;
-    if (controls.UI_LEFT_R)
-    {
-      holdTmrLeft = 0;
-      spamLeft = false;
-    }
+      if (controls.UI_LEFT) holdTmrLeft += elapsed;
+      if (controls.UI_LEFT_R)
+      {
+        holdTmrLeft = 0;
+        spamLeft = false;
+      }
 
-    if (controls.UI_RIGHT) holdTmrRight += elapsed;
-    if (controls.UI_RIGHT_R)
-    {
-      holdTmrRight = 0;
-      spamRight = false;
-    }
+      if (controls.UI_RIGHT) holdTmrRight += elapsed;
+      if (controls.UI_RIGHT_R)
+      {
+        holdTmrRight = 0;
+        spamRight = false;
+      }
 
-    var initSpam = 0.5;
+      var initSpam = 0.5;
 
-    if (holdTmrUp >= initSpam) spamUp = true;
-    if (holdTmrDown >= initSpam) spamDown = true;
-    if (holdTmrLeft >= initSpam) spamLeft = true;
-    if (holdTmrRight >= initSpam) spamRight = true;
+      if (holdTmrUp >= initSpam) spamUp = true;
+      if (holdTmrDown >= initSpam) spamDown = true;
+      if (holdTmrLeft >= initSpam) spamLeft = true;
+      if (holdTmrRight >= initSpam) spamRight = true;
 
-    if (controls.UI_UP_P)
-    {
-      cursorY -= 1;
-      cursorDenied.visible = false;
+      if (controls.UI_UP_P)
+      {
+        cursorY -= 1;
+        cursorDenied.visible = false;
 
-      holdTmrUp = 0;
+        holdTmrUp = 0;
 
-      selectSound.play(true);
-    }
-    if (controls.UI_DOWN_P)
-    {
-      cursorY += 1;
-      cursorDenied.visible = false;
-      holdTmrDown = 0;
-      selectSound.play(true);
-    }
-    if (controls.UI_LEFT_P)
-    {
-      cursorX -= 1;
-      cursorDenied.visible = false;
+        selectSound.play(true);
+      }
+      if (controls.UI_DOWN_P)
+      {
+        cursorY += 1;
+        cursorDenied.visible = false;
+        holdTmrDown = 0;
+        selectSound.play(true);
+      }
+      if (controls.UI_LEFT_P)
+      {
+        cursorX -= 1;
+        cursorDenied.visible = false;
 
-      holdTmrLeft = 0;
-      selectSound.play(true);
-    }
-    if (controls.UI_RIGHT_P)
-    {
-      cursorX += 1;
-      cursorDenied.visible = false;
-      holdTmrRight = 0;
-      selectSound.play(true);
+        holdTmrLeft = 0;
+        selectSound.play(true);
+      }
+      if (controls.UI_RIGHT_P)
+      {
+        cursorX += 1;
+        cursorDenied.visible = false;
+        holdTmrRight = 0;
+        selectSound.play(true);
+      }
     }
 
     if (cursorX < -1)
@@ -694,7 +755,7 @@ class CharSelectSubState extends MusicBeatSubState
         gfChill.playAnimation("confirm");
         pressedSelect = true;
         selectTimer.start(1.5, (_) -> {
-          pressedSelect = false;
+          // pressedSelect = false;
           // FlxG.switchState(FreeplayState.build(
           //   {
           //     {
@@ -735,6 +796,8 @@ class CharSelectSubState extends MusicBeatSubState
         cursorDenied.visible = true;
         cursorDenied.x = cursor.x - 2;
         cursorDenied.y = cursor.y - 4;
+
+        playerChill.playAnimation("cannot select", true);
         cursorDenied.animation.play("idle", true);
         cursorDenied.animation.finishCallback = (_) -> {
           cursorDenied.visible = false;
@@ -796,6 +859,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       var refFrame = bopInfo.frames[bopInfo.frames.length - 1];
       var curFrame = bopInfo.frames[bopFr];
+      if (bopFr >= 13) icon.filters = selectedBizz;
 
       var scaleXDiff:Float = curFrame.scaleX - refFrame.scaleX;
       var scaleYDiff:Float = curFrame.scaleY - refFrame.scaleY;
@@ -878,7 +942,6 @@ class CharSelectSubState extends MusicBeatSubState
           if (index == getCurrentSelected())
           {
             // memb.pixels = memb.withDropShadow.clone();
-            memb.filters = selectedBizz;
 
             if (bopPlay)
             {
@@ -890,12 +953,14 @@ class CharSelectSubState extends MusicBeatSubState
               doBop(memb, FlxG.elapsed);
             }
             else
-              memb.scale.set(2.6, 2.6);
-
-            if (controls.ACCEPT) memb.animation.play("confirm");
-            if (memb.animation.curAnim.name == "confirm" && controls.BACK)
             {
-              memb.animation.play("confirm", false, true);
+              memb.filters = selectedBizz;
+              memb.scale.set(2.6, 2.6);
+            }
+            if (controls.ACCEPT && memb.animation.curAnim.name == "confirm") memb.animation.play("confirm");
+            if (pressedSelect && controls.BACK)
+            {
+              memb.animation.play("confirm", true, true);
               member.animation.finishCallback = (_) -> {
                 member.animation.play("idle");
                 member.animation.finishCallback = null;

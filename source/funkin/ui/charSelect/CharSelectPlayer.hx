@@ -8,13 +8,9 @@ import funkin.modding.events.ScriptEvent;
 
 class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
-  var desLp:FlxKeyFrame = null;
-
   public function new(x:Float, y:Float)
   {
     super(x, y, Paths.animateAtlas("charSelect/bfChill"));
-
-    desLp = anim.getFrameLabel("deselect loop start");
 
     onAnimationComplete.add(function(animLabel:String) {
       switch (animLabel)
@@ -79,8 +75,6 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
 
     playAnimation("slidein", true, false, false);
-
-    desLp = anim.getFrameLabel("deselect loop start");
 
     updateHitbox();
 
