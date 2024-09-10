@@ -1985,6 +1985,12 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
+    if (targetInstId == null)
+    {
+      var baseInstrumentalId:String = targetSong?.getBaseInstrumentalId(targetDifficultyId, targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+      targetInstId = baseInstrumentalId;
+    }
+
     // Visual and audio effects.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
     if (dj != null) dj.confirm();
@@ -2409,6 +2415,7 @@ class DifficultySprite extends FlxSprite
       if (assetDiffIdParts.length == 0) break;
       assetDiffId = assetDiffIdParts.join('-');
     }
+    trace('Found difficulty asset: freeplay/freeplay${assetDiffId}');
 
     // Check for an XML to use an animation instead of an image.
     if (Assets.exists(Paths.file('images/freeplay/freeplay${assetDiffId}.xml')))
