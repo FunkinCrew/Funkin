@@ -1985,22 +1985,6 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    var baseInstrumentalId:String = targetSong?.getBaseInstrumentalId(targetDifficultyId, targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? '';
-    var altInstrumentalIds:Array<String> = targetSong?.listAltInstrumentalIds(targetDifficultyId,
-      targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? [];
-
-    var targetInstId:String = baseInstrumentalId;
-
-    // TODO: Make this a UI element.
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
-    {
-      targetInstId = altInstrumentalIds[0];
-    }
-
-    if (targetInstId == null) targetInstId = baseInstrumentalId;
-    #end
-
     // Visual and audio effects.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
     if (dj != null) dj.confirm();
