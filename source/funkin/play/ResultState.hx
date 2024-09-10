@@ -4,6 +4,8 @@ import funkin.util.MathUtil;
 import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxSprite;
+import flixel.FlxState;
+import flixel.FlxSubState;
 import funkin.graphics.FunkinSprite;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxBitmapFont;
@@ -736,11 +738,13 @@ class ResultState extends MusicBeatSubState
       // Default to main menu because that's better than `null`.
       var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
       var shouldTween = false;
+      var shouldUseSubstate = false;
 
       if (params.storyMode)
       {
         if (PlayerRegistry.instance.hasNewCharacter())
         {
+          // New character, display the notif.
           targetState = new StoryMenuState(null);
 
           var newCharacters = PlayerRegistry.instance.listNewCharacters();
@@ -754,6 +758,9 @@ class ResultState extends MusicBeatSubState
         }
         else
         {
+          // No new characters.
+          shouldTween = false;
+          shouldUseSubstate = true;
           targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker));
         }
       }
@@ -781,21 +788,9 @@ class ResultState extends MusicBeatSubState
         }
         else
         {
-          trace('rank is lower...... and/or equal');
-
-          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
-            {
-              {
-                fromResults:
-                  {
-                    oldRank: null,
-                    playRankAnim: false,
-                    newRank: rank,
-                    songId: params.songId,
-                    difficultyId: params.difficultyId
-                  }
-              }
-            }, sticker));
+          shouldTween = false;
+          shouldUseSubstate = true;
+          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker));
         }
       }
 
@@ -805,13 +800,27 @@ class ResultState extends MusicBeatSubState
           {
             ease: FlxEase.expoOut,
             onComplete: function(_) {
-              FlxG.switchState(targetState);
+              if (shouldUseSubstate && targetState is FlxSubState)
+              {
+                openSubState(cast targetState);
+              }
+              else
+              {
+                FlxG.switchState(targetState);
+              }
             }
           });
       }
       else
       {
-        FlxG.switchState(targetState);
+        if (shouldUseSubstate && targetState is FlxSubState)
+        {
+          openSubState(cast targetState);
+        }
+        else
+        {
+          FlxG.switchState(targetState);
+        }
       }
     }
 
