@@ -95,7 +95,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function hasAnimation(id:String):Bool
   {
-    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id) || anim.getByName(id) != null;
+    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id);
   }
 
   /**
@@ -155,19 +155,23 @@ class FlxAtlasSprite extends FlxAnimate
       if (!anim.isPlaying)
       {
         // Resume animation if it's paused.
-        anim.play('', restart, false, startFrame);
+        anim.resume();
       }
+
       return;
     }
-    else
+    else if (!hasAnimation(id))
     {
       // Skip if the animation doesn't exist
-      if (!hasAnimation(id))
-      {
-        trace('Animation ' + id + ' not found');
-        return;
-      }
+      trace('Animation ' + id + ' not found');
+      return;
     }
+
+    this.currentAnimation = id;
+    anim.onComplete.removeAll();
+    anim.onComplete.add(function() {
+      _onAnimationComplete();
+    });
 
     looping = loop;
 
@@ -177,20 +181,18 @@ class FlxAtlasSprite extends FlxAnimate
     // Move to the first frame of the animation.
     // goToFrameLabel(id);
     trace('Playing animation $id');
+    if (this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
+    {
+      this.anim.play(id, true, false, startFrame);
+      fr = null;
+    }
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
-    if (getLabelIndex(id) != -1)
+    if (getFrameLabelNames().indexOf(id) != -1)
     {
       goToFrameLabel(id);
       fr = anim.getFrameLabel(id);
       anim.curFrame += startFrame;
     }
-    else
-    {
-      this.anim.play(id, restart, false, startFrame);
-      fr = null;
-    }
-
-    this.currentAnimation = id;
   }
 
   override public function update(elapsed:Float)
@@ -288,12 +290,13 @@ class FlxAtlasSprite extends FlxAnimate
       {
         anim.pause();
         _onAnimationComplete();
+
         if (looping)
         {
           anim.curFrame = (fr != null) ? fr.index : 0;
           anim.resume();
         }
-        else
+        else if (fr != null)
         {
           anim.curFrame--;
         }

@@ -116,24 +116,17 @@ class IntroSubState extends MusicBeatSubState
    */
   function onAttractEnd():Void
   {
-    #if html5
-    if (vid != null)
-    {
-      remove(vid);
-    }
-    #end
-
-    #if hxCodec
-    if (vid != null)
-    {
-      vid.stop();
-      remove(vid);
-    }
-    #end
-
     #if (html5 || hxCodec)
-    vid.destroy();
-    vid = null;
+    if (vid != null)
+    {
+      #if hxCodec
+      vid.stop();
+      #end
+      remove(vid);
+
+      vid.destroy();
+      vid = null;
+    }
     #end
 
     close();
