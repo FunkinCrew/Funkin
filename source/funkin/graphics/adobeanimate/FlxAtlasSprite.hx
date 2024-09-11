@@ -95,7 +95,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function hasAnimation(id:String):Bool
   {
-    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id);
+    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id) || anim.getByName(id);
   }
 
   /**
