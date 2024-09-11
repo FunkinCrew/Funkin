@@ -358,6 +358,7 @@ class MainMenuState extends MusicBeatState
     // Ctrl+Alt+Shift+W = Meet requirements for Pico Unlock
     // Ctrl+Alt+Shift+L = Revoke requirements for Pico Unlock
     // Ctrl+Alt+Shift+R = Score/Rank conflict test
+    // Ctrl+Alt+Shift+N = Mark all characters as not seen
     // Ctrl+Alt+Shift+E = Dump save data
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.P)
@@ -431,6 +432,12 @@ class MainMenuState extends MusicBeatState
               totalNotes: 10,
             }
         });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.N)
+    {
+      @:privateAccess
+      funkin.save.Save.instance.data.unlocks.charactersSeen = ["bf"];
     }
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.E)

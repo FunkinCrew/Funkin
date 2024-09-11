@@ -571,7 +571,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   /**
    * Produces a string representation suitable for debugging.
    */
-  public function toString():String
+  public override function toString():String
   {
     return 'FunkinSound(${this._label})';
   }
