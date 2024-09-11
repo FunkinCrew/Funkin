@@ -375,6 +375,13 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function confirm():Void
   {
+    // We really don't want to play anything but the new character animation here.
+    if (PlayerRegistry.instance.hasNewCharacter())
+    {
+      currentState = NewUnlock;
+      return;
+    }
+
     currentState = Confirm;
   }
 
@@ -397,6 +404,13 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function fistPumpIntro():Void
   {
+    // We really don't want to play anything but the new character animation here.
+    if (PlayerRegistry.instance.hasNewCharacter())
+    {
+      currentState = NewUnlock;
+      return;
+    }
+
     currentState = FistPumpIntro;
     var animPrefix = playableCharData.getAnimationPrefix('fistPump');
     playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroStartFrame());
@@ -404,6 +418,13 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function fistPump():Void
   {
+    // We really don't want to play anything but the new character animation here.
+    if (PlayerRegistry.instance.hasNewCharacter())
+    {
+      currentState = NewUnlock;
+      return;
+    }
+
     currentState = FistPump;
     var animPrefix = playableCharData.getAnimationPrefix('fistPump');
     playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopStartFrame());
@@ -411,6 +432,13 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function fistPumpLossIntro():Void
   {
+    // We really don't want to play anything but the new character animation here.
+    if (PlayerRegistry.instance.hasNewCharacter())
+    {
+      currentState = NewUnlock;
+      return;
+    }
+
     currentState = FistPumpIntro;
     var animPrefix = playableCharData.getAnimationPrefix('loss');
     playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
@@ -418,6 +446,13 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function fistPumpLoss():Void
   {
+    // We really don't want to play anything but the new character animation here.
+    if (PlayerRegistry.instance.hasNewCharacter())
+    {
+      currentState = NewUnlock;
+      return;
+    }
+
     currentState = FistPump;
     var animPrefix = playableCharData.getAnimationPrefix('loss');
     playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
