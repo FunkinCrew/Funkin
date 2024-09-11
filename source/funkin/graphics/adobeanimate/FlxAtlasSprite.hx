@@ -154,6 +154,10 @@ class FlxAtlasSprite extends FlxAnimate
     {
       if (!anim.isPlaying)
       {
+        if (fr != null) anim.curFrame = fr.index + startFrame;
+        else
+          anim.curFrame = startFrame;
+
         // Resume animation if it's paused.
         anim.resume();
       }
@@ -183,7 +187,9 @@ class FlxAtlasSprite extends FlxAnimate
     trace('Playing animation $id');
     if (this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
     {
-      this.anim.play(id, true, false, startFrame);
+      this.anim.play(id, restart, false, startFrame);
+
+      if (id == "Boyfriend DJ fist pump" || startFrame == 4) trace("PUMP COMMAND: " + anim.curFrame);
       fr = null;
     }
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
@@ -296,7 +302,7 @@ class FlxAtlasSprite extends FlxAnimate
           anim.curFrame = (fr != null) ? fr.index : 0;
           anim.resume();
         }
-        else if (fr != null)
+        else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
         }
