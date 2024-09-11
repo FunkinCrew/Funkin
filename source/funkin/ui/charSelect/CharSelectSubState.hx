@@ -239,7 +239,7 @@ class CharSelectSubState extends MusicBeatSubState
     // FlxG.debugger.track(bfChill, "bf chill");
     // FlxG.debugger.track(playerChill, "player");
     // FlxG.debugger.track(nametag, "nametag");
-    FlxG.debugger.track(selectSound, "selectSound");
+    // FlxG.debugger.track(selectSound, "selectSound");
     // FlxG.debugger.track(chooseDipshit, "choose dipshit");
     // FlxG.debugger.track(barthing, "barthing");
     // FlxG.debugger.track(fgBlur, "fgBlur");
