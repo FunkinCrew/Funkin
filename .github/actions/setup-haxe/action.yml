@@ -82,7 +82,8 @@ runs:
     with:
       run: |
         git config --global --name-only --get-regexp 'url\.https\:\/\/x-access-token:.+@github\.com\/\.insteadOf' \
-        | xargs git config --global --unset
+        | xargs -I {} git config --global --unset {}
+
         git config -l --show-scope --show-origin
         git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
       post: git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf'
