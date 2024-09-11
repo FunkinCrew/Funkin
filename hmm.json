@@ -18,7 +18,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "599f38eeb502a8ba6439784036c2cfdc7b485260",
+      "ref": "f2b090d6c608471e730b051c8ee22b8b378964b1",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -46,7 +46,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "280d1a46ac60021d08bb18181631cbd6d061782c",
+      "ref": "0654797e5eb7cd7de0c1b2dbaa1efe5a1e1d9412",
       "url": "https://github.com/Dot-Stuff/flxanimate"
     },
     {
@@ -116,6 +116,13 @@
       "url": "https://github.com/FunkinCrew/hxcpp-debugger"
     },
     {
+      "name": "hxjsonast",
+      "type": "git",
+      "dir": null,
+      "ref": "20e72cc68c823496359775ac1f06500e67f189d5",
+      "url": "https://github.com/nadako/hxjsonast/"
+    },
+    {
       "name": "hxp",
       "type": "haxelib",
       "version": "1.3.0"
@@ -145,7 +152,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "e0b2339e02fff91168789dbd1a0dd019ea3dda39",
+      "ref": "fe3368f611a84a19afc03011353945ae4da8fffd",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {

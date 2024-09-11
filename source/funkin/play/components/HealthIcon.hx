@@ -49,7 +49,7 @@ class HealthIcon extends FunkinSprite
    * this value allows you to set a relative scale for the icon.
    * @default 1x scale = 150px width and height.
    */
-  public var size:FlxPoint = new FlxPoint(1, 1);
+  public var size:FlxPoint;
 
   /**
    * Apply the "bop" animation once every X steps.
@@ -120,11 +120,15 @@ class HealthIcon extends FunkinSprite
   {
     super(0, 0);
     this.playerId = playerId;
+    this.size = new FlxCallbackPoint(onSetSize);
     this.scrollFactor.set();
-
+    size.set(1.0, 1.0);
     this.characterId = char;
+  }
 
-    initTargetSize();
+  function onSetSize(value:FlxPoint):Void
+  {
+    snapToTargetSize();
   }
 
   function set_characterId(value:Null<String>):Null<String>
@@ -243,6 +247,22 @@ class HealthIcon extends FunkinSprite
     this.updateHitbox();
   }
 
+  /*
+   * Immediately snap the health icon to its target size without lerping.
+   */
+  public function snapToTargetSize():Void
+  {
+    if (this.width > this.height)
+    {
+      setGraphicSize(Std.int(HEALTH_ICON_SIZE * this.size.x), 0);
+    }
+    else
+    {
+      setGraphicSize(0, Std.int(HEALTH_ICON_SIZE * this.size.y));
+    }
+    updateHitbox();
+  }
+
   /**
    * Update the position (and status) of the health icon.
    */
@@ -299,12 +319,6 @@ class HealthIcon extends FunkinSprite
       // Ensure the icon is positioned correctly after updating the hitbox.
       this.updatePosition();
     }
-  }
-
-  inline function initTargetSize():Void
-  {
-    setGraphicSize(HEALTH_ICON_SIZE);
-    updateHitbox();
   }
 
   function updateHealthIcon(health:Float):Void

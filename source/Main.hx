@@ -66,6 +66,18 @@ class Main extends Sprite
 
   function init(?event:Event):Void
   {
+    #if web
+    untyped js.Syntax.code("
+    window.requestAnimationFrame = function(callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = 0;
+                    var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+                      timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                }");
+    #end
+
     if (hasEventListener(Event.ADDED_TO_STAGE))
     {
       removeEventListener(Event.ADDED_TO_STAGE, init);

@@ -253,6 +253,8 @@ class FreeplayState extends MusicBeatSubState
 
     switch (currentCharacterId)
     {
+      case(PlayerRegistry.instance.hasNewCharacter()) => true:
+        backingCard = new NewCharacterCard(currentCharacter);
       case 'bf':
         backingCard = new BoyfriendCard(currentCharacter);
       case 'pico':
@@ -347,11 +349,16 @@ class FreeplayState extends MusicBeatSubState
         var displayedVariations = song.getVariationsByCharacter(currentCharacter);
         trace('Displayed Variations (${songId}): $displayedVariations');
         var availableDifficultiesForSong:Array<String> = song.listSuffixedDifficulties(displayedVariations, false, false);
+        var unsuffixedDifficulties = song.listDifficulties(displayedVariations, false, false);
         trace('Available Difficulties: $availableDifficultiesForSong');
         if (availableDifficultiesForSong.length == 0) continue;
 
         songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
         for (difficulty in availableDifficultiesForSong)
+        {
+          diffIdsTotal.pushUnique(difficulty);
+        }
+        for (difficulty in unsuffixedDifficulties)
         {
           diffIdsTotal.pushUnique(difficulty);
         }
@@ -1985,21 +1992,11 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    var baseInstrumentalId:String = targetSong?.getBaseInstrumentalId(targetDifficultyId, targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? '';
-    var altInstrumentalIds:Array<String> = targetSong?.listAltInstrumentalIds(targetDifficultyId,
-      targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? [];
-
-    var targetInstId:String = baseInstrumentalId;
-
-    // TODO: Make this a UI element.
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
+    if (targetInstId == null)
     {
-      targetInstId = altInstrumentalIds[0];
+      var baseInstrumentalId:String = targetSong?.getBaseInstrumentalId(targetDifficultyId, targetDifficulty.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+      targetInstId = baseInstrumentalId;
     }
-
-    if (targetInstId == null) targetInstId = baseInstrumentalId;
-    #end
 
     // Visual and audio effects.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
@@ -2380,7 +2377,7 @@ class FreeplaySongData
 
     this.scoringRank = Save.instance.getSongRank(songId, suffixedDifficulty);
 
-    this.isNew = song.isSongNew(currentDifficulty);
+    this.isNew = song.isSongNew(suffixedDifficulty);
   }
 }
 
@@ -2422,7 +2419,11 @@ class DifficultySprite extends FlxSprite
       // Remove the last suffix of the difficulty id until we find an asset or there are no more suffixes.
       var assetDiffIdParts:Array<String> = assetDiffId.split('-');
       assetDiffIdParts.pop();
-      if (assetDiffIdParts.length == 0) break;
+      if (assetDiffIdParts.length == 0)
+      {
+        trace('Could not find difficulty asset: freeplay/freeplay${diffId} (from ${diffId})');
+        return;
+      };
       assetDiffId = assetDiffIdParts.join('-');
     }
 
@@ -2436,6 +2437,7 @@ class DifficultySprite extends FlxSprite
     else
     {
       this.loadGraphic(Paths.image('freeplay/freeplay' + assetDiffId));
+      trace('Loaded difficulty asset: freeplay/freeplay${assetDiffId} (from ${diffId})');
     }
   }
 }
