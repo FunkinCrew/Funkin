@@ -169,19 +169,6 @@ class FlxAtlasSprite extends FlxAnimate
       }
     }
 
-    anim.onComplete.removeAll();
-    anim.onComplete.add(function() {
-      if (loop)
-      {
-        this.anim.play(id, restart, false, startFrame);
-        this.currentAnimation = id;
-      }
-      else
-      {
-        onAnimationComplete.dispatch(id);
-      }
-    });
-
     looping = loop;
 
     // Prevent other animations from playing if `ignoreOther` is true.
@@ -191,7 +178,7 @@ class FlxAtlasSprite extends FlxAnimate
     // goToFrameLabel(id);
     trace('Playing animation $id');
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
-    if (getFrameLabelNames().indexOf(id) != -1)
+    if (getLabelIndex(id) != -1)
     {
       goToFrameLabel(id);
       fr = anim.getFrameLabel(id);
