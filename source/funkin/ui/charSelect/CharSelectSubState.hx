@@ -35,55 +35,44 @@ import openfl.filters.ShaderFilter;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.util.FramesJSFLParser.FramesJSFLFrame;
+import funkin.graphics.FunkinSprite;
 
 class CharSelectSubState extends MusicBeatSubState
 {
   var cursor:FlxSprite;
+
   var cursorBlue:FlxSprite;
   var cursorDarkBlue:FlxSprite;
-
   var grpCursors:FlxTypedGroup<FlxSprite>;
-
   var cursorConfirmed:FlxSprite;
   var cursorDenied:FlxSprite;
-
   var cursorX:Int = 0;
   var cursorY:Int = 0;
-
   var cursorFactor:Float = 110;
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
-
   var cursorLocIntended:FlxPoint = new FlxPoint(0, 0);
   var lerpAmnt:Float = 0.95;
-
   var tmrFrames:Int = 60;
-
   var currentStage:Stage;
-
   var playerChill:CharSelectPlayer;
   var playerChillOut:CharSelectPlayer;
   var gfChill:CharSelectGF;
   var gfChillOut:CharSelectGF;
-
   var barthing:FlxAtlasSprite;
   var dipshitBacking:FlxSprite;
   var chooseDipshit:FlxSprite;
   var dipshitBlur:FlxSprite;
   var transitionGradient:FlxSprite;
-
   var curChar(default, set):String = "pico";
   var nametag:Nametag;
   var camFollow:FlxObject;
   var autoFollow:Bool = false;
-
   var availableChars:Map<Int, String> = new Map<Int, String>();
   var pressedSelect:Bool = false;
-
   var selectTimer:FlxTimer = new FlxTimer();
   var selectSound:FunkinSound;
   var unlockSound:FunkinSound;
-
   var charSelectCam:FunkinCamera;
 
   var selectedBizz:Array<BitmapFilter> = [
@@ -92,6 +81,7 @@ class CharSelectSubState extends MusicBeatSubState
   ];
 
   var bopInfo:FramesJSFLInfo;
+  var blackScreen:FunkinSprite;
 
   public function new()
   {
@@ -125,11 +115,6 @@ class CharSelectSubState extends MusicBeatSubState
 
   override public function create():Void
   {
-    openSubState(new IntroSubState());
-    subStateClosed.addOnce((_) -> {
-      camera.flash();
-      checkNewChar();
-    });
     super.create();
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
@@ -365,6 +350,20 @@ class CharSelectSubState extends MusicBeatSubState
           FlxG.camera.follow(camFollow, LOCKON, 0.01);
         }
       });
+
+    var blackScreen = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
+    blackScreen.x = -(FlxG.width * 0.5);
+    blackScreen.y = -(FlxG.height * 0.5);
+    add(blackScreen);
+
+    openSubState(new IntroSubState());
+    subStateClosed.addOnce((_) -> {
+      remove(blackScreen);
+      if (!Save.instance.oldChar) camera.flash();
+      checkNewChar();
+
+      Save.instance.oldChar = true;
+    });
   }
 
   function checkNewChar():Void
@@ -396,7 +395,6 @@ class CharSelectSubState extends MusicBeatSubState
   var grpIcons:FlxSpriteGroup;
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
-
   var nonLocks = [];
 
   function initLocks():Void
@@ -426,9 +424,9 @@ class CharSelectSubState extends MusicBeatSubState
         var temp:Lock = new Lock(0, 0, i);
         temp.ID = 1;
 
-        temp.onAnimationComplete.add(function(anim) {
-          if (anim == "unlock") playerChill.playAnimation("unlock", true);
-        });
+        // temp.onAnimationComplete.add(function(anim) {
+        //   if (anim == "unlock") playerChill.playAnimation("unlock", true);
+        // });
 
         grpIcons.add(temp);
       }
@@ -443,7 +441,7 @@ class CharSelectSubState extends MusicBeatSubState
   {
     var index = nonLocks[0];
 
-    // pressedSelect = true;
+    pressedSelect = true;
 
     var copy = 3;
 
@@ -478,7 +476,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       syncLock = lock;
 
-      // sync = true;
+      sync = true;
 
       lock.onAnimationComplete.addOnce(function(_) {
         syncLock = null;
@@ -561,9 +559,7 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var sync:Bool = false;
-
   var syncLock:Lock = null;
-
   var audioBizz:Float = 0;
 
   function syncAudio(elapsed:Float):Void
@@ -579,8 +575,6 @@ class CharSelectSubState extends MusicBeatSubState
 
       playerChillOut.anim._tick = 0;
       if (syncLock != null) syncLock.anim._tick = 0;
-
-      trace(unlockSound.time);
 
       if ((unlockSound.time - audioBizz) >= (delay * 1000))
       {
@@ -738,7 +732,7 @@ class CharSelectSubState extends MusicBeatSubState
     {
       curChar = availableChars.get(getCurrentSelected());
 
-      if (controls.ACCEPT)
+      if (!pressedSelect && controls.ACCEPT)
       {
         cursorConfirmed.visible = true;
         cursorConfirmed.x = cursor.x - 2;
@@ -775,6 +769,7 @@ class CharSelectSubState extends MusicBeatSubState
         FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
         playerChill.playAnimation("deselect");
         gfChill.playAnimation("deselect");
+        pressedSelect = false;
         FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1,
           {
             ease: FlxEase.quartInOut,
@@ -783,7 +778,6 @@ class CharSelectSubState extends MusicBeatSubState
               gfChill.playAnimation("idle", true, false, true);
             }
           });
-        pressedSelect = false;
         selectTimer.cancel();
       }
     }
@@ -797,7 +791,7 @@ class CharSelectSubState extends MusicBeatSubState
         cursorDenied.x = cursor.x - 2;
         cursorDenied.y = cursor.y - 4;
 
-        playerChill.playAnimation("cannot select", true);
+        playerChill.playAnimation("cannot select Label", true);
         cursorDenied.animation.play("idle", true);
         cursorDenied.animation.finishCallback = (_) -> {
           cursorDenied.visible = false;
@@ -831,13 +825,9 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var bopTimer:Float = 0;
-
   var delay = 1 / 24;
-
   var bopFr = 0;
-
   var bopPlay:Bool = false;
-
   var bopRefX:Float = 0;
   var bopRefY:Float = 0;
 
@@ -957,10 +947,10 @@ class CharSelectSubState extends MusicBeatSubState
               memb.filters = selectedBizz;
               memb.scale.set(2.6, 2.6);
             }
-            if (controls.ACCEPT && memb.animation.curAnim.name == "confirm") memb.animation.play("confirm");
-            if (pressedSelect && controls.BACK)
+            if (pressedSelect && memb.animation.curAnim.name == "idle") memb.animation.play("confirm");
+            if (!pressedSelect && memb.animation.curAnim.name != "idle")
             {
-              memb.animation.play("confirm", true, true);
+              memb.animation.play("confirm", false, true);
               member.animation.finishCallback = (_) -> {
                 member.animation.play("idle");
                 member.animation.finishCallback = null;

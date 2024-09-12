@@ -125,6 +125,7 @@ class Save
         {
           // Default to having seen the default character.
           charactersSeen: ["bf"],
+          oldChar: false
         },
 
       optionsChartEditor:
@@ -404,6 +405,18 @@ class Save
   function get_charactersSeen():Array<String>
   {
     return data.unlocks.charactersSeen;
+  }
+
+  public var oldChar(get, set):Bool;
+
+  function get_oldChar():Bool
+  {
+    return data.unlocks.oldChar;
+  }
+
+  function set_oldChar(value:Bool):Bool
+  {
+    return data.unlocks.oldChar = value;
   }
 
   /**
@@ -1027,6 +1040,12 @@ typedef SaveDataUnlocks =
    * add it to this list so that we don't show it again.
    */
   var charactersSeen:Array<String>;
+
+  /**
+   * This is a conditional when the player enters the character state
+   * For the first time ever
+   */
+  var oldChar:Bool;
 }
 
 /**

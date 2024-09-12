@@ -151,6 +151,8 @@ class BaseCharacter extends Bopper
     super(CharacterDataParser.DEFAULT_DANCEEVERY);
     this.characterId = id;
 
+    ignoreExclusionPref = ["sing"];
+
     _data = CharacterDataParser.fetchCharacterData(this.characterId);
     if (_data == null)
     {

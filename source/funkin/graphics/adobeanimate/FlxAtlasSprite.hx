@@ -95,7 +95,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function hasAnimation(id:String):Bool
   {
-    return getLabelIndex(id) != -1;
+    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id);
   }
 
   /**
@@ -112,6 +112,8 @@ class FlxAtlasSprite extends FlxAnimate
 
   var looping:Bool = false;
 
+  public var ignoreExclusionPref:Array<String> = [];
+
   /**
    * Plays an animation.
    * @param id A string ID of the animation to play.
@@ -124,7 +126,25 @@ class FlxAtlasSprite extends FlxAnimate
   public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
   {
     // Skip if not allowed to play animations.
-    if ((!canPlayOtherAnims && !ignoreOther)) return;
+    if ((!canPlayOtherAnims))
+    {
+      if (this.currentAnimation == id && restart) {}
+      else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
+      {
+        var detected:Bool = false;
+        for (entry in ignoreExclusionPref)
+        {
+          if (StringTools.startsWith(id, entry))
+          {
+            detected = true;
+            break;
+          }
+        }
+        if (!detected) return;
+      }
+      else
+        return;
+    }
 
     if (anim == null) return;
 
@@ -132,38 +152,29 @@ class FlxAtlasSprite extends FlxAnimate
 
     if (this.currentAnimation == id && !restart)
     {
-      if (anim.isPlaying)
+      if (!anim.isPlaying)
       {
-        // Skip if animation is already playing.
-        return;
-      }
-      else
-      {
+        if (fr != null) anim.curFrame = fr.index + startFrame;
+        else
+          anim.curFrame = startFrame;
+
         // Resume animation if it's paused.
-        anim.play('', restart, false, startFrame);
+        anim.resume();
       }
+
+      return;
     }
-    else
+    else if (!hasAnimation(id))
     {
       // Skip if the animation doesn't exist
-      if (!hasAnimation(id))
-      {
-        trace('Animation ' + id + ' not found');
-        return;
-      }
+      trace('Animation ' + id + ' not found');
+      return;
     }
 
+    this.currentAnimation = id;
     anim.onComplete.removeAll();
     anim.onComplete.add(function() {
-      if (loop)
-      {
-        this.anim.play(id, restart, false, startFrame);
-        this.currentAnimation = id;
-      }
-      else
-      {
-        onAnimationComplete.dispatch(id);
-      }
+      _onAnimationComplete();
     });
 
     looping = loop;
@@ -177,16 +188,17 @@ class FlxAtlasSprite extends FlxAnimate
     if (this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
     {
       this.anim.play(id, restart, false, startFrame);
+
+      if (id == "Boyfriend DJ fist pump" || startFrame == 4) trace("PUMP COMMAND: " + anim.curFrame);
+      fr = null;
     }
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
     if (getFrameLabelNames().indexOf(id) != -1)
     {
       goToFrameLabel(id);
       fr = anim.getFrameLabel(id);
+      anim.curFrame += startFrame;
     }
-
-    anim.curFrame += startFrame;
-    this.currentAnimation = id;
   }
 
   override public function update(elapsed:Float)
@@ -284,12 +296,13 @@ class FlxAtlasSprite extends FlxAnimate
       {
         anim.pause();
         _onAnimationComplete();
+
         if (looping)
         {
           anim.curFrame = (fr != null) ? fr.index : 0;
           anim.resume();
         }
-        else
+        else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
         }

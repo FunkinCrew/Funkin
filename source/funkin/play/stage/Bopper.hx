@@ -260,6 +260,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public var canPlayOtherAnims:Bool = true;
 
+  public var ignoreExclusionPref:Array<String> = [];
+
   /**
    * @param name The name of the animation to play.
    * @param restart Whether to restart the animation if it is already playing.
@@ -268,7 +270,26 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
-    if (!canPlayOtherAnims && !ignoreOther) return;
+    if ((!canPlayOtherAnims))
+    {
+      var id = name;
+      if (getCurrentAnimation() == id && restart) {}
+      else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
+      {
+        var detected:Bool = false;
+        for (entry in ignoreExclusionPref)
+        {
+          if (StringTools.startsWith(id, entry))
+          {
+            detected = true;
+            break;
+          }
+        }
+        if (!detected) return;
+      }
+      else
+        return;
+    }
 
     var correctName = correctAnimationName(name);
     if (correctName == null) return;
