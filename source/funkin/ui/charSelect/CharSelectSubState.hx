@@ -291,6 +291,9 @@ class CharSelectSubState extends MusicBeatSubState
     unlockSound.volume = 0;
     unlockSound.play(true);
 
+    FlxG.sound.defaultSoundGroup.add(unlockSound);
+    FlxG.sound.list.add(unlockSound);
+
     lockedSound = new FunkinSound();
     lockedSound.loadEmbedded(Paths.sound('CS_locked'));
     lockedSound.pitch = 1;
@@ -404,7 +407,7 @@ class CharSelectSubState extends MusicBeatSubState
 
   function checkNewChar():Void
   {
-    if (nonLocks.length > 0) selectTimer.start(0.5, (_) -> {
+    if (nonLocks.length > 0) selectTimer.start(2, (_) -> {
       unLock();
     });
     else
