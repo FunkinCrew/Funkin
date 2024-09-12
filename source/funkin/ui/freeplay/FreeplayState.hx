@@ -9,6 +9,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
@@ -180,6 +181,8 @@ class FreeplayState extends MusicBeatSubState
   var ostName:FlxText;
   var albumRoll:AlbumRoll;
 
+  var charSelectHint:FlxText;
+
   var letterSort:LetterSort;
   var exitMovers:ExitMoverData = new Map();
 
@@ -279,6 +282,7 @@ class FreeplayState extends MusicBeatSubState
     txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
     ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
+    charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
     bgDad = new FlxSprite(backingCard.pinkBack.width * 0.74, 0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());
   }
@@ -498,7 +502,14 @@ class FreeplayState extends MusicBeatSubState
     ostName.alignment = RIGHT;
     ostName.visible = false;
 
-    exitMovers.set([overhangStuff, fnfFreeplay, ostName],
+    charSelectHint.alignment = CENTER;
+    charSelectHint.font = "5by7";
+    charSelectHint.color = 0xFF5F5F5F;
+    charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
+    charSelectHint.y -= 100;
+    FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
+
+    exitMovers.set([overhangStuff, fnfFreeplay, ostName, charSelectHint],
       {
         y: -overhangStuff.height,
         x: 0,
@@ -506,7 +517,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
-    exitMoversCharSel.set([overhangStuff, fnfFreeplay, ostName],
+    exitMoversCharSel.set([overhangStuff, fnfFreeplay, ostName, charSelectHint],
       {
         y: -300,
         speed: 0.8,
@@ -603,6 +614,11 @@ class FreeplayState extends MusicBeatSubState
     add(overhangStuff);
     add(fnfFreeplay);
     add(ostName);
+
+    if (PlayerRegistry.instance.hasNewCharacter() == true)
+    {
+      add(charSelectHint);
+    }
 
     // be careful not to "add()" things in here unless it's to a group that's already added to the state
     // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
@@ -1348,9 +1364,18 @@ class FreeplayState extends MusicBeatSubState
 
   var originalPos:FlxPoint = new FlxPoint();
 
+  var hintTimer:Float = 0;
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (charSelectHint != null)
+    {
+      hintTimer += elapsed * 2;
+      var targetAmt:Float = (Math.sin(hintTimer) + 1) / 2;
+      charSelectHint.alpha = FlxMath.lerp(0.3, 0.9, targetAmt);
+    }
 
     #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.P)
