@@ -20,8 +20,6 @@ class IntroSubState extends MusicBeatSubState
 {
   static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('introSelect'));
 
-  var introSound:FunkinSound = null;
-
   public override function create():Void
   {
     // Pause existing music.
@@ -40,15 +38,6 @@ class IntroSubState extends MusicBeatSubState
     trace('Playing native video ${ATTRACT_VIDEO_PATH}');
     playVideoNative(ATTRACT_VIDEO_PATH);
     #end
-
-    introSound = new FunkinSound();
-    introSound.loadEmbedded(Paths.sound('CS_Lights'));
-    introSound.pitch = 1;
-
-    FlxG.sound.defaultSoundGroup.add(introSound);
-    FlxG.sound.list.add(introSound);
-
-    introSound.play(true);
   }
 
   #if html5
