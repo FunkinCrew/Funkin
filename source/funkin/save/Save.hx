@@ -125,6 +125,7 @@ class Save
         {
           // Default to having seen the default character.
           charactersSeen: ["bf"],
+          oldChar: false
         },
 
       optionsChartEditor:
@@ -407,12 +408,33 @@ class Save
   }
 
   /**
+   * Marks whether the player has seen the spotlight animation, which should only display once per save file ever.
+   */
+  public var oldChar(get, set):Bool;
+
+  function get_oldChar():Bool
+  {
+    return data.unlocks.oldChar;
+  }
+
+  function set_oldChar(value:Bool):Bool
+  {
+    data.unlocks.oldChar = value;
+    flush();
+    return data.unlocks.oldChar;
+  }
+
+  /**
    * When we've seen a character unlock, add it to the list of characters seen.
    * @param character
    */
   public function addCharacterSeen(character:String):Void
   {
-    if (!data.unlocks.charactersSeen.contains(character)) data.unlocks.charactersSeen.push(character);
+    if (!data.unlocks.charactersSeen.contains(character))
+    {
+      data.unlocks.charactersSeen.push(character);
+      flush();
+    }
   }
 
   /**
@@ -1027,6 +1049,12 @@ typedef SaveDataUnlocks =
    * add it to this list so that we don't show it again.
    */
   var charactersSeen:Array<String>;
+
+  /**
+   * This is a conditional when the player enters the character state
+   * For the first time ever
+   */
+  var oldChar:Bool;
 }
 
 /**
