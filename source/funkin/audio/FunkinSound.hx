@@ -340,6 +340,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       if (songMusicData != null)
       {
         Conductor.instance.mapTimeChanges(songMusicData.timeChanges);
+
+        if (songMusicData.looped != null && params.loop == null) params.loop = songMusicData.looped;
       }
       else
       {
