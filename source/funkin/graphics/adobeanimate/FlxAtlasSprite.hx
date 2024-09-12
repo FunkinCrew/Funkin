@@ -95,7 +95,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function hasAnimation(id:String):Bool
   {
-    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id) || anim.getByName(id) != null;
+    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id);
   }
 
   /**
@@ -154,32 +154,27 @@ class FlxAtlasSprite extends FlxAnimate
     {
       if (!anim.isPlaying)
       {
+        if (fr != null) anim.curFrame = fr.index + startFrame;
+        else
+          anim.curFrame = startFrame;
+
         // Resume animation if it's paused.
-        anim.play('', restart, false, startFrame);
+        anim.resume();
       }
+
       return;
     }
-    else
+    else if (!hasAnimation(id))
     {
       // Skip if the animation doesn't exist
-      if (!hasAnimation(id))
-      {
-        trace('Animation ' + id + ' not found');
-        return;
-      }
+      trace('Animation ' + id + ' not found');
+      return;
     }
 
+    this.currentAnimation = id;
     anim.onComplete.removeAll();
     anim.onComplete.add(function() {
-      if (loop)
-      {
-        this.anim.play(id, restart, false, startFrame);
-        this.currentAnimation = id;
-      }
-      else
-      {
-        onAnimationComplete.dispatch(id);
-      }
+      _onAnimationComplete();
     });
 
     looping = loop;
@@ -190,6 +185,14 @@ class FlxAtlasSprite extends FlxAnimate
     // Move to the first frame of the animation.
     // goToFrameLabel(id);
     trace('Playing animation $id');
+    if ((id == null || id == "") || this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
+    {
+      this.anim.play(id, restart, false, startFrame);
+
+      this.currentAnimation = anim.curSymbol.name;
+
+      fr = null;
+    }
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
     if (getFrameLabelNames().indexOf(id) != -1)
     {
@@ -197,13 +200,6 @@ class FlxAtlasSprite extends FlxAnimate
       fr = anim.getFrameLabel(id);
       anim.curFrame += startFrame;
     }
-    else
-    {
-      this.anim.play(id, restart, false, startFrame);
-      fr = null;
-    }
-
-    this.currentAnimation = id;
   }
 
   override public function update(elapsed:Float)
@@ -301,12 +297,13 @@ class FlxAtlasSprite extends FlxAnimate
       {
         anim.pause();
         _onAnimationComplete();
+
         if (looping)
         {
           anim.curFrame = (fr != null) ? fr.index : 0;
           anim.resume();
         }
-        else
+        else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
         }
@@ -319,6 +316,10 @@ class FlxAtlasSprite extends FlxAnimate
     if (currentAnimation != null)
     {
       onAnimationComplete.dispatch(currentAnimation);
+    }
+    else
+    {
+      onAnimationComplete.dispatch('');
     }
   }
 

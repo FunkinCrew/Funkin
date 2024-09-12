@@ -97,6 +97,7 @@ class Save
           autoPause: true,
           inputOffset: 0,
           audioVisualOffset: 0,
+          unlockedFramerate: false,
 
           controls:
             {
@@ -1179,6 +1180,12 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var audioVisualOffset:Int;
+
+  /**
+   * If we want the framerate to be unlocked on HTML5.
+   * @default `false
+   */
+  var unlockedFramerate:Bool;
 
   var controls:
     {

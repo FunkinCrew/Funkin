@@ -8,20 +8,22 @@ import hxcodec.flixel.FlxVideoSprite;
 #end
 import funkin.ui.MusicBeatSubState;
 import funkin.audio.FunkinSound;
+import funkin.save.Save;
 
 /**
- * After about 2 minutes of inactivity on the title screen,
- * the game will enter the Attract state, as a reference to physical arcade machines.
- *
- * In the current version, this just plays the ~~Kickstarter trailer~~ Erect teaser, but this can be changed to
- * gameplay footage, a generic game trailer, or something more elaborate.
+ * When you first enter the character select state, it will play an introductory video opening up the lights
  */
 class IntroSubState extends MusicBeatSubState
 {
-  static final ATTRACT_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('introSelect'));
+  static final LIGHTS_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('introSelect'));
 
   public override function create():Void
   {
+    if (Save.instance.oldChar)
+    {
+      onLightsEnd();
+      return;
+    }
     // Pause existing music.
     if (FlxG.sound.music != null)
     {
@@ -30,14 +32,19 @@ class IntroSubState extends MusicBeatSubState
     }
 
     #if html5
-    trace('Playing web video ${ATTRACT_VIDEO_PATH}');
-    playVideoHTML5(ATTRACT_VIDEO_PATH);
+    trace('Playing web video ${LIGHTS_VIDEO_PATH}');
+    playVideoHTML5(LIGHTS_VIDEO_PATH);
     #end
 
     #if hxCodec
-    trace('Playing native video ${ATTRACT_VIDEO_PATH}');
-    playVideoNative(ATTRACT_VIDEO_PATH);
+    trace('Playing native video ${LIGHTS_VIDEO_PATH}');
+    playVideoNative(LIGHTS_VIDEO_PATH);
     #end
+
+    // Im TOO lazy to even care, so uh, yep
+    FlxG.camera.zoom = 0.66666666666666666666666666666667;
+    vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
+    vid.y = -((FlxG.height - (FlxG.height * FlxG.camera.zoom)) * 0.75);
   }
 
   #if html5
@@ -53,7 +60,7 @@ class IntroSubState extends MusicBeatSubState
     {
       vid.zIndex = 0;
 
-      vid.finishCallback = onAttractEnd;
+      vid.finishCallback = onLightsEnd;
 
       add(vid);
     }
@@ -77,7 +84,7 @@ class IntroSubState extends MusicBeatSubState
     if (vid != null)
     {
       vid.zIndex = 0;
-      vid.bitmap.onEndReached.add(onAttractEnd);
+      vid.bitmap.onEndReached.add(onLightsEnd);
 
       add(vid);
       vid.play(filePath, false);
@@ -93,37 +100,33 @@ class IntroSubState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (controls.ACCEPT)
-    {
-      onAttractEnd();
-    }
+    // if (!introSound.paused)
+    // {
+    //   #if html5
+    //   @:privateAccess
+    //   vid.netStream.seek(introSound.time);
+    //   #elseif hxCodec
+    //   vid.bitmap.time = Std.int(introSound.time);
+    //   #end
+    // }
   }
 
   /**
-   * When the attraction state ends (after the video ends or the user presses any button),
-   * switch immediately to the title screen.
+   * When the lights video finishes, it will close the substate
    */
-  function onAttractEnd():Void
+  function onLightsEnd():Void
   {
-    #if html5
     if (vid != null)
     {
-      remove(vid);
-    }
-    #end
-
-    #if hxCodec
-    if (vid != null)
-    {
+      #if hxCodec
       vid.stop();
+      #end
       remove(vid);
+      vid.destroy();
+      vid = null;
     }
-    #end
 
-    #if (html5 || hxCodec)
-    vid.destroy();
-    vid = null;
-    #end
+    FlxG.camera.zoom = 1;
 
     close();
   }
