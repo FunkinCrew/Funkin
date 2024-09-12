@@ -72,6 +72,12 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+
+    #if web
+    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+      Preferences.unlockedFramerate = value;
+    }, Preferences.unlockedFramerate);
+    #end
   }
 
   override function update(elapsed:Float):Void
