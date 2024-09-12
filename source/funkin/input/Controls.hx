@@ -395,20 +395,37 @@ class Controls extends FlxActionSet
     return result;
   }
 
-  public function getDialogueName(action:FlxActionDigital):String
+  public function getDialogueName(action:FlxActionDigital, ?ignoreSurrounding:Bool = false):String
   {
     var input = action.inputs[0];
-    return switch (input.device)
+    if (ignoreSurrounding == false)
     {
-      case KEYBOARD: return '[${(input.inputID : FlxKey)}]';
-      case GAMEPAD: return '(${(input.inputID : FlxGamepadInputID)})';
-      case device: throw 'unhandled device: $device';
+      return switch (input.device)
+      {
+        case KEYBOARD: return '[${(input.inputID : FlxKey)}]';
+        case GAMEPAD: return '(${(input.inputID : FlxGamepadInputID)})';
+        case device: throw 'unhandled device: $device';
+      }
+    }
+    else
+    {
+      return switch (input.device)
+      {
+        case KEYBOARD: return '${(input.inputID : FlxKey)}';
+        case GAMEPAD: return '${(input.inputID : FlxGamepadInputID)}';
+        case device: throw 'unhandled device: $device';
+      }
     }
   }
 
-  public function getDialogueNameFromToken(token:String):String
+  public function getDialogueNameFromToken(token:String, ?ignoreSurrounding:Bool = false):String
   {
-    return getDialogueName(getActionFromControl(Control.createByName(token.toUpperCase())));
+    return getDialogueName(getActionFromControl(Control.createByName(token.toUpperCase())), ignoreSurrounding);
+  }
+
+  public function getDialogueNameFromControl(control:Control, ?ignoreSurrounding:Bool = false):String
+  {
+    return getDialogueName(getActionFromControl(control), ignoreSurrounding);
   }
 
   function getActionFromControl(control:Control):FlxActionDigital
