@@ -73,7 +73,6 @@ class Main extends Sprite
                     var timeToCall = 0;
                     var id = window.setTimeout(function() { callback(currTime + timeToCall); },
                       timeToCall);
-                    lastTime = currTime + timeToCall;
                     return id;
                 }");
     #end
