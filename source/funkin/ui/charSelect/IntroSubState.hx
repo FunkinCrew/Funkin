@@ -41,10 +41,10 @@ class IntroSubState extends MusicBeatSubState
     playVideoNative(LIGHTS_VIDEO_PATH);
     #end
 
-    // Im TOO lazy to even care, so uh, yep
-    FlxG.camera.zoom = 0.66666666666666666666666666666667;
-    vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
-    vid.y = -((FlxG.height - (FlxG.height * FlxG.camera.zoom)) * 0.75);
+    // // Im TOO lazy to even care, so uh, yep
+    // FlxG.camera.zoom = 0.66666666666666666666666666666667;
+    // vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
+    // vid.y = -((FlxG.height - (FlxG.height * FlxG.camera.zoom)) * 0.75);
   }
 
   #if html5
