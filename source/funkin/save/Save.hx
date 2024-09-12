@@ -407,6 +407,9 @@ class Save
     return data.unlocks.charactersSeen;
   }
 
+  /**
+   * Marks whether the player has seen the spotlight animation, which should only display once per save file ever.
+   */
   public var oldChar(get, set):Bool;
 
   function get_oldChar():Bool
@@ -416,7 +419,9 @@ class Save
 
   function set_oldChar(value:Bool):Bool
   {
-    return data.unlocks.oldChar = value;
+    data.unlocks.oldChar = value;
+    flush();
+    return data.unlocks.oldChar;
   }
 
   /**
@@ -425,7 +430,11 @@ class Save
    */
   public function addCharacterSeen(character:String):Void
   {
-    if (!data.unlocks.charactersSeen.contains(character)) data.unlocks.charactersSeen.push(character);
+    if (!data.unlocks.charactersSeen.contains(character))
+    {
+      data.unlocks.charactersSeen.push(character);
+      flush();
+    }
   }
 
   /**
