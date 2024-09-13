@@ -63,7 +63,7 @@ class Constants
   /**
    * Link to buy merch for the game.
    */
-  public static final URL_MERCH:String = 'https://needlejuicerecords.com/pages/friday-night-funkin';
+  public static final URL_MERCH:String = 'https://www.makeship.com/shop/creator/friday-night-funkin';
 
   /**
    * Preloader sitelock.
