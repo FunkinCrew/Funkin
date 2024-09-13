@@ -67,14 +67,9 @@ class Main extends Sprite
   function init(?event:Event):Void
   {
     #if web
-    untyped js.Syntax.code("
-    window.requestAnimationFrame = function(callback, element) {
-                    var currTime = new Date().getTime();
-                    var timeToCall = 0;
-                    var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-                      timeToCall);
-                    return id;
-                }");
+    // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
+    // The framerate cap will more thoroughly initialize via Preferences in InitState.hx
+    funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
     #end
 
     if (hasEventListener(Event.ADDED_TO_STAGE))

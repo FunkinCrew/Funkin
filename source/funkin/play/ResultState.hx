@@ -418,8 +418,7 @@ class ResultState extends MusicBeatSubState
             {
               startingVolume: 1.0,
               overrideExisting: true,
-              restartTrack: true,
-              loop: rank.shouldMusicLoop()
+              restartTrack: true
             });
         });
       }
@@ -429,8 +428,7 @@ class ResultState extends MusicBeatSubState
           {
             startingVolume: 1.0,
             overrideExisting: true,
-            restartTrack: true,
-            loop: rank.shouldMusicLoop()
+            restartTrack: true
           });
       }
     });

@@ -17,8 +17,6 @@ class IntroSubState extends MusicBeatSubState
 {
   static final LIGHTS_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('introSelect'));
 
-  var introSound:FunkinSound = null;
-
   public override function create():Void
   {
     if (Save.instance.oldChar)
@@ -43,19 +41,10 @@ class IntroSubState extends MusicBeatSubState
     playVideoNative(LIGHTS_VIDEO_PATH);
     #end
 
-    // Im TOO lazy to even care, so uh, yep
-    FlxG.camera.zoom = 0.66666666666666666666666666666667;
-    vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
-    vid.y = -((FlxG.height - (FlxG.height * FlxG.camera.zoom)) * 0.75);
-
-    introSound = new FunkinSound();
-    introSound.loadEmbedded(Paths.sound('CS_Lights'));
-    introSound.pitch = 1;
-
-    FlxG.sound.defaultSoundGroup.add(introSound);
-    FlxG.sound.list.add(introSound);
-
-    introSound.play(true);
+    // // Im TOO lazy to even care, so uh, yep
+    // FlxG.camera.zoom = 0.66666666666666666666666666666667;
+    // vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
+    // vid.y = -((FlxG.height - (FlxG.height * FlxG.camera.zoom)) * 0.75);
   }
 
   #if html5

@@ -29,8 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented support for a new Instrumental Selector in Freeplay
   - Beating a Pico remix lets you use that instrumental when playing as Boyfriend
 - Added the first batch of Erect Stages! These graphical overhauls of the original stages will be used when playing Erect remixes and Pico remixes
+  - Week 1 Erect Stage
+  - Week 2 Erect Stage
+  - Week 3 Erect Stage
+  - Week 4 Erect Stage
+  - Week 5 Erect Stage
+  - Weekend 1 Erect Stage
+- Implemented alternate animations and music for Pico in the results screen.
+  - These display on Pico remixes, as well as when playing Weekend 1.
 - Implemented support for scripted Note Kinds. You can use HScript define a different note style to display for these notes as well as custom behavior. (community feature by lemz1)
-- Implemented a new Strumline Background option, to display a darkened background behind the strumline with your choice of opacity.
 - Implemented support for Numeric and Selector options in the Options menu. (community feature by FlooferLand)
 ## Changed
 - Girlfriend and Nene now perform previously unused animations when you achieve a large combo, or drop a large combo.

@@ -185,11 +185,12 @@ class FlxAtlasSprite extends FlxAnimate
     // Move to the first frame of the animation.
     // goToFrameLabel(id);
     trace('Playing animation $id');
-    if (this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
+    if ((id == null || id == "") || this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
     {
       this.anim.play(id, restart, false, startFrame);
 
-      if (id == "Boyfriend DJ fist pump" || startFrame == 4) trace("PUMP COMMAND: " + anim.curFrame);
+      this.currentAnimation = anim.curSymbol.name;
+
       fr = null;
     }
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
@@ -315,6 +316,10 @@ class FlxAtlasSprite extends FlxAnimate
     if (currentAnimation != null)
     {
       onAnimationComplete.dispatch(currentAnimation);
+    }
+    else
+    {
+      onAnimationComplete.dispatch('');
     }
   }
 

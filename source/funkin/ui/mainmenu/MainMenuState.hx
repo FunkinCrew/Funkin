@@ -437,7 +437,10 @@ class MainMenuState extends MusicBeatState
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.N)
     {
       @:privateAccess
-      funkin.save.Save.instance.data.unlocks.charactersSeen = ["bf"];
+      {
+        funkin.save.Save.instance.data.unlocks.charactersSeen = ["bf"];
+        funkin.save.Save.instance.data.unlocks.oldChar = false;
+      }
     }
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.E)

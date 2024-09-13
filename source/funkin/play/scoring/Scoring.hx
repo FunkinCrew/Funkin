@@ -577,19 +577,6 @@ enum abstract ScoringRank(String)
     }
   }
 
-  public function shouldMusicLoop():Bool
-  {
-    switch (abstract)
-    {
-      case PERFECT_GOLD | PERFECT | EXCELLENT | GREAT | GOOD:
-        return true;
-      case SHIT:
-        return false;
-      default:
-        return false;
-    }
-  }
-
   public function getHorTextAsset()
   {
     switch (abstract)
