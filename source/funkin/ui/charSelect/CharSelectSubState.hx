@@ -131,6 +131,9 @@ class CharSelectSubState extends MusicBeatSubState
 
     var crowd:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/crowd"));
     crowd.anim.play();
+    crowd.anim.onComplete.add(function() {
+      crowd.anim.play();
+    });
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
@@ -147,6 +150,9 @@ class CharSelectSubState extends MusicBeatSubState
 
     barthing = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/barThing"));
     barthing.anim.play("");
+    barthing.anim.onComplete.add(function() {
+      barthing.anim.play("");
+    });
     barthing.blend = BlendMode.MULTIPLY;
     barthing.scrollFactor.set(0, 0);
     add(barthing);
@@ -176,6 +182,9 @@ class CharSelectSubState extends MusicBeatSubState
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
+    speakers.anim.onComplete.add(function() {
+      speakers.anim.play("");
+    });
     speakers.scrollFactor.set(1.8, 1.8);
     add(speakers);
 
