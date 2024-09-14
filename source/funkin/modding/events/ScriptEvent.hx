@@ -103,7 +103,7 @@ class NoteScriptEvent extends ScriptEvent
   public var comboCount(default, null):Int;
 
   /**
-   * Whether to play the record scratch sound (if this eventn type is `NOTE_MISS`).
+   * Whether to play the record scratch sound (if this event type is `NOTE_MISS`).
    */
   public var playSound(default, default):Bool;
 
