@@ -270,6 +270,7 @@ typedef PlayerResultsData =
 {
   var music:PlayerResultsMusicData;
 
+  var perfectGold:Array<PlayerResultsAnimationData>;
   var perfect:Array<PlayerResultsAnimationData>;
   var excellent:Array<PlayerResultsAnimationData>;
   var great:Array<PlayerResultsAnimationData>;
