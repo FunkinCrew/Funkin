@@ -120,7 +120,7 @@ class FunkinSoundTray extends FlxSoundTray
     lerpYPos = 10;
     visible = true;
     active = true;
-    var globalVolume:Int = Math.round(FlxG.sound.volume * 10);
+    var globalVolume:Int = Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
 
     if (FlxG.sound.muted)
     {
