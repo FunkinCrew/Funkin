@@ -4,6 +4,8 @@ import funkin.util.MathUtil;
 import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxSprite;
+import flixel.FlxState;
+import flixel.FlxSubState;
 import funkin.graphics.FunkinSprite;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxBitmapFont;
@@ -14,6 +16,9 @@ import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
 import funkin.ui.freeplay.FreeplayScore;
 import flixel.text.FlxText;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.player.PlayerData;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
@@ -55,14 +60,19 @@ class ResultState extends MusicBeatSubState
   final highscoreNew:FlxSprite;
   final score:ResultScore;
 
-  var bfPerfect:Null<FlxAtlasSprite> = null;
-  var heartsPerfect:Null<FlxAtlasSprite> = null;
-  var bfExcellent:Null<FlxAtlasSprite> = null;
-  var bfGreat:Null<FlxAtlasSprite> = null;
-  var gfGreat:Null<FlxAtlasSprite> = null;
-  var bfGood:Null<FlxSprite> = null;
-  var gfGood:Null<FlxSprite> = null;
-  var bfShit:Null<FlxAtlasSprite> = null;
+  var characterAtlasAnimations:Array<
+    {
+      sprite:FlxAtlasSprite,
+      delay:Float,
+      forceLoop:Bool
+    }> = [];
+  var characterSparrowAnimations:Array<
+    {
+      sprite:FunkinSprite,
+      delay:Float
+    }> = [];
+
+  var playerCharacterId:Null<String>;
 
   var rankBg:FunkinSprite;
   final cameraBG:FunkinCamera;
@@ -157,118 +167,98 @@ class ResultState extends MusicBeatSubState
     soundSystem.zIndex = 1100;
     add(soundSystem);
 
-    switch (rank)
+    // Fetch playable character data. Default to BF on the results screen if we can't find it.
+    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId);
+    var playerCharacter:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? 'bf');
+
+    trace('Got playable character: ${playerCharacter?.getName()}');
+    // Query JSON data based on the rank, then use that to build the animation(s) the player sees.
+    var playerAnimationDatas:Array<PlayerResultsAnimationData> = playerCharacter != null ? playerCharacter.getResultsAnimationDatas(rank) : [];
+
+    for (animData in playerAnimationDatas)
     {
-      case PERFECT | PERFECT_GOLD:
-        heartsPerfect = new FlxAtlasSprite(1342, 370, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT/hearts", "shared"));
-        heartsPerfect.visible = false;
-        heartsPerfect.zIndex = 501;
-        add(heartsPerfect);
+      if (animData == null) continue;
 
-        heartsPerfect.anim.onComplete = () -> {
-          if (heartsPerfect != null)
+      var animPath:String = Paths.stripLibrary(animData.assetPath);
+      var animLibrary:String = Paths.getLibrary(animData.assetPath);
+      var offsets = animData.offsets ?? [0, 0];
+      switch (animData.renderType)
+      {
+        case 'animateatlas':
+          var animation:FlxAtlasSprite = new FlxAtlasSprite(offsets[0], offsets[1], Paths.animateAtlas(animPath, animLibrary));
+          animation.zIndex = animData.zIndex ?? 500;
+
+          animation.scale.set(animData.scale ?? 1.0, animData.scale ?? 1.0);
+
+          if (!(animData.looped ?? true))
           {
-            // bfPerfect.anim.curFrame = 137;
-            heartsPerfect.anim.curFrame = 43;
-            heartsPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+            // Animation is not looped.
+            animation.onAnimationComplete.add((_name:String) -> {
+              trace("AHAHAH 2");
+              if (animation != null)
+              {
+                animation.anim.pause();
+              }
+            });
           }
-        };
-
-        bfPerfect = new FlxAtlasSprite(1342, 370, Paths.animateAtlas("resultScreen/results-bf/resultsPERFECT", "shared"));
-        bfPerfect.visible = false;
-        bfPerfect.zIndex = 500;
-        add(bfPerfect);
-
-        bfPerfect.anim.onComplete = () -> {
-          if (bfPerfect != null)
+          else if (animData.loopFrameLabel != null)
           {
-            // bfPerfect.anim.curFrame = 137;
-            bfPerfect.anim.curFrame = 137;
-            bfPerfect.anim.play(); // unpauses this anim, since it's on PlayOnce!
+            animation.onAnimationComplete.add((_name:String) -> {
+              trace("AHAHAH 2");
+              if (animation != null)
+              {
+                animation.playAnimation(animData.loopFrameLabel ?? '', true, false, true); // unpauses this anim, since it's on PlayOnce!
+              }
+            });
           }
-        };
-
-      case EXCELLENT:
-        bfExcellent = new FlxAtlasSprite(1329, 429, Paths.animateAtlas("resultScreen/results-bf/resultsEXCELLENT", "shared"));
-        bfExcellent.visible = false;
-        bfExcellent.zIndex = 500;
-        add(bfExcellent);
-
-        bfExcellent.anim.onComplete = () -> {
-          if (bfExcellent != null)
+          else if (animData.loopFrame != null)
           {
-            bfExcellent.anim.curFrame = 28;
-            bfExcellent.anim.play(); // unpauses this anim, since it's on PlayOnce!
+            animation.onAnimationComplete.add((_name:String) -> {
+              if (animation != null)
+              {
+                trace("AHAHAH");
+                animation.anim.curFrame = animData.loopFrame ?? 0;
+                animation.anim.play(); // unpauses this anim, since it's on PlayOnce!
+              }
+            });
           }
-        };
 
-      case GREAT:
-        gfGreat = new FlxAtlasSprite(802, 331, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/gf", "shared"));
-        gfGreat.visible = false;
-        gfGreat.zIndex = 499;
-        add(gfGreat);
+          // Hide until ready to play.
+          animation.visible = false;
+          // Queue to play.
+          characterAtlasAnimations.push(
+            {
+              sprite: animation,
+              delay: animData.delay ?? 0.0,
+              forceLoop: (animData.loopFrame ?? -1) == 0
+            });
+          // Add to the scene.
+          add(animation);
+        case 'sparrow':
+          var animation:FunkinSprite = FunkinSprite.createSparrow(offsets[0], offsets[1], animPath);
+          animation.animation.addByPrefix('idle', '', 24, false, false, false);
 
-        gfGreat.scale.set(0.93, 0.93);
-
-        gfGreat.anim.onComplete = () -> {
-          if (gfGreat != null)
+          if (animData.loopFrame != null)
           {
-            gfGreat.anim.curFrame = 9;
-            gfGreat.anim.play(); // unpauses this anim, since it's on PlayOnce!
+            animation.animation.finishCallback = (_name:String) -> {
+              if (animation != null)
+              {
+                animation.animation.play('idle', true, false, animData.loopFrame ?? 0);
+              }
+            }
           }
-        };
 
-        bfGreat = new FlxAtlasSprite(929, 363, Paths.animateAtlas("resultScreen/results-bf/resultsGREAT/bf", "shared"));
-        bfGreat.visible = false;
-        bfGreat.zIndex = 500;
-        add(bfGreat);
-
-        bfGreat.scale.set(0.93, 0.93);
-
-        bfGreat.anim.onComplete = () -> {
-          if (bfGreat != null)
-          {
-            bfGreat.anim.curFrame = 15;
-            bfGreat.anim.play(); // unpauses this anim, since it's on PlayOnce!
-          }
-        };
-
-      case GOOD:
-        gfGood = FunkinSprite.createSparrow(625, 325, 'resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD');
-        gfGood.animation.addByPrefix("clap", "Girlfriend Good Anim", 24, false);
-        gfGood.visible = false;
-        gfGood.zIndex = 500;
-        gfGood.animation.finishCallback = _ -> {
-          if (gfGood != null)
-          {
-            gfGood.animation.play('clap', true, false, 9);
-          }
-        };
-        add(gfGood);
-
-        bfGood = FunkinSprite.createSparrow(640, -200, 'resultScreen/results-bf/resultsGOOD/resultBoyfriendGOOD');
-        bfGood.animation.addByPrefix("fall", "Boyfriend Good Anim0", 24, false);
-        bfGood.visible = false;
-        bfGood.zIndex = 501;
-        bfGood.animation.finishCallback = function(_) {
-          if (bfGood != null)
-          {
-            bfGood.animation.play('fall', true, false, 14);
-          }
-        };
-        add(bfGood);
-
-      case SHIT:
-        bfShit = new FlxAtlasSprite(0, 20, Paths.animateAtlas("resultScreen/results-bf/resultsSHIT", "shared"));
-        bfShit.visible = false;
-        bfShit.zIndex = 500;
-        add(bfShit);
-        bfShit.onAnimationFinish.add((animName) -> {
-          if (bfShit != null)
-          {
-            bfShit.playAnimation('Loop Start');
-          }
-        });
+          // Hide until ready to play.
+          animation.visible = false;
+          // Queue to play.
+          characterSparrowAnimations.push(
+            {
+              sprite: animation,
+              delay: animData.delay ?? 0.0
+            });
+          // Add to the scene.
+          add(animation);
+      }
     }
 
     var diffSpr:String = 'diff_${params?.difficultyId ?? 'Normal'}';
@@ -419,28 +409,26 @@ class ResultState extends MusicBeatSubState
     // }
 
     new FlxTimer().start(rank.getMusicDelay(), _ -> {
-      if (rank.hasMusicIntro())
+      var introMusic:String = Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank) + '-intro');
+      if (Assets.exists(introMusic))
       {
         // Play the intro music.
-        var introMusic:String = Paths.music(rank.getMusicPath() + '/' + rank.getMusicPath() + '-intro');
         FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
-          FunkinSound.playMusic(rank.getMusicPath(),
+          FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
             {
               startingVolume: 1.0,
               overrideExisting: true,
-              restartTrack: true,
-              loop: rank.shouldMusicLoop()
+              restartTrack: true
             });
         });
       }
       else
       {
-        FunkinSound.playMusic(rank.getMusicPath(),
+        FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
           {
             startingVolume: 1.0,
             overrideExisting: true,
-            restartTrack: true,
-            loop: rank.shouldMusicLoop()
+            restartTrack: true
           });
       }
     });
@@ -456,6 +444,11 @@ class ResultState extends MusicBeatSubState
     super.create();
   }
 
+  function getMusicPath(playerCharacter:Null<PlayableCharacter>, rank:ScoringRank):String
+  {
+    return playerCharacter?.getResultsMusicPath(rank) ?? 'resultsNORMAL';
+  }
+
   var rankTallyTimer:Null<FlxTimer> = null;
   var clearPercentTarget:Int = 100;
   var clearPercentLerp:Int = 0;
@@ -464,7 +457,9 @@ class ResultState extends MusicBeatSubState
   {
     bgFlash.visible = true;
     FlxTween.tween(bgFlash, {alpha: 0}, 5 / 24);
-    var clearPercentFloat = (params.scoreData.tallies.sick + params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes * 100;
+    // NOTE: Only divide if totalNotes > 0 to prevent divide-by-zero errors.
+    var clearPercentFloat = params.scoreData.tallies.totalNotes == 0 ? 0.0 : (params.scoreData.tallies.sick +
+      params.scoreData.tallies.good) / params.scoreData.tallies.totalNotes * 100;
     clearPercentTarget = Math.floor(clearPercentFloat);
     // Prevent off-by-one errors.
 
@@ -585,94 +580,22 @@ class ResultState extends MusicBeatSubState
   {
     showSmallClearPercent();
 
-    switch (rank)
+    for (atlas in characterAtlasAnimations)
     {
-      case PERFECT | PERFECT_GOLD:
-        if (bfPerfect == null)
-        {
-          trace("Could not build PERFECT animation!");
-        }
-        else
-        {
-          bfPerfect.visible = true;
-          bfPerfect.playAnimation('');
-        }
-        new FlxTimer().start(106 / 24, _ -> {
-          if (heartsPerfect == null)
-          {
-            trace("Could not build heartsPerfect animation!");
-          }
-          else
-          {
-            heartsPerfect.visible = true;
-            heartsPerfect.playAnimation('');
-          }
-        });
-      case EXCELLENT:
-        if (bfExcellent == null)
-        {
-          trace("Could not build EXCELLENT animation!");
-        }
-        else
-        {
-          bfExcellent.visible = true;
-          bfExcellent.playAnimation('');
-        }
-      case GREAT:
-        if (bfGreat == null)
-        {
-          trace("Could not build GREAT animation!");
-        }
-        else
-        {
-          bfGreat.visible = true;
-          bfGreat.playAnimation('');
-        }
+      new FlxTimer().start(atlas.delay, _ -> {
+        if (atlas.sprite == null) return;
+        atlas.sprite.visible = true;
+        atlas.sprite.playAnimation('');
+      });
+    }
 
-        new FlxTimer().start(6 / 24, _ -> {
-          if (gfGreat == null)
-          {
-            trace("Could not build GREAT animation for gf!");
-          }
-          else
-          {
-            gfGreat.visible = true;
-            gfGreat.playAnimation('');
-          }
-        });
-      case SHIT:
-        if (bfShit == null)
-        {
-          trace("Could not build SHIT animation!");
-        }
-        else
-        {
-          bfShit.visible = true;
-          bfShit.playAnimation('Intro');
-        }
-      case GOOD:
-        if (bfGood == null)
-        {
-          trace("Could not build GOOD animation!");
-        }
-        else
-        {
-          bfGood.animation.play('fall');
-          bfGood.visible = true;
-          new FlxTimer().start((1 / 24) * 22, _ -> {
-            // plays about 22 frames (at 24fps timing) after bf spawns in
-            if (gfGood != null)
-            {
-              gfGood.animation.play('clap', true);
-              gfGood.visible = true;
-            }
-            else
-            {
-              trace("Could not build GOOD animation!");
-            }
-          });
-        }
-      default:
+    for (sprite in characterSparrowAnimations)
+    {
+      new FlxTimer().start(sprite.delay, _ -> {
+        if (sprite.sprite == null) return;
+        sprite.sprite.visible = true;
+        sprite.sprite.animation.play('idle', true);
+      });
     }
   }
 
@@ -774,52 +697,6 @@ class ResultState extends MusicBeatSubState
     //   }));
     // }
 
-    // if(heartsPerfect != null){
-    // if (FlxG.keys.justPressed.I)
-    // {
-    //   heartsPerfect.y -= 1;
-    //   trace(heartsPerfect.x, heartsPerfect.y);
-    // }
-    // if (FlxG.keys.justPressed.J)
-    // {
-    //   heartsPerfect.x -= 1;
-    //   trace(heartsPerfect.x, heartsPerfect.y);
-    // }
-    // if (FlxG.keys.justPressed.L)
-    // {
-    //   heartsPerfect.x += 1;
-    //   trace(heartsPerfect.x, heartsPerfect.y);
-    // }
-    // if (FlxG.keys.justPressed.K)
-    // {
-    //   heartsPerfect.y += 1;
-    //   trace(heartsPerfect.x, heartsPerfect.y);
-    // }
-    // }
-
-    // if(bfGreat != null){
-    // if (FlxG.keys.justPressed.W)
-    // {
-    //   bfGreat.y -= 1;
-    //   trace(bfGreat.x, bfGreat.y);
-    // }
-    // if (FlxG.keys.justPressed.A)
-    // {
-    //   bfGreat.x -= 1;
-    //   trace(bfGreat.x, bfGreat.y);
-    // }
-    // if (FlxG.keys.justPressed.D)
-    // {
-    //   bfGreat.x += 1;
-    //   trace(bfGreat.x, bfGreat.y);
-    // }
-    // if (FlxG.keys.justPressed.S)
-    // {
-    //   bfGreat.y += 1;
-    //   trace(bfGreat.x, bfGreat.y);
-    // }
-    // }
-
     // maskShaderSongName.swagSprX = songName.x;
     maskShaderDifficulty.swagSprX = difficulty.x;
 
@@ -857,53 +734,93 @@ class ResultState extends MusicBeatSubState
             }
           });
       }
+
+      // Determining the target state(s) to go to.
+      // Default to main menu because that's better than `null`.
+      var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var shouldTween = false;
+      var shouldUseSubstate = false;
+
       if (params.storyMode)
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
+        if (PlayerRegistry.instance.hasNewCharacter())
+        {
+          // New character, display the notif.
+          targetState = new StoryMenuState(null);
+
+          var newCharacters = PlayerRegistry.instance.listNewCharacters();
+
+          for (charId in newCharacters)
+          {
+            shouldTween = true;
+            // This works recursively, ehe!
+            targetState = new funkin.ui.charSelect.CharacterUnlockState(charId, targetState);
+          }
+        }
+        else
+        {
+          // No new characters.
+          shouldTween = false;
+          shouldUseSubstate = true;
+          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker));
+        }
       }
       else
       {
-        var rigged:Bool = true;
-        if (rank > Scoring.calculateRank(params?.prevScoreData)) // if (rigged)
+        if (rank > Scoring.calculateRank(params?.prevScoreData))
         {
           trace('THE RANK IS Higher.....');
 
-          FlxTween.tween(rankBg, {alpha: 1}, 0.5,
+          shouldTween = true;
+          targetState = FreeplayState.build(
             {
-              ease: FlxEase.expoOut,
-              onComplete: function(_) {
-                FlxG.switchState(FreeplayState.build(
+              {
+                character: playerCharacterId ?? "bf",
+                fromResults:
                   {
-                    {
-                      fromResults:
-                        {
-                          oldRank: Scoring.calculateRank(params?.prevScoreData),
-                          newRank: rank,
-                          songId: params.songId,
-                          difficultyId: params.difficultyId,
-                          playRankAnim: true
-                        }
-                    }
-                  }));
+                    oldRank: Scoring.calculateRank(params?.prevScoreData),
+                    newRank: rank,
+                    songId: params.songId,
+                    difficultyId: params.difficultyId,
+                    playRankAnim: true
+                  }
               }
             });
         }
         else
         {
-          trace('rank is lower...... and/or equal');
-          openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(
-            {
+          shouldTween = false;
+          shouldUseSubstate = true;
+          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker));
+        }
+      }
+
+      if (shouldTween)
+      {
+        FlxTween.tween(rankBg, {alpha: 1}, 0.5,
+          {
+            ease: FlxEase.expoOut,
+            onComplete: function(_) {
+              if (shouldUseSubstate && targetState is FlxSubState)
               {
-                fromResults:
-                  {
-                    oldRank: null,
-                    playRankAnim: false,
-                    newRank: rank,
-                    songId: params.songId,
-                    difficultyId: params.difficultyId
-                  }
+                openSubState(cast targetState);
               }
-            }, sticker)));
+              else
+              {
+                FlxG.switchState(targetState);
+              }
+            }
+          });
+      }
+      else
+      {
+        if (shouldUseSubstate && targetState is FlxSubState)
+        {
+          openSubState(cast targetState);
+        }
+        else
+        {
+          FlxG.switchState(targetState);
         }
       }
     }
@@ -920,11 +837,21 @@ typedef ResultsStateParams =
   var storyMode:Bool;
 
   /**
+   * A readable title for the song we just played.
    * Either "Song Name by Artist Name" or "Week Name"
    */
   var title:String;
 
+  /**
+   * The internal song ID for the song we just played.
+   */
   var songId:String;
+
+  /**
+   * The character ID for the song we just played.
+   * @default `bf`
+   */
+  var ?characterId:String;
 
   /**
    * Whether the displayed score is a new highscore
