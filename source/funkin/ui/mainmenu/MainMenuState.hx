@@ -27,7 +27,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import Discord.DiscordClient;
 #end
 #if newgrounds
@@ -54,7 +54,7 @@ class MainMenuState extends MusicBeatState
 
   override function create():Void
   {
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
     DiscordClient.changePresence("In the Menus", null);
     #end
@@ -64,7 +64,7 @@ class MainMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    if (overrideMusic == false) playMenuMusic();
+    if (!overrideMusic) playMenuMusic();
 
     // We want the state to always be able to begin with being able to accept inputs and show the anims of the menu items.
     persistentUpdate = true;
@@ -98,14 +98,7 @@ class MainMenuState extends MusicBeatState
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
-      if (_.name == 'freeplay')
-      {
-        magenta.visible = true;
-      }
-      else
-      {
-        FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
-      }
+      FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
     });
 
     menuItems.enabled = true; // can move on intro
@@ -117,7 +110,17 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      openSubState(new FreeplayState());
+      #if FEATURE_DEBUG_FUNCTIONS
+      // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
+      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
+      #else
+      var targetCharacter:Null<String> = null;
+      #end
+
+      openSubState(new FreeplayState(
+        {
+          character: targetCharacter
+        }));
     });
 
     #if CAN_OPEN_LINKS
@@ -153,6 +156,9 @@ class MainMenuState extends MusicBeatState
 
     resetCamStuff();
 
+    // reset camera when debug menu is closed
+    subStateClosed.add(_ -> resetCamStuff(false));
+
     subStateOpened.add(sub -> {
       if (Type.getClass(sub) == FreeplayState)
       {
@@ -182,10 +188,11 @@ class MainMenuState extends MusicBeatState
       });
   }
 
-  function resetCamStuff():Void
+  function resetCamStuff(?snap:Bool = true):Void
   {
     FlxG.camera.follow(camFollow, null, 0.06);
-    FlxG.camera.snapToTarget();
+
+    if (snap) FlxG.camera.snapToTarget();
   }
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
@@ -338,22 +345,55 @@ class MainMenuState extends MusicBeatState
     }
 
     // Open the debug menu, defaults to ` / ~
-    #if CHART_EDITOR_SUPPORTED
+    // This includes stuff like the Chart Editor, so it should be present on all builds.
     if (controls.DEBUG_MENU)
     {
       persistentUpdate = false;
 
       FlxG.state.openSubState(new DebugMenuSubState());
-      // reset camera when debug menu is closed
-      subStateClosed.addOnce(_ -> resetCamStuff());
     }
-    #end
 
-    #if (debug || FORCE_DEBUG_VERSION)
+    #if FEATURE_DEBUG_FUNCTIONS
+    // Ctrl+Alt+Shift+P = Character Unlock screen
+    // Ctrl+Alt+Shift+W = Meet requirements for Pico Unlock
+    // Ctrl+Alt+Shift+L = Revoke requirements for Pico Unlock
+    // Ctrl+Alt+Shift+R = Score/Rank conflict test
+    // Ctrl+Alt+Shift+N = Mark all characters as not seen
+    // Ctrl+Alt+Shift+E = Dump save data
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.P)
+    {
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState('pico'));
+    }
+
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
     {
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
       // Give the user a score of 1 point on Weekend 1 story mode.
       // This makes the level count as cleared and displays the songs in Freeplay.
+      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
+        {
+          score: 1,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            }
+        });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    {
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      // Give the user a score of 0 points on Weekend 1 story mode.
+      // This makes the level count as uncleared and no longer displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
         {
           score: 1,
@@ -394,6 +434,15 @@ class MainMenuState extends MusicBeatState
         });
     }
 
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.N)
+    {
+      @:privateAccess
+      {
+        funkin.save.Save.instance.data.unlocks.charactersSeen = ["bf"];
+        funkin.save.Save.instance.data.unlocks.oldChar = false;
+      }
+    }
+
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.E)
     {
       funkin.save.Save.instance.debug_dumpSave();
@@ -409,8 +458,8 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       FlxG.switchState(() -> new TitleState());
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
   }
 }
