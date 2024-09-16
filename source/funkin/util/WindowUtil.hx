@@ -24,7 +24,7 @@ class WindowUtil
   {
     #if CAN_OPEN_LINKS
     #if linux
-    Sys.command('/usr/bin/xdg-open', [targetUrl, '&']);
+    Sys.command('/usr/bin/xdg-open $targetUrl &');
     #else
     // This should work on Windows and HTML5.
     FlxG.openURL(targetUrl);
@@ -92,7 +92,7 @@ class WindowUtil
     });
 
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
-      for (key in PlayerSettings.player1.controls.getKeysForAction(FULLSCREEN))
+      for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
         if (e.keyCode == key)
         {

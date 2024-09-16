@@ -2,19 +2,11 @@ package funkin.api.newgrounds;
 
 #if newgrounds
 import flixel.util.FlxSignal;
-import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import io.newgrounds.NGLite;
-import io.newgrounds.components.ScoreBoardComponent.Period;
 import io.newgrounds.objects.Error;
-import io.newgrounds.objects.Medal;
 import io.newgrounds.objects.Score;
-import io.newgrounds.objects.ScoreBoard;
-import io.newgrounds.objects.events.Response;
-import io.newgrounds.objects.events.Result.GetCurrentVersionResult;
-import io.newgrounds.objects.events.Result.GetVersionResult;
 import lime.app.Application;
-import openfl.display.Stage;
 #end
 
 /**
@@ -247,7 +239,7 @@ class NGio
     NG.core.calls.event.logEvent(event).send();
     trace('should have logged: ' + event);
     #else
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     trace('event:$event - not logged, missing NG.io lib');
     #end
     #end
@@ -262,7 +254,7 @@ class NGio
       if (!medal.unlocked) medal.sendUnlock();
     }
     #else
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     trace('medal:$id - not unlocked, missing NG.io lib');
     #end
     #end
@@ -286,7 +278,7 @@ class NGio
       }
     }
     #else
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     trace('Song:$song, Score:$score - not posted, missing NG.io lib');
     #end
     #end

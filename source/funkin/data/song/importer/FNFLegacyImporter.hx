@@ -36,7 +36,7 @@ class FNFLegacyImporter
   {
     trace('Migrating song metadata from FNF Legacy.');
 
-    var songMetadata:SongMetadata = new SongMetadata('Import', 'Kawai Sprite', 'default');
+    var songMetadata:SongMetadata = new SongMetadata('Import', Constants.DEFAULT_ARTIST, 'default');
 
     var hadError:Bool = false;
 
@@ -65,7 +65,7 @@ class FNFLegacyImporter
 
     songMetadata.timeChanges = rebuildTimeChanges(songData);
 
-    songMetadata.playData.characters = new SongCharacterData(songData?.song?.player1 ?? 'bf', 'gf', songData?.song?.player2 ?? 'dad', 'mom');
+    songMetadata.playData.characters = new SongCharacterData(songData?.song?.player1 ?? 'bf', 'gf', songData?.song?.player2 ?? 'dad');
 
     return songMetadata;
   }
@@ -199,6 +199,8 @@ class FNFLegacyImporter
       {
         // Handle the dumb logic for mustHitSection.
         var noteData = note.data;
+        if (noteData < 0) continue; // Exclude Psych event notes.
+        if (noteData > (STRUMLINE_SIZE * 2)) noteData = noteData % (2 * STRUMLINE_SIZE); // Handle other engine event notes.
 
         // Flip notes if mustHitSection is FALSE (not true lol).
         if (!mustHitSection)
