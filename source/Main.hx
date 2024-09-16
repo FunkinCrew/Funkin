@@ -22,7 +22,7 @@ class Main extends Sprite
   var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
   var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
   var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-  #if web
+  #if (web || CHEEMS)
   var framerate:Int = 60; // How many frames per second the game should run at.
   #else
   // TODO: This should probably be in the options menu?
@@ -66,6 +66,12 @@ class Main extends Sprite
 
   function init(?event:Event):Void
   {
+    #if web
+    // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
+    // The framerate cap will more thoroughly initialize via Preferences in InitState.hx
+    funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
+    #end
+
     if (hasEventListener(Event.ADDED_TO_STAGE))
     {
       removeEventListener(Event.ADDED_TO_STAGE, init);
@@ -113,7 +119,7 @@ class Main extends Sprite
 
     addChild(game);
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     #end
 
