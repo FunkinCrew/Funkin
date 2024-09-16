@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.components;
 
 import funkin.play.notes.Strumline;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -15,6 +16,7 @@ import flixel.math.FlxMath;
  * A sprite that can be used to display the trail of a hold note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
+@:access(funkin.ui.debug.charting.ChartEditorState)
 @:nullSafety
 class ChartEditorHoldNoteSprite extends SustainTrail
 {
@@ -23,6 +25,22 @@ class ChartEditorHoldNoteSprite extends SustainTrail
    */
   public var parentState:ChartEditorState;
 
+  @:isVar
+  public var noteStyle(get, set):Null<String>;
+
+  function get_noteStyle():Null<String>
+  {
+    return this.noteStyle ?? this.parentState.currentSongNoteStyle;
+  }
+
+  @:nullSafety(Off)
+  function set_noteStyle(value:Null<String>):Null<String>
+  {
+    this.noteStyle = value;
+    this.updateHoldNoteGraphic();
+    return value;
+  }
+
   public function new(parent:ChartEditorState)
   {
     var noteStyle = NoteStyleRegistry.instance.fetchDefault();
@@ -30,13 +48,51 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     super(0, 100, noteStyle);
 
     this.parentState = parent;
+  }
+
+  @:nullSafety(Off)
+  function updateHoldNoteGraphic():Void
+  {
+    var bruhStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyle);
+    if (bruhStyle == null) bruhStyle = NoteStyleRegistry.instance.fetchDefault();
+    setupHoldNoteGraphic(bruhStyle);
+  }
+
+  override function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
+  {
+    var graphicPath = noteStyle.getHoldNoteAssetPath();
+    if (graphicPath == null) return;
+    loadGraphic(graphicPath);
+
+    antialiasing = true;
+
+    this.isPixel = noteStyle.isHoldNotePixel();
+    if (isPixel)
+    {
+      endOffset = bottomClip = 1;
+      antialiasing = false;
+    }
+    else
+    {
+      endOffset = 0.5;
+      bottomClip = 0.9;
+    }
 
     zoom = 1.0;
     zoom *= noteStyle.fetchHoldNoteScale();
     zoom *= 0.7;
     zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
+    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
+    graphicHeight = sustainLength * 0.45; // sustainHeight
+
     flipY = false;
+
+    alpha = 1.0;
+
+    updateColorTransform();
+
+    updateClipping();
 
     setup();
   }

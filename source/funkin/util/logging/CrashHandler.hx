@@ -265,9 +265,10 @@ class CrashHandler
 
   static function renderMethod():String
   {
-    try
+    var outputStr:String = 'UNKNOWN';
+    outputStr = try
     {
-      return switch (FlxG.renderMethod)
+      switch (FlxG.renderMethod)
       {
         case FlxRenderMethod.DRAW_TILES: 'DRAW_TILES';
         case FlxRenderMethod.BLITTING: 'BLITTING';
@@ -276,7 +277,9 @@ class CrashHandler
     }
     catch (e)
     {
-      return 'ERROR ON QUERY RENDER METHOD: ${e}';
+      'ERROR ON QUERY RENDER METHOD: ${e}';
     }
+
+    return outputStr;
   }
 }
