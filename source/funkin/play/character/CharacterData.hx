@@ -305,8 +305,10 @@ class CharacterDataParser
         icon = "darnell";
       case "senpai-angry":
         icon = "senpai";
-      case "tankman" | "tankman-atlas":
-        icon = "tankmen";
+      case "spooky-dark":
+        icon = "spooky";
+      case "tankman-atlas":
+        icon = "tankman";
     }
 
     var path = Paths.image("freeplay/icons/" + icon + "pixel");
@@ -383,21 +385,21 @@ class CharacterDataParser
    * Values that are too high will cause the character to hold their singing pose for too long after they're done.
    * @default `8 steps`
    */
-  static final DEFAULT_SINGTIME:Float = 8.0;
+  public static final DEFAULT_SINGTIME:Float = 8.0;
 
-  static final DEFAULT_DANCEEVERY:Int = 1;
-  static final DEFAULT_FLIPX:Bool = false;
-  static final DEFAULT_FLIPY:Bool = false;
-  static final DEFAULT_FRAMERATE:Int = 24;
-  static final DEFAULT_ISPIXEL:Bool = false;
-  static final DEFAULT_LOOP:Bool = false;
-  static final DEFAULT_NAME:String = 'Untitled Character';
-  static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
-  static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
-  static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
-  static final DEFAULT_SCALE:Float = 1;
-  static final DEFAULT_SCROLL:Array<Float> = [0, 0];
-  static final DEFAULT_STARTINGANIM:String = 'idle';
+  public static final DEFAULT_DANCEEVERY:Float = 1.0;
+  public static final DEFAULT_FLIPX:Bool = false;
+  public static final DEFAULT_FLIPY:Bool = false;
+  public static final DEFAULT_FRAMERATE:Int = 24;
+  public static final DEFAULT_ISPIXEL:Bool = false;
+  public static final DEFAULT_LOOP:Bool = false;
+  public static final DEFAULT_NAME:String = 'Untitled Character';
+  public static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
+  public static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
+  public static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
+  public static final DEFAULT_SCALE:Float = 1;
+  public static final DEFAULT_SCROLL:Array<Float> = [0, 0];
+  public static final DEFAULT_STARTINGANIM:String = 'idle';
 
   /**
    * Set unspecified parameters to their defaults.
@@ -665,10 +667,12 @@ typedef CharacterData =
   /**
    * The frequency at which the character will play its idle animation, in beats.
    * Increasing this number will make the character dance less often.
-   *
-   * @default 1
+   * Supports up to `0.25` precision.
+   * @default `1.0` on characters
    */
-  var danceEvery:Null<Int>;
+  @:optional
+  @:default(1.0)
+  var danceEvery:Null<Float>;
 
   /**
    * The minimum duration that a character will play a note animation for, in beats.

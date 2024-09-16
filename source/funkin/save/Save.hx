@@ -1,6 +1,7 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
+import funkin.util.FileUtil;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
@@ -58,7 +59,7 @@ class Save
       this.data = data;
 
     // Make sure the verison number is up to date before we flush.
-    this.data.version = Save.SAVE_DATA_VERSION;
+    updateVersionToLatest();
   }
 
   public static function getDefault():RawSaveData
@@ -96,6 +97,7 @@ class Save
           autoPause: true,
           inputOffset: 0,
           audioVisualOffset: 0,
+          unlockedFramerate: false,
 
           controls:
             {
@@ -118,6 +120,13 @@ class Save
           // No mods enabled.
           enabledMods: [],
           modOptions: [],
+        },
+
+      unlocks:
+        {
+          // Default to having seen the default character.
+          charactersSeen: ["bf"],
+          oldChar: false
         },
 
       optionsChartEditor:
@@ -392,6 +401,43 @@ class Save
     return data.optionsChartEditor.playbackSpeed;
   }
 
+  public var charactersSeen(get, never):Array<String>;
+
+  function get_charactersSeen():Array<String>
+  {
+    return data.unlocks.charactersSeen;
+  }
+
+  /**
+   * Marks whether the player has seen the spotlight animation, which should only display once per save file ever.
+   */
+  public var oldChar(get, set):Bool;
+
+  function get_oldChar():Bool
+  {
+    return data.unlocks.oldChar;
+  }
+
+  function set_oldChar(value:Bool):Bool
+  {
+    data.unlocks.oldChar = value;
+    flush();
+    return data.unlocks.oldChar;
+  }
+
+  /**
+   * When we've seen a character unlock, add it to the list of characters seen.
+   * @param character
+   */
+  public function addCharacterSeen(character:String):Void
+  {
+    if (!data.unlocks.charactersSeen.contains(character))
+    {
+      data.unlocks.charactersSeen.push(character);
+      flush();
+    }
+  }
+
   /**
    * Return the score the user achieved for a given level on a given difficulty.
    *
@@ -470,10 +516,18 @@ class Save
     for (difficulty in difficultyList)
     {
       var score:Null<SaveScoreData> = getLevelScore(levelId, difficulty);
-      // TODO: Do we need to check accuracy/score here?
       if (score != null)
       {
-        return true;
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          return false;
+        }
       }
     }
     return false;
@@ -503,7 +557,7 @@ class Save
   }
 
   /**
-   * Apply the score the user achieved for a given song on a given difficulty.
+   * Directly set the score the user achieved for a given song on a given difficulty.
    */
   public function setSongScore(songId:String, difficultyId:String, score:SaveScoreData):Void
   {
@@ -514,6 +568,44 @@ class Save
       data.scores.songs.set(songId, song);
     }
     song.set(difficultyId, score);
+
+    flush();
+  }
+
+  /**
+   * Only replace the ranking data for the song, because the old score is still better.
+   */
+  public function applySongRank(songId:String, difficultyId:String, newScoreData:SaveScoreData):Void
+  {
+    var newRank = Scoring.calculateRank(newScoreData);
+    if (newScoreData == null || newRank == null) return;
+
+    var song = data.scores.songs.get(songId);
+    if (song == null)
+    {
+      song = [];
+      data.scores.songs.set(songId, song);
+    }
+
+    var previousScoreData = song.get(difficultyId);
+
+    var previousRank = Scoring.calculateRank(previousScoreData);
+
+    if (previousScoreData == null || previousRank == null)
+    {
+      // Directly set the highscore.
+      setSongScore(songId, difficultyId, newScoreData);
+      return;
+    }
+
+    // Set the high score and the high rank separately.
+    var newScore:SaveScoreData =
+      {
+        score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
+        tallies: (previousRank > newRank) ? previousScoreData.tallies : newScoreData.tallies
+      };
+
+    song.set(difficultyId, newScore);
 
     flush();
   }
@@ -544,6 +636,39 @@ class Save
   }
 
   /**
+   * Is the provided score data better than the current rank for the given song?
+   * @param songId The song ID to check.
+   * @param difficultyId The difficulty to check.
+   * @param score The score to check the rank for.
+   * @return Whether the score's rank is better than the current rank.
+   */
+  public function isSongHighRank(songId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
+  {
+    var newScoreRank = Scoring.calculateRank(score);
+    if (newScoreRank == null)
+    {
+      // The provided score is invalid.
+      return false;
+    }
+
+    var song = data.scores.songs.get(songId);
+    if (song == null)
+    {
+      song = [];
+      data.scores.songs.set(songId, song);
+    }
+    var currentScore = song.get(difficultyId);
+    var currentScoreRank = Scoring.calculateRank(currentScore);
+    if (currentScoreRank == null)
+    {
+      // There is no primary highscore for this song.
+      return true;
+    }
+
+    return newScoreRank > currentScoreRank;
+  }
+
+  /**
    * Has the provided song been beaten on one of the listed difficulties?
    * @param songId The song ID to check.
    * @param difficultyList The difficulties to check. Defaults to `easy`, `normal`, and `hard`.
@@ -558,10 +683,18 @@ class Save
     for (difficulty in difficultyList)
     {
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
-      // TODO: Do we need to check accuracy/score here?
       if (score != null)
       {
-        return true;
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          return false;
+        }
       }
     }
     return false;
@@ -832,6 +965,29 @@ class Save
       return cast legacySave.data;
     }
   }
+
+  /**
+   * Serialize this Save into a JSON string.
+   * @param pretty Whether the JSON should be big ol string (false),
+   * or formatted with tabs (true)
+   * @return The JSON string.
+   */
+  public function serialize(pretty:Bool = true):String
+  {
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
+    return writer.write(data, pretty ? '  ' : null);
+  }
+
+  public function updateVersionToLatest():Void
+  {
+    this.data.version = Save.SAVE_DATA_VERSION;
+  }
+
+  public function debug_dumpSave():Void
+  {
+    FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+  }
 }
 
 /**
@@ -861,6 +1017,8 @@ typedef RawSaveData =
    */
   var options:SaveDataOptions;
 
+  var unlocks:SaveDataUnlocks;
+
   /**
    * The user's favorited songs in the Freeplay menu,
    * as a list of song IDs.
@@ -885,6 +1043,21 @@ typedef SaveApiNewgroundsData =
   var sessionId:Null<String>;
 }
 
+typedef SaveDataUnlocks =
+{
+  /**
+   * Every time we see the unlock animation for a character,
+   * add it to this list so that we don't show it again.
+   */
+  var charactersSeen:Array<String>;
+
+  /**
+   * This is a conditional when the player enters the character state
+   * For the first time ever
+   */
+  var oldChar:Bool;
+}
+
 /**
  * An anoymous structure containing options about the user's high scores.
  */
@@ -904,6 +1077,9 @@ typedef SaveHighScoresData =
 typedef SaveDataMods =
 {
   var enabledMods:Array<String>;
+
+  // TODO: Make this not trip up the serializer when debugging.
+  @:jignored
   var modOptions:Map<String, Dynamic>;
 }
 
@@ -1004,6 +1180,12 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var audioVisualOffset:Int;
+
+  /**
+   * If we want the framerate to be unlocked on HTML5.
+   * @default `false
+   */
+  var unlockedFramerate:Bool;
 
   var controls:
     {

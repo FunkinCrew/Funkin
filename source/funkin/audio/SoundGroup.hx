@@ -113,6 +113,11 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
   {
     forEachAlive(function(sound:FunkinSound) {
+      if (sound.length < startTime)
+      {
+        // trace('Queuing sound (${sound.toString()} past its length! Skipping...)');
+        return;
+      }
       sound.play(forceRestart, startTime, endTime);
     });
   }

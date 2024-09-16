@@ -306,7 +306,7 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
-      metadataDifficulty.text += PlayState.instance.currentDifficulty.toTitleCase();
+      metadataDifficulty.text += PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
     }
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
@@ -430,7 +430,7 @@ class PauseSubState extends MusicBeatSubState
       resume(this);
     }
 
-    #if (debug || FORCE_DEBUG_VERSION)
+    #if FEATURE_DEBUG_FUNCTIONS
     // to pause the game and get screenshots easy, press H on pause menu!
     if (FlxG.keys.justPressed.H)
     {
@@ -449,12 +449,13 @@ class PauseSubState extends MusicBeatSubState
    */
   function changeSelection(change:Int = 0):Void
   {
-    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-
+    var prevEntry:Int = currentEntry;
     currentEntry += change;
 
     if (currentEntry < 0) currentEntry = currentMenuEntries.length - 1;
     if (currentEntry >= currentMenuEntries.length) currentEntry = 0;
+
+    if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     for (entryIndex in 0...currentMenuEntries.length)
     {
