@@ -33,4 +33,19 @@ class ReflectUtil
   {
     return Type.getClassName(Type.getClass(obj));
   }
+
+  public static function getAnonymousFieldsOf(obj:Dynamic):Array<String>
+  {
+    return Reflect.fields(obj);
+  }
+
+  public static function getAnonymousField(obj:Dynamic, name:String):Dynamic
+  {
+    return Reflect.field(obj, name);
+  }
+
+  public static function hasAnonymousField(obj:Dynamic, name:String):Bool
+  {
+    return Reflect.hasField(obj, name);
+  }
 }
