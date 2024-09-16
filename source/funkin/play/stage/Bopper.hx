@@ -1,6 +1,7 @@
 package funkin.play.stage;
 
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
@@ -19,8 +20,10 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   /**
    * The bopper plays the dance animation once every `danceEvery` beats.
    * Set to 0 to disable idle animation.
+   * Supports up to 0.25 precision.
+   * @default 0.0 on props, 1.0 on characters
    */
-  public var danceEvery:Int = 1;
+  public var danceEvery:Float = 0.0;
 
   /**
    * Whether the bopper should dance left and right.
@@ -43,8 +46,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var idleSuffix(default, set):String = '';
 
   /**
-   * If this bopper is rendered with pixel art,
-   * disable anti-aliasing and render at 6x scale.
+   * If this bopper is rendered with pixel art, disable anti-aliasing.
+   * @default `false`
    */
   public var isPixel(default, set):Bool = false;
 
@@ -77,11 +80,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
 
-    var xDiff = globalOffsets[0] - value[0];
-    var yDiff = globalOffsets[1] - value[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
     return globalOffsets = value;
   }
 
@@ -95,12 +93,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (animOffsets == null) animOffsets = [0, 0];
     if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
 
-    var xDiff = animOffsets[0] - value[0];
-    var yDiff = animOffsets[1] - value[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
-
     return animOffsets = value;
   }
 
@@ -110,7 +102,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   var hasDanced:Bool = false;
 
-  public function new(danceEvery:Int = 1)
+  public function new(danceEvery:Float = 0.0)
   {
     super();
     this.danceEvery = danceEvery;
@@ -171,15 +163,17 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   /**
-   * Called once every beat of the song.
+   * Called once every step of the song.
    */
-  public function onBeatHit(event:SongTimeScriptEvent):Void
+  public function onStepHit(event:SongTimeScriptEvent)
   {
-    if (danceEvery > 0 && event.beat % danceEvery == 0)
+    if (danceEvery > 0 && (event.step % (danceEvery * Constants.STEPS_PER_BEAT)) == 0)
     {
       dance(shouldBop);
     }
   }
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void {}
 
   /**
    * Called every `danceEvery` beats of the song.
@@ -200,12 +194,10 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     {
       if (hasDanced)
       {
-        trace('DanceRight (alternate)');
         playAnimation('danceRight$idleSuffix', forceRestart);
       }
       else
       {
-        trace('DanceLeft (alternate)');
         playAnimation('danceLeft$idleSuffix', forceRestart);
       }
       hasDanced = !hasDanced;
@@ -268,6 +260,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public var canPlayOtherAnims:Bool = true;
 
+  public var ignoreExclusionPref:Array<String> = [];
+
   /**
    * @param name The name of the animation to play.
    * @param restart Whether to restart the animation if it is already playing.
@@ -276,7 +270,26 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
-    if (!canPlayOtherAnims && !ignoreOther) return;
+    if ((!canPlayOtherAnims))
+    {
+      var id = name;
+      if (getCurrentAnimation() == id && restart) {}
+      else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
+      {
+        var detected:Bool = false;
+        for (entry in ignoreExclusionPref)
+        {
+          if (StringTools.startsWith(id, entry))
+          {
+            detected = true;
+            break;
+          }
+        }
+        if (!detected) return;
+      }
+      else
+        return;
+    }
 
     var correctName = correctAnimationName(name);
     if (correctName == null) return;
@@ -318,19 +331,12 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   function applyAnimationOffsets(name:String):Void
   {
     var offsets = animationOffsets.get(name);
-    if (offsets != null && !(offsets[0] == 0 && offsets[1] == 0))
-    {
-      this.animOffsets = [offsets[0] + globalOffsets[0], offsets[1] + globalOffsets[1]];
-    }
-    else
-    {
-      this.animOffsets = globalOffsets;
-    }
+    this.animOffsets = offsets;
   }
 
   public function isAnimationFinished():Bool
   {
-    return this.animation.finished;
+    return this.animation?.finished ?? false;
   }
 
   public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
@@ -347,6 +353,15 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   {
     if (this.animation == null || this.animation.curAnim == null) return "";
     return this.animation.curAnim.name;
+  }
+
+  // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
+    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
+    return output;
   }
 
   public function onPause(event:PauseScriptEvent) {}
@@ -368,8 +383,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public function onSongEvent(event:SongEventScriptEvent) {}
 
   public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
-
-  public function onStepHit(event:SongTimeScriptEvent) {}
 
   public function onCountdownStart(event:CountdownScriptEvent) {}
 

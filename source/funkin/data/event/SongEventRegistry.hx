@@ -46,7 +46,7 @@ class SongEventRegistry
 
       if (event != null)
       {
-        trace('  Loaded built-in song event: (${event.id})');
+        trace('  Loaded built-in song event: ${event.id}');
         eventCache.set(event.id, event);
       }
       else
@@ -59,9 +59,9 @@ class SongEventRegistry
   static function registerScriptedEvents()
   {
     var scriptedEventClassNames:Array<String> = ScriptedSongEvent.listScriptClasses();
+    trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
     if (scriptedEventClassNames == null || scriptedEventClassNames.length == 0) return;
 
-    trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
     for (eventCls in scriptedEventClassNames)
     {
       var event:SongEvent = ScriptedSongEvent.init(eventCls, "UKNOWN");
