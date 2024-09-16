@@ -36,7 +36,7 @@ class MemoryCounter extends TextField
   @:noCompletion
   #if !flash override #end function __enterFrame(deltaTime:Float):Void
   {
-    var mem:Float = Math.round(MemoryUtil.getMemoryUsed() / BYTES_PER_MEG / ROUND_TO) * ROUND_TO;
+    var mem:Float = Math.fround(MemoryUtil.getMemoryUsed() / BYTES_PER_MEG / ROUND_TO) * ROUND_TO;
 
     if (mem > memPeak) memPeak = mem;
 

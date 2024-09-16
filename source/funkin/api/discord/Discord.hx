@@ -1,13 +1,13 @@
 package funkin.api.discord;
 
 import Sys.sleep;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import discord_rpc.DiscordRpc;
 #end
 
 class DiscordClient
 {
-  #if discord_rpc
+  #if FEATURE_DISCORD_RPC
   public function new()
   {
     trace("Discord Client starting...");
