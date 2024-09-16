@@ -16,6 +16,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.notes.notekind.NoteKindManager;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -37,7 +38,7 @@ class Strumline extends FlxSpriteGroup
 
   static function get_RENDER_DISTANCE_MS():Float
   {
-    return FlxG.height / 0.45;
+    return FlxG.height / Constants.PIXELS_PER_MS;
   }
 
   /**
@@ -51,6 +52,14 @@ class Strumline extends FlxSpriteGroup
    * playing a sound that has it's own conductor, set this (LatencyState for example)
    */
   public var conductorInUse(get, set):Conductor;
+
+  // Used in-game to control the scroll speed within a song
+  public var scrollSpeed:Float = 1.0;
+
+  public function resetScrollSpeed():Void
+  {
+    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+  }
 
   var _conductorInUse:Null<Conductor>;
 
@@ -84,6 +93,10 @@ class Strumline extends FlxSpriteGroup
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
 
   final noteStyle:NoteStyle;
+
+  #if FEATURE_GHOST_TAPPING
+  var ghostTapTimer:Float = 0.0;
+  #end
 
   /**
    * The note data for the song. Should NOT be altered after the song starts,
@@ -134,6 +147,7 @@ class Strumline extends FlxSpriteGroup
     this.refresh();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
+    resetScrollSpeed();
 
     for (i in 0...KEY_COUNT)
     {
@@ -169,7 +183,36 @@ class Strumline extends FlxSpriteGroup
     super.update(elapsed);
 
     updateNotes();
+
+    #if FEATURE_GHOST_TAPPING
+    updateGhostTapTimer(elapsed);
+    #end
   }
+
+  #if FEATURE_GHOST_TAPPING
+  /**
+   * Returns `true` if no notes are in range of the strumline and the player can spam without penalty.
+   */
+  public function mayGhostTap():Bool
+  {
+    // Any notes in range of the strumline.
+    if (getNotesMayHit().length > 0)
+    {
+      return false;
+    }
+    // Any hold notes in range of the strumline.
+    if (getHoldNotesHitOrMissed().length > 0)
+    {
+      return false;
+    }
+
+    // Note has been hit recently.
+    if (ghostTapTimer > 0.0) return false;
+
+    // **yippee**
+    return true;
+  }
+  #end
 
   /**
    * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
@@ -283,7 +326,6 @@ class Strumline extends FlxSpriteGroup
     // var vwoosh:Float = (strumTime < Conductor.songPosition) && vwoosh ? 2.0 : 1.0;
     // ^^^ commented this out... do NOT make it move faster as it moves offscreen!
     var vwoosh:Float = 1.0;
-    var scrollSpeed:Float = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
 
     return
       Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
@@ -406,7 +448,7 @@ class Strumline extends FlxSpriteGroup
 
         if (Preferences.downscroll)
         {
-          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
         }
         else
         {
@@ -435,7 +477,7 @@ class Strumline extends FlxSpriteGroup
 
         if (Preferences.downscroll)
         {
-          holdNote.y = this.y - holdNote.height + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
         }
         else
         {
@@ -450,7 +492,7 @@ class Strumline extends FlxSpriteGroup
 
         if (Preferences.downscroll)
         {
-          holdNote.y = this.y + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
+          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
         }
         else
         {
@@ -468,6 +510,32 @@ class Strumline extends FlxSpriteGroup
       }
     }
   }
+
+  /**
+   * Return notes that are within, or way after, `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `NoteSprite` objects.
+   */
+  public function getNotesOnScreen():Array<NoteSprite>
+  {
+    return notes.members.filter(function(note:NoteSprite) {
+      return note != null && note.alive && !note.hasBeenHit;
+    });
+  }
+
+  #if FEATURE_GHOST_TAPPING
+  function updateGhostTapTimer(elapsed:Float):Void
+  {
+    // If it's still our turn, don't update the ghost tap timer.
+    if (getNotesOnScreen().length > 0) return;
+
+    ghostTapTimer -= elapsed;
+
+    if (ghostTapTimer <= 0)
+    {
+      ghostTapTimer = 0;
+    }
+  }
+  #end
 
   /**
    * Called when the PlayState skips a large amount of time forward or backward.
@@ -539,6 +607,11 @@ class Strumline extends FlxSpriteGroup
     {
       playStatic(dir);
     }
+    resetScrollSpeed();
+
+    #if FEATURE_GHOST_TAPPING
+    ghostTapTimer = 0;
+    #end
   }
 
   public function applyNoteData(data:Array<SongNoteData>):Void
@@ -575,10 +648,13 @@ class Strumline extends FlxSpriteGroup
     {
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
-      note.holdNoteSprite.alpha = 1.0;
 
       note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
     }
+
+    #if FEATURE_GHOST_TAPPING
+    ghostTapTimer = Constants.GHOST_TAP_DELAY;
+    #end
   }
 
   public function killNote(note:NoteSprite):Void
@@ -686,11 +762,15 @@ class Strumline extends FlxSpriteGroup
 
     if (noteSprite != null)
     {
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
+      noteSprite.setupNoteGraphic(noteKindStyle);
+
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
 
       noteSprite.x = this.x;
       noteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
+      noteSprite.x -= (noteSprite.width - Strumline.STRUMLINE_SIZE) / 2; // Center it
       noteSprite.x -= NUDGE;
       // noteSprite.x += INITIAL_OFFSET;
       noteSprite.y = -9999;
@@ -705,6 +785,10 @@ class Strumline extends FlxSpriteGroup
 
     if (holdNoteSprite != null)
     {
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
+      holdNoteSprite.setupHoldNoteGraphic(noteKindStyle);
+
+      holdNoteSprite.parentStrumline = this;
       holdNoteSprite.noteData = note;
       holdNoteSprite.strumTime = note.time;
       holdNoteSprite.noteDirection = note.getDirection();

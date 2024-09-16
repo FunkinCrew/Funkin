@@ -4,6 +4,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import flixel.FlxSprite;
+import funkin.ui.mainmenu.MainMenuState;
 import flixel.group.FlxSpriteGroup;
 
 /**
@@ -33,7 +34,13 @@ class CreditsState extends MusicBeatState
    * To use a font from the `assets` folder, use `Paths.font(...)`.
    * Choose something that will render Unicode properly.
    */
+  #if windows
   static final CREDITS_FONT = 'Consolas';
+  #elseif mac
+  static final CREDITS_FONT = 'Menlo';
+  #else
+  static final CREDITS_FONT = "Courier New";
+  #end
 
   /**
    * The size of the font.
@@ -199,7 +206,7 @@ class CreditsState extends MusicBeatState
 
   function exit():Void
   {
-    FlxG.switchState(funkin.ui.mainmenu.MainMenuState.new);
+    FlxG.switchState(() -> new MainMenuState());
   }
 
   public override function destroy():Void
