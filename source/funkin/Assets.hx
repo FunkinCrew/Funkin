@@ -11,6 +11,11 @@ class Assets
     return openfl.utils.Assets.getText(path);
   }
 
+  public static function getPath(path:String):String
+  {
+    return openfl.utils.Assets.getPath(path);
+  }
+
   public static function getMusic(path:String):openfl.media.Sound
   {
     return openfl.utils.Assets.getMusic(path);
