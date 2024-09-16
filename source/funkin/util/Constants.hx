@@ -41,9 +41,9 @@ class Constants
    * A suffix to add to the game version.
    * Add a suffix to prototype builds and remove it for releases.
    */
-  public static final VERSION_SUFFIX:String = #if (DEBUG || FORCE_DEBUG_VERSION) ' PROTOTYPE' #else '' #end;
+  public static final VERSION_SUFFIX:String = #if FEATURE_DEBUG_FUNCTIONS ' PROTOTYPE' #else '' #end;
 
-  #if (debug || FORCE_DEBUG_VERSION)
+  #if FEATURE_DEBUG_FUNCTIONS
   static function get_VERSION():String
   {
     return 'v${Application.current.meta.get('version')} (${GIT_BRANCH} : ${GIT_HASH}${GIT_HAS_LOCAL_CHANGES ? ' : MODIFIED' : ''})' + VERSION_SUFFIX;
@@ -63,7 +63,7 @@ class Constants
   /**
    * Link to buy merch for the game.
    */
-  public static final URL_MERCH:String = 'https://needlejuicerecords.com/pages/friday-night-funkin';
+  public static final URL_MERCH:String = 'https://www.makeship.com/shop/creator/friday-night-funkin';
 
   /**
    * Preloader sitelock.
@@ -259,6 +259,16 @@ class Constants
   public static final DEFAULT_NOTE_STYLE:String = 'funkin';
 
   /**
+   * The default freeplay style for characters.
+   */
+  public static final DEFAULT_FREEPLAY_STYLE:String = 'bf';
+
+  /**
+   * The default pixel note style for songs.
+   */
+  public static final DEFAULT_PIXEL_NOTE_STYLE:String = 'pixel';
+
+  /**
    * The default album for songs in Freeplay.
    */
   public static final DEFAULT_ALBUM_ID:String = 'volume1';
@@ -282,6 +292,21 @@ class Constants
    * Default denominator for the time signature.
    */
   public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
+
+  /**
+   * ANIMATIONS
+   */
+  // ==============================
+
+  /**
+   * A suffix used for animations played when an animation would loop.
+   */
+  public static final ANIMATION_HOLD_SUFFIX:String = '-hold';
+
+  /**
+   * A suffix used for animations played when an animation would end before transitioning to another.
+   */
+  public static final ANIMATION_END_SUFFIX:String = '-end';
 
   /**
    * TIMING
@@ -364,11 +389,7 @@ class Constants
    * 1 = The preloader waits for 1 second before moving to the next step.
    *     The progress bare is automatically rescaled to match.
    */
-  #if debug
-  public static final PRELOADER_MIN_STAGE_TIME:Float = 0.0;
-  #else
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
-  #end
 
   /**
    * HEALTH VALUES
@@ -508,12 +529,16 @@ class Constants
    * OTHER
    */
   // ==============================
+  #if FEATURE_GHOST_TAPPING
+  // Hey there, Eric here.
+  // This feature is currently still in development. You can test it out by creating a special debug build!
+  // lime build windows -DFEATURE_GHOST_TAPPING
 
   /**
-   * If true, the player will not receive the ghost miss penalty if there are no notes within the hit window.
-   * This is the thing people have been begging for forever lolol.
+   * Duration, in seconds, after the player's section ends before the player can spam without penalty.
    */
-  public static final GHOST_TAPPING:Bool = false;
+  public static final GHOST_TAP_DELAY:Float = 3 / 8;
+  #end
 
   /**
    * The maximum number of previous file paths for the Chart Editor to remember.
