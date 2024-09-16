@@ -195,6 +195,11 @@ class Strumline extends FlxSpriteGroup
    */
   public function mayGhostTap():Bool
   {
+    if (!Preferences.ghostTapping)
+    {
+      return false;
+    }
+
     // Any notes in range of the strumline.
     if (getNotesMayHit().length > 0)
     {

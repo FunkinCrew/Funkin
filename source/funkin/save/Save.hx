@@ -91,6 +91,9 @@ class Save
           // Reasonable defaults.
           naughtyness: true,
           downscroll: false,
+          #if FEATURE_GHOST_TAPPING
+          ghostTapping: true,
+          #end
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
@@ -1144,6 +1147,14 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var downscroll:Bool;
+
+  #if FEATURE_GHOST_TAPPING
+  /**
+   * If enabled, the player will be allowed to press their note controls without any penalty.
+   * @default `true`
+   */
+  var ghostTapping:Bool;
+  #end
 
   /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
