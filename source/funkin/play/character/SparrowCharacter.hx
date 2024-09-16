@@ -33,7 +33,7 @@ class SparrowCharacter extends BaseCharacter
   {
     trace('[SPARROWCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
 
-    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath, 'shared');
+    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
     if (tex == null)
     {
       trace('Could not load Sparrow sprite: ${_data.assetPath}');
@@ -46,6 +46,8 @@ class SparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
+      pixelPerfectRender = true;
+      pixelPerfectPosition = true;
     }
     else
     {

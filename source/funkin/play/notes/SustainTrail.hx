@@ -99,7 +99,27 @@ class SustainTrail extends FlxSprite
    */
   public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
   {
-    super(0, 0, noteStyle.getHoldNoteAssetPath());
+    super(0, 0);
+
+    // BASIC SETUP
+    this.sustainLength = sustainLength;
+    this.fullSustainLength = sustainLength;
+    this.noteDirection = noteDirection;
+
+    setupHoldNoteGraphic(noteStyle);
+
+    indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
+
+    this.active = true; // This NEEDS to be true for the note to be drawn!
+  }
+
+  /**
+   * Creates hold note graphic and applies correct zooming
+   * @param noteStyle The note style
+   */
+  public function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
+  {
+    loadGraphic(noteStyle.getHoldNoteAssetPath());
 
     antialiasing = true;
 
@@ -109,13 +129,14 @@ class SustainTrail extends FlxSprite
       endOffset = bottomClip = 1;
       antialiasing = false;
     }
+    else
+    {
+      endOffset = 0.5;
+      bottomClip = 0.9;
+    }
+
+    zoom = 1.0;
     zoom *= noteStyle.fetchHoldNoteScale();
-
-    // BASIC SETUP
-    this.sustainLength = sustainLength;
-    this.fullSustainLength = sustainLength;
-    this.noteDirection = noteDirection;
-
     zoom *= 0.7;
 
     // CALCULATE SIZE
@@ -131,9 +152,6 @@ class SustainTrail extends FlxSprite
     updateColorTransform();
 
     updateClipping();
-    indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
-
-    this.active = true; // This NEEDS to be true for the note to be drawn!
   }
 
   function getBaseScrollSpeed()
@@ -160,7 +178,7 @@ class SustainTrail extends FlxSprite
    */
   public static inline function sustainHeight(susLength:Float, scroll:Float)
   {
-    return (susLength * 0.45 * scroll);
+    return (susLength * Constants.PIXELS_PER_MS * scroll);
   }
 
   function set_sustainLength(s:Float):Float
@@ -195,6 +213,11 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping(songTime:Float = 0):Void
   {
+    if (graphic == null)
+    {
+      return;
+    }
+
     var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
     if (clipHeight <= 0.1)
     {
