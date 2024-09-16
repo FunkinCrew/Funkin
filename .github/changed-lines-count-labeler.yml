@@ -1,0 +1,12 @@
+# Add 'small' to any changes below 10 lines
+small:
+  max: 9
+
+# Add 'medium' to any changes between 10 and 100 lines
+medium:
+  min: 10
+  max: 99
+
+# Add 'large' to any changes for more than 100 lines
+large:
+  min: 100
