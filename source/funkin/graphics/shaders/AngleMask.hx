@@ -1,11 +1,24 @@
 package funkin.graphics.shaders;
 
 import flixel.system.FlxAssets.FlxShader;
+import flixel.util.FlxColor;
 
 class AngleMask extends FlxShader
 {
+  public var extraColor(default, set):FlxColor = 0xFFFFFFFF;
+
+  function set_extraColor(value:FlxColor):FlxColor
+  {
+    extraTint.value = [value.redFloat, value.greenFloat, value.blueFloat];
+    this.extraColor = value;
+
+    return this.extraColor;
+  }
+
   @:glFragmentSource('
     #pragma header
+
+    uniform vec3 extraTint;
 
     uniform vec2 endPosition;
     vec2 hash22(vec2 p) {
@@ -69,6 +82,7 @@ class AngleMask extends FlxShader
 
     void main() {
       vec4 col = antialias(openfl_TextureCoordv);
+      col.xyz = col.xyz * extraTint.xyz;
       // col.xyz = gamma(col.xyz);
       gl_FragColor = col;
     }')
@@ -77,5 +91,6 @@ class AngleMask extends FlxShader
     super();
 
     endPosition.value = [90, 100]; // 100 AS DEFAULT WORKS NICELY FOR FREEPLAY?
+    extraTint.value = [1, 1, 1];
   }
 }

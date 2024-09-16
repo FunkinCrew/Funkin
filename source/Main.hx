@@ -61,6 +61,12 @@ class Main extends Sprite
 
   function init(?event:Event):Void
   {
+    #if web
+    // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
+    // The framerate cap will more thoroughly initialize via Preferences in InitState.hx
+    funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
+    #end
+
     if (hasEventListener(Event.ADDED_TO_STAGE))
     {
       removeEventListener(Event.ADDED_TO_STAGE, init);
@@ -108,7 +114,7 @@ class Main extends Sprite
 
     addChild(game);
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     #end
 

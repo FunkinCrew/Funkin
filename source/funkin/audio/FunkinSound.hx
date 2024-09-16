@@ -340,6 +340,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       if (songMusicData != null)
       {
         Conductor.instance.mapTimeChanges(songMusicData.timeChanges);
+
+        if (songMusicData.looped != null && params.loop == null) params.loop = songMusicData.looped;
       }
       else
       {
@@ -388,13 +390,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     else
     {
-      var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true);
+      var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true, params.onComplete);
       if (music != null)
       {
         FlxG.sound.music = music;
 
         // Prevent repeat update() and onFocus() calls.
         FlxG.sound.list.remove(FlxG.sound.music);
+
+        if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
 
         return true;
       }
@@ -491,8 +495,10 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
 
     // split the path and get only after first :
-    // we are bypassing the openfl/lime asset library fuss
+    // we are bypassing the openfl/lime asset library fuss on web only
+    #if web
     path = Paths.stripLibrary(path);
+    #end
 
     var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
 
@@ -533,11 +539,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * Play a sound effect once, then destroy it.
    * @param key
    * @param volume
-   * @return static function construct():FunkinSound
+   * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
-  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Void
+  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
     var result = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
+    return result;
   }
 
   /**
@@ -561,6 +568,14 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     FlxG.sound.list.add(sound);
 
     return sound;
+  }
+
+  /**
+   * Produces a string representation suitable for debugging.
+   */
+  public override function toString():String
+  {
+    return 'FunkinSound(${this._label})';
   }
 }
 
