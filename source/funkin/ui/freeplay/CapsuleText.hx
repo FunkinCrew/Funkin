@@ -10,6 +10,7 @@ import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 import openfl.display.BlendMode;
+import flixel.util.FlxColor;
 
 class CapsuleText extends FlxSpriteGroup
 {
@@ -25,6 +26,8 @@ class CapsuleText extends FlxSpriteGroup
 
   public var tooLong:Bool = false;
 
+  var glowColor:FlxColor = 0xFF00ccff;
+
   // 255, 27 normal
   // 220, 27 favourited
 
@@ -38,7 +41,7 @@ class CapsuleText extends FlxSpriteGroup
     // whiteText.shader = new GaussianBlurShader(0.3);
     text = songTitle;
 
-    blurredText.color = 0xFF00ccff;
+    blurredText.color = glowColor;
     whiteText.color = 0xFFFFFFFF;
     add(blurredText);
     add(whiteText);
@@ -49,6 +52,16 @@ class CapsuleText extends FlxSpriteGroup
     var text:FlxText = new FlxText(0, 0, 0, songTitle, Std.int(size));
     text.font = "5by7";
     return text;
+  }
+
+  public function applyStyle(styleData:FreeplayStyle):Void
+  {
+    glowColor = styleData.getCapsuleSelCol();
+    blurredText.color = glowColor;
+    whiteText.textField.filters = [
+      new openfl.filters.GlowFilter(glowColor, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
+      // new openfl.filters.BlurFilter(5, 5, BitmapFilterQuality.LOW)
+    ];
   }
 
   // ???? none
@@ -99,7 +112,7 @@ class CapsuleText extends FlxSpriteGroup
     whiteText.text = value;
     checkClipWidth();
     whiteText.textField.filters = [
-      new openfl.filters.GlowFilter(0x00ccff, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
+      new openfl.filters.GlowFilter(glowColor, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
       // new openfl.filters.BlurFilter(5, 5, BitmapFilterQuality.LOW)
     ];
 
@@ -186,7 +199,7 @@ class CapsuleText extends FlxSpriteGroup
     }
     else
     {
-      blurredText.color = 0xFF00aadd;
+      blurredText.color = glowColor;
       whiteText.color = 0xFFDDDDDD;
       whiteText.textField.filters = [
         new openfl.filters.GlowFilter(0xDDDDDD, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
