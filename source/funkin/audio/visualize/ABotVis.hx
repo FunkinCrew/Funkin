@@ -54,7 +54,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function initAnalyzer()
   {
     @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__source, 7, 0.1, 40);
+    analyzer = new SpectralAnalyzer(snd._channel.__audioSource, 7, 0.1, 40);
 
     #if desktop
     // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
@@ -102,7 +102,9 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
       var animFrame:Int = Math.round(levels[i].value * 5);
 
       #if desktop
-      animFrame = Math.round(animFrame * FlxG.sound.volume);
+      // Web version scales with the Flixel volume level.
+      // This line brings platform parity but looks worse.
+      // animFrame = Math.round(animFrame * FlxG.sound.volume);
       #end
 
       animFrame = Math.floor(Math.min(5, animFrame));

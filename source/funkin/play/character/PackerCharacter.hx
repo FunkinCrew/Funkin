@@ -30,7 +30,7 @@ class PackerCharacter extends BaseCharacter
   {
     trace('[PACKERCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
 
-    var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath, 'shared');
+    var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath);
     if (tex == null)
     {
       trace('Could not load Packer sprite: ${_data.assetPath}');
@@ -43,6 +43,8 @@ class PackerCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
+      pixelPerfectRender = true;
+      pixelPerfectPosition = true;
     }
     else
     {
