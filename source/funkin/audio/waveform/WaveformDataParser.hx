@@ -16,7 +16,7 @@ class WaveformDataParser
 
     // Method 1. This only works if the sound has been played before.
     @:privateAccess
-    var soundBuffer:Null<lime.media.AudioBuffer> = sound?._channel?.__source?.buffer;
+    var soundBuffer:Null<lime.media.AudioBuffer> = sound?._channel?.__audioSource?.buffer;
 
     if (soundBuffer == null)
     {
