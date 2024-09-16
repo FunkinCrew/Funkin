@@ -6,6 +6,9 @@ class AnsiTrace
   // but adds nice cute ANSI things
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
+    #if TREMOVE
+    return;
+    #end
     var str = formatOutput(v, info);
     #if js
     if (js.Syntax.typeof(untyped console) != "undefined" && (untyped console).log != null) (untyped console).log(str);
@@ -51,7 +54,7 @@ class AnsiTrace
 
   public static function traceBF()
   {
-    #if sys
+    #if (sys && debug)
     if (colorSupported)
     {
       for (line in ansiBF)
