@@ -6,8 +6,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
-import funkin.ui.options.items.CheckboxPreferenceItem;
-import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.audio.FunkinSound;
