@@ -49,7 +49,7 @@ class HealthIcon extends FunkinSprite
    * this value allows you to set a relative scale for the icon.
    * @default 1x scale = 150px width and height.
    */
-  public var size:FlxPoint = new FlxPoint(1, 1);
+  public var size:FlxPoint;
 
   /**
    * Apply the "bop" animation once every X steps.
@@ -120,11 +120,15 @@ class HealthIcon extends FunkinSprite
   {
     super(0, 0);
     this.playerId = playerId;
+    this.size = new FlxCallbackPoint(onSetSize);
     this.scrollFactor.set();
-
+    size.set(1.0, 1.0);
     this.characterId = char;
+  }
 
-    initTargetSize();
+  function onSetSize(value:FlxPoint):Void
+  {
+    snapToTargetSize();
   }
 
   function set_characterId(value:Null<String>):Null<String>
@@ -150,13 +154,17 @@ class HealthIcon extends FunkinSprite
   {
     if (characterId == 'bf-old')
     {
+      isPixel = PlayState.instance.currentStage.getBoyfriend().isPixel;
       PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
     }
     else
     {
       characterId = 'bf-old';
+      isPixel = false;
       loadCharacter(characterId);
     }
+
+    lerpIconSize(true);
   }
 
   /**
@@ -200,29 +208,59 @@ class HealthIcon extends FunkinSprite
 
     if (bopEvery != 0)
     {
-      // Lerp the health icon back to its normal size,
-      // while maintaining aspect ratio.
-      if (this.width > this.height)
-      {
-        // Apply linear interpolation while accounting for frame rate.
-        var targetSize:Int = Std.int(MathUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
-
-        setGraphicSize(targetSize, 0);
-      }
-      else
-      {
-        var targetSize:Int = Std.int(MathUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
-
-        setGraphicSize(0, targetSize);
-      }
+      lerpIconSize();
 
       // Lerp the health icon back to its normal angle.
       this.angle = MathUtil.coolLerp(this.angle, 0, 0.15);
-
-      this.updateHitbox();
     }
 
     this.updatePosition();
+  }
+
+  /**
+   * Does the calculation to lerp the icon size. Usually called every frame, but can be forced to the target size.
+   * Mainly forced when changing to old icon to not have a weird lerp related to changing from pixel icon to non-pixel old icon
+   * @param force Force the icon immedialtely to be the target size. Defaults to false.
+   */
+  function lerpIconSize(force:Bool = false):Void
+  {
+    // Lerp the health icon back to its normal size,
+    // while maintaining aspect ratio.
+    if (this.width > this.height)
+    {
+      // Apply linear interpolation while accounting for frame rate.
+      var targetSize:Int = Std.int(MathUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
+
+      if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.x);
+
+      setGraphicSize(targetSize, 0);
+    }
+    else
+    {
+      var targetSize:Int = Std.int(MathUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
+
+      if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.y);
+
+      setGraphicSize(0, targetSize);
+    }
+
+    this.updateHitbox();
+  }
+
+  /*
+   * Immediately snap the health icon to its target size without lerping.
+   */
+  public function snapToTargetSize():Void
+  {
+    if (this.width > this.height)
+    {
+      setGraphicSize(Std.int(HEALTH_ICON_SIZE * this.size.x), 0);
+    }
+    else
+    {
+      setGraphicSize(0, Std.int(HEALTH_ICON_SIZE * this.size.y));
+    }
+    updateHitbox();
   }
 
   /**
@@ -281,12 +319,6 @@ class HealthIcon extends FunkinSprite
       // Ensure the icon is positioned correctly after updating the hitbox.
       this.updatePosition();
     }
-  }
-
-  inline function initTargetSize():Void
-  {
-    setGraphicSize(HEALTH_ICON_SIZE);
-    updateHitbox();
   }
 
   function updateHealthIcon(health:Float):Void
@@ -411,6 +443,8 @@ class HealthIcon extends FunkinSprite
     }
 
     isLegacyStyle = !isNewSpritesheet(charId);
+
+    trace(' Loading health icon for character: $charId (legacy: $isLegacyStyle)');
 
     if (!isLegacyStyle)
     {
