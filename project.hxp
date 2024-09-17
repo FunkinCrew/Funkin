@@ -460,7 +460,7 @@ class Project extends HXProject {
 		// Should be true on release, non-tester builds.
 		// We don't want testers to accidentally leak songs to their Discord friends!
     // TODO: Re-enable this.
-		FEATURE_DISCORD_RPC.apply(this, false && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+		FEATURE_DISCORD_RPC.apply(this, true && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
 		// Should be true only on web builds.
 		// Audio context issues only exist there.
