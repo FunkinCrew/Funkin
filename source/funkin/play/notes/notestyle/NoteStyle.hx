@@ -93,7 +93,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     buildNoteAnimations(target);
 
     // Set the scale.
-    target.setGraphicSize(Strumline.STRUMLINE_SIZE * getNoteScale());
+    target.scale.set(getNoteScale());
     target.updateHitbox();
   }
 
