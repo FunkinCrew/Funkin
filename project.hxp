@@ -239,6 +239,8 @@ class Project extends HXProject {
 		configureFeatureFlags();
                 if (isAndroid())
                     configureAndroidPermissions();
+                if (isMobile())
+                   configureMobileArchDefines();
     configureCompileDefines();
 		configureIncludeMacros();
 		configureCustomMacros();
@@ -483,8 +485,8 @@ class Project extends HXProject {
 	}
 
   /**
-   * Setup required permissions for Android target
-  */
+   * Setup required permissions for Android target.
+   */
   function configureAndroidPermissions() {
        platformConfig.android.permissions.push ("android.permission.WAKE_LOCK");
        platformConfig.android.permissions.push ("android.permission.INTERNET");
@@ -497,6 +499,19 @@ class Project extends HXProject {
 
        platformConfig.android.mimeType.push ("application/x-zip-compressed");
   }
+
+  /**
+   * Setup Mobile Architecture defines.
+   */
+   function configureMobileArchDefines() {
+    #if ONLY_ARM64
+    architectures = [Architecture.ARM64];
+    #elseif ONLY_ARMV7
+    architectures = [Architecture.ARMV7];
+    #else
+    architectures = [Architecture.ARMV7, Architecture.ARM64];
+    #end
+   }
 
   /**
    * Set compilation flags which are not feature flags.
