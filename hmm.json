@@ -4,8 +4,8 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "main",
-      "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "discord_rpc",
@@ -101,7 +101,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "master",
+      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1",
       "url": "https://github.com/HaxeFoundation/hxcpp"
     },
     {
@@ -148,7 +148,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "develop2",
+      "ref": "dev-funkin",
       "url": "https://github.com/FunkinDroidTeam/lime"
     },
     {
