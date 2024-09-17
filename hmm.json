@@ -148,7 +148,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "dev-funkin",
+      "ref": "dev-funkin-arm64",
       "url": "https://github.com/FunkinDroidTeam/lime"
     },
     {
