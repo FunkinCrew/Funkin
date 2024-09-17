@@ -237,6 +237,7 @@ class Project extends HXProject {
 
 		displayTarget();
 		configureFeatureFlags();
+                configureAndroidPermissions();
     configureCompileDefines();
 		configureIncludeMacros();
 		configureCustomMacros();
@@ -479,6 +480,22 @@ class Project extends HXProject {
 		// Chart editor doesn't work there.
 		FEATURE_CHART_EDITOR.apply(this, !isWeb());
 	}
+
+  /**
+   * Setup required permissions for Android target
+  */
+  function configureAndroidPermissions() {
+       platformConfig.android.permissions.push ("android.permission.WAKE_LOCK");
+       platformConfig.android.permissions.push ("android.permission.INTERNET");
+       platformConfig.android.permissions.push ("android.permission.VIBRATE");
+       platformConfig.android.permissions.push ("android.permission.ACCESS_NETWORK_STATE");
+
+       platformConfig.android.permissions.push ("android.permission.READ_EXTERNAL_STORAGE");
+       platformConfig.android.permissions.push ("android.permission.WRITE_EXTERNAL_STORAGE");
+       platformConfig.android.permissions.push ("android.permission.MANAGE_EXTERNAL_STORAGE");
+
+       platformConfig.android.mimeType.push ("application/x-zip-compressed");
+  }
 
   /**
    * Set compilation flags which are not feature flags.
