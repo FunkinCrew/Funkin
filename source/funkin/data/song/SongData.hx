@@ -1006,7 +1006,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    *
    * 0 = left, 1 = down, 2 = up, 3 = right
    */
-  public inline function getDirection(strumlineSize:Int = 4):Int
+  public function getDirection(strumlineSize:Int = 4):Int
   {
     return this.data % strumlineSize;
   }
@@ -1157,22 +1157,22 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     }
   }
 
-  public inline function getSchema():Null<SongNoteSchema>
+  public function getSchema():Null<SongNoteSchema>
   {
     return NoteKindManager.getSchema(this.kind);
   }
 
-  public inline function getDynamic(key:String):Null<Dynamic>
+  public function getDynamic(key:String):Null<Dynamic>
   {
     return this.params == null ? null : Reflect.field(this.params, key);
   }
 
-  public inline function getBool(key:String):Null<Bool>
+  public function getBool(key:String):Null<Bool>
   {
     return this.params == null ? null : cast Reflect.field(this.params, key);
   }
 
-  public inline function getInt(key:String):Null<Int>
+  public function getInt(key:String):Null<Int>
   {
     if (this.params == null) return null;
     var result = Reflect.field(this.params, key);
@@ -1182,7 +1182,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     return cast result;
   }
 
-  public inline function getFloat(key:String):Null<Float>
+  public function getFloat(key:String):Null<Float>
   {
     if (this.params == null) return null;
     var result = Reflect.field(this.params, key);
@@ -1192,17 +1192,17 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     return cast result;
   }
 
-  public inline function getString(key:String):String
+  public function getString(key:String):String
   {
     return this.params == null ? null : cast Reflect.field(this.params, key);
   }
 
-  public inline function getArray(key:String):Array<Dynamic>
+  public function getArray(key:String):Array<Dynamic>
   {
     return this.params == null ? null : cast Reflect.field(this.params, key);
   }
 
-  public inline function getBoolArray(key:String):Array<Bool>
+  public function getBoolArray(key:String):Array<Bool>
   {
     return this.params == null ? null : cast Reflect.field(this.params, key);
   }
