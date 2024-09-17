@@ -87,7 +87,7 @@ class IntroSubState extends MusicBeatSubState
       vid.bitmap.onEndReached.add(onLightsEnd);
 
       add(vid);
-      if (vid.load(filePath, false)) vid.play();
+      if (vid.load(filePath)) vid.play();
     }
     else
     {
