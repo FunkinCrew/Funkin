@@ -4,8 +4,8 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "main",
-      "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "discord_rpc",
