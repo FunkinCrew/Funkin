@@ -16,7 +16,7 @@ jobs:
 
       - name: Install Libraries
         run: |
-          haxelib install hmm --quiet
+          haxelib git hmm https://github.com/FunkinCrew/hmm.git skip-deps --quiet
           haxelib run hmm install --quiet
           haxelib run lime rebuild hxcpp
 
