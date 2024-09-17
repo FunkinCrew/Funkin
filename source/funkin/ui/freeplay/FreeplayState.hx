@@ -179,7 +179,7 @@ class FreeplayState extends MusicBeatSubState
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
   var curPlaying:Bool = false;
 
-  var dj:Null<FreeplayDJ> = null;
+  var dj:FreeplayDJ = null;
 
   var ostName:FlxText;
   var albumRoll:AlbumRoll;
@@ -189,8 +189,8 @@ class FreeplayState extends MusicBeatSubState
   var letterSort:LetterSort;
   var exitMovers:ExitMoverData = new Map();
 
-  var diffSelLeft:DifficultySelector;
-  var diffSelRight:DifficultySelector;
+  var diffSelLeft:Null<DifficultySelector>;
+  var diffSelRight:Null<DifficultySelector>;
 
   var exitMoversCharSel:ExitMoverData = new Map();
 
@@ -230,7 +230,7 @@ class FreeplayState extends MusicBeatSubState
   var fromCharSelect:Null<Bool> = null;
 
   #if mobile
-  var touchBuddy:FlxSprite;
+  var touchBuddy:Null<FlxSprite>;
   #end
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
