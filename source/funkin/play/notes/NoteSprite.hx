@@ -175,23 +175,6 @@ class NoteSprite extends FunkinSprite
    */
   public function getParam(name:String):Null<Dynamic>
   {
-    for (param in params)
-    {
-      if (param.name == name)
-      {
-        return param.value;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Retrieve the value of the param with the given name
-   * @param name Name of the param
-   * @return Null<Dynamic>
-   */
-  public function getParam(name:String):Null<Dynamic>
-  {
     return this.noteData?.getDynamic(name);
   }
 
