@@ -30,7 +30,7 @@ class Project extends HXProject {
 	/**
 	 * The game's name. Used as the default window title.
 	 */
-	static final TITLE:String = "Friday Night Funkin'";
+	static final TITLE:String = (target == Platform.IOS) ? "FridayNightFunkin" : "Friday Night Funkin'";
 
 	/**
 	 * The name of the generated executable file.
@@ -323,7 +323,7 @@ class Project extends HXProject {
 
 		if (isMobile()) {
 			this.window.orientation = Orientation.LANDSCAPE;
-			this.window.fullscreen = false;
+			this.window.fullscreen = true;
 			this.window.resizable = false;
 			this.window.width = 0;
 			this.window.height = 0;
@@ -464,7 +464,7 @@ class Project extends HXProject {
 
 		// Should be true only on web builds.
 		// Audio context issues only exist there.
-		TOUCH_HERE_TO_PLAY.apply(this, isWeb());
+		TOUCH_HERE_TO_PLAY.apply(this, isWeb() || isMobile());
 
 		// Should be true only on web builds.
 		// Enabling embedding and preloading is required to preload assets properly.
