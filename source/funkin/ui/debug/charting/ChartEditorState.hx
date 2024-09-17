@@ -409,11 +409,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           if (id == 1)
           {
-            member.time = (scrollPositionInMs - currentVocalOffsetOpponent) / Constants.MS_PER_SEC;
+            member.time = ((scrollPositionInMs - currentVocalOffsetOpponent) - currentInstrumentalOffset) / Constants.MS_PER_SEC;
           }
           else
           {
-            member.time = (scrollPositionInMs - currentVocalOffsetPlayer) / Constants.MS_PER_SEC;
+            member.time = ((scrollPositionInMs - currentVocalOffsetOpponent) - currentInstrumentalOffset) / Constants.MS_PER_SEC;
           }
           id++;
           // Doing this desyncs the waveforms from the grid.
