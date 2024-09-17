@@ -489,7 +489,16 @@ class Project extends HXProject {
    * Setup required configuration for Android target.
    */
   function configureAndroidConfig() {
-	  includeXML(FileSystem.getContent('androidConfig.xml'));
+config.push("android.permission", "android.permission.WAKE_LOCK", true);
+config.push("android.permission", "android.permission.INTERNET", true);
+config.push("android.permission", "android.permission.VIBRATE", true);
+config.push("android.permission", "android.permission.ACCESS_NETWORK_STATE", true);
+
+config.push("android.permission", "android.permission.READ_EXTERNAL_STORAGE", true);
+config.push("android.permission", "android.permission.WRITE_EXTERNAL_STORAGE", true);
+config.push("android.permission", "android.permission.MANAGE_EXTERNAL_STORAGE", true);
+
+config.push("android.mimeType", "application/x-zip-compressed", true);
   }
 
   /**
