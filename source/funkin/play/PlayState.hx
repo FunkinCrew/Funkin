@@ -3110,7 +3110,7 @@ class PlayState extends MusicBeatSubState
     GameOverSubState.reset();
     PauseSubState.reset();
     Countdown.reset();
-    PopUpStuff.reset();
+    comboPopUps.reset();
 
     // Clear the static reference to this state.
     instance = null;

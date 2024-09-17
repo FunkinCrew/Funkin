@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
@@ -55,7 +56,7 @@ class PreferencesMenu extends Page
     });
 
     #if mobile
-    backButton = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.BLACK);
+    backButton = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK);
     add(backButton);
     #end
   }

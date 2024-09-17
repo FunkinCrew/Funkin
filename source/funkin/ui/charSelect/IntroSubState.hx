@@ -3,8 +3,8 @@ package funkin.ui.charSelect;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
-#if hxCodec
-import hxcodec.flixel.FlxVideoSprite;
+#if hxvlc
+import hxvlc.flixel.FlxVideoSprite;
 #end
 import funkin.ui.MusicBeatSubState;
 import funkin.audio.FunkinSound;
@@ -36,7 +36,7 @@ class IntroSubState extends MusicBeatSubState
     playVideoHTML5(LIGHTS_VIDEO_PATH);
     #end
 
-    #if hxCodec
+    #if hxvlc
     trace('Playing native video ${LIGHTS_VIDEO_PATH}');
     playVideoNative(LIGHTS_VIDEO_PATH);
     #end
@@ -71,7 +71,7 @@ class IntroSubState extends MusicBeatSubState
   }
   #end
 
-  #if hxCodec
+  #if hxvlc
   var vid:FlxVideoSprite;
 
   function playVideoNative(filePath:String):Void
@@ -105,7 +105,7 @@ class IntroSubState extends MusicBeatSubState
     //   #if html5
     //   @:privateAccess
     //   vid.netStream.seek(introSound.time);
-    //   #elseif hxCodec
+    //   #elseif hxvlc
     //   vid.bitmap.time = Std.int(introSound.time);
     //   #end
     // }
@@ -118,7 +118,7 @@ class IntroSubState extends MusicBeatSubState
   {
     if (vid != null)
     {
-      #if hxCodec
+      #if hxvlc
       vid.stop();
       #end
       remove(vid);

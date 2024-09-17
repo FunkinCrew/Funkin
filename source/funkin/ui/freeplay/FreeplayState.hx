@@ -189,6 +189,9 @@ class FreeplayState extends MusicBeatSubState
   var letterSort:LetterSort;
   var exitMovers:ExitMoverData = new Map();
 
+  var diffSelLeft:DifficultySelector;
+  var diffSelRight:DifficultySelector;
+
   var exitMoversCharSel:ExitMoverData = new Map();
 
   var stickerSubState:Null<StickerSubState> = null;
@@ -606,8 +609,8 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
 
-    var diffSelLeft:DifficultySelector = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls, styleData);
-    var diffSelRight:DifficultySelector = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls, styleData);
+    diffSelLeft = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls, styleData);
+    diffSelRight = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls, styleData);
     diffSelLeft.visible = false;
     diffSelRight.visible = false;
     add(diffSelLeft);
@@ -1528,7 +1531,7 @@ class FreeplayState extends MusicBeatSubState
       || (FlxG.pixelPerfectOverlap(touchBuddy, grpCapsules.members[curSelected].capsule, 0)
         && TouchUtil.justReleased
         && !SwipeUtil.swipeAny) #end);
-    
+
     #if mobile
     if (TouchUtil.pressed) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
     #end
