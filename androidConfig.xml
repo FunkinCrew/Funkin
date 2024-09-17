@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://lime.openfl.org/project/1.0.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
+	<section if="android">
+		<config:android permission="android.permission.WAKE_LOCK" />
+		<config:android permission="android.permission.INTERNET" />
+		<config:android permission="android.permission.VIBRATE" />
+		<config:android permission="android.permission.ACCESS_NETWORK_STATE" />
+
+		<config:android permission="android.permission.READ_EXTERNAL_STORAGE" />
+		<config:android permission="android.permission.WRITE_EXTERNAL_STORAGE" />
+		<config:android permission="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+		<config:android mimeType="application/x-zip-compressed" />
+	</section>
+</project>
