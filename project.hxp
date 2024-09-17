@@ -237,7 +237,7 @@ class Project extends HXProject {
 
 		displayTarget();
 		configureFeatureFlags();
-                #if (isAndroid())
+                if (isAndroid())
                     configureAndroidPermissions();
     configureCompileDefines();
 		configureIncludeMacros();
