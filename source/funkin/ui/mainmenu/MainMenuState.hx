@@ -123,7 +123,7 @@ class MainMenuState extends MusicBeatState
         }));
     });
 
-    #if CAN_OPEN_LINKS
+    #if FEATURE_OPEN_URL
     // In order to prevent popup blockers from triggering,
     // we need to open the link as an immediate result of a keypress event,
     // so we can't wait for the flicker animation to complete.
@@ -234,7 +234,7 @@ class MainMenuState extends MusicBeatState
     camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
   }
 
-  #if CAN_OPEN_LINKS
+  #if FEATURE_OPEN_URL
   function selectDonate()
   {
     WindowUtil.openURL(Constants.URL_ITCH);
