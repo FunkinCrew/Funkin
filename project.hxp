@@ -30,7 +30,8 @@ class Project extends HXProject {
 	/**
 	 * The game's name. Used as the default window title.
 	 */
-	static final TITLE:String = (isIOS()) ? "FridayNightFunkin" : "Friday Night Funkin'";
+	static final TITLE:String = "Friday Night Funkin'";
+        static final TITLEIOS:String = "FridayNightFunkin";
 
 	/**
 	 * The name of the generated executable file.
@@ -271,7 +272,7 @@ class Project extends HXProject {
 	 * as well as info like the package name and company (used by various app stores).
 	 */
 	function configureApp() {
-		this.meta.title = TITLE;
+		this.meta.title = (isIOS()) ? TITLEIOS : TITLE;
 		this.meta.version = VERSION;
 		this.meta.packageName = PACKAGE_NAME;
 		this.meta.company = COMPANY;
