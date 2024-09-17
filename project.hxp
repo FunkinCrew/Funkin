@@ -1035,6 +1035,8 @@ config.push("android.permission", "android.permission.MANAGE_EXTERNAL_STORAGE", 
 		// Sys.println(message);
 		// Sys.stdout().writeString(message);
 		// Sys.stderr().writeString(message);
+		if(!isDisplay())
+			trace(message);
 	}
 }
 
