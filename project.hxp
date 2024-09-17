@@ -475,7 +475,7 @@ class Project extends HXProject {
 
 		// Should be true except on MacOS.
 		// File drop doesn't work there.
-		FEATURE_FILE_DROP.apply(this, !isMac());
+		FEATURE_FILE_DROP.apply(this, !isMac() || !isMobile());
 
 		// Should be true except on web builds.
 		// Chart editor doesn't work there.
@@ -629,11 +629,14 @@ class Project extends HXProject {
 			addHaxelib('hxcpp-debug-server'); // VSCode debug support
 		}
 
-    if (isDesktop() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
+    if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
       // hxCodec doesn't function on HashLink or non-desktop platforms
 			// It's also unnecessary if video playback is disabled
-      addHaxelib('hxCodec'); // Video playback
+      addHaxelib('hxvlc'); // Video playback
     }
+
+    if (isMobile())
+       addHaxelib('extension-androidtools'); // Android Functions
 
 		if (FEATURE_DISCORD_RPC.isEnabled(this)) {
 			addHaxelib('discord_rpc'); // Discord API
