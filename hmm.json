@@ -90,12 +90,12 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "1.8.2"
+      "version": "1.8.3"
     },
     {
       "name": "extension-androidtools",
       "type": "haxelib",
-      "version": "2.1.0"
+      "version": "2.1.1"
     },
     {
       "name": "hxcpp",
