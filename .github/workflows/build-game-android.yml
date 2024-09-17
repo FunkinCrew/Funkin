@@ -2,11 +2,7 @@ name: Build Game for Android
 on: workflow_dispatch
 jobs:
   Android:
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        flag: [ONLY_ARMV7, ONLY_ARM64, UNIVERSAL]
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -22,7 +18,7 @@ jobs:
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
         with:
-          haxe-version: 4.3.4
+          haxe-version: 4.3.6
 
       - name: Install Libraries
         run: |
@@ -38,11 +34,11 @@ jobs:
           haxelib run lime config ANDROID_SETUP true
 
       - name: Compile
-        run: haxelib run lime build android -D ${{matrix.flag}}
+        run: haxelib run lime build android
 
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
-          name: androidBuild-${{matrix.flag}}
+          name: androidBuild
           path: export/release/android/bin/app/build/outputs/apk/debug
           if-no-files-found: error
