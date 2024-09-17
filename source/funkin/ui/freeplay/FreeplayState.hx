@@ -105,7 +105,7 @@ typedef FromResultsParams =
 /**
  * The state for the freeplay menu, allowing the player to select any song to play.
  */
-@:nullSafety
+// @:nullSafety
 class FreeplayState extends MusicBeatSubState
 {
   //
