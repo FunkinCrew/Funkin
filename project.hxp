@@ -233,15 +233,14 @@ class Project extends HXProject {
 	public function new() {
 		super();
 
+	  if (isAndroid())
+    	configureAndroidConfig();
+
 		flair();
 		configureApp();
 
 		displayTarget();
 		configureFeatureFlags();
-                if (isAndroid())
-                    configureAndroidConfig();
-                if (isMobile())
-                   configureMobileArchDefines();
     configureCompileDefines();
 		configureIncludeMacros();
 		configureCustomMacros();
@@ -489,22 +488,14 @@ class Project extends HXProject {
    * Setup required configuration for Android target.
    */
   function configureAndroidConfig() {
-config.push("android.permission", "android.permission.WAKE_LOCK", true);
-config.push("android.permission", "android.permission.INTERNET", true);
-config.push("android.permission", "android.permission.VIBRATE", true);
-config.push("android.permission", "android.permission.ACCESS_NETWORK_STATE", true);
-
-config.push("android.permission", "android.permission.READ_EXTERNAL_STORAGE", true);
-config.push("android.permission", "android.permission.WRITE_EXTERNAL_STORAGE", true);
-config.push("android.permission", "android.permission.MANAGE_EXTERNAL_STORAGE", true);
+		config.push("android.permission", "android.permission.WAKE_LOCK", true);
+		config.push("android.permission", "android.permission.INTERNET", true);
+		config.push("android.permission", "android.permission.VIBRATE", true);
+		config.push("android.permission", "android.permission.ACCESS_NETWORK_STATE", true);
+		config.push("android.permission", "android.permission.READ_EXTERNAL_STORAGE", true);
+		config.push("android.permission", "android.permission.WRITE_EXTERNAL_STORAGE", true);
+		config.push("android.permission", "android.permission.MANAGE_EXTERNAL_STORAGE", true);
   }
-
-  /**
-   * Setup Mobile Architecture defines.
-   */
-   function configureMobileArchDefines() {
-    architectures = [Architecture.ARM64];
-   }
 
   /**
    * Set compilation flags which are not feature flags.
