@@ -489,16 +489,16 @@ class Project extends HXProject {
    * Setup required permissions for Android target.
    */
   function configureAndroidPermissions() {
-       platformConfig.android.permissions.push ("android.permission.WAKE_LOCK");
-       platformConfig.android.permissions.push ("android.permission.INTERNET");
-       platformConfig.android.permissions.push ("android.permission.VIBRATE");
-       platformConfig.android.permissions.push ("android.permission.ACCESS_NETWORK_STATE");
+       config.android.permissions.push ("android.permission.WAKE_LOCK");
+       config.android.permissions.push ("android.permission.INTERNET");
+       config.android.permissions.push ("android.permission.VIBRATE");
+       config.android.permissions.push ("android.permission.ACCESS_NETWORK_STATE");
 
-       platformConfig.android.permissions.push ("android.permission.READ_EXTERNAL_STORAGE");
-       platformConfig.android.permissions.push ("android.permission.WRITE_EXTERNAL_STORAGE");
-       platformConfig.android.permissions.push ("android.permission.MANAGE_EXTERNAL_STORAGE");
+       config.android.permissions.push ("android.permission.READ_EXTERNAL_STORAGE");
+       config.android.permissions.push ("android.permission.WRITE_EXTERNAL_STORAGE");
+       config.android.permissions.push ("android.permission.MANAGE_EXTERNAL_STORAGE");
 
-       platformConfig.android.mimeType.push ("application/x-zip-compressed");
+       config.android.mimeType.push ("application/x-zip-compressed");
   }
 
   /**
