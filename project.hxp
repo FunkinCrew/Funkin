@@ -482,7 +482,7 @@ class Project extends HXProject {
 
 		// Should be true except on web builds.
 		// Chart editor doesn't work there.
-		FEATURE_CHART_EDITOR.apply(this, !isWeb());
+		FEATURE_CHART_EDITOR.apply(this, !isWeb() || !isMobile());
 	}
 
   /**
