@@ -6,6 +6,7 @@ import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.data.notes.SongNoteSchema;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.notekind.ScriptedNoteKind;
 
 class NoteKindManager
 {
