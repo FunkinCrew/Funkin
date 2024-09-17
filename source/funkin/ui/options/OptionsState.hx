@@ -164,8 +164,8 @@ class Page extends FlxGroup
     // This fucking auto-formatter sucks and i REFUSE to make this more than 1 variable
     if (canExit && (controls.BACK #if mobile || (backButton != null && TouchUtil.overlapsComplex(backButton) && TouchUtil.justPressed) #end))
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
   }
 

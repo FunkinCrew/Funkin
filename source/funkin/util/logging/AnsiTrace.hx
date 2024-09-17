@@ -6,7 +6,9 @@ class AnsiTrace
   // but adds nice cute ANSI things
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
-    #if debug
+    #if TREMOVE
+    return;
+    #end
     var str = formatOutput(v, info);
     #if js
     if (js.Syntax.typeof(untyped console) != "undefined" && (untyped console).log != null) (untyped console).log(str);
@@ -16,7 +18,6 @@ class AnsiTrace
     Sys.println(str);
     #else
     throw new haxe.exceptions.NotImplementedException()
-    #end
     #end
   }
 

@@ -32,11 +32,14 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
+import funkin.save.Save;
 #if mobile
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
 #end
 
+#if desktop
+#end
 class TitleState extends MusicBeatState
 {
   /**
@@ -274,6 +277,11 @@ class TitleState extends MusicBeatState
     }
     #end
 
+    if (Save.instance.charactersSeen.contains("pico"))
+    {
+      Save.instance.charactersSeen.remove("pico");
+      Save.instance.oldChar = false;
+    }
     Conductor.instance.update();
 
     if (FlxG.keys.justPressed.I)
@@ -513,7 +521,8 @@ class TitleState extends MusicBeatState
       remove(ngSpr);
 
       FlxG.camera.flash(FlxColor.WHITE, initialized ? 1 : 4);
-      remove(credGroup);
+
+      if (credGroup != null) remove(credGroup);
       skippedIntro = true;
     }
   }

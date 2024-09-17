@@ -97,6 +97,7 @@ class Save
           autoPause: true,
           inputOffset: 0,
           audioVisualOffset: 0,
+          unlockedFramerate: false,
 
           controls:
             {
@@ -128,6 +129,13 @@ class Save
           // No mods enabled.
           enabledMods: [],
           modOptions: [],
+        },
+
+      unlocks:
+        {
+          // Default to having seen the default character.
+          charactersSeen: ["bf"],
+          oldChar: false
         },
 
       optionsChartEditor:
@@ -414,6 +422,43 @@ class Save
     return data.optionsChartEditor.playbackSpeed;
   }
 
+  public var charactersSeen(get, never):Array<String>;
+
+  function get_charactersSeen():Array<String>
+  {
+    return data.unlocks.charactersSeen;
+  }
+
+  /**
+   * Marks whether the player has seen the spotlight animation, which should only display once per save file ever.
+   */
+  public var oldChar(get, set):Bool;
+
+  function get_oldChar():Bool
+  {
+    return data.unlocks.oldChar;
+  }
+
+  function set_oldChar(value:Bool):Bool
+  {
+    data.unlocks.oldChar = value;
+    flush();
+    return data.unlocks.oldChar;
+  }
+
+  /**
+   * When we've seen a character unlock, add it to the list of characters seen.
+   * @param character
+   */
+  public function addCharacterSeen(character:String):Void
+  {
+    if (!data.unlocks.charactersSeen.contains(character))
+    {
+      data.unlocks.charactersSeen.push(character);
+      flush();
+    }
+  }
+
   /**
    * Return the score the user achieved for a given level on a given difficulty.
    *
@@ -492,10 +537,18 @@ class Save
     for (difficulty in difficultyList)
     {
       var score:Null<SaveScoreData> = getLevelScore(levelId, difficulty);
-      // TODO: Do we need to check accuracy/score here?
       if (score != null)
       {
-        return true;
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          return false;
+        }
       }
     }
     return false;
@@ -651,10 +704,18 @@ class Save
     for (difficulty in difficultyList)
     {
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
-      // TODO: Do we need to check accuracy/score here?
       if (score != null)
       {
-        return true;
+        if (score.score > 0)
+        {
+          // Level has score data, which means we cleared it!
+          return true;
+        }
+        else
+        {
+          // Level has score data, but the score is 0.
+          return false;
+        }
       }
     }
     return false;
@@ -977,13 +1038,15 @@ typedef RawSaveData =
    */
   var options:SaveDataOptions;
 
+  var unlocks:SaveDataUnlocks;
+  
   #if mobile
   /**
    * The user's preferences for mobile.
    */
   var mobileOptions:SaveDataMobileOptions;
   #end
-
+  
   /**
    * The user's favorited songs in the Freeplay menu,
    * as a list of song IDs.
@@ -1006,6 +1069,21 @@ typedef SaveApiData =
 typedef SaveApiNewgroundsData =
 {
   var sessionId:Null<String>;
+}
+
+typedef SaveDataUnlocks =
+{
+  /**
+   * Every time we see the unlock animation for a character,
+   * add it to this list so that we don't show it again.
+   */
+  var charactersSeen:Array<String>;
+
+  /**
+   * This is a conditional when the player enters the character state
+   * For the first time ever
+   */
+  var oldChar:Bool;
 }
 
 /**
@@ -1130,6 +1208,12 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var audioVisualOffset:Int;
+
+  /**
+   * If we want the framerate to be unlocked on HTML5.
+   * @default `false
+   */
+  var unlockedFramerate:Bool;
 
   var controls:
     {

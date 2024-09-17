@@ -308,7 +308,7 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
-      metadataDifficulty.text += PlayState.instance.currentDifficulty.toTitleCase();
+      metadataDifficulty.text += PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
     }
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
@@ -438,7 +438,7 @@ class PauseSubState extends MusicBeatSubState
       resume(this);
     }
 
-    #if (debug || FORCE_DEBUG_VERSION)
+    #if FEATURE_DEBUG_FUNCTIONS
     // to pause the game and get screenshots easy, press H on pause menu!
     if (FlxG.keys.justPressed.H)
     {
