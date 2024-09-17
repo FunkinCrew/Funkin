@@ -30,7 +30,7 @@ class Project extends HXProject {
 	/**
 	 * The game's name. Used as the default window title.
 	 */
-	static final TITLE:String = (target == Platform.IOS) ? "FridayNightFunkin" : "Friday Night Funkin'";
+	static final TITLE:String = (isIOS()) ? "FridayNightFunkin" : "Friday Night Funkin'";
 
 	/**
 	 * The name of the generated executable file.
@@ -237,7 +237,8 @@ class Project extends HXProject {
 
 		displayTarget();
 		configureFeatureFlags();
-                configureAndroidPermissions();
+                #if (isAndroid())
+                    configureAndroidPermissions();
     configureCompileDefines();
 		configureIncludeMacros();
 		configureCustomMacros();
