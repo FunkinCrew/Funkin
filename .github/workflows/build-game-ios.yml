@@ -2,7 +2,7 @@ name: Build Game for iOS
 on: workflow_dispatch
 jobs:
   iOS:
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -11,14 +11,14 @@ jobs:
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
         with:
-          haxe-version: 4.3.4
+          haxe-version: 4.3.6
       - name: Install Libraries
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
           haxelib run lime rebuild hxcpp
       - name: Compile
-        run: haxelib run lime build ios -nosign -D ONLY_ARM64
+        run: haxelib run lime build ios -nosign
       - name: Make .ipa
         run: |
           cd export/*/ios/build/*-iphoneos
