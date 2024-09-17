@@ -31,7 +31,7 @@ class Project extends HXProject {
 	 * The game's name. Used as the default window title.
 	 */
 	static final TITLE:String = "Friday Night Funkin'";
-        static final TITLEIOS:String = "FridayNightFunkin";
+  static final TITLEIOS:String = "FridayNightFunkin";
 
 	/**
 	 * The name of the generated executable file.
@@ -476,13 +476,13 @@ class Project extends HXProject {
 		EMBED_ASSETS.apply(this, isWeb());
 		PRELOAD_ALL.apply(this, !isWeb());
 
-		// Should be true except on MacOS.
+		// Should be true except on MacOS and Mobile.
 		// File drop doesn't work there.
-		FEATURE_FILE_DROP.apply(this, !isMac() || !isMobile());
+		FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
 
-		// Should be true except on web builds.
+		// Should be true except on web and mobile builds.
 		// Chart editor doesn't work there.
-		FEATURE_CHART_EDITOR.apply(this, !isWeb() || !isMobile());
+		FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
 	}
 
   /**
