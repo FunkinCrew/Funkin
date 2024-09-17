@@ -404,11 +404,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
         measureTicks.y = gridTiledSprite.y;
-
+        var id = 0;
         for (member in audioWaveforms.members)
         {
-          member.time = scrollPositionInMs / Constants.MS_PER_SEC;
-
+          if (id == 1)
+          {
+            member.time = (scrollPositionInMs - currentVocalOffsetOpponent) / Constants.MS_PER_SEC;
+          }
+          else
+          {
+            member.time = (scrollPositionInMs - currentVocalOffsetPlayer) / Constants.MS_PER_SEC;
+          }
+          id++;
           // Doing this desyncs the waveforms from the grid.
           // member.y = Math.max(this.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
         }
