@@ -144,6 +144,12 @@ jobs:
         haxelib run lime build ${{ matrix.target }} -v -release --times ${{ github.event.inputs.build-defines }}
       timeout-minutes: 120
 
+    - name: Save build artifact to Github Actions
+      if: ${{ github.event.inputs.save-artifact }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.target }}
+        path: export/release/${{matrix.target}}/bin/
     - name: Upload build artifacts
       uses: ./.github/actions/upload-itch
       with:
