@@ -630,7 +630,7 @@ class Project extends HXProject {
 		}
 
     if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
-      // hxCodec doesn't function on HashLink or non-desktop platforms
+      // hxvlc doesn't function on HashLink or non-desktop platforms
 			// It's also unnecessary if video playback is disabled
       addHaxelib('hxvlc'); // Video playback
     }
