@@ -5615,7 +5615,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else
     {
-      trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
+      // trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
     }
   }
 
