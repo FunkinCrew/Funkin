@@ -503,13 +503,7 @@ config.push("android.permission", "android.permission.MANAGE_EXTERNAL_STORAGE", 
    * Setup Mobile Architecture defines.
    */
    function configureMobileArchDefines() {
-    #if ONLY_ARM64
     architectures = [Architecture.ARM64];
-    #elseif ONLY_ARMV7
-    architectures = [Architecture.ARMV7];
-    #else
-    architectures = [Architecture.ARMV7, Architecture.ARM64];
-    #end
    }
 
   /**
