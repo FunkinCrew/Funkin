@@ -282,46 +282,61 @@ class CharacterDataParser
   }
 
   /**
+   * Returns the Freeplay Icon version of a character.
+   * This was made to avoid copy and pasting.
+   */
+  public static function getCharPixelIcon(char:String):String
+  {
+    var charPath = switch (char)
+    {
+      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
+        "bfpixel";
+      case "monster-christmas":
+        "monsterpixel";
+      case "mom" | "mom-car":
+        "mommypixel";
+      case "pico-blazin" | "pico-playable" | "pico-speaker":
+        "picopixel";
+      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
+        "gfpixel";
+      case "dad":
+        "dadpixel";
+      case "darnell-blazin":
+        "darnellpixel";
+      case "senpai-angry":
+        "senpaipixel";
+      case "spooky-dark":
+        "spookypixel";
+      case "tankman-atlas":
+        "tankmanpixel";
+      case "pico-christmas" | "pico-dark":
+        "picopixel";
+      default:
+        '${char}pixel';
+    }
+
+    if (!Assets.exists(Paths.image("freeplay/icons/" + charPath)))
+    {
+      trace('[WARN] Character ${char} has no freeplay icon.');
+      return null;
+    }
+
+    return charPath;
+  }
+
+  /**
    * Returns the idle frame of a character.
+   * @author TechnikTil
    */
   public static function getCharPixelIconAsset(char:String):FlxFrame
   {
     var charPath:String = "freeplay/icons/";
 
-    // FunkinCrew please dont skin me alive for copying pixelated icon and changing it a tiny bit
-    switch (char)
-    {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
-        charPath += "bfpixel";
-      case "monster-christmas":
-        charPath += "monsterpixel";
-      case "mom" | "mom-car":
-        charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
-        charPath += "picopixel";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
-        charPath += "gfpixel";
-      case "dad":
-        charPath += "dadpixel";
-      case "darnell-blazin":
-        charPath += "darnellpixel";
-      case "senpai-angry":
-        charPath += "senpaipixel";
-      case "spooky-dark":
-        charPath += "spookypixel";
-      case "tankman-atlas":
-        charPath += "tankmanpixel";
-      case "pico-christmas" | "pico-dark":
-        charPath += "picopixel";
-      default:
-        charPath += '${char}pixel';
-    }
-
-    if (!Assets.exists(Paths.image(charPath)))
-    {
-      trace('[WARN] Character ${char} has no freeplay icon.');
+    var convertChar:Null<String> = getCharPixelIcon(char);
+    if(convertChar != null)
       return null;
-    }
+
+    charPath += convertChar;
 
     var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
     var frame:FlxFrame = null;

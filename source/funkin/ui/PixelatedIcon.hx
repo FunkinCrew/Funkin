@@ -2,6 +2,7 @@ package funkin.ui;
 
 import flixel.FlxSprite;
 import funkin.graphics.FlxFilteredSprite;
+import funkin.play.character.CharacterData.CharacterDataParser;
 
 /**
  * The icon that gets used for Freeplay capsules and char select
@@ -21,37 +22,11 @@ class PixelatedIcon extends FlxFilteredSprite
   {
     var charPath:String = "freeplay/icons/";
 
-    switch (char)
-    {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
-        charPath += "bfpixel";
-      case "monster-christmas":
-        charPath += "monsterpixel";
-      case "mom" | "mom-car":
-        charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
-        charPath += "picopixel";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
-        charPath += "gfpixel";
-      case "dad":
-        charPath += "dadpixel";
-      case "darnell-blazin":
-        charPath += "darnellpixel";
-      case "senpai-angry":
-        charPath += "senpaipixel";
-      case "spooky-dark":
-        charPath += "spookypixel";
-      case "tankman-atlas":
-        charPath += "tankmanpixel";
-      default:
-        charPath += '${char}pixel';
-    }
+    var convertChar:Null<String> = CharacterDataParser.getCharPixelIcon(char);
+    if(convertChar != null)
+      return null;
 
-    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
-    {
-      trace('[WARN] Character ${char} has no freeplay icon.');
-      return;
-    }
+    charPath += convertChar;
 
     var isAnimated = openfl.utils.Assets.exists(Paths.file('images/$charPath.xml'));
 
