@@ -941,6 +941,8 @@ class Project extends HXProject {
 		var commitHash:String = process.stdout.readLine();
 		var commitHashSplice:String = commitHash.substr(0, 7);
 
+		process.close();
+
 		return commitHashSplice;
 	}
 
@@ -954,6 +956,8 @@ class Project extends HXProject {
 		}
 
 		var branchName:String = branchProcess.stdout.readLine();
+
+		branchProcess.close();
 
 		return branchName;
 	}
@@ -978,6 +982,8 @@ class Project extends HXProject {
 				throw e;
 			}
 		}
+
+		branchProcess.close();
 
 		return output.length > 0;
 	}
