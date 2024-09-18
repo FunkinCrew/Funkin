@@ -228,6 +228,8 @@ class PolymodHandler
   static function buildImports():Void
   {
     // Add default imports for common classes.
+    Polymod.addDefaultImport(funkin.Assets);
+    Polymod.addDefaultImport(funkin.Paths);
 
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
