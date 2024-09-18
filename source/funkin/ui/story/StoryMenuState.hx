@@ -24,7 +24,7 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import openfl.utils.Assets;
-#if discord_rpc
+#if FEATURE_DISCORD_RPC
 import funkin.api.discord.Discord.DiscordClient;
 #end
 
