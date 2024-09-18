@@ -24,7 +24,7 @@ class PixelatedIcon extends FlxFilteredSprite
 
     var convertChar:Null<String> = CharacterDataParser.getCharPixelIcon(char);
     if(convertChar != null)
-      return null;
+      return;
 
     charPath += convertChar;
 
