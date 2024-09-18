@@ -598,11 +598,15 @@ class Save
       return;
     }
 
+    //percent also accounts for different ranks
+    var oldPerc = (previousScoreData.tallies.sick + previousScoreData.tallies.good) / previousScoreData.tallies.totalNotes;
+    var newPerc = (newScoreData.tallies.sick + newScoreData.tallies.good) / newScoreData.tallies.totalNotes;
+
     // Set the high score and the high rank separately.
     var newScore:SaveScoreData =
       {
-        score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
-        tallies: (previousRank > newRank) ? previousScoreData.tallies : newScoreData.tallies
+        score: Std.int(Math.max(previousScoreData.score, newScoreData.score)),
+        tallies: (oldPerc > newPerc ? previousScoreData.tallies : newScoreData.tallies)
       };
 
     song.set(difficultyId, newScore);
