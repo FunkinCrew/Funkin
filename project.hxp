@@ -158,6 +158,13 @@ class Project extends HXProject {
 	static final FEATURE_DEBUG_TRACY:FeatureFlag = "FEATURE_DEBUG_TRACY";
 
 	/**
+	 * `-DFEATURE_LOG_TRACE`
+	 * If this flag is enabled, the game will print debug traces to the console.
+	 * Disable to improve performance a bunch.
+	 */
+	static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
+
+	/**
 	 * `-DFEATURE_DISCORD_RPC`
 	 * If this flag is enabled, the game will enable the Discord Remote Procedure Call library.
 	 * This is used to provide Discord Rich Presence support.
@@ -461,6 +468,7 @@ class Project extends HXProject {
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+		FEATURE_LOG_TRACE.apply(this, isDebug());
 
 		// Should default to true on workspace builds and false on release builds.
 		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
