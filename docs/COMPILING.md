@@ -41,9 +41,6 @@ There are several useful build flags you can add to a build to affect how it wor
 - `-DFEATURE_STAGE_EDITOR` to forcibly enable the experimental stage editor.
 - `-DFEATURE_GHOST_TAPPING` to forcibly enable an experimental gameplay change to the anti-mash system.
 
-# Troubleshooting - GO THROUGH THESE STEPS BEFORE OPENING ISSUES ON GITHUB!
+# Troubleshooting
 
-- During the cloning process, you may experience an error along the lines of `error: RPC failed; curl 92 HTTP/2 stream 0 was not closed cleanly: PROTOCOL_ERROR (err 1)` due to poor connectivity. A common fix is to run ` git config --global http.postBuffer 4096M`.
-- Make sure your game directory has an `assets` folder! If it's missing, copy the path to your `funkin` folder and run `cd the\path\you\copied`. Then follow the guide starting from **Step 4**.
-- Check that your `assets` folder is not empty! If it is, go back to **Step 4** and follow the guide from there.
-- The compilation process often fails due to having the wrong versions of the required libraries. Many errors can be resolved by deleting the `.haxelib` folder and following the guide starting from **Step 5**.
+If you experience any issues during the compilation process, DO NOT open an issue on GitHub. Instead, check the [Troubleshooting Guide](TROUBLESHOOTING.md) for steps on how to resolve common problems.

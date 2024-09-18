@@ -77,7 +77,7 @@ class DebugBoundingState extends FlxState
   {
     // get the screen position, according to the HUD camera, temp default to FlxG.camera juuust in case?
     var hudMousePos:FlxPoint = FlxG.mouse.getScreenPosition(hudCam ?? FlxG.camera);
-    return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y);
+    return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y) || FlxG.mouse.overlaps(animDropDownMenu, hudCam);
   }
 
   override function create()
@@ -233,6 +233,11 @@ class DebugBoundingState extends FlxState
 
         txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
         txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
+      }
+
+      if (FlxG.mouse.justReleased)
+      {
+        movingCharacter = false;
       }
 
       if (FlxG.mouse.justReleased)

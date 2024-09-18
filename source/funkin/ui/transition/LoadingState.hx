@@ -314,7 +314,6 @@ class LoadingState extends MusicBeatSubState
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num7'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num8'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num9'));
-
     FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
