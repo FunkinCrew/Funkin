@@ -1999,6 +1999,7 @@ class PlayState extends MusicBeatSubState
 
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
+
     var timeToPlayAt:Float = Conductor.instance.songPosition - Conductor.instance.instrumentalOffset;
     FlxG.sound.music.pause();
     vocals.pause();
@@ -3051,6 +3052,7 @@ class PlayState extends MusicBeatSubState
     GameOverSubState.reset();
     PauseSubState.reset();
     Countdown.reset();
+    PopUpStuff.reset();
 
     // Clear the static reference to this state.
     instance = null;
