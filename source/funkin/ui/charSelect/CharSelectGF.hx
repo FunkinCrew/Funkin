@@ -11,6 +11,7 @@ import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import flixel.math.FlxMath;
 import funkin.modding.events.ScriptEvent;
 import funkin.vis.dsp.SpectralAnalyzer;
+import funkin.data.freeplay.player.PlayerRegistry;
 
 class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
@@ -27,7 +28,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   var analyzer:SpectralAnalyzer;
 
-  var curGF:GFChar = GF;
+  var curGF:String = "gf";
 
   public function new()
   {
@@ -97,7 +98,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   function drawFFT()
   {
-    if (curGF == NENE)
+    if (curGF == "nene")
     {
       var levels = analyzer.getLevels();
       var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
@@ -172,16 +173,21 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
    */
   public function switchGF(bf:String):Void
   {
-    var prevGF:GFChar = curGF;
-    switch (bf)
-    {
-      case "pico":
-        curGF = NENE;
-      case "bf":
-        curGF = GF;
-      default:
-        curGF = GF;
-    }
+    var prevGF = curGF;
+
+    var bfObj = PlayerRegistry.instance.fetchEntry(bf);
+    curGF = bfObj?.getCharSelectData()?.assignedGF ?? "gf";
+
+    /*var prevGF:GFChar = curGF;
+      switch (bf)
+      {
+        case "pico":
+          curGF = NENE;
+        case "bf":
+          curGF = GF;
+        default:
+          curGF = GF;
+    }*/
 
     // We don't need to update any anims if we didn't change GF
     if (prevGF != curGF)
@@ -213,9 +219,8 @@ enum FadeStatus
   FADE_OUT;
   FADE_IN;
 }
-
-enum abstract GFChar(String) from String to String
-{
+/*enum abstract GFChar(String) from String to String
+  {
   var GF = "gf";
   var NENE = "nene";
-}
+}*/
