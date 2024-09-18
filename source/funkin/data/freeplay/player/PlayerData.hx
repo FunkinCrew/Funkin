@@ -264,6 +264,12 @@ class PlayerCharSelectData
    */
   @:optional
   public var position:Null<Int>;
+
+  /**
+   * The GF name to assign for this character.
+   */
+  @:optional
+  public var assignedGF:Null<String>;
 }
 
 typedef PlayerResultsData =
