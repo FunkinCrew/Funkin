@@ -7,7 +7,6 @@ import flxanimate.frames.FlxAnimateFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import openfl.display.BitmapData;
-import openfl.utils.Assets;
 import flixel.math.FlxPoint;
 import flxanimate.animate.FlxKeyFrame;
 

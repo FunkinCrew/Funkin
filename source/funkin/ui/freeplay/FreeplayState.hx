@@ -51,7 +51,6 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
-import lime.utils.Assets;
 import openfl.display.BlendMode;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongData.SongMusicData;
@@ -1859,7 +1858,7 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.setDifficultyStars(daSong?.difficultyRating);
   }
 
-  // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
+  // Clears the cache of songs to free up memory, they'll have to be loaded in later tho
   function clearDaCache(actualSongTho:String):Void
   {
     for (song in songs)

@@ -11,7 +11,6 @@ import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import haxe.Json;
-import openfl.utils.Assets;
 
 class CharacterDataParser
 {
