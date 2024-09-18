@@ -105,8 +105,8 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1",
-      "url": "https://github.com/HaxeFoundation/hxcpp"
+      "ref": "c6bac3d6c7d683f25104296b2f4c50f8c90b8349",
+      "url": "https://github.com/cortex-engine/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
