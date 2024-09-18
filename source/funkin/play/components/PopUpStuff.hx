@@ -125,4 +125,13 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
       daLoop++;
     }
   }
+
+  /**
+   * Reset the popup configuration to the default.
+   */
+  public static function reset()
+  {
+    noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    isPixel = false;
+  }
 }
