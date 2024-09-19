@@ -55,6 +55,9 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongData.SongMusicData;
+#if FEATURE_DISCORD_RPC
+import funkin.api.discord.DiscordClient;
+#end
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -313,7 +316,7 @@ class FreeplayState extends MusicBeatSubState
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
-    DiscordClient.changePresence('In the Menus', null);
+    DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
     #end
 
     var isDebug:Bool = false;

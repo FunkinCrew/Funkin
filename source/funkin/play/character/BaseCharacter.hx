@@ -323,6 +323,11 @@ class BaseCharacter extends Bopper
     this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
   }
 
+  public function getHealthIconId():String
+  {
+    return _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
+  }
+
   public function initHealthIcon(isOpponent:Bool):Void
   {
     if (!isOpponent)
@@ -332,7 +337,7 @@ class BaseCharacter extends Bopper
         trace('[WARN] Player 1 health icon not found!');
         return;
       }
-      PlayState.instance.iconP1.configure(_data.healthIcon);
+      PlayState.instance.iconP1.configure(_data?.healthIcon);
       PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
     }
     else
@@ -342,7 +347,7 @@ class BaseCharacter extends Bopper
         trace('[WARN] Player 2 health icon not found!');
         return;
       }
-      PlayState.instance.iconP2.configure(_data.healthIcon);
+      PlayState.instance.iconP2.configure(_data?.healthIcon);
     }
   }
 
