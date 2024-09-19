@@ -30,6 +30,11 @@ class Countdown
   public static var soundSuffix:String = '';
 
   /**
+   * Whether the countdown has finished.
+   */
+  public static var finished:Bool = false;
+
+  /**
    * Which alternate graphic on countdown to use.
    * You can set this via script.
    * For example, in Week 6 it is `-pixel`.
@@ -53,6 +58,7 @@ class Countdown
    */
   public static function performCountdown():Bool
   {
+    finished = false;
     countdownStep = BEFORE;
     var cancelled:Bool = propagateCountdownEvent(countdownStep);
     if (cancelled)
@@ -101,6 +107,7 @@ class Countdown
 
       if (countdownStep == AFTER)
       {
+        finished = true;
         stopCountdown();
       }
     }, 5); // Before, 3, 2, 1, GO!, After
