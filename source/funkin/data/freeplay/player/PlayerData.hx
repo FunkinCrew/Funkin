@@ -269,7 +269,20 @@ class PlayerCharSelectData
    * The GF name to assign for this character.
    */
   @:optional
-  public var assignedGF:Null<String>;
+  public var gf:PlayerCharSelectGFData;
+}
+
+typedef PlayerCharSelectGFData =
+{
+  @:optional
+  public var assetPath:String;
+
+  @:optional
+  public var animInfoPath:String;
+
+  @:optional
+  @:default(false)
+  public var visualizer:Bool;
 }
 
 typedef PlayerResultsData =
