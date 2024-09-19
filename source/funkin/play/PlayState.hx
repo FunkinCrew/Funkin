@@ -1979,6 +1979,7 @@ class PlayState extends MusicBeatSubState
     vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
+    vocals.time = startTimestamp;
     resyncVocals();
 
     #if FEATURE_DISCORD_RPC
