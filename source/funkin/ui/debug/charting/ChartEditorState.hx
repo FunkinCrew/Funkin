@@ -2274,7 +2274,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         this.openBackupAvailableDialog(welcomeDialog);
       }
     }
+
+    #if FEATURE_DISCORD_RPC
+    updateDiscordRPC();
+    #end
   }
+
+  #if FEATURE_DISCORD_RPC
+  function updateDiscordRPC():Void
+  {
+    funkin.api.discord.DiscordClient.instance.setPresence(
+      {
+        // TODO: Make this display the song name and update when it changes.
+        // state: '${currentSongName} [${selectedDifficulty}]',
+        state: null,
+        details: 'Chart Editor [Charting]'
+      });
+  }
+  #end
 
   function setupWelcomeMusic()
   {

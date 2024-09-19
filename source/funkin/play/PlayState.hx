@@ -447,10 +447,7 @@ class PlayState extends MusicBeatSubState
 
   #if FEATURE_DISCORD_RPC
   // Discord RPC variables
-  var discordRPCDifficulty:String = '';
   var discordRPCIcon:String = '';
-  var discordRPCDetailsText:String = '';
-  var discordRPCDetailsPausedText:String = '';
   #end
 
   /**
@@ -986,8 +983,10 @@ class PlayState extends MusicBeatSubState
         #if FEATURE_DISCORD_RPC
         DiscordClient.instance.setPresence(
           {
-            state: '${currentChart.songName} (${discordRPCDifficulty})',
-            details: discordRPCDetailsPausedText,
+            details: 'Paused - ${buildDiscordRPCDetails()}',
+
+            state: buildDiscordRPCState(),
+
             smallImageKey: discordRPCIcon
           });
         #end
@@ -1080,8 +1079,8 @@ class PlayState extends MusicBeatSubState
         #if FEATURE_DISCORD_RPC
         DiscordClient.instance.setPresence(
           {
-            state: '${currentChart.songName} [${discordRPCDifficulty}]',
-            details: 'Game Over - ${discordRPCDetailsText}',
+            details: 'Game Over - ${buildDiscordRPCDetails()}',
+            state: buildDiscordRPCState(),
             smallImageKey: discordRPCIcon
           });
         #end
@@ -1300,8 +1299,8 @@ class PlayState extends MusicBeatSubState
         //   currentSongLengthMs - Conductor.instance.songPosition);
         DiscordClient.instance.setPresence(
           {
-            state: '${currentChart.songName} [${discordRPCDifficulty}]',
-            details: discordRPCDetailsText,
+            state: buildDiscordRPCState(),
+            details: 'Paused - ${buildDiscordRPCDetails()}',
             smallImageKey: discordRPCIcon
           });
       }
@@ -1309,8 +1308,8 @@ class PlayState extends MusicBeatSubState
       {
         DiscordClient.instance.setPresence(
           {
-            state: '${currentChart.songName} [${discordRPCDifficulty}]',
-            details: discordRPCDetailsText,
+            state: buildDiscordRPCState(),
+            details: 'Paused - ${buildDiscordRPCDetails()}',
             smallImageKey: discordRPCIcon
           });
       }
@@ -1344,8 +1343,8 @@ class PlayState extends MusicBeatSubState
       {
         DiscordClient.instance.setPresence(
           {
-            state: '${currentChart.songName} [${discordRPCDifficulty}]',
-            details: discordRPCDetailsText,
+            state: buildDiscordRPCState(),
+            details: buildDiscordRPCDetails(),
             smallImageKey: discordRPCIcon
           });
       }
@@ -1353,8 +1352,8 @@ class PlayState extends MusicBeatSubState
       {
         DiscordClient.instance.setPresence(
           {
-            state: '${currentChart.songName} [${discordRPCDifficulty}]',
-            details: discordRPCDetailsText,
+            state: buildDiscordRPCState(),
+            details: buildDiscordRPCDetails(),
             smallImageKey: discordRPCIcon
           });
         // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true,
@@ -1380,8 +1379,8 @@ class PlayState extends MusicBeatSubState
     {
       DiscordClient.instance.setPresence(
         {
-          state: '${currentChart.songName} [${discordRPCDifficulty}]',
-          details: discordRPCDetailsText,
+          state: buildDiscordRPCState(),
+          details: buildDiscordRPCDetails(),
           smallImageKey: discordRPCIcon
         });
     }
@@ -1801,20 +1800,49 @@ class PlayState extends MusicBeatSubState
   function initDiscord():Void
   {
     #if FEATURE_DISCORD_RPC
-    discordRPCDifficulty = PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
-
     // Determine the details strings once and reuse them.
-    discordRPCDetailsText = PlayStatePlaylist.isStoryMode ? 'Story Mode: Week ${PlayStatePlaylist.campaignId}' : 'Freeplay';
-    discordRPCDetailsPausedText = 'Paused - $discordRPCDetailsText';
 
     // Updating Discord Rich Presence.
     DiscordClient.instance.setPresence(
       {
-        state: '${currentChart.songName} [${discordRPCDifficulty}]',
-        details: discordRPCDetailsText,
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
         smallImageKey: discordRPCIcon
       });
     #end
+  }
+
+  function buildDiscordRPCDetails():String
+  {
+    if (PlayStatePlaylist.isStoryMode)
+    {
+      return 'Story Mode: ${PlayStatePlaylist.campaignTitle}';
+    }
+    else
+    {
+      if (isChartingMode)
+      {
+        return 'Chart Editor [Playtest]';
+      }
+      else if (isPracticeMode)
+      {
+        return 'Freeplay [Practice]';
+      }
+      else if (isBotPlayMode)
+      {
+        return 'Freeplay [Bot Play]';
+      }
+      else
+      {
+        return 'Freeplay';
+      }
+    }
+  }
+
+  function buildDiscordRPCState():String
+  {
+    var discordRPCDifficulty = PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
+    return '${currentChart.songName} [${discordRPCDifficulty}]';
   }
 
   function initPreciseInputs():Void
@@ -2010,8 +2038,8 @@ class PlayState extends MusicBeatSubState
     // Updating Discord Rich Presence (with Time Left)
     DiscordClient.instance.setPresence(
       {
-        state: '${currentChart.songName} (${discordRPCDifficulty})',
-        details: discordRPCDetailsText,
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
         smallImageKey: discordRPCIcon
       });
     // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true, currentSongLengthMs);

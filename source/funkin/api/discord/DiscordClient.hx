@@ -96,16 +96,28 @@ class DiscordClient
     // The large image displaying what the user is doing.
     // This should probably be album art.
     // IMPORTANT NOTE: This can be an asset key uploaded to Discord's developer panel OR any URL you like.
+
+    // TODO: Make this use the song's album art.
     // presence.largeImageKey = "icon";
-    presence.largeImageKey = "https://f4.bcbits.com/img/a3122193953_16.jpg";
+    presence.largeImageKey = "https://f4.bcbits.com/img/a0746694746_16.jpg";
+
     // The small inset image for what the user is doing.
     // This can be the opponent's health icon?
     presence.smallImageKey = cast(params.smallImageKey, Null<String>);
 
-    // Start timestamp, used to power elapsed/remaining data
-    // presence.startTimestamp
-    // End timestamp, used to power elapsed/remaining data
-    // presence.endTimestamp
+    // NOTE: In previous versions, this showed as "Elapsed", but now shows as playtime and doesn't look good
+    // presence.startTimestamp = time - 10;
+    // presence.endTimestamp = time + 30;
+
+    final button1:DiscordButton = DiscordButton.create();
+    button1.label = "Play on Web";
+    button1.url = Constants.URL_NEWGROUNDS;
+    presence.buttons[0] = button1;
+
+    final button2:DiscordButton = DiscordButton.create();
+    button2.label = "Download";
+    button2.url = Constants.URL_ITCH;
+    presence.buttons[1] = button2;
 
     return presence;
   }

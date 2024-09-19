@@ -78,7 +78,12 @@ class Constants
   /**
    * Link to download the game on Itch.io.
    */
-  public static final URL_ITCH:String = 'https://ninja-muffin24.itch.io/funkin/purchase';
+  public static final URL_ITCH:String = 'https://ninja-muffin24.itch.io/funkin';
+
+  /**
+   * Link to play the game on Newgrounds.
+   */
+  public static final URL_NEWGROUNDS:String = 'https://www.newgrounds.com/portal/view/770371';
 
   /**
    * Link to the game's page on Kickstarter.
