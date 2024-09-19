@@ -112,8 +112,8 @@
       "name": "hxdiscord_rpc",
       "type": "git",
       "dir": null,
-      "ref": "main",
-      "url": "https://github.com/MAJigsaw77/hxdiscord_rpc"
+      "ref": "79955ce93f0392b245b3610b7697780c8618bc47",
+      "url": "https://github.com/FunkinCrew/hxdiscord_rpc"
     },
     {
       "name": "hxjsonast",
@@ -154,13 +154,6 @@
       "dir": null,
       "ref": "fe3368f611a84a19afc03011353945ae4da8fffd",
       "url": "https://github.com/FunkinCrew/lime"
-    },
-    {
-      "name": "linc_discord-rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5",
-      "url": "https://github.com/FunkinCrew/haxe-discord-rpc"
     },
     {
       "name": "mconsole",
