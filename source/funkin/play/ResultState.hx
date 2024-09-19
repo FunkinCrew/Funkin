@@ -472,9 +472,12 @@ class ResultState extends MusicBeatSubState
       {
         ease: FlxEase.quartOut,
         onUpdate: _ -> {
+          clearPercentLerp = Math.round(clearPercentLerp);
+          clearPercentCounter.curNumber = Math.round(clearPercentCounter.curNumber);
           // Only play the tick sound if the number increased.
           if (clearPercentLerp != clearPercentCounter.curNumber)
           {
+            trace('$clearPercentLerp and ${clearPercentCounter.curNumber}');
             clearPercentLerp = clearPercentCounter.curNumber;
             FunkinSound.playOnce(Paths.sound('scrollMenu'));
           }
