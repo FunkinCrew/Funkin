@@ -687,7 +687,11 @@ class PlayState extends MusicBeatSubState
     }
 
     Conductor.instance.mapTimeChanges(currentChart.timeChanges);
-    Conductor.instance.update((Conductor.instance.beatLengthMs * -5) + startTimestamp);
+    var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
+
+    trace('Attempting to start at ' + pre);
+
+    Conductor.instance.update(pre);
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
@@ -915,7 +919,7 @@ class PlayState extends MusicBeatSubState
       {
         // Do NOT apply offsets at this point, because they already got applied the previous frame!
         Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
-        if (Conductor.instance.songPosition - Conductor.instance.instrumentalOffset >= (startTimestamp) && Countdown.finished)
+        if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.instrumentalOffset))
         {
           trace("started song at " + Conductor.instance.songPosition);
           startSong();
@@ -1395,17 +1399,18 @@ class PlayState extends MusicBeatSubState
       // activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
     }
 
-    var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.instrumentalOffset));
-
-    if (!startingSong
-      && FlxG.sound.music != null
-      && (Math.abs(FlxG.sound.music.time - correctSync) > 100 || Math.abs(vocals.checkSyncError(correctSync)) > 100))
+    if (FlxG.sound.music != null)
     {
-      trace("VOCALS NEED RESYNC");
-      if (vocals != null) trace(vocals.checkSyncError(correctSync));
-      trace(FlxG.sound.music.time);
-      trace(correctSync);
-      resyncVocals();
+      var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.instrumentalOffset));
+
+      if (!startingSong && (Math.abs(FlxG.sound.music.time - correctSync) > 100 || Math.abs(vocals.checkSyncError(correctSync)) > 100))
+      {
+        trace("VOCALS NEED RESYNC");
+        if (vocals != null) trace(vocals.checkSyncError(correctSync));
+        trace(FlxG.sound.music.time);
+        trace(correctSync);
+        resyncVocals();
+      }
     }
 
     // Only bop camera if zoom level is below 135%

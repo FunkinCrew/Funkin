@@ -412,8 +412,17 @@ class Conductor
     var oldBeat:Float = this.currentBeat;
     var oldStep:Float = this.currentStep;
 
+    // If the song is playing, limit the song position to the length of the song or beginning of the song.
+    if (FlxG.sound.music != null && FlxG.sound.music.playing)
+    {
+      this.songPosition = Math.min(currentLength, Math.max(0, songPos));
+    }
+    else
+    {
+      this.songPosition = songPos;
+    }
+
     // Set the song position we are at (for purposes of calculating note positions, etc).
-    this.songPosition = Math.min(currentLength, Math.max(0, songPos));
 
     currentTimeChange = timeChanges[0];
     if (this.songPosition > 0.0)
