@@ -356,7 +356,7 @@ class MainMenuState extends MusicBeatState
     #if FEATURE_DEBUG_FUNCTIONS
     // Ctrl+Alt+Shift+P = Character Unlock screen
     // Ctrl+Alt+Shift+W = Meet requirements for Pico Unlock
-    // Ctrl+Alt+Shift+L = Revoke requirements for Pico Unlock
+    // Ctrl+Alt+Shift+M = Revoke requirements for Pico Unlock
     // Ctrl+Alt+Shift+R = Score/Rank conflict test
     // Ctrl+Alt+Shift+N = Mark all characters as not seen
     // Ctrl+Alt+Shift+E = Dump save data
@@ -369,7 +369,7 @@ class MainMenuState extends MusicBeatState
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
     {
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      // Give the user a score of 1 point on Weekend 1 story mode.
+      // Give the user a score of 1 point on Weekend 1 story mode (Easy difficulty).
       // This makes the level count as cleared and displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
         {
@@ -389,27 +389,30 @@ class MainMenuState extends MusicBeatState
         });
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.L)
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
     {
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      // Give the user a score of 0 points on Weekend 1 story mode.
+      // Give the user a score of 0 points on Weekend 1 story mode (all difficulties).
       // This makes the level count as uncleared and no longer displays the songs in Freeplay.
-      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
-        {
-          score: 1,
-          tallies:
-            {
-              sick: 0,
-              good: 0,
-              bad: 0,
-              shit: 0,
-              missed: 0,
-              combo: 0,
-              maxCombo: 0,
-              totalNotesHit: 0,
-              totalNotes: 0,
-            }
-        });
+      for (diff in ['easy', 'normal', 'hard'])
+      {
+        funkin.save.Save.instance.setLevelScore('weekend1', diff,
+          {
+            score: 0,
+            tallies:
+              {
+                sick: 0,
+                good: 0,
+                bad: 0,
+                shit: 0,
+                missed: 0,
+                combo: 0,
+                maxCombo: 0,
+                totalNotesHit: 0,
+                totalNotes: 0,
+              }
+          });
+      }
     }
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.R)

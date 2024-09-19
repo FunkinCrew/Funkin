@@ -47,7 +47,6 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     //
     if (getCurrentAnimation() == "idle")
     {
-      trace('Player beat hit');
       playAnimation("idle", true, false, false);
     }
   };
