@@ -20,7 +20,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
    */
-  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.3";
+  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.4";
 
   public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = "2.2.x";
 

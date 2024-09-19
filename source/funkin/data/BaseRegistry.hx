@@ -263,7 +263,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param version The entry's version (use `fetchEntryVersion(id)`).
    * @return The created entry.
    */
-  public function parseEntryDataWithMigration(id:String, version:thx.semver.Version):Null<J>
+  public function parseEntryDataWithMigration(id:String, version:Null<thx.semver.Version>):Null<J>
   {
     if (version == null)
     {

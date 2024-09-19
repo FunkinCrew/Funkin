@@ -140,12 +140,12 @@ typedef StageDataProp =
    * If not zero, this prop will play an animation every X beats of the song.
    * This requires animations to be defined. If `danceLeft` and `danceRight` are defined,
    * they will alternated between, otherwise the `idle` animation will be used.
-   *
-   * @default 0
+   * Supports up to 0.25 precision.
+   * @default 0.0
    */
-  @:default(0)
+  @:default(0.0)
   @:optional
-  var danceEvery:Int;
+  var danceEvery:Float;
 
   /**
    * How much the prop scrolls relative to the camera. Used to create a parallax effect.
