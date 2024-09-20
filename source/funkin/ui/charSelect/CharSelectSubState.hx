@@ -71,6 +71,7 @@ class CharSelectSubState extends MusicBeatSubState
   var availableChars:Map<Int, String> = new Map<Int, String>();
   var pressedSelect:Bool = false;
   var selectTimer:FlxTimer = new FlxTimer();
+  var allowInput:Bool = false;
 
   var selectSound:FunkinSound;
   var unlockSound:FunkinSound;
@@ -430,6 +431,8 @@ class CharSelectSubState extends MusicBeatSubState
           overrideExisting: true,
           restartTrack: true,
           onLoad: function() {
+            allowInput = true;
+
             @:privateAccess
             gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
             #if desktop
@@ -573,6 +576,8 @@ class CharSelectSubState extends MusicBeatSubState
               overrideExisting: true,
               restartTrack: true,
               onLoad: function() {
+                allowInput = true;
+
                 @:privateAccess
                 gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
                 #if desktop
@@ -642,6 +647,7 @@ class CharSelectSubState extends MusicBeatSubState
 
   function goToFreeplay():Void
   {
+    allowInput = false;
     autoFollow = false;
 
     FlxTween.tween(cursor, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
@@ -695,7 +701,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     syncAudio(elapsed);
 
-    if (!pressedSelect)
+    if (allowInput && !pressedSelect)
     {
       if (controls.UI_UP) holdTmrUp += elapsed;
       if (controls.UI_UP_R)
@@ -789,7 +795,7 @@ class CharSelectSubState extends MusicBeatSubState
       gfChill.visible = true;
       curChar = availableChars.get(getCurrentSelected());
 
-      if (!pressedSelect && controls.ACCEPT)
+      if (allowInput && !pressedSelect && controls.ACCEPT)
       {
         cursorConfirmed.visible = true;
         cursorConfirmed.x = cursor.x - 2;
@@ -817,7 +823,7 @@ class CharSelectSubState extends MusicBeatSubState
         });
       }
 
-      if (pressedSelect && controls.BACK)
+      if (allowInput && pressedSelect && controls.BACK)
       {
         cursorConfirmed.visible = false;
         grpCursors.visible = true;
@@ -847,7 +853,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       gfChill.visible = false;
 
-      if (controls.ACCEPT)
+      if (allowInput && controls.ACCEPT)
       {
         cursorDenied.visible = true;
         cursorDenied.x = cursor.x - 2;
