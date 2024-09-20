@@ -276,7 +276,7 @@ class LoadingState extends MusicBeatSubState
   #if NO_PRELOAD_ALL
   static function isSoundLoaded(path:String):Bool
   {
-    return Assets.cache.hasSound(path);
+    return OpenFLAssets.cache.hasSound(path);
   }
 
   static function isLibraryLoaded(library:String):Bool
