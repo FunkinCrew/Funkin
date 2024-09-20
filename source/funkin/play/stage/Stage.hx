@@ -464,6 +464,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       #end
     }
 
+    // Set the characters type
+    character.characterType = charType;
+
     // Add the character to the scene.
     this.add(character);
 
