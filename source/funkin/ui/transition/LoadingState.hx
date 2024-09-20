@@ -87,7 +87,7 @@ class LoadingState extends MusicBeatSubState
       }
 
       checkLibrary('shared');
-      checkLibrary(PlayStatePlaylist.campaignId);
+      checkLibrary(stageDirectory);
       checkLibrary('tutorial');
 
       var fadeTime:Float = 0.5;
@@ -205,6 +205,8 @@ class LoadingState extends MusicBeatSubState
     return Paths.inst(PlayState.instance.currentSong.id);
   }
 
+  static var stageDirectory:String = "shared";
+
   /**
    * Starts the transition to a new `PlayState` to start a new song.
    * First switches to the `LoadingState` if assets need to be loaded.
@@ -214,7 +216,13 @@ class LoadingState extends MusicBeatSubState
    */
   public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false, asSubState = false, ?onConstruct:PlayState->Void):Void
   {
-    Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
+    var daChart = params.targetSong.getDifficulty(params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
+      params.targetVariation ?? Constants.DEFAULT_VARIATION);
+
+    var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart.stage);
+    stageDirectory = daStage.directory ?? "shared";
+    Paths.setCurrentLevel(stageDirectory);
+
     var playStateCtor:() -> PlayState = function() {
       return new PlayState(params);
     };
