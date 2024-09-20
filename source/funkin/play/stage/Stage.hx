@@ -258,7 +258,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       propSprite.angle = dataProp.angle;
       propSprite.color = FlxColor.fromString(dataProp.color);
-      propSprite.blend = BlendMode.fromString(dataProp.blend);
+      @:privateAccess propSprite.blend = BlendMode.fromString(dataProp.blend);
 
       propSprite.zIndex = dataProp.zIndex;
 
