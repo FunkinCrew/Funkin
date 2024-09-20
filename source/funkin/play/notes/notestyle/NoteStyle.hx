@@ -590,7 +590,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         var result = _data.assets.judgementBad?.isPixel;
         if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
         return result ?? false;
-      case "GO":
+      case "shit":
         var result = _data.assets.judgementShit?.isPixel;
         if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
         return result ?? false;
