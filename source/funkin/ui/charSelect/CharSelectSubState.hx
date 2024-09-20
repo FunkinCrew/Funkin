@@ -792,7 +792,6 @@ class CharSelectSubState extends MusicBeatSubState
       && availableChars.exists(getCurrentSelected())
       && Save.instance.charactersSeen.contains(availableChars[getCurrentSelected()]))
     {
-      gfChill.visible = true;
       curChar = availableChars.get(getCurrentSelected());
 
       if (allowInput && !pressedSelect && controls.ACCEPT)
