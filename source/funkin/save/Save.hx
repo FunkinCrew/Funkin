@@ -91,6 +91,7 @@ class Save
       options:
         {
           // Reasonable defaults.
+          framerate: 60,
           naughtyness: true,
           downscroll: false,
           flashingLights: true,
@@ -1141,6 +1142,12 @@ typedef SaveScoreTallyData =
  */
 typedef SaveDataOptions =
 {
+  /**
+   * FPS
+   * @default `60`
+   */
+  var framerate:Int;
+
   /**
    * Whether some particularly fowl language is displayed.
    * @default `true`
