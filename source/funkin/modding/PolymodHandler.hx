@@ -260,7 +260,7 @@ class PolymodHandler
     Polymod.blacklistImport('cpp.Lib');
 
     // `Unserializer`
-    // Unserializerr.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
+    // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('Unserializer');
 
     // `lime.system.CFFI`

@@ -273,11 +273,6 @@ class TitleState extends MusicBeatState
     }
     #end
 
-    if (Save.instance.charactersSeen.contains("pico"))
-    {
-      Save.instance.charactersSeen.remove("pico");
-      Save.instance.oldChar = false;
-    }
     Conductor.instance.update();
 
     /* if (FlxG.onMobile)

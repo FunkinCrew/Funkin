@@ -238,6 +238,11 @@ class DebugBoundingState extends FlxState
       {
         movingCharacter = false;
       }
+
+      if (FlxG.mouse.justReleased)
+      {
+        movingCharacter = false;
+      }
     }
   }
 

@@ -22,7 +22,7 @@ class WindowUtil
    */
   public static function openURL(targetUrl:String):Void
   {
-    #if CAN_OPEN_LINKS
+    #if FEATURE_OPEN_URL
     #if linux
     Sys.command('/usr/bin/xdg-open $targetUrl &');
     #else
@@ -40,7 +40,7 @@ class WindowUtil
    */
   public static function openFolder(targetPath:String):Void
   {
-    #if CAN_OPEN_LINKS
+    #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', [targetPath.replace('/', '\\')]);
     #elseif mac
@@ -59,7 +59,7 @@ class WindowUtil
    */
   public static function openSelectFile(targetPath:String):Void
   {
-    #if CAN_OPEN_LINKS
+    #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', ['/select,' + targetPath.replace('/', '\\')]);
     #elseif mac
