@@ -796,6 +796,11 @@ class CharSelectSubState extends MusicBeatSubState
 
       if (allowInput && !pressedSelect && controls.ACCEPT)
       {
+        spamUp = false;
+        spamDown = false;
+        spamLeft = false;
+        spamRight = false;
+
         cursorConfirmed.visible = true;
         cursorConfirmed.animation.play("idle", true);
 
