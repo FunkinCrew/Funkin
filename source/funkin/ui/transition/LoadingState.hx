@@ -220,7 +220,7 @@ class LoadingState extends MusicBeatSubState
       params.targetVariation ?? Constants.DEFAULT_VARIATION);
 
     var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart.stage);
-    stageDirectory = daStage.directory ?? "shared";
+		stageDirectory = daStage?._data?.directory ?? "shared";
     Paths.setCurrentLevel(stageDirectory);
 
     var playStateCtor:() -> PlayState = function() {
