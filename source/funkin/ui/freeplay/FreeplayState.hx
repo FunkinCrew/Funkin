@@ -586,13 +586,13 @@ class FreeplayState extends MusicBeatSubState
       }
     };
 
-    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, txtCompletion, clearBoxSprite],
+    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
       {
         x: FlxG.width,
         speed: 0.3
       });
 
-    exitMoversCharSel.set([fp, txtCompletion, fnfHighscoreSpr, txtCompletion, clearBoxSprite],
+    exitMoversCharSel.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
       {
         y: -270,
         speed: 0.8,
@@ -1376,7 +1376,7 @@ class FreeplayState extends MusicBeatSubState
     #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.P)
     {
-      FlxG.switchState(FreeplayState.build(
+      FlxG.switchState(() -> FreeplayState.build(
         {
           {
             character: currentCharacterId == "pico" ? Constants.DEFAULT_CHARACTER : "pico",
@@ -1777,12 +1777,13 @@ class FreeplayState extends MusicBeatSubState
         FlxG.log.warn('WARN: could not find song with id (${daSong.songId})');
         return;
       }
-      var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty) ?? '';
+      var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty, currentCharacter) ?? '';
 
       // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
       var suffixedDifficulty = (targetVariation != Constants.DEFAULT_VARIATION
         && targetVariation != 'erect') ? '$currentDifficulty-${targetVariation}' : currentDifficulty;
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.songId, suffixedDifficulty);
+      trace(songScore);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = suffixedDifficulty;

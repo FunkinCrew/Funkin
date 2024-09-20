@@ -184,7 +184,7 @@ class FlxAtlasSprite extends FlxAnimate
 
     // Move to the first frame of the animation.
     // goToFrameLabel(id);
-    trace('Playing animation $id');
+    // trace('Playing animation $id');
     if ((id == null || id == "") || this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
     {
       this.anim.play(id, restart, false, startFrame);
