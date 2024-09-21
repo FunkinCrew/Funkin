@@ -2,8 +2,8 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterRegistry;
+import funkin.data.character.CharacterData;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
 
@@ -39,6 +39,11 @@ class BaseCharacter extends Bopper
    * Set to true when the character dead. Part of the handling for death animations.
    */
   public var isDead:Bool = false;
+
+  /**
+   * Whether the character will swap its `singRIGHT` and `singLEFT` animations when the character is flipped.
+   */
+  public var flipSingAnimations:Bool = false;
 
   /**
    * Set to true when the character being used in a special way.
@@ -148,12 +153,12 @@ class BaseCharacter extends Bopper
 
   public function new(id:String, renderType:CharacterRenderType)
   {
-    super(CharacterDataParser.DEFAULT_DANCEEVERY);
+    super(CharacterRegistry.DEFAULT_DANCEEVERY);
     this.characterId = id;
 
     ignoreExclusionPref = ["sing"];
 
-    _data = CharacterDataParser.fetchCharacterData(this.characterId);
+    _data = CharacterRegistry.fetchCharacterData(this.characterId);
     if (_data == null)
     {
       throw 'Could not find character data for characterId: $characterId';
@@ -170,6 +175,8 @@ class BaseCharacter extends Bopper
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
+      this.flipXOffsets = _data.flipXOffsets;
+      this.flipSingAnimations = _data.flipSingAnimations;
     }
 
     shouldBop = false;
@@ -633,6 +640,19 @@ class BaseCharacter extends Bopper
    */
   public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
+    if (flipX && flipSingAnimations)
+    {
+      switch (dir)
+      {
+        case LEFT:
+          dir = RIGHT;
+        case RIGHT:
+          dir = LEFT;
+        default:
+          // Don't flip.
+      }
+    }
+
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
     // restart even if already playing, because the character might sing the same note twice.
