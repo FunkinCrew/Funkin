@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - These display on Pico remixes, as well as when playing Weekend 1.
 - Implemented support for scripted Note Kinds. You can use HScript define a different note style to display for these notes as well as custom behavior. (community feature by lemz1)
 - Implemented support for Numeric and Selector options in the Options menu. (community feature by FlooferLand)
+- Implemented new animations for Tankman and Pico
 ## Changed
 - Girlfriend and Nene now perform previously unused animations when you achieve a large combo, or drop a large combo.
 - The pixel character icons in the Freeplay menu now display an animation!
