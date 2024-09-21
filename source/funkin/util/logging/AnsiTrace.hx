@@ -1,7 +1,15 @@
 package funkin.util.logging;
 
+#if cpp
+import cpp.vm.Mutex;
+#end
+
 class AnsiTrace
 {
+	#if (cpp && !TREMOVE)
+	static final _mutex:Mutex = new Mutex();
+	#end
+
   // mostly a copy of haxe.Log.trace()
   // but adds nice cute ANSI things
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
@@ -15,7 +23,13 @@ class AnsiTrace
     #elseif lua
     untyped __define_feature__("use._hx_print", _hx_print(str));
     #elseif sys
-    Sys.println(str);
+		#if cpp
+		_mutex.acquire();
+		Sys.println(str);
+		_mutex.release();
+		#else
+		Sys.println(str);
+		#end
     #else
     throw new haxe.exceptions.NotImplementedException()
     #end
