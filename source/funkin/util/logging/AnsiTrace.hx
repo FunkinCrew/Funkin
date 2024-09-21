@@ -1,12 +1,12 @@
 package funkin.util.logging;
 
-#if cpp
-import cpp.vm.Mutex;
+#if (sys && target.threaded)
+import sys.thread.Mutex;
 #end
 
 class AnsiTrace
 {
-  #if (cpp && !TREMOVE)
+  #if (sys && target.threaded && !TREMOVE)
   static final _mutex:Mutex = new Mutex();
   #end
 
@@ -23,7 +23,7 @@ class AnsiTrace
     #elseif lua
     untyped __define_feature__("use._hx_print", _hx_print(str));
     #elseif sys
-    #if cpp
+    #if target.threaded
     _mutex.acquire();
     Sys.println(str);
     _mutex.release();
