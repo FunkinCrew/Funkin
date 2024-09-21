@@ -10,14 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Modding isn't 100% there but we're working on it!
 - Added Pico as a playable character! Unlock him by completing Weekend 1 (if you haven't already done that)
   - The songs from Weekend 1 have moved; you must now switch to Pico in Freeplay to access them
-- Added 10 new Pico remixes! Access them by selecting Pico from in the Character Select screen
+- Added 11 new Pico remixes! Access them by selecting Pico from in the Character Select screen
   - Bopeebo (Pico Mix)
   - Fresh (Pico Mix)
   - DadBattle (Pico Mix)
   - Spookeez (Pico Mix)
   - South (Pico Mix)
+  - Pico (Pico Mix)
   - Philly Nice (Pico Mix)
-  - Blammed  (Pico Mix)
+  - Blammed (Pico Mix)
   - Eggnog (Pico Mix)
   - Ugh (Pico Mix)
   - Guns (Pico Mix)
