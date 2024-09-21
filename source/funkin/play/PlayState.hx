@@ -1393,12 +1393,15 @@ class PlayState extends MusicBeatSubState
 
     if (!startingSong
       && FlxG.sound.music != null
-      && (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100
-        || Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100))
+      && (Math.abs(FlxG.sound.music.time
+        - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset - Conductor.instance.audioVisualOffset)) > 100
+        || Math.abs(vocals.checkSyncError(Conductor.instance.songPosition +
+          Conductor.instance.instrumentalOffset - Conductor.instance.audioVisualOffset)) > 100))
     {
       trace("VOCALS NEED RESYNC");
-      if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
-      trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
+      if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset
+        - Conductor.instance.audioVisualOffset));
+      trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset - Conductor.instance.audioVisualOffset));
       resyncVocals();
     }
 
