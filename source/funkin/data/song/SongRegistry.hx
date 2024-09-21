@@ -18,7 +18,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   /**
    * The current version string for the stage data format.
    * Handle breaking changes by incrementing this value
-   * and adding migration to the `migrateStageData()` function.
+   * and adding migration to the `migrateSongData()` function.
    */
   public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.4";
 

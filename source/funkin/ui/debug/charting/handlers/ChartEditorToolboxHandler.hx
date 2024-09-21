@@ -1,8 +1,8 @@
 package funkin.ui.debug.charting.handlers;
 
 import funkin.data.stage.StageData;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import haxe.ui.components.HorizontalSlider;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
@@ -11,8 +11,8 @@ import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.event.SongEvent;
 import funkin.play.song.SongSerializer;
 import funkin.data.stage.StageData;

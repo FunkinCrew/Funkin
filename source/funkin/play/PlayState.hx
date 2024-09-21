@@ -36,7 +36,7 @@ import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.components.ComboMilestone;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
@@ -1674,7 +1674,7 @@ class PlayState extends MusicBeatSubState
     //
     // GIRLFRIEND
     //
-    var girlfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.girlfriend);
+    var girlfriend:BaseCharacter = CharacterRegistry.fetchCharacter(currentCharacterData.girlfriend);
 
     if (girlfriend != null)
     {
@@ -1692,7 +1692,7 @@ class PlayState extends MusicBeatSubState
     //
     // DAD
     //
-    var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+    var dad:BaseCharacter = CharacterRegistry.fetchCharacter(currentCharacterData.opponent);
 
     if (dad != null)
     {
@@ -1715,7 +1715,7 @@ class PlayState extends MusicBeatSubState
     //
     // BOYFRIEND
     //
-    var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+    var boyfriend:BaseCharacter = CharacterRegistry.fetchCharacter(currentCharacterData.player);
 
     if (boyfriend != null)
     {

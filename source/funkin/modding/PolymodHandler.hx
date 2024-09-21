@@ -13,7 +13,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.save.Save;
 import funkin.util.FileUtil;
 import funkin.util.macro.ClassMacro;
@@ -248,6 +248,9 @@ class PolymodHandler
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
 
+    // Add imports for backwards compatibility.
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterRegistry);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
@@ -418,7 +421,7 @@ class PolymodHandler
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
-    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    CharacterRegistry.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();
     ModuleHandler.loadModuleCache();
   }
