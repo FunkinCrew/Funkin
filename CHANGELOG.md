@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new Character Select screen to switch between playable characters in Freeplay
   - Modding isn't 100% there but we're working on it!
 - Added Pico as a playable character! Unlock him by completing Weekend 1 (if you haven't already done that)
-  - The songs from Weekend 1 have moved; you must now switch to Pico in Freeplay to access them
+  - The songs from Weekend 1 have moved; you must now switch to Pico via Character Select screen in Freeplay to access them
 - Added 11 new Pico remixes! Access them by selecting Pico from in the Character Select screen
   - Bopeebo (Pico Mix)
   - Fresh (Pico Mix)
