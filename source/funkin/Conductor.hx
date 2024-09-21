@@ -275,6 +275,13 @@ class Conductor
     return Save.instance.options.audioVisualOffset;
   }
 
+  public var combinedOffset(get, never):Float;
+
+  function get_combinedOffset():Float
+  {
+    return instrumentalOffset + audioVisualOffset + inputOffset;
+  }
+
   /**
    * The number of beats in a measure. May be fractional depending on the time signature.
    */
