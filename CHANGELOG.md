@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Eggnog (Pico Mix)
   - Ugh (Pico Mix)
   - Guns (Pico Mix)
-- Added 1 new Boyfriend remix! Access it by selecting Pico from in the Character Select screen
+- Added 1 new Boyfriend remix! Access it by completing Weekend 1 as Pico and then selecting Boyfriend from in the Character Select screen
   - Darnell (BF Mix)
 - Added 2 new Erect remixes! Access them by switching difficulty on the song
   - Cocoa Erect
