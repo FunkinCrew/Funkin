@@ -6,9 +6,9 @@ import cpp.vm.Mutex;
 
 class AnsiTrace
 {
-	#if (cpp && !TREMOVE)
-	static final _mutex:Mutex = new Mutex();
-	#end
+  #if (cpp && !TREMOVE)
+  static final _mutex:Mutex = new Mutex();
+  #end
 
   // mostly a copy of haxe.Log.trace()
   // but adds nice cute ANSI things
@@ -23,13 +23,13 @@ class AnsiTrace
     #elseif lua
     untyped __define_feature__("use._hx_print", _hx_print(str));
     #elseif sys
-		#if cpp
-		_mutex.acquire();
-		Sys.println(str);
-		_mutex.release();
-		#else
-		Sys.println(str);
-		#end
+    #if cpp
+    _mutex.acquire();
+    Sys.println(str);
+    _mutex.release();
+    #else
+    Sys.println(str);
+    #end
     #else
     throw new haxe.exceptions.NotImplementedException()
     #end
