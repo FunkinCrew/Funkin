@@ -257,18 +257,27 @@ class SongOffsets implements ICloneable<SongOffsets>
   public var altInstrumentals:Map<String, Float>;
 
   /**
-   * The offset, in milliseconds, to apply to the song's vocals, relative to the chart.
+   * The offset, in milliseconds, to apply to the song's vocals, relative to the song's base instrumental.
    * These are applied ON TOP OF the instrumental offset.
    */
   @:optional
   @:default([])
   public var vocals:Map<String, Float>;
 
-  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>)
+  /**
+   * The offset, in milliseconds, to apply to the songs vocals, relative to each alternate instrumental.
+   * This is useful for the circumstance where, for example, an alt instrumental has a few seconds of lead in before the song starts.
+   */
+  @:optional
+  @:default([])
+  public var altVocals:Map<String, Map<String, Float>>;
+
+  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>, ?altVocals:Map<String, Map<String, Float>>)
   {
     this.instrumental = instrumental;
     this.altInstrumentals = altInstrumentals == null ? new Map<String, Float>() : altInstrumentals;
     this.vocals = vocals == null ? new Map<String, Float>() : vocals;
+    this.altVocals = altVocals == null ? new Map<String, Map<String, Float>>() : altVocals;
   }
 
   public function getInstrumentalOffset(?instrumental:String):Float
@@ -293,11 +302,19 @@ class SongOffsets implements ICloneable<SongOffsets>
     return value;
   }
 
-  public function getVocalOffset(charId:String):Float
+  public function getVocalOffset(charId:String, ?instrumental:String):Float
   {
-    if (!this.vocals.exists(charId)) return 0.0;
-
-    return this.vocals.get(charId);
+    if (instrumental == null)
+    {
+      if (!this.vocals.exists(charId)) return 0.0;
+      return this.vocals.get(charId);
+    }
+    else
+    {
+      if (!this.altVocals.exists(instrumental)) return 0.0;
+      if (!this.altVocals.get(instrumental).exists(charId)) return 0.0;
+      return this.altVocals.get(instrumental).get(charId);
+    }
   }
 
   public function setVocalOffset(charId:String, value:Float):Float
@@ -320,7 +337,7 @@ class SongOffsets implements ICloneable<SongOffsets>
    */
   public function toString():String
   {
-    return 'SongOffsets(${this.instrumental}ms, ${this.altInstrumentals}, ${this.vocals})';
+    return 'SongOffsets(${this.instrumental}ms, ${this.altInstrumentals}, ${this.vocals}, ${this.altVocals})';
   }
 }
 
@@ -529,12 +546,26 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   @:default([])
   public var altInstrumentals:Array<String> = [];
 
-  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '')
+  @:optional
+  public var opponentVocals:Null<Array<String>> = null;
+
+  @:optional
+  public var playerVocals:Null<Array<String>> = null;
+
+  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>,
+      ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
   {
     this.player = player;
     this.girlfriend = girlfriend;
     this.opponent = opponent;
     this.instrumental = instrumental;
+
+    this.altInstrumentals = altInstrumentals;
+    this.opponentVocals = opponentVocals;
+    this.playerVocals = playerVocals;
+
+    if (opponentVocals == null) this.opponentVocals = [opponent];
+    if (playerVocals == null) this.playerVocals = [player];
   }
 
   public function clone():SongCharacterData
@@ -722,18 +753,6 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   {
     return new SongEventDataRaw(this.time, this.eventKind, this.value);
   }
-}
-
-/**
- * Wrap SongEventData in an abstract so we can overload operators.
- */
-@:forward(time, eventKind, value, activated, getStepTime, clone)
-abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
-{
-  public function new(time:Float, eventKind:String, value:Dynamic = null)
-  {
-    this = new SongEventDataRaw(time, eventKind, value);
-  }
 
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
@@ -757,27 +776,27 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     }
   }
 
-  public inline function getHandler():Null<SongEvent>
+  public function getHandler():Null<SongEvent>
   {
     return SongEventRegistry.getEvent(this.eventKind);
   }
 
-  public inline function getSchema():Null<SongEventSchema>
+  public function getSchema():Null<SongEventSchema>
   {
     return SongEventRegistry.getEventSchema(this.eventKind);
   }
 
-  public inline function getDynamic(key:String):Null<Dynamic>
+  public function getDynamic(key:String):Null<Dynamic>
   {
     return this.value == null ? null : Reflect.field(this.value, key);
   }
 
-  public inline function getBool(key:String):Null<Bool>
+  public function getBool(key:String):Null<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
-  public inline function getInt(key:String):Null<Int>
+  public function getInt(key:String):Null<Int>
   {
     if (this.value == null) return null;
     var result = Reflect.field(this.value, key);
@@ -787,7 +806,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     return cast result;
   }
 
-  public inline function getFloat(key:String):Null<Float>
+  public function getFloat(key:String):Null<Float>
   {
     if (this.value == null) return null;
     var result = Reflect.field(this.value, key);
@@ -797,17 +816,17 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     return cast result;
   }
 
-  public inline function getString(key:String):String
+  public function getString(key:String):String
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
-  public inline function getArray(key:String):Array<Dynamic>
+  public function getArray(key:String):Array<Dynamic>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
-  public inline function getBoolArray(key:String):Array<Bool>
+  public function getBoolArray(key:String):Array<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
@@ -838,6 +857,19 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     }
 
     return result;
+  }
+}
+
+/**
+ * Wrap SongEventData in an abstract so we can overload operators.
+ */
+@:forward(time, eventKind, value, activated, getStepTime, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray,
+  getBoolArray, buildTooltip, valueAsStruct)
+abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
+{
+  public function new(time:Float, eventKind:String, value:Dynamic = null)
+  {
+    this = new SongEventDataRaw(time, eventKind, value);
   }
 
   public function clone():SongEventData
@@ -951,12 +983,18 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return this.kind = value;
   }
 
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
+  @:alias("p")
+  @:default([])
+  @:optional
+  public var params:Array<NoteParamData>;
+
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
   {
     this.time = time;
     this.data = data;
     this.length = length;
     this.kind = kind;
+    this.params = params ?? [];
   }
 
   /**
@@ -1051,9 +1089,19 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     _stepLength = null;
   }
 
+  public function cloneParams():Array<NoteParamData>
+  {
+    var params:Array<NoteParamData> = [];
+    for (param in this.params)
+    {
+      params.push(param.clone());
+    }
+    return params;
+  }
+
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind);
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams());
   }
 
   public function toString():String
@@ -1069,9 +1117,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 @:forward
 abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 {
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '')
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
   {
-    this = new SongNoteDataRaw(time, data, length, kind);
+    this = new SongNoteDataRaw(time, data, length, kind, params);
   }
 
   public static function buildDirectionName(data:Int, strumlineSize:Int = 4):String
@@ -1115,7 +1163,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       if (other.kind == '' || this.kind == null) return false;
     }
 
-    return this.time == other.time && this.data == other.data && this.length == other.length;
+    return this.time == other.time && this.data == other.data && this.length == other.length && this.params == other.params;
   }
 
   @:op(A != B)
@@ -1134,7 +1182,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
       if (other.kind == '') return true;
     }
 
-    return this.time != other.time || this.data != other.data || this.length != other.length;
+    return this.time != other.time || this.data != other.data || this.length != other.length || this.params != other.params;
   }
 
   @:op(A > B)
@@ -1171,7 +1219,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 
   public function clone():SongNoteData
   {
-    return new SongNoteData(this.time, this.data, this.length, this.kind);
+    return new SongNoteData(this.time, this.data, this.length, this.kind, this.params);
   }
 
   /**
@@ -1181,5 +1229,32 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
   {
     return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
       + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+  }
+}
+
+class NoteParamData implements ICloneable<NoteParamData>
+{
+  @:alias("n")
+  public var name:String;
+
+  @:alias("v")
+  @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  public var value:Dynamic;
+
+  public function new(name:String, value:Dynamic)
+  {
+    this.name = name;
+    this.value = value;
+  }
+
+  public function clone():NoteParamData
+  {
+    return new NoteParamData(this.name, this.value);
+  }
+
+  public function toString():String
+  {
+    return 'NoteParamData(${this.name}, ${this.value})';
   }
 }
