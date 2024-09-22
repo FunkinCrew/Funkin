@@ -535,7 +535,7 @@ class PlayState extends MusicBeatSubState
   {
     // Note: If there is a substate which requires the game to act unpaused,
     //       this should be changed to include something like `&& Std.isOfType()`
-    return this.subState != null;
+    return this.subState != null || this._requestedSubState != null;
   }
 
   var isExitingViaPauseMenu(get, never):Bool;
@@ -932,7 +932,6 @@ class PlayState extends MusicBeatSubState
       Conductor.instance.update(); // Normal conductor update.
     }
 
-    var isPaused:Bool = false;
     var androidPause:Bool = false;
 
     #if android
@@ -948,8 +947,6 @@ class PlayState extends MusicBeatSubState
 
       if (!event.eventCanceled)
       {
-        isPaused = true;
-        
         // Pause updates while the substate is open, preventing the game state from advancing.
         persistentUpdate = false;
         // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
@@ -1086,7 +1083,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    if (!isPaused)
+    if (!isGamePaused)
     {
       processSongEvents();
 
