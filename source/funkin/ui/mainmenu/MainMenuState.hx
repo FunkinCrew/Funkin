@@ -344,6 +344,8 @@ class MainMenuState extends MusicBeatState
       }
     }
 
+    Conductor.instance.update();
+
     // Open the debug menu, defaults to ` / ~
     // This includes stuff like the Chart Editor, so it should be present on all builds.
     if (controls.DEBUG_MENU)

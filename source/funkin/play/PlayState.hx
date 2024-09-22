@@ -1411,13 +1411,6 @@ class PlayState extends MusicBeatSubState
         trace(correctSync);
         resyncVocals();
       }
-      else
-      {
-        trace("NO VOCAL SYNC NEEDED");
-        if (vocals != null) trace(vocals.checkSyncError(correctSync));
-        trace(FlxG.sound.music.time);
-        trace(correctSync);
-      }
     }
 
     // Only bop camera if zoom level is below 135%
@@ -2396,9 +2389,9 @@ class PlayState extends MusicBeatSubState
       if (targetNote == null) continue;
 
       // Judge and hit the note.
-      trace('Hit note! ${targetNote.noteData}');
+      // trace('Hit note! ${targetNote.noteData}');
       goodNoteHit(targetNote, input);
-      trace('Score: ${songScore}');
+      // trace('Score: ${songScore}');
 
       notesInDirection.remove(targetNote);
 
