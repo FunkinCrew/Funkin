@@ -79,10 +79,12 @@ class ScreenshotPlugin extends FlxBasic
   {
     super.update(elapsed);
 
+    #if !html5
     if (hasPressedScreenshot())
     {
       capture();
     }
+    #end
   }
 
   /**
