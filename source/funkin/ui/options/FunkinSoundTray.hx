@@ -79,10 +79,12 @@ class FunkinSoundTray extends FlxSoundTray
     y = MathUtil.coolLerp(y, lerpYPos, 0.1);
     alpha = MathUtil.coolLerp(alpha, alphaTarget, 0.25);
 
+    var shouldHide = (FlxG.sound.muted == false && FlxG.sound.volume > 0);
+
     // Animate sound tray thing
     if (_timer > 0)
     {
-      _timer -= (MS / 1000);
+      if (shouldHide) _timer -= (MS / 1000);
       alphaTarget = 1;
     }
     else if (y >= -height)
