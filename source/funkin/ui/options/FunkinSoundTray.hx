@@ -121,7 +121,7 @@ class FunkinSoundTray extends FlxSoundTray
     active = true;
     var globalVolume:Int = Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
 
-    if (FlxG.sound.muted)
+    if (FlxG.sound.muted || FlxG.sound.volume == 0)
     {
       globalVolume = 0;
     }
