@@ -6,7 +6,6 @@ import flixel.system.FlxAssets;
 import flixel.tweens.FlxEase;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.utils.Assets;
 import funkin.util.MathUtil;
 
 /**

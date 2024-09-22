@@ -16,7 +16,6 @@ import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.util.SortUtil;
-import openfl.utils.Assets;
 
 /**
  * This is a data structure managing information about the current song.

@@ -1612,7 +1612,7 @@ class PlayState extends MusicBeatSubState
 
     if (girlfriend != null)
     {
-      girlfriend.characterType = CharacterType.GF;
+      // Don't need to do anything.
     }
     else if (currentCharacterData.girlfriend != '')
     {
@@ -1630,8 +1630,6 @@ class PlayState extends MusicBeatSubState
 
     if (dad != null)
     {
-      dad.characterType = CharacterType.DAD;
-
       //
       // OPPONENT HEALTH ICON
       //
@@ -1650,8 +1648,6 @@ class PlayState extends MusicBeatSubState
 
     if (boyfriend != null)
     {
-      boyfriend.characterType = CharacterType.BF;
-
       //
       // PLAYER HEALTH ICON
       //
@@ -3046,7 +3042,6 @@ class PlayState extends MusicBeatSubState
     GameOverSubState.reset();
     PauseSubState.reset();
     Countdown.reset();
-    PopUpStuff.reset();
 
     // Clear the static reference to this state.
     instance = null;

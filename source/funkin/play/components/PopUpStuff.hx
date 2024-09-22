@@ -8,7 +8,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import funkin.util.TimerUtil;
 import funkin.util.EaseUtil;
-import openfl.utils.Assets;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 
@@ -124,14 +123,5 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
       daLoop++;
     }
-  }
-
-  /**
-   * Reset the popup configuration to the default.
-   */
-  public static function reset()
-  {
-    noteStyle = NoteStyleRegistry.instance.fetchDefault();
-    isPixel = false;
   }
 }

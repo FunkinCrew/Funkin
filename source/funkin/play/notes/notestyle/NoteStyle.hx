@@ -93,7 +93,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     buildNoteAnimations(target);
 
     // Set the scale.
-    target.setGraphicSize(Strumline.STRUMLINE_SIZE * getNoteScale());
+    var scale = getNoteScale();
+    target.scale.set(scale, scale);
     target.updateHitbox();
   }
 
@@ -224,6 +225,13 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return data?.scale ?? 1.0;
   }
 
+  public function getHoldNoteOffsets():Array<Float>
+  {
+    var data = _data?.assets?.holdNote;
+    if (data == null && fallback != null) return fallback.getHoldNoteOffsets();
+    return data?.offsets ?? [0.0, 0.0];
+  }
+
   public function applyStrumlineFrames(target:StrumlineNote):Void
   {
     // TODO: Add support for multi-Sparrow.
@@ -304,9 +312,16 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return thx.Arrays.filterNull(result);
   }
 
+  public function getStrumlineOffsets():Array<Float>
+  {
+    var data = _data?.assets?.noteStrumline;
+    if (data == null && fallback != null) return fallback.getStrumlineOffsets();
+    return data?.offsets ?? [0.0, 0.0];
+  }
+
   public function applyStrumlineOffsets(target:StrumlineNote):Void
   {
-    var offsets = _data?.assets?.noteStrumline?.offsets ?? [0.0, 0.0];
+    var offsets = getStrumlineOffsets();
     target.x += offsets[0];
     target.y += offsets[1];
   }
@@ -575,7 +590,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         var result = _data.assets.judgementBad?.isPixel;
         if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
         return result ?? false;
-      case "GO":
+      case "shit":
         var result = _data.assets.judgementShit?.isPixel;
         if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
         return result ?? false;
