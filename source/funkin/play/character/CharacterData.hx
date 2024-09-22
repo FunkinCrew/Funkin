@@ -315,12 +315,6 @@ class CharacterDataParser
         '${char}pixel';
     }
 
-    if (!Assets.exists(Paths.image("freeplay/icons/" + charPath)))
-    {
-      trace('[WARN] Character ${char} has no freeplay icon.');
-      return null;
-    }
-
     return charPath;
   }
 
@@ -330,13 +324,13 @@ class CharacterDataParser
    */
   public static function getCharPixelIconAsset(char:String):FlxFrame
   {
-    var charPath:String = "freeplay/icons/";
+    var charPath:String = "freeplay/icons/" + getCharPixelIcon(char);
 
-    var convertChar:Null<String> = getCharPixelIcon(char);
-    if(convertChar != null)
+    if (!Assets.exists(Paths.image(charPath)))
+    {
+      trace('[WARN] Character ${char} has no freeplay icon.');
       return null;
-
-    charPath += convertChar;
+    }
 
     var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
     var frame:FlxFrame = null;
@@ -355,12 +349,7 @@ class CharacterDataParser
         return null;
       }
 
-      // so, haxe.ui.backend.AssetsImpl uses the parent width and height, which makes the image go crazy when rendered
-      // so this is a work around so that it uses the actual width and height
-      var imageGraphic = flixel.graphics.FlxGraphic.fromFrame(idleFrame);
-
-      var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(imageGraphic);
-      frame = imageFrame.frame;
+      frame = idleFrame;
     }
     else
     {

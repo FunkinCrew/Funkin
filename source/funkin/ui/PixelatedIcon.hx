@@ -20,14 +20,13 @@ class PixelatedIcon extends FlxFilteredSprite
 
   public function setCharacter(char:String):Void
   {
-    var charPath:String = "freeplay/icons/";
+    var charPath:String = "freeplay/icons/" + CharacterDataParser.getCharPixelIcon(char);
 
-    var convertChar:Null<String> = CharacterDataParser.getCharPixelIcon(char);
-    if(convertChar != null)
+    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
+    {
+      trace('[WARN] Character ${char} has no freeplay icon.');
       return;
-
-    charPath += convertChar;
-
+    }
     var isAnimated = openfl.utils.Assets.exists(Paths.file('images/$charPath.xml'));
 
     if (isAnimated)
