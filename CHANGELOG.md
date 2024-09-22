@@ -9,19 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new Character Select screen to switch between playable characters in Freeplay
   - Modding isn't 100% there but we're working on it!
 - Added Pico as a playable character! Unlock him by completing Weekend 1 (if you haven't already done that)
-  - The songs from Weekend 1 have moved; you must now switch to Pico in Freeplay to access them
-- Added 10 new Pico remixes! Access them by selecting Pico from in the Character Select screen
+  - The songs from Weekend 1 have moved; you must now switch to Pico via Character Select screen in Freeplay to access them
+- Added 11 new Pico remixes! Access them by selecting Pico from in the Character Select screen
   - Bopeebo (Pico Mix)
   - Fresh (Pico Mix)
   - DadBattle (Pico Mix)
   - Spookeez (Pico Mix)
   - South (Pico Mix)
+  - Pico (Pico Mix)
   - Philly Nice (Pico Mix)
-  - Blammed  (Pico Mix)
+  - Blammed (Pico Mix)
   - Eggnog (Pico Mix)
   - Ugh (Pico Mix)
   - Guns (Pico Mix)
-- Added 1 new Boyfriend remix! Access it by selecting Pico from in the Character Select screen
+- Added 1 new Boyfriend remix! Access it by completing Weekend 1 as Pico and then selecting Boyfriend from in the Character Select screen
   - Darnell (BF Mix)
 - Added 2 new Erect remixes! Access them by switching difficulty on the song
   - Cocoa Erect
@@ -39,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - These display on Pico remixes, as well as when playing Weekend 1.
 - Implemented support for scripted Note Kinds. You can use HScript define a different note style to display for these notes as well as custom behavior. (community feature by lemz1)
 - Implemented support for Numeric and Selector options in the Options menu. (community feature by FlooferLand)
+- Implemented new animations for Tankman and Pico
 ## Changed
 - Girlfriend and Nene now perform previously unused animations when you achieve a large combo, or drop a large combo.
 - The pixel character icons in the Freeplay menu now display an animation!
