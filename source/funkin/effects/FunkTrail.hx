@@ -26,7 +26,7 @@ class FunkTrail extends FlxTrail
     super(Target, Graphic, Length, Delay, Alpha, Diff);
   }
 
-  override public function updateTrail():Void
+  override public function update(elapsed:Float):Void
   {
     if (target is Bopper)
     {
@@ -35,6 +35,6 @@ class FunkTrail extends FlxTrail
         (targ.animOffsets[1] - targ.globalOffsets[1]) * targ.scale.y);
     }
 
-    super.updateTrail();
+    super.update(elapsed);
   }
 }
