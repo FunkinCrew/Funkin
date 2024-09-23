@@ -9,11 +9,13 @@ class Nametag extends FlxSprite
   var midpointX(default, set):Float = 1008;
   var midpointY(default, set):Float = 100;
   var mosaicShader:MosaicEffect;
+  var switchTimer:FlxTimer;
 
   public function new(?x:Float = 0, ?y:Float = 0)
   {
     super(x, y);
 
+    switchTimer = new FlxTimer();
     mosaicShader = new MosaicEffect();
     shader = mosaicShader;
 
@@ -36,7 +38,8 @@ class Nametag extends FlxSprite
   {
     shaderEffect();
 
-    new FlxTimer().start(4 / 30, _ -> {
+    switchTimer.cancel();
+    switchTimer.start(4 / 30, _ -> {
       var path:String = str;
       switch str
       {

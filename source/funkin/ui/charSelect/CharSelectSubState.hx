@@ -175,6 +175,7 @@ class CharSelectSubState extends MusicBeatSubState
     add(playerChill);
 
     playerChillOut = new CharSelectPlayer(0, 0);
+    playerChillOut.visible = false;
     add(playerChillOut);
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
@@ -321,18 +322,16 @@ class CharSelectSubState extends MusicBeatSubState
     {
       gfChill.switchGF(char);
       playerChill.switchChar(char);
+      nametag.switchChar(char);
 
       if (char == FreeplayState.rememberedCharacterId)
       {
-        curChar = char;
-        playerChillOut.visible = false;
         moveCursorIndex(id);
       }
     }
 
-    gfChill.switchGF(curChar);
-    playerChillOut.switchChar(curChar);
-    playerChill.switchChar(curChar);
+    // Set to the currently selected character
+    curChar = FreeplayState.rememberedCharacterId;
 
     // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
     // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
