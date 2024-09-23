@@ -1,5 +1,6 @@
 package funkin.graphics.video;
 
+#if hxcodec
 import hxcodec.flixel.FlxVideoSprite;
 
 /**
@@ -30,3 +31,4 @@ class FunkinVideoSprite extends FlxVideoSprite
     return volume;
   }
 }
+#end
