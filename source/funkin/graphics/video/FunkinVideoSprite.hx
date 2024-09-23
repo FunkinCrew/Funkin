@@ -1,6 +1,6 @@
 package funkin.graphics.video;
 
-#if hxcodec
+#if hxCodec
 import hxcodec.flixel.FlxVideoSprite;
 
 /**
