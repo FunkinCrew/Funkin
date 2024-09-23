@@ -103,7 +103,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   function buildNoteFrames(force:Bool = false):Null<FlxAtlasFrames>
   {
     var noteAssetPath = getNoteAssetPath();
-    if (noteAssetPath == null) return null;
+    if (noteAssetPath == null)
+    {
+      FlxG.log.warn('Note asset path not found: ${id}');
+      return null;
+    }
 
     if (!FunkinSprite.isTextureCached(Paths.image(noteAssetPath)))
     {

@@ -451,6 +451,11 @@ class LoadingState extends MusicBeatSubState
 
     return promise.future;
   }
+
+  public static function transitionToState(state:NextState, stopMusic:Bool = false):Void
+  {
+    FlxG.switchState(() -> new LoadingState(state, stopMusic));
+  }
 }
 
 class MultiCallback
