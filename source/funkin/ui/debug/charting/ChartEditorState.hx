@@ -4251,8 +4251,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               }
               else
               {
-                // Minimum of 0.
-                return 0;
+                // Minimum of -1.
+                return -1;
               }
             });
 
