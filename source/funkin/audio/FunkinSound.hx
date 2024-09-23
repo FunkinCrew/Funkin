@@ -543,18 +543,19 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
-    var result = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
+    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
     return result;
   }
 
   /**
    * Stop all sounds in the pool and allow them to be recycled.
    */
-  public static function stopAllAudio(musicToo:Bool = false):Void
+  public static function stopAllAudio(musicToo:Bool = false, persistToo:Bool = false):Void
   {
     for (sound in pool)
     {
       if (sound == null) continue;
+      if (!persistToo && sound.persist) continue;
       if (!musicToo && sound == FlxG.sound.music) continue;
       sound.destroy();
     }

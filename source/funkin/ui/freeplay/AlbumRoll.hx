@@ -11,7 +11,6 @@ import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
-import openfl.utils.Assets;
 
 /**
  * The graphic for the album roll in the FreeplayState.

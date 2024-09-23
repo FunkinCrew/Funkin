@@ -24,7 +24,6 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import lime.utils.Assets as LimeAssets;
-import openfl.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
@@ -233,6 +232,11 @@ class DebugBoundingState extends FlxState
 
         txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
         txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
+      }
+
+      if (FlxG.mouse.justReleased)
+      {
+        movingCharacter = false;
       }
 
       if (FlxG.mouse.justReleased)
