@@ -91,6 +91,14 @@ class WindowUtil
       windowExit.dispatch(exitCode);
     });
 
+    #if FEATURE_DEBUG_TRACY
+    // Apply a marker to indicate frame end for the Tracy profiler.
+    // Do this only if Tracy is configured to prevent lag.
+    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
+      cpp.vm.tracy.TracyProfiler.frameMark();
+    });
+    #end
+
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
