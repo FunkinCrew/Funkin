@@ -28,7 +28,7 @@ import funkin.ui.PixelatedIcon;
 
 class SongMenuItem extends FlxSpriteGroup
 {
-  public var capsule:FlxSprite;
+  public var capsule:CapsuleSprite;
 
   var pixelIcon:PixelatedIcon;
 
@@ -77,7 +77,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var weekNumbers:Array<CapsuleNumber> = [];
 
-  var impactThing:FunkinSprite;
+ // var impactThing:FunkinSprite;
 
   public var sparkle:FlxSprite;
 
@@ -87,11 +87,7 @@ class SongMenuItem extends FlxSpriteGroup
   {
     super(x, y);
 
-    capsule = new FlxSprite();
-    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/capsule/freeplayCapsule');
-    capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
-    capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
-    // capsule.animation
+    capsule = new CapsuleSprite(0xFF87B5CB, 0xFF505BA9, 0xFF53B1EA);
     add(capsule);
 
     bpmText = new FlxSprite(144, 87).loadGraphic(Paths.image('freeplay/freeplayCapsule/bpmtext'));
@@ -371,11 +367,11 @@ class SongMenuItem extends FlxSpriteGroup
     // diffRatingSprite.visible = false;
   }
 
-  var evilTrail:FlxTrail;
+  //var evilTrail:FlxTrail;
 
   public function fadeAnim():Void
   {
-    impactThing = new FunkinSprite(0, 0);
+    /*impactThing = new FunkinSprite(0, 0);
     impactThing.frames = capsule.frames;
     impactThing.frame = capsule.frame;
     impactThing.updateHitbox();
@@ -414,12 +410,28 @@ class SongMenuItem extends FlxSpriteGroup
         evilTrail.color = 0xFFFF58B4;
       case PERFECT_GOLD:
         evilTrail.color = 0xFFFFB619;
-    }
+    }*/
   }
 
   public function getTrailColor():FlxColor
   {
-    return evilTrail.color;
+    var trailColor:FlxColor = FlxColor.WHITE;
+    switch (ranking.rank)
+    {
+      case SHIT:
+        trailColor = 0xFF6044FF;
+      case GOOD:
+        trailColor = 0xFFEF8764;
+      case GREAT:
+        trailColor = 0xFFEAF6FF;
+      case EXCELLENT:
+        trailColor = 0xFFFDCB42;
+      case PERFECT:
+        trailColor = 0xFFFF58B4;
+      case PERFECT_GOLD:
+        trailColor = 0xFFFFB619;
+    }
+    return trailColor;
   }
 
   function updateDifficultyRating(newRating:Int):Void
@@ -467,7 +479,7 @@ class SongMenuItem extends FlxSpriteGroup
   function set_hsvShader(value:HSVShader):HSVShader
   {
     this.hsvShader = value;
-    capsule.shader = hsvShader;
+    capsule.capsule.shader = hsvShader;
     songText.shader = hsvShader;
 
     return value;
@@ -511,9 +523,7 @@ class SongMenuItem extends FlxSpriteGroup
     // capsule.frames = Paths.getSparrowAtlas(styleData == null ? 'freeplay/freeplayCapsule/capsule/freeplayCapsule' : styleData.getCapsuleAssetKey()); thank u luv u
     if (styleData != null)
     {
-      capsule.frames = Paths.getSparrowAtlas(styleData.getCapsuleAssetKey());
-      capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
-      capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
+      capsule.reapplyColors(styleData.getCapsuleBGcolor(), styleData.getCapsuleBGdeselectedColor(),styleData.getCapsuleGlowColor());
       songText.applyStyle(styleData);
     }
 
@@ -603,7 +613,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   override function update(elapsed:Float):Void
   {
-    if (impactThing != null) impactThing.angle = capsule.angle;
+    //if (impactThing != null) impactThing.angle = capsule.angle;
 
     // if (FlxG.keys.justPressed.I)
     // {
@@ -702,8 +712,10 @@ class SongMenuItem extends FlxSpriteGroup
     grayscaleShader.setAmount(this.selected ? 0 : 0.8);
     songText.alpha = this.selected ? 1 : 0.6;
     songText.blurredText.visible = this.selected ? true : false;
-    capsule.offset.x = this.selected ? 0 : -5;
-    capsule.animation.play(this.selected ? "selected" : "unselected");
+    if(this.selected)
+      capsule.select();
+    else
+      capsule.deselect();
     ranking.alpha = this.selected ? 1 : 0.7;
     favIcon.alpha = this.selected ? 1 : 0.6;
     favIconBlurred.alpha = this.selected ? 1 : 0;
@@ -712,6 +724,71 @@ class SongMenuItem extends FlxSpriteGroup
     if (songText.tooLong) songText.resetText();
 
     if (selected && songText.tooLong) songText.initMove();
+  }
+}
+
+//TODO: return eviltrail and impactthing stuff
+class CapsuleSprite extends FlxSpriteGroup{
+  public var bg:FlxSprite;
+  public var capsule:FlxSprite;
+  public var glow:FlxSprite;
+
+  var bgColor = 0xFF87B5CB;
+  var bgColorDeselected = 0xFF505BA9;
+
+  var selected = false;
+
+  public function select(){
+    glow.offset.x = 0;
+    glow.animation.play("selected");
+    capsule.animation.resume();
+    bg.makeGraphic(400, 70, bgColor);
+    selected = true;
+  }
+
+  public function deselect(){
+    glow.offset.x = -5;
+    glow.animation.play("unselected");
+    capsule.animation.pause();
+    bg.makeGraphic(400, 70, bgColorDeselected);
+    selected = false;
+  }
+
+  public function reapplyColors(bgColor, bgColorDeselected, glowColor){
+    this.bgColor = bgColor;
+    this.bgColorDeselected = bgColorDeselected;
+    glow.color = glowColor;
+
+    //reapply colors
+    if(selected)
+      select();
+    else
+      deselect();
+
+  }
+
+
+  override public function new(bgColor,bgColorDeselected,glowColor){
+    super(x,y);
+
+    this.bgColor = bgColor;
+    this.bgColorDeselected = bgColorDeselected;
+
+    bg = new FlxSprite(104, 23).makeGraphic(400, 70, bgColor);
+    add(bg);
+
+    capsule = new FlxSprite(49,13);
+    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/capsule/capsule');
+    capsule.animation.addByPrefix('idle', 'capsule', 24);
+    capsule.animation.play('idle',true);
+    add(capsule);
+
+    glow = new FlxSprite(0, 0);
+    glow.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/capsule/capsuleGlow');
+    glow.animation.addByPrefix('selected', 'selected', 24);
+    glow.animation.addByPrefix('unselected', 'not selected', 24);
+    glow.color = glowColor;
+    add(glow);
   }
 }
 

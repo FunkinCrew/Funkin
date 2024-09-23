@@ -41,6 +41,12 @@ typedef FreeplayStyleData =
   public var capsuleTextColors:Array<String>;
 
   /**
+   * Color data for the capsule colors.
+   * the order of this array goes as follows: [SELECTED, DESELECTED, GLOW]
+   */
+  public var capsuleColors:Array<String>;
+
+  /**
    * Delay time after confirming a song selection, before entering PlayState.
    * Useful for letting longer animations play out.
    */
