@@ -558,8 +558,9 @@ class CharSelectSubState extends MusicBeatSubState
 
         nametag.switchChar(char);
         gfChill.switchGF(char);
-        playerChill.switchChar(char);
+        gfChill.visible = true;
 
+        playerChill.switchChar(char);
         playerChill.playAnimation("unlock");
         playerChill.visible = true;
 
@@ -808,12 +809,10 @@ class CharSelectSubState extends MusicBeatSubState
       {
         if (validChar)
         {
-          gfChill.visible = true;
           curChar = availableChars.get(getCurrentSelected());
         }
         else
         {
-          gfChill.visible = false;
           curChar = "locked";
         }
       }
@@ -1070,6 +1069,7 @@ class CharSelectSubState extends MusicBeatSubState
     nametag.switchChar(value);
     playerChill.switchChar(value);
     gfChill.switchGF(value);
+    gfChill.visible = value != "locked";
 
     playerChillOut.visible = true;
     playerChillOut.switchChar(lastChar);
