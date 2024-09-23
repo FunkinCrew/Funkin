@@ -10,11 +10,13 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
   public function new(x:Float, y:Float)
   {
-    super(x, y, Paths.animateAtlas("charSelect/bfChill"));
+    super(x, y, Paths.animateAtlas("charSelect/lockedChill"));
 
     onAnimationComplete.add(function(animLabel:String) {
       switch (animLabel)
       {
+        case "slideout":
+          visible = false;
         case "slidein":
           if (hasAnimation("slidein idle point"))
           {
@@ -66,13 +68,18 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
   }
 
+  var curChar:String = "locked";
+
   public function switchChar(str:String)
   {
-    switch str
+    if (str == curChar) return;
+
+    switch (str)
     {
       default:
         loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
     }
+    curChar = str;
 
     playAnimation("slidein", true, false, false);
 
