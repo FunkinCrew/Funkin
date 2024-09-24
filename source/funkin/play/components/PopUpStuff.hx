@@ -73,7 +73,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
       });
   }
 
-  public function displayCombo(combo:Int = 0):Void
+  public function displayCombo(combo:Int = 0)
   {
     var seperatedScore:Array<Int> = [];
     var tempCombo:Int = combo;
@@ -124,14 +124,5 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
       daLoop++;
     }
-  }
-
-  /**
-   * Reset the popup configuration to the default.
-   */
-  public static function reset()
-  {
-    noteStyle = NoteStyleRegistry.instance.fetchDefault();
-    isPixel = false;
   }
 }
