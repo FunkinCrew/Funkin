@@ -28,12 +28,7 @@ typedef FreeplayStyleData =
    * Asset key for the numbers shown at the top right of the screen.
    */
   public var numbersAsset:String;
-
-  /**
-   * Asset key for the freeplay capsules.
-   */
-  public var capsuleAsset:String;
-
+  
   /**
    * Color data for the capsule text outline.
    * the order of this array goes as follows: [DESELECTED, SELECTED]

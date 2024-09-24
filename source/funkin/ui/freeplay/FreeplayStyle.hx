@@ -61,15 +61,6 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
   }
 
   /**
-   * Get the asset key for the number assets.
-   * @return The asset key
-   */
-  public function getCapsuleAssetKey():String
-  {
-    return _data.capsuleAsset;
-  }
-
-  /**
    * Get the asset key for the capsule art.
    * @return The asset key
    */

@@ -77,8 +77,6 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var weekNumbers:Array<CapsuleNumber> = [];
 
- // var impactThing:FunkinSprite;
-
   public var sparkle:FlxSprite;
 
   var sparkleTimer:FlxTimer;
@@ -367,24 +365,11 @@ class SongMenuItem extends FlxSpriteGroup
     // diffRatingSprite.visible = false;
   }
 
-  //var evilTrail:FlxTrail;
+  var evilTrail:FlxTrail;
 
   public function fadeAnim():Void
   {
-    /*impactThing = new FunkinSprite(0, 0);
-    impactThing.frames = capsule.frames;
-    impactThing.frame = capsule.frame;
-    impactThing.updateHitbox();
-    // impactThing.x = capsule.x;
-    // impactThing.y = capsule.y;
-    // picoFade.stamp(this, 0, 0);
-    impactThing.alpha = 0;
-    impactThing.zIndex = capsule.zIndex - 3;
-    add(impactThing);
-    FlxTween.tween(impactThing.scale, {x: 2.5, y: 2.5}, 0.5);
-    // FlxTween.tween(impactThing, {alpha: 0}, 0.5);
-
-    evilTrail = new FlxTrail(impactThing, null, 15, 2, 0.01, 0.069);
+    evilTrail = new FlxTrail(capsule.capsule, null, 15, 2, 0.01, 0.069);
     evilTrail.blend = BlendMode.ADD;
     evilTrail.zIndex = capsule.zIndex - 5;
     FlxTween.tween(evilTrail, {alpha: 0}, 0.6,
@@ -410,28 +395,12 @@ class SongMenuItem extends FlxSpriteGroup
         evilTrail.color = 0xFFFF58B4;
       case PERFECT_GOLD:
         evilTrail.color = 0xFFFFB619;
-    }*/
+    }
   }
 
   public function getTrailColor():FlxColor
   {
-    var trailColor:FlxColor = FlxColor.WHITE;
-    switch (ranking.rank)
-    {
-      case SHIT:
-        trailColor = 0xFF6044FF;
-      case GOOD:
-        trailColor = 0xFFEF8764;
-      case GREAT:
-        trailColor = 0xFFEAF6FF;
-      case EXCELLENT:
-        trailColor = 0xFFFDCB42;
-      case PERFECT:
-        trailColor = 0xFFFF58B4;
-      case PERFECT_GOLD:
-        trailColor = 0xFFFFB619;
-    }
-    return trailColor;
+    return evilTrail.color;
   }
 
   function updateDifficultyRating(newRating:Int):Void
@@ -480,6 +449,7 @@ class SongMenuItem extends FlxSpriteGroup
   {
     this.hsvShader = value;
     capsule.capsule.shader = hsvShader;
+    capsule.glow.shader = hsvShader;
     songText.shader = hsvShader;
 
     return value;
@@ -613,7 +583,6 @@ class SongMenuItem extends FlxSpriteGroup
 
   override function update(elapsed:Float):Void
   {
-    //if (impactThing != null) impactThing.angle = capsule.angle;
 
     // if (FlxG.keys.justPressed.I)
     // {
@@ -727,7 +696,7 @@ class SongMenuItem extends FlxSpriteGroup
   }
 }
 
-//TODO: return eviltrail and impactthing stuff
+
 class CapsuleSprite extends FlxSpriteGroup{
   public var bg:FlxSprite;
   public var capsule:FlxSprite;
