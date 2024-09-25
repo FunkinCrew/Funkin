@@ -103,7 +103,7 @@ class NoteScriptEvent extends ScriptEvent
   public var comboCount(default, null):Int;
 
   /**
-   * Whether to play the record scratch sound (if this eventn type is `NOTE_MISS`).
+   * Whether to play the record scratch sound (if this event type is `NOTE_MISS`).
    */
   public var playSound(default, default):Bool;
 
@@ -151,7 +151,8 @@ class HitNoteScriptEvent extends NoteScriptEvent
   public var hitDiff:Float = 0;
 
   /**
-   * If the hit causes a notesplash
+   * Whether this note hit causes a note splash to display.
+   * Defaults to true only on "sick" notes.
    */
   public var doesNotesplash:Bool = false;
 

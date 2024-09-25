@@ -109,8 +109,6 @@ class AnimateAtlasCharacter extends BaseCharacter
     var loop:Bool = animData.looped;
 
     this.mainSprite.playAnimation(prefix, restart, ignoreOther, loop);
-
-    animFinished = false;
   }
 
   public override function hasAnimation(name:String):Bool
@@ -124,17 +122,21 @@ class AnimateAtlasCharacter extends BaseCharacter
    */
   public override function isAnimationFinished():Bool
   {
-    return animFinished;
+    return mainSprite?.isAnimationFinished() ?? false;
   }
 
   function loadAtlasSprite():FlxAtlasSprite
   {
     trace('[ATLASCHAR] Loading sprite atlas for ${characterId}.');
 
-    var sprite:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas(_data.assetPath, 'shared'));
+    var animLibrary:String = Paths.getLibrary(_data.assetPath);
+    var animPath:String = Paths.stripLibrary(_data.assetPath);
+    var assetPath:String = Paths.animateAtlas(animPath, animLibrary);
 
-    sprite.onAnimationFinish.removeAll();
-    sprite.onAnimationFinish.add(this.onAnimationFinished);
+    var sprite:FlxAtlasSprite = new FlxAtlasSprite(0, 0, assetPath);
+
+    // sprite.onAnimationComplete.removeAll();
+    sprite.onAnimationComplete.add(this.onAnimationFinished);
 
     return sprite;
   }
@@ -152,7 +154,6 @@ class AnimateAtlasCharacter extends BaseCharacter
       // Make the game hold on the last frame.
       this.mainSprite.cleanupAnimation(prefix);
       // currentAnimName = null;
-      animFinished = true;
 
       // Fallback to idle!
       // playAnimation('idle', true, false);
@@ -164,6 +165,13 @@ class AnimateAtlasCharacter extends BaseCharacter
     trace('[ATLASCHAR] Applying sprite properties to ${characterId}');
 
     this.mainSprite = sprite;
+
+    mainSprite.ignoreExclusionPref = ["sing"];
+
+    // This forces the atlas to recalcuate its width and height
+    this.mainSprite.alpha = 0.0001;
+    this.mainSprite.draw();
+    this.mainSprite.alpha = 1.0;
 
     var feetPos:FlxPoint = feetPosition;
     this.updateHitbox();
