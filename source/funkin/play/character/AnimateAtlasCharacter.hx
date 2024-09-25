@@ -74,10 +74,14 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   override function onCreate(event:ScriptEvent):Void
   {
-    trace('Creating Animate Atlas character: ' + this.characterId);
+    // Display a custom scope for debugging purposes.
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('AnimateAtlasCharacter.create(${this.characterId})');
+    #end
 
     try
     {
+      trace('Loading assets for Animate Atlas character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
       var atlasSprite:FlxAtlasSprite = loadAtlasSprite();
       setSprite(atlasSprite);
 
