@@ -7,7 +7,7 @@ import sys.thread.Thread;
 
 class DiscordClient
 {
-  static final CLIENT_ID:String = "814588678700924999";
+  static final CLIENT_ID:String = "816168432860790794";
 
   public static var instance(get, never):DiscordClient;
   static var _instance:Null<DiscordClient> = null;
@@ -96,13 +96,17 @@ class DiscordClient
     // The large image displaying what the user is doing.
     // This should probably be album art.
     // IMPORTANT NOTE: This can be an asset key uploaded to Discord's developer panel OR any URL you like.
+    presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? "album-volume1";
+
+    trace('[DISCORD] largeImageKey: ${presence.largeImageKey}');
 
     // TODO: Make this use the song's album art.
     // presence.largeImageKey = "icon";
-    presence.largeImageKey = "https://f4.bcbits.com/img/a0746694746_16.jpg";
+    // presence.largeImageKey = "https://f4.bcbits.com/img/a0746694746_16.jpg";
 
     // The small inset image for what the user is doing.
     // This can be the opponent's health icon?
+    // NOTE: Like largeImageKey, this can be a URL, or an asset key.
     presence.smallImageKey = cast(params.smallImageKey, Null<String>);
 
     // NOTE: In previous versions, this showed as "Elapsed", but now shows as playtime and doesn't look good

@@ -447,6 +447,7 @@ class PlayState extends MusicBeatSubState
 
   #if FEATURE_DISCORD_RPC
   // Discord RPC variables
+  var discordRPCAlbum:String = '';
   var discordRPCIcon:String = '';
   #end
 
@@ -987,6 +988,7 @@ class PlayState extends MusicBeatSubState
 
             state: buildDiscordRPCState(),
 
+            largeImageKey: discordRPCAlbum,
             smallImageKey: discordRPCIcon
           });
         #end
@@ -1081,6 +1083,8 @@ class PlayState extends MusicBeatSubState
           {
             details: 'Game Over - ${buildDiscordRPCDetails()}',
             state: buildDiscordRPCState(),
+
+            largeImageKey: discordRPCAlbum,
             smallImageKey: discordRPCIcon
           });
         #end
@@ -1300,7 +1304,9 @@ class PlayState extends MusicBeatSubState
         DiscordClient.instance.setPresence(
           {
             state: buildDiscordRPCState(),
-            details: 'Paused - ${buildDiscordRPCDetails()}',
+            details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
             smallImageKey: discordRPCIcon
           });
       }
@@ -1309,7 +1315,9 @@ class PlayState extends MusicBeatSubState
         DiscordClient.instance.setPresence(
           {
             state: buildDiscordRPCState(),
-            details: 'Paused - ${buildDiscordRPCDetails()}',
+            details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
             smallImageKey: discordRPCIcon
           });
       }
@@ -1345,6 +1353,8 @@ class PlayState extends MusicBeatSubState
           {
             state: buildDiscordRPCState(),
             details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
             smallImageKey: discordRPCIcon
           });
       }
@@ -1354,6 +1364,8 @@ class PlayState extends MusicBeatSubState
           {
             state: buildDiscordRPCState(),
             details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
             smallImageKey: discordRPCIcon
           });
         // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true,
@@ -1381,6 +1393,8 @@ class PlayState extends MusicBeatSubState
         {
           state: buildDiscordRPCState(),
           details: buildDiscordRPCDetails(),
+
+          largeImageKey: discordRPCAlbum,
           smallImageKey: discordRPCIcon
         });
     }
@@ -1681,7 +1695,8 @@ class PlayState extends MusicBeatSubState
       iconP2.cameras = [camHUD];
 
       #if FEATURE_DISCORD_RPC
-      discordRPCIcon = currentCharacterData.opponent;
+      discordRPCAlbum = 'album-${currentChart.album}';
+      discordRPCIcon = 'icon-${currentCharacterData.opponent}';
       #end
     }
 
@@ -1807,6 +1822,8 @@ class PlayState extends MusicBeatSubState
       {
         state: buildDiscordRPCState(),
         details: buildDiscordRPCDetails(),
+
+        largeImageKey: discordRPCAlbum,
         smallImageKey: discordRPCIcon
       });
     #end
@@ -2040,6 +2057,8 @@ class PlayState extends MusicBeatSubState
       {
         state: buildDiscordRPCState(),
         details: buildDiscordRPCDetails(),
+
+        largeImageKey: discordRPCAlbum,
         smallImageKey: discordRPCIcon
       });
     // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true, currentSongLengthMs);
