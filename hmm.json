@@ -95,13 +95,6 @@
       "url": "https://github.com/FunkinCrew/hxCodec"
     },
     {
-      "name": "hxcpp",
-      "type": "git",
-      "dir": null,
-      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1",
-      "url": "https://github.com/HaxeFoundation/hxcpp"
-    },
-    {
       "name": "hxcpp-debug-server",
       "type": "git",
       "dir": "hxcpp-debug-server",
@@ -145,7 +138,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "fe3368f611a84a19afc03011353945ae4da8fffd",
+      "ref": "872ff6db2f2d27c0243d4ff76802121ded550dd7",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
