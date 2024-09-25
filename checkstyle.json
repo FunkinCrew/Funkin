@@ -79,7 +79,7 @@
     {
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-z][A-Z][A-Z0-9]*(_[A-Z0-9_]+)*$",
+        "format": "^[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
         "tokens": ["INLINE", "NOTINLINE"]
       },
       "type": "ConstantName"
@@ -327,7 +327,8 @@
           "INLINE",
           "DYNAMIC",
           "FINAL"
-        ]
+        ],
+        "severity": "IGNORE"
       },
       "type": "ModifierOrder"
     },

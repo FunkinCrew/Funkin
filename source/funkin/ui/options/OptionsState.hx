@@ -1,5 +1,6 @@
 package funkin.ui.options;
 
+import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -25,6 +26,8 @@ class OptionsState extends MusicBeatState
 
   override function create():Void
   {
+    persistentUpdate = true;
+
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
     var hsv = new HSVShader();
     hsv.hue = -0.6;
@@ -55,8 +58,6 @@ class OptionsState extends MusicBeatState
       setPage(Controls);
     }
 
-    // disable for intro transition
-    currentPage.enabled = false;
     super.create();
   }
 
@@ -84,13 +85,6 @@ class OptionsState extends MusicBeatState
       currentPage.exists = true;
       currentPage.visible = true;
     }
-  }
-
-  override function finishTransIn()
-  {
-    super.finishTransIn();
-
-    currentPage.enabled = true;
   }
 
   function switchPage(name:PageName)
@@ -152,8 +146,8 @@ class Page extends FlxGroup
   {
     if (canExit && controls.BACK)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
   }
 
@@ -192,7 +186,11 @@ class OptionsMenu extends Page
     createItem("PREFERENCES", function() switchPage(Preferences));
     createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
+      #if web
+      LoadingState.transitionToState(() -> new LatencyState());
+      #else
       FlxG.state.openSubState(new LatencyState());
+      #end
     });
 
     #if newgrounds
@@ -266,11 +264,11 @@ class OptionsMenu extends Page
   #end
 }
 
-enum PageName
+enum abstract PageName(String)
 {
-  Options;
-  Controls;
-  Colors;
-  Mods;
-  Preferences;
+  var Options = "options";
+  var Controls = "controls";
+  var Colors = "colors";
+  var Mods = "mods";
+  var Preferences = "preferences";
 }

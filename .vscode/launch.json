@@ -3,9 +3,16 @@
   "configurations": [
     {
       // Launch in native/CPP on Windows/OSX/Linux
-      "name": "Lime",
+      "name": "Lime Build+Debug",
       "type": "lime",
       "request": "launch"
+    },
+    {
+      // Launch in native/CPP on Windows/OSX/Linux
+      "name": "Lime Debug (No Build)",
+      "type": "lime",
+      "request": "launch",
+      "preLaunchTask": null
     },
     {
       // Launch in browser

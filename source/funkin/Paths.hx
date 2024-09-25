@@ -2,7 +2,6 @@ package funkin;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
-import openfl.utils.Assets as OpenFlAssets;
 
 /**
  * A core class which handles determining asset paths.
@@ -11,9 +10,16 @@ class Paths
 {
   static var currentLevel:Null<String> = null;
 
-  public static function setCurrentLevel(name:String):Void
+  public static function setCurrentLevel(name:Null<String>):Void
   {
-    currentLevel = name.toLowerCase();
+    if (name == null)
+    {
+      currentLevel = null;
+    }
+    else
+    {
+      currentLevel = name.toLowerCase();
+    }
   }
 
   public static function stripLibrary(path:String):String
@@ -37,11 +43,11 @@ class Paths
     if (currentLevel != null)
     {
       var levelPath:String = getLibraryPathForce(file, currentLevel);
-      if (OpenFlAssets.exists(levelPath, type)) return levelPath;
+      if (Assets.exists(levelPath, type)) return levelPath;
     }
 
     var levelPath:String = getLibraryPathForce(file, 'shared');
-    if (OpenFlAssets.exists(levelPath, type)) return levelPath;
+    if (Assets.exists(levelPath, type)) return levelPath;
 
     return getPreloadPath(file);
   }
@@ -123,9 +129,17 @@ class Paths
     return 'songs:assets/songs/${song.toLowerCase()}/Voices$suffix.${Constants.EXT_SOUND}';
   }
 
-  public static function inst(song:String, ?suffix:String = ''):String
+  /**
+   * Gets the path to an `Inst.mp3/ogg` song instrumental from songs:assets/songs/`song`/
+   * @param song name of the song to get instrumental for
+   * @param suffix any suffix to add to end of song name, used for `-erect` variants usually
+   * @param withExtension if it should return with the audio file extension `.mp3` or `.ogg`.
+   * @return String
+   */
+  public static function inst(song:String, ?suffix:String = '', ?withExtension:Bool = true):String
   {
-    return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix.${Constants.EXT_SOUND}';
+    var ext:String = withExtension ? '.${Constants.EXT_SOUND}' : '';
+    return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix$ext';
   }
 
   public static function image(key:String, ?library:String):String
@@ -152,4 +166,12 @@ class Paths
   {
     return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
   }
+}
+
+enum abstract PathsFunction(String)
+{
+  var MUSIC;
+  var INST;
+  var VOICES;
+  var SOUND;
 }

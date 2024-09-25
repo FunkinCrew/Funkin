@@ -4,7 +4,7 @@ import flixel.system.FlxAssets.FlxShader;
 import openfl.display.BitmapData;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
-import openfl.utils.Assets;
+import flixel.util.FlxColor;
 
 typedef Light =
 {
@@ -30,6 +30,14 @@ class RuntimeRainShader extends RuntimePostEffectShader
   {
     this.setFloat('uTime', value);
     return time = value;
+  }
+
+  public var spriteMode(default, set):Bool = false;
+
+  function set_spriteMode(value:Bool):Bool
+  {
+    this.setBool('uSpriteMode', value);
+    return spriteMode = value;
   }
 
   // The scale of the rain depends on the world coordinate system, so higher resolution makes
@@ -86,6 +94,14 @@ class RuntimeRainShader extends RuntimePostEffectShader
     return mask = value;
   }
 
+  public var rainColor(default, set):FlxColor;
+
+  function set_rainColor(color:FlxColor):FlxColor
+  {
+    this.setFloatArray("uRainColor", [color.red / 255, color.green / 255, color.blue / 255]);
+    return rainColor = color;
+  }
+
   public var lightMap(default, set):BitmapData;
 
   function set_lightMap(value:BitmapData):BitmapData
@@ -105,6 +121,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
   public function new()
   {
     super(Assets.getText(Paths.frag('rain')));
+    this.rainColor = 0xFF6680cc;
   }
 
   public function update(elapsed:Float):Void

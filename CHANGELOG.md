@@ -4,6 +4,188 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2024-09-12
+### Added
+- Added a new Character Select screen to switch between playable characters in Freeplay
+  - Modding isn't 100% there but we're working on it!
+- Added Pico as a playable character! Unlock him by completing Weekend 1 (if you haven't already done that)
+  - The songs from Weekend 1 have moved; you must now switch to Pico via Character Select screen in Freeplay to access them
+- Added 11 new Pico remixes! Access them by selecting Pico from in the Character Select screen
+  - Bopeebo (Pico Mix)
+  - Fresh (Pico Mix)
+  - DadBattle (Pico Mix)
+  - Spookeez (Pico Mix)
+  - South (Pico Mix)
+  - Pico (Pico Mix)
+  - Philly Nice (Pico Mix)
+  - Blammed (Pico Mix)
+  - Eggnog (Pico Mix)
+  - Ugh (Pico Mix)
+  - Guns (Pico Mix)
+- Added 1 new Boyfriend remix! Access it by completing Weekend 1 as Pico and then selecting Boyfriend from in the Character Select screen
+  - Darnell (BF Mix)
+- Added 2 new Erect remixes! Access them by switching difficulty on the song
+  - Cocoa Erect
+  - Ugh Erect
+- Implemented support for a new Instrumental Selector in Freeplay
+  - Beating a Pico remix lets you use that instrumental when playing as Boyfriend
+- Added the first batch of Erect Stages! These graphical overhauls of the original stages will be used when playing Erect remixes and Pico remixes
+  - Week 1 Erect Stage
+  - Week 2 Erect Stage
+  - Week 3 Erect Stage
+  - Week 4 Erect Stage
+  - Week 5 Erect Stage
+  - Weekend 1 Erect Stage
+- Implemented alternate animations and music for Pico in the results screen.
+  - These display on Pico remixes, as well as when playing Weekend 1.
+- Implemented support for scripted Note Kinds. You can use HScript define a different note style to display for these notes as well as custom behavior. (community feature by lemz1)
+- Implemented support for Numeric and Selector options in the Options menu. (community feature by FlooferLand)
+- Implemented new animations for Tankman and Pico
+## Changed
+- Girlfriend and Nene now perform previously unused animations when you achieve a large combo, or drop a large combo.
+- The pixel character icons in the Freeplay menu now display an animation!
+- Altered how Week 6 displays sprites to make things look more retro.
+- Character offsets are now independent of the character's scale.
+  - This should resolve issues with offsets when porting characters from older mods.
+  - Pixel character offsets have been modified to compensate.
+- Note style data can now specify custom combo count graphics, judgement graphics, countdown graphics, and countdown audio. (community feature by anysad)
+  - These were previously using hardcoded values based on whether the stage was `school` or `schoolEvil`.
+- The `danceEvery` property of characters and stage props can now use values with a precision of `0.25`, to play their idle animation up to four times per beat.
+- Reworked the JSON merging system in Polymod; you can now include JSONPatch files under `_merge` in your mod folder to add, modify, or remove values in a JSON without replacing it entirely!
+- Cutscenes now automatically pause when tabbing out (community fix by AbnormalPoof)
+- Characters will now respect the `danceEvery` property (community fix by gamerbross)
+- The F5 function now reloads the current song's chart data from disc (community feature by gamerbross)
+- Refactored the compilation guide and added common troubleshooting steps (community fix by Hundrec)
+- Made several layout improvements and fixes to the Animation Offsets editor in the Debug menu (community fix by gamerbross)
+- Fixed a bug where the Back sound would be not played when leaving the Story menu and Options menu (community fix by AppleHair)
+- Animation offsets no longer directly modify the `x` and `y` position of props, which makes props work better with tweens (community fix by Sword352)
+- The YEAH! events in Tutorial now use chart events rather than being hard-coded (community fix by anysad)
+- The player's Score now displays commas in it (community fix by loggo)
+## Fixed
+- Fixed an issue where songs with no notes would crash on the Results screen.
+- Fixed an issue where the old icon easter egg would not work properly on pixel levels.
+- Fixed an issue where you could play notes during the Thorns cutscene.
+- Fixed an issue where the Heart icon when favoriting a song in Freeplay would be malformed.
+- Fixed an issue where Pico's death animation displays a faint blue background (community fix by doggogit)
+- Fixed an issue where mod songs would not play a preview in the Freeplay menu (community fix by KarimAkra)
+- Fixed an issue where the Memory Usage counter could overflow and display a negative number (community fix by KarimAkra)
+- Fixed an issue where pressing the Chart Editor keybind while playtesting a chart would reset the chart editor (community fix by gamerbross)
+- Fixed a crash bug when pressing F5 after seeing the sticker transition (community fix by gamerbross)
+- Fixed an issue where the Story Mode menu couldn't be scrolled with a mouse (community fix by JVNpixels)
+- Fixed an issue causing the song to majorly desync sometimes (community fix by Burgerballs)
+- Fixed an issue where the Freeplay song preview would not respect the instrumental ID specified in the song metadata (community fix by AppleHair)
+- Fixed an issue where Tankman's icon wouldn't display in the Chart Editor (community fix by hundrec)
+- Fixed an issue where pausing the game during a camera zoom would zoom the pause menu. (community fix by gamerbros)
+- Fixed an issue where certain UI elements would not flash at a consistent rate (community fix by cyn0x8)
+- Fixed an issue where the game would not use the placeholder health icon as a fallback (community fix by gamerbross)
+- Fixed an issue where the chart editor could get stuck creating a hold note when using Live Inputs (community fix by gamerbross)
+- Fixed an issue where character graphics could not be placed in week folders (community fix by 7oltan)
+- Fixed a crash issue when a Freeplay song has no `Normal` difficulty (community fix by Applehair and gamerbross)
+- Fixed an issue in Story Mode where a song that isn't valid for the current variation could be selected (community fix by Applehair)
+
+## [0.4.1] - 2024-06-12
+### Added
+- Pressing ESCAPE on the title screen on desktop now exits the game, allowing you to exit the game while in fullscreen on desktop
+- Freeplay menu controls (favoriting and switching categories) are now rebindable from the Options menu, and now have default binds on controllers.
+### Changed
+- Highscores and ranks are now saved separately, which fixes the issue where people would overwrite their saves with higher scores,
+which would remove their rank if they had a lower one.
+- A-Bot speaker now reacts to the user's volume preference on desktop (thanks to [M7theguy for the issue report/suggestion](https://github.com/FunkinCrew/Funkin/issues/2744)!)
+- On Freeplay, heart icons are shifted to the right when you favorite a song that has no rank on it.
+- Only play `scrollMenu` sound effect when there's a real change on the freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
+- Gave antialiasing to the edge of the dad graphic on Freeplay
+- Rearranged some controls in the controls menu
+- Made several chart revisions
+  - Re-enabled custom camera events in Roses (Erect/Nightmare)
+  - Tweaked the chart for Lit Up (Hard)
+  - Corrected the difficulty ratings for M.I.L.F. (Easy/Normal/Hard)
+### Fixed
+- Fixed an issue in the controls menu where some control binds would overlap their names
+- Fixed crash when attempting to exit the gameover screen when also attempting to retry the song ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
+- Fix botplay sustain release bug ([thanks Hundrec!](Fix botplay sustain release bug #2683))
+- Fix for the camera not pausing during a gameplay pause ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2684))
+- Fixed issue where Pico's gameplay sprite would unintentionally appear on the gameover screen when dying on 2Hot from an explosion
+- Freeplay previews properly fade volume during the BF idle animation
+- Fixed bug where Dadbattle incorrectly appeared as Dadbattle Erect when returning to freeplay on Hard
+- Fixed 2Hot not appearing under the "#" category in Freeplay menu
+- Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
+- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
+- Fixed the black "temp" graphic on freeplay from being incorrectly sized / masked, now it's identical to the dad freeplay graphic
+
+## [0.4.0] - 2024-06-06
+### Added
+- 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
+- Major visual improvements to the Results screen, with additional animations and audio based on your performance.
+- Major visual improvements to the Freeplay screen, with song difficulty ratings and player rank displays.
+  - Freeplay now plays a preview of songs when you hover over them.
+- Added a Charter field to the chart format, to allow for crediting the creator of a level's chart.
+  - You can see who charted a song from the Pause menu.
+- Added a new Scroll Speed chart event to change the note speed mid-song (thanks burgerballs!)
+### Changed
+- Tweaked the charts for several songs:
+  - Tutorial (increased the note speed slightly)
+  - Spookeez
+  - Monster
+  - Winter Horrorland
+  - M.I.L.F.
+  - Senpai (increased the note speed)
+  - Roses
+  - Thorns (increased the note speed slightly)
+  - Ugh
+  - Stress
+  - Lit Up
+- Favorite songs marked in Freeplay are now stored between sessions.
+- The Freeplay easter eggs are now easier to see.
+- In the event that the game cannot load your save data, it will now perform a backup before clearing it, so that we can try to repair it in the future.
+- Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
+- Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
+  - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
+- Improved the Event Toolbox in the Chart Editor; dropdowns are now bigger, include search field, and display elements in alphabetical order rather than a random order.
+### Fixed
+- Fixed an issue where Nene's visualizer would not play on Desktop builds
+- Fixed a bug where the game would silently fail to load saves on HTML5
+- Fixed some bugs with the props on the Story Menu not bopping properly
+- Additional fixes to the Loading bar on HTML5 (thanks lemz1!)
+- Fixed several bugs with the TitleState, including missing music when returning from the Main Menu (thanks gamerbross!)
+- Fixed a camera bug in the Main Menu (thanks richTrash21!)
+- Fixed a bug where changing difficulties in Story mode wouldn't update the score (thanks sectorA!)
+- Fixed a crash in Freeplay caused by a level referencing an invalid song (thanks gamerbross!)
+- Fixed a bug where pressing the volume keys would stop the Toy commercial (thanks gamerbross!)
+- Fixed a bug where the Chart Editor Playtest would crash when losing (thanks gamerbross!)
+- Fixed a bug where hold notes would display improperly in the Chart Editor when downscroll was enabled for gameplay (thanks gamerbross!)
+- Fixed a bug where hold notes would be positioned wrong on downscroll (thanks MaybeMaru!)
+- Removed a large number of unused imports to optimize builds (thanks Ethan-makes-music!)
+- Improved debug logging for unscripted stages (thanks gamerbross!)
+- Made improvements to compiling documentation (thanks gedehari!)
+- Fixed a crash on Linux caused by an old version of hxCodec (thanks Noobz4Life!)
+- Optimized animation handling for characters (thanks richTrash21!)
+- Made improvements to compiling documentation (thanks gedehari!)
+- Fixed an issue where the Chart Editor would use an incorrect instrumental on imported Legacy songs (thanks gamerbross!)
+- Fixed a camera bug in the Main Menu (thanks richTrash21!)
+- Fixed a bug where opening the game from the command line would crash the preloader (thanks NotHyper474!)
+- Fixed a bug where characters would sometimes use the wrong scale value (thanks PurSnake!)
+- Additional bug fixes and optimizations.
+
+## [0.3.3] - 2024-05-14
+### Changed
+- Cleaned up some code in `PlayAnimationSongEvent.hx` (thanks BurgerBalls!)
+### Fixed
+- Fixes to the Loading bar on HTML5 (thanks lemz1!)
+- Don't allow any more inputs when exiting freeplay (thanks gamerbros!)
+- Fixed using mouse wheel to scroll on freeplay (thanks JugieNoob!)
+- Fixed the reset's of the health icons, score, and notes when re-entering gameplay from gameover (thanks ImCodist!)
+- Fixed the chart editor character selector's hitbox width (thanks MadBear422!)
+- Fixed camera stutter once a wipe transition to the Main Menu completes (thanks ImCodist!)
+- Fixed an issue where hold note would be invisible for a single frame (thanks ImCodist!)
+- Fix tween accumulation on title screen when pressing Y multiple times (thanks TheGaloXx!)
+- Fix a crash when querying FlxG.state in the crash handler
+- Fix for a game over easter egg so you don't accidentally exit it when viewing
+- Fix an issue where the Freeplay menu never displays 100% clear
+- Fix an issue where Weekend 1 Pico attempted to retrieve a missing asset.
+- Fix an issue where duplicate keybinds would be stoed, potentially causing a crash
+- Chart debug key now properly returns you to the previous chart editor session if you were playtesting a chart (thanks nebulazorua!)
+- Fix a crash on Freeplay found on AMD graphics cards
+
 ## [0.3.2] - 2024-05-03
 ### Added
 - Added `,` and `.` keybinds to the Chart Editor. These place Focus Camera events at the playhead, for the opponent and player respectively.
