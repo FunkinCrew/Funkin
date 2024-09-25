@@ -149,6 +149,7 @@ class BaseCharacter extends Bopper
   public function new(id:String, renderType:CharacterRenderType)
   {
     super(CharacterDataParser.DEFAULT_DANCEEVERY);
+
     this.characterId = id;
 
     ignoreExclusionPref = ["sing"];

@@ -86,6 +86,10 @@ class InitState extends FlxState
     // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
     WindowUtil.disableCrashHandler();
 
+    #if FEATURE_DEBUG_TRACY
+    funkin.util.WindowUtil.initTracy();
+    #end
+
     // This ain't a pixel art game! (most of the time)
     FlxSprite.defaultAntialiasing = true;
 

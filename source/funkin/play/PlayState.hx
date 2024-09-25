@@ -799,8 +799,6 @@ class PlayState extends MusicBeatSubState
 
   public override function update(elapsed:Float):Void
   {
-    // TOTAL: 9.42% CPU Time when profiled in VS 2019.
-
     if (criticalFailure) return;
 
     super.update(elapsed);
