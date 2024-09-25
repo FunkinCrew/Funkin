@@ -1063,6 +1063,7 @@ class CharSelectSubState extends MusicBeatSubState
     playerChillOut.visible = true;
     playerChillOut.playAnimation("slideout");
     var index = playerChillOut.anim.getFrameLabel("slideout").index;
+    playerChillOut.onAnimationFrame.removeAll();
     playerChillOut.onAnimationFrame.add((_, frame:Int) -> {
       if (frame >= index + 1)
       {
