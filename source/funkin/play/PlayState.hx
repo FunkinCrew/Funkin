@@ -2578,7 +2578,7 @@ class PlayState extends MusicBeatSubState
      */
   function debugKeyShit():Void
   {
-    #if FEATURE_CHART_EDITOR
+    #if FEATURE_STAGE_EDITOR
     // Open the stage editor overlaying the current state.
     if (controls.DEBUG_STAGE)
     {
@@ -2587,7 +2587,9 @@ class PlayState extends MusicBeatSubState
       persistentUpdate = false;
       openSubState(new StageOffsetSubState());
     }
+    #end
 
+    #if FEATURE_CHART_EDITOR
     // Redirect to the chart editor playing the current song.
     if (controls.DEBUG_CHART)
     {
@@ -2595,11 +2597,13 @@ class PlayState extends MusicBeatSubState
       persistentUpdate = false;
       if (isChartingMode)
       {
+        // Close the playtest substate.
         FlxG.sound.music?.pause();
         this.close();
       }
       else
       {
+        // Move to the chart editor.
         FlxG.switchState(() -> new ChartEditorState(
           {
             targetSongId: currentSong.id,
