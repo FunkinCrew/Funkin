@@ -790,9 +790,7 @@ class CharSelectSubState extends MusicBeatSubState
       cursorY = -1;
     }
 
-    if (autoFollow
-      && availableChars.exists(getCurrentSelected())
-      && Save.instance.charactersSeen.contains(availableChars[getCurrentSelected()]))
+    if (availableChars.exists(getCurrentSelected()) && Save.instance.charactersSeen.contains(availableChars[getCurrentSelected()]))
     {
       curChar = availableChars.get(getCurrentSelected());
 
@@ -846,7 +844,7 @@ class CharSelectSubState extends MusicBeatSubState
         selectTimer.cancel();
       }
     }
-    else if (autoFollow)
+    else
     {
       curChar = "locked";
 
