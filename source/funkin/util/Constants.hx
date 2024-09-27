@@ -187,6 +187,11 @@ class Constants
   public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
 
   /**
+   * Default list of difficulties for Erect mode.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST_ERECT:Array<String> = ['erect', 'nightmare'];
+
+  /**
    * List of all difficulties used by the base game.
    * Includes Erect and Nightmare.
    */
