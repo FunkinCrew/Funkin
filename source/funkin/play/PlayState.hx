@@ -1979,8 +1979,8 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
     vocals.time = FlxG.sound.music.time;
-    trace('${FlxG.sound.music.time}');
-    trace('${vocals.time}');
+    // trace('${FlxG.sound.music.time}');
+    // trace('${vocals.time}');
     resyncVocals();
 
     #if FEATURE_DISCORD_RPC

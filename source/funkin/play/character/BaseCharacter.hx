@@ -305,7 +305,7 @@ class BaseCharacter extends Bopper
   {
     super.onAnimationFinished(animationName);
 
-    trace('${characterId} has finished animation: ${animationName}');
+    // trace('${characterId} has finished animation: ${animationName}');
     if ((animationName.endsWith(Constants.ANIMATION_END_SUFFIX) && !animationName.startsWith('idle') && !animationName.startsWith('dance'))
       || animationName.startsWith('combo')
       || animationName.startsWith('drop'))
@@ -402,7 +402,7 @@ class BaseCharacter extends Bopper
       FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
       if (holdTimer > singTimeSec && shouldStopSinging)
       {
-        trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
+        // trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
         holdTimer = 0;
 
         var currentAnimation:String = getCurrentAnimation();
@@ -636,7 +636,7 @@ class BaseCharacter extends Bopper
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
     // restart even if already playing, because the character might sing the same note twice.
-    trace('Playing ${anim}...');
+    // trace('Playing ${anim}...');
     playAnimation(anim, true);
   }
 
