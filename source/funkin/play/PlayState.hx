@@ -817,6 +817,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
+        this.remove(currentStage);
         FlxG.switchState(() -> new MainMenuState());
       }
       return false;
@@ -965,6 +966,7 @@ class PlayState extends MusicBeatSubState
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
         if (!isSubState && event.gitaroo)
         {
+          this.remove(currentStage);
           FlxG.switchState(() -> new GitarooPause(
             {
               targetSong: currentSong,
@@ -1366,6 +1368,7 @@ class PlayState extends MusicBeatSubState
   {
     funkin.modding.PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
+    this.remove(currentStage);
     LoadingState.loadPlayState(lastParams);
   }
 
@@ -2600,6 +2603,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
+        this.remove(currentStage);
         FlxG.switchState(() -> new ChartEditorState(
           {
             targetSongId: currentSong.id,
@@ -2949,6 +2953,7 @@ class PlayState extends MusicBeatSubState
             {
               targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
             }
+            this.remove(currentStage);
             LoadingState.loadPlayState(
               {
                 targetSong: targetSong,
@@ -2966,6 +2971,7 @@ class PlayState extends MusicBeatSubState
           {
             targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
           }
+          this.remove(currentStage);
           LoadingState.loadPlayState(
             {
               targetSong: targetSong,
