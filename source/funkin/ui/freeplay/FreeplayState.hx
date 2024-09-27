@@ -1785,14 +1785,13 @@ class FreeplayState extends MusicBeatSubState
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.songId, suffixedDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
-      rememberedDifficulty = suffixedDifficulty;
     }
     else
     {
       intendedScore = 0;
       intendedCompletion = 0.0;
-      rememberedDifficulty = currentDifficulty;
     }
+    rememberedDifficulty = currentDifficulty;
 
     if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
     {
