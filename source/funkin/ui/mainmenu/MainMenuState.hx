@@ -362,6 +362,7 @@ class MainMenuState extends MusicBeatState
     // Ctrl+Alt+Shift+R = Score/Rank conflict test
     // Ctrl+Alt+Shift+N = Mark all characters as not seen
     // Ctrl+Alt+Shift+E = Dump save data
+    // Ctrl+Alt+Shift+L = Force crash and create a log dump
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.P)
     {
