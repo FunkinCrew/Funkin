@@ -74,6 +74,8 @@ class ResultState extends MusicBeatSubState
 
   var playerCharacterId:Null<String>;
 
+  var introMusicAudio:Null<FunkinSound>;
+
   var rankBg:FunkinSprite;
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;
@@ -413,7 +415,8 @@ class ResultState extends MusicBeatSubState
       if (Assets.exists(introMusic))
       {
         // Play the intro music.
-        FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
+        introMusicAudio = FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
+          introMusicAudio = null;
           FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
             {
               startingVolume: 1.0,
@@ -727,9 +730,34 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE)
     {
-      if (FlxG.sound.music != null)
+      if (introMusicAudio != null) {
+        @:nullSafety(Off)
+        introMusicAudio.onComplete = null;
+
+        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8, {
+          onComplete: _ -> {
+            if (introMusicAudio != null) {
+              introMusicAudio.stop();
+              introMusicAudio.destroy();
+              introMusicAudio = null;
+            }
+          }
+        });
+        FlxTween.tween(introMusicAudio, {pitch: 3}, 0.1,
+          {
+            onComplete: _ -> {
+              FlxTween.tween(introMusicAudio, {pitch: 0.5}, 0.4);
+            }
+          });
+      }
+      else if (FlxG.sound.music != null)
       {
-        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8);
+        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8, {
+          onComplete: _ -> {
+            FlxG.sound.music.stop();
+            FlxG.sound.music.destroy();
+          }
+        });
         FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
