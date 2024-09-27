@@ -50,7 +50,12 @@ class PixelatedIcon extends FlxFilteredSprite
     if (!openfl.utils.Assets.exists(Paths.image(charPath)))
     {
       trace('[WARN] Character ${char} has no freeplay icon.');
+      this.visible = false;
       return;
+    }
+    else
+    {
+      this.visible = true;
     }
 
     var isAnimated = openfl.utils.Assets.exists(Paths.file('images/$charPath.xml'));
