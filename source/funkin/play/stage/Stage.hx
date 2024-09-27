@@ -258,6 +258,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       propSprite.zIndex = dataProp.zIndex;
 
+      propSprite.flipX = dataProp.flipX;
+      propSprite.flipY = dataProp.flipY;
+
       switch (dataProp.animType)
       {
         case 'packer':
