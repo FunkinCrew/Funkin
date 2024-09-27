@@ -148,10 +148,12 @@ class InitState extends FlxState
     #if FEATURE_DEBUG_FUNCTIONS
     funkin.util.plugins.MemoryGCPlugin.initialize();
     #end
+    #if FEATURE_SCREENSHOTS
+    funkin.util.plugins.ScreenshotPlugin.initialize();
+    #end
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
-    funkin.util.plugins.ScreenshotPlugin.initialize();
     funkin.util.plugins.VolumePlugin.initialize();
     funkin.util.plugins.WatchPlugin.initialize();
 
