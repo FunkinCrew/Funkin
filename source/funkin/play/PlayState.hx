@@ -687,7 +687,11 @@ class PlayState extends MusicBeatSubState
     }
 
     Conductor.instance.mapTimeChanges(currentChart.timeChanges);
-    Conductor.instance.update((Conductor.instance.beatLengthMs * -5) + startTimestamp);
+    var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
+
+    trace('Attempting to start at ' + pre);
+
+    Conductor.instance.update(pre);
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
@@ -857,7 +861,7 @@ class PlayState extends MusicBeatSubState
       // Reset music properly.
       if (FlxG.sound.music != null)
       {
-        FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+        FlxG.sound.music.time = startTimestamp - Conductor.instance.combinedOffset;
         FlxG.sound.music.pitch = playbackRate;
         FlxG.sound.music.pause();
       }
@@ -874,7 +878,7 @@ class PlayState extends MusicBeatSubState
         }
       }
       vocals.pause();
-      vocals.time = 0;
+      vocals.time = 0 - Conductor.instance.combinedOffset;
 
       if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
@@ -915,7 +919,11 @@ class PlayState extends MusicBeatSubState
       {
         // Do NOT apply offsets at this point, because they already got applied the previous frame!
         Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
-        if (Conductor.instance.songPosition >= (startTimestamp)) startSong();
+        if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
+        {
+          trace("started song at " + Conductor.instance.songPosition);
+          startSong();
+        }
       }
     }
     else
@@ -1391,15 +1399,18 @@ class PlayState extends MusicBeatSubState
       // activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
     }
 
-    if (!startingSong
-      && FlxG.sound.music != null
-      && (Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100
-        || Math.abs(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset)) > 100))
+    if (FlxG.sound.music != null)
     {
-      trace("VOCALS NEED RESYNC");
-      if (vocals != null) trace(vocals.checkSyncError(Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
-      trace(FlxG.sound.music.time - (Conductor.instance.songPosition + Conductor.instance.instrumentalOffset));
-      resyncVocals();
+      var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+
+      if (!startingSong && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(vocals.checkSyncError(correctSync)) > 5))
+      {
+        trace("VOCALS NEED RESYNC");
+        if (vocals != null) trace(vocals.checkSyncError(correctSync));
+        trace(FlxG.sound.music.time);
+        trace(correctSync);
+        resyncVocals();
+      }
     }
 
     // Only bop camera if zoom level is below 135%
@@ -1612,7 +1623,7 @@ class PlayState extends MusicBeatSubState
 
     if (girlfriend != null)
     {
-      girlfriend.characterType = CharacterType.GF;
+      // Don't need to do anything.
     }
     else if (currentCharacterData.girlfriend != '')
     {
@@ -1630,8 +1641,6 @@ class PlayState extends MusicBeatSubState
 
     if (dad != null)
     {
-      dad.characterType = CharacterType.DAD;
-
       //
       // OPPONENT HEALTH ICON
       //
@@ -1650,8 +1659,6 @@ class PlayState extends MusicBeatSubState
 
     if (boyfriend != null)
     {
-      boyfriend.characterType = CharacterType.BF;
-
       //
       // PLAYER HEALTH ICON
       //
@@ -1956,7 +1963,7 @@ class PlayState extends MusicBeatSubState
     };
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
-    FlxG.sound.music.play(true, startTimestamp - Conductor.instance.instrumentalOffset);
+    FlxG.sound.music.play(true, Math.max(0, startTimestamp - Conductor.instance.combinedOffset));
     FlxG.sound.music.pitch = playbackRate;
 
     // Prevent the volume from being wrong.
@@ -1968,6 +1975,9 @@ class PlayState extends MusicBeatSubState
     vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
+    vocals.time = FlxG.sound.music.time;
+    trace('${FlxG.sound.music.time}');
+    trace('${vocals.time}');
     resyncVocals();
 
     #if FEATURE_DISCORD_RPC
@@ -1977,7 +1987,7 @@ class PlayState extends MusicBeatSubState
 
     if (startTimestamp > 0)
     {
-      // FlxG.sound.music.time = startTimestamp - Conductor.instance.instrumentalOffset;
+      // FlxG.sound.music.time = startTimestamp - Conductor.instance.combinedOffset;
       handleSkippedNotes();
     }
 
@@ -1994,7 +2004,8 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Conductor.instance.songPosition - Conductor.instance.instrumentalOffset;
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+    trace('Resyncing vocals to ${timeToPlayAt}');
     FlxG.sound.music.pause();
     vocals.pause();
 
@@ -2374,9 +2385,9 @@ class PlayState extends MusicBeatSubState
       if (targetNote == null) continue;
 
       // Judge and hit the note.
-      trace('Hit note! ${targetNote.noteData}');
+      // trace('Hit note! ${targetNote.noteData}');
       goodNoteHit(targetNote, input);
-      trace('Score: ${songScore}');
+      // trace('Score: ${songScore}');
 
       notesInDirection.remove(targetNote);
 
@@ -3178,7 +3189,7 @@ class PlayState extends MusicBeatSubState
   /**
      * Resets the camera's zoom level and focus point.
      */
-  public function resetCamera(?resetZoom:Bool = true, ?cancelTweens:Bool = true):Void
+  public function resetCamera(?resetZoom:Bool = true, ?cancelTweens:Bool = true, ?snap:Bool = true):Void
   {
     // Cancel camera tweens if any are active.
     if (cancelTweens)
@@ -3195,7 +3206,7 @@ class PlayState extends MusicBeatSubState
     }
 
     // Snap the camera to the follow point immediately.
-    FlxG.camera.focusOn(cameraFollowPoint.getPosition());
+    if (snap) FlxG.camera.focusOn(cameraFollowPoint.getPosition());
   }
 
   /**

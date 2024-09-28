@@ -550,11 +550,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   /**
    * Stop all sounds in the pool and allow them to be recycled.
    */
-  public static function stopAllAudio(musicToo:Bool = false):Void
+  public static function stopAllAudio(musicToo:Bool = false, persistToo:Bool = false):Void
   {
     for (sound in pool)
     {
       if (sound == null) continue;
+      if (!persistToo && sound.persist) continue;
       if (!musicToo && sound == FlxG.sound.music) continue;
       sound.destroy();
     }

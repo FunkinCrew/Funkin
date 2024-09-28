@@ -1,7 +1,6 @@
 package funkin.input;
 
 import haxe.ui.backend.flixel.CursorHelper;
-import openfl.utils.Assets;
 import lime.app.Future;
 import openfl.display.BitmapData;
 

@@ -23,7 +23,6 @@ import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
-import openfl.utils.Assets;
 
 class StoryMenuState extends MusicBeatState
 {
