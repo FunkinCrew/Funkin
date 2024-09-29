@@ -37,7 +37,7 @@ class Preferences
   }
 
   /**
-   * Whether some particularly fowl language is displayed.
+   * Whether some particularly foul language is displayed.
    * @default `true`
    */
   public static var naughtyness(get, set):Bool;
