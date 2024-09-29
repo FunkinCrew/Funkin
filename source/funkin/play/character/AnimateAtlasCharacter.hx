@@ -98,7 +98,7 @@ class AnimateAtlasCharacter extends BaseCharacter
     var correctName = correctAnimationName(name);
     if (correctName == null)
     {
-      trace('Could not find Atlas animation: ' + name);
+      trace('$characterName Could not find Atlas animation: ' + name);
       return;
     }
 
@@ -447,6 +447,49 @@ class AnimateAtlasCharacter extends BaseCharacter
     {
       sprite.clipRect = FlxRect.get(clipRect.x - sprite.x + x, clipRect.y - sprite.y + y, clipRect.width, clipRect.height);
     }
+  }
+
+  /**
+   * Reset the character so it can be used at the start of the level.
+   * Call this when restarting the level.
+   */
+  override public function resetCharacter(resetCamera:Bool = true):Void
+  {
+    trace("RESETTING ATLAS");
+
+    // Reset the animation offsets. This will modify x and y to be the absolute position of the character.
+    // this.animOffsets = [0, 0];
+
+    // Now we can set the x and y to be their original values without having to account for animOffsets.
+    this.resetPosition();
+    mainSprite.setPosition(originalPosition.x, originalPosition.y);
+
+    // Then reapply animOffsets...
+    // applyAnimationOffsets(getCurrentAnimation());
+
+    trace("PRE: " + mainSprite.width / scale.x, mainSprite.height / scale.y);
+
+    // Make sure we are playing the idle animation
+    // ...then update the hitbox so that this.width and this.height are correct.
+
+    mainSprite.scale.set(1, 1);
+    mainSprite.alpha = 0.0001;
+    mainSprite.width = 0;
+    mainSprite.height = 0;
+    trace("PLAYING DANCE");
+    this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
+
+    mainSprite.draw(); // refresh frame
+
+    mainSprite.alpha = alpha;
+
+    scaleCallback(scale);
+
+    this.updateHitbox();
+    trace("POST: " + mainSprite.width / scale.x, mainSprite.height / scale.y);
+
+    // Reset the camera focus point while we're at it.
+    if (resetCamera) this.resetCameraFocusPoint();
   }
 
   inline function offsetCallback(offset:FlxPoint):Void
