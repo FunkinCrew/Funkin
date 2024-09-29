@@ -430,12 +430,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param autoDestroy     Whether to destroy this sound when it finishes playing.
    *                          Leave this value set to `false` if you want to re-use this `FunkinSound` instance.
    * @param autoPlay        Whether to play the sound immediately or wait for a `play()` call.
+   * @param persist         Whether to keep this `FunkinSound` between states, or destroy it.
    * @param onComplete      Called when the sound finished playing.
    * @param onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
   public static function load(embeddedSound:FlxSoundAsset, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = false,
-      ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
+      persist:Bool = false, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
     @:privateAccess
     if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
@@ -462,7 +463,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (autoPlay) sound.play();
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
-    sound.persist = true;
+    sound.persist = persist;
 
     // Make sure to add the sound to the list.
     // If it's already in, it won't get re-added.
