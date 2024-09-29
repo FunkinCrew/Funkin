@@ -6,7 +6,7 @@ class AnsiTrace
   // but adds nice cute ANSI things
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
-    #if NO_FEATURE_LOG_TRACE
+    #if (NO_FEATURE_LOG_TRACE && !FEATURE_DEBUG_FUNCTIONS)
     return;
     #end
     var str = formatOutput(v, info);
