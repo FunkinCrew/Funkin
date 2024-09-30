@@ -18,7 +18,6 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.MusicBeatSubState;
-import lime.utils.Assets;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
 
@@ -177,20 +176,21 @@ class BoyfriendCard extends BackingCard
   }
 
   var beatFreq:Int = 1;
-  var beatFreqList:Array<Int> = [1,2,4,8];
+  var beatFreqList:Array<Int> = [1, 2, 4, 8];
 
-  public override function beatHit():Void {
+  public override function beatHit():Void
+  {
     // increases the amount of beats that need to go by to pulse the glow because itd flash like craazy at high bpms.....
-    beatFreq = beatFreqList[Math.floor(Conductor.instance.bpm/140)];
+    beatFreq = beatFreqList[Math.floor(Conductor.instance.bpm / 140)];
 
-    if(Conductor.instance.currentBeat % beatFreq != 0) return;
+    if (Conductor.instance.currentBeat % beatFreq != 0) return;
     FlxTween.cancelTweensOf(glow);
     FlxTween.cancelTweensOf(glowDark);
 
     glow.alpha = 0.8;
-    FlxTween.tween(glow, {alpha: 0}, 16/24, {ease: FlxEase.quartOut});
+    FlxTween.tween(glow, {alpha: 0}, 16 / 24, {ease: FlxEase.quartOut});
     glowDark.alpha = 0;
-    FlxTween.tween(glowDark, {alpha: 0.6}, 18/24, {ease: FlxEase.quartOut});
+    FlxTween.tween(glowDark, {alpha: 0.6}, 18 / 24, {ease: FlxEase.quartOut});
   }
 
   public override function introDone():Void
