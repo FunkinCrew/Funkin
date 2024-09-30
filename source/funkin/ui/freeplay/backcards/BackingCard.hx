@@ -18,7 +18,6 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.MusicBeatSubState;
-import lime.utils.Assets;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
 

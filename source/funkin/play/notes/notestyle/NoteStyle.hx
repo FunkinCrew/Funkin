@@ -34,7 +34,12 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
    * The note style to use if this one doesn't have a certain asset.
    * This can be recursive, ehe.
    */
-  final fallback:Null<NoteStyle>;
+  var fallback(get, never):Null<NoteStyle>;
+
+  function get_fallback():Null<NoteStyle> {
+    if (_data == null || _data.fallback == null) return null;
+    return NoteStyleRegistry.instance.fetchEntry(_data.fallback);
+  }
 
   /**
    * @param id The ID of the JSON file to parse.
@@ -43,9 +48,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     this.id = id;
     _data = _fetchData(id);
-
-    var fallbackID = _data.fallback;
-    if (fallbackID != null) this.fallback = NoteStyleRegistry.instance.fetchEntry(fallbackID);
   }
 
   /**
@@ -93,7 +95,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     buildNoteAnimations(target);
 
     // Set the scale.
-    target.setGraphicSize(Strumline.STRUMLINE_SIZE * getNoteScale());
+    var scale = getNoteScale();
+    target.scale.set(scale, scale);
     target.updateHitbox();
   }
 
@@ -102,7 +105,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   function buildNoteFrames(force:Bool = false):Null<FlxAtlasFrames>
   {
     var noteAssetPath = getNoteAssetPath();
-    if (noteAssetPath == null) return null;
+    if (noteAssetPath == null)
+    {
+      FlxG.log.warn('Note asset path not found: ${id}');
+      return null;
+    }
 
     if (!FunkinSprite.isTextureCached(Paths.image(noteAssetPath)))
     {
@@ -135,7 +142,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     if (raw)
     {
       var rawPath:Null<String> = _data?.assets?.note?.assetPath;
-      if (rawPath == null && fallback != null) return fallback.getNoteAssetPath(true);
+      if (rawPath == null) return fallback?.getNoteAssetPath(true);
       return rawPath;
     }
 
@@ -173,12 +180,13 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function isNoteAnimated():Bool
   {
-    return _data.assets?.note?.animated ?? false;
+    // LOL is double ?? bad practice?
+    return _data.assets?.note?.animated ?? fallback?.isNoteAnimated() ?? false;
   }
 
   public function getNoteScale():Float
   {
-    return _data.assets?.note?.scale ?? 1.0;
+    return _data.assets?.note?.scale ?? fallback?.getNoteScale() ?? 1.0;
   }
 
   function fetchNoteAnimationData(dir:NoteDirection):Null<AnimationData>
@@ -191,16 +199,15 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       case RIGHT: _data.assets?.note?.data?.right?.toNamed();
     };
 
-    return (result == null && fallback != null) ? fallback.fetchNoteAnimationData(dir) : result;
+    return result ?? fallback?.fetchNoteAnimationData(dir);
   }
 
   public function getHoldNoteAssetPath(raw:Bool = false):Null<String>
   {
     if (raw)
     {
-      // TODO: figure out why ?. didn't work here
-      var rawPath:Null<String> = (_data?.assets?.holdNote == null) ? null : _data?.assets?.holdNote?.assetPath;
-      return (rawPath == null && fallback != null) ? fallback.getHoldNoteAssetPath(true) : rawPath;
+      var rawPath:Null<String> = _data?.assets?.holdNote?.assetPath;
+      return rawPath ?? fallback?.getHoldNoteAssetPath(true);
     }
 
     // library:path
@@ -212,16 +219,17 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function isHoldNotePixel():Bool
   {
-    var data = _data?.assets?.holdNote;
-    if (data == null && fallback != null) return fallback.isHoldNotePixel();
-    return data?.isPixel ?? false;
+    return _data?.assets?.holdNote?.isPixel ?? fallback?.isHoldNotePixel() ?? false;
   }
 
   public function fetchHoldNoteScale():Float
   {
-    var data = _data?.assets?.holdNote;
-    if (data == null && fallback != null) return fallback.fetchHoldNoteScale();
-    return data?.scale ?? 1.0;
+    return _data?.assets?.holdNote?.scale ?? fallback?.fetchHoldNoteScale() ?? 1.0;
+  }
+
+  public function getHoldNoteOffsets():Array<Float>
+  {
+    return _data?.assets?.holdNote?.offsets ?? fallback?.getHoldNoteOffsets() ?? [0.0, 0.0];
   }
 
   public function applyStrumlineFrames(target:StrumlineNote):Void
@@ -246,9 +254,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     if (raw)
     {
-      var rawPath:Null<String> = _data?.assets?.noteStrumline?.assetPath;
-      if (rawPath == null && fallback != null) return fallback.getStrumlineAssetPath(true);
-      return rawPath;
+      return _data?.assets?.noteStrumline?.assetPath ?? fallback?.getStrumlineAssetPath(true);
     }
 
     // library:path
@@ -270,11 +276,19 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     FlxAnimationUtil.addAtlasAnimations(target, getStrumlineAnimationData(dir));
   }
 
+  /**
+   * Fetch the animation data for the strumline.
+   * NOTE: This function only queries the fallback note style if all the animations are missing for a given direction.
+   *
+   * @param dir The direction to fetch the animation data for.
+   * @return The animation data for the strumline in that direction.
+   */
   function getStrumlineAnimationData(dir:NoteDirection):Array<AnimationData>
   {
     var result:Array<Null<AnimationData>> = switch (dir)
     {
-      case NoteDirection.LEFT: [
+      case NoteDirection.LEFT:
+        [
           _data.assets.noteStrumline?.data?.leftStatic?.toNamed('static'),
           _data.assets.noteStrumline?.data?.leftPress?.toNamed('press'),
           _data.assets.noteStrumline?.data?.leftConfirm?.toNamed('confirm'),
@@ -301,33 +315,39 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       default: [];
     };
 
-    return thx.Arrays.filterNull(result);
+    // New variable so we can change the type.
+    var filteredResult:Array<AnimationData> = thx.Arrays.filterNull(result);
+
+    if (filteredResult.length == 0) return fallback?.getStrumlineAnimationData(dir) ?? [];
+
+    return filteredResult;
+  }
+
+  public function getStrumlineOffsets():Array<Float>
+  {
+    return _data?.assets?.noteStrumline?.offsets ?? fallback?.getStrumlineOffsets() ?? [0.0, 0.0];
   }
 
   public function applyStrumlineOffsets(target:StrumlineNote):Void
   {
-    var offsets = _data?.assets?.noteStrumline?.offsets ?? [0.0, 0.0];
+    var offsets = getStrumlineOffsets();
     target.x += offsets[0];
     target.y += offsets[1];
   }
 
   public function getStrumlineScale():Float
   {
-    return _data?.assets?.noteStrumline?.scale ?? 1.0;
+    return _data?.assets?.noteStrumline?.scale ?? fallback?.getStrumlineScale() ?? 1.0;
   }
 
   public function isNoteSplashEnabled():Bool
   {
-    var data = _data?.assets?.noteSplash?.data;
-    if (data == null) return fallback?.isNoteSplashEnabled() ?? false;
-    return data.enabled ?? false;
+    return _data?.assets?.noteSplash?.data?.enabled ?? fallback?.isNoteSplashEnabled() ?? false;
   }
 
   public function isHoldNoteCoverEnabled():Bool
   {
-    var data = _data?.assets?.holdNoteCover?.data;
-    if (data == null) return fallback?.isHoldNoteCoverEnabled() ?? false;
-    return data.enabled ?? false;
+    return _data?.assets?.holdNoteCover?.data?.enabled ?? fallback?.isHoldNoteCoverEnabled() ?? false;
   }
 
   /**
@@ -438,20 +458,20 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       case THREE:
         var result = _data.assets.countdownThree?.isPixel;
-        if (result == null && fallback != null) result = fallback.isCountdownSpritePixel(step);
-        return result ?? false;
+        if (result == null) result = fallback?.isCountdownSpritePixel(step) ?? false;
+        return result;
       case TWO:
         var result = _data.assets.countdownTwo?.isPixel;
-        if (result == null && fallback != null) result = fallback.isCountdownSpritePixel(step);
-        return result ?? false;
+        if (result == null) result = fallback?.isCountdownSpritePixel(step) ?? false;
+        return result;
       case ONE:
         var result = _data.assets.countdownOne?.isPixel;
-        if (result == null && fallback != null) result = fallback.isCountdownSpritePixel(step);
-        return result ?? false;
+        if (result == null) result = fallback?.isCountdownSpritePixel(step) ?? false;
+        return result;
       case GO:
         var result = _data.assets.countdownGo?.isPixel;
-        if (result == null && fallback != null) result = fallback.isCountdownSpritePixel(step);
-        return result ?? false;
+        if (result == null) result = fallback?.isCountdownSpritePixel(step) ?? false;
+        return result;
       default:
         return false;
     }
@@ -463,20 +483,20 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       case THREE:
         var result = _data.assets.countdownThree?.offsets;
-        if (result == null && fallback != null) result = fallback.getCountdownSpriteOffsets(step);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getCountdownSpriteOffsets(step) ?? [0, 0];
+        return result;
       case TWO:
         var result = _data.assets.countdownTwo?.offsets;
-        if (result == null && fallback != null) result = fallback.getCountdownSpriteOffsets(step);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getCountdownSpriteOffsets(step) ?? [0, 0];
+        return result;
       case ONE:
         var result = _data.assets.countdownOne?.offsets;
-        if (result == null && fallback != null) result = fallback.getCountdownSpriteOffsets(step);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getCountdownSpriteOffsets(step) ?? [0, 0];
+        return result;
       case GO:
         var result = _data.assets.countdownGo?.offsets;
-        if (result == null && fallback != null) result = fallback.getCountdownSpriteOffsets(step);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getCountdownSpriteOffsets(step) ?? [0, 0];
+        return result;
       default:
         return [0, 0];
     }
@@ -501,7 +521,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
           null;
       }
 
-      return (rawPath == null && fallback != null) ? fallback.getCountdownSoundPath(step, true) : rawPath;
+      return (rawPath == null) ? fallback?.getCountdownSoundPath(step, true) : rawPath;
     }
 
     // library:path
@@ -565,20 +585,20 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       case "sick":
         var result = _data.assets.judgementSick?.isPixel;
-        if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
-        return result ?? false;
+        if (result == null) result = fallback?.isJudgementSpritePixel(rating) ?? false;
+        return result;
       case "good":
         var result = _data.assets.judgementGood?.isPixel;
-        if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
-        return result ?? false;
+        if (result == null) result = fallback?.isJudgementSpritePixel(rating) ?? false;
+        return result;
       case "bad":
         var result = _data.assets.judgementBad?.isPixel;
-        if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
-        return result ?? false;
-      case "GO":
+        if (result == null) result = fallback?.isJudgementSpritePixel(rating) ?? false;
+        return result;
+      case "shit":
         var result = _data.assets.judgementShit?.isPixel;
-        if (result == null && fallback != null) result = fallback.isJudgementSpritePixel(rating);
-        return result ?? false;
+        if (result == null) result = fallback?.isJudgementSpritePixel(rating) ?? false;
+        return result;
       default:
         return false;
     }
@@ -616,20 +636,20 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       case "sick":
         var result = _data.assets.judgementSick?.offsets;
-        if (result == null && fallback != null) result = fallback.getJudgementSpriteOffsets(rating);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getJudgementSpriteOffsets(rating) ?? [0, 0];
+        return result;
       case "good":
         var result = _data.assets.judgementGood?.offsets;
-        if (result == null && fallback != null) result = fallback.getJudgementSpriteOffsets(rating);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getJudgementSpriteOffsets(rating) ?? [0, 0];
+        return result;
       case "bad":
         var result = _data.assets.judgementBad?.offsets;
-        if (result == null && fallback != null) result = fallback.getJudgementSpriteOffsets(rating);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getJudgementSpriteOffsets(rating) ?? [0, 0];
+        return result;
       case "shit":
         var result = _data.assets.judgementShit?.offsets;
-        if (result == null && fallback != null) result = fallback.getJudgementSpriteOffsets(rating);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getJudgementSpriteOffsets(rating) ?? [0, 0];
+        return result;
       default:
         return [0, 0];
     }
@@ -730,44 +750,44 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       case 0:
         var result = _data.assets.comboNumber0?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 1:
         var result = _data.assets.comboNumber1?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 2:
         var result = _data.assets.comboNumber2?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 3:
         var result = _data.assets.comboNumber3?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 4:
         var result = _data.assets.comboNumber4?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 5:
         var result = _data.assets.comboNumber5?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 6:
         var result = _data.assets.comboNumber6?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 7:
         var result = _data.assets.comboNumber7?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 8:
         var result = _data.assets.comboNumber8?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       case 9:
         var result = _data.assets.comboNumber9?.isPixel;
-        if (result == null && fallback != null) result = fallback.isComboNumSpritePixel(digit);
-        return result ?? false;
+        if (result == null) result = fallback?.isComboNumSpritePixel(digit) ?? false;
+        return result;
       default:
         return false;
     }
@@ -817,44 +837,44 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       case 0:
         var result = _data.assets.comboNumber0?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 1:
         var result = _data.assets.comboNumber1?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 2:
         var result = _data.assets.comboNumber2?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 3:
         var result = _data.assets.comboNumber3?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 4:
         var result = _data.assets.comboNumber4?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 5:
         var result = _data.assets.comboNumber5?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 6:
         var result = _data.assets.comboNumber6?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 7:
         var result = _data.assets.comboNumber7?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 8:
         var result = _data.assets.comboNumber8?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       case 9:
         var result = _data.assets.comboNumber9?.offsets;
-        if (result == null && fallback != null) result = fallback.getComboNumSpriteOffsets(digit);
-        return result ?? [0, 0];
+        if (result == null) result = fallback?.getComboNumSpriteOffsets(digit) ?? [0, 0];
+        return result;
       default:
         return [0, 0];
     }

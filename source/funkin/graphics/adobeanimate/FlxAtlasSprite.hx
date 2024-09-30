@@ -7,7 +7,6 @@ import flxanimate.frames.FlxAnimateFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import openfl.display.BitmapData;
-import openfl.utils.Assets;
 import flixel.math.FlxPoint;
 import flxanimate.animate.FlxKeyFrame;
 
@@ -184,7 +183,7 @@ class FlxAtlasSprite extends FlxAnimate
 
     // Move to the first frame of the animation.
     // goToFrameLabel(id);
-    trace('Playing animation $id');
+    // trace('Playing animation $id');
     if ((id == null || id == "") || this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
     {
       this.anim.play(id, restart, false, startFrame);

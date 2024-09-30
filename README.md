@@ -17,9 +17,13 @@ To learn how to install the necessary dependencies and compile the game from sou
 
 Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can actively participate in the development of Friday Night Funkin'.
 
+# Modding
+
+Feel free to start learning to mod the game by reading our [documentation](https://funkincrew.github.io/funkin-modding-docs/) and guide to modding.
+
 # Credits and Special Thanks
 
-Full credits can be found in-game, or wherever the credits.json file is.
+Full credits can be found in-game, or in the `credits.json` file which is located [here](https://github.com/FunkinCrew/funkin.assets/blob/main/exclude/data/credits.json).
 
 ## Programming
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Lead Programmer
