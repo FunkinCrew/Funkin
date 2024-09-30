@@ -6,7 +6,7 @@ import funkin.ui.debug.stageeditor.StageEditorState.StageEditorDialogType;
 
 class UndoRedoHandler
 {
-  public static function performLastAction(state:StageEditorState, redo:Bool = false)
+  public static function performLastAction(state:StageEditorState, redo:Bool = false):Void
   {
     if (state == null || (state.undoArray.length <= 0 && !redo) || (state.redoArray.length <= 0 && redo)) return;
     var actionToDo = redo ? state.redoArray.pop() : state.undoArray.pop();
