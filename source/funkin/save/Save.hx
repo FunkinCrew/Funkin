@@ -1152,7 +1152,7 @@ typedef SaveDataOptions =
   var framerate:Int;
 
   /**
-   * Whether some particularly fowl language is displayed.
+   * Whether some particularly foul language is displayed.
    * @default `true`
    */
   var naughtyness:Bool;
@@ -1188,20 +1188,20 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
-   * Offset the users inputs by this many ms.
+   * Offset the user's inputs by this many ms.
    * @default `0`
    */
   var inputOffset:Int;
 
   /**
-   * Affects the delay between the audio and the visuals during gameplay
+   * Affects the delay between the audio and the visuals during gameplay.
    * @default `0`
    */
   var audioVisualOffset:Int;
 
   /**
    * If we want the framerate to be unlocked on HTML5.
-   * @default `false
+   * @default `false`
    */
   var unlockedFramerate:Bool;
 
