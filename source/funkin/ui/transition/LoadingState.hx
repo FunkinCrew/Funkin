@@ -3,24 +3,23 @@ package funkin.ui.transition;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import flixel.util.typeLimit.NextState;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song.SongDifficulty;
 import funkin.ui.MusicBeatState;
 import haxe.io.Path;
-import funkin.graphics.FunkinSprite;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
 import lime.utils.Assets as LimeAssets;
 import openfl.filters.ShaderFilter;
-import openfl.utils.Assets;
-import flixel.util.typeLimit.NextState;
+import openfl.utils.Assets as OpenFLAssets;
 
 class LoadingState extends MusicBeatSubState
 {
@@ -98,7 +97,7 @@ class LoadingState extends MusicBeatSubState
 
   function checkLoadSong(path:String):Void
   {
-    if (!Assets.cache.hasSound(path))
+    if (!OpenFLAssets.cache.hasSound(path))
     {
       var library = Assets.getLibrary('songs');
       var symbolPath = path.split(':').pop();
@@ -277,7 +276,7 @@ class LoadingState extends MusicBeatSubState
   #if NO_PRELOAD_ALL
   static function isSoundLoaded(path:String):Bool
   {
-    return Assets.cache.hasSound(path);
+    return OpenFLAssets.cache.hasSound(path);
   }
 
   static function isLibraryLoaded(library:String):Bool
@@ -451,6 +450,11 @@ class LoadingState extends MusicBeatSubState
     });
 
     return promise.future;
+  }
+
+  public static function transitionToState(state:NextState, stopMusic:Bool = false):Void
+  {
+    FlxG.switchState(() -> new LoadingState(state, stopMusic));
   }
 }
 

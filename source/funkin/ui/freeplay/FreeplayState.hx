@@ -51,10 +51,12 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
-import lime.utils.Assets;
 import openfl.display.BlendMode;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongData.SongMusicData;
+#if FEATURE_DISCORD_RPC
+import funkin.api.discord.DiscordClient;
+#end
 
 /**
  * Parameters used to initialize the FreeplayState.
@@ -145,11 +147,37 @@ class FreeplayState extends MusicBeatSubState
 
   var songs:Array<Null<FreeplaySongData>> = [];
 
+  // List of available difficulties for the current song, without `-variation` at the end (no duplicates or nulls).
   var diffIdsCurrent:Array<String> = [];
+  // List of available difficulties for the total song list, without `-variation` at the end (no duplicates or nulls).
   var diffIdsTotal:Array<String> = [];
+  // List of available difficulties for the current song, with `-variation` at the end (no duplicates or nulls).
+  var suffixedDiffIdsCurrent:Array<String> = [];
+  // List of available difficulties for the total song list, with `-variation` at the end (no duplicates or nulls).
+  var suffixedDiffIdsTotal:Array<String> = [];
 
   var curSelected:Int = 0;
-  var currentDifficulty:String = Constants.DEFAULT_DIFFICULTY;
+  var currentSuffixedDifficulty:String = Constants.DEFAULT_DIFFICULTY;
+  var currentUnsuffixedDifficulty(get, never):String;
+
+  function get_currentUnsuffixedDifficulty():String
+  {
+    if (Constants.DEFAULT_DIFFICULTY_LIST_FULL.contains(currentSuffixedDifficulty)) return currentSuffixedDifficulty;
+
+    // Else, we need to strip the suffix.
+    return currentSuffixedDifficulty.substring(0, currentSuffixedDifficulty.lastIndexOf('-'));
+  }
+
+  var currentVariation(get, never):String;
+
+  function get_currentVariation():String
+  {
+    if (Constants.DEFAULT_DIFFICULTY_LIST.contains(currentSuffixedDifficulty)) return Constants.DEFAULT_VARIATION;
+    if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentSuffixedDifficulty)) return 'erect';
+
+    // Else, we need to isolate the suffix.
+    return currentSuffixedDifficulty.substring(currentSuffixedDifficulty.lastIndexOf('-') + 1, currentSuffixedDifficulty.length);
+  }
 
   public var fp:FreeplayScore;
 
@@ -313,7 +341,7 @@ class FreeplayState extends MusicBeatSubState
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
-    DiscordClient.changePresence('In the Menus', null);
+    DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
     #end
 
     var isDebug:Bool = false;
@@ -357,10 +385,14 @@ class FreeplayState extends MusicBeatSubState
         trace('Available Difficulties: $availableDifficultiesForSong');
         if (availableDifficultiesForSong.length == 0) continue;
 
-        songs.push(new FreeplaySongData(levelId, songId, song, displayedVariations));
+        songs.push(new FreeplaySongData(levelId, songId, song, currentCharacter, displayedVariations));
         for (difficulty in unsuffixedDifficulties)
         {
           diffIdsTotal.pushUnique(difficulty);
+        }
+        for (difficulty in availableDifficultiesForSong)
+        {
+          suffixedDiffIdsTotal.pushUnique(difficulty);
         }
       }
     }
@@ -454,7 +486,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
 
-    for (diffId in diffIdsTotal)
+    for (diffId in suffixedDiffIdsTotal)
     {
       var diffSprite:DifficultySprite = new DifficultySprite(diffId);
       diffSprite.difficultyId = diffId;
@@ -468,7 +500,7 @@ class FreeplayState extends MusicBeatSubState
     for (diffSprite in grpDifficulties.group.members)
     {
       if (diffSprite == null) continue;
-      if (diffSprite.difficultyId == currentDifficulty) diffSprite.visible = true;
+      if (diffSprite.difficultyId == currentSuffixedDifficulty) diffSprite.visible = true;
     }
 
     albumRoll.albumId = null;
@@ -586,13 +618,13 @@ class FreeplayState extends MusicBeatSubState
       }
     };
 
-    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, txtCompletion, clearBoxSprite],
+    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
       {
         x: FlxG.width,
         speed: 0.3
       });
 
-    exitMoversCharSel.set([fp, txtCompletion, fnfHighscoreSpr, txtCompletion, clearBoxSprite],
+    exitMoversCharSel.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
       {
         y: -270,
         speed: 0.8,
@@ -744,17 +776,14 @@ class FreeplayState extends MusicBeatSubState
   {
     var tempSongs:Array<Null<FreeplaySongData>> = songs;
 
-    // Remember just the difficulty because it's important for song sorting.
-    currentDifficulty = rememberedDifficulty;
-
     if (filterStuff != null) tempSongs = sortSongs(tempSongs, filterStuff);
 
     // Filter further by current selected difficulty.
-    if (currentDifficulty != null)
+    if (currentSuffixedDifficulty != null)
     {
       tempSongs = tempSongs.filter(song -> {
         if (song == null) return true; // Random
-        return song.songDifficulties.contains(currentDifficulty);
+        return song.suffixedSongDifficulties.contains(currentSuffixedDifficulty);
       });
     }
 
@@ -1345,7 +1374,6 @@ class FreeplayState extends MusicBeatSubState
   var dyTouch:Float = 0;
   var velTouch:Float = 0;
 
-  var veloctiyLoopShit:Float = 0;
   var touchTimer:Float = 0;
 
   var initTouchPos:FlxPoint = new FlxPoint();
@@ -1376,7 +1404,7 @@ class FreeplayState extends MusicBeatSubState
     #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.P)
     {
-      FlxG.switchState(FreeplayState.build(
+      FlxG.switchState(() -> FreeplayState.build(
         {
           {
             character: currentCharacterId == "pico" ? Constants.DEFAULT_CHARACTER : "pico",
@@ -1757,16 +1785,18 @@ class FreeplayState extends MusicBeatSubState
   {
     touchTimer = 0;
 
-    var currentDifficultyIndex:Int = diffIdsCurrent.indexOf(currentDifficulty);
+    var currentDifficultyIndex:Int = suffixedDiffIdsCurrent.indexOf(currentSuffixedDifficulty);
 
-    if (currentDifficultyIndex == -1) currentDifficultyIndex = diffIdsCurrent.indexOf(Constants.DEFAULT_DIFFICULTY);
+    if (currentDifficultyIndex == -1) currentDifficultyIndex = suffixedDiffIdsCurrent.indexOf(Constants.DEFAULT_DIFFICULTY);
 
     currentDifficultyIndex += change;
 
-    if (currentDifficultyIndex < 0) currentDifficultyIndex = diffIdsCurrent.length - 1;
-    if (currentDifficultyIndex >= diffIdsCurrent.length) currentDifficultyIndex = 0;
+    if (currentDifficultyIndex < 0) currentDifficultyIndex = suffixedDiffIdsCurrent.length - 1;
+    if (currentDifficultyIndex >= suffixedDiffIdsCurrent.length) currentDifficultyIndex = 0;
 
-    currentDifficulty = diffIdsCurrent[currentDifficultyIndex];
+    currentSuffixedDifficulty = suffixedDiffIdsCurrent[currentDifficultyIndex];
+
+    trace('Switching to difficulty: ${currentSuffixedDifficulty}');
 
     var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].songData;
     if (daSong != null)
@@ -1777,21 +1807,20 @@ class FreeplayState extends MusicBeatSubState
         FlxG.log.warn('WARN: could not find song with id (${daSong.songId})');
         return;
       }
-      var targetVariation:String = targetSong.getFirstValidVariation(currentDifficulty) ?? '';
 
-      // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
-      var suffixedDifficulty = (targetVariation != Constants.DEFAULT_VARIATION
-        && targetVariation != 'erect') ? '$currentDifficulty-${targetVariation}' : currentDifficulty;
+      var suffixedDifficulty = suffixedDiffIdsCurrent[currentDifficultyIndex];
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.songId, suffixedDifficulty);
+      trace(songScore);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = suffixedDifficulty;
+      currentSuffixedDifficulty = suffixedDifficulty;
     }
     else
     {
       intendedScore = 0;
       intendedCompletion = 0.0;
-      rememberedDifficulty = currentDifficulty;
+      rememberedDifficulty = currentSuffixedDifficulty;
     }
 
     if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
@@ -1806,7 +1835,7 @@ class FreeplayState extends MusicBeatSubState
     for (diffSprite in grpDifficulties.group.members)
     {
       if (diffSprite == null) continue;
-      if (diffSprite.difficultyId == currentDifficulty)
+      if (diffSprite.difficultyId == currentSuffixedDifficulty)
       {
         if (change != 0)
         {
@@ -1833,7 +1862,9 @@ class FreeplayState extends MusicBeatSubState
         if (songCapsule == null) continue;
         if (songCapsule.songData != null)
         {
-          songCapsule.songData.currentDifficulty = currentDifficulty;
+          songCapsule.songData.currentVariation = currentVariation;
+          songCapsule.songData.currentUnsuffixedDifficulty = currentUnsuffixedDifficulty;
+          songCapsule.songData.currentSuffixedDifficulty = currentSuffixedDifficulty;
           songCapsule.init(null, null, songCapsule.songData);
           songCapsule.checkClip();
         }
@@ -1859,7 +1890,7 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.setDifficultyStars(daSong?.difficultyRating);
   }
 
-  // Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
+  // Clears the cache of songs to free up memory, they'll have to be loaded in later tho
   function clearDaCache(actualSongTho:String):Void
   {
     for (song in songs)
@@ -1921,8 +1952,9 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetSong:Song = targetSongNullable;
-    var targetDifficultyId:String = currentDifficulty;
-    var targetVariation:Null<String> = targetSong.getFirstValidVariation(targetDifficultyId, currentCharacter);
+    var targetDifficultyId:String = currentUnsuffixedDifficulty;
+    var targetVariation:Null<String> = currentVariation;
+    trace('target song: ${targetSongId} (${targetVariation})');
     var targetLevelId:Null<String> = cap?.songData?.levelId;
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
 
@@ -2002,8 +2034,8 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetSong:Song = targetSongNullable;
-    var targetDifficultyId:String = currentDifficulty;
-    var targetVariation:Null<String> = targetSong.getFirstValidVariation(targetDifficultyId, currentCharacter);
+    var targetDifficultyId:String = currentUnsuffixedDifficulty;
+    var targetVariation:Null<String> = currentVariation;
     var targetLevelId:Null<String> = cap?.songData?.levelId;
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
 
@@ -2069,7 +2101,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (rememberedDifficulty != null)
     {
-      currentDifficulty = rememberedDifficulty;
+      currentSuffixedDifficulty = rememberedDifficulty;
     }
   }
 
@@ -2087,10 +2119,11 @@ class FreeplayState extends MusicBeatSubState
     var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
     if (daSongCapsule.songData != null)
     {
-      var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.songData.songId, currentDifficulty);
+      var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.songData.songId, currentSuffixedDifficulty);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       diffIdsCurrent = daSongCapsule.songData.songDifficulties;
+      suffixedDiffIdsCurrent = daSongCapsule.songData.suffixedSongDifficulties;
       rememberedSongId = daSongCapsule.songData.songId;
       changeDiff();
     }
@@ -2099,6 +2132,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = 0;
       intendedCompletion = 0.0;
       diffIdsCurrent = diffIdsTotal;
+      suffixedDiffIdsCurrent = suffixedDiffIdsTotal;
       rememberedSongId = null;
       rememberedDifficulty = Constants.DEFAULT_DIFFICULTY;
       albumRoll.albumId = null;
@@ -2143,17 +2177,18 @@ class FreeplayState extends MusicBeatSubState
       if (previewSongId == null) return;
 
       var previewSong:Null<Song> = SongRegistry.instance.fetchEntry(previewSongId);
-      var currentVariation = previewSong?.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
-      var songDifficulty:Null<SongDifficulty> = previewSong?.getDifficulty(currentDifficulty,
-        previewSong?.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST);
+      if (previewSong == null) return;
+      // var currentVariation = previewSong.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
+      var targetDifficultyId:String = currentUnsuffixedDifficulty;
+      var targetVariation:Null<String> = currentVariation;
+      var songDifficulty:Null<SongDifficulty> = previewSong.getDifficulty(targetDifficultyId, targetVariation ?? Constants.DEFAULT_VARIATION);
 
-      var baseInstrumentalId:String = previewSong?.getBaseInstrumentalId(currentDifficulty, songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
-      var altInstrumentalIds:Array<String> = previewSong?.listAltInstrumentalIds(currentDifficulty,
+      var baseInstrumentalId:String = previewSong.getBaseInstrumentalId(targetDifficultyId, songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+      var altInstrumentalIds:Array<String> = previewSong.listAltInstrumentalIds(targetDifficultyId,
         songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
       var instSuffix:String = baseInstrumentalId;
 
-      // TODO: Make this a UI element.
       #if FEATURE_DEBUG_FUNCTIONS
       if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
       {
@@ -2312,6 +2347,7 @@ class FreeplaySongData
   public var songId(default, null):String = '';
 
   public var songDifficulties(default, null):Array<String> = [];
+  public var suffixedSongDifficulties(default, null):Array<String> = [];
 
   public var songName(default, null):String = '';
   public var songCharacter(default, null):String = '';
@@ -2319,22 +2355,25 @@ class FreeplaySongData
   public var difficultyRating(default, null):Int = 0;
   public var albumId(default, null):Null<String> = null;
 
-  public var currentDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
+  public var currentCharacter:PlayableCharacter;
+  public var currentVariation:String = Constants.DEFAULT_VARIATION;
+  public var currentSuffixedDifficulty(default, set):String = Constants.DEFAULT_DIFFICULTY;
+  public var currentUnsuffixedDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   public var scoringRank:Null<ScoringRank> = null;
 
   var displayedVariations:Array<String> = [Constants.DEFAULT_VARIATION];
 
-  function set_currentDifficulty(value:String):String
+  function set_currentSuffixedDifficulty(value:String):String
   {
-    if (currentDifficulty == value) return value;
+    if (currentSuffixedDifficulty == value) return value;
 
-    currentDifficulty = value;
+    currentSuffixedDifficulty = value;
     updateValues(displayedVariations);
     return value;
   }
 
-  public function new(levelId:String, songId:String, song:Song, ?displayedVariations:Array<String>)
+  public function new(levelId:String, songId:String, song:Song, currentCharacter:PlayableCharacter, ?displayedVariations:Array<String>)
   {
     this.levelId = levelId;
     this.songId = songId;
@@ -2342,6 +2381,7 @@ class FreeplaySongData
 
     this.isFav = Save.instance.isSongFavorited(songId);
 
+    this.currentCharacter = currentCharacter;
     if (displayedVariations != null) this.displayedVariations = displayedVariations;
 
     updateValues(displayedVariations);
@@ -2368,15 +2408,18 @@ class FreeplaySongData
   function updateValues(variations:Array<String>):Void
   {
     this.songDifficulties = song.listDifficulties(null, variations, false, false);
-    if (!this.songDifficulties.contains(currentDifficulty))
+    this.suffixedSongDifficulties = song.listSuffixedDifficulties(variations, false, false);
+    if (!this.songDifficulties.contains(currentUnsuffixedDifficulty))
     {
-      currentDifficulty = Constants.DEFAULT_DIFFICULTY;
+      currentSuffixedDifficulty = Constants.DEFAULT_DIFFICULTY;
       // This method gets called again by the setter-method
       // or the difficulty didn't change, so there's no need to continue.
       return;
     }
 
-    var songDifficulty:SongDifficulty = song.getDifficulty(currentDifficulty, null, variations);
+    var targetVariation:Null<String> = currentVariation;
+
+    var songDifficulty:SongDifficulty = song.getDifficulty(currentUnsuffixedDifficulty, targetVariation);
     if (songDifficulty == null) return;
     this.songStartingBpm = songDifficulty.getStartingBPM();
     this.songName = songDifficulty.songName;
@@ -2392,10 +2435,7 @@ class FreeplaySongData
       this.albumId = songDifficulty.album;
     }
 
-    // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
-    // `easy`, `erect`, `normal-pico`, etc.
-    var suffixedDifficulty = (songDifficulty.variation != Constants.DEFAULT_VARIATION
-      && songDifficulty.variation != 'erect') ? '$currentDifficulty-${songDifficulty.variation}' : currentDifficulty;
+    var suffixedDifficulty = currentSuffixedDifficulty;
 
     this.scoringRank = Save.instance.getSongRank(songId, suffixedDifficulty);
 

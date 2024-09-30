@@ -1,0 +1,29 @@
+# Perform actions when labels are applied to issues, discussions, or pull requests
+# See .github/label-actions.yml
+name: 'Label Actions'
+
+on:
+  issues:
+    types:
+      - labeled
+      - unlabeled
+  pull_request_target:
+    types:
+      - labeled
+      - unlabeled
+  discussion:
+    types:
+      - labeled
+      - unlabeled
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  discussions: write
+
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/label-actions@v4

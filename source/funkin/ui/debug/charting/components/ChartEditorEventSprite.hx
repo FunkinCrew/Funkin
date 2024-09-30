@@ -3,7 +3,6 @@ package funkin.ui.debug.charting.components;
 import funkin.data.event.SongEventRegistry;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
-import openfl.utils.Assets;
 import flixel.FlxObject;
 import flixel.FlxBasic;
 import flixel.FlxSprite;

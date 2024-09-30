@@ -8,13 +8,6 @@
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
-      "name": "discord_rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "2d83fa863ef0c1eace5f1cf67c3ac315d1a3a8a5",
-      "url": "https://github.com/FunkinCrew/linc_discord-rpc"
-    },
-    {
       "name": "flixel",
       "type": "git",
       "dir": null,
@@ -25,7 +18,7 @@
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "9c6fb47968e894eb36bf10e94725cd7640c49281",
+      "ref": "7424db4e9164ff46f224a7c47de1b732d2542dd7",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -70,14 +63,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "22f7c5a8ffca90d4677cffd6e570f53761709fbc",
+      "ref": "c9d96b168ea2a19274ad7c766ab1a34b57baa793",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "28bb710d0ae5d94b5108787593052165be43b980",
+      "ref": "013b9d4e56bfe9a034e028a8d685f0b274cb73c4",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -98,8 +91,8 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1",
-      "url": "https://github.com/HaxeFoundation/hxcpp"
+      "ref": "c6bac3d6c7d683f25104296b2f4c50f8c90b8349",
+      "url": "https://github.com/cortex-engine/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
@@ -107,6 +100,13 @@
       "dir": "hxcpp-debug-server",
       "ref": "147294123f983e35f50a966741474438069a7a8f",
       "url": "https://github.com/FunkinCrew/hxcpp-debugger"
+    },
+    {
+      "name": "hxdiscord_rpc",
+      "type": "git",
+      "dir": null,
+      "ref": "82c47ecc1a454b7dd644e4fcac7e91155f176dec",
+      "url": "https://github.com/FunkinCrew/hxdiscord_rpc"
     },
     {
       "name": "hxjsonast",

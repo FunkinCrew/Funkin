@@ -113,7 +113,9 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
 
     switch (rank)
     {
-      case PERFECT | PERFECT_GOLD:
+      case PERFECT_GOLD:
+        return _data.results.perfectGold;
+      case PERFECT:
         return _data.results.perfect;
       case EXCELLENT:
         return _data.results.excellent;

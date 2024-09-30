@@ -233,14 +233,8 @@ class BaseCharacter extends Bopper
    */
   public function resetCharacter(resetCamera:Bool = true):Void
   {
-    // Reset the animation offsets. This will modify x and y to be the absolute position of the character.
-    // this.animOffsets = [0, 0];
-
-    // Now we can set the x and y to be their original values without having to account for animOffsets.
+    // Set the x and y to be their original values.
     this.resetPosition();
-
-    // Then reapply animOffsets...
-    // applyAnimationOffsets(getCurrentAnimation());
 
     this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
     // Make sure we are playing the idle animation
@@ -305,7 +299,7 @@ class BaseCharacter extends Bopper
   {
     super.onAnimationFinished(animationName);
 
-    trace('${characterId} has finished animation: ${animationName}');
+    // trace('${characterId} has finished animation: ${animationName}');
     if ((animationName.endsWith(Constants.ANIMATION_END_SUFFIX) && !animationName.startsWith('idle') && !animationName.startsWith('dance'))
       || animationName.startsWith('combo')
       || animationName.startsWith('drop'))
@@ -323,6 +317,11 @@ class BaseCharacter extends Bopper
     this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
   }
 
+  public function getHealthIconId():String
+  {
+    return _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
+  }
+
   public function initHealthIcon(isOpponent:Bool):Void
   {
     if (!isOpponent)
@@ -332,7 +331,7 @@ class BaseCharacter extends Bopper
         trace('[WARN] Player 1 health icon not found!');
         return;
       }
-      PlayState.instance.iconP1.configure(_data.healthIcon);
+      PlayState.instance.iconP1.configure(_data?.healthIcon);
       PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
     }
     else
@@ -342,7 +341,7 @@ class BaseCharacter extends Bopper
         trace('[WARN] Player 2 health icon not found!');
         return;
       }
-      PlayState.instance.iconP2.configure(_data.healthIcon);
+      PlayState.instance.iconP2.configure(_data?.healthIcon);
     }
   }
 
@@ -402,7 +401,7 @@ class BaseCharacter extends Bopper
       FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
       if (holdTimer > singTimeSec && shouldStopSinging)
       {
-        trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
+        // trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
         holdTimer = 0;
 
         var currentAnimation:String = getCurrentAnimation();
@@ -636,7 +635,7 @@ class BaseCharacter extends Bopper
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
     // restart even if already playing, because the character might sing the same note twice.
-    trace('Playing ${anim}...');
+    // trace('Playing ${anim}...');
     playAnimation(anim, true);
   }
 

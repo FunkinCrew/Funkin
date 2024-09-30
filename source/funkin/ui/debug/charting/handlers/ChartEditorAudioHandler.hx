@@ -13,7 +13,6 @@ import funkin.audio.waveform.WaveformSprite;
 import flixel.util.FlxColor;
 import haxe.io.Bytes;
 import haxe.io.Path;
-import openfl.utils.Assets;
 
 /**
  * Functions for loading audio for the chart editor.

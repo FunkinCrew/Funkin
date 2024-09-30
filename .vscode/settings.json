@@ -97,6 +97,11 @@
       "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
+      "label": "Windows / Debug (Tracy)",
+      "target": "windows",
+      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
       "label": "Linux / Debug",
       "target": "linux",
       "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
@@ -105,6 +110,11 @@
       "label": "HashLink / Debug",
       "target": "hl",
       "args": ["-debug"]
+    },
+    {
+      "label": "Windows / Debug (Discord)",
+      "target": "windows",
+      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS", "-DFEATURE_DISCORD_RPC"]
     },
     {
       "label": "Windows / Debug (FlxAnimate Test)",

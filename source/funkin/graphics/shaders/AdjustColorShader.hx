@@ -1,8 +1,6 @@
 package funkin.graphics.shaders;
 
 import flixel.addons.display.FlxRuntimeShader;
-import funkin.Paths;
-import openfl.utils.Assets;
 
 class AdjustColorShader extends FlxRuntimeShader
 {
@@ -51,5 +49,10 @@ class AdjustColorShader extends FlxRuntimeShader
     this.contrast = value;
 
     return this.contrast;
+  }
+
+  public override function toString():String
+  {
+    return 'AdjustColorShader(${this.hue}, ${this.saturation}, ${this.brightness}, ${this.contrast})';
   }
 }
