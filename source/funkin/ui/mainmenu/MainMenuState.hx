@@ -28,7 +28,7 @@ import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
 #if FEATURE_DISCORD_RPC
-import Discord.DiscordClient;
+import funkin.api.discord.DiscordClient;
 #end
 #if newgrounds
 import funkin.ui.NgPrompt;
@@ -55,8 +55,7 @@ class MainMenuState extends MusicBeatState
   override function create():Void
   {
     #if FEATURE_DISCORD_RPC
-    // Updating Discord Rich Presence
-    DiscordClient.changePresence("In the Menus", null);
+    DiscordClient.instance.setPresence({state: "In the Menus", details: null});
     #end
 
     FlxG.cameras.reset(new FunkinCamera('mainMenu'));
@@ -362,6 +361,7 @@ class MainMenuState extends MusicBeatState
     // Ctrl+Alt+Shift+R = Score/Rank conflict test
     // Ctrl+Alt+Shift+N = Mark all characters as not seen
     // Ctrl+Alt+Shift+E = Dump save data
+    // Ctrl+Alt+Shift+L = Force crash and create a log dump
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.P)
     {

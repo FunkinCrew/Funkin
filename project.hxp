@@ -214,6 +214,12 @@ class Project extends HXProject {
    */
   static final FEATURE_OPEN_URL:FeatureFlag = "FEATURE_OPEN_URL";
 
+  /**
+	 * `-DFEATURE_SCREENSHOTS`
+   * If this flag is enabled, the game will support the screenshots feature.
+   */
+  static final FEATURE_SCREENSHOTS:FeatureFlag = "FEATURE_SCREENSHOTS";
+
 	/**
    * `-DFEATURE_CHART_EDITOR`
 	 * If this flag is enabled, the Chart Editor will be accessible from the debug menu.
@@ -473,10 +479,9 @@ class Project extends HXProject {
 		// Should default to true on workspace builds and false on release builds.
 		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
 
-		// Should be true on release, non-tester builds.
+		// Should be true on desktop, release, non-tester builds.
 		// We don't want testers to accidentally leak songs to their Discord friends!
-    // TODO: Re-enable this.
-		FEATURE_DISCORD_RPC.apply(this, false && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+		FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
 		// Should be true only on web builds.
 		// Audio context issues only exist there.
@@ -494,6 +499,10 @@ class Project extends HXProject {
 		// Should be true except on web builds.
 		// Chart editor doesn't work there.
 		FEATURE_CHART_EDITOR.apply(this, !isWeb());
+
+		// Should be true except on web builds.
+		// Screenshots doesn't work there.
+		FEATURE_SCREENSHOTS.apply(this, !isWeb());
 	}
 
   /**
@@ -644,7 +653,7 @@ class Project extends HXProject {
     }
 
 		if (FEATURE_DISCORD_RPC.isEnabled(this)) {
-			addHaxelib('discord_rpc'); // Discord API
+			addHaxelib('hxdiscord_rpc'); // Discord API
 		}
 
 		if (FEATURE_NEWGROUNDS.isEnabled(this)) {

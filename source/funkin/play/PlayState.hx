@@ -15,8 +15,8 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimer;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
@@ -44,12 +44,12 @@ import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
-import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
@@ -68,7 +68,7 @@ import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 #if FEATURE_DISCORD_RPC
-import Discord.DiscordClient;
+import funkin.api.discord.DiscordClient;
 #end
 
 /**
@@ -447,10 +447,8 @@ class PlayState extends MusicBeatSubState
 
   #if FEATURE_DISCORD_RPC
   // Discord RPC variables
-  var storyDifficultyText:String = '';
-  var iconRPC:String = '';
-  var detailsText:String = '';
-  var detailsPausedText:String = '';
+  var discordRPCAlbum:String = '';
+  var discordRPCIcon:String = '';
   #end
 
   /**
@@ -817,6 +815,7 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
+        this.remove(currentStage);
         FlxG.switchState(() -> new MainMenuState());
       }
       return false;
@@ -965,6 +964,7 @@ class PlayState extends MusicBeatSubState
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
         if (!isSubState && event.gitaroo)
         {
+          this.remove(currentStage);
           FlxG.switchState(() -> new GitarooPause(
             {
               targetSong: currentSong,
@@ -992,7 +992,15 @@ class PlayState extends MusicBeatSubState
         }
 
         #if FEATURE_DISCORD_RPC
-        DiscordClient.changePresence(detailsPausedText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+        DiscordClient.instance.setPresence(
+          {
+            details: 'Paused - ${buildDiscordRPCDetails()}',
+
+            state: buildDiscordRPCState(),
+
+            largeImageKey: discordRPCAlbum,
+            smallImageKey: discordRPCIcon
+          });
         #end
       }
     }
@@ -1081,8 +1089,14 @@ class PlayState extends MusicBeatSubState
         }
 
         #if FEATURE_DISCORD_RPC
-        // Game Over doesn't get his own variable because it's only used here
-        DiscordClient.changePresence('Game Over - ' + detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+        DiscordClient.instance.setPresence(
+          {
+            details: 'Game Over - ${buildDiscordRPCDetails()}',
+            state: buildDiscordRPCState(),
+
+            largeImageKey: discordRPCAlbum,
+            smallImageKey: discordRPCIcon
+          });
         #end
       }
       else if (isPlayerDying)
@@ -1293,14 +1307,29 @@ class PlayState extends MusicBeatSubState
       Countdown.resumeCountdown();
 
       #if FEATURE_DISCORD_RPC
-      if (startTimer.finished)
+      if (Conductor.instance.songPosition > 0)
       {
-        DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true,
-          currentSongLengthMs - Conductor.instance.songPosition);
+        // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true,
+        //   currentSongLengthMs - Conductor.instance.songPosition);
+        DiscordClient.instance.setPresence(
+          {
+            state: buildDiscordRPCState(),
+            details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
+            smallImageKey: discordRPCIcon
+          });
       }
       else
       {
-        DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
+        DiscordClient.instance.setPresence(
+          {
+            state: buildDiscordRPCState(),
+            details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
+            smallImageKey: discordRPCIcon
+          });
       }
       #end
 
@@ -1326,16 +1355,32 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause)
+    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
     {
-      if (Conductor.instance.songPosition > 0.0) DiscordClient.changePresence(detailsText, currentSong.song
-        + ' ('
-        + storyDifficultyText
-        + ')', iconRPC, true,
-        currentSongLengthMs
-        - Conductor.instance.songPosition);
+      if (Conductor.instance.songPosition > 0.0)
+      {
+        DiscordClient.instance.setPresence(
+          {
+            state: buildDiscordRPCState(),
+            details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
+            smallImageKey: discordRPCIcon
+          });
+      }
       else
-        DiscordClient.changePresence(detailsText, currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+      {
+        DiscordClient.instance.setPresence(
+          {
+            state: buildDiscordRPCState(),
+            details: buildDiscordRPCDetails(),
+
+            largeImageKey: discordRPCAlbum,
+            smallImageKey: discordRPCIcon
+          });
+        // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true,
+        //   currentSongLengthMs - Conductor.instance.songPosition);
+      }
     }
     #end
 
@@ -1352,8 +1397,17 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !paused && FlxG.autoPause) DiscordClient.changePresence(detailsPausedText,
-      currentSong.song + ' (' + storyDifficultyText + ')', iconRPC);
+    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
+    {
+      DiscordClient.instance.setPresence(
+        {
+          state: buildDiscordRPCState(),
+          details: buildDiscordRPCDetails(),
+
+          largeImageKey: discordRPCAlbum,
+          smallImageKey: discordRPCIcon
+        });
+    }
     #end
 
     super.onFocusLost();
@@ -1366,6 +1420,7 @@ class PlayState extends MusicBeatSubState
   {
     funkin.modding.PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
+    this.remove(currentStage);
     LoadingState.loadPlayState(lastParams);
   }
 
@@ -1650,6 +1705,11 @@ class PlayState extends MusicBeatSubState
       iconP2.zIndex = 850;
       add(iconP2);
       iconP2.cameras = [camHUD];
+
+      #if FEATURE_DISCORD_RPC
+      discordRPCAlbum = 'album-${currentChart.album}';
+      discordRPCIcon = 'icon-${currentCharacterData.opponent}';
+      #end
     }
 
     //
@@ -1765,27 +1825,51 @@ class PlayState extends MusicBeatSubState
   function initDiscord():Void
   {
     #if FEATURE_DISCORD_RPC
-    storyDifficultyText = difficultyString();
-    iconRPC = currentSong.player2;
-
-    // To avoid having duplicate images in Discord assets
-    switch (iconRPC)
-    {
-      case 'senpai-angry':
-        iconRPC = 'senpai';
-      case 'monster-christmas':
-        iconRPC = 'monster';
-      case 'mom-car':
-        iconRPC = 'mom';
-    }
-
-    // String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-    detailsText = isStoryMode ? 'Story Mode: Week $storyWeek' : 'Freeplay';
-    detailsPausedText = 'Paused - $detailsText';
+    // Determine the details strings once and reuse them.
 
     // Updating Discord Rich Presence.
-    DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC);
+    DiscordClient.instance.setPresence(
+      {
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
+
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
     #end
+  }
+
+  function buildDiscordRPCDetails():String
+  {
+    if (PlayStatePlaylist.isStoryMode)
+    {
+      return 'Story Mode: ${PlayStatePlaylist.campaignTitle}';
+    }
+    else
+    {
+      if (isChartingMode)
+      {
+        return 'Chart Editor [Playtest]';
+      }
+      else if (isPracticeMode)
+      {
+        return 'Freeplay [Practice]';
+      }
+      else if (isBotPlayMode)
+      {
+        return 'Freeplay [Bot Play]';
+      }
+      else
+      {
+        return 'Freeplay';
+      }
+    }
+  }
+
+  function buildDiscordRPCState():String
+  {
+    var discordRPCDifficulty = PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
+    return '${currentChart.songName} [${discordRPCDifficulty}]';
   }
 
   function initPreciseInputs():Void
@@ -1976,13 +2060,21 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
     vocals.time = FlxG.sound.music.time;
-    trace('${FlxG.sound.music.time}');
-    trace('${vocals.time}');
+    // trace('${FlxG.sound.music.time}');
+    // trace('${vocals.time}');
     resyncVocals();
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
-    DiscordClient.changePresence(detailsText, '${currentChart.songName} ($storyDifficultyText)', iconRPC, true, currentSongLengthMs);
+    DiscordClient.instance.setPresence(
+      {
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
+
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
+    // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true, currentSongLengthMs);
     #end
 
     if (startTimestamp > 0)
@@ -2578,7 +2670,7 @@ class PlayState extends MusicBeatSubState
      */
   function debugKeyShit():Void
   {
-    #if FEATURE_CHART_EDITOR
+    #if FEATURE_STAGE_EDITOR
     // Open the stage editor overlaying the current state.
     if (controls.DEBUG_STAGE)
     {
@@ -2587,7 +2679,9 @@ class PlayState extends MusicBeatSubState
       persistentUpdate = false;
       openSubState(new StageOffsetSubState());
     }
+    #end
 
+    #if FEATURE_CHART_EDITOR
     // Redirect to the chart editor playing the current song.
     if (controls.DEBUG_CHART)
     {
@@ -2595,11 +2689,13 @@ class PlayState extends MusicBeatSubState
       persistentUpdate = false;
       if (isChartingMode)
       {
+        // Close the playtest substate.
         FlxG.sound.music?.pause();
         this.close();
       }
       else
       {
+        this.remove(currentStage);
         FlxG.switchState(() -> new ChartEditorState(
           {
             targetSongId: currentSong.id,
@@ -2949,6 +3045,7 @@ class PlayState extends MusicBeatSubState
             {
               targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
             }
+            this.remove(currentStage);
             LoadingState.loadPlayState(
               {
                 targetSong: targetSong,
@@ -2966,6 +3063,7 @@ class PlayState extends MusicBeatSubState
           {
             targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
           }
+          this.remove(currentStage);
           LoadingState.loadPlayState(
             {
               targetSong: targetSong,
