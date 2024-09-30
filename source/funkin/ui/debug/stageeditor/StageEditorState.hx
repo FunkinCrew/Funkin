@@ -292,7 +292,7 @@ class StageEditorState extends UIState
   {
     WindowManager.instance.reset();
     instance = this;
-    FlxG.sound.music.stop();
+    FlxG.sound.music?.stop();
     WindowUtil.setWindowTitle("Friday Night Funkin\' Stage Editor");
 
     AssetDataHandler.init(this);
@@ -503,7 +503,7 @@ class StageEditorState extends UIState
     return super.beatHit();
   }
 
-  override public function update(elapsed:Float)
+  override public function update(elapsed:Float):Void
   {
     updateBGSize();
     conductorInUse.update();
@@ -563,7 +563,8 @@ class StageEditorState extends UIState
     // key shortcuts and inputs
     if (allowInput)
     {
-      if (FlxG.keys.pressed.CONTROL)
+      // "WINDOWS" key code is the same keycode as COMMAND on mac
+      if (FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.WINDOWS)
       {
         if (FlxG.keys.justPressed.Z) onMenuItemClick("undo");
         if (FlxG.keys.justPressed.Y) onMenuItemClick("redo");
