@@ -28,10 +28,14 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
     [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
     [CUTSCENE_ADVANCE],
-    [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT],
-    [WINDOW_FULLSCREEN, WINDOW_SCREENSHOT],
+    [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT],
+    [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end],
     [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
-    [DEBUG_MENU, DEBUG_CHART]
+    [
+      DEBUG_MENU,
+      #if FEATURE_CHART_EDITOR DEBUG_CHART, #end
+      #if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end
+    ]
   ];
 
   var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
@@ -137,7 +141,8 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
 
       if (currentHeader != null && name.indexOf(currentHeader) == 0) name = name.substr(currentHeader.length);
 
-      var label = labels.add(new AtlasText(100, y, name, AtlasFont.BOLD));
+      var formatName = name.replace('_', ' ');
+      var label = labels.add(new AtlasText(100, y, formatName, AtlasFont.BOLD));
       label.alpha = 0.6;
       for (i in 0...COLUMNS)
         createItem(label.x + 550 + i * 400, y, control, i);
