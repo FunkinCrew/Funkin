@@ -6,65 +6,73 @@ body:
   - type: checkboxes
     attributes:
       label: Issue Checklist
+      description: Be sure to complete these steps to increase the chances of your issue being addressed!
       options:
-        - label: I have properly named the issue
-        - label: I have checked the issues/discussions pages to see if the issue has been previously reported
+        - label: I have properly named my issue
+        - label: I have checked the Issues/Discussions pages to see if my issue has already been reported
 
   - type: dropdown
     attributes:
-      label: What platform are you using?
+      label: Platform
+      description: Which platform are you playing on?
       options:
-        - Newgrounds (Web)
-        - Itch.io (Web)
+        - Newgrounds (Web/HTML5)
+        - Itch.io (Web/HTML5)
         - Itch.io (Downloadable Build) - Windows
         - Itch.io (Downloadable Build) - MacOS
         - Itch.io (Downloadable Build) - Linux
+        - Compiled from GitHub Source Code
     validations:
       required: true
 
   - type: dropdown
     attributes:
-      label: If you are playing on a browser, which one are you using?
+      label: Browser
+      description: (Web/HTML5 users only) Which browser are you playing on?
       options:
         - Google Chrome
         - Microsoft Edge
         - Firefox
         - Opera
         - Safari
-        - Other (Specify below)
+        - Other (Specify in Description field)
 
   - type: input
     attributes:
       label: Version
-      description: What version are you using?
-      placeholder: ex. 0.4.1
+      description: Which version are you playing on? The game version is in the bottom left corner of the main menu. 
+      placeholder: ex. 0.5.0
     validations:
       required: true
 
   - type: markdown
     attributes:
-      value: "## Describe your issue."
+      value: "## Describe the crash."
 
   - type: markdown
     attributes:
       value: "### Please do not report issues from other engines. These must be reported in their respective repositories."
 
-  - type: markdown
-    attributes:
-      value: "#### Provide as many details as you can."
-
   - type: textarea
     attributes:
-      label: Context (Provide screenshots or videos of the crash happening)
-
-  - type: textarea
-    attributes:
-      label: Steps to reproduce
+      label: Description
+      description: Include screenshots or videos of the crash happening. Provide as much detail as you can. 
+      placeholder: Describe the crash here...
     validations:
       required: true
 
   - type: textarea
     attributes:
-      label: Crash logs (can be found in the logs folder where Funkin.exe is)
+      label: Steps to Reproduce
+      description: What steps can other people take to reliably trigger this crash?
+      placeholder: 1. Open the game...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Crash logs
+      description: These can be found in the logs folder where Funkin.exe is.
+      placeholder: Upload your logs here...
     validations:
       required: true

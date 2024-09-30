@@ -8,7 +8,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import funkin.util.TimerUtil;
 import funkin.util.EaseUtil;
-import openfl.utils.Assets;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 
@@ -95,7 +94,6 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
       if (numScore == null) continue;
 
       numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65;
-      trace('numScore($daLoop) = ${numScore.x}');
       numScore.y = (FlxG.camera.height * 0.44);
 
       numScore.x += offsets[0];

@@ -15,7 +15,7 @@ class Preferences
 
   static function get_framerate():Int
   {
-    #if (web || CHEEMS)
+    #if web
     return 60;
     #else
     return Save?.instance?.options?.framerate ?? 60;
@@ -24,7 +24,7 @@ class Preferences
 
   static function set_framerate(value:Int):Int
   {
-    #if (web || CHEEMS)
+    #if web
     return 60;
     #else
     var save:Save = Save.instance;
@@ -37,7 +37,7 @@ class Preferences
   }
 
   /**
-   * Whether some particularly fowl language is displayed.
+   * Whether some particularly foul language is displayed.
    * @default `true`
    */
   public static var naughtyness(get, set):Bool;

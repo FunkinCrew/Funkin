@@ -54,11 +54,6 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-    #if !web
-    createPrefItemNumber('FPS', 'The framerate that the game is running on', function(value:Float) {
-      Preferences.framerate = Std.int(value);
-    }, null, Preferences.framerate, 60, 360, 1, 0);
-    #end
     createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
@@ -82,6 +77,10 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
+    #else
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
+      Preferences.framerate = Std.int(value);
+    }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
   }
 

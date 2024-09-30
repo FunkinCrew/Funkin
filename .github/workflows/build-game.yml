@@ -2,6 +2,15 @@ name: Build and Upload nightly game builds
 
 on:
   workflow_dispatch:
+    inputs:
+      build-defines:
+        type: string
+        description: Build defines to use
+        default: '-DGITHUB_BUILD'
+      save-artifact:
+        type: boolean
+        description: Save the build artifact to Github Actions (sends to itch otherwise)
+        default: false
   push:
     paths-ignore:
     - '**/Dockerfile'
@@ -53,13 +62,20 @@ jobs:
     - name: Build game
       if: ${{ matrix.target == 'windows' }}
       run: |
-        haxelib run lime build windows -v -release -DGITHUB_BUILD
+        haxelib run lime build windows -v -release ${{ github.event.inputs.build-defines }}
       timeout-minutes: 120
     - name: Build game
       if: ${{ matrix.target != 'windows' }}
       run: |
-        haxelib run lime build ${{ matrix.target }} -v -release --times -DGITHUB_BUILD
+        haxelib run lime build ${{ matrix.target }} -v -release --times ${{ github.event.inputs.build-defines }}
       timeout-minutes: 120
+    - name: Save build artifact to Github Actions
+      if: ${{ github.event.inputs.save-artifact }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.target }}
+        path: export/release/${{matrix.target}}/bin/
+
 
     - name: Upload build artifacts
       uses: ./.github/actions/upload-itch
@@ -125,9 +141,15 @@ jobs:
 
     - name: Build game
       run: |
-        haxelib run lime build ${{ matrix.target }} -v -release --times -DGITHUB_BUILD
+        haxelib run lime build ${{ matrix.target }} -v -release --times ${{ github.event.inputs.build-defines }}
       timeout-minutes: 120
 
+    - name: Save build artifact to Github Actions
+      if: ${{ github.event.inputs.save-artifact }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ matrix.target }}
+        path: export/release/${{matrix.target}}/bin/
     - name: Upload build artifacts
       uses: ./.github/actions/upload-itch
       with:
