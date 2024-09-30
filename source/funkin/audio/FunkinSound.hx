@@ -390,7 +390,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     else
     {
-      var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true, params.onComplete);
+      var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true, params.persist ?? false, params.onComplete);
       if (music != null)
       {
         FlxG.sound.music = music;
@@ -514,7 +514,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       });
 
       soundRequest.future.onComplete(function(partialSound) {
-        var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, onComplete, onLoad);
+        var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, false, onComplete, onLoad);
         promise.complete(snd);
       });
     }
@@ -544,7 +544,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    */
   public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
-    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, onComplete, onLoad);
+    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, false, onComplete, onLoad);
     return result;
   }
 
@@ -629,6 +629,11 @@ typedef FunkinSoundPlayMusicParams =
   var ?pathsFunction:PathsFunction;
 
   var ?partialParams:PartialSoundParams;
+
+  /**
+   * Whether the sound should be destroyed on state switches
+   */
+  var ?persist:Bool;
 
   var ?onComplete:Void->Void;
   var ?onLoad:Void->Void;
