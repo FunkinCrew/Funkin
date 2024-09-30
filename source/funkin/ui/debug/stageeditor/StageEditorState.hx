@@ -181,7 +181,7 @@ class StageEditorState extends UIState
   public var saved(default, set):Bool = true;
   public var currentFile(default, set):String = "";
 
-  function set_saved(value:Bool)
+  function set_saved(value:Bool):Bool
   {
     saved = value;
 
@@ -216,7 +216,7 @@ class StageEditorState extends UIState
     return value;
   }
 
-  function set_currentFile(value:String)
+  function set_currentFile(value:String):String
   {
     currentFile = value;
 
@@ -278,7 +278,7 @@ class StageEditorState extends UIState
 
   var showChars(default, set):Bool = true;
 
-  function set_showChars(value:Bool)
+  function set_showChars(value:Bool):Bool
   {
     this.showChars = value;
 
@@ -288,7 +288,7 @@ class StageEditorState extends UIState
     return value;
   }
 
-  override public function create()
+  override public function create():Void
   {
     WindowManager.instance.reset();
     instance = this;
@@ -619,7 +619,7 @@ class StageEditorState extends UIState
       {
         spr.active = spr.isOnScreen();
 
-        if (FlxG.mouse.overlaps(spr))
+        if (spr.pixelsOverlapPoint(FlxG.mouse.getWorldPosition()))
         {
           if (spr.visible && !FlxG.keys.pressed.SHIFT) nameTxt.text = spr.name;
 
@@ -923,7 +923,7 @@ class StageEditorState extends UIState
     WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 
-  function updateBGColors()
+  function updateBGColors():Void
   {
     var colArray = Save.instance.stageEditorTheme == StageEditorTheme.Dark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
 
@@ -937,14 +937,14 @@ class StageEditorState extends UIState
     members.insert(index, bg);
   }
 
-  function updateBGSize()
+  function updateBGSize():Void
   {
     bg.scale.set(1 / FlxG.camera.zoom, 1 / FlxG.camera.zoom);
     bg.updateHitbox();
     bg.screenCenter();
   }
 
-  function checkOverlaps(spr:FlxSprite)
+  function checkOverlaps(spr:FlxSprite):Bool
   {
     if (FlxG.mouse.overlaps(spr) /*spr.overlapsPoint(FlxG.mouse.getWorldPosition(spr.camera), true, spr.camera) */
       && Screen.instance != null
@@ -957,7 +957,7 @@ class StageEditorState extends UIState
 
   var sprDependant:Array<MenuItem> = [];
 
-  function addUI()
+  function addUI():Void
   {
     menubarItemNewStage.onClick = function(_) onMenuItemClick("new stage");
     menubarItemOpenStage.onClick = function(_) onMenuItemClick("open stage");
@@ -1065,7 +1065,7 @@ class StageEditorState extends UIState
     reloadRecentFiles();
   }
 
-  function reloadRecentFiles()
+  function reloadRecentFiles():Void
   {
     for (a in menubarItemOpenRecent.childComponents)
       menubarItemOpenRecent.removeComponent(a);
@@ -1114,7 +1114,7 @@ class StageEditorState extends UIState
   public var aboutDialog:AboutDialog;
   public var loadUrlDialog:LoadFromUrlDialog;
 
-  public function onMenuItemClick(item:String)
+  public function onMenuItemClick(item:String):Void
   {
     switch (item.toLowerCase())
     {

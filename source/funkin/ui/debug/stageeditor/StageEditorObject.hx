@@ -50,7 +50,7 @@ class StageEditorObject extends FunkinSprite
     return value;
   }
 
-  public function playAnim(name:String, restart:Bool = false, reversed:Bool = false)
+  public function playAnim(name:String, restart:Bool = false, reversed:Bool = false):Void
   {
     if (!animation.getNameList().contains(name)) return;
 
@@ -71,7 +71,7 @@ class StageEditorObject extends FunkinSprite
    */
   var _danced:Bool = true;
 
-  public function dance(restart:Bool = false)
+  public function dance(restart:Bool = false):Void
   {
     if (isDebugged) return;
 
