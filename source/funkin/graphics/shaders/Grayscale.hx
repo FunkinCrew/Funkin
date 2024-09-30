@@ -1,8 +1,6 @@
 package funkin.graphics.shaders;
 
 import flixel.addons.display.FlxRuntimeShader;
-import funkin.Paths;
-import openfl.utils.Assets;
 
 class Grayscale extends FlxRuntimeShader
 {

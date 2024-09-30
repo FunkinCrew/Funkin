@@ -16,7 +16,6 @@ import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.util.SortUtil;
-import openfl.utils.Assets;
 
 /**
  * This is a data structure managing information about the current song.
@@ -157,6 +156,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       for (vari in _data.playData.songVariations)
       {
+        if (!validateVariationId(vari)) {
+          trace('  [WARN] Variation id "$vari" is invalid, skipping...');
+          continue;
+        }
+
         var variMeta:Null<SongMetadata> = fetchVariationMetadata(id, vari);
         if (variMeta != null)
         {
@@ -408,7 +412,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (possibleVariations == null)
     {
       possibleVariations = getVariationsByCharacter(currentCharacter);
-      possibleVariations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
     }
     if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
 
@@ -429,7 +432,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public function getVariationsByCharacter(?char:PlayableCharacter):Array<String>
   {
-    if (char == null) return variations;
+    if (char == null)
+    {
+      var result = variations;
+      result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
+      return result;
+    }
 
     var result = [];
     trace('Evaluating variations for ${this.id} ${char.id}: ${this.variations}');
@@ -445,6 +453,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         result.push(variation);
       }
     }
+
+    result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
 
     return result;
   }
@@ -466,18 +476,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     if (variationIds.length == 0) return [];
 
-    // The difficulties array contains entries like 'normal', 'nightmare-erect', and 'normal-pico',
-    // so we have to map it to the actual difficulty names.
-    // We also filter out difficulties that don't match the variation or that don't exist.
-
-    var diffFiltered:Array<String> = difficulties.keys()
-      .array()
-      .map(function(diffId:String):Null<String> {
-        var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
-        if (difficulty == null) return null;
-        if (variationIds.length > 0 && !variationIds.contains(difficulty.variation)) return null;
-        return difficulty.difficulty;
-      })
+    var diffFiltered:Array<String> = variationIds.map(function(variationId:String):Array<String> {
+      var metadata = _metadata.get(variationId);
+      return metadata?.playData?.difficulties ?? [];
+    })
+      .flatten()
       .filterNull()
       .distinct();
 
@@ -490,11 +493,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       return false;
     });
 
-    diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
+    diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
     return diffFiltered;
   }
 
+  /**
+   * TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
+   * @return `easy`, `erect`, `normal-pico`, etc.
+   */
   public function listSuffixedDifficulties(variationIds:Array<String>, ?showLocked:Bool, ?showHidden:Bool):Array<String>
   {
     var result = [];
@@ -509,6 +516,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         result.push(suffixedDifficulty);
       }
     }
+
+    result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
     return result;
   }
@@ -629,6 +638,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (version == null) return null;
     var meta:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataWithMigration(id, vari, version);
     return meta;
+  }
+
+  static final VARIATION_REGEX = ~/^[a-z][a-z0-9]+$/;
+
+  /**
+   * Validate that the variation ID is valid.
+   * Auto-accept if it's one of the base game default variations.
+   * Reject if the ID starts with a number, or contains invalid characters.
+   */
+  static function validateVariationId(variation:String):Bool {
+    if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
+
+    return VARIATION_REGEX.match(variation);
   }
 }
 
