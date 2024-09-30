@@ -1,42 +1,42 @@
 package funkin;
 
-import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.transition.LoadingState;
-import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.TransitionData;
+import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.FlxSprite;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
-import funkin.util.macro.MacroUtil;
-import funkin.util.WindowUtil;
-import funkin.play.PlayStatePlaylist;
-import openfl.display.BitmapData;
-import funkin.data.story.level.LevelRegistry;
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.freeplay.style.FreeplayStyleRegistry;
-import funkin.data.event.SongEventRegistry;
-import funkin.data.stage.StageRegistry;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.stage.StageRegistry;
+import funkin.data.story.level.LevelRegistry;
+import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.notes.notekind.NoteKindManager;
-import funkin.modding.module.ModuleHandler;
+import funkin.play.PlayStatePlaylist;
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.title.TitleState;
+import funkin.ui.transition.LoadingState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
+import funkin.util.macro.MacroUtil;
 import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
+import funkin.util.WindowUtil;
+import openfl.display.BitmapData;
 #if FEATURE_DISCORD_RPC
-import Discord.DiscordClient;
+import funkin.api.discord.DiscordClient;
 #end
 
 /**
@@ -125,10 +125,10 @@ class InitState extends FlxState
     // DISCORD API SETUP
     //
     #if FEATURE_DISCORD_RPC
-    DiscordClient.initialize();
+    DiscordClient.instance.init();
 
-    Application.current.onExit.add(function(exitCode) {
-      DiscordClient.shutdown();
+    lime.app.Application.current.onExit.add(function(exitCode) {
+      DiscordClient.instance.shutdown();
     });
     #end
 
@@ -148,10 +148,12 @@ class InitState extends FlxState
     #if FEATURE_DEBUG_FUNCTIONS
     funkin.util.plugins.MemoryGCPlugin.initialize();
     #end
+    #if FEATURE_SCREENSHOTS
+    funkin.util.plugins.ScreenshotPlugin.initialize();
+    #end
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
-    funkin.util.plugins.ScreenshotPlugin.initialize();
     funkin.util.plugins.VolumePlugin.initialize();
     funkin.util.plugins.WatchPlugin.initialize();
 

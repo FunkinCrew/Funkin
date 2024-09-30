@@ -2,7 +2,6 @@ package funkin.ui.transition;
 
 import flixel.FlxSprite;
 import haxe.Json;
-import lime.utils.Assets;
 import funkin.graphics.FunkinSprite;
 // import flxtyped group
 import funkin.ui.MusicBeatSubState;
@@ -56,7 +55,7 @@ class StickerSubState extends MusicBeatSubState
     // make sure that ONLY plays mp3/ogg files
     // if there's no mp3/ogg file, then it regenerates/reloads the random folder
 
-    var assetsInList = openfl.utils.Assets.list();
+    var assetsInList = Assets.list();
 
     var soundFilterFunc = function(a:String) {
       return a.startsWith('assets/shared/sounds/stickersounds/');
@@ -84,7 +83,7 @@ class StickerSubState extends MusicBeatSubState
     var filterFunc = function(a:String) {
       return a.startsWith('assets/shared/sounds/stickersounds/' + soundSelection + '/');
     };
-    var assetsInList3 = openfl.utils.Assets.list();
+    var assetsInList3 = Assets.list();
     sounds = assetsInList3.filter(filterFunc);
     for (i in 0...sounds.length)
     {

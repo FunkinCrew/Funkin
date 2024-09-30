@@ -2,7 +2,6 @@ package funkin.graphics.shaders;
 
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import openfl.utils.Assets;
 
 class RuntimeCustomBlendShader extends RuntimePostEffectShader
 {
