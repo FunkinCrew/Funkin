@@ -17,7 +17,7 @@ import thx.semver.Version;
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.5";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.4";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -34,19 +34,19 @@ class Save
   {
     if (_instance == null)
     {
-      _instance = new Save(FlxG.save.data);
+      return _instance = load();
     }
     return _instance;
   }
 
   var data:RawSaveData;
 
-  public static function load():Void
+  public static function load():Save
   {
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    loadFromSlot(1);
+    return loadFromSlot(1);
   }
 
   /**
@@ -65,7 +65,9 @@ class Save
   public static function getDefault():RawSaveData
   {
     return {
-      version: Save.SAVE_DATA_VERSION,
+      // Version number is an abstract(Array) internally.
+      // This means it copies by reference, so merging save data overides the version number lol.
+      version: thx.Dynamics.clone(Save.SAVE_DATA_VERSION),
 
       volume: 1.0,
       mute: false,
@@ -89,6 +91,7 @@ class Save
       options:
         {
           // Reasonable defaults.
+          framerate: 60,
           naughtyness: true,
           downscroll: false,
           flashingLights: true,
@@ -433,7 +436,9 @@ class Save
   {
     if (!data.unlocks.charactersSeen.contains(character))
     {
+      trace('Character seen: ' + character);
       data.unlocks.charactersSeen.push(character);
+      trace('New characters seen list: ' + data.unlocks.charactersSeen);
       flush();
     }
   }
@@ -598,11 +603,14 @@ class Save
       return;
     }
 
+    var newCompletion = (newScoreData.tallies.sick + newScoreData.tallies.good) / newScoreData.tallies.totalNotes;
+    var previousCompletion = (previousScoreData.tallies.sick + previousScoreData.tallies.good) / previousScoreData.tallies.totalNotes;
+
     // Set the high score and the high rank separately.
     var newScore:SaveScoreData =
       {
         score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
-        tallies: (previousRank > newRank) ? previousScoreData.tallies : newScoreData.tallies
+        tallies: (previousRank > newRank || previousCompletion > newCompletion) ? previousScoreData.tallies : newScoreData.tallies
       };
 
     song.set(difficultyId, newScore);
@@ -832,7 +840,7 @@ class Save
    * If you set slot to `2`, it will load an independe
    * @param slot
    */
-  static function loadFromSlot(slot:Int):Void
+  static function loadFromSlot(slot:Int):Save
   {
     trace("[SAVE] Loading save from slot " + slot + "...");
 
@@ -850,12 +858,14 @@ class Save
         trace('[SAVE] Found legacy save data, converting...');
         var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
         FlxG.save.mergeData(gameSave.data, true);
+        return gameSave;
       }
       else
       {
         trace('[SAVE] No legacy save data found.');
         var gameSave = new Save();
         FlxG.save.mergeData(gameSave.data, true);
+        return gameSave;
       }
     }
     else
@@ -863,6 +873,8 @@ class Save
       trace('[SAVE] Found existing save data.');
       var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
       FlxG.save.mergeData(gameSave.data, true);
+
+      return gameSave;
     }
   }
 
@@ -1134,7 +1146,13 @@ typedef SaveScoreTallyData =
 typedef SaveDataOptions =
 {
   /**
-   * Whether some particularly fowl language is displayed.
+   * FPS
+   * @default `60`
+   */
+  var framerate:Int;
+
+  /**
+   * Whether some particularly foul language is displayed.
    * @default `true`
    */
   var naughtyness:Bool;
@@ -1170,20 +1188,20 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
-   * Offset the users inputs by this many ms.
+   * Offset the user's inputs by this many ms.
    * @default `0`
    */
   var inputOffset:Int;
 
   /**
-   * Affects the delay between the audio and the visuals during gameplay
+   * Affects the delay between the audio and the visuals during gameplay.
    * @default `0`
    */
   var audioVisualOffset:Int;
 
   /**
    * If we want the framerate to be unlocked on HTML5.
-   * @default `false
+   * @default `false`
    */
   var unlockedFramerate:Bool;
 

@@ -11,7 +11,6 @@ import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import flixel.util.FlxTimer;
 import funkin.util.EaseUtil;
 import funkin.audio.FunkinSound;
-import openfl.utils.Assets;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 

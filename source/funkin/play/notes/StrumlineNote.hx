@@ -85,7 +85,8 @@ class StrumlineNote extends FlxSprite
     noteStyle.applyStrumlineFrames(this);
     noteStyle.applyStrumlineAnimations(this, this.direction);
 
-    this.setGraphicSize(Std.int(Strumline.STRUMLINE_SIZE * noteStyle.getStrumlineScale()));
+    var scale = noteStyle.getStrumlineScale();
+    this.scale.set(scale, scale);
     this.updateHitbox();
     noteStyle.applyStrumlineOffsets(this);
 

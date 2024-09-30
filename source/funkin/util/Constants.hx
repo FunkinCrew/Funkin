@@ -78,7 +78,12 @@ class Constants
   /**
    * Link to download the game on Itch.io.
    */
-  public static final URL_ITCH:String = 'https://ninja-muffin24.itch.io/funkin/purchase';
+  public static final URL_ITCH:String = 'https://ninja-muffin24.itch.io/funkin';
+
+  /**
+   * Link to play the game on Newgrounds.
+   */
+  public static final URL_NEWGROUNDS:String = 'https://www.newgrounds.com/portal/view/770371';
 
   /**
    * Link to the game's page on Kickstarter.
@@ -185,6 +190,11 @@ class Constants
    * Assumes no Erect mode, etc.
    */
   public static final DEFAULT_DIFFICULTY_LIST:Array<String> = ['easy', 'normal', 'hard'];
+
+  /**
+   * Default list of difficulties for Erect mode.
+   */
+  public static final DEFAULT_DIFFICULTY_LIST_ERECT:Array<String> = ['erect', 'nightmare'];
 
   /**
    * List of all difficulties used by the base game.
@@ -480,10 +490,6 @@ class Constants
   public static final JUDGEMENT_GOOD_COMBO_BREAK:Bool = false;
   public static final JUDGEMENT_BAD_COMBO_BREAK:Bool = true;
   public static final JUDGEMENT_SHIT_COMBO_BREAK:Bool = true;
-
-  // % Sick
-  public static final RANK_PERFECT_PLAT_THRESHOLD:Float = 1.0; // % Sick
-  public static final RANK_PERFECT_GOLD_THRESHOLD:Float = 0.85; // % Sick
 
   // % Hit
   public static final RANK_PERFECT_THRESHOLD:Float = 1.00;

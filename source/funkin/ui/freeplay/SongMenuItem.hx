@@ -678,7 +678,7 @@ class SongMenuItem extends FlxSpriteGroup
   public function confirm():Void
   {
     if (songText != null) songText.flickerText();
-    if (pixelIcon != null)
+    if (pixelIcon != null && pixelIcon.visible)
     {
       pixelIcon.animation.play('confirm');
     }

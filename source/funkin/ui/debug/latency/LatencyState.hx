@@ -16,6 +16,7 @@ import funkin.ui.debug.latency.CoolStatsGraph;
 import openfl.events.KeyboardEvent;
 import funkin.input.PreciseInputManager;
 import funkin.play.notes.Strumline;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -189,6 +190,12 @@ class LatencyState extends MusicBeatSubState
 
   override public function close():Void
   {
+    cleanup();
+    super.close();
+  }
+
+  function cleanup():Void
+  {
     PreciseInputManager.instance.onInputPressed.remove(preciseInputPressed);
     PreciseInputManager.instance.onInputReleased.remove(preciseInputReleased);
 
@@ -200,7 +207,6 @@ class LatencyState extends MusicBeatSubState
 
     FlxG.state.persistentDraw = prevPersistentDraw;
     FlxG.state.persistentUpdate = prevPersistentUpdate;
-    super.close();
   }
 
   function regenNoteData()
@@ -311,7 +317,9 @@ class LatencyState extends MusicBeatSubState
 
     if (controls.BACK)
     {
-      close();
+      // close();
+      cleanup();
+      FlxG.switchState(() -> new MainMenuState());
     }
 
     super.update(elapsed);

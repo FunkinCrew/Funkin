@@ -150,11 +150,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public function resetPosition()
   {
-    var oldAnimOffsets = [animOffsets[0], animOffsets[1]];
-    animOffsets = [0, 0];
     this.x = originalPosition.x;
     this.y = originalPosition.y;
-    animOffsets = oldAnimOffsets;
   }
 
   function update_shouldAlternate():Void

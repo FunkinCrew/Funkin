@@ -119,6 +119,22 @@ typedef StageDataProp =
   var isPixel:Bool;
 
   /**
+   * If set to true, the prop will be flipped horizontally.
+   * @default false
+   */
+  @:optional
+  @:default(false)
+  var flipX:Bool;
+
+  /**
+   * If set to true, the prop will be flipped vertically.
+   * @default false
+   */
+  @:optional
+  @:default(false)
+  var flipY:Bool;
+
+  /**
    * Either the scale of the prop as a float, or the [w, h] scale as an array of two floats.
    * Pro tip: On pixel-art levels, save the sprite small and set this value to 6 or so to save memory.
    */

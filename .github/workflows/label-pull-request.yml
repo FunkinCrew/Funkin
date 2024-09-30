@@ -3,6 +3,7 @@ on:
 - pull_request_target
 
 jobs:
+  # Apply labels to pull requests based on which files were edited
   labeler:
     permissions:
       contents: read
@@ -13,6 +14,7 @@ jobs:
       uses: actions/labeler@v5
       with:
         sync-labels: true
+  # Apply labels to pull requests based on how many lines were edited
   changed-lines-count-labeler:
     permissions:
       contents: read

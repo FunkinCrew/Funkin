@@ -11,7 +11,7 @@ import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import haxe.Json;
-import openfl.utils.Assets;
+import flixel.graphics.frames.FlxFrame;
 
 class CharacterDataParser
 {
@@ -281,41 +281,78 @@ class CharacterDataParser
   }
 
   /**
-   * TODO: Hardcode this.
+   * Returns the idle frame of a character.
    */
-  public static function getCharPixelIconAsset(char:String):String
+  public static function getCharPixelIconAsset(char:String):FlxFrame
   {
-    var icon:String = char;
+    var charPath:String = "freeplay/icons/";
 
-    switch (icon)
+    // FunkinCrew please dont skin me alive for copying pixelated icon and changing it a tiny bit
+    switch (char)
     {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
-        icon = "bf";
+      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
+        charPath += "bfpixel";
       case "monster-christmas":
-        icon = "monster";
+        charPath += "monsterpixel";
       case "mom" | "mom-car":
-        icon = "mommy";
+        charPath += "mommypixel";
       case "pico-blazin" | "pico-playable" | "pico-speaker":
-        icon = "pico";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
-        icon = "gf";
+        charPath += "picopixel";
+      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
+        charPath += "gfpixel";
       case "dad":
-        icon = "daddy";
+        charPath += "dadpixel";
       case "darnell-blazin":
-        icon = "darnell";
+        charPath += "darnellpixel";
       case "senpai-angry":
-        icon = "senpai";
+        charPath += "senpaipixel";
       case "spooky-dark":
-        icon = "spooky";
+        charPath += "spookypixel";
       case "tankman-atlas":
-        icon = "tankman";
+        charPath += "tankmanpixel";
+      case "pico-christmas" | "pico-dark":
+        charPath += "picopixel";
+      default:
+        charPath += '${char}pixel';
     }
 
-    var path = Paths.image("freeplay/icons/" + icon + "pixel");
-    if (Assets.exists(path)) return path;
+    if (!Assets.exists(Paths.image(charPath)))
+    {
+      trace('[WARN] Character ${char} has no freeplay icon.');
+      return null;
+    }
 
-    // TODO: Hardcode some additional behavior or a fallback.
-    return null;
+    var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
+    var frame:FlxFrame = null;
+
+    if (isAnimated)
+    {
+      var frames = Paths.getSparrowAtlas(charPath);
+
+      var idleFrame:FlxFrame = frames.frames.find(function(frame:FlxFrame):Bool {
+        return frame.name.startsWith('idle');
+      });
+
+      if (idleFrame == null)
+      {
+        trace('[WARN] Character ${char} has no idle in their freeplay icon.');
+        return null;
+      }
+
+      // so, haxe.ui.backend.AssetsImpl uses the parent width and height, which makes the image go crazy when rendered
+      // so this is a work around so that it uses the actual width and height
+      var imageGraphic = flixel.graphics.FlxGraphic.fromFrame(idleFrame);
+
+      var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(imageGraphic);
+      frame = imageFrame.frame;
+    }
+    else
+    {
+      var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(Paths.image(charPath));
+      frame = imageFrame.frame;
+    }
+
+    return frame;
   }
 
   /**
