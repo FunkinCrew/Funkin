@@ -3,6 +3,7 @@ package funkin.ui.debug.charting;
 #if !macro
 // Apply handlers so they can be called as though they were functions in ChartEditorState
 using funkin.ui.debug.charting.handlers.ChartEditorAudioHandler;
+using funkin.ui.debug.charting.handlers.ChartEditorChartGeneratorHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorContextMenuHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorDialogHandler;
 using funkin.ui.debug.charting.handlers.ChartEditorGamepadHandler;
