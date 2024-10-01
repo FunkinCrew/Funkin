@@ -6,5 +6,5 @@
 - Backspace is a Crash Keybind in Visual Offset Menu (v0.5.1)
 
 # Minor Priority Bugs
-- Double Boyfriend Sprites in Character Select (v0.5)
+- [Double Boyfriend Sprites in Character Select (v0.5)](https://github.com/FunkinCrew/Funkin/issues/3220)
 - Freeplay Menu Character Flickering (v0.5)
