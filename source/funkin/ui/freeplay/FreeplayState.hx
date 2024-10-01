@@ -270,6 +270,13 @@ class FreeplayState extends MusicBeatSubState
 
     fromResultsParams = params?.fromResults;
 
+    // bf songs have no suffix, but we need to initalize the difficulty
+    // in case we begin playing as pico
+    if (currentCharacterId != 'bf')
+    {
+      currentSuffixedDifficulty = Constants.DEFAULT_DIFFICULTY + '-$currentCharacterId';
+    }
+
     if (fromResultsParams?.playRankAnim == true)
     {
       prepForNewRank = true;
@@ -783,7 +790,7 @@ class FreeplayState extends MusicBeatSubState
     {
       tempSongs = tempSongs.filter(song -> {
         if (song == null) return true; // Random
-        return song.suffixedSongDifficulties.contains(currentSuffixedDifficulty);
+        return (song.suffixedSongDifficulties.contains(currentSuffixedDifficulty) || song.songCharacter == currentCharacterId);
       });
     }
 
@@ -1797,6 +1804,7 @@ class FreeplayState extends MusicBeatSubState
     currentSuffixedDifficulty = suffixedDiffIdsCurrent[currentDifficultyIndex];
 
     trace('Switching to difficulty: ${currentSuffixedDifficulty}');
+    trace(suffixedDiffIdsCurrent);
 
     var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].songData;
     if (daSong != null)
@@ -2382,6 +2390,7 @@ class FreeplaySongData
     this.isFav = Save.instance.isSongFavorited(songId);
 
     this.currentCharacter = currentCharacter;
+
     if (displayedVariations != null) this.displayedVariations = displayedVariations;
 
     updateValues(displayedVariations);
@@ -2407,6 +2416,7 @@ class FreeplaySongData
 
   function updateValues(variations:Array<String>):Void
   {
+    trace('variations: ${variations}');
     this.songDifficulties = song.listDifficulties(null, variations, false, false);
     this.suffixedSongDifficulties = song.listSuffixedDifficulties(variations, false, false);
     if (!this.songDifficulties.contains(currentUnsuffixedDifficulty))
