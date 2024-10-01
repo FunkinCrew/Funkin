@@ -4,6 +4,14 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2024-10-??
+### Fixed
+- Fixed an issue where holding down a direction key then selecting a character would select the locked character and crash the game (community fix by ACrazyTown)
+- Fixed an issue where the player and girlfriend would disappear or overlap themselves in Character Select (community fix by gamerbross)
+- Fixed an issue where the game would show the wrong girlfriend in Character Select (community fix by gamerbross)
+- Fixed an issue where the cursor wouldn't update properly in Character Select (community fix by gamerbross)
+- Fixed an issue where the player would display double after entering character select or when spamming buttons (community fix by gamerbross)
+
 ## [0.5.1] - 2024-09-30
 ### Added
 - Readded the Merch button to the main menu.
@@ -72,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue where classic FocusCamera song events could cause the camera to snap in place. (community fix by NebulaZorua)
 - Fixed an issue where achieving the same rank on a song (but a different clear %) would override your clear %, even if it was lower. (community fix by lemz1)
 - Fixed an issue where the FPS counter would display even if Debug Display was turned off. (community fix by Lethrial)
+- Fixed an issue where selecting the area to the left of the Chart Editor would select some of the player's notes (community fix by NotHyper474)
 - Fixed an issue where pixel icons in the Chart Editor would not display correctly. (community fix by Techniktil)
 - Fixed an issue where `Stage.addCharacter` would not properly assign the `characterType`. (community fix by KadeDeveloper)
 - Fixed an issue where players should interact with Character Select during the unlock sequence, causing a crash. (community fix by actualmandm)
