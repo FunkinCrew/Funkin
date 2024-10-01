@@ -143,9 +143,11 @@ class StageEditorState extends UIState
 
     if (selectedSprite != null)
     {
-      spriteMarker.setGraphicSize(Std.int(selectedSprite.width), Std.int(selectedSprite.height));
-      spriteMarker.updateHitbox();
+      // spriteMarker.setGraphicSize(Std.int(selectedSprite.width), Std.int(selectedSprite.height));
+      // spriteMarker.updateHitbox();
     }
+
+    selectedSprite?.selectedShader.setAmount(1);
 
     return selectedSprite;
   }
@@ -370,10 +372,10 @@ class StageEditorState extends UIState
     add(charGroups[CharacterType.BF]);
 
     // ui
-    spriteMarker = new FlxSprite().makeGraphic(1, 1, FlxColor.CYAN);
-    spriteMarker.alpha = 0.3;
-    spriteMarker.zIndex = MAX_Z_INDEX + CHARACTER_COLORS.length + 3; // PLEASE
-    add(spriteMarker);
+    // spriteMarker = new FlxSprite().makeGraphic(1, 1, FlxColor.CYAN);
+    // spriteMarker.alpha = 0.3;
+    // spriteMarker.zIndex = MAX_Z_INDEX + CHARACTER_COLORS.length + 3; // PLEASE
+    // add(spriteMarker);
 
     camFields = new FlxTypedGroup<FlxSprite>();
     camFields.visible = false;
@@ -522,7 +524,7 @@ class StageEditorState extends UIState
       for (char in getCharacters())
         char.alpha = 1;
 
-      spriteMarker.visible = camMarker.visible = false;
+      // spriteMarker.visible = camMarker.visible = false;
       findObjDialog.hideDialog(DialogButton.CANCEL);
 
       // cam
@@ -625,6 +627,7 @@ class StageEditorState extends UIState
 
           if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
           {
+            selectedSprite.selectedShader.setAmount(0);
             selectedSprite = spr;
             updateDialog(StageEditorDialogType.OBJECT);
           }
@@ -734,12 +737,12 @@ class StageEditorState extends UIState
     nameTxt.x = FlxG.mouse.getScreenPosition(camHUD).x;
     nameTxt.y = FlxG.mouse.getScreenPosition(camHUD).y - nameTxt.height;
 
-    spriteMarker.visible = (moveMode == "assets" && selectedSprite != null);
+    // spriteMarker.visible = (moveMode == "assets" && selectedSprite != null);
     camMarker.visible = moveMode == "chars";
-    if (selectedSprite != null) spriteMarker.setPosition(selectedSprite.x, selectedSprite.y);
+    // if (selectedSprite != null) spriteMarker.setPosition(selectedSprite.x, selectedSprite.y);
 
-    for (item in sprDependant)
-      item.disabled = !spriteMarker.visible;
+    // for (item in sprDependant)
+    // item.disabled = !spriteMarker.visible;
 
     menubarItemPaste.disabled = copiedSprite == null;
     menubarItemFindObj.disabled = !(moveMode == "assets");
