@@ -790,7 +790,13 @@ class FreeplayState extends MusicBeatSubState
     {
       tempSongs = tempSongs.filter(song -> {
         if (song == null) return true; // Random
-        return (song.suffixedSongDifficulties.contains(currentSuffixedDifficulty) || song.songCharacter == currentCharacterId);
+
+        // Include songs that match the current suffixed difficulty (`normal-pico`)
+        // or the current unsuffixed difficulty, `normal`
+        // or songs specifically for the current character `normal` w/ songCharacter == `pico`
+        return (song.suffixedSongDifficulties.contains(currentSuffixedDifficulty)
+          || song.songDifficulties.contains(currentUnsuffixedDifficulty)
+          || song.songCharacter == currentCharacterId);
       });
     }
 
@@ -1817,6 +1823,15 @@ class FreeplayState extends MusicBeatSubState
       }
 
       var suffixedDifficulty = suffixedDiffIdsCurrent[currentDifficultyIndex];
+      var unsuffixedDifficulty = currentUnsuffixedDifficulty;
+
+      // Check for character-specific difficulty
+      var characterSuffixedDifficulty = '${unsuffixedDifficulty}-${currentCharacterId}';
+      if (daSong.suffixedSongDifficulties.contains(characterSuffixedDifficulty))
+      {
+        suffixedDifficulty = characterSuffixedDifficulty;
+      }
+
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.songId, suffixedDifficulty);
       trace(songScore);
       intendedScore = songScore?.score ?? 0;
@@ -2419,7 +2434,14 @@ class FreeplaySongData
     trace('variations: ${variations}');
     this.songDifficulties = song.listDifficulties(null, variations, false, false);
     this.suffixedSongDifficulties = song.listSuffixedDifficulties(variations, false, false);
-    if (!this.songDifficulties.contains(currentUnsuffixedDifficulty))
+
+    // Add character-specific difficulties
+    for (difficulty in this.songDifficulties)
+    {
+      this.suffixedSongDifficulties.push('${difficulty}-${currentCharacter.id}');
+    }
+
+    if (!this.songDifficulties.contains(currentUnsuffixedDifficulty) && !this.suffixedSongDifficulties.contains(currentSuffixedDifficulty))
     {
       currentSuffixedDifficulty = Constants.DEFAULT_DIFFICULTY;
       // This method gets called again by the setter-method
