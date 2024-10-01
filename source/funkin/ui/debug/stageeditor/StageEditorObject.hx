@@ -3,6 +3,7 @@ package funkin.ui.debug.stageeditor;
 import funkin.data.animation.AnimationData;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
+import funkin.graphics.shaders.InverseDotsShader;
 
 /**
  * Contains all the Logic needed for Stage Editor. Only for Stage Editor, as in the gameplay StageProps and Boppers will be used.
@@ -14,6 +15,8 @@ class StageEditorObject extends FunkinSprite
    */
   public var name:String = "Unnamed";
 
+  public var selectedShader:InverseDotsShader;
+
   /**
    * What animation to play upon starting.
    */
@@ -24,6 +27,9 @@ class StageEditorObject extends FunkinSprite
   override public function new()
   {
     super();
+
+    selectedShader = new InverseDotsShader(0);
+    shader = selectedShader;
   }
 
   /**
@@ -31,7 +37,7 @@ class StageEditorObject extends FunkinSprite
    */
   public var isDebugged(default, set):Bool = true;
 
-  function set_isDebugged(value:Bool)
+  function set_isDebugged(value:Bool):Bool
   {
     this.isDebugged = value;
 
