@@ -14,6 +14,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
+import funkin.util.WindowUtil;
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -21,6 +22,7 @@ import funkin.input.Controls;
  */
 class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
+  var windowTitle = "Friday Night Funkin'";
   var controls(get, never):Controls;
 
   inline function get_controls():Controls
@@ -59,6 +61,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override function create()
   {
+    WindowUtil.setWindowTitle(windowTitle);
     super.create();
 
     createWatermarkText();
