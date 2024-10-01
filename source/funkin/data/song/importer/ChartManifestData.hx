@@ -21,10 +21,17 @@ class ChartManifestData
    */
   public var songId:String;
 
-  public function new(songId:String)
+  /**
+   * Used for loading the midi file
+   */
+  @:optional
+  public var midiFile:String;
+
+  public function new(songId:String, ?midiFile:String)
   {
     this.version = CHART_MANIFEST_DATA_VERSION;
     this.songId = songId;
+    this.midiFile = midiFile;
   }
 
   public function getMetadataFileName(?variation:String):String
