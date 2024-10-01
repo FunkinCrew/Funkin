@@ -24,7 +24,6 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import lime.utils.Assets as LimeAssets;
-import openfl.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
@@ -77,7 +76,7 @@ class DebugBoundingState extends FlxState
   {
     // get the screen position, according to the HUD camera, temp default to FlxG.camera juuust in case?
     var hudMousePos:FlxPoint = FlxG.mouse.getScreenPosition(hudCam ?? FlxG.camera);
-    return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y) || FlxG.mouse.overlaps(animDropDownMenu, hudCam);
+    return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y);
   }
 
   override function create()
