@@ -13,12 +13,14 @@ import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 import funkin.input.Controls;
+import funkin.util.WindowUtil;
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
 class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
+  public var windowTitle = "Friday Night Funkin'";
   public var leftWatermarkText:FlxText = null;
   public var rightWatermarkText:FlxText = null;
 
@@ -58,6 +60,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   override function create():Void
   {
+    WindowUtil.setWindowTitle(windowTitle);
     super.create();
 
     createWatermarkText();
