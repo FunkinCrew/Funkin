@@ -22,7 +22,7 @@ import funkin.util.WindowUtil;
  */
 class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
-  var windowTitle = "Friday Night Funkin'";
+  public var windowTitle = "Friday Night Funkin'";
   var controls(get, never):Controls;
 
   inline function get_controls():Controls
