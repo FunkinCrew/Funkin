@@ -1,7 +1,7 @@
 # Known Bugs
 
 # "Again?" Bugs
-- A-bot Visualizer doesn't react to volume
+- [A-bot Visualizer doesn't react to volume (v0.5)](https://github.com/FunkinCrew/Funkin/issues/3400)
 
 # Major Priority Bugs
 - [Swing Rhythm when Visual Offset is set to 150 (v0.5)](https://github.com/FunkinCrew/Funkin/issues/3380)
