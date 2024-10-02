@@ -1646,7 +1646,9 @@ class FreeplayState extends MusicBeatSubState
           FunkinSound.playMusic('freakyMenu',
             {
               overrideExisting: true,
-              restartTrack: false
+              restartTrack: false,
+              // Continue playing this music between states, until a different music track gets played.
+              persist: true
             });
           FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
           close();
