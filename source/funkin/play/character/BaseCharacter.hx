@@ -640,7 +640,7 @@ class BaseCharacter extends Bopper
    */
   public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
-    if (flipX && flipSingAnimations)
+    if (flipSingAnimations && flipX != _data.flipX)
     {
       switch (dir)
       {
@@ -663,6 +663,11 @@ class BaseCharacter extends Bopper
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
     super.playAnimation(name, restart, ignoreOther, reversed);
+  }
+
+  override function shouldFlipOffset(xAxis:Bool):Bool
+  {
+    return xAxis ? (flipXOffsets && flipX != _data.flipX) : (flipYOffsets && flipY);
   }
 }
 
