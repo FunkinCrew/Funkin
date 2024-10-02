@@ -5160,7 +5160,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var songPosSeconds:String = Std.string(Math.floor((Math.abs(songPos) / 1000) % 60)).lpad('0', 2);
     var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / 1000) / 60)).lpad('0', 2);
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
-    var songPosString:String = '${songPosMinutes}:${songPosSeconds}:${songPosMilliseconds}';
+    var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
 
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
