@@ -199,7 +199,11 @@ class LatencyState extends MusicBeatSubState
     PreciseInputManager.instance.onInputPressed.remove(preciseInputPressed);
     PreciseInputManager.instance.onInputReleased.remove(preciseInputReleased);
 
-    FlxG.sound.music.volume = previousVolume;
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.volume = previousVolume;
+    }
+
     swagSong.stop();
     FlxG.sound.list.remove(swagSong);
 
