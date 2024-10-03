@@ -84,7 +84,7 @@ class CrashHandler
 
     #if sys
     // Exit the game. Since it threw an error, we use a non-zero exit code.
-    lime.system.System.exit(1);
+    Sys.exit(1);
     #end
   }
 
