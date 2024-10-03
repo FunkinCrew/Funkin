@@ -365,7 +365,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return this.animation.curAnim.name;
   }
 
-  /// override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
+  // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
@@ -375,6 +375,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       ((flipYOffsets && flipY) ? (frameHeight - height - animOffsets[1]) : animOffsets[1]) - globalOffsets[1]
     );
 
+    // simple offset needs to be tested first before angle
     // adjustedOffsets = adjustedOffsets.pivotDegrees(FlxPoint.weak(0, 0), this.angle);
 
     return output.subtractPoint(adjustedOffsets.scalePoint(this.scale));
