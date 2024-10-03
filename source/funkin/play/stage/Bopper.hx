@@ -365,24 +365,19 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return this.animation.curAnim.name;
   }
 
-  // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
+  /// override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
 
-    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
-    if (flipXOffsets && flipX)
-    {
-      output.x += (animOffsets[0] * 2 + (width - frameWidth)) * this.scale.x;
-    }
+    var adjustedOffsets:FlxPoint = FlxPoint.get(
+      ((flipXOffsets && flipX) ? (frameWidth - width - animOffsets[0]) : animOffsets[0]) - globalOffsets[0],
+      ((flipYOffsets && flipY) ? (frameHeight - height - animOffsets[1]) : animOffsets[1]) - globalOffsets[1]
+    );
 
-    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
-    if (flipYOffsets && flipY)
-    {
-      output.y += (animOffsets[1] * 2 + (height - frameHeight)) * this.scale.y;
-    }
+    // adjustedOffsets = adjustedOffsets.pivotDegrees(FlxPoint.weak(0, 0), this.angle);
 
-    return output;
+    return output.subtractPoint(adjustedOffsets.scalePoint(this.scale));
   }
 
   public function onPause(event:PauseScriptEvent) {}
