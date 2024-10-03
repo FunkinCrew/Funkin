@@ -1485,10 +1485,11 @@ class PlayState extends MusicBeatSubState
         {
           trace(playerVoicesError);
           trace(opponentVoicesError);
-          trace(FlxG.sound.music.time);
+        }
+        trace(FlxG.sound.music.time);
         trace(correctSync);
         resyncVocals();
-        }
+      }
     }
 
     // Only bop camera if zoom level is below 135%
