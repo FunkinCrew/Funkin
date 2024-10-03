@@ -8,6 +8,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.input.Controls;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
@@ -69,14 +70,19 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     changeSelection(0);
   }
 
+  var controls(get, never):Controls;
+
+  inline function get_controls():Controls
+    return PlayerSettings.player1.controls;
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
     if (inputEnabled)
     {
-      if (FlxG.keys.justPressed.E) changeSelection(1);
-      if (FlxG.keys.justPressed.Q) changeSelection(-1);
+      if (controls.FREEPLAY_LEFT) changeSelection(-1);
+      if (controls.FREEPLAY_RIGHT) changeSelection(1);
     }
   }
 

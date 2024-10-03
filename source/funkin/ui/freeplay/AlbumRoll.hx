@@ -11,7 +11,6 @@ import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
-import openfl.utils.Assets;
 
 /**
  * The graphic for the album roll in the FreeplayState.
@@ -37,9 +36,11 @@ class AlbumRoll extends FlxSpriteGroup
   }
 
   var newAlbumArt:FlxAtlasSprite;
+  var albumTitle:FunkinSprite;
 
-  // var difficultyStars:DifficultyStars;
+  var difficultyStars:DifficultyStars;
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
+  var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
 
   var albumData:Album;
 
@@ -59,24 +60,27 @@ class AlbumRoll extends FlxSpriteGroup
   {
     super();
 
-    newAlbumArt = new FlxAtlasSprite(0, 0, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
+    newAlbumArt = new FlxAtlasSprite(640, 360, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
     newAlbumArt.visible = false;
-    newAlbumArt.onAnimationFinish.add(onAlbumFinish);
+    newAlbumArt.onAnimationComplete.add(onAlbumFinish);
 
     add(newAlbumArt);
 
-    // difficultyStars = new DifficultyStars(140, 39);
-    // difficultyStars.stars.visible = false;
-    // add(difficultyStars);
+    difficultyStars = new DifficultyStars(140, 39);
+    difficultyStars.visible = false;
+    add(difficultyStars);
+
+    buildAlbumTitle("freeplay/albumRoll/volume1-text");
+    albumTitle.visible = false;
   }
 
   function onAlbumFinish(animName:String):Void
   {
     // Play the idle animation for the current album.
-    newAlbumArt.playAnimation(animNames.get('$albumId-idle'), false, false, true);
-
-    // End on the last frame and don't continue until playAnimation is called again.
-    // newAlbumArt.anim.pause();
+    if (animName != "idle")
+    {
+      newAlbumArt.playAnimation('idle', true);
+    }
   }
 
   /**
@@ -86,8 +90,13 @@ class AlbumRoll extends FlxSpriteGroup
   {
     if (albumId == null)
     {
-      // difficultyStars.stars.visible = false;
+      this.visible = false;
+      difficultyStars.stars.visible = false;
       return;
+    }
+    else
+    {
+      this.visible = true;
     }
 
     albumData = AlbumRegistry.instance.fetchEntry(albumId);
@@ -98,6 +107,12 @@ class AlbumRoll extends FlxSpriteGroup
 
       return;
     };
+
+    // Update the album art.
+    var albumGraphic = Paths.image(albumData.getAlbumArtAssetKey());
+    newAlbumArt.replaceFrameGraphic(0, albumGraphic);
+
+    buildAlbumTitle(albumData.getAlbumTitleAssetKey());
 
     applyExitMovers();
 
@@ -113,7 +128,7 @@ class AlbumRoll extends FlxSpriteGroup
    * Apply exit movers for the album roll.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     if (exitMovers == null)
     {
@@ -126,11 +141,29 @@ class AlbumRoll extends FlxSpriteGroup
 
     if (exitMovers == null) return;
 
-    exitMovers.set([newAlbumArt],
+    if (exitMoversCharSel == null)
+    {
+      exitMoversCharSel = _exitMoversCharSel;
+    }
+    else
+    {
+      _exitMoversCharSel = exitMoversCharSel;
+    }
+
+    if (exitMoversCharSel == null) return;
+
+    exitMovers.set([newAlbumArt, difficultyStars],
       {
         x: FlxG.width,
         speed: 0.4,
         wait: 0
+      });
+
+    exitMoversCharSel.set([newAlbumArt, difficultyStars],
+      {
+        y: -175,
+        speed: 0.8,
+        wait: 0.1
       });
   }
 
@@ -141,31 +174,78 @@ class AlbumRoll extends FlxSpriteGroup
    */
   public function playIntro():Void
   {
+    albumTitle.visible = false;
     newAlbumArt.visible = true;
-    newAlbumArt.playAnimation(animNames.get('$albumId-active'), false, false, false);
+    newAlbumArt.playAnimation('intro', true);
 
-    // difficultyStars.stars.visible = false;
+    difficultyStars.visible = false;
     new FlxTimer().start(0.75, function(_) {
-      // showTitle();
-      // showStars();
+      showTitle();
+      showStars();
+      albumTitle.animation.play('switch');
     });
   }
 
   public function skipIntro():Void
   {
-    newAlbumArt.playAnimation(animNames.get('$albumId-trans'), false, false, false);
+    // Weird workaround
+    newAlbumArt.playAnimation('switch', true);
+    albumTitle.animation.play('switch');
   }
 
-  // public function setDifficultyStars(?difficulty:Int):Void
-  // {
-  //   if (difficulty == null) return;
-  //   difficultyStars.difficulty = difficulty;
-  // }
-  // /**
-  //  * Make the album stars visible.
-  //  */
-  // public function showStars():Void
-  // {
-  //   difficultyStars.stars.visible = false; // true;
-  // }
+  public function showTitle():Void
+  {
+    albumTitle.visible = true;
+  }
+
+  public function buildAlbumTitle(assetKey:String):Void
+  {
+    if (albumTitle != null)
+    {
+      remove(albumTitle);
+      albumTitle = null;
+    }
+
+    albumTitle = FunkinSprite.createSparrow(925, 500, assetKey);
+    albumTitle.visible = albumTitle.frames != null && newAlbumArt.visible;
+    albumTitle.animation.addByPrefix('idle', 'idle0', 24, true);
+    albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);
+    add(albumTitle);
+
+    albumTitle.animation.finishCallback = (function(name) {
+      if (name == 'switch') albumTitle.animation.play('idle');
+    });
+    albumTitle.animation.play('idle');
+
+    albumTitle.zIndex = 1000;
+
+    if (_exitMovers != null) _exitMovers.set([albumTitle],
+      {
+        x: FlxG.width,
+        speed: 0.4,
+        wait: 0
+      });
+
+    if (_exitMoversCharSel != null) _exitMoversCharSel.set([albumTitle],
+      {
+        y: -190,
+        speed: 0.8,
+        wait: 0.1
+      });
+  }
+
+  public function setDifficultyStars(?difficulty:Int):Void
+  {
+    if (difficulty == null) return;
+    difficultyStars.difficulty = difficulty;
+  }
+
+  /**
+   * Make the album stars visible.
+   */
+  public function showStars():Void
+  {
+    difficultyStars.visible = true; // true;
+    difficultyStars.flameCheck();
+  }
 }

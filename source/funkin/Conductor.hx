@@ -275,6 +275,13 @@ class Conductor
     return Save.instance.options.audioVisualOffset;
   }
 
+  public var combinedOffset(get, never):Float;
+
+  function get_combinedOffset():Float
+  {
+    return instrumentalOffset + audioVisualOffset + inputOffset;
+  }
+
   /**
    * The number of beats in a measure. May be fractional depending on the time signature.
    */
@@ -397,9 +404,12 @@ class Conductor
    */
   public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false)
   {
+    var currentTime:Float = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
+    var currentLength:Float = (FlxG.sound.music != null) ? FlxG.sound.music.length : 0.0;
+
     if (songPos == null)
     {
-      songPos = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
+      songPos = currentTime;
     }
 
     // Take into account instrumental and file format song offsets.
@@ -409,8 +419,17 @@ class Conductor
     var oldBeat:Float = this.currentBeat;
     var oldStep:Float = this.currentStep;
 
+    // If the song is playing, limit the song position to the length of the song or beginning of the song.
+    if (FlxG.sound.music != null && FlxG.sound.music.playing)
+    {
+      this.songPosition = Math.min(currentLength, Math.max(0, songPos));
+    }
+    else
+    {
+      this.songPosition = songPos;
+    }
+
     // Set the song position we are at (for purposes of calculating note positions, etc).
-    this.songPosition = songPos;
 
     currentTimeChange = timeChanges[0];
     if (this.songPosition > 0.0)
@@ -430,7 +449,8 @@ class Conductor
     else if (currentTimeChange != null && this.songPosition > 0.0)
     {
       // roundDecimal prevents representing 8 as 7.9999999
-      this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * 4) + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
+      this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)
+        + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
       this.currentMeasureTime = currentStepTime / stepsPerMeasure;
       this.currentStep = Math.floor(currentStepTime);
@@ -564,7 +584,7 @@ class Conductor
         if (ms >= timeChange.timeStamp)
         {
           lastTimeChange = timeChange;
-          resultStep = lastTimeChange.beatTime * 4;
+          resultStep = lastTimeChange.beatTime * Constants.STEPS_PER_BEAT;
         }
         else
         {
@@ -600,7 +620,7 @@ class Conductor
       var lastTimeChange:SongTimeChange = timeChanges[0];
       for (timeChange in timeChanges)
       {
-        if (stepTime >= timeChange.beatTime * 4)
+        if (stepTime >= timeChange.beatTime * Constants.STEPS_PER_BEAT)
         {
           lastTimeChange = timeChange;
           resultMs = lastTimeChange.timeStamp;
@@ -613,7 +633,7 @@ class Conductor
       }
 
       var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
-      resultMs += (stepTime - lastTimeChange.beatTime * 4) * lastStepLengthMs;
+      resultMs += (stepTime - lastTimeChange.beatTime * Constants.STEPS_PER_BEAT) * lastStepLengthMs;
 
       return resultMs;
     }

@@ -1,0 +1,18 @@
+name: Enhancement
+description: Suggest a new feature.
+labels: ["type: enhancement", "status: pending triage"]
+title: "Enhancement: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      description: Be sure to complete these steps to increase the chances of your suggestion being considered!
+      options:
+        - label: I have properly named my enhancement
+        - label: I have checked the Issues/Discussions pages to see if my enhancement has already been suggested
+
+  - type: textarea
+    attributes:
+      label: What is your suggestion, and why should it be implemented?
+    validations:
+      required: true

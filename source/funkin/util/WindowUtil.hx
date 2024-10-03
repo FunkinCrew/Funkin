@@ -22,9 +22,9 @@ class WindowUtil
    */
   public static function openURL(targetUrl:String):Void
   {
-    #if CAN_OPEN_LINKS
+    #if FEATURE_OPEN_URL
     #if linux
-    Sys.command('/usr/bin/xdg-open', [targetUrl, '&']);
+    Sys.command('/usr/bin/xdg-open $targetUrl &');
     #else
     // This should work on Windows and HTML5.
     FlxG.openURL(targetUrl);
@@ -40,7 +40,7 @@ class WindowUtil
    */
   public static function openFolder(targetPath:String):Void
   {
-    #if CAN_OPEN_LINKS
+    #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', [targetPath.replace('/', '\\')]);
     #elseif mac
@@ -59,7 +59,7 @@ class WindowUtil
    */
   public static function openSelectFile(targetPath:String):Void
   {
-    #if CAN_OPEN_LINKS
+    #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', ['/select,' + targetPath.replace('/', '\\')]);
     #elseif mac
@@ -91,8 +91,16 @@ class WindowUtil
       windowExit.dispatch(exitCode);
     });
 
+    #if FEATURE_DEBUG_TRACY
+    // Apply a marker to indicate frame end for the Tracy profiler.
+    // Do this only if Tracy is configured to prevent lag.
+    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
+      cpp.vm.tracy.TracyProfiler.frameMark();
+    });
+    #end
+
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
-      for (key in PlayerSettings.player1.controls.getKeysForAction(FULLSCREEN))
+      for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
         if (e.keyCode == key)
         {

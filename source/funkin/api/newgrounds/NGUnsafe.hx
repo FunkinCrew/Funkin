@@ -1,9 +1,5 @@
 package funkin.api.newgrounds;
 
-import flixel.util.FlxSignal;
-import flixel.util.FlxTimer;
-import lime.app.Application;
-import openfl.display.Stage;
 #if newgrounds
 import io.newgrounds.NG;
 import io.newgrounds.NGLite;
@@ -28,7 +24,7 @@ class NGUnsafe
     NG.core.calls.event.logEvent(event).send();
     trace('should have logged: ' + event);
     #else
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     trace('event:$event - not logged, missing NG.io lib');
     #end
     #end
@@ -43,7 +39,7 @@ class NGUnsafe
       if (!medal.unlocked) medal.sendUnlock();
     }
     #else
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     trace('medal:$id - not unlocked, missing NG.io lib');
     #end
     #end
@@ -67,7 +63,7 @@ class NGUnsafe
       }
     }
     #else
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     trace('Song:$song, Score:$score - not posted, missing NG.io lib');
     #end
     #end

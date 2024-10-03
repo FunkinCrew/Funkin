@@ -97,7 +97,7 @@ class SortUtil
    * @param b The second string to compare.
    * @return 1 if `a` comes before `b`, -1 if `b` comes before `a`, 0 if they are equal
    */
-  public static function alphabetically(a:String, b:String):Int
+  public static function alphabetically(?a:String, ?b:String):Int
   {
     a = a.toUpperCase();
     b = b.toUpperCase();

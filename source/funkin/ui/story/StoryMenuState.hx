@@ -24,6 +24,9 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import openfl.utils.Assets;
+#if FEATURE_DISCORD_RPC
+import funkin.api.discord.DiscordClient;
+#end
 
 class StoryMenuState extends MusicBeatState
 {
@@ -113,7 +116,7 @@ class StoryMenuState extends MusicBeatState
   {
     super();
 
-    if (stickers != null)
+    if (stickers?.members != null)
     {
       stickerSubState = stickers;
     }
@@ -216,9 +219,9 @@ class StoryMenuState extends MusicBeatState
     changeLevel();
     refresh();
 
-    #if discord_rpc
+    #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
-    DiscordClient.changePresence('In the Menus', null);
+    DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
     #end
   }
 
@@ -306,7 +309,7 @@ class StoryMenuState extends MusicBeatState
   {
     Conductor.instance.update();
 
-    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.5));
+    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.25));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
@@ -335,6 +338,22 @@ class StoryMenuState extends MusicBeatState
           changeLevel(1);
           changeDifficulty(0);
         }
+
+        #if !html5
+        if (FlxG.mouse.wheel != 0)
+        {
+          changeLevel(-Math.round(FlxG.mouse.wheel));
+        }
+        #else
+        if (FlxG.mouse.wheel < 0)
+        {
+          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
+        }
+        else if (FlxG.mouse.wheel > 0)
+        {
+          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
+        }
+        #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
         if (controls.UI_RIGHT_P)
@@ -374,9 +393,9 @@ class StoryMenuState extends MusicBeatState
 
     if (controls.BACK && !exitingMenu && !selectedLevel)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exitingMenu = true;
       FlxG.switchState(() -> new MainMenuState());
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
   }
 
@@ -387,6 +406,7 @@ class StoryMenuState extends MusicBeatState
   function changeLevel(change:Int = 0):Void
   {
     var currentIndex:Int = levelList.indexOf(currentLevelId);
+    var prevIndex:Int = currentIndex;
 
     currentIndex += change;
 
@@ -417,7 +437,7 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     updateText();
     updateBackground(previousLevelId);
@@ -466,6 +486,9 @@ class StoryMenuState extends MusicBeatState
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
+
+    updateText();
+    refresh();
   }
 
   final FADE_OUT_TIME:Float = 1.5;

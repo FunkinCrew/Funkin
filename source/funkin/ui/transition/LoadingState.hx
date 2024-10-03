@@ -3,24 +3,23 @@ package funkin.ui.transition;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import flixel.util.typeLimit.NextState;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song.SongDifficulty;
 import funkin.ui.MusicBeatState;
 import haxe.io.Path;
-import funkin.graphics.FunkinSprite;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
 import lime.utils.Assets as LimeAssets;
 import openfl.filters.ShaderFilter;
-import openfl.utils.Assets;
-import flixel.util.typeLimit.NextState;
+import openfl.utils.Assets as OpenFLAssets;
 
 class LoadingState extends MusicBeatSubState
 {
@@ -57,8 +56,7 @@ class LoadingState extends MusicBeatSubState
     funkay.scrollFactor.set();
     funkay.screenCenter();
 
-    loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(FlxG.width, 10, 0xFFff16d2);
-    loadBar.screenCenter(X);
+    loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(0, 10, 0xFFff16d2);
     add(loadBar);
 
     initSongsManifest().onComplete(function(lib) {
@@ -99,7 +97,7 @@ class LoadingState extends MusicBeatSubState
 
   function checkLoadSong(path:String):Void
   {
-    if (!Assets.cache.hasSound(path))
+    if (!OpenFLAssets.cache.hasSound(path))
     {
       var library = Assets.getLibrary('songs');
       var symbolPath = path.split(':').pop();
@@ -162,11 +160,20 @@ class LoadingState extends MusicBeatSubState
     {
       targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
 
-      loadBar.scale.x = FlxMath.lerp(loadBar.scale.x, targetShit, 0.50);
+      var lerpWidth:Int = Std.int(FlxMath.lerp(loadBar.width, FlxG.width * targetShit, 0.2));
+      // this if-check prevents the setGraphicSize function
+      // from setting the width of the loadBar to the height of the loadBar
+      // this is a behaviour that is implemented in the setGraphicSize function
+      // if the width parameter is equal to 0
+      if (lerpWidth > 0)
+      {
+        loadBar.setGraphicSize(lerpWidth, loadBar.height);
+        loadBar.updateHitbox();
+      }
       FlxG.watch.addQuick('percentage?', callbacks.numRemaining / callbacks.length);
     }
 
-    #if debug
+    #if FEATURE_DEBUG_FUNCTIONS
     if (FlxG.keys.justPressed.SPACE) trace('fired: ' + callbacks.getFired() + ' unfired:' + callbacks.getUnfired());
     #end
   }
@@ -269,7 +276,7 @@ class LoadingState extends MusicBeatSubState
   #if NO_PRELOAD_ALL
   static function isSoundLoaded(path:String):Bool
   {
-    return Assets.cache.hasSound(path);
+    return OpenFLAssets.cache.hasSound(path);
   }
 
   static function isLibraryLoaded(library:String):Bool
@@ -283,29 +290,50 @@ class LoadingState extends MusicBeatSubState
     FunkinSprite.preparePurgeCache();
     FunkinSprite.cacheTexture(Paths.image('healthBar'));
     FunkinSprite.cacheTexture(Paths.image('menuDesat'));
-    FunkinSprite.cacheTexture(Paths.image('combo'));
-    FunkinSprite.cacheTexture(Paths.image('num0'));
-    FunkinSprite.cacheTexture(Paths.image('num1'));
-    FunkinSprite.cacheTexture(Paths.image('num2'));
-    FunkinSprite.cacheTexture(Paths.image('num3'));
-    FunkinSprite.cacheTexture(Paths.image('num4'));
-    FunkinSprite.cacheTexture(Paths.image('num5'));
-    FunkinSprite.cacheTexture(Paths.image('num6'));
-    FunkinSprite.cacheTexture(Paths.image('num7'));
-    FunkinSprite.cacheTexture(Paths.image('num8'));
-    FunkinSprite.cacheTexture(Paths.image('num9'));
+    // Lord have mercy on me and this caching -anysad
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/combo'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num0'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num1'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num2'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num3'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num4'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num5'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num6'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num7'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num8'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num9'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/combo'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num0'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num1'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num2'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num3'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num4'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num5'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num6'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num7'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num8'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num9'));
     FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
-    FunkinSprite.cacheTexture(Paths.image('ready', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('set', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('go', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('sick', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('good', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('bad', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('shit', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('miss', 'shared')); // TODO: remove this
+
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/ready', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/set', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/go', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/ready', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/set', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/go', 'shared'));
+
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/sick'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/good'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/bad'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/shit'));
+
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/sick'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/good'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/bad'));
+    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/shit'));
 
     // List all image assets in the level's library.
     // This is crude and I want to remove it when we have a proper asset caching system.
@@ -338,7 +366,7 @@ class LoadingState extends MusicBeatSubState
         return 'Done precaching ${path}';
       }, true);
 
-      trace("Queued ${path} for precaching");
+      trace('Queued ${path} for precaching');
       // FunkinSprite.cacheTexture(path);
     }
 
@@ -422,6 +450,11 @@ class LoadingState extends MusicBeatSubState
     });
 
     return promise.future;
+  }
+
+  public static function transitionToState(state:NextState, stopMusic:Bool = false):Void
+  {
+    FlxG.switchState(() -> new LoadingState(state, stopMusic));
   }
 }
 

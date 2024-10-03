@@ -14,12 +14,23 @@ import flixel.text.FlxText;
 import flixel.util.FlxTimer;
 import funkin.util.MathUtil;
 import funkin.graphics.shaders.Grayscale;
+import funkin.graphics.shaders.GaussianBlurShader;
+import openfl.display.BlendMode;
+import funkin.graphics.FunkinSprite;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.addons.effects.FlxTrail;
+import funkin.play.scoring.Scoring.ScoringRank;
+import funkin.save.Save;
+import funkin.save.Save.SaveScoreData;
+import flixel.util.FlxColor;
+import funkin.ui.PixelatedIcon;
 
 class SongMenuItem extends FlxSpriteGroup
 {
   public var capsule:FlxSprite;
 
-  var pixelIcon:FlxSprite;
+  var pixelIcon:PixelatedIcon;
 
   /**
    * Modify this by calling `init()`
@@ -30,10 +41,16 @@ class SongMenuItem extends FlxSpriteGroup
   public var selected(default, set):Bool;
 
   public var songText:CapsuleText;
+  public var favIconBlurred:FlxSprite;
   public var favIcon:FlxSprite;
-  public var ranking:FlxSprite;
 
-  var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect"];
+  public var ranking:FreeplayRank;
+  public var blurredRanking:FreeplayRank;
+
+  public var fakeRanking:FreeplayRank;
+  public var fakeBlurredRanking:FreeplayRank;
+
+  var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect", "perfectsick"];
 
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
@@ -47,24 +64,114 @@ class SongMenuItem extends FlxSpriteGroup
   public var hsvShader(default, set):HSVShader;
 
   // var diffRatingSprite:FlxSprite;
+  public var bpmText:FlxSprite;
+  public var difficultyText:FlxSprite;
+  public var weekType:FlxSprite;
+
+  public var newText:FlxSprite;
+
+  // public var weekType:FlxSprite;
+  public var bigNumbers:Array<CapsuleNumber> = [];
+
+  public var smallNumbers:Array<CapsuleNumber> = [];
+
+  public var weekNumbers:Array<CapsuleNumber> = [];
+
+  var impactThing:FunkinSprite;
+
+  public var sparkle:FlxSprite;
+
+  var sparkleTimer:FlxTimer;
 
   public function new(x:Float, y:Float)
   {
     super(x, y);
 
     capsule = new FlxSprite();
-    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule');
+    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/capsule/freeplayCapsule');
     capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
     capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
     // capsule.animation
     add(capsule);
 
+    bpmText = new FlxSprite(144, 87).loadGraphic(Paths.image('freeplay/freeplayCapsule/bpmtext'));
+    bpmText.setGraphicSize(Std.int(bpmText.width * 0.9));
+    add(bpmText);
+
+    difficultyText = new FlxSprite(414, 87).loadGraphic(Paths.image('freeplay/freeplayCapsule/difficultytext'));
+    difficultyText.setGraphicSize(Std.int(difficultyText.width * 0.9));
+    add(difficultyText);
+
+    weekType = new FlxSprite(291, 87);
+    weekType.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/weektypes');
+
+    weekType.animation.addByPrefix('WEEK', 'WEEK text instance 1', 24, false);
+    weekType.animation.addByPrefix('WEEKEND', 'WEEKEND text instance 1', 24, false);
+
+    weekType.setGraphicSize(Std.int(weekType.width * 0.9));
+    add(weekType);
+
+    newText = new FlxSprite(454, 9);
+    newText.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/new');
+    newText.animation.addByPrefix('newAnim', 'NEW notif', 24, true);
+    newText.animation.play('newAnim', true);
+    newText.setGraphicSize(Std.int(newText.width * 0.9));
+
+    // newText.visible = false;
+
+    add(newText);
+
+    // var debugNumber2:CapsuleNumber = new CapsuleNumber(0, 0, true, 2);
+    // add(debugNumber2);
+
+    for (i in 0...2)
+    {
+      var bigNumber:CapsuleNumber = new CapsuleNumber(466 + (i * 30), 32, true, 0);
+      add(bigNumber);
+
+      bigNumbers.push(bigNumber);
+    }
+
+    for (i in 0...3)
+    {
+      var smallNumber:CapsuleNumber = new CapsuleNumber(185 + (i * 11), 88.5, false, 0);
+      add(smallNumber);
+
+      smallNumbers.push(smallNumber);
+    }
+
     // doesn't get added, simply is here to help with visibility of things for the pop in!
     grpHide = new FlxGroup();
 
-    var rank:String = FlxG.random.getObject(ranks);
+    fakeRanking = new FreeplayRank(420, 41);
+    add(fakeRanking);
 
-    ranking = new FlxSprite(capsule.width * 0.84, 30);
+    fakeBlurredRanking = new FreeplayRank(fakeRanking.x, fakeRanking.y);
+    fakeBlurredRanking.shader = new GaussianBlurShader(1);
+    add(fakeBlurredRanking);
+
+    fakeRanking.visible = false;
+    fakeBlurredRanking.visible = false;
+
+    ranking = new FreeplayRank(420, 41);
+    add(ranking);
+
+    blurredRanking = new FreeplayRank(ranking.x, ranking.y);
+    blurredRanking.shader = new GaussianBlurShader(1);
+    add(blurredRanking);
+
+    sparkle = new FlxSprite(ranking.x, ranking.y);
+    sparkle.frames = Paths.getSparrowAtlas('freeplay/sparkle');
+    sparkle.animation.addByPrefix('sparkle', 'sparkle Export0', 24, false);
+    sparkle.animation.play('sparkle', true);
+    sparkle.scale.set(0.8, 0.8);
+    sparkle.blend = BlendMode.ADD;
+
+    sparkle.visible = false;
+    sparkle.alpha = 0.7;
+
+    add(sparkle);
+
     // ranking.loadGraphic(Paths.image('freeplay/ranks/' + rank));
     // ranking.scale.x = ranking.scale.y = realScaled;
     // ranking.alpha = 0.75;
@@ -73,11 +180,11 @@ class SongMenuItem extends FlxSpriteGroup
     // add(ranking);
     // grpHide.add(ranking);
 
-    switch (rank)
-    {
-      case 'perfect':
-        ranking.x -= 10;
-    }
+    // switch (rank)
+    // {
+    //   case 'perfect':
+    //     ranking.x -= 10;
+    // }
 
     grayscaleShader = new Grayscale(1);
 
@@ -93,33 +200,268 @@ class SongMenuItem extends FlxSpriteGroup
     grpHide.add(songText);
 
     // TODO: Use value from metadata instead of random.
-    updateDifficultyRating(FlxG.random.int(0, 15));
+    updateDifficultyRating(FlxG.random.int(0, 20));
 
-    pixelIcon = new FlxSprite(160, 35);
-
-    pixelIcon.makeGraphic(32, 32, 0x00000000);
-    pixelIcon.antialiasing = false;
-    pixelIcon.active = false;
+    pixelIcon = new PixelatedIcon(160, 35);
     add(pixelIcon);
     grpHide.add(pixelIcon);
 
-    favIcon = new FlxSprite(400, 40);
+    favIconBlurred = new FlxSprite(380, 40);
+    favIconBlurred.frames = Paths.getSparrowAtlas('freeplay/favHeart');
+    favIconBlurred.animation.addByPrefix('fav', 'favorite heart', 24, false);
+    favIconBlurred.animation.play('fav');
+
+    favIconBlurred.setGraphicSize(50, 50);
+    favIconBlurred.blend = BlendMode.ADD;
+    favIconBlurred.shader = new GaussianBlurShader(1.2);
+    favIconBlurred.visible = false;
+    add(favIconBlurred);
+
+    favIcon = new FlxSprite(favIconBlurred.x, favIconBlurred.y);
     favIcon.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIcon.animation.addByPrefix('fav', 'favorite heart', 24, false);
     favIcon.animation.play('fav');
     favIcon.setGraphicSize(50, 50);
     favIcon.visible = false;
+    favIcon.blend = BlendMode.ADD;
     add(favIcon);
-    // grpHide.add(favIcon);
+
+    var weekNumber:CapsuleNumber = new CapsuleNumber(355, 88.5, false, 0);
+    add(weekNumber);
+
+    weekNumbers.push(weekNumber);
 
     setVisibleGrp(false);
+  }
+
+  function sparkleEffect(timer:FlxTimer):Void
+  {
+    sparkle.setPosition(FlxG.random.float(ranking.x - 20, ranking.x + 3), FlxG.random.float(ranking.y - 29, ranking.y + 4));
+    sparkle.animation.play('sparkle', true);
+    sparkleTimer = new FlxTimer().start(FlxG.random.float(1.2, 4.5), sparkleEffect);
+  }
+
+  // no way to grab weeks rn, so this needs to be done :/
+  // negative values mean weekends
+  function checkWeek(name:String):Void
+  {
+    // trace(name);
+    var weekNum:Int = 0;
+    switch (name)
+    {
+      case 'bopeebo' | 'fresh' | 'dadbattle':
+        weekNum = 1;
+      case 'spookeez' | 'south' | 'monster':
+        weekNum = 2;
+      case 'pico' | 'philly-nice' | 'blammed':
+        weekNum = 3;
+      case "satin-panties" | 'high' | 'milf':
+        weekNum = 4;
+      case "cocoa" | 'eggnog' | 'winter-horrorland':
+        weekNum = 5;
+      case 'senpai' | 'roses' | 'thorns':
+        weekNum = 6;
+      case 'ugh' | 'guns' | 'stress':
+        weekNum = 7;
+      case 'darnell' | 'lit-up' | '2hot' | 'blazin':
+        weekNum = -1;
+      default:
+        weekNum = 0;
+    }
+
+    weekNumbers[0].digit = Std.int(Math.abs(weekNum));
+
+    if (weekNum == 0)
+    {
+      weekType.visible = false;
+      weekNumbers[0].visible = false;
+    }
+    else
+    {
+      weekType.visible = true;
+      weekNumbers[0].visible = true;
+    }
+    if (weekNum > 0)
+    {
+      weekType.animation.play('WEEK', true);
+    }
+    else
+    {
+      weekType.animation.play('WEEKEND', true);
+      weekNumbers[0].offset.x -= 35;
+    }
+  }
+
+  /**
+   * Checks whether the song is favorited, and/or has a rank, and adjusts the clipping
+   * for the scenario when the text could be too long
+   */
+  public function checkClip():Void
+  {
+    var clipSize:Int = 290;
+    var clipType:Int = 0;
+
+    if (ranking.visible)
+    {
+      favIconBlurred.x = this.x + 370;
+      favIcon.x = favIconBlurred.x;
+      clipType += 1;
+    }
+    else
+    {
+      favIconBlurred.x = favIcon.x = this.x + 405;
+    }
+
+    if (favIcon.visible) clipType += 1;
+
+    switch (clipType)
+    {
+      case 2:
+        clipSize = 210;
+      case 1:
+        clipSize = 245;
+    }
+    songText.clipWidth = clipSize;
+  }
+
+  function updateBPM(newBPM:Int):Void
+  {
+    var shiftX:Float = 191;
+    var tempShift:Float = 0;
+
+    if (Math.floor(newBPM / 100) == 1)
+    {
+      shiftX = 186;
+    }
+
+    for (i in 0...smallNumbers.length)
+    {
+      smallNumbers[i].x = this.x + (shiftX + (i * 11));
+      switch (i)
+      {
+        case 0:
+          if (newBPM < 100)
+          {
+            smallNumbers[i].digit = 0;
+          }
+          else
+          {
+            smallNumbers[i].digit = Math.floor(newBPM / 100) % 10;
+          }
+
+        case 1:
+          if (newBPM < 10)
+          {
+            smallNumbers[i].digit = 0;
+          }
+          else
+          {
+            smallNumbers[i].digit = Math.floor(newBPM / 10) % 10;
+
+            if (Math.floor(newBPM / 10) % 10 == 1) tempShift = -4;
+          }
+        case 2:
+          smallNumbers[i].digit = newBPM % 10;
+        default:
+          trace('why the fuck is this being called');
+      }
+      smallNumbers[i].x += tempShift;
+    }
+    // diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
+    // diffRatingSprite.visible = false;
+  }
+
+  var evilTrail:FlxTrail;
+
+  public function fadeAnim():Void
+  {
+    impactThing = new FunkinSprite(0, 0);
+    impactThing.frames = capsule.frames;
+    impactThing.frame = capsule.frame;
+    impactThing.updateHitbox();
+    // impactThing.x = capsule.x;
+    // impactThing.y = capsule.y;
+    // picoFade.stamp(this, 0, 0);
+    impactThing.alpha = 0;
+    impactThing.zIndex = capsule.zIndex - 3;
+    add(impactThing);
+    FlxTween.tween(impactThing.scale, {x: 2.5, y: 2.5}, 0.5);
+    // FlxTween.tween(impactThing, {alpha: 0}, 0.5);
+
+    evilTrail = new FlxTrail(impactThing, null, 15, 2, 0.01, 0.069);
+    evilTrail.blend = BlendMode.ADD;
+    evilTrail.zIndex = capsule.zIndex - 5;
+    FlxTween.tween(evilTrail, {alpha: 0}, 0.6,
+      {
+        ease: FlxEase.quadOut,
+        onComplete: function(_) {
+          remove(evilTrail);
+        }
+      });
+    add(evilTrail);
+
+    switch (ranking.rank)
+    {
+      case SHIT:
+        evilTrail.color = 0xFF6044FF;
+      case GOOD:
+        evilTrail.color = 0xFFEF8764;
+      case GREAT:
+        evilTrail.color = 0xFFEAF6FF;
+      case EXCELLENT:
+        evilTrail.color = 0xFFFDCB42;
+      case PERFECT:
+        evilTrail.color = 0xFFFF58B4;
+      case PERFECT_GOLD:
+        evilTrail.color = 0xFFFFB619;
+    }
+  }
+
+  public function getTrailColor():FlxColor
+  {
+    return evilTrail.color;
   }
 
   function updateDifficultyRating(newRating:Int):Void
   {
     var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
+
+    for (i in 0...bigNumbers.length)
+    {
+      switch (i)
+      {
+        case 0:
+          if (newRating < 10)
+          {
+            bigNumbers[i].digit = 0;
+          }
+          else
+          {
+            bigNumbers[i].digit = Math.floor(newRating / 10);
+          }
+        case 1:
+          bigNumbers[i].digit = newRating % 10;
+        default:
+          trace('why the fuck is this being called');
+      }
+    }
     // diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
     // diffRatingSprite.visible = false;
+  }
+
+  function updateScoringRank(newRank:Null<ScoringRank>):Void
+  {
+    if (sparkleTimer != null) sparkleTimer.cancel();
+    sparkle.visible = false;
+
+    this.ranking.rank = newRank;
+    this.blurredRanking.rank = newRank;
+
+    if (newRank == PERFECT_GOLD)
+    {
+      sparkleTimer = new FlxTimer().start(1, sparkleEffect);
+      sparkle.visible = true;
+    }
   }
 
   function set_hsvShader(value:HSVShader):HSVShader
@@ -158,66 +500,38 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>):Void
+  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
   {
     if (x != null) this.x = x;
     if (y != null) this.y = y;
     this.songData = songData;
 
+    // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
+    // if thats possible someone Please change the new function to be something like
+    // capsule.frames = Paths.getSparrowAtlas(styleData == null ? 'freeplay/freeplayCapsule/capsule/freeplayCapsule' : styleData.getCapsuleAssetKey()); thank u luv u
+    if (styleData != null)
+    {
+      capsule.frames = Paths.getSparrowAtlas(styleData.getCapsuleAssetKey());
+      capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
+      capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
+      songText.applyStyle(styleData);
+    }
+
     // Update capsule text.
     songText.text = songData?.songName ?? 'Random';
     // Update capsule character.
-    if (songData?.songCharacter != null) setCharacter(songData.songCharacter);
-    updateDifficultyRating(songData?.songRating ?? 0);
+    if (songData?.songCharacter != null) pixelIcon.setCharacter(songData.songCharacter);
+    updateBPM(Std.int(songData?.songStartingBpm) ?? 0);
+    updateDifficultyRating(songData?.difficultyRating ?? 0);
+    updateScoringRank(songData?.scoringRank);
+    newText.visible = songData?.isNew;
+    favIcon.animation.curAnim.curFrame = favIcon.animation.curAnim.numFrames - 1;
+    favIconBlurred.animation.curAnim.curFrame = favIconBlurred.animation.curAnim.numFrames - 1;
+
     // Update opacity, offsets, etc.
     updateSelected();
-  }
 
-  /**
-   * Set the character displayed next to this song in the freeplay menu.
-   * @param char The character ID used by this song.
-   *             If the character has no freeplay icon, a warning will be thrown and nothing will display.
-   */
-  public function setCharacter(char:String):Void
-  {
-    var charPath:String = "freeplay/icons/";
-
-    // TODO: Put this in the character metadata where it belongs.
-    // TODO: Also, can use CharacterDataParser.getCharPixelIconAsset()
-    switch (char)
-    {
-      case 'monster-christmas':
-        charPath += 'monsterpixel';
-      case 'mom-car':
-        charPath += 'mommypixel';
-      case 'dad':
-        charPath += 'daddypixel';
-      case 'darnell-blazin':
-        charPath += 'darnellpixel';
-      case 'senpai-angry':
-        charPath += 'senpaipixel';
-      default:
-        charPath += '${char}pixel';
-    }
-
-    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
-    {
-      trace('[WARN] Character ${char} has no freeplay icon.');
-      return;
-    }
-
-    pixelIcon.loadGraphic(Paths.image(charPath));
-    pixelIcon.scale.x = pixelIcon.scale.y = 2;
-
-    switch (char)
-    {
-      case 'parents-christmas':
-        pixelIcon.origin.x = 140;
-      default:
-        pixelIcon.origin.x = 100;
-    }
-    // pixelIcon.origin.x = capsule.origin.x;
-    // pixelIcon.offset.x -= pixelIcon.origin.x;
+    checkWeek(songData?.songId);
   }
 
   var frameInTicker:Float = 0;
@@ -289,6 +603,28 @@ class SongMenuItem extends FlxSpriteGroup
 
   override function update(elapsed:Float):Void
   {
+    if (impactThing != null) impactThing.angle = capsule.angle;
+
+    // if (FlxG.keys.justPressed.I)
+    // {
+    //   newText.y -= 1;
+    //   trace(this.x - newText.x, this.y - newText.y);
+    // }
+    // if (FlxG.keys.justPressed.J)
+    // {
+    //   newText.x -= 1;
+    //   trace(this.x - newText.x, this.y - newText.y);
+    // }
+    // if (FlxG.keys.justPressed.L)
+    // {
+    //   newText.x += 1;
+    //   trace(this.x - newText.x, this.y - newText.y);
+    // }
+    // if (FlxG.keys.justPressed.K)
+    // {
+    //   newText.y += 1;
+    //   trace(this.x - newText.x, this.y - newText.y);
+    // }
     if (doJumpIn)
     {
       frameInTicker += elapsed;
@@ -336,6 +672,18 @@ class SongMenuItem extends FlxSpriteGroup
     super.update(elapsed);
   }
 
+  /**
+   * Play any animations associated with selecting this song.
+   */
+  public function confirm():Void
+  {
+    if (songText != null) songText.flickerText();
+    if (pixelIcon != null && pixelIcon.visible)
+    {
+      pixelIcon.animation.play('confirm');
+    }
+  }
+
   public function intendedY(index:Int):Float
   {
     return (index * ((height * realScaled) + 10)) + 120;
@@ -357,6 +705,146 @@ class SongMenuItem extends FlxSpriteGroup
     capsule.offset.x = this.selected ? 0 : -5;
     capsule.animation.play(this.selected ? "selected" : "unselected");
     ranking.alpha = this.selected ? 1 : 0.7;
+    favIcon.alpha = this.selected ? 1 : 0.6;
+    favIconBlurred.alpha = this.selected ? 1 : 0;
     ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
+
+    if (songText.tooLong) songText.resetText();
+
+    if (selected && songText.tooLong) songText.initMove();
+  }
+}
+
+class FreeplayRank extends FlxSprite
+{
+  public var rank(default, set):Null<ScoringRank> = null;
+
+  function set_rank(val:Null<ScoringRank>):Null<ScoringRank>
+  {
+    rank = val;
+
+    if (rank == null || val == null)
+    {
+      this.visible = false;
+    }
+    else
+    {
+      this.visible = true;
+
+      animation.play(val.getFreeplayRankIconAsset(), true, false);
+
+      centerOffsets(false);
+
+      switch (val)
+      {
+        case SHIT:
+          // offset.x -= 1;
+        case GOOD:
+          // offset.x -= 1;
+          offset.y -= 8;
+        case GREAT:
+          // offset.x -= 1;
+          offset.y -= 8;
+        case EXCELLENT:
+          // offset.y += 5;
+        case PERFECT:
+          // offset.y += 5;
+        case PERFECT_GOLD:
+          // offset.y += 5;
+        default:
+          centerOffsets(false);
+          this.visible = false;
+      }
+      updateHitbox();
+    }
+
+    return rank = val;
+  }
+
+  public var baseX:Float = 0;
+  public var baseY:Float = 0;
+
+  public function new(x:Float, y:Float)
+  {
+    super(x, y);
+
+    frames = Paths.getSparrowAtlas('freeplay/rankbadges');
+
+    animation.addByPrefix('PERFECT', 'PERFECT rank0', 24, false);
+    animation.addByPrefix('EXCELLENT', 'EXCELLENT rank0', 24, false);
+    animation.addByPrefix('GOOD', 'GOOD rank0', 24, false);
+    animation.addByPrefix('PERFECTSICK', 'PERFECT rank GOLD', 24, false);
+    animation.addByPrefix('GREAT', 'GREAT rank0', 24, false);
+    animation.addByPrefix('LOSS', 'LOSS rank0', 24, false);
+
+    blend = BlendMode.ADD;
+
+    this.rank = null;
+
+    // setGraphicSize(Std.int(width * 0.9));
+    scale.set(0.9, 0.9);
+    updateHitbox();
+  }
+}
+
+class CapsuleNumber extends FlxSprite
+{
+  public var digit(default, set):Int = 0;
+
+  function set_digit(val):Int
+  {
+    animation.play(numToString[val], true, false, 0);
+
+    centerOffsets(false);
+
+    switch (val)
+    {
+      case 1:
+        offset.x -= 4;
+      case 3:
+        offset.x -= 1;
+
+      case 6:
+
+      case 4:
+        // offset.y += 5;
+      case 9:
+        // offset.y += 5;
+      default:
+        centerOffsets(false);
+    }
+    return val;
+  }
+
+  public var baseY:Float = 0;
+  public var baseX:Float = 0;
+
+  var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+
+  public function new(x:Float, y:Float, big:Bool = false, ?initDigit:Int = 0)
+  {
+    super(x, y);
+
+    if (big)
+    {
+      frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/bignumbers');
+    }
+    else
+    {
+      frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/smallnumbers');
+    }
+
+    for (i in 0...10)
+    {
+      var stringNum:String = numToString[i];
+      animation.addByPrefix(stringNum, '$stringNum', 24, false);
+    }
+
+    this.digit = initDigit;
+
+    animation.play(numToString[initDigit], true);
+
+    setGraphicSize(Std.int(width * 0.9));
+    updateHitbox();
   }
 }

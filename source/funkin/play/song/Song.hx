@@ -14,8 +14,8 @@ import funkin.data.song.SongData.SongTimeFormat;
 import funkin.data.song.SongRegistry;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.util.SortUtil;
-import openfl.utils.Assets;
 
 /**
  * This is a data structure managing information about the current song.
@@ -91,6 +91,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return _metadata.keys().array();
   }
 
+  // this returns false so that any new song can override this and return true when needed
+  public function isSongNew(currentDifficulty:String):Bool
+  {
+    return false;
+  }
+
   /**
    * Set to false if the song was edited in the charter and should not be saved as a high score.
    */
@@ -121,6 +127,18 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
+   * The artist of the song.
+   */
+  public var charter(get, never):String;
+
+  function get_charter():String
+  {
+    if (_data != null) return _data?.charter ?? 'Unknown';
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.charter ?? 'Unknown';
+    return Constants.DEFAULT_CHARTER;
+  }
+
+  /**
    * @param id The ID of the song to load.
    * @param ignoreErrors If false, an exception will be thrown if the song data could not be loaded.
    */
@@ -138,6 +156,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       for (vari in _data.playData.songVariations)
       {
+        if (!validateVariationId(vari)) {
+          trace('  [WARN] Variation id "$vari" is invalid, skipping...');
+          continue;
+        }
+
         var variMeta:Null<SongMetadata> = fetchVariationMetadata(id, vari);
         if (variMeta != null)
         {
@@ -258,7 +281,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       // If there are no difficulties in the metadata, there's a problem.
       if (metadata.playData.difficulties.length == 0)
       {
-        throw 'Song $id has no difficulties listed in metadata!';
+        trace('[SONG] Warning: Song $id (variation ${metadata.variation}) has no difficulties listed in metadata!');
+        continue;
       }
 
       // There may be more difficulties in the chart file than in the metadata,
@@ -270,6 +294,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.songName = metadata.songName;
         difficulty.songArtist = metadata.artist;
+        difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
         difficulty.timeFormat = metadata.timeFormat;
         difficulty.divisions = metadata.divisions;
         difficulty.timeChanges = metadata.timeChanges;
@@ -334,6 +359,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         {
           difficulty.songName = metadata.songName;
           difficulty.songArtist = metadata.artist;
+          difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
           difficulty.timeFormat = metadata.timeFormat;
           difficulty.divisions = metadata.divisions;
           difficulty.timeChanges = metadata.timeChanges;
@@ -364,7 +390,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public function getDifficulty(?diffId:String, ?variation:String, ?variations:Array<String>):Null<SongDifficulty>
   {
-    if (diffId == null) diffId = listDifficulties(variation)[0];
+    if (diffId == null) diffId = listDifficulties(variation, variations)[0];
     if (variation == null) variation = Constants.DEFAULT_VARIATION;
     if (variations == null) variations = [variation];
 
@@ -381,12 +407,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return null;
   }
 
-  public function getFirstValidVariation(?diffId:String, ?possibleVariations:Array<String>):Null<String>
+  public function getFirstValidVariation(?diffId:String, ?currentCharacter:PlayableCharacter, ?possibleVariations:Array<String>):Null<String>
   {
     if (possibleVariations == null)
     {
-      possibleVariations = variations;
-      possibleVariations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
+      possibleVariations = getVariationsByCharacter(currentCharacter);
     }
     if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
 
@@ -397,6 +422,41 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
 
     return null;
+  }
+
+  /**
+   * Given that this character is selected in the Freeplay menu,
+   * which variations should be available?
+   * @param char The playable character to query.
+   * @return An array of available variations.
+   */
+  public function getVariationsByCharacter(?char:PlayableCharacter):Array<String>
+  {
+    if (char == null)
+    {
+      var result = variations;
+      result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
+      return result;
+    }
+
+    var result = [];
+    trace('Evaluating variations for ${this.id} ${char.id}: ${this.variations}');
+    for (variation in variations)
+    {
+      var metadata = _metadata.get(variation);
+
+      var playerCharId = metadata?.playData?.characters?.player;
+      if (playerCharId == null) continue;
+
+      if (char.shouldShowCharacter(playerCharId))
+      {
+        result.push(variation);
+      }
+    }
+
+    result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
+
+    return result;
   }
 
   /**
@@ -414,16 +474,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (variationIds == null) variationIds = [];
     if (variationId != null) variationIds.push(variationId);
 
-    // The difficulties array contains entries like 'normal', 'nightmare-erect', and 'normal-pico',
-    // so we have to map it to the actual difficulty names.
-    // We also filter out difficulties that don't match the variation or that don't exist.
+    if (variationIds.length == 0) return [];
 
-    var diffFiltered:Array<String> = difficulties.keys().array().map(function(diffId:String):Null<String> {
-      var difficulty:Null<SongDifficulty> = difficulties.get(diffId);
-      if (difficulty == null) return null;
-      if (variationIds.length > 0 && !variationIds.contains(difficulty.variation)) return null;
-      return difficulty.difficulty;
-    }).nonNull().unique();
+    var diffFiltered:Array<String> = variationIds.map(function(variationId:String):Array<String> {
+      var metadata = _metadata.get(variationId);
+      return metadata?.playData?.difficulties ?? [];
+    })
+      .flatten()
+      .filterNull()
+      .distinct();
 
     diffFiltered = diffFiltered.filter(function(diffId:String):Bool {
       if (showHidden) return true;
@@ -434,9 +493,33 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       return false;
     });
 
-    diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
+    diffFiltered.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
     return diffFiltered;
+  }
+
+  /**
+   * TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
+   * @return `easy`, `erect`, `normal-pico`, etc.
+   */
+  public function listSuffixedDifficulties(variationIds:Array<String>, ?showLocked:Bool, ?showHidden:Bool):Array<String>
+  {
+    var result = [];
+
+    for (variation in variationIds)
+    {
+      var difficulties = listDifficulties(variation, null, showLocked, showHidden);
+      for (difficulty in difficulties)
+      {
+        var suffixedDifficulty = (variation != Constants.DEFAULT_VARIATION
+          && variation != 'erect') ? '$difficulty-${variation}' : difficulty;
+        result.push(suffixedDifficulty);
+      }
+    }
+
+    result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
+
+    return result;
   }
 
   public function hasDifficulty(diffId:String, ?variationId:String, ?variationIds:Array<String>):Bool
@@ -457,6 +540,28 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     var variation = _metadata.get(variationId);
     if (variation == null) return false;
     return variation.playData.difficulties.contains(diffId);
+  }
+
+  /**
+   * Return the list of available alternate instrumentals.
+   * Scripts can override this, fun.
+   * @param variationId
+   * @param difficultyId
+   */
+  public function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String>
+  {
+    var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
+    if (targetDifficulty == null) return [];
+
+    return targetDifficulty?.characters?.altInstrumentals ?? [];
+  }
+
+  public function getBaseInstrumentalId(difficultyId:String, variationId:String):String
+  {
+    var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
+    if (targetDifficulty == null) return '';
+
+    return targetDifficulty?.characters?.instrumental ?? '';
   }
 
   /**
@@ -534,6 +639,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     var meta:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataWithMigration(id, vari, version);
     return meta;
   }
+
+  static final VARIATION_REGEX = ~/^[a-z][a-z0-9]+$/;
+
+  /**
+   * Validate that the variation ID is valid.
+   * Auto-accept if it's one of the base game default variations.
+   * Reject if the ID starts with a number, or contains invalid characters.
+   */
+  static function validateVariationId(variation:String):Bool {
+    if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
+
+    return VARIATION_REGEX.match(variation);
+  }
 }
 
 class SongDifficulty
@@ -565,6 +683,7 @@ class SongDifficulty
 
   public var songName:String = Constants.DEFAULT_SONGNAME;
   public var songArtist:String = Constants.DEFAULT_ARTIST;
+  public var charter:String = Constants.DEFAULT_CHARTER;
   public var timeFormat:SongTimeFormat = Constants.DEFAULT_TIMEFORMAT;
   public var divisions:Null<Int> = null;
   public var looped:Bool = false;
@@ -636,9 +755,9 @@ class SongDifficulty
     FlxG.sound.cache(getInstPath(instrumental));
   }
 
-  public function playInst(volume:Float = 1.0, looped:Bool = false):Void
+  public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
   {
-    var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
+    var suffix:String = (instId != '') ? '-$instId' : '';
 
     FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true);
 
@@ -650,10 +769,11 @@ class SongDifficulty
    * Cache the vocals for a given character.
    * @param id The character we are about to play.
    */
-  public inline function cacheVocals():Void
+  public function cacheVocals():Void
   {
     for (voice in buildVoiceList())
     {
+      trace('Caching vocal track: $voice');
       FlxG.sound.cache(voice);
     }
   }
@@ -666,68 +786,108 @@ class SongDifficulty
    */
   public function buildVoiceList():Array<String>
   {
+    var result:Array<String> = [];
+    result = result.concat(buildPlayerVoiceList());
+    result = result.concat(buildOpponentVoiceList());
+    if (result.length == 0)
+    {
+      var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
+      // Try to use `Voices.ogg` if no other voices are found.
+      if (Assets.exists(Paths.voices(this.song.id, ''))) result.push(Paths.voices(this.song.id, '$suffix'));
+    }
+    return result;
+  }
+
+  public function buildPlayerVoiceList():Array<String>
+  {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
     // Automatically resolve voices by removing suffixes.
     // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
     // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
 
-    var playerId:String = characters.player;
-    var voicePlayer:String = Paths.voices(this.song.id, '-$playerId$suffix');
-    while (voicePlayer != null && !Assets.exists(voicePlayer))
+    if (characters.playerVocals == null)
     {
-      // Remove the last suffix.
-      // For example, bf-car becomes bf.
-      playerId = playerId.split('-').slice(0, -1).join('-');
-      // Try again.
-      voicePlayer = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
-    }
-    if (voicePlayer == null)
-    {
-      // Try again without $suffix.
-      playerId = characters.player;
-      voicePlayer = Paths.voices(this.song.id, '-${playerId}');
-      while (voicePlayer != null && !Assets.exists(voicePlayer))
+      var playerId:String = characters.player;
+      var playerVoice:String = Paths.voices(this.song.id, '-${playerId}$suffix');
+
+      while (playerVoice != null && !Assets.exists(playerVoice))
       {
         // Remove the last suffix.
+        // For example, bf-car becomes bf.
         playerId = playerId.split('-').slice(0, -1).join('-');
         // Try again.
-        voicePlayer = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+        playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
       }
-    }
+      if (playerVoice == null)
+      {
+        // Try again without $suffix.
+        playerId = characters.player;
+        playerVoice = Paths.voices(this.song.id, '-${playerId}');
+        while (playerVoice != null && !Assets.exists(playerVoice))
+        {
+          // Remove the last suffix.
+          playerId = playerId.split('-').slice(0, -1).join('-');
+          // Try again.
+          playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+        }
+      }
 
-    var opponentId:String = characters.opponent;
-    var voiceOpponent:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
-    while (voiceOpponent != null && !Assets.exists(voiceOpponent))
-    {
-      // Remove the last suffix.
-      opponentId = opponentId.split('-').slice(0, -1).join('-');
-      // Try again.
-      voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+      return playerVoice != null ? [playerVoice] : [];
     }
-    if (voiceOpponent == null)
+    else
     {
-      // Try again without $suffix.
-      opponentId = characters.opponent;
-      voiceOpponent = Paths.voices(this.song.id, '-${opponentId}');
-      while (voiceOpponent != null && !Assets.exists(voiceOpponent))
+      // The metadata explicitly defines the list of voices.
+      var playerIds:Array<String> = characters?.playerVocals ?? [characters.player];
+      var playerVoices:Array<String> = playerIds.map((id) -> Paths.voices(this.song.id, '-$id$suffix'));
+
+      return playerVoices;
+    }
+  }
+
+  public function buildOpponentVoiceList():Array<String>
+  {
+    var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
+
+    // Automatically resolve voices by removing suffixes.
+    // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
+    // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
+
+    if (characters.opponentVocals == null)
+    {
+      var opponentId:String = characters.opponent;
+      var opponentVoice:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
+      while (opponentVoice != null && !Assets.exists(opponentVoice))
       {
         // Remove the last suffix.
         opponentId = opponentId.split('-').slice(0, -1).join('-');
         // Try again.
-        voiceOpponent = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+        opponentVoice = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
       }
-    }
+      if (opponentVoice == null)
+      {
+        // Try again without $suffix.
+        opponentId = characters.opponent;
+        opponentVoice = Paths.voices(this.song.id, '-${opponentId}');
+        while (opponentVoice != null && !Assets.exists(opponentVoice))
+        {
+          // Remove the last suffix.
+          opponentId = opponentId.split('-').slice(0, -1).join('-');
+          // Try again.
+          opponentVoice = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+        }
+      }
 
-    var result:Array<String> = [];
-    if (voicePlayer != null) result.push(voicePlayer);
-    if (voiceOpponent != null) result.push(voiceOpponent);
-    if (voicePlayer == null && voiceOpponent == null)
-    {
-      // Try to use `Voices.ogg` if no other voices are found.
-      if (Assets.exists(Paths.voices(this.song.id, ''))) result.push(Paths.voices(this.song.id, '$suffix'));
+      return opponentVoice != null ? [opponentVoice] : [];
     }
-    return result;
+    else
+    {
+      // The metadata explicitly defines the list of voices.
+      var opponentIds:Array<String> = characters?.opponentVocals ?? [characters.opponent];
+      var opponentVoices:Array<String> = opponentIds.map((id) -> Paths.voices(this.song.id, '-$id$suffix'));
+
+      return opponentVoices;
+    }
   }
 
   /**
@@ -735,34 +895,27 @@ class SongDifficulty
    * @param charId The player ID.
    * @return The generated vocal group.
    */
-  public function buildVocals():VoicesGroup
+  public function buildVocals(?instId:String = ''):VoicesGroup
   {
     var result:VoicesGroup = new VoicesGroup();
 
-    var voiceList:Array<String> = buildVoiceList();
-
-    if (voiceList.length == 0)
-    {
-      trace('Could not find any voices for song ${this.song.id}');
-      return result;
-    }
+    var playerVoiceList:Array<String> = this.buildPlayerVoiceList();
+    var opponentVoiceList:Array<String> = this.buildOpponentVoiceList();
 
     // Add player vocals.
-    if (voiceList[0] != null) result.addPlayerVoice(FunkinSound.load(voiceList[0]));
-    // Add opponent vocals.
-    if (voiceList[1] != null) result.addOpponentVoice(FunkinSound.load(voiceList[1]));
-
-    // Add additional vocals.
-    if (voiceList.length > 2)
+    for (playerVoice in playerVoiceList)
     {
-      for (i in 2...voiceList.length)
-      {
-        result.add(FunkinSound.load(Assets.getSound(voiceList[i])));
-      }
+      result.addPlayerVoice(FunkinSound.load(playerVoice));
     }
 
-    result.playerVoicesOffset = offsets.getVocalOffset(characters.player);
-    result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent);
+    // Add opponent vocals.
+    for (opponentVoice in opponentVoiceList)
+    {
+      result.addOpponentVoice(FunkinSound.load(opponentVoice));
+    }
+
+    result.playerVoicesOffset = offsets.getVocalOffset(characters.player, instId);
+    result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent, instId);
 
     return result;
   }

@@ -29,6 +29,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 {
   var inputSongName:TextField;
   var inputSongArtist:TextField;
+  var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
   var buttonCharacterPlayer:Button;
@@ -89,6 +90,20 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
+    inputSongCharter.onChange = function(event:UIEvent) {
+      var valid:Bool = event.target.text != null && event.target.text != '';
+
+      if (valid)
+      {
+        inputSongCharter.removeClass('invalid-value');
+        chartEditorState.currentSongMetadata.charter = event.target.text;
+      }
+      else
+      {
+        chartEditorState.currentSongMetadata.charter = null;
+      }
+    };
+
     inputStage.onChange = function(event:UIEvent) {
       var valid:Bool = event.data != null && event.data.id != null;
 
@@ -104,6 +119,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (event.data?.id == null) return;
       chartEditorState.currentSongNoteStyle = event.data.id;
     };
+    var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
+    inputNoteStyle.value = startingValueNoteStyle;
 
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;
@@ -176,6 +193,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
+    inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
@@ -203,7 +221,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var charDataOpponent:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.opponent);
     if (charDataOpponent != null)
     {
-      buttonCharacterOpponent.icon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.opponent);
+      buttonCharacterOpponent.icon = haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.opponent));
       buttonCharacterOpponent.text = charDataOpponent.name.length > LIMIT ? '${charDataOpponent.name.substr(0, LIMIT)}.' : '${charDataOpponent.name}';
     }
     else
@@ -215,7 +233,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
     if (charDataGirlfriend != null)
     {
-      buttonCharacterGirlfriend.icon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
+      buttonCharacterGirlfriend.icon = haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.girlfriend));
       buttonCharacterGirlfriend.text = charDataGirlfriend.name.length > LIMIT ? '${charDataGirlfriend.name.substr(0, LIMIT)}.' : '${charDataGirlfriend.name}';
     }
     else
@@ -227,7 +245,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
     if (charDataPlayer != null)
     {
-      buttonCharacterPlayer.icon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.player);
+      buttonCharacterPlayer.icon = haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.player));
       buttonCharacterPlayer.text = charDataPlayer.name.length > LIMIT ? '${charDataPlayer.name.substr(0, LIMIT)}.' : '${charDataPlayer.name}';
     }
     else

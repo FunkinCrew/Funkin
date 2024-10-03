@@ -15,7 +15,8 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
-import openfl.utils.Assets;
+import funkin.effects.RetroCameraFade;
+import flixel.math.FlxPoint;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -71,7 +72,7 @@ class GameOverSubState extends MusicBeatSubState
   var gameOverMusic:Null<FunkinSound> = null;
 
   /**
-   * Whether the player has confirmed and prepared to restart the level.
+   * Whether the player has confirmed and prepared to restart the level or to go back to the freeplay menu.
    * This means the animation and transition have already started.
    */
   var isEnding:Bool = false;
@@ -82,6 +83,8 @@ class GameOverSubState extends MusicBeatSubState
   var isStarting:Bool = true;
 
   var isChartingMode:Bool = false;
+
+  var mustNotExit:Bool = false;
 
   var transparent:Bool;
 
@@ -142,6 +145,7 @@ class GameOverSubState extends MusicBeatSubState
     else
     {
       boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
+      boyfriend.canPlayOtherAnims = true;
       boyfriend.isDead = true;
       add(boyfriend);
       boyfriend.resetCharacter();
@@ -160,10 +164,12 @@ class GameOverSubState extends MusicBeatSubState
   @:nullSafety(Off)
   function setCameraTarget():Void
   {
+    if (PlayState.instance.isMinimalMode || boyfriend == null) return;
+
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
-    cameraFollowPoint.x = boyfriend.getGraphicMidpoint().x;
-    cameraFollowPoint.y = boyfriend.getGraphicMidpoint().y;
+    cameraFollowPoint.x = getMidPointOld(boyfriend).x;
+    cameraFollowPoint.y = getMidPointOld(boyfriend).y;
     var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
     cameraFollowPoint.x += offsets[0];
     cameraFollowPoint.y += offsets[1];
@@ -172,6 +178,21 @@ class GameOverSubState extends MusicBeatSubState
     FlxG.camera.target = null;
     FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE / 2);
     targetCameraZoom = (PlayState?.instance?.currentStage?.camZoom ?? 1.0) * boyfriend.getDeathCameraZoom();
+  }
+
+  /**
+   * FlxSprite.getMidpoint(); calculations changed in this git commit
+   * https://github.com/HaxeFlixel/flixel/commit/1553b5af0871462fcefedc091b7885437d6c36d2
+   * https://github.com/HaxeFlixel/flixel/pull/3125
+   *
+   * So we use this to do the old math that gets the midpoint of our graphics
+   * Luckily, we don't use getGraphicMidpoint() much in the code, so it's fine being in GameoverSubState here.
+   * @return FlxPoint
+   */
+  function getMidPointOld(spr:FlxSprite, ?point:FlxPoint):FlxPoint
+  {
+    if (point == null) point = FlxPoint.get();
+    return point.set(spr.x + spr.frameWidth * 0.5 * spr.scale.x, spr.y + spr.frameHeight * 0.5 * spr.scale.y);
   }
 
   /**
@@ -233,15 +254,16 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT && blueballed)
+    if (controls.ACCEPT && blueballed && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();
     }
 
     // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
-    if (controls.BACK)
+    if (controls.BACK && !mustNotExit && !isEnding)
     {
+      isEnding = true;
       blueballed = false;
       PlayState.instance.deathCounter = 0;
       // PlayState.seenCutscene = false; // old thing...
@@ -252,6 +274,7 @@ class GameOverSubState extends MusicBeatSubState
         this.close();
         if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
         PlayState.instance.close(); // This only works because PlayState is a substate!
+        return;
       }
       else if (PlayStatePlaylist.isStoryMode)
       {
@@ -325,9 +348,12 @@ class GameOverSubState extends MusicBeatSubState
       // After the animation finishes...
       new FlxTimer().start(0.7, function(tmr:FlxTimer) {
         // ...fade out the graphics. Then after that happens...
-        FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+
+        var resetPlaying = function(pixel:Bool = false) {
           // ...close the GameOverSubState.
-          FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
+          if (pixel) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
+          else
+            FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           PlayState.instance.needsReset = true;
 
           if (PlayState.instance.isMinimalMode || boyfriend == null) {}
@@ -344,7 +370,22 @@ class GameOverSubState extends MusicBeatSubState
 
           // Close the substate.
           close();
-        });
+        };
+
+        if (musicSuffix == '-pixel')
+        {
+          RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
+          new FlxTimer().start(2, _ -> {
+            FlxG.camera.filters = [];
+            resetPlaying(true);
+          });
+        }
+        else
+        {
+          FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+            resetPlaying();
+          });
+        }
       });
     }
   }

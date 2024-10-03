@@ -1,0 +1,78 @@
+name: Crash Report
+description: Report a crash that occurred while playing the game.
+labels: ["type: major bug", "status: pending triage"]
+title: "Crash Report: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      description: Be sure to complete these steps to increase the chances of your issue being addressed!
+      options:
+        - label: I have properly named my issue
+        - label: I have checked the Issues/Discussions pages to see if my issue has already been reported
+
+  - type: dropdown
+    attributes:
+      label: Platform
+      description: Which platform are you playing on?
+      options:
+        - Newgrounds (Web/HTML5)
+        - Itch.io (Web/HTML5)
+        - Itch.io (Downloadable Build) - Windows
+        - Itch.io (Downloadable Build) - MacOS
+        - Itch.io (Downloadable Build) - Linux
+        - Compiled from GitHub Source Code
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Browser
+      description: (Web/HTML5 users only) Which browser are you playing on?
+      options:
+        - Google Chrome
+        - Microsoft Edge
+        - Firefox
+        - Opera
+        - Safari
+        - Other (Specify in Description field)
+
+  - type: input
+    attributes:
+      label: Version
+      description: Which version are you playing on? The game version is in the bottom left corner of the main menu. 
+      placeholder: ex. 0.5.0
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "## Describe the crash."
+
+  - type: markdown
+    attributes:
+      value: "### Please do not report issues from other engines. These must be reported in their respective repositories."
+
+  - type: textarea
+    attributes:
+      label: Description
+      description: Include screenshots or videos of the crash happening. Provide as much detail as you can. 
+      placeholder: Describe the crash here...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: What steps can other people take to reliably trigger this crash?
+      placeholder: 1. Open the game...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Crash logs
+      description: These can be found in the logs folder where Funkin.exe is.
+      placeholder: Upload your logs here...
+    validations:
+      required: true

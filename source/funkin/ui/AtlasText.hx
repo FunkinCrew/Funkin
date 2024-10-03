@@ -152,6 +152,32 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
     }
   }
 
+  public function getWidth():Int
+  {
+    var width = 0;
+    for (char in this.text.split(""))
+    {
+      switch (char)
+      {
+        case " ":
+          {
+            width += 40;
+          }
+        case "\n":
+          {}
+        case char:
+          {
+            var sprite = new AtlasChar(atlas, char);
+            sprite.revive();
+            sprite.char = char;
+            sprite.alpha = 1;
+            width += Std.int(sprite.width);
+          }
+      }
+    }
+    return width;
+  }
+
   override function toString()
   {
     return "InputItem, " + FlxStringUtil.getDebugString([

@@ -28,8 +28,14 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
     [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
     [CUTSCENE_ADVANCE],
+    [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT],
+    [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end],
     [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
-    [DEBUG_MENU, DEBUG_CHART]
+    [
+      DEBUG_MENU,
+      #if FEATURE_CHART_EDITOR DEBUG_CHART, #end
+      #if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end
+    ]
   ];
 
   var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
@@ -108,6 +114,18 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
         headers.add(new AtlasText(0, y, "CUTSCENE", AtlasFont.BOLD)).screenCenter(X);
         y += spacer;
       }
+      else if (currentHeader != "FREEPLAY_" && name.indexOf("FREEPLAY_") == 0)
+      {
+        currentHeader = "FREEPLAY_";
+        headers.add(new AtlasText(0, y, "FREEPLAY", AtlasFont.BOLD)).screenCenter(X);
+        y += spacer;
+      }
+      else if (currentHeader != "WINDOW_" && name.indexOf("WINDOW_") == 0)
+      {
+        currentHeader = "WINDOW_";
+        headers.add(new AtlasText(0, y, "WINDOW", AtlasFont.BOLD)).screenCenter(X);
+        y += spacer;
+      }
       else if (currentHeader != "VOLUME_" && name.indexOf("VOLUME_") == 0)
       {
         currentHeader = "VOLUME_";
@@ -123,10 +141,11 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
 
       if (currentHeader != null && name.indexOf(currentHeader) == 0) name = name.substr(currentHeader.length);
 
-      var label = labels.add(new AtlasText(150, y, name, AtlasFont.BOLD));
+      var formatName = name.replace('_', ' ');
+      var label = labels.add(new AtlasText(100, y, formatName, AtlasFont.BOLD));
       label.alpha = 0.6;
       for (i in 0...COLUMNS)
-        createItem(label.x + 400 + i * 300, y, control, i);
+        createItem(label.x + 550 + i * 400, y, control, i);
 
       y += spacer;
     }
