@@ -25,7 +25,7 @@ class Project extends HXProject {
 	 * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
 	 * You only have to change it here, the rest of the game will query this value.
 	 */
-	static final VERSION:String = "0.5.0";
+	static final VERSION:String = "0.5.1";
 
 	/**
 	 * The game's name. Used as the default window title.
@@ -150,6 +150,21 @@ class Project extends HXProject {
 	static final FEATURE_DEBUG_FUNCTIONS:FeatureFlag = "FEATURE_DEBUG_FUNCTIONS";
 
 	/**
+	 * `-DFEATURE_DEBUG_TRACY`
+	 * If this flag is enabled, the game will have the necessary hooks for the Tracy profiler.
+	 * Only enable this if you're using the correct fork of Haxe to support this.
+	 * @see https://github.com/HaxeFoundation/hxcpp/pull/1153
+	 */
+	static final FEATURE_DEBUG_TRACY:FeatureFlag = "FEATURE_DEBUG_TRACY";
+
+	/**
+	 * `-DFEATURE_LOG_TRACE`
+	 * If this flag is enabled, the game will print debug traces to the console.
+	 * Disable to improve performance a bunch.
+	 */
+	static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
+
+	/**
 	 * `-DFEATURE_DISCORD_RPC`
 	 * If this flag is enabled, the game will enable the Discord Remote Procedure Call library.
 	 * This is used to provide Discord Rich Presence support.
@@ -198,6 +213,12 @@ class Project extends HXProject {
    * If this flag is enabled, the game will support opening URLs (such as the merch page).
    */
   static final FEATURE_OPEN_URL:FeatureFlag = "FEATURE_OPEN_URL";
+
+  /**
+	 * `-DFEATURE_SCREENSHOTS`
+   * If this flag is enabled, the game will support the screenshots feature.
+   */
+  static final FEATURE_SCREENSHOTS:FeatureFlag = "FEATURE_SCREENSHOTS";
 
 	/**
    * `-DFEATURE_CHART_EDITOR`
@@ -453,14 +474,14 @@ class Project extends HXProject {
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+		FEATURE_LOG_TRACE.apply(this, isDebug());
 
 		// Should default to true on workspace builds and false on release builds.
 		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
 
-		// Should be true on release, non-tester builds.
+		// Should be true on desktop, release, non-tester builds.
 		// We don't want testers to accidentally leak songs to their Discord friends!
-    // TODO: Re-enable this.
-		FEATURE_DISCORD_RPC.apply(this, false && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+		FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
 		// Should be true only on web builds.
 		// Audio context issues only exist there.
@@ -478,6 +499,10 @@ class Project extends HXProject {
 		// Should be true except on web builds.
 		// Chart editor doesn't work there.
 		FEATURE_CHART_EDITOR.apply(this, !isWeb());
+
+		// Should be true except on web builds.
+		// Screenshots doesn't work there.
+		FEATURE_SCREENSHOTS.apply(this, !isWeb());
 	}
 
   /**
@@ -516,6 +541,16 @@ class Project extends HXProject {
 
 		// Cleaner looking compiler errors.
 		setHaxedef("message.reporting", "pretty");
+
+		if (FEATURE_DEBUG_TRACY.isEnabled(this)) {
+			setHaxedef("HXCPP_TELEMETRY"); // Enable telemetry
+			setHaxedef("HXCPP_TRACY"); // Enable Tracy telemetry
+			setHaxedef("HXCPP_TRACY_MEMORY"); // Track memory allocations
+			setHaxedef("HXCPP_TRACY_ON_DEMAND"); // Only collect telemetry when Tracy is open and reachable
+			// setHaxedef("HXCPP_TRACY_INCLUDE_CALLSTACKS"); // Inspect callstacks per zone, inflating telemetry data
+
+			setHaxedef("absolute-paths"); // Fix source locations so Tracy can see them
+		}
   }
 
 	/**
@@ -618,7 +653,7 @@ class Project extends HXProject {
     }
 
 		if (FEATURE_DISCORD_RPC.isEnabled(this)) {
-			addHaxelib('discord_rpc'); // Discord API
+			addHaxelib('hxdiscord_rpc'); // Discord API
 		}
 
 		if (FEATURE_NEWGROUNDS.isEnabled(this)) {
@@ -941,6 +976,8 @@ class Project extends HXProject {
 		var commitHash:String = process.stdout.readLine();
 		var commitHashSplice:String = commitHash.substr(0, 7);
 
+		process.close();
+
 		return commitHashSplice;
 	}
 
@@ -954,6 +991,8 @@ class Project extends HXProject {
 		}
 
 		var branchName:String = branchProcess.stdout.readLine();
+
+		branchProcess.close();
 
 		return branchName;
 	}
@@ -978,6 +1017,8 @@ class Project extends HXProject {
 				throw e;
 			}
 		}
+
+		branchProcess.close();
 
 		return output.length > 0;
 	}

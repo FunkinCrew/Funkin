@@ -1457,6 +1457,7 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
 
@@ -1484,11 +1485,10 @@ class PlayState extends MusicBeatSubState
         {
           trace(playerVoicesError);
           trace(opponentVoicesError);
-        }
-        trace(FlxG.sound.music.time);
+          trace(FlxG.sound.music.time);
         trace(correctSync);
         resyncVocals();
-      }
+        }
     }
 
     // Only bop camera if zoom level is below 135%
@@ -1849,6 +1849,20 @@ class PlayState extends MusicBeatSubState
   {
     #if FEATURE_DISCORD_RPC
     // Determine the details strings once and reuse them.
+
+
+    // Updating Discord Rich Presence.
+    DiscordClient.instance.setPresence(
+      {
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
+
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
+    #end
+  }
+
 
     // Updating Discord Rich Presence.
     DiscordClient.instance.setPresence(
