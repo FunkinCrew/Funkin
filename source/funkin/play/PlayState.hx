@@ -1906,6 +1906,39 @@ class PlayState extends MusicBeatSubState
     return '${currentChart.songName} [${discordRPCDifficulty}]';
   }
 
+  function buildDiscordRPCDetails():String
+  {
+    if (PlayStatePlaylist.isStoryMode)
+    {
+      return 'Story Mode: ${PlayStatePlaylist.campaignTitle}';
+    }
+    else
+    {
+      if (isChartingMode)
+      {
+        return 'Chart Editor [Playtest]';
+      }
+      else if (isPracticeMode)
+      {
+        return 'Freeplay [Practice]';
+      }
+      else if (isBotPlayMode)
+      {
+        return 'Freeplay [Bot Play]';
+      }
+      else
+      {
+        return 'Freeplay';
+      }
+    }
+  }
+
+  function buildDiscordRPCState():String
+  {
+    var discordRPCDifficulty = PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
+    return '${currentChart.songName} [${discordRPCDifficulty}]';
+  }
+
   function initPreciseInputs():Void
   {
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
