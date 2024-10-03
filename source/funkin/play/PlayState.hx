@@ -1837,6 +1837,17 @@ class PlayState extends MusicBeatSubState
         smallImageKey: discordRPCIcon
       });
     #end
+
+    #if FEATURE_DISCORD_RPC
+    // Updating Discord Rich Presence.
+    DiscordClient.instance.setPresence(
+      {
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
+    #end
   }
 
   function buildDiscordRPCDetails():String
