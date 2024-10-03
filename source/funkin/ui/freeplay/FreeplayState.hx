@@ -1717,8 +1717,6 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    trace('CURRENT VARIATION OF SONG: ${currentVariation}');
-
     var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
     if (daSong != null)
     {
@@ -1729,7 +1727,7 @@ class FreeplayState extends MusicBeatSubState
         return;
       }
 
-      var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty);
+      var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
@@ -2025,7 +2023,7 @@ class FreeplayState extends MusicBeatSubState
     var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
     if (daSongCapsule.freeplayData != null)
     {
-      var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.freeplayData.data.id, currentDifficulty);
+      var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.freeplayData.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
@@ -2260,7 +2258,7 @@ class FreeplaySongData
   /**
    * Whether the player has seen/played this song before within freeplay
    */
-  public var isNew:Bool = false;
+  public var isNew(get, never):Bool;
 
   /**
    * The default opponent for the song.
@@ -2312,6 +2310,18 @@ class FreeplaySongData
     // this.isNew = song.isSongNew(suffixedDifficulty);
   }
 
+  function get_isNew():Bool
+  {
+    // We use a slightly different manner to get the new status of a song than the other getters here
+    // `isSongNew()` only takes a single variation, and it's data that isn't accessible via the Song data/metadata
+    // it's stored in the song .hxc script in a function that overrides `isSongNew()`
+    // and is only accessible with the correct valid variation inputs
+
+    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
+    var variation:String = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    return data.isSongNew(FreeplayState.rememberedDifficulty, variation);
+  }
+
   function get_songCharacter():String
   {
     var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
@@ -2340,8 +2350,10 @@ class FreeplaySongData
 
   function get_scoringRank():Null<ScoringRank>
   {
-    // TODO: Properly get/migrate the save data from the suffixed difficulty version to our new unsuffixed version
-    return Save.instance.getSongRank(data.songName, FreeplayState.rememberedDifficulty);
+    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
+    var variation:String = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+
+    return Save.instance.getSongRank(data.id, FreeplayState.rememberedDifficulty, variation);
   }
 }
 

@@ -543,22 +543,34 @@ class Save
    *
    * @param songId The ID of the song.
    * @param difficultyId The difficulty to check.
+   * @param variation The variation to check. Defaults to empty string. Appended to difficulty with `-`, e.g. `easy-pico`.
    * @return A data structure containing score, judgement counts, and accuracy. Returns `null` if no score is saved.
    */
-  public function getSongScore(songId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
+  public function getSongScore(songId:String, difficultyId:String = 'normal', ?variation:String):Null<SaveScoreData>
   {
     var song = data.scores.songs.get(songId);
+    trace('Getting song score for $songId $difficultyId $variation');
     if (song == null)
     {
+      trace('Could not find song data for $songId $difficultyId $variation');
       song = [];
       data.scores.songs.set(songId, song);
     }
+
+    // 'default' variations are left with no suffix ('easy', 'normal', 'hard'),
+    // along with 'erect' variations ('erect', 'nightmare')
+    // otherwise, we want to add a suffix of our current variation to get the save data.
+    if (variation != null && variation != '' && variation != 'default' && variation != 'erect')
+    {
+      difficultyId = '${difficultyId}-${variation}';
+    }
+
     return song.get(difficultyId);
   }
 
-  public function getSongRank(songId:String, difficultyId:String = 'normal'):Null<ScoringRank>
+  public function getSongRank(songId:String, difficultyId:String = 'normal', ?variation:String):Null<ScoringRank>
   {
-    return Scoring.calculateRank(getSongScore(songId, difficultyId));
+    return Scoring.calculateRank(getSongScore(songId, difficultyId, variation));
   }
 
   /**

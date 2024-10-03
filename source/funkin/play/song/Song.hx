@@ -98,7 +98,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   // this returns false so that any new song can override this and return true when needed
-  public function isSongNew(currentDifficulty:String):Bool
+  public function isSongNew(currentDifficulty:String, currentVariation:String):Bool
   {
     return false;
   }
@@ -434,17 +434,25 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return null;
   }
 
+  /**
+   * Returns the first valid variation that matches both the difficulty id, and the current character / possible input variations
+   * @param diffId
+   * @param currentCharacter
+   * @param possibleVariations
+   * @return Null<String>
+   */
   public function getFirstValidVariation(?diffId:String, ?currentCharacter:PlayableCharacter, ?possibleVariations:Array<String>):Null<String>
   {
     if (possibleVariations == null)
     {
       possibleVariations = getVariationsByCharacter(currentCharacter);
     }
+
     if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
 
     for (variationId in possibleVariations)
     {
-      if (difficulties.exists('$variationId')) return variationId;
+      if (difficulties.get('$variationId')?.exists(diffId) ?? false) return variationId;
     }
 
     return null;
