@@ -56,6 +56,16 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var flipYOffsets:Bool = false;
 
   /**
+   * Whether to apply additional math to automatically horizontally flip the animation offsets for you when the bopper is flipped.
+   */
+  public var flipXOffsets:Bool = false;
+
+  /**
+   * Whether to apply additional math to automatically vertically flip the animation offsets for you when the bopper is flipped.
+   */
+  public var flipYOffsets:Bool = false;
+
+  /**
    * If this bopper is rendered with pixel art, disable anti-aliasing.
    * @default `false`
    */
@@ -160,11 +170,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public function resetPosition()
   {
-    var oldAnimOffsets = [animOffsets[0], animOffsets[1]];
-    animOffsets = [0, 0];
     this.x = originalPosition.x;
     this.y = originalPosition.y;
-    animOffsets = oldAnimOffsets;
   }
 
   function update_shouldAlternate():Void

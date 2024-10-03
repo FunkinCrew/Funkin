@@ -147,7 +147,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 
     if (getAnimationData() != null && getAnimationData().looped)
     {
-      playAnimation(prefix, true, false);
+      playAnimation(currentAnimName, true, false);
     }
     else
     {

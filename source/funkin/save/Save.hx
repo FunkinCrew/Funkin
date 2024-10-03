@@ -603,11 +603,14 @@ class Save
       return;
     }
 
+    var newCompletion = (newScoreData.tallies.sick + newScoreData.tallies.good) / newScoreData.tallies.totalNotes;
+    var previousCompletion = (previousScoreData.tallies.sick + previousScoreData.tallies.good) / previousScoreData.tallies.totalNotes;
+
     // Set the high score and the high rank separately.
     var newScore:SaveScoreData =
       {
         score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
-        tallies: (previousRank > newRank) ? previousScoreData.tallies : newScoreData.tallies
+        tallies: (previousRank > newRank || previousCompletion > newCompletion) ? previousScoreData.tallies : newScoreData.tallies
       };
 
     song.set(difficultyId, newScore);
@@ -1149,7 +1152,7 @@ typedef SaveDataOptions =
   var framerate:Int;
 
   /**
-   * Whether some particularly fowl language is displayed.
+   * Whether some particularly foul language is displayed.
    * @default `true`
    */
   var naughtyness:Bool;
@@ -1185,20 +1188,20 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
-   * Offset the users inputs by this many ms.
+   * Offset the user's inputs by this many ms.
    * @default `0`
    */
   var inputOffset:Int;
 
   /**
-   * Affects the delay between the audio and the visuals during gameplay
+   * Affects the delay between the audio and the visuals during gameplay.
    * @default `0`
    */
   var audioVisualOffset:Int;
 
   /**
    * If we want the framerate to be unlocked on HTML5.
-   * @default `false
+   * @default `false`
    */
   var unlockedFramerate:Bool;
 

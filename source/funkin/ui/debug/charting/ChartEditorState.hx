@@ -79,7 +79,6 @@ import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
-import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorPlaybarHead;
@@ -2274,7 +2273,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         this.openBackupAvailableDialog(welcomeDialog);
       }
     }
+
+    #if FEATURE_DISCORD_RPC
+    updateDiscordRPC();
+    #end
   }
+
+  #if FEATURE_DISCORD_RPC
+  function updateDiscordRPC():Void
+  {
+    funkin.api.discord.DiscordClient.instance.setPresence(
+      {
+        // TODO: Make this display the song name and update when it changes.
+        // state: '${currentSongName} [${selectedDifficulty}]',
+        state: null,
+        details: 'Chart Editor [Charting]'
+      });
+  }
+  #end
 
   function setupWelcomeMusic()
   {
@@ -4251,8 +4267,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               }
               else
               {
-                // Minimum of 0.
-                return 0;
+                // Minimum of -1.
+                return -1;
               }
             });
 

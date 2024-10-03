@@ -258,6 +258,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       propSprite.zIndex = dataProp.zIndex;
 
+      propSprite.flipX = dataProp.flipX;
+      propSprite.flipY = dataProp.flipY;
+
       switch (dataProp.animType)
       {
         case 'packer':
@@ -440,12 +443,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.x = stageCharData.position[0] - character.characterOrigin.x;
       character.y = stageCharData.position[1] - character.characterOrigin.y;
 
-      @:privateAccess(funkin.play.stage.Bopper)
-      {
-        // Undo animOffsets before saving original position.
-        character.originalPosition.x = character.x + character.animOffsets[0];
-        character.originalPosition.y = character.y + character.animOffsets[1];
-      }
+      character.originalPosition.set(character.x, character.y);
 
       var finalScale = character.getBaseScale() * stageCharData.scale;
       character.setScale(finalScale); // Don't use scale.set for characters!
