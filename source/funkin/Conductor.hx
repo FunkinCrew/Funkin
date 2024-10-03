@@ -92,6 +92,12 @@ class Conductor
    */
   public var songPosition(default, null):Float = 0;
 
+  /**
+   * The offset between frame time and music time.
+   * Used in `getTimeWithDelta()` to get a more accurate music time when on higher framerates.
+   */
+  var songPositionDelta(default, null):Float = 0;
+
   var prevTimestamp:Float = 0;
   var prevTime:Float = 0;
 
@@ -423,6 +429,7 @@ class Conductor
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
     {
       this.songPosition = Math.min(currentLength, Math.max(0, songPos));
+      this.songPositionDelta += FlxG.elapsed * 1000 * FlxG.sound.music.pitch;
     }
     else
     {
@@ -488,10 +495,21 @@ class Conductor
     // which it doesn't do every frame!
     if (prevTime != this.songPosition)
     {
+      this.songPositionDelta = 0;
+
       // Update the timestamp for use in-between frames
       prevTime = this.songPosition;
       prevTimestamp = Std.int(Timer.stamp() * 1000);
     }
+  }
+
+  /**
+   * Returns a more accurate music time for higher framerates.
+   * @return Float
+   */
+  public function getTimeWithDelta():Float
+  {
+    return this.songPosition + this.songPositionDelta;
   }
 
   /**
