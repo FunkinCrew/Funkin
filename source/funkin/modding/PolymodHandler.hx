@@ -282,6 +282,13 @@ class PolymodHandler
     // System.load() can load malicious DLLs
     Polymod.blacklistImport('lime.system.System');
 
+    // `lime.utils.Assets`
+    // Literally just has a private `resolveClass` function for some reason?
+    Polymod.blacklistImport('lime.utils.Assets');
+    Polymod.blacklistImport('openfl.utils.Assets');
+    Polymod.blacklistImport('openfl.Lib');
+    Polymod.blacklistImport('openfl.system.ApplicationDomain');
+
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
