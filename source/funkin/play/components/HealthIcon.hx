@@ -1,10 +1,11 @@
 package funkin.play.components;
 
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
+import openfl.utils.Assets;
 import funkin.graphics.FunkinSprite;
 import funkin.util.MathUtil;
 
@@ -172,30 +173,15 @@ class HealthIcon extends FunkinSprite
    */
   public function configure(data:Null<HealthIconData>):Void
   {
-    if (data == null)
-    {
-      this.characterId = Constants.DEFAULT_HEALTH_ICON;
-      this.isPixel = false;
+    this.characterId = data?.id ?? Constants.DEFAULT_HEALTH_ICON;
+    this.isPixel = data?.isPixel ?? false;
 
-      loadCharacter(characterId);
+    loadCharacter(characterId);
 
-      this.size.set(1.0, 1.0);
-      this.offset.x = 0.0;
-      this.offset.y = 0.0;
-      this.flipX = false;
-    }
-    else
-    {
-      this.characterId = data.id;
-      this.isPixel = data.isPixel ?? false;
-
-      loadCharacter(characterId);
-
-      this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
-      this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;
-      this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
-    }
+    this.size.set(data?.scale ?? 1.0, data?.scale ?? 1.0);
+    this.offset.x = (data?.offsets ?? [0, 0])[0] ?? 0.0;
+    this.offset.y = (data?.offsets ?? [0, 0])[1] ?? 0.0;
+    this.flipX = data?.flipX ?? false; // Face the OTHER way by default, since that is more common.
   }
 
   /**

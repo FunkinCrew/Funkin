@@ -46,6 +46,16 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var idleSuffix(default, set):String = '';
 
   /**
+   * Whether to apply additional math to automatically horizontally flip the animation offsets for you when the bopper is flipped.
+   */
+  public var flipXOffsets:Bool = false;
+
+  /**
+   * Whether to apply additional math to automatically vertically flip the animation offsets for you when the bopper is flipped.
+   */
+  public var flipYOffsets:Bool = false;
+
+  /**
    * If this bopper is rendered with pixel art, disable anti-aliasing.
    * @default `false`
    */
@@ -356,9 +366,25 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
+
     output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
+    if (shouldFlip(true))
+    {
+      output.x += (animOffsets[0] * 2 + (width - frameWidth)) * this.scale.x;
+    }
+
     output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
+    if (shouldFlip(false))
+    {
+      output.y += (animOffsets[1] * 2 + (height - frameHeight)) * this.scale.y;
+    }
+
     return output;
+  }
+
+  function shouldFlip(xAxis:Bool):Bool
+  {
+    return xAxis ? (flipXOffsets && flipX) : (flipYOffsets && flipY);
   }
 
   public function onPause(event:PauseScriptEvent) {}

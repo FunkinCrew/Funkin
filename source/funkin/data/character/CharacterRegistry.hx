@@ -1,38 +1,45 @@
-package funkin.play.character;
+package funkin.data.character;
 
-import funkin.data.animation.AnimationData;
-import funkin.modding.events.ScriptEvent;
+import flixel.graphics.frames.FlxFrame;
+import funkin.data.character.CharacterData;
+import funkin.play.character.AnimateAtlasCharacter;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.MultiSparrowCharacter;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.character.PackerCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedAnimateAtlasCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedBaseCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedMultiSparrowCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedPackerCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
+import funkin.play.character.SparrowCharacter;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
-import haxe.Json;
-import flixel.graphics.frames.FlxFrame;
 
-class CharacterDataParser
+/**
+ * NOTE: This doesn't act the same as the other registries.
+ * It doesn't implement `BaseRegistry` and fetching produces a new instance rather than reusing them.
+ */
+class CharacterRegistry
 {
   /**
-   * The current version string for the stage data format.
+   * The current version string for the character data format.
    * Handle breaking changes by incrementing this value
-   * and adding migration to the `migrateStageData()` function.
-   *
-   * - Version 1.0.1 adds `death.cameraOffsets`
+   * and adding migration to the `migrateCharacterData()` function.
    */
-  public static final CHARACTER_DATA_VERSION:String = '1.0.1';
+  public static final CHARACTER_DATA_VERSION:String = '1.1.0';
 
   /**
-   * The current version rule check for the stage data format.
+   * The current version rule check for the character data format.
    */
-  public static final CHARACTER_DATA_VERSION_RULE:String = '1.0.x';
+  public static final CHARACTER_DATA_VERSION_RULE:String = '1.1.x';
 
   static final characterCache:Map<String, CharacterData> = new Map<String, CharacterData>();
   static final characterScriptedClass:Map<String, String> = new Map<String, String>();
 
-  static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
+  static final DEFAULT_CHAR_ID:String = 'unknown';
 
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
@@ -378,14 +385,76 @@ class CharacterDataParser
    */
   public static function parseCharacterData(charId:String):Null<CharacterData>
   {
-    var rawJson:String = loadCharacterFile(charId);
+    var rawJson:JsonFile = loadCharacterFile(charId);
 
-    var charData:CharacterData = migrateCharacterData(rawJson, charId);
+    var charData:CharacterData = buildCharacterData(rawJson, charId);
 
-    return validateCharacterData(charId, charData);
+    if (charData == null)
+    {
+      // trace('[CHARACTER] Could not load character data for "$charId", check above for potential errors');
+      return null;
+    }
+    if (CHARACTER_DATA_VERSION_RULE == null || VersionUtil.validateVersionStr(charData.version, CHARACTER_DATA_VERSION_RULE))
+    {
+      return migrateCharacterData(charData, charId);
+    }
+    else if (VersionUtil.validateVersion(charData.version, "1.0.x"))
+    {
+      return migrateCharacterData_v1_0_0(charData, charId);
+    }
+    else
+    {
+      trace('[CHARACTER] Could not load character data for "$charId": bad version (got ${charData.version}, expected ${CHARACTER_DATA_VERSION_RULE})');
+      return null;
+    }
   }
 
-  static function loadCharacterFile(charPath:String):String
+  /**
+   * Apply operations to prevent regressions when updating character data.
+   */
+  static function migrateCharacterData_v1_0_0(result:Null<CharacterData>, charId:String):Null<CharacterData>
+  {
+    if (result == null) return null;
+
+    // These values are new, and default to enabled on newer metadata versions,
+    // but should be forced to false for older character data to prevent breaking existing characters.
+    result.flipXOffsets = false;
+    result.flipSingAnimations = false;
+
+    // NOTE: Migration should be STACKED!
+    // So migrate 1.0.0->1.1.0->1.2.0, etc.
+    return migrateCharacterData(result, charId);
+  }
+
+  /**
+   * Apply migration operations which are relevant for all character data.
+   * This is mostly applying non-primitive default values.
+   */
+  static function migrateCharacterData(result:Null<CharacterData>, charId:String):Null<CharacterData>
+  {
+    if (result.healthIcon == null)
+    {
+      result.healthIcon = {};
+    }
+
+    if (result.healthIcon.id == null)
+    {
+      result.healthIcon.id = charId;
+    }
+
+    // If `flipXOffsets` is enabled, we need to account for the default value of `flipX`.
+    // if (result.flipX && result.flipXOffsets)
+    // {
+    //   for (anim in result.animations)
+    //   {
+    //     anim.offsets[0] *= -1;
+    //   }
+    // }
+
+    return result;
+  }
+
+  static function loadCharacterFile(charPath:String):JsonFile
   {
     var charFilePath:String = Paths.json('characters/${charPath}');
     var rawJson = Assets.getText(charFilePath).trim();
@@ -395,25 +464,43 @@ class CharacterDataParser
       rawJson = rawJson.substr(0, rawJson.length - 1);
     }
 
-    return rawJson;
+    return {
+      fileName: charFilePath,
+      contents: rawJson
+    };
   }
 
-  static function migrateCharacterData(rawJson:String, charId:String):Null<CharacterData>
+  static function buildCharacterData(rawJson:JsonFile, charId:String):Null<CharacterData>
   {
     // If you update the character data format in a breaking way,
     // handle migration here by checking the `version` value.
 
-    try
+    var parser = new json2object.JsonParser<CharacterData>();
+    parser.ignoreUnknownVariables = false;
+
+    switch (rawJson)
     {
-      var charData:CharacterData = cast Json.parse(rawJson);
-      return charData;
+      case {fileName: fileName, contents: contents}:
+        parser.fromJson(contents, fileName);
+      default:
+        return null;
     }
-    catch (e)
+
+    if (parser.errors.length > 0)
     {
-      trace('  Error parsing data for character: ${charId}');
-      trace('    ${e}');
+      printErrors(parser.errors, charId);
       return null;
     }
+
+    return parser.value;
+  }
+
+  static function printErrors(errors:Array<json2object.Error>, id:String = ''):Void
+  {
+    trace('[CHARACTER] Failed to parse waveform data: ${id}');
+
+    for (error in errors)
+      funkin.data.DataError.printError(error);
   }
 
   /**
@@ -441,6 +528,7 @@ class CharacterDataParser
   /**
    * Set unspecified parameters to their defaults.
    * If the parameter is mandatory, print an error message.
+   * TODO: This function is redundant now that we're using json2object!
    * @param id
    * @param input
    * @return The validated character data
@@ -449,25 +537,19 @@ class CharacterDataParser
   {
     if (input == null)
     {
-      trace('ERROR: Could not parse character data for "${id}".');
+      trace('[CHARACTER] Could not parse character data for "${id}".');
       return null;
     }
 
     if (input.version == null)
     {
-      trace('WARN: No semantic version specified for character data file "$id", assuming ${CHARACTER_DATA_VERSION}');
+      trace('[CHARACTER] No semantic version specified for character data file "$id", assuming ${CHARACTER_DATA_VERSION}');
       input.version = CHARACTER_DATA_VERSION;
-    }
-
-    if (!VersionUtil.validateVersionStr(input.version, CHARACTER_DATA_VERSION_RULE))
-    {
-      trace('ERROR: Could not load character data for "$id": bad version (got ${input.version}, expected ${CHARACTER_DATA_VERSION_RULE})');
-      return null;
     }
 
     if (input.name == null)
     {
-      trace('WARN: Character data for "$id" missing name');
+      trace('[CHARACTER] Character data for "$id" missing name');
       input.name = DEFAULT_NAME;
     }
 
@@ -478,7 +560,7 @@ class CharacterDataParser
 
     if (input.assetPath == null)
     {
-      trace('ERROR: Could not load character data for "$id": missing assetPath');
+      trace('[CHARACTER] Could not load character data for "$id": missing assetPath');
       return null;
     }
 
@@ -556,7 +638,7 @@ class CharacterDataParser
 
     if (input.animations == null || input.animations.length == 0)
     {
-      trace('ERROR: Could not load character data for "$id": missing animations');
+      trace('[CHARACTER] Could not load character data for "$id": missing animations');
       input.animations = [];
     }
 
@@ -574,7 +656,7 @@ class CharacterDataParser
     {
       if (inputAnimation.name == null)
       {
-        trace('ERROR: Could not load character data for "$id": missing animation name for prop "${input.name}"');
+        trace('[CHARACTER] Could not load character data for "$id": missing animation name for prop "${input.name}"');
         return null;
       }
 
@@ -607,195 +689,4 @@ class CharacterDataParser
     // All good!
     return input;
   }
-}
-
-/**
- * Describes the available rendering types for a character.
- */
-enum abstract CharacterRenderType(String) from String to String
-{
-  /**
-   * Renders the character using a single spritesheet and XML data.
-   */
-  public var Sparrow = 'sparrow';
-
-  /**
-   * Renders the character using a single spritesheet and TXT data.
-   */
-  public var Packer = 'packer';
-
-  /**
-   * Renders the character using multiple spritesheets and XML data.
-   */
-  public var MultiSparrow = 'multisparrow';
-
-  /**
-   * Renders the character using a spritesheet of symbols and JSON data.
-   */
-  public var AnimateAtlas = 'animateatlas';
-
-  /**
-   * Renders the character using a custom method.
-   */
-  public var Custom = 'custom';
-}
-
-/**
- * The JSON data schema used to define a character.
- */
-typedef CharacterData =
-{
-  /**
-   * The sematic version number of the character data JSON format.
-   */
-  var version:String;
-
-  /**
-   * The readable name of the character.
-   */
-  var name:String;
-
-  /**
-   * The type of rendering system to use for the character.
-   * @default sparrow
-   */
-  var renderType:CharacterRenderType;
-
-  /**
-   * Behavior varies by render type:
-   * - SPARROW: Path to retrieve both the spritesheet and the XML data from.
-   * - PACKER: Path to retrieve both the spritsheet and the TXT data from.
-   */
-  var assetPath:String;
-
-  /**
-   * The scale of the graphic as a float.
-   * Pro tip: On pixel-art levels, save the sprites small and set this value to 6 or so to save memory.
-   * @default 1
-   */
-  var scale:Null<Float>;
-
-  /**
-   * Optional data about the health icon for the character.
-   */
-  var healthIcon:Null<HealthIconData>;
-
-  var death:Null<DeathData>;
-
-  /**
-   * The global offset to the character's position, in pixels.
-   * @default [0, 0]
-   */
-  var offsets:Null<Array<Float>>;
-
-  /**
-   * The amount to offset the camera by while focusing on this character.
-   * Default value focuses on the character directly.
-   * @default [0, 0]
-   */
-  var cameraOffsets:Array<Float>;
-
-  /**
-   * Setting this to true disables anti-aliasing for the character.
-   * @default false
-   */
-  var isPixel:Null<Bool>;
-
-  /**
-   * The frequency at which the character will play its idle animation, in beats.
-   * Increasing this number will make the character dance less often.
-   * Supports up to `0.25` precision.
-   * @default `1.0` on characters
-   */
-  @:optional
-  @:default(1.0)
-  var danceEvery:Null<Float>;
-
-  /**
-   * The minimum duration that a character will play a note animation for, in beats.
-   * If this number is too low, you may see the character start playing the idle animation between notes.
-   * If this number is too high, you may see the the character play the sing animation for too long after the notes are gone.
-   *
-   * Examples:
-   * - Daddy Dearest uses a value of `1.525`.
-   * @default 1.0
-   */
-  var singTime:Null<Float>;
-
-  /**
-   * An optional array of animations which the character can play.
-   */
-  var animations:Array<AnimationData>;
-
-  /**
-   * If animations are used, this is the name of the animation to play first.
-   * @default idle
-   */
-  var startingAnimation:Null<String>;
-
-  /**
-   * Whether or not the whole ass sprite is flipped by default.
-   * Useful for characters that could also be played (Pico)
-   *
-   * @default false
-   */
-  var flipX:Null<Bool>;
-};
-
-/**
- * The JSON data schema used to define the health icon for a character.
- */
-typedef HealthIconData =
-{
-  /**
-   * The ID to use for the health icon.
-   * @default The character's ID
-   */
-  var id:Null<String>;
-
-  /**
-   * The scale of the health icon.
-   */
-  var scale:Null<Float>;
-
-  /**
-   * Whether to flip the health icon horizontally.
-   * @default false
-   */
-  var flipX:Null<Bool>;
-
-  /**
-   * Multiply scale by 6 and disable antialiasing
-   * @default false
-   */
-  var isPixel:Null<Bool>;
-
-  /**
-   * The offset of the health icon, in pixels.
-   * @default [0, 25]
-   */
-  var offsets:Null<Array<Float>>;
-}
-
-typedef DeathData =
-{
-  /**
-   * The amount to offset the camera by while focusing on this character as they die.
-   * Default value focuses on the character's graphic midpoint.
-   * @default [0, 0]
-   */
-  var ?cameraOffsets:Array<Float>;
-
-  /**
-   * The amount to zoom the camera by while focusing on this character as they die.
-   * Value is a multiplier of the default camera zoom for the stage.
-   * @default 1.0
-   */
-  var ?cameraZoom:Float;
-
-  /**
-   * Impose a delay between when the character reaches `0` health and when the death animation plays.
-   * @default 0.0
-   */
-  var ?preTransitionDelay:Float;
 }

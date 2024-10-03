@@ -48,8 +48,8 @@ import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayState;
@@ -78,7 +78,6 @@ import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
-import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
@@ -5383,8 +5382,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (healthIconsDirty)
     {
-      var charDataBF = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.player);
-      var charDataDad = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
+      var charDataBF = CharacterRegistry.fetchCharacterData(currentSongMetadata.playData.characters.player);
+      var charDataDad = CharacterRegistry.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
       if (healthIconBF != null)
       {
         healthIconBF.configure(charDataBF?.healthIcon);

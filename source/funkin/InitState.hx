@@ -10,19 +10,19 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.event.SongEventRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
-import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.PlayStatePlaylist;
 import funkin.ui.debug.charting.ChartEditorState;
@@ -177,9 +177,8 @@ class InitState extends FlxState
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
-    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
-    // Move it to use a BaseRegistry.
-    CharacterDataParser.loadCharacterCache();
+    // TODO: CharacterRegistry doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
+    CharacterRegistry.loadCharacterCache();
 
     NoteKindManager.loadScripts();
 
