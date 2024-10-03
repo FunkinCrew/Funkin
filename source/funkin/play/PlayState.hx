@@ -1851,7 +1851,6 @@ class PlayState extends MusicBeatSubState
     #if FEATURE_DISCORD_RPC
     // Determine the details strings once and reuse them.
 
-
     // Updating Discord Rich Presence.
     DiscordClient.instance.setPresence(
       {
@@ -1862,15 +1861,13 @@ class PlayState extends MusicBeatSubState
         smallImageKey: discordRPCIcon
       });
     #end
-  }
 
-
+    #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence.
     DiscordClient.instance.setPresence(
       {
         state: buildDiscordRPCState(),
         details: buildDiscordRPCDetails(),
-
         largeImageKey: discordRPCAlbum,
         smallImageKey: discordRPCIcon
       });
