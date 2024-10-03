@@ -46,6 +46,11 @@ class BaseCharacter extends Bopper
   public var flipSingAnimations:Bool = false;
 
   /**
+   * Whether the character's animations are looking to the right or left.
+   */
+  public var isFacingRight:Bool = false;
+
+  /**
    * Set to true when the character being used in a special way.
    * This includes the Chart Editor and the Animation Editor.
    *
@@ -177,6 +182,7 @@ class BaseCharacter extends Bopper
       this.flipX = _data.flipX;
       this.flipXOffsets = _data.flipXOffsets;
       this.flipSingAnimations = _data.flipSingAnimations;
+      this.isFacingRight = _data.isFacingRight;
     }
 
     shouldBop = false;
@@ -639,7 +645,7 @@ class BaseCharacter extends Bopper
    */
   public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
-    if (flipX && flipSingAnimations)
+    if (flipSingAnimations && ((!isFacingRight && flipX == _data.flipX) || (isFacingRight && flipX != _data.flipX)))
     {
       switch (dir)
       {
@@ -662,6 +668,12 @@ class BaseCharacter extends Bopper
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
     super.playAnimation(name, restart, ignoreOther, reversed);
+  }
+
+  override function shouldFlip(xAxis:Bool):Bool
+  {
+    return xAxis ? (flipXOffsets
+      && ((!isFacingRight && flipX == _data.flipX) || (isFacingRight && flipX != _data.flipX))) : (flipYOffsets && flipY);
   }
 }
 
