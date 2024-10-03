@@ -678,18 +678,31 @@ class Save
 
   /**
    * Has the provided song been beaten on one of the listed difficulties?
+   * Note: This function can still take in the 'difficulty-variation' format for the difficultyList parameter
+   * as it is used in the old save data format. However inputting a variation will append it to the difficulty
+   * so you can do `hasBeatenSong('dadbattle', ['easy-pico'])` to check if you've beaten the Pico mix on easy.
+   * or you can do `hasBeatenSong('dadbattle', ['easy'], 'pico')` to check if you've beaten the Pico mix on easy.
+   * however you should not mix the two as it will append '-pico' to the 'easy-pico' if it's inputted into the array.
    * @param songId The song ID to check.
    * @param difficultyList The difficulties to check. Defaults to `easy`, `normal`, and `hard`.
+   * @param variation The variation to check. Defaults to empty string. Appended to difficulty list with `-`, e.g. `easy-pico`.
+   *                  This is our old format for getting difficulty/variation information, however we don't want to mess around with
+   *                  save migration just yet.
    * @return Whether the song has been beaten on any of the listed difficulties.
    */
-  public function hasBeatenSong(songId:String, ?difficultyList:Array<String>):Bool
+  public function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
   {
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
     }
+
+    if (variation == null) variation = '';
+
     for (difficulty in difficultyList)
     {
+      if (variation != '') difficulty = '${difficulty}-${variation}';
+
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {
