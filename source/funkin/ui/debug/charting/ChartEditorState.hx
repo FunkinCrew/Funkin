@@ -848,6 +848,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var stretchySounds:Bool = false;
 
+  var stackedNotes:Array<SongNoteData> = [];
+
   // Selection
 
   /**
@@ -2010,9 +2012,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The IMAGE used for the selection squares. Updated by ChartEditorThemeHandler.
-   * Used two ways:
+   * Used three ways:
    * 1. A sprite is given this bitmap and placed over selected notes.
-   * 2. The image is split and used for a 9-slice sprite for the selection box.
+   * 2. Same as above but for notes that are overlapped by another.
+   * 3. The image is split and used for a 9-slice sprite for the selection box.
    */
   var selectionSquareBitmap:Null<BitmapData> = null;
 
@@ -3661,6 +3664,34 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
+      // Retrieve notes stacked on top of others (TODO: Is there a non-O(n^2) way of doing this?)
+      // Another TODO: Maybe this can be merged into another existing loop
+      for (i in 0...displayedNoteData.length)
+      {
+        final noteData = displayedNoteData[i];
+
+        if (noteData == null || stackedNotes.contains(noteData))
+        {
+          continue;
+        }
+
+        for (j in 0...displayedNoteData.length)
+        {
+          final otherNote = displayedNoteData[j];
+          if (i == j || noteData == otherNote || stackedNotes.contains(otherNote)) continue;
+
+          if (noteData.getStrumlineIndex() == otherNote.getStrumlineIndex() && noteData.getDirection() == otherNote.getDirection())
+          {
+            // If the notes are close enough in time, consider them stacked
+            if (Math.abs(otherNote.time - noteData.time) < 5)
+            {
+              trace('Found two stacked notes ${noteData}, ${otherNote}');
+              stackedNotes.append(noteData);
+            }
+          }
+        }
+      }
+
       // Add events that are now visible.
       for (eventData in currentSongChartEventData)
       {
@@ -3790,11 +3821,31 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.x = noteSprite.x;
           selectionSquare.y = noteSprite.y;
           selectionSquare.width = GRID_SIZE;
+          selectionSquare.color = FlxColor.WHITE;
 
           var stepLength = noteSprite.noteData.getStepLength();
           selectionSquare.height = (stepLength <= 0) ? GRID_SIZE : ((stepLength + 1) * GRID_SIZE);
         }
+        else
+        {
+          if (noteSprite.noteData != null && stackedNotes.contains(noteSprite.noteData))
+          {
+            // TODO: Maybe use another way to display these notes
+            var selectionSquare:ChartEditorSelectionSquareSprite = renderedSelectionSquares.recycle(buildSelectionSquare);
+
+            // Set the position and size (because we might be recycling one with bad values).
+            selectionSquare.noteData = noteSprite.noteData;
+            selectionSquare.eventData = null;
+            selectionSquare.x = noteSprite.x;
+            selectionSquare.y = noteSprite.y;
+            selectionSquare.width = selectionSquare.height = GRID_SIZE;
+            selectionSquare.color = FlxColor.RED;
+          }
+        }
       }
+
+      // TODO: Maybe stackedNotes can just stay as a local variable?
+      stackedNotes.clear();
 
       for (eventSprite in renderedEvents.members)
       {
