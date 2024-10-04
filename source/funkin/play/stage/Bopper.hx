@@ -382,11 +382,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return output;
   }
 
-  function shouldFlip(xAxis:Bool):Bool
-  {
-    return xAxis ? (flipXOffsets && flipX) : (flipYOffsets && flipY);
-  }
-
   public function onPause(event:PauseScriptEvent) {}
 
   public function onResume(event:ScriptEvent) {}

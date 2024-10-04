@@ -639,7 +639,7 @@ class BaseCharacter extends Bopper
    */
   public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
-    if (flipSingAnimations && animation?.curAnim?.flipX ?? false)
+    if (flipX && flipSingAnimations)
     {
       switch (dir)
       {
@@ -662,11 +662,6 @@ class BaseCharacter extends Bopper
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
     super.playAnimation(name, restart, ignoreOther, reversed);
-  }
-
-  override function shouldFlip(xAxis:Bool):Bool
-  {
-    return xAxis ? (flipXOffsets && animation?.curAnim?.flipX ?? false) : (flipYOffsets && flipY);
   }
 }
 
