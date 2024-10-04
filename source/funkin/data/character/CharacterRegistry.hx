@@ -416,10 +416,10 @@ class CharacterRegistry
   {
     if (result == null) return null;
 
-    // These values are new, and default to enabled on newer metadata versions,
-    // but should be forced to false for older character data to prevent breaking existing characters.
-    result.flipXOffsets = false;
-    result.flipSingAnimations = false;
+    // These values are new, but should be forced to false for older character data to prevent breaking existing characters.
+    result.autoCorrectAnimations = false;
+    result.playerSideOffsets = false;
+    result.playerSideSingAnimations = false;
 
     // NOTE: Migration should be STACKED!
     // So migrate 1.0.0->1.1.0->1.2.0, etc.
@@ -440,15 +440,6 @@ class CharacterRegistry
     if (result.healthIcon.id == null)
     {
       result.healthIcon.id = charId;
-    }
-
-    // If `flipXOffsets` is enabled, we need to account for the default value of `flipX`.
-    if (result.flipX && result.flipXOffsets)
-    {
-      for (anim in result.animations)
-      {
-        anim.offsets[0] *= -1;
-      }
     }
 
     return result;

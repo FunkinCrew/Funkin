@@ -106,23 +106,34 @@ typedef CharacterData =
   var offsets:Null<Array<Float>>;
 
   /**
-   * If `true`, apply additional math to automatically flip a character's offsets for you when the character is flipped.
-   * If `false`, don't apply any extra math.
-   *
-   * NOTE: If you are changing this from `false` to `true` and your character has `flipX` enabled,
-   * your animation offsets are for the flipped character and you have to invert them horizontally.
+   * Whether or not to correct the character's offsets when flipped or rotated.
+   * @default `true`
    */
   @:optional
   @:default(true)
-  var flipXOffsets:Bool;
+  var autoCorrectAnimations:Bool;
 
   /**
-   * If `true`, the character will swap its `singRIGHT` and `singLEFT` animations when the character is flipped.
-   * If `false`, leave animations as they are.
+   * Whether or not the character's animation offsets are intended for the player side.
+   * If the sides don't match, the character's offsets will be flipped horizontally.
+   *
+   * NOTE: If is only used if `autoCorrectAnimations` is enabled.
+   * @default `false`
    */
   @:optional
-  @:default(true)
-  var flipSingAnimations:Bool;
+  @:default(false)
+  var playerSideOffsets:Bool;
+
+  /**
+   * Whether or not the character's `singRIGHT` and `singLEFT` sing animations are intended for the player side.
+   * If the sides don't match, they will be swapped.
+   *
+   * NOTE: This is only used if `autoCorrectAnimations` is enabled.
+   * @default `false`
+   */
+  @:optional
+  @:default(false)
+  var playerSideSingAnimations:Bool;
 
   /**
    * The amount to offset the camera by while focusing on this character.

@@ -46,12 +46,21 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var idleSuffix(default, set):String = '';
 
   /**
+   * Whether to automatically correct the animation offsets when the bopper is flipped or rotated.
+   */
+  public var autoCorrectAnimations:Bool = true;
+
+  /**
    * Whether to apply additional math to automatically horizontally flip the animation offsets for you when the bopper is flipped.
+   *
+   * NOTE: This is only used if `autoCorrectAnimations` is enabled.
    */
   public var flipXOffsets:Bool = false;
 
   /**
    * Whether to apply additional math to automatically vertically flip the animation offsets for you when the bopper is flipped.
+   *
+   * NOTE: This is only used if `autoCorrectAnimations` is enabled.
    */
   public var flipYOffsets:Bool = false;
 
@@ -367,13 +376,13 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
 
-    var adjustedOffsets:FlxPoint = FlxPoint.get(
-      ((flipXOffsets && flipX) ? (frameWidth - width - animOffsets[0]) : animOffsets[0]) - globalOffsets[0],
-      ((flipYOffsets && flipY) ? (frameHeight - height - animOffsets[1]) : animOffsets[1]) - globalOffsets[1]
-    );
-
-    // simple offset needs to be tested first before angle
-    // adjustedOffsets = adjustedOffsets.pivotDegrees(FlxPoint.weak(0, 0), this.angle);
+    var adjustedOffsets:FlxPoint = FlxPoint.weak(animOffsets[0] - globalOffsets[0], animOffsets[1] - globalOffsets[1]);
+    if (autoCorrectAnimations)
+    {
+      if (flipXOffsets) adjustedOffsets.x -= animOffsets[0] * 2 + width - frameWidth;
+      if (flipYOffsets) adjustedOffsets.y -= animOffsets[1] * 2 + height - frameHeight;
+      adjustedOffsets.degrees += this.angle;
+    }
 
     return output.subtractPoint(adjustedOffsets.scalePoint(this.scale));
   }
