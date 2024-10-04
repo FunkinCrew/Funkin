@@ -87,7 +87,7 @@ class SetCameraBopSongEvent extends SongEvent
         step: 1,
         type: SongEventFieldType.INTEGER,
         units: 'beats'
-      }
+      },
       {
         name: 'rate',
         title: 'Rate',
