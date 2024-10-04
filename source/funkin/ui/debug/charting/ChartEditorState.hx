@@ -88,6 +88,7 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
+import funkin.ui.debug.charting.util.NoteDataFilter;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
 import funkin.ui.mainmenu.MainMenuState;
@@ -847,8 +848,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Flip-flop to alternate between two stretching sounds.
    */
   var stretchySounds:Bool = false;
-
-  var stackedNotes:Array<SongNoteData> = [];
 
   // Selection
 
@@ -3659,33 +3658,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
-      // Retrieve notes stacked on top of others (TODO: Is there a non-O(n^2) way of doing this?)
-      // Another TODO: Maybe this can be merged into another existing loop
-      for (i in 0...displayedNoteData.length)
-      {
-        final noteData = displayedNoteData[i];
-
-        if (noteData == null || stackedNotes.contains(noteData))
-        {
-          continue;
-        }
-
-        for (j in 0...displayedNoteData.length)
-        {
-          final otherNote = displayedNoteData[j];
-          if (i == j || noteData == otherNote || stackedNotes.contains(otherNote)) continue;
-
-          if (noteData.getStrumlineIndex() == otherNote.getStrumlineIndex() && noteData.getDirection() == otherNote.getDirection())
-          {
-            // If the notes are close enough in time, consider them stacked
-            if (Math.abs(otherNote.time - noteData.time) < 5)
-            {
-              trace('Found two stacked notes ${noteData}, ${otherNote}');
-              stackedNotes.append(noteData);
-            }
-          }
-        }
-      }
+      var stackedNotes:Array<SongNoteData> = NoteDataFilter.filterStackedNotes(displayedNoteData, 5);
 
       // Add events that are now visible.
       for (eventData in currentSongChartEventData)
@@ -3838,9 +3811,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
         }
       }
-
-      // TODO: Maybe stackedNotes can just stay as a local variable?
-      stackedNotes.clear();
 
       for (eventSprite in renderedEvents.members)
       {
