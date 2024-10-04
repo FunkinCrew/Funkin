@@ -103,7 +103,7 @@ class StrumlineNote extends FlxSprite
 
   public function playStatic():Void
   {
-    this.active = false;
+    this.active = true;
     this.playAnimation('static', true);
   }
 
