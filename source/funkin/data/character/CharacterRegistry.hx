@@ -443,13 +443,13 @@ class CharacterRegistry
     }
 
     // If `flipXOffsets` is enabled, we need to account for the default value of `flipX`.
-    // if (result.flipX && result.flipXOffsets)
-    // {
-    //   for (anim in result.animations)
-    //   {
-    //     anim.offsets[0] *= -1;
-    //   }
-    // }
+    if (result.flipX && result.flipXOffsets)
+    {
+      for (anim in result.animations)
+      {
+        anim.offsets[0] *= -1;
+      }
+    }
 
     return result;
   }

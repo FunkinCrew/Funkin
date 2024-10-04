@@ -368,23 +368,18 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     var output:FlxPoint = super.getScreenPosition(result, camera);
 
     output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
-    if (shouldFlip(true))
+    if (flipXOffsets && flipX)
     {
       output.x += (animOffsets[0] * 2 + (width - frameWidth)) * this.scale.x;
     }
 
     output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
-    if (shouldFlip(false))
+    if (flipYOffsets && flipY)
     {
       output.y += (animOffsets[1] * 2 + (height - frameHeight)) * this.scale.y;
     }
 
     return output;
-  }
-
-  function shouldFlip(xAxis:Bool):Bool
-  {
-    return xAxis ? (flipXOffsets && flipX) : (flipYOffsets && flipY);
   }
 
   public function onPause(event:PauseScriptEvent) {}

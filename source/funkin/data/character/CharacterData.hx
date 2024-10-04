@@ -125,13 +125,6 @@ typedef CharacterData =
   var flipSingAnimations:Bool;
 
   /**
-   * Whether the character's animations are looking to the right or left.
-   */
-  @:optional
-  @:default(true)
-  var isFacingRight:Bool;
-
-  /**
    * The amount to offset the camera by while focusing on this character.
    * Default value focuses on the character directly.
    * @default `[0, 0]`
