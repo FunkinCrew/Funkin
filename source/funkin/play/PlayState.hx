@@ -1786,7 +1786,7 @@ class PlayState extends MusicBeatSubState
     if (Preferences.zoomCamera
       && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
       && cameraZoomRate > 0
-      && Conductor.instance.currentBeat + cameraZoomRateOffset % cameraZoomRate == 0)
+      && (Conductor.instance.currentBeat + cameraZoomRateOffset) % cameraZoomRate == 0)
     {
       // Set zoom multiplier for camera bop.
       cameraBopMultiplier = cameraBopIntensity;
