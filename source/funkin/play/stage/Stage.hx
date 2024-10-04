@@ -411,21 +411,29 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         this.characters.set('bf', character);
         stageCharData = _data.characters.bf;
         character.flipX = !character.getDataFlipX();
+        character.flipXOffsets = !character.playerSideOffsets;
+        character.flipSingAnimations = !character.playerSideSingAnimations;
         character.name = 'bf';
         character.initHealthIcon(false);
       case GF:
         this.characters.set('gf', character);
         stageCharData = _data.characters.gf;
         character.flipX = character.getDataFlipX();
+        character.flipXOffsets = character.playerSideOffsets;
+        character.flipSingAnimations = character.playerSideSingAnimations;
         character.name = 'gf';
       case DAD:
         this.characters.set('dad', character);
         stageCharData = _data.characters.dad;
         character.flipX = character.getDataFlipX();
+        character.flipXOffsets = character.playerSideOffsets;
+        character.flipSingAnimations = character.playerSideSingAnimations;
         character.name = 'dad';
         character.initHealthIcon(true);
       default:
         this.characters.set(character.characterId, character);
+        character.flipXOffsets = character.playerSideOffsets;
+        character.flipSingAnimations = character.playerSideSingAnimations;
     }
 
     // Reset the character before adding it to the stage.

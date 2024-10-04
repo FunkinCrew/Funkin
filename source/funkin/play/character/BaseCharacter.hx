@@ -41,7 +41,25 @@ class BaseCharacter extends Bopper
   public var isDead:Bool = false;
 
   /**
+   * Whether or not the character's animation offsets are intended for the player side.
+   * If the sides don't match, the character's offsets will be flipped horizontally.
+   *
+   * NOTE: If is only used if `autoCorrectAnimations` is enabled.
+   */
+  public var playerSideOffsets:Bool = false;
+
+  /**
+   * Whether or not the character's `singRIGHT` and `singLEFT` sing animations are intended for the player side.
+   * If the sides don't match, they will be swapped.
+   *
+   * NOTE: This is only used if `autoCorrectAnimations` is enabled.
+   */
+  public var playerSideSingAnimations:Bool = false;
+
+  /**
    * Whether the character will swap its `singRIGHT` and `singLEFT` animations when the character is flipped.
+   *
+   * NOTE: This is only used if `autoCorrectAnimations` is enabled.
    */
   public var flipSingAnimations:Bool = false;
 
@@ -175,8 +193,9 @@ class BaseCharacter extends Bopper
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
-      this.flipXOffsets = _data.flipXOffsets;
-      this.flipSingAnimations = _data.flipSingAnimations;
+      this.autoCorrectAnimations = _data.autoCorrectAnimations;
+      this.playerSideOffsets = _data.playerSideOffsets;
+      this.playerSideSingAnimations = _data.playerSideSingAnimations;
     }
 
     shouldBop = false;
@@ -639,7 +658,7 @@ class BaseCharacter extends Bopper
    */
   public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
-    if (flipX && flipSingAnimations)
+    if (autoCorrectAnimations && flipSingAnimations)
     {
       switch (dir)
       {
