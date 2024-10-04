@@ -1457,7 +1457,6 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
-
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
 
