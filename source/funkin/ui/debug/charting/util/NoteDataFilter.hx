@@ -24,41 +24,44 @@ class NoteDataFilter
 
     for (note in notes)
     {
-      if (note == null)
+      // noticed a bug that displayedNoteData somehow can have duplicate notes
+      // thats why we need `chunks[chunks.length - 1].contains(note)`
+      if (note == null || chunks[chunks.length - 1].contains(note))
       {
         continue;
       }
 
-      if (note.time >= chunkTime && note.time < chunkTime + CHUNK_INTERVAL_MS)
+      while (note.time >= chunkTime + CHUNK_INTERVAL_MS)
       {
-        chunks[chunks.length - 1].push(note);
-      }
-      else
-      {
-        chunks.push([]);
         chunkTime += CHUNK_INTERVAL_MS;
+        chunks.push([]);
       }
+
+      chunks[chunks.length - 1].push(note);
     }
 
     for (chunk in chunks)
     {
-      for (i in 0...chunk.length - 1)
+      for (i in 0...(chunk.length - 1))
       {
-        for (j in i...chunk.length)
+        for (j in (i + 1)...chunk.length)
         {
           var noteI:SongNoteData = chunk[i];
           var noteJ:SongNoteData = chunk[j];
 
-          if (Math.abs(noteJ.time - noteI.time) <= threshold)
+          if (noteI.getStrumlineIndex() == noteJ.getStrumlineIndex() && noteI.getDirection() == noteJ.getDirection())
           {
-            if (!stackedNotes.contains(noteI))
+            if (Math.abs(noteJ.time - noteI.time) <= threshold)
             {
-              stackedNotes.push(noteI);
-            }
+              if (!stackedNotes.contains(noteI))
+              {
+                stackedNotes.push(noteI);
+              }
 
-            if (!stackedNotes.contains(noteJ))
-            {
-              stackedNotes.push(noteJ);
+              if (!stackedNotes.contains(noteJ))
+              {
+                stackedNotes.push(noteJ);
+              }
             }
           }
         }
