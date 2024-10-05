@@ -1689,6 +1689,7 @@ class FreeplayState extends MusicBeatSubState
   function changeDiff(change:Int = 0, force:Bool = false):Void
   {
     touchTimer = 0;
+    var previousVariation:String = currentVariation;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
@@ -1784,7 +1785,7 @@ class FreeplayState extends MusicBeatSubState
       }
 
       // Reset the song preview in case we changed variations (normal->erect etc)
-      playCurSongPreview();
+      if (currentVariation != previousVariation) playCurSongPreview();
     }
 
     // Set the album graphic and play the animation if relevant.
