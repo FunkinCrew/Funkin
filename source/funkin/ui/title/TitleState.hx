@@ -271,7 +271,7 @@ class TitleState extends MusicBeatState
     #if desktop
     if (FlxG.keys.justPressed.ESCAPE)
     {
-      Sys.exit(0);
+      openfl.Lib.application.window.close();
     }
     #end
 
