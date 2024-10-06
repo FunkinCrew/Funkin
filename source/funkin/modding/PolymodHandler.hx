@@ -288,6 +288,7 @@ class PolymodHandler
     Polymod.blacklistImport('openfl.utils.Assets');
     Polymod.blacklistImport('openfl.Lib');
     Polymod.blacklistImport('openfl.system.ApplicationDomain');
+    Polymod.blacklistImport('funkin.util.FunkinTypeResolver');
 
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
