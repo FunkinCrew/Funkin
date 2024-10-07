@@ -908,12 +908,11 @@ class FreeplayState extends MusicBeatSubState
       case ALL:
         // no filter!
       case FAVORITE:
+        // sort favorites by week, not alphabetically
         songsToFilter = songsToFilter.filter(str -> {
           if (str == null) return true; // Random
           return str.isFav;
         });
-
-        songsToFilter.sort(filterAlphabetically);
 
       default:
         // return all on default
