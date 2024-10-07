@@ -71,13 +71,12 @@ class NoteDataFilter
   /**
    * Tries to concatenate two arrays of notes together but skips notes from `notesB` that overlap notes from `noteA`.
    * @param notesA An array of notes into which `notesB` will be concatenated.
-   * @param notesB Another array of notes that will be concated into `input`.
+   * @param notesB Another array of notes that will be concated into `notesA`.
    * @param threshold Threshold in ms
    * @param modifyB If `true` `notesB` will be modified in-place by removing the notes that overlap notes from `notesA`.
    * @return Array<SongNoteData>
    */
-  public static function concatFilterStackedNotes(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float,
-      modifyB:Bool = false):Array<SongNoteData>
+  public static function concatNoOverlap(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float, modifyB:Bool = false):Array<SongNoteData>
   {
     // TODO: Maybe this whole function should be moved to SongNoteDataArrayTools
     var result:Array<SongNoteData> = notesA.copy();
