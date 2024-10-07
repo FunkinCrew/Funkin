@@ -193,11 +193,6 @@ class OptionsMenu extends Page
       #end
     });
 
-    #if newgrounds
-    if (NGio.isLoggedIn) createItem("LOGOUT", selectLogout);
-    else
-      createItem("LOGIN", selectLogin);
-    #end
     createItem("EXIT", exit);
   }
 
@@ -223,45 +218,6 @@ class OptionsMenu extends Page
   {
     return items.length > 2;
   }
-
-  #if newgrounds
-  function selectLogin()
-  {
-    openNgPrompt(NgPrompt.showLogin());
-  }
-
-  function selectLogout()
-  {
-    openNgPrompt(NgPrompt.showLogout());
-  }
-
-  /**
-   * Calls openPrompt and redraws the login/logout button
-   * @param prompt
-   * @param onClose
-   */
-  public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
-  {
-    var onPromptClose = checkLoginStatus;
-    if (onClose != null)
-    {
-      onPromptClose = function() {
-        checkLoginStatus();
-        onClose();
-      }
-    }
-
-    openPrompt(prompt, onPromptClose);
-  }
-
-  function checkLoginStatus()
-  {
-    // this shit don't work!! wtf!!!!
-    var prevLoggedIn = items.has("logout");
-    if (prevLoggedIn && !NGio.isLoggedIn) items.resetItem("logout", "login", selectLogin);
-    else if (!prevLoggedIn && NGio.isLoggedIn) items.resetItem("login", "logout", selectLogout);
-  }
-  #end
 }
 
 enum abstract PageName(String)

@@ -13,7 +13,6 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
-import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
@@ -57,6 +56,10 @@ import funkin.util.SerializerUtil;
 import haxe.Int64;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
+#end
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+import funkin.api.newgrounds.Leaderboards;
 #end
 
 /**
@@ -2948,14 +2951,44 @@ class PlayState extends MusicBeatSubState
         // If neither are higher, nothing will change.
         Save.instance.applySongRank(currentSong.id, suffixedDifficulty, data);
 
-        if (isNewHighscore)
-        {
-          #if newgrounds
-          NGio.postScore(score, currentSong.id);
-          #end
-        }
+        if (isNewHighscore) {}
       }
     }
+
+    #if FEATURE_NEWGROUNDS
+    // Only award medals if we are LEGIT.
+    if (!isPracticeMode && !isBotPlayMode && !isChartingMode && currentSong.validScore)
+    {
+      // Award a medal for beating a song on a Friday.
+      if (Date.now().getDay() == 5) Medals.award(FridayNight);
+
+      // Determine the score rank for this song we just finished.
+      var scoreRank:ScoringRank = Scoring.calculateRank(
+        {
+          score: songScore,
+          tallies:
+            {
+              sick: Highscore.tallies.sick,
+              good: Highscore.tallies.good,
+              bad: Highscore.tallies.bad,
+              shit: Highscore.tallies.shit,
+              missed: Highscore.tallies.missed,
+              combo: Highscore.tallies.combo,
+              maxCombo: Highscore.tallies.maxCombo,
+              totalNotesHit: Highscore.tallies.totalNotesHit,
+              totalNotes: Highscore.tallies.totalNotes,
+            }
+        });
+
+      // Award various medals based on variation, difficulty, and scoring rank.
+      if (scoreRank == ScoringRank.SHIT) Medals.award(LossRating);
+      if (scoreRank >= ScoringRank.PERFECT && currentDifficulty == 'hard') Medals.award(PerfectRatingHard);
+      if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'hard') Medals.award(GoldPerfectRatingHard);
+      if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentDifficulty)) Medals.award(ErectDifficulty);
+      if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'nightmare') Medals.award(GoldPerfectRatingNightmare);
+      if (currentVariation == 'pico' && !PlayStatePlaylist.isStoryMode) Medals.award(FreeplayPicoMix);
+    }
+    #end
 
     if (PlayStatePlaylist.isStoryMode)
     {
@@ -2971,8 +3004,6 @@ class PlayState extends MusicBeatSubState
       {
         if (currentSong.validScore)
         {
-          NGio.unlockMedal(60961);
-
           var data =
             {
               score: PlayStatePlaylist.campaignScore,
@@ -2991,12 +3022,18 @@ class PlayState extends MusicBeatSubState
                 },
             };
 
-          if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
+          if (currentSong.validScore
+            && Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
-            Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
-            #if newgrounds
-            NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
+            #if FEATURE_NEWGROUNDS
+            // Award a medal for beating a Story level.
+            Medals.awardStoryLevel(PlayStatePlaylist.campaignId);
+
+            // Submit the score for the Story level to Newgrounds.
+            Leaderboards.submitLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, PlayStatePlaylist.campaignScore);
             #end
+
+            Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
             isNewHighscore = true;
           }
         }

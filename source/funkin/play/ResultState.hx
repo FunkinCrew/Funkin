@@ -34,6 +34,9 @@ import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
 import funkin.play.components.ClearPercentCounter;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+#end
 
 /**
  * The state for the results screen after a song or week is finished.
@@ -492,6 +495,11 @@ class ResultState extends MusicBeatSubState
           // Just to be sure that the lerp didn't mess things up.
           clearPercentCounter.curNumber = clearPercentTarget;
 
+          #if FEATURE_NEWGROUNDS
+          // This is the easiest spot to do the medal calculation lol.
+          if (clearPercentTarget == 69) Medals.award(Nice);
+          #end
+
           clearPercentCounter.flash(true);
           new FlxTimer().start(0.4, _ -> {
             clearPercentCounter.flash(false);
@@ -730,19 +738,22 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE)
     {
-      if (introMusicAudio != null) {
+      if (introMusicAudio != null)
+      {
         @:nullSafety(Off)
         introMusicAudio.onComplete = null;
 
-        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8, {
-          onComplete: _ -> {
-            if (introMusicAudio != null) {
-              introMusicAudio.stop();
-              introMusicAudio.destroy();
-              introMusicAudio = null;
+        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8,
+          {
+            onComplete: _ -> {
+              if (introMusicAudio != null)
+              {
+                introMusicAudio.stop();
+                introMusicAudio.destroy();
+                introMusicAudio = null;
+              }
             }
-          }
-        });
+          });
         FlxTween.tween(introMusicAudio, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
@@ -752,12 +763,13 @@ class ResultState extends MusicBeatSubState
       }
       else if (FlxG.sound.music != null)
       {
-        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8, {
-          onComplete: _ -> {
-            FlxG.sound.music.stop();
-            FlxG.sound.music.destroy();
-          }
-        });
+        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8,
+          {
+            onComplete: _ -> {
+              FlxG.sound.music.stop();
+              FlxG.sound.music.destroy();
+            }
+          });
         FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
