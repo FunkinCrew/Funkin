@@ -5,6 +5,8 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
 
+using funkin.ui.debug.charting.util.NoteDataFilter;
+
 /**
  * A command which inserts the contents of the clipboard into the chart editor.
  */
@@ -41,7 +43,11 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
+    // If a warning should appear when pasting a note on top of another
+    // TODO: Should events also not be allowed to stack?
+    var shouldWarn = false;
+
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concatFilterStackedNotes(addedNotes, ChartEditorState.STACK_NOTE_THRESHOLD);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();

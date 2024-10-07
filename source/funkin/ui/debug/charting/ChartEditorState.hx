@@ -203,6 +203,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final NOTE_SELECT_BUTTON_HEIGHT:Int = 24;
 
   /**
+   * How "close" in milliseconds two notes have to be to be considered as stacked.
+   * TODO: This should probably be turned into a modifiable value
+   */
+  public static final STACK_NOTE_THRESHOLD:Int = 20;
+
+  /**
    * The amount of padding between the menu bar and the chart grid when fully scrolled up.
    */
   public static final GRID_TOP_PAD:Int = NOTE_SELECT_BUTTON_HEIGHT + 12;
@@ -3658,7 +3664,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
-      var stackedNotes:Array<SongNoteData> = NoteDataFilter.filterStackedNotes(displayedNoteData, 5);
+      var stackedNotes = NoteDataFilter.listStackedNotes(currentSongChartNoteData, STACK_NOTE_THRESHOLD);
 
       // Add events that are now visible.
       for (eventData in currentSongChartEventData)
@@ -3796,6 +3802,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
+          // TODO: Move this to a function like isNoteSelected does
           if (noteSprite.noteData != null && stackedNotes.contains(noteSprite.noteData))
           {
             // TODO: Maybe use another way to display these notes
@@ -3858,6 +3865,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       // Sort the events DESCENDING. This keeps the sustain behind the associated note.
       renderedEvents.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.H)
+    {
+      // performCommand(new RemoveNotesCommand(stackedNotes));
     }
   }
 
@@ -5675,7 +5687,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleHelpKeybinds():Void
   {
     // F1 = Open Help
-    if (FlxG.keys.justPressed.F1 && !isHaxeUIDialogOpen) {
+    if (FlxG.keys.justPressed.F1 && !isHaxeUIDialogOpen)
+    {
       this.openUserGuideDialog();
     }
   }
