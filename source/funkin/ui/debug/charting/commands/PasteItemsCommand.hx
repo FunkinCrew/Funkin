@@ -43,11 +43,10 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    var shouldWarn = false;
     var curAddedNotesLen = addedNotes.length;
 
     // TODO: Should events also not be allowed to stack?
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concatFilterStackedNotes(addedNotes, ChartEditorState.STACK_NOTE_THRESHOLD, true);
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concatNoOverlap(addedNotes, ChartEditorState.STACK_NOTE_THRESHOLD, true);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
@@ -58,8 +57,7 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    shouldWarn = curAddedNotesLen != addedNotes.length;
-    if (shouldWarn) state.warning('Failed to Paste All Notes', 'Some notes couldn\'t be pasted because they overlapped others.');
+    if (curAddedNotesLen != addedNotes.length) state.warning('Failed to Paste All Notes', 'Some notes couldn\'t be pasted because they would overlap others.');
     else
       state.success('Paste Successful', 'Successfully pasted clipboard contents.');
   }
