@@ -73,35 +73,42 @@ class NoteDataFilter
    * @param notesA An array of notes into which `notesB` will be concatenated.
    * @param notesB Another array of notes that will be concated into `notesA`.
    * @param threshold Threshold in ms
-   * @param modifyB If `true` `notesB` will be modified in-place by removing the notes that overlap notes from `notesA`.
+   * @param modifyB If `true`, `notesB` will be modified in-place by removing the notes that overlap notes from `notesA`.
    * @return Array<SongNoteData>
    */
   public static function concatNoOverlap(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float, modifyB:Bool = false):Array<SongNoteData>
   {
     // TODO: Maybe this whole function should be moved to SongNoteDataArrayTools
     var result:Array<SongNoteData> = notesA.copy();
+    var overlappingNotes:Array<SongNoteData> = [];
 
     for (noteB in notesB)
     {
-      var overlaps:Bool = false;
+      var hasOverlap:Bool = false;
 
       for (noteA in notesA)
       {
         if (doNotesStack(noteA, noteB, threshold))
         {
-          overlaps = true;
+          hasOverlap = true;
           break;
         }
       }
 
-      if (!overlaps)
+      if (!hasOverlap)
       {
         result.push(noteB);
       }
       else if (modifyB)
       {
-        notesB.remove(noteB);
+        overlappingNotes.push(noteB);
       }
+    }
+
+    if (modifyB)
+    {
+      for (note in overlappingNotes)
+        notesB.remove(note);
     }
 
     return result;
@@ -113,8 +120,6 @@ class NoteDataFilter
    */
   static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float):Bool
   {
-    return noteA.getStrumlineIndex() == noteB.getStrumlineIndex()
-      && noteA.getDirection() == noteB.getDirection()
-      && Math.abs(noteA.time - noteB.time) <= threshold;
+    return noteA.data == noteB.data && Math.abs(noteA.time - noteB.time) <= threshold;
   }
 }
