@@ -52,15 +52,13 @@ class PasteItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
 
-    // Use some clever trick to know that some notes were ignored.
-    shouldWarn = curAddedNotesLen != addedNotes.length;
-
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
 
     state.sortChartData();
 
+    shouldWarn = curAddedNotesLen != addedNotes.length;
     if (shouldWarn) state.warning('Failed to Paste All Notes', 'Some notes couldn\'t be pasted because they overlapped others.');
     else
       state.success('Paste Successful', 'Successfully pasted clipboard contents.');
