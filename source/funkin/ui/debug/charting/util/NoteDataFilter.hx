@@ -49,19 +49,16 @@ class NoteDataFilter
           var noteI:SongNoteData = chunk[i];
           var noteJ:SongNoteData = chunk[j];
 
-          if (canNotesStack(noteI, noteJ))
+          if (doNotesStack(noteI, noteJ, threshold))
           {
-            if (Math.abs(noteJ.time - noteI.time) <= threshold)
+            if (!stackedNotes.fastContains(noteI))
             {
-              if (!stackedNotes.fastContains(noteI))
-              {
-                stackedNotes.push(noteI);
-              }
+              stackedNotes.push(noteI);
+            }
 
-              if (!stackedNotes.fastContains(noteJ))
-              {
-                stackedNotes.push(noteJ);
-              }
+            if (!stackedNotes.fastContains(noteJ))
+            {
+              stackedNotes.push(noteJ);
             }
           }
         }
@@ -76,7 +73,7 @@ class NoteDataFilter
    * @param notesA An array of notes into which `notesB` will be concatenated.
    * @param notesB Another array of notes that will be concated into `input`.
    * @param threshold Threshold in ms
-   * @param modifyB If `true` modifies `notesB` in-place by removing the notes that overlap notes from `notesA`.
+   * @param modifyB If `true` `notesB` will be modified in-place by removing the notes that overlap notes from `notesA`.
    * @return Array<SongNoteData>
    */
   public static function concatFilterStackedNotes(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float,
@@ -91,13 +88,10 @@ class NoteDataFilter
 
       for (noteA in notesA)
       {
-        if (canNotesStack(noteA, noteB))
+        if (doNotesStack(noteA, noteB, threshold))
         {
-          if (Math.abs(noteA.time - noteB.time) < threshold)
-          {
-            overlaps = true;
-            break;
-          }
+          overlaps = true;
+          break;
         }
       }
 
@@ -115,10 +109,13 @@ class NoteDataFilter
   }
 
   /**
-   * @return Returns `true` if both notes are on the same strumline and have the same direction
+   * @param threshold
+   * @return Returns `true` if both notes are on the same strumline, have the same direction and their time difference is less than `threshold`.
    */
-  public static inline function canNotesStack(noteA:SongNoteData, noteB:SongNoteData):Bool
+  static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float):Bool
   {
-    return noteA.getStrumlineIndex() == noteB.getStrumlineIndex() && noteA.getDirection() == noteB.getDirection();
+    return noteA.getStrumlineIndex() == noteB.getStrumlineIndex()
+      && noteA.getDirection() == noteB.getDirection()
+      && Math.abs(noteA.time - noteB.time) <= threshold;
   }
 }
