@@ -177,6 +177,13 @@
       "url": "https://github.com/FunkinCrew/MassiveUnit"
     },
     {
+      "name": "newgrounds",
+      "type": "git",
+      "dir": null,
+      "ref": "c8b3083",
+      "url": "https://github.com/Geokureli/Newgrounds/"
+    },
+    {
       "name": "openfl",
       "type": "git",
       "dir": null,

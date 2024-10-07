@@ -179,6 +179,18 @@ class Project extends HXProject {
 	static final FEATURE_NEWGROUNDS:FeatureFlag = "FEATURE_NEWGROUNDS";
 
 	/**
+	 * `-DFEATURE_NEWGROUNDS_DEBUG`
+	 * If this flag is enabled, the game will enable the Newgrounds library's debug functions.
+	 */
+	static final FEATURE_NEWGROUNDS_DEBUG:FeatureFlag = "FEATURE_NEWGROUNDS_DEBUG";
+
+	/**
+	 * `-DFEATURE_NEWGROUNDS_AUTOLOGIN`
+	 * If this flag is enabled, the game will attempt to automatically login to Newgrounds on startup.
+	 */
+	static final FEATURE_NEWGROUNDS_AUTOLOGIN:FeatureFlag = "FEATURE_NEWGROUNDS_AUTOLOGIN";
+
+	/**
 	 * `-DFEATURE_FUNKVIS`
 	 * If this flag is enabled, the game will enable the Funkin Visualizer library.
 	 * This is used to provide audio visualization like Nene's speaker.
@@ -460,7 +472,6 @@ class Project extends HXProject {
 
 		// Should be false unless explicitly requested.
 		GITHUB_BUILD.apply(this, false);
-		FEATURE_NEWGROUNDS.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
 
 		// Should be true unless explicitly requested.
@@ -478,6 +489,10 @@ class Project extends HXProject {
 		// Got a lot of complains about this being turned off by default on some builds.
 		// TODO: Look into ways to optimize logging (maybe by using a thread pool?)
 		FEATURE_LOG_TRACE.apply(this, true);
+
+		FEATURE_NEWGROUNDS.apply(this, true);
+		FEATURE_NEWGROUNDS_DEBUG.apply(this, false); //isDebug() && FEATURE_NEWGROUNDS.isEnabled(this));
+		FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, true);
 
 		// Should default to true on workspace builds and false on release builds.
 		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
