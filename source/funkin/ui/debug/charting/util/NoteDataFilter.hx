@@ -15,7 +15,7 @@ class NoteDataFilter
    * @param threshold Threshold in ms
    * @return Stacked notes
    */
-  public static function filterStackedNotes(notes:Array<SongNoteData>, threshold:Float):Array<SongNoteData>
+  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
 
@@ -49,19 +49,16 @@ class NoteDataFilter
           var noteI:SongNoteData = chunk[i];
           var noteJ:SongNoteData = chunk[j];
 
-          if (noteI.getStrumlineIndex() == noteJ.getStrumlineIndex() && noteI.getDirection() == noteJ.getDirection())
+          if (doNotesStack(noteI, noteJ, threshold))
           {
-            if (Math.abs(noteJ.time - noteI.time) <= threshold)
+            if (!stackedNotes.fastContains(noteI))
             {
-              if (!stackedNotes.contains(noteI))
-              {
-                stackedNotes.push(noteI);
-              }
+              stackedNotes.push(noteI);
+            }
 
-              if (!stackedNotes.contains(noteJ))
-              {
-                stackedNotes.push(noteJ);
-              }
+            if (!stackedNotes.fastContains(noteJ))
+            {
+              stackedNotes.push(noteJ);
             }
           }
         }
@@ -69,5 +66,56 @@ class NoteDataFilter
     }
 
     return stackedNotes;
+  }
+
+  /**
+   * Tries to concatenate two arrays of notes together but skips notes from `notesB` that overlap notes from `noteA`.
+   * @param notesA An array of notes into which `notesB` will be concatenated.
+   * @param notesB Another array of notes that will be concated into `input`.
+   * @param threshold Threshold in ms
+   * @param modifyB If `true` `notesB` will be modified in-place by removing the notes that overlap notes from `notesA`.
+   * @return Array<SongNoteData>
+   */
+  public static function concatFilterStackedNotes(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float,
+      modifyB:Bool = false):Array<SongNoteData>
+  {
+    // TODO: Maybe this whole function should be moved to SongNoteDataArrayTools
+    var result:Array<SongNoteData> = notesA.copy();
+
+    for (noteB in notesB)
+    {
+      var overlaps:Bool = false;
+
+      for (noteA in notesA)
+      {
+        if (doNotesStack(noteA, noteB, threshold))
+        {
+          overlaps = true;
+          break;
+        }
+      }
+
+      if (!overlaps)
+      {
+        result.push(noteB);
+      }
+      else if (modifyB)
+      {
+        notesB.remove(noteB);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * @param threshold
+   * @return Returns `true` if both notes are on the same strumline, have the same direction and their time difference is less than `threshold`.
+   */
+  static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float):Bool
+  {
+    return noteA.getStrumlineIndex() == noteB.getStrumlineIndex()
+      && noteA.getDirection() == noteB.getDirection()
+      && Math.abs(noteA.time - noteB.time) <= threshold;
   }
 }
