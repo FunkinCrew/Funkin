@@ -43,14 +43,17 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    // If a warning should appear when pasting a note on top of another
-    // TODO: Should events also not be allowed to stack?
     var shouldWarn = false;
+    var curAddedNotesLen = addedNotes.length;
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concatFilterStackedNotes(addedNotes, ChartEditorState.STACK_NOTE_THRESHOLD);
+    // TODO: Should events also not be allowed to stack?
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concatFilterStackedNotes(addedNotes, ChartEditorState.STACK_NOTE_THRESHOLD, true);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
+
+    // Use some clever trick to know that some notes were ignored.
+    shouldWarn = curAddedNotesLen != addedNotes.length;
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -58,7 +61,9 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    state.success('Paste Successful', 'Successfully pasted clipboard contents.');
+    if (shouldWarn) state.warning('Failed to Paste All Notes', 'Some notes couldn\'t be pasted because they overlapped others.');
+    else
+      state.success('Paste Successful', 'Successfully pasted clipboard contents.');
   }
 
   public function undo(state:ChartEditorState):Void

@@ -104,7 +104,10 @@ class NoteDataFilter
       if (!overlaps)
       {
         result.push(noteB);
-        if (modifyB) notesB.remove(noteB);
+      }
+      else if (modifyB)
+      {
+        notesB.remove(noteB);
       }
     }
 
