@@ -24,6 +24,7 @@ import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.ui.title.OutdatedState;
 import funkin.play.PlayStatePlaylist;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.title.TitleState;
@@ -193,7 +194,7 @@ class InitState extends FlxState
   /**
    * Start the game.
    *
-   * By default, moves to the `TitleState`.
+   * By default, moves to the `TitleState` or `OutdatedState`.
    * But based on compile defines, the game can start immediately on a specific song,
    * or immediately in a specific debug menu.
    */
@@ -284,7 +285,7 @@ class InitState extends FlxState
     else
     {
       FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-      FlxG.switchState(() -> new TitleState());
+      FlxG.switchState(() -> OutdatedState.build());
     }
   }
 
