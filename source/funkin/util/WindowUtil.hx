@@ -102,6 +102,17 @@ class WindowUtil
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
+        // FlxG.stage.focus is set to null by the debug console stuff,
+        // so when that's in focus, we don't want to toggle fullscreen using F
+        // (annoying when tying "FlxG" in console... lol)
+        #if FLX_DEBUG
+        @:privateAccess
+        if (FlxG.game.debugger.visible)
+        {
+          return;
+        }
+        #end
+
         if (e.keyCode == key)
         {
           openfl.Lib.application.window.fullscreen = !openfl.Lib.application.window.fullscreen;

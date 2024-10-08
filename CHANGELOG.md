@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.2] - 2024-10-??
 ### Fixed
+- Fixed an issue where exiting the Chart Editor would sometimes crash the game.
 - Fixed an issue where holding down a direction key then selecting a character would select the locked character and crash the game (community fix by ACrazyTown)
 - Fixed an issue where the player and girlfriend would disappear or overlap themselves in Character Select (community fix by gamerbross)
 - Fixed an issue where the game would show the wrong girlfriend in Character Select (community fix by gamerbross)
