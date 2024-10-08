@@ -70,7 +70,7 @@ class AlbumRoll extends FlxSpriteGroup
     difficultyStars.visible = false;
     add(difficultyStars);
 
-    buildAlbumTitle("freeplay/albumRoll/volume1-text", [0, 0]);
+    buildAlbumTitle("freeplay/albumRoll/volume1-text");
     albumTitle.visible = false;
   }
 
@@ -198,15 +198,13 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.visible = true;
   }
 
-  public function buildAlbumTitle(assetKey:String, titleOffsets:Array<Float>):Void
+  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Array<Float> = [0, 0]):Void
   {
     if (albumTitle != null)
     {
       remove(albumTitle);
       albumTitle = null;
     }
-
-    albumData = AlbumRegistry.instance.fetchEntry(albumId);
 
     albumTitle = FunkinSprite.createSparrow(925, 500, assetKey);
     albumTitle.visible = albumTitle.frames != null && newAlbumArt.visible;
