@@ -198,12 +198,17 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.visible = true;
   }
 
-  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Array<Float> = [0, 0]):Void
+  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Array<Float>):Void
   {
     if (albumTitle != null)
     {
       remove(albumTitle);
       albumTitle = null;
+    }
+
+    if (titleOffsets == null)
+    {
+      titleOffsets = [0, 0];
     }
 
     albumTitle = FunkinSprite.createSparrow(925, 500, assetKey);
