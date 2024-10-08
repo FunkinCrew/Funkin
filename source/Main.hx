@@ -49,6 +49,16 @@ class Main extends Sprite
     // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
     funkin.modding.PolymodHandler.loadAllMods();
 
+    if (funkin.modding.PolymodHandler.outdatedMods.length > 0)
+    {
+      var description:String = 'Required Version: ${funkin.modding.PolymodHandler.API_VERSION}\n';
+      for (mod in funkin.modding.PolymodHandler.outdatedMods)
+      {
+        description += '\n${mod.title} (v${mod.apiVersion}, id: ${mod.id})';
+      }
+      funkin.modding.PolymodErrorHandler.showAlert('Outdated Mods', description);
+    }
+
     if (stage != null)
     {
       init();
