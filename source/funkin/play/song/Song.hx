@@ -15,6 +15,7 @@ import funkin.data.song.SongRegistry;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.util.SortUtil;
 
 /**
@@ -79,7 +80,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
-  final difficulties:Map<String, SongDifficulty>;
+
+  /**
+   * holds the difficulties (as in SongDifficulty) for each variation
+   * difficulties.get('default').get('easy') would return the easy difficulty for the default variation
+   */
+  final difficulties:Map<String, Map<String, SongDifficulty>>;
 
   /**
    * The list of variations a song has.
@@ -92,7 +98,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   // this returns false so that any new song can override this and return true when needed
-  public function isSongNew(currentDifficulty:String):Bool
+  public function isSongNew(currentDifficulty:String, currentVariation:String):Bool
   {
     return false;
   }
@@ -146,7 +152,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     this.id = id;
 
-    difficulties = new Map<String, SongDifficulty>();
+    difficulties = new Map<String, Map<String, SongDifficulty>>();
 
     _data = _fetchData(id);
 
@@ -156,7 +162,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       for (vari in _data.playData.songVariations)
       {
-        if (!validateVariationId(vari)) {
+        if (!validateVariationId(vari))
+        {
           trace('  [WARN] Variation id "$vari" is invalid, skipping...');
           continue;
         }
@@ -249,20 +256,37 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * List the album IDs for each variation of the song.
    * @return A map of variation IDs to album IDs.
    */
-  public function listAlbums():Map<String, String>
+  public function listAlbums(variation:String):Map<String, String>
   {
     var result:Map<String, String> = new Map<String, String>();
 
-    for (difficultyId in difficulties.keys())
+    for (variationMap in difficulties)
     {
-      var meta:Null<SongDifficulty> = difficulties.get(difficultyId);
-      if (meta != null && meta.album != null)
+      for (difficultyId in variationMap.keys())
       {
-        result.set(difficultyId, meta.album);
+        var meta:Null<SongDifficulty> = variationMap.get(difficultyId);
+        if (meta != null && meta.album != null)
+        {
+          result.set(difficultyId, meta.album);
+        }
       }
     }
 
     return result;
+  }
+
+  /**
+   * Input a difficulty ID and a variation ID, and get the album ID.
+   * @param diffId
+   * @param variation
+   * @return String
+   */
+  public function getAlbumId(diffId:String, variation:String):String
+  {
+    var diff:Null<SongDifficulty> = getDifficulty(diffId, variation);
+    if (diff == null) return '';
+
+    return diff.album ?? '';
   }
 
   /**
@@ -284,6 +308,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         trace('[SONG] Warning: Song $id (variation ${metadata.variation}) has no difficulties listed in metadata!');
         continue;
       }
+
+      // This resides within difficulties
+      var difficultyMap:Map<String, SongDifficulty> = new Map<String, SongDifficulty>();
 
       // There may be more difficulties in the chart file than in the metadata,
       // (i.e. non-playable charts like the one used for Pico on the speaker in Stress)
@@ -309,10 +336,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         difficulty.noteStyle = metadata.playData.noteStyle;
 
         difficulty.characters = metadata.playData.characters;
-
-        var variationSuffix = (metadata.variation != Constants.DEFAULT_VARIATION) ? '-${metadata.variation}' : '';
-        difficulties.set('$diffId$variationSuffix', difficulty);
+        difficultyMap.set(diffId, difficulty);
       }
+      difficulties.set(metadata.variation, difficultyMap);
     }
   }
 
@@ -345,15 +371,18 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     for (diffId in chartNotes.keys())
     {
-      // Retrieve the cached difficulty data.
-      var variationSuffix = (variation != Constants.DEFAULT_VARIATION) ? '-$variation' : '';
-      var difficulty:Null<SongDifficulty> = difficulties.get('$diffId$variationSuffix');
-      if (difficulty == null)
+      // Retrieve the cached difficulty data. This one could potentially be null.
+      var nullDiff:Null<SongDifficulty> = getDifficulty(diffId, variation);
+
+      // if the difficulty doesn't exist, create a new one, and then proceed to fill it with data.
+      // I mostly do this since I don't wanna throw around ? everywhere for null check lol?
+      var difficulty:SongDifficulty = nullDiff ?? new SongDifficulty(this, diffId, variation);
+
+      if (nullDiff == null)
       {
         trace('Fabricated new difficulty for $diffId.');
-        difficulty = new SongDifficulty(this, diffId, variation);
         var metadata = _metadata.get(variation);
-        difficulties.set('$diffId$variationSuffix', difficulty);
+        difficulties.get(variation)?.set(diffId, difficulty);
 
         if (metadata != null)
         {
@@ -396,29 +425,34 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     for (currentVariation in variations)
     {
-      var variationSuffix = (currentVariation != Constants.DEFAULT_VARIATION) ? '-$currentVariation' : '';
-
-      if (difficulties.exists('$diffId$variationSuffix'))
+      if (difficulties.get(currentVariation)?.exists(diffId) ?? false)
       {
-        return difficulties.get('$diffId$variationSuffix');
+        return difficulties.get(currentVariation)?.get(diffId);
       }
     }
 
     return null;
   }
 
+  /**
+   * Returns the first valid variation that matches both the difficulty id, and the current character / possible input variations
+   * @param diffId
+   * @param currentCharacter
+   * @param possibleVariations
+   * @return Null<String>
+   */
   public function getFirstValidVariation(?diffId:String, ?currentCharacter:PlayableCharacter, ?possibleVariations:Array<String>):Null<String>
   {
     if (possibleVariations == null)
     {
       possibleVariations = getVariationsByCharacter(currentCharacter);
     }
+
     if (diffId == null) diffId = listDifficulties(null, possibleVariations)[0];
 
     for (variationId in possibleVariations)
     {
-      var variationSuffix = (variationId != Constants.DEFAULT_VARIATION) ? '-$variationId' : '';
-      if (difficulties.exists('$diffId$variationSuffix')) return variationId;
+      if (difficulties.get('$variationId')?.exists(diffId) ?? false) return variationId;
     }
 
     return null;
@@ -440,7 +474,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
 
     var result = [];
-    trace('Evaluating variations for ${this.id} ${char.id}: ${this.variations}');
     for (variation in variations)
     {
       var metadata = _metadata.get(variation);
@@ -457,6 +490,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     result.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
 
     return result;
+  }
+
+  /**
+   * Nearly the same thing as getVariationsByCharacter, but takes a character ID instead.
+   * @param charId
+   * @return Array<String>
+   * @see getVariationsByCharacter
+   */
+  public function getVariationsByCharacterId(?charId:String):Array<String>
+  {
+    var charPlayer = PlayerRegistry.instance.fetchEntry(charId ?? '');
+
+    return getVariationsByCharacter(charPlayer);
   }
 
   /**
@@ -501,6 +547,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   /**
    * TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
    * @return `easy`, `erect`, `normal-pico`, etc.
+   * @deprecated This function is deprecated, Funkin no longer uses suffixed difficulties.
    */
   public function listSuffixedDifficulties(variationIds:Array<String>, ?showLocked:Bool, ?showHidden:Bool):Array<String>
   {
@@ -529,8 +576,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     for (targetVariation in variationIds)
     {
-      var variationSuffix = (targetVariation != Constants.DEFAULT_VARIATION) ? '-$targetVariation' : '';
-      if (difficulties.exists('$diffId$variationSuffix')) return true;
+      if (difficulties.get(targetVariation)?.exists(diffId) ?? false) return true;
     }
     return false;
   }
@@ -565,13 +611,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
-   * Purge the cached chart data for each difficulty of this song.
+   * Purge the cached chart data for each difficulty/variation of this song.
    */
   public function clearCharts():Void
   {
-    for (diff in difficulties)
+    for (variationMap in difficulties)
     {
-      diff.clearChart();
+      for (diff in variationMap)
+      {
+        diff.clearChart();
+      }
     }
   }
 
@@ -647,7 +696,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * Auto-accept if it's one of the base game default variations.
    * Reject if the ID starts with a number, or contains invalid characters.
    */
-  static function validateVariationId(variation:String):Bool {
+  static function validateVariationId(variation:String):Bool
+  {
     if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
 
     return VARIATION_REGEX.match(variation);

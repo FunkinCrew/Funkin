@@ -250,18 +250,18 @@ class FunkinPreloader extends FlxBasePreloader
     dspText.selectable = false;
     dspText.textColor = 0x000000;
     dspText.width = this._width;
-    dspText.height = 20;
+    dspText.height = 30;
     dspText.text = 'DSP';
     dspText.x = 10;
-    dspText.y = -5;
+    dspText.y = -7;
     box.addChild(dspText);
 
     fnfText.selectable = false;
     fnfText.textColor = 0x000000;
     fnfText.width = this._width;
-    fnfText.height = 20;
-    fnfText.x = 75;
-    fnfText.y = -5;
+    fnfText.height = 30;
+    fnfText.x = 78;
+    fnfText.y = -7;
     fnfText.text = 'FNF';
     box.addChild(fnfText);
 

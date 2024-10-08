@@ -109,9 +109,11 @@ class DebugBoundingState extends FlxState
     offsetEditorDialog.cameras = [hudCam];
 
     add(offsetEditorDialog);
+    offsetEditorDialog.showDialog(false);
 
-    // Anchor to the right side by default
-    // offsetEditorDialog.x = FlxG.width - offsetEditorDialog.width;
+    // Anchor to the left side by default
+    offsetEditorDialog.x = 16;
+    offsetEditorDialog.y = 16;
 
     // sets the default camera back to FlxG.camera, since we set it to hudCamera for haxeui stuf
     FlxG.cameras.setDefaultDrawTarget(FlxG.camera, true);
