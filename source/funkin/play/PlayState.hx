@@ -1460,11 +1460,34 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+      var playerVoicesError:Float = 0;
+      var opponentVoicesError:Float = 0;
 
-      if (!startingSong && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(vocals.checkSyncError(correctSync)) > 5))
+      if (vocals != null)
+      {
+        @:privateAccess // todo: maybe make the groups public :thinking:
+        {
+          vocals.playerVoices.forEachAlive(function(voice:FunkinSound) {
+            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset;
+            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError)) playerVoicesError = currentRawVoiceTime - correctSync;
+          });
+
+          vocals.opponentVoices.forEachAlive(function(voice:FunkinSound) {
+            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset;
+            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError)) opponentVoicesError = currentRawVoiceTime - correctSync;
+          });
+        }
+      }
+
+      if (!startingSong
+        && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(playerVoicesError) > 5 || Math.abs(opponentVoicesError) > 5))
       {
         trace("VOCALS NEED RESYNC");
-        if (vocals != null) trace(vocals.checkSyncError(correctSync));
+        if (vocals != null)
+        {
+          trace(playerVoicesError);
+          trace(opponentVoicesError);
+        }
         trace(FlxG.sound.music.time);
         trace(correctSync);
         resyncVocals();
@@ -1836,6 +1859,17 @@ class PlayState extends MusicBeatSubState
         state: buildDiscordRPCState(),
         details: buildDiscordRPCDetails(),
 
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
+    #end
+
+    #if FEATURE_DISCORD_RPC
+    // Updating Discord Rich Presence.
+    DiscordClient.instance.setPresence(
+      {
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
         largeImageKey: discordRPCAlbum,
         smallImageKey: discordRPCIcon
       });
@@ -2531,8 +2565,8 @@ class PlayState extends MusicBeatSubState
         healthChange = Constants.HEALTH_BAD_BONUS;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
-        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
         healthChange = Constants.HEALTH_SHIT_BONUS;
+        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 
     // Send the note hit event.
@@ -2601,8 +2635,6 @@ class PlayState extends MusicBeatSubState
       }
     }
     vocals.playerVolume = 0;
-
-    if (Highscore.tallies.combo != 0) if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
 
     applyScore(-10, 'miss', healthChange, true);
 
@@ -2822,7 +2854,7 @@ class PlayState extends MusicBeatSubState
       }
     }
     comboPopUps.displayRating(daRating);
-    if (combo >= 10 || combo == 0) comboPopUps.displayCombo(combo);
+    if (combo >= 10) comboPopUps.displayCombo(combo);
 
     vocals.playerVolume = 1;
   }
