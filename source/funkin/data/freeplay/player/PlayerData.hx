@@ -96,7 +96,7 @@ class PlayerFreeplayDJData
 
   @:optional
   @default(true)
-  var idleOnBeat:Bool;
+  var danceToBeat:Bool;
 
   @:optional
   @:default("BOYFRIEND")
@@ -149,9 +149,9 @@ class PlayerFreeplayDJData
     return Paths.animateAtlas(assetPath);
   }
 
-  public function shouldIdleOnBeat():Bool
+  public function shouldDanceToBeat():Bool
   {
-    return idleOnBeat;
+    return danceToBeat;
   }
 
   public function getFreeplayDJText(index:Int):String
