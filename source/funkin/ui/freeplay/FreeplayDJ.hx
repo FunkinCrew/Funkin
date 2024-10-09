@@ -98,7 +98,7 @@ class FreeplayDJ extends FlxAtlasSprite
         var animPrefix = playableCharData.getAnimationPrefix('idle');
         if (getCurrentAnimation() != animPrefix)
         {
-          playFlashAnimation(animPrefix, true, false, !playableCharData.shouldDanceToBeat());
+          playFlashAnimation(animPrefix, true, false, !playableCharData.shouldIdleOnBeat());
         }
 
         if (getCurrentAnimation() == animPrefix && this.isLoopComplete())
@@ -312,7 +312,7 @@ class FreeplayDJ extends FlxAtlasSprite
    */
   public function beatHit():Void
   {
-    if (!playableCharData.shouldDanceToBeat()) return;
+    if (!playableCharData.shouldIdleOnBeat()) return;
     if (currentState != Idle) return;
 
     beatFreq = beatFreqList[Math.floor(Conductor.instance.bpm / 140)];
