@@ -6,6 +6,7 @@ import flixel.math.FlxMath;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 import funkin.save.Save;
+import funkin.util.TimerUtil.SongSequence;
 import haxe.Timer;
 import flixel.sound.FlxSound;
 
@@ -492,6 +493,8 @@ class Conductor
       prevTime = this.songPosition;
       prevTimestamp = Std.int(Timer.stamp() * 1000);
     }
+
+    if (this == Conductor.instance) SongSequence.update.dispatch();
   }
 
   /**
