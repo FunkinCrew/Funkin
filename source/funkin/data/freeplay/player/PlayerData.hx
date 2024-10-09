@@ -95,6 +95,10 @@ class PlayerFreeplayDJData
   var animations:Array<AnimationData>;
 
   @:optional
+  @default(true)
+  var danceToBeat:Bool;
+
+  @:optional
   @:default("BOYFRIEND")
   var text1:String;
 
@@ -143,6 +147,11 @@ class PlayerFreeplayDJData
   public function getAtlasPath():String
   {
     return Paths.animateAtlas(assetPath);
+  }
+
+  public function shouldDanceToBeat():Bool
+  {
+    return danceToBeat;
   }
 
   public function getFreeplayDJText(index:Int):String
