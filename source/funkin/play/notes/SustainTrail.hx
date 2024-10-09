@@ -113,6 +113,7 @@ class SustainTrail extends FlxSprite
     this.noteDirection = noteDirection;
 
     setupHoldNoteGraphic(noteStyle);
+    noteStyleOffsets = noteStyle.getHoldNoteOffsets();
 
     setIndices(TRIANGLE_VERTEX_INDICES);
 
@@ -200,7 +201,6 @@ class SustainTrail extends FlxSprite
 
     zoom = 1.0;
     zoom *= noteStyle.fetchHoldNoteScale();
-    zoom *= 0.7;
 
     // CALCULATE SIZE
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
