@@ -1439,8 +1439,6 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var upP:Bool = controls.UI_UP_P;
-    var downP:Bool = controls.UI_DOWN_P;
     var accepted:Bool = controls.ACCEPT;
 
     if (FlxG.onMobile)
@@ -1660,7 +1658,8 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    if (accepted)
+    // onConfirm() calls functions that set busy to true
+    if (accepted && !busy)
     {
       grpCapsules.members[curSelected].onConfirm();
     }
