@@ -642,6 +642,9 @@ class Project extends HXProject {
 		addHaxelib('thx.core'); // General utility library, "the lodash of Haxe"
 		addHaxelib('thx.semver'); // Version string handling
 
+		addHaxelib('grig.midi'); // Midi utilities
+		addHaxelib('grig.pitch'); // Needed for grig.midi
+
 		if (isDebug()) {
 			addHaxelib('hxcpp-debug-server'); // VSCode debug support
 		}

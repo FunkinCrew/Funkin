@@ -55,6 +55,20 @@
       "url": "https://gitlab.com/haxe-grig/grig.audio.git"
     },
     {
+      "name": "grig.midi",
+      "type": "git",
+      "dir": "src",
+      "ref": "08e1aa7bd76c9e568bc2f9272991d9b2dd6debb8",
+      "url": "https://github.com/osakared/grig.midi.git"
+    },
+    {
+      "name": "grig.pitch",
+      "type": "git",
+      "dir": "src",
+      "ref": "4ce420f42ffc7cb31ab5423b650561d3c9294658",
+      "url": "https://github.com/osakared/grig.pitch.git"
+    },
+    {
       "name": "hamcrest",
       "type": "haxelib",
       "version": "3.0.0"
