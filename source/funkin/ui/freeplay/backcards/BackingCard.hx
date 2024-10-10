@@ -20,11 +20,13 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.MusicBeatSubState;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
+import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * A class for the backing cards so they dont have to be part of freeplayState......
  */
-class BackingCard extends FlxSpriteGroup
+class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass
 {
   public var backingTextYeah:FlxAtlasSprite;
   public var orangeBackShit:FunkinSprite;
@@ -39,12 +41,14 @@ class BackingCard extends FlxSpriteGroup
   var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
 
   public var instance:FreeplayState;
+  public var currentCharacter:String;
+  public var player:PlayableCharacter;
 
-  public function new(currentCharacter:PlayableCharacter, ?_instance:FreeplayState)
+  public function new(currentCharacter:String)
   {
     super();
 
-    if (_instance != null) instance = _instance;
+    this.currentCharacter = currentCharacter;
 
     cardGlow = new FlxSprite(-30, -30).loadGraphic(Paths.image('freeplay/cardGlow'));
     confirmGlow = new FlxSprite(-30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
@@ -131,7 +135,7 @@ class BackingCard extends FlxSpriteGroup
   /**
    * Called in create. Adds sprites and tweens.
    */
-  public function init():Void
+  public function initCard():Void
   {
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
@@ -245,4 +249,16 @@ class BackingCard extends FlxSpriteGroup
     orangeBackShit.visible = false;
     alsoOrangeLOL.visible = false;
   }
+
+  public function onScriptEvent(event:ScriptEvent):Void {};
+
+  public function onCreate(event:ScriptEvent):Void {};
+
+  public function onDestroy(event:ScriptEvent):Void {};
+
+  public function onUpdate(event:UpdateScriptEvent):Void {};
+
+  public function onStepHit(event:SongTimeScriptEvent):Void {};
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void {};
 }

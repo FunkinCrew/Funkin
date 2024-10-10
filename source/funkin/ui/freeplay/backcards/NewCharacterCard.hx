@@ -125,7 +125,7 @@ class NewCharacterCard extends BackingCard
     FlxTween.tween(newUnlock3, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
   }
 
-  public override function init():Void
+  public override function initCard():Void
   {
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
