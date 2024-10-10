@@ -1,4 +1,4 @@
-# Friday Night Funkin' 
+# Friday Night Funkin'
 
 Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for Ludum Dare 47.
 
@@ -15,7 +15,7 @@ To learn how to install the necessary dependencies and compile the game from sou
 
 # Contributing
 
-Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can actively participate in the development of Friday Night Funkin'.
+Please check out our [Contributor's guide](/docs/CONTRIBUTING.md) on how you can actively participate in the development of Friday Night Funkin'.
 
 # Modding
 

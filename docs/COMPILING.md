@@ -10,7 +10,7 @@
 2. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
 3. Run `cd funkin` to enter the cloned repository's directory.
 4. Run `git submodule update --init --recursive` to download the game's assets.
-    - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
+    - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](../LICENSE.md) repo for more information.
 5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
 6. Run `hmm install` to install all haxelibs of the current branch
 7. Run `haxelib run lime setup` to set up lime
@@ -43,4 +43,4 @@ There are several useful build flags you can add to a build to affect how it wor
 
 # Troubleshooting
 
-If you experience any issues during the compilation process, DO NOT open an issue on GitHub. Instead, check the [Troubleshooting Guide](TROUBLESHOOTING.md) for steps on how to resolve common problems.
+If you experience any issues during the compilation process, DO NOT open an issue on GitHub. Instead, check the [Troubleshooting Guide](./troubleshooting.md) for steps on how to resolve common problems.
