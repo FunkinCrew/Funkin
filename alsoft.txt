@@ -1,0 +1,14 @@
+[general]
+sample-type=float32
+stereo-mode=speakers
+stereo-encoding=panpot
+hrtf=false
+cf_level=0
+resampler=fast_bsinc24
+front-stablizer=false
+output-limiter=false
+volume-adjust=0
+[decoder]
+hq-mode=false
+distance-comp=false
+nfc=false

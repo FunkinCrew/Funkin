@@ -3,6 +3,9 @@ package;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.Preferences;
+#if desktop
+import funkin.audio.ALSoftConfig; // Just to make sure DCE doesn't remove this, since it's not directly referenced anywhere else.
+#end
 import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.MemoryCounter;
 import funkin.save.Save;
