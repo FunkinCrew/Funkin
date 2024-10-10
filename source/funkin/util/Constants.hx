@@ -244,6 +244,11 @@ class Constants
   public static final DEFAULT_ZOOM_RATE:Int = 4;
 
   /**
+   * The default offset of camera zooms (in beats).
+   */
+  public static final DEFAULT_ZOOM_OFFSET:Int = 0;
+
+  /**
    * The default BPM for charts, so things don't break if none is specified.
    */
   public static final DEFAULT_BPM:Float = 100.0;
