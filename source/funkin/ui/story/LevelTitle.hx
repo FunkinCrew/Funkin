@@ -49,7 +49,7 @@ class LevelTitle extends FlxSpriteGroup
 
   public override function update(elapsed:Float):Void
   {
-    this.y = MathUtil.coolLerp(y, targetY, 0.17);
+    this.y = MathUtil.smoothLerpPrecision(y, targetY, elapsed, 0.5);
 
     if (isFlashing)
     {

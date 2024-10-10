@@ -1400,8 +1400,8 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
-    lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
+    lerpScore = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpScore, intendedScore, elapsed, 0.2), intendedScore, 1);
+    lerpCompletion = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpCompletion, intendedCompletion, elapsed, 0.5), intendedCompletion, 1 / 100);
 
     if (Math.isNaN(lerpScore))
     {

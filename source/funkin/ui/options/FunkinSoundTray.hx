@@ -79,8 +79,8 @@ class FunkinSoundTray extends FlxSoundTray
 
   override public function update(MS:Float):Void
   {
-    y = MathUtil.coolLerp(y, lerpYPos, 0.1);
-    alpha = MathUtil.coolLerp(alpha, alphaTarget, 0.25);
+    y = MathUtil.smoothLerpPrecision(y, lerpYPos, MS / 1000, 0.8);
+    alpha = MathUtil.smoothLerpPrecision(alpha, alphaTarget, MS / 1000, 0.325);
 
     var shouldHide = (FlxG.sound.muted == false && FlxG.sound.volume > 0);
 

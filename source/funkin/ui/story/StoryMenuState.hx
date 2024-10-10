@@ -311,7 +311,7 @@ class StoryMenuState extends MusicBeatState
   {
     Conductor.instance.update();
 
-    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.25));
+    highScoreLerp = Std.int(MathUtil.snap(MathUtil.smoothLerpPrecision(highScoreLerp, highScore, elapsed, 0.25), highScore, 1));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
