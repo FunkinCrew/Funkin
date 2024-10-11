@@ -138,6 +138,7 @@ class StageEditorState extends UIState
 
   function set_selectedSprite(value:StageEditorObject)
   {
+
     selectedSprite?.selectedShader.setAmount(0);
     this.selectedSprite = value;
     updateDialog(StageEditorDialogType.OBJECT);
@@ -586,6 +587,7 @@ class StageEditorState extends UIState
       if (FlxG.keys.justPressed.F1) onMenuItemClick("user guide");
       if (FlxG.keys.justPressed.BACKSPACE) selectedSprite = null;
 
+
       if (FlxG.keys.justPressed.T)
       {
         camFollow.screenCenter();
@@ -629,6 +631,7 @@ class StageEditorState extends UIState
 
           if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
           {
+
             selectedSprite = spr;
             updateDialog(StageEditorDialogType.OBJECT);
           }
@@ -1139,6 +1142,7 @@ class StageEditorState extends UIState
           currentFile = path;
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
 
+
       case "save stage":
         if (currentFile == "")
         {
@@ -1157,7 +1161,7 @@ class StageEditorState extends UIState
         FileUtil.writeBytesToPath(currentFile, bytes, Force); // mhm
 
         saved = true;
-        updateRecentFiles();
+
       case "open stage":
         if (!saved)
         {
