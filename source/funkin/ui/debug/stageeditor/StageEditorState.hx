@@ -1140,8 +1140,8 @@ class StageEditorState extends UIState
         FileUtil.saveFile(bytes, [FileUtil.FILE_FILTER_FNFS], function(path:String) {
           saved = true;
           currentFile = path;
+          reloadRecentFiles();
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
-
 
       case "save stage":
         if (currentFile == "")
@@ -1161,6 +1161,7 @@ class StageEditorState extends UIState
         FileUtil.writeBytesToPath(currentFile, bytes, Force); // mhm
 
         saved = true;
+        reloadRecentFiles();
 
       case "open stage":
         if (!saved)
