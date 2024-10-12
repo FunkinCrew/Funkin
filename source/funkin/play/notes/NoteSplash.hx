@@ -82,7 +82,7 @@ class NoteSplash extends FlxSprite
     animation.curAnim.frameRate = FRAMERATE_DEFAULT + FlxG.random.int(-FRAMERATE_VARIANCE, FRAMERATE_VARIANCE);
 
     // Center the animation on the note splash.
-    offset.set(width * 0.3, height * 0.3);
+    offset.set(width * 0.2, height * 0.3);
   }
 
   public function onAnimationFinished(animationName:String):Void
