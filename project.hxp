@@ -474,6 +474,7 @@ class Project extends HXProject {
 
 		// Should be false unless explicitly requested.
 		GITHUB_BUILD.apply(this, false);
+		FEATURE_NEWGROUNDS.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
 
 		// Should be true unless explicitly requested.
