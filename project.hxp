@@ -25,7 +25,7 @@ class Project extends HXProject {
 	 * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
 	 * You only have to change it here, the rest of the game will query this value.
 	 */
-	static final VERSION:String = "0.5.1";
+	static final VERSION:String = "0.5.2";
 
 	/**
 	 * The game's name. Used as the default window title.
