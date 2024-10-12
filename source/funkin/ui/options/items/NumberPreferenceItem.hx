@@ -58,6 +58,8 @@ class NumberPreferenceItem extends TextMenuItem
     this.precision = precision;
     this.onChangeCallback = callback;
     this.valueFormatter = valueFormatter;
+
+    this.fireInstantly = true;
   }
 
   override function update(elapsed:Float):Void

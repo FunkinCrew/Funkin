@@ -10,6 +10,7 @@ import funkin.save.migrator.SaveDataMigrator;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
+import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.SerializerUtil;
 import thx.semver.Version;
 import thx.semver.Version;
@@ -146,6 +147,14 @@ class Save
           hitsoundVolumeOpponent: 1.0,
           themeMusic: true
         },
+
+      optionsStageEditor:
+        {
+          previousFiles: [],
+          moveStep: "1px",
+          angleStep: 5,
+          theme: StageEditorTheme.Light
+        }
     };
   }
 
@@ -428,6 +437,91 @@ class Save
     return data.unlocks.oldChar;
   }
 
+  public var stageEditorPreviousFiles(get, set):Array<String>;
+
+  function get_stageEditorPreviousFiles():Array<String>
+  {
+    if (data.optionsStageEditor.previousFiles == null) data.optionsStageEditor.previousFiles = [];
+
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  function set_stageEditorPreviousFiles(value:Array<String>):Array<String>
+  {
+    // Set and apply.
+    data.optionsStageEditor.previousFiles = value;
+    flush();
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  public var stageEditorHasBackup(get, set):Bool;
+
+  function get_stageEditorHasBackup():Bool
+  {
+    if (data.optionsStageEditor.hasBackup == null) data.optionsStageEditor.hasBackup = false;
+
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  function set_stageEditorHasBackup(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsStageEditor.hasBackup = value;
+    flush();
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  public var stageEditorMoveStep(get, set):String;
+
+  function get_stageEditorMoveStep():String
+  {
+    if (data.optionsStageEditor.moveStep == null) data.optionsStageEditor.moveStep = "1px";
+
+    return data.optionsStageEditor.moveStep;
+  }
+
+  function set_stageEditorMoveStep(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.moveStep = value;
+    flush();
+    return data.optionsStageEditor.moveStep;
+  }
+
+  public var stageEditorAngleStep(get, set):Float;
+
+  function get_stageEditorAngleStep():Float
+  {
+    if (data.optionsStageEditor.angleStep == null) data.optionsStageEditor.angleStep = 5;
+
+    return data.optionsStageEditor.angleStep;
+  }
+
+  function set_stageEditorAngleStep(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsStageEditor.angleStep = value;
+    flush();
+    return data.optionsStageEditor.angleStep;
+  }
+
+  public var stageEditorTheme(get, set):StageEditorTheme;
+
+  function get_stageEditorTheme():StageEditorTheme
+  {
+    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = StageEditorTheme.Light;
+
+    return data.optionsStageEditor.theme;
+  }
+
+  function set_stageEditorTheme(value:StageEditorTheme):StageEditorTheme
+  {
+    // Set and apply.
+    data.optionsStageEditor.theme = value;
+    flush();
+    return data.optionsStageEditor.theme;
+  }
+
   /**
    * When we've seen a character unlock, add it to the list of characters seen.
    * @param character
@@ -543,22 +637,34 @@ class Save
    *
    * @param songId The ID of the song.
    * @param difficultyId The difficulty to check.
+   * @param variation The variation to check. Defaults to empty string. Appended to difficulty with `-`, e.g. `easy-pico`.
    * @return A data structure containing score, judgement counts, and accuracy. Returns `null` if no score is saved.
    */
-  public function getSongScore(songId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
+  public function getSongScore(songId:String, difficultyId:String = 'normal', ?variation:String):Null<SaveScoreData>
   {
     var song = data.scores.songs.get(songId);
+    trace('Getting song score for $songId $difficultyId $variation');
     if (song == null)
     {
+      trace('Could not find song data for $songId $difficultyId $variation');
       song = [];
       data.scores.songs.set(songId, song);
     }
+
+    // 'default' variations are left with no suffix ('easy', 'normal', 'hard'),
+    // along with 'erect' variations ('erect', 'nightmare')
+    // otherwise, we want to add a suffix of our current variation to get the save data.
+    if (variation != null && variation != '' && variation != 'default' && variation != 'erect')
+    {
+      difficultyId = '${difficultyId}-${variation}';
+    }
+
     return song.get(difficultyId);
   }
 
-  public function getSongRank(songId:String, difficultyId:String = 'normal'):Null<ScoringRank>
+  public function getSongRank(songId:String, difficultyId:String = 'normal', ?variation:String):Null<ScoringRank>
   {
-    return Scoring.calculateRank(getSongScore(songId, difficultyId));
+    return Scoring.calculateRank(getSongScore(songId, difficultyId, variation));
   }
 
   /**
@@ -678,18 +784,31 @@ class Save
 
   /**
    * Has the provided song been beaten on one of the listed difficulties?
+   * Note: This function can still take in the 'difficulty-variation' format for the difficultyList parameter
+   * as it is used in the old save data format. However inputting a variation will append it to the difficulty
+   * so you can do `hasBeatenSong('dadbattle', ['easy-pico'])` to check if you've beaten the Pico mix on easy.
+   * or you can do `hasBeatenSong('dadbattle', ['easy'], 'pico')` to check if you've beaten the Pico mix on easy.
+   * however you should not mix the two as it will append '-pico' to the 'easy-pico' if it's inputted into the array.
    * @param songId The song ID to check.
    * @param difficultyList The difficulties to check. Defaults to `easy`, `normal`, and `hard`.
+   * @param variation The variation to check. Defaults to empty string. Appended to difficulty list with `-`, e.g. `easy-pico`.
+   *                  This is our old format for getting difficulty/variation information, however we don't want to mess around with
+   *                  save migration just yet.
    * @return Whether the song has been beaten on any of the listed difficulties.
    */
-  public function hasBeatenSong(songId:String, ?difficultyList:Array<String>):Bool
+  public function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
   {
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
     }
+
+    if (variation == null) variation = '';
+
     for (difficulty in difficultyList)
     {
+      if (variation != '') difficulty = '${difficulty}-${variation}';
+
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {
@@ -1043,6 +1162,11 @@ typedef RawSaveData =
    * The user's preferences specific to the Chart Editor.
    */
   var optionsChartEditor:SaveDataChartEditorOptions;
+
+  /**
+   * The user's preferences specific to the Stage Editor.
+   */
+  var optionsStageEditor:SaveDataStageEditorOptions;
 };
 
 typedef SaveApiData =
@@ -1415,4 +1539,40 @@ typedef SaveDataChartEditorOptions =
    * @default `1.0`
    */
   var ?playbackSpeed:Float;
+};
+
+typedef SaveDataStageEditorOptions =
+{
+  // a lot of these things were copied from savedatacharteditoroptions
+
+  /**
+   * Whether the Stage Editor created a backup the last time it closed.
+   * Prompt the user to load it, then set this back to `false`.
+   * @default `false`
+   */
+  var ?hasBackup:Bool;
+
+  /**
+   * Previous files opened in the Stage Editor.
+   * @default `[]`
+   */
+  var ?previousFiles:Array<String>;
+
+  /**
+   * The Step at which an Object or Character is moved.
+   * @default `1px`
+   */
+  var ?moveStep:String;
+
+  /**
+   * The Step at which an Object is rotated.
+   * @default `5`
+   */
+  var ?angleStep:Float;
+
+  /**
+   * Theme in the Stage Editor.
+   * @default `StageEditorTheme.Light`
+   */
+  var ?theme:StageEditorTheme;
 };

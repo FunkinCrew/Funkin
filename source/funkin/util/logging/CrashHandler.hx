@@ -61,6 +61,12 @@ class CrashHandler
     {
       trace('Error while handling crash: ' + e);
     }
+
+    #if sys
+    Sys.sleep(1); // wait a few moments of margin to process.
+    // Exit the game. Since it threw an error, we use a non-zero exit code.
+    openfl.Lib.application.window.close();
+    #end
   }
 
   static function onCriticalError(message:String):Void
@@ -83,8 +89,9 @@ class CrashHandler
     }
 
     #if sys
+    Sys.sleep(1); // wait a few moments of margin to process.
     // Exit the game. Since it threw an error, we use a non-zero exit code.
-    Sys.exit(1);
+    openfl.Lib.application.window.close();
     #end
   }
 

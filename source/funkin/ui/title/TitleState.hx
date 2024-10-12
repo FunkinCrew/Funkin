@@ -233,6 +233,7 @@ class TitleState extends MusicBeatState
         startingVolume: 0.0,
         overrideExisting: true,
         restartTrack: false,
+        // Continue playing this music between states, until a different music track gets played.
         persist: true
       });
     // Fade from 0.0 to 1 over 4 seconds
@@ -270,7 +271,7 @@ class TitleState extends MusicBeatState
     #if desktop
     if (FlxG.keys.justPressed.ESCAPE)
     {
-      Sys.exit(0);
+      openfl.Lib.application.window.close();
     }
     #end
 

@@ -46,6 +46,8 @@ class EnumPreferenceItem extends TextMenuItem
     }
 
     lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
+
+    this.fireInstantly = true;
   }
 
   override function update(elapsed:Float):Void

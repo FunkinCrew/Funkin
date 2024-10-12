@@ -239,6 +239,18 @@ class FunkinSprite extends FlxSprite
   }
 
   /**
+   * @param id The animation ID to check.
+   * @return Whether the animation is dynamic (has multiple frames). `false` for static, one-frame animations.
+   */
+  public function isAnimationDynamic(id:String):Bool
+  {
+    if (this.animation == null) return false;
+    var animData = this.animation.getByName(id);
+    if (animData == null) return false;
+    return animData.numFrames > 1;
+  }
+
+  /**
    * Acts similarly to `makeGraphic`, but with improved memory usage,
    * at the expense of not being able to paint onto the resulting sprite.
    *
