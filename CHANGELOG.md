@@ -237,7 +237,7 @@ which would remove their rank if they had a lower one.
 - Fix for the camera not pausing during a gameplay pause ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2684))
 - Fixed issue where Pico's gameplay sprite would unintentionally appear on the gameover screen when dying on 2hot from an explosion
 - Freeplay previews properly fade volume during the BF idle animation
-- Fixed bug where Dadbattle incorrectly appeared as Dadbattle Erect when returning to freeplay on Hard
+- Fixed bug where DadBattle incorrectly appeared as DadBattle Erect when returning to freeplay on Hard
 - Fixed 2hot not appearing under the "#" category in Freeplay menu
 - Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
 - Improved offsets for Pico and Tankman opponents so they don't slide around as much.
@@ -529,7 +529,7 @@ which would remove their rank if they had a lower one.
 - Can now change difficulties in Freeplay mode
 
 ### Changed
-- Balanced out Normal mode for the harder songs(Dadbattle and Spookeez, not South yet). Should be much easier all around.
+- Balanced out Normal mode for the harder songs(DadBattle and Spookeez, not South yet). Should be much easier all around.
 - Put tutorial in it's own 'week', so that if you want to play week 1, you don't have to play the tutorial.
 
 ### Fixed
