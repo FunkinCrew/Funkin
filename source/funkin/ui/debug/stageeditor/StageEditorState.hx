@@ -584,7 +584,6 @@ class StageEditorState extends UIState
       if (FlxG.keys.justPressed.ENTER) onMenuItemClick("test stage");
       if (FlxG.keys.justPressed.ESCAPE) onMenuItemClick("exit");
       if (FlxG.keys.justPressed.F1) onMenuItemClick("user guide");
-      if (FlxG.keys.justPressed.BACKSPACE) selectedSprite = null;
 
       if (FlxG.keys.justPressed.T)
       {
@@ -1287,6 +1286,7 @@ class StageEditorState extends UIState
 
         if (!testingMode) menubarItemWindowObject.selected = menubarItemWindowCharacter.selected = menubarItemWindowStage.selected = false;
 
+        selectedSprite?.selectedShader.setAmount((testingMode ? (moveMode == "assets" ? 1 : 0) : 0));
         testingMode = !testingMode;
 
       case "clear assets":
