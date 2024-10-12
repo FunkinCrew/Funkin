@@ -10,6 +10,7 @@ import funkin.save.migrator.SaveDataMigrator;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
+import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.SerializerUtil;
 import thx.semver.Version;
 import thx.semver.Version;
@@ -146,6 +147,14 @@ class Save
           hitsoundVolumeOpponent: 1.0,
           themeMusic: true
         },
+
+      optionsStageEditor:
+        {
+          previousFiles: [],
+          moveStep: "1px",
+          angleStep: 5,
+          theme: StageEditorTheme.Light
+        }
     };
   }
 
@@ -426,6 +435,91 @@ class Save
     data.unlocks.oldChar = value;
     flush();
     return data.unlocks.oldChar;
+  }
+
+  public var stageEditorPreviousFiles(get, set):Array<String>;
+
+  function get_stageEditorPreviousFiles():Array<String>
+  {
+    if (data.optionsStageEditor.previousFiles == null) data.optionsStageEditor.previousFiles = [];
+
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  function set_stageEditorPreviousFiles(value:Array<String>):Array<String>
+  {
+    // Set and apply.
+    data.optionsStageEditor.previousFiles = value;
+    flush();
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  public var stageEditorHasBackup(get, set):Bool;
+
+  function get_stageEditorHasBackup():Bool
+  {
+    if (data.optionsStageEditor.hasBackup == null) data.optionsStageEditor.hasBackup = false;
+
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  function set_stageEditorHasBackup(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsStageEditor.hasBackup = value;
+    flush();
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  public var stageEditorMoveStep(get, set):String;
+
+  function get_stageEditorMoveStep():String
+  {
+    if (data.optionsStageEditor.moveStep == null) data.optionsStageEditor.moveStep = "1px";
+
+    return data.optionsStageEditor.moveStep;
+  }
+
+  function set_stageEditorMoveStep(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.moveStep = value;
+    flush();
+    return data.optionsStageEditor.moveStep;
+  }
+
+  public var stageEditorAngleStep(get, set):Float;
+
+  function get_stageEditorAngleStep():Float
+  {
+    if (data.optionsStageEditor.angleStep == null) data.optionsStageEditor.angleStep = 5;
+
+    return data.optionsStageEditor.angleStep;
+  }
+
+  function set_stageEditorAngleStep(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsStageEditor.angleStep = value;
+    flush();
+    return data.optionsStageEditor.angleStep;
+  }
+
+  public var stageEditorTheme(get, set):StageEditorTheme;
+
+  function get_stageEditorTheme():StageEditorTheme
+  {
+    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = StageEditorTheme.Light;
+
+    return data.optionsStageEditor.theme;
+  }
+
+  function set_stageEditorTheme(value:StageEditorTheme):StageEditorTheme
+  {
+    // Set and apply.
+    data.optionsStageEditor.theme = value;
+    flush();
+    return data.optionsStageEditor.theme;
   }
 
   /**
@@ -1068,6 +1162,11 @@ typedef RawSaveData =
    * The user's preferences specific to the Chart Editor.
    */
   var optionsChartEditor:SaveDataChartEditorOptions;
+
+  /**
+   * The user's preferences specific to the Stage Editor.
+   */
+  var optionsStageEditor:SaveDataStageEditorOptions;
 };
 
 typedef SaveApiData =
@@ -1440,4 +1539,40 @@ typedef SaveDataChartEditorOptions =
    * @default `1.0`
    */
   var ?playbackSpeed:Float;
+};
+
+typedef SaveDataStageEditorOptions =
+{
+  // a lot of these things were copied from savedatacharteditoroptions
+
+  /**
+   * Whether the Stage Editor created a backup the last time it closed.
+   * Prompt the user to load it, then set this back to `false`.
+   * @default `false`
+   */
+  var ?hasBackup:Bool;
+
+  /**
+   * Previous files opened in the Stage Editor.
+   * @default `[]`
+   */
+  var ?previousFiles:Array<String>;
+
+  /**
+   * The Step at which an Object or Character is moved.
+   * @default `1px`
+   */
+  var ?moveStep:String;
+
+  /**
+   * The Step at which an Object is rotated.
+   * @default `5`
+   */
+  var ?angleStep:Float;
+
+  /**
+   * Theme in the Stage Editor.
+   * @default `StageEditorTheme.Light`
+   */
+  var ?theme:StageEditorTheme;
 };
