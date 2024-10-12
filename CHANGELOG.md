@@ -12,8 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added InverseDotsShader that emulates flash selections ([097dbf5](https://github.com/FunkinCrew/Funkin/commit/097dbf5bb4346d431d8ca9f0ec4bc5b5e6f4523f)) - by @ninjamuffin99
 - (docs) Add additional `variation` input parameter to `Save.hasBeatenSong()` to allow usage of the function by inputting a variation id ([4fa9a0d](https://github.com/FunkinCrew/Funkin/commit/4fa9a0daaa67e0977460b147bd1f74a118e3e2a5)) - by @ninjamuffin99
 - (docs) Added modding docs link in readme ([4b54118](https://github.com/FunkinCrew/Funkin/commit/4b54118731e26118111e06558ae4853c577fe4bb)) - by @Cartridge-Man in [#3082](https://github.com/FunkinCrew/Funkin/pull/3082)
+- (docs) Fix some misspellings and grammar in code documentation ([2175bea](https://github.com/FunkinCrew/Funkin/commit/2175beaa651e009332202985be4b7eb4ed36e5a4)) - by @Hundrec in [#3477](https://github.com/FunkinCrew/Funkin/pull/3477)
 - (docs) Improvements to Github Issues templates ([399869c](https://github.com/FunkinCrew/Funkin/commit/399869cdccc9c5ac27cecfbcdc33c3d7eb4b348c)) - by @Hundrec in [#3458](https://github.com/FunkinCrew/Funkin/pull/3458)
-- Fix some misspellings and grammar in code documentation ([6df80ba](https://github.com/FunkinCrew/Funkin/commit/6df80ba69d0e24269f40471f83462cab7d5e13cf)) - by @Hundrec in [#3477](https://github.com/FunkinCrew/Funkin/pull/3477)
+
 
 ### Fixed
 - Disable flickering when changing FPS in the options menu ([b2647fe](https://github.com/FunkinCrew/Funkin/commit/b2647fe09f5281ce7074b26d47bc1524764168ee)) - by @lemz1 in [#3629](https://github.com/FunkinCrew/Funkin/pull/3629)
@@ -31,14 +32,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (debug) No more fullscreening when typing "F" in the flixel debugger console ([29b6763](https://github.com/FunkinCrew/Funkin/commit/29b6763290df05d42039806f3d142740568c80f0)) - by @ninjamuffin99 
 - Fix the user song offsets being applied incorrectly ([410cfe9](https://github.com/FunkinCrew/Funkin/commit/410cfe972d6df9de4d4d128375cf8380c4f06d92)) - by @JustKolosaki in [#3546](https://github.com/FunkinCrew/Funkin/pull/3546)
 - Fix crash in LatencyState when exiting / cleaning up state data ([39b1a42](https://github.com/FunkinCrew/Funkin/commit/39b1a42cfeafe2b7be8b66e2fe529e853d9ae197)) - by @lemz1 in [#3493](https://github.com/FunkinCrew/Funkin/pull/3493)
-- Add additional classes to Polymod Blacklist ([b0b73c8](https://github.com/FunkinCrew/Funkin/commit/b0b73c83994f33118c6a69550da9ec8ec1c07adc)) - by @EliteMasterEric in [#3558](https://github.com/FunkinCrew/Funkin/pull/3558)
+- Add additional classes to Polymod blacklist for security ([b0b73c8](https://github.com/FunkinCrew/Funkin/commit/b0b73c83994f33118c6a69550da9ec8ec1c07adc)) - by @EliteMasterEric in [#3558](https://github.com/FunkinCrew/Funkin/pull/3558)
 - Stop allowing inputs after selecting a character ([dbf66ac](https://github.com/FunkinCrew/Funkin/commit/dbf66ac250137262866d75f7c1387645b35d88d0)) - by @ACrazyTown in [#3398](https://github.com/FunkinCrew/Funkin/pull/3398)
 - Fix conflict with modded StrumlineNote sprite looping animation ([bc546e8](https://github.com/FunkinCrew/Funkin/commit/bc546e86aa77ffc795b3f079de5f590289a9c583)) - by @DaWaterMalone in [#3577](https://github.com/FunkinCrew/Funkin/pull/3577)
 - Properly format the millisecond counter in the chart editor playbar ([f1b6e6c](https://github.com/FunkinCrew/Funkin/commit/f1b6e6c4e42455e0c2900d738ebc24893f2479a0)) - by @afreetoplaynoob in [#3537](https://github.com/FunkinCrew/Funkin/pull/3537)
-- Fixed an issue where the player and girlfriend would disappear or overlap themselves in Character Select ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
-- Fixed an issue where the game would show the wrong girlfriend in Character Select ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
-- Fixed an issue where the cursor wouldn't update properly in Character Select ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
-- Fixed an issue where the player would display double after entering character select or when spamming buttons ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
+- Fixed an issue where the player and girlfriend would disappear or overlap themselves in Character Select ([community fix by @gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
+- Fixed an issue where the game would show the wrong girlfriend in Character Select ([community fix by @gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
+- Fixed an issue where the cursor wouldn't update properly in Character Select ([community fix by @gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
+- Fixed an issue where the player would display double after entering character select or when spamming buttons ([community fix by @gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
 
 ## New Contributors for 0.5.2
 * @Kn1ghtNight made their first contribution in [#2853](https://github.com/FunkinCrew/Funkin/pull/2853)
