@@ -19,6 +19,7 @@ import funkin.util.FileUtil;
 import funkin.util.macro.ClassMacro;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
+import polymod.util.VersionUtil;
 import polymod.Polymod;
 
 /**
@@ -30,6 +31,7 @@ class PolymodHandler
    * The API version for the current version of the game. Since 0.5.0, we've just made this the game version!
    * Minor updates rarely impact mods but major versions often do.
    */
+
   // static final API_VERSION:String = Constants.VERSION;
 
   /**
@@ -60,6 +62,8 @@ class PolymodHandler
     #else
     null
     #end;
+
+  public static var outdatedMods(default, null):Array<ModMetadata> = [];
 
   public static var loadedModIds:Array<String> = [];
 
@@ -353,12 +357,27 @@ class PolymodHandler
     var modMetadata:Array<ModMetadata> = Polymod.scan(
       {
         modRoot: MOD_FOLDER,
-        apiVersionRule: API_VERSION_RULE,
+        apiVersionRule: VersionUtil.DEFAULT_VERSION_RULE,
         fileSystem: modFileSystem,
         errorCallback: PolymodErrorHandler.onPolymodError
       });
-    trace('Found ${modMetadata.length} mods when scanning.');
-    return modMetadata;
+
+    outdatedMods = [];
+    var validMods:Array<ModMetadata> = [];
+
+    for (data in modMetadata)
+    {
+      if (!VersionUtil.match(data.apiVersion, API_VERSION))
+      {
+        outdatedMods.push(data);
+      }
+      else
+      {
+        validMods.push(data);
+      }
+    }
+
+    return validMods;
   }
 
   /**
