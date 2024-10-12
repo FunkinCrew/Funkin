@@ -533,7 +533,7 @@ class PlayState extends MusicBeatSubState
   {
     // Note: If there is a substate which requires the game to act unpaused,
     //       this should be changed to include something like `&& Std.isOfType()`
-    return this.subState != null;
+    return this.subState != null || this._requestedSubState != null;
   }
 
   var isExitingViaPauseMenu(get, never):Bool;
@@ -1105,15 +1105,18 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    processSongEvents();
+    if (!isGamePaused)
+    {
+      processSongEvents();
 
-    // Handle keybinds.
-    processInputQueue();
-    if (!isInCutscene && !disableKeys) debugKeyShit();
-    if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
+      // Handle keybinds.
+      processInputQueue();
+      if (!isInCutscene && !disableKeys) debugKeyShit();
+      if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
-    // Moving notes into position is now done by Strumline.update().
-    if (!isInCutscene) processNotes(elapsed);
+      // Moving notes into position is now done by Strumline.update().
+      if (!isInCutscene) processNotes(elapsed);
+    }
 
     justUnpaused = false;
   }
