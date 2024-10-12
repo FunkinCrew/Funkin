@@ -4,6 +4,8 @@ import funkin.data.freeplay.player.PlayerData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
 import funkin.save.Save;
+import funkin.ui.freeplay.backcards.BackingCard;
+import funkin.ui.freeplay.backcards.ScriptedBackingCard;
 
 class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
 {
@@ -30,6 +32,8 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
    */
   var ownedCharacterIds:Map<String, String> = [];
 
+  var backingCards:Map<String, BackingCard> = [];
+
   public function new()
   {
     super('PLAYER', 'players', PLAYER_DATA_VERSION_RULE);
@@ -38,6 +42,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
   public override function loadEntries():Void
   {
     super.loadEntries();
+    backingCards.clear();
 
     for (playerId in listEntryIds())
     {
@@ -48,6 +53,12 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
       for (characterId in currentPlayerCharIds)
       {
         ownedCharacterIds.set(characterId, playerId);
+      }
+
+      for (entryCls in ScriptedBackingCard.listScriptClasses()) // todo: make a better system this one fucking sucks
+      {
+        var daCard:BackingCard = getScriptedBackingCard(entryCls);
+        if (daCard != null && daCard.currentCharacter == playerId) backingCards.set(playerId, daCard);
       }
     }
 
@@ -118,6 +129,22 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
   {
     if (characterId == null) return null;
     return ownedCharacterIds[characterId];
+  }
+
+  /**
+   * Get the freeplay backing card associated with a given stage character.
+   * @param characterId The stage character ID.
+   * @return The backing card.
+   */
+  public function getBackingCard(characterId:Null<String>):Null<BackingCard>
+  {
+    if (characterId == null) return null;
+    return backingCards[characterId];
+  }
+
+  public function getScriptedBackingCard(characterId:String):BackingCard
+  {
+    return ScriptedBackingCard.init(characterId, "unknown");
   }
 
   /**

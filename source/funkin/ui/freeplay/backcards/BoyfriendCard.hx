@@ -20,6 +20,7 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.MusicBeatSubState;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
+import funkin.data.freeplay.player.PlayerRegistry;
 
 class BoyfriendCard extends BackingCard
 {
@@ -88,19 +89,20 @@ class BoyfriendCard extends BackingCard
     FlxTween.tween(funnyScroll3, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
   }
 
-  public override function new(currentCharacter:PlayableCharacter)
+  public override function new(currentCharacter:String)
   {
     super(currentCharacter);
 
-    funnyScroll = new BGScrollingText(0, 220, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, false, 60);
-    funnyScroll2 = new BGScrollingText(0, 335, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, false, 60);
-    moreWays = new BGScrollingText(0, 160, currentCharacter.getFreeplayDJText(2), FlxG.width, true, 43);
-    moreWays2 = new BGScrollingText(0, 397, currentCharacter.getFreeplayDJText(2), FlxG.width, true, 43);
-    txtNuts = new BGScrollingText(0, 285, currentCharacter.getFreeplayDJText(3), FlxG.width / 2, true, 43);
-    funnyScroll3 = new BGScrollingText(0, orangeBackShit.y + 10, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, 60);
+    var player = PlayerRegistry.instance.fetchEntry(currentCharacter);
+    funnyScroll = new BGScrollingText(0, 220, player.getFreeplayDJText(1), FlxG.width / 2, false, 60);
+    funnyScroll2 = new BGScrollingText(0, 335, player.getFreeplayDJText(1), FlxG.width / 2, false, 60);
+    moreWays = new BGScrollingText(0, 160, player.getFreeplayDJText(2), FlxG.width, true, 43);
+    moreWays2 = new BGScrollingText(0, 397, player.getFreeplayDJText(2), FlxG.width, true, 43);
+    txtNuts = new BGScrollingText(0, 285, player.getFreeplayDJText(3), FlxG.width / 2, true, 43);
+    funnyScroll3 = new BGScrollingText(0, orangeBackShit.y + 10, player.getFreeplayDJText(1), FlxG.width / 2, 60);
   }
 
-  public override function init():Void
+  public override function initCard():Void
   {
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
