@@ -19,11 +19,11 @@ class RegistryMacro
     var jsonCls = typeParams.jsonCls;
     var scriptedEntryCls = getScriptedEntryClass(entryCls);
 
-    // fields = fields.concat(buildInstanceField(cls));
+    fields = fields.concat(buildInstanceField(cls));
 
-    // fields.push(buildGetScriptedClassNamesField(scriptedEntryClsName));
+    fields.push(buildGetScriptedClassNamesField(scriptedEntryCls));
 
-    // fields.push(buildCreateScriptedEntryField(entryCls, scriptedEntryClsName));
+    fields.push(buildCreateScriptedEntryField(entryCls, scriptedEntryCls));
 
     return fields;
   }
@@ -157,7 +157,7 @@ class RegistryMacro
 
   static function buildCreateScriptedEntryField(entryCls:ClassType, scriptedEntryCls:ClassType):Field
   {
-    var scriptedStrExpr = '${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}.init(clsName, ${buildNullArgs(entryCls.constructor.get())})';
+    var scriptedStrExpr = '${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}.init(clsName, null)';
     var scriptedInitExpr = Context.parse(scriptedStrExpr, Context.currentPos());
 
     return {
@@ -191,33 +191,6 @@ class RegistryMacro
         }),
       pos: Context.currentPos()
     };
-  }
-
-  static function buildNullArgs(fun:ClassField):String
-  {
-    var amount:Int = 0;
-    switch (fun.type)
-    {
-      case Type.TFun(args, _):
-        amount = args.length;
-      case Type.TLazy(f):
-        switch (f())
-        {
-          case Type.TFun(args, _):
-            amount = args.length;
-          default:
-            throw 'Not a function';
-        }
-      default:
-        throw 'Not a function';
-    }
-
-    var args = [];
-    for (i in 0...amount)
-    {
-      args.push('null');
-    }
-    return args.join(', ');
   }
   #end
 }
