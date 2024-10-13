@@ -170,8 +170,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented alternate animations and music for Pico in the results screen.
   - These display on Pico remixes, as well as when playing Weekend 1.
 - Implemented support for scripted Note Kinds. You can use HScript define a different note style to display for these notes as well as custom behavior. (community feature by lemz1)
-- Implemented support for Numeric and Selector options in the Options menu. (community feature by FlooferLand)
-- Implemented new animations for Tankman and Pico
+- Implemented support for Numeric and Selector options in the Options menu. ([community feature by FlooferLand](https://github.com/FunkinCrew/Funkin/pull/2942))
+- Implemented new animations for Tankman and Pico.
 ## Changed
 - Girlfriend and Nene now perform previously unused animations when you achieve a large combo, or drop a large combo.
 - The pixel character icons in the Freeplay menu now display an animation!
@@ -179,40 +179,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Character offsets are now independent of the character's scale.
   - This should resolve issues with offsets when porting characters from older mods.
   - Pixel character offsets have been modified to compensate.
-- Note style data can now specify custom combo count graphics, judgement graphics, countdown graphics, and countdown audio. (community feature by anysad)
+- Note style data can now specify custom combo count graphics, judgement graphics, countdown graphics, and countdown audio. ([community feature by anysad](https://github.com/FunkinCrew/Funkin/pull/3020))
   - These were previously using hardcoded values based on whether the stage was `school` or `schoolEvil`.
 - The `danceEvery` property of characters and stage props can now use values with a precision of `0.25`, to play their idle animation up to four times per beat.
 - Reworked the JSON merging system in Polymod; you can now include JSONPatch files under `_merge` in your mod folder to add, modify, or remove values in a JSON without replacing it entirely!
-- Cutscenes now automatically pause when tabbing out (community fix by AbnormalPoof)
-- Characters will now respect the `danceEvery` property (community fix by gamerbross)
-- The F5 function now reloads the current song's chart data from disc (community feature by gamerbross)
-- Refactored the compilation guide and added common troubleshooting steps (community fix by Hundrec)
-- Made several layout improvements and fixes to the Animation Offsets editor in the Debug menu (community fix by gamerbross)
-- Fixed a bug where the Back sound would be not played when leaving the Story menu and Options menu (community fix by AppleHair)
-- Animation offsets no longer directly modify the `x` and `y` position of props, which makes props work better with tweens (community fix by Sword352)
-- The YEAH! events in Tutorial now use chart events rather than being hard-coded (community fix by anysad)
+- Cutscenes now automatically pause when tabbing out ([community fix by AbnormalPoof](https://github.com/FunkinCrew/Funkin/pull/2903))
+- Characters will now respect the `danceEvery` property ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2925))
+- The F5 function now reloads the current song's chart data from disc ([community feature by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2990))
+- Refactored the compilation guide and added common troubleshooting steps ([community fix by Hundrec](https://github.com/FunkinCrew/Funkin/pull/2813))
+- Made several layout improvements and fixes to the Animation Offsets editor in the Debug menu ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2820))
+- Fixed a bug where the Back sound would be not played when leaving the Story menu and Options menu ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/2986))
+- Animation offsets no longer directly modify the `x` and `y` position of props, which makes props work better with tweens ([community fix by Sword352](https://github.com/FunkinCrew/Funkin/pull/2310))
+- The YEAH! events in Tutorial now use chart events rather than being hard-coded ([community fix by anysad](https://github.com/FunkinCrew/Funkin/pull/3007))
 - The player's Score now displays commas in it (community fix by loggo)
 ## Fixed
 - Fixed an issue where songs with no notes would crash on the Results screen.
 - Fixed an issue where the old icon easter egg would not work properly on pixel levels.
 - Fixed an issue where you could play notes during the Thorns cutscene.
 - Fixed an issue where the Heart icon when favoriting a song in Freeplay would be malformed.
-- Fixed an issue where Pico's death animation displays a faint blue background (community fix by doggogit)
-- Fixed an issue where mod songs would not play a preview in the Freeplay menu (community fix by KarimAkra)
-- Fixed an issue where the Memory Usage counter could overflow and display a negative number (community fix by KarimAkra)
-- Fixed an issue where pressing the Chart Editor keybind while playtesting a chart would reset the chart editor (community fix by gamerbross)
-- Fixed a crash bug when pressing F5 after seeing the sticker transition (community fix by gamerbross)
-- Fixed an issue where the Story Mode menu couldn't be scrolled with a mouse (community fix by JVNpixels)
-- Fixed an issue causing the song to majorly desync sometimes (community fix by Burgerballs)
-- Fixed an issue where the Freeplay song preview would not respect the instrumental ID specified in the song metadata (community fix by AppleHair)
-- Fixed an issue where Tankman's icon wouldn't display in the Chart Editor (community fix by Hundrec)
-- Fixed an issue where pausing the game during a camera zoom would zoom the pause menu. (community fix by gamerbros)
-- Fixed an issue where certain UI elements would not flash at a consistent rate (community fix by cyn0x8)
-- Fixed an issue where the game would not use the placeholder health icon as a fallback (community fix by gamerbross)
-- Fixed an issue where the chart editor could get stuck creating a hold note when using Live Inputs (community fix by gamerbross)
-- Fixed an issue where character graphics could not be placed in week folders (community fix by 7oltan)
-- Fixed a crash issue when a Freeplay song has no `Normal` difficulty (community fix by AppleHair and gamerbross)
-- Fixed an issue in Story Mode where a song that isn't valid for the current variation could be selected (community fix by AppleHair)
+- Fixed an issue where Pico's death animation displays a faint blue background ([community fix by doggogit](https://github.com/FunkinCrew/funkin.assets/pull/1))
+- Fixed an issue where mod songs would not play a preview in the Freeplay menu ([community fix by KarimAkra](https://github.com/FunkinCrew/Funkin/pull/2724))
+- Fixed an issue where the Memory Usage counter could overflow and display a negative number ([community fix by KarimAkra](https://github.com/FunkinCrew/Funkin/pull/2713))
+- Fixed an issue where pressing the Chart Editor keybind while playtesting a chart would reset the chart editor ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2739))
+- Fixed a crash bug when pressing F5 after seeing the sticker transition ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2863))
+- Fixed an issue where the Story Mode menu couldn't be scrolled with a mouse ([community fix by JVNpixels](https://github.com/FunkinCrew/Funkin/pull/2873))
+- Fixed an issue causing the song to majorly desync sometimes ([community fix by Burgerballs](https://github.com/FunkinCrew/Funkin/pull/3058))
+- Fixed an issue where the Freeplay song preview would not respect the instrumental ID specified in the song metadata ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/2742))
+- Fixed an issue where Tankman's icon wouldn't display in the Chart Editor ([community fix by Hundrec](https://github.com/FunkinCrew/Funkin/pull/2912))
+- Fixed an issue where pausing the game during a camera zoom would zoom the pause menu. ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2567))
+- Fixed an issue where certain UI elements would not flash at a consistent rate ([community fix by cyn0x8](https://github.com/FunkinCrew/Funkin/pull/2494))
+- Fixed an issue where the game would not use the placeholder health icon as a fallback ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/3005))
+- Fixed an issue where the chart editor could get stuck creating a hold note when using Live Inputs ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2992))
+- Fixed an issue where character graphics could not be placed in week folders ([community fix by 7oltan](https://github.com/FunkinCrew/Funkin/pull/3035))
+- Fixed a crash issue when a Freeplay song has no `Normal` difficulty ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/3036) and [gamerbross](https://github.com/FunkinCrew/Funkin/pull/2712))
+- Fixed an issue in Story Mode where a song that isn't valid for the current variation could be selected ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/3037))
+
+## New Contributors for 0.5.0
+* @Flooferland made their first contribution in [#2942](https://github.com/FunkinCrew/Funkin/pull/2942)
+* @anysad made their first contribution in [#3007](https://github.com/FunkinCrew/Funkin/pull/3007)
+* @Sword352 made their first contribution in [#2310](https://github.com/FunkinCrew/Funkin/pull/2310)
+* @KarimAkra made their first contribution in [#2713](https://github.com/FunkinCrew/Funkin/pull/2713)
+* @JVNpixels made their first contribution in [#2873](https://github.com/FunkinCrew/Funkin/pull/2873)
+* @AppleHair made their first contribution in [#2742](https://github.com/FunkinCrew/Funkin/pull/2742)
+* @7oltan made their first contribution in [#3035](https://github.com/FunkinCrew/Funkin/pull/3035)
+* @cyn0x8 made their first contribution in [#2494](https://github.com/FunkinCrew/Funkin/pull/2494)
+
 
 ## [0.4.1] - 2024-06-12
 ### Added
@@ -302,7 +313,7 @@ which would remove their rank if they had a lower one.
 - Cleaned up some code in `PlayAnimationSongEvent.hx` (thanks Burgerballs!)
 ### Fixed
 - Fixes to the Loading bar on HTML5 (thanks lemz1!)
-- Don't allow any more inputs when exiting freeplay (thanks gamerbros!)
+- Don't allow any more inputs when exiting freeplay (thanks gamerbross!)
 - Fixed using mouse wheel to scroll on freeplay (thanks JugieNoob!)
 - Fixed the reset's of the health icons, score, and notes when re-entering gameplay from gameover (thanks ImCodist!)
 - Fixed the chart editor character selector's hitbox width (thanks MadBear422!)
