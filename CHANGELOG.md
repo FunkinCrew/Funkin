@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue where the player would display double after entering character select or when spamming buttons ([community fix by @gamerbross](https://github.com/FunkinCrew/Funkin/pull/3457))
 
 ## New Contributors for 0.5.2
+* @JustKolosaki made their first contribution in [#3482](https://github.com/FunkinCrew/Funkin/pull/3482)
 * @Kn1ghtNight made their first contribution in [#2853](https://github.com/FunkinCrew/Funkin/pull/2853)
 * @DaWaterMalone made their first contribution in [#3577](https://github.com/FunkinCrew/Funkin/pull/3577)
 * @amyspark-ng made their first contribution in [#3552](https://github.com/FunkinCrew/Funkin/pull/3552)
@@ -324,23 +325,34 @@ which would remove their rank if they had a lower one.
 
 ## [0.3.3] - 2024-05-14
 ### Changed
-- Cleaned up some code in `PlayAnimationSongEvent.hx` (thanks Burgerballs!)
+- Cleaned up some code in `PlayAnimationSongEvent.hx` ([thanks Burgerballs!](https://github.com/FunkinCrew/Funkin/pull/2308))
 ### Fixed
-- Fixes to the Loading bar on HTML5 (thanks lemz1!)
-- Don't allow any more inputs when exiting freeplay (thanks gamerbross!)
-- Fixed using mouse wheel to scroll on freeplay (thanks JugieNoob!)
-- Fixed the reset's of the health icons, score, and notes when re-entering gameplay from gameover (thanks ImCodist!)
-- Fixed the chart editor character selector's hitbox width (thanks MadBear422!)
-- Fixed camera stutter once a wipe transition to the Main Menu completes (thanks ImCodist!)
-- Fixed an issue where hold note would be invisible for a single frame (thanks ImCodist!)
-- Fix tween accumulation on title screen when pressing Y multiple times (thanks TheGaloXx!)
+- Fixes to the Loading bar on HTML5 ([thanks lemz1!](https://github.com/FunkinCrew/Funkin/pull/2499))
+- Don't allow any more inputs when exiting freeplay ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2470))
+- Fixed using mouse wheel to scroll on freeplay ([thanks JugieNoob!](https://github.com/FunkinCrew/Funkin/pull/2466))
+- Fixed the resets of the health icons, score, and notes when re-entering gameplay from gameover ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2390))
+- Fixed the chart editor character selector's hitbox width ([thanks MadBear422!](https://github.com/FunkinCrew/Funkin/pull/2370))
+- Fixed camera stutter once a wipe transition to the Main Menu completes ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2315))
+- Fixed an issue where hold note would be invisible for a single frame ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2309))
+- Fix tween accumulation on title screen when pressing Y multiple times ([thanks TheGaloXx!](https://github.com/FunkinCrew/Funkin/pull/2300))
 - Fix a crash when querying FlxG.state in the crash handler
 - Fix for a game over easter egg so you don't accidentally exit it when viewing
 - Fix an issue where the Freeplay menu never displays 100% clear
 - Fix an issue where Weekend 1 Pico attempted to retrieve a missing asset.
-- Fix an issue where duplicate keybinds would be stoed, potentially causing a crash
-- Chart debug key now properly returns you to the previous chart editor session if you were playtesting a chart (thanks nebulazorua!)
+- Fix an issue where duplicate keybinds would be stored, potentially causing a crash
+- Chart debug key now properly returns you to the previous chart editor session if you were playtesting a chart ([thanks nebulazorua!](https://github.com/FunkinCrew/Funkin/pull/2323))
 - Fix a crash on Freeplay found on AMD graphics cards
+
+## New Contributors for 0.3.3
+* @Burgerballs made their first contribution in [#2308](https://github.com/FunkinCrew/Funkin/pull/2308)
+* @lemz1 made their first contribution in [#2499](https://github.com/FunkinCrew/Funkin/pull/2499)
+* @gamerbross made their first contribution in [#2470](https://github.com/FunkinCrew/Funkin/pull/2470)
+* @JugieNoob made their first contribution in [#2466](https://github.com/FunkinCrew/Funkin/pull/2466)
+* @MadBear422 made their first contribution in [#2370](https://github.com/FunkinCrew/Funkin/pull/2370)
+* @ImCodist made their first contribution in [#2309](https://github.com/FunkinCrew/Funkin/pull/2309)
+* @TheGaloXx made their first contribution in [#2300](https://github.com/FunkinCrew/Funkin/pull/2300)
+* @nebulazorua made their first contribution in [#2323](https://github.com/FunkinCrew/Funkin/pull/2323)
+
 
 ## [0.3.2] - 2024-05-03
 ### Added
