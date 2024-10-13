@@ -157,7 +157,7 @@ class RegistryMacro
 
   static function buildCreateScriptedEntryField(entryCls:ClassType, scriptedEntryCls:ClassType):Field
   {
-    var scriptedStrExpr = '${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}.init(clsName, null)';
+    var scriptedStrExpr = '${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}.init(clsName, \'unknown\')';
     var scriptedInitExpr = Context.parse(scriptedStrExpr, Context.currentPos());
 
     return {
