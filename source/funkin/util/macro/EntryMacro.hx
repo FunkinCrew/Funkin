@@ -12,63 +12,54 @@ class EntryMacro
   {
     var fields = Context.getBuildFields();
 
-    var cls = Context.getLocalClass().get();
-
-    var registryCls = MacroUtil.getClassTypeFromExpr(registryExpr);
-
-    fields.push(build_fetchDataField(registryExpr));
+    fields = fields.concat(buildRegistryInstanceField(registryExpr));
 
     return fields;
   }
 
   #if macro
-  static function build_fetchDataField(registryExpr:ExprOf<Class<Dynamic>>):Field
+  static function buildRegistryInstanceField(registryExpr:ExprOf<Class<Dynamic>>):Array<Field>
   {
-    return {
-      name: '_fetchData',
-      access: [Access.APrivate],
-      kind: FieldType.FFun(
-        {
-          args: [
-            {
-              name: 'id',
-              type: (macro :String)
-            }
-          ],
-          expr: macro
-          {
-            var result = ${registryExpr}.instance.parseEntryDataWithMigration(id, ${registryExpr}.instance.fetchEntryVersion(id));
+    var fields = [];
 
-            if (result == null)
-            {
-              throw 'Could not parse note style data for id: ' + id;
-            }
-            else
-            {
-              return result;
-            }
-          },
-          params: [],
-          ret: (macro :funkin.data.notestyle.NoteStyleData)
-        }),
-      pos: Context.currentPos()
-    };
+    var registryCls = MacroUtil.getClassTypeFromExpr(registryExpr);
 
-    /**
-      *   static function _fetchData(id:String):NoteStyleData
+    fields.push(
       {
-        var result = NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
+        name: 'registryInstance',
+        access: [Access.APrivate, Access.AStatic],
+        kind: FieldType.FProp("get", "never", ComplexType.TPath(
+          {
+            pack: registryCls.pack,
+            name: registryCls.name,
+            params: []
+          })),
+        pos: Context.currentPos()
+      });
 
-        if (result == null)
-        {
-          throw 'Could not parse note style data for id: $id';
-        }
-        else
-        {
-          return result;
-        }
-      }
-     */
+    fields.push(
+      {
+        name: 'get_registryInstance',
+        access: [Access.APrivate, Access.AStatic],
+        kind: FFun(
+          {
+            args: [],
+            expr: macro
+            {
+              return ${registryExpr}.instance;
+            },
+            params: [],
+            ret: ComplexType.TPath(
+              {
+                pack: registryCls.pack,
+                name: registryCls.name,
+                params: []
+              })
+          }),
+        pos: Context.currentPos()
+      });
+
+    return fields;
   }
   #end
 }
