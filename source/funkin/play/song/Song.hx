@@ -66,19 +66,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 
-  /**
-   * The internal ID of the song.
-   */
-  public final id:String;
-
-  /**
-   * Song metadata as parsed from the JSON file.
-   * This is the data for the `default` variation specifically,
-   * and is needed for the IRegistryEntry interface.
-   * Will only be null if the song data could not be loaded.
-   */
-  public final _data:Null<SongMetadata>;
-
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
 
