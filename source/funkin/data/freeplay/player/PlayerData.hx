@@ -106,6 +106,10 @@ class PlayerFreeplayDJData
   @:default("PROTECT YO NUTS")
   var text3:String;
 
+  @:optional
+  @:default('BackingCard')
+  public var backcardClassName:String = 'BackingCard';
+
   @:jignored
   var animationMap:Map<String, AnimationData>;
 

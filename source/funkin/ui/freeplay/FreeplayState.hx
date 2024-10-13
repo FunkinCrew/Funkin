@@ -54,6 +54,7 @@ import funkin.util.SortUtil;
 import openfl.display.BlendMode;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongData.SongMusicData;
+import funkin.util.macro.ClassMacro;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -221,16 +222,40 @@ class FreeplayState extends MusicBeatSubState
 
     if (stickers?.members != null) stickerSubState = stickers;
 
-    switch (currentCharacterId)
+    if (PlayerRegistry.instance.hasNewCharacter())
     {
-      case(PlayerRegistry.instance.hasNewCharacter()) => true:
-        backingCard = new NewCharacterCard(currentCharacter);
-      case 'bf':
-        backingCard = new BoyfriendCard(currentCharacter);
-      case 'pico':
-        backingCard = new PicoCard(currentCharacter);
-      default:
-        backingCard = new BackingCard(currentCharacter);
+      backingCard = new NewCharacterCard(currentCharacter);
+    }
+    else
+    {
+      for (className in ScriptedBackingCard.listScriptClasses())
+      {
+        if (className == currentCharacter.getBackcardClassName())
+        {
+          backingCard = ScriptedBackingCard.init(className, currentCharacter, null);
+          break;
+        }
+      }
+
+      if (backingCard == null)
+      {
+        for (cls in ClassMacro.listClassesInPackage('funkin.ui.freeplay.backcards'))
+        {
+          if (cls == null) continue;
+          var className:String = Type.getClassName(cls).split('.')?.pop() ?? '';
+
+          if (className == currentCharacter.getBackcardClassName())
+          {
+            backingCard = Type.createInstance(cls, [currentCharacter, null]);
+            break;
+          }
+        }
+      }
+    }
+
+    if (backingCard == null)
+    {
+      backingCard = new BackingCard(currentCharacter, null);
     }
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
@@ -327,7 +352,7 @@ class FreeplayState extends MusicBeatSubState
     if (backingCard != null)
     {
       add(backingCard);
-      backingCard.init();
+      backingCard.initCard();
       backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
       backingCard.instance = this;
     }

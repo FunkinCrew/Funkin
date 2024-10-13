@@ -131,7 +131,7 @@ class BackingCard extends FlxSpriteGroup
   /**
    * Called in create. Adds sprites and tweens.
    */
-  public function init():Void
+  public function initCard():Void
   {
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
