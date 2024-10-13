@@ -19,16 +19,28 @@ class RegistryMacro
     var jsonCls = typeParams.jsonCls;
     var scriptedEntryCls = getScriptedEntryClass(entryCls);
 
-    fields = fields.concat(buildInstanceField(cls));
+    buildInstanceField(cls, fields);
 
-    fields.push(buildGetScriptedClassNamesField(scriptedEntryCls));
+    buildGetScriptedClassNamesField(scriptedEntryCls, fields);
 
-    fields.push(buildCreateScriptedEntryField(entryCls, scriptedEntryCls));
+    buildCreateScriptedEntryField(entryCls, scriptedEntryCls, fields);
 
     return fields;
   }
 
   #if macro
+  static function shouldBuildField(name:String, fields:Array<Field>):Bool
+  {
+    for (field in fields)
+    {
+      if (field.name == name)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
   static function getTypeParams(cls:ClassType):RegistryTypeParams
   {
     switch (cls.superClass.t.get().kind)
@@ -65,9 +77,12 @@ class RegistryMacro
     };
   }
 
-  static function buildInstanceField(cls:ClassType):Array<Field>
+  static function buildInstanceField(cls:ClassType, fields:Array<Field>):Void
   {
-    var fields = [];
+    if (!shouldBuildField('instasnce', fields))
+    {
+      return;
+    }
 
     fields.push(
       {
@@ -130,67 +145,77 @@ class RegistryMacro
           }),
         pos: Context.currentPos()
       });
-
-    return fields;
   }
 
-  static function buildGetScriptedClassNamesField(scriptedEntryCls:ClassType):Field
+  static function buildGetScriptedClassNamesField(scriptedEntryCls:ClassType, fields:Array<Field>):Void
   {
+    if (!shouldBuildField('getScriptedClassNames', fields))
+    {
+      return;
+    }
+
     var scriptedEntryExpr = Context.parse('${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}', Context.currentPos());
 
-    return {
-      name: 'getScriptedClassNames',
-      access: [Access.APrivate],
-      kind: FieldType.FFun(
-        {
-          args: [],
-          expr: macro
+    fields.push(
+      {
+        name: 'getScriptedClassNames',
+        access: [Access.APrivate],
+        kind: FieldType.FFun(
           {
-            return ${scriptedEntryExpr}.listScriptClasses();
-          },
-          params: [],
-          ret: (macro :Array<String>)
-        }),
-      pos: Context.currentPos()
-    };
+            args: [],
+            expr: macro
+            {
+              return ${scriptedEntryExpr}.listScriptClasses();
+            },
+            params: [],
+            ret: (macro :Array<String>)
+          }),
+        pos: Context.currentPos()
+      });
   }
 
-  static function buildCreateScriptedEntryField(entryCls:ClassType, scriptedEntryCls:ClassType):Field
+  static function buildCreateScriptedEntryField(entryCls:ClassType, scriptedEntryCls:ClassType, fields:Array<Field>):Void
   {
+    if (!shouldBuildField('createScriptedEntry', fields))
+    {
+      return;
+    }
+
     var scriptedStrExpr = '${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}.init(clsName, \'unknown\')';
     var scriptedInitExpr = Context.parse(scriptedStrExpr, Context.currentPos());
 
-    return {
-      name: 'createScriptedEntry',
-      access: [Access.APrivate],
-      kind: FieldType.FFun(
-        {
-          args: [
-            {
-              name: 'clsName',
-              type: (macro :String)
-            }
-          ],
-          expr: macro
+    fields.push(
+      {
+        name: 'createScriptedEntry',
+        access: [Access.APrivate],
+        kind: FieldType.FFun(
           {
-            return ${scriptedInitExpr};
-          },
-          params: [],
-          ret: ComplexType.TPath(
+            args: [
+              {
+                name: 'clsName',
+                type: (macro :String)
+              }
+            ],
+            expr: macro
             {
-              pack: [],
-              name: 'Null',
-              params: [
-                TypeParam.TPType(ComplexType.TPath(
-                  {
-                    pack: entryCls.pack,
-                    name: entryCls.name
-                  }))
-              ]
-            })
-        }),
-      pos: Context.currentPos()
-    };
+              return ${scriptedInitExpr};
+            },
+            params: [],
+            ret: ComplexType.TPath(
+              {
+                pack: [],
+                name: 'Null',
+                params: [
+                  TypeParam.TPType(ComplexType.TPath(
+                    {
+                      pack: entryCls.pack,
+                      name: entryCls.name
+                    }))
+                ]
+              })
+          }),
+        pos: Context.currentPos()
+      });
   }
   #end
 }
