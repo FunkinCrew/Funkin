@@ -4,6 +4,7 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notestyle.ScriptedNoteStyle;
 import funkin.data.notestyle.NoteStyleData;
 
+@:build(funkin.util.macro.RegistryMacro.build())
 class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 {
   /**
@@ -15,14 +16,13 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 
   public static final NOTE_STYLE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.1.x";
 
-  public static var instance(get, never):NoteStyleRegistry;
-  static var _instance:Null<NoteStyleRegistry> = null;
-
-  static function get_instance():NoteStyleRegistry
-  {
-    if (_instance == null) _instance = new NoteStyleRegistry();
-    return _instance;
-  }
+  // public static var instance(get, never):NoteStyleRegistry;
+  // static var _instance:Null<NoteStyleRegistry> = null;
+  // static function get_instance():NoteStyleRegistry
+  // {
+  //   if (_instance == null) _instance = new NoteStyleRegistry();
+  //   return _instance;
+  // }
 
   public function new()
   {
@@ -81,13 +81,12 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
     return parser.value;
   }
 
-  function createScriptedEntry(clsName:String):NoteStyle
-  {
-    return ScriptedNoteStyle.init(clsName, "unknown");
-  }
-
-  function getScriptedClassNames():Array<String>
-  {
-    return ScriptedNoteStyle.listScriptClasses();
-  }
+  // function createScriptedEntry(clsName:String):NoteStyle
+  // {
+  //   return ScriptedNoteStyle.init(clsName, "unknown");
+  // }
+  // function getScriptedClassNames():Array<String>
+  // {
+  //   return ScriptedNoteStyle.listScriptClasses();
+  // }
 }
