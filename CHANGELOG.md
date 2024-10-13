@@ -254,6 +254,11 @@ which would remove their rank if they had a lower one.
 - Improved offsets for Pico and Tankman opponents so they don't slide around as much.
 - Fixed the black "temp" graphic on freeplay from being incorrectly sized / masked, now it's identical to the dad freeplay graphic
 
+## New Contributors for 0.4.1
+* @DMMaster636 made their first contribution in [#2709](https://github.com/FunkinCrew/Funkin/pull/2709)
+* @Hundrec made their first contribution in [#2683](https://github.com/FunkinCrew/Funkin/pull/2683)
+
+
 ## [0.4.0] - 2024-06-06
 ### Added
 - 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
@@ -262,7 +267,7 @@ which would remove their rank if they had a lower one.
   - Freeplay now plays a preview of songs when you hover over them.
 - Added a Charter field to the chart format, to allow for crediting the creator of a level's chart.
   - You can see who charted a song from the Pause menu.
-- Added a new Scroll Speed chart event to change the note speed mid-song (thanks Burgerballs!)
+- Added a new Scroll Speed chart event to change the note speed mid-song ([thanks Burgerballs!](https://github.com/FunkinCrew/Funkin/pull/2409))
 ### Changed
 - Tweaked the charts for several songs:
   - Tutorial (increased the note speed slightly)
@@ -279,34 +284,43 @@ which would remove their rank if they had a lower one.
 - Favorite songs marked in Freeplay are now stored between sessions.
 - The Freeplay easter eggs are now easier to see.
 - In the event that the game cannot load your save data, it will now perform a backup before clearing it, so that we can try to repair it in the future.
-- Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. (thanks Keoiki!)
-- Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. (thanks gamerbross!)
+- Custom note styles are now properly supported for songs; add new notestyles via JSON, then select it for use from the Chart Editor Metadata toolbox. ([thanks Keoiki!](https://github.com/FunkinCrew/Funkin/pull/2581))
+- Health icons now support a Winning frame without requiring a spritesheet, simply include a third frame in the icon file. ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2593))
   - Remember that for more complex behaviors such as animations or transitions, you should use an XML file to define each frame.
 - Improved the Event Toolbox in the Chart Editor; dropdowns are now bigger, include search field, and display elements in alphabetical order rather than a random order.
 ### Fixed
 - Fixed an issue where Nene's visualizer would not play on Desktop builds
 - Fixed a bug where the game would silently fail to load saves on HTML5
 - Fixed some bugs with the props on the Story Menu not bopping properly
-- Additional fixes to the Loading bar on HTML5 (thanks lemz1!)
-- Fixed several bugs with the TitleState, including missing music when returning from the Main Menu (thanks gamerbross!)
-- Fixed a camera bug in the Main Menu (thanks richTrash21!)
-- Fixed a bug where changing difficulties in Story mode wouldn't update the score (thanks sectorA!)
-- Fixed a crash in Freeplay caused by a level referencing an invalid song (thanks gamerbross!)
-- Fixed a bug where pressing the volume keys would stop the Toy commercial (thanks gamerbross!)
-- Fixed a bug where the Chart Editor Playtest would crash when losing (thanks gamerbross!)
-- Fixed a bug where hold notes would display improperly in the Chart Editor when downscroll was enabled for gameplay (thanks gamerbross!)
-- Fixed a bug where hold notes would be positioned wrong on downscroll (thanks MaybeMaru!)
-- Removed a large number of unused imports to optimize builds (thanks Ethan-makes-music!)
-- Improved debug logging for unscripted stages (thanks gamerbross!)
+- Additional fixes to the Loading bar on HTML5 ([thanks lemz1!](https://github.com/FunkinCrew/Funkin/pull/2553))
+- Fixed several bugs with the TitleState, including missing music when returning from the Main Menu ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2539))
+- Fixed a camera bug in the Main Menu ([thanks richTrash21!](https://github.com/FunkinCrew/Funkin/pull/2576))
+- Fixed a bug where changing difficulties in Story mode wouldn't update the score ([thanks sector-a!](https://github.com/FunkinCrew/Funkin/pull/2585))
+- Fixed a crash in Freeplay caused by a level referencing an invalid song ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2457))
+- Fixed a bug where pressing the volume keys would stop the Toy commercial ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2540))
+- Fixed a bug where the Chart Editor Playtest would crash when losing ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2518))
+- Fixed a bug where hold notes would display improperly in the Chart Editor when downscroll was enabled for gameplay ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2565))
+- Fixed a bug where hold notes would be positioned wrong on downscroll ([thanks MaybeMaru!](https://github.com/FunkinCrew/Funkin/pull/2488))
+- Removed a large number of unused imports to optimize builds ([thanks Ethan-makes-music!](https://github.com/FunkinCrew/Funkin/pull/2624))
+- Improved debug logging for unscripted stages ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2603))
+- Fixed a crash on Linux caused by an old version of hxCodec ([thanks Noobz4Life!](https://github.com/FunkinCrew/Funkin/pull/2472))
+- Optimized animation handling for characters ([thanks richTrash21!](https://github.com/FunkinCrew/Funkin/pull/2493))  
 - Made improvements to compiling documentation (thanks gedehari!)
-- Fixed a crash on Linux caused by an old version of hxCodec (thanks Noobz4Life!)
-- Optimized animation handling for characters (thanks richTrash21!)
-- Made improvements to compiling documentation (thanks gedehari!)
-- Fixed an issue where the Chart Editor would use an incorrect instrumental on imported Legacy songs (thanks gamerbross!)
-- Fixed a camera bug in the Main Menu (thanks richTrash21!)
-- Fixed a bug where opening the game from the command line would crash the preloader (thanks NotHyper-474!)
-- Fixed a bug where characters would sometimes use the wrong scale value (thanks PurSnake!)
+- Fixed an issue where the Chart Editor would use an incorrect instrumental on imported Legacy songs ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2604))
+- Fixed a bug where opening the game from the command line would crash the preloader ([thanks NotHyper-474!](https://github.com/FunkinCrew/Funkin/pull/2629))
+- Fixed a bug where characters would sometimes use the wrong scale value ([thanks PurSnake!](https://github.com/FunkinCrew/Funkin/pull/2610))
 - Additional bug fixes and optimizations.
+
+## New Contributors for 0.4.0
+* @Keoiki made their first contribution in [#2581](https://github.com/FunkinCrew/Funkin/pull/2581)
+* @richTrash21 made their first contribution in [#2493](https://github.com/FunkinCrew/Funkin/pull/2493)
+* @sector-a made their first contribution in [#2585](https://github.com/FunkinCrew/Funkin/pull/2585)
+* @MaybeMaru made their first contribution in [#2488](https://github.com/FunkinCrew/Funkin/pull/2488)
+* @Ethan-makes-music made their first contribution in [#2624](https://github.com/FunkinCrew/Funkin/pull/2624)
+* @Noobz4Life made their first contribution in [#2472](https://github.com/FunkinCrew/Funkin/pull/2472)
+* @NotHyper-474 made their first contribution in [#2629](https://github.com/FunkinCrew/Funkin/pull/2629)
+* @PurSnake made their first contribution in [#2610](https://github.com/FunkinCrew/Funkin/pull/2610)
+
 
 ## [0.3.3] - 2024-05-14
 ### Changed
