@@ -16,6 +16,10 @@ class EntryMacro
 
     var entryData = getEntryData(cls);
 
+    fields.push(buildIdField());
+
+    fields.push(build_dataField(entryData));
+
     fields = fields.concat(buildRegistryInstanceField(registryExpr));
 
     fields.push(build_fetchDataField(entryData, registryExpr));
@@ -35,6 +39,37 @@ class EntryMacro
       default:
         throw 'Entry Data is not a class or typedef';
     }
+  }
+
+  static function buildIdField():Field
+  {
+    return {
+      name: 'id',
+      access: [Access.APublic, Access.AFinal],
+      kind: FieldType.FVar((macro :String)),
+      pos: Context.currentPos()
+    };
+  }
+
+  static function build_dataField(entryData:Dynamic):Field
+  {
+    return {
+      name: '_data',
+      access: [Access.APublic, Access.AFinal],
+      kind: FieldType.FVar(ComplexType.TPath(
+        {
+          pack: [],
+          name: 'Null',
+          params: [
+            TypeParam.TPType(ComplexType.TPath(
+              {
+                pack: entryData.pack,
+                name: entryData.name
+              }))
+          ]
+        })),
+      pos: Context.currentPos()
+    };
   }
 
   static function buildRegistryInstanceField(registryExpr:ExprOf<Class<Dynamic>>):Array<Field>
