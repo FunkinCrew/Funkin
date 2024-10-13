@@ -18,6 +18,7 @@ using funkin.data.animation.AnimationData.AnimationDataUtil;
  * and provides convenience methods for building sprites based on them.
  */
 @:nullSafety
+@:build(funkin.util.macro.EntryMacro.build(funkin.data.notestyle.NoteStyleRegistry))
 class NoteStyle implements IRegistryEntry<NoteStyleData>
 {
   /**
@@ -36,9 +37,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
    */
   var fallback(get, never):Null<NoteStyle>;
 
-  function get_fallback():Null<NoteStyle> {
+  function get_fallback():Null<NoteStyle>
+  {
     if (_data == null || _data.fallback == null) return null;
-    return NoteStyleRegistry.instance.fetchEntry(_data.fallback);
+    return null;
+    // return NoteStyleRegistry.instance.fetchEntry(_data.fallback);
   }
 
   /**
@@ -887,17 +890,16 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return 'NoteStyle($id)';
   }
 
-  static function _fetchData(id:String):NoteStyleData
-  {
-    var result = NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
-
-    if (result == null)
-    {
-      throw 'Could not parse note style data for id: $id';
-    }
-    else
-    {
-      return result;
-    }
-  }
+  // static function _fetchData(id:String):NoteStyleData
+  // {
+  //   var result = NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
+  //   if (result == null)
+  //   {
+  //     throw 'Could not parse note style data for id: $id';
+  //   }
+  //   else
+  //   {
+  //     return result;
+  //   }
+  // }
 }
