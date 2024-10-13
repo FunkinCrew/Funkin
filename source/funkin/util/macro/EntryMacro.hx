@@ -16,18 +16,30 @@ class EntryMacro
 
     var entryData = getEntryData(cls);
 
-    fields.push(buildIdField());
+    buildIdField(fields);
 
-    fields.push(build_dataField(entryData));
+    build_dataField(entryData, fields);
 
-    fields = fields.concat(buildRegistryInstanceField(registryExpr));
+    buildRegistryInstanceField(registryExpr, fields);
 
-    fields.push(build_fetchDataField(entryData, registryExpr));
+    build_fetchDataField(entryData, registryExpr, fields);
 
     return fields;
   }
 
   #if macro
+  static function shouldBuildField(name:String, fields:Array<Field>):Bool
+  {
+    for (field in fields)
+    {
+      if (field.name == name)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
   static function getEntryData(cls:ClassType):Dynamic // DefType or ClassType
   {
     switch (cls.interfaces[0].params[0])
@@ -41,40 +53,55 @@ class EntryMacro
     }
   }
 
-  static function buildIdField():Field
+  static function buildIdField(fields:Array<Field>):Void
   {
-    return {
-      name: 'id',
-      access: [Access.APublic, Access.AFinal],
-      kind: FieldType.FVar((macro :String)),
-      pos: Context.currentPos()
-    };
+    if (!shouldBuildField('id', fields))
+    {
+      return;
+    }
+
+    fields.push(
+      {
+        name: 'id',
+        access: [Access.APublic, Access.AFinal],
+        kind: FieldType.FVar((macro :String)),
+        pos: Context.currentPos()
+      });
   }
 
-  static function build_dataField(entryData:Dynamic):Field
+  static function build_dataField(entryData:Dynamic, fields:Array<Field>):Void
   {
-    return {
-      name: '_data',
-      access: [Access.APublic, Access.AFinal],
-      kind: FieldType.FVar(ComplexType.TPath(
-        {
-          pack: [],
-          name: 'Null',
-          params: [
-            TypeParam.TPType(ComplexType.TPath(
-              {
-                pack: entryData.pack,
-                name: entryData.name
-              }))
-          ]
-        })),
-      pos: Context.currentPos()
-    };
+    if (!shouldBuildField('_data', fields))
+    {
+      return;
+    }
+
+    fields.push(
+      {
+        name: '_data',
+        access: [Access.APublic, Access.AFinal],
+        kind: FieldType.FVar(ComplexType.TPath(
+          {
+            pack: [],
+            name: 'Null',
+            params: [
+              TypeParam.TPType(ComplexType.TPath(
+                {
+                  pack: entryData.pack,
+                  name: entryData.name
+                }))
+            ]
+          })),
+        pos: Context.currentPos()
+      });
   }
 
-  static function buildRegistryInstanceField(registryExpr:ExprOf<Class<Dynamic>>):Array<Field>
+  static function buildRegistryInstanceField(registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
   {
-    var fields = [];
+    if (!shouldBuildField('registryInstance', fields))
+    {
+      return;
+    }
 
     var registryCls = MacroUtil.getClassTypeFromExpr(registryExpr);
 
@@ -112,43 +139,47 @@ class EntryMacro
           }),
         pos: Context.currentPos()
       });
-
-    return fields;
   }
 
-  static function build_fetchDataField(entryData:Dynamic, registryExpr:ExprOf<Class<Dynamic>>):Field
+  static function build_fetchDataField(entryData:Dynamic, registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
   {
-    return {
-      name: '_fetchData',
-      access: [Access.AStatic, Access.APrivate],
-      kind: FieldType.FFun(
-        {
-          args: [
-            {
-              name: 'id',
-              type: (macro :String)
-            }
-          ],
-          expr: macro
+    if (!shouldBuildField('_fetchData', fields))
+    {
+      return;
+    }
+
+    fields.push(
+      {
+        name: '_fetchData',
+        access: [Access.AStatic, Access.APrivate],
+        kind: FieldType.FFun(
           {
-            return ${registryExpr}.instance.parseEntryDataWithMigration(id, ${registryExpr}.instance.fetchEntryVersion(id));
-          },
-          params: [],
-          ret: ComplexType.TPath(
+            args: [
+              {
+                name: 'id',
+                type: (macro :String)
+              }
+            ],
+            expr: macro
             {
-              pack: [],
-              name: 'Null',
-              params: [
-                TypeParam.TPType(ComplexType.TPath(
-                  {
-                    pack: entryData.pack,
-                    name: entryData.name
-                  }))
-              ]
-            })
-        }),
-      pos: Context.currentPos()
-    };
+              return ${registryExpr}.instance.parseEntryDataWithMigration(id, ${registryExpr}.instance.fetchEntryVersion(id));
+            },
+            params: [],
+            ret: ComplexType.TPath(
+              {
+                pack: [],
+                name: 'Null',
+                params: [
+                  TypeParam.TPType(ComplexType.TPath(
+                    {
+                      pack: entryData.pack,
+                      name: entryData.name
+                    }))
+                ]
+              })
+          }),
+        pos: Context.currentPos()
+      });
   }
   #end
 }

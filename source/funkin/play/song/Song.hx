@@ -661,6 +661,14 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function onUpdate(event:UpdateScriptEvent):Void {};
 
+  static function _fetchData(id:String):Null<SongMetadata>
+  {
+    trace('Fetching song metadata for $id');
+    var version:Null<thx.semver.Version> = registryInstance.fetchEntryMetadataVersion(id);
+    if (version == null) return null;
+    return registryInstance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
+  }
+
   function fetchVariationMetadata(id:String, vari:String):Null<SongMetadata>
   {
     var version:Null<thx.semver.Version> = registryInstance.fetchEntryMetadataVersion(id, vari);
