@@ -28,6 +28,7 @@ import funkin.util.SortUtil;
  * can be used to perform custom gameplay behaviors only on specific songs.
  */
 @:nullSafety
+@:build(funkin.util.macro.EntryMacro.build(funkin.data.song.SongRegistry))
 class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMetadata>
 {
   /**
@@ -209,17 +210,17 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     @:privateAccess
     var result:Null<Song>;
 
-    if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
+    if (includeScript && registryInstance.isScriptedEntry(songId))
     {
-      var songClassName:String = SongRegistry.instance.getScriptedEntryClassName(songId);
+      var songClassName:String = registryInstance.getScriptedEntryClassName(songId);
 
       @:privateAccess
-      result = SongRegistry.instance.createScriptedEntry(songClassName);
+      result = registryInstance.createScriptedEntry(songClassName);
     }
     else
     {
       @:privateAccess
-      result = SongRegistry.instance.createEntry(songId);
+      result = registryInstance.createEntry(songId);
     }
 
     if (result == null) throw 'ERROR: Could not build Song instance ($songId), is the attached script bad?';
@@ -356,9 +357,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     trace('Caching ${variations.length} chart files for song $id');
     for (variation in variations)
     {
-      var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryChartVersion(id, variation);
+      var version:Null<thx.semver.Version> = registryInstance.fetchEntryChartVersion(id, variation);
       if (version == null) continue;
-      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, variation, version);
+      var chart:Null<SongChartData> = registryInstance.parseEntryChartDataWithMigration(id, variation, version);
       if (chart == null) continue;
       applyChartData(chart, variation);
     }
@@ -673,19 +674,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function onUpdate(event:UpdateScriptEvent):Void {};
 
-  static function _fetchData(id:String):Null<SongMetadata>
-  {
-    trace('Fetching song metadata for $id');
-    var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id);
-    if (version == null) return null;
-    return SongRegistry.instance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
-  }
-
   function fetchVariationMetadata(id:String, vari:String):Null<SongMetadata>
   {
-    var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id, vari);
+    var version:Null<thx.semver.Version> = registryInstance.fetchEntryMetadataVersion(id, vari);
     if (version == null) return null;
-    var meta:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataWithMigration(id, vari, version);
+    var meta:Null<SongMetadata> = registryInstance.parseEntryMetadataWithMigration(id, vari, version);
     return meta;
   }
 
