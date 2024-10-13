@@ -13,6 +13,7 @@ import funkin.util.VersionUtil;
 using funkin.data.song.migrator.SongDataMigrator;
 
 @:nullSafety
+@:build(funkin.util.macro.RegistryMacro.build())
 class SongRegistry extends BaseRegistry<Song, SongMetadata>
 {
   /**
