@@ -107,6 +107,8 @@ class ChartEditorImportExportHandler
 
     state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
 
+    state._selectedSongId = songId;
+
     trace('===============END');
   }
 
@@ -312,6 +314,9 @@ class ChartEditorImportExportHandler
     loadSong(state, songMetadatas, songChartDatas);
 
     state.switchToCurrentInstrumental();
+
+    // Infer the song ID from the metadata song name to let the user edit the song ID
+    state._selectedSongId = null;
 
     return warnings;
   }
