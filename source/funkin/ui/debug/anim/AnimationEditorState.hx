@@ -72,7 +72,7 @@ class AnimationEditorState extends MusicBeatState
   function get_haxeUIFocused():Bool
   {
     // get the screen position, according to the HUD camera, temp default to FlxG.camera juuust in case?
-    var hudMousePos:FlxPoint = FlxG.mouse.getScreenPosition(hudCam ?? FlxG.camera);
+    var hudMousePos:FlxPoint = FlxG.mouse.getViewPosition(hudCam ?? FlxG.camera);
     return Screen.instance.hasSolidComponentUnderPoint(hudMousePos.x, hudMousePos.y);
   }
 
