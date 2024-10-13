@@ -100,7 +100,7 @@ class BoyfriendCard extends BackingCard
     funnyScroll3 = new BGScrollingText(0, orangeBackShit.y + 10, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, 60);
   }
 
-  public override function init():Void
+  public override function initCard():Void
   {
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);

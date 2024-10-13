@@ -158,6 +158,14 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
   }
 
   /**
+   * Returns the Class that Freeplay should use for the backing card.
+   */
+  public function getBackcardClassName():String
+  {
+    return _data?.freeplayDJ?.backcardClassName ?? 'BackingCard';
+  }
+
+  /**
    * Called when the character is destroyed.
    * TODO: Document when this gets called
    */
