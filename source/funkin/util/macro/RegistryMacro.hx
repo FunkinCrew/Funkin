@@ -25,6 +25,10 @@ class RegistryMacro
 
     buildCreateScriptedEntryField(entryCls, scriptedEntryCls, fields);
 
+    buildParseEntryDataField(jsonCls, fields);
+
+    buildParseEntryDataRawField(jsonCls, fields);
+
     return fields;
   }
 
@@ -79,7 +83,7 @@ class RegistryMacro
 
   static function buildInstanceField(cls:ClassType, fields:Array<Field>):Void
   {
-    if (!shouldBuildField('instasnce', fields))
+    if (!shouldBuildField('instance', fields))
     {
       return;
     }
@@ -210,6 +214,124 @@ class RegistryMacro
                     {
                       pack: entryCls.pack,
                       name: entryCls.name
+                    }))
+                ]
+              })
+          }),
+        pos: Context.currentPos()
+      });
+  }
+
+  static function buildParseEntryDataField(jsonCls:Dynamic, fields:Array<Field>):Void
+  {
+    if (!shouldBuildField('parseEntryData', fields))
+    {
+      return;
+    }
+
+    var jsonParserNewStrExpr = 'new json2object.JsonParser<${jsonCls.pack.join('.')}.${jsonCls.name}>()';
+    var jsonParserNewExpr = Context.parse(jsonParserNewStrExpr, Context.currentPos());
+
+    fields.push(
+      {
+        name: 'parseEntryData',
+        access: [Access.APublic],
+        kind: FieldType.FFun(
+          {
+            args: [
+              {
+                name: 'id',
+                type: (macro :String)
+              }
+            ],
+            expr: macro
+            {
+              var parser = ${jsonParserNewExpr};
+              parser.ignoreUnknownVariables = false;
+
+              switch (loadEntryFile(id))
+              {
+                case {fileName: fileName, contents: contents}:
+                  parser.fromJson(contents, fileName);
+                default:
+                  return null;
+              }
+
+              if (parser.errors.length > 0)
+              {
+                printErrors(parser.errors, id);
+                return null;
+              }
+              return parser.value;
+            },
+            params: [],
+            ret: ComplexType.TPath(
+              {
+                pack: [],
+                name: 'Null',
+                params: [
+                  TypeParam.TPType(ComplexType.TPath(
+                    {
+                      pack: jsonCls.pack,
+                      name: jsonCls.name
+                    }))
+                ]
+              })
+          }),
+        pos: Context.currentPos()
+      });
+  }
+
+  static function buildParseEntryDataRawField(jsonCls:Dynamic, fields:Array<Field>):Void
+  {
+    if (!shouldBuildField('parseEntryDataRaw', fields))
+    {
+      return;
+    }
+
+    var jsonParserNewStrExpr = 'new json2object.JsonParser<${jsonCls.pack.join('.')}.${jsonCls.name}>()';
+    var jsonParserNewExpr = Context.parse(jsonParserNewStrExpr, Context.currentPos());
+
+    fields.push(
+      {
+        name: 'parseEntryDataRaw',
+        access: [Access.APublic],
+        kind: FieldType.FFun(
+          {
+            args: [
+              {
+                name: 'contents',
+                type: (macro :String)
+              },
+              {
+                name: 'fileName',
+                type: (macro :Null<String>),
+                opt: true
+              }
+            ],
+            expr: macro
+            {
+              var parser = ${jsonParserNewExpr};
+              parser.ignoreUnknownVariables = false;
+              parser.fromJson(contents, fileName);
+
+              if (parser.errors.length > 0)
+              {
+                printErrors(parser.errors, fileName);
+                return null;
+              }
+              return parser.value;
+            },
+            params: [],
+            ret: ComplexType.TPath(
+              {
+                pack: [],
+                name: 'Null',
+                params: [
+                  TypeParam.TPType(ComplexType.TPath(
+                    {
+                      pack: jsonCls.pack,
+                      name: jsonCls.name
                     }))
                 ]
               })
