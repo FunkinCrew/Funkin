@@ -612,13 +612,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
   }
 
-  public function toString():String
-  {
-    return 'Song($id)';
-  }
-
-  public function destroy():Void {}
-
   public function onPause(event:PauseScriptEvent):Void {};
 
   public function onResume(event:ScriptEvent):Void {};
