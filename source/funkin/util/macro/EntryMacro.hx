@@ -26,13 +26,13 @@ class EntryMacro
 
     buildToStringField(cls, fields);
 
-    buildDestroyField(fields);
+    buildDestroyField(cls, fields);
 
     return fields;
   }
 
   #if macro
-  static function shouldBuildField(name:String, fields:Array<Field>):Bool
+  static function shouldBuildField(name:String, fields:Array<Dynamic>):Bool // fields can be Array<Field> or Array<ClassField>
   {
     for (field in fields)
     {
@@ -211,9 +211,9 @@ class EntryMacro
       });
   }
 
-  static function buildDestroyField(fields:Array<Field>):Void
+  static function buildDestroyField(cls:ClassType, fields:Array<Field>):Void
   {
-    if (!shouldBuildField('destroy', fields))
+    if (!shouldBuildField('destroy', fields) || !shouldBuildField('destroy', cls.superClass?.t.get().fields.get() ?? []))
     {
       return;
     }
