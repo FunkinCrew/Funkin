@@ -18,11 +18,15 @@ class EntryMacro
 
     buildIdField(fields);
 
-    build_dataField(entryData, fields);
+    buildDataField(entryData, fields);
 
     buildRegistryInstanceField(registryExpr, fields);
 
-    build_fetchDataField(entryData, registryExpr, fields);
+    buildFetchDataField(entryData, fields);
+
+    buildToStringField(cls, fields);
+
+    buildDestroyField(fields);
 
     return fields;
   }
@@ -69,7 +73,7 @@ class EntryMacro
       });
   }
 
-  static function build_dataField(entryData:Dynamic, fields:Array<Field>):Void
+  static function buildDataField(entryData:Dynamic, fields:Array<Field>):Void
   {
     if (!shouldBuildField('_data', fields))
     {
@@ -141,7 +145,7 @@ class EntryMacro
       });
   }
 
-  static function build_fetchDataField(entryData:Dynamic, registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
+  static function buildFetchDataField(entryData:Dynamic, fields:Array<Field>):Void
   {
     if (!shouldBuildField('_fetchData', fields))
     {
@@ -162,7 +166,7 @@ class EntryMacro
             ],
             expr: macro
             {
-              return ${registryExpr}.instance.parseEntryDataWithMigration(id, ${registryExpr}.instance.fetchEntryVersion(id));
+              return registryInstance.parseEntryDataWithMigration(id, registryInstance.fetchEntryVersion(id));
             },
             params: [],
             ret: ComplexType.TPath(
@@ -177,6 +181,55 @@ class EntryMacro
                     }))
                 ]
               })
+          }),
+        pos: Context.currentPos()
+      });
+  }
+
+  static function buildToStringField(cls:ClassType, fields:Array<Field>):Void
+  {
+    if (!shouldBuildField('toString', fields))
+    {
+      return;
+    }
+
+    fields.push(
+      {
+        name: 'toString',
+        access: [Access.APublic],
+        kind: FieldType.FFun(
+          {
+            args: [],
+            expr: macro
+            {
+              return $v{cls.name} + '(' + id + ')';
+            },
+            params: [],
+            ret: (macro :String)
+          }),
+        pos: Context.currentPos()
+      });
+  }
+
+  static function buildDestroyField(fields:Array<Field>):Void
+  {
+    if (!shouldBuildField('destroy', fields))
+    {
+      return;
+    }
+
+    fields.push(
+      {
+        name: 'destroy',
+        access: [Access.APublic],
+        kind: FieldType.FFun(
+          {
+            args: [],
+            expr: macro
+            {
+              return;
+            },
+            params: []
           }),
         pos: Context.currentPos()
       });
