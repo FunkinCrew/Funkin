@@ -10,6 +10,7 @@ import funkin.play.scoring.Scoring.ScoringRank;
  * Can be scripted to override each function, for custom behavior.
  */
 @:nullSafety
+@:build(funkin.util.macro.EntryMacro.build(funkin.data.freeplay.player.PlayerRegistry))
 class PlayableCharacter implements IRegistryEntry<PlayerData>
 {
   /**
