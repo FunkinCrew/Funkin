@@ -33,7 +33,7 @@ class RegistryMacro
   }
 
   #if macro
-  static function shouldBuildField(name:String, fields:Array<Field>):Bool
+  static function shouldBuildField(name:String, fields:Array<Dynamic>):Bool // fields can be Array<Field> or Array<ClassField>
   {
     for (field in fields)
     {
