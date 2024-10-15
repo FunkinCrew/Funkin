@@ -83,7 +83,8 @@ class AssetDataHandler
     {
       if (data.animations != null && data.animations.length > 0)
       {
-        object.frames = flixel.graphics.frames.FlxAtlasFrames.fromSparrow(finalBitmap, data.xmlData);
+        var bitToLoad = state.addBitmap(data.bitmap.clone());
+        object.frames = flixel.graphics.frames.FlxAtlasFrames.fromSparrow(state.bitmaps[bitToLoad], data.xmlData);
       }
       else if (areTheseBitmapsEqual(data.bitmap, getDefaultGraphic()))
       {
