@@ -1,11 +1,11 @@
-package funkin.ui.debug.charting.util;
+package funkin.data.song;
 
-import funkin.data.song.SongData.SongNoteData;
+using SongData.SongNoteData;
 
 /**
- * Helper class for filtering notes
+ * Utility class for extra handling of song notes
  */
-class NoteDataFilter
+class SongNoteDataUtils
 {
   static final CHUNK_INTERVAL_MS:Float = 2500;
 
@@ -68,6 +68,7 @@ class NoteDataFilter
 
   /**
    * Tries to concatenate two arrays of notes together but skips notes from `notesB` that overlap notes from `noteA`.
+   * This does not modify the original array.
    * @param notesA An array of notes into which `notesB` will be concatenated.
    * @param notesB Another array of notes that will be concated into `notesA`.
    * @param threshold Threshold in ms
@@ -76,7 +77,7 @@ class NoteDataFilter
    */
   public static function concatNoOverlap(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float, modifyB:Bool = false):Array<SongNoteData>
   {
-    // TODO: Maybe these concat functions should be moved to SongNoteDataArrayTools
+    if (notesA == null || notesA.length == 0) return notesB;
     if (notesB == null || notesB.length == 0) return notesA;
 
     var result:Array<SongNoteData> = notesA.copy();
@@ -116,6 +117,7 @@ class NoteDataFilter
 
   /**
    * Concatenates two arrays of notes but overwrites notes in `lhs` that are overlapped by notes from `rhs`.
+   * This does not modify the fist array but does modify the second.
    * @param lhs
    * @param rhs
    * @param threshold Threshold in ms
@@ -125,32 +127,37 @@ class NoteDataFilter
   public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, threshold:Float,
       ?overwrittenNotes:Array<SongNoteData>):Array<SongNoteData>
   {
-    if (rhs == null || rhs.length == 0) return lhs;
+    if (lhs == null || rhs == null || rhs.length == 0) return lhs;
 
     var result = lhs.copy();
-    var addend = rhs.copy();
-    for (noteB in addend)
+    for (i in 0...rhs.length)
     {
-      var overwritten = false;
-      for (i in 0...lhs.length)
+      if (rhs[i] == null) continue;
+
+      var noteB:SongNoteData = rhs[i];
+      var hasOverlap:Bool = false;
+      for (j in 0...lhs.length)
       {
-        var noteA:SongNoteData = lhs[i];
+        var noteA:SongNoteData = lhs[j];
         if (doNotesStack(noteA, noteB, threshold))
         {
           if (noteA.length < noteB.length || !noteEquals(noteA, noteB))
           {
-            overwrittenNotes?.push(result[i].clone());
-            result[i] = noteB;
+            overwrittenNotes?.push(result[j].clone());
+            result[j] = noteB;
+            // Do not resize array with remove() now to not screw with loop
+            rhs[i] = null;
           }
-          // We mark it as overwritten anyway as to not stack notes
-          overwritten = true;
+          hasOverlap = true;
           break;
         }
       }
 
-      // FIXME: Currently the paste command always thinks it has notes to undo because addedNotes (rhs) is never changed in this function.
-      if (!overwritten) result.push(noteB);
+      if (!hasOverlap) result.push(noteB);
     }
+
+    // Now we can safely resize it
+    rhs = rhs.filterNull();
 
     return result;
   }
@@ -159,9 +166,9 @@ class NoteDataFilter
    * @param threshold
    * @return Returns `true` if both notes are on the same strumline, have the same direction and their time difference is less than `threshold`.
    */
-  static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float):Bool
+  public static function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float):Bool
   {
-    return noteA.data == noteB.data && Math.abs(noteA.time - noteB.time) <= threshold;
+    return noteA.data == noteB.data && Math.fceil(Math.abs(noteA.time - noteB.time)) <= threshold;
   }
 
   // This is replacing SongNoteData's equals operator because for some reason its params check is unreliable.

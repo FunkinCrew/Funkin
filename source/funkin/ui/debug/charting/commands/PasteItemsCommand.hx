@@ -4,8 +4,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
-
-using funkin.ui.debug.charting.util.NoteDataFilter;
+import funkin.data.song.SongNoteDataUtils;
 
 /**
  * A command which inserts the contents of the clipboard into the chart editor.
@@ -44,7 +43,7 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concatOverwrite(addedNotes, ChartEditorState.STACK_NOTE_THRESHOLD, removedNotes);
+    state.currentSongChartNoteData = SongDataUtils.addNotes(state.currentSongChartNoteData, addedNotes);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();

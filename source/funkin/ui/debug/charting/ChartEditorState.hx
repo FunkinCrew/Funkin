@@ -37,6 +37,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageData;
 import funkin.graphics.FunkinCamera;
@@ -88,7 +89,6 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
-import funkin.ui.debug.charting.util.NoteDataFilter;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.haxeui.HaxeUIState;
 import funkin.ui.mainmenu.MainMenuState;
@@ -3737,7 +3737,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
 
       // Gather stacked notes to render later
-      var stackedNotes = NoteDataFilter.listStackedNotes(currentSongChartNoteData, STACK_NOTE_THRESHOLD);
+      var stackedNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, STACK_NOTE_THRESHOLD);
 
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.

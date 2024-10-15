@@ -4,6 +4,7 @@ import flixel.util.FlxSort;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.util.ClipboardUtil;
 import funkin.util.SerializerUtil;
 
@@ -79,6 +80,17 @@ class SongDataUtils
     return events.filter(function(event:SongEventData):Bool {
       return event.time >= startTime && event.time <= endTime;
     });
+  }
+
+  /**
+   * Returns a new array which is a concatenation of two arrays of notes while preventing duplicate notes.
+   * NOTE: This modifies the `addend` array.
+   * @param notes The array of notes to be added to.
+   * @param addend The notes to add to the `notes` array.
+   */
+  public inline static function addNotes(notes:Array<SongNoteData>, addend:Array<SongNoteData>):Array<SongNoteData>
+  {
+    return SongNoteDataUtils.concatNoOverlap(notes, addend, ChartEditorState.STACK_NOTE_THRESHOLD, true);
   }
 
   /**
