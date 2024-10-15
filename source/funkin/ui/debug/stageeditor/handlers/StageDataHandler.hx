@@ -292,12 +292,13 @@ class StageDataHandler
     for (objData in data.props)
     {
       var spr = new StageEditorObject();
-      if (!objData.assetPath.startsWith("#")) state.bitmaps.set(objData.assetPath, Assets.getBitmapData(Paths.image(objData.assetPath)));
+      var daName = objData.assetPath.split("/")[objData.assetPath.split("/").length - 1];
+      if (!objData.assetPath.startsWith("#")) state.bitmaps.set(daName, Assets.getBitmapData(Paths.image(objData.assetPath)));
 
       spr.fromData(
         {
           name: objData.name ?? "Unnamed",
-          assetPath: objData.assetPath,
+          assetPath: daName,
           animations: objData.animations.copy(),
           scale: objData.scale,
           position: objData.position,
