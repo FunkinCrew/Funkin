@@ -168,7 +168,7 @@ class SongNoteDataUtils
    */
   public static function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float):Bool
   {
-    return noteA.data == noteB.data && Math.fceil(Math.abs(noteA.time - noteB.time)) <= threshold;
+    return noteA.data == noteB.data && Math.ffloor(Math.abs(noteA.time - noteB.time)) <= threshold;
   }
 
   // This is replacing SongNoteData's equals operator because for some reason its params check is unreliable.
