@@ -4,6 +4,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
+import funkin.data.song.SongNoteDataUtils;
 
 /**
  * A command which inserts the contents of the clipboard into the chart editor.
@@ -13,9 +14,10 @@ import funkin.data.song.SongDataUtils.SongClipboardItems;
 class PasteItemsCommand implements ChartEditorCommand
 {
   var targetTimestamp:Float;
-  // Notes we added with this command, for undo.
+  // Notes we added and removed with this command, for undo.
   var addedNotes:Array<SongNoteData> = [];
   var addedEvents:Array<SongEventData> = [];
+  var removedNotes:Array<SongNoteData> = [];
 
   public function new(targetTimestamp:Float)
   {
@@ -41,7 +43,7 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
+    state.currentSongChartNoteData = SongDataUtils.addNotes(state.currentSongChartNoteData, addedNotes);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
@@ -52,14 +54,16 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    state.success('Paste Successful', 'Successfully pasted clipboard contents.');
+    if (removedNotes.length > 0) state.warning('Paste Successful', 'However overlapped notes were overwritten.');
+    else
+      state.success('Paste Successful', 'Successfully pasted clipboard contents.');
   }
 
   public function undo(state:ChartEditorState):Void
   {
     state.playSound(Paths.sound('chartingSounds/undo'));
 
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes).concat(removedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
@@ -74,7 +78,7 @@ class PasteItemsCommand implements ChartEditorCommand
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
     // This command is undoable. Add to the history if we actually performed an action.
-    return (addedNotes.length > 0 || addedEvents.length > 0);
+    return (addedNotes.length > 0 || addedEvents.length > 0 || removedNotes.length > 0);
   }
 
   public function toString():String

@@ -37,6 +37,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageData;
 import funkin.graphics.FunkinCamera;
@@ -200,6 +201,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The height of the note selection buttons above the grid.
    */
   public static final NOTE_SELECT_BUTTON_HEIGHT:Int = 24;
+
+  /**
+   * How "close" in milliseconds two notes have to be to be considered as stacked.
+   * TODO: This should probably be turned into a customizable value
+   */
+  public static final STACK_NOTE_THRESHOLD:Int = 20;
 
   /**
    * The amount of padding between the menu bar and the chart grid when fully scrolled up.
@@ -2010,9 +2017,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The IMAGE used for the selection squares. Updated by ChartEditorThemeHandler.
-   * Used two ways:
+   * Used three ways:
    * 1. A sprite is given this bitmap and placed over selected notes.
-   * 2. The image is split and used for a 9-slice sprite for the selection box.
+   * 2. Same as above but for notes that are overlapped by another.
+   * 3. The image is split and used for a 9-slice sprite for the selection box.
    */
   var selectionSquareBitmap:Null<BitmapData> = null;
 
@@ -3728,6 +3736,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         member.kill();
       }
 
+      // Gather stacked notes to render later
+      var stackedNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, STACK_NOTE_THRESHOLD);
+
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.
       for (noteSprite in renderedNotes.members)
@@ -3785,9 +3796,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.x = noteSprite.x;
           selectionSquare.y = noteSprite.y;
           selectionSquare.width = GRID_SIZE;
+          selectionSquare.color = FlxColor.WHITE;
 
           var stepLength = noteSprite.noteData.getStepLength();
           selectionSquare.height = (stepLength <= 0) ? GRID_SIZE : ((stepLength + 1) * GRID_SIZE);
+        }
+        // TODO: Move this to a function like isNoteSelected does
+        else if (doesNoteStack(noteSprite.noteData, stackedNotes))
+        {
+          // TODO: Maybe use another way to display these notes
+          var selectionSquare:ChartEditorSelectionSquareSprite = renderedSelectionSquares.recycle(buildSelectionSquare);
+
+          // Set the position and size (because we might be recycling one with bad values).
+          selectionSquare.noteData = noteSprite.noteData;
+          selectionSquare.eventData = null;
+          selectionSquare.x = noteSprite.x;
+          selectionSquare.y = noteSprite.y;
+          selectionSquare.width = selectionSquare.height = GRID_SIZE;
+          selectionSquare.color = FlxColor.RED;
         }
       }
 
@@ -5654,7 +5680,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleHelpKeybinds():Void
   {
     // F1 = Open Help
-    if (FlxG.keys.justPressed.F1 && !isHaxeUIDialogOpen) {
+    if (FlxG.keys.justPressed.F1 && !isHaxeUIDialogOpen)
+    {
       this.openUserGuideDialog();
     }
   }
@@ -6421,6 +6448,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function isNoteSelected(note:Null<SongNoteData>):Bool
   {
     return note != null && currentNoteSelection.indexOf(note) != -1;
+  }
+
+  function doesNoteStack(note:Null<SongNoteData>, curStackedNotes:Array<SongNoteData>):Bool
+  {
+    return note != null && curStackedNotes.contains(note);
   }
 
   override function destroy():Void
