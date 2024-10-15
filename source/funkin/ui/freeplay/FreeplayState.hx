@@ -700,7 +700,7 @@ class FreeplayState extends MusicBeatSubState
       // Gets all available difficulties for our character, via our available variations
       var difficultiesAvailable:Array<String> = song.data.listDifficulties(null, characterVariations);
 
-      return difficultiesAvailable.contains(currentDifficulty);
+      return difficultiesAvailable.contains(rememberedDifficulty);
     });
 
     if (onlyIfChanged)
@@ -1147,6 +1147,9 @@ class FreeplayState extends MusicBeatSubState
 
     // Get this character's transition delay, with a reasonable default.
     var transitionDelay:Float = currentCharacter.getFreeplayDJData()?.getCharSelectTransitionDelay() ?? 0.25;
+
+    // Setting this to default because of the case of selecting Erect/Nightmare then changing the character to Pico, who does not have those difficulties.
+    rememberedDifficulty = Constants.DEFAULT_DIFFICULTY;
 
     new FlxTimer().start(transitionDelay, _ -> {
       transitionToCharSelect();
