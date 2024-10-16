@@ -40,9 +40,8 @@ class PreferencesMenu extends Page
     if (items != null) camFollow.y = items.selectedItem.y;
 
     menuCamera.follow(camFollow, null, 0.06);
-    var margin = 160;
-    menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
-    menuCamera.minScrollY = 0;
+    var margin = 100;
+    menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
 
     items.onChange.add(function(selected) {
       camFollow.y = selected.y;

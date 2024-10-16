@@ -163,7 +163,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     menuCamera.follow(camFollow, null, 0.06);
     var margin = 100;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
-    menuCamera.minScrollY = 0;
+
     controlGrid.onChange.add(function(selected) {
       camFollow.y = selected.y;
 
@@ -171,9 +171,9 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
       labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
     });
 
-    prompt = new Prompt("\nPress any key to rebind\n\n\nBackspace to unbind\n    Escape to cancel", None);
+    prompt = new Prompt("\nPress any key to rebind\n\n\n  Backspace to unbind\n    Escape to cancel", None);
     prompt.create();
-    prompt.createBgFromMargin(100, 0xFFfafd6d);
+    prompt.createBgFromMargin(75, 0xFFfafd6d);
     prompt.back.scrollFactor.set(0, 0);
     prompt.exists = false;
     add(prompt);
