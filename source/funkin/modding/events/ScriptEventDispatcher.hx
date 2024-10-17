@@ -37,6 +37,12 @@ class ScriptEventDispatcher
       case UPDATE:
         target.onUpdate(cast event);
         return;
+      case FOCUS_LOST:
+        target.onFocusLost(cast event);
+        return;
+      case FOCUS_GAINED:
+        target.onFocusGained(cast event);
+        return;
       default: // Continue;
     }
 

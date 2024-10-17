@@ -14,6 +14,7 @@ interface IScriptedClass
   public function onCreate(event:ScriptEvent):Void;
   public function onDestroy(event:ScriptEvent):Void;
   public function onUpdate(event:UpdateScriptEvent):Void;
+
   public function onFocusLost(event:FocusScriptEvent):Void;
   public function onFocusGained(event:FocusScriptEvent):Void;
 }
