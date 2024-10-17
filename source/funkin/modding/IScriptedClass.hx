@@ -14,9 +14,6 @@ interface IScriptedClass
   public function onCreate(event:ScriptEvent):Void;
   public function onDestroy(event:ScriptEvent):Void;
   public function onUpdate(event:UpdateScriptEvent):Void;
-
-  public function onFocusLost(event:FocusScriptEvent):Void;
-  public function onFocusGained(event:FocusScriptEvent):Void;
 }
 
 /**
@@ -40,6 +37,15 @@ interface IStateChangingScriptedClass extends IScriptedClass
   public function onSubStateOpenEnd(event:SubStateScriptEvent):Void;
   public function onSubStateCloseBegin(event:SubStateScriptEvent):Void;
   public function onSubStateCloseEnd(event:SubStateScriptEvent):Void;
+}
+
+/**
+ * Defines a set of callbacks available to scripted classes which involve focus loss/gain.
+ */
+interface IFocusScriptedClass extends IScriptedClass
+{
+  public function onFocusLost(event:FocusScriptEvent):Void;
+  public function onFocusGained(event:FocusScriptEvent):Void;
 }
 
 /**

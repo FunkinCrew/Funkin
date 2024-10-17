@@ -37,12 +37,6 @@ class ScriptEventDispatcher
       case UPDATE:
         target.onUpdate(cast event);
         return;
-      case FOCUS_LOST:
-        target.onFocusLost(cast event);
-        return;
-      case FOCUS_GAINED:
-        target.onFocusGained(cast event);
-        return;
       default: // Continue;
     }
 
@@ -110,6 +104,21 @@ class ScriptEventDispatcher
           return;
         case SONG_STEP_HIT:
           t.onStepHit(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+
+    if (Std.isOfType(target, IFocusScriptedClass))
+    {
+      var t = cast(target, IFocusScriptedClass);
+      switch (event.type)
+      {
+        case FOCUS_LOST:
+          t.onFocusLost(cast event);
+          return;
+        case FOCUS_GAINED:
+          t.onFocusGained(cast event);
           return;
         default: // Continue;
       }
