@@ -458,6 +458,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.scrollFactor.y += stageCharData.scroll[1];
 
       character.alpha = stageCharData.alpha;
+      character.angle = stageCharData.angle;
 
       #if FEATURE_DEBUG_FUNCTIONS
       // Draw the debug icon at the character's feet.

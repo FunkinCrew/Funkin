@@ -281,4 +281,12 @@ typedef StageDataCharacter =
   @:optional
   @:default(1.0)
   var alpha:Float;
+
+  /**
+   * The angle of the character, as a float.
+   * @default 1.0
+   */
+  @:optional
+  @:default(0.0)
+  var angle:Float;
 };
