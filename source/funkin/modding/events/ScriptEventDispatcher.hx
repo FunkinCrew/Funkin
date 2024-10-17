@@ -109,21 +109,6 @@ class ScriptEventDispatcher
       }
     }
 
-    if (Std.isOfType(target, IFocusScriptedClass))
-    {
-      var t = cast(target, IFocusScriptedClass);
-      switch (event.type)
-      {
-        case FOCUS_LOST:
-          t.onFocusLost(cast event);
-          return;
-        case FOCUS_GAINED:
-          t.onFocusGained(cast event);
-          return;
-        default: // Continue;
-      }
-    }
-
     if (Std.isOfType(target, IPlayStateScriptedClass))
     {
       var t:IPlayStateScriptedClass = cast(target, IPlayStateScriptedClass);
@@ -191,6 +176,12 @@ class ScriptEventDispatcher
           return;
         case SUBSTATE_CLOSE_END:
           t.onSubStateCloseEnd(cast event);
+          return;
+        case FOCUS_LOST:
+          t.onFocusLost(cast event);
+          return;
+        case FOCUS_GAINED:
+          t.onFocusGained(cast event);
           return;
         default: // Continue;
       }
