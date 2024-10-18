@@ -50,6 +50,7 @@ import funkin.audio.FunkinSound;
 import haxe.ui.notifications.NotificationType;
 import haxe.ui.notifications.NotificationManager;
 import funkin.util.logging.CrashHandler;
+import funkin.ui.debug.DebugMenuSubState.EditorTheme;
 
 /**
  * Da Stage Editor woo!!
@@ -138,6 +139,7 @@ class StageEditorState extends UIState
 
   function set_selectedSprite(value:StageEditorObject)
   {
+    selectedSprite?.selectedShader.setAmount(0);
     this.selectedSprite = value;
     updateDialog(StageEditorDialogType.OBJECT);
 
@@ -583,6 +585,7 @@ class StageEditorState extends UIState
       if (FlxG.keys.justPressed.ENTER) onMenuItemClick("test stage");
       if (FlxG.keys.justPressed.ESCAPE) onMenuItemClick("exit");
       if (FlxG.keys.justPressed.F1) onMenuItemClick("user guide");
+      if (FlxG.keys.justPressed.BACKSPACE) selectedSprite = null;
 
       if (FlxG.keys.justPressed.T)
       {
@@ -627,7 +630,6 @@ class StageEditorState extends UIState
 
           if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
           {
-            selectedSprite.selectedShader.setAmount(0);
             selectedSprite = spr;
             updateDialog(StageEditorDialogType.OBJECT);
           }
@@ -928,7 +930,7 @@ class StageEditorState extends UIState
 
   function updateBGColors():Void
   {
-    var colArray = Save.instance.stageEditorTheme == StageEditorTheme.Dark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
+    var colArray = Save.instance.stageEditorTheme == DARK_THEME ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
 
     var index = members.indexOf(bg);
     bg.kill();
@@ -1038,17 +1040,17 @@ class StageEditorState extends UIState
     menubarItemWindowStage.onChange = function(_) toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
 
     menubarItemThemeLight.onClick = function(_) {
-      Save.instance.stageEditorTheme = StageEditorTheme.Light;
+      Save.instance.stageEditorTheme = LIGHT_THEME;
       updateBGColors();
     }
 
     menubarItemThemeDark.onClick = function(_) {
-      Save.instance.stageEditorTheme = StageEditorTheme.Dark;
+      Save.instance.stageEditorTheme = DARK_THEME;
       updateBGColors();
     }
 
-    menubarItemThemeDark.selected = Save.instance.stageEditorTheme == StageEditorTheme.Dark;
-    menubarItemThemeLight.selected = Save.instance.stageEditorTheme == StageEditorTheme.Light;
+    menubarItemThemeDark.selected = Save.instance.stageEditorTheme == DARK_THEME;
+    menubarItemThemeLight.selected = Save.instance.stageEditorTheme == LIGHT_THEME;
 
     menubarItemViewChars.onChange = function(_) showChars = menubarItemViewChars.selected;
     menubarItemViewNameText.onChange = function(_) nameTxt.visible = menubarItemViewNameText.selected;
@@ -1138,8 +1140,6 @@ class StageEditorState extends UIState
           currentFile = path;
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
 
-        bitmaps.clear();
-
       case "save stage":
         if (currentFile == "")
         {
@@ -1158,10 +1158,7 @@ class StageEditorState extends UIState
         FileUtil.writeBytesToPath(currentFile, bytes, Force); // mhm
 
         saved = true;
-
         updateRecentFiles();
-        bitmaps.clear();
-
       case "open stage":
         if (!saved)
         {

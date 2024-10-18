@@ -141,3 +141,18 @@ class DebugMenuSubState extends MusicBeatSubState
     this.close();
   }
 }
+
+// used for BOTH chart editor AND stage editor
+// maybe even some editors in the future who knows.....
+enum abstract EditorTheme(String) from String to String
+{
+  /**
+   * The default theme for the current editor.
+   */
+  var LIGHT_THEME = "light";
+
+  /**
+   * A theme which introduces darker colors.
+   */
+  var DARK_THEME = "dark";
+}

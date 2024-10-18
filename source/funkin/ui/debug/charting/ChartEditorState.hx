@@ -39,6 +39,7 @@ import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageData;
+import funkin.ui.debug.DebugMenuSubState.EditorTheme;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
@@ -286,16 +287,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * A map of the keys for every live input style.
    */
-  public static final LIVE_INPUT_KEYS:Map<ChartEditorLiveInputStyle, Array<FlxKey>> = [
-    NumberKeys => [
+  public static final LIVE_INPUT_KEYS:Map<LiveInputStyle, Array<FlxKey>> = [
+    NUMBER_KEYS => [
       FIVE, SIX, SEVEN, EIGHT,
        ONE, TWO, THREE,  FOUR
     ],
-    WASDKeys => [
+    WASD_KEYS => [
       LEFT, DOWN, UP, RIGHT,
          A,    S,  W,     D
     ],
-    None => []
+    NONE => []
   ];
 
   /**
@@ -600,7 +601,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The currently selected live input style.
    */
-  var currentLiveInputStyle:ChartEditorLiveInputStyle = None;
+  var currentLiveInputStyle:LiveInputStyle = NONE;
 
   /**
    * If true, playtesting a chart will skip to the current playhead position.
@@ -655,9 +656,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Dictates the appearance of many UI elements.
    * Currently hardcoded to just Light and Dark.
    */
-  var currentTheme(default, set):ChartEditorTheme = ChartEditorTheme.Light;
+  var currentTheme(default, set):EditorTheme = LIGHT_THEME;
 
-  function set_currentTheme(value:ChartEditorTheme):ChartEditorTheme
+  function set_currentTheme(value:EditorTheme):EditorTheme
   {
     if (value == null || value == currentTheme) return currentTheme;
 
@@ -2990,17 +2991,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
 
     menuBarItemInputStyleNone.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = None;
+      currentLiveInputStyle = NONE;
     };
-    menuBarItemInputStyleNone.selected = currentLiveInputStyle == None;
+    menuBarItemInputStyleNone.selected = currentLiveInputStyle == NONE;
     menuBarItemInputStyleNumberKeys.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = NumberKeys;
+      currentLiveInputStyle = NUMBER_KEYS;
     };
-    menuBarItemInputStyleNumberKeys.selected = currentLiveInputStyle == NumberKeys;
+    menuBarItemInputStyleNumberKeys.selected = currentLiveInputStyle == NUMBER_KEYS;
     menuBarItemInputStyleWASD.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = WASDKeys;
+      currentLiveInputStyle = WASD_KEYS;
     };
-    menuBarItemInputStyleWASD.selected = currentLiveInputStyle == WASDKeys;
+    menuBarItemInputStyleWASD.selected = currentLiveInputStyle == WASD_KEYS;
 
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
@@ -3021,14 +3022,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
 
     menuBarItemThemeLight.onChange = function(event:UIEvent) {
-      if (event.target.value) currentTheme = ChartEditorTheme.Light;
+      if (event.target.value) currentTheme = LIGHT_THEME;
     };
-    menuBarItemThemeLight.selected = currentTheme == ChartEditorTheme.Light;
+    menuBarItemThemeLight.selected = currentTheme == LIGHT_THEME;
 
     menuBarItemThemeDark.onChange = function(event:UIEvent) {
-      if (event.target.value) currentTheme = ChartEditorTheme.Dark;
+      if (event.target.value) currentTheme = DARK_THEME;
     };
-    menuBarItemThemeDark.selected = currentTheme == ChartEditorTheme.Dark;
+    menuBarItemThemeDark.selected = currentTheme == DARK_THEME;
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
@@ -3876,26 +3877,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // Up Arrow = Scroll Up
-    if (upKeyHandler.activated && currentLiveInputStyle == None)
+    if (upKeyHandler.activated && currentLiveInputStyle == NONE)
     {
       scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
     }
     // Down Arrow = Scroll Down
-    if (downKeyHandler.activated && currentLiveInputStyle == None)
+    if (downKeyHandler.activated && currentLiveInputStyle == NONE)
     {
       scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
     }
 
     // W = Scroll Up (doesn't work with Ctrl+Scroll)
-    if (wKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
+    if (wKeyHandler.activated && currentLiveInputStyle == NONE && !FlxG.keys.pressed.CONTROL)
     {
       scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
     }
     // S = Scroll Down (doesn't work with Ctrl+Scroll)
-    if (sKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
+    if (sKeyHandler.activated && currentLiveInputStyle == NONE && !FlxG.keys.pressed.CONTROL)
     {
       scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
@@ -4085,7 +4086,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function handleSnap():Void
   {
-    if (currentLiveInputStyle == None)
+    if (currentLiveInputStyle == NONE)
     {
       if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
       {
@@ -5617,7 +5618,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function handleViewKeybinds():Void
   {
-    if (currentLiveInputStyle == None)
+    if (currentLiveInputStyle == NONE)
     {
       if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
       {
@@ -6538,6 +6539,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     return params;
   }
+}
+
+enum abstract LiveInputStyle(String) from String to String
+{
+  /**
+   * No hotkeys to place notes at the playbar.
+   */
+  var NONE = "none";
+
+  /**
+   * 1/2/3/4 to place notes on opponent's side, 5/6/7/8 to place notes on player's side.
+   */
+  var NUMBER_KEYS = "number_keys";
+
+  /**
+   * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
+   */
+  var WASD_KEYS = "wasd_keys";
 }
 
 /**

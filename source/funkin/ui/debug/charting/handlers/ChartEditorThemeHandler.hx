@@ -96,8 +96,8 @@ class ChartEditorThemeHandler
     if (state.menuBG == null) return;
     state.menuBG.color = switch (state.currentTheme)
     {
-      case ChartEditorTheme.Light: BACKGROUND_COLOR_LIGHT;
-      case ChartEditorTheme.Dark: BACKGROUND_COLOR_DARK;
+      case LIGHT_THEME: BACKGROUND_COLOR_LIGHT;
+      case DARK_THEME: BACKGROUND_COLOR_DARK;
       default: BACKGROUND_COLOR_LIGHT;
     }
   }
@@ -110,15 +110,15 @@ class ChartEditorThemeHandler
   {
     var gridColor1:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_COLOR_1_LIGHT;
-      case Dark: GRID_COLOR_1_DARK;
+      case LIGHT_THEME: GRID_COLOR_1_LIGHT;
+      case DARK_THEME: GRID_COLOR_1_DARK;
       default: GRID_COLOR_1_LIGHT;
     };
 
     var gridColor2:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_COLOR_2_LIGHT;
-      case Dark: GRID_COLOR_2_DARK;
+      case LIGHT_THEME: GRID_COLOR_2_LIGHT;
+      case DARK_THEME: GRID_COLOR_2_DARK;
       default: GRID_COLOR_2_LIGHT;
     };
 
@@ -133,8 +133,8 @@ class ChartEditorThemeHandler
     // Selection borders
     var selectionBorderColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_COLOR_3_LIGHT;
-      case Dark: GRID_COLOR_3_DARK;
+      case LIGHT_THEME: GRID_COLOR_3_LIGHT;
+      case DARK_THEME: GRID_COLOR_3_DARK;
       default: GRID_COLOR_3_LIGHT;
     };
 
@@ -178,8 +178,8 @@ class ChartEditorThemeHandler
 
     var gridMeasureDividerColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-      case Dark: GRID_MEASURE_DIVIDER_COLOR_DARK;
+      case LIGHT_THEME: GRID_MEASURE_DIVIDER_COLOR_LIGHT;
+      case DARK_THEME: GRID_MEASURE_DIVIDER_COLOR_DARK;
       default: GRID_MEASURE_DIVIDER_COLOR_LIGHT;
     };
 
@@ -193,8 +193,8 @@ class ChartEditorThemeHandler
 
     var gridBeatDividerColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_BEAT_DIVIDER_COLOR_LIGHT;
-      case Dark: GRID_BEAT_DIVIDER_COLOR_DARK;
+      case LIGHT_THEME: GRID_BEAT_DIVIDER_COLOR_LIGHT;
+      case DARK_THEME: GRID_BEAT_DIVIDER_COLOR_DARK;
       default: GRID_BEAT_DIVIDER_COLOR_LIGHT;
     };
 
@@ -214,8 +214,8 @@ class ChartEditorThemeHandler
 
     var gridStrumlineDividerColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-      case Dark: GRID_STRUMLINE_DIVIDER_COLOR_DARK;
+      case LIGHT_THEME: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
+      case DARK_THEME: GRID_STRUMLINE_DIVIDER_COLOR_DARK;
       default: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
     };
 
@@ -348,15 +348,15 @@ class ChartEditorThemeHandler
   {
     var selectionSquareBorderColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: SELECTION_SQUARE_BORDER_COLOR_LIGHT;
-      case Dark: SELECTION_SQUARE_BORDER_COLOR_DARK;
+      case LIGHT_THEME: SELECTION_SQUARE_BORDER_COLOR_LIGHT;
+      case DARK_THEME: SELECTION_SQUARE_BORDER_COLOR_DARK;
       default: SELECTION_SQUARE_BORDER_COLOR_LIGHT;
     };
 
     var selectionSquareFillColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: SELECTION_SQUARE_FILL_COLOR_LIGHT;
-      case Dark: SELECTION_SQUARE_FILL_COLOR_DARK;
+      case LIGHT_THEME: SELECTION_SQUARE_FILL_COLOR_LIGHT;
+      case DARK_THEME: SELECTION_SQUARE_FILL_COLOR_DARK;
       default: SELECTION_SQUARE_FILL_COLOR_LIGHT;
     };
 
@@ -387,15 +387,15 @@ class ChartEditorThemeHandler
   {
     var viewportBorderColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
-      case Dark: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK;
+      case LIGHT_THEME: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
+      case DARK_THEME: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK;
       default: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
     };
 
     var viewportFillColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
-      case Dark: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK;
+      case LIGHT_THEME: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
+      case DARK_THEME: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK;
       default: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
     };
 

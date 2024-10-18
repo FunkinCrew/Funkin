@@ -9,6 +9,8 @@ import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
+import funkin.ui.debug.charting.ChartEditorState.LiveInputStyle;
+import funkin.ui.debug.DebugMenuSubState.EditorTheme;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.SerializerUtil;
@@ -18,12 +20,13 @@ import thx.semver.Version;
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.4";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.5";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
   static final SAVE_PATH:String = 'FunkinCrew';
   static final SAVE_NAME:String = 'Funkin';
+  static final SCORE_BACKUP_NAME:String = "SaveBackup";
 
   static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
   static final SAVE_NAME_LEGACY:String = 'funkin';
@@ -138,8 +141,10 @@ class Save
           // Reasonable defaults.
           previousFiles: [],
           noteQuant: 3,
-          chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
-          theme: ChartEditorTheme.Light,
+          // chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
+          // theme: Light,
+          liveInputStyle: NONE,
+          editorTheme: LIGHT_THEME,
           playtestStartTime: false,
           downscroll: false,
           metronomeVolume: 1.0,
@@ -153,7 +158,8 @@ class Save
           previousFiles: [],
           moveStep: "1px",
           angleStep: 5,
-          theme: StageEditorTheme.Light
+          // theme: Light
+          editorTheme: LIGHT_THEME
         }
     };
   }
@@ -260,21 +266,34 @@ class Save
     return data.optionsChartEditor.noteQuant;
   }
 
-  public var chartEditorLiveInputStyle(get, set):ChartEditorLiveInputStyle;
+  public var chartEditorLiveInputStyle(get, set):LiveInputStyle;
 
-  function get_chartEditorLiveInputStyle():ChartEditorLiveInputStyle
+  function get_chartEditorLiveInputStyle():LiveInputStyle
   {
-    if (data.optionsChartEditor.chartEditorLiveInputStyle == null) data.optionsChartEditor.chartEditorLiveInputStyle = ChartEditorLiveInputStyle.None;
+    if (data.optionsChartEditor.liveInputStyle == null)
+    {
+      if (data.optionsChartEditor.chartEditorLiveInputStyle != null)
+      {
+        data.optionsChartEditor.liveInputStyle = switch (data.optionsChartEditor.chartEditorLiveInputStyle)
+        {
+          case NumberKeys: NUMBER_KEYS;
+          case WASDKeys: WASD_KEYS;
+          default: NONE;
+        }
+      }
 
-    return data.optionsChartEditor.chartEditorLiveInputStyle;
+      if (data.optionsChartEditor.liveInputStyle == null) data.optionsChartEditor.liveInputStyle = NONE;
+    }
+
+    return data.optionsChartEditor.liveInputStyle;
   }
 
-  function set_chartEditorLiveInputStyle(value:ChartEditorLiveInputStyle):ChartEditorLiveInputStyle
+  function set_chartEditorLiveInputStyle(value:LiveInputStyle):LiveInputStyle
   {
     // Set and apply.
-    data.optionsChartEditor.chartEditorLiveInputStyle = value;
+    data.optionsChartEditor.liveInputStyle = value;
     flush();
-    return data.optionsChartEditor.chartEditorLiveInputStyle;
+    return data.optionsChartEditor.liveInputStyle;
   }
 
   public var chartEditorDownscroll(get, set):Bool;
@@ -311,21 +330,29 @@ class Save
     return data.optionsChartEditor.playtestStartTime;
   }
 
-  public var chartEditorTheme(get, set):ChartEditorTheme;
+  public var chartEditorTheme(get, set):EditorTheme;
 
-  function get_chartEditorTheme():ChartEditorTheme
+  function get_chartEditorTheme():EditorTheme
   {
-    if (data.optionsChartEditor.theme == null) data.optionsChartEditor.theme = ChartEditorTheme.Light;
+    if (data.optionsChartEditor.editorTheme == null) // I hate having to do backwards compatibility.
+    {
+      if (data.optionsChartEditor.theme != null
+        && data.optionsChartEditor.theme == ChartEditorTheme.Light) data.optionsChartEditor.editorTheme = LIGHT_THEME;
+      else if (data.optionsChartEditor.theme != null
+        && data.optionsChartEditor.theme == ChartEditorTheme.Dark) data.optionsChartEditor.editorTheme = DARK_THEME;
+      else
+        data.optionsChartEditor.editorTheme = LIGHT_THEME;
+    }
 
-    return data.optionsChartEditor.theme;
+    return data.optionsChartEditor.editorTheme;
   }
 
-  function set_chartEditorTheme(value:ChartEditorTheme):ChartEditorTheme
+  function set_chartEditorTheme(value:EditorTheme):EditorTheme
   {
     // Set and apply.
-    data.optionsChartEditor.theme = value;
+    data.optionsChartEditor.editorTheme = value;
     flush();
-    return data.optionsChartEditor.theme;
+    return data.optionsChartEditor.editorTheme;
   }
 
   public var chartEditorMetronomeVolume(get, set):Float;
@@ -505,21 +532,29 @@ class Save
     return data.optionsStageEditor.angleStep;
   }
 
-  public var stageEditorTheme(get, set):StageEditorTheme;
+  public var stageEditorTheme(get, set):EditorTheme;
 
-  function get_stageEditorTheme():StageEditorTheme
+  function get_stageEditorTheme():EditorTheme
   {
-    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = StageEditorTheme.Light;
+    if (data.optionsStageEditor.editorTheme == null) // I hate having to do backwards compatibility.
+    {
+      if (data.optionsStageEditor.theme != null
+        && data.optionsStageEditor.theme == StageEditorTheme.Light) data.optionsStageEditor.editorTheme = LIGHT_THEME;
+      else if (data.optionsStageEditor.theme != null
+        && data.optionsStageEditor.theme == StageEditorTheme.Dark) data.optionsStageEditor.editorTheme = DARK_THEME;
+      else
+        data.optionsStageEditor.editorTheme = LIGHT_THEME;
+    }
 
-    return data.optionsStageEditor.theme;
+    return data.optionsStageEditor.editorTheme;
   }
 
-  function set_stageEditorTheme(value:StageEditorTheme):StageEditorTheme
+  function set_stageEditorTheme(value:EditorTheme):EditorTheme
   {
     // Set and apply.
-    data.optionsStageEditor.theme = value;
+    data.optionsStageEditor.editorTheme = value;
     flush();
-    return data.optionsStageEditor.theme;
+    return data.optionsStageEditor.editorTheme;
   }
 
   /**
@@ -953,6 +988,11 @@ class Save
   public function flush():Void
   {
     FlxG.save.flush();
+
+    var backupSaveFile = new FlxSave();
+    backupSaveFile.bind(SCORE_BACKUP_NAME, SAVE_PATH);
+    backupSaveFile.mergeData(FlxG.save.data, true);
+    backupSaveFile.flush();
   }
 
   /**
@@ -983,6 +1023,7 @@ class Save
       {
         trace('[SAVE] No legacy save data found.');
         var gameSave = new Save();
+        loadScoreBackups(gameSave);
         FlxG.save.mergeData(gameSave.data, true);
         return gameSave;
       }
@@ -995,6 +1036,17 @@ class Save
 
       return gameSave;
     }
+  }
+
+  static function loadScoreBackups(save:Save)
+  {
+    var backupsFile = new FlxSave();
+    backupsFile.bind(SCORE_BACKUP_NAME, SAVE_PATH);
+
+    if (backupsFile.isEmpty()) return; // damn it, nothing was saved. the save system has fallen
+
+    save.data = backupsFile.data;
+    save.flush();
   }
 
   public static function archiveBadSaveData(data:Dynamic):Int
@@ -1478,13 +1530,29 @@ typedef SaveDataChartEditorOptions =
    * Live input style in the Chart Editor.
    * @default `ChartEditorLiveInputStyle.None`
    */
+  @:optional
+  @:deprecated("Use liveInputStyle instead!")
   var ?chartEditorLiveInputStyle:ChartEditorLiveInputStyle;
+
+  /**
+   * Live input style in the Chart Editor.
+   * @default `NONE`
+   */
+  var ?liveInputStyle:LiveInputStyle;
 
   /**
    * Theme in the Chart Editor.
    * @default `ChartEditorTheme.Light`
    */
+  @:deprecated("Use editorTheme instead!")
+  @:optional
   var ?theme:ChartEditorTheme;
+
+  /**
+   * Theme in the Chart Editor.
+   * @default `LIGHT_THEME`
+   */
+  var ?editorTheme:EditorTheme;
 
   /**
    * Downscroll in the Chart Editor.
@@ -1574,5 +1642,13 @@ typedef SaveDataStageEditorOptions =
    * Theme in the Stage Editor.
    * @default `StageEditorTheme.Light`
    */
+  @:deprecated("Use editorTheme instead!")
+  @:optional
   var ?theme:StageEditorTheme;
+
+  /**
+   * Theme in the Stage Editor
+   * @default `LIGHT_THEME`
+   */
+  var ?editorTheme:EditorTheme;
 };
