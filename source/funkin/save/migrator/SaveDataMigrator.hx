@@ -53,9 +53,9 @@ class SaveDataMigrator
     var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefault(), inputData);
 
     // Reset these values to valid ones.
-    saveDataWithDefaults.optionsChartEditor.chartEditorLiveInputStyle = funkin.ui.debug.charting.ChartEditorLiveInputStyle.None;
-    saveDataWithDefaults.optionsChartEditor.theme = funkin.ui.debug.charting.ChartEditorTheme.Light;
-    saveDataWithDefaults.optionsStageEditor.theme = funkin.ui.debug.stageeditor.StageEditorTheme.Light;
+    saveDataWithDefaults.optionsChartEditor.chartEditorLiveInputStyle = funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle.None;
+    saveDataWithDefaults.optionsChartEditor.theme = funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme.Light;
+    saveDataWithDefaults.optionsStageEditor.theme = funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme.Light;
 
     var save:Save = new Save(saveDataWithDefaults);
     return save;
