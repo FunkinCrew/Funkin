@@ -198,7 +198,7 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.visible = true;
   }
 
-  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Array<Float>):Void
+  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Null<Array<Float>>):Void
   {
     if (albumTitle != null)
     {
