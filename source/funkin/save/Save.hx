@@ -961,10 +961,7 @@ class Save
    */
   static function loadFromSlot(slot:Int):Save
   {
-    trace("[SAVE] Loading save from slot " + slot + "...");
-
-    // Prevent crashes if the save data is corrupted.
-    SerializerUtil.initSerializer();
+    trace('[SAVE] Loading save from slot $slot...');
 
     FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
 
