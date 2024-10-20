@@ -113,6 +113,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+      Preferences.autoFullscreen = value;
+    }, Preferences.autoFullscreen);
 
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
@@ -123,10 +126,6 @@ class PreferencesMenu extends Page
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
-
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
-      Preferences.autoFullscreen = value;
-    }, Preferences.autoFullscreen);
   }
 
   override function update(elapsed:Float):Void
