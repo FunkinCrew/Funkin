@@ -117,18 +117,18 @@ jobs:
         echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
 
     - name: Restore cached dependencies
-      id: cache-hmm
+      id: cache-hxpkg
       uses: actions/cache@v4
       with:
         path: .haxelib
-        key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
+        key: haxe-hxpkg-${{ runner.os }}-${{ hashFiles('**/.hxpkg') }}
 
-    - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+    - if: ${{ steps.cache-hxpkg.outputs.cache-hit != 'true' }}
       name: Install dependencies
       run: |
         git config --global 'url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf' https://github.com/
         git config --global advice.detachedHead false
-        haxelib --global run hmm install -q
+        haxelib --global run hxpkg install --quiet
         cd .haxelib/hxcpp/git/tools/hxcpp && haxe compile.hxml
 
     - if: ${{ matrix.target != 'html5' }}
