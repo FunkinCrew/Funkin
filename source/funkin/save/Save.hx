@@ -97,7 +97,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
-          strumlineBackgroundOpacity: 0,
+          autoFullscreen: false,
           inputOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
@@ -1353,14 +1353,13 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
-   * If >0, the game will display a semi-opaque background under the notes.
-   * `0` for no background, `100` for solid black if you're freaky like that
-   * @default `0`
+   * If enabled, the game will automatically launch in fullscreen on startup.
+   * @default `true`
    */
-  var strumlineBackgroundOpacity:Int;
+  var autoFullscreen:Bool;
 
   /**
-   * Offset the users inputs by this many ms.
+   * Offset the user's inputs by this many ms.
    * @default `0`
    */
   var inputOffset:Int;
