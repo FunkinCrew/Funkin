@@ -6575,22 +6575,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 /**
  * Available input modes for the chart editor state. Numbers/arrows/WASD available for other keybinds.
  */
-enum ChartEditorLiveInputStyle
+enum abstract ChartEditorLiveInputStyle(String)
 {
   /**
    * No hotkeys to place notes at the playbar.
    */
-  None;
+  var None;
 
   /**
    * 1/2/3/4 to place notes on opponent's side, 5/6/7/8 to place notes on player's side.
    */
-  NumberKeys;
+  var NumberKeys;
 
   /**
    * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
    */
-  WASDKeys;
+  var WASDKeys;
 }
 
 typedef ChartEditorParams =
@@ -6609,15 +6609,15 @@ typedef ChartEditorParams =
 /**
  * Available themes for the chart editor state.
  */
-enum ChartEditorTheme
+enum abstract ChartEditorTheme(String)
 {
   /**
    * The default theme for the chart editor.
    */
-  Light;
+  var Light;
 
   /**
    * A theme which introduces darker colors.
    */
-  Dark;
+  var Dark;
 }
