@@ -7,7 +7,7 @@ class HaxelibVersions
   public static macro function getLibraryVersions():haxe.macro.Expr.ExprOf<Array<String>>
   {
     #if !display
-    return macro $v{formatHmmData()};
+    return macro $v{formatHxPkgData()};
     #else
     // `#if display` is used for code completion. In this case returning an
     // empty string is good enough; We don't want to call functions on every hint.
@@ -18,26 +18,33 @@ class HaxelibVersions
 
   #if (macro)
   @SuppressWarnings('checkstyle:Dynamic')
-  static function formatHmmData():Array<String>
+  static function formatHxPkgData():Array<String>
   {
     var result:Array<String> = [];
 
-    var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent('hmm.json'));
-    var dependencies:Array<Dynamic> = cast hmmData.dependencies;
-    for (library in dependencies)
+    var hxPkgData:Array<Dynamic> = cast haxe.Json.parse(sys.io.File.getContent('.hxpkg'));
+    for (profile in hxPkgData)
     {
-      switch (library.type)
+      if (profile.profile != 'default')
       {
-        case 'haxelib':
-          result.push('${library.name} haxelib(${library.version ?? 'None'})');
-        case 'git':
-          result.push('${library.name} git(${library.url}/${library.dir ?? ''}:${library.ref ?? 'None'}');
-        case 'mercurial':
-          result.push('${library.name} mercurial(${library.url}/${library.dir ?? ''}:${library.ref ?? 'None'})');
-        case 'dev':
-          result.push('${library.name} dev(${library.path})');
-        case ty:
-          throw 'Unhandled hmm library type ${ty}';
+        continue;
+      }
+
+      var pkgs:Array<Dynamic> = cast profile.pkgs;
+      for (pkg in pkgs)
+      {
+        var type:String = pkg.link != null ? 'git' : 'haxelib';
+        var innerText:String = switch (type)
+        {
+          case 'git':
+            '${pkg.link}:${pkg.branch ?? 'None'}';
+          case 'haxelib':
+            '${pkg.version ?? 'None'}';
+          default:
+            'THIS CANT HAPPEN';
+        }
+
+        result.push('${pkg.name} ${type}(${innerText})');
       }
     }
 

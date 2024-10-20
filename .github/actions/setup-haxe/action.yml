@@ -1,5 +1,5 @@
 name: setup-haxeshit
-description: "sets up haxe shit, using HMM!"
+description: "sets up haxe shit, using HxPKG!"
 
 inputs:
   haxe:
@@ -60,23 +60,23 @@ runs:
       haxelib --debug --never --global install haxelib 4.1.0
       haxelib --debug --global set haxelib 4.1.0
       haxelib --global remove haxelib git || true
-      haxelib --global remove hmm || true
+      haxelib --global remove hxpkg || true
       rm -rf .haxelib
       haxelib --debug --never --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
-      haxelib --debug --never --global git hmm https://github.com/FunkinCrew/hmm funkin-patches
+      haxelib --debug --never --global git hxpkg https://github.com/CobaltBar/HxPKG
       haxelib --debug --never newrepo
       haxelib version
       echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
       echo "TIMER_DEPS=$(date +%s)" >> "$GITHUB_ENV"
 
   - name: Restore cached dependencies
-    id: cache-hmm
+    id: cache-hxpkg
     uses: actions/cache@v4
     with:
       path: .haxelib
-      key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
+      key: haxe-hxpkg-${{ runner.os }}-${{ hashFiles('**/.hxpkg') }}
 
-  - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+  - if: ${{ steps.cache-hxpkg.outputs.cache-hit != 'true' }}
     name: Prep git for dependency install
     uses: gacts/run-and-post-run@v1
     with:
@@ -88,11 +88,11 @@ runs:
         git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
       post: git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf'
 
-  - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+  - if: ${{ steps.cache-hxpkg.outputs.cache-hit != 'true' }}
     name: Install dependencies
     shell: bash
     run: |
-      haxelib --global run hmm install -q
+      haxelib --global run hxpkg install --quiet
       echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
 
   # by default use a shared hxcpp cache

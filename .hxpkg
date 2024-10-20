@@ -1,0 +1,164 @@
+[
+	{
+		"profile": "unit",
+		"pkgs": [
+			{
+				"name": "hamcrest",
+				"version": "3.0.0"
+			},
+			{
+				"name": "mconsole",
+				"link": "https://github.com/massive-oss/mconsole",
+				"branch": "06c0499ed8f80628a0e6e55ffa32c3cbd688a838"
+			},
+			{
+				"name": "mcover",
+				"link": "https://github.com/massive-oss/mcover",
+				"branch": "c3c47cd682b0b202a41caee95321989391b617ef",
+				"dir": "src"
+			},
+			{
+				"name": "mockatoo",
+				"link": "https://github.com/FunkinCrew/mockatoo",
+				"branch": "13d77a0a8eaf5e789ef5dae6cd33eee812deda36",
+				"dir": "src"
+			},
+			{
+				"name": "munit",
+				"link": "https://github.com/FunkinCrew/MassiveUnit",
+				"branch": "f61be7f7ba796595f45023ca65164a485aba0e7e",
+				"dir": "src"
+			}
+		]
+	},
+	{
+		"profile": "default",
+		"pkgs": [
+			{
+				"name": "FlxPartialSound",
+				"link": "https://github.com/FunkinCrew/FlxPartialSound.git",
+				"branch": "a1eab7b9bf507b87200a3341719054fe427f3b15"
+			},
+			{
+				"name": "flixel",
+				"link": "https://github.com/FunkinCrew/flixel",
+				"branch": "ffa691cb2d2d81de35b900a4411e4062ac84ab58"
+			},
+			{
+				"name": "flixel-addons",
+				"link": "https://github.com/FunkinCrew/flixel-addons",
+				"branch": "7424db4e9164ff46f224a7c47de1b732d2542dd7"
+			},
+			{
+				"name": "flixel-text-input",
+				"link": "https://github.com/FunkinCrew/flixel-text-input",
+				"branch": "951a0103a17bfa55eed86703ce50b4fb0d7590bc"
+			},
+			{
+				"name": "flxanimate",
+				"link": "https://github.com/Dot-Stuff/flxanimate",
+				"branch": "0654797e5eb7cd7de0c1b2dbaa1efe5a1e1d9412"
+			},
+			{
+				"name": "format",
+				"version": "3.5.0"
+			},
+			{
+				"name": "funkin.vis",
+				"link": "https://github.com/FunkinCrew/funkVis",
+				"branch": "22b1ce089dd924f15cdc4632397ef3504d464e90"
+			},
+			{
+				"name": "grig.audio",
+				"link": "https://gitlab.com/haxe-grig/grig.audio.git",
+				"branch": "57f5d47f2533fd0c3dcd025a86cb86c0dfa0b6d2",
+				"dir": "src"
+			},
+			{
+				"name": "haxeui-core",
+				"link": "https://github.com/haxeui/haxeui-core",
+				"branch": "51c23588614397089a5ce182cddea729f0be6fa0"
+			},
+			{
+				"name": "haxeui-flixel",
+				"link": "https://github.com/haxeui/haxeui-flixel",
+				"branch": "da27e833947f32ef007ed11f523aa5524f5a5d54"
+			},
+			{
+				"name": "hscript",
+				"link": "https://github.com/FunkinCrew/hscript",
+				"branch": "12785398e2f07082f05034cb580682e5671442a2"
+			},
+			{
+				"name": "hxCodec",
+				"link": "https://github.com/FunkinCrew/hxCodec",
+				"branch": "61b98a7a353b7f529a8fec84ed9afc919a2dffdd"
+			},
+			{
+				"name": "hxcpp",
+				"link": "https://github.com/cortex-engine/hxcpp",
+				"branch": "c6bac3d6c7d683f25104296b2f4c50f8c90b8349"
+			},
+			{
+				"name": "hxcpp-debug-server",
+				"link": "https://github.com/FunkinCrew/hxcpp-debugger",
+				"branch": "147294123f983e35f50a966741474438069a7a8f",
+				"dir": "hxcpp-debug-server"
+			},
+			{
+				"name": "hxdiscord_rpc",
+				"link": "https://github.com/FunkinCrew/hxdiscord_rpc",
+				"branch": "82c47ecc1a454b7dd644e4fcac7e91155f176dec"
+			},
+			{
+				"name": "hxjsonast",
+				"link": "https://github.com/nadako/hxjsonast/",
+				"branch": "20e72cc68c823496359775ac1f06500e67f189d5"
+			},
+			{
+				"name": "hxp",
+				"version": "1.3.0"
+			},
+			{
+				"name": "json2object",
+				"link": "https://github.com/FunkinCrew/json2object",
+				"branch": "a8c26f18463c98da32f744c214fe02273e1823fa"
+			},
+			{
+				"name": "jsonpatch",
+				"link": "https://github.com/EliteMasterEric/jsonpatch",
+				"branch": "f9b83215acd586dc28754b4ae7f69d4c06c3b4d3"
+			},
+			{
+				"name": "jsonpath",
+				"link": "https://github.com/EliteMasterEric/jsonpath",
+				"branch": "7a24193717b36393458c15c0435bb7c4470ecdda"
+			},
+			{
+				"name": "lime",
+				"link": "https://github.com/FunkinCrew/lime",
+				"branch": "fe3368f611a84a19afc03011353945ae4da8fffd"
+			},
+			{
+				"name": "openfl",
+				"link": "https://github.com/FunkinCrew/openfl",
+				"branch": "8306425c497766739510ab29e876059c96f77bd2"
+			},
+			{
+				"name": "polymod",
+				"link": "https://github.com/larsiusprime/polymod",
+				"branch": "0fbdf27fe124549730accd540cec8a183f8652c0"
+			},
+			{
+				"name": "thx.core",
+				"link": "https://github.com/fponticelli/thx.core",
+				"branch": "76d87418fadd92eb8e1b61f004cff27d656e53dd"
+			},
+			{
+				"name": "thx.semver",
+				"link": "https://github.com/fponticelli/thx.semver",
+				"branch": "bdb191fe7cf745c02a980749906dbf22719e200b"
+			}
+		]
+	}
+]
