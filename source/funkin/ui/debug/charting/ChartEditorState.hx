@@ -203,12 +203,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final NOTE_SELECT_BUTTON_HEIGHT:Int = 24;
 
   /**
-   * How "close" in milliseconds two notes have to be to be considered as stacked.
-   * TODO: This should probably be turned into a customizable value
-   */
-  public static final STACK_NOTE_THRESHOLD:Int = 20;
-
-  /**
    * The amount of padding between the menu bar and the chart grid when fully scrolled up.
    */
   public static final GRID_TOP_PAD:Int = NOTE_SELECT_BUTTON_HEIGHT + 12;
@@ -813,6 +807,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * As the user moves down, we will update this note's sustain length, and finalize the note when they release.
    */
   var currentLiveInputPlaceNoteData:Array<SongNoteData> = [];
+
+  /**
+   * How "close" in milliseconds two notes have to be to be considered as stacked.
+   * For instance, `0` means the notes should be exactly on top of each other
+   */
+  public static var stackNoteThreshold:Int = 20;
 
   // Note Movement
 
@@ -1825,6 +1825,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The `Edit -> Decrease Note Snap Precision` menu item.
    */
   var menuBarItemNoteSnapIncrease:MenuItem;
+
+  /**
+   * The `Edit -> Stacked Note Threshold` menu item
+   */
+  var menuBarItemStackedNoteThreshold:MenuItem;
 
   /**
    * The `View -> Downscroll` menu item.
@@ -3737,7 +3742,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
 
       // Gather stacked notes to render later
-      var stackedNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, STACK_NOTE_THRESHOLD);
+      var stackedNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackNoteThreshold);
 
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.
@@ -3801,7 +3806,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           var stepLength = noteSprite.noteData.getStepLength();
           selectionSquare.height = (stepLength <= 0) ? GRID_SIZE : ((stepLength + 1) * GRID_SIZE);
         }
-        // TODO: Move this to a function like isNoteSelected does
         else if (doesNoteStack(noteSprite.noteData, stackedNotes))
         {
           // TODO: Maybe use another way to display these notes

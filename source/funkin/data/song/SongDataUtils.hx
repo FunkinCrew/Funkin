@@ -90,7 +90,7 @@ class SongDataUtils
    */
   public inline static function addNotes(notes:Array<SongNoteData>, addend:Array<SongNoteData>):Array<SongNoteData>
   {
-    return SongNoteDataUtils.concatNoOverlap(notes, addend, ChartEditorState.STACK_NOTE_THRESHOLD, true);
+    return SongNoteDataUtils.concatNoOverlap(notes, addend, ChartEditorState.stackNoteThreshold);
   }
 
   /**

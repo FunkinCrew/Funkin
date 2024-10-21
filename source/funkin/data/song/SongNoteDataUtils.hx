@@ -11,11 +11,12 @@ class SongNoteDataUtils
 
   /**
    * Retrieves all stacked notes
+   *
    * @param notes Sorted notes by time
    * @param threshold Threshold in ms
    * @return Stacked notes
    */
-  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float):Array<SongNoteData>
+  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float = 20):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
 
@@ -68,64 +69,46 @@ class SongNoteDataUtils
 
   /**
    * Tries to concatenate two arrays of notes together but skips notes from `notesB` that overlap notes from `noteA`.
-   * This does not modify the original array.
+   * This operation modifies the second array by removing the overlapped notes
+   *
    * @param notesA An array of notes into which `notesB` will be concatenated.
-   * @param notesB Another array of notes that will be concated into `notesA`.
-   * @param threshold Threshold in ms
-   * @param modifyB If `true`, `notesB` will be modified in-place by removing the notes that overlap notes from `notesA`.
-   * @return Array<SongNoteData>
+   * @param notesB Another array of notes that will be concatenated into `notesA`.
+   * @param threshold Threshold in ms.
+   * @return The unsorted resulting array.
    */
-  public static function concatNoOverlap(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float, modifyB:Bool = false):Array<SongNoteData>
+  public static function concatNoOverlap(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float = 20):Array<SongNoteData>
   {
     if (notesA == null || notesA.length == 0) return notesB;
     if (notesB == null || notesB.length == 0) return notesA;
 
-    var result:Array<SongNoteData> = notesA.copy();
-    var overlappingNotes:Array<SongNoteData> = [];
-
-    for (noteB in notesB)
-    {
-      var hasOverlap:Bool = false;
-
+    var addend = notesB.copy();
+    addend = addend.filter((noteB) -> {
       for (noteA in notesA)
       {
         if (doNotesStack(noteA, noteB, threshold))
         {
-          hasOverlap = true;
-          break;
+          notesB.remove(noteB);
+          return false;
         }
       }
+      return true;
+    });
 
-      if (!hasOverlap)
-      {
-        result.push(noteB);
-      }
-      else if (modifyB)
-      {
-        overlappingNotes.push(noteB);
-      }
-    }
-
-    if (modifyB)
-    {
-      for (note in overlappingNotes)
-        notesB.remove(note);
-    }
-
-    return result;
+    return notesA.concat(addend);
   }
 
   /**
    * Concatenates two arrays of notes but overwrites notes in `lhs` that are overlapped by notes from `rhs`.
-   * This does not modify the fist array but does modify the second.
-   * @param lhs
-   * @param rhs
+   * This operation only modifies the second array and `overwrittenNotes`.
+   *
+   * @param lhs An array of notes
+   * @param rhs An array of notes to concatenate into `lhs`
+   * @param overwrittenNotes An optional array that is modified in-place with the notes in `lhs` that were overwritten.
    * @param threshold Threshold in ms
-   * @param overwrittenNotes An array that is modified in-place with the notes in `lhs` that were overwritten.
-   * @return `lhs` + `rhs`
+   * @return The resulting array, note that the added notes are placed at the end of the array.
    */
-  public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, threshold:Float,
-      ?overwrittenNotes:Array<SongNoteData>):Array<SongNoteData>
+  public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>,
+      threshold:Float = 20):Array<SongNoteData>
   {
     if (lhs == null || rhs == null || rhs.length == 0) return lhs;
 
@@ -145,7 +128,6 @@ class SongNoteDataUtils
           {
             overwrittenNotes?.push(result[j].clone());
             result[j] = noteB;
-            // Do not resize array with remove() now to not screw with loop
             rhs[i] = null;
           }
           hasOverlap = true;
@@ -155,39 +137,38 @@ class SongNoteDataUtils
 
       if (!hasOverlap) result.push(noteB);
     }
-
-    // Now we can safely resize it
     rhs = rhs.filterNull();
 
     return result;
   }
 
   /**
-   * @param threshold
+   * @param threshold Time difference in milliseconds.
    * @return Returns `true` if both notes are on the same strumline, have the same direction and their time difference is less than `threshold`.
    */
-  public static function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float):Bool
+  public static function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float = 20):Bool
   {
+    // TODO: Make this function inline again when I'm done debugging.
     return noteA.data == noteB.data && Math.ffloor(Math.abs(noteA.time - noteB.time)) <= threshold;
   }
 
   // This is replacing SongNoteData's equals operator because for some reason its params check is unreliable.
-  static function noteEquals(noteA:SongNoteData, other:SongNoteData):Bool
+  static function noteEquals(note:SongNoteData, other:SongNoteData):Bool
   {
-    if (noteA == null) return other == null;
+    if (note == null) return other == null;
     if (other == null) return false;
 
-    // TESTME: These checks seem redundant when kind's getter already returns null if it's an empty string.
-    if (noteA.kind == null || noteA.kind == '')
-    {
-      if (other.kind != '' && noteA.kind != null) return false;
-    }
-    else
-    {
-      if (other.kind == '' || noteA.kind == null) return false;
-    }
+    // TESTME: These checks seem redundant when get_kind already returns null if it's an empty string.
+    /*if (noteA.kind == null)
+      {
+        if (other.kind != null) return false;
+      }
+      else
+      {
+        if (other.kind == null) return false;
+    }*/
 
     // params check is unreliable and doNotesStack already checks data
-    return noteA.time == other.time && noteA.length == other.length;
+    return note.time == other.time && note.length == other.length && note.kind == other.kind;
   }
 }
