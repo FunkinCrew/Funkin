@@ -4,6 +4,14 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2024-10-18
+
+### Changed
+- `optionsStageEditor.theme` converted from an Enum to a String to fix save data compatibility issues.
+- In the future, Enum values should not be used in order to prevent incompatibilities caused by introducing new types to the save data that older versions cannot parse.
+- `optionsChartEditor.theme` converted from an Enum to a String to fix save data compatibility issues.
+- `optionsChartEditor.chartEditorLiveInputStyle` converted from an Enum to a String to fix save data compatibility issues.
+
 ## [0.5.2] - 2024-10-11
 
 ### Changed
