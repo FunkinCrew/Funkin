@@ -54,11 +54,6 @@ jobs:
       uses: ./.github/actions/setup-haxe
       with:
         gh-token: ${{ steps.app_token.outputs.token }}
-    - name: Setup HXCPP dev commit
-      run: |
-        cd .haxelib/hxcpp/git/tools/hxcpp
-        haxe compile.hxml
-        cd ../../../../..
     - name: Build game
       if: ${{ matrix.target == 'windows' }}
       run: |
@@ -129,7 +124,6 @@ jobs:
         git config --global 'url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf' https://github.com/
         git config --global advice.detachedHead false
         haxelib --global run hxpkg install --quiet
-        cd .haxelib/hxcpp/git/tools/hxcpp && haxe compile.hxml
 
     - if: ${{ matrix.target != 'html5' }}
       name: Restore hxcpp cache
