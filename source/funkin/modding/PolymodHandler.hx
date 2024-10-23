@@ -240,7 +240,11 @@ class PolymodHandler
 
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
+
     Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
+
+    // Sandboxed version for use in mods
+    Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtil.FileUtilSandboxed);
 
     Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
 
