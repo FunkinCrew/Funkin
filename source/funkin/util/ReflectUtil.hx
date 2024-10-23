@@ -44,6 +44,11 @@ class ReflectUtil
     return Reflect.field(obj, name);
   }
 
+  public static function setAnonymousField(obj:Dynamic, name:String, value:Dynamic):Dynamic
+  {
+    return Reflect.setField(obj, name, value);
+  }
+
   public static function hasAnonymousField(obj:Dynamic, name:String):Bool
   {
     return Reflect.hasField(obj, name);
