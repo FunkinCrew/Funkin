@@ -8,11 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This patch resolves a critical issue which could cause user's save data to become corrupted. It is recommended that users switch to this version immediately and avoid using version 0.5.2.
 ### Fixed
 - Fixed a critical issue in which the Stage Editor theme value could not be parsed by older versions of the game, resulting in all save data being destroyed.
-  - Added a check which prevents save data from being loaded if it is corrupted rather than overriding it.
+  - Added a check that prevents save data from being loaded if it is corrupted rather than overriding it.
 - `optionsChartEditor.chartEditorLiveInputStyle` in the save data converted from an Enum to a String to fix save data compatibility issues.
 - `optionsStageEditor.theme` in the save data converted from an Enum to a String to fix save data compatibility issues.
   - In the future, Enum values should not be used in order to prevent incompatibilities caused by introducing new types to the save data that older versions cannot parse.
 - Fixed an issue where some publicly distributed release builds of the game were not updated to the latest version.
+
 
 ## [0.5.2] - 2024-10-11
 ### Added
@@ -21,7 +22,6 @@ This patch resolves a critical issue which could cause user's save data to becom
 - Added the `color` attribute to stage prop JSON data to allow them to be tinted without code. ([27a0b44](https://github.com/FunkinCrew/Funkin/pull/3482/commits/27a0b4426f86f04362f97e16e2eff580c9402f34)) - by @JustKolosaki 
 - Added the `angle` attribute to stage prop JSON data to allow them to be rotated without code. ([27a0b44](https://github.com/FunkinCrew/Funkin/pull/3482/commits/27a0b4426f86f04362f97e16e2eff580c9402f34)) - by @JustKolosaki 
 - Added the `blend` attribute to the stage prop JSON data to allow blend modes to be applied without code. ([27a0b44](https://github.com/FunkinCrew/Funkin/pull/3482/commits/27a0b4426f86f04362f97e16e2eff580c9402f34)) - by @JustKolosaki
-
 ### Changed
 - (docs) Delete Modding.md since we have a separate modding documentation ([a42240e](https://github.com/FunkinCrew/Funkin/commit/a42240e6a595d33034f2c887bf38a350d1fa0f15)) - by @AbnormalPoof in [#3651](https://github.com/FunkinCrew/Funkin/pull/3651)
 - (docs) Create a git cliff template for easier changelog stuff ([91b4544](https://github.com/FunkinCrew/Funkin/commit/91b4544f7ebc51485e3e28c3d716ba6ee69ad885)) - by @ninjamuffin99 in [#3652](https://github.com/FunkinCrew/Funkin/pull/3652)
@@ -29,7 +29,6 @@ This patch resolves a critical issue which could cause user's save data to becom
 - (docs) Added modding docs link in readme ([4b54118](https://github.com/FunkinCrew/Funkin/commit/4b54118731e26118111e06558ae4853c577fe4bb)) - by @Cartridge-Man in [#3082](https://github.com/FunkinCrew/Funkin/pull/3082)
 - (docs) Fix some misspellings and grammar in code documentation ([2175bea](https://github.com/FunkinCrew/Funkin/commit/2175beaa651e009332202985be4b7eb4ed36e5a4)) - by @Hundrec in [#3477](https://github.com/FunkinCrew/Funkin/pull/3477)
 - (docs) Improvements to Github Issues templates ([399869c](https://github.com/FunkinCrew/Funkin/commit/399869cdccc9c5ac27cecfbcdc33c3d7eb4b348c)) - by @Hundrec in [#3458](https://github.com/FunkinCrew/Funkin/pull/3458)
-
 ### Fixed
 - Fix the user song offsets being applied incorrectly, causing stuttering or skipping ([410cfe9](https://github.com/FunkinCrew/Funkin/commit/410cfe972d6df9de4d4d128375cf8380c4f06d92)) - by @JustKolosaki in [#3546](https://github.com/FunkinCrew/Funkin/pull/3546) in [#3506](https://github.com/FunkinCrew/Funkin/pull/3506)
 - Fixed issues with variation / difficulty loading for Freeplay Menu which caused some songs to disappear ([c0314c8](https://github.com/FunkinCrew/Funkin/commit/c0314c85ecd5116641aff3de8e9153f7fe48e79c)) - by @ninjamuffin99
@@ -389,6 +388,7 @@ which would remove their rank if they had a lower one.
 ### Removed
 - Removed some unused `.txt` files in the `assets/data` folder.
 
+
 ## [0.3.1] - 2024-05-01
 ### Changed
 - Ensure the Git commit hash always displays in the log files.
@@ -404,6 +404,7 @@ which would remove their rank if they had a lower one.
 - Pico game over confirm plays correctly
 - When exiting from a song into freeplay, main menu no longer takes inputs unintentionally (aka issues with merch links opening up when selecting songs)
 - Fix for arrow keys causing web browser page scroll
+
 
 ## [0.3.0] - 2024-04-30
 ### Added
@@ -438,6 +439,7 @@ which would remove their rank if they had a lower one.
 ### Fixed
 - 17 quadrillion bugs across hundreds of PRs.
 
+
 ## [0.2.8] - 2021-04-18 (note, this one is iffy cuz we slacked wit it lol!)
 ### Added
 - TANKMAN! 3 NEW SONGS BY KAWAISPRITE (UGH, GUNS, STRESS)! Charting help by MtH!
@@ -451,6 +453,7 @@ which would remove their rank if they had a lower one.
 - Made difficulty selector on freeplay menu more apparent
 ### Fixed
 - That one random note on Bopeebo
+
 
 ## [0.2.7.1] - 2021-02-14
 ### Added
@@ -469,6 +472,7 @@ which would remove their rank if they had a lower one.
 - Fixed sustain note trails ALSO THANKS TO MTH U A REAL ONE ([MTH VERY POWERFUL](https://github.com/ninjamuffin99/Funkin/pull/415))
 - Antialiasing on the skyscraper lights
 
+
 ## [0.2.7] - 2021-02-02
 ### Added
 - PIXEL DAY UPDATE LOL 1 WEEK LATER
@@ -481,6 +485,7 @@ which would remove their rank if they had a lower one.
 - Removed the default HaxeFlixel pause screen when the game window loses focus, can get screenshots of the game easier hehehe
 ### Fixed
 - Idle animation bug with BF christmas and BF hair blow sprites ([Thanks to Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/237))
+
 
 ## [0.2.6] - 2021-01-20
 ### Added
@@ -502,6 +507,7 @@ which would remove their rank if they had a lower one.
 - Screen wipe being cut off in the limo/mom stage. Should fill the whole screen now.
 - Boyfriend animations on hold notes, and pressing on repeating notes should behave differently
 
+
 ## [0.2.5] - 2020-12-27
 ### Added
 - MOMMY GF, 3 NEW ASS SONGS BY KAWAISPRITE, NEW ART BY PHANTOMARCADE,WOOOOOOAH!!!!
@@ -519,6 +525,7 @@ which would remove their rank if they had a lower one.
 - When pausing music at the start, it doesn't continue the song anyways. ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
 - IDK i think backing out of song menu should play main menu songs again hehe ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
 
+
 ## [0.2.4] - 2020-12-11
 ### Added
 - 3 NEW SONGS BY KAWAISPRITE. Pico, Philly, and Blammed.
@@ -530,6 +537,7 @@ which would remove their rank if they had a lower one.
 - Song desync of you paused and unpaused frequently ([shoutouts SonicBlam](https://github.com/ninjamuffin99/Funkin/issues/37))
 - Animation offsets when GF is scared
 
+
 ## [0.2.3] - 2020-12-04
 ### Added
 - More intro texts
@@ -539,6 +547,7 @@ which would remove their rank if they had a lower one.
 - Glitch where if you never would lose health if you missed a note on a fast song (shoutouts [MrDulfin](https://github.com/ninjamuffin99/Funkin/issues/10), [HotSauceBurritos](https://github.com/ninjamuffin99/Funkin/issues/13) and [LobsterMango](https://lobstermango.newgrounds.com))
 - Fixed tiny note bleed over thingies (shoutouts [lotusotho](https://github.com/ninjamuffin99/Funkin/pull/24))
 
+
 ## [0.2.2] - 2020-11-20
 ### Added
 - Music playing on the freeplay menu.
@@ -546,7 +555,6 @@ which would remove their rank if they had a lower one.
 - Score now shows mid-song.
 - Menu on pause screen! Can resume, and restart song, or go back to main menu.
 - New music made for pause menu!
-
 ### Changed
 - Moved all the intro texts to its own txt file instead of being hardcoded, this allows for much easier customization. File is in the data folder, called "introText.txt", follow the format in there and you're probably good to go!
 ### Fixed
@@ -557,15 +565,18 @@ which would remove their rank if they had a lower one.
 - Fixed some animation timings, should feel both better to play, and watch. (shoutouts Dave/Ivan lol)
 - Animation issue where GF would freak out on the title screen if you returned to it([shoutouts MultiXIII](https://github.com/ninjamuffin99/Funkin/issues/12)).
 
+
 ## [0.2.1.2] - 2020-11-06
 ### Fixed
 - Story mode scores not properly resetting, leading to VERY inflated highscores on the leaderboards. This also requires me to clear the scores that are on the leaderboard right now, sorry!
 - Difficulty on storymode and in freeplay scores
 - Hard mode difficulty on campaign levels have been fixed
 
+
 ## [0.2.1.1] - 2020-11-06
 ### Fixed
 - Week 2 not unlocking properly
+
 
 ## [0.2.1] - 2020-11-06
 ### Added
@@ -574,17 +585,17 @@ which would remove their rank if they had a lower one.
 - Lightning effect in Spooky stages
 - Campaign scores, can now compete on scoreboards for campaign!
 - Can now change difficulties in Freeplay mode
-
 ### Changed
 - Balanced out Normal mode for the harder songs(DadBattle and Spookeez, not South yet). Should be much easier all around.
 - Put tutorial in it's own 'week', so that if you want to play week 1, you don't have to play the tutorial.
-
 ### Fixed
 - One of the charting bits on South and Spookeez during the intro.
+
 
 ## [0.2.0] - 2020-11-01
 ### Added
 - Uhh Newgrounds release lolol I always lose track of shit.
+
 
 ## [0.1.0] - 2020-10-05
 ### Added
