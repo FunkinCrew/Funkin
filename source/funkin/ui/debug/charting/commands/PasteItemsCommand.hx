@@ -4,6 +4,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
+import funkin.ui.debug.charting.ChartEditorState;
 
 /**
  * A command which inserts the contents of the clipboard into the chart editor.
@@ -13,7 +14,7 @@ import funkin.data.song.SongDataUtils.SongClipboardItems;
 class PasteItemsCommand implements ChartEditorCommand
 {
   var targetTimestamp:Float;
-  // Notes we added with this command, for undo.
+  // Notes we added and removed with this command, for undo.
   var addedNotes:Array<SongNoteData> = [];
   var addedEvents:Array<SongEventData> = [];
 
@@ -40,11 +41,15 @@ class PasteItemsCommand implements ChartEditorCommand
     addedNotes = SongDataUtils.clampSongNoteData(addedNotes, 0.0, msCutoff);
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
+    var removedNotes = addedNotes.copy();
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
+    state.currentSongChartNoteData = SongDataUtils.addNotes(state.currentSongChartNoteData, addedNotes);
+    // SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, addedNotes, removedNotes,
+    // ChartEditorState.stackNoteThreshold);
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
-    state.currentNoteSelection = addedNotes.copy();
+    state.currentNoteSelection = removedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
+    removedNotes = SongDataUtils.subtractNotes(removedNotes, addedNotes);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -52,7 +57,11 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    state.success('Paste Successful', 'Successfully pasted clipboard contents.');
+    // FIXME: execute() is reused as a redo function so these messages show up even when not actually pasting
+    if (addedNotes.length == 0) state.error('Paste Failed', 'All notes would overlap already placed notes.')
+    else if (removedNotes.length > 0) state.warning('Paste Successful', 'However overlapping notes were ignored.');
+    else
+      state.success('Paste Successful', 'Successfully pasted clipboard contents.');
   }
 
   public function undo(state:ChartEditorState):Void
