@@ -10,18 +10,9 @@ import funkin.play.scoring.Scoring.ScoringRank;
  * Can be scripted to override each function, for custom behavior.
  */
 @:nullSafety
+@:build(funkin.util.macro.EntryMacro.build(funkin.data.freeplay.player.PlayerRegistry))
 class PlayableCharacter implements IRegistryEntry<PlayerData>
 {
-  /**
-   * The ID of the playable character.
-   */
-  public final id:String;
-
-  /**
-   * Playable character data as parsed from the JSON file.
-   */
-  public final _data:Null<PlayerData>;
-
   /**
    * @param id The ID of the JSON file to parse.
    */
@@ -155,26 +146,5 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
   public function isUnlocked():Bool
   {
     return _data?.unlocked ?? true;
-  }
-
-  /**
-   * Called when the character is destroyed.
-   * TODO: Document when this gets called
-   */
-  public function destroy():Void {}
-
-  public function toString():String
-  {
-    return 'PlayableCharacter($id)';
-  }
-
-  /**
-   * Retrieve and parse the JSON data for a playable character by ID.
-   * @param id The ID of the character
-   * @return The parsed player data, or null if not found or invalid
-   */
-  static function _fetchData(id:String):Null<PlayerData>
-  {
-    return PlayerRegistry.instance.parseEntryDataWithMigration(id, PlayerRegistry.instance.fetchEntryVersion(id));
   }
 }

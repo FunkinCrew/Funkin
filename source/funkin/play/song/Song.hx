@@ -28,6 +28,7 @@ import funkin.util.SortUtil;
  * can be used to perform custom gameplay behaviors only on specific songs.
  */
 @:nullSafety
+@:build(funkin.util.macro.EntryMacro.build(funkin.data.song.SongRegistry))
 class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMetadata>
 {
   /**
@@ -64,19 +65,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * The default value for the song's scroll speed.
    */
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
-
-  /**
-   * The internal ID of the song.
-   */
-  public final id:String;
-
-  /**
-   * Song metadata as parsed from the JSON file.
-   * This is the data for the `default` variation specifically,
-   * and is needed for the IRegistryEntry interface.
-   * Will only be null if the song data could not be loaded.
-   */
-  public final _data:Null<SongMetadata>;
 
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
@@ -209,17 +197,17 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     @:privateAccess
     var result:Null<Song>;
 
-    if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
+    if (includeScript && registryInstance.isScriptedEntry(songId))
     {
-      var songClassName:String = SongRegistry.instance.getScriptedEntryClassName(songId);
+      var songClassName:String = registryInstance.getScriptedEntryClassName(songId);
 
       @:privateAccess
-      result = SongRegistry.instance.createScriptedEntry(songClassName);
+      result = registryInstance.createScriptedEntry(songClassName);
     }
     else
     {
       @:privateAccess
-      result = SongRegistry.instance.createEntry(songId);
+      result = registryInstance.createEntry(songId);
     }
 
     if (result == null) throw 'ERROR: Could not build Song instance ($songId), is the attached script bad?';
@@ -356,9 +344,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     trace('Caching ${variations.length} chart files for song $id');
     for (variation in variations)
     {
-      var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryChartVersion(id, variation);
+      var version:Null<thx.semver.Version> = registryInstance.fetchEntryChartVersion(id, variation);
       if (version == null) continue;
-      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, variation, version);
+      var chart:Null<SongChartData> = registryInstance.parseEntryChartDataWithMigration(id, variation, version);
       if (chart == null) continue;
       applyChartData(chart, variation);
     }
@@ -624,13 +612,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
   }
 
-  public function toString():String
-  {
-    return 'Song($id)';
-  }
-
-  public function destroy():Void {}
-
   public function onPause(event:PauseScriptEvent):Void {};
 
   public function onResume(event:ScriptEvent):Void {};
@@ -676,16 +657,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   static function _fetchData(id:String):Null<SongMetadata>
   {
     trace('Fetching song metadata for $id');
-    var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id);
+    var version:Null<thx.semver.Version> = registryInstance.fetchEntryMetadataVersion(id);
     if (version == null) return null;
-    return SongRegistry.instance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
+    return registryInstance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
   }
 
   function fetchVariationMetadata(id:String, vari:String):Null<SongMetadata>
   {
-    var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id, vari);
+    var version:Null<thx.semver.Version> = registryInstance.fetchEntryMetadataVersion(id, vari);
     if (version == null) return null;
-    var meta:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataWithMigration(id, vari, version);
+    var meta:Null<SongMetadata> = registryInstance.parseEntryMetadataWithMigration(id, vari, version);
     return meta;
   }
 
