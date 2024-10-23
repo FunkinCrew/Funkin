@@ -474,7 +474,10 @@ class CharSelectSubState extends MusicBeatSubState
       }
       else
       {
-        if (availableChars.exists(i)) nonLocks.push(i);
+        var playableCharacterId:String = availableChars.get(i);
+        var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playableCharacterId);
+        var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
+        if (availableChars.exists(i) && isPlayerUnlocked) nonLocks.push(i);
 
         var temp:Lock = new Lock(0, 0, i);
         temp.ID = 1;
