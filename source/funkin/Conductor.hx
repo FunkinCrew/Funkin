@@ -92,6 +92,13 @@ class Conductor
    */
   public var songPosition(default, null):Float = 0;
 
+  /**
+   * The current position in the song in milliseconds, updated every frame.
+   * `songPosition` doesn't update every frame, meaning things that are based on `songPosition` but update faster than `songPosition` appear to lag.
+   * An example is note rendering. Using `frameSongPosition` instead of `songPosition` fixes this.
+   */
+  public var frameSongPosition(default, null):Float = 0;
+
   var prevTimestamp:Float = 0;
   var prevTime:Float = 0;
 
@@ -411,6 +418,7 @@ class Conductor
     {
       songPos = currentTime;
     }
+    var frameSongPos:Float = frameSongPosition + FlxG.elapsed * 1000;
 
     // Take into account instrumental and file format song offsets.
     songPos += applyOffsets ? (combinedOffset) : 0;
@@ -423,10 +431,12 @@ class Conductor
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
     {
       this.songPosition = Math.min(currentLength, Math.max(0, songPos));
+      this.frameSongPosition = Math.min(currentLength, Math.max(0, frameSongPos));
     }
     else
     {
       this.songPosition = songPos;
+      this.frameSongPosition = frameSongPos;
     }
 
     // Set the song position we are at (for purposes of calculating note positions, etc).
@@ -488,6 +498,9 @@ class Conductor
     // which it doesn't do every frame!
     if (prevTime != this.songPosition)
     {
+      // Set the frameSongPosition to the actual songPosition every time it actually changes to prevent desync
+      frameSongPosition = this.songPosition;
+
       // Update the timestamp for use in-between frames
       prevTime = this.songPosition;
       prevTimestamp = Std.int(Timer.stamp() * 1000);
@@ -686,6 +699,7 @@ class Conductor
     if (target == null) target = Conductor.instance;
 
     FlxG.watch.addQuick('songPosition', target.songPosition);
+    FlxG.watch.addQuick('frameSongPosition', target.frameSongPosition);
     FlxG.watch.addQuick('bpm', target.bpm);
     FlxG.watch.addQuick('currentMeasureTime', target.currentMeasureTime);
     FlxG.watch.addQuick('currentBeatTime', target.currentBeatTime);
