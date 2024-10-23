@@ -13,7 +13,7 @@ This patch resolves a critical issue which could cause user's save data to becom
   - In the future, Enum values should not be used in order to prevent incompatibilities caused by introducing new types to the save data that older versions cannot parse.
 - `optionsChartEditor.theme` in the save data converted from an Enum to a String to fix save data compatibility issues.
 - `optionsChartEditor.chartEditorLiveInputStyle` in the save data converted from an Enum to a String to fix save data compatibility issues.
-- Fixed an issue where some publicly distributed release builds of the game were not 
+- Fixed an issue where some publicly distributed builds of the game were debug builds instead of release builds.
 
 ## [0.5.2] - 2024-10-11
 
