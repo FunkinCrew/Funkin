@@ -89,6 +89,20 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
+  override function onFocus():Void
+  {
+    super.onFocus();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
+  }
+
+  override function onFocusLost():Void
+  {
+    super.onFocusLost();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
+  }
+
   public function initConsoleHelpers():Void {}
 
   function reloadAssets()
