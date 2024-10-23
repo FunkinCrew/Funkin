@@ -94,6 +94,7 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
+import funkin.util.MathUtil;
 import funkin.util.logging.CrashHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
@@ -244,7 +245,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Duration, in seconds, for the scroll easing animation.
    */
-  public static final SCROLL_EASE_DURATION:Float = 0.2;
+  public static final SCROLL_EASE_DURATION:Float = 0.4;
 
   // Other
 
@@ -773,9 +774,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The current process that is lerping the scroll position.
-   * Used to cancel the previous lerp if the user scrolls again.
    */
-  var currentScrollEase:Null<VarTween>;
+  var currentScrollEase:Null<Float>;
 
   /**
    * The position where the user middle clicked to place a scroll anchor.
@@ -2726,10 +2726,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.playbarHead.onDrag = function(_:DragEvent) {
       if (playbarHeadDragging)
       {
-        // Set the song position to where the playhead was moved to.
-        scrollPositionInPixels = (songLengthInPixels) * playbarHeadLayout.playbarHead.value / 100;
         // Update the conductor and audio tracks to match.
-        moveSongToScrollPosition();
+        easeSongToScrollPosition((songLengthInPixels) * playbarHeadLayout.playbarHead.value / 100);
       }
     }
 
@@ -4057,27 +4055,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       shouldPause = true;
     }
 
-    if (Math.abs(scrollAmount) > GRID_SIZE * 8)
-    {
-      shouldEase = true;
-    }
+    shouldEase = true;
+    if (shouldPause) stopAudioPlayback();
 
     // Resync the conductor and audio tracks.
-    if (scrollAmount != 0 || playheadAmount != 0)
-    {
-      this.playheadPositionInPixels += playheadAmount;
-      if (shouldEase)
-      {
-        easeSongToScrollPosition(this.scrollPositionInPixels + scrollAmount);
-      }
-      else
-      {
-        // Apply the scroll amount.
-        this.scrollPositionInPixels += scrollAmount;
-        moveSongToScrollPosition();
-      }
-    }
-    if (shouldPause) stopAudioPlayback();
+    if (playheadAmount != 0) this.playheadPositionInPixels += playheadAmount;
+
+    if (scrollAmount != 0) easeSongToScrollPosition(currentScrollEase + scrollAmount);
+    else if (!audioInstTrack.isPlaying && currentScrollEase != this.scrollPositionInPixels) easeSongToScrollPosition(currentScrollEase);
   }
 
   /**
@@ -4333,15 +4318,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             {
               // Scroll up.
               var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.viewY;
-              scrollPositionInPixels -= diff * 0.5; // Too fast!
-              moveSongToScrollPosition();
+              scrollPositionInPixels -= diff * 0.5;
+              easeSongToScrollPosition(currentScrollEase - (diff * 0.5)); // Too fast!
             }
             else if (FlxG.mouse.viewY > (playbarHeadLayout?.y ?? 0.0))
             {
               // Scroll down.
               var diff:Float = FlxG.mouse.viewY - (playbarHeadLayout?.y ?? 0.0);
-              scrollPositionInPixels += diff * 0.5; // Too fast!
-              moveSongToScrollPosition();
+              easeSongToScrollPosition(currentScrollEase + (diff * 0.5)); // Too fast!
             }
 
             // Render the selection box.
@@ -4480,8 +4464,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var clickedPosInPixels:Float = FlxMath.remapToRange(FlxG.mouse.viewY, (notePreview?.y ?? 0.0), (notePreview?.y ?? 0.0) + (notePreview?.height ?? 0.0),
           0, songLengthInPixels);
 
-        scrollPositionInPixels = clickedPosInPixels;
-        moveSongToScrollPosition();
+        easeSongToScrollPosition(clickedPosInPixels);
       }
       else if (scrollAnchorScreenPos != null)
       {
@@ -4540,15 +4523,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             // Scroll up.
             var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.viewY;
-            scrollPositionInPixels -= diff * 0.5; // Too fast!
-            moveSongToScrollPosition();
+            easeSongToScrollPosition(currentScrollEase - (diff * 0.5));
           }
           else if (FlxG.mouse.viewY > (playbarHeadLayout?.y ?? 0.0))
           {
             // Scroll down.
             var diff:Float = FlxG.mouse.viewY - (playbarHeadLayout?.y ?? 0.0);
-            scrollPositionInPixels += diff * 0.5; // Too fast!
-            moveSongToScrollPosition();
+            easeSongToScrollPosition(currentScrollEase + (diff * 0.5));
           }
 
           // Calculate distance between the position dragged to and the original position.
@@ -6134,41 +6115,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function easeSongToScrollPosition(targetScrollPosition:Float):Void
   {
-    if (currentScrollEase != null) cancelScrollEase(currentScrollEase);
-
-    currentScrollEase = FlxTween.tween(this, {scrollPositionInPixels: targetScrollPosition}, SCROLL_EASE_DURATION,
-      {
-        ease: FlxEase.quintInOut,
-        onUpdate: this.onScrollEaseUpdate,
-        onComplete: this.cancelScrollEase,
-        type: ONESHOT
-      });
-  }
-
-  /**
-   * Callback function executed every frame that the scroll position is being eased.
-   * @param _
-   */
-  function onScrollEaseUpdate(_:FlxTween):Void
-  {
+    currentScrollEase = Math.max(0, targetScrollPosition);
+    currentScrollEase = Math.min(currentScrollEase, songLengthInPixels);
+    scrollPositionInPixels = MathUtil.smoothLerp(scrollPositionInPixels, currentScrollEase, FlxG.elapsed, SCROLL_EASE_DURATION, 1 / 1000);
     moveSongToScrollPosition();
-  }
-
-  /**
-   * Callback function executed when cancelling an existing scroll position ease.
-   * Ensures that the ease is immediately cancelled and the scroll position is set to the target value.
-   */
-  function cancelScrollEase(_:FlxTween):Void
-  {
-    if (currentScrollEase != null)
-    {
-      @:privateAccess
-      var targetScrollPosition:Float = currentScrollEase._properties.scrollPositionInPixels;
-
-      currentScrollEase.cancel();
-      currentScrollEase = null;
-      this.scrollPositionInPixels = targetScrollPosition;
-    }
   }
 
   /**
@@ -6350,6 +6300,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function toggleAudioPlayback():Void
   {
     if (audioInstTrack == null) return;
+
+    currentScrollEase = this.scrollPositionInPixels;
 
     if (audioInstTrack.isPlaying)
     {
