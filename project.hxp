@@ -266,6 +266,7 @@ class Project extends HXProject {
     configureHaxelibs();
     configureAssets();
     configureIcons();
+    configureALSoft();
 	}
 
 	/**
@@ -741,6 +742,15 @@ class Project extends HXProject {
 		addIcon("art/icon32.png", 32);
 		addIcon("art/icon64.png", 64);
 		addIcon("art/iconOG.png");
+  }
+
+  /**
+   * For desktop platforms, copy the OpenALSoft config file into the build to improve audio quality.
+   */
+  function configureALSoft() {
+    if (isDesktop()) {
+      addAsset("alsoft.txt", 'plugins/alsoft.${isWindows() ? "ini" : "conf"}', "default", false);
+    }
   }
 
 	//
