@@ -7,14 +7,13 @@
     - Instead, open a command prompt and do the following steps...
 1. Run `cd the\directory\you\want\the\source\code\in` to specify which folder the command prompt is working in.
     - For example, `cd C:\Users\YOURNAME\Documents` would instruct the command prompt to perform the next steps in your Documents folder.
-2. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
-3. Run `cd funkin` to enter the cloned repository's directory.
+2. Run `git clone https://github.com/FunkinCrew/Funkin.git` to clone the base repository.
+3. Run `cd Funkin` to enter the cloned repository's directory.
 4. Run `git submodule update --init --recursive` to download the game's assets.
-    - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
-5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
-6. Run `hmm install` to install all haxelibs of the current branch
-7. Run `haxelib run lime setup` to set up lime
-8. Perform additional platform setup
+    - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See the LICENSE.md files for `funkin.assets` [here](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) and for `funkin.art` [here](https://github.com/FunkinCrew/funkin.art/blob/main/LICENSE.md).
+5. Run `haxelib --global install hxpkg` and then `haxelib --global run hxpkg setup` to install `HxPKG`
+6. Run `hxpkg install` to install all haxelibs of the current branch
+7. Perform additional platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
@@ -22,8 +21,8 @@
     - Mac: [`lime setup mac` Documentation](https://lime.openfl.org/docs/advanced-setup/macos/)
     - Linux: [`lime setup linux` Documentation](https://lime.openfl.org/docs/advanced-setup/linux/)
     - HTML5: Compiles without any extra setup
-9. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
-10. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
+8. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
+9. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
 
 ## Build Flags
 

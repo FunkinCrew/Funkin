@@ -108,7 +108,7 @@ class Constants
   public static final GIT_HAS_LOCAL_CHANGES:Bool = funkin.util.macro.GitCommit.getGitHasLocalChanges();
 
   /**
-   * The current library versions, as provided by hmm.
+   * The current library versions, as provided by HxPKG.
    */
   public static final LIBRARY_VERSIONS:Array<String> = funkin.util.macro.HaxelibVersions.getLibraryVersions();
 
