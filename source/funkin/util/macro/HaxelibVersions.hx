@@ -37,7 +37,7 @@ class HaxelibVersions
         var innerText:String = switch (type)
         {
           case 'git':
-            '${pkg.link}:${pkg.branch ?? 'None'}';
+            '${pkg.link}/${pkg.dir ?? ''}:${pkg.branch ?? 'None'}';
           case 'haxelib':
             '${pkg.version ?? 'None'}';
           default:
