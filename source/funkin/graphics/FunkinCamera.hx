@@ -54,8 +54,16 @@ class FunkinCamera extends FlxCamera
   {
     super(x, y, width, height, zoom);
     this.id = id;
-    bgTexture = pickTexture(width, height);
-    bgBitmap = FixedBitmapData.fromTexture(bgTexture);
+
+    if(Lib.current.stage.context3D != null)
+    {
+      bgTexture = pickTexture(width, height);
+      bgBitmap = FixedBitmapData.fromTexture(bgTexture);
+    }
+    else
+    {
+      bgBitmap = new BitmapData(width, height);
+    }
     bgFrame = new FlxFrame(new FlxGraphic('', null));
     bgFrame.parent.bitmap = bgBitmap;
     bgFrame.frame = new FlxRect();
@@ -112,9 +120,11 @@ class FunkinCamera extends FlxCamera
     static final matrix = new FlxMatrix();
 
     // resize the background bitmap if needed
-    if (bgTexture.__width != width || bgTexture.__height != height)
+    if (bgBitmap.width != width || bgBitmap.height != height)
     {
-      BitmapDataUtil.resizeTexture(bgTexture, width, height);
+      if(Lib.current.stage.context3D != null)
+        BitmapDataUtil.resizeTexture(bgTexture, width, height);
+
       bgBitmap.__resize(width, height);
       bgFrame.parent.bitmap = bgBitmap;
     }
@@ -255,7 +265,10 @@ class FunkinCamera extends FlxCamera
       texture.dispose();
     }
     texturePool.resize(0);
-    bgTexture.dispose();
+
+    if(Lib.current.stage.context3D != null)
+      bgTexture.dispose();
+
     bgBitmap.dispose();
   }
 }
