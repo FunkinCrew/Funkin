@@ -67,6 +67,7 @@ class DebugMenuSubState extends MusicBeatSubState
     #if sys
     createItem("OPEN CRASH LOG FOLDER", openLogFolder);
     #end
+    onMenuChange(items.members[0]);
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
   }
 
