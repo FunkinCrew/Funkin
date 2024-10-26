@@ -2083,11 +2083,9 @@ class PlayState extends MusicBeatSubState
     };
 
     // Check for the lowest song length, then set all the endTimes to it.
-    var allSoundLengths:Array<Float> = [
-      FlxG.sound.music.length,
-      vocals.getPlayerVoiceLength(),
-      vocals.getOpponentVoiceLength()
-    ];
+    var allSoundLengths:Array<Float> = [FlxG.sound.music.length];
+    if (vocals.getPlayerVoiceLength() > 0) allSoundLengths.push(vocals.getPlayerVoiceLength());
+    if (vocals.getOpponentVoiceLength() > 0) allSoundLengths.push(vocals.getOpponentVoiceLength());
 
     allSoundLengths.sort(flixel.util.FlxSort.byValues.bind(flixel.util.FlxSort.ASCENDING));
     minSongLength = allSoundLengths[0];
