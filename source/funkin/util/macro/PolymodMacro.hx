@@ -20,14 +20,14 @@ class PolymodMacro
           throw 'BRUH';
       }
 
-      // var type = Context.getType('funkin.Paths.PathsFunction');
-      // switch (type)
-      // {
-      //   case Type.TAbstract(t, _):
-      //     buildAbstract(t.get());
-      //   default:
-      //     throw 'BRUH';
-      // }
+      var type = Context.getType('funkin.Paths.PathsFunction');
+      switch (type)
+      {
+        case Type.TAbstract(t, _):
+          buildAbstract(t.get());
+        default:
+          throw 'BRUH';
+      }
     });
   }
 
@@ -36,7 +36,7 @@ class PolymodMacro
     var abstractAliases:Map<String, String> = new Map<String, String>();
     var abstractTypes = [
       Context.getType('flixel.util.FlxColor'),
-      // Context.getType('funkin.Paths.PathsFunction')
+      Context.getType('funkin.Paths.PathsFunction')
     ];
     for (abstractType in abstractTypes)
     {
@@ -86,7 +86,7 @@ class PolymodMacro
     Context.defineType(
       {
         pos: Context.currentPos(),
-        pack: ['polymod', 'abstracts'].concat(abstractCls.pack),
+        pack: ['polymod', 'abstracts'].concat(abstractCls.module.split('.')),
         name: abstractCls.name,
         kind: TypeDefKind.TDClass(null, [], false, false, false),
         fields: fields,
@@ -191,12 +191,15 @@ class PolymodMacro
             pos: Context.currentPos()
           });
       case Type.TAbstract(t, params):
+        var actualType:ComplexType = cls.to.length != 0 ? Context.toComplexType(t.get()
+          .type) : Context.toComplexType(Context.getType('${cls.module}.${cls.name}'));
+
         fields.push(
           {
             name: field.name,
             doc: field.doc,
             access: [Access.AStatic].concat(getFieldAccess(field)),
-            kind: FieldType.FProp('get', 'never', Context.toComplexType(t.get().type), null),
+            kind: FieldType.FProp('get', 'never', actualType, null),
             pos: Context.currentPos()
           });
 
@@ -220,7 +223,7 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: [],
-                ret: Context.toComplexType(t.get().type),
+                ret: actualType,
                 expr: macro
                 {
                   return ${strExpr};
