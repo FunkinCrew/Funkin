@@ -8,8 +8,10 @@ using StringTools;
 
 class PolymodMacro
 {
-  public static macro function buildPolymodAbstracts():Void
+  public static macro function buildPolymodAbstracts():Array<Field>
   {
+    var fields:Array<Field> = Context.getBuildFields();
+
     Context.onAfterTyping((types) -> {
       for (type in types)
       {
@@ -17,11 +19,14 @@ class PolymodMacro
         {
           case ModuleType.TAbstract(a):
             var cls = a.get();
+            trace(cls.name);
           default:
             // do nothing
         }
       }
     });
+
+    return fields;
   }
 
   #if macro

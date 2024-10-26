@@ -588,7 +588,6 @@ class Project extends HXProject {
 	function configureCustomMacros() {
 		// This macro allows addition of new functionality to existing Flixel. -->
 		addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
-		addHaxeMacro("funkin.util.macro.PolymodMacro.buildPolymodAbstracts()");
 	}
 
   function configureOutputDir() {
