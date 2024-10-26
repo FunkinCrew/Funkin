@@ -170,7 +170,7 @@ class PolymodMacro
             });
         }
 
-        var strExpr = Context.parse('${cls.pack.join('.')}.${cls.name}.${field.name}(${exprArgs.join(', ')})', Context.currentPos());
+        var strExpr = Context.parse('${cls.module}.${cls.name}.${field.name}(${exprArgs.join(', ')})', Context.currentPos());
 
         fields.push(
           {
@@ -209,7 +209,7 @@ class PolymodMacro
             });
         }
 
-        var strExpr = Context.parse('${cls.pack.join('.')}.${cls.name}.${field.name}', Context.currentPos());
+        var strExpr = Context.parse('${cls.module}.${cls.name}.${field.name}', Context.currentPos());
 
         fields.push(
           {
