@@ -66,7 +66,7 @@ class PolymodMacro
 
     skipFields = [];
 
-    var cls = abstractCls.impl.get();
+    var cls:ClassType = abstractCls.impl.get();
 
     // we use the functions to check whether we need to skip some fields
     // that is why we sort the fields, so that functions are handled first
@@ -135,7 +135,7 @@ class PolymodMacro
 
   static function _createFields(cls:AbstractType, field:ClassField, type:Type):Array<Field>
   {
-    var fields = [];
+    var fields:Array<Field> = [];
 
     switch (type)
     {
@@ -229,7 +229,61 @@ class PolymodMacro
               }),
             pos: Context.currentPos()
           });
+      case TType(t, params):
+        var actualType = switch (Context.toComplexType(t.get().type))
+        {
+          case ComplexType.TPath(ct):
+            ct.params = [];
+            for (param in params)
+            {
+              switch (param)
+              {
+                case Type.TInst(p, _):
+                  ct.params.push(TypeParam.TPType(ComplexType.TPath(
+                    {
+                      pack: p.get().pack,
+                      name: p.get().name
+                    })));
 
+                case Type.TAbstract(p, _):
+                  ct.params.push(TypeParam.TPType(Context.toComplexType(p.get().type)));
+                default:
+                  throw 'unhandled type';
+              }
+            }
+            ComplexType.TPath(ct);
+          default:
+            Context.toComplexType(t.get().type);
+        }
+
+        fields.push(
+          {
+            name: field.name,
+            doc: field.doc,
+            access: [Access.AStatic].concat(getFieldAccess(field)),
+            kind: FieldType.FProp('get', 'never', actualType, null),
+            pos: Context.currentPos()
+          });
+
+        var strExpr = Context.parse('${cls.module}.${cls.name}.${field.name}', Context.currentPos());
+
+        fields.push(
+          {
+            name: 'get_${field.name}',
+            doc: field.doc,
+            access: [Access.AStatic, field.isPublic ? Access.APublic : Access.APrivate],
+            kind: FieldType.FFun(
+              {
+                args: [],
+                ret: actualType,
+                expr: macro
+                {
+                  return ${strExpr};
+                },
+                params: []
+              }),
+            pos: Context.currentPos()
+          });
       default:
         return [];
     };
