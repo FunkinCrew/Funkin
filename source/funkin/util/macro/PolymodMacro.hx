@@ -48,6 +48,7 @@ class PolymodMacro
           throw 'BRUH';
       }
 
+      // should this use `type.module` insead of `type.pack`?
       abstractAliases.set('${type.pack.join('.')}.${type.name}', 'polymod.abstracts.${type.pack.join('.')}.${type.name}');
     }
     return macro $v{abstractAliases};
