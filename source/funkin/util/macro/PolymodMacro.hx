@@ -4,6 +4,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+using haxe.macro.ExprTools;
 using StringTools;
 
 class PolymodMacro
@@ -146,22 +147,84 @@ class PolymodMacro
 
   static function buildCreateField(cls:AbstractType, field:ClassField):Field
   {
-    var newExpr = Context.parse('new ${cls.module}.${cls.name}<Dynamic->Void>()', Context.currentPos());
+    var newExprStr = trialAndError(cls, field) ?? 'new ${cls.module}.${cls.name}';
+
+    var funcArgs = [];
+    var funcArgNames:Array<String> = [];
+    switch (field.type)
+    {
+      case Type.TFun(args, _):
+        for (arg in args)
+        {
+          funcArgs.push(
+            {
+              name: arg.name,
+              type: (macro :Dynamic),
+              opt: arg.opt
+            });
+          funcArgNames.push(arg.name);
+        }
+      default:
+        throw 'how is this not a function';
+    }
 
     return {
       name: 'create',
       access: [Access.APublic, Access.AStatic],
       kind: FieldType.FFun(
         {
-          args: [],
+          args: funcArgs,
           ret: (macro :Dynamic),
           expr: macro
           {
-            return ${newExpr};
+            return ${Context.parse(newExprStr + '(' + funcArgNames.join(', ') + ')', Context.currentPos())};
           },
         }),
       pos: Context.currentPos()
     };
+  }
+
+  static function trialAndError(cls:AbstractType, field:ClassField):Null<String>
+  {
+    if (cls.params.length <= 0)
+    {
+      return null;
+    }
+
+    function getCombinations(num:Int):Array<Array<String>>
+    {
+      if (num == 0)
+      {
+        return [[]];
+      }
+
+      var combinations:Array<Array<String>> = [];
+      for (combination in getCombinations(num - 1))
+      {
+        // combinations.push(combination.concat(['Dynamic']));
+        combinations.push(combination.concat(['Dynamic->Void']));
+      }
+
+      return combinations;
+    }
+    var typeArgss:Array<Array<String>> = getCombinations(cls.params.length);
+
+    for (typeArgs in typeArgss)
+    {
+      // TODO: figure out a way to find out whether a typeparameter is valid or not
+      try
+      {
+        // var expr = Context.parse('new ${cls.module}.${cls.name}<' + typeArgs.join(', ') + '>()', Context.currentPos());
+        // return expr;
+        return 'new ${cls.module}.${cls.name} <' + typeArgs.join(', ') + '>';
+      }
+      catch (e)
+      {
+        trace(e);
+      }
+    }
+
+    return null;
   }
 
   static function createFields(cls:AbstractType, field:ClassField):Array<Field>
