@@ -298,9 +298,6 @@ class PolymodMacro
             pos: Context.currentPos()
           });
       case Type.TAbstract(t, params):
-        var actualType:ComplexType = cls.to.length != 0 ? Context.toComplexType(t.get()
-          .type) : Context.toComplexType(Context.getType('${cls.module}.${cls.name}'));
-
         fields.push(
           {
             name: field.name,
@@ -331,32 +328,6 @@ class PolymodMacro
             pos: Context.currentPos()
           });
       case TType(t, params):
-        var actualType = switch (Context.toComplexType(t.get().type))
-        {
-          case ComplexType.TPath(ct):
-            ct.params = [];
-            for (param in params)
-            {
-              switch (param)
-              {
-                case Type.TInst(p, _):
-                  ct.params.push(TypeParam.TPType(ComplexType.TPath(
-                    {
-                      pack: p.get().pack,
-                      name: p.get().name
-                    })));
-
-                case Type.TAbstract(p, _):
-                  ct.params.push(TypeParam.TPType(Context.toComplexType(p.get().type)));
-                default:
-                  throw 'unhandled type';
-              }
-            }
-            ComplexType.TPath(ct);
-          default:
-            Context.toComplexType(t.get().type);
-        }
-
         fields.push(
           {
             name: field.name,
