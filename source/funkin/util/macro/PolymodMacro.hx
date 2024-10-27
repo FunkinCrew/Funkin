@@ -25,6 +25,19 @@ class PolymodMacro
         return;
       }
 
+      var sortedAbstractClasses:Array<String> = [];
+      for (abstractCls in abstractClasses)
+      {
+        if (abstractCls.startsWith('!'))
+        {
+          sortedAbstractClasses.insert(0, abstractCls);
+        }
+        else
+        {
+          sortedAbstractClasses.push(abstractCls);
+        }
+      }
+
       var aliases:Map<String, String> = new Map<String, String>();
 
       for (type in types)
@@ -33,14 +46,27 @@ class PolymodMacro
         {
           case ModuleType.TAbstract(a):
             var cls = a.get();
-            for (abstractCls in abstractClasses)
+
+            for (abstractCls in sortedAbstractClasses)
             {
-              if (!cls.module.startsWith(abstractCls.replace('.*', ''))
-                && cls.module + cls.name != abstractCls
-                && cls.pack.join('.') + '.' + cls.name != abstractCls)
+              var negate:Bool = abstractCls.startsWith('!');
+              var name:String = abstractCls.replace('!', '').replace('.*', '');
+              if (!negate && !cls.module.startsWith(name) && cls.module + cls.name != name && cls.pack.join('.') + '.' + cls.name != name)
               {
                 continue;
               }
+              else if (negate)
+              {
+                if (cls.module.startsWith(name) || cls.module + cls.name == name || cls.pack.join('.') + '.' + cls.name == name)
+                {
+                  break;
+                }
+                else
+                {
+                  continue;
+                }
+              }
+
               aliases.set('${cls.pack.join('.')}.${cls.name}', 'polymod.abstracts.${cls.pack.join('.')}.${cls.name}');
               buildAbstract(cls);
               break;
@@ -177,6 +203,7 @@ class PolymodMacro
           ret: (macro :Dynamic),
           expr: macro
           {
+            @:privateAccess
             return ${Context.parse(newExprStr + '(' + funcArgNames.join(', ') + ')', Context.currentPos())};
           },
         }),
