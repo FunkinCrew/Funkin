@@ -186,6 +186,11 @@ class PolymodMacro
 
   static function trialAndError(cls:AbstractType, field:ClassField):Null<String>
   {
+    if ('${cls.module}.${cls.name}' == 'flixel.util.FlxSignal.FlxTypedSignal')
+    {
+      return 'new flixel.util.FlxSignal.FlxTypedSignal<Dynamic->Void>';
+    }
+
     if (cls.params.length <= 0)
     {
       return null;
@@ -201,8 +206,8 @@ class PolymodMacro
       var combinations:Array<Array<String>> = [];
       for (combination in getCombinations(num - 1))
       {
-        // combinations.push(combination.concat(['Dynamic']));
-        combinations.push(combination.concat(['Dynamic->Void']));
+        combinations.push(combination.concat(['Dynamic']));
+        // combinations.push(combination.concat(['Dynamic->Void']));
       }
 
       return combinations;
