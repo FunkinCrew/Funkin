@@ -272,17 +272,8 @@ class PolymodMacro
           fieldArgs.push(
             {
               name: arg.name,
-              type: Context.toComplexType(arg.t),
+              type: (macro :Dynamic),
               opt: arg.opt,
-            });
-        }
-        var fieldParams = [];
-        for (param in field.params)
-        {
-          fieldParams.push(
-            {
-              name: param.name,
-              defaultType: param.defaultType != null ? Context.toComplexType(param.defaultType) : null,
             });
         }
 
@@ -296,13 +287,13 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: fieldArgs,
-                ret: Context.toComplexType(ret),
+                ret: (macro :Dynamic),
                 expr: macro
                 {
                   @:privateAccess
                   return ${strExpr};
                 },
-                params: fieldParams
+                params: []
               }),
             pos: Context.currentPos()
           });
@@ -315,19 +306,9 @@ class PolymodMacro
             name: field.name,
             doc: field.doc,
             access: [Access.AStatic].concat(getFieldAccess(field)),
-            kind: FieldType.FProp('get', 'never', actualType, null),
+            kind: FieldType.FProp('get', 'never', (macro :Dynamic), null),
             pos: Context.currentPos()
           });
-
-        var fieldParams = [];
-        for (param in field.params)
-        {
-          fieldParams.push(
-            {
-              name: param.name,
-              defaultType: param.defaultType != null ? Context.toComplexType(param.defaultType) : null,
-            });
-        }
 
         var strExpr = Context.parse('${cls.module}.${cls.name}.${field.name}', Context.currentPos());
 
@@ -339,13 +320,13 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: [],
-                ret: actualType,
+                ret: (macro :Dynamic),
                 expr: macro
                 {
                   @:privateAccess
                   return ${strExpr};
                 },
-                params: fieldParams
+                params: []
               }),
             pos: Context.currentPos()
           });
@@ -381,7 +362,7 @@ class PolymodMacro
             name: field.name,
             doc: field.doc,
             access: [Access.AStatic].concat(getFieldAccess(field)),
-            kind: FieldType.FProp('get', 'never', actualType, null),
+            kind: FieldType.FProp('get', 'never', (macro :Dynamic), null),
             pos: Context.currentPos()
           });
 
@@ -395,7 +376,7 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: [],
-                ret: actualType,
+                ret: (macro :Dynamic),
                 expr: macro
                 {
                   @:privateAccess
