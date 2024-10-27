@@ -24,7 +24,6 @@ import polymod.Polymod;
 /**
  * A class for interacting with Polymod, the atomic modding framework for Haxe.
  */
-@:build(funkin.util.macro.PolymodMacro.buildPolymodAbstracts(['funkin.*', 'flixel.util.FlxColor']))
 class PolymodHandler
 {
   /**
@@ -250,6 +249,11 @@ class PolymodHandler
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
+
+    for (key => value in funkin.util.macro.PolymodMacro.aliases)
+    {
+      Polymod.addImportAlias(key, Type.resolveClass(value));
+    }
 
     // Add blacklisting for prohibited classes and packages.
 

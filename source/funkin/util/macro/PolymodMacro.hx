@@ -8,11 +8,24 @@ using StringTools;
 
 class PolymodMacro
 {
-  public static macro function buildPolymodAbstracts(abstractClasses:Array<String>):Array<Field>
-  {
-    var fields:Array<Field> = Context.getBuildFields();
+  public static var aliases(get, never):Map<String, String>;
 
+  static function get_aliases():Map<String, String>
+  {
+    // truly a sight to behold
+    return Reflect.callMethod(null, Reflect.field(Type.resolveClass('funkin.util.macro.AbstractAliases'), 'get'), []);
+  }
+
+  public static macro function buildPolymodAbstracts(abstractClasses:Array<String>):Void
+  {
     Context.onAfterTyping((types) -> {
+      if (alreadyCalled)
+      {
+        return;
+      }
+
+      var aliases:Map<String, String> = new Map<String, String>();
+
       for (type in types)
       {
         switch (type)
@@ -27,6 +40,7 @@ class PolymodMacro
               {
                 continue;
               }
+              aliases.set('${cls.pack.join('.')}.${cls.name}', 'polymod.abstracts.${cls.pack.join('.')}.${cls.name}');
               buildAbstract(cls);
               break;
             }
@@ -34,12 +48,39 @@ class PolymodMacro
             // do nothing
         }
       }
-    });
 
-    return fields;
+      Context.defineModule('funkin.util.macro.PolymodMacro', [
+        {
+          pack: ['funkin', 'util', 'macro'],
+          name: 'AbstractAliases',
+          kind: TypeDefKind.TDClass(null, [], false, false, false),
+          fields: [
+            {
+              name: 'get',
+              access: [Access.APublic, Access.AStatic],
+              kind: FieldType.FFun(
+                {
+                  args: [],
+                  ret: (macro :Map<String, String>),
+                  expr: macro
+                  {
+                    return $v{aliases};
+                  }
+                }),
+              pos: Context.currentPos()
+            }
+          ],
+          pos: Context.currentPos()
+        }
+      ]);
+
+      // the callback is called twice, which this leads to issues
+      alreadyCalled = true;
+    });
   }
 
   #if macro
+  static var alreadyCalled:Bool = false;
   static var skipFields:Array<String> = [];
 
   static function buildAbstract(abstractCls:AbstractType):Void
