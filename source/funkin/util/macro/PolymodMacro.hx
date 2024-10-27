@@ -103,6 +103,7 @@ class PolymodMacro
     {
       if (field.name == '_new')
       {
+        fields.push(buildCreateField(abstractCls, field));
         continue;
       }
 
@@ -143,6 +144,26 @@ class PolymodMacro
     return sortedFields;
   }
 
+  static function buildCreateField(cls:AbstractType, field:ClassField):Field
+  {
+    var newExpr = Context.parse('new ${cls.module}.${cls.name}<Dynamic->Void>()', Context.currentPos());
+
+    return {
+      name: 'create',
+      access: [Access.APublic, Access.AStatic],
+      kind: FieldType.FFun(
+        {
+          args: [],
+          ret: (macro :Dynamic),
+          expr: macro
+          {
+            return ${newExpr};
+          },
+        }),
+      pos: Context.currentPos()
+    };
+  }
+
   static function createFields(cls:AbstractType, field:ClassField):Array<Field>
   {
     if (skipFields.contains(field.name))
@@ -161,6 +182,11 @@ class PolymodMacro
 
   static function _createFields(cls:AbstractType, field:ClassField, type:Type):Array<Field>
   {
+    if (field.meta.has(':to'))
+    {
+      return [];
+    }
+
     var fields:Array<Field> = [];
 
     switch (type)
