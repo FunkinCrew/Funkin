@@ -24,7 +24,7 @@ import polymod.Polymod;
 /**
  * A class for interacting with Polymod, the atomic modding framework for Haxe.
  */
-@:build(funkin.util.macro.PolymodMacro.buildPolymodAbstracts())
+@:build(funkin.util.macro.PolymodMacro.buildPolymodAbstracts(['funkin.*', 'flixel.util.FlxColor']))
 class PolymodHandler
 {
   /**

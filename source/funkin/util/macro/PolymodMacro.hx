@@ -8,7 +8,7 @@ using StringTools;
 
 class PolymodMacro
 {
-  public static macro function buildPolymodAbstracts():Array<Field>
+  public static macro function buildPolymodAbstracts(abstractClasses:Array<String>):Array<Field>
   {
     var fields:Array<Field> = Context.getBuildFields();
 
@@ -19,7 +19,18 @@ class PolymodMacro
         {
           case ModuleType.TAbstract(a):
             var cls = a.get();
-            trace(cls.name);
+            for (abstractCls in abstractClasses)
+            {
+              if (!cls.module.startsWith(abstractCls.replace('.*', ''))
+                && cls.module + cls.name != abstractCls
+                && cls.pack.join('.') + '.' + cls.name != abstractCls)
+              {
+                continue;
+              }
+
+              trace(cls.module + '.' + cls.name);
+              break;
+            }
           default:
             // do nothing
         }
