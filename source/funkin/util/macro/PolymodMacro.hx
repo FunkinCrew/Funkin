@@ -46,6 +46,10 @@ class PolymodMacro
         {
           case ModuleType.TAbstract(a):
             var cls = a.get();
+            if (cls.isPrivate)
+            {
+              continue;
+            }
 
             for (abstractCls in sortedAbstractClasses)
             {
