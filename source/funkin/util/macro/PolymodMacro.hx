@@ -137,7 +137,7 @@ class PolymodMacro
     Context.defineType(
       {
         pos: Context.currentPos(),
-        pack: ['polymod', 'enums'].concat(enm.module.split('.')),
+        pack: ['polymod', 'enums'].concat(enm.pack),
         name: enm.name,
         kind: TypeDefKind.TDClass(null, [], false, false, false),
         fields: fields,
