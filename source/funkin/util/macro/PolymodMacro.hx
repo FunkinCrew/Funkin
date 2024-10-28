@@ -46,11 +46,6 @@ class PolymodMacro
         }
       }
 
-      for (key => value in aliases)
-      {
-        trace(key, value);
-      }
-
       Context.defineModule('funkin.util.macro.PolymodMacro', [
         {
           pack: ['funkin', 'util', 'macro'],
