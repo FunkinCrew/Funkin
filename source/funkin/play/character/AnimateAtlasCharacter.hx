@@ -476,8 +476,6 @@ class AnimateAtlasCharacter extends BaseCharacter
     // Then reapply animOffsets...
     // applyAnimationOffsets(getCurrentAnimation());
 
-    trace("PRE: " + mainSprite.width / scale.x, mainSprite.height / scale.y);
-
     // Make sure we are playing the idle animation
     // ...then update the hitbox so that this.width and this.height are correct.
 
@@ -485,18 +483,13 @@ class AnimateAtlasCharacter extends BaseCharacter
     mainSprite.alpha = 0.0001;
     mainSprite.width = 0;
     mainSprite.height = 0;
-    mainSprite.frameWidth = 0;
-    mainSprite.frameHeight = 0;
     this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
-
-    trace("PLAYING DANCE " + '"${getCurrentAnimation()}" at frame ${mainSprite.anim.curFrame}');
-    trace(mainSprite.anim.curSymbol.name);
 
     mainSprite.draw(); // refresh frame
 
     if (resS.x == 0)
     {
-      resS.x = mainSprite.width;
+      resS.x = mainSprite.width; // clunky bizz
       resS.y = mainSprite.height;
     }
 
