@@ -145,9 +145,16 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     super.onAnimationFinished(prefix);
 
+    if (!getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)
+      && hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX))
+    {
+      playAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX);
+    }
+
     if (getAnimationData() != null && getAnimationData().looped)
     {
-      playAnimation(currentAnimName, true, false);
+      if (StringTools.endsWith(prefix, "-hold")) trace(prefix);
+      playAnimation(prefix, true, false);
     }
     else
     {
@@ -449,13 +456,15 @@ class AnimateAtlasCharacter extends BaseCharacter
     }
   }
 
+  var resS:FlxPoint = new FlxPoint();
+
   /**
    * Reset the character so it can be used at the start of the level.
    * Call this when restarting the level.
    */
   override public function resetCharacter(resetCamera:Bool = true):Void
   {
-    trace("RESETTING ATLAS");
+    trace("RESETTING ATLAS " + characterName);
 
     // Reset the animation offsets. This will modify x and y to be the absolute position of the character.
     // this.animOffsets = [0, 0];
@@ -476,17 +485,30 @@ class AnimateAtlasCharacter extends BaseCharacter
     mainSprite.alpha = 0.0001;
     mainSprite.width = 0;
     mainSprite.height = 0;
-    trace("PLAYING DANCE");
+    mainSprite.frameWidth = 0;
+    mainSprite.frameHeight = 0;
     this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
+
+    trace("PLAYING DANCE " + '"${getCurrentAnimation()}" at frame ${mainSprite.anim.curFrame}');
+    trace(mainSprite.anim.curSymbol.name);
 
     mainSprite.draw(); // refresh frame
 
+    if (resS.x == 0)
+    {
+      resS.x = mainSprite.width;
+      resS.y = mainSprite.height;
+    }
+
     mainSprite.alpha = alpha;
 
-    scaleCallback(scale);
+    mainSprite.width = resS.x;
+    mainSprite.height = resS.y;
+    frameWidth = 0;
+    frameHeight = 0;
 
+    scaleCallback(scale);
     this.updateHitbox();
-    trace("POST: " + mainSprite.width / scale.x, mainSprite.height / scale.y);
 
     // Reset the camera focus point while we're at it.
     if (resetCamera) this.resetCameraFocusPoint();
