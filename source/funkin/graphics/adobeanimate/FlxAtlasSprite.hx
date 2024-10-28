@@ -213,7 +213,9 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function isAnimationFinished():Bool
   {
-    return this.anim.finished;
+    if (!looping) return false;
+
+    return isLoopComplete();
   }
 
   /**
@@ -306,6 +308,7 @@ class FlxAtlasSprite extends FlxAnimate
         else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
+          cleanupAnimation("");
         }
       }
     }
