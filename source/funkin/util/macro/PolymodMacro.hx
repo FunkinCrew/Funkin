@@ -144,7 +144,7 @@ class PolymodMacro
     Context.defineType(
       {
         pos: Context.currentPos(),
-        pack: ['polymod', 'abstracts'].concat(abstractCls.module.split('.')),
+        pack: ['polymod', 'abstracts'].concat(abstractCls.pack),
         name: abstractCls.name,
         kind: TypeDefKind.TDClass(null, [], false, false, false),
         fields: fields,
