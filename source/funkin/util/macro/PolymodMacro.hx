@@ -313,7 +313,20 @@ class PolymodMacro
             });
         }
 
-        var strExpr = Context.parse('${cls.module}.${cls.name}.${field.name}(${exprArgs.join(', ')})', Context.currentPos());
+        var returnStr:String = 'return ';
+        var returnType:ComplexType = (macro :Dynamic);
+        switch (ret)
+        {
+          case Type.TAbstract(t, _):
+            if (t.get().name == 'Void')
+            {
+              returnStr = '';
+              returnType = (macro :Void);
+            }
+          default:
+        }
+
+        var strExpr = Context.parse('${returnStr}${cls.module}.${cls.name}.${field.name}(${exprArgs.join(', ')})', Context.currentPos());
 
         fields.push(
           {
@@ -323,11 +336,11 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: fieldArgs,
-                ret: (macro :Dynamic),
+                ret: returnType,
                 expr: macro
                 {
                   @:privateAccess
-                  return ${strExpr};
+                  ${strExpr};
                 },
                 params: []
               }),

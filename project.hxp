@@ -592,7 +592,7 @@ class Project extends HXProject {
 		var abstracts:Array<String> = [
 			'funkin.*',
 			'flixel.*',
-			'haxe.ui.*'
+			'haxe.*'
 		];
 		addHaxeMacro("funkin.util.macro.PolymodMacro.buildPolymodAbstracts(['" + abstracts.join("', '") + "'])");
 	}
