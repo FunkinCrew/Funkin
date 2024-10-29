@@ -441,9 +441,9 @@ class StateChangeScriptEvent extends ScriptEvent
  */
 class FocusScriptEvent extends ScriptEvent
 {
-  public function new(type:ScriptEventType, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType):Void
   {
-    super(type, cancelable);
+    super(type, false);
   }
 
   public override function toString():String
