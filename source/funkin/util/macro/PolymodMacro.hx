@@ -7,8 +7,18 @@ import haxe.macro.Type;
 using haxe.macro.ExprTools;
 using StringTools;
 
+/**
+ * This macro creates aliases for abstracts.
+ * That way we can use abstracts in hscript
+ */
+@SuppressWarnings(['checkstyle:CodeSimilarity', 'checkstyle:Dynamic'])
 class PolymodMacro
 {
+  /**
+   * The abstracts and their corresponding aliases
+   * `key` => original class path
+   * `value` => alias class path
+   */
   public static var aliases(get, never):Map<String, String>;
 
   static function get_aliases():Map<String, String>
@@ -17,6 +27,11 @@ class PolymodMacro
     return Reflect.callMethod(null, Reflect.field(Type.resolveClass('funkin.util.macro.AbstractAliases'), 'get'), []);
   }
 
+  /**
+   * Function that builds all the alias classes
+   * @param abstractClasses An array of packages and classes
+   *   (`!` infront of the name will exclude classes from being built)
+   */
   public static macro function buildPolymodAbstracts(abstractClasses:Array<String>):Void
   {
     Context.onAfterTyping((types) -> {
@@ -38,14 +53,14 @@ class PolymodMacro
         }
       }
 
-      var aliases:Map<String, String> = new Map<String, String>();
+      var abstractAliases:Map<String, String> = new Map<String, String>();
 
       for (type in types)
       {
         switch (type)
         {
           case ModuleType.TAbstract(a):
-            var cls = a.get();
+            var cls:AbstractType = a.get();
             if (cls.isPrivate)
             {
               continue;
@@ -71,7 +86,7 @@ class PolymodMacro
                 }
               }
 
-              aliases.set('${packTypePath(cls)}', 'polymod.abstracts.${packTypePath(cls)}');
+              abstractAliases.set('${packTypePath(cls)}', 'polymod.abstracts.${packTypePath(cls)}');
               buildAbstract(cls);
               break;
             }
@@ -95,7 +110,7 @@ class PolymodMacro
                   ret: (macro :Map<String, String>),
                   expr: macro
                   {
-                    return $v{aliases};
+                    return $v{abstractAliases};
                   }
                 }),
               pos: Context.currentPos()
@@ -177,7 +192,7 @@ class PolymodMacro
 
   static function buildCreateField(cls:AbstractType, field:ClassField):Field
   {
-    var funcArgs = [];
+    var funcArgs:Array<FunctionArg> = [];
     var funcArgNames:Array<String> = [];
     switch (field.type)
     {
@@ -258,7 +273,7 @@ class PolymodMacro
     switch (type)
     {
       case Type.TFun(args, ret):
-        var fieldArgs = [];
+        var fieldArgs:Array<FunctionArg> = [];
         var exprArgs:Array<String> = [];
         for (arg in args)
         {
