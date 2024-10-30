@@ -48,4 +48,19 @@ class ReflectUtil
   {
     return Reflect.hasField(obj, name);
   }
+
+  public static function copyAnonymousFieldsOf(obj:Dynamic):Dynamic
+  {
+    return Reflect.copy(obj);
+  }
+
+  public static function deleteAnonymousField(obj:Dynamic, name:String):Bool
+  {
+    return Reflect.deleteField(obj, name);
+  }
+
+  public static function compareValues(valueA:Dynamic, valueB:Dynamic):Int
+  {
+    return Reflect.compare(valueA, valueB);
+  }
 }
