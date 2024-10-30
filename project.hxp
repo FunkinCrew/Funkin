@@ -590,9 +590,11 @@ class Project extends HXProject {
 		addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
 
 		var abstracts:Array<String> = [
-			'funkin.*',
-			'flixel.*',
-			'haxe.*'
+			'.*',
+			'!thx.Set',
+			'!cpp.*',
+			'!lime.*',
+			'!openfl.*'
 		];
 		addHaxeMacro("funkin.util.macro.PolymodMacro.buildPolymodAbstracts(['" + abstracts.join("', '") + "'])");
 	}

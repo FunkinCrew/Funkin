@@ -86,7 +86,7 @@ class PolymodMacro
                 }
               }
 
-              abstractAliases.set('${packTypePath(cls)}', 'polymod.abstracts.${packTypePath(cls)}');
+              abstractAliases.set('${packTypePath(cls)}', 'polymod.abstracts.${packTypePath(cls)}${classSuffix}');
               buildAbstract(cls);
               break;
             }
@@ -126,6 +126,7 @@ class PolymodMacro
   }
 
   #if macro
+  static var classSuffix:String = '_';
   static var alreadyCalled:Bool = false;
   static var skipFields:Array<String> = [];
 
@@ -160,7 +161,7 @@ class PolymodMacro
       {
         pos: Context.currentPos(),
         pack: ['polymod', 'abstracts'].concat(abstractCls.pack),
-        name: abstractCls.name,
+        name: abstractCls.name + classSuffix,
         kind: TypeDefKind.TDClass(null, [], false, false, false),
         fields: fields,
       }, null);
@@ -202,7 +203,7 @@ class PolymodMacro
           funcArgs.push(
             {
               name: arg.name,
-              type: (macro :Dynamic),
+              type: null,
               opt: arg.opt
             });
           funcArgNames.push(arg.name);
@@ -219,7 +220,7 @@ class PolymodMacro
       kind: FieldType.FFun(
         {
           args: funcArgs,
-          ret: (macro :Dynamic),
+          ret: null,
           expr: macro
           {
             @:privateAccess
@@ -290,23 +291,25 @@ class PolymodMacro
           fieldArgs.push(
             {
               name: arg.name,
-              type: (macro :Dynamic),
+              type: null,
               opt: arg.opt,
             });
         }
 
-        var returnStr:String = 'return ';
-        var returnType:ComplexType = (macro :Dynamic);
-        switch (ret)
+        var returnStr:String = switch (ret)
         {
           case Type.TAbstract(t, _):
             if (t.get().name == 'Void')
             {
-              returnStr = '';
-              returnType = (macro :Void);
+              '';
+            }
+            else
+            {
+              'return ';
             }
           default:
-        }
+            'return ';
+        };
 
         var expr:String = '${returnStr}${moduleTypePath(cls)}.${field.name}(${exprArgs.join(', ')})';
 
@@ -318,7 +321,7 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: fieldArgs,
-                ret: returnType,
+                ret: null,
                 expr: macro
                 {
                   @:privateAccess
@@ -348,7 +351,7 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: [],
-                ret: (macro :Dynamic),
+                ret: null,
                 expr: macro
                 {
                   @:privateAccess
@@ -378,7 +381,7 @@ class PolymodMacro
             kind: FieldType.FFun(
               {
                 args: [],
-                ret: (macro :Dynamic),
+                ret: null,
                 expr: macro
                 {
                   @:privateAccess
