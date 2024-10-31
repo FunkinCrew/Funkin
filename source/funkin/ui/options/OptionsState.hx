@@ -14,6 +14,9 @@ import funkin.graphics.shaders.HSVShader;
 import funkin.util.WindowUtil;
 import funkin.audio.FunkinSound;
 import funkin.input.Controls;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.NewgroundsClient;
+#end
 
 class OptionsState extends MusicBeatState
 {
@@ -192,6 +195,36 @@ class OptionsMenu extends Page
       FlxG.state.openSubState(new LatencyState());
       #end
     });
+
+    #if FEATURE_NEWGROUNDS
+    if (NewgroundsClient.instance.isLoggedIn())
+    {
+      createItem("LOGOUT OF NG", function() {
+        NewgroundsClient.instance.logout(function() {
+          // Reset the options menu when logout succeeds.
+          // This means the login option will be displayed.
+          FlxG.resetState();
+        }, function() {
+          FlxG.log.warn("Newgrounds logout failed!");
+        });
+      });
+    }
+    else
+    {
+      createItem("LOGIN TO NG", function() {
+        NewgroundsClient.instance.login(function() {
+          // Reset the options menu when login succeeds.
+          // This means the logout option will be displayed.
+
+          // NOTE: If the user presses login and opens the browser,
+          // then navigates the UI
+          FlxG.resetState();
+        }, function() {
+          FlxG.log.warn("Newgrounds login failed!");
+        });
+      });
+    }
+    #end
 
     createItem("EXIT", exit);
   }
