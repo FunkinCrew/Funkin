@@ -133,7 +133,7 @@ class ResultState extends MusicBeatSubState
     if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
     // We need multiple cameras so we can put one at an angle.
-    cameraScroll.angle = -3.8;
+    cameraScroll.canvas.rotation = -3.8;
 
     cameraBG.bgColor = FlxColor.MAGENTA;
     cameraScroll.bgColor = FlxColor.TRANSPARENT;
