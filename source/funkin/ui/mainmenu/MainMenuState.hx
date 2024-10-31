@@ -67,7 +67,7 @@ class MainMenuState extends MusicBeatState
     var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
     bg.scrollFactor.x = 0;
     bg.scrollFactor.y = 0.17;
-    bg.setGraphicSize(Std.int(bg.width * 1.2));
+    bg.setGraphicSize(Std.int(FlxG.width * 1.2));
     bg.updateHitbox();
     bg.screenCenter();
     add(bg);

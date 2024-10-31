@@ -118,6 +118,7 @@ class Main extends Sprite
 
     #if mobile
     FlxG.signals.gameResized.add(resizeGame);
+    FlxG.scaleMode = new flixel.system.scaleModes.FullScreenScaleMode();
     #end
 
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
