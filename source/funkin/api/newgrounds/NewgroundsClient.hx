@@ -43,6 +43,13 @@ class NewgroundsClient
     }
 
     trace('[NEWGROUNDS] Initializing client...');
+
+    if (!hasValidCredentials())
+    {
+      FlxG.log.warn("Tried to initialize Newgrounds client, but credentials are invalid!");
+      return;
+    }
+
     var debug = #if FEATURE_NEWGROUNDS_DEBUG true #else false #end;
     client = new NG(NewgroundsCredentials.APP_ID, getSessionId(), debug, onLoginResolved);
     client.setupEncryption(NewgroundsCredentials.ENCRYPTION_KEY);
@@ -79,27 +86,64 @@ class NewgroundsClient
 
   /**
    * Attempt to log into Newgrounds and create a session ID.
+   * @param onSuccess An optional callback for when the login is successful.
+   * @param onError An optional callback for when the login fails.
    */
-  public function login():Void
+  public function login(?onSuccess:Void->Void, ?onError:Void->Void):Void
   {
-    if (client == null) return;
-    client.requestLogin(onLoginResolved);
+    if (client == null)
+    {
+      FlxG.log.warn("No Newgrounds client initialized! Are your credentials invalid?");
+      return;
+    }
+
+    if (onSuccess != null && onError != null)
+    {
+      client.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError));
+    }
+    else
+    {
+      client.requestLogin(onLoginResolved);
+    }
   }
 
   /**
    * Log out of Newgrounds and invalidate the current session.
+   * @param onSuccess An optional callback for when the logout is successful.
    */
-  public function logout():Void
+  public function logout(?onSuccess:Void->Void, ?onError:Void->Void):Void
   {
-    if (client != null) client.logOut();
+    if (client != null)
+    {
+      if (onSuccess != null && onError != null)
+      {
+        client.logOut(onLogoutResolvedWithCallbacks.bind(_, onSuccess, onError));
+      }
+      else
+      {
+        client.logOut(onLogoutResolved);
+      }
+    }
 
     Save.instance.ngSessionId = null;
-    client = null;
   }
 
   public function isLoggedIn():Bool
   {
     return client != null && client.loggedIn;
+  }
+
+  /**
+   * @returns `false` if either the app ID or the encryption key is invalid.
+   */
+  static function hasValidCredentials():Bool
+  {
+    return !(NewgroundsCredentials.APP_ID == null
+      || NewgroundsCredentials.APP_ID == ""
+      || NewgroundsCredentials.APP_ID.contains(" ")
+      || NewgroundsCredentials.ENCRYPTION_KEY == null
+      || NewgroundsCredentials.ENCRYPTION_KEY == ""
+      || NewgroundsCredentials.ENCRYPTION_KEY.contains(" "));
   }
 
   function onLoginResolved(outcome:LoginOutcome):Void
@@ -110,6 +154,43 @@ class NewgroundsClient
         onLoginSuccessful();
       case FAIL(result):
         onLoginFailed(result);
+    }
+  }
+
+  function onLoginResolvedWithCallbacks(outcome:LoginOutcome, onSuccess:Void->Void, onError:Void->Void):Void
+  {
+    onLoginResolved(outcome);
+
+    switch (outcome)
+    {
+      case SUCCESS:
+        onSuccess();
+      case FAIL(result):
+        onError();
+    }
+  }
+
+  function onLogoutResolved(outcome:Outcome<CallError>):Void
+  {
+    switch (outcome)
+    {
+      case SUCCESS:
+        onLogoutSuccessful();
+      case FAIL(result):
+        onLogoutFailed(result);
+    }
+  }
+
+  function onLogoutResolvedWithCallbacks(outcome:Outcome<CallError>, onSuccess:Void->Void, onError:Void->Void):Void
+  {
+    onLogoutResolved(outcome);
+
+    switch (outcome)
+    {
+      case SUCCESS:
+        onSuccess();
+      case FAIL(result):
+        onError();
     }
   }
 
@@ -156,6 +237,26 @@ class NewgroundsClient
         }
       default:
         trace('[NEWGROUNDS] Login failed due to unknown reason.');
+    }
+  }
+
+  function onLogoutSuccessful():Void
+  {
+    trace('[NEWGROUNDS] Logout successful!');
+  }
+
+  function onLogoutFailed(result:CallError):Void
+  {
+    switch (result)
+    {
+      case HTTP(error):
+        trace('[NEWGROUNDS] Logout failed due to HTTP error: ${error}');
+      case RESPONSE(error):
+        trace('[NEWGROUNDS] Logout failed due to response error: ${error.message} (${error.code})');
+      case RESULT(error):
+        trace('[NEWGROUNDS] Logout failed due to result error: ${error.message} (${error.code})');
+      default:
+        trace('[NEWGROUNDS] Logout failed due to unknown error: ${result}');
     }
   }
 
