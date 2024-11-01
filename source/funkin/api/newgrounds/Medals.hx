@@ -2,6 +2,9 @@ package funkin.api.newgrounds;
 
 #if FEATURE_NEWGROUNDS
 import io.newgrounds.objects.Medal as MedalData;
+import funkin.util.plugins.NewgroundsMedalPlugin;
+import flixel.graphics.FlxGraphic;
+import openfl.display.BitmapData;
 
 class Medals
 {
@@ -32,6 +35,10 @@ class Medals
     if (NewgroundsClient.instance.isLoggedIn())
     {
       var medalData = NewgroundsClient.instance.medals.get(medal.getId());
+      trace(medalData.icon);
+      BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
+        NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
+      });
       if (!medalData.unlocked)
       {
         trace('[NEWGROUNDS] Awarding medal (${medal}).');

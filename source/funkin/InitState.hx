@@ -154,6 +154,7 @@ class InitState extends FlxState
     #if FEATURE_SCREENSHOTS
     funkin.util.plugins.ScreenshotPlugin.initialize();
     #end
+    funkin.util.plugins.NewgroundsMedalPlugin.initialize();
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
