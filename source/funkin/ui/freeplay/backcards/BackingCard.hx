@@ -11,6 +11,9 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
+import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.util.BitmapUtil;
+import openfl.utils.Assets;
 
 /**
  * A class for the backing cards so they dont have to be part of freeplayState......
@@ -37,14 +40,25 @@ class BackingCard extends FlxSpriteGroup
 
     if (_instance != null) instance = _instance;
 
-    cardGlow = new FlxSprite(-30, -30).loadGraphic(Paths.image('freeplay/cardGlow'));
-    confirmGlow = new FlxSprite(-30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
-    confirmTextGlow = new FlxSprite(-8, 115).loadGraphic(Paths.image('freeplay/glowingText'));
-    pinkBack = FunkinSprite.create('freeplay/pinkBack');
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/cardGlow')), FullScreenScaleMode.cutoutSize.x);
+    cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
+
+    confirmGlow = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
+    confirmTextGlow = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -8, 115).loadGraphic(Paths.image('freeplay/glowingText'));
+
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/pinkBack')), FullScreenScaleMode.cutoutSize.x);
+    pinkBack = new FunkinSprite();
+    pinkBack.loadGraphic(bitmap);
+
     orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
+    orangeBackShit.scale.y = FullScreenScaleMode.windowScale.y;
+
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
+    scale.x = FullScreenScaleMode.windowScale.x;
+
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('freeplay/confirmGlow2'));
-    backingTextYeah = new FlxAtlasSprite(640, 370, Paths.animateAtlas("freeplay/backing-text-yeah"),
+
+    backingTextYeah = new FlxAtlasSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + 640, 370, Paths.animateAtlas("freeplay/backing-text-yeah"),
       {
         FrameRate: 24.0,
         Reversed: false,
@@ -235,5 +249,10 @@ class BackingCard extends FlxSpriteGroup
 
     orangeBackShit.visible = false;
     alsoOrangeLOL.visible = false;
+  }
+
+  public function centerObjectOnCard(object:flixel.FlxObject)
+  {
+    if (pinkBack != null) object.x = (x + ((pinkBack.width - object.width) / 2)) * 0.74;
   }
 }

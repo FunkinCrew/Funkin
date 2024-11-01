@@ -118,7 +118,6 @@ class Main extends Sprite
 
     #if mobile
     FlxG.signals.gameResized.add(resizeGame);
-    FlxG.scaleMode = new flixel.system.scaleModes.FullScreenScaleMode();
     #end
 
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
@@ -137,9 +136,15 @@ class Main extends Sprite
 
     #if mobile
     flixel.FlxG.game.addChild(fpsCounter);
+    FlxG.scaleMode = new flixel.system.scaleModes.FullScreenScaleMode();
     #else
     addChild(fpsCounter);
     #end
+
+    // #if desktop
+    // FlxG.stage.window.width = 1280;
+    // FlxG.stage.window.height = 540;
+    // #end
 
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');

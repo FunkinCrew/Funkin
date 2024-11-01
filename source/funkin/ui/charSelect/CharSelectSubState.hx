@@ -732,6 +732,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         ease: FlxEase.backIn,
         onComplete: function(_) {
+          flixel.system.scaleModes.FullScreenScaleMode.enabled = true;
           FlxG.switchState(FreeplayState.build(
             {
               {

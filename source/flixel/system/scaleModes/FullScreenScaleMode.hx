@@ -17,10 +17,12 @@ class FullScreenScaleMode extends BaseScaleMode
   public static var ratio:FlxPoint = FlxPoint.get(-1, -1);
   public static var ratioAxis:FlxAxes = X;
   public static var enabled(default, set):Bool;
+  public static var instance:FullScreenScaleMode = null;
 
   public function new(enable:Bool = true)
   {
     super();
+    instance = this;
     enabled = enable;
   }
 
@@ -78,18 +80,21 @@ class FullScreenScaleMode extends BaseScaleMode
 
   public function fillScreen()
   {
+    // this scale thing needs to be looked into cuz it seems incorrect..
+    windowScale.set(1, 1);
     if (ratioAxis == Y)
     {
       gameSize.y += cutoutSize.y;
       FlxG.height = Math.floor(gameSize.y / scale.y);
+      windowScale.x = (FlxG.height / FlxG.initialHeight) / scale.y;
     }
     else
     {
       gameSize.x += cutoutSize.x;
       FlxG.width = Math.floor(gameSize.x / scale.x);
+      windowScale.x = (FlxG.width / FlxG.initialWidth) / scale.x;
     }
 
-    windowScale.set(FlxG.width / FlxG.initialWidth, FlxG.height / FlxG.initialHeight);
     // trace('resized game with size $gameSize and scale ${scale}');
     // trace('flixel width: ${FlxG.width} - flixel height: ${FlxG.height}');
     // trace('current window scale is $windowScale');
@@ -106,17 +111,27 @@ class FullScreenScaleMode extends BaseScaleMode
     }
     #end
 
-    if (Value == true)
+    enabled = Value;
+
+    if (instance != null)
     {
-      FlxG.scaleMode.horizontalAlign = LEFT;
-      FlxG.scaleMode.verticalAlign = TOP;
-    }
-    else
-    {
-      FlxG.scaleMode.horizontalAlign = CENTER;
-      FlxG.scaleMode.verticalAlign = CENTER;
+      if (enabled == true)
+      {
+        instance.horizontalAlign = LEFT;
+        instance.verticalAlign = TOP;
+      }
+      else
+      {
+        instance.horizontalAlign = CENTER;
+        instance.verticalAlign = CENTER;
+      }
+
+      if (FlxG.stage != null)
+      {
+        instance.onMeasure(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
+      }
     }
 
-    return enabled = Value;
+    return enabled;
   }
 }

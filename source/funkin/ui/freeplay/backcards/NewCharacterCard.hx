@@ -8,6 +8,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import openfl.display.BlendMode;
+import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.util.BitmapUtil;
+import openfl.utils.Assets;
 
 class NewCharacterCard extends BackingCard
 {
@@ -128,7 +131,9 @@ class NewCharacterCard extends BackingCard
     friendFoe2 = new BGScrollingText(0, 402, 'COULD IT BE A NEW FRIEND? OR FOE??', FlxG.width, true, 43);
     newUnlock3 = new BGScrollingText(0, 458, 'NEW UNLOCK!', FlxG.width / 2, true, 80);
 
-    darkBg = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/darkback'));
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/darkback')),
+      FullScreenScaleMode.cutoutSize.x);
+    darkBg = new FlxSprite(0, 0).loadGraphic(bitmap);
     add(darkBg);
 
     friendFoe.funnyColor = 0xFF139376;
@@ -155,31 +160,39 @@ class NewCharacterCard extends BackingCard
     newUnlock3.speed = 2;
     add(newUnlock3);
 
-    multiplyBar = new FlxSprite(-10, 440).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/multiplyBar'));
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/multiplyBar')),
+      FullScreenScaleMode.cutoutSize.x);
+    multiplyBar = new FlxSprite(-10, 440).loadGraphic(bitmap);
     multiplyBar.blend = BlendMode.MULTIPLY;
     add(multiplyBar);
 
-    lightLayer = new FlxSprite(-360, 230).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/orange gradient'));
+    lightLayer = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.45) + -360,
+      230).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/orange gradient'));
     lightLayer.blend = BlendMode.ADD;
     add(lightLayer);
 
-    multiply1 = new FlxSprite(-15, -125).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/red'));
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/red')), FullScreenScaleMode.cutoutSize.x);
+    multiply1 = new FlxSprite(-15, -125).loadGraphic(bitmap);
     multiply1.blend = BlendMode.MULTIPLY;
     add(multiply1);
 
-    multiply2 = new FlxSprite(-15, -125).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/red'));
+    multiply2 = new FlxSprite(-15, -125).loadGraphic(bitmap);
     multiply2.blend = BlendMode.MULTIPLY;
     add(multiply2);
 
-    lightLayer2 = new FlxSprite(-360, 230).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/orange gradient'));
+    lightLayer2 = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.45) + -360,
+      230).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/orange gradient'));
     lightLayer2.blend = BlendMode.ADD;
     add(lightLayer2);
 
-    yellow = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/yellow bg piece'));
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/yellow bg piece')),
+      FullScreenScaleMode.cutoutSize.x);
+    yellow = new FlxSprite(0, 0).loadGraphic(bitmap);
     yellow.blend = BlendMode.MULTIPLY;
     add(yellow);
 
-    lightLayer3 = new FlxSprite(-360, 290).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/red gradient'));
+    lightLayer3 = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.45) + -360,
+      290).loadGraphic(Paths.image('freeplay/backingCards/newCharacter/red gradient'));
     lightLayer3.blend = BlendMode.ADD;
     add(lightLayer3);
 

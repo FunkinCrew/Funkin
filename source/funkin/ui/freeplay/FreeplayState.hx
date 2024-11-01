@@ -51,6 +51,7 @@ import funkin.api.discord.DiscordClient;
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
 #end
+import flixel.system.scaleModes.FullScreenScaleMode;
 
 /**
  * The state for the freeplay menu, allowing the player to select any song to play.
@@ -136,7 +137,7 @@ class FreeplayState extends MusicBeatSubState
 
   var dj:Null<FreeplayDJ> = null;
   #if mobile
-  var djHitbox:FlxSprite = new FlxSprite(58, 358);
+  var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + 58, 358);
   #end
 
   var ostName:FlxText;
@@ -236,17 +237,17 @@ class FreeplayState extends MusicBeatSubState
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
     albumRoll = new AlbumRoll();
-    fp = new FreeplayScore(460, 60, 7, 100, styleData);
+    fp = new FreeplayScore(FlxG.width - 367, 60, 7, 100, styleData);
     rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
-    letterSort = new LetterSort(400, 75);
+    letterSort = new LetterSort((FullScreenScaleMode.cutoutSize.x * 0.55) + 400, 75);
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
     sparks = new FlxSprite(0, 0);
     sparksADD = new FlxSprite(0, 0);
-    txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
+    txtCompletion = new AtlasText(FlxG.width - 95, 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
     ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
@@ -334,7 +335,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (currentCharacter?.getFreeplayDJData() != null)
     {
-      dj = new FreeplayDJ(640, 366, currentCharacterId);
+      dj = new FreeplayDJ((FullScreenScaleMode.cutoutSize.x * 0.33) + 640, 366, currentCharacterId);
       exitMovers.set([dj],
         {
           x: -dj.width * 1.6,
@@ -425,7 +426,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (fromCharSelect)
     {
-      blackOverlayBullshitLOLXD.x = 387.76;
+      blackOverlayBullshitLOLXD.x = bgDad.x;
       overhangStuff.y = -100;
       backingCard?.skipIntroTween();
     }
@@ -433,7 +434,7 @@ class FreeplayState extends MusicBeatSubState
     {
       albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
       FlxTween.tween(overhangStuff, {y: -100}, 0.3, {ease: FlxEase.quartOut});
-      FlxTween.tween(blackOverlayBullshitLOLXD, {x: 387.76}, 0.7, {ease: FlxEase.quintOut});
+      FlxTween.tween(blackOverlayBullshitLOLXD, {x: bgDad.x}, 0.7, {ease: FlxEase.quintOut});
     }
 
     var fnfFreeplay:FlxText = new FlxText(8, 8, 0, 'FREEPLAY', 48);
@@ -474,7 +475,7 @@ class FreeplayState extends MusicBeatSubState
     fnfFreeplay.shader = sillyStroke;
     ostName.shader = sillyStroke;
 
-    var fnfHighscoreSpr:FlxSprite = new FlxSprite(860, 70);
+    var fnfHighscoreSpr:FlxSprite = new FlxSprite(FlxG.width - 420, 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
     fnfHighscoreSpr.animation.addByPrefix('highscore', 'highscore small instance 1', 24, false);
     fnfHighscoreSpr.visible = false;
@@ -490,7 +491,7 @@ class FreeplayState extends MusicBeatSubState
     fp.visible = false;
     add(fp);
 
-    var clearBoxSprite:FlxSprite = new FlxSprite(1165, 65).loadGraphic(Paths.image('freeplay/clearBox'));
+    var clearBoxSprite:FlxSprite = new FlxSprite(FlxG.width - 115, 65).loadGraphic(Paths.image('freeplay/clearBox'));
     clearBoxSprite.visible = false;
     add(clearBoxSprite);
 
@@ -557,8 +558,8 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
 
-    diffSelLeft = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls, styleData);
-    diffSelRight = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls, styleData);
+    diffSelLeft = new DifficultySelector(this, (FullScreenScaleMode.cutoutSize.x * 0.33) + 20, grpDifficulties.y - 10, false, controls, styleData);
+    diffSelRight = new DifficultySelector(this, (FullScreenScaleMode.cutoutSize.x * 0.33) + 325, grpDifficulties.y - 10, true, controls, styleData);
 
     if (diffSelLeft != null)
     {
@@ -607,7 +608,7 @@ class FreeplayState extends MusicBeatSubState
           });
       }
 
-      FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
+      FlxTween.tween(grpDifficulties, {x: (FullScreenScaleMode.cutoutSize.x * 0.33) + 90}, 0.6, {ease: FlxEase.quartOut});
 
       if (diffSelLeft != null) diffSelLeft.visible = true;
       if (diffSelRight != null) diffSelRight.visible = true;
@@ -919,7 +920,7 @@ class FreeplayState extends MusicBeatSubState
     // originalPos.x = capsuleToRank.x;
     // originalPos.y = capsuleToRank.y;
 
-    originalPos.x = 320.488;
+    originalPos.x = (FullScreenScaleMode.cutoutSize.x * 0.55) + 320.488;
     originalPos.y = 235.6;
     trace(originalPos);
 
@@ -1201,6 +1202,7 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
+      FullScreenScaleMode.enabled = false;
       FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
     });
     for (grpSpr in exitMoversCharSel.keys())
@@ -2022,7 +2024,7 @@ class FreeplayState extends MusicBeatSubState
       capsule.selected = index == curSelected + 1;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
+      capsule.targetPos.x = (FullScreenScaleMode.cutoutSize.x * 0.55) + (270 + (60 * (Math.sin(index - curSelected))));
 
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }

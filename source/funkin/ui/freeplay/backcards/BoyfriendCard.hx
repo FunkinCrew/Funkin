@@ -7,6 +7,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxSpriteUtil;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
+import flixel.system.scaleModes.FullScreenScaleMode;
 
 class BoyfriendCard extends BackingCard
 {
@@ -148,11 +149,11 @@ class BoyfriendCard extends BackingCard
     funnyScroll3.speed = -3.8;
     add(funnyScroll3);
 
-    glowDark = new FlxSprite(-300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
+    glowDark = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
     glowDark.blend = BlendMode.MULTIPLY;
     add(glowDark);
 
-    glow = new FlxSprite(-300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
+    glow = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
     glow.blend = BlendMode.ADD;
     add(glow);
 
