@@ -36,13 +36,12 @@ class NewgroundsClient
 
   private function new()
   {
-    if (NewgroundsCredentials.ENCRYPTION_KEY.contains(' '))
-    {
-      trace('[NEWGROUNDS] Encryption key not valid, disabling...');
-      return;
-    }
-
     trace('[NEWGROUNDS] Initializing client...');
+
+    #if FEATURE_NEWGROUNDS_DEBUG
+    trace('[NEWGROUNDS] App ID: ${NewgroundsCredentials.APP_ID}');
+    trace('[NEWGROUNDS] Encryption Key: ${NewgroundsCredentials.ENCRYPTION_KEY}');
+    #end
 
     if (!hasValidCredentials())
     {
