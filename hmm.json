@@ -91,8 +91,8 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "c6bac3d6c7d683f25104296b2f4c50f8c90b8349",
-      "url": "https://github.com/cortex-engine/hxcpp"
+      "ref": "v4.3.68",
+      "url": "https://github.com/HaxeFoundation/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
@@ -145,7 +145,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "fe3368f611a84a19afc03011353945ae4da8fffd",
+      "ref": "9478698b35fb518e98b5189376226f384ccc256a",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -180,7 +180,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "8306425c497766739510ab29e876059c96f77bd2",
+      "ref": "7661264837f9619886aa4d5f023a98233daa7c65",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
