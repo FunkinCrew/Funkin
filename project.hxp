@@ -491,7 +491,7 @@ class Project extends HXProject {
 		FEATURE_LOG_TRACE.apply(this, true);
 
 		FEATURE_NEWGROUNDS.apply(this, true);
-		FEATURE_NEWGROUNDS_DEBUG.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isDebug());
+		FEATURE_NEWGROUNDS_DEBUG.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 		FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
 
 		// Should default to true on workspace builds and false on release builds.
