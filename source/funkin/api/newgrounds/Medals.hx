@@ -41,9 +41,22 @@ class Medals
         medalData.sendUnlock();
 
         // Play the medal unlock animation, but only if the user has not already unlocked it.
-        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
-          NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
-        });
+        // BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
+        //   NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
+        // });
+
+        var g:FlxGraphic = null;
+        var str:String = switch (medal.getId())
+        {
+          case Medal.StartGame: "StartGame";
+          case Medal.FridayNight: "JustLikeTheGame";
+          case Medal.StoryWeek1: "DaddyQueerest";
+          default: null;
+        }
+
+        if (str != null) g = FlxG.bitmap.add(Paths.image("ui/medalImage/" + str));
+
+        NewgroundsMedalPlugin.play(medalData.value, medalData.name, g);
       }
       else
       {
@@ -85,7 +98,7 @@ class Medals
 }
 #end
 
-enum abstract Medal(Int)
+enum abstract Medal(Int) from Int to Int
 {
   /**
    * Represents an undefined or invalid medal.
