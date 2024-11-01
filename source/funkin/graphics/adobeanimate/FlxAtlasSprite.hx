@@ -9,6 +9,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import openfl.display.BitmapData;
 import flixel.math.FlxPoint;
 import flxanimate.animate.FlxKeyFrame;
+import flixel.graphics.FlxGraphic;
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
@@ -326,7 +327,16 @@ class FlxAtlasSprite extends FlxAnimate
 
   public function replaceFrameGraphic(index:Int, ?graphic:FlxGraphicAsset):Void
   {
-    if (graphic == null || !Assets.exists(graphic))
+    var cond = false;
+
+    if (graphic == null) cond = true;
+    else
+    {
+      if ((graphic is String)) cond = !Assets.exists(graphic)
+      else
+        cond = false;
+    }
+    if (cond)
     {
       var prevFrame:Null<FlxFrame> = prevFrames.get(index);
       if (prevFrame == null) return;
