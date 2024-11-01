@@ -5,9 +5,12 @@ import io.newgrounds.objects.Medal as MedalData;
 import funkin.util.plugins.NewgroundsMedalPlugin;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
+import haxe.Json;
 
 class Medals
 {
+  public static var medalJSON:Array<MedalJSON>;
+
   public static function listMedalData():Map<Medal, MedalData>
   {
     if (NewgroundsClient.instance.medals == null)
@@ -35,28 +38,30 @@ class Medals
     if (NewgroundsClient.instance.isLoggedIn())
     {
       var medalData = NewgroundsClient.instance.medals.get(medal.getId());
+      trace(medalData);
       if (!medalData.unlocked)
       {
         trace('[NEWGROUNDS] Awarding medal (${medal}).');
         medalData.sendUnlock();
 
         // Play the medal unlock animation, but only if the user has not already unlocked it.
-        // BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
-        //   NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
-        // });
-
+        #if html5
+        // Web builds support parsing the bitmap data from the URL directly.
+        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
+          NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
+        });
+        #else
+        if (medalJSON == null) loadMedalJSON();
+        // We have to use a medal image from the game files. We use a Base64 encoded image that NG spits out.
         var g:FlxGraphic = null;
-        var str:String = switch (medal.getId())
-        {
-          case Medal.StartGame: "StartGame";
-          case Medal.FridayNight: "JustLikeTheGame";
-          case Medal.StoryWeek1: "DaddyQueerest";
-          default: null;
-        }
-
-        if (str != null) g = FlxG.bitmap.add(Paths.image("ui/medalImage/" + str));
+        var str:String = medalJSON.filter(function(jsonMedal) return medal == jsonMedal.id)[0].icon;
+        // Lime/OpenFL parses it without the included prefix stuff, so we remove it.
+        str = str.replace("data:image/png;base64,", "").trim();
+        var bitmapData = BitmapData.fromBase64(str, "image/png");
+        if (str != null) g = FlxGraphic.fromBitmapData(bitmapData);
 
         NewgroundsMedalPlugin.play(medalData.value, medalData.name, g);
+        #end
       }
       else
       {
@@ -67,6 +72,13 @@ class Medals
     {
       trace('[NEWGROUNDS] Attempted to award medal (${medal}), but not logged into Newgrounds.');
     }
+  }
+
+  public static function loadMedalJSON():Void
+  {
+    var jsonPath = Paths.json('medals');
+    var jsonString = Assets.getText(jsonPath);
+    medalJSON = cast Json.parse(jsonString);
   }
 
   public static function awardStoryLevel(id:String):Void
@@ -97,6 +109,16 @@ class Medals
   }
 }
 #end
+
+/**
+ * Represents NG Medal data in a JSON format.
+ */
+typedef MedalJSON =
+{
+  var id:Int;
+  var name:String;
+  var icon:String;
+}
 
 enum abstract Medal(Int) from Int to Int
 {

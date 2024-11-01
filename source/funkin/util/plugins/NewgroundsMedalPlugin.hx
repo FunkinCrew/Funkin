@@ -8,6 +8,7 @@ import flixel.graphics.FlxGraphic;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
+import funkin.api.newgrounds.Medals;
 
 class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 {
@@ -24,6 +25,11 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
   public function new()
   {
     super();
+
+    #if FLX_DEBUG
+    FlxG.console.registerFunction("medal_test", NewgroundsMedalPlugin.play);
+    FlxG.console.registerClass(Medals);
+    #end
 
     var ecs = (FlxG.width - 250) * 0.5;
     var why = FlxG.height - 100;

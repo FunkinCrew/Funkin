@@ -294,6 +294,15 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
+    // `funkin.api.*`
+    // Contains functions which may allow for cheating and such.
+    for (cls in ClassMacro.listClassesInPackage('funkin.api'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
     // `polymod.*`
     // Contains functions which may allow for un-blacklisting other modules.
     for (cls in ClassMacro.listClassesInPackage('polymod'))
@@ -342,8 +351,19 @@ class PolymodHandler
   {
     return {
       assetLibraryPaths: [
-        'default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'videos' => 'videos', 'tutorial' => 'tutorial', 'week1' => 'week1',
-        'week2' => 'week2', 'week3' => 'week3', 'week4' => 'week4', 'week5' => 'week5', 'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1',
+        'default' => 'preload',
+        'shared' => 'shared',
+        'songs' => 'songs',
+        'videos' => 'videos',
+        'tutorial' => 'tutorial',
+        'week1' => 'week1',
+        'week2' => 'week2',
+        'week3' => 'week3',
+        'week4' => 'week4',
+        'week5' => 'week5',
+        'week6' => 'week6',
+        'week7' => 'week7',
+        'weekend1' => 'weekend1',
       ],
       coreAssetRedirect: CORE_FOLDER,
     }

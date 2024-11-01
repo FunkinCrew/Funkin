@@ -35,6 +35,7 @@ import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
 import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
+import funkin.api.newgrounds.Medals;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -57,6 +58,9 @@ class InitState extends FlxState
    */
   public override function create():Void
   {
+    // Award the "Start Game" medal.
+    Medals.award(Medal.StartGame);
+
     // Setup a bunch of important Flixel stuff.
     setupShit();
 

@@ -16,8 +16,6 @@ import io.newgrounds.objects.User;
 @:nullSafety
 class NewgroundsClient
 {
-  static final CLIENT_ID:String = "816168432860790794";
-
   public static var instance(get, never):NewgroundsClient;
   static var _instance:Null<NewgroundsClient> = null;
 
@@ -27,8 +25,6 @@ class NewgroundsClient
     if (NewgroundsClient._instance == null) throw "Could not initialize singleton NewgroundsClient!";
     return NewgroundsClient._instance;
   }
-
-  var client:Null<NG>;
 
   public var user(get, never):Null<User>;
   public var medals(get, never):Null<MedalList>;
@@ -50,23 +46,23 @@ class NewgroundsClient
     }
 
     var debug = #if FEATURE_NEWGROUNDS_DEBUG true #else false #end;
-    client = new NG(NewgroundsCredentials.APP_ID, getSessionId(), debug, onLoginResolved);
-    client.setupEncryption(NewgroundsCredentials.ENCRYPTION_KEY);
+    NG.create(NewgroundsCredentials.APP_ID, getSessionId(), debug, onLoginResolved);
+    NG.core.setupEncryption(NewgroundsCredentials.ENCRYPTION_KEY);
   }
 
   public function init()
   {
-    if (client == null) return;
+    if (NG.core == null) return;
 
     trace('[NEWGROUNDS] Setting up connection...');
 
     #if FEATURE_NEWGROUNDS_DEBUG
-    client.verbose = true;
+    NG.core.verbose = true;
     #end
 
-    client.onLogin.add(onLoginSuccessful);
+    NG.core.onLogin.add(onLoginSuccessful);
 
-    if (client.attemptingLogin)
+    if (NG.core.attemptingLogin)
     {
       // Session ID was valid and we should be logged in soon.
       trace('[NEWGROUNDS] Waiting for existing login!');
@@ -90,7 +86,7 @@ class NewgroundsClient
    */
   public function login(?onSuccess:Void->Void, ?onError:Void->Void):Void
   {
-    if (client == null)
+    if (NG.core == null)
     {
       FlxG.log.warn("No Newgrounds client initialized! Are your credentials invalid?");
       return;
@@ -98,11 +94,11 @@ class NewgroundsClient
 
     if (onSuccess != null && onError != null)
     {
-      client.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError));
+      NG.core.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError));
     }
     else
     {
-      client.requestLogin(onLoginResolved);
+      NG.core.requestLogin(onLoginResolved);
     }
   }
 
@@ -112,15 +108,15 @@ class NewgroundsClient
    */
   public function logout(?onSuccess:Void->Void, ?onError:Void->Void):Void
   {
-    if (client != null)
+    if (NG.core != null)
     {
       if (onSuccess != null && onError != null)
       {
-        client.logOut(onLogoutResolvedWithCallbacks.bind(_, onSuccess, onError));
+        NG.core.logOut(onLogoutResolvedWithCallbacks.bind(_, onSuccess, onError));
       }
       else
       {
-        client.logOut(onLogoutResolved);
+        NG.core.logOut(onLogoutResolved);
       }
     }
 
@@ -129,7 +125,7 @@ class NewgroundsClient
 
   public function isLoggedIn():Bool
   {
-    return client != null && client.loggedIn;
+    return NG.core != null && NG.core.loggedIn;
   }
 
   /**
@@ -195,17 +191,17 @@ class NewgroundsClient
 
   function onLoginSuccessful():Void
   {
-    if (client == null) return;
+    if (NG.core == null) return;
 
     trace('[NEWGROUNDS] Login successful!');
 
     // Persist the session ID.
-    Save.instance.ngSessionId = client.sessionId;
+    Save.instance.ngSessionId = NG.core.sessionId;
 
     trace('[NEWGROUNDS] Submitting medal request...');
-    client.requestMedals(onFetchedMedals);
+    NG.core.requestMedals(onFetchedMedals);
     trace('[NEWGROUNDS] Submitting leaderboard request...');
-    client.scoreBoards.loadList(onFetchedLeaderboards);
+    NG.core.scoreBoards.loadList(onFetchedLeaderboards);
   }
 
   function onLoginFailed(result:LoginFail):Void
@@ -262,8 +258,6 @@ class NewgroundsClient
   function onFetchedMedals(outcome:Outcome<CallError>):Void
   {
     trace('[NEWGROUNDS] Fetched medals!');
-
-    Medals.award(Medal.StartGame);
   }
 
   function onFetchedLeaderboards(outcome:Outcome<CallError>):Void
@@ -275,20 +269,20 @@ class NewgroundsClient
 
   function get_user():Null<User>
   {
-    if (client == null || !this.isLoggedIn()) return null;
-    return client.user;
+    if (NG.core == null || !this.isLoggedIn()) return null;
+    return NG.core.user;
   }
 
   function get_medals():Null<MedalList>
   {
-    if (client == null || !this.isLoggedIn()) return null;
-    return client.medals;
+    if (NG.core == null || !this.isLoggedIn()) return null;
+    return NG.core.medals;
   }
 
   function get_leaderboards():Null<ScoreBoardList>
   {
-    if (client == null || !this.isLoggedIn()) return null;
-    return client.scoreBoards;
+    if (NG.core == null || !this.isLoggedIn()) return null;
+    return NG.core.scoreBoards;
   }
 
   static function getSessionId():Null<String>
