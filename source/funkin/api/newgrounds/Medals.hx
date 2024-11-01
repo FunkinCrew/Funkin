@@ -35,14 +35,15 @@ class Medals
     if (NewgroundsClient.instance.isLoggedIn())
     {
       var medalData = NewgroundsClient.instance.medals.get(medal.getId());
-      trace(medalData.icon);
-      BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
-        NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
-      });
       if (!medalData.unlocked)
       {
         trace('[NEWGROUNDS] Awarding medal (${medal}).');
         medalData.sendUnlock();
+
+        // Play the medal unlock animation, but only if the user has not already unlocked it.
+        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
+          NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
+        });
       }
       else
       {
