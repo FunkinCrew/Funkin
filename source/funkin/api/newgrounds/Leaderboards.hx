@@ -91,25 +91,61 @@ enum abstract Leaderboard(Int)
   //
   // STORY LEVELS
   //
-  var StoryWeek1 = 14239;
-  var StoryWeek2 = 14240;
-  var StoryWeek3 = 14242;
-  var StoryWeek4 = 14241;
-  var StoryWeek5 = 14243;
-  var StoryWeek6 = 14244;
-  var StoryWeek7 = 14245;
-  var StoryWeekend1 = 14237;
+  var StoryWeek1 = #if FEATURE_NEWGROUNDS_DEBUG 14239 #else 9615 #end;
+  var StoryWeek2 = #if FEATURE_NEWGROUNDS_DEBUG 14240 #else 9616 #end;
+  var StoryWeek3 = #if FEATURE_NEWGROUNDS_DEBUG 14242 #else 9767 #end;
+  var StoryWeek4 = #if FEATURE_NEWGROUNDS_DEBUG 14241 #else 9866 #end;
+  var StoryWeek5 = #if FEATURE_NEWGROUNDS_DEBUG 14243 #else 9956 #end;
+  var StoryWeek6 = #if FEATURE_NEWGROUNDS_DEBUG 14244 #else 9957 #end;
+  var StoryWeek7 = #if FEATURE_NEWGROUNDS_DEBUG 14245 #else 1000000 #end;
+  var StoryWeekend1 = #if FEATURE_NEWGROUNDS_DEBUG 14237 #else 1000000 #end;
 
   //
   // SONGS
   //
   // Tutorial
-  var Tutorial = 14249;
+  var Tutorial = #if FEATURE_NEWGROUNDS_DEBUG 14249 #else 1000000 #end;
 
   // Week 1
-  var Bopeebo = 14246;
-  var Fresh = 14247;
-  var DadBattle = 14248;
+  var Bopeebo = #if FEATURE_NEWGROUNDS_DEBUG 14246 #else 9603 #end;
+  var Fresh = #if FEATURE_NEWGROUNDS_DEBUG 14247 #else 9602 #end;
+  var DadBattle = #if FEATURE_NEWGROUNDS_DEBUG 14248 #else 9605 #end;
+
+  // Week 2
+  var Spookeez = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9604 #end;
+  var South = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9606 #end;
+  var Monster = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+
+  // Week 3
+  var Pico = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9766 #end;
+  var PhillyNice = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9769 #end;
+  var Blammed = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9768 #end;
+
+  // Week 4
+  var SatinPanties = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+  var High = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9867 #end;
+  var MILF = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9868 #end;
+
+  // Week 5
+  var Cocoa = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+  var Eggnog = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+  var WinterHorrorland = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+
+  // Week 6
+  var Senpai = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9958 #end;
+  var Roses = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9959 #end;
+  var Thorns = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 9960 #end;
+
+  // Week 7
+  var Ugh = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+  var Guns = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+  var Stress = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+
+  // Weekend 1
+  var Darnell = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+  var LitUp = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
+  var TwoHot = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end; // Variable names can't start with a number!
+  var Blazin = #if FEATURE_NEWGROUNDS_DEBUG 1000000 #else 1000000 #end;
 
   public function getId():Int
   {
@@ -165,6 +201,50 @@ enum abstract Leaderboard(Int)
         return Fresh;
       case "dadbattle":
         return DadBattle;
+      case "spookeez":
+        return Spookeez;
+      case "south":
+        return South;
+      case "monster":
+        return Monster;
+      case "pico":
+        return Pico;
+      case "philly-nice":
+        return PhillyNice;
+      case "blammed":
+        return Blammed;
+      case "satin-panties":
+        return SatinPanties;
+      case "high":
+        return High;
+      case "milf":
+        return MILF;
+      case "cocoa":
+        return Cocoa;
+      case "eggnog":
+        return Eggnog;
+      case "winter-horrorland":
+        return WinterHorrorland;
+      case "senpai":
+        return Senpai;
+      case "roses":
+        return Roses;
+      case "thorns":
+        return Thorns;
+      case "ugh":
+        return Ugh;
+      case "guns":
+        return Guns;
+      case "stress":
+        return Stress;
+      case "darnell":
+        return Darnell;
+      case "litup":
+        return LitUp;
+      case "2hot":
+        return TwoHot;
+      case "blazin":
+        return Blazin;
       default:
         return Unknown;
     }

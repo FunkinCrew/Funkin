@@ -95,7 +95,7 @@ enum abstract Medal(Int)
    * I Said Funkin'!
    * Start the game for the first time.
    */
-  var StartGame = 80894;
+  var StartGame = #if FEATURE_NEWGROUNDS_DEBUG 80894 #else 60960 #end;
 
   /**
    * That's How You Do It!
@@ -107,93 +107,93 @@ enum abstract Medal(Int)
    * More Like Daddy Queerest
    * Beat Week 1 in Story Mode (on any difficulty).
    */
-  var StoryWeek1 = 80899;
+  var StoryWeek1 = #if FEATURE_NEWGROUNDS_DEBUG 80899 #else 60961 #end;
 
   /**
    * IT IS THE SPOOKY MONTH
    * Beat Week 2 in Story Mode (on any difficulty).
    */
-  var StoryWeek2 = 80900;
+  var StoryWeek2 = #if FEATURE_NEWGROUNDS_DEBUG 80900 #else 1000000 #end;
 
   /**
    * Zeboim Damn Ima Nut
    * Beat Week 3 in Story Mode (on any difficulty).
    */
-  var StoryWeek3 = 80901;
+  var StoryWeek3 = #if FEATURE_NEWGROUNDS_DEBUG 80901 #else 1000000 #end;
 
   /**
    * Mommy Must Murder
    * Beat Week 4 in Story Mode (on any difficulty).
    */
-  var StoryWeek4 = 80902;
+  var StoryWeek4 = #if FEATURE_NEWGROUNDS_DEBUG 80902 #else 1000000 #end;
 
   /**
    * FNF Corruption Mod (real)
    * Beat Week 5 in Story Mode (on any difficulty).
    */
-  var StoryWeek5 = 80903;
+  var StoryWeek5 = #if FEATURE_NEWGROUNDS_DEBUG 80903 #else 1000000 #end;
 
   /**
    * The Original .EXE
    * Beat Week 6 in Story Mode (on any difficulty).
    */
-  var StoryWeek6 = 80904;
+  var StoryWeek6 = #if FEATURE_NEWGROUNDS_DEBUG 80904 #else 1000000 #end;
 
   /**
    * I'm Gonna Beep-Beep a Garbage Truck Into Your Girlfriend's Face!
    * Beat Week 7 in Story Mode (on any difficulty).
    */
-  var StoryWeek7 = 80905;
+  var StoryWeek7 = #if FEATURE_NEWGROUNDS_DEBUG 80905 #else 1000000 #end;
 
   /**
    * Yo, Really Think So?
    * Beat Weekend 1 in Story Mode (on any difficulty).
    */
-  var StoryWeekend1 = 80907;
+  var StoryWeekend1 = #if FEATURE_NEWGROUNDS_DEBUG 80907 #else 1000000 #end;
 
   /**
    * A Challenger Appears
    * Beat any Pico remix in Freeplay (on any difficulty).
    */
-  var FreeplayPicoMix = 80910;
+  var FreeplayPicoMix = #if FEATURE_NEWGROUNDS_DEBUG 80910 #else 1000000 #end;
 
   /**
    * The Sex Update
    * Earn a Perfect rating on any song on Hard difficulty or higher.
    * NOTE: Should also be awarded for a Gold Perfect because otherwise that would be annoying.
    */
-  var PerfectRatingHard = 80908;
+  var PerfectRatingHard = #if FEATURE_NEWGROUNDS_DEBUG 80908 #else 1000000 #end;
 
   /**
    * Get Ratio'd
    * Earn a Loss rating on any song (on any difficulty).
    */
-  var LossRating = 80915;
+  var LossRating = #if FEATURE_NEWGROUNDS_DEBUG 80915 #else 1000000 #end;
 
   /**
    * You Should Drink More Water
    * Earn a Golden Perfect rating on any song on Hard difficulty or higher.
    */
-  var GoldPerfectRatingHard = 80909;
+  var GoldPerfectRatingHard = #if FEATURE_NEWGROUNDS_DEBUG 80909 #else 1000000 #end;
 
   /**
    * Harder Than Hard
    * Beat any Erect remix in Freeplay on Erect or Nightmare difficulty.
    */
-  var ErectDifficulty = 80911;
+  var ErectDifficulty = #if FEATURE_NEWGROUNDS_DEBUG 80911 #else 1000000 #end;
 
   /**
    * The Rap God
    * Earn a Gold Perfect rating on any song on Nightmare difficulty.
    */
-  var GoldPerfectRatingNightmare = 80912;
+  var GoldPerfectRatingNightmare = #if FEATURE_NEWGROUNDS_DEBUG 80912 #else 1000000 #end;
 
   /**
    * Just Like The Game!
    * Get freaky on a Friday.
    * NOTE: You must beat at least one song on any difficulty.
    */
-  var FridayNight = 80913;
+  var FridayNight = #if FEATURE_NEWGROUNDS_DEBUG 80913 #else 61034 #end;
 
   /**
    * Nice
