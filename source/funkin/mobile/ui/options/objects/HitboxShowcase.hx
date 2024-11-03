@@ -1,11 +1,17 @@
 package funkin.mobile.ui.options.objects;
 
-import flixel.group.FlxSpriteGroup;
 import flixel.addons.display.shapes.FlxShapeBox;
+import flixel.group.FlxSpriteGroup;
+import flixel.effects.FlxFlicker;
+import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.FunkinCamera;
+import funkin.audio.FunkinSound;
 import funkin.util.MathUtil;
 
 /**
@@ -14,6 +20,11 @@ import funkin.util.MathUtil;
 @:nullSafety
 class HitboxShowcase extends FlxSpriteGroup
 {
+  /**
+   * The x position of the object that has been set at the very beginning.
+   */
+  public var absoluteX:Int;
+
   /**
    * The group's main camera.
    */
@@ -40,6 +51,16 @@ class HitboxShowcase extends FlxSpriteGroup
   public var selected(get, never):Bool;
 
   /**
+   * Signal dispatched when the object is selected. Additional behavior can be added by subscribing to this signal.
+   */
+  public var onSelect(default, null):FlxSignal = new FlxSignal();
+
+  /**
+   * Indicates if the object is currently processing a selection (to avoid multiple triggers).
+   */
+  public var busy:Bool = false;
+
+  /**
    * Creates a new HitboxShowcase instance.
    *
    * @param x The x position of the object.
@@ -48,14 +69,19 @@ class HitboxShowcase extends FlxSpriteGroup
    * @param selectionIndex Menu's current selection index.
    * @param controlsScheme Hitbox's controls scheme.
    */
-  public function new(x:Int = 0, y:Int = 0, index:Int, selectionIndex:Int = 0, controlsScheme:String)
+  public function new(x:Int = 0, y:Int = 0, index:Int, selectionIndex:Int = 0, controlsScheme:String, ?onClick:Void->Void = null)
   {
     super(x, y);
 
+    this.absoluteX = x;
     this.index = index;
     this.selectionIndex = selectionIndex;
 
     setupObjects(controlsScheme);
+
+    alpha = HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0];
+
+    if (onClick != null) onSelect.add(onClick);
   }
 
   /**
@@ -68,14 +94,13 @@ class HitboxShowcase extends FlxSpriteGroup
     camHitbox = new FunkinCamera('camHitbox' + index);
     camHitbox.bgColor = 0x0;
     camHitbox.setScale(0.5, 0.5);
-    FlxG.cameras.add(camHitbox);
+    FlxG.cameras.add(camHitbox, false);
 
     final bg:FlxShapeBox = new FlxShapeBox(0, 0, FlxG.width + 2, FlxG.height + 2, {thickness: 6, color: FlxColor.BLACK}, FlxColor.GRAY);
     bg.screenCenter();
     add(bg);
 
     final hitbox:FunkinHitbox = new FunkinHitbox(controlsScheme);
-    hitbox.screenCenter();
     hitbox.forEachAlive(function(hint:FunkinHint):Void {
       hint.alpha = 0.3;
       @:privateAccess
@@ -92,6 +117,20 @@ class HitboxShowcase extends FlxSpriteGroup
     super.update(elapsed);
 
     alpha = MathUtil.smoothLerp(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.5);
+
+    x = MathUtil.smoothLerp(x, absoluteX + 1500 * -selectionIndex, elapsed, 0.5);
+
+    if (!busy && (TouchUtil.justPressed && TouchUtil.overlapsComplex(this) && !SwipeUtil.swipeAny))
+    {
+      busy = true;
+
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+
+      FlxFlicker.flicker(this, 1, 0.06, true, false, function(_) {
+        busy = false;
+        onSelect.dispatch();
+      });
+    }
   }
 
   function get_selected()

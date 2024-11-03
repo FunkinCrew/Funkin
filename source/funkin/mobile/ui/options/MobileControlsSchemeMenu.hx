@@ -14,59 +14,41 @@ import funkin.mobile.ui.options.objects.SchemeMenuButton;
 import funkin.mobile.ui.options.objects.HitboxShowcase;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.util.SwipeUtil;
+import funkin.util.MathUtil;
+import flixel.math.FlxMath;
 
-// This is kinda BAD, will be remade later
 class MobileControlsSchemeMenu extends MusicBeatSubState
 {
-  // Cameras
-  var mainCamera:FunkinCamera;
+  var schemeNameText:AtlasText;
+
   var camButtons:FunkinCamera;
 
-  // Objects
-  var menuBG:FunkinSprite;
-  var curSchemeText:AtlasText;
+  var currentButton:SchemeMenuButton;
 
-  // Groups
-  var buttonGroup:FlxTypedGroup<SchemeMenuButton>;
+  var hitboxShowcases:FlxTypedGroup<HitboxShowcase>;
 
-  // Variables
   final availableSchemes:Array<String> = [
     FunkinHitboxControlSchemes.FourLanes,
     FunkinHitboxControlSchemes.DoubleThumbTriangle,
     FunkinHitboxControlSchemes.DoubleThumbSquare,
     FunkinHitboxControlSchemes.DoubleThumbDPad
   ];
-  final schemeNames:Array<String> = [
-    'Four Lanes',
-    'Double Thumb Triangle',
-    'Double Thumb Square',
-    'Double Thumb DPad'
-  ];
-  var anyButtonBusy:Bool = false;
-  var curSelected:Int = 0;
-  var isDemoScreen:Bool;
 
-  // stores values of what the previous persistent draw/update stuff was, example if opened
-  // from pause menu, we want to NOT draw persistently, but then resume drawing once closed
-  var prevPersistentDraw:Bool;
-  var prevPersistentUpdate:Bool;
+  var currentIndex:Int = 0;
+
+  var currentHitboxBusy(get, never):Bool;
 
   override function create()
   {
     super.create();
 
-    prevPersistentDraw = FlxG.state.persistentDraw;
-    prevPersistentUpdate = FlxG.state.persistentUpdate;
-
     FlxG.state.persistentDraw = false;
     FlxG.state.persistentUpdate = false;
-
-    setupCameras();
 
     var colorShader = new AdjustColorShader();
     colorShader.brightness = -200;
 
-    menuBG = FunkinSprite.create('menuDesat');
+    final menuBG:FunkinSprite = FunkinSprite.create('menuDesat');
     menuBG.shader = colorShader;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
@@ -76,116 +58,170 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
     for (i in 0...availableSchemes.length)
     {
-      if (availableSchemes[i] == Preferences.controlsScheme) curSelected = i;
+      if (availableSchemes[i] == Preferences.controlsScheme) currentIndex = i;
     }
 
-    addSchemeMenuButtons();
-    createHitboxCamera(availableSchemes[curSelected]);
+    schemeNameText = new AtlasText(FlxG.width * 0.05, FlxG.height * 0.05, getCurrentSchemeName(), AtlasFont.BOLD);
+    add(schemeNameText);
+
+    setupCameras();
+
+    setupHitboxShowcases();
+
+    createButton(false);
   }
 
   function setupCameras()
   {
-    mainCamera = new FunkinCamera('mobileControlsSchemeMainCamera');
+    final mainCamera:FunkinCamera = new FunkinCamera('mobileControlsSchemeMainCamera');
     mainCamera.bgColor = FlxColor.BLACK;
     FlxG.cameras.add(mainCamera);
+
+    if (camControls != null) FlxG.cameras.remove(camControls);
+
+    camControls = new FunkinCamera('camControls');
+    FlxG.cameras.add(camControls, false);
+    camControls.bgColor = 0x0;
 
     camButtons = new FunkinCamera('camButtons');
     FlxG.cameras.add(camButtons, false);
     camButtons.bgColor = 0x0;
   }
 
-  function createHitboxCamera(controlsScheme:String)
+  function setupHitboxShowcases()
   {
-    var h:HitboxShowcase = new HitboxShowcase(-200, 0, 0, curSelected, controlsScheme);
-    add(h);
+    hitboxShowcases = new FlxTypedGroup<HitboxShowcase>();
+    for (i in 0...availableSchemes.length)
+    {
+      var hitboxShowcase:HitboxShowcase = new HitboxShowcase(Std.int(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
+      hitboxShowcases.add(hitboxShowcase);
+    }
+    add(hitboxShowcases);
   }
 
-  function createSchemeMenuButton(xPos:Float, yPos:Float, name:String, ?onClick:Void->Void = null)
+  function createButton(isDemoScreen:Bool)
   {
-    var button:SchemeMenuButton = new SchemeMenuButton(xPos, yPos, name, onClick);
-    button.cameras = [camButtons];
-
-    buttonGroup.add(button);
-  }
-
-  function addSchemeMenuButtons(isDemoScreen:Bool = false)
-  {
-    buttonGroup = new FlxTypedGroup<SchemeMenuButton>();
+    if (currentButton != null) remove(currentButton);
 
     if (isDemoScreen)
     {
-      createSchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.1, 'BACK', onHitboxDemoBack);
+      currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.83, 'BACK', onHitboxDemoBack);
     }
     else
     {
-      createSchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.1, 'DEMO', onHitboxDemo);
-      createSchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.82, 'EXIT', onExitButtonPressed);
+      currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.83, 'DEMO', onHitboxDemo);
     }
-
-    add(buttonGroup);
+    add(currentButton);
   }
 
-  function removeSchemeMenuButtons()
+  function onSelectHitbox()
   {
-    anyButtonBusy = false;
-
-    buttonGroup.forEachAlive(function(button:SchemeMenuButton) {
-      buttonGroup.remove(button);
-    });
-
-    remove(buttonGroup);
+    currentButton.busy = true;
+    Preferences.controlsScheme = availableSchemes[currentIndex];
+    FlxG.switchState(() -> new MainMenuState());
   }
 
   function onHitboxDemo()
   {
-    curSchemeText.visible = false;
-    isDemoScreen = true;
-
-    addHitbox(true, false, availableSchemes[curSelected]);
-    removeSchemeMenuButtons();
-    addSchemeMenuButtons(true);
-
-    hitbox.forEachAlive(function(hint:FunkinHint) {
-      buttonGroup.forEachAlive(function(button:SchemeMenuButton) {
-        if (!hint.deadZones.contains(cast(button.body, FunkinSprite))) hint.deadZones.push(cast(button.body, FunkinSprite));
-      });
+    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+      hitboxShowcase.exists = false;
     });
 
-    if (hitbox != null) hitbox.active = hitbox.visible = true;
+    createButton(true);
+
+    addHitbox(true, false, availableSchemes[currentIndex]);
+
+    hitbox.forEachAlive(function(hint:FunkinHint) {
+      if (!hint.deadZones.contains(cast(currentButton.body, FunkinSprite))) hint.deadZones.push(cast(currentButton.body, FunkinSprite));
+    });
   }
 
   function onHitboxDemoBack()
   {
-    curSchemeText.visible = true;
-    isDemoScreen = false;
+    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+      hitboxShowcase.exists = true;
+    });
 
-    removeSchemeMenuButtons();
-    addSchemeMenuButtons();
+    createButton(false);
 
-    // (hitboxCamera != null) hitboxCamera.visible = true;
-    if (hitbox != null) hitbox.active = hitbox.visible = false;
+    if (hitbox != null) hitbox.exists = false;
   }
 
-  function onExitButtonPressed()
+  function changeSelection(change:Int)
   {
-    Preferences.controlsScheme = availableSchemes[curSelected];
-    FlxG.switchState(() -> new MainMenuState());
+    currentIndex += change;
+
+    if (currentIndex < 0) currentIndex = hitboxShowcases.length - 1;
+    if (currentIndex >= hitboxShowcases.length) currentIndex = 0;
+
+    schemeNameText.text = getCurrentSchemeName();
+
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+
+    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+      hitboxShowcase.selectionIndex = currentIndex;
+    });
   }
+
+  function getCurrentSchemeName():String
+  {
+    var scheme:String = availableSchemes[currentIndex];
+
+    // Make first character capital
+    scheme = scheme.charAt(0).toUpperCase() + scheme.substr(1);
+
+    // Begin word separation process
+    var regex = ~/[A-Z]/;
+    var wordsSeperated:Array<String> = [];
+    var word = "";
+    for (i in 0...scheme.length)
+    {
+      var char = scheme.charAt(i);
+
+      // Push the current word and move to next one if current character is capital
+      if (regex.match(char) && word.length != 0)
+      {
+        wordsSeperated.push(word);
+        word = "";
+      }
+      word += char;
+    }
+    // Push last matched word
+    wordsSeperated.push(word);
+
+    return wordsSeperated.join(" ");
+  }
+
+  var currentHitboxExists:Bool;
 
   override function update(elapsed:Float)
   {
     super.update(elapsed);
 
-    if (buttonGroup != null)
+    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+      if (hitboxShowcase.selected) currentHitboxExists = hitboxShowcase.exists;
+    });
+
+    if (!currentHitboxBusy && currentHitboxExists && !currentButton.busy)
     {
-      buttonGroup.forEachAlive(function(button:SchemeMenuButton) {
-        if (anyButtonBusy)
-        {
-          button.busy = true;
-          return;
-        }
-        anyButtonBusy = button.busy;
-      });
+      if (SwipeUtil.swipeRight)
+      {
+        changeSelection(1);
+      }
+      else if (SwipeUtil.swipeLeft)
+      {
+        changeSelection(-1);
+      }
     }
+  }
+
+  function get_currentHitboxBusy()
+  {
+    var busy:Bool = false;
+    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+      if (hitboxShowcase.selected) busy = hitboxShowcase.busy;
+    });
+
+    return busy;
   }
 }

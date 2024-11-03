@@ -6,8 +6,9 @@ import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
-import funkin.audio.FunkinSound;
 import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
+import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 
 /**
@@ -64,7 +65,7 @@ class SchemeMenuButton extends FlxSpriteGroup
   {
     super.update(elapsed);
 
-    if (!busy && (TouchUtil.justPressed && TouchUtil.overlapsComplex(this)))
+    if (!busy && (TouchUtil.justPressed && TouchUtil.overlapsComplex(this) && !SwipeUtil.swipeAny))
     {
       busy = true;
 
