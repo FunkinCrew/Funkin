@@ -16,7 +16,7 @@ class SongNoteDataUtils
    * @param threshold Threshold in ms
    * @return Stacked notes
    */
-  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float = 20):Array<SongNoteData>
+  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
 
@@ -76,7 +76,7 @@ class SongNoteDataUtils
    * @param threshold Threshold in ms.
    * @return The unsorted resulting array.
    */
-  public static function concatNoOverlap(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float = 20):Array<SongNoteData>
+  public static function concatNoOverlap(notesA:Array<SongNoteData>, notesB:Array<SongNoteData>, threshold:Float):Array<SongNoteData>
   {
     if (notesA == null || notesA.length == 0) return notesB;
     if (notesB == null || notesB.length == 0) return notesA;
@@ -98,37 +98,38 @@ class SongNoteDataUtils
   }
 
   /**
-   * Concatenates two arrays of notes but overwrites notes in `lhs` that are overlapped by notes from `rhs`.
+   * Concatenates two arrays of notes but overwrites notes in `lhs` that are overlapped by notes in `rhs`.
+   * Hold notes are only overwritten by longer hold notes.
    * This operation only modifies the second array and `overwrittenNotes`.
    *
    * @param lhs An array of notes
    * @param rhs An array of notes to concatenate into `lhs`
    * @param overwrittenNotes An optional array that is modified in-place with the notes in `lhs` that were overwritten.
-   * @param threshold Threshold in ms
-   * @return The resulting array, note that the added notes are placed at the end of the array.
+   * @param threshold Threshold in ms.
+   * @return The unsorted resulting array.
    */
   public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>,
-      threshold:Float = 20):Array<SongNoteData>
+      threshold:Float):Array<SongNoteData>
   {
     if (lhs == null || rhs == null || rhs.length == 0) return lhs;
+    if (lhs.length == 0) return rhs;
 
     var result = lhs.copy();
     for (i in 0...rhs.length)
     {
-      if (rhs[i] == null) continue;
-
       var noteB:SongNoteData = rhs[i];
       var hasOverlap:Bool = false;
+
+      // TODO: Since notes are generally sorted this could probably benefit of only cycling through notes in a certain range
       for (j in 0...lhs.length)
       {
         var noteA:SongNoteData = lhs[j];
         if (doNotesStack(noteA, noteB, threshold))
         {
-          if (noteA.length < noteB.length || !noteEquals(noteA, noteB))
+          if (noteA.length <= noteB.length)
           {
             overwrittenNotes?.push(result[j].clone());
             result[j] = noteB;
-            rhs[i] = null;
           }
           hasOverlap = true;
           break;
@@ -137,7 +138,6 @@ class SongNoteDataUtils
 
       if (!hasOverlap) result.push(noteB);
     }
-    rhs = rhs.filterNull();
 
     return result;
   }
@@ -150,25 +150,5 @@ class SongNoteDataUtils
   {
     // TODO: Make this function inline again when I'm done debugging.
     return noteA.data == noteB.data && Math.ffloor(Math.abs(noteA.time - noteB.time)) <= threshold;
-  }
-
-  // This is replacing SongNoteData's equals operator because for some reason its params check is unreliable.
-  static function noteEquals(note:SongNoteData, other:SongNoteData):Bool
-  {
-    if (note == null) return other == null;
-    if (other == null) return false;
-
-    // TESTME: These checks seem redundant when get_kind already returns null if it's an empty string.
-    /*if (noteA.kind == null)
-      {
-        if (other.kind != null) return false;
-      }
-      else
-      {
-        if (other.kind == null) return false;
-    }*/
-
-    // params check is unreliable and doNotesStack already checks data
-    return note.time == other.time && note.length == other.length && note.kind == other.kind;
   }
 }
