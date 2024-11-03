@@ -97,6 +97,21 @@ class FreeplayState extends MusicBeatSubState
    */
   public static final FADE_OUT_END_VOLUME:Float = 0.0;
 
+  /**
+   * For scaling some sprites on wide displays.
+   */
+  public static var CUTOUT_WIDTH:Float = FullScreenScaleMode.cutoutSize.x / 1.5;
+
+  /**
+   * For positioning the DJ on wide displays.
+   */
+  public static final DJ_POS_MULTI:Float = 0.44;
+
+  /**
+   * For positioning the songs list on wide displays.
+   */
+  public static final SONGS_POS_MULTI:Float = 0.75;
+
   var songs:Array<Null<FreeplaySongData>> = [];
 
   var curSelected:Int = 0;
@@ -137,7 +152,7 @@ class FreeplayState extends MusicBeatSubState
 
   var dj:Null<FreeplayDJ> = null;
   #if mobile
-  var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + 58, 358);
+  var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.cutoutSize.x * DJ_POS_MULTI) + 58, 358);
   #end
 
   var ostName:FlxText;
@@ -201,6 +216,8 @@ class FreeplayState extends MusicBeatSubState
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
+    // shit needs re-calculating.,.,.,.
+    CUTOUT_WIDTH = FullScreenScaleMode.cutoutSize.x / 1.5;
     currentCharacterId = params?.character ?? rememberedCharacterId;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
 
@@ -237,12 +254,12 @@ class FreeplayState extends MusicBeatSubState
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
     albumRoll = new AlbumRoll();
-    fp = new FreeplayScore(FlxG.width - 367, 60, 7, 100, styleData);
+    fp = new FreeplayScore(FlxG.width - 353, 60, 7, 100, styleData);
     rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
-    letterSort = new LetterSort((FullScreenScaleMode.cutoutSize.x * 0.55) + 400, 75);
+    letterSort = new LetterSort((CUTOUT_WIDTH * SONGS_POS_MULTI) + 400, 75);
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
     sparks = new FlxSprite(0, 0);
@@ -335,7 +352,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (currentCharacter?.getFreeplayDJData() != null)
     {
-      dj = new FreeplayDJ((FullScreenScaleMode.cutoutSize.x * 0.33) + 640, 366, currentCharacterId);
+      dj = new FreeplayDJ((CUTOUT_WIDTH * DJ_POS_MULTI) + 640, 366, currentCharacterId);
       exitMovers.set([dj],
         {
           x: -dj.width * 1.6,
@@ -558,8 +575,8 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
 
-    diffSelLeft = new DifficultySelector(this, (FullScreenScaleMode.cutoutSize.x * 0.33) + 20, grpDifficulties.y - 10, false, controls, styleData);
-    diffSelRight = new DifficultySelector(this, (FullScreenScaleMode.cutoutSize.x * 0.33) + 325, grpDifficulties.y - 10, true, controls, styleData);
+    diffSelLeft = new DifficultySelector(this, (CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData);
+    diffSelRight = new DifficultySelector(this, (CUTOUT_WIDTH * DJ_POS_MULTI) + 325, grpDifficulties.y - 10, true, controls, styleData);
 
     if (diffSelLeft != null)
     {
@@ -608,7 +625,7 @@ class FreeplayState extends MusicBeatSubState
           });
       }
 
-      FlxTween.tween(grpDifficulties, {x: (FullScreenScaleMode.cutoutSize.x * 0.33) + 90}, 0.6, {ease: FlxEase.quartOut});
+      FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
 
       if (diffSelLeft != null) diffSelLeft.visible = true;
       if (diffSelRight != null) diffSelRight.visible = true;
@@ -692,9 +709,9 @@ class FreeplayState extends MusicBeatSubState
     rankBg.alpha = 0;
 
     #if mobile
-    addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width, FlxG.height * 0.84, FlxColor.WHITE, goBack);
 
-    FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
+    FlxTween.tween(backButton, {x: FlxG.width - 456}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
     #end
 
     if (prepForNewRank)
@@ -920,7 +937,7 @@ class FreeplayState extends MusicBeatSubState
     // originalPos.x = capsuleToRank.x;
     // originalPos.y = capsuleToRank.y;
 
-    originalPos.x = (FullScreenScaleMode.cutoutSize.x * 0.55) + 320.488;
+    originalPos.x = (CUTOUT_WIDTH * SONGS_POS_MULTI) + 320.488;
     originalPos.y = 235.6;
     trace(originalPos);
 
@@ -2024,7 +2041,7 @@ class FreeplayState extends MusicBeatSubState
       capsule.selected = index == curSelected + 1;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = (FullScreenScaleMode.cutoutSize.x * 0.55) + (270 + (60 * (Math.sin(index - curSelected))));
+      capsule.targetPos.x = (CUTOUT_WIDTH * SONGS_POS_MULTI) + (270 + (60 * (Math.sin(index - curSelected))));
 
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }

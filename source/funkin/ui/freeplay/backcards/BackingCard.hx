@@ -40,13 +40,13 @@ class BackingCard extends FlxSpriteGroup
 
     if (_instance != null) instance = _instance;
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/cardGlow')), FullScreenScaleMode.cutoutSize.x);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/cardGlow')), FreeplayState.CUTOUT_WIDTH);
     cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
 
-    confirmGlow = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
-    confirmTextGlow = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -8, 115).loadGraphic(Paths.image('freeplay/glowingText'));
+    confirmGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
+    confirmTextGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -8, 115).loadGraphic(Paths.image('freeplay/glowingText'));
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/pinkBack')), FullScreenScaleMode.cutoutSize.x);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/pinkBack')), FreeplayState.CUTOUT_WIDTH);
     pinkBack = new FunkinSprite();
     pinkBack.loadGraphic(bitmap);
 
@@ -58,8 +58,8 @@ class BackingCard extends FlxSpriteGroup
 
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('freeplay/confirmGlow2'));
 
-    backingTextYeah = new FlxAtlasSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + 640, 370, Paths.animateAtlas("freeplay/backing-text-yeah"),
-      {
+    backingTextYeah = new FlxAtlasSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + 640, 370,
+      Paths.animateAtlas("freeplay/backing-text-yeah"), {
         FrameRate: 24.0,
         Reversed: false,
         // ?OnComplete:Void -> Void,

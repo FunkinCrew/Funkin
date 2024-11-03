@@ -100,7 +100,7 @@ class PicoCard extends BackingCard
     scrollLower.velocity.x = -110;
     add(scrollLower);
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/pico/blueBar')), FullScreenScaleMode.cutoutSize.x);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/pico/blueBar')), FreeplayState.CUTOUT_WIDTH);
     blueBar = new FlxSprite(0, 239).loadGraphic(bitmap);
     blueBar.blend = BlendMode.MULTIPLY;
     blueBar.alpha = 0.4;
@@ -125,11 +125,12 @@ class PicoCard extends BackingCard
     add(scrollMiddle);
     scrollMiddle.velocity.x = 220;
 
-    glowDark = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -300, 330).loadGraphic(Paths.image('freeplay/backingCards/pico/glow'));
+    glowDark = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI)
+      + -300, 330).loadGraphic(Paths.image('freeplay/backingCards/pico/glow'));
     glowDark.blend = BlendMode.MULTIPLY;
     add(glowDark);
 
-    glow = new FlxSprite((FullScreenScaleMode.cutoutSize.x * 0.33) + -300, 330).loadGraphic(Paths.image('freeplay/backingCards/pico/glow'));
+    glow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -300, 330).loadGraphic(Paths.image('freeplay/backingCards/pico/glow'));
     glow.blend = BlendMode.ADD;
     add(glow);
 
