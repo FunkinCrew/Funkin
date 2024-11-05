@@ -56,7 +56,7 @@ body:
   - type: textarea
     attributes:
       label: Location
-      description: Where did you find the issue(s)? Include the name of the song, the variation, the difficulty, the time/section of the song, and any other relevant details.
+      description: Where did you find the issue(s)? Include the name of the song, the variation, the difficulty, the time/section of the song, and any images or videos.
       placeholder: ex. Cocoa Erect on Erect/Nightmare difficulties at Section 30
     validations:
       required: true
