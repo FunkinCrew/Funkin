@@ -810,9 +810,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * How "close" in milliseconds two notes have to be to be considered as stacked.
-   * For instance, `0` means the notes should be exactly on top of each other
+   * For instance, `0` means the notes should be exactly on top of each other.
    */
-  public static var stackNoteThreshold:Int = 20;
+  public static var stackNoteThreshold:Int = 10;
 
   // Note Movement
 
