@@ -69,7 +69,7 @@ class SongNoteDataUtils
 
   /**
    * Tries to concatenate two arrays of notes together but skips notes from `notesB` that overlap notes from `noteA`.
-   * This operation modifies the second array by removing the overlapped notes
+   * This operation modifies the second array by removing the overlapped notes.
    *
    * @param notesA An array of notes into which `notesB` will be concatenated.
    * @param notesB Another array of notes that will be concatenated into `notesA`.
@@ -120,7 +120,6 @@ class SongNoteDataUtils
       var noteB:SongNoteData = rhs[i];
       var hasOverlap:Bool = false;
 
-      // TODO: Since notes are generally sorted this could probably benefit of only cycling through notes in a certain range
       for (j in 0...lhs.length)
       {
         var noteA:SongNoteData = lhs[j];
