@@ -26,13 +26,13 @@ body:
     attributes:
       label: Version
       description: Which version are you compiling? The game version is in the bottom left corner of the main menu or in the project.hxp file. 
-      placeholder: ex. 0.5.0
+      placeholder: ex. 0.5.3
     validations:
       required: true
   
   - type: markdown
     attributes:
-      value: "## Describe your bug."
+      value: "## Describe your compiling error."
 
   - type: markdown
     attributes:
@@ -40,14 +40,8 @@ body:
 
   - type: textarea
     attributes:
-      label: Description (include any images, videos, errors, or crash logs)
+      label: Description (include any images, videos, errors of terminal or console, error logs)
       description: Provide as much detail as you can. The better others understand your issue, the more they can help you!  
       placeholder: Describe your issue here...
     validations:
       required: true
-      
-  - type: textarea
-    attributes:
-      label: Steps to Reproduce
-      description: What steps can other people take to reliably encounter this issue?
-      placeholder: 1. Open the game...
