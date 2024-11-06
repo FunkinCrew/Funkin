@@ -22,6 +22,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
   var am:Float = 20;
 
+  var funcs:Array<Void->Void> = [];
+
   public function new()
   {
     super();
@@ -112,17 +114,30 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     FlxG.plugins.drawOnTop = true;
     instance = new NewgroundsMedalPlugin();
     FlxG.plugins.add(instance);
+
+    instance.medal.anim.onComplete.add(function() {
+      if (instance.funcs.length > 0)
+      {
+        instance.funcs.shift()();
+      }
+    });
   }
 
   public static function play(points:Int = 100, name:String = "I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM", graphic:FlxGraphic = null)
   {
-    instance.points.visible = false;
-    instance.name.visible = false;
-    instance.points.text = Std.string(points);
-    instance.name.text = name;
+    var func = function() {
+      instance.points.visible = false;
+      instance.name.visible = false;
+      instance.points.text = Std.string(points);
+      instance.name.text = name;
 
-    instance.medal.visible = true;
-    instance.medal.replaceFrameGraphic(3, graphic);
-    instance.medal.anim.play(true);
+      instance.medal.visible = true;
+      instance.medal.replaceFrameGraphic(3, graphic);
+      instance.medal.anim.play(true);
+    }
+
+    if (!instance.medal.anim.isPlaying && instance.funcs.length == 0) func();
+    else
+      instance.funcs.push(func);
   }
 }

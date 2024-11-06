@@ -200,6 +200,7 @@ class NewgroundsClient
 
     trace('[NEWGROUNDS] Submitting medal request...');
     NG.core.requestMedals(onFetchedMedals);
+
     trace('[NEWGROUNDS] Submitting leaderboard request...');
     NG.core.scoreBoards.loadList(onFetchedLeaderboards);
   }
@@ -258,6 +259,11 @@ class NewgroundsClient
   function onFetchedMedals(outcome:Outcome<CallError>):Void
   {
     trace('[NEWGROUNDS] Fetched medals!');
+
+    // Award the "Start Game" medal.
+    Medals.award(Medal.StartGame);
+
+    if (Date.now().getDay() == 5) Medals.award(Medal.FridayNight);
   }
 
   function onFetchedLeaderboards(outcome:Outcome<CallError>):Void
