@@ -176,6 +176,8 @@ class FreeplayState extends MusicBeatSubState
    */
   public static var rememberedVariation:String = Constants.DEFAULT_VARIATION;
 
+  var allDifficulties:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST_FULL;
+
   var funnyCam:FunkinCamera;
   var rankCamera:FunkinCamera;
   var rankBg:FunkinSprite;
@@ -636,6 +638,16 @@ class FreeplayState extends MusicBeatSubState
     else
     {
       onDJIntroDone();
+    }
+
+    allDifficulties = [];
+    for (song in songs)
+    {
+      if (song == null) continue;
+      for (diff in song.data.listDifficulties(null, song.data.getVariationsByCharacterId(rememberedCharacterId)))
+      {
+        if (!allDifficulties.contains(diff)) allDifficulties.push(diff);
+      }
     }
 
     // Generates song list with the starter params (who our current character is, last remembered difficulty, etc.)
@@ -1697,7 +1709,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Gets all available difficulties for our character, via our available variations
     var difficultiesAvailable:Array<String> = grpCapsules.members[curSelected].freeplayData?.data.listDifficulties(null,
-      characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
+      characterVariations) ?? allDifficulties;
 
     var currentDifficultyIndex:Int = difficultiesAvailable.indexOf(currentDifficulty);
 
