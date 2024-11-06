@@ -4,11 +4,12 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+using haxe.macro.ExprTools;
 using StringTools;
 
 class EntryMacro
 {
-  public static macro function build(registryExpr:ExprOf<Class<Dynamic>>):Array<Field>
+  public static macro function build(registryExpr:ExprOf<Class<Dynamic>>, ...additionalReferencedRegistries:ExprOf<Class<Dynamic>>):Array<Field>
   {
     var fields = Context.getBuildFields();
 
@@ -16,7 +17,7 @@ class EntryMacro
 
     var entryData = getEntryData(cls);
 
-    makeParentClassFieldsCallable(registryExpr, fields);
+    makeReferenceRegistryFieldsCallable(additionalReferencedRegistries.append(registryExpr), fields);
 
     buildIdField(fields);
 
@@ -100,31 +101,29 @@ class EntryMacro
       });
   }
 
-  static function makeParentClassFieldsCallable(registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
+  static function makeReferenceRegistryFieldsCallable(registryExprs:Array<ExprOf<Class<Dynamic>>>, fields:Array<Field>):Void
   {
-    var registryCls = MacroUtil.getClassTypeFromExpr(registryExpr);
+    for (registryExpr in registryExprs)
+    {
+      var registryCls = MacroUtil.getClassTypeFromExpr(registryExpr);
+      var expr:String = '${registryExpr.toString()}.instance';
 
-    fields.push(
-      {
-        name: 'ohMyGodThisIsSuchACoolFunction_uohsfdg80zwrt_addedAHashBeforeThisBecauseWhyNot_TM',
-        access: [Access.APrivate, Access.AStatic],
-        kind: FFun(
-          {
-            args: [],
-            expr: macro
+      fields.push(
+        {
+          name: '_${registryCls.pack.join('_')}_${registryCls.name}',
+          access: [Access.APrivate, Access.AStatic],
+          kind: FFun(
             {
-              return ${registryExpr}.instance;
-            },
-            params: [],
-            ret: ComplexType.TPath(
+              args: [],
+              expr: macro
               {
-                pack: registryCls.pack,
-                name: registryCls.name,
-                params: []
-              })
-          }),
-        pos: Context.currentPos()
-      });
+                return ${registryExpr}.instance;
+              },
+              params: []
+            }),
+          pos: Context.currentPos()
+        });
+    }
   }
 
   static function buildFetchDataField(entryData:Dynamic, registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void

@@ -30,6 +30,8 @@ import funkin.util.EaseUtil;
  *
  * This shit is great for modders but it's pretty elaborate for how much it'll actually be used, lolol. -Eric
  */
+@:build(funkin.util.macro.EntryMacro.build(funkin.data.dialogue.conversation.ConversationRegistry, funkin.data.dialogue.speaker.SpeakerRegistry,
+  funkin.data.dialogue.dialoguebox.DialogueBoxRegistry))
 class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
   /**
@@ -635,11 +637,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   public override function toString():String
   {
     return 'Conversation($id)';
-  }
-
-  static function _fetchData(id:String):Null<ConversationData>
-  {
-    return ConversationRegistry.instance.parseEntryDataWithMigration(id, ConversationRegistry.instance.fetchEntryVersion(id));
   }
 }
 
