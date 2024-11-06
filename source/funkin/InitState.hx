@@ -58,9 +58,6 @@ class InitState extends FlxState
    */
   public override function create():Void
   {
-    // Award the "Start Game" medal.
-    Medals.award(Medal.StartGame);
-
     // Setup a bunch of important Flixel stuff.
     setupShit();
 
