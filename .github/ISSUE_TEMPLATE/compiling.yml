@@ -1,6 +1,6 @@
 name: Compiling Report
 description: Report an issue with compiling the game.
-labels: ["type: minor bug", "status: pending triage"]
+labels: ["type: compilation help", "status: pending triage"]
 title: "Compiling Report: "
 body:
   - type: checkboxes
