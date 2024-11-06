@@ -119,7 +119,9 @@ class FunkinPolygonButton extends FunkinButton
       endDrawDebug(camera);
     }
     else
+    {
       super.drawDebugOnCamera(camera);
+    }
   }
 
   @:noCompletion

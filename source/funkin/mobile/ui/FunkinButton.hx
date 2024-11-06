@@ -12,6 +12,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import funkin.mobile.util.SwipeUtil;
+import openfl.display.Graphics;
 import haxe.ds.Map;
 
 /**
@@ -94,6 +95,16 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var limitToBounds:Bool = true;
 
   /**
+   * Wether this button is a circle or not (This affects the overlap check method).
+   */
+  public var isCircle:Bool = false;
+
+  /**
+   * A radius for circular buttons.
+   */
+  public var radius:Float = 0;
+
+  /**
    * The input associated with the button, using `Int` as the type.
    */
   var input:FlxInput<Int>;
@@ -158,15 +169,16 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     if (visible)
     {
       final overlapFound:Bool = checkTouchOverlap();
+      final touchReleased:Bool = (currentTouch != null && currentTouch.justReleased);
 
-      if (currentInput != null && currentInput.justReleased && overlapFound)
+      if ((currentInput != null && currentInput.justReleased || (!limitToBounds && touchReleased)) && overlapFound)
       {
         onUpHandler();
       }
 
-      if (!isPressed(overlapFound))
+      if (status != FunkinButtonStatus.NORMAL && (!overlapFound || (currentInput != null && currentInput.justReleased)))
       {
-        if (limitToBounds || (!limitToBounds && (currentTouch != null && currentTouch.justReleased))) onOutHandler();
+        if (limitToBounds || (!limitToBounds && touchReleased)) onOutHandler();
       }
     }
     #end
@@ -188,13 +200,13 @@ class FunkinButton extends FunkinSprite implements IFlxInput
           if (zone != null && zone.overlapsPoint(worldPos, true, camera)) return false;
         }
 
-        if (overlapsPoint(worldPos, true, camera))
+        if ((!isCircle && overlapsPoint(worldPos, true, camera)) || (isCircle && circleOverlapsPoint(worldPos, camera)))
         {
           touchID = touch.touchPointID;
           if (buttonsTouchID.exists(touchID) && buttonsTouchID.get(touchID) != this)
           {
             var prevButton = buttonsTouchID.get(touchID);
-            if (prevButton.status == FunkinButtonStatus.PRESSED && prevButton != null && !prevButton.limitToBounds)
+            if (prevButton != null && !prevButton.limitToBounds)
             {
               prevButton.onOutHandler();
             }
@@ -211,9 +223,20 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     return false;
   }
 
-  private function isPressed(check:Bool):Bool
+  function circleOverlapsPoint(point:FlxPoint, ?camera:FlxCamera):Bool
   {
-    return !(status != FunkinButtonStatus.NORMAL && (!check || (currentInput != null && currentInput.justReleased)));
+    if (camera == null) camera = FlxG.camera;
+
+    final xPos = point.x - camera.scroll.x;
+    final yPos = point.y - camera.scroll.y;
+    getScreenPosition(_point, camera);
+    point.putWeak();
+
+    final distanceX = xPos - (_point.x + (width / 2));
+    final distanceY = yPos - (_point.y + (height / 2));
+    final distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
+
+    return distance <= radius;
   }
 
   private function updateStatus(input:IFlxInput):Void
@@ -269,6 +292,35 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     onOut.dispatch();
   }
+
+  #if FLX_DEBUG
+  public override function drawDebugOnCamera(camera:FlxCamera):Void
+  {
+    if (isCircle)
+    {
+      if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
+
+      getScreenPosition(_point, camera);
+
+      final gfx:Graphics = beginDrawDebug(camera);
+
+      drawDebugCircleColor(gfx, getDebugBoundingBoxColor(allowCollisions));
+
+      endDrawDebug(camera);
+    }
+    else
+    {
+      super.drawDebugOnCamera(camera);
+    }
+  }
+
+  @:noCompletion
+  private function drawDebugCircleColor(gfx:Graphics, color:FlxColor):Void
+  {
+    gfx.lineStyle(2, color, 0.75);
+    gfx.drawCircle(radius, radius, radius);
+  }
+  #end
 
   private inline function get_justReleased():Bool
   {

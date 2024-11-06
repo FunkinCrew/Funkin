@@ -368,9 +368,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
             final x:Float = ((i == 1) ? FlxG.width - (hintSize * 4) : hintSize * 2) + Math.cos(hintsAngles[j]) * hintsZoneRadius;
             final y:Float = (FlxG.height - (hintSize * 3.75)) + Math.sin(hintsAngles[j]) * hintsZoneRadius;
 
-            final hint:FunkinHint = createHintCircle(x, y, hintsNoteDirections[j % hintsNoteDirections.length], hintSize, hintsColors[j % hintsColors.length]);
-            hint.limitToBounds = false;
-            add(hint);
+            add(createHintCircle(x, y, hintsNoteDirections[j % hintsNoteDirections.length], hintSize, hintsColors[j % hintsColors.length]));
           }
         }
     }
@@ -445,6 +443,9 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
     hint.loadGraphic(createHintCircleGraphic(radius, color));
+    hint.limitToBounds = false;
+    hint.isCircle = true;
+    hint.radius = radius;
     hint.onDown.add(() -> onHintDown.dispatch(hint));
     hint.onUp.add(() -> onHintUp.dispatch(hint));
     hint.onOut.add(() -> onHintUp.dispatch(hint));
