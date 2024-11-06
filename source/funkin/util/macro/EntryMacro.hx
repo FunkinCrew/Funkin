@@ -16,13 +16,13 @@ class EntryMacro
 
     var entryData = getEntryData(cls);
 
+    makeParentClassFieldsCallable(registryExpr, fields);
+
     buildIdField(fields);
 
     buildDataField(entryData, fields);
 
-    buildRegistryInstanceField(registryExpr, fields);
-
-    buildFetchDataField(entryData, fields);
+    buildFetchDataField(entryData, registryExpr, fields);
 
     buildToStringField(cls, fields);
 
@@ -100,31 +100,13 @@ class EntryMacro
       });
   }
 
-  static function buildRegistryInstanceField(registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
+  static function makeParentClassFieldsCallable(registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
   {
-    if (!shouldBuildField('registryInstance', fields))
-    {
-      return;
-    }
-
     var registryCls = MacroUtil.getClassTypeFromExpr(registryExpr);
 
     fields.push(
       {
-        name: 'registryInstance',
-        access: [Access.APrivate, Access.AStatic],
-        kind: FieldType.FProp("get", "never", ComplexType.TPath(
-          {
-            pack: registryCls.pack,
-            name: registryCls.name,
-            params: []
-          })),
-        pos: Context.currentPos()
-      });
-
-    fields.push(
-      {
-        name: 'get_registryInstance',
+        name: 'ohMyGodThisIsSuchACoolFunction_uohsfdg80zwrt_addedAHashBeforeThisBecauseWhyNot_TM',
         access: [Access.APrivate, Access.AStatic],
         kind: FFun(
           {
@@ -145,7 +127,7 @@ class EntryMacro
       });
   }
 
-  static function buildFetchDataField(entryData:Dynamic, fields:Array<Field>):Void
+  static function buildFetchDataField(entryData:Dynamic, registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
   {
     if (!shouldBuildField('_fetchData', fields))
     {
@@ -166,7 +148,7 @@ class EntryMacro
             ],
             expr: macro
             {
-              return registryInstance.parseEntryDataWithMigration(id, registryInstance.fetchEntryVersion(id));
+              return ${registryExpr}.instance.parseEntryDataWithMigration(id, ${registryExpr}.instance.fetchEntryVersion(id));
             },
             params: [],
             ret: ComplexType.TPath(
