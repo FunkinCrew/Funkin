@@ -28,6 +28,7 @@ import funkin.util.SortUtil;
  * can be used to perform custom gameplay behaviors only on specific songs.
  */
 @:nullSafety
+@:build(funkin.util.macro.EntryMacro.build(funkin.data.song.SongRegistry))
 class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMetadata>
 {
   /**
@@ -64,19 +65,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * The default value for the song's scroll speed.
    */
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
-
-  /**
-   * The internal ID of the song.
-   */
-  public final id:String;
-
-  /**
-   * Song metadata as parsed from the JSON file.
-   * This is the data for the `default` variation specifically,
-   * and is needed for the IRegistryEntry interface.
-   * Will only be null if the song data could not be loaded.
-   */
-  public final _data:Null<SongMetadata>;
 
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
@@ -623,13 +611,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       }
     }
   }
-
-  public function toString():String
-  {
-    return 'Song($id)';
-  }
-
-  public function destroy():Void {}
 
   public function onPause(event:PauseScriptEvent):Void {};
 
