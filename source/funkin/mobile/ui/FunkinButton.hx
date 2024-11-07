@@ -90,12 +90,12 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var deadZones:Array<FunkinSprite> = [];
 
   /**
-   * Wether the button should be released if you swiped over somwhere else.
+   * Whether the button should be released if you swiped over somwhere else.
    */
   public var limitToBounds:Bool = true;
 
   /**
-   * Wether this button is a circle or not (This affects the overlap check method).
+   * Whether this button is a circle or not (This affects the overlap check method).
    */
   public var isCircle:Bool = false;
 
@@ -119,6 +119,11 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * The ID of the touch object that pressed this button.
    */
   var touchID:Int = -1;
+
+  /**
+   * Whether the funkin button is a back button, button shouldn't call onDownHandler() on touch.pressed.
+   */
+  public var isBackButton:Bool = false;
 
   /**
    * Creates a new `FunkinButton` object.
@@ -247,7 +252,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       onDownHandler();
     }
-    else if (status == FunkinButtonStatus.NORMAL)
+    else if (status == FunkinButtonStatus.NORMAL && !isBackButton)
     {
       if (input.pressed)
       {

@@ -14,6 +14,7 @@ class FunkinBackspace extends FunkinButton
     animation.addByPrefix("idle", "backspace to exit white0");
     animation.play("idle");
     color = theColor;
+    isBackButton = true;
 
     if (onClick != null) onDown.add(onClick);
   }
