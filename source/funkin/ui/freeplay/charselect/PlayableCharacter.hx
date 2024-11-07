@@ -13,6 +13,8 @@ import funkin.play.scoring.Scoring.ScoringRank;
 @:build(funkin.util.macro.EntryMacro.build(funkin.data.freeplay.player.PlayerRegistry))
 class PlayableCharacter implements IRegistryEntry<PlayerData>
 {
+  public final id:String;
+
   /**
    * @param id The ID of the JSON file to parse.
    */

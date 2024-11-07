@@ -4,6 +4,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+using haxe.macro.ExprTools;
+using haxe.macro.TypeTools;
 using StringTools;
 
 class RegistryMacro
@@ -19,30 +21,43 @@ class RegistryMacro
     var jsonCls = typeParams.jsonCls;
     var scriptedEntryCls = getScriptedEntryClass(entryCls);
 
-    buildInstanceField(cls, fields);
-
-    buildGetScriptedClassNamesField(scriptedEntryCls, fields);
-
-    buildCreateScriptedEntryField(entryCls, scriptedEntryCls, fields);
-
-    buildParseEntryDataField(jsonCls, fields);
-
-    buildParseEntryDataRawField(jsonCls, fields);
+    fields = fields.concat(buildVariables(cls));
+    fields = fields.concat(buildMethods(cls, entryCls, scriptedEntryCls, jsonCls));
 
     return fields;
   }
 
   #if macro
-  static function shouldBuildField(name:String, fields:Array<Dynamic>):Bool // fields can be Array<Field> or Array<ClassField>
+  static function fieldAlreadyExists(name:String):Bool
   {
-    for (field in fields)
+    for (field in Context.getBuildFields())
     {
-      if (field.name == name)
+      if (field.name == name && !((field.access ?? []).contains(Access.AAbstract)))
+      {
+        return true;
+      }
+    }
+
+    function fieldAlreadyExistsSuper(name:String, superClass:Null<ClassType>)
+    {
+      if (superClass == null)
       {
         return false;
       }
+
+      for (field in superClass.fields.get())
+      {
+        if (field.name == name && !field.isAbstract)
+        {
+          return true;
+        }
+      }
+
+      // recursively check superclasses
+      return fieldAlreadyExistsSuper(name, superClass.superClass?.t.get());
     }
-    return true;
+
+    return fieldAlreadyExistsSuper(name, Context.getLocalClass().get().superClass?.t.get());
   }
 
   static function getTypeParams(cls:ClassType):RegistryTypeParams
@@ -81,263 +96,83 @@ class RegistryMacro
     };
   }
 
-  static function buildInstanceField(cls:ClassType, fields:Array<Field>):Void
+  static function buildVariables(cls:ClassType):Array<Field>
   {
-    if (!shouldBuildField('instance', fields))
-    {
-      return;
-    }
+    var clsType:ComplexType = Context.getType('${cls.module}.${cls.name}').toComplexType();
 
-    fields.push(
+    var newInstanceExpr:String = 'new ${cls.module}.${cls.name}()';
+
+    return (macro class TempClass
       {
-        name: '_instance',
-        access: [Access.APrivate, Access.AStatic],
-        kind: FieldType.FVar(ComplexType.TPath(
-          {
-            pack: [],
-            name: 'Null',
-            params: [
-              TypeParam.TPType(ComplexType.TPath(
-                {
-                  pack: cls.pack,
-                  name: cls.name,
-                  params: []
-                }))
-            ]
-          })),
-        pos: Context.currentPos()
-      });
+        static var _instance:Null<$clsType>;
+        public static var instance(get, never):$clsType;
 
-    fields.push(
-      {
-        name: 'instance',
-        access: [Access.APublic, Access.AStatic],
-        kind: FieldType.FProp("get", "never", ComplexType.TPath(
+        static function get_instance():$clsType
+        {
+          if (_instance == null)
           {
-            pack: cls.pack,
-            name: cls.name,
-            params: []
-          })),
-        pos: Context.currentPos()
-      });
-
-    var newStrExpr = 'new ${cls.pack.join('.')}.${cls.name}()';
-    var newExpr = Context.parse(newStrExpr, Context.currentPos());
-
-    fields.push(
-      {
-        name: 'get_instance',
-        access: [Access.APrivate, Access.AStatic],
-        kind: FFun(
-          {
-            args: [],
-            expr: macro
-            {
-              if (_instance == null)
-              {
-                _instance = ${newExpr};
-              }
-              return _instance;
-            },
-            params: [],
-            ret: ComplexType.TPath(
-              {
-                pack: cls.pack,
-                name: cls.name,
-                params: []
-              })
-          }),
-        pos: Context.currentPos()
-      });
+            _instance = ${Context.parse(newInstanceExpr, Context.currentPos())};
+          }
+          return _instance;
+        }
+      }).fields.filter((field) -> return !fieldAlreadyExists(field.name));
   }
 
-  static function buildGetScriptedClassNamesField(scriptedEntryCls:ClassType, fields:Array<Field>):Void
+  static function buildMethods(cls:ClassType, entryCls:ClassType, scriptedEntryCls:ClassType, jsonCls:Dynamic):Array<Field>
   {
-    if (!shouldBuildField('getScriptedClassNames', fields))
-    {
-      return;
-    }
+    var getScriptedClassNameExpr:String = '${scriptedEntryCls.module}.${scriptedEntryCls.name}';
 
-    var scriptedEntryExpr = Context.parse('${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}', Context.currentPos());
+    var createScriptedEntryExpr = '${scriptedEntryCls.module}.${scriptedEntryCls.name}.init(clsName, \'unknown\')';
 
-    fields.push(
+    var jsonParserNewExpr = 'new json2object.JsonParser<${jsonCls.module}.${jsonCls.name}>()';
+
+    return (macro class TempClass
       {
-        name: 'getScriptedClassNames',
-        access: [Access.APrivate],
-        kind: FieldType.FFun(
+        function getScriptedClassNames()
+        {
+          return ${Context.parse(getScriptedClassNameExpr, Context.currentPos())}.listScriptClasses();
+        }
+
+        function createScriptedEntry(clsName:String)
+        {
+          return ${Context.parse(createScriptedEntryExpr, Context.currentPos())};
+        }
+
+        public function parseEntryData(id:String)
+        {
+          var parser = ${Context.parse(jsonParserNewExpr, Context.currentPos())};
+          parser.ignoreUnknownVariables = false;
+
+          switch (loadEntryFile(id))
           {
-            args: [],
-            expr: macro
-            {
-              return ${scriptedEntryExpr}.listScriptClasses();
-            },
-            params: [],
-            ret: (macro :Array<String>)
-          }),
-        pos: Context.currentPos()
-      });
-  }
-
-  static function buildCreateScriptedEntryField(entryCls:ClassType, scriptedEntryCls:ClassType, fields:Array<Field>):Void
-  {
-    if (!shouldBuildField('createScriptedEntry', fields))
-    {
-      return;
-    }
-
-    var scriptedStrExpr = '${scriptedEntryCls.pack.join('.')}.${scriptedEntryCls.name}.init(clsName, \'unknown\')';
-    var scriptedInitExpr = Context.parse(scriptedStrExpr, Context.currentPos());
-
-    fields.push(
-      {
-        name: 'createScriptedEntry',
-        access: [Access.APrivate],
-        kind: FieldType.FFun(
-          {
-            args: [
-              {
-                name: 'clsName',
-                type: (macro :String)
-              }
-            ],
-            expr: macro
-            {
-              return ${scriptedInitExpr};
-            },
-            params: [],
-            ret: ComplexType.TPath(
-              {
-                pack: [],
-                name: 'Null',
-                params: [
-                  TypeParam.TPType(ComplexType.TPath(
-                    {
-                      pack: entryCls.pack,
-                      name: entryCls.name
-                    }))
-                ]
-              })
-          }),
-        pos: Context.currentPos()
-      });
-  }
-
-  static function buildParseEntryDataField(jsonCls:Dynamic, fields:Array<Field>):Void
-  {
-    if (!shouldBuildField('parseEntryData', fields))
-    {
-      return;
-    }
-
-    var jsonParserNewStrExpr = 'new json2object.JsonParser<${jsonCls.pack.join('.')}.${jsonCls.name}>()';
-    var jsonParserNewExpr = Context.parse(jsonParserNewStrExpr, Context.currentPos());
-
-    fields.push(
-      {
-        name: 'parseEntryData',
-        access: [Access.APublic],
-        kind: FieldType.FFun(
-          {
-            args: [
-              {
-                name: 'id',
-                type: (macro :String)
-              }
-            ],
-            expr: macro
-            {
-              var parser = ${jsonParserNewExpr};
-              parser.ignoreUnknownVariables = false;
-
-              switch (loadEntryFile(id))
-              {
-                case {fileName: fileName, contents: contents}:
-                  parser.fromJson(contents, fileName);
-                default:
-                  return null;
-              }
-
-              if (parser.errors.length > 0)
-              {
-                printErrors(parser.errors, id);
-                return null;
-              }
-              return parser.value;
-            },
-            params: [],
-            ret: ComplexType.TPath(
-              {
-                pack: [],
-                name: 'Null',
-                params: [
-                  TypeParam.TPType(ComplexType.TPath(
-                    {
-                      pack: jsonCls.pack,
-                      name: jsonCls.name
-                    }))
-                ]
-              })
-          }),
-        pos: Context.currentPos()
-      });
-  }
-
-  static function buildParseEntryDataRawField(jsonCls:Dynamic, fields:Array<Field>):Void
-  {
-    if (!shouldBuildField('parseEntryDataRaw', fields))
-    {
-      return;
-    }
-
-    var jsonParserNewStrExpr = 'new json2object.JsonParser<${jsonCls.pack.join('.')}.${jsonCls.name}>()';
-    var jsonParserNewExpr = Context.parse(jsonParserNewStrExpr, Context.currentPos());
-
-    fields.push(
-      {
-        name: 'parseEntryDataRaw',
-        access: [Access.APublic],
-        kind: FieldType.FFun(
-          {
-            args: [
-              {
-                name: 'contents',
-                type: (macro :String)
-              },
-              {
-                name: 'fileName',
-                type: (macro :Null<String>),
-                opt: true
-              }
-            ],
-            expr: macro
-            {
-              var parser = ${jsonParserNewExpr};
-              parser.ignoreUnknownVariables = false;
+            case {fileName: fileName, contents: contents}:
               parser.fromJson(contents, fileName);
+            default:
+              return null;
+          }
 
-              if (parser.errors.length > 0)
-              {
-                printErrors(parser.errors, fileName);
-                return null;
-              }
-              return parser.value;
-            },
-            params: [],
-            ret: ComplexType.TPath(
-              {
-                pack: [],
-                name: 'Null',
-                params: [
-                  TypeParam.TPType(ComplexType.TPath(
-                    {
-                      pack: jsonCls.pack,
-                      name: jsonCls.name
-                    }))
-                ]
-              })
-          }),
-        pos: Context.currentPos()
-      });
+          if (parser.errors.length > 0)
+          {
+            printErrors(parser.errors, id);
+            return null;
+          }
+          return parser.value;
+        }
+
+        public function parseEntryDataRaw(contents:String, ?fileName:String)
+        {
+          var parser = ${Context.parse(jsonParserNewExpr, Context.currentPos())};
+          parser.ignoreUnknownVariables = false;
+          parser.fromJson(contents, fileName);
+
+          if (parser.errors.length > 0)
+          {
+            printErrors(parser.errors, fileName);
+            return null;
+          }
+          return parser.value;
+        }
+      }).fields.filter((field) -> return !fieldAlreadyExists(field.name));
   }
   #end
 }

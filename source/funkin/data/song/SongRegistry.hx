@@ -13,7 +13,6 @@ import funkin.util.VersionUtil;
 using funkin.data.song.migrator.SongDataMigrator;
 
 @:nullSafety
-@:build(funkin.util.macro.RegistryMacro.build())
 class SongRegistry extends BaseRegistry<Song, SongMetadata>
 {
   /**
@@ -40,6 +39,19 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return '${Constants.TITLE} - ${Constants.VERSION}';
   }
 
+  /**
+   * TODO: What if there was a Singleton macro which automatically created the property for us?
+   */
+  public static var instance(get, never):SongRegistry;
+
+  static var _instance:Null<SongRegistry> = null;
+
+  static function get_instance():SongRegistry
+  {
+    if (_instance == null) _instance = new SongRegistry();
+    return _instance;
+  }
+
   public function new()
   {
     super('SONG', 'songs', SONG_METADATA_VERSION_RULE);
@@ -57,7 +69,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
     for (entryCls in scriptedEntryClassNames)
     {
-      var entry:Null<Song> = createScriptedEntry(entryCls);
+      var entry:Song = createScriptedEntry(entryCls);
 
       if (entry != null)
       {
@@ -405,6 +417,16 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
   }
 
+  function createScriptedEntry(clsName:String):Song
+  {
+    return ScriptedSong.init(clsName, "unknown");
+  }
+
+  function getScriptedClassNames():Array<String>
+  {
+    return ScriptedSong.listScriptClasses();
+  }
+
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
@@ -486,8 +508,32 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   public function listBaseGameSongIds():Array<String>
   {
     return [
-      "tutorial", "bopeebo", "fresh", "dadbattle", "spookeez", "south", "monster", "pico", "philly-nice", "blammed", "satin-panties", "high", "milf", "cocoa",
-      "eggnog", "winter-horrorland", "senpai", "roses", "thorns", "ugh", "guns", "stress", "darnell", "lit-up", "2hot", "blazin"
+      "tutorial",
+      "bopeebo",
+      "fresh",
+      "dadbattle",
+      "spookeez",
+      "south",
+      "monster",
+      "pico",
+      "philly-nice",
+      "blammed",
+      "satin-panties",
+      "high",
+      "milf",
+      "cocoa",
+      "eggnog",
+      "winter-horrorland",
+      "senpai",
+      "roses",
+      "thorns",
+      "ugh",
+      "guns",
+      "stress",
+      "darnell",
+      "lit-up",
+      "2hot",
+      "blazin"
     ];
   }
 

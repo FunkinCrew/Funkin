@@ -3,7 +3,6 @@ package funkin.data.dialogue.conversation;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.dialogue.ScriptedConversation;
 
-@:build(funkin.util.macro.RegistryMacro.build())
 class ConversationRegistry extends BaseRegistry<Conversation, ConversationData>
 {
   /**
@@ -14,6 +13,15 @@ class ConversationRegistry extends BaseRegistry<Conversation, ConversationData>
   public static final CONVERSATION_DATA_VERSION:thx.semver.Version = "1.0.0";
 
   public static final CONVERSATION_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
+
+  public static var instance(get, never):ConversationRegistry;
+  static var _instance:Null<ConversationRegistry> = null;
+
+  static function get_instance():ConversationRegistry
+  {
+    if (_instance == null) _instance = new ConversationRegistry();
+    return _instance;
+  }
 
   public function new()
   {
@@ -65,5 +73,15 @@ class ConversationRegistry extends BaseRegistry<Conversation, ConversationData>
       return null;
     }
     return parser.value;
+  }
+
+  function createScriptedEntry(clsName:String):Conversation
+  {
+    return ScriptedConversation.init(clsName, "unknown");
+  }
+
+  function getScriptedClassNames():Array<String>
+  {
+    return ScriptedConversation.listScriptClasses();
   }
 }

@@ -5,11 +5,12 @@ import haxe.macro.Expr;
 import haxe.macro.Type;
 
 using haxe.macro.ExprTools;
+using haxe.macro.TypeTools;
 using StringTools;
 
 class EntryMacro
 {
-  public static macro function build(registryExpr:ExprOf<Class<Dynamic>>, ...additionalReferencedRegistries:ExprOf<Class<Dynamic>>):Array<Field>
+  public static macro function build(registry:ExprOf<Class<Dynamic>>, ...additionalReferencedRegistries:ExprOf<Class<Dynamic>>):Array<Field>
   {
     var fields = Context.getBuildFields();
 
@@ -17,32 +18,53 @@ class EntryMacro
 
     var entryData = getEntryData(cls);
 
-    makeReferenceRegistryFieldsCallable(additionalReferencedRegistries.append(registryExpr), fields);
+    makeFieldsCallable(additionalReferencedRegistries.append(registry));
 
-    buildIdField(fields);
-
-    buildDataField(entryData, fields);
-
-    buildFetchDataField(entryData, registryExpr, fields);
-
-    buildToStringField(cls, fields);
-
-    buildDestroyField(cls, fields);
+    fields = fields.concat(buildVariables(cls, entryData));
+    fields = fields.concat(buildMethods(cls, registry));
 
     return fields;
   }
 
   #if macro
-  static function shouldBuildField(name:String, fields:Array<Dynamic>):Bool // fields can be Array<Field> or Array<ClassField>
+  static function makeFieldsCallable(registries:Array<ExprOf<Class<Dynamic>>>)
   {
-    for (field in fields)
+    for (registry in registries)
+    {
+      MacroUtil.getClassTypeFromExpr(registry);
+    }
+  }
+
+  static function fieldAlreadyExists(name:String):Bool
+  {
+    for (field in Context.getBuildFields())
     {
       if (field.name == name)
       {
-        return false;
+        return true;
       }
     }
-    return true;
+
+    function fieldAlreadyExistsSuper(name:String, superClass:Null<ClassType>)
+    {
+      if (superClass == null)
+      {
+        return false;
+      }
+
+      for (field in superClass.fields.get())
+      {
+        if (field.name == name)
+        {
+          return true;
+        }
+      }
+
+      // recursively check superclasses
+      return fieldAlreadyExistsSuper(name, superClass.superClass?.t.get());
+    }
+
+    return fieldAlreadyExistsSuper(name, Context.getLocalClass().get().superClass?.t.get());
   }
 
   static function getEntryData(cls:ClassType):Dynamic // DefType or ClassType
@@ -58,162 +80,34 @@ class EntryMacro
     }
   }
 
-  static function buildIdField(fields:Array<Field>):Void
+  static function buildVariables(cls:ClassType, entryData:Dynamic):Array<Field>
   {
-    if (!shouldBuildField('id', fields))
-    {
-      return;
-    }
+    var entryDataType:ComplexType = Context.getType('${entryData.module}.${entryData.name}').toComplexType();
 
-    fields.push(
+    return (macro class TempClass
       {
-        name: 'id',
-        access: [Access.APublic, Access.AFinal],
-        kind: FieldType.FVar((macro :String)),
-        pos: Context.currentPos()
-      });
+        public final id:String;
+
+        public final _data:Null<$entryDataType>;
+      }).fields.filter((field) -> return !fieldAlreadyExists(field.name));
   }
 
-  static function buildDataField(entryData:Dynamic, fields:Array<Field>):Void
+  static function buildMethods(cls:ClassType, registry:ExprOf<Class<Dynamic>>):Array<Field>
   {
-    if (!shouldBuildField('_data', fields))
-    {
-      return;
-    }
-
-    fields.push(
+    return (macro class TempClass
       {
-        name: '_data',
-        access: [Access.APublic, Access.AFinal],
-        kind: FieldType.FVar(ComplexType.TPath(
-          {
-            pack: [],
-            name: 'Null',
-            params: [
-              TypeParam.TPType(ComplexType.TPath(
-                {
-                  pack: entryData.pack,
-                  name: entryData.name
-                }))
-            ]
-          })),
-        pos: Context.currentPos()
-      });
-  }
-
-  static function makeReferenceRegistryFieldsCallable(registryExprs:Array<ExprOf<Class<Dynamic>>>, fields:Array<Field>):Void
-  {
-    for (registryExpr in registryExprs)
-    {
-      var registryCls = MacroUtil.getClassTypeFromExpr(registryExpr);
-      var expr:String = '${registryExpr.toString()}.instance';
-
-      fields.push(
+        public function _fetchData(id:String)
         {
-          name: '_${registryCls.pack.join('_')}_${registryCls.name}',
-          access: [Access.APrivate, Access.AStatic],
-          kind: FFun(
-            {
-              args: [],
-              expr: macro
-              {
-                return ${registryExpr}.instance;
-              },
-              params: []
-            }),
-          pos: Context.currentPos()
-        });
-    }
-  }
+          return ${registry}.instance.parseEntryDataWithMigration(id, ${registry}.instance.fetchEntryVersion(id));
+        }
 
-  static function buildFetchDataField(entryData:Dynamic, registryExpr:ExprOf<Class<Dynamic>>, fields:Array<Field>):Void
-  {
-    if (!shouldBuildField('_fetchData', fields))
-    {
-      return;
-    }
+        public function toString()
+        {
+          return $v{cls.name} + '(' + id + ')';
+        }
 
-    fields.push(
-      {
-        name: '_fetchData',
-        access: [Access.AStatic, Access.APrivate],
-        kind: FieldType.FFun(
-          {
-            args: [
-              {
-                name: 'id',
-                type: (macro :String)
-              }
-            ],
-            expr: macro
-            {
-              return ${registryExpr}.instance.parseEntryDataWithMigration(id, ${registryExpr}.instance.fetchEntryVersion(id));
-            },
-            params: [],
-            ret: ComplexType.TPath(
-              {
-                pack: [],
-                name: 'Null',
-                params: [
-                  TypeParam.TPType(ComplexType.TPath(
-                    {
-                      pack: entryData.pack,
-                      name: entryData.name
-                    }))
-                ]
-              })
-          }),
-        pos: Context.currentPos()
-      });
-  }
-
-  static function buildToStringField(cls:ClassType, fields:Array<Field>):Void
-  {
-    if (!shouldBuildField('toString', fields))
-    {
-      return;
-    }
-
-    fields.push(
-      {
-        name: 'toString',
-        access: [Access.APublic],
-        kind: FieldType.FFun(
-          {
-            args: [],
-            expr: macro
-            {
-              return $v{cls.name} + '(' + id + ')';
-            },
-            params: [],
-            ret: (macro :String)
-          }),
-        pos: Context.currentPos()
-      });
-  }
-
-  static function buildDestroyField(cls:ClassType, fields:Array<Field>):Void
-  {
-    if (!shouldBuildField('destroy', fields) || !shouldBuildField('destroy', cls.superClass?.t.get().fields.get() ?? []))
-    {
-      return;
-    }
-
-    fields.push(
-      {
-        name: 'destroy',
-        access: [Access.APublic],
-        kind: FieldType.FFun(
-          {
-            args: [],
-            expr: macro
-            {
-              return;
-            },
-            params: []
-          }),
-        pos: Context.currentPos()
-      });
+        public function destroy() {}
+      }).fields.filter((field) -> !fieldAlreadyExists(field.name));
   }
   #end
 }
