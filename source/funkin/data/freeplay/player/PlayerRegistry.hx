@@ -5,7 +5,7 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
 import funkin.save.Save;
 
-@:build(funkin.util.macro.RegistryMacro.build())
+@:build(funkin.util.macro.RegistryMacro.buildRegistry())
 class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
 {
   /**

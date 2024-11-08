@@ -18,7 +18,7 @@ using funkin.data.animation.AnimationData.AnimationDataUtil;
  * and provides convenience methods for building sprites based on them.
  */
 @:nullSafety
-@:build(funkin.util.macro.EntryMacro.build(funkin.data.notestyle.NoteStyleRegistry))
+@:build(funkin.util.macro.RegistryMacro.buildEntry())
 class NoteStyle implements IRegistryEntry<NoteStyleData>
 {
   /**

@@ -4,7 +4,7 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notestyle.ScriptedNoteStyle;
 import funkin.data.notestyle.NoteStyleData;
 
-@:build(funkin.util.macro.RegistryMacro.build())
+@:build(funkin.util.macro.RegistryMacro.buildRegistry())
 class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
 {
   /**

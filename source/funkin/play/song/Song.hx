@@ -28,7 +28,7 @@ import funkin.util.SortUtil;
  * can be used to perform custom gameplay behaviors only on specific songs.
  */
 @:nullSafety
-@:build(funkin.util.macro.EntryMacro.build(funkin.data.song.SongRegistry))
+@:build(funkin.util.macro.RegistryMacro.buildEntry())
 class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMetadata>
 {
   /**

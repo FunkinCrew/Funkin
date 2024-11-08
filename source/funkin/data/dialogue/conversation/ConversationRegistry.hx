@@ -3,7 +3,7 @@ package funkin.data.dialogue.conversation;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.dialogue.ScriptedConversation;
 
-@:build(funkin.util.macro.RegistryMacro.build())
+@:build(funkin.util.macro.RegistryMacro.buildRegistry())
 class ConversationRegistry extends BaseRegistry<Conversation, ConversationData>
 {
   /**
