@@ -1,39 +1,62 @@
 package funkin.mobile.ui.options;
 
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.FlxG;
-import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import funkin.ui.MusicBeatSubState;
-import funkin.ui.AtlasText;
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.graphics.FunkinSprite;
-import funkin.graphics.FunkinCamera;
-import funkin.audio.FunkinSound;
+import flixel.util.FlxColor;
+import flixel.FlxG;
 import funkin.mobile.ui.options.objects.SchemeMenuButton;
 import funkin.mobile.ui.options.objects.HitboxShowcase;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
-import funkin.graphics.shaders.HSVShader;
 import funkin.util.MathUtil;
-import flixel.math.FlxMath;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.AtlasText;
+import funkin.graphics.shaders.HSVShader;
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.FunkinCamera;
+import funkin.audio.FunkinSound;
+import funkin.Preferences;
 
-// TODO: Clean-Up this madness.
+/**
+ * Represents the mobile controls scheme menu.
+ * In this menu, you can change your controls scheme.
+ */
 class MobileControlsSchemeMenu extends MusicBeatSubState
 {
-  var schemeNameText:AtlasText;
+  /**
+   * Text that displays current scheme's name.
+   */
+  private var schemeNameText:AtlasText;
 
-  var camButtons:FunkinCamera;
+  /**
+   * A camera for buttons.
+   */
+  private var camButtons:FunkinCamera;
 
-  var currentButton:SchemeMenuButton;
+  /**
+   * A button that is changed depending if you are in the hitbox demo or not.
+   */
+  private var currentButton:SchemeMenuButton;
 
-  var hitboxShowcases:FlxTypedGroup<HitboxShowcase>;
+  /**
+   * Group of hitbox showcase selection items.
+   */
+  private var hitboxShowcases:FlxTypedGroup<HitboxShowcase>;
 
-  var theCenterHitbox:FunkinSprite;
+  /**
+   * An object used for selecting the current hitbox scheme.
+   */
+  private var theCenterHitbox:FunkinSprite;
 
-  var isInDemo:Bool;
+  /**
+   * Returns true, if player is currently in hitbox demonstration.
+   */
+  private var isInDemo:Bool;
 
+  /**
+   * An array of every single scheme.
+   */
   final availableSchemes:Array<String> = [
     FunkinHitboxControlSchemes.FourLanes,
     FunkinHitboxControlSchemes.DoubleThumbTriangle,
@@ -41,7 +64,10 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     FunkinHitboxControlSchemes.DoubleThumbDPad
   ];
 
-  var currentIndex:Int = 0;
+  /**
+   * Current selected index
+   */
+  private var currentIndex:Int = 0;
 
   override function create()
   {
@@ -77,6 +103,9 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     createButton(false);
   }
 
+  /**
+   * Setups every needed camera.
+   */
   function setupCameras()
   {
     final mainCamera:FunkinCamera = new FunkinCamera('mobileControlsSchemeMainCamera');
@@ -94,6 +123,9 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     camButtons.bgColor = 0x0;
   }
 
+  /**
+   * Setups the hitbox showcase items.
+   */
   function setupHitboxShowcases()
   {
     hitboxShowcases = new FlxTypedGroup<HitboxShowcase>();
@@ -112,6 +144,10 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     add(theCenterHitbox);
   }
 
+  /**
+   * Creates or recreates a scheme menu button.
+   * @param isDemoScreen Returns true, if player is currently in hitbox demo.
+   */
   function createButton(isDemoScreen:Bool)
   {
     if (currentButton != null) remove(currentButton);
@@ -119,31 +155,43 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     if (isDemoScreen)
     {
       currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.03, 'BACK', onHitboxDemoBack);
+      currentButton.text.x -= 5;
     }
     else
     {
       currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.83, 'DEMO', onHitboxDemo);
+      currentButton.text.x -= 10;
     }
     add(currentButton);
   }
 
+  /**
+   * Called when current hitbox has been selected.
+   */
   function onSelectHitbox()
   {
     currentButton.busy = true;
+
     Preferences.controlsScheme = availableSchemes[currentIndex];
-    FlxG.switchState(() -> new MainMenuState());
+
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxTransitionableState.skipNextTransOut = true;
+
+    FlxG.switchState(() -> new funkin.ui.options.OptionsState());
   }
 
+  /**
+   * Called when the current button is pressed and player is not in demo right now.
+   */
   function onHitboxDemo()
   {
     isInDemo = true;
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
-      hitboxShowcase.exists = false;
-      hitboxShowcase.busy = false;
+      hitboxShowcase.visible = false;
     });
 
-    schemeNameText.exists = false;
+    schemeNameText.visible = false;
 
     createButton(true);
 
@@ -154,46 +202,60 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     });
   }
 
+  /**
+   * Called when the current button is pressed and player is in demo right now.
+   */
   function onHitboxDemoBack()
   {
+    // Works but i dont know why did it happen :/
+    currentIndex++;
+
     isInDemo = false;
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
-      hitboxShowcase.exists = true;
-      hitboxShowcase.busy = false;
+      hitboxShowcase.visible = true;
     });
 
-    schemeNameText.exists = true;
+    schemeNameText.visible = true;
 
     createButton(false);
 
     if (hitbox != null) hitbox.exists = false;
   }
 
-  function changeSelection(change:Int)
+  /**
+   * Updates selection using currentIndex.
+   * @param change Used to change currentIndex.
+   */
+  function updateSelection(change:Int)
   {
     currentIndex += change;
 
     if (currentIndex < 0) currentIndex = hitboxShowcases.length - 1;
     if (currentIndex >= hitboxShowcases.length) currentIndex = 0;
 
-    schemeNameText.text = getCurrentSchemeName();
-
     FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+
+    schemeNameText.text = getCurrentSchemeName();
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.selectionIndex = currentIndex;
     });
   }
 
+  /**
+   * Gets current scheme's name.
+   * Needed for schemeNameText.
+   * @return String
+   */
   function getCurrentSchemeName():String
   {
     var scheme:String = availableSchemes[currentIndex];
 
-    // Make first character capital
+    // Make first character capital.
     scheme = scheme.charAt(0).toUpperCase() + scheme.substr(1);
 
-    // Begin word separation process
+    // Begin word separation process.
     var regex = ~/[A-Z]/;
     var wordsSeperated:Array<String> = [];
     var word = "";
@@ -201,7 +263,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     {
       var char = scheme.charAt(i);
 
-      // Push the current word and move to next one if current character is capital
+      // Push the current word and move to next one if current character is capital.
       if (regex.match(char) && word.length != 0)
       {
         wordsSeperated.push(word);
@@ -209,59 +271,44 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
       }
       word += char;
     }
-    // Push last matched word
+
     wordsSeperated.push(word);
 
     return wordsSeperated.join(" ");
   }
 
   /**
-   * Checks if either hitbox showcases or button are busy.
-   * @return Bool
+   * Handles all the touch inputs.
    */
-  function anythingBusy():Bool
-  {
-    var busy:Bool = false;
-
-    hitboxShowcases.forEachAlive(function(hitboxShowcase:HitboxShowcase) {
-      if (hitboxShowcase.busy) busy = true;
-    });
-
-    if (currentButton.busy) busy = true;
-
-    return busy;
-  }
-
   function handleInputs()
   {
-    if (anythingBusy()) return;
-
     if (isInDemo) return;
+
+    if (currentButton.busy) return;
 
     if (SwipeUtil.swipeRight)
     {
-      changeSelection(1);
+      updateSelection(1);
+      return;
     }
-    else if (SwipeUtil.swipeLeft)
+
+    if (SwipeUtil.swipeLeft)
     {
-      changeSelection(-1);
+      updateSelection(-1);
+      return;
     }
 
     if (TouchUtil.justPressed && TouchUtil.overlapsComplex(theCenterHitbox) && !SwipeUtil.swipeAny)
     {
       hitboxShowcases.members[currentIndex].onPress();
-      FlxTransitionableState.skipNextTransIn = true;
-      FlxTransitionableState.skipNextTransOut = true;
+      currentButton.busy = true;
+      return;
     }
   }
 
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-
-    if (hitboxShowcases.members[currentIndex].busy) currentButton.busy = true;
-
-    if (currentButton.busy) hitboxShowcases.members[currentIndex].busy = true;
 
     handleInputs();
   }

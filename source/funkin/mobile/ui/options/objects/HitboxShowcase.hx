@@ -138,7 +138,7 @@ class HitboxShowcase extends FlxSpriteGroup
     x = MathUtil.smoothLerp(x, absoluteX + 1500 * -selectionIndex, elapsed, 0.5);
   }
 
-  function get_selected()
+  function get_selected():Bool
   {
     return index == selectionIndex;
   }
