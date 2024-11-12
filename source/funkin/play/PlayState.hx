@@ -3441,20 +3441,6 @@ class PlayState extends MusicBeatSubState
 
     var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
 
-    // Shows a video ad on mobile devices each 3 blueballs
-    #if NO_DISABLE_ADMOB_ADS
-    if (PlayStatePlaylist.isStoryMode)
-    {
-      AdMobUtil.loadInterstitial(true);
-    }
-    else
-    {
-      Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER++;
-      if ((Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0
-        && Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0)) AdMobUtil.loadInterstitial(true);
-    }
-    #end
-
     var res:ResultState = new ResultState(
       {
         storyMode: PlayStatePlaylist.isStoryMode,
