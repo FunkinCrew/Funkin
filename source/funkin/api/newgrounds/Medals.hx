@@ -48,7 +48,9 @@ class Medals
         #if html5
         // Web builds support parsing the bitmap data from the URL directly.
         BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
-          NewgroundsMedalPlugin.play(medalData.value, medalData.name, FlxGraphic.fromBitmapData(bmp));
+          var medalGraphic = FlxGraphic.fromBitmapData(bmp);
+          medalGraphic.persist = true;
+          NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
         });
         #else
         if (medalJSON == null) loadMedalJSON();
@@ -59,6 +61,7 @@ class Medals
         str = str.replace("data:image/png;base64,", "").trim();
         var bitmapData = BitmapData.fromBase64(str, "image/png");
         if (str != null) g = FlxGraphic.fromBitmapData(bitmapData);
+        g.persist = true;
 
         NewgroundsMedalPlugin.play(medalData.value, medalData.name, g);
         #end

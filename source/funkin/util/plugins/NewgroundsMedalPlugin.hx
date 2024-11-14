@@ -37,7 +37,6 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     var why = FlxG.height - 100;
     FlxGraphic.defaultPersist = true;
     medal = new FlxAtlasSprite(ecs, why, Paths.animateAtlas("ui/medal"));
-    FlxGraphic.defaultPersist = false;
 
     points = new FlxText(171 + ecs, 10 + why, 50, 12, false);
     points.fieldHeight = 18;
@@ -95,6 +94,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     add(medal);
     add(points);
     add(name);
+    FlxGraphic.defaultPersist = false;
   }
 
   override public function update(elapsed:Float)
