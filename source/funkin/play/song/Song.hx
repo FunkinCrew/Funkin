@@ -955,12 +955,14 @@ class SongDifficulty
     // Add player vocals.
     for (playerVoice in playerVoiceList)
     {
+      if (!Assets.exists(playerVoice)) continue;
       result.addPlayerVoice(FunkinSound.load(playerVoice));
     }
 
     // Add opponent vocals.
     for (opponentVoice in opponentVoiceList)
     {
+      if (!Assets.exists(opponentVoice)) continue;
       result.addOpponentVoice(FunkinSound.load(opponentVoice));
     }
 
