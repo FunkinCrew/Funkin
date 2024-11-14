@@ -1,5 +1,8 @@
 package funkin.play;
 
+import flixel.FlxState;
+import funkin.ui.story.StoryMenuState;
+import funkin.data.freeplay.player.PlayerRegistry;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -737,15 +740,25 @@ class PauseSubState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
 
+    var targetState:funkin.ui.transition.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(sticker) : (sticker) ->
+      FreeplayState.build(sticker);
+
+    // Do this AFTER because this resets the value of isStoryMode!
     if (PlayStatePlaylist.isStoryMode)
     {
       PlayStatePlaylist.reset();
-      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState(sticker)));
     }
-    else
+
+    var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+    var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
+    var stickerPack = switch (PlayState.instance.currentChart.song.id)
     {
-      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
-    }
+      case "tutorial": "tutorial";
+      case "darnell" | "lit-up" | "2hot": "weekend";
+      default: "all";
+    };
+
+    state.openSubState(new funkin.ui.transition.StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
   }
 
   /**
