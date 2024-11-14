@@ -260,9 +260,6 @@ class NewgroundsClient
   {
     trace('[NEWGROUNDS] Fetched medals!');
 
-    // Award the "Start Game" medal.
-    Medals.award(Medal.StartGame);
-
     if (Date.now().getDay() == 5) Medals.award(Medal.FridayNight);
   }
 

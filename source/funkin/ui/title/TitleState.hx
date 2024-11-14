@@ -32,6 +32,9 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import openfl.display.BlendMode;
 import funkin.save.Save;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+#end
 
 #if desktop
 #end
@@ -328,6 +331,11 @@ class TitleState extends MusicBeatState
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
+
+      #if FEATURE_NEWGROUNDS
+      // Award the "Start Game" medal.
+      Medals.award(Medal.StartGame);
+      #end
 
       var targetState:NextState = () -> new MainMenuState();
 
