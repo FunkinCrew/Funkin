@@ -784,6 +784,15 @@ class ResultState extends MusicBeatSubState
       var shouldTween = false;
       var shouldUseSubstate = false;
 
+      var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+      var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
+      var stickerPack = switch (PlayState.instance.currentChart.song.id)
+      {
+        case "tutorial": "tutorial";
+        case "darnell" | "lit-up" | "2hot": "weekend";
+        default: "all";
+      };
+
       if (params.storyMode)
       {
         if (PlayerRegistry.instance.hasNewCharacter())
@@ -805,7 +814,12 @@ class ResultState extends MusicBeatSubState
           // No new characters.
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker));
+          targetState = new funkin.ui.transition.StickerSubState(
+            {
+              targetState: (sticker) -> new StoryMenuState(sticker),
+              stickerSet: stickerSet,
+              stickerPack: stickerPack
+            });
         }
       }
       else
@@ -834,7 +848,12 @@ class ResultState extends MusicBeatSubState
         {
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker));
+          targetState = new funkin.ui.transition.StickerSubState(
+            {
+              targetState: (sticker) -> FreeplayState.build(null, sticker),
+              stickerSet: stickerSet,
+              stickerPack: stickerPack
+            });
         }
       }
 
