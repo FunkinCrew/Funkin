@@ -26,7 +26,7 @@ class AlbumRoll extends FlxSpriteGroup
 
   function set_albumId(value:Null<String>):Null<String>
   {
-    if (this.albumId != value)
+    if (this.albumId != value || value == null)
     {
       this.albumId = value;
       updateAlbum();
