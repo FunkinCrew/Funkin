@@ -3861,7 +3861,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Handle scroll anchor
     if (scrollAnchorScreenPos != null)
     {
-      var currentScreenPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewX);
+      var currentScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
       var distance = currentScreenPos - scrollAnchorScreenPos;
 
       var verticalDistance = distance.y;
@@ -4144,7 +4144,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (scrollAnchorScreenPos == null)
         {
-          scrollAnchorScreenPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+          scrollAnchorScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
           selectionBoxStartPos = null;
         }
         else
