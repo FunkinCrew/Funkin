@@ -97,6 +97,7 @@ class Save
           downscroll: false,
           flashingLights: true,
           zoomCamera: true,
+          playMissSound: false,
           debugDisplay: false,
           autoPause: true,
           inputOffset: 0,
@@ -1298,6 +1299,12 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var zoomCamera:Bool;
+
+  /**
+   * If enabled, the miss sound will play when the player misses a note.
+   * @default `true`
+   */
+  var playMissSound:Bool;
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
