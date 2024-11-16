@@ -66,15 +66,15 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+    createPrefItemCheckbox('Play Miss Sound', 'Disable to stop the mute sound from playing when a miss occurs.', function(value:Bool):Void {
+      Preferences.playMissSound = value;
+    }, Preferences.playMissSound);
     createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
     createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Play Miss Sound', 'Disable to stop the mute sound from playing when a miss occurs.', function(value:Bool):Void {
-      Preferences.playMissSound = value;
-    }, Preferences.playMissSound);
 
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
