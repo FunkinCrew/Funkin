@@ -1,59 +1,49 @@
 package funkin.ui.freeplay;
 
-import funkin.ui.freeplay.backcards.*;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.tweens.misc.ShakeTween;
 import flixel.util.FlxColor;
-import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.effects.IntervalShake;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.AngleMask;
-import funkin.graphics.shaders.GaussianBlurShader;
+import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.PureColor;
-import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.StrokeShader;
-import openfl.filters.ShaderFilter;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
-import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.play.song.Song;
 import funkin.save.Save;
-import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
-import funkin.ui.freeplay.charselect.PlayableCharacter;
-import funkin.ui.freeplay.SongMenuItem.FreeplayRank;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.freeplay.backcards.*;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.story.Level;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
-import funkin.data.freeplay.style.FreeplayStyleRegistry;
-import funkin.data.song.SongData.SongMusicData;
+import openfl.filters.ShaderFilter;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -229,6 +219,8 @@ class FreeplayState extends MusicBeatSubState
         backingCard = new BoyfriendCard(currentCharacter);
       case 'pico':
         backingCard = new PicoCard(currentCharacter);
+      case 'mat':
+        backingCard = new MatCard(currentCharacter);
       default:
         backingCard = new BackingCard(currentCharacter);
     }
@@ -1222,21 +1214,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
     add(transitionGradient);
-    // FlxTween.tween(transitionGradient, {alpha: 0}, 1, {ease: FlxEase.circIn});
-    // for (index => capsule in grpCapsules.members)
-    // {
-    //   var distFromSelected:Float = Math.abs(index - curSelected) - 1;
-    //   if (distFromSelected < 5)
-    //   {
-    //     capsule.doLerp = false;
-    //     exitMoversCharSel.set([capsule],
-    //       {
-    //         y: -250,
-    //         speed: 0.8,
-    //         wait: 0.1
-    //       });
-    //   }
-    // }
+
     fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn});
     for (grpSpr in exitMoversCharSel.keys())
     {
@@ -1303,39 +1281,6 @@ class FreeplayState extends MusicBeatSubState
       var targetAmt:Float = (Math.sin(hintTimer) + 1) / 2;
       charSelectHint.alpha = FlxMath.lerp(0.3, 0.9, targetAmt);
     }
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.justPressed.P)
-    {
-      FlxG.switchState(() -> FreeplayState.build(
-        {
-          {
-            character: currentCharacterId == "pico" ? Constants.DEFAULT_CHARACTER : "pico",
-          }
-        }));
-    }
-
-    if (FlxG.keys.justPressed.T)
-    {
-      rankAnimStart(fromResultsParams ??
-        {
-          playRankAnim: true,
-          newRank: PERFECT_GOLD,
-          songId: "tutorial",
-          difficultyId: "hard"
-        });
-    }
-
-    // if (FlxG.keys.justPressed.H)
-    // {
-    //   rankDisplayNew(fromResultsParams);
-    // }
-
-    // if (FlxG.keys.justPressed.G)
-    // {
-    //   rankAnimSlam(fromResultsParams);
-    // }
-    #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
     if (controls.FREEPLAY_CHAR_SELECT && !busy)
     {

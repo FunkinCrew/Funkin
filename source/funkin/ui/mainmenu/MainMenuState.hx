@@ -1,31 +1,24 @@
 package funkin.ui.mainmenu;
 
-import funkin.graphics.FunkinSprite;
-import flixel.addons.transition.FlxTransitionableState;
-import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.util.typeLimit.NextState;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
-import flixel.text.FlxText;
-import funkin.data.song.SongData.SongMusicData;
 import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinCamera;
-import funkin.audio.FunkinSound;
 import flixel.tweens.FlxTween;
-import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
+import flixel.util.typeLimit.NextState;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinCamera;
 import funkin.ui.AtlasMenuList;
-import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MenuList;
-import funkin.ui.title.TitleState;
-import funkin.ui.story.StoryMenuState;
+import funkin.ui.MusicBeatState;
 import funkin.ui.Prompt;
+import funkin.ui.debug.DebugMenuSubState;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.story.StoryMenuState;
+import funkin.ui.title.TitleState;
 import funkin.util.WindowUtil;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -121,14 +114,6 @@ class MainMenuState extends MusicBeatState
           character: targetCharacter
         }));
     });
-
-    #if FEATURE_OPEN_URL
-    // In order to prevent popup blockers from triggering,
-    // we need to open the link as an immediate result of a keypress event,
-    // so we can't wait for the flicker animation to complete.
-    var hasPopupBlocker = #if web true #else false #end;
-    createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
-    #end
 
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());

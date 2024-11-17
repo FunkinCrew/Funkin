@@ -1,18 +1,15 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
-import funkin.util.FileUtil;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
-import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
-import funkin.save.migrator.SaveDataMigrator;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
+import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
-import thx.semver.Version;
 import thx.semver.Version;
 
 @:nullSafety
@@ -22,7 +19,7 @@ class Save
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
-  static final SAVE_PATH:String = 'FunkinCrew';
+  static final SAVE_PATH:String = 'MatMixes';
   static final SAVE_NAME:String = 'Funkin';
 
   static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
