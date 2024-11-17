@@ -123,10 +123,6 @@ class MultiSparrowCharacter extends BaseCharacter
 
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
   {
-    // Make sure we ignore other animations if we're currently playing a forced one,
-    // unless we're forcing a new animation.
-    if (!this.canPlayOtherAnims && !ignoreOther) return;
-
     super.playAnimation(name, restart, ignoreOther, reverse);
   }
 }

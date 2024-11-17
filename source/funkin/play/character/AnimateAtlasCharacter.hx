@@ -93,8 +93,6 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
   {
-    if ((!canPlayOtherAnims && !ignoreOther)) return;
-
     var correctName = correctAnimationName(name);
     if (correctName == null)
     {
