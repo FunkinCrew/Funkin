@@ -1,30 +1,30 @@
 package funkin.play.stage;
 
-import openfl.display.BlendMode;
-import funkin.graphics.framebuffer.FrameBufferManager;
-import flixel.util.FlxColor;
-import funkin.graphics.framebuffer.SpriteCopy;
-import funkin.graphics.FunkinCamera;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
-import flixel.util.FlxSort;
-import openfl.display.BitmapData;
 import flixel.util.FlxColor;
+import flixel.util.FlxColor;
+import flixel.util.FlxSort;
+import funkin.data.IRegistryEntry;
+import funkin.data.stage.StageData.StageDataCharacter;
+import funkin.data.stage.StageData;
+import funkin.data.stage.StageRegistry;
+import funkin.graphics.FunkinCamera;
+import funkin.graphics.framebuffer.FrameBufferManager;
+import funkin.graphics.framebuffer.SpriteCopy;
 import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEventType;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.events.ScriptEventType;
 import funkin.play.character.BaseCharacter;
-import funkin.data.IRegistryEntry;
-import funkin.data.stage.StageData;
-import funkin.data.stage.StageData.StageDataCharacter;
-import funkin.data.stage.StageRegistry;
 import funkin.play.stage.StageProp;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
+import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 
 typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 

@@ -2,8 +2,8 @@ package funkin.save.migrator;
 
 import funkin.save.Save;
 import funkin.save.migrator.RawSaveData_v1_0_0;
-import thx.semver.Version;
 import funkin.util.VersionUtil;
+import thx.semver.Version;
 
 @:nullSafety
 class SaveDataMigrator
@@ -32,6 +32,10 @@ class SaveDataMigrator
         var save:Save = new Save(saveDataWithDefaults);
         return save;
       }
+      else if (VersionUtil.validateVersion(version, "2.0.x"))
+      {
+        return migrate_v2_0_0(inputData);
+      }
       else
       {
         var message:String = 'Error migrating save data, expected ${Save.SAVE_DATA_VERSION}.';
@@ -41,6 +45,20 @@ class SaveDataMigrator
         return new Save(Save.getDefault());
       }
     }
+  }
+
+  static function migrate_v2_0_0(inputData:Dynamic):Save
+  {
+    // Import the structured data.
+    var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefault(), inputData);
+
+    // Reset these values to valid ones.
+    saveDataWithDefaults.optionsChartEditor.chartEditorLiveInputStyle = funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle.None;
+    saveDataWithDefaults.optionsChartEditor.theme = funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme.Light;
+    saveDataWithDefaults.optionsStageEditor.theme = funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme.Light;
+
+    var save:Save = new Save(saveDataWithDefaults);
+    return save;
   }
 
   /**
