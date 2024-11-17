@@ -10,29 +10,29 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
+import funkin.api.newgrounds.NGio;
+import funkin.audio.FunkinSound;
 import funkin.audio.visualize.SpectogramSprite;
-import funkin.graphics.shaders.ColorSwap;
-import funkin.graphics.shaders.LeftMaskShader;
+import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.MusicBeatState;
-import funkin.data.song.SongData.SongMusicData;
+import funkin.graphics.shaders.ColorSwap;
+import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.shaders.TitleOutline;
-import funkin.audio.FunkinSound;
-import funkin.ui.freeplay.FreeplayState;
+import funkin.save.Save;
 import funkin.ui.AtlasText;
+import funkin.ui.MusicBeatState;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.mainmenu.MainMenuState;
 import openfl.Assets;
+import openfl.display.BlendMode;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
-import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
-import funkin.ui.freeplay.FreeplayState;
 import openfl.media.Video;
 import openfl.net.NetStream;
-import funkin.api.newgrounds.NGio;
-import openfl.display.BlendMode;
-import funkin.save.Save;
 
 #if desktop
 #end
@@ -465,13 +465,13 @@ class TitleState extends MusicBeatState
           switch (i + 1)
           {
             case 1:
-              createCoolText(['The', 'Funkin Crew Inc']);
+              createCoolText(['The', 'Mat Mixes Team']);
             case 3:
               addMoreText('presents');
             case 4:
               deleteCoolText();
             case 5:
-              createCoolText(['In association', 'with']);
+              createCoolText(['Not associated', 'with']);
             case 7:
               addMoreText('newgrounds');
               if (ngSpr != null) ngSpr.visible = true;
@@ -485,16 +485,14 @@ class TitleState extends MusicBeatState
             case 12:
               deleteCoolText();
             case 13:
-              addMoreText('Friday');
+              addMoreText('FNF');
             case 14:
-              // easter egg for when the game is trending with the wrong spelling
-              // the random intro text would be "trending--only on x"
-
-              if (curWacky[0] == "trending") addMoreText('Nigth');
+              // MAT-ING TIME GUYS!
+              if (curWacky[0] == "mating") addMoreText('Mating');
               else
-                addMoreText('Night');
+                addMoreText('Mat');
             case 15:
-              addMoreText('Funkin');
+              addMoreText('Mixes');
             case 16:
               skipIntro();
           }
