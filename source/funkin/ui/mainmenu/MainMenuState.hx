@@ -98,29 +98,21 @@ class MainMenuState extends MusicBeatState
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
+
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
-      #if FEATURE_DEBUG_FUNCTIONS
-      // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
-      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
-      #else
       var targetCharacter:Null<String> = null;
-      #end
-
-      openSubState(new FreeplayState(
-        {
-          character: targetCharacter
-        }));
-    });
-
-    createMenuItem('options', 'mainmenu/options', function() {
-      startExitState(() -> new funkin.ui.options.OptionsState());
+      openSubState(new FreeplayState({character: targetCharacter}));
     });
 
     createMenuItem('credits', 'mainmenu/credits', function() {
       startExitState(() -> new funkin.ui.credits.CreditsState());
+    });
+
+    createMenuItem('options', 'mainmenu/options', function() {
+      startExitState(() -> new funkin.ui.options.OptionsState());
     });
 
     // Reset position of menu items.
