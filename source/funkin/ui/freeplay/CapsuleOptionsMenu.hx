@@ -1,17 +1,19 @@
 package funkin.ui.freeplay;
 
-import funkin.graphics.shaders.PureColor;
-import funkin.input.Controls;
 import flixel.group.FlxSpriteGroup;
-import funkin.graphics.FunkinSprite;
+import flixel.text.FlxText.FlxTextAlign;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import flixel.text.FlxText;
-import flixel.text.FlxText.FlxTextAlign;
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.shaders.PureColor;
+import funkin.input.Controls;
 
 @:nullSafety
 class CapsuleOptionsMenu extends FlxSpriteGroup
 {
+  var busy:Bool = false;
+
   var capsuleMenuBG:FunkinSprite;
   var parent:FreeplayState;
 
@@ -74,27 +76,31 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     }
 
     var changedInst = false;
-    if (parent.getControls().UI_LEFT_P)
+    if (!busy)
     {
-      currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
-      changedInst = true;
-    }
-    if (parent.getControls().UI_RIGHT_P)
-    {
-      currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
-      changedInst = true;
-    }
-    if (!changedInst && currentInstrumental.text == '') changedInst = true;
+      if (parent.getControls().UI_LEFT_P)
+      {
+        currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
+        changedInst = true;
+      }
+      if (parent.getControls().UI_RIGHT_P)
+      {
+        currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
+        changedInst = true;
+      }
+      if (!changedInst && currentInstrumental.text == '') changedInst = true;
 
-    if (changedInst)
-    {
-      currentInstrumental.text = instrumentalIds[currentInstrumentalIndex].toTitleCase() ?? '';
-      if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
-    }
+      if (changedInst)
+      {
+        currentInstrumental.text = instrumentalIds[currentInstrumentalIndex].toTitleCase() ?? '';
+        if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
+      }
 
-    if (parent.getControls().ACCEPT)
-    {
-      onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
+      if (parent.getControls().ACCEPT)
+      {
+        busy = true;
+        onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
+      }
     }
   }
 
