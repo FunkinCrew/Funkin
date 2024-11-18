@@ -84,7 +84,7 @@ class PreferencesMenu extends Page
     itemDesc.screenCenter();
     itemDesc.y += 270;
 
-    // Update the box around the text.
+    // Create the box around the text.
     itemDescBox.setPosition(itemDesc.x - 10, itemDesc.y - 10);
     itemDescBox.setGraphicSize(Std.int(itemDesc.width + 20), Std.int(itemDesc.height + 25));
     itemDescBox.updateHitbox();
