@@ -328,7 +328,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param name (Optional) A unique name for the sprite.
    *   You can call `getNamedProp(name)` to retrieve it later.
    */
-  public function addProp(prop:StageProp, ?name:String = null)
+  public function addProp(prop:StageProp, ?name:String = null):Void
   {
     if (name != null)
     {
@@ -341,7 +341,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   /**
    * Add a sprite to the stage which animates to the beat of the song.
    */
-  public function addBopper(bopper:Bopper, ?name:String = null)
+  public function addBopper(bopper:Bopper, ?name:String = null):Void
   {
     boppers.push(bopper);
     this.addProp(bopper, name);
@@ -352,12 +352,16 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * Refreshes the stage, by redoing the render order of all props.
    * It does this based on the `zIndex` of each prop.
    */
-  public function refresh()
+  public function refresh():Void
   {
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
-  public function setShader(shader:FlxShader)
+  /**
+   * Sets a shader for each prop in the stage
+   * @param shader The shader to apply to each prop
+   */
+  public function setShader(shader:FlxShader):Void
   {
     forEachAlive(function(prop:FlxSprite) {
       prop.shader = shader;
