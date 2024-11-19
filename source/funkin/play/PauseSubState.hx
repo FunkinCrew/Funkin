@@ -1,12 +1,9 @@
 package funkin.play;
 
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
-import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -14,13 +11,12 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
-import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
-import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
+import funkin.play.cutscene.VideoCutscene;
 import funkin.ui.AtlasText;
-import funkin.ui.debug.latency.LatencyState;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.transition.StickerSubState;
 
 /**
@@ -168,10 +164,14 @@ class PauseSubState extends MusicBeatSubState
   var metadataDeaths:FlxText;
 
   /**
-   * A text object which displays the current song's artist.
-   * Fades to the charter after a period before fading back.
+   * A text object which displays the current song's composer.
    */
   var metadataArtist:FlxText;
+
+  /**
+   * A text object which displays the current song's charter.
+   */
+  var metadataCharter:FlxText;
 
   /**
    * The actual text objects for the menu entries.
@@ -213,8 +213,6 @@ class PauseSubState extends MusicBeatSubState
     regenerateMenu();
 
     transitionIn();
-
-    startCharterTimer();
   }
 
   /**
@@ -234,8 +232,6 @@ class PauseSubState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
-    charterFadeTween.cancel();
-    charterFadeTween = null;
     pauseMusic.stop();
   }
 
@@ -302,7 +298,16 @@ class PauseSubState extends MusicBeatSubState
     metadataArtist.scrollFactor.set(0, 0);
     metadata.add(metadataArtist);
 
-    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, FlxG.width - 40, 'Difficulty: ');
+    metadataCharter = new FlxText(20, metadataArtist.y + 32, FlxG.width - 40, 'Charter: ${Constants.DEFAULT_CHARTER}');
+    metadataCharter.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    if (PlayState.instance?.currentChart != null)
+    {
+      metadataCharter.text = 'Charter: ${PlayState.instance.currentChart.charter}';
+    }
+    metadataCharter.scrollFactor.set(0, 0);
+    metadata.add(metadataCharter);
+
+    var metadataDifficulty:FlxText = new FlxText(20, metadataCharter.y + 32, FlxG.width - 40, 'Difficulty: ');
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
@@ -311,7 +316,7 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Game Overs');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
@@ -323,62 +328,6 @@ class PauseSubState extends MusicBeatSubState
     metadata.add(metadataPractice);
 
     updateMetadataText();
-  }
-
-  var charterFadeTween:Null<FlxTween> = null;
-
-  function startCharterTimer():Void
-  {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
-      {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
-          }
-          else
-          {
-            metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startArtistTimer();
-              }
-            });
-        }
-      });
-  }
-
-  function startArtistTimer():Void
-  {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
-      {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
-          }
-          else
-          {
-            metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startCharterTimer();
-              }
-            });
-        }
-      });
   }
 
   /**
@@ -487,8 +436,6 @@ class PauseSubState extends MusicBeatSubState
   {
     // If targetMode is null, keep the current mode.
     if (targetMode == null) targetMode = this.currentMode;
-
-    var previousMode:PauseMode = this.currentMode;
     this.currentMode = targetMode;
 
     resetSelection();
@@ -599,7 +546,7 @@ class PauseSubState extends MusicBeatSubState
     switch (this.currentMode)
     {
       case Standard | Difficulty:
-        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+        metadataDeaths.text = '${PlayState.instance?.deathCounter} Game Overs';
       case Charting:
         metadataDeaths.text = 'Chart Editor Preview';
       case Conversation:
