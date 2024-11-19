@@ -49,7 +49,6 @@ import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
@@ -2672,17 +2671,6 @@ class PlayState extends MusicBeatSubState
      */
   function debugKeyShit():Void
   {
-    #if FEATURE_STAGE_EDITOR
-    // Open the stage editor overlaying the current state.
-    if (controls.DEBUG_STAGE)
-    {
-      // hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
-      disableKeys = true;
-      persistentUpdate = false;
-      openSubState(new StageOffsetSubState());
-    }
-    #end
-
     #if FEATURE_CHART_EDITOR
     // Redirect to the chart editor playing the current song.
     if (controls.DEBUG_CHART)
