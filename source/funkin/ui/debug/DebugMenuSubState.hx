@@ -1,16 +1,16 @@
 package funkin.ui.debug;
 
-import flixel.math.FlxPoint;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import funkin.ui.MusicBeatSubState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.math.FlxPoint;
 import funkin.audio.FunkinSound;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.MusicBeatSubState;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.MusicBeatSubState;
-import funkin.util.logging.CrashHandler;
-import flixel.addons.transition.FlxTransitionableState;
 import funkin.util.FileUtil;
+import funkin.util.logging.CrashHandler;
 
 class DebugMenuSubState extends MusicBeatSubState
 {
@@ -57,11 +57,10 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_CHART_EDITOR
     onMenuChange(createItem("CHART EDITOR", openChartEditor));
     #end
-    // createItem("Input Offset Testing", openInputOffsetTesting);
     createItem("CHARACTER SELECT", openCharSelect, true);
     createItem("ANIMATION EDITOR", openAnimationEditor);
     createItem("STAGE EDITOR", openStageEditor);
-    // createItem("TEST STICKERS", testStickers);
+    createItem("TEST STICKERS", testStickers);
     #if sys
     createItem("OPEN CRASH LOG FOLDER", openLogFolder);
     #end
@@ -107,7 +106,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openCharSelect()
   {
-    FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+    FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
   }
 
   function openAnimationEditor()

@@ -1,9 +1,9 @@
 package funkin.data.story.level;
 
-import funkin.util.SortUtil;
-import funkin.ui.story.Level;
 import funkin.data.story.level.LevelData;
+import funkin.ui.story.Level;
 import funkin.ui.story.ScriptedLevel;
+import funkin.util.SortUtil;
 
 class LevelRegistry extends BaseRegistry<Level, LevelData>
 {
@@ -102,7 +102,8 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
       "week5",
       "week6",
       "week7",
-      "weekend1"
+      "weekend1",
+      "weekend2"
     ];
   }
 

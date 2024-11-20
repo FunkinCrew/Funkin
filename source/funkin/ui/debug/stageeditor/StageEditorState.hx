@@ -1,55 +1,55 @@
 package funkin.ui.debug.stageeditor;
 
-import flixel.math.FlxPoint;
-import flixel.text.FlxText;
-import openfl.display.BitmapData;
-import flixel.util.FlxTimer;
 import flixel.FlxCamera;
+import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.shapes.FlxShapeCircle;
 import flixel.graphics.FlxGraphic;
-import flixel.FlxSprite;
-import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.addons.display.FlxGridOverlay;
-import funkin.play.character.BaseCharacter;
+import flixel.math.FlxPoint;
+import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter.CharacterType;
+import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
-import funkin.input.Cursor;
-import haxe.ui.backend.flixel.UIState;
-import haxe.ui.containers.menus.MenuItem;
-import haxe.ui.containers.menus.Menu;
-import haxe.ui.containers.menus.MenuSeparator;
-import haxe.ui.containers.menus.MenuBar;
-import haxe.ui.containers.menus.MenuOptionBox;
-import haxe.ui.containers.menus.MenuCheckBox;
-import funkin.util.FileUtil;
-import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.ui.debug.stageeditor.components.*;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler.StageEditorObjectData;
+import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.debug.stageeditor.handlers.StageDataHandler;
 import funkin.ui.debug.stageeditor.handlers.UndoRedoHandler.UndoAction;
 import funkin.ui.debug.stageeditor.toolboxes.*;
-import funkin.ui.debug.stageeditor.components.*;
-import haxe.ui.containers.dialogs.Dialogs;
-import haxe.ui.containers.dialogs.Dialog;
-import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.util.FileUtil;
+import funkin.util.WindowUtil;
+import funkin.util.logging.CrashHandler;
+import haxe.ui.backend.flixel.UIState;
+import haxe.ui.components.Button;
+import haxe.ui.components.Label;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.VBox; // vbucks
-import haxe.ui.components.Button;
+import haxe.ui.containers.dialogs.Dialog;
+import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.containers.menus.Menu;
+import haxe.ui.containers.menus.MenuBar;
+import haxe.ui.containers.menus.MenuCheckBox;
+import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.menus.MenuOptionBox;
+import haxe.ui.containers.menus.MenuSeparator;
+import haxe.ui.containers.windows.Window;
 import haxe.ui.containers.windows.WindowList;
 import haxe.ui.containers.windows.WindowManager;
-import haxe.ui.containers.windows.Window;
-import flixel.FlxObject;
-import haxe.ui.components.Label;
-import funkin.ui.mainmenu.MainMenuState;
-import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
-import haxe.ui.focus.FocusManager;
 import haxe.ui.core.Screen;
-import funkin.util.WindowUtil;
-import funkin.audio.FunkinSound;
-import haxe.ui.notifications.NotificationType;
+import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
-import funkin.util.logging.CrashHandler;
+import haxe.ui.notifications.NotificationType;
+import openfl.display.BitmapData;
 
 /**
  * Da Stage Editor woo!!
@@ -1208,8 +1208,7 @@ class StageEditorState extends UIState
         CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
         Cursor.hide();
-        FlxG.switchState(() -> new DebugMenuSubState());
-        FlxG.sound.music.stop();
+        FlxG.switchState(() -> new MainMenuState());
 
       case "switch mode":
         if (!testingMode) moveMode = (moveMode == "assets" ? "chars" : "assets");

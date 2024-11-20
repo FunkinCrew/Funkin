@@ -2,8 +2,8 @@
   "version": "1.0.0",
   "bgAsset": "freeplay/freeplayBGDadMat",
   "selectorAsset": "freeplay/freeplaySelector/freeplaySelector_mat",
-  "numbersAsset": "digital_numbers_mat",
+  "numbersAsset": "freeplay/digital_numbers_mat",
   "capsuleAsset": "freeplay/freeplayCapsule/capsule/freeplayCapsule_mat",
   "capsuleTextColors": ["#C94564", "#C94564"],
-  "startDelay": 1.0
+  "startDelay": 1.5
 }

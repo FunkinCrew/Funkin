@@ -1,7 +1,6 @@
 package funkin.ui.title;
 
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.tweens.FlxEase;
@@ -13,20 +12,14 @@ import flixel.util.typeLimit.NextState;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.visualize.SpectogramSprite;
-import funkin.data.song.SongData.SongMusicData;
-import funkin.data.song.SongRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.shaders.TitleOutline;
-import funkin.save.Save;
 import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatState;
-import funkin.ui.freeplay.FreeplayState;
-import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.mainmenu.MainMenuState;
 import openfl.Assets;
-import openfl.display.BlendMode;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
 import openfl.events.MouseEvent;

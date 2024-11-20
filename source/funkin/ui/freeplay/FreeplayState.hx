@@ -127,7 +127,6 @@ class FreeplayState extends MusicBeatSubState
     0xFFF6B604
   ];
 
-  var grpSongs:FlxTypedGroup<Alphabet>;
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
   var curPlaying:Bool = false;
 
@@ -233,7 +232,6 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
     letterSort = new LetterSort(400, 75);
-    grpSongs = new FlxTypedGroup<Alphabet>();
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
     sparks = new FlxSprite(0, 0);
@@ -375,8 +373,6 @@ class FreeplayState extends MusicBeatSubState
 
     rankBg.makeSolidColor(FlxG.width, FlxG.height, 0xD3000000);
     add(rankBg);
-
-    add(grpSongs);
 
     add(grpCapsules);
 

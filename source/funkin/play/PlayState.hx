@@ -1,12 +1,12 @@
 package funkin.play;
 
-import flixel.addons.display.FlxPieDial;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.display.FlxPieDial;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.Transition;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -17,6 +17,7 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
+import funkin.Highscore.Tallies;
 import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
@@ -31,7 +32,6 @@ import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
-import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -40,33 +40,32 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.ComboMilestone;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
-import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.notes.NoteDirection;
-import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
-import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
+import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
-import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.debug.stage.StageOffsetSubState;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.options.PreferencesMenu;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
 import lime.ui.Haptic;
+import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
-import openfl.Lib;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -2702,17 +2701,6 @@ class PlayState extends MusicBeatSubState
      */
   function debugKeyShit():Void
   {
-    #if FEATURE_STAGE_EDITOR
-    // Open the stage editor overlaying the current state.
-    if (controls.DEBUG_STAGE)
-    {
-      // hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
-      disableKeys = true;
-      persistentUpdate = false;
-      openSubState(new StageOffsetSubState());
-    }
-    #end
-
     #if FEATURE_CHART_EDITOR
     // Redirect to the chart editor playing the current song.
     if (controls.DEBUG_CHART)
