@@ -289,11 +289,11 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.scrollFactor.set(0, 0);
     metadata.add(metadataSong);
 
-    metadataArtist = new FlxText(20, metadataSong.y + 32, FlxG.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataArtist = new FlxText(20, metadataSong.y + 32, FlxG.width - 40, 'Composer: ${Constants.DEFAULT_ARTIST}');
     metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
-      metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
+      metadataArtist.text = 'Composer: ${PlayState.instance.currentChart.songArtist}';
     }
     metadataArtist.scrollFactor.set(0, 0);
     metadata.add(metadataArtist);
