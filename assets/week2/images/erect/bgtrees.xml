@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bgtrees.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bgtrees0000" x="0" y="0" width="600" height="400"/>
+	<SubTexture name="bgtrees0001" x="605" y="0" width="600" height="400"/>
+	<SubTexture name="bgtrees0002" x="1210" y="0" width="600" height="400"/>
+	<SubTexture name="bgtrees0003" x="0" y="405" width="600" height="400"/>
+	<SubTexture name="bgtrees0004" x="605" y="405" width="600" height="400"/>
+	<SubTexture name="bgtrees0005" x="1210" y="405" width="600" height="400"/>
+	<SubTexture name="bgtrees0006" x="0" y="810" width="600" height="400"/>
+	<SubTexture name="bgtrees0007" x="605" y="810" width="600" height="400"/>
+	<SubTexture name="bgtrees0008" x="1210" y="810" width="600" height="400"/>
+	<SubTexture name="bgtrees0009" x="0" y="1215" width="600" height="400"/>
+	<SubTexture name="bgtrees0010" x="605" y="1215" width="600" height="400"/>
+	<SubTexture name="bgtrees0011" x="1210" y="1215" width="600" height="400"/>
+</TextureAtlas>

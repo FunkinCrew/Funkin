@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Free texture packer v0.6.7 http://free-tex-packer.com
+-->
+<TextureAtlas imagePath="neneChristmasKnife.png" width="1654" height="1183">
+  <SubTexture name="knife toss xmas0001.png" x="0" y="0"  width="346" height="397" frameX="-0" frameY="-8" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0005.png" x="346" y="0"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0007.png" x="346" y="393"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0008.png" x="0" y="397"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0009.png" x="327" y="786"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0010.png" x="0" y="790"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0011.png" x="654" y="786"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0012.png" x="673" y="0"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0013.png" x="673" y="393"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0014.png" x="981" y="786"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0015.png" x="1000" y="0"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0016.png" x="1000" y="393"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0017.png" x="1308" y="786"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0018.png" x="1327" y="0"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0003.png" x="1327" y="393"  width="327" height="391" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0002.png" x="0" y="0"  width="346" height="397" frameX="-0" frameY="-8" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0004.png" x="1327" y="393"  width="327" height="391" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+  <SubTexture name="knife toss xmas0006.png" x="346" y="0"  width="327" height="393" frameX="-18" frameY="-0" frameWidth="346" frameHeight="405"/>
+</TextureAtlas>

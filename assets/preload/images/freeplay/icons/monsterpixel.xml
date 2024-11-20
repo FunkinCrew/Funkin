@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="monsterpixel.png" width="123" height="49">
+  <SubTexture name="idle0001" x="85" y="0"  width="38" height="25" frameX="-5" frameY="-2" frameWidth="45" frameHeight="31"/>
+
+  <SubTexture name="confirm0001" x="85" y="0"  width="38" height="25" frameX="-5" frameY="-2" frameWidth="45" frameHeight="31"/>
+  <SubTexture name="confirm0002" x="0" y="0"  width="45" height="22" frameX="-0" frameY="-6" frameWidth="45" frameHeight="31"/>
+  <SubTexture name="confirm0003" x="45" y="0"  width="40" height="31" frameX="-3" frameY="-0" frameWidth="45" frameHeight="31"/>
+  <SubTexture name="confirm0004" x="0" y="22"  width="40" height="27" frameX="-3" frameY="-2" frameWidth="45" frameHeight="31"/>
+
+  <SubTexture name="confirm-hold0001" x="0" y="22"  width="40" height="27" frameX="-3" frameY="-2" frameWidth="45" frameHeight="31"/>
+</TextureAtlas>

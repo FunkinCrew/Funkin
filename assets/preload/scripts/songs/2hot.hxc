@@ -1,0 +1,408 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxBasePoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.Conductor;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.base.ScriptedFlxAtlasSprite;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.GameOverSubState;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.song.Song;
+import funkin.play.stage.StageProp;
+import funkin.save.Save;
+
+// We have to use FlxBasePoint in scripts because FlxPoint is inlined and not available in scripts
+
+class TwoHOTSong extends Song
+{
+	var hasPlayedCutscene:Bool = false;
+	//var tempConductor:Conductor;
+	var cutsceneMusic:FunkinSound;
+
+	function new()
+	{
+		super('2hot');
+
+		hasPlayedCutscene = false;
+	}
+
+	/**
+	 * Health lost when hit by can.
+	 */
+	var HEALTH_LOSS = 0.25 * 2;
+
+	public function listDifficulties(variationId:String, variationIds:Array<String>, showLocked:Bool):Array<String> {
+		if (showLocked || Save.instance.hasBeatenLevel('weekend1')) {
+			return super.listDifficulties(variationId, variationIds);
+		}
+
+		// Hide all difficulties if the player has not beaten the week.
+		return [];
+	}
+
+	public override function onCountdownStart(event:CountdownScriptEvent):Void {
+		super.onCountdownStart(event);
+	}
+
+	function onSongRetry(event:ScriptEvent)
+	{
+		super.onSongRetry(event);
+
+		removeCans();
+		gunCocked = false;
+	}
+
+	public override function onSongEnd(event:CountdownScriptEvent):Void {
+		super.onSongEnd(event);
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      hasPlayedCutscene = true;
+
+      event.cancel();
+
+			// start the video cutscene and hide it so the other stuff can happen after
+      startCutscene();
+    } else {
+			// Make sure the cutscene can play again next time!
+			hasPlayedCutscene = false;
+			// DO NOT CANCEL THE EVENT!
+		}
+	}
+
+	// the Other stuff
+	function endCutscene(){
+		VideoCutscene.onVideoStarted.removeAll();
+		VideoCutscene.hideVideo();
+
+		new FlxTimer().start(1, function(tmr)
+		{
+			PlayState.instance.tweenCameraToPosition(1539, 833.5, 2, FlxEase.quadInOut);
+			PlayState.instance.tweenCameraZoom(0.69, 2, true, FlxEase.quadInOut);
+		});
+
+		// Since no music plays at this part I'm too lazy to hook Nene up to a conductor,
+		// so we just dance on a timer here.
+		new FlxTimer().start(0.5, function(tmr)
+		{
+			PlayState.instance.currentStage.getGirlfriend().dance(true);
+		}, 10);
+
+		new FlxTimer().start(2, function(tmr)
+		{
+			PlayState.instance.currentStage.getBoyfriend().playAnimation('intro1', true, true);
+		});
+		new FlxTimer().start(2.5, function(tmr)
+		{
+			PlayState.instance.currentStage.getDad().playAnimation('pissed', true, true);
+		});
+
+		new FlxTimer().start(6, function(tmr)
+		{
+			// video would play around here
+			//PlayState.instance.endSong(true);
+
+			trace('Pausing ending to play a video cutscene (`2hot`)');
+
+			// Add a black background behind the cutscene to fix a transition bug!
+			trace('Adding black background behind cutscene over UI');
+			var bgSprite = new FunkinSprite(-100, -100);
+			bgSprite.makeSolidColor(2000, 2500, 0xFF000000);
+			bgSprite.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
+			bgSprite.zIndex = 1000000;
+			PlayState.instance.add(bgSprite);
+			PlayState.instance.refresh();
+
+			VideoCutscene.showVideo();
+		});
+
+	}
+
+	function startCutscene(){
+		VideoCutscene.onVideoStarted.add(endCutscene);
+		PlayState.instance.camHUD.visible = false;
+
+		PlayState.instance.isInCutscene = true;
+		hasPlayedCutscene = true;
+
+		PlayState.instance.currentStage.getBoyfriend().danceEvery = 0;
+		PlayState.instance.currentStage.getDad().danceEvery = 0;
+
+		startVideo();
+	}
+
+	function startVideo() {
+		VideoCutscene.play(Paths.videos('2hotCutscene'), CutsceneType.ENDING);
+  }
+
+	function removeCans()
+	{
+		for (can in spawnedCans)
+		{
+			can.kill();
+		}
+		spawnedCans = [];
+	}
+
+	function onStateChangeEnd(event:StateChangeScriptEvent)
+	{
+		super.onStateChangeEnd(event);
+
+		if ((Std.isOfType(event.targetState, PlayState)))
+		{
+			return;
+		}
+		hardClear();
+	}
+
+	function hardClear()
+	{
+		removeCans();
+		gunCocked = false;
+	}
+
+	var gunCocked:Bool = false;
+	var spawnedCans:Array<ScriptedFlxAtlasSprite> = [];
+
+	function onNoteHit(event:HitNoteScriptEvent)
+	{
+		super.onNoteHit(event);
+    if (PlayState.instance.currentStage == null) return;
+
+		switch (event.note.kind)
+		{
+			case "weekend-1-lightcan":
+				// Do nothing, but place this such that the animation plays at the right time.
+			case "weekend-1-kickcan":
+				// This creates the can and starts the animation.
+				// We define the behavior of the can in a separate scripted class,
+				// which allows the can to track and manage its own properties.
+				var newCan:ScriptedFlxAtlasSprite = ScriptedFlxAtlasSprite.init('SpraycanAtlasSprite', 0, 0);
+
+				var spraycanPile = PlayState.instance.currentStage.getNamedProp('spraycanPile');
+
+				newCan.x = spraycanPile.x - 430;
+				newCan.y = spraycanPile.y - 840;
+				newCan.zIndex = spraycanPile.zIndex - 1;
+
+				newCan.scriptCall('playCanStart');
+
+				PlayState.instance.currentStage.add(newCan);
+				PlayState.instance.currentStage.refresh(); // Apply z-index.
+				spawnedCans.push(newCan);
+			case "weekend-1-kneecan":
+				// Do nothing, but place this such that the animation plays at the right time.
+			case "weekend-1-cockgun": // lol
+				gunCocked = true;
+				new FlxTimer().start(1.0, function()
+				{
+					gunCocked = false;
+				});
+			case "weekend-1-firegun":
+				if (gunCocked)
+				{
+					trace('Firing gun!');
+					shootNextCan();
+				}
+				else
+				{
+					trace('Cannot fire gun!');
+					// The player cannot hit this note.
+					event.cancelEvent();
+				}
+		}
+	}
+
+	public var STATE_ARCING:Int = 2; // In the air.
+	public var STATE_SHOT:Int = 3; // Hit by the player.
+	public var STATE_IMPACTED:Int = 4; // Impacted the player.
+
+	function getNextCanWithState(desiredState:Int)
+	{
+		for (index in 0...spawnedCans.length)
+		{
+			var can = spawnedCans[index];
+			var canState = can.scriptGet('currentState');
+
+			if (canState == desiredState)
+			{
+				// Return the can we found.
+				return can;
+			}
+		}
+		return null;
+	}
+
+	function onUpdate(event:UpdateScriptEvent) {
+		super.onUpdate(event);
+	}
+
+	function darkenStageProps()
+	{
+		// Darken the background, then fade it back.
+		for (stageProp in PlayState.instance.currentStage.members)
+		{
+			// Determine if the stage prop is something that should be excluded from darkening.
+			if (Std.isOfType(stageProp, StageProp)) {
+				if (stageProp.name == "bf" || stageProp.name == "dad" || stageProp.name == "gf") // This refers to the player.
+				{
+					// Exclude.
+					continue;
+				}
+			}
+
+			// Select cans.
+			if (spawnedCans.contains(stageProp)) {
+				// Exclude.
+				continue;
+			}
+
+			// Hacky way of selecting PicoPlayable.picoFade.
+			if (stageProp.zIndex == (PlayState.instance.currentStage.getBoyfriend().zIndex - 3)) {
+				// Exclude.
+				continue;
+			}
+
+			// If not excluded, darken.
+			stageProp.color = 0xFF111111;
+			new FlxTimer().start(1/24, (tmr) ->
+			{
+				stageProp.color = 0xFF222222;
+				FlxTween.color(stageProp, 1.4, 0xFF222222, 0xFFFFFFFF);
+			});
+		}
+	}
+
+	function blackenStageProps()
+	{
+		// Blacken the background (also Darnell and Nene) entirely, then restore it once the gameOverSubState is up.
+		for (stageProp in PlayState.instance.currentStage.members)
+		{
+			// Determine if the stage prop is something that should be excluded from blackening.
+			if (Std.isOfType(stageProp, StageProp)) {
+				if (stageProp.name == "bf") // This refers to the player.
+				{
+					// Exclude.
+					continue;
+				}
+			}
+
+			// Select cans.
+			if (spawnedCans.contains(stageProp)) {
+				// Exclude.
+				continue;
+			}
+
+			// If not excluded, blacken.
+			stageProp.color = 0xFF000000;
+			new FlxTimer().start(1.0, (tmr) ->
+			{
+				stageProp.color = 0xFFFFFFFF;
+			});
+		}
+	}
+
+	function shootNextCan()
+	{
+		var can = getNextCanWithState(STATE_ARCING);
+
+		if (can != null)
+		{
+			can.scriptSet('currentState', STATE_SHOT);
+			can.scriptCall('playCanShot');
+
+			new FlxTimer().start(1/24, function(tmr)
+			{
+				darkenStageProps();
+			});
+
+		}
+	}
+
+	function missNextCan()
+	{
+		var can = getNextCanWithState(STATE_ARCING);
+
+		if (can != null)
+		{
+			can.scriptSet('currentState', STATE_IMPACTED);
+		}
+	}
+
+	function spawnImpactParticle()
+	{
+		var impactParticle = FunkinSprite.createSparrow(0, 0, 'CanImpactParticle');
+		impactParticle.animation.addByPrefix('idle', 'CanImpactParticle0', 24, false);
+		impactParticle.animation.play('idle');
+		impactParticle.x = PlayState.instance.currentStage.getBoyfriend().x + 400;
+		impactParticle.y = PlayState.instance.currentStage.getBoyfriend().y - 200;
+		PlayState.instance.currentStage.add(impactParticle);
+
+		impactParticle.animation.finishCallback = function()
+		{
+			impactParticle.kill();
+		};
+	}
+
+	function onNoteMiss(event:NoteScriptEvent)
+	{
+		super.onNoteMiss(event.note);
+
+		trace('Missed note on 2hot stage...' + event.note.noteData);
+
+		switch (event.note.kind)
+		{
+			case "weekend-1-cockgun":
+				event.healthChange = 0.0; // We cause health loss later.
+			case "weekend-1-firegun":
+				gunCocked = false;
+				event.healthChange = 0.0; // We cause health loss elsewhere.
+				missNextCan();
+				takeCanDamage();
+			case "weekend-1-firegun-hip":
+				gunCocked = false;
+				event.healthChange = 0.0; // We cause health loss elsewhere.
+				missNextCan();
+				takeCanDamage();
+			case "weekend-1-firegun-far":
+				gunCocked = false;
+				event.healthChange = 0.0; // We cause health loss elsewhere.
+				missNextCan();
+				takeCanDamage();
+		}
+	}
+
+	function takeCanDamage():Void {
+		trace('Taking damage from can exploding!');
+		PlayState.instance.health -= HEALTH_LOSS;
+		// TODO: This is jank as hell! Add some better way to prevent onNoteMiss's normal health loss.
+		// PlayState.instance.health += 0.0775;
+
+		if (PlayState.instance.health <= 0) {
+			trace('Died to the can! Use special death animation.');
+
+			// Reset to standard death animation.
+			GameOverSubState.musicSuffix = '-pico-explode';
+			GameOverSubState.blueBallSuffix = '-pico-explode';
+
+			blackenStageProps();
+		}
+	}
+
+	/**
+   * Replay the cutscene after leaving the song.
+   */
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    hasPlayedCutscene = false;
+  }
+}

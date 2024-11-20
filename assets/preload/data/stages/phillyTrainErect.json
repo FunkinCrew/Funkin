@@ -1,0 +1,145 @@
+{
+  "props": [
+    {
+      "danceEvery": 0,
+      "zIndex": 10,
+      "position": [-100, 0],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "sky",
+      "isPixel": false,
+      "assetPath": "philly/erect/sky",
+      "scroll": [0.1, 0.1],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 20,
+      "position": [-10, 0],
+      "scale": [0.85, 0.85],
+      "animType": "sparrow",
+      "name": "city",
+      "isPixel": false,
+      "assetPath": "philly/erect/city",
+      "scroll": [0.3, 0.3],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 30,
+      "position": [-10, 0],
+      "scale": [0.85, 0.85],
+      "animType": "sparrow",
+      "name": "lights0",
+      "isPixel": false,
+      "assetPath": "philly/erect/win0",
+      "scroll": [0.3, 0.3],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 30,
+      "position": [-10, 0],
+      "scale": [0.85, 0.85],
+      "animType": "sparrow",
+      "name": "lights1",
+      "isPixel": false,
+      "assetPath": "philly/erect/win1",
+      "scroll": [0.3, 0.3],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 30,
+      "position": [-10, 0],
+      "scale": [0.85, 0.85],
+      "animType": "sparrow",
+      "name": "lights2",
+      "isPixel": false,
+      "assetPath": "philly/erect/win2",
+      "scroll": [0.3, 0.3],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 30,
+      "position": [-10, 0],
+      "scale": [0.85, 0.85],
+      "animType": "sparrow",
+      "name": "lights3",
+      "isPixel": false,
+      "assetPath": "philly/erect/win3",
+      "scroll": [0.3, 0.3],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 30,
+      "position": [-10, 0],
+      "scale": [0.85, 0.85],
+      "animType": "sparrow",
+      "name": "lights4",
+      "isPixel": false,
+      "assetPath": "philly/erect/win4",
+      "scroll": [0.3, 0.3],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 50,
+      "position": [-40, 50],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "behindTrain",
+      "isPixel": false,
+      "assetPath": "philly/erect/behindTrain",
+      "scroll": [1, 1],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 60,
+      "position": [2000, 360],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "train",
+      "isPixel": false,
+      "assetPath": "philly/train",
+      "scroll": [1, 1],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 70,
+      "position": [-40, 50],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "street",
+      "isPixel": false,
+      "assetPath": "philly/erect/street",
+      "scroll": [1, 1],
+      "animations": []
+    }
+  ],
+  "cameraZoom": 1.1,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [1020.5, 885],
+      "cameraOffsets": [-200, -100]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [468, 885],
+      "cameraOffsets": [200, -100]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [0, 0],
+      "position": [751.5, 787]
+    }
+  },
+  "name": "Philly (Train) [Erect]",
+  "directory": "week3"
+}

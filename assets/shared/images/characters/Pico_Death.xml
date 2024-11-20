@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="Pico_Death.png" width="6371" height="3442">
+	<SubTexture name="Pico Death Stab0001" x="5584" y="1027" width="518" height="490" frameX="-124" frameY="-87" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0002" x="4517" y="2250" width="563" height="519" frameX="-124" frameY="-58" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0003" x="5176" y="525" width="547" height="499" frameX="-140" frameY="-78" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0004" x="4778" y="1" width="562" height="521" frameX="-140" frameY="-56" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0005" x="4013" y="1706" width="562" height="541" frameX="-140" frameY="-36" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0006" x="3645" y="1" width="576" height="570" rotated="true" frameX="-140" frameY="-1" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0007" x="3403" y="1151" width="570" height="569" frameX="-140" frameY="-8" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0008" x="2788" y="2300" width="576" height="563" frameX="-140" frameY="-14" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0009" x="2788" y="2300" width="576" height="563" frameX="-140" frameY="-14" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0010" x="4224" y="1" width="551" height="552" frameX="-140" frameY="-25" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0011" x="4224" y="1" width="551" height="552" frameX="-140" frameY="-25" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0012" x="4578" y="1706" width="567" height="499" rotated="true" frameX="-140" frameY="-10" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0013" x="4578" y="1706" width="567" height="499" rotated="true" frameX="-140" frameY="-10" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0014" x="5082" y="1056" width="499" height="554" frameX="-140" frameY="-23" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0015" x="5082" y="1056" width="499" height="554" frameX="-140" frameY="-23" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0016" x="5343" y="1" width="527" height="500" rotated="true" frameX="-138" frameY="-50" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0017" x="5343" y="1" width="527" height="500" rotated="true" frameX="-138" frameY="-50" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0018" x="5148" y="1613" width="500" height="513" frameX="-138" frameY="-64" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0019" x="5083" y="2208" width="502" height="514" frameX="-142" frameY="-64" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0020" x="5726" y="504" width="502" height="493" frameX="-142" frameY="-85" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0021" x="5061" y="2772" width="522" height="498" frameX="-156" frameY="-78" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0022" x="3016" y="576" width="368" height="489" rotated="true" frameX="-262" frameY="-189" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0023" x="5651" y="1520" width="489" height="417" frameX="-262" frameY="-189" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0024" x="5588" y="2129" width="491" height="419" frameX="-260" frameY="-187" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0025" x="1" y="3009" width="491" height="428" frameX="-260" frameY="-187" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0026" x="2551" y="1" width="431" height="500" rotated="true" frameX="-251" frameY="-184" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0027" x="1985" y="3013" width="500" height="428" frameX="-251" frameY="-184" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0028" x="5586" y="2725" width="497" height="416" frameX="-254" frameY="-196" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0029" x="5873" y="1" width="497" height="417" frameX="-254" frameY="-196" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0030" x="495" y="3009" width="497" height="419" frameX="-254" frameY="-194" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0031" x="995" y="3015" width="497" height="419" frameX="-254" frameY="-194" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0032" x="995" y="3015" width="497" height="419" frameX="-254" frameY="-194" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0033" x="4583" y="556" width="590" height="497" rotated="true" frameX="-254" frameY="-23" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0034" x="2407" y="547" width="606" height="599" frameX="-250" frameY="-14" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0035" x="2407" y="547" width="606" height="599" frameX="-250" frameY="-14" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0036" x="1061" y="1" width="793" height="606" frameX="-136" frameY="-7" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0037" x="1957" y="1783" width="800" height="612" frameX="-161" frameY="-1" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0038" x="1985" y="2398" width="800" height="612" frameX="-161" frameY="-1" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0039" x="1037" y="1783" width="917" height="613" frameX="-79" frameY="-0" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0040" x="1065" y="2399" width="917" height="613" frameX="-79" frameY="-0" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0041" x="1" y="1201" width="1033" height="610" frameX="-15" frameY="-3" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0042" x="1" y="1814" width="1033" height="610" frameX="-15" frameY="-3" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0043" x="1" y="1" width="1057" height="597" frameX="-4" frameY="-16" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0044" x="1" y="601" width="1057" height="597" frameX="-4" frameY="-16" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0045" x="1" y="2427" width="1061" height="579" frameX="-0" frameY="-34" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0046" x="1037" y="1201" width="1061" height="579" frameX="-0" frameY="-34" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0047" x="2774" y="1149" width="626" height="572" frameX="-254" frameY="-41" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0048" x="1061" y="610" width="670" height="569" frameX="-254" frameY="-44" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0049" x="1734" y="610" width="670" height="569" frameX="-254" frameY="-44" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0050" x="2760" y="1754" width="691" height="543" frameX="-254" frameY="-70" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0051" x="1857" y="1" width="691" height="543" frameX="-254" frameY="-70" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0052" x="4542" y="1140" width="537" height="563" frameX="-254" frameY="-50" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0053" x="4032" y="574" width="548" height="563" frameX="-243" frameY="-50" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0054" x="3367" y="2300" width="572" height="557" rotated="true" frameX="-243" frameY="-41" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0055" x="3942" y="2294" width="572" height="546" rotated="true" frameX="-254" frameY="-41" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0056" x="3936" y="2860" width="556" height="568" frameX="-254" frameY="-45" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0057" x="3454" y="1723" width="556" height="568" frameX="-254" frameY="-45" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0058" x="4495" y="2843" width="563" height="552" frameX="-254" frameY="-61" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0059" x="3976" y="1151" width="563" height="552" frameX="-254" frameY="-61" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0060" x="2788" y="2866" width="571" height="560" frameX="-254" frameY="-53" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0061" x="3362" y="2866" width="571" height="560" frameX="-254" frameY="-53" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0062" x="3016" y="1" width="626" height="572" frameX="-254" frameY="-41" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0063" x="3403" y="576" width="626" height="572" frameX="-254" frameY="-41" frameWidth="1061" frameHeight="615"/>
+	<SubTexture name="Pico Death Stab0064" x="2101" y="1182" width="670" height="569" frameX="-254" frameY="-44" frameWidth="1061" frameHeight="615"/>
+</TextureAtlas>

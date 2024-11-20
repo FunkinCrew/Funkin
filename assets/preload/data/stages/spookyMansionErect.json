@@ -1,0 +1,79 @@
+{
+  "props": [
+    {
+      "name": "solid",
+      "assetPath": "#242336",
+      "position": [-300, -500],
+      "scroll": [1, 1],
+      "scale": [2400, 2000],
+      "zIndex": -500
+    },
+    {
+      "name": "bgTrees",
+      "assetPath": "erect/bgtrees",
+      "zIndex": -101,
+      "position": [200, 50],
+      "scale": [1, 1],
+      "scroll": [0.8, 0.8],
+      "danceEvery": 0,
+      "animations": [
+        {
+          "name": "bgtrees",
+          "prefix": "bgtrees",
+          "looped": true,
+          "frameRate": 5
+        }
+      ],
+      "startingAnimation": "bgtrees"
+    },
+    {
+      "name": "bgDark",
+      "assetPath": "erect/bgDark",
+      "zIndex": -100,
+      "position": [-360, -220],
+      "scale": [1, 1],
+      "scroll": [1, 1]
+    },
+    {
+      "name": "bgLight",
+      "assetPath": "erect/bgLight",
+      "zIndex": -99,
+      "position": [-360, -220],
+      "scale": [1, 1],
+      "scroll": [1, 1]
+    },
+    {
+      "name": "stairsDark",
+      "assetPath": "erect/stairsDark",
+      "zIndex": 400,
+      "position": [966, -225],
+      "scale": [1, 1],
+      "scroll": [1, 1]
+    },
+    {
+      "name": "stairsLight",
+      "assetPath": "erect/stairsLight",
+      "zIndex": 401,
+      "position": [966, -225],
+      "scale": [1, 1],
+      "scroll": [1, 1]
+    }
+  ],
+  "cameraZoom": 1.0,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 200,
+      "position": [1250, 835],
+      "cameraOffsets": [-100, -100]
+    },
+    "gf": { "zIndex": 100, "position": [821.5, 800], "cameraOffsets": [0, 0] },
+    "dad": {
+      "zIndex": 200,
+      "position": [382, 831],
+      "cameraOffsets": [150, -100]
+    }
+  },
+  "name": "Spooky Mansion [Erect]",
+  "directory": "week2"
+}

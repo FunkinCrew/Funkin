@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="spiritpixel.png" width="38" height="149">
+  <SubTexture name="idle0001" x="0" y="39"  width="37" height="38" frameX="-7" frameY="-1" frameWidth="45" frameHeight="40"/>
+
+  <SubTexture name="confirm0001" x="0" y="39"  width="37" height="38" frameX="-7" frameY="-1" frameWidth="45" frameHeight="40"/>
+  <SubTexture name="confirm0002" x="0" y="115"  width="36" height="34" frameX="-8" frameY="-6" frameWidth="45" frameHeight="40"/>
+  <SubTexture name="confirm0003" x="0" y="0"  width="38" height="39" frameX="-4" frameY="-1" frameWidth="45" frameHeight="40"/>
+  <SubTexture name="confirm0004" x="0" y="77"  width="36" height="38" frameX="-6" frameY="-2" frameWidth="45" frameHeight="40"/>
+
+  <SubTexture name="confirm-hold0001" x="0" y="77"  width="36" height="38" frameX="-6" frameY="-2" frameWidth="45" frameHeight="40"/>
+</TextureAtlas>

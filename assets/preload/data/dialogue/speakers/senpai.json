@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "name": "Senpai",
+  "assetPath": "weeb/senpaiPortrait",
+  "flipX": false,
+  "isPixel": true,
+  "scale": 5.4,
+  "offsets": [-20, 14],
+  "animations": [
+    {
+      "name": "talkEnter",
+      "prefix": "portraitEnter0",
+      "offsets": [0, 0],
+      "frameRate": 12
+    },
+    {
+      "name": "talk",
+      "prefix": "portraitTalk0",
+      "offsets": [0, 0],
+      "frameRate": 12
+    }
+  ]
+}

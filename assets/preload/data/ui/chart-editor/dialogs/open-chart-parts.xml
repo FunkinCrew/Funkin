@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog id="chartDialog" width="600" height="400" title="Open Chart - Upload Files">
+  <vbox width="100%" height="100%">
+    <hbox width="100%" height="100%">
+      <vbox width="100%" height="100%" id="chartContainerA" />
+      <vbox width="100%" height="100%" id="chartContainerB" />
+    </hbox>
+    <hbox width="100%" horizontalAlign="right">
+      <button text="Cancel" id="dialogCancel" />
+      <spacer width="100%" />
+      <button text="Continue" id="dialogContinue" />
+    </hbox>
+  </vbox>
+</dialog>

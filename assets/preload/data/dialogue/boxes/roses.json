@@ -1,0 +1,62 @@
+{
+  "version": "1.1.0",
+  "name": "Roses",
+  "assetPath": "weeb/pixelUI/dialogueBox-new",
+  "isPixel": true,
+  "flipX": false,
+  "flipY": false,
+  "offsets": [-20, 20],
+  "scale": 5.4,
+
+  "text": {
+    "offsets": [225, 450],
+    "width": 800,
+    "color": "#3F2021",
+    "fontFamily": "Pixel Arial 11 Bold",
+    "shadowColor": "#D89494",
+    "shadowWidth": 2
+  },
+
+  "animations": [
+    {
+      "name": "enter",
+      "prefix": "Text Box Appear0",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "speaking",
+      "prefix": "Text Box Speaking0",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "sentenceEnd",
+      "prefix": "Text Box Sentence End0",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "idle",
+      "prefix": "Text Box wait to click0",
+      "looped": true,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "click",
+      "prefix": "Text Box CLICK0",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "exit",
+      "prefix": "Text Box Appear0",
+      "offsets": [0, 0],
+      "frameIndices": [4, 3, 2, 1, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "angrySenpai",
+      "prefix": "SENPAI ANGRY IMPACT SPEECH0",
+      "offsets": [0, 0],
+      "frameRate": 24
+    }
+  ]
+}

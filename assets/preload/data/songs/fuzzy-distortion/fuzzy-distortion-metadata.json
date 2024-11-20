@@ -1,0 +1,25 @@
+{
+  "version": "2.2.4",
+  "songName": "Fuzzy-Distortion",
+  "artist": "Tenaxis",
+  "charter": "Honton129",
+  "playData": {
+    "album": "matmixes1",
+    "difficulties": ["hard"],
+    "characters": {
+      "player": "bf",
+      "girlfriend": "gf",
+      "opponent": "mat"
+    },
+    "stage": "matPark",
+    "noteStyle": "funkin",
+    "ratings": { "hard": 7 },
+    "previewStart": 0,
+    "previewEnd": 14000
+  },
+  "generatedBy": "Friday Night Funkin' - v0.5.3",
+  "timeFormat": "ms",
+  "timeChanges": [
+    { "t": 0, "b": 0, "bpm": 180, "n": 4, "d": 4, "bt": [4, 4, 4, 4] }
+  ]
+}

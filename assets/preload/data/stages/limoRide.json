@@ -1,0 +1,265 @@
+{
+  "version": "1.0.0",
+  "cameraZoom": 0.9,
+  "props": [
+    {
+      "zIndex": 10,
+      "danceEvery": 0,
+      "position": [-120, -50],
+      "scale": [1, 1],
+      "name": "limoSunset",
+      "animType": "sparrow",
+      "isPixel": false,
+      "scroll": [0.1, 0.1],
+      "assetPath": "limo/limoSunset",
+      "animations": []
+    },
+    {
+      "zIndex": 20,
+      "danceEvery": 0,
+      "position": [-200, 480],
+      "scale": [1, 1],
+      "name": "bgLimo",
+      "animType": "sparrow",
+      "isPixel": false,
+      "startingAnimation": "drive",
+      "scroll": [0.4, 0.4],
+      "assetPath": "limo/bgLimo",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "background limo pink",
+          "name": "drive",
+          "looped": true,
+          "flipX": false
+        }
+      ]
+    },
+    {
+      "zIndex": 150,
+      "danceEvery": 0,
+      "position": [-120, 550],
+      "scale": [1, 1],
+      "name": "limo",
+      "animType": "sparrow",
+      "isPixel": false,
+      "startingAnimation": "drive",
+      "scroll": [1, 1],
+      "assetPath": "limo/limoDrive",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "Limo stage",
+          "name": "drive",
+          "looped": true,
+          "flipX": false
+        }
+      ]
+    },
+    {
+      "zIndex": 500,
+      "danceEvery": 0,
+      "position": [-300, 160],
+      "scale": [1, 1],
+      "name": "fastCar",
+      "animType": "sparrow",
+      "isPixel": false,
+      "scroll": [1, 1],
+      "assetPath": "limo/fastCarLol",
+      "animations": []
+    },
+    {
+      "zIndex": 30,
+      "danceEvery": 1.0,
+      "position": [100, 100],
+      "scale": [1, 1],
+      "name": "limoDancer1",
+      "animType": "sparrow",
+      "isPixel": false,
+      "startingAnimation": "danceRight",
+      "scroll": [0.4, 0.4],
+      "assetPath": "limo/henchmen",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "prefix": "hench dancing",
+          "name": "danceLeft",
+          "flipX": false
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ],
+          "prefix": "hench dancing",
+          "name": "danceRight",
+          "flipX": false
+        }
+      ]
+    },
+    {
+      "zIndex": 30,
+      "danceEvery": 1.0,
+      "position": [400, 100],
+      "scale": [1, 1],
+      "name": "limoDancer2",
+      "animType": "sparrow",
+      "isPixel": false,
+      "startingAnimation": "danceRight",
+      "scroll": [0.4, 0.4],
+      "assetPath": "limo/henchmen",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "prefix": "hench dancing",
+          "name": "danceLeft",
+          "flipX": false
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ],
+          "prefix": "hench dancing",
+          "name": "danceRight",
+          "flipX": false
+        }
+      ]
+    },
+    {
+      "zIndex": 30,
+      "danceEvery": 1.0,
+      "position": [700, 100],
+      "scale": [1, 1],
+      "name": "limoDancer3",
+      "animType": "sparrow",
+      "isPixel": false,
+      "startingAnimation": "danceLeft",
+      "scroll": [0.4, 0.4],
+      "assetPath": "limo/henchmen",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "prefix": "hench dancing",
+          "name": "danceLeft",
+          "flipX": false
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ],
+          "prefix": "hench dancing",
+          "name": "danceRight",
+          "flipX": false
+        }
+      ]
+    },
+    {
+      "zIndex": 30,
+      "danceEvery": 1.0,
+      "position": [1000, 100],
+      "scale": [1, 1],
+      "name": "limoDancer4",
+      "animType": "sparrow",
+      "isPixel": false,
+      "startingAnimation": "danceLeft",
+      "scroll": [0.4, 0.4],
+      "assetPath": "limo/henchmen",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "prefix": "hench dancing",
+          "name": "danceLeft",
+          "flipX": false
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ],
+          "prefix": "hench dancing",
+          "name": "danceRight",
+          "flipX": false
+        }
+      ]
+    },
+    {
+      "zIndex": 30,
+      "danceEvery": 1.0,
+      "position": [1300, 100],
+      "scale": [1, 1],
+      "name": "limoDancer5",
+      "animType": "sparrow",
+      "isPixel": false,
+      "startingAnimation": "danceLeft",
+      "scroll": [0.4, 0.4],
+      "assetPath": "limo/henchmen",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "prefix": "hench dancing",
+          "name": "danceLeft",
+          "flipX": false
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ],
+          "prefix": "hench dancing",
+          "name": "danceRight",
+          "flipX": false
+        }
+      ]
+    }
+  ],
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [1217.5, 592],
+      "cameraOffsets": [-300, -100]
+    },
+    "gf": {
+      "zIndex": 100,
+      "position": [787, 779],
+      "cameraOffsets": [0, 0]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [329.5, 913],
+      "cameraOffsets": [150, 0]
+    }
+  },
+  "name": "Limo Ride",
+  "directory": "week4"
+}

@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "name": "Daddy Dearest",
+  "assetPath": "characters/daddyDearest",
+  "singTime": 8.0,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "idle-hold",
+      "prefix": "idle",
+      "looped": true,
+      "frameIndices": [11, 12],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "singLEFT",
+      "offsets": [-10, 10]
+    },
+    {
+      "name": "singLEFT-hold",
+      "prefix": "singLEFT",
+      "looped": true,
+      "frameIndices": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "offsets": [-10, 10]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "singDOWN",
+      "offsets": [0, -30]
+    },
+    {
+      "name": "singDOWN-hold",
+      "prefix": "singDOWN",
+      "looped": true,
+      "frameIndices": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "offsets": [0, -30]
+    },
+    {
+      "name": "singUP",
+      "prefix": "singUP",
+      "offsets": [-6, 50]
+    },
+    {
+      "name": "singUP-hold",
+      "prefix": "singUP",
+      "looped": true,
+      "frameIndices": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "offsets": [-6, 50]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "singRIGHT",
+      "offsets": [0, 27]
+    },
+    {
+      "name": "singRIGHT-hold",
+      "prefix": "singRIGHT",
+      "looped": true,
+      "frameIndices": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "offsets": [0, 27]
+    }
+  ]
+}

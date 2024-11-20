@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="dipshitBacking.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="CHOOSE horizontal offset instance 10000" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10001" x="411" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10002" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10003" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10004" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10005" x="822" y="0" width="407" height="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10006" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10007" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10008" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10009" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10010" x="411" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10011" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10012" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10013" x="411" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10014" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10015" x="411" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10016" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10017" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10018" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10019" x="822" y="0" width="407" height="636"/>
+	<SubTexture name="CHOOSE horizontal offset instance 10020" x="0" y="0" width="405" height="636" frameX="-2" frameY="0" frameWidth="407" frameHeight="636"/>
+</TextureAtlas>

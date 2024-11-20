@@ -1,0 +1,2799 @@
+{
+  "frames": {
+    "Pico Spin0002.png": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 302,
+        "h": 436
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 65,
+        "y": 25,
+        "w": 302,
+        "h": 436
+      },
+      "sourceSize": {
+        "w": 372,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Spin0003.png": {
+      "frame": {
+        "x": 436,
+        "y": 0,
+        "w": 305,
+        "h": 435
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 67,
+        "y": 31,
+        "w": 305,
+        "h": 435
+      },
+      "sourceSize": {
+        "w": 372,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0001.png": {
+      "frame": {
+        "x": 871,
+        "y": 0,
+        "w": 448,
+        "h": 322
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 10,
+        "w": 448,
+        "h": 322
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0003.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Dodge0001.png": {
+      "frame": {
+        "x": 1770,
+        "y": 0,
+        "w": 336,
+        "h": 456
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 2,
+        "y": 0,
+        "w": 336,
+        "h": 456
+      },
+      "sourceSize": {
+        "w": 341,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Dodge0003.png": {
+      "frame": {
+        "x": 2226,
+        "y": 0,
+        "w": 341,
+        "h": 452
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 4,
+        "w": 341,
+        "h": 452
+      },
+      "sourceSize": {
+        "w": 341,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0003.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0006.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0014.png": {
+      "frame": {
+        "x": 3608,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0015.png": {
+      "frame": {
+        "x": 0,
+        "y": 305,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Spin0001.png": {
+      "frame": {
+        "x": 466,
+        "y": 322,
+        "w": 369,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 369,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 372,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit High0003.png": {
+      "frame": {
+        "x": 932,
+        "y": 332,
+        "w": 375,
+        "h": 523
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 523
+      },
+      "sourceSize": {
+        "w": 428,
+        "h": 532
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit High0005.png": {
+      "frame": {
+        "x": 1455,
+        "y": 336,
+        "w": 375,
+        "h": 523
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 523
+      },
+      "sourceSize": {
+        "w": 428,
+        "h": 532
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0001.png": {
+      "frame": {
+        "x": 1978,
+        "y": 341,
+        "w": 375,
+        "h": 455
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 11,
+        "w": 375,
+        "h": 455
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0001.png": {
+      "frame": {
+        "x": 2433,
+        "y": 347,
+        "w": 376,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 376,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0004.png": {
+      "frame": {
+        "x": 2899,
+        "y": 347,
+        "w": 376,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 376,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0005.png": {
+      "frame": {
+        "x": 3365,
+        "y": 347,
+        "w": 376,
+        "h": 468
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 376,
+        "h": 468
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0011.png": {
+      "frame": {
+        "x": 0,
+        "y": 652,
+        "w": 376,
+        "h": 463
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 5,
+        "w": 376,
+        "h": 463
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0006.png": {
+      "frame": {
+        "x": 463,
+        "y": 691,
+        "w": 376,
+        "h": 468
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 376,
+        "h": 468
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0008.png": {
+      "frame": {
+        "x": 931,
+        "y": 707,
+        "w": 376,
+        "h": 468
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 376,
+        "h": 468
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0010.png": {
+      "frame": {
+        "x": 1399,
+        "y": 711,
+        "w": 376,
+        "h": 468
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 376,
+        "h": 468
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0012.png": {
+      "frame": {
+        "x": 1867,
+        "y": 716,
+        "w": 376,
+        "h": 463
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 5,
+        "w": 376,
+        "h": 463
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit Low0003.png": {
+      "frame": {
+        "x": 2330,
+        "y": 723,
+        "w": 397,
+        "h": 479
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 68,
+        "y": 7,
+        "w": 397,
+        "h": 479
+      },
+      "sourceSize": {
+        "w": 520,
+        "h": 486
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit Low0006.png": {
+      "frame": {
+        "x": 2809,
+        "y": 723,
+        "w": 397,
+        "h": 479
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 68,
+        "y": 7,
+        "w": 397,
+        "h": 479
+      },
+      "sourceSize": {
+        "w": 520,
+        "h": 486
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit High0001.png": {
+      "frame": {
+        "x": 3288,
+        "y": 723,
+        "w": 418,
+        "h": 516
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 16,
+        "w": 418,
+        "h": 516
+      },
+      "sourceSize": {
+        "w": 428,
+        "h": 532
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Fake Out0001.png": {
+      "frame": {
+        "x": 0,
+        "y": 1028,
+        "w": 423,
+        "h": 439
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 11,
+        "w": 423,
+        "h": 439
+      },
+      "sourceSize": {
+        "w": 433,
+        "h": 450
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0003.png": {
+      "frame": {
+        "x": 439,
+        "y": 1067,
+        "w": 420,
+        "h": 473
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 420,
+        "h": 473
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0001.png": {
+      "frame": {
+        "x": 912,
+        "y": 1083,
+        "w": 425,
+        "h": 471
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 425,
+        "h": 471
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Fake Out0003.png": {
+      "frame": {
+        "x": 1383,
+        "y": 1087,
+        "w": 433,
+        "h": 450
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 433,
+        "h": 450
+      },
+      "sourceSize": {
+        "w": 433,
+        "h": 450
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch High0003.png": {
+      "frame": {
+        "x": 1833,
+        "y": 1092,
+        "w": 490,
+        "h": 459
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 36,
+        "y": 0,
+        "w": 490,
+        "h": 459
+      },
+      "sourceSize": {
+        "w": 526,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0003.png": {
+      "frame": {
+        "x": 2323,
+        "y": 1120,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0004.png": {
+      "frame": {
+        "x": 2830,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0005.png": {
+      "frame": {
+        "x": 3337,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0001.png": {
+      "frame": {
+        "x": 0,
+        "y": 1487,
+        "w": 453,
+        "h": 521
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 453,
+        "h": 521
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0002.png": {
+      "frame": {
+        "x": 521,
+        "y": 1508,
+        "w": 453,
+        "h": 521
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 453,
+        "h": 521
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch Low0001.png": {
+      "frame": {
+        "x": 1042,
+        "y": 1520,
+        "w": 510,
+        "h": 456
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 8,
+        "w": 510,
+        "h": 456
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 464
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch High0001.png": {
+      "frame": {
+        "x": 1552,
+        "y": 1551,
+        "w": 524,
+        "h": 457
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 524,
+        "h": 457
+      },
+      "sourceSize": {
+        "w": 526,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch Low0003.png": {
+      "frame": {
+        "x": 2076,
+        "y": 1557,
+        "w": 487,
+        "h": 464
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 23,
+        "y": 0,
+        "w": 487,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 464
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit Low0001.png": {
+      "frame": {
+        "x": 2563,
+        "y": 1578,
+        "w": 520,
+        "h": 484
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 520,
+        "h": 484
+      },
+      "sourceSize": {
+        "w": 520,
+        "h": 486
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0002.png": {
+      "frame": {
+        "x": 871,
+        "y": 0,
+        "w": 448,
+        "h": 322
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 10,
+        "w": 448,
+        "h": 322
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0004.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0005.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0006.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0007.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0008.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0009.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0010.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0011.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0012.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0013.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Before Uppercut0014.png": {
+      "frame": {
+        "x": 1319,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 451,
+        "h": 332
+      },
+      "sourceSize": {
+        "w": 458,
+        "h": 332
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0002.png": {
+      "frame": {
+        "x": 912,
+        "y": 1083,
+        "w": 425,
+        "h": 471
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 425,
+        "h": 471
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0004.png": {
+      "frame": {
+        "x": 439,
+        "y": 1067,
+        "w": 420,
+        "h": 473
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 420,
+        "h": 473
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0005.png": {
+      "frame": {
+        "x": 439,
+        "y": 1067,
+        "w": 420,
+        "h": 473
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 420,
+        "h": 473
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0006.png": {
+      "frame": {
+        "x": 439,
+        "y": 1067,
+        "w": 420,
+        "h": 473
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 420,
+        "h": 473
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0007.png": {
+      "frame": {
+        "x": 439,
+        "y": 1067,
+        "w": 420,
+        "h": 473
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 420,
+        "h": 473
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0008.png": {
+      "frame": {
+        "x": 439,
+        "y": 1067,
+        "w": 420,
+        "h": 473
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 420,
+        "h": 473
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Block Hit0009.png": {
+      "frame": {
+        "x": 439,
+        "y": 1067,
+        "w": 420,
+        "h": 473
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 420,
+        "h": 473
+      },
+      "sourceSize": {
+        "w": 425,
+        "h": 473
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Dodge0002.png": {
+      "frame": {
+        "x": 1770,
+        "y": 0,
+        "w": 336,
+        "h": 456
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 2,
+        "y": 0,
+        "w": 336,
+        "h": 456
+      },
+      "sourceSize": {
+        "w": 341,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Dodge0004.png": {
+      "frame": {
+        "x": 2226,
+        "y": 0,
+        "w": 341,
+        "h": 452
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 4,
+        "w": 341,
+        "h": 452
+      },
+      "sourceSize": {
+        "w": 341,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Dodge0005.png": {
+      "frame": {
+        "x": 2226,
+        "y": 0,
+        "w": 341,
+        "h": 452
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 4,
+        "w": 341,
+        "h": 452
+      },
+      "sourceSize": {
+        "w": 341,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Fake Out0002.png": {
+      "frame": {
+        "x": 0,
+        "y": 1028,
+        "w": 423,
+        "h": 439
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 11,
+        "w": 423,
+        "h": 439
+      },
+      "sourceSize": {
+        "w": 433,
+        "h": 450
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Fake Out0004.png": {
+      "frame": {
+        "x": 1383,
+        "y": 1087,
+        "w": 433,
+        "h": 450
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 433,
+        "h": 450
+      },
+      "sourceSize": {
+        "w": 433,
+        "h": 450
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Fake Out0005.png": {
+      "frame": {
+        "x": 1383,
+        "y": 1087,
+        "w": 433,
+        "h": 450
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 433,
+        "h": 450
+      },
+      "sourceSize": {
+        "w": 433,
+        "h": 450
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit High0002.png": {
+      "frame": {
+        "x": 3288,
+        "y": 723,
+        "w": 418,
+        "h": 516
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 10,
+        "y": 16,
+        "w": 418,
+        "h": 516
+      },
+      "sourceSize": {
+        "w": 428,
+        "h": 532
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit High0004.png": {
+      "frame": {
+        "x": 932,
+        "y": 332,
+        "w": 375,
+        "h": 523
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 523
+      },
+      "sourceSize": {
+        "w": 428,
+        "h": 532
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit Low0002.png": {
+      "frame": {
+        "x": 2563,
+        "y": 1578,
+        "w": 520,
+        "h": 484
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 520,
+        "h": 484
+      },
+      "sourceSize": {
+        "w": 520,
+        "h": 486
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit Low0004.png": {
+      "frame": {
+        "x": 2330,
+        "y": 723,
+        "w": 397,
+        "h": 479
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 68,
+        "y": 7,
+        "w": 397,
+        "h": 479
+      },
+      "sourceSize": {
+        "w": 520,
+        "h": 486
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Hit Low0005.png": {
+      "frame": {
+        "x": 2330,
+        "y": 723,
+        "w": 397,
+        "h": 479
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 68,
+        "y": 7,
+        "w": 397,
+        "h": 479
+      },
+      "sourceSize": {
+        "w": 520,
+        "h": 486
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0002.png": {
+      "frame": {
+        "x": 2433,
+        "y": 347,
+        "w": 376,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 376,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0003.png": {
+      "frame": {
+        "x": 2433,
+        "y": 347,
+        "w": 376,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 376,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0007.png": {
+      "frame": {
+        "x": 463,
+        "y": 691,
+        "w": 376,
+        "h": 468
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 376,
+        "h": 468
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0009.png": {
+      "frame": {
+        "x": 931,
+        "y": 707,
+        "w": 376,
+        "h": 468
+      },
+      "rotated": true,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 376,
+        "h": 468
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0013.png": {
+      "frame": {
+        "x": 1867,
+        "y": 716,
+        "w": 376,
+        "h": 463
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 5,
+        "w": 376,
+        "h": 463
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Idle0014.png": {
+      "frame": {
+        "x": 1867,
+        "y": 716,
+        "w": 376,
+        "h": 463
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 5,
+        "w": 376,
+        "h": 463
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 468
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0002.png": {
+      "frame": {
+        "x": 1978,
+        "y": 341,
+        "w": 375,
+        "h": 455
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 11,
+        "w": 375,
+        "h": 455
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0004.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0005.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0009.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0010.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0011.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0016.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0017.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0021.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0022.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0023.png": {
+      "frame": {
+        "x": 2678,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 0,
+        "w": 347,
+        "h": 466
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0007.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0008.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0012.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0013.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0018.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0019.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Laughing0020.png": {
+      "frame": {
+        "x": 3144,
+        "y": 0,
+        "w": 347,
+        "h": 464
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 29,
+        "y": 2,
+        "w": 347,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 376,
+        "h": 466
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch High0002.png": {
+      "frame": {
+        "x": 1552,
+        "y": 1551,
+        "w": 524,
+        "h": 457
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 2,
+        "w": 524,
+        "h": 457
+      },
+      "sourceSize": {
+        "w": 526,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch High0004.png": {
+      "frame": {
+        "x": 1833,
+        "y": 1092,
+        "w": 490,
+        "h": 459
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 36,
+        "y": 0,
+        "w": 490,
+        "h": 459
+      },
+      "sourceSize": {
+        "w": 526,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch High0005.png": {
+      "frame": {
+        "x": 1833,
+        "y": 1092,
+        "w": 490,
+        "h": 459
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 36,
+        "y": 0,
+        "w": 490,
+        "h": 459
+      },
+      "sourceSize": {
+        "w": 526,
+        "h": 459
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch Low0002.png": {
+      "frame": {
+        "x": 1042,
+        "y": 1520,
+        "w": 510,
+        "h": 456
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 8,
+        "w": 510,
+        "h": 456
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 464
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch Low0004.png": {
+      "frame": {
+        "x": 2076,
+        "y": 1557,
+        "w": 487,
+        "h": 464
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 23,
+        "y": 0,
+        "w": 487,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 464
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Punch Low0005.png": {
+      "frame": {
+        "x": 2076,
+        "y": 1557,
+        "w": 487,
+        "h": 464
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 23,
+        "y": 0,
+        "w": 487,
+        "h": 464
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 464
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0006.png": {
+      "frame": {
+        "x": 2323,
+        "y": 1120,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0009.png": {
+      "frame": {
+        "x": 2323,
+        "y": 1120,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0012.png": {
+      "frame": {
+        "x": 2323,
+        "y": 1120,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0015.png": {
+      "frame": {
+        "x": 2323,
+        "y": 1120,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0018.png": {
+      "frame": {
+        "x": 2323,
+        "y": 1120,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0021.png": {
+      "frame": {
+        "x": 2323,
+        "y": 1120,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0007.png": {
+      "frame": {
+        "x": 2830,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0010.png": {
+      "frame": {
+        "x": 2830,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0013.png": {
+      "frame": {
+        "x": 2830,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0016.png": {
+      "frame": {
+        "x": 2830,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0019.png": {
+      "frame": {
+        "x": 2830,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0022.png": {
+      "frame": {
+        "x": 2830,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0008.png": {
+      "frame": {
+        "x": 3337,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0011.png": {
+      "frame": {
+        "x": 3337,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0014.png": {
+      "frame": {
+        "x": 3337,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0017.png": {
+      "frame": {
+        "x": 3337,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "Pico Uppercut0020.png": {
+      "frame": {
+        "x": 3337,
+        "y": 1141,
+        "w": 437,
+        "h": 507
+      },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 20,
+        "y": 14,
+        "w": 437,
+        "h": 507
+      },
+      "sourceSize": {
+        "w": 457,
+        "h": 521
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  },
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "Pico_Blazin.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 4072,
+      "h": 2062
+    },
+    "scale": 1
+  }
+}

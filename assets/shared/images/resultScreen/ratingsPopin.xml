@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ratingsPopin.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Categories0000" x="0" y="0" width="395" height="32" frameX="0" frameY="-29" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0001" x="400" y="0" width="268" height="74" frameX="-179" frameY="0" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0002" x="673" y="0" width="395" height="119" frameX="-52" frameY="0" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0003" x="1073" y="0" width="296" height="123" frameX="-153" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0004" x="1374" y="0" width="328" height="171" frameX="-121" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0005" x="1707" y="0" width="293" height="189" frameX="-154" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0006" x="0" y="194" width="345" height="225" frameX="-102" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0007" x="350" y="194" width="289" height="237" frameX="-158" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0008" x="644" y="194" width="336" height="282" frameX="-111" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0009" x="985" y="194" width="289" height="301" frameX="-158" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0010" x="1279" y="194" width="342" height="340" frameX="-105" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0011" x="1626" y="194" width="289" height="365" frameX="-158" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0012" x="0" y="564" width="366" height="397" frameX="-81" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0013" x="371" y="564" width="289" height="412" frameX="-158" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0014" x="665" y="564" width="289" height="412" frameX="-158" frameY="-7" frameWidth="449" frameHeight="419"/>
+	<SubTexture name="Categories0015" x="959" y="564" width="289" height="407" frameX="-158" frameY="-7" frameWidth="449" frameHeight="419"/>
+</TextureAtlas>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="NeneKnifeToss.png" width="964" height="1985">
+  <SubTexture name="knife toss0001" x="0" y="0" width="344" height="401" frameX="-0" frameY="-9" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0018" x="0" y="401" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0005" x="0" y="797" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0007" x="0" y="1193" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0008" x="0" y="1589" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0009" x="310" y="401" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0010" x="344" y="0" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0017" x="310" y="797" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0012" x="310" y="1193" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0013" x="310" y="1589" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0014" x="620" y="396" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0015" x="654" y="0" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0016" x="620" y="792" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0011" x="620" y="1188" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0003" x="620" y="1584" width="310" height="393" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0002" x="0" y="0" width="344" height="401" frameX="-0" frameY="-9" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0004" x="620" y="1584" width="310" height="393" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+  <SubTexture name="knife toss0006" x="0" y="797" width="310" height="396" frameX="-32" frameY="-0" frameWidth="344" frameHeight="410" />
+</TextureAtlas>

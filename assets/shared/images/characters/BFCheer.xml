@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<TextureAtlas imagePath="BFCheer.png" width="432" height="1346">
+  <SubTexture name="Cheer0001" x="0" y="0" width="432" height="460" frameX="-1" frameY="-0" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0005" x="0" y="460" width="431" height="447" frameX="-0" frameY="-14" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0003" x="0" y="907" width="425" height="439" frameX="-3" frameY="-21" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0002" x="0" y="0" width="432" height="460" frameX="-1" frameY="-0" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0004" x="0" y="907" width="425" height="439" frameX="-3" frameY="-21" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0006" x="0" y="460" width="431" height="447" frameX="-0" frameY="-14" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0007" x="0" y="460" width="431" height="447" frameX="-0" frameY="-14" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0008" x="0" y="460" width="431" height="447" frameX="-0" frameY="-14" frameWidth="433" frameHeight="461" />
+  <SubTexture name="Cheer0009" x="0" y="460" width="431" height="447" frameX="-0" frameY="-14" frameWidth="433" frameHeight="461" />
+</TextureAtlas>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="options.png">
+	<SubTexture name="options idle0000" x="0" y="488" width="487" height="111" />
+	<SubTexture name="options idle0001" x="0" y="488" width="487" height="111" />
+	<SubTexture name="options idle0002" x="0" y="488" width="487" height="111" />
+	<SubTexture name="options idle0003" x="0" y="603" width="487" height="111" />
+	<SubTexture name="options idle0004" x="0" y="603" width="487" height="111" />
+	<SubTexture name="options idle0005" x="0" y="603" width="487" height="111" />
+	<SubTexture name="options idle0006" x="0" y="718" width="487" height="111" />
+	<SubTexture name="options idle0007" x="0" y="718" width="487" height="111" />
+	<SubTexture name="options idle0008" x="0" y="718" width="487" height="111" />
+	<SubTexture name="options selected0000" x="0" y="329" width="606" height="155" frameX="-2" frameY="-1" frameWidth="610" frameHeight="163" />
+	<SubTexture name="options selected0001" x="0" y="167" width="607" height="158" frameX="-3" frameY="-1" frameWidth="610" frameHeight="163" />
+	<SubTexture name="options selected0002" x="0" y="0" width="610" height="163" />
+</TextureAtlas>

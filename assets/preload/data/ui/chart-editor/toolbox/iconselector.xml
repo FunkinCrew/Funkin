@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="iconSelector" title="Choose a Character" width="440" height="240">
+  <vbox width="100%" height="100%">
+    <scrollview id="charSelectScroll" width="400" height="150" contentWidth="100%" />
+    <label id="charIconName" text="Character Name" />
+  </vbox>
+</collapsible-dialog>

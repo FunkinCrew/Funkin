@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog title="Object Properties" width="400" height="400">
+  <vbox width="100%" height="100%">
+    <scrollview width="100%" height="100%" contentWidth="100%">
+      <vbox width="100%">
+
+        <collapsible text="Common" width="100%">
+          <vbox width="100%">
+            <section-header text="Object Image"/>
+            <hbox width="100%">
+              <box width="175" height="175" style="border:1px dashed $normal-border-color">
+                <scrollview width="100%" height="100%" styleName="no-padding">
+                  <image id="objectImagePreview" imageScale=".5"/>
+                </scrollview>
+              </box>
+              <vbox>
+                <button id="objectLoadImageButton" text="Load Image"/>
+                <button id="objectLoadInternetButton" text="Load From Internet"/>
+                <button id="objectDownloadImageButton" text="Download Image"/>
+                <button id="objectResetImageButton" text="Reset Image"/>
+              </vbox>
+            </hbox>
+
+            <section-header text="Z-Index"/>
+            <hbox width="100%">
+              <number-stepper id="objectZIdxStepper"/>
+              <spacer width="100%" />
+              <button id="objectZIdxReset" text="Reset" horizontalAlign="right"/>
+            </hbox>
+          </vbox>
+        </collapsible>
+
+        <collapsible text="Numeric" width="100%">
+          <vbox width="100%">
+            <section-header text="Position"/>
+            <hbox width="100%">
+              <vbox>
+                <number-stepper id="objectPosXStepper" step="5" pos="0" precision="2"/>
+                <number-stepper id="objectPosYStepper" step="5" pos="0" precision="2"/>
+              </vbox>
+              <spacer width="100%" />
+              <button id="objectPosResetButton" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+            <section-header text="Alpha"/>
+            <hbox width="100%">
+              <slider id="objectAlphaSlider" pos="1" step="0.05" min="0" max="1" majorTicks="0.1" minorTicks="0.05"/>
+              <spacer width="100%" />
+              <button id="objectAlphaResetButton" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+            <section-header text="Angle"/>
+            <hbox width="100%">
+              <slider id="objectAngleSlider" pos="0" step="5" min="0" max="360" majorTicks="45" minorTicks="15"/>
+              <spacer width="100%" />
+              <button id="objectAngleResetButton" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+            <section-header text="Scale"/>
+            <hbox width="100%">
+              <vbox>
+                <number-stepper id="objectScaleXStepper" step="0.05" min="0.05" precision="2"/>
+                <number-stepper id="objectScaleYStepper" step="0.05" min="0.05" precision="2"/>
+              </vbox>
+              <spacer width="100%" />
+              <button id="objectScaleResetButton" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+            <section-header text="Absolute Size"/>
+            <hbox width="100%">
+              <vbox>
+                <number-stepper id="objectSizeXStepper" step="1" min="1"/>
+                <number-stepper id="objectSizeYStepper" step="1" min="1"/>
+              </vbox>
+              <spacer width="100%" />
+              <button id="objectSizeResetButton" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+            <section-header text="Scroll"/>
+            <hbox width="100%">
+              <vbox>
+                <slider id="objectScrollXSlider" pos="1" step="0.05" min="-10" max="10" majorTicks="1" minorTicks="0.5"/>
+                <slider id="objectScrollYSlider" pos="1" step="0.05" min="-10" max="10" majorTicks="1" minorTicks="0.5"/>
+              </vbox>
+              <spacer width="100%" />
+              <button id="objectScrollResetButton" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+          </vbox>
+        </collapsible>
+
+        <collapsible text="Frame Splitting" width="100%">
+          <vbox width="100%">
+            <section-header text="From Text"/>
+            <hbox width="100%" height="200">
+              <textarea id="objectFrameText" width="50%" height="100%"/>
+              <vbox width="50%" height="100%">
+                <button id="objectFrameTextLoad" text="Load File"/>
+                <button id="objectFrameTextSparrow" text="Set as Sparrow"/>
+                <button id="objectFrameTextPacker" text="Set as Packer"/>
+              </vbox>
+            </hbox>
+
+            <section-header text="From Object Image"/>
+            <label text="Frame Width/Height"/>
+            <hbox width="100%">
+              <number-stepper id="objectFrameImageWidth" step="1" min="1"/> <!-- max will be set through code-->
+              <number-stepper id="objectFrameImageHeight" step="1" min="1"/>
+            </hbox>
+            <button id="objectFrameImageSetter" text="Set Frames"/>
+
+            <section-header text="Reset Frames"/>
+            <label text="WARNING: Resetting Frames will also Clear Animations to stop any Errors. Are you sure?" width="100%"/>
+            <button id="objectFrameReset" text="Reset"/>
+          </vbox>
+        </collapsible>
+
+        <collapsible text="Animation" width="100%">
+          <vbox width="100%">
+            <section-header text="Animation Data"/>
+             <hbox width="100%">
+              <dropdown id="objectAnimDropdown" width="50%" text="Search Animation" searchable="true" searchPrompt="Search Animation">
+                <data/> <!--fill with code-->
+              </dropdown>
+              <textfield id="objectAnimName" width="50%" placeholder="Animation Name"/>
+             </hbox>
+
+             <hbox width="100%">
+              <listview id="objectAnimFrameList" width="50%" height="100%">
+                <item-renderer width="100%" allowHover="true">
+                  <label id="name" horizontalAlign="left"/>
+                </item-renderer>
+                <data /> <!-- fill with code-->
+              </listview>
+
+              <vbox width="50%">
+                <textfield id="objectAnimPrefix" placeholder="Anim Prefix"/>
+                <textfield id="objectAnimFrames" placeholder="Anim Frame Indices"/>
+                <checkbox id="objectAnimLooped" text="Looped"/>
+                <checkbox id="objectAnimFlipX" text="Flip X"/>
+                <checkbox id="objectAnimFlipY" text="Flip Y"/>
+                <label text="Framerate"/>
+                <number-stepper id="objectAnimFramerate" min="1" step="1" pos="24"/>
+                <label text="Offsets X/Y"/>
+                <hbox width="100%">
+                  <number-stepper id="objectAnimOffsetX" step="1" pos="0"/>
+                  <number-stepper id="objectAnimOffsetY" step="1" pos="0"/>
+                </hbox>
+              </vbox>
+            </hbox>
+
+            <hbox width="100%" style="justify-content:space-evenly" continuous="true">
+              <button id="objectAnimSave" text="Save Animation"/>
+              <button id="objectAnimDelete" text="Remove Animation"/>
+            </hbox>
+
+            <section-header text="Dance on Beat"/>
+            <hbox width="100%">
+              <number-stepper id="objectAnimDanceBeat" step="1" min="0" pos="0"/>
+              <spacer width="100%" />
+              <button id="objectAnimDanceBeatReset" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+            <section-header text="Starting Animation"/>
+            <hbox width="100%">
+              <textfield id="objectAnimStart" placeholder="Animation Name"/>
+              <spacer width="100%" />
+              <button id="objectAnimStartReset" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+          </vbox>
+        </collapsible>
+
+        <collapsible text="Misc" width="100%">
+          <vbox width="100%">
+            <section-header text="Antialiasing"/>
+            <hbox width="100%">
+              <checkbox id="objectMiscAntialias" text="Enabled"/>
+              <spacer width="100%" />
+              <button id="objectMiscAntialiasReset" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+
+            <!-- <section-header text="Flip Object"/>
+            <hbox width="100%">
+              <vbox>
+                <checkbox id="objectMiscFlipX" text="On X Axis"/>
+                <checkbox id="objectMiscFlipY" text="On Y Axis"/>
+              </vbox>
+              <spacer width="100%" />
+              <button id="objectMiscFlipReset" text="Reset" horizontalAlign="right"/>
+            </hbox> -->
+
+            <section-header text="Blend Mode"/>
+            <hbox width="100%">
+              <dropdown id="objectMiscBlendDrop" width="125" text="Select Blend Mode">
+                <data>
+                  <item text="NONE"/>
+                  <item text="ADD"/>
+                  <item text="ALPHA"/>
+                  <item text="DARKEN"/>
+                  <item text="DIFFERENCE"/>
+                  <item text="ERASE"/>
+                  <item text="HARDLIGHT"/>
+                  <item text="INVERT"/>
+                  <item text="LAYER"/>
+                  <item text="LIGHTEN"/>
+                  <item text="MULTIPLY"/>
+                  <item text="NORMAL"/>
+                  <item text="OVERLAY"/>
+                  <item text="SCREEN"/>
+                  <item text="SHADER"/>
+                  <item text="SUBSCTRACT"/>
+                </data>
+              </dropdown>
+              <spacer width="100%" />
+              <button id="objectMiscBlendReset" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+            <section-header text="Color"/>
+            <hbox width="100%">
+              <color-picker id="objectMiscColor" currentColor="white"/>
+              <spacer width="100%" />
+              <button id="objectMiscColorReset" text="Reset" horizontalAlign="right"/>
+            </hbox>
+
+          </vbox>
+        </collapsible>
+      </vbox>
+    </scrollview>
+  </vbox>
+</collapsible-dialog>

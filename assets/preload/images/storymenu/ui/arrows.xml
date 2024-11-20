@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="arrows.png">
+	<SubTexture name="leftIdle0000" x="4" y="4" width="48" height="85" />
+	<SubTexture name="rightIdle0000" x="56" y="4" width="47" height="85" />
+	<SubTexture name="leftConfirm0000" x="107" y="4" width="42" height="75" />
+	<SubTexture name="rightConfirm0000" x="153" y="4" width="41" height="74" />
+</TextureAtlas>

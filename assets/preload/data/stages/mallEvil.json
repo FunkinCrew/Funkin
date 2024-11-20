@@ -1,0 +1,52 @@
+{
+  "version": "1.0.0",
+  "name": "Christmas Mall (Naughty)",
+  "cameraZoom": 1.0,
+  "props": [
+    {
+      "name": "solid",
+      "assetPath": "#23062D",
+      "position": [-500, -1000],
+      "scale": [2400, 2000],
+      "scroll": [0.2, 0.2]
+    },
+    {
+      "name": "bg",
+      "assetPath": "christmas/evilBG",
+      "position": [-400, -500],
+      "scale": [0.8, 0.8],
+      "scroll": [0.2, 0.2],
+      "zIndex": 10
+    },
+    {
+      "name": "evilTree",
+      "assetPath": "christmas/evilTree",
+      "position": [300, -300],
+      "scale": [1, 1],
+      "scroll": [0.2, 0.2],
+      "zIndex": 20
+    },
+    {
+      "name": "evilSnow",
+      "assetPath": "christmas/evilSnow",
+      "position": [-200, 700],
+      "scale": [1, 1],
+      "scroll": [1, 1],
+      "zIndex": 20
+    }
+  ],
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [1297.5, 871],
+      "cameraOffsets": [-100, -100]
+    },
+    "gf": { "zIndex": 100, "position": [808.5, 854], "cameraOffsets": [0, 0] },
+    "dad": {
+      "zIndex": 200,
+      "position": [290.5, 869],
+      "cameraOffsets": [150, -100]
+    }
+  },
+  "directory": "week5"
+}

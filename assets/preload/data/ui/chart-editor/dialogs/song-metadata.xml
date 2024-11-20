@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NOTE: This dialog is used in the chart editor when the player is making a new chart, after they upload instrumentals and vocals. -->
+<dialog id="metadataDialog" width="325" height="400" title="New Chart - Provide Song Metadata">
+	<vbox width="100%" height="100%">
+		<form id="metadataForm" height="100%" width="100%">
+			<grid columns="2" width="100%" height="100%">
+				<label text="Song Name:" verticalAlign="center" horizontalAlign="right" />
+				<textfield id="inputSongName" value="Bopeebo" />
+				<label text="Song Artist:" verticalAlign="center" horizontalAlign="right" />
+				<textfield id="inputSongArtist" value="Kawai Sprite" />
+				<label text="Stage:" verticalAlign="center" horizontalAlign="right" />
+				<dropdown id="inputStage" value="Main Stage" dropdownSize="10" dropdownWidth="300" searchable="true" width="100%" horizontalAlign="right">
+					<data>
+						<item id="mainStage" text="Main Stage" />
+					</data>
+				</dropdown>
+				<label text="Note Style:" verticalAlign="center" horizontalAlign="right" />
+				<dropdown id="inputNoteStyle" value="Normal" horizontalAlign="right" width="100%">
+					<data>
+						<item id="funkin" text="Funkin'" />
+					</data>
+				</dropdown>
+				<label text="Player Character:" verticalAlign="center" horizontalAlign="right" />
+				<dropdown id="inputCharacterPlayer" value="bf" dropdownSize="10" dropdownWidth="300" horizontalAlign="right" width="100%" searchable="true">
+					<validator type="required" />
+					<data>
+						<item id="bf" text="Boyfriend" />
+					</data>
+				</dropdown>
+				<label text="Opponent Character:" verticalAlign="center" horizontalAlign="right" />
+				<dropdown id="inputCharacterOpponent" value="dad" dropdownSize="10" dropdownWidth="300" horizontalAlign="right" width="100%" searchable="true">
+					<validator type="required" />
+					<data>
+						<item id="dad" text="Daddy Dearest" />
+					</data>
+				</dropdown>
+				<label text="Girlfriend Character:" verticalAlign="center" horizontalAlign="right" />
+				<dropdown id="inputCharacterGirlfriend" value="none" dropdownSize="10" dropdownWidth="300" horizontalAlign="right" width="100%" searchable="true">
+					<data>
+						<item id="none" text="" />
+						<item id="gf" text="Girlfriend" />
+					</data>
+				</dropdown>
+				<label text="Starting BPM:" verticalAlign="center" style="font-size: 10px" horizontalAlign="right" />
+				<number-stepper id="dialogBPM" style="font-size: 10px" pos="100" step="1" min="10" max="500" precision="1" horizontalAlign="right" width="100%" validator="required" />
+			</grid>
+		</form>
+		<hbox width="100%">
+			<button text="Cancel" id="dialogCancel" />
+			<spacer width="100%" />
+			<button text="Continue" id="dialogContinue" horizontalAlign="right" onclick="metadataForm.submit()" />
+		</hbox>
+	</vbox>
+</dialog>

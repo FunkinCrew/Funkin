@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="freeplayFlame.png">
+	<SubTexture name="fire loop full instance 10000" x="0" y="0" width="109" height="129" frameX="0" frameY="-70" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10001" x="115" y="0" width="38" height="173" frameX="-42" frameY="0" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10002" x="55" y="135" width="48" height="116" frameX="-34" frameY="-54" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10003" x="0" y="135" width="49" height="114" frameX="-36" frameY="-53" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10004" x="57" y="257" width="52" height="101" frameX="-31" frameY="-68" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10005" x="0" y="257" width="51" height="107" frameX="-34" frameY="-53" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10006" x="57" y="364" width="43" height="121" frameX="-35" frameY="-40" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10007" x="0" y="370" width="48" height="102" frameX="-37" frameY="-55" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10008" x="115" y="179" width="39" height="113" frameX="-40" frameY="-48" frameWidth="109" frameHeight="199" />
+	<SubTexture name="fire loop full instance 10009" x="106" y="364" width="43" height="120" frameX="-43" frameY="-45" frameWidth="109" frameHeight="199" />
+</TextureAtlas>

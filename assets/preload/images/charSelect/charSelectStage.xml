@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="charSelectStage.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="stage full instance 10000" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10001" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10002" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10003" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10004" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10005" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10006" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10007" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10008" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10009" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10010" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10011" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10012" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10013" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10014" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10015" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10016" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10017" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10018" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10019" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10020" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10021" x="0" y="385" width="1389" height="382"/>
+	<SubTexture name="stage full instance 10022" x="0" y="0" width="1389" height="379" frameX="0" frameY="-3" frameWidth="1389" frameHeight="382"/>
+	<SubTexture name="stage full instance 10023" x="0" y="385" width="1389" height="382"/>
+</TextureAtlas>

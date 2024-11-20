@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="scorePopin.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="tally score0000" x="0" y="0" width="420" height="50" frameX="0" frameY="-47" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0001" x="425" y="0" width="407" height="108" frameX="-157" frameY="-18" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0002" x="837" y="0" width="415" height="108" frameX="-153" frameY="-18" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0003" x="1257" y="0" width="425" height="82" frameX="-148" frameY="-31" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0004" x="0" y="113" width="435" height="82" frameX="-143" frameY="-31" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0005" x="440" y="113" width="447" height="85" frameX="-137" frameY="-30" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0006" x="892" y="113" width="461" height="88" frameX="-130" frameY="-28" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0007" x="1358" y="113" width="475" height="92" frameX="-123" frameY="-26" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0008" x="0" y="210" width="491" height="96" frameX="-115" frameY="-24" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0009" x="496" y="210" width="509" height="98" frameX="-106" frameY="-23" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0010" x="1010" y="210" width="529" height="103" frameX="-96" frameY="-21" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0011" x="0" y="318" width="549" height="108" frameX="-86" frameY="-18" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0012" x="554" y="318" width="571" height="114" frameX="-75" frameY="-15" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0013" x="1130" y="318" width="595" height="118" frameX="-63" frameY="-13" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0014" x="0" y="441" width="619" height="126" frameX="-51" frameY="-9" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0015" x="624" y="441" width="647" height="132" frameX="-37" frameY="-6" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0016" x="1276" y="441" width="673" height="138" frameX="-24" frameY="-3" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0017" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0018" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0019" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0020" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0021" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0022" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0023" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0024" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0025" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0026" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0027" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0028" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+	<SubTexture name="tally score0029" x="0" y="584" width="703" height="145" frameX="-9" frameY="0" frameWidth="712" frameHeight="145"/>
+</TextureAtlas>

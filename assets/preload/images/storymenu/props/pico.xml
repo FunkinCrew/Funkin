@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<TextureAtlas imagePath="pico.png" width="475" height="1004">
+  <SubTexture name="idle0009" x="8" y="8" width="221" height="237" frameX="-5" frameY="-0" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0007" x="8" y="261" width="222" height="236" frameX="-4" frameY="-1" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0008" x="245" y="8" width="221" height="236" frameX="-5" frameY="-1" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0003" x="8" y="513" width="221" height="234" frameX="-0" frameY="-3" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0005" x="8" y="763" width="224" height="233" frameX="-2" frameY="-4" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0006" x="245" y="513" width="222" height="233" frameX="-4" frameY="-4" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0001" x="246" y="260" width="217" height="230" frameX="-0" frameY="-7" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0002" x="246" y="260" width="217" height="230" frameX="-0" frameY="-7" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0004" x="8" y="513" width="221" height="234" frameX="-0" frameY="-3" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0010" x="8" y="8" width="221" height="237" frameX="-5" frameY="-0" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0011" x="8" y="8" width="221" height="237" frameX="-5" frameY="-0" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0012" x="8" y="8" width="221" height="237" frameX="-5" frameY="-0" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0013" x="8" y="8" width="221" height="237" frameX="-5" frameY="-0" frameWidth="226" frameHeight="237" />
+  <SubTexture name="idle0014" x="8" y="8" width="221" height="237" frameX="-5" frameY="-0" frameWidth="226" frameHeight="237" />
+</TextureAtlas>

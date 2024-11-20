@@ -1,0 +1,32 @@
+import funkin.play.PauseSubState;
+import funkin.play.GameOverSubState;
+import funkin.play.character.MultiSparrowCharacter;
+
+class MatPlayerCharacter extends MultiSparrowCharacter {
+	function new() {
+		super('mat-playable');
+	}
+
+	function onCreate(event:ScriptEvent) {
+		super.onCreate(event);
+
+		GameOverSubState.musicSuffix = '-pico';
+		GameOverSubState.blueBallSuffix = '-mat';
+
+		PauseSubState.musicSuffix = '-mat';
+	}
+
+    override function onGameOver(event:ScriptEvent):Void {
+		super.onGameOver(event);
+	}
+
+	override function onSongRetry(event:ScriptEvent):Void {
+		super.onSongRetry(event);
+
+		// Reset to standard death animation.
+		GameOverSubState.musicSuffix = '-pico';
+		GameOverSubState.blueBallSuffix = '-mat';
+
+		PauseSubState.musicSuffix = '-mat';
+	}
+}

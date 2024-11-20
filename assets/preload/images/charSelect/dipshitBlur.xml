@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="dipshitBlur.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="CHOOSE vertical offset instance 10000" x="0" y="0" width="412" height="706" frameX="0" frameY="-16" frameWidth="412" frameHeight="738"/>
+	<SubTexture name="CHOOSE vertical offset instance 10001" x="418" y="0" width="400" height="686" frameX="-6" frameY="-26" frameWidth="412" frameHeight="738"/>
+	<SubTexture name="CHOOSE vertical offset instance 10002" x="824" y="0" width="402" height="720" frameX="-5" frameY="-9" frameWidth="412" frameHeight="738"/>
+	<SubTexture name="CHOOSE vertical offset instance 10003" x="1232" y="0" width="400" height="682" frameX="-6" frameY="-28" frameWidth="412" frameHeight="738"/>
+	<SubTexture name="CHOOSE vertical offset instance 10004" x="0" y="726" width="400" height="684" frameX="-6" frameY="-27" frameWidth="412" frameHeight="738"/>
+	<SubTexture name="CHOOSE vertical offset instance 10005" x="406" y="726" width="400" height="690" frameX="-6" frameY="-24" frameWidth="412" frameHeight="738"/>
+	<SubTexture name="CHOOSE vertical offset instance 10006" x="0" y="726" width="400" height="684" frameX="-6" frameY="-27" frameWidth="412" frameHeight="738"/>
+	<SubTexture name="CHOOSE vertical offset instance 10007" x="812" y="726" width="400" height="738" frameX="-6" frameY="0" frameWidth="412" frameHeight="738"/>
+</TextureAtlas>

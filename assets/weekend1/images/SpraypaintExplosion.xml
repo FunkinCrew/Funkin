@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Spraypaint_Can_Assets.png">
+	<SubTexture name="Explosion 1 movie0000" x="2136" y="1867" width="278" height="281" frameX="-387" frameY="-342" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0001" x="3034" y="0" width="954" height="918" frameX="-103" frameY="-123" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0002" x="1165" y="0" width="895" height="1087" frameX="-127" frameY="-95" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0003" x="1165" y="0" width="895" height="1087" frameX="-127" frameY="-95" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0004" x="0" y="0" width="1159" height="1176" frameX="0" frameY="-55" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0005" x="0" y="0" width="1159" height="1176" frameX="0" frameY="-55" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0006" x="0" y="1182" width="1162" height="926" frameX="-24" frameY="-50" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0007" x="0" y="1182" width="1162" height="926" frameX="-24" frameY="-50" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0008" x="2066" y="0" width="962" height="931" frameX="-15" frameY="-21" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0009" x="2066" y="0" width="962" height="931" frameX="-15" frameY="-21" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0010" x="1168" y="1093" width="962" height="935" frameX="-8" frameY="-9" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0011" x="1168" y="1093" width="962" height="935" frameX="-8" frameY="-9" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0012" x="2136" y="937" width="962" height="924" frameX="-10" frameY="0" frameWidth="1186" frameHeight="1231" />
+	<SubTexture name="Explosion 1 movie0013" x="2136" y="937" width="962" height="924" frameX="-10" frameY="0" frameWidth="1186" frameHeight="1231" />
+</TextureAtlas>

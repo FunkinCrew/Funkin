@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="Pico_Shooting.png" width="2684" height="1875">
+  <SubTexture name="Pico Hit Can0001.png" x="4" y="1318" width="543" height="453" frameX="-5" frameY="-15" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0002.png" x="555" y="1318" width="543" height="452" frameX="-5" frameY="-16" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0003.png" x="778" y="4" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0004.png" x="1199" y="481" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0005.png" x="1106" y="1185" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0006.png" x="654" y="708" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0007.png" x="1323" y="4" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0008.png" x="1106" y="1185" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0009.png" x="654" y="708" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0010.png" x="1323" y="4" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0011.png" x="1106" y="1185" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0012.png" x="654" y="708" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0013.png" x="1323" y="4" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0014.png" x="1106" y="1185" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Hit Can0015.png" x="654" y="708" width="537" height="469" frameX="-0" frameY="-0" frameWidth="548" frameHeight="469" />
+  <SubTexture name="Pico Reload0001.png" x="2141" y="923" width="451" height="468" frameX="-0" frameY="-1" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0002.png" x="2229" y="446" width="451" height="468" frameX="-0" frameY="-1" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0003.png" x="2095" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0004.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0005.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0006.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0007.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0008.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0009.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0010.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0011.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0012.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0013.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0014.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Reload0015.png" x="1651" y="1400" width="436" height="471" frameX="-4" frameY="-0" frameWidth="451" frameHeight="471" />
+  <SubTexture name="Pico Shoot Hip Full0001.png" x="4" y="708" width="642" height="602" frameX="-124" frameY="-94" frameWidth="766" frameHeight="696" />
+  <SubTexture name="Pico Shoot Hip Full0002.png" x="4" y="4" width="766" height="696" frameX="-0" frameY="-0" frameWidth="766" frameHeight="696" />
+  <SubTexture name="Pico Shoot Hip Full0003.png" x="1651" y="958" width="482" height="434" frameX="-281" frameY="-262" frameWidth="766" frameHeight="696" />
+  <SubTexture name="Pico Shoot Hip Full0004.png" x="1744" y="481" width="477" height="434" frameX="-286" frameY="-262" frameWidth="766" frameHeight="696" />
+  <SubTexture name="Pico Shoot Hip Full0005.png" x="1868" y="4" width="473" height="434" frameX="-290" frameY="-262" frameWidth="766" frameHeight="696" />
+  <SubTexture name="Pico Shoot Hip Full0006.png" x="1868" y="4" width="473" height="434" frameX="-290" frameY="-262" frameWidth="766" frameHeight="696" />
+  <SubTexture name="Pico Shoot Hip Full0007.png" x="1868" y="4" width="473" height="434" frameX="-290" frameY="-262" frameWidth="766" frameHeight="696" />
+</TextureAtlas>

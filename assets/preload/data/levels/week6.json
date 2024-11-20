@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "name": "HATING SIMULATOR FT. MOAWLING",
+  "titleAsset": "storymenu/titles/week6",
+  "props": [
+    {
+      "assetPath": "storymenu/props/senpai",
+      "scale": 1.0,
+      "offsets": [60, 100],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "idle0",
+          "frameRate": 24
+        }
+      ]
+    },
+    {
+      "assetPath": "storymenu/props/bf",
+      "scale": 1.0,
+      "offsets": [150, 80],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "idle0",
+          "frameRate": 24
+        },
+        {
+          "name": "confirm",
+          "prefix": "confirm0",
+          "frameRate": 24
+        }
+      ]
+    },
+    {
+      "assetPath": "storymenu/props/gf",
+      "scale": 1.0,
+      "offsets": [200, 80],
+      "animations": [
+        {
+          "name": "danceLeft",
+          "prefix": "idle0",
+          "frameIndices": [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        },
+        {
+          "name": "danceRight",
+          "prefix": "idle0",
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ]
+        }
+      ]
+    }
+  ],
+  "background": "#F9CF51",
+  "songs": ["senpai", "roses", "thorns"]
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="500" title="About">
+	<vbox width="100%">
+		<label text="Friday Night Funkin'" horizontalAlign="center" />
+		<label text="Stage Editor v1.1" horizontalAlign="center" />
+		<label text="Built by Kolo" horizontalAlign="center" />
+		<label text="HaxeUI by Ian Harrigan" horizontalAlign="center" />
+	</vbox>
+</dialog>

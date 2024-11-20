@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="gfpixel.png" width="111" height="76">
+  <SubTexture name="idle0001" x="0" y="39"  width="38" height="37" frameX="-5" frameY="-8" frameWidth="50" frameHeight="50"/>
+
+  <SubTexture name="confirm0001" x="0" y="39"  width="38" height="37" frameX="-5" frameY="-8" frameWidth="50" frameHeight="50"/>
+  <SubTexture name="confirm0002" x="0" y="0"  width="36" height="39" frameX="-6" frameY="-5" frameWidth="50" frameHeight="50"/>
+  <SubTexture name="confirm0003" x="73" y="0"  width="38" height="33" frameX="-6" frameY="-11" frameWidth="50" frameHeight="50"/>
+  <SubTexture name="confirm0004" x="36" y="0"  width="37" height="34" frameX="-6" frameY="-9" frameWidth="50" frameHeight="50"/>
+
+  <SubTexture name="confirm-hold0004" x="36" y="0"  width="37" height="34" frameX="-6" frameY="-9" frameWidth="50" frameHeight="50"/>
+</TextureAtlas>

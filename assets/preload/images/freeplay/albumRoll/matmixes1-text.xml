@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="matmixes1-text.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle0000" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="idle0001" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="idle0002" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="idle0003" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="idle0004" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="idle0005" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="idle0006" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="idle0007" x="5" y="5" width="290" height="138"/>
+	<SubTexture name="switch0000" x="5" y="148" width="290" height="138"/>
+	<SubTexture name="switch0001" x="5" y="148" width="290" height="138"/>
+	<SubTexture name="switch0002" x="5" y="148" width="290" height="138"/>
+	<SubTexture name="switch0003" x="5" y="148" width="290" height="138"/>
+</TextureAtlas>

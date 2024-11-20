@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	This component acts as the slider head on a music player.
+	This is inserted and positioned manually by the Chart Editor state.
+-->
+<box>
+	<style>
+		#playbarHead {
+		border-radius: 0px;
+		}
+		#playbarHead .button {
+		height: 16px;
+		width: 16px;
+		border-radius: 8px;
+		background: #8844DD #6622BB vertical;
+		}
+		#playbarHead .slider-value {
+		background: #442277 #220055 vertical;
+		}
+		#playbarHead .range-value {
+		background: #8844DD #6622BB vertical;
+		}
+	</style>
+	<horizontal-slider id="playbarHead" styleName="playhead-slider" />
+</box>

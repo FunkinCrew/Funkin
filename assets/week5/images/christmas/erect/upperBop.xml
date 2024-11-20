@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="upperBop.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="upperBop0000" x="0" y="0" width="2259" height="288" frameX="0" frameY="-16" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0001" x="0" y="0" width="2259" height="288" frameX="0" frameY="-16" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0002" x="0" y="293" width="2249" height="294" frameX="-5" frameY="-10" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0003" x="0" y="293" width="2249" height="294" frameX="-5" frameY="-10" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0004" x="0" y="592" width="2247" height="301" frameX="-6" frameY="-2" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0005" x="0" y="592" width="2247" height="301" frameX="-6" frameY="-2" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0006" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0007" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0008" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0009" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0010" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0011" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0012" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+	<SubTexture name="upperBop0013" x="0" y="898" width="2243" height="302" frameX="-8" frameY="0" frameWidth="2259" frameHeight="303"/>
+</TextureAtlas>

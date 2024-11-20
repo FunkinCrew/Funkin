@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu>
+	<menu-item id="contextmenuFlip" text="Flip Note" />
+	<menu-item id="contextmenuRemoveHold" text="Remove Hold" />
+	<menu-item id="contextmenuDelete" text="Delete Note" />
+</menu>

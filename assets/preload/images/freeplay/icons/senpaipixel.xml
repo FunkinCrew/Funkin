@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="senpaipixel.png" width="144" height="35">
+  <SubTexture name="idle0001" x="36" y="0"  width="36" height="34" frameX="-10" frameY="-4" frameWidth="55" frameHeight="40"/>
+
+  <SubTexture name="confirm0001" x="36" y="0"  width="36" height="34" frameX="-10" frameY="-4" frameWidth="55" frameHeight="40"/>
+  <SubTexture name="confirm0002" x="0" y="0"  width="36" height="35" frameX="-10" frameY="-3" frameWidth="55" frameHeight="40"/>
+  <SubTexture name="confirm0003" x="108" y="0"  width="36" height="33" frameX="-9" frameY="-4" frameWidth="55" frameHeight="40"/>
+  <SubTexture name="confirm0004" x="72" y="0"  width="36" height="34" frameX="-9" frameY="-4" frameWidth="55" frameHeight="40"/>
+
+  <SubTexture name="confirm-hold0001" x="72" y="0"  width="36" height="34" frameX="-9" frameY="-4" frameWidth="55" frameHeight="40"/>
+</TextureAtlas>

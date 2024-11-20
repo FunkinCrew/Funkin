@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Faucet.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Faucet instancia 10000" x="5" y="5" width="699" height="607"/>
+	<SubTexture name="Faucet instancia 10001" x="5" y="5" width="699" height="607"/>
+	<SubTexture name="Faucet instancia 10002" x="709" y="5" width="699" height="607"/>
+	<SubTexture name="Faucet instancia 10003" x="5" y="617" width="699" height="607"/>
+	<SubTexture name="Faucet instancia 10004" x="709" y="617" width="699" height="607"/>
+	<SubTexture name="Faucet instancia 10005" x="709" y="617" width="699" height="607"/>
+</TextureAtlas>

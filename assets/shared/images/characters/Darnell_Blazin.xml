@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="Darnell_Blazin.png" width="4093" height="2052">
+  <SubTexture name="Darnell Before Uppercut0001" x="0" y="0" width="477" height="327" frameX="-0" frameY="-10" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0002" x="0" y="0" width="477" height="327" frameX="-0" frameY="-10" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0003" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0004" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0005" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0006" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0007" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0008" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0009" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0010" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0011" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0012" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0013" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0014" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Before Uppercut0015" x="477" y="0" width="479" height="337" frameX="-7" frameY="-0" frameWidth="486" frameHeight="337" />
+  <SubTexture name="Darnell Block Hit0001" x="1834" y="946" width="410" height="514" frameX="-0" frameY="-0" frameWidth="414" frameHeight="514" />
+  <SubTexture name="Darnell Block Hit0002" x="1834" y="946" width="410" height="514" frameX="-0" frameY="-0" frameWidth="414" frameHeight="514" />
+  <SubTexture name="Darnell Block Hit0003" x="1439" y="937" width="395" height="513" frameX="-19" frameY="-1" frameWidth="414" frameHeight="514" />
+  <SubTexture name="Darnell Block Hit0004" x="1439" y="937" width="395" height="513" frameX="-19" frameY="-1" frameWidth="414" frameHeight="514" />
+  <SubTexture name="Darnell Block Hit0005" x="1439" y="937" width="395" height="513" frameX="-19" frameY="-1" frameWidth="414" frameHeight="514" />
+  <SubTexture name="Darnell Cringe0001" x="630" y="337" width="325" height="497" frameX="-5" frameY="-7" frameWidth="334" frameHeight="504" />
+  <SubTexture name="Darnell Cringe0002" x="630" y="337" width="325" height="497" frameX="-5" frameY="-7" frameWidth="334" frameHeight="504" />
+  <SubTexture name="Darnell Cringe0003" x="2896" y="456" width="334" height="503" frameX="-0" frameY="-0" frameWidth="334" frameHeight="504" />
+  <SubTexture name="Darnell Cringe0004" x="2896" y="456" width="334" height="503" frameX="-0" frameY="-0" frameWidth="334" frameHeight="504" />
+  <SubTexture name="Darnell Cringe0005" x="2896" y="456" width="334" height="503" frameX="-0" frameY="-0" frameWidth="334" frameHeight="504" />
+  <SubTexture name="Darnell Dodge0001" x="2431" y="0" width="371" height="453" frameX="-2" frameY="-4" frameWidth="376" frameHeight="461" />
+  <SubTexture name="Darnell Dodge0002" x="2431" y="0" width="371" height="453" frameX="-2" frameY="-4" frameWidth="376" frameHeight="461" />
+  <SubTexture name="Darnell Dodge0003" x="3311" y="0" width="373" height="457" frameX="-0" frameY="-0" frameWidth="376" frameHeight="461" />
+  <SubTexture name="Darnell Dodge0004" x="3311" y="0" width="373" height="457" frameX="-0" frameY="-0" frameWidth="376" frameHeight="461" />
+  <SubTexture name="Darnell Dodge0005" x="3311" y="0" width="373" height="457" frameX="-0" frameY="-0" frameWidth="376" frameHeight="461" />
+  <SubTexture name="Darnell Fake Out0001" x="956" y="0" width="480" height="426" frameX="-1" frameY="-5" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0002" x="956" y="0" width="480" height="426" frameX="-1" frameY="-5" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0003" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0004" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0005" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0006" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0007" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0008" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0009" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0010" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0011" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0012" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0013" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0014" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0015" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Fake Out0016" x="1436" y="0" width="469" height="431" frameX="-0" frameY="-0" frameWidth="481" frameHeight="431" />
+  <SubTexture name="Darnell Hit High0001" x="1674" y="1460" width="446" height="570" frameX="-0" frameY="-0" frameWidth="446" frameHeight="575" />
+  <SubTexture name="Darnell Hit High0002" x="1674" y="1460" width="446" height="570" frameX="-0" frameY="-0" frameWidth="446" frameHeight="575" />
+  <SubTexture name="Darnell Hit High0003" x="2120" y="1478" width="423" height="574" frameX="-18" frameY="-1" frameWidth="446" frameHeight="575" />
+  <SubTexture name="Darnell Hit High0004" x="2120" y="1478" width="423" height="574" frameX="-18" frameY="-1" frameWidth="446" frameHeight="575" />
+  <SubTexture name="Darnell Hit High0005" x="2120" y="1478" width="423" height="574" frameX="-18" frameY="-1" frameWidth="446" frameHeight="575" />
+  <SubTexture name="Darnell Hit High0006" x="2120" y="1478" width="423" height="574" frameX="-18" frameY="-1" frameWidth="446" frameHeight="575" />
+  <SubTexture name="Darnell Hit High0007" x="2120" y="1478" width="423" height="574" frameX="-18" frameY="-1" frameWidth="446" frameHeight="575" />
+  <SubTexture name="Darnell Hit Low0001" x="0" y="337" width="630" height="457" frameX="-0" frameY="-23" frameWidth="630" frameHeight="480" />
+  <SubTexture name="Darnell Hit Low0002" x="0" y="337" width="630" height="457" frameX="-0" frameY="-23" frameWidth="630" frameHeight="480" />
+  <SubTexture name="Darnell Hit Low0003" x="3684" y="0" width="409" height="479" frameX="-142" frameY="-0" frameWidth="630" frameHeight="480" />
+  <SubTexture name="Darnell Hit Low0004" x="3684" y="0" width="409" height="479" frameX="-142" frameY="-0" frameWidth="630" frameHeight="480" />
+  <SubTexture name="Darnell Hit Low0005" x="3684" y="0" width="409" height="479" frameX="-142" frameY="-0" frameWidth="630" frameHeight="480" />
+  <SubTexture name="Darnell Hit Low0006" x="3684" y="0" width="409" height="479" frameX="-142" frameY="-0" frameWidth="630" frameHeight="480" />
+  <SubTexture name="Darnell Idle0001" x="955" y="426" width="388" height="488" frameX="-0" frameY="-16" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0002" x="955" y="426" width="388" height="488" frameX="-0" frameY="-16" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0003" x="1343" y="431" width="388" height="489" frameX="-0" frameY="-15" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0004" x="1731" y="448" width="390" height="489" frameX="-1" frameY="-15" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0005" x="2121" y="453" width="390" height="493" frameX="-1" frameY="-11" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0006" x="2121" y="453" width="390" height="493" frameX="-1" frameY="-11" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0007" x="2511" y="456" width="385" height="501" frameX="-5" frameY="-3" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0008" x="2511" y="456" width="385" height="501" frameX="-5" frameY="-3" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0009" x="3230" y="457" width="385" height="504" frameX="-5" frameY="-0" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0010" x="3615" y="479" width="387" height="504" frameX="-5" frameY="-0" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0011" x="3615" y="479" width="387" height="504" frameX="-5" frameY="-0" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0012" x="538" y="834" width="387" height="504" frameX="-3" frameY="-0" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0013" x="538" y="834" width="387" height="504" frameX="-3" frameY="-0" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Idle0014" x="538" y="834" width="387" height="504" frameX="-3" frameY="-0" frameWidth="392" frameHeight="504" />
+  <SubTexture name="Darnell Punch High0001" x="0" y="794" width="538" height="503" frameX="-3" frameY="-0" frameWidth="541" frameHeight="503" />
+  <SubTexture name="Darnell Punch High0002" x="0" y="794" width="538" height="503" frameX="-3" frameY="-0" frameWidth="541" frameHeight="503" />
+  <SubTexture name="Darnell Punch High0003" x="925" y="920" width="514" height="503" frameX="-0" frameY="-0" frameWidth="541" frameHeight="503" />
+  <SubTexture name="Darnell Punch High0004" x="925" y="920" width="514" height="503" frameX="-0" frameY="-0" frameWidth="541" frameHeight="503" />
+  <SubTexture name="Darnell Punch High0005" x="925" y="920" width="514" height="503" frameX="-0" frameY="-0" frameWidth="541" frameHeight="503" />
+  <SubTexture name="Darnell Punch Low0001" x="1905" y="0" width="526" height="448" frameX="-2" frameY="-8" frameWidth="528" frameHeight="456" />
+  <SubTexture name="Darnell Punch Low0002" x="1905" y="0" width="526" height="448" frameX="-2" frameY="-8" frameWidth="528" frameHeight="456" />
+  <SubTexture name="Darnell Punch Low0003" x="2802" y="0" width="509" height="456" frameX="-0" frameY="-0" frameWidth="528" frameHeight="456" />
+  <SubTexture name="Darnell Punch Low0004" x="2802" y="0" width="509" height="456" frameX="-0" frameY="-0" frameWidth="528" frameHeight="456" />
+  <SubTexture name="Darnell Punch Low0005" x="2802" y="0" width="509" height="456" frameX="-0" frameY="-0" frameWidth="528" frameHeight="456" />
+  <SubTexture name="Darnell Spin0001" x="476" y="1338" width="379" height="556" frameX="-48" frameY="-18" frameWidth="427" frameHeight="574" />
+  <SubTexture name="Darnell Spin0002" x="1331" y="1450" width="343" height="569" frameX="-20" frameY="-0" frameWidth="427" frameHeight="574" />
+  <SubTexture name="Darnell Spin0003" x="3162" y="961" width="420" height="540" frameX="-0" frameY="-13" frameWidth="427" frameHeight="574" />
+  <SubTexture name="Darnell Uppercut0001" x="0" y="1297" width="476" height="531" frameX="-5" frameY="-0" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0002" x="855" y="1423" width="476" height="531" frameX="-5" frameY="-0" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0003" x="2244" y="957" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0004" x="2703" y="959" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0005" x="3582" y="983" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0006" x="2244" y="957" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0007" x="2703" y="959" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0008" x="3582" y="983" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0009" x="2244" y="957" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0010" x="2703" y="959" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0011" x="3582" y="983" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0012" x="2244" y="957" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0013" x="2703" y="959" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0014" x="3582" y="983" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0015" x="2244" y="957" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0016" x="2703" y="959" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0017" x="3582" y="983" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0018" x="2244" y="957" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0019" x="2703" y="959" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0020" x="3582" y="983" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0021" x="2244" y="957" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0022" x="2703" y="959" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+  <SubTexture name="Darnell Uppercut0023" x="3582" y="983" width="459" height="521" frameX="-0" frameY="-10" frameWidth="481" frameHeight="531" />
+</TextureAtlas>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="holdCoverRed.png" width="599" height="591">
+  <SubTexture name="holdCoverStartRed0001" x="413" y="96" width="93" height="93" frameX="-111" frameY="-107" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverRed0001" x="407" y="243" width="108" height="139" rotated="true" frameX="-93" frameY="-94" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverRed0002" x="413" y="0" width="120" height="96" frameX="-100" frameY="-104" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverRed0003" x="506" y="96" width="93" height="80" frameX="-115" frameY="-107" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverRed0004" x="146" y="423" width="36" height="78" rotated="true" frameX="-122" frameY="-133" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0001" x="146" y="423" width="36" height="78" rotated="true" frameX="-122" frameY="-133" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0002" x="0" y="423" width="146" height="168" rotated="true" frameX="-72" frameY="-59" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0003" x="192" y="243" width="215" height="185" frameX="-47" frameY="-55" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0004" x="192" y="243" width="215" height="185" frameX="-47" frameY="-55" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0005" x="0" y="193" width="192" height="230" rotated="true" frameX="-44" frameY="-62" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0006" x="0" y="0" width="246" height="193" frameX="-43" frameY="-78" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0007" x="246" y="0" width="167" height="243" rotated="true" frameX="-52" frameY="-113" frameWidth="300" frameHeight="400" />
+  <SubTexture name="holdCoverEndRed0008" x="246" y="0" width="167" height="243" rotated="true" frameX="-52" frameY="-113" frameWidth="300" frameHeight="400" />
+</TextureAtlas>

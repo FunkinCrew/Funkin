@@ -1,0 +1,12 @@
+<vbox width="100%" height="100%">
+    <section-header text="Layers" />
+    <listview id="prop-layers" width="100%" height="100%">
+        <item-renderer layoutName="horizontal" width="100%">
+            <checkbox id="complete" />
+            <label width="100%" id="item" verticalAlign="center" />
+        </item-renderer>
+        <data>
+            <!-- This will be filled in-game -->
+        </data>
+    </listview>
+</vbox>

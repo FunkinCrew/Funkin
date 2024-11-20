@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+
+  "backdrop": {
+    "type": "solid",
+    "fadeTime": 2.0,
+    "color": "#BFB3DFD8"
+  },
+
+  "music": {
+    "asset": "Lunchbox",
+    "fadeTime": 2.0,
+    "looped": true
+  },
+
+  "outro": {
+    "type": "fade",
+    "fadeTime": 1.0
+  },
+
+  "dialogue": [
+    {
+      "speaker": "senpai",
+      "speakerAnimation": "talkEnter",
+      "box": "roses",
+      "boxAnimation": "enter",
+
+      "text": ["Ah, a new fair maiden has come in search of true love!"]
+    },
+    {
+      "speaker": "senpai",
+      "speakerAnimation": "talk",
+      "box": "roses",
+      "boxAnimation": "speaking",
+
+      "text": [
+        "A serenade between gentlemen shall decide where her beautiful heart shall reside."
+      ]
+    },
+    {
+      "speaker": "bf-pixel",
+      "speakerAnimation": "talkEnter",
+      "box": "roses",
+      "boxAnimation": "speaking",
+
+      "text": ["Beep bo bop"]
+    }
+  ]
+}

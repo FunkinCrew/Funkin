@@ -1,0 +1,45 @@
+{
+  "version": "2.2.4",
+  "songName": "Bulletfur",
+  "artist": "FellowDesert51",
+  "divisions": 96,
+  "playData": {
+    "album": "matmixes1",
+    "difficulties": [
+      "easy",
+      "normal",
+      "hard"
+    ],
+    "characters": {
+      "player": "pico-playable",
+      "girlfriend": "nene",
+      "opponent": "mat"
+    },
+    "stage": "matPark",
+    "noteStyle": "funkin",
+    "ratings": {
+      "easy": 3,
+      "normal": 5,
+      "hard": 7
+    },
+    "previewStart": 0,
+    "previewEnd": 10000
+  },
+  "generatedBy": "Friday Night Funkin' - v0.5.3",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 155,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

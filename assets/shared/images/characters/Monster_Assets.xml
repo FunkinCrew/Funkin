@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Monster_Assets.png">
+	<SubTexture name="monster down0000" x="3367" y="701" width="428" height="571" frameX="-12" frameY="-18" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0001" x="3367" y="701" width="428" height="571" frameX="-12" frameY="-18" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0002" x="3805" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0003" x="4249" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0004" x="4693" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0005" x="5137" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0006" x="5581" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0007" x="6025" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0008" x="6469" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0009" x="6913" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0010" x="7357" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0011" x="0" y="1380" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0012" x="444" y="1380" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0013" x="888" y="1380" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0014" x="3805" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0015" x="4249" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0016" x="4693" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0017" x="5137" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0018" x="5581" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0019" x="6025" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0020" x="6469" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0021" x="6913" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0022" x="4249" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0023" x="4249" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0024" x="6913" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0025" x="6913" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0026" x="4249" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0027" x="4249" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0028" x="6913" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster down0029" x="6913" y="701" width="434" height="588" frameX="0" frameY="0" frameWidth="440" frameHeight="589" />
+	<SubTexture name="monster idle0000" x="1332" y="1380" width="424" height="603" frameX="-46" frameY="-74" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0001" x="1766" y="1380" width="424" height="602" frameX="-46" frameY="-75" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0002" x="2200" y="1380" width="422" height="607" frameX="-49" frameY="-67" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0003" x="2632" y="1380" width="422" height="607" frameX="-49" frameY="-67" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0004" x="3064" y="1380" width="439" height="610" frameX="-38" frameY="-61" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0005" x="3513" y="1380" width="439" height="630" frameX="-38" frameY="-41" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0006" x="3962" y="1380" width="481" height="660" frameX="-3" frameY="-12" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0007" x="4453" y="1380" width="481" height="660" frameX="-3" frameY="-12" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0008" x="4944" y="1380" width="484" height="671" frameX="0" frameY="-2" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0009" x="5438" y="1380" width="484" height="671" frameX="0" frameY="-2" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0010" x="5932" y="1380" width="484" height="673" frameX="0" frameY="0" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0011" x="6426" y="1380" width="484" height="673" frameX="0" frameY="0" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0012" x="6920" y="1380" width="484" height="673" frameX="0" frameY="0" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0013" x="7414" y="1380" width="484" height="673" frameX="0" frameY="0" frameWidth="484" frameHeight="677" />
+	<SubTexture name="monster idle0014" x="0" y="2063" width="484" height="673" frameX="0" frameY="0" frameWidth="484" frameHeight="677" />
+	<SubTexture name="Monster left note0000" x="5077" y="0" width="460" height="675" frameX="-15" frameY="0" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0001" x="5077" y="0" width="460" height="675" frameX="-15" frameY="0" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0002" x="5547" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0003" x="6028" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0004" x="6509" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0005" x="6990" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0006" x="7471" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0007" x="0" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0008" x="481" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0009" x="962" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0010" x="1443" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0011" x="1924" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0012" x="2405" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0013" x="2886" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0014" x="5547" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0015" x="6028" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0016" x="6509" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0017" x="6990" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0018" x="7471" y="0" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster left note0019" x="0" y="701" width="471" height="669" frameX="0" frameY="-8" frameWidth="475" frameHeight="677" />
+	<SubTexture name="Monster Right note0000" x="0" y="0" width="375" height="691" frameX="-4" frameY="0" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0001" x="0" y="0" width="375" height="691" frameX="-4" frameY="0" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0002" x="385" y="0" width="381" height="680" frameX="0" frameY="-8" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0003" x="776" y="0" width="381" height="679" frameX="0" frameY="-9" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0004" x="1167" y="0" width="381" height="680" frameX="0" frameY="-8" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0005" x="1558" y="0" width="381" height="679" frameX="0" frameY="-9" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0006" x="1949" y="0" width="381" height="680" frameX="0" frameY="-8" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0007" x="2340" y="0" width="381" height="679" frameX="0" frameY="-9" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0008" x="2731" y="0" width="381" height="680" frameX="0" frameY="-8" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0009" x="3122" y="0" width="381" height="679" frameX="0" frameY="-9" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0010" x="3513" y="0" width="381" height="680" frameX="0" frameY="-8" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0011" x="3904" y="0" width="381" height="679" frameX="0" frameY="-9" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0012" x="4295" y="0" width="381" height="680" frameX="0" frameY="-8" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0013" x="4686" y="0" width="381" height="679" frameX="0" frameY="-9" frameWidth="381" frameHeight="691" />
+	<SubTexture name="Monster Right note0014" x="385" y="0" width="381" height="680" frameX="0" frameY="-8" frameWidth="381" frameHeight="691" />
+	<SubTexture name="monster up note0000" x="494" y="2063" width="410" height="753" frameX="-7" frameY="0" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0001" x="494" y="2063" width="410" height="753" frameX="-7" frameY="0" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0002" x="914" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0003" x="1342" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0004" x="1770" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0005" x="2198" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0006" x="2626" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0007" x="3054" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0008" x="3482" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0009" x="3910" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0010" x="4338" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0011" x="4766" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0012" x="5194" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0013" x="5622" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0014" x="914" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0015" x="1342" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0016" x="1770" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0017" x="2198" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0018" x="2626" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0019" x="3054" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0020" x="3482" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0021" x="3910" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0022" x="4338" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+	<SubTexture name="monster up note0023" x="4766" y="2063" width="418" height="721" frameX="0" frameY="-38" frameWidth="418" frameHeight="759" />
+</TextureAtlas>

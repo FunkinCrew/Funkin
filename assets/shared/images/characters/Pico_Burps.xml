@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Pico_Burps.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="burpshit0000" x="0" y="0" width="438" height="467" frameX="-2" frameY="-8" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0001" x="443" y="0" width="438" height="467" frameX="-2" frameY="-8" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0002" x="886" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0003" x="1339" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0004" x="1792" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0005" x="2245" y="0" width="440" height="468" frameX="-11" frameY="-7" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0006" x="2690" y="0" width="440" height="468" frameX="-11" frameY="-7" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0007" x="3135" y="0" width="441" height="475" frameX="-35" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0008" x="3135" y="0" width="441" height="475" frameX="-35" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0009" x="3135" y="0" width="441" height="475" frameX="-35" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0010" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0011" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0012" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0013" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0014" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0015" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0016" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0017" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0018" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0019" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0020" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0021" x="3581" y="0" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0022" x="0" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0023" x="0" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0024" x="448" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0025" x="448" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0026" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0027" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0028" x="1344" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0029" x="1344" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0030" x="1792" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0031" x="448" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0032" x="448" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0033" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0034" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0035" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0036" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0037" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0038" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0039" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0040" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0041" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0042" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0043" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0044" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0045" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0046" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpshit0047" x="896" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0000" x="2240" y="480" width="442" height="468" frameX="-78" frameY="-7" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0001" x="2240" y="480" width="442" height="468" frameX="-78" frameY="-7" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0002" x="0" y="0" width="438" height="467" frameX="-2" frameY="-8" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0003" x="443" y="0" width="438" height="467" frameX="-2" frameY="-8" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0004" x="886" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0005" x="1339" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0006" x="1792" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0007" x="2687" y="480" width="448" height="469" frameX="0" frameY="-6" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0008" x="886" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0009" x="1339" y="0" width="448" height="469" frameX="0" frameY="-6" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0010" x="2245" y="0" width="440" height="468" frameX="-11" frameY="-7" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0011" x="2690" y="0" width="440" height="468" frameX="-11" frameY="-7" frameWidth="480" frameHeight="475"/>
+	<SubTexture name="burpsmile0012" x="3140" y="480" width="441" height="475" frameX="-35" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0013" x="3140" y="480" width="441" height="475" frameX="-35" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0014" x="3140" y="480" width="441" height="475" frameX="-35" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0015" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0016" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0017" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0018" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0019" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0020" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0021" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0022" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0023" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0024" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0025" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0026" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0027" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0028" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0029" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0030" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="burpsmile0031" x="3586" y="480" width="443" height="475" frameX="-37" frameY="0" frameWidth="520" frameHeight="475"/>
+	<SubTexture name="shit0000" x="0" y="960" width="444" height="476"/>
+	<SubTexture name="shit0001" x="449" y="960" width="444" height="476"/>
+	<SubTexture name="shit0002" x="449" y="960" width="444" height="476"/>
+	<SubTexture name="shit0003" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0004" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0005" x="1347" y="960" width="444" height="476"/>
+	<SubTexture name="shit0006" x="1796" y="960" width="444" height="476"/>
+	<SubTexture name="shit0007" x="2245" y="960" width="444" height="476"/>
+	<SubTexture name="shit0008" x="2694" y="960" width="444" height="476"/>
+	<SubTexture name="shit0009" x="3143" y="960" width="444" height="476"/>
+	<SubTexture name="shit0010" x="1796" y="960" width="444" height="476"/>
+	<SubTexture name="shit0011" x="2245" y="960" width="444" height="476"/>
+	<SubTexture name="shit0012" x="2694" y="960" width="444" height="476"/>
+	<SubTexture name="shit0013" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0014" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0015" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0016" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0017" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0018" x="898" y="960" width="444" height="476"/>
+	<SubTexture name="shit0019" x="898" y="960" width="444" height="476"/>
+</TextureAtlas>

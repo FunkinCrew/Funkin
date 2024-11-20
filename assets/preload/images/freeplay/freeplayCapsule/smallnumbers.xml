@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="smallnumbers.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="ZERO0000" x="162" y="0" width="18" height="28"/>
+	<SubTexture name="ONE0000" x="0" y="0" width="18" height="28"/>
+	<SubTexture name="TWO0000" x="18" y="0" width="18" height="28"/>
+	<SubTexture name="THREE0000" x="36" y="0" width="18" height="28"/>
+	<SubTexture name="FOUR0000" x="54" y="0" width="18" height="28"/>
+	<SubTexture name="FIVE0000" x="72" y="0" width="18" height="28"/>
+	<SubTexture name="SIX0000" x="90" y="0" width="18" height="28"/>
+	<SubTexture name="SEVEN0000" x="108" y="0" width="18" height="28"/>
+	<SubTexture name="EIGHT0000" x="126" y="0" width="18" height="28"/>
+	<SubTexture name="NINE0000" x="144" y="0" width="18" height="28"/>
+</TextureAtlas>

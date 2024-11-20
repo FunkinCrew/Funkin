@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="tank4.png">
+	<SubTexture name="fg tankman bobbin 3 instance 10000" x="0" y="0" width="399" height="319" frameX="0" frameY="-11" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10001" x="0" y="0" width="399" height="319" frameX="0" frameY="-11" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10002" x="0" y="329" width="393" height="322" frameX="-4" frameY="-8" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10003" x="0" y="329" width="393" height="322" frameX="-4" frameY="-8" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10004" x="403" y="329" width="391" height="320" frameX="-8" frameY="-4" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10005" x="403" y="329" width="391" height="320" frameX="-8" frameY="-4" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10006" x="403" y="659" width="390" height="320" frameX="-10" frameY="-1" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10007" x="403" y="659" width="390" height="320" frameX="-10" frameY="-1" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10008" x="0" y="661" width="390" height="319" frameX="-11" frameY="0" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10009" x="0" y="661" width="390" height="319" frameX="-11" frameY="0" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10010" x="0" y="661" width="390" height="319" frameX="-11" frameY="0" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10011" x="0" y="661" width="390" height="319" frameX="-11" frameY="0" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10012" x="0" y="661" width="390" height="319" frameX="-11" frameY="0" frameWidth="401" frameHeight="330" />
+	<SubTexture name="fg tankman bobbin 3 instance 10013" x="0" y="661" width="390" height="319" frameX="-11" frameY="0" frameWidth="401" frameHeight="330" />
+</TextureAtlas>

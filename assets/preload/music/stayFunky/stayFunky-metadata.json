@@ -1,0 +1,9 @@
+{
+  "timeFormat": "ms",
+  "artist": "Kawai Sprite",
+  "songName": "Stay Funky",
+  "timeChanges": [{ "d": 4, "n": 4, "t": 0, "bt": [4, 4, 4, 4], "bpm": 90 }],
+  "generatedBy": "Manual (by fabs)",
+  "looped": true,
+  "version": "2.0.0"
+}

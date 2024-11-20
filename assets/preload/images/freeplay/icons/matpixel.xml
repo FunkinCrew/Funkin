@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="matpixel.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="confirm0000" x="0" y="0" width="49" height="34" frameX="0" frameY="-6" frameWidth="49" frameHeight="40"/>
+	<SubTexture name="confirm0001" x="49" y="0" width="44" height="39" frameX="-3" frameY="0" frameWidth="49" frameHeight="40"/>
+	<SubTexture name="confirm0002" x="0" y="39" width="47" height="38" frameX="-2" frameY="-2" frameWidth="49" frameHeight="40"/>
+	<SubTexture name="confirm-hold0000" x="0" y="39" width="47" height="38" frameX="0" frameY="0" frameWidth="49" frameHeight="40"/>
+	<SubTexture name="idle0000" x="47" y="39" width="47" height="38"/>
+</TextureAtlas>

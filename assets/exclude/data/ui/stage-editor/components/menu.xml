@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menubar id="menubar" width="100%" height="35" paddingLeft="172">
+  <style>
+    .menu {
+    // The width of the individual menu items
+    width: 160px;
+    }
+  </style>
+
+  <menu text="File" id="menubarMenuFile">
+    <menu-item id="menubarItemNewStage" text="New Stage"/>
+    <menu-separator />
+    <menu-item id="menubarItemOpenStage" text="Open Stage..." shortcutText="Ctrl+O" />
+    <menu id="menubarItemOpenRecent" text="Open Recent" />
+    <menu-separator />
+    <menu-item id="menubarItemSaveStage" text="Save Stage" shortcutText="Ctrl+S" />
+    <menu-item id="menubarItemSaveStageAs" text="Save Stage As..." shortcutText="Ctrl+Shift+S" />
+    <menu-separator />
+    <menu-item id="menubarItemClearAssets" text="Clear Assets" style="color: indianred"/>
+    <menu-separator />
+    <menu-item id="menubarItemExit" text="Exit" shortcutText="Esc" />
+  </menu>
+
+  <menu text="Edit" id="menubarMenuEdit">
+    <menu-item id="menubarItemUndo" text="Undo" shortcutText="Ctrl + Z"/>
+    <menu-item id="menubarItemRedo" text="Redo" shortcutText="Ctrl + Y"/>
+    <menu-separator />
+    <menu-item id="menubarItemCopy" text="Copy Object" shortcutText="Ctrl + C"/>
+    <menu-item id="menubarItemCut" text="Cut Object" shortcutText="Ctrl + X"/>
+    <menu-item id="menubarItemPaste" text="Paste Object" shortcutText="Ctrl + V"/>
+    <menu-item id="menubarItemDelete" text="Delete Object" shortcutText="Ctrl + Del" style="color: indianred"/>
+    <menu-separator />
+    <menu-item id="menubarItemNewObj" text="New Object"/>
+    <menu-item id="menubarItemFindObj" text="Find Object" shortcutText="Ctrl + F"/>
+  </menu>
+
+  <menu text="View" id="menubarMenuView">
+    <menu text="Theme">
+      <menu-option-box id="menubarItemThemeLight" text="Light" group="menubarItemThemeGroup" tooltip="Change the Background's Color Scheme to Light Mode."/>
+      <menu-option-box id="menubarItemThemeDark" text="Dark" group="menubarItemThemeGroup" tooltip="Change the Background's Color Scheme to Dark Mode." />
+    </menu>
+    <menu-separator />
+    <menu-checkbox id="menubarItemViewChars" text="View Characters" selected="true" tooltip="Show Characters."/>
+    <menu-checkbox id="menubarItemViewNameText" text="View Name Text" selected="true" tooltip="Show the Text above Cursor with the Name of an Asset directly below Cursor."/>
+    <menu-checkbox id="menubarItemViewFloorLines" text="View Floor Lines" tooltip="Show Lines that indicate the Floor of Characters."/>
+    <menu-checkbox id="menubarItemViewPosMarkers" text="View Position Markers" tooltip="Show Circles that show the Feet Position of Characters."/>
+    <menu-checkbox id="menubarItemViewCamBounds" text="View Camera Bounds" tooltip="Show Rectangles representing the Camera View upon being focused on a Character."/>
+  </menu>
+
+  <menu text="Windows" id="menubarMenuWindow">
+    <menu-checkbox id="menubarItemWindowObject" text="Object Properties"/>
+    <menu-checkbox id="menubarItemWindowCharacter" text="Character Properties"/>
+    <menu-checkbox id="menubarItemWindowStage" text="Stage Data Settings"/>
+  </menu>
+
+  <menu text="Help" id="menubarMenuHelp">
+    <menu-item id="menubarItemUserGuide" text="User Guide" shortcutText="F1" />
+    <menu-item id="menubarItemGoToBackupsFolder" text="Go to Backups Folder" />
+    <menu-item id="menubarItemAbout" text="About..." />
+  </menu>
+
+  <button id="menubarButtonText" text="Test Stage" toggle="true" tooltip="Test the Stage inside the Editor."/>
+  <spacer width="100%" />
+  <label text="PROTOTYPE Functionality is subject to change." verticalAlign="center" />
+</menubar>

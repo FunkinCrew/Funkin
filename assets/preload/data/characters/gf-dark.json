@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "name": "Girlfriend (Dark)",
+  "renderType": "sparrow",
+  "assetPath": "characters/gf_dark",
+  "startingAnimation": "danceRight",
+  "healthIcon": {
+    "id": "gf",
+    "flipX": false
+  },
+  "singTime": 8.0,
+  "animations": [
+    {
+      "name": "danceLeft",
+      "prefix": "GF Dancing Beat",
+      "frameIndices": [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "offsets": [0, -9]
+    },
+    {
+      "name": "danceRight",
+      "prefix": "GF Dancing Beat",
+      "frameIndices": [
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+      ],
+      "offsets": [0, -9]
+    },
+    {
+      "name": "sad",
+      "prefix": "gf sad",
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "offsets": [2, -21]
+    },
+    {
+      "name": "cheer",
+      "prefix": "GF Cheer",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "combo50",
+      "prefix": "GF Cheer",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "drop70",
+      "prefix": "gf sad",
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "offsets": [2, -21]
+    },
+    {
+      "name": "scared",
+      "prefix": "GF FEAR",
+      "offsets": [-2, -17]
+    }
+  ]
+}

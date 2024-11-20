@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menubar id="menubar" width="100%" height="100%">
+  <style>
+    .menu {
+    // The width of the individual menu items
+    width: 120px;
+    }
+  </style>
+  <menu text="File">
+    <menu-item id="saveCompile" text="Save (compile)" shortcutText="Ctrl+S" />
+    <menu-separator />
+    <menu-item id="saveAs" text="Save As..." shortcutText="Ctrl+Shift+S" />
+  </menu>
+  <menu text="Edit">
+    <menu-item id="menubarItemUndo" text="Undo" shortcutText="Ctrl+Z" />
+    <menu-item id="menubarItemRedo" text="Redo" shortcutText="Ctrl+Y" />
+    <menu-separator />
+    <menu-item id="menubarItemCut" text="Cut" shortcutText="Ctrl+X" />
+    <menu-item id="menubarItemCopy" text="Copy" shortcutText="Ctrl+C" />
+    <menu-item id="menubarItemPaste" text="Paste" shortcutText="Ctrl+V" />
+    <menu-item id="menubarItemDelete" text="Delete" shortcutText="Delete" />
+    <menu-separator />
+    <menu-item id="menubarItemSelectAll" text="Select All" shortcutText="Ctrl+A" />
+    <menu-item id="menubarItemSelectInverse" text="Select Inverse" shortcutText="Ctrl+I" />
+    <menu-item id="menubarItemSelectNone" text="Select None" shortcutText="Ctrl+D" />
+    <menu-item id="menubarItemSelectRegion" text="Select Region" shortcutText="Tab" disabled="true" />
+    <menu-item id="menubarItemSelectBeforeCursor" text="Select Before Cursor" shortcutText="Shift+Home" disabled="true" />
+    <menu-item id="menubarItemSelectAfterCursor" text="Select After Cursor" shortcutText="Shift+End" disabled="true" />
+    <menu-separator />
+    <menu text="Input Style" disabled="true">
+      <menuoptionbox id="menuBarItemInputStyleNone" text="None" group="menubarItemInputStyleGroup" selected="true" disabled="true" />
+      <menuoptionbox id="menuBarItemInputStyleNumberKeys" text="Number Keys" group="menubarItemInputStyleGroup" disabled="true" />
+      <menuoptionbox id="menuBarItemInputStyleWASD" text="WASD + Arrows" group="menubarItemInputStyleGroup" disabled="true" />
+      <menuoptionbox id="menuBarItemInputStyleDFJK" text="ASDF + JKL;" group="menubarItemInputStyleGroup" disabled="true" />
+    </menu>
+  </menu>
+  <menu text="View">
+    <menu-checkbox id="menubarItemDownscroll" text="Downscroll" disabled="true" />
+    <menu text="Theme">
+      <menuoptionbox id="menuBarItemThemeLight" text="Light" group="menubarItemThemeGroup" selected="true" />
+      <menuoptionbox id="menuBarItemThemeDark" text="Dark" group="menubarItemThemeGroup" />
+    </menu>
+  </menu>
+  <menu text="Audio">
+    <menu-checkbox id="menubarItemMetronomeEnabled" text="Enable Metronome" />
+    <menu-checkbox id="menubarItemPlayerHitsounds" text="Enable Player Note Sounds" />
+    <menu-checkbox id="menubarItemOpponentHitsounds" text="Enable Opponent Note Sounds" />
+    <menu-separator />
+    <vbox width="100%" style="padding: 5px;">
+      <label id="menubarLabelVolumeInstrumental" text="Instrumental - 100%" />
+      <slider id="menubarItemVolumeInstrumental" width="100%" majorTicks="10" minorTicks="5" pos="100" />
+      <label id="menubarLabelVolumeVocals" text="Vocal Volume - 100%" />
+      <slider id="menubarItemVolumeVocals" width="100%" majorTicks="10" minorTicks="5" pos="100" />
+      <label id="menubarLabelPlaybackSpeed" text="Playback Speed - 100%" />
+      <slider id="menubarItemPlaybackSpeed" width="100%" majorTicks="10" minorTicks="5" pos="50" />
+    </vbox>
+  </menu>
+  <menu text="Help">
+    <menu-item id="menubarItemUserGuide" text="User Guide" shortcutText="F1" />
+    <menu-item id="menubarItemAbout" text="About..." />
+  </menu>
+  <spacer width="100%" />
+  <label text="PROTOTYPE Functionality is subject to change." verticalAlign="center" />
+</menubar>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="darnellpixel.png" width="110" height="71">
+  <SubTexture name="idle0001" x="39" y="0"  width="38" height="38" frameX="-5" frameY="-6" frameWidth="54" frameHeight="50"/>
+
+  <SubTexture name="confirm0001" x="39" y="0"  width="38" height="38" frameX="-5" frameY="-6" frameWidth="54" frameHeight="50"/>
+  <SubTexture name="confirm0002" x="0" y="0"  width="39" height="36" frameX="-5" frameY="-10" frameWidth="54" frameHeight="50"/>
+  <SubTexture name="confirm0003" x="77" y="0"  width="33" height="39" frameX="-6" frameY="-3" frameWidth="54" frameHeight="50"/>
+  <SubTexture name="confirm0004" x="0" y="36"  width="35" height="35" frameX="-5" frameY="-6" frameWidth="54" frameHeight="50"/>
+
+  <SubTexture name="confirm-hold0001" x="0" y="36"  width="35" height="35" frameX="-5" frameY="-6" frameWidth="54" frameHeight="50"/>
+</TextureAtlas>

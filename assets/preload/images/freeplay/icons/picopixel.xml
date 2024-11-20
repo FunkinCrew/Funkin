@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="picopixel.png" width="131" height="29">
+  <SubTexture name="idle0001" x="0" y="0"  width="33" height="29" frameX="-3" frameY="-2" frameWidth="36" frameHeight="32"/>
+
+  <SubTexture name="confirm0001" x="0" y="0"  width="33" height="29" frameX="-3" frameY="-2" frameWidth="36" frameHeight="32"/>
+  <SubTexture name="confirm0002" x="33" y="0"  width="33" height="29" frameX="-2" frameY="-3" frameWidth="36" frameHeight="32"/>
+  <SubTexture name="confirm0003" x="99" y="0"  width="32" height="28" frameX="-4" frameY="-2" frameWidth="36" frameHeight="32"/>
+  <SubTexture name="confirm0004" x="66" y="0"  width="33" height="29" frameX="-3" frameY="-2" frameWidth="36" frameHeight="32"/>
+
+  <SubTexture name="confirm-hold0001" x="66" y="0"  width="33" height="29" frameX="-3" frameY="-2" frameWidth="36" frameHeight="32"/>
+</TextureAtlas>

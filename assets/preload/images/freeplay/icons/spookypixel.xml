@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="spookypixel.png" width="127" height="66">
+  <SubTexture name="idle0001" x="43" y="33"  width="40" height="33" frameX="-7" frameY="-3" frameWidth="50" frameHeight="36"/>
+
+  <SubTexture name="confirm0001" x="43" y="33"  width="40" height="33" frameX="-7" frameY="-3" frameWidth="50" frameHeight="36"/>
+  <SubTexture name="confirm0002" x="0" y="0"  width="43" height="34" frameX="-7" frameY="-1" frameWidth="50" frameHeight="36"/>
+  <SubTexture name="confirm0003" x="43" y="0"  width="43" height="33" frameX="-4" frameY="-3" frameWidth="50" frameHeight="36"/>
+  <SubTexture name="confirm0004" x="86" y="0"  width="41" height="34" frameX="-6" frameY="-1" frameWidth="50" frameHeight="36"/>
+
+  <SubTexture name="confirm-hold0001" x="86" y="0"  width="41" height="34" frameX="-6" frameY="-1" frameWidth="50" frameHeight="36"/>
+</TextureAtlas>

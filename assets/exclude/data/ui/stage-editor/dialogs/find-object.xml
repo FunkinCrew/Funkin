@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="350" title="Find Object" destroyOnClose="false" modal="false">
+  <vbox width="100%">
+    <hbox width="100%" height="25">
+      <label text="Find by Name" width="25%" verticalAlign="center"/>
+      <textfield id="nameField" placeholder="Search for Name..." width="75%"/>
+    </hbox>
+
+    <hbox width="100%" height="15">
+      <checkbox id="capsCheck" text="Match Caps" />
+      <checkbox id="wordCheck" text="Match Word" />
+    </hbox>
+
+    <label id="indicator" text="No Matches Found" horizontalAlign="right"/>
+  </vbox>
+</dialog>

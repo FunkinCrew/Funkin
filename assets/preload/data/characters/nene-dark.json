@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "name": "Nene (Dark)",
+  "assetPath": "characters/nene_dark",
+  "startingAnimation": "danceRight",
+  "offsets": [0, -100],
+  "animations": [
+    {
+      "name": "danceLeft",
+      "prefix": "Nene Idle",
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "danceRight",
+      "prefix": "Nene Idle",
+      "frameIndices": [
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+      ],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "combo50",
+      "prefix": "combo celebration 1 nene",
+      "offsets": [-120, 50]
+    },
+    {
+      "name": "drop70",
+      "prefix": "laughing nene",
+      "frameIndices": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11,
+        7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11
+      ],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "laughCutscene",
+      "prefix": "laughing nene",
+      "frameIndices": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11,
+        7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11
+      ],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "combo200",
+      "prefix": "fawn nene",
+      "frameIndices": [
+        0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6
+      ],
+      "offsets": [-50, -25]
+    },
+    {
+      "name": "raiseKnife",
+      "prefix": "knife raise",
+      "offsets": [0, 52]
+    },
+    {
+      "name": "idleKnife",
+      "prefix": "knife high held",
+      "offsets": [-99, 52]
+    },
+    {
+      "name": "lowerKnife",
+      "prefix": "knife lower",
+      "offsets": [0, 52]
+    }
+  ]
+}

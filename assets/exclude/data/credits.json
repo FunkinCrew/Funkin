@@ -1,0 +1,291 @@
+{
+  "entries": [
+    {
+      "header": "Friday Night Funkin'",
+      "body": [
+        { "line": "A video game created by" },
+        { "line": "The Funkin' Crew Inc." }
+      ]
+    },
+    {
+      "header": "The Funkin' Crew Inc. Shareholders",
+      "body": [
+        { "line": "ninjamuffin99" },
+        { "line": "PhantomArcade" },
+        { "line": "Kawai Sprite" },
+        { "line": "evilsk8r" }
+      ]
+    },
+    {
+      "header": "Direction and Art Lead",
+      "body": [
+        { "line": "PhantomArcade" }
+      ]
+    },
+    {
+      "header": "Music Lead",
+      "body": [
+        { "line": "Isaac “Kawai Sprite” Garcia" }
+      ]
+    },
+    {
+      "header": "Co-Direction and Programming Lead",
+      "body": [
+        { "line": "ninjamuffin99" }
+      ]
+    },
+    {
+      "header": "Producer",
+      "body": [
+        { "line": "Kawa Teaño" }
+      ]
+    },
+    {
+      "header": "Artists",
+      "body": [
+        { "line": "PhantomArcade" },
+        { "line": "evilsk8r" },
+        { "line": "beck" }
+      ]
+    },
+    {
+      "header": "Pixel Art",
+      "body": [
+        { "line": "moawling" }
+      ]
+    },
+    {
+      "header": "Cutscene Storyboards & SFX",
+      "body": [
+        { "line": "PhantomArcade"}
+      ]
+    },
+    {
+      "header": "Additional Background Design",
+      "body": [
+        { "line": "Red Minus"}
+      ]
+    },
+    {
+      "header": "Cutscene Animation",
+      "body": [
+        { "line": "Figburn"},
+        { "line": "Sade"},
+        { "line": "Topium"},
+        { "line": "BlairTheUnseriousGuy"}
+      ]
+    },
+    {
+      "header": "Cutscene Cleanup",
+      "body": [
+        { "line": "PennilessRagamuffin"},
+        { "line": "beck"}
+      ]
+    },
+    {
+      "header": "Cutscene Background Art",
+      "body": [
+        { "line": "beck"}
+      ]
+    },
+    {
+      "header": "Additional Art",
+      "body": [
+        { "line": "Jeff Bandelin" },
+        { "line": "Mogy64" },
+        { "line": "ChipsGoWoah" },
+        { "line": "Min Ho Kim (Deegeemin)" },
+        { "line": "PKettles" },
+        { "line": "peepo173" }
+      ]
+    },
+    {
+      "header": "Music Production",
+      "body": [
+        { "line": "Saruky" },
+        { "line": "crisp" }
+      ]
+    },
+    {
+      "header": "Featured Guest Musicians (thus far)",
+      "body": [
+        { "line": "BassetFilms" },
+        { "line": "Kohta Takahashi" },
+        { "line": "Lotus Juice"},
+        { "line": "METAROOM"},
+        { "line": "nuphory"},
+        { "line": "Saster" },
+        { "line": "SixImpala" },
+        { "line": "TeraVex"},
+        { "line": "ThatAndyGuy"},
+        { "line": "tsuyunoshi"},
+        { "line": "xploshi"}
+      ]
+    },
+    {
+      "header": "Programming",
+      "body": [
+        { "line": "Eric \"EliteMasterEric\" Myllyoja" },
+        { "line": "fabs" }
+      ]
+    },
+    {
+      "header": "Additional Programming",
+      "body": [
+        { "line": "Jenny Crowe" },
+        { "line": "ember ana" },
+        { "line": "Mike Welsh" },
+        { "line": "Saharan" },
+        { "line": "Ian Harrigan" },
+        { "line": "Osaka Red LLC: Thomas J Webb" },
+        { "line": "Emma (MtH)" },
+        { "line": "George Kurelic" },
+        { "line": "Will Blanton" },
+        { "line": "Victor - Cheemsandfriends" }
+      ]
+    },
+    {
+      "header": "Devops and Additional Internal Tooling",
+      "body": [
+        { "line": "ember ana" }
+      ]
+    },
+    {
+      "header": "Gameplay Design",
+      "body": [
+        { "line": "PhantomArcade" },
+        { "line": "Cameron Taylor" },
+        { "line": "Jenny Crowe" },
+        { "line": "Spazkid" },
+        { "line": "fabs" },
+        { "line": "Emma (MtH)" }
+      ]
+    },
+    {
+      "header": "Kickstarter Backer Portal Programming",
+      "body": [
+        { "line": "Shingai Shamu" }
+      ]
+    },
+    {
+      "header": "Merchandise Partners and Designers",
+      "body": [
+        { "line": "Needlejuice Records: Jace McLain" },
+        { "line": "Needlejuice Records: Brandon Brown" },
+        { "line": "Type-4: Coby Win" },
+        { "line": "IvanAlmighty" },
+        { "line": "Mogy64" },
+        { "line": "ChipsGoWoah" },
+        { "line": "Min Ho Kim" },
+        { "line": "PKettles" },
+        { "line": "Jeff Bandelin" },
+        { "line": "PhantomArcade"},
+        { "line": "evilsk8r" },
+        { "line": "beck" }
+      ]
+    },
+    {
+      "header": "Production and Business Development Partner - Windflower Games",
+      "body": [
+        { "line": "Sunni Pavlovic" },
+        { "line": "Kristen Lynch" }
+      ]
+    },
+    {
+      "header": "Additional Administrative Assistance",
+      "body": [
+        { "line": "moawling" }
+      ]
+    },
+    {
+      "header": "Quality Assurance - Indium Play",
+      "body": [
+        { "line": "Lead Tester: Mihajlo Vuković" },
+        { "line": "Dajana Dimovska" }
+      ]
+    },
+    {
+      "header": "Accounting: Molinari Oswald",
+      "body": [
+        { "line": "Francis Molinari" },
+        { "line": "Aaron Hofmann" },
+        { "line": "Katherine Stauffer" },
+        { "line": "Jane Haring" }
+      ]
+    },
+    {
+      "header": "US Legal: Odin Law",
+      "body": [
+        { "line": "Brandon Huffman" },
+        { "line": "Michele Robichaux" },
+        { "line": "Connor Richards" },
+        { "line": "Pam Driver" },
+        { "line": "Jacob Barefoot" }
+      ]
+    },
+    {
+      "header": "CA Legal: DLA Piper",
+      "body": [
+        { "line": "Ryan Black" },
+        { "line": "Brian Wong" }
+      ]
+    },
+    {
+      "header": "Special Thanks",
+      "body": [
+        { "line": "Tom Fulp" },
+        { "line": "Jeff Bandelin"},
+        { "line": "The entire Molinari Oswald Crew" },
+        { "line": "The entire Odin Law function" },
+        { "line": "SrPelo" }
+      ]
+    },
+    {
+      "header": "Cameron would like to specially thank",
+      "body": [
+        { "line": "wanda, henry, snackers, digi, joemega, caddy, pewpew" },
+        { "line": "milkhead jack" },
+        { "line": "katt" },
+        { "line": "arko, pepe, cashu, ookiyo" },
+        { "line": "Krystin, Kaye-lyn, and Cassidy, Mack, Levi, and Jasmine." },
+        { "line": "Laurel" },
+        { "line": "Clone Hero" },
+        { "line": "Innersloth, Puffballs, Forest and Victoria" },
+        { "line": "StuffedWombat" },
+        { "line": "mmatt_ugh" },
+        { "line": "lucas and jack taterguy and marty emrox" },
+        { "line": "Luis" },
+        { "line": "GeoKureli, Will Blanton, Austin East, Squidly" },
+        { "line": "fizzd" },
+        { "line": "bbpanzu" },
+        { "line": "Etika" },
+        { "line": "Foamymuffin (insert travis scott lyrics here)" },
+        { "line": "SiIvaGunner" },
+        { "line": "Freddie Dredd"}
+      ]
+    },
+    {
+      "header": "Kawa would like to specially thank",
+      "body": [
+        { "line": "Alexei Pepers" },
+        { "line": "Xalavier Nelson Jr." }
+      ]
+    },
+    {
+      "header": "Eric would like to specially thank",
+      "body": [
+        { "line": "Rob and Jill Myllyoja" },
+        { "line": "KadeDev" },
+        { "line": "Shadow Mario" }
+      ]
+    },
+    {
+      "header": "Hazel (Ravy) would like to specially thank",
+      "body": [
+        { "line": "d1ggo" }
+
+      ]
+    }
+
+  ]
+}

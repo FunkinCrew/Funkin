@@ -1,0 +1,227 @@
+{
+  "version": "1.0.0",
+  "name": "Tankman Battlefield",
+  "cameraZoom": 0.9,
+  "props": [
+    {
+      "name": "tankSky",
+      "assetPath": "tankSky",
+      "position": [-400, -400],
+      "scale": [1, 1],
+      "zIndex": 10,
+      "scroll": [0, 0]
+    },
+    {
+      "name": "solid",
+      "assetPath": "#E3A26D",
+      "position": [-500, -1000],
+      "scale": [2400, 2000],
+      "scroll": [0, 0]
+    },
+    {
+      "assetPath": "tankMountains",
+      "position": [-280, -20],
+      "scale": [1.2, 1.2],
+      "zIndex": 11,
+      "scroll": [0.2, 0.2]
+    },
+    {
+      "assetPath": "tankBuildings",
+      "position": [-180, 0],
+      "scale": [1.1, 1.1],
+      "zIndex": 13,
+      "scroll": [0.3, 0.3]
+    },
+    {
+      "assetPath": "tankRuins",
+      "position": [-180, 0],
+      "scale": [1.1, 1.1],
+      "zIndex": 13,
+      "scroll": [0.35, 0.35]
+    },
+    {
+      "name": "clouds",
+      "assetPath": "tankClouds",
+      "scale": [1, 1],
+      "position": [0, 0],
+      "zIndex": 11,
+      "scroll": [0.4, 0.4]
+    },
+    {
+      "name": "smokeLeft",
+      "assetPath": "smokeLeft",
+      "position": [-200, 0],
+      "scale": [1, 1],
+      "scroll": [0.4, 0.4],
+      "zIndex": 14,
+      "animations": [
+        { "name": "smokeLeft", "prefix": "SmokeBlurLeft", "looped": true }
+      ],
+      "startingAnimation": "smokeLeft"
+    },
+    {
+      "name": "smokeRight",
+      "assetPath": "smokeRight",
+      "position": [1100, -100],
+      "scale": [1, 1],
+      "zIndex": 15,
+      "scroll": [0.4, 0.4],
+      "animations": [
+        { "name": "smokeRight", "prefix": "SmokeRight", "looped": true }
+      ],
+      "startingAnimation": "smokeRight"
+    },
+    {
+      "name": "watchtower",
+      "assetPath": "tankWatchtower",
+      "position": [100, 50],
+      "scroll": [0.5, 0.5],
+      "scale": [1, 1],
+      "zIndex": 21,
+      "danceEvery": 1,
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "watchtower gradient color"
+        }
+      ],
+      "startingAnimation": "idle"
+    },
+    {
+      "name": "tankRolling",
+      "assetPath": "tankRolling",
+      "position": [300, 300],
+      "scale": [1, 1],
+      "zIndex": 22,
+      "scroll": [0.5, 0.5],
+      "animations": [
+        { "name": "roll", "prefix": "BG tank w lighting", "looped": true }
+      ],
+      "startingAnimation": "roll"
+    },
+    {
+      "name": "tankGround",
+      "assetPath": "tankGround",
+      "position": [-420, -150],
+      "scroll": [1, 1],
+      "scale": [1.15, 1.15],
+      "zIndex": 40
+    },
+    {
+      "name": "tankmanAudience0",
+      "assetPath": "tank0",
+      "zIndex": 1000,
+      "position": [-500, 650],
+      "scale": [1, 1],
+      "scroll": [1.7, 1.5],
+      "danceEvery": 1,
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "fg tankhead far right instance 1",
+          "looped": false
+        }
+      ],
+      "startingAnimation": "idle"
+    },
+    {
+      "name": "tankmanAudience2",
+      "assetPath": "tank2",
+      "zIndex": 1002,
+      "position": [360, 980],
+      "scale": [1, 1],
+      "scroll": [1.5, 1.5],
+      "danceEvery": 1,
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "foreground man 3 instance 1",
+          "looped": false
+        }
+      ],
+      "startingAnimation": "idle"
+    },
+    {
+      "name": "tankmanAudience3",
+      "assetPath": "tank3",
+      "zIndex": 1016,
+      "position": [1050, 1240],
+      "scale": [1, 1],
+      "scroll": [3.5, 2.5],
+      "danceEvery": 1,
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "fg tankhead 4 instance 1",
+          "looped": false
+        }
+      ],
+      "startingAnimation": "idle"
+    },
+    {
+      "name": "tankmanAudience4",
+      "assetPath": "tank4",
+      "zIndex": 1004,
+      "position": [1200, 900],
+      "scale": [1, 1],
+      "scroll": [1.5, 1.5],
+      "danceEvery": 1,
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "fg tankman bobbin 3 instance 1",
+          "looped": false
+        }
+      ],
+      "startingAnimation": "idle"
+    },
+    {
+      "name": "tankmanAudience5",
+      "assetPath": "tank5",
+      "zIndex": 1003,
+      "position": [1550, 700],
+      "scale": [1, 1],
+      "scroll": [1.5, 1.5],
+      "danceEvery": 1,
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "fg tankhead far right instance 1",
+          "looped": false
+        }
+      ],
+      "startingAnimation": "idle"
+    },
+    {
+      "name": "tankmanAudience1",
+      "assetPath": "tank1",
+      "zIndex": 1100,
+      "position": [-300, 750],
+      "scale": [1, 1],
+      "scroll": [2.0, 0.2],
+      "danceEvery": 1,
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "fg tankhead 5 instance 1",
+          "looped": false
+        }
+      ],
+      "startingAnimation": "idle"
+    }
+  ],
+  "characters": {
+    "bf": {
+      "zIndex": 100,
+      "position": [1090.5, 885],
+      "cameraOffsets": [-220, -100]
+    },
+    "dad": {
+      "zIndex": 100,
+      "position": [230.5, 996],
+      "cameraOffsets": [250, -100]
+    },
+    "gf": { "zIndex": 100, "position": [660.5, 715], "cameraOffsets": [0, 0] }
+  },
+  "directory": "week7"
+}

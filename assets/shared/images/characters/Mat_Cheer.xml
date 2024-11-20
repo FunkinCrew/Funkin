@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Mat_Cheer.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="HeyAlt0000" x="5" y="5" width="459" height="673"/>
+	<SubTexture name="HeyAlt0001" x="5" y="5" width="459" height="673"/>
+	<SubTexture name="HeyAlt0002" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0003" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0004" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0005" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0006" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0007" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0008" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0009" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0010" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0011" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0012" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0013" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+	<SubTexture name="HeyAlt0014" x="469" y="5" width="453" height="653" frameX="-3" frameY="-15" frameWidth="459" frameHeight="673"/>
+</TextureAtlas>

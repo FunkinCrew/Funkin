@@ -1,0 +1,52 @@
+{
+  "props": [
+    {
+      "name": "solid",
+      "assetPath": "#000000",
+      "position": [-500, -1000],
+      "scale": [2400, 2000],
+      "scroll": [0, 0]
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 10,
+      "position": [-200, 0],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "evilSchoolBG",
+      "isPixel": true,
+      "assetPath": "weeb/evilSchoolBG",
+      "scroll": [0.6, 0.9],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 20,
+      "position": [-200, 0],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "evilSchoolFG",
+      "isPixel": true,
+      "assetPath": "weeb/evilSchoolFG",
+      "scroll": [0.95, 0.95],
+      "animations": []
+    }
+  ],
+  "cameraZoom": 1,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [1139, 908],
+      "cameraOffsets": [-200, -100]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [84, 718],
+      "cameraOffsets": [410, 250]
+    },
+    "gf": { "zIndex": 100, "cameraOffsets": [0, 0], "position": [840, 766] }
+  },
+  "name": "School (Hate)",
+  "directory": "week6"
+}

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="charSelectorDenied.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="cursor DENIED instance 10000" x="0" y="0" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10001" x="130" y="0" width="128" height="114" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10002" x="263" y="0" width="126" height="117" frameX="0" frameY="0" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10003" x="0" y="122" width="125" height="118" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10004" x="130" y="122" width="127" height="116" frameX="-1" frameY="-1" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10005" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10006" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10007" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10008" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10009" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10010" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10011" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10012" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10013" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+	<SubTexture name="cursor DENIED instance 10014" x="262" y="122" width="125" height="113" frameX="-1" frameY="-4" frameWidth="129" frameHeight="122"/>
+</TextureAtlas>

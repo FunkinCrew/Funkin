@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="aBotViz.png">
+	<SubTexture name="viz10000" x="212" y="0" width="68" height="196" />
+	<SubTexture name="viz10001" x="538" y="0" width="68" height="169" frameX="0" frameY="-27" frameWidth="68" frameHeight="196" />
+	<SubTexture name="viz10002" x="538" y="173" width="65" height="135" frameX="-3" frameY="-61" frameWidth="68" frameHeight="196" />
+	<SubTexture name="viz10003" x="806" y="195" width="60" height="96" frameX="-8" frameY="-100" frameWidth="68" frameHeight="196" />
+	<SubTexture name="viz10004" x="928" y="299" width="53" height="53" frameX="-15" frameY="-143" frameWidth="68" frameHeight="196" />
+	<SubTexture name="viz10005" x="531" y="312" width="46" height="28" frameX="-22" frameY="-168" frameWidth="68" frameHeight="196" />
+	<SubTexture name="viz20000" x="407" y="0" width="58" height="209" />
+	<SubTexture name="viz20001" x="870" y="0" width="58" height="183" frameX="0" frameY="-26" frameWidth="58" frameHeight="209" />
+	<SubTexture name="viz20002" x="607" y="189" width="57" height="141" frameX="-1" frameY="-68" frameWidth="58" frameHeight="209" />
+	<SubTexture name="viz20003" x="407" y="213" width="54" height="99" frameX="-4" frameY="-110" frameWidth="58" frameHeight="209" />
+	<SubTexture name="viz20004" x="741" y="300" width="48" height="56" frameX="-10" frameY="-153" frameWidth="58" frameHeight="209" />
+	<SubTexture name="viz20005" x="383" y="316" width="43" height="27" frameX="-15" frameY="-182" frameWidth="58" frameHeight="209" />
+	<SubTexture name="viz30000" x="284" y="0" width="58" height="215" />
+	<SubTexture name="viz30001" x="747" y="0" width="58" height="188" frameX="0" frameY="-27" frameWidth="58" frameHeight="215" />
+	<SubTexture name="viz30002" x="469" y="182" width="58" height="151" frameX="0" frameY="-64" frameWidth="58" frameHeight="215" />
+	<SubTexture name="viz30003" x="212" y="200" width="55" height="100" frameX="-3" frameY="-115" frameWidth="58" frameHeight="215" />
+	<SubTexture name="viz30004" x="271" y="286" width="50" height="57" frameX="-8" frameY="-158" frameWidth="58" frameHeight="215" />
+	<SubTexture name="viz30005" x="668" y="316" width="45" height="22" frameX="-13" frameY="-193" frameWidth="58" frameHeight="215" />
+	<SubTexture name="viz40000" x="346" y="0" width="57" height="216" />
+	<SubTexture name="viz40001" x="809" y="0" width="57" height="191" frameX="0" frameY="-25" frameWidth="57" frameHeight="216" />
+	<SubTexture name="viz40002" x="870" y="187" width="54" height="153" frameX="0" frameY="-63" frameWidth="57" frameHeight="216" />
+	<SubTexture name="viz40003" x="132" y="219" width="52" height="101" frameX="0" frameY="-115" frameWidth="57" frameHeight="216" />
+	<SubTexture name="viz40004" x="806" y="295" width="49" height="58" frameX="0" frameY="-158" frameWidth="57" frameHeight="216" />
+	<SubTexture name="viz40005" x="109" y="324" width="44" height="22" frameX="-2" frameY="-194" frameWidth="57" frameHeight="216" />
+	<SubTexture name="viz60000" x="0" y="0" width="67" height="207" />
+	<SubTexture name="viz60001" x="469" y="0" width="65" height="178" frameX="0" frameY="-29" frameWidth="67" frameHeight="207" />
+	<SubTexture name="viz60002" x="675" y="168" width="62" height="144" frameX="0" frameY="-63" frameWidth="67" frameHeight="207" />
+	<SubTexture name="viz60003" x="71" y="197" width="57" height="101" frameX="0" frameY="-106" frameWidth="67" frameHeight="207" />
+	<SubTexture name="viz60004" x="329" y="220" width="51" height="61" frameX="0" frameY="-146" frameWidth="67" frameHeight="207" />
+	<SubTexture name="viz60005" x="188" y="304" width="45" height="30" frameX="0" frameY="-177" frameWidth="67" frameHeight="207" />
+	<SubTexture name="viz70000" x="71" y="0" width="71" height="193" />
+	<SubTexture name="viz70001" x="675" y="0" width="68" height="164" frameX="0" frameY="-29" frameWidth="71" frameHeight="193" />
+	<SubTexture name="viz70002" x="932" y="0" width="66" height="139" frameX="0" frameY="-54" frameWidth="71" frameHeight="193" />
+	<SubTexture name="viz70003" x="741" y="192" width="61" height="104" frameX="0" frameY="-89" frameWidth="71" frameHeight="193" />
+	<SubTexture name="viz70004" x="271" y="219" width="54" height="63" frameX="0" frameY="-130" frameWidth="71" frameHeight="193" />
+	<SubTexture name="viz70005" x="59" y="302" width="46" height="32" frameX="0" frameY="-161" frameWidth="71" frameHeight="193" />
+	<SubTexture name="viz50000" x="146" y="0" width="62" height="215" />
+	<SubTexture name="viz50001" x="610" y="0" width="61" height="185" frameX="0" frameY="-30" frameWidth="62" frameHeight="215" />
+	<SubTexture name="viz50002" x="932" y="143" width="59" height="152" frameX="0" frameY="-63" frameWidth="62" frameHeight="215" />
+	<SubTexture name="viz50003" x="0" y="211" width="55" height="100" frameX="0" frameY="-115" frameWidth="62" frameHeight="215" />
+	<SubTexture name="viz50004" x="329" y="285" width="50" height="60" frameX="0" frameY="-155" frameWidth="62" frameHeight="215" />
+	<SubTexture name="viz50005" x="0" y="315" width="46" height="27" frameX="0" frameY="-188" frameWidth="62" frameHeight="215" />
+</TextureAtlas>

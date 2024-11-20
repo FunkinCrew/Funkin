@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="parents-christmaspixel.png" width="181" height="87">
+  <SubTexture name="idle0001" x="0" y="43"  width="57" height="44" frameX="-7" frameY="-3" frameWidth="72" frameHeight="50"/>
+
+  <SubTexture name="confirm0001" x="0" y="43"  width="57" height="44" frameX="-7" frameY="-3" frameWidth="72" frameHeight="50"/>
+  <SubTexture name="confirm0002" x="122" y="0"  width="59" height="45" frameX="-4" frameY="-2" frameWidth="72" frameHeight="50"/>
+  <SubTexture name="confirm0003" x="61" y="42"  width="59" height="43" frameX="-6" frameY="-2" frameWidth="72" frameHeight="50"/>
+  <SubTexture name="confirm0004" x="61" y="0"  width="61" height="42" frameX="-5" frameY="-4" frameWidth="72" frameHeight="50"/>
+  <SubTexture name="confirm0005" x="0" y="0"  width="61" height="43" frameX="-5" frameY="-3" frameWidth="72" frameHeight="50"/>
+
+  <SubTexture name="confirm-hold0001" x="0" y="0"  width="61" height="43" frameX="-5" frameY="-3" frameWidth="72" frameHeight="50"/>
+</TextureAtlas>

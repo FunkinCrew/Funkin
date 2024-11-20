@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="tankmanpixel.png" width="135" height="27">
+  <SubTexture name="idle0001" x="103" y="0"  width="32" height="26" frameX="-6" frameY="-2" frameWidth="40" frameHeight="28"/>
+
+  <SubTexture name="confirm0001" x="103" y="0"  width="32" height="26" frameX="-6" frameY="-2" frameWidth="40" frameHeight="28"/>
+  <SubTexture name="confirm0002" x="69" y="0"  width="34" height="24" frameX="-6" frameY="-4" frameWidth="40" frameHeight="28"/>
+  <SubTexture name="confirm0003" x="0" y="0"  width="35" height="27" frameX="-5" frameY="-0" frameWidth="40" frameHeight="28"/>
+  <SubTexture name="confirm0004" x="35" y="0"  width="34" height="26" frameX="-6" frameY="-1" frameWidth="40" frameHeight="28"/>
+
+  <SubTexture name="confirm-hold0001" x="35" y="0"  width="34" height="26" frameX="-6" frameY="-1" frameWidth="40" frameHeight="28"/>
+</TextureAtlas>

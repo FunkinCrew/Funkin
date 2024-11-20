@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="300" title="Load from URL">
+ <grid width="100%">
+    <label text="URL:" verticalAlign="center"/>
+    <textfield id="urlField" width="100%"/>
+ </grid>
+</dialog>

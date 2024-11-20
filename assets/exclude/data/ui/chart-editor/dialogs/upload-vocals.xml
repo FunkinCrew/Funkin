@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog id="vocalDialog" width="600" height="400" title="New Chart - Upload Vocals">
+	<vbox width="100%" height="100%">
+		<hbox width="100%" height="100%" id="vocalContainer" />
+		<hbox width="100%" horizontalAlign="right">
+			<button text="Cancel" id="dialogCancel" />
+			<spacer width="100%" />
+			<button text="Skip (No Vocals)" id="dialogNoVocals" />
+			<button text="Continue" id="dialogContinue" />
+		</hbox>
+	</vbox>
+</dialog>

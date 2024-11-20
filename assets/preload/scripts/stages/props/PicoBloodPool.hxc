@@ -1,0 +1,58 @@
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import flixel.math.FlxPoint;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayState;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.audio.FunkinSound;
+
+class PicoBloodPool extends FlxAtlasSprite
+{
+
+  var extend:Bool = false;
+
+  var el = null;
+  public function new(x:Float, y:Float)
+  {
+    super(x, y, Paths.animateAtlas("philly/erect/bloodPool", "week3"), {
+      FrameRate: 24.0,
+      Reversed: false,
+      // ?OnComplete:Void -> Void,
+      ShowPivot: false,
+      Antialiasing: true,
+      ScrollFactor: new FlxPoint(1, 1),
+    });
+
+   // onAnimationFinish.add(finishCanAnimation);
+   onAnimationComplete.addOnce((_)->{
+    el = anim.curSymbol.getElement(0);
+    extend = true;
+  });
+    this.visible = false;
+  }
+
+  public function doAnim(){
+    playAnimation("poolAnim", true, false, false);
+    //backingTextYeah.anim.play("");
+    this.visible = true;
+  }
+
+
+  override public function update(elapsed:Float)
+  {
+    super.update(elapsed);
+    if (extend)
+    {
+      var val = 0.02 * elapsed;
+
+      var mat = el.matrix;
+      mat.a += val;
+      mat.d += val;
+
+      mat.tx -= el.symbol.transformationPoint.x * val;
+      mat.ty -= el.symbol.transformationPoint.y * val;
+    }
+
+  }
+}

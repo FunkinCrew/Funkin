@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="picoIcon.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Pico Icon instance 10000" x="0" y="0" width="120" height="101" frameX="-24" frameY="-23" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10001" x="0" y="0" width="120" height="101" frameX="-24" frameY="-23" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10002" x="126" y="0" width="169" height="144"/>
+	<SubTexture name="Pico Icon instance 10003" x="126" y="0" width="169" height="144"/>
+	<SubTexture name="Pico Icon instance 10004" x="301" y="0" width="152" height="129" frameX="-8" frameY="-7" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10005" x="301" y="0" width="152" height="129" frameX="-8" frameY="-7" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10006" x="0" y="150" width="129" height="108" frameX="-35" frameY="-21" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10007" x="0" y="150" width="129" height="108" frameX="-35" frameY="-21" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10008" x="135" y="150" width="131" height="116" frameX="-28" frameY="-10" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10009" x="135" y="150" width="131" height="116" frameX="-28" frameY="-10" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10010" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10011" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10012" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10013" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10014" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10015" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10016" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10017" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10018" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10019" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+	<SubTexture name="Pico Icon instance 10020" x="272" y="150" width="127" height="111" frameX="-29" frameY="-14" frameWidth="169" frameHeight="144"/>
+</TextureAtlas>

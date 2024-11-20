@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="senpaiPortrait.png">
+	<SubTexture name="portraitEnter0000" x="0" y="0" width="249" height="145" />
+	<SubTexture name="portraitEnter0001" x="259" y="0" width="249" height="145" />
+	<SubTexture name="portraitEnter0002" x="0" y="155" width="249" height="145" />
+	<SubTexture name="portraitEnter0003" x="259" y="155" width="249" height="145" />
+	<SubTexture name="portraitTalk0001" x="259" y="155" width="249" height="145" />
+</TextureAtlas>

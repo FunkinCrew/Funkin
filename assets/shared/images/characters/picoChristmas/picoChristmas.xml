@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="picoChristmas.png" width="3992" height="2222">
+  <SubTexture name="Pico Down Note MISS xmas0001.png" x="0" y="0"  width="494" height="382" frameX="-13" frameY="-52" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0002.png" x="1994" y="0"  width="499" height="396" frameX="-2" frameY="-38" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0003.png" x="3495" y="0"  width="497" height="431" frameX="-4" frameY="-0" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0004.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0005.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0006.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0007.png" x="988" y="0"  width="503" height="391" frameX="-0" frameY="-43" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0008.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0009.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0010.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0011.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0012.png" x="988" y="0"  width="503" height="391" frameX="-0" frameY="-43" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0013.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0014.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0015.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0016.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0017.png" x="988" y="0"  width="503" height="391" frameX="-0" frameY="-43" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0018.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0019.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0020.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0021.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0022.png" x="988" y="0"  width="503" height="391" frameX="-0" frameY="-43" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0023.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0024.png" x="2994" y="0"  width="501" height="426" frameX="-2" frameY="-5" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note MISS xmas0025.png" x="2493" y="0"  width="501" height="425" frameX="-2" frameY="-6" frameWidth="507" frameHeight="434"/>
+  <SubTexture name="Pico Down Note xmas0001.png" x="494" y="0"  width="494" height="382" frameX="-13" frameY="-9" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0002.png" x="494" y="0"  width="494" height="382" frameX="-13" frameY="-9" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0003.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0004.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0005.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0006.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0007.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0008.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0009.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0010.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Down Note xmas0011.png" x="1491" y="0"  width="503" height="391" frameX="-0" frameY="-0" frameWidth="507" frameHeight="391"/>
+  <SubTexture name="Pico Idle Dance xmas0001.png" x="0" y="382" width="461" height="434" rotated="true"  frameX="-65" frameY="-17" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0002.png" x="0" y="382" width="461" height="434" rotated="true"  frameX="-65" frameY="-17" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0003.png" x="2433" y="425" width="468" height="441" rotated="true"  frameX="-58" frameY="-10" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0004.png" x="2433" y="425" width="468" height="441" rotated="true"  frameX="-58" frameY="-10" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0005.png" x="1584" y="1280" width="468" height="447" rotated="true"  frameX="-48" frameY="-11" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0006.png" x="0" y="817" width="468" height="443" rotated="true"  frameX="-48" frameY="-11" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0007.png" x="1937" y="836" width="474" height="444" rotated="true"  frameX="-47" frameY="-5" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0008.png" x="2901" y="426" width="474" height="442" rotated="true"  frameX="-47" frameY="-5" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0009.png" x="468" y="817" width="475" height="443" rotated="true"  frameX="-46" frameY="-4" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0010.png" x="468" y="817" width="475" height="443" rotated="true"  frameX="-46" frameY="-4" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0011.png" x="468" y="817" width="475" height="443" rotated="true"  frameX="-46" frameY="-4" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0012.png" x="468" y="817" width="475" height="443" rotated="true"  frameX="-46" frameY="-4" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0013.png" x="468" y="817" width="475" height="443" rotated="true"  frameX="-46" frameY="-4" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico Idle Dance xmas0014.png" x="468" y="817" width="475" height="443" rotated="true"  frameX="-46" frameY="-4" frameWidth="499" frameHeight="479"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0001.png" x="3040" y="1318" width="465" height="456" rotated="true"  frameX="-24" frameY="-35" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0002.png" x="0" y="1705" width="500" height="458" rotated="true"  frameX="-26" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0003.png" x="0" y="1705" width="500" height="458" rotated="true"  frameX="-26" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0004.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0005.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0006.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0007.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0008.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0009.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0010.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0011.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0012.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0013.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0014.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0015.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0016.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0017.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0018.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0019.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0020.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0021.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0022.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0023.png" x="1000" y="1719" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0024.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT miss xmas0025.png" x="500" y="1716" width="500" height="460" rotated="true"  frameX="-24" frameY="-0" frameWidth="484" frameHeight="500"/>
+  <SubTexture name="Pico NOTE LEFT xmas0001.png" x="2052" y="1311" width="461" height="450" rotated="true"  frameX="-30" frameY="-3" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0002.png" x="2052" y="1311" width="461" height="450" rotated="true"  frameX="-30" frameY="-3" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0003.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0004.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0005.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0006.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0007.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0008.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0009.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0010.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0011.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0012.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0013.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0014.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0015.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0016.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico NOTE LEFT xmas0017.png" x="3505" y="1318" width="464" height="456" rotated="true"  frameX="-24" frameY="-0" frameWidth="480" frameHeight="464"/>
+  <SubTexture name="Pico Note Right Miss xmas0001.png" x="1500" y="1727" width="475" height="461" rotated="true"  frameX="-8" frameY="-47" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0002.png" x="943" y="827" width="472" height="443" rotated="true"  frameX="-6" frameY="-50" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0003.png" x="1415" y="830" width="522" height="443" rotated="true"  frameX="-0" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0004.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0005.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0006.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0007.png" x="2411" y="866" width="472" height="445" rotated="true"  frameX="-7" frameY="-50" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0008.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0009.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0010.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0011.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0012.png" x="2411" y="866" width="472" height="445" rotated="true"  frameX="-7" frameY="-50" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0013.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0014.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0015.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0016.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0017.png" x="2411" y="866" width="472" height="445" rotated="true"  frameX="-7" frameY="-50" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0018.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0019.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0020.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0021.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0022.png" x="2411" y="866" width="472" height="445" rotated="true"  frameX="-7" frameY="-50" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0023.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0024.png" x="3355" y="873" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right Miss xmas0025.png" x="0" y="1260" width="522" height="445" rotated="true"  frameX="-1" frameY="-0" frameWidth="469" frameHeight="522"/>
+  <SubTexture name="Pico Note Right xmas0001.png" x="1975" y="1761" width="475" height="461" rotated="true"  frameX="-1" frameY="-0" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0002.png" x="1975" y="1761" width="475" height="461" rotated="true"  frameX="-1" frameY="-0" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0003.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0004.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0005.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0006.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0007.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0008.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0009.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0010.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0011.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0012.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0013.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0014.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0015.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0016.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="Pico Note Right xmas0017.png" x="2883" y="868" width="472" height="445" rotated="true"  frameX="-0" frameY="-3" frameWidth="462" frameHeight="475"/>
+  <SubTexture name="pico Up note miss xmas0001.png" x="1938" y="396" width="495" height="440" rotated="true"  frameX="-45" frameY="-36" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0002.png" x="3375" y="431" width="488" height="442" rotated="true"  frameX="-42" frameY="-45" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0003.png" x="2513" y="1313" width="527" height="452" rotated="true"  frameX="-38" frameY="-4" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0004.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0005.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0006.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0007.png" x="952" y="391" width="492" height="436" rotated="true"  frameX="-45" frameY="-41" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0008.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0009.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0010.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0011.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0012.png" x="952" y="391" width="492" height="436" rotated="true"  frameX="-45" frameY="-41" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0013.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0014.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0015.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0016.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0017.png" x="952" y="391" width="492" height="436" rotated="true"  frameX="-45" frameY="-41" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0018.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0019.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0020.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0021.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0022.png" x="952" y="391" width="492" height="436" rotated="true"  frameX="-45" frameY="-41" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0023.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0024.png" x="522" y="1270" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note miss xmas0025.png" x="1053" y="1273" width="531" height="446" rotated="true"  frameX="-41" frameY="-0" frameWidth="490" frameHeight="533"/>
+  <SubTexture name="pico Up note xmas0001.png" x="1444" y="391" width="494" height="439" rotated="true"  frameX="-49" frameY="-0" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0002.png" x="1444" y="391" width="494" height="439" rotated="true"  frameX="-49" frameY="-0" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0003.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0004.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0005.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0006.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0007.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0008.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0009.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0010.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0011.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0012.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0013.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+  <SubTexture name="pico Up note xmas0014.png" x="461" y="382" width="491" height="435" rotated="true"  frameX="-49" frameY="-5" frameWidth="488" frameHeight="496"/>
+</TextureAtlas>

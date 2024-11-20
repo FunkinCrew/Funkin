@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="dialogueBox-evil.png">
+	<SubTexture name="Spirit Textbox spawn instance 10000" x="0" y="0" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10001" x="0" y="0" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10002" x="259" y="0" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10003" x="259" y="0" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10004" x="0" y="155" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10005" x="0" y="155" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10006" x="259" y="155" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10007" x="259" y="155" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10008" x="0" y="310" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10009" x="0" y="310" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10010" x="259" y="310" width="249" height="145" />
+	<SubTexture name="Spirit Textbox spawn instance 10011" x="259" y="310" width="249" height="145" />
+</TextureAtlas>

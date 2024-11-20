@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="freeplaySelector.png">
+	<SubTexture name="arrow pointer loop0000" x="0" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0001" x="0" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0002" x="0" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0003" x="0" y="95" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0004" x="0" y="95" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0005" x="0" y="95" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0006" x="54" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0007" x="54" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0008" x="54" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0009" x="54" y="95" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0010" x="54" y="95" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0011" x="54" y="95" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0012" x="108" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0013" x="108" y="0" width="49" height="90" />
+	<SubTexture name="arrow pointer loop0014" x="108" y="0" width="49" height="90" />
+</TextureAtlas>

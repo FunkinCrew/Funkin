@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="arrows-pixels.png">
+	<SubTexture name="staticLeft0001" x="0" y="0" width="17" height="17" />
+	<SubTexture name="staticDown0001" x="17" y="0" width="17" height="17" />
+	<SubTexture name="staticUp0001" x="34" y="0" width="17" height="17" />
+	<SubTexture name="staticRight0001" x="51" y="0" width="17" height="17" />
+	<SubTexture name="noteLeft0001" x="0" y="17" width="17" height="17" />
+	<SubTexture name="noteDown0001" x="17" y="17" width="17" height="17" />
+	<SubTexture name="noteUp0001" x="34" y="17" width="17" height="17" />
+	<SubTexture name="noteRight0001" x="51" y="17" width="17" height="17" />
+	<SubTexture name="pressedLeft0001" x="0" y="17" width="17" height="17" />
+	<SubTexture name="pressedDown0001" x="17" y="17" width="17" height="17" />
+	<SubTexture name="pressedUp0001" x="34" y="17" width="17" height="17" />
+	<SubTexture name="pressedRight0001" x="51" y="17" width="17" height="17" />
+	<SubTexture name="pressedLeft0002" x="0" y="34" width="17" height="17" />
+	<SubTexture name="pressedDown0002" x="17" y="34" width="17" height="17" />
+	<SubTexture name="pressedUp0002" x="34" y="34" width="17" height="17" />
+	<SubTexture name="pressedRight0002" x="51" y="34" width="17" height="17" />
+	<SubTexture name="confirmLeft0001" x="0" y="51" width="17" height="17" />
+	<SubTexture name="confirmDown0001" x="17" y="51" width="17" height="17" />
+	<SubTexture name="confirmUp0001" x="34" y="51" width="17" height="17" />
+	<SubTexture name="confirmRight0001" x="51" y="51" width="17" height="17" />
+	<SubTexture name="confirmLeft0002" x="0" y="68" width="17" height="17" />
+	<SubTexture name="confirmDown0002" x="17" y="68" width="17" height="17" />
+	<SubTexture name="confirmUp0002" x="34" y="68" width="17" height="17" />
+	<SubTexture name="confirmRight0002" x="51" y="68" width="17" height="17" />
+</TextureAtlas>

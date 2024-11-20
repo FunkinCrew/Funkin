@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="letterStuff.png">
+	<SubTexture name="# instance 10000" x="0" y="55" width="52" height="53" />
+	<SubTexture name="ALL instance 10000" x="0" y="0" width="56" height="50" />
+	<SubTexture name="a instance 10000" x="57" y="55" width="48" height="51" />
+	<SubTexture name="b instance 10000" x="213" y="103" width="46" height="49" />
+	<SubTexture name="c instance 10000" x="112" y="106" width="44" height="52" />
+	<SubTexture name="d instance 10000" x="56" y="167" width="47" height="52" />
+	<SubTexture name="e instance 10000" x="331" y="0" width="41" height="50" />
+	<SubTexture name="f instance 10000" x="323" y="55" width="41" height="49" />
+	<SubTexture name="fav instance 10000" x="110" y="54" width="51" height="47" />
+	<SubTexture name="g instance 10000" x="314" y="209" width="44" height="47" />
+	<SubTexture name="h instance 10000" x="159" y="163" width="48" height="47" />
+	<SubTexture name="i instance 10000" x="161" y="106" width="47" height="48" />
+	<SubTexture name="j instance 10000" x="108" y="167" width="46" height="50" />
+	<SubTexture name="k instance 10000" x="263" y="157" width="47" height="47" />
+	<SubTexture name="l instance 10000" x="315" y="109" width="42" height="47" />
+	<SubTexture name="m instance 10000" x="61" y="0" width="49" height="49" />
+	<SubTexture name="mini arrow instance 10000" x="363" y="109" width="15" height="23" />
+	<SubTexture name="n instance 10000" x="220" y="50" width="47" height="47" />
+	<SubTexture name="o instance 10000" x="272" y="50" width="46" height="46" />
+	<SubTexture name="p instance 10000" x="279" y="0" width="47" height="45" />
+	<SubTexture name="q instance 10000" x="0" y="113" width="51" height="50" />
+	<SubTexture name="r instance 10000" x="115" y="0" width="50" height="47" />
+	<SubTexture name="s instance 10000" x="212" y="159" width="46" height="49" />
+	<SubTexture name="seperator instance 10000" x="363" y="137" width="17" height="18" />
+	<SubTexture name="t instance 10000" x="166" y="52" width="49" height="46" />
+	<SubTexture name="u instance 10000" x="263" y="209" width="46" height="47" />
+	<SubTexture name="v instance 10000" x="264" y="102" width="46" height="46" />
+	<SubTexture name="w instance 10000" x="170" y="0" width="50" height="45" />
+	<SubTexture name="x instance 10000" x="225" y="0" width="49" height="45" />
+	<SubTexture name="y instance 10000" x="56" y="113" width="51" height="49" />
+	<SubTexture name="z instance 10000" x="0" y="168" width="51" height="49" />
+</TextureAtlas>

@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="senpaiAngryPortrait.png">
+	<SubTexture name="amongus" x="0" y="0" width="60" height="60" />
+</TextureAtlas>

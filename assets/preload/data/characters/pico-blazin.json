@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "name": "Pico (Blazin')",
+  "assetPath": "shared:characters/picoBlazin",
+  "healthIcon": {
+    "id": "pico"
+  },
+  "flipX": true,
+  "renderType": "animateatlas",
+  "singTime": 999.0,
+  "death": {
+    "preTransitionDelay": 0.125,
+    "cameraOffsets": [1700, 1550],
+    "cameraZoom": 0.8
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Idle",
+      "looped": true,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "block",
+      "prefix": "Block",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "dodge",
+      "prefix": "Dodge",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "fakeout",
+      "prefix": "Fake Hit",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "taunt",
+      "prefix": "Taunt",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "taunt-hold",
+      "prefix": "Taunt Laugh Loop",
+      "looped": true,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "punchHigh1",
+      "prefix": "Punch High 1",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "punchHigh2",
+      "prefix": "Punch High 2",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "punchLow1",
+      "prefix": "Punch Low 1",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "punchLow2",
+      "prefix": "Punch Low 2",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "hitHigh",
+      "prefix": "Hit High",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "hitLow",
+      "prefix": "Hit Low",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "hitSpin",
+      "prefix": "Hit Spin",
+      "looped": true,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "uppercutPrep",
+      "prefix": "Uppercut Prep",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "uppercut",
+      "prefix": "Uppercut Punch",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "uppercutHit",
+      "prefix": "Uppercut Hit",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "uppercut-hold",
+      "prefix": "Uppercut Punch Loop",
+      "looped": true,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "Low Death Intro",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "Low Death Loop",
+      "looped": true,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "Low Death Confirm",
+      "offsets": [0, 0]
+    }
+  ]
+}

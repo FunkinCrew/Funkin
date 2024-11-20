@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<TextureAtlas imagePath="darnell.png" width="1821" height="217">
+  <SubTexture name="idle0001" x="8" y="8" width="240" height="191" rotated="true" frameX="-0" frameY="-8" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0002" x="264" y="8" width="240" height="191" rotated="true" frameX="-0" frameY="-8" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0009" x="520" y="8" width="248" height="197" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0013" x="784" y="8" width="248" height="197" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0007" x="1048" y="8" width="248" height="198" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0005" x="1312" y="8" width="245" height="200" rotated="true" frameX="-1" frameY="-3" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0003" x="1573" y="8" width="240" height="201" rotated="true" frameX="-0" frameY="-8" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0004" x="1573" y="8" width="240" height="201" rotated="true" frameX="-0" frameY="-8" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0006" x="1312" y="8" width="245" height="200" rotated="true" frameX="-1" frameY="-3" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0008" x="1048" y="8" width="248" height="198" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0010" x="520" y="8" width="248" height="197" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0011" x="520" y="8" width="248" height="197" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0012" x="520" y="8" width="248" height="197" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+  <SubTexture name="idle0014" x="784" y="8" width="248" height="197" rotated="true" frameX="-1" frameY="-0" frameWidth="201" frameHeight="248" />
+</TextureAtlas>

@@ -1,0 +1,7 @@
+{
+  "version": "1.0.0",
+  "name": "Volume 2",
+  "artists": ["Kawai Sprite"],
+  "albumArtAsset": "freeplay/albumRoll/volume2",
+  "albumTitleAsset": "freeplay/albumRoll/volume2-text"
+}

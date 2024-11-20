@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog title="Character Properties" width="325" height="465">
+  <vbox width="100%" height="100%">
+    <section-header text="Position"/>
+    <hbox width="100%">
+      <number-stepper id="characterPosXStepper" precision="2"/>
+      <number-stepper id="characterPosYStepper" precision="2"/>
+      <spacer width="100%" />
+      <button id="characterPosReset" text="Reset"/>
+    </hbox>
+
+    <section-header text="Z-Index"/>
+    <hbox width="100%">
+      <number-stepper id="characterZIdxStepper"/>
+      <spacer width="100%" />
+      <button id="characterZIdxReset" text="Reset"/>
+    </hbox>
+
+    <section-header text="Camera Offset"/>
+    <hbox width="100%">
+      <number-stepper id="characterCamXStepper" precision="1"/>
+      <number-stepper id="characterCamYStepper" precision="1"/>
+      <spacer width="100%" />
+      <button id="characterCamReset" text="Reset"/>
+    </hbox>
+
+    <section-header text="Scale"/>
+    <hbox width="100%">
+      <slider id="characterScaleSlider" pos="1" step="0.05" min="0.05" max="10" majorTicks="1" minorTicks="0.25"/>
+      <spacer width="100%" />
+      <button id="characterScaleReset" text="Reset"/>
+    </hbox>
+
+    <section-header text="Test as Character"/>
+    <button id="characterTypeButton" width="70" height="70" padding="8" iconPosition="top">
+      Aught
+    </button>
+  </vbox>
+</collapsible-dialog>

@@ -1,0 +1,9 @@
+{
+  "timeFormat": "ms",
+  "artist": "Saruky",
+  "songName": "Random!",
+  "timeChanges": [{ "d": 4, "n": 4, "t": 0, "bt": [4, 4, 4, 4], "bpm": 160 }],
+  "generatedBy": "Manual",
+  "looped": true,
+  "version": "2.0.0"
+}

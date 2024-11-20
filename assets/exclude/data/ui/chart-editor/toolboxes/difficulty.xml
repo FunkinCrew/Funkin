@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="toolboxDifficulty" title="Difficulty" width="300" height="425">
+    <vbox>
+        <frame text="Select Difficulty">
+            <tree-view id="difficultyToolboxTree" width="260" height="200" />
+        </frame>
+        <hbox>
+            <button allowFocus="false" id="difficultyToolboxAddVariation" text="Add Variation" />
+            <button allowFocus="false" id="difficultyToolboxAddDifficulty" text="Add Difficulty" />
+        </hbox>
+        <hbox>
+            <button allowFocus="false" id="difficultyToolboxRemoveDifficulty" text="Remove Difficulty" />
+        </hbox>
+        <rule />
+        <hbox>
+            <button allowFocus="false" id="difficultyToolboxSaveMetadata" text="Save Metadata File" />
+            <button allowFocus="false" id="difficultyToolboxSaveChart" text="Save Chart File" />
+        </hbox>
+        <hbox>
+            <button allowFocus="false" id="difficultyToolboxLoadMetadata" text="Load Metadata File" />
+            <button allowFocus="false" id="difficultyToolboxLoadChart" text="Load Chart File" />
+        </hbox>
+    </vbox>
+</collapsible-dialog>

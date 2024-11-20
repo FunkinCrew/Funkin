@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="sparksadd.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="sparks add0000" x="0" y="0" width="271" height="408" frameX="-120" frameY="-18" frameWidth="556" frameHeight="548"/>
+	<SubTexture name="sparks add0001" x="276" y="0" width="373" height="481" frameX="-73" frameY="-1" frameWidth="556" frameHeight="548"/>
+	<SubTexture name="sparks add0002" x="654" y="0" width="478" height="504" frameX="-27" frameY="0" frameWidth="556" frameHeight="548"/>
+	<SubTexture name="sparks add0003" x="1137" y="0" width="523" height="526" frameX="-9" frameY="-22" frameWidth="556" frameHeight="548"/>
+	<SubTexture name="sparks add0004" x="0" y="531" width="556" height="395" frameX="0" frameY="-54" frameWidth="556" frameHeight="548"/>
+</TextureAtlas>

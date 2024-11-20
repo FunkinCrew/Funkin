@@ -1,0 +1,162 @@
+{
+  "version": "1.1.0",
+  "name": "Pixel",
+  "author": "Moawling",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "week6:weeb/pixelUI/arrows-pixels",
+      "scale": 6.0,
+      "isPixel": true,
+      "data": {
+        "left": { "prefix": "noteLeft" },
+        "down": { "prefix": "noteDown" },
+        "up": { "prefix": "noteUp" },
+        "right": { "prefix": "noteRight" }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": "week6:weeb/pixelUI/arrows-pixels",
+      "scale": 6.0,
+      "offsets": [28, 32],
+      "isPixel": true,
+      "data": {
+        "leftStatic": { "prefix": "staticLeft0" },
+        "leftPress": { "prefix": "pressedLeft0" },
+        "leftConfirm": { "prefix": "confirmLeft0" },
+        "leftConfirmHold": { "prefix": "confirmLeft0" },
+        "downStatic": { "prefix": "staticDown0" },
+        "downPress": { "prefix": "pressedDown0" },
+        "downConfirm": { "prefix": "confirmDown0" },
+        "downConfirmHold": { "prefix": "confirmDown0" },
+        "upStatic": { "prefix": "staticUp0" },
+        "upPress": { "prefix": "pressedUp0" },
+        "upConfirm": { "prefix": "confirmUp0" },
+        "upConfirmHold": { "prefix": "confirmUp0" },
+        "rightStatic": { "prefix": "staticRight0" },
+        "rightPress": { "prefix": "pressedRight0" },
+        "rightConfirm": { "prefix": "confirmRight0" },
+        "rightConfirmHold": { "prefix": "confirmRight0" }
+      }
+    },
+    "holdNote": {
+      "assetPath": "week6:weeb/pixelUI/arrowEndsNew",
+      "scale": 6.0,
+      "offsets": [2, 1],
+      "isPixel": true,
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": "",
+      "data": {
+        "enabled": false
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "",
+      "data": {
+        "enabled": false
+      }
+    },
+    "countdownThree": {
+      "data": {
+        "audioPath": "shared:gameplay/countdown/pixel/introTHREE"
+      },
+      "assetPath": null
+    },
+    "countdownTwo": {
+      "data": {
+        "audioPath": "shared:gameplay/countdown/pixel/introTWO"
+      },
+      "assetPath": "shared:ui/countdown/pixel/ready",
+      "scale": 6.0,
+      "isPixel": true
+    },
+    "countdownOne": {
+      "data": {
+        "audioPath": "shared:gameplay/countdown/pixel/introONE"
+      },
+      "assetPath": "shared:ui/countdown/pixel/set",
+      "scale": 6.0,
+      "isPixel": true
+    },
+    "countdownGo": {
+      "data": {
+        "audioPath": "shared:gameplay/countdown/pixel/introGO"
+      },
+      "assetPath": "shared:ui/countdown/pixel/go",
+      "scale": 6.0,
+      "isPixel": true
+    },
+    "judgementSick": {
+      "assetPath": "default:ui/popup/pixel/sick",
+      "scale": 4.2,
+      "isPixel": true
+    },
+    "judgementGood": {
+      "assetPath": "default:ui/popup/pixel/good",
+      "scale": 4.2,
+      "isPixel": true
+    },
+    "judgementBad": {
+      "assetPath": "default:ui/popup/pixel/bad",
+      "scale": 4.2,
+      "isPixel": true
+    },
+    "judgementShit": {
+      "assetPath": "default:ui/popup/pixel/shit",
+      "scale": 4.2,
+      "isPixel": true
+    },
+    "comboNumber0": {
+      "assetPath": "default:ui/popup/pixel/num0",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber1": {
+      "assetPath": "default:ui/popup/pixel/num1",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber2": {
+      "assetPath": "default:ui/popup/pixel/num2",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber3": {
+      "assetPath": "default:ui/popup/pixel/num3",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber4": {
+      "assetPath": "default:ui/popup/pixel/num4",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber5": {
+      "assetPath": "default:ui/popup/pixel/num5",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber6": {
+      "assetPath": "default:ui/popup/pixel/num6",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber7": {
+      "assetPath": "default:ui/popup/pixel/num7",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber8": {
+      "assetPath": "default:ui/popup/pixel/num8",
+      "isPixel": true,
+      "scale": 4.2
+    },
+    "comboNumber9": {
+      "assetPath": "default:ui/popup/pixel/num9",
+      "isPixel": true,
+      "scale": 4.2
+    }
+  }
+}

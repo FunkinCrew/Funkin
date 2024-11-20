@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "name": "Senpai",
+  "assetPath": "characters/senpai",
+  "singTime": 8.0,
+  "isPixel": true,
+  "scale": 6,
+  "healthIcon": {
+    "id": "senpai",
+    "isPixel": true
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Senpai Idle instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "SENPAI LEFT NOTE instance 10",
+      "offsets": [6.6, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "SENPAI DOWN NOTE instance 10",
+      "offsets": [2.33, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "SENPAI UP NOTE instance 10",
+      "offsets": [0.83, 6.16]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "SENPAI RIGHT NOTE instance 10",
+      "offsets": [0, 0]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "version": "1.0.0",
+  "name": "Nene (Christmas)",
+  "assetPath": "characters/neneChristmas/neneChristmas",
+  "startingAnimation": "danceRight",
+  "offsets": [0, -100],
+  "animations": [
+    {
+      "name": "danceLeft",
+      "prefix": "Nene Abot Idle xmas0",
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "danceRight",
+      "prefix": "Nene Abot Idle xmas0",
+      "frameIndices": [
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+      ],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "combo50",
+      "prefix": "combo celebration 1 nene xmas0",
+      "offsets": [-120, 50]
+    },
+    {
+      "name": "drop70",
+      "prefix": "laughing nene xmas0",
+      "frameIndices": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11,
+        7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11
+      ],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "combo200",
+      "prefix": "fawn nene xmas0",
+      "frameIndices": [
+        0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6, 6, 6
+      ],
+      "offsets": [-50, -25]
+    },
+    {
+      "name": "raiseKnife",
+      "prefix": "knife raise xmas0",
+      "offsets": [0, 52]
+    },
+    {
+      "name": "idleKnife",
+      "prefix": "knife high held xmas0",
+      "offsets": [-99, 52]
+    },
+    {
+      "name": "lowerKnife",
+      "prefix": "knife lower xmas0",
+      "offsets": [135, 52]
+    }
+  ]
+}

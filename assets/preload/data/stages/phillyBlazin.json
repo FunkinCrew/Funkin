@@ -1,0 +1,79 @@
+{
+  "version": "1.0.0",
+  "name": "Philly (Blazin')",
+  "cameraZoom": 0.75,
+  "props": [
+    {
+      "zIndex": 11,
+      "position": [-600, -175],
+      "animType": "sparrow",
+      "name": "skyAdditive",
+      "assetPath": "phillyBlazin/skyBlur",
+      "scroll": [0.0, 0.0],
+      "scale": [1.75, 1.75]
+    },
+    {
+      "zIndex": 20,
+      "position": [50, -300],
+      "animType": "sparrow",
+      "name": "lightning",
+      "assetPath": "phillyBlazin/lightning",
+      "scroll": [0.0, 0.0],
+      "scale": [1.75, 1.75],
+      "animations": [
+        {
+          "name": "strike",
+          "prefix": "lightning0",
+          "offsets": [0, 0]
+        }
+      ]
+    },
+    {
+      "zIndex": 30,
+      "position": [-600, -175],
+      "animType": "sparrow",
+      "name": "phillyForegroundCity",
+      "assetPath": "phillyBlazin/streetBlur",
+      "scroll": [0.0, 0.0],
+      "scale": [1.75, 1.75]
+    },
+    {
+      "zIndex": 31,
+      "position": [-600, -175],
+      "animType": "sparrow",
+      "name": "foregroundMultiply",
+      "assetPath": "phillyBlazin/streetBlur",
+      "scroll": [0.0, 0.0],
+      "scale": [1.75, 1.75]
+    },
+    {
+      "zIndex": 40,
+      "position": [-600, -175],
+      "animType": "sparrow",
+      "name": "additionalLighten",
+      "assetPath": "#FFFFFF",
+      "scroll": [0.0, 0.0],
+      "scale": [2500, 2000]
+    }
+  ],
+  "characters": {
+    "bf": {
+      "zIndex": 2000,
+      "scale": 1.75,
+      "position": [-237, 100],
+      "cameraOffsets": [-350, -100]
+    },
+    "gf": {
+      "zIndex": 1000,
+      "position": [1353, 1125],
+      "cameraOffsets": [0, 20]
+    },
+    "dad": {
+      "zIndex": 3000,
+      "scale": 1.75,
+      "position": [-237, 150],
+      "cameraOffsets": [500, 200]
+    }
+  },
+  "directory": "weekend1"
+}

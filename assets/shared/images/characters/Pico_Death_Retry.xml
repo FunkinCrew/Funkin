@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="Pico_Death_Retry.png" width="2002" height="2805">
+  <SubTexture name="Retry Text Confirm0001" x="1664" y="2021" width="316" height="105" frameX="-228" frameY="-226" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0002" x="1111" y="2371" width="520" height="345" frameX="-139" frameY="-81" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0003" x="4" y="1698" width="563" height="449" frameX="-126" frameY="-29" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0004" x="1402" y="644" width="563" height="361" frameX="-126" frameY="-88" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0005" x="1111" y="2022" width="545" height="341" frameX="-140" frameY="-98" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0006" x="4" y="2482" width="542" height="319" frameX="-138" frameY="-112" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0007" x="558" y="2155" width="545" height="319" frameX="-136" frameY="-112" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0008" x="4" y="2155" width="546" height="316" frameX="-135" frameY="-115" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0009" x="1141" y="1697" width="551" height="316" frameX="-134" frameY="-115" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0010" x="575" y="1698" width="558" height="316" frameX="-132" frameY="-115" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0011" x="1308" y="1031" width="565" height="310" frameX="-131" frameY="-119" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0012" x="1402" y="324" width="577" height="312" frameX="-126" frameY="-118" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0013" x="1244" y="1371" width="585" height="313" frameX="-124" frameY="-117" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0014" x="1402" y="4" width="596" height="312" frameX="-118" frameY="-116" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0015" x="631" y="1373" width="605" height="316" frameX="-115" frameY="-113" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0016" x="4" y="1373" width="619" height="317" frameX="-107" frameY="-111" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0017" x="662" y="1045" width="638" height="318" frameX="-95" frameY="-108" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0018" x="4" y="1045" width="650" height="320" frameX="-86" frameY="-107" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0019" x="4" y="711" width="671" height="326" frameX="-71" frameY="-104" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0020" x="703" y="694" width="691" height="329" frameX="-59" frameY="-103" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0021" x="703" y="350" width="691" height="336" frameX="-59" frameY="-99" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0022" x="703" y="4" width="691" height="338" frameX="-59" frameY="-98" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0023" x="4" y="359" width="691" height="344" frameX="-59" frameY="-95" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0024" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0025" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0026" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0027" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0028" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0029" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0030" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0031" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0032" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0033" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Confirm0034" x="4" y="4" width="691" height="347" frameX="-59" frameY="-93" frameWidth="810" frameHeight="534" />
+  <SubTexture name="Retry Text Loop0001" x="575" y="2022" width="277" height="125" frameX="-3" frameY="-0" frameWidth="286" frameHeight="136" />
+  <SubTexture name="Retry Text Loop0002" x="575" y="2022" width="277" height="125" frameX="-3" frameY="-0" frameWidth="286" frameHeight="136" />
+  <SubTexture name="Retry Text Loop0003" x="1700" y="1692" width="286" height="127" frameX="-0" frameY="-0" frameWidth="286" frameHeight="136" />
+  <SubTexture name="Retry Text Loop0004" x="1700" y="1692" width="286" height="127" frameX="-0" frameY="-0" frameWidth="286" frameHeight="136" />
+  <SubTexture name="Retry Text Loop0005" x="1664" y="2134" width="277" height="131" frameX="-6" frameY="-5" frameWidth="286" frameHeight="136" />
+  <SubTexture name="Retry Text Loop0006" x="1664" y="2134" width="277" height="131" frameX="-6" frameY="-5" frameWidth="286" frameHeight="136" />
+  <SubTexture name="Retry Text Loop0007" x="1700" y="1827" width="281" height="127" frameX="-1" frameY="-6" frameWidth="286" frameHeight="136" />
+  <SubTexture name="Retry Text Loop0008" x="1700" y="1827" width="281" height="127" frameX="-1" frameY="-6" frameWidth="286" frameHeight="136" />
+</TextureAtlas>

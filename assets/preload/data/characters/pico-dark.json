@@ -1,0 +1,109 @@
+{
+  "version": "1.0.0",
+  "name": "Pico (Playable) (Dark)",
+  "assetPath": "characters/pico_dark",
+  "healthIcon": {
+    "id": "pico",
+    "flipX": false
+  },
+  "death": {
+    "cameraOffsets": [10, -40],
+    "cameraZoom": 1.0
+  },
+  "flipX": true,
+  "renderType": "multisparrow",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Pico Idle Dance",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Pico Note Right0",
+      "offsets": [-50, 1]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Pico Down Note0",
+      "offsets": [84, -77]
+    },
+    {
+      "name": "singUP",
+      "prefix": "pico Up note0",
+      "offsets": [21, 28]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Pico NOTE LEFT0",
+      "offsets": [84, -11]
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "Pico NOTE LEFT miss",
+      "offsets": [68, 20]
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "Pico Down Note MISS",
+      "offsets": [80, -40]
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "pico Up note miss",
+      "offsets": [29, 70]
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "Pico Note Right Miss",
+      "offsets": [-55, 45]
+    },
+    {
+      "name": "burpShit",
+      "prefix": "burpshit",
+      "offsets": [33, -3]
+    },
+    {
+      "name": "burpSmile",
+      "prefix": "burpsmile",
+      "offsets": [33, -3]
+    },
+    {
+      "name": "burpSmileLong",
+      "prefix": "burpsmile",
+      "frameIndices": [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 25, 26, 27, 28, 29, 30, 31, 31, 31, 31, 31, 31, 31,
+	 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+	 31, 31, 31, 31, 31
+      ],
+      "offsets": [33, -3]
+    },
+    {
+      "name": "shit",
+      "prefix": "shit",
+      "offsets": [33, -3]
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "Pico Death Stab",
+      "assetPath": "characters/Pico_Death",
+      "frameIndices": [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
+        38, 39, 40, 41, 42, 43, 44, 45, 46, 47
+      ],
+      "offsets": [225, 125]
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "Pico Death Stab",
+      "looped": true,
+      "assetPath": "characters/Pico_Death",
+      "frameIndices": [
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63
+      ],
+      "offsets": [225, 125]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	This component imitates the playback controls like on a music player.
+-->
+<box id="playbar" width="100%" height="48" styleName="playbar">
+	<hbox>
+		<label horizontalAlign="left" id="playbarSongPos" text="0:32" styleName="playbarDuration" />
+	</hbox>
+	<hbox horizontalAlign="center">
+		<button allowFocus="false" styleName="playbarButton" tooltip="Skip to Start" id="playbarStart" text="|<" />
+		<button allowFocus="false" styleName="playbarButton" tooltip="Skip Back" id="playbarBack" text="<<" />
+		<button allowFocus="false" styleName="playbarButton" tooltip="Play/Pause" id="playbarPlay" text=">" />
+		<button allowFocus="false" styleName="playbarButton" tooltip="Skip Back" id="playbarForward" text=">>" />
+		<button allowFocus="false" styleName="playbarButton" tooltip="Skip to End" id="playbarEnd" text=">|" />
+	</hbox>
+	<hbox horizontalAlign="right">
+		<label id="playbarDifficulty" verticalAlign="center" text="NORMAL" styleName="playbarStatus" tooltip="Left Click/Ctrl+Left Arrow to Decrease Difficulty\nRight Click/Ctrl+Right Arrow to Increase Difficulty\nCtrl+Click to open Difficulty Window" />
+		<rule direction="vertical" height="80%" />
+		<label id="playbarBPM" verticalAlign="center" text="BPM: 120" styleName="playbarStatus" tooltip="Left Click to Increase BPM\nRight Click to Decrease BPM\nCtrl+Click to open Metadata Window" />
+		<rule direction="vertical" height="80%" />
+		<label id="playbarNoteSnap" verticalAlign="center" text="1/4" styleName="playbarStatus" tooltip="Note Snap Level\nLeft Click to Increase\nRight Click to Decrease\nShift+Click to set to default snapping (1/16)" />
+		<rule direction="vertical" height="80%" />
+		<label id="playbarSongRemaining" text="-1:00" styleName="playbarDuration" />
+	</hbox>
+</box>

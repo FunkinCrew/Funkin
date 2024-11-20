@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="toolboxNotes" title="Notes" width="250" height="100">
+	<vbox width="100%" height="100%">
+		<grid columns="2" width="100%">
+			<label text="Note Kind" verticalAlign="center" horizontalAlign="right" />
+			<dropdown id="toolboxNotesNoteKind" width="100%" value="" dropdownSize="10" dropdownWidth="300" searchable="true">
+				<data>
+					<item id="" text="Default" />
+					<item id="~CUSTOM~" text="Custom" />
+				</data>
+			</dropdown>
+			<label id="toolboxNotesCustomKindLabel" text="Custom Note Type" hidden="true" />
+			<textfield id="toolboxNotesCustomKind" style="font-size: 10px" placeholder="Kind..." width="100%" hidden="true" />
+		</grid>
+	</vbox>
+</collapsible-dialog>

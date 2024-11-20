@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="favHeart.png">
+	<SubTexture name="favorite heart0000" x="53" y="0" width="21" height="16" frameX="-14" frameY="-11" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0001" x="0" y="0" width="48" height="39" />
+	<SubTexture name="favorite heart0002" x="0" y="0" width="48" height="39" />
+	<SubTexture name="favorite heart0003" x="0" y="44" width="39" height="32" frameX="-5" frameY="-3" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0004" x="53" y="0" width="21" height="16" frameX="-14" frameY="-11" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0005" x="53" y="0" width="21" height="16" frameX="-14" frameY="-11" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0006" x="44" y="44" width="30" height="24" frameX="-9" frameY="-7" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0007" x="44" y="44" width="30" height="24" frameX="-9" frameY="-7" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0008" x="44" y="44" width="30" height="24" frameX="-9" frameY="-7" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0009" x="44" y="44" width="30" height="24" frameX="-9" frameY="-7" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0010" x="44" y="44" width="30" height="24" frameX="-9" frameY="-7" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0011" x="44" y="44" width="30" height="24" frameX="-9" frameY="-7" frameWidth="48" frameHeight="39" />
+	<SubTexture name="favorite heart0012" x="44" y="44" width="30" height="24" frameX="-9" frameY="-7" frameWidth="48" frameHeight="39" />
+</TextureAtlas>

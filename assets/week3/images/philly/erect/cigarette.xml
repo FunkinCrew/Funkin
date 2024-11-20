@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="cigarette.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="cigarette spit0000" x="0" y="0" width="84" height="68" frameX="-473" frameY="-40" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0001" x="89" y="0" width="94" height="97" frameX="-371" frameY="-125" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0002" x="188" y="0" width="89" height="66" frameX="-299" frameY="-176" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0003" x="188" y="0" width="89" height="66" frameX="-299" frameY="-176" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0004" x="282" y="0" width="50" height="93" frameX="-279" frameY="-102" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0005" x="282" y="0" width="50" height="93" frameX="-279" frameY="-102" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0006" x="337" y="0" width="39" height="60" frameX="-244" frameY="-35" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0007" x="337" y="0" width="39" height="60" frameX="-244" frameY="-35" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0008" x="381" y="0" width="59" height="39" frameX="-187" frameY="-3" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0009" x="381" y="0" width="59" height="39" frameX="-187" frameY="-3" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0010" x="445" y="0" width="43" height="64" frameX="-145" frameY="0" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0011" x="445" y="0" width="43" height="64" frameX="-145" frameY="0" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0012" x="0" y="102" width="65" height="43" frameX="-90" frameY="-46" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0013" x="0" y="102" width="65" height="43" frameX="-90" frameY="-46" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0014" x="70" y="102" width="55" height="46" frameX="-62" frameY="-115" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0015" x="70" y="102" width="55" height="46" frameX="-62" frameY="-115" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0016" x="130" y="102" width="61" height="40" frameX="-27" frameY="-180" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0017" x="130" y="102" width="61" height="40" frameX="-27" frameY="-180" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0018" x="196" y="102" width="62" height="43" frameX="-11" frameY="-167" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0019" x="196" y="102" width="62" height="43" frameX="-11" frameY="-167" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0020" x="263" y="102" width="63" height="42" frameX="-5" frameY="-179" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0021" x="263" y="102" width="63" height="42" frameX="-5" frameY="-179" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0022" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0023" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0024" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0025" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0026" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0027" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0028" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0029" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0030" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0031" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0032" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0033" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0034" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0035" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0036" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0037" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0038" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0039" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+	<SubTexture name="cigarette spit0040" x="331" y="102" width="64" height="44" frameX="0" frameY="-175" frameWidth="557" frameHeight="242"/>
+</TextureAtlas>

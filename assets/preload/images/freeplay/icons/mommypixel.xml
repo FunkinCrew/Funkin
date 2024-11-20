@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="mommypixel.png" width="275" height="50">
+	<SubTexture name="idle0001" x="232" y="1" width="42" height="44" frameX="-11" frameY="-9" frameWidth="60" frameHeight="60"/>
+
+	<SubTexture name="confirm0001" x="94" y="1" width="43" height="45" frameX="-12" frameY="-8" frameWidth="60" frameHeight="60"/>
+	<SubTexture name="confirm0002" x="1" y="1" width="44" height="48" frameX="-8" frameY="-9" frameWidth="60" frameHeight="60"/>
+	<SubTexture name="confirm0003" x="186" y="1" width="43" height="44" frameX="-9" frameY="-13" frameWidth="60" frameHeight="60"/>
+	<SubTexture name="confirm0004" x="48" y="1" width="43" height="47" frameX="-9" frameY="-10" frameWidth="60" frameHeight="60"/>
+	<SubTexture name="confirm0005" x="140" y="1" width="43" height="45" frameX="-9" frameY="-12" frameWidth="60" frameHeight="60"/>
+
+	<SubTexture name="confirm-hold0001" x="140" y="1" width="43" height="45" frameX="-9" frameY="-12" frameWidth="60" frameHeight="60"/>
+</TextureAtlas>

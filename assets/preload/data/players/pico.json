@@ -1,0 +1,152 @@
+{
+  "version": "1.0.0",
+  "name": "Pico",
+  "ownedChars": [
+    "pico",
+    "pico-playable",
+    "pico-blazin",
+    "pico-christmas",
+    "pico-dark"
+  ],
+  "showUnownedChars": false,
+  "unlocked": true,
+  "freeplayStyle": "pico",
+  "freeplayDJ": {
+    "assetPath": "freeplay/freeplay-pico",
+    "text1": "PICO",
+    "text2": "GOD DAMN HE DOWN ON THE NUT",
+    "text3": "ZEBOIM DAMN IMA NUT",
+    "fistPump": {
+      "introStartFrame": 0,
+      "introEndFrame": 4,
+
+      "loopStartFrame": 4,
+      "loopEndFrame": -1,
+
+      "introBadStartFrame": 0,
+      "introBadEndFrame": 0,
+
+      "loopBadStartFrame": 0,
+      "loopBadEndFrame": -1
+    },
+    "charSelect": {
+      "transitionDelay": 0.45
+    },
+    "animations": [
+      {
+        "name": "intro",
+        "prefix": "pico dj intro",
+        "offsets": [631.7, 362.6]
+      },
+      {
+        "name": "idle",
+        "prefix": "Pico DJ",
+        "offsets": [625, 360]
+      },
+      {
+        "name": "idleEasterEgg",
+        "prefix": "Pico DJ afk",
+        "offsets": [625, 360]
+      },
+      {
+        "name": "confirm",
+        "prefix": "Pico DJ confirm",
+        "offsets": [625, 360]
+      },
+      {
+        "name": "fistPump",
+        "prefix": "pico cheer",
+        "offsets": [975, 260]
+      },
+      {
+        "name": "loss",
+        "prefix": "Pico DJ loss",
+        "offsets": [625, 360]
+      },
+      {
+        "name": "charSelect",
+        "prefix": "Pico DJ to CS",
+        "offsets": [625, 360]
+      }
+    ]
+  },
+  "charSelect": {
+    "position": 3,
+    "gf": {
+      "assetPath": "charSelect/neneChill",
+      "animInfoPath": "charSelect/neneAnimInfo",
+      "visualizer": true
+    }
+  },
+  "results": {
+    "music": {
+      "PERFECT_GOLD": "resultsPERFECT-pico",
+      "PERFECT": "resultsPERFECT-pico",
+      "EXCELLENT": "resultsEXCELLENT-pico",
+      "GREAT": "resultsNORMAL-pico",
+      "GOOD": "resultsNORMAL-pico",
+      "SHIT": "resultsSHIT-pico"
+    },
+    "perfectGold": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-pico/resultsPERFECT",
+        "zIndex": 500,
+        "scale": 0.88,
+        "offsets": [385, 82],
+        "loopFrame": 91
+      }
+    ],
+    "perfect": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-pico/resultsPERFECT",
+        "zIndex": 500,
+        "scale": 0.88,
+        "offsets": [385, 82],
+        "loopFrame": 91
+      }
+    ],
+    "excellent": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-pico/resultsGREAT",
+        "zIndex": 500,
+        "scale": 1.25,
+        "offsets": [350, 25],
+        "looped": true,
+        "loopFrame": 32
+      }
+    ],
+    "great": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-pico/resultsGREAT",
+        "zIndex": 500,
+        "scale": 1.25,
+        "offsets": [350, 25],
+        "looped": true,
+        "loopFrame": 32
+      }
+    ],
+    "good": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-pico/resultsGOOD",
+        "zIndex": 500,
+        "scale": 1.25,
+        "offsets": [350, 25],
+        "loopFrame": 41
+      }
+    ],
+    "loss": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-pico/resultsSHIT",
+        "zIndex": 500,
+        "offsets": [-185, -125],
+        "loopFrame": 0
+      }
+    ]
+  }
+}

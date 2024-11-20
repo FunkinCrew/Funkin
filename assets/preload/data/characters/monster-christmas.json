@@ -1,0 +1,75 @@
+{
+  "version": "1.0.0",
+  "name": "Monster (Christmas)",
+  "assetPath": "characters/monsterChristmas",
+  "healthIcon": {
+    "id": "monster"
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "monster idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "idle-hold",
+      "prefix": "monster idle",
+      "looped": true,
+      "frameIndices": [12, 13, 14],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Monster left note",
+      "offsets": [-30, 0]
+    },
+    {
+      "name": "singRIGHT-hold",
+      "prefix": "Monster left note",
+      "looped": true,
+      "frameIndices": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+      "offsets": [-30, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "monster down",
+      "offsets": [-40, -94]
+    },
+    {
+      "name": "singDOWN-hold",
+      "prefix": "monster down",
+      "looped": true,
+      "frameIndices": [
+        7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+        26, 27, 28, 29
+      ],
+      "offsets": [-40, -94]
+    },
+    {
+      "name": "singUP",
+      "prefix": "monster up note",
+      "offsets": [-20, 50]
+    },
+    {
+      "name": "singUP-hold",
+      "prefix": "monster up note",
+      "looped": true,
+      "frameIndices": [
+        8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+      ],
+      "offsets": [-20, 50]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Monster Right note",
+      "offsets": [-51, 0]
+    },
+    {
+      "name": "singLEFT-hold",
+      "prefix": "Monster Right note",
+      "looped": true,
+      "frameIndices": [6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "offsets": [-51, 0]
+    }
+  ]
+}

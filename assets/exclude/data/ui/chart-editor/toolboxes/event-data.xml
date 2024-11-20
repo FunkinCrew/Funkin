@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="toolboxEvents" title="Events" width="320" style="minHeight:200">
+	<vbox width="100%">
+		<grid columns="2" width="100%">
+			<label text="Event Type" verticalAlign="center" />
+			<dropdown id="toolboxEventsEventKind" width="100%" value="normal" dropdownSize="10" dropdownWidth="300" searchable="true">
+				<data />
+			</dropdown>
+		</grid>
+		<frame id="toolboxEventsDataFrame" text="Event Data" width="100%">
+			<grid id="toolboxEventsDataGrid" columns="2" width="100%" />
+		</frame>
+	</vbox>
+</collapsible-dialog>

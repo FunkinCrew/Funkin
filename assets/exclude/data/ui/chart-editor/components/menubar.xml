@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menubar id="menubar" width="100%" paddingLeft="172">
+  <style>
+    .menu {
+    // The width of the individual menu items
+    width: 160px;
+    }
+  </style>
+  <menu text="File">
+    <menu-item id="menubarItemNewChart" text="New Chart" shortcutText="Ctrl+N" />
+    <menu-separator />
+    <menu-item id="menubarItemOpenChart" text="Open Chart..." shortcutText="Ctrl+O" />
+    <menu id="menubarOpenRecent" text="Open Recent" />
+    <menu-separator />
+    <menu-item id="menubarItemSaveChart" text="Save Chart" shortcutText="Ctrl+S" />
+    <menu-item id="menubarItemSaveChartAs" text="Save Chart As..." shortcutText="Ctrl+Shift+S" />
+    <menu-separator />
+    <menu-item id="menubarItemPreferences" text="Preferences" disabled="true" />
+    <menu-separator />
+    <menu-item id="menubarItemExit" text="Exit" shortcutText="Ctrl+Q" />
+  </menu>
+  <menu text="Edit">
+    <menu-item id="menubarItemUndo" text="Undo" shortcutText="Ctrl+Z" />
+    <menu-item id="menubarItemRedo" text="Redo" shortcutText="Ctrl+Y" />
+    <menu-separator />
+    <menu-item id="menubarItemCut" text="Cut" shortcutText="Ctrl+X" />
+    <menu-item id="menubarItemCopy" text="Copy" shortcutText="Ctrl+C" />
+    <menu-item id="menubarItemPaste" text="Paste" shortcutText="Ctrl+V" />
+    <menu-item id="menubarItemPasteUnsnapped" text="Paste (Unsnapped)" shortcutText="Ctrl+Shift+V" />
+    <menu-item id="menubarItemDelete" text="Delete" shortcutText="Delete" />
+    <menu-separator />
+    <menu-item id="menubarItemFlipNotes" text="Flip Selected Notes" shortcutText="Ctrl+F" />
+    <menu-separator />
+    <menu-item id="menubarItemSelectAllNotes" text="Select All Notes" shortcutText="Ctrl+A" />
+    <menu-item id="menubarItemSelectAllEvents" text="Select All Events" shortcutText="Ctrl+Alt+A" />
+    <menu-item id="menubarItemSelectInverse" text="Invert Selection" shortcutText="Ctrl+I" />
+    <menu-item id="menubarItemSelectNone" text="Deselect All" shortcutText="Ctrl+D" />
+    <menu-item id="menubarItemSelectRegion" text="Select Region" shortcutText="Tab" disabled="true" />
+    <menu-item id="menubarItemSelectBeforeCursor" text="Select Before Cursor" shortcutText="Shift+Home" disabled="true" />
+    <menu-item id="menubarItemSelectAfterCursor" text="Select After Cursor" shortcutText="Shift+End" disabled="true" />
+    <menu-separator />
+    <menu text="Note Snapping">
+      <menu-item id="menuBarItemNoteSnapDecrease" text="Decrease Note Snap Precision" shortcutText="Left Arrow" />
+      <menu-item id="menuBarItemNoteSnapIncrease" text="Increase Note Snap Precision" shortcutText="Right Arrow" />
+    </menu>
+    <menu text="Live Input Mode">
+      <menuoptionbox id="menuBarItemInputStyleNone" text="None" group="menubarItemInputStyleGroup" />
+      <menuoptionbox id="menuBarItemInputStyleNumberKeys" text="Number Keys" group="menubarItemInputStyleGroup" />
+      <menuoptionbox id="menuBarItemInputStyleWASD" text="WASD + Arrows" group="menubarItemInputStyleGroup" />
+    </menu>
+  </menu>
+  <menu text="View">
+    <menu-checkbox id="menubarItemDownscroll" text="Downscroll" disabled="true" />
+    <menu text="Theme">
+      <menu-option-box id="menuBarItemThemeLight" text="Light" group="menubarItemThemeGroup" selected="true" />
+      <menu-option-box id="menuBarItemThemeDark" text="Dark" group="menubarItemThemeGroup" />
+    </menu>
+    <menu-separator />
+    <menu-item id="menubarItemDifficultyUp" text="Increase Difficulty" tooltip="Manage Difficulties with the Difficulty Toolbox" shortcutText="Ctrl+Left" />
+    <menu-item id="menubarItemDifficultyDown" text="Decrease Difficulty" tooltip="Manage Difficulties with the Difficulty Toolbox" shortcutText="Ctrl+Right" />
+  </menu>
+  <menu text="Audio">
+    <menu-item id="menubarItemPlayPause" text="Play/Pause" shortcutText="Space" />
+    <menu-separator />
+    <menu-item id="menubarItemLoadInstrumental" text="Load Instrumental" />
+    <menu-item id="menubarItemLoadVocals" text="Load Vocals" />
+    <menu-separator />
+    <vbox width="100%" style="padding: 5px;">
+      <label id="menubarLabelVolumeMetronome" styleName="menuLabel" text="Metronome - 100%" />
+      <slider id="menubarItemVolumeMetronome" width="100%" majorTicks="10" minorTicks="5" pos="100" />
+    </vbox>
+    <menu-separator />
+    <vbox width="100%" style="padding: 5px;">
+      <label id="menubarLabelHitsoundVolume" width="100%" styleName="menuHeader" text="HITSOUNDS" />
+      <hbox width="100%" style="padding: 5px;">
+        <vbox width="50%">
+          <label id="menubarLabelVolumeHitsoundPlayer" styleName="menuLabel" text="Player - 100%" />
+          <slider id="menubarItemVolumeHitsoundPlayer" width="100%" majorTicks="20" minorTicks="10" pos="100" />
+        </vbox>
+        <vbox width="50%">
+          <label id="menubarLabelVolumeHitsoundOpponent" styleName="menuLabel" text="Enemy - 100%" />
+          <slider id="menubarItemVolumeHitsoundOpponent" width="100%" majorTicks="20" minorTicks="10" pos="100" />
+        </vbox>
+      </hbox>
+    </vbox>
+    <menu-separator />
+    <vbox width="100%" style="padding-bottom: 9px;">
+      <vbox width="100%" style="padding: 5px;">
+        <label id="menubarLabelSongVolume" width="100%" styleName="menuHeader" text="SONG" />
+        <label id="menubarLabelVolumeInstrumental" styleName="menuLabel" text="Instrumental - 100%" />
+        <slider id="menubarItemVolumeInstrumental" width="100%" majorTicks="10" minorTicks="5" pos="100" />
+      </vbox>
+      <hbox width="100%" style="padding: 5px;">
+        <vbox width="50%">
+          <label id="menubarLabelVolumeVocalsPlayer" styleName="menuLabel" text="Player - 100%" />
+          <slider id="menubarItemVolumeVocalsPlayer" width="100%" majorTicks="20" minorTicks="10" pos="100" />
+        </vbox>
+        <vbox width="50%">
+          <label id="menubarLabelVolumeVocalsOpponent" styleName="menuLabel" text="Enemy - 100%" />
+          <slider id="menubarItemVolumeVocalsOpponent" width="100%" majorTicks="20" minorTicks="10" pos="100" />
+        </vbox>
+      </hbox>
+    </vbox>
+    <menu-separator />
+    <vbox width="100%" style="padding: 5px;">
+      <label id="menubarLabelPlaybackSpeed" styleName="menuLabel" text="Playback Speed - 100%" />
+      <slider id="menubarItemPlaybackSpeed" width="100%" majorTicks="10" minorTicks="5" pos="50" />
+    </vbox>
+    <menu-separator />
+    <menu-checkbox id="menubarItemThemeMusic" text="Play Theme Music" />
+  </menu>
+  <menu text="Test">
+    <menu-item id="menubarItemPlaytestFull" text="Playtest Chart" shortcutText="Enter" />
+    <menu-item id="menubarItemPlaytestMinimal" text="Playtest Chart (Minimal Mode)" shortcutText="Shift-Enter" />
+  </menu>
+  <menu text="Window">
+    <menu-checkbox id="menubarItemToggleToolboxDifficulty" text="Difficulty" />
+    <menu-checkbox hidden="true" id="menubarItemToggleToolboxPlayerPreview" text="Player Preview" />
+    <menu-checkbox hidden="true" id="menubarItemToggleToolboxOpponentPreview" text="Opponent Preview" />
+    <menu-checkbox id="menubarItemToggleToolboxMetadata" text="Metadata" />
+    <menu-checkbox id="menubarItemToggleToolboxOffsets" text="Offsets" />
+    <menu-checkbox id="menubarItemToggleToolboxNoteData" text="Notes" />
+    <menu-checkbox id="menubarItemToggleToolboxEventData" text="Events" />
+    <menu-checkbox id="menubarItemToggleToolboxFreeplay" text="Freeplay Properties" />
+    <menu-checkbox id="menubarItemToggleToolboxPlaytestProperties" text="Playtest Properties" />
+  </menu>
+  <menu text="Help">
+    <menu-item id="menubarItemWelcomeDialog" text="Welcome Dialog" />
+    <menu-item id="menubarItemUserGuide" text="User Guide" shortcutText="F1" />
+    <menu-item id="menubarItemGoToBackupsFolder" text="Go to Backups Folder" />
+    <menu-item id="menubarItemAbout" text="About..." />
+  </menu>
+  <spacer width="100%" />
+  <label text="PROTOTYPE Functionality is subject to change." verticalAlign="center" />
+</menubar>

@@ -1,0 +1,60 @@
+{
+  "props": [
+    {
+      "name": "solid",
+      "assetPath": "#242336",
+      "position": [-300, -500],
+      "scroll": [1, 1],
+      "scale": [2400, 2000],
+      "zIndex": -500
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": -100,
+      "position": [-200, -100],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "halloweenBG",
+      "isPixel": false,
+      "startingAnimation": "idle",
+      "assetPath": "halloween_bg",
+      "scroll": [1, 1],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "halloweem bg0",
+          "looped": true,
+          "flipX": false,
+          "name": "idle"
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "halloweem bg lightning strike",
+          "flipX": false,
+          "name": "lightning"
+        }
+      ]
+    }
+  ],
+  "cameraZoom": 1.0,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 200,
+      "position": [989.5, 885],
+      "cameraOffsets": [-100, -100]
+    },
+    "gf": { "zIndex": 100, "position": [751.5, 787], "cameraOffsets": [0, 0] },
+    "dad": {
+      "zIndex": 200,
+      "position": [382, 831],
+      "cameraOffsets": [150, -100]
+    }
+  },
+  "name": "Spooky Mansion",
+  "directory": "week2"
+}

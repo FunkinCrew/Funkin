@@ -1,0 +1,175 @@
+{
+  "props": [
+    {
+      "danceEvery": 0,
+      "zIndex": 10,
+      "position": [0, 0],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "sky",
+      "isPixel": true,
+      "assetPath": "weeb/weebSky",
+      "scroll": [0.1, 0.1],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 20,
+      "position": [-200, 0],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "school",
+      "isPixel": true,
+      "assetPath": "weeb/weebSchool",
+      "scroll": [0.6, 0.9],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 30,
+      "position": [-200, 0],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "street",
+      "isPixel": true,
+      "assetPath": "weeb/weebStreet",
+      "scroll": [0.95, 0.95],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 40,
+      "position": [-120, 60],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "treesFG",
+      "isPixel": true,
+      "assetPath": "weeb/weebTreesBack",
+      "scroll": [0.9, 0.9],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 60,
+      "position": [-780, -1000],
+      "scale": [6, 6],
+      "animType": "packer",
+      "name": "treesBG",
+      "startingAnimation": "treeLoop",
+      "isPixel": true,
+      "assetPath": "weeb/weebTrees",
+      "scroll": [0.85, 0.85],
+      "animations": [
+        {
+          "flipY": false,
+          "offsets": [0, 0],
+          "frameRate": 12,
+          "frameIndices": [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
+          ],
+          "flipX": false,
+          "looped": true,
+          "name": "treeLoop"
+        }
+      ]
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 70,
+      "position": [-20, -40],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "petals",
+      "startingAnimation": "leaves",
+      "isPixel": true,
+      "assetPath": "weeb/petals",
+      "scroll": [0.85, 0.85],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "PETALS ALL",
+          "looped": true,
+          "flipX": false,
+          "name": "leaves"
+        }
+      ]
+    },
+    {
+      "zIndex": 80,
+      "danceEvery": 1,
+      "position": [-100, 190],
+      "scale": [6, 6],
+      "animType": "sparrow",
+      "name": "freaks",
+      "startingAnimation": "danceLeft",
+      "isPixel": true,
+      "assetPath": "weeb/bgFreaks",
+      "scroll": [0.9, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "prefix": "BG girls group",
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "looped": true,
+          "flipX": false,
+          "name": "danceLeft",
+          "flipY": false,
+          "frameRate": 24
+        },
+        {
+          "offsets": [0, 0],
+          "prefix": "BG girls group",
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ],
+          "looped": true,
+          "flipX": false,
+          "name": "danceRight",
+          "flipY": false,
+          "frameRate": 24
+        },
+        {
+          "offsets": [0, 0],
+          "prefix": "BG fangirls dissuaded",
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "looped": true,
+          "flipX": false,
+          "name": "danceLeft-scared",
+          "flipY": false,
+          "frameRate": 24
+        },
+        {
+          "offsets": [0, 0],
+          "prefix": "BG fangirls dissuaded",
+          "frameIndices": [
+            15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+          ],
+          "looped": true,
+          "flipX": false,
+          "name": "danceRight-scared",
+          "flipY": false,
+          "frameRate": 24
+        }
+      ]
+    }
+  ],
+  "cameraZoom": 1.05,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "cameraOffsets": [-200, -100],
+      "position": [1139, 908]
+    },
+    "dad": {
+      "zIndex": 200,
+      "cameraOffsets": [160, 0],
+      "position": [525, 1044]
+    },
+    "gf": { "zIndex": 100, "cameraOffsets": [0, 0], "position": [840, 866] }
+  },
+  "name": "School (Date)",
+  "directory": "week6"
+}

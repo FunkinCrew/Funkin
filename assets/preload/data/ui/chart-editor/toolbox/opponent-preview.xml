@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="toolboxOpponentPreview" title="Opponent Preview">
+    <vbox width="100%" height="100%">
+        <character-player id="charPlayer" paddingLeft="10" paddingTop="10" paddingRight="10" paddingBottom="10" />
+    </vbox>
+</collapsible-dialog>

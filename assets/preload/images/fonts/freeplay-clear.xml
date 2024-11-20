@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Freeplay_redesign_assets_VER3.png">
+	<SubTexture name="00000" x="4" y="4" width="25" height="24" />
+	<SubTexture name="10000" x="33" y="4" width="10" height="23" />
+	<SubTexture name="20000" x="47" y="4" width="24" height="24" />
+	<SubTexture name="30000" x="75" y="4" width="25" height="23" />
+	<SubTexture name="40000" x="4" y="32" width="24" height="24" />
+	<SubTexture name="50000" x="32" y="32" width="25" height="23" />
+	<SubTexture name="60000" x="61" y="32" width="25" height="24" />
+	<SubTexture name="70000" x="90" y="32" width="25" height="24" />
+	<SubTexture name="80000" x="4" y="60" width="24" height="24" />
+	<SubTexture name="90000" x="32" y="60" width="24" height="24" />
+</TextureAtlas>

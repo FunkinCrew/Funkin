@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bfPortrait.png">
+	<SubTexture name="Boyfriend portrait enter instance 10000" x="0" y="0" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10001" x="259" y="0" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10002" x="259" y="0" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10003" x="0" y="155" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10004" x="0" y="155" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10005" x="259" y="155" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10006" x="259" y="155" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10007" x="259" y="155" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait enter instance 10008" x="259" y="155" width="249" height="145" />
+	<SubTexture name="Boyfriend portrait idle instance 10001" x="0" y="155" width="249" height="145" />
+</TextureAtlas>

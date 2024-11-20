@@ -1,0 +1,80 @@
+{
+	"version": "1.0.0",
+	"renderType": "sparrow",
+	"offsets": [
+		0,
+		-50
+	],
+	"danceEvery": 1,
+	"scale": 1,
+	"name": "Mat",
+	"cameraOffsets": [
+		0,
+		0
+	],
+	"flipX": true,
+	"singTime": 8.0,
+	"startingAnimation": "idle",
+	"isPixel": false,
+	"assetPath": "characters/Mat_Base",
+	"healthIcon": {
+		"offsets": [
+			0,
+			0
+		],
+		"id": "mat",
+		"flipX": false,
+		"isPixel": false,
+		"scale": 1
+	},
+	"animations": [
+		{
+			"flipY": false,
+			"offsets": [
+				0,
+				0
+			],
+			"frameRate": 24,
+			"prefix": "Idle",
+			"flipX": false,
+			"looped": false,
+			"name": "idle"
+		},
+		{
+			"flipY": false,
+			"offsets": [-125, 14],
+			"frameRate": 24,
+			"prefix": "Left0",
+			"flipX": false,
+			"looped": false,
+			"name": "singRIGHT"
+		},
+		{
+			"flipY": false,
+			"offsets": [49, -130],
+			"frameRate": 24,
+			"prefix": "Down0",
+			"flipX": false,
+			"looped": false,
+			"name": "singDOWN"
+		},
+		{
+			"flipY": false,
+			"offsets": [-125, 73],
+			"frameRate": 24,
+			"prefix": "Up0",
+			"flipX": false,
+			"looped": false,
+			"name": "singUP"
+		},
+		{
+			"flipY": false,
+			"offsets": [94, -45],
+			"frameRate": 24,
+			"prefix": "Right0",
+			"flipX": false,
+			"looped": false,
+			"name": "singLEFT"
+		}
+	]
+}

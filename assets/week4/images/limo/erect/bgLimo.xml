@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bgLimo.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="background limo blue0000" x="0" y="0" width="2196" height="383" frameX="-20" frameY="-6" frameWidth="2216" frameHeight="389"/>
+	<SubTexture name="background limo blue0001" x="0" y="388" width="2216" height="385" frameX="0" frameY="-4" frameWidth="2216" frameHeight="389"/>
+	<SubTexture name="background limo blue0002" x="0" y="778" width="2196" height="388" frameX="-20" frameY="-1" frameWidth="2216" frameHeight="389"/>
+	<SubTexture name="background limo blue0003" x="0" y="1171" width="2196" height="389" frameX="-20" frameY="0" frameWidth="2216" frameHeight="389"/>
+</TextureAtlas>

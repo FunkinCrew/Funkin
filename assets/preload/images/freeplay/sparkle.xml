@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="sparkle.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="sparkle Export0000" x="0" y="0" width="31" height="31" frameX="-16" frameY="-16" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0001" x="0" y="0" width="31" height="31" frameX="-16" frameY="-16" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0002" x="36" y="0" width="47" height="47" frameX="-8" frameY="-8" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0003" x="36" y="0" width="47" height="47" frameX="-8" frameY="-8" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0004" x="88" y="0" width="59" height="59" frameX="-2" frameY="-2" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0005" x="88" y="0" width="59" height="59" frameX="-2" frameY="-2" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0006" x="152" y="0" width="63" height="63" frameX="0" frameY="0" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0007" x="152" y="0" width="63" height="63" frameX="0" frameY="0" frameWidth="64" frameHeight="63"/>
+	<SubTexture name="sparkle Export0008" x="0" y="68" width="64" height="63"/>
+	<SubTexture name="sparkle Export0009" x="69" y="68" width="1" height="1" frameX="-30" frameY="-30" frameWidth="64" frameHeight="63"/>
+</TextureAtlas>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="highscore.png">
+	<SubTexture name="highscore small instance 10000" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10001" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10002" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10003" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10004" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10005" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10006" x="0" y="47" width="289" height="43" />
+	<SubTexture name="highscore small instance 10007" x="0" y="47" width="289" height="43" />
+	<SubTexture name="highscore small instance 10008" x="0" y="94" width="289" height="43" />
+	<SubTexture name="highscore small instance 10009" x="0" y="94" width="289" height="43" />
+	<SubTexture name="highscore small instance 10010" x="0" y="141" width="289" height="43" />
+	<SubTexture name="highscore small instance 10011" x="0" y="141" width="289" height="43" />
+	<SubTexture name="highscore small instance 10012" x="293" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10013" x="586" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10014" x="293" y="47" width="289" height="43" />
+	<SubTexture name="highscore small instance 10015" x="586" y="47" width="289" height="43" />
+	<SubTexture name="highscore small instance 10016" x="293" y="94" width="289" height="43" />
+	<SubTexture name="highscore small instance 10017" x="293" y="94" width="289" height="43" />
+	<SubTexture name="highscore small instance 10018" x="586" y="94" width="289" height="43" />
+	<SubTexture name="highscore small instance 10019" x="586" y="94" width="289" height="43" />
+	<SubTexture name="highscore small instance 10020" x="293" y="141" width="289" height="43" />
+	<SubTexture name="highscore small instance 10021" x="293" y="141" width="289" height="43" />
+	<SubTexture name="highscore small instance 10022" x="586" y="141" width="289" height="43" />
+	<SubTexture name="highscore small instance 10023" x="586" y="141" width="289" height="43" />
+	<SubTexture name="highscore small instance 10024" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10025" x="0" y="0" width="289" height="43" />
+	<SubTexture name="highscore small instance 10026" x="0" y="0" width="289" height="43" />
+</TextureAtlas>

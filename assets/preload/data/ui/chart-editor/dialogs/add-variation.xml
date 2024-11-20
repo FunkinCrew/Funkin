@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog id="addVariationDialog" width="300" height="425" title="Add Variation">
+	<vbox width="100%" height="100%">
+		<form id="variationForm" width="100%" height="100%">
+			<vbox width="100%" height="100%">
+				<grid columns="2" width="100%" height="100%">
+					<label text="Variation Name:" verticalAlign="center" horizontalAlign="right" />
+					<textfield id="dialogVariationName" placeholder="Variation name..." width="100%" validator="required" />
+					<label text="Song Name:" verticalAlign="center" horizontalAlign="right" />
+					<textfield id="dialogSongName" placeholder="Song name..." width="100%" validator="required" />
+					<label text="Song Artist:" verticalAlign="center" horizontalAlign="right" />
+					<textfield id="dialogSongArtist" placeholder="Song artist..." width="100%" validator="required" />
+					<label text="Stage:" verticalAlign="center" horizontalAlign="right" />
+					<dropdown id="dialogStage" text="Stage..." horizontalAlign="right" width="100%">
+						<validator type="required" />
+						<data>
+							<item id="mainStage" text="Main Stage" />
+							<item id="spookyMansion" text="Spooky Mansion" />
+							<item id="phillyTrain" text="Philly Train" />
+							<item id="limoRide" text="Limo Ride" />
+							<item id="mallXmas" text="Mall (Xmas)" />
+							<item id="mallEvil" text="Mall (Evil)" />
+							<item id="school" text="School" />
+							<item id="schoolEvil" text="School (Evil)" />
+							<item id="tankmanBattlefield" text="Tankman Battlefield" />
+							<item id="phillyStreets" text="Philly Streets" />
+							<item id="phillyBlazin" text="Philly Streets (Blazin')" />
+						</data>
+					</dropdown>
+					<label text="Note Style:" verticalAlign="center" horizontalAlign="right" />
+					<dropdown id="dialogNoteStyle" value="normal" horizontalAlign="right" width="100%">
+						<validator type="required" />
+						<data>
+							<item id="Normal" text="Normal" />
+							<item id="Pixel" text="Pixel" />
+						</data>
+					</dropdown>
+					<label text="Player Character:" verticalAlign="center" horizontalAlign="right" />
+					<dropdown id="dialogCharacterPlayer" value="bf" horizontalAlign="right" width="100%">
+						<validator type="required" />
+						<data>
+							<item id="bf" text="Boyfriend" />
+							<item id="pico-playable" text="Pico (Darnell)" />
+						</data>
+					</dropdown>
+					<label text="Opponent Character:" verticalAlign="center" horizontalAlign="right" />
+					<dropdown id="dialogCharacterOpponent" value="dad" horizontalAlign="right" width="100%">
+						<validator type="required" />
+						<data>
+							<item id="dad" text="Daddy Dearest" />
+							<item id="darnell" text="Darnell" />
+						</data>
+					</dropdown>
+					<label text="Girlfriend Character:" verticalAlign="center" horizontalAlign="right" />
+					<dropdown id="dialogCharacterGirlfriend" value="none" horizontalAlign="right" width="100%">
+						<data>
+							<item id="none" text="" />
+							<item id="gf" text="Girlfriend" />
+							<item id="nene" text="Nene" />
+						</data>
+					</dropdown>
+					<label text="Starting BPM:" verticalAlign="center" style="font-size: 10px" horizontalAlign="right" />
+					<number-stepper id="dialogBPM" style="font-size: 10px" pos="100" step="1" min="10" max="500" precision="1" horizontalAlign="right" width="100%" validator="required" />
+				</grid>
+			</vbox>
+		</form>
+		<hbox width="100%">
+			<button text="Cancel" id="dialogCancel" />
+			<spacer width="100%" />
+			<button text="Add" id="dialogAdd" horizontalAlign="right" />
+		</hbox>
+	</vbox>
+</dialog>

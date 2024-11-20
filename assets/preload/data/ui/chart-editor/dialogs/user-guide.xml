@@ -1,0 +1,64 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="500" height="600" title="Help">
+	<tabview width="100%" height="100%">
+		<box width="100%" text="Basics">
+			<label text="No one's around to help." />
+		</box>
+		<box width="100%" text="Hotkeys">
+			<tableview width="100%" height="510" contentWidth="100%">
+				<header width="100%">
+					<column id="action" text="Action" width="50%" />
+					<column id="keybind" text="Keybind" width="50%" />
+				</header>
+				<data>
+					<item action="Show User Guide" keybind="F1" />
+					<item action="Place Note/Event" keybind="Left Click on Grid" />
+					<item action="Place Hold Note" keybind="Left Click and Drag on Grid" />
+					<item action="Select Note/Event" keybind="Left Click on Note" />
+					<item action="Select Multiple Notes/Events" keybind="Ctrl + Left Click" />
+					<item action="Remove Note/Event" keybind="Right Click on Note" />
+					<item action="Select Box" keybind="Left Click and Drag" />
+					<item action="Scroll Up/Down" keybind="Mouse Wheel" />
+					<item action="Scroll Up/Down (Fast)" keybind="Shift + Mouse Wheel" />
+					<item action="Scroll Up/Down (Precise)" keybind="Ctrl + Mouse Wheel" />
+					<item action="Scroll Up" keybind="Up Arrow" />
+					<item action="Scroll Up (Fast)" keybind="Shift + Up Arrow" />
+					<item action="Scroll Up (Precise)" keybind="Ctrl + Up Arrow" />
+					<item action="Scroll Down" keybind="Down Arrow" />
+					<item action="Scroll Down (Fast)" keybind="Shift + Down Arrow" />
+					<item action="Scroll Down (Precise)" keybind="Ctrl + Down Arrow" />
+					<item action="Scroll, Leave Playhead Stationary" keybind="Middle Click + Arrows/Mouse Wheel" />
+					<item action="Scroll (Playhead Only)" keybind="Alt + Arrows/Mouse Wheel" />
+					<item action="Jump to Start" keybind="Home" />
+					<item action="Jump Back" keybind="Page Up" />
+					<item action="Jump Forward" keybind="Page Down" />
+					<item action="Jump to End" keybind="End" />
+					<item action="Play/Pause" keybind="Space" />
+					<item action="Increase Note Snap" keybind="Right Arrow" />
+					<item action="Decrease Note Snap" keybind="Left Arrow" />
+					<item action="New Chart" keybind="Ctrl + N" />
+					<item action="Open Chart" keybind="Ctrl + O" />
+					<item action="Save Chart" keybind="Ctrl + S" />
+					<item action="Save Chart As..." keybind="Ctrl + Shift + S" />
+					<item action="Quit to Menu" keybind="Ctrl + Q" />
+					<item action="Undo" keybind="Ctrl + Z" />
+					<item action="Redo" keybind="Ctrl + Y" />
+					<item action="Copy Selection" keybind="Ctrl + C" />
+					<item action="Cut Selection" keybind="Ctrl + X" />
+					<item action="Paste" keybind="Ctrl + V" />
+					<item action="Delete Selection" keybind="Delete" />
+					<item action="Select All" keybind="Ctrl + A" />
+					<item action="Select None" keybind="Ctrl + D" />
+					<item action="Select Inverse" keybind="Ctrl + I" />
+					<item action="Select Region" keybind="Tab" />
+					<item action="Test Song" keybind="Enter" />
+					<item action="Test Song (Minimal Mode)" keybind="Shift + Enter" />
+					<item action="Switch to Easier Difficulty" keybind="Ctrl + Left Arrow" />
+					<item action="Switch to Harder Difficulty" keybind="Ctrl + Right Arrow" />
+				</data>
+			</tableview>
+		</box>
+		<box width="100%" text="Even More Details" />
+	</tabview>
+</dialog>

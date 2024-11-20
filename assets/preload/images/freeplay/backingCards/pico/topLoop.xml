@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="topLoop.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="base0000" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rifle info0000" x="0" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0001" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rifle info0002" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rifle info0003" x="0" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0004" x="2114" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0005" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rifle info0006" x="4228" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0007" x="0" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0008" x="0" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0009" x="2114" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0010" x="2114" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0011" x="0" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0012" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0013" x="2114" y="0" width="2109" height="278"/>
+	<SubTexture name="rifle info0014" x="4228" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0015" x="0" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0016" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0017" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0018" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0019" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0020" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0021" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0022" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0023" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0024" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0025" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0026" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0027" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0028" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0029" x="2114" y="283" width="2109" height="278"/>
+	<SubTexture name="rifle info0030" x="0" y="566" width="2109" height="278"/>
+	<SubTexture name="rifle info0031" x="0" y="566" width="2109" height="278"/>
+	<SubTexture name="rifle info0032" x="2114" y="566" width="2109" height="278"/>
+	<SubTexture name="rifle info0033" x="2114" y="566" width="2109" height="278"/>
+	<SubTexture name="rifle info0034" x="2114" y="566" width="2109" height="278"/>
+	<SubTexture name="rifle info0035" x="4228" y="566" width="2109" height="278"/>
+	<SubTexture name="rifle info0036" x="4228" y="566" width="2109" height="278"/>
+	<SubTexture name="rifle info0037" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0000" x="0" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0001" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0002" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0003" x="0" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0004" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0005" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0006" x="4228" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0007" x="0" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0008" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0009" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0010" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0011" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0012" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0013" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0014" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0015" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0016" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0017" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0018" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0019" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0020" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0021" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0022" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0023" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0024" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0025" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0026" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0027" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0028" x="2114" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0029" x="4228" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0030" x="4228" y="849" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0031" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0032" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="rocket launcher info0033" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="sniper info0000" x="0" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0001" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="sniper info0002" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="sniper info0003" x="0" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0004" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0005" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="sniper info0006" x="4228" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0007" x="0" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0008" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0009" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0010" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0011" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0012" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0013" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0014" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0015" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0016" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0017" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0018" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0019" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0020" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0021" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0022" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0023" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0024" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0025" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0026" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0027" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0028" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0029" x="2114" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0030" x="4228" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0031" x="4228" y="1132" width="2109" height="278"/>
+	<SubTexture name="sniper info0032" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="sniper info0033" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0000" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0001" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0002" x="2114" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0003" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0004" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0005" x="2114" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0006" x="2114" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0007" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0008" x="4228" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0009" x="2114" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0010" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0011" x="2114" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0012" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0013" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0014" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0015" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0016" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0017" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0018" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0019" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0020" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0021" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0022" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0023" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0024" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0025" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0026" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0027" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0028" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0029" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0030" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0031" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0032" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0033" x="0" y="1698" width="2109" height="278"/>
+	<SubTexture name="uzi info0034" x="4228" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0035" x="4228" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0036" x="0" y="1415" width="2109" height="278"/>
+	<SubTexture name="uzi info0037" x="0" y="1415" width="2109" height="278"/>
+</TextureAtlas>

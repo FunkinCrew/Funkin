@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="volume2-text.png" width="468" height="134">
+  <SubTexture name="switch0001" x="0" y="0"  width="234" height="134" frameX="-0" frameY="-0" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="switch0002" x="0" y="0"  width="234" height="134" frameX="-0" frameY="-0" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0001" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0002" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0003" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0004" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0005" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0006" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0007" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+  <SubTexture name="idle0008" x="234" y="0"  width="234" height="133" frameX="-0" frameY="-7" frameWidth="234" frameHeight="142"/>
+</TextureAtlas>

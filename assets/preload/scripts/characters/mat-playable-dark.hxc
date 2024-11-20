@@ -1,0 +1,63 @@
+import funkin.play.PauseSubState;
+import funkin.play.GameOverSubState;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterDataParser;
+import funkin.play.character.SparrowCharacter;
+import funkin.play.PlayState;
+
+class MatPlayerDarkCharacter extends SparrowCharacter {
+	function new() {
+		super('mat-playable-dark');
+	}
+
+	var normalChar:BaseCharacter;
+	override function set_alpha(val:Float):Float
+	{
+		super.set_alpha(val);
+
+		if(val != 1) normalChar.alpha = 1;
+		else normalChar.alpha = 0;
+		return val;
+	}
+
+	override function playAnimation(name:String, restart:Bool, ignoreOther:Bool)
+	{
+		super.playAnimation(name, restart, ignoreOther);
+
+		if(normalChar != null) {
+			normalChar.playAnimation(name, restart, ignoreOther);
+			normalChar.setPosition(this.x, this.y);
+		}
+	}
+
+	function onCreate(event:ScriptEvent) {
+		super.onCreate(event);
+
+		normalChar = CharacterDataParser.fetchCharacter('mat-playable');
+		normalChar.zIndex = 199;
+		normalChar.alpha = 0;
+		normalChar.flipX = false;
+	
+		PlayState.instance.currentStage.add(normalChar);
+		PlayState.instance.currentStage.refresh(); // Apply z-index.
+
+		GameOverSubState.musicSuffix = '-pico';
+		GameOverSubState.blueBallSuffix = '-mat';
+
+		PauseSubState.musicSuffix = '-mat';
+	}
+
+    override function onGameOver(event:ScriptEvent):Void {
+		super.onGameOver(event);
+	}
+
+	override function onSongRetry(event:ScriptEvent):Void {
+		super.onSongRetry(event);
+
+		// Reset to standard death animation.
+		GameOverSubState.musicSuffix = '-pico';
+		GameOverSubState.blueBallSuffix = '-mat';
+
+		PauseSubState.musicSuffix = '-mat';
+	}
+}

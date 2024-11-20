@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0",
+  "name": "Mommy Mearest (Car)",
+  "assetPath": "characters/momCar",
+  "singTime": 8.0,
+  "healthIcon": {
+    "id": "mom"
+  },
+  "cameraOffsets": [0, -100],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Mom Idle0",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "idle-hold",
+      "prefix": "Mom Idle",
+      "looped": true,
+      "frameIndices": [10, 11, 12, 13],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Mom Left Pose0",
+      "offsets": [250, -23]
+    },
+    {
+      "name": "singLEFT-hold",
+      "prefix": "Mom Left Pose0",
+      "looped": true,
+      "frameIndices": [2, 3, 4, 5, 6, 7, 8, 9],
+      "offsets": [250, -23]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "MOM DOWN POSE0",
+      "offsets": [20, -160]
+    },
+    {
+      "name": "singDOWN-hold",
+      "prefix": "MOM DOWN POSE0",
+      "looped": true,
+      "frameIndices": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "offsets": [20, -160]
+    },
+    {
+      "name": "singUP",
+      "prefix": "Mom Up Pose0",
+      "offsets": [14, 71]
+    },
+    {
+      "name": "singUP-hold",
+      "prefix": "Mom Up Pose0",
+      "looped": true,
+      "frameIndices": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "offsets": [14, 71]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Mom Pose Left0",
+      "offsets": [10, -60]
+    },
+    {
+      "name": "singRIGHT-hold",
+      "prefix": "Mom Pose Left0",
+      "looped": true,
+      "frameIndices": [2, 3, 4, 5, 6, 7, 8, 9],
+      "offsets": [10, -60]
+    }
+  ]
+}

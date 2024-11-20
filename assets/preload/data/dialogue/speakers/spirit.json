@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "Spirit",
+  "assetPath": "weeb/spiritFaceForward",
+  "flipX": false,
+  "isPixel": true,
+  "scale": 5.4,
+  "offsets": [140, -14],
+  "animations": [
+    {
+      "name": "talkEnter",
+      "prefix": "portraitEnter0",
+      "frameRate": 12
+    },
+    {
+      "name": "talk",
+      "prefix": "portraitTalk0",
+      "frameRate": 12
+    }
+  ]
+}

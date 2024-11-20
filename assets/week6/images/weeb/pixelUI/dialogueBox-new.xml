@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Text_Boxes.png">
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0000" x="4" y="4" width="248" height="144" />
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0001" x="256" y="4" width="248" height="144" />
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0002" x="508" y="4" width="248" height="144" />
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0003" x="760" y="4" width="248" height="144" />
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0004" x="4" y="152" width="248" height="144" />
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0005" x="4" y="152" width="248" height="144" />
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0006" x="256" y="152" width="248" height="144" />
+	<SubTexture name="SENPAI ANGRY IMPACT SPEECH0007" x="256" y="152" width="248" height="144" />
+	<SubTexture name="Text Box Appear0000" x="508" y="152" width="248" height="144" />
+	<SubTexture name="Text Box Appear0001" x="760" y="152" width="248" height="144" />
+	<SubTexture name="Text Box Appear0002" x="4" y="300" width="248" height="144" />
+	<SubTexture name="Text Box Appear0003" x="256" y="300" width="248" height="144" />
+	<SubTexture name="Text Box Appear0004" x="256" y="300" width="248" height="144" />
+	<SubTexture name="Text Box Speaking0001" x="256" y="300" width="248" height="144" />
+	<SubTexture name="Text Box CLICK0000" x="508" y="300" width="248" height="144" />
+	<SubTexture name="Text Box CLICK0001" x="508" y="300" width="248" height="144" />
+	<SubTexture name="Text Box CLICK0002" x="760" y="300" width="248" height="144" />
+	<SubTexture name="Text Box CLICK0003" x="256" y="300" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0000" x="4" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0001" x="256" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0002" x="256" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0003" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0004" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0005" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0006" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0007" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0008" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0009" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0010" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0011" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0012" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box Sentence End0013" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0000" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0001" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0002" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0003" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0004" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0005" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0006" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0007" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0008" x="760" y="300" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0009" x="760" y="300" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0010" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0011" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0012" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0013" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0014" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0015" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0016" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0017" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0018" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0019" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0020" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0021" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0022" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0023" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0024" x="508" y="448" width="248" height="144" />
+	<SubTexture name="Text Box wait to click0025" x="508" y="448" width="248" height="144" />
+</TextureAtlas>

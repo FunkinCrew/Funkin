@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="randomChill.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="LOCKED MAN instance 10000" x="0" y="0" width="227" height="386" frameX="-66" frameY="-6" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10001" x="233" y="0" width="229" height="384" frameX="-65" frameY="-9" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10002" x="468" y="0" width="230" height="383" frameX="-65" frameY="-8" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10003" x="704" y="0" width="249" height="389" frameX="-57" frameY="-6" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10004" x="959" y="0" width="225" height="388" frameX="-66" frameY="-7" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10005" x="1190" y="0" width="225" height="389" frameX="-68" frameY="-5" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10006" x="1421" y="0" width="252" height="396" frameX="-54" frameY="-4" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10007" x="0" y="402" width="284" height="385" frameX="-21" frameY="-8" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10008" x="290" y="402" width="280" height="386" frameX="-17" frameY="-7" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10009" x="576" y="402" width="299" height="366" frameX="-60" frameY="-27" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10010" x="881" y="402" width="299" height="391" frameX="0" frameY="-10" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10011" x="1186" y="402" width="247" height="392" frameX="-37" frameY="-11" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10012" x="1439" y="402" width="225" height="401" frameX="-69" frameY="0" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10013" x="1670" y="402" width="226" height="389" frameX="-67" frameY="-8" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10014" x="0" y="0" width="227" height="386" frameX="-66" frameY="-6" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10015" x="0" y="0" width="227" height="386" frameX="-66" frameY="-6" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10016" x="233" y="0" width="229" height="384" frameX="-65" frameY="-9" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10017" x="468" y="0" width="230" height="383" frameX="-65" frameY="-8" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10018" x="704" y="0" width="249" height="389" frameX="-57" frameY="-6" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10019" x="959" y="0" width="225" height="388" frameX="-66" frameY="-7" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10020" x="1190" y="0" width="225" height="389" frameX="-68" frameY="-5" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10021" x="1421" y="0" width="252" height="396" frameX="-54" frameY="-4" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10022" x="0" y="402" width="284" height="385" frameX="-21" frameY="-8" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10023" x="0" y="0" width="227" height="386" frameX="-66" frameY="-6" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10024" x="233" y="0" width="229" height="384" frameX="-65" frameY="-9" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10025" x="468" y="0" width="230" height="383" frameX="-65" frameY="-8" frameWidth="359" frameHeight="403"/>
+	<SubTexture name="LOCKED MAN instance 10026" x="1186" y="402" width="247" height="392" frameX="-37" frameY="-11" frameWidth="359" frameHeight="403"/>
+</TextureAtlas>

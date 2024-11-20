@@ -1,0 +1,56 @@
+{
+  "version": "1.1.0",
+  "name": "Thorns",
+  "assetPath": "weeb/pixelUI/dialogueBox-evilNew",
+  "isPixel": true,
+  "flipX": false,
+  "flipY": false,
+  "offsets": [-20, 20],
+  "scale": 5.4,
+
+  "text": {
+    "offsets": [225, 450],
+    "width": 900,
+    "color": "#FFFFFF",
+    "fontFamily": "Pixel Arial 11 Bold",
+    "shadowColor": "#00000000",
+    "shadowWidth": 0
+  },
+
+  "animations": [
+    {
+      "name": "enter",
+      "prefix": "Spirit Textbox spawn0",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "idle",
+      "prefix": "Spirit Text Box Sentence Complete0",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "sentenceEnd",
+      "prefix": "Spirit Text Box Sentence Complete0",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "speaking",
+      "prefix": "Spirit Textbox0",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "click",
+      "prefix": "Spirit Text Box Click0",
+      "frameIndices": [0, 0, 0, 0],
+      "offsets": [0, 0]
+    },
+    {
+      "name": "exit",
+      "prefix": "Spirit Textbox spawn0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+    }
+  ]
+}

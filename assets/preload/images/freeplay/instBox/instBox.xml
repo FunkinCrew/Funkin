@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="instBox.png" width="682" height="220">
+  <SubTexture name="open0001" x="8" y="8"  width="329" height="89" frameX="-0" frameY="-0" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0002" x="8" y="113"  width="317" height="99" frameX="-6" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0003" x="8" y="113"  width="317" height="99" frameX="-6" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0004" x="353" y="8"  width="321" height="97" frameX="-4" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0005" x="353" y="8"  width="321" height="97" frameX="-4" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0006" x="353" y="8"  width="321" height="97" frameX="-4" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0007" x="353" y="8"  width="321" height="97" frameX="-4" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0008" x="353" y="8"  width="321" height="97" frameX="-4" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="open0009" x="353" y="8"  width="321" height="97" frameX="-4" frameY="-1" frameWidth="329" frameHeight="100"/>
+  <SubTexture name="idle0001" x="353" y="8"  width="321" height="97" frameX="-4" frameY="-1" frameWidth="329" frameHeight="100"/>
+</TextureAtlas>

@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+
+  "backdrop": {
+    "type": "solid",
+    "fadeTime": 2.0,
+    "color": "#BFB3DFD8"
+  },
+
+  "music": {
+    "asset": "Lunchbox",
+    "fadeTime": 2.0,
+    "looped": true
+  },
+
+  "outro": {
+    "type": "fade",
+    "fadeTime": 1.0
+  },
+
+  "dialogue": [
+    {
+      "speaker": "senpai-angry",
+      "speakerAnimation": "talk",
+      "box": "roses",
+      "boxAnimation": "angrySenpai",
+
+      "text": ["Not bad for an ugly worm."]
+    },
+    {
+      "speaker": "senpai-angry",
+      "speakerAnimation": "talk",
+      "box": "roses",
+      "boxAnimation": "idle",
+
+      "text": ["But this time I'm gonna make you scream..."],
+      "speed": 0.5
+    },
+    {
+      "speaker": "senpai-angry",
+      "speakerAnimation": "talk",
+      "box": "roses",
+      "boxAnimation": "idle",
+
+      "text": [
+        "Almost as loud as I'll make your girlfriend scream later tonight, you fat midget."
+      ],
+      "speed": 0.5
+    },
+    {
+      "speaker": "bf-pixel",
+      "speakerAnimation": "talkEnter",
+      "box": "roses",
+      "boxAnimation": "idle",
+
+      "text": ["Bop beep be be skdoo bep"]
+    }
+  ]
+}

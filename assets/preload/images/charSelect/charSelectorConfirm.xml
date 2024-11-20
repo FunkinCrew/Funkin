@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="charSelectorConfirm.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="cursor ACCEPTED instance 10000" x="0" y="0" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10001" x="130" y="0" width="128" height="116" frameX="-1" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10002" x="263" y="0" width="128" height="115" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10003" x="0" y="121" width="129" height="114" frameX="0" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10004" x="134" y="121" width="126" height="118" frameX="-3" frameY="0" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10005" x="265" y="121" width="127" height="118" frameX="-2" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10006" x="0" y="244" width="126" height="115" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10007" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10008" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10009" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10010" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10011" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10012" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10013" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10014" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+	<SubTexture name="cursor ACCEPTED instance 10015" x="131" y="244" width="125" height="113" frameX="-4" frameY="-5" frameWidth="132" frameHeight="123"/>
+</TextureAtlas>

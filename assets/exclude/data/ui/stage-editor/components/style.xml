@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<box width="0" height="0" padding="0" x="-9999" y="-9999"> <!-- I don't want to have this box here but it prevents errors. -->
+	<style>
+		body, .label, .link {
+		font-size: 14px;
+		font-family: 'Inconsolata';
+		font-bold: true;
+		}
+		.button, .menu, .menuitem, .menuLabel, .menuitem-checkbox {
+		font-size: 12px;
+		font-family: 'Inconsolata';
+		font-bold: true;
+		}
+		.menuHeader {
+		font-size: 16px;
+		font-family: 'Inconsolata';
+		font-bold: true;
+		}
+		.textfield {
+		font-size: 10px;
+		font-bold: true;
+		}
+		.notifbar {
+		margin: 0px;
+		padding: 0px;
+		border-left: 1px solid #000;
+		border-top: 1px solid #000;
+		border-right: 0px solid #000;
+		border-bottom: 0px solid #000;
+		}
+		.notifbarBox {
+		margin: 8px;
+		}
+		.bottomBar {
+		background-color: $solid-background-color;
+		padding: 8px;
+		}
+		.infoText {
+		font-size: 18px;
+		font-bold: true;
+		}
+		.infoText {
+		font-size: 18px;
+		font-bold: true;
+		pointer-events: true;
+		}
+		.infoText:hover {
+		background-color: #CCCCCC;
+		}
+		.playbarButton {
+		font-size: 16px;
+		font-family: 'Inconsolata';
+		font-bold: true;
+		width: 56px;
+		}
+		.compact {
+		margin: 0px;
+		padding: 0px;
+		}
+		.compactButton {
+		margin: 0px;
+		padding-top: 4px;
+		padding-right: 0px;
+		padding-bottom: 4px;
+		padding-left: 0px;
+		}
+		.dialog-close-button {
+		resource: "haxeui-flixel/styles/flixel-ui/images/close.png";
+		vertical-align: "center";
+		cursor: "pointer";
+		pointer-events: true;
+		padding: 3px;
+		border-radius: 2px;
+		}
+		.dialog-close-button:hover {
+		resource: $close-hover;
+		background-color: $selection-background-color;
+		}
+		.dialog-minimize-button {
+		resource: "shared:assets/shared/images/ui/chart-editor/minimize.png";
+		vertical-align: "center";
+		cursor: "pointer";
+		pointer-events: true;
+		padding: 3px;
+		border-radius: 2px;
+		}
+		.dialog-minimize-button:hover {
+		resource: "shared:assets/shared/images/ui/chart-editor/minimize.png";
+		background-color: $selection-background-color;
+		}
+		.dialog-maximize-button {
+		resource: "shared:assets/shared/images/ui/chart-editor/maximize.png";
+		vertical-align: "center";
+		cursor: "pointer";
+		pointer-events: true;
+		padding: 3px;
+		border-radius: 2px;
+		}
+		.disable-validation.invalid-value {
+		border: $normal-border-size solid $normal-border-color;
+		background-color: $tertiary-background-color;
+		}
+		.dialog-maximize-button:hover {
+		resource: "shared:assets/shared/images/ui/chart-editor/maximize.png";
+		background-color: $selection-background-color;
+		}
+		#toolboxTools .dialog-title, #toolboxSong .dialog-title, #toolboxNotes .dialog-title, #toolboxEvents .dialog-title {
+		padding: 4px;
+		}
+		#toolboxSong .dialog-content {
+		padding: 0px;
+		}
+		.offset-ticks-label {
+		color: #FFFFFF;
+		font-size: 12px;
+		font-weight: bold;
+		}
+		.absolute {
+		clip: false;
+		}
+		.uploadBG {
+		background-color: #666666;
+		pointer-events: true;
+		}
+		.uploadBG:hover {
+		background-color: #444444;
+		}
+</style>
+</box>

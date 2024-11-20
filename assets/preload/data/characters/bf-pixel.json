@@ -1,0 +1,83 @@
+{
+  "version": "1.0.1",
+  "name": "Boyfriend (Pixel)",
+  "assetPath": "characters/bfPixel",
+  "flipX": true,
+  "renderType": "multisparrow",
+  "singTime": 8.0,
+  "isPixel": true,
+  "healthIcon": {
+    "id": "bf-pixel",
+    "isPixel": true
+  },
+  "death": {
+    "cameraOffsets": [0, 0]
+  },
+  "scale": 6,
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "BF IDLE instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "BF UP NOTE instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "BF LEFT NOTE instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "BF RIGHT NOTE instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "BF DOWN NOTE instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "BF UP MISS instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "BF LEFT MISS instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "BF RIGHT MISS instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "BF DOWN MISS instance 10",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "BF Dies pixel",
+      "assetPath": "characters/bfPixelsDEAD",
+      "offsets": [8.33, 0]
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "Retry Loop",
+      "assetPath": "characters/bfPixelsDEAD",
+      "looped": true,
+      "offsets": [3.33, -2.08]
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "RETRY CONFIRM",
+      "assetPath": "characters/bfPixelsDEAD",
+      "offsets": [3.33, -2.08]
+    }
+  ]
+}

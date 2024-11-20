@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="toolboxPlaytestProperties" title="Playtest Properties" width="320" style="minHeight:200">
+    <vbox width="100%">
+        <checkbox id="practiceModeCheckbox" text="Practice mode" selected="true" tooltip="Whether or not you die/game over when you lose all health" />
+        <checkbox id="playtestBotPlayCheckbox" text="Bot Play mode" selected="false" tooltip="Whether or not the computer plays the chart for you" />
+        <checkbox id="playtestStartTimeCheckbox" text="Start at Current time" selected="false" tooltip="Starts the song at current time from the chart editor when playtesting" />
+        <checkbox id="playtestSongScriptsCheckbox" text="Enable Song Scripts" selected="true" tooltip="Enable .hxc scripts tied to the given song" />
+    </vbox>
+</collapsible-dialog>

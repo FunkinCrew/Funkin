@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu>
+	<menu-item id="contextmenuCut" text="Cut" shortcutText="Ctrl+X" />
+	<menu-item id="contextmenuCopy" text="Copy" shortcutText="Ctrl+C" />
+	<menu-item id="contextmenuPaste" text="Paste" shortcutText="Ctrl+V" />
+	<menu-item id="contextmenuDelete" text="Delete" shortcutText="Delete" />
+	<menu-separator />
+	<menu-item id="contextmenuFlip" text="Flip" />
+	<menu-separator />
+	<menu-item id="contextmenuSelectAll" text="Select All" shortcutText="Ctrl+A" />
+	<menu-item id="contextmenuSelectInverse" text="Select Inverse" shortcutText="Ctrl+I" />
+	<menu-item id="contextmenuSelectNone" text="Select None" shortcutText="Ctrl+D" />
+	<menu-separator />
+	<menu-item id="contextmenuConvertToSymbol" text="Convert to Symbol" shortcutText="F8" />
+</menu>

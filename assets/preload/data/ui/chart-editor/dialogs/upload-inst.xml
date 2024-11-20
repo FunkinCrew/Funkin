@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog id="instrumentalDialog" width="600" height="400" title="New Chart - Upload Instrumental">
+	<vbox width="100%" height="100%">
+		<box width="100%" id="instrumentalBox" height="100%" styleName="upload-bg" style="border: 2px dotted #DDDDDD; padding: 5px;">
+			<label width="100%" style="font-size: 24px" verticalAlign="center" horizontalAlign="center" textAlign="center" text="Drag and drop an instrumental here, or click to browse." />
+		</box>
+		<hbox>
+			<button text="Cancel" id="dialogCancel" />
+			<spacer width="100%" />
+		</hbox>
+	</vbox>
+</dialog>

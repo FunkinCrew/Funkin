@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+
+  "backdrop": {
+    "type": "solid",
+    "fadeTime": 2.0,
+    "color": "#BFB3DFD8"
+  },
+
+  "music": {
+    "asset": "LunchboxScary",
+    "fadeTime": 2.0,
+    "looped": true
+  },
+
+  "outro": {
+    "type": "fade",
+    "fadeTime": 1.0
+  },
+
+  "dialogue": [
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "enter",
+
+      "text": [
+        "Direct contact with real humans, after being trapped in here for so long...",
+        " and HER of all people."
+      ],
+      "speed": 1.0
+    },
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "idle",
+
+      "text": [
+        "I'll make her father pay for what he's done to me and all the others..."
+      ]
+    },
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "idle",
+
+      "text": ["I'll beat you and make you take my place."]
+    },
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "idle",
+
+      "text": [
+        "You don't mind your bodies being borrowed right?",
+        " It's only fair..."
+      ]
+    }
+  ]
+}

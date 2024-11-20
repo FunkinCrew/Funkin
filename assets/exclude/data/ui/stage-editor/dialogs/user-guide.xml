@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="500" height="600" title="Help">
+	<tabview width="100%" height="100%">
+		<box width="100%" text="Basics">
+			<label text="No Help yet...." />
+		</box>
+		<box width="100%" text="Hotkeys">
+			<tableview width="100%" height="510" contentWidth="100%">
+				<header width="100%">
+					<column id="action" text="Action" width="50%" />
+					<column id="keybind" text="Keybind" width="50%" />
+				</header>
+				<data>
+					<item action="Show User Guide" keybind="F1" />
+          <item action="Move Camera" keybind="W/A/S/D"/>
+          <item action="Zoom In/Out" keybind="Mouse Wheel"/>
+          <item action="Reset Camera" keybind="T"/>
+          <item action="Select Object/Character" keybind="Left Click"/>
+          <item action="Move Selected (Mouse)" keybind="Left Click + Drag Mouse"/>
+          <item action="Move Selected (Keys)" keybind="Up/Down/Left/Right"/>
+          <item action="Move Selected (Free)" keybind="Up/Down/Left/Right + Shift"/>
+          <item action="Switch Mode" keybind="Tab"/>
+					<item action="Lock Focus" keybind="Shift"/>
+          <item action="Undo Last" keybind="Ctrl + Z"/>
+          <item action="Redo Last" keybind="Ctrl + Y"/>
+          <item action="Copy Object" keybind="Ctrl + C"/>
+          <item action="Cut Object" keybind="Ctrl + X"/>
+          <item action="Paste Object" keybind="Ctrl + V"/>
+          <item action="Delete Object" keybind="Del"/>
+          <item action="Find Object" keybind="Ctrl + F"/>
+          <item action="Rotate Object" keybind="R + Left/Right"/>
+          <item action="Test Stage (In Editor)" keybind="Enter"/>
+          <item action="Save Stage" keybind="Ctrl + S"/>
+          <item action="Save Stage As" keybind="Ctrl + Shift + S"/>
+          <item action="Open Stage" keybind="Ctrl + O"/>
+          <item action="Exit" keybind="Esc"/>
+				</data>
+			</tableview>
+		</box>
+		<box width="100%" text="Even More Details">
+			<label text="No Details yet...." />
+    </box>
+	</tabview>
+</dialog>

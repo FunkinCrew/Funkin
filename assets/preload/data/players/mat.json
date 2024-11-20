@@ -1,0 +1,181 @@
+{
+  "version": "1.0.0",
+  "name": "Mat",
+  "ownedChars": [
+    "mat",
+    "mat-playable",
+    "mat-christmas"
+  ],
+  "showUnownedChars": false,
+  "unlocked": true,
+  "freeplayStyle": "mat",
+  "freeplayDJ": {
+    "assetPath": "freeplay/freeplay-mat",
+    "text1": "MATING TIME",
+    "text2": "BISEXUAL FURRY GUY",
+    "text3": "DIGITAL ARTIST",
+    "fistPump": {
+      "introStartFrame": 0,
+      "introEndFrame": 4,
+
+      "loopStartFrame": 45,
+      "loopEndFrame": 105,
+
+      "introBadStartFrame": 0,
+      "introBadEndFrame": 4,
+
+      "loopBadStartFrame": 29,
+      "loopBadEndFrame": 180
+    },
+    "charSelect": {
+      "transitionDelay": 0.45
+    },
+    "animations": [
+      {
+        "name": "intro",
+        "prefix": "Mat DJ intro",
+        "offsets": [-19, 3]
+      },
+      {
+        "name": "idle",
+        "prefix": "Mat DJ Idle",
+        "offsets": [-25, 0]
+      },
+      {
+        "name": "idleEasterEgg",
+        "prefix": "Mat DJ afk",
+        "offsets": [-25, 0]
+      },
+      {
+        "name": "confirm",
+        "prefix": "Mat DJ confirm",
+        "offsets": [-25, 0]
+      },
+      {
+        "name": "fistPump",
+        "prefix": "Mat DJ Win",
+        "offsets": [-25, 0]
+      },
+      {
+        "name": "loss",
+        "prefix": "Mat DJ Loss",
+        "offsets": [-25, 0]
+      },
+      {
+        "name": "charSelect",
+        "prefix": "Mat DJ to CS",
+        "offsets": [-25, 0]
+      }
+    ]
+  },
+  "charSelect": {
+    "position": 1,
+    "gf": {
+      "assetPath": "charSelect/prismChill",
+      "animInfoPath": "charSelect/prismAnimInfo",
+      "visualizer": false
+    }
+  },
+  "results": {
+    "music": {
+      "PERFECT_GOLD": "resultsPERFECT",
+      "PERFECT": "resultsPERFECT",
+      "EXCELLENT": "resultsEXCELLENT",
+      "GREAT": "resultsNORMAL",
+      "GOOD": "resultsNORMAL",
+      "SHIT": "resultsSHIT"
+    },
+    "perfectGold": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsPERFECT",
+        "zIndex": 500,
+        "offsets": [1342, 370],
+        "loopFrame": 137
+      },
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsPERFECT/hearts",
+        "zIndex": 501,
+        "delay": 4.41,
+        "offsets": [1342, 370],
+        "loopFrame": 43
+      }
+    ],
+    "perfect": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsPERFECT",
+        "zIndex": 500,
+        "offsets": [1342, 370],
+        "loopFrame": 137
+      },
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsPERFECT/hearts",
+        "zIndex": 501,
+        "delay": 4.41,
+        "offsets": [1342, 370],
+        "loopFrame": 43
+      }
+    ],
+    "excellent": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsEXCELLENT",
+        "zIndex": 500,
+        "offsets": [1329, 429],
+
+        "loopFrame": 29
+      }
+    ],
+    "great": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsGREAT/gf",
+        "scale": 0.93,
+        "delay": 0.25,
+        "offsets": [802, 331],
+        "zIndex": 499,
+
+        "loopFrame": 9
+      },
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsGREAT/bf",
+        "scale": 0.93,
+        "zIndex": 500,
+        "offsets": [929, 363],
+
+        "loopFrame": 15
+      }
+    ],
+    "good": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsGOOD/bf",
+        "zIndex": 501,
+        "offsets": [662, 371],
+
+        "loopFrame": 14
+      },
+      {
+        "renderType": "sparrow",
+        "assetPath": "shared:resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD",
+        "zIndex": 500,
+        "delay": 0.91,
+        "offsets": [629, 323],
+        "loopFrame": 9
+      }
+    ],
+    "loss": [
+      {
+        "renderType": "animateatlas",
+        "assetPath": "shared:resultScreen/results-bf/resultsSHIT",
+        "zIndex": 500,
+        "offsets": [0, 20],
+        "loopFrameLabel": "Loop Start"
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "name": "Tankman",
+  "renderType": "animateatlas",
+  "assetPath": "characters/tankman",
+  "flipX": true,
+  "singTime": 8.0,
+  "offsets": [200, -550],
+  "cameraOffsets": [200, 500],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "singLEFT",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "singDOWN",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "singUP",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "singRIGHT",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "hehPrettyGood",
+      "prefix": "hehPrettyGood",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "ugh",
+      "prefix": "ugh",
+      "offsets": [0, 0]
+    }
+  ]
+}

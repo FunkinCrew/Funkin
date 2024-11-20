@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "name": "Spooky Kids",
+  "assetPath": "characters/SpookyKids",
+  "singTime": 8.0,
+  "startingAnimation": "danceRight",
+  "animations": [
+    {
+      "name": "danceLeft",
+      "prefix": "Idle",
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7],
+      "frameRate": 24,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "danceRight",
+      "prefix": "Idle",
+      "frameIndices": [8, 9, 10, 11, 12, 13, 14, 15],
+      "frameRate": 24,
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "SingLEFT",
+      "offsets": [130, -10]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "SingDOWN",
+      "offsets": [-50, -130]
+    },
+    {
+      "name": "singUP",
+      "prefix": "SingUP",
+      "offsets": [-20, 26]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "SingRIGHT",
+      "offsets": [-130, -14]
+    },
+    {
+      "name": "cheer",
+      "prefix": "Cheer",
+      "offsets": [0, 0]
+    }
+  ]
+}

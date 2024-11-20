@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Nene assets2_dark_U2NLIT.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Nene Idle0001" x="0" y="0" width="321" height="458" frameX="-97" frameY="-7" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0002" x="0" y="0" width="321" height="458" frameX="-97" frameY="-7" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0003" x="326" y="0" width="406" height="470" frameX="-13" frameY="-6" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0004" x="326" y="0" width="406" height="470" frameX="-13" frameY="-6" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0005" x="737" y="0" width="414" height="472" frameX="-5" frameY="-4" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0006" x="737" y="0" width="414" height="472" frameX="-5" frameY="-4" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0007" x="1156" y="0" width="424" height="473" frameX="0" frameY="-2" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0008" x="1585" y="0" width="441" height="475" frameX="0" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0009" x="2031" y="0" width="439" height="475" frameX="-2" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0010" x="2475" y="0" width="439" height="474" frameX="-2" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0011" x="2919" y="0" width="440" height="474" frameX="-3" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0012" x="2919" y="0" width="440" height="474" frameX="-3" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0013" x="3364" y="0" width="440" height="474" frameX="-3" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0014" x="0" y="480" width="436" height="474" frameX="-9" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0015" x="441" y="480" width="436" height="471" frameX="-9" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0016" x="882" y="480" width="394" height="394" frameX="-66" frameY="-17" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0017" x="882" y="480" width="394" height="394" frameX="-66" frameY="-17" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0018" x="1281" y="480" width="363" height="361" frameX="-98" frameY="-18" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0019" x="1281" y="480" width="363" height="361" frameX="-98" frameY="-18" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0020" x="1649" y="480" width="362" height="353" frameX="-98" frameY="-16" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0021" x="1649" y="480" width="362" height="353" frameX="-98" frameY="-16" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0022" x="2016" y="480" width="360" height="352" frameX="-98" frameY="-14" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0023" x="2381" y="480" width="348" height="366" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0024" x="2734" y="480" width="348" height="366" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0025" x="3087" y="480" width="348" height="368" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0026" x="3440" y="480" width="347" height="368" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0027" x="3440" y="480" width="347" height="368" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0028" x="0" y="959" width="347" height="376" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0029" x="352" y="959" width="346" height="376" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="Nene Idle0030" x="703" y="959" width="346" height="403" frameX="-98" frameY="0" frameWidth="461" frameHeight="476"/>
+	<SubTexture name="combo celebration 1 nene0000" x="1054" y="959" width="294" height="434" frameX="-16" frameY="-56" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0001" x="1353" y="959" width="294" height="446" frameX="-16" frameY="-44" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0002" x="1652" y="959" width="313" height="452" frameX="0" frameY="-44" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0003" x="1970" y="959" width="313" height="476" frameX="0" frameY="-20" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0004" x="1970" y="959" width="313" height="476" frameX="0" frameY="-20" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0005" x="2288" y="959" width="313" height="479" frameX="0" frameY="-17" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0006" x="2288" y="959" width="313" height="479" frameX="0" frameY="-17" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0007" x="2606" y="959" width="313" height="489" frameX="0" frameY="-7" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0008" x="2606" y="959" width="313" height="489" frameX="0" frameY="-7" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0009" x="2924" y="959" width="313" height="494" frameX="0" frameY="-2" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0010" x="2924" y="959" width="313" height="494" frameX="0" frameY="-2" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0011" x="3242" y="959" width="313" height="496"/>
+	<SubTexture name="combo celebration 1 nene0012" x="3242" y="959" width="313" height="496"/>
+	<SubTexture name="combo celebration 1 nene0013" x="3560" y="959" width="313" height="496"/>
+	<SubTexture name="combo celebration 1 nene0014" x="3560" y="959" width="313" height="496"/>
+	<SubTexture name="combo celebration 1 nene0015" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0016" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0017" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0018" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0019" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0020" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0021" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0022" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0023" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="combo celebration 1 nene0024" x="0" y="1460" width="313" height="438" frameX="0" frameY="-58" frameWidth="313" frameHeight="496"/>
+	<SubTexture name="fawn nene0000" x="318" y="1460" width="418" height="457" frameX="0" frameY="-4" frameWidth="418" frameHeight="461"/>
+	<SubTexture name="fawn nene0001" x="318" y="1460" width="418" height="457" frameX="0" frameY="-4" frameWidth="418" frameHeight="461"/>
+	<SubTexture name="fawn nene0002" x="741" y="1460" width="411" height="451" frameX="-5" frameY="-1" frameWidth="418" frameHeight="461"/>
+	<SubTexture name="fawn nene0003" x="741" y="1460" width="411" height="451" frameX="-5" frameY="-1" frameWidth="418" frameHeight="461"/>
+	<SubTexture name="fawn nene0004" x="1157" y="1460" width="408" height="452" frameX="-7" frameY="0" frameWidth="418" frameHeight="461"/>
+	<SubTexture name="fawn nene0005" x="1157" y="1460" width="408" height="452" frameX="-7" frameY="0" frameWidth="418" frameHeight="461"/>
+	<SubTexture name="fawn nene0006" x="1157" y="1460" width="408" height="452" frameX="-7" frameY="0" frameWidth="418" frameHeight="461"/>
+	<SubTexture name="knife high held0000" x="1570" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0001" x="1917" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0002" x="1917" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0003" x="2264" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0004" x="2611" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0005" x="2611" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0006" x="2611" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0007" x="2958" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0008" x="2958" y="1460" width="342" height="525"/>
+	<SubTexture name="knife high held0009" x="1570" y="1460" width="342" height="525"/>
+	<SubTexture name="knife lower0000" x="3305" y="1460" width="341" height="525" frameX="-61" frameY="0" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0001" x="3651" y="1460" width="343" height="524" frameX="-61" frameY="-1" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0002" x="3651" y="1460" width="343" height="524" frameX="-61" frameY="-1" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0003" x="0" y="1990" width="342" height="514" frameX="-61" frameY="-11" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0004" x="0" y="1990" width="342" height="514" frameX="-61" frameY="-11" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0005" x="347" y="1990" width="341" height="487" frameX="-61" frameY="-38" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0006" x="347" y="1990" width="341" height="487" frameX="-61" frameY="-38" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0007" x="693" y="1990" width="410" height="467" frameX="0" frameY="-55" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife lower0008" x="693" y="1990" width="410" height="467" frameX="0" frameY="-55" frameWidth="410" frameHeight="525"/>
+	<SubTexture name="knife raise0000" x="1108" y="1990" width="445" height="476" frameX="0" frameY="-50" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0001" x="1108" y="1990" width="445" height="476" frameX="0" frameY="-50" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0002" x="1558" y="1990" width="398" height="479" frameX="-44" frameY="-47" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0003" x="1558" y="1990" width="398" height="479" frameX="-44" frameY="-47" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0004" x="1961" y="1990" width="342" height="520" frameX="-99" frameY="-6" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0005" x="1961" y="1990" width="342" height="520" frameX="-99" frameY="-6" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0006" x="2308" y="1990" width="342" height="524" frameX="-99" frameY="-2" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0007" x="2308" y="1990" width="342" height="524" frameX="-99" frameY="-2" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0008" x="2655" y="1990" width="342" height="526" frameX="-99" frameY="0" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0009" x="2655" y="1990" width="342" height="526" frameX="-99" frameY="0" frameWidth="445" frameHeight="526"/>
+	<SubTexture name="knife raise0010" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0011" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0012" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0013" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0014" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0015" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0016" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0017" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0018" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="knife raise0019" x="1570" y="1460" width="342" height="525" frameX="-99" frameY="0" frameWidth="342" frameHeight="525"/>
+	<SubTexture name="laughing nene0000" x="3002" y="1990" width="479" height="452" frameX="-2" frameY="-40" frameWidth="481" frameHeight="492"/>
+	<SubTexture name="laughing nene0001" x="3002" y="1990" width="479" height="452" frameX="-2" frameY="-40" frameWidth="481" frameHeight="492"/>
+	<SubTexture name="laughing nene0002" x="3486" y="1990" width="459" height="447" frameX="0" frameY="-34" frameWidth="481" frameHeight="492"/>
+	<SubTexture name="laughing nene0003" x="3486" y="1990" width="459" height="447" frameX="0" frameY="-34" frameWidth="481" frameHeight="492"/>
+</TextureAtlas>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog title="Edit Song Event" width="320" height="200">
+	<vbox width="100%" height="100%">
+		<grid columns="2" width="100%">
+			<label text="Event Type" verticalAlign="center" />
+			<dropdown id="dialogEventKind" width="100%" value="normal" dropdownSize="10" dropdownWidth="300" searchable="true">
+				<data />
+			</dropdown>
+		</grid>
+		<frame id="dialogEventDataFrame" text="Event Data" width="100%">
+			<grid id="dialogEventDataGrid" columns="2" width="100%" />
+		</frame>
+		<hbox width="100%">
+			<button text="Cancel" id="dialogCancel" />
+			<spacer width="100%" />
+			<button text="Save" id="dialogSave" horizontalAlign="right" />
+		</hbox>
+	</vbox>
+</dialog>

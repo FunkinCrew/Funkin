@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="tank2.png">
+	<SubTexture name="foreground man 3 instance 10000" x="595" y="327" width="293" height="305" frameX="-2" frameY="-17" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10001" x="595" y="327" width="293" height="305" frameX="-2" frameY="-17" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10002" x="0" y="331" width="288" height="310" frameX="-4" frameY="-12" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10003" x="0" y="331" width="288" height="310" frameX="-4" frameY="-12" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10004" x="595" y="0" width="288" height="317" frameX="-1" frameY="-5" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10005" x="595" y="0" width="288" height="317" frameX="-1" frameY="-5" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10006" x="0" y="0" width="288" height="321" frameX="0" frameY="-1" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10007" x="0" y="0" width="288" height="321" frameX="0" frameY="-1" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10008" x="298" y="0" width="287" height="322" frameX="0" frameY="0" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10009" x="298" y="0" width="287" height="322" frameX="0" frameY="0" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10010" x="298" y="0" width="287" height="322" frameX="0" frameY="0" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10011" x="298" y="0" width="287" height="322" frameX="0" frameY="0" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10012" x="298" y="0" width="287" height="322" frameX="0" frameY="0" frameWidth="295" frameHeight="322" />
+	<SubTexture name="foreground man 3 instance 10013" x="298" y="0" width="287" height="322" frameX="0" frameY="0" frameWidth="295" frameHeight="322" />
+</TextureAtlas>

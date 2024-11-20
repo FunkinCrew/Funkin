@@ -1,0 +1,163 @@
+{
+  "props": [
+    {
+      "danceEvery": 0,
+      "zIndex": 1,
+      "position": [-1400, -500],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "skyBG",
+      "isPixel": false,
+      "assetPath": "matPark/skyBG",
+      "scroll": [0.5, 0.5],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 2,
+      "position": [650, 95],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "freakingSun",
+      "isPixel": false,
+      "assetPath": "matPark/theSun",
+      "scroll": [0.55, 0.55],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 3,
+      "position": [-150, 150],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "cloudMcCloud",
+      "isPixel": false,
+      "assetPath": "matPark/clouds",
+      "scroll": [0.6, 0.6],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 4,
+      "position": [-440, 355],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "cityBack",
+      "isPixel": false,
+      "assetPath": "matPark/cityBack",
+      "scroll": [0.6, 0.6],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 5,
+      "position": [-200, 490],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "cityFront",
+      "isPixel": false,
+      "assetPath": "matPark/cityFront",
+      "scroll": [0.75, 0.75],
+      "animations": []
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 6,
+      "position": [50, 1400],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "parkFloor",
+      "isPixel": false,
+      "assetPath": "matPark/parkFloor",
+      "scroll": [0.95, 0.95],
+      "animations": []
+    },
+    {
+      "zIndex": 7,
+      "danceEvery": 0,
+      "position": [1655, 1212],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "faucetFishy",
+      "isPixel": false,
+      "startingAnimation": "fishyIdle",
+      "assetPath": "matPark/fishFaucet",
+      "scroll": [0.95, 0.95],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "Faucet",
+          "name": "fishyIdle",
+          "looped": true,
+          "flipX": false
+        }
+      ]
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 8,
+      "position": [1315, 1045],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "name": "monaPicoOMG",
+      "isPixel": false,
+      "assetPath": "matPark/monaPico",
+      "scroll": [0.95, 0.95],
+      "animations": []
+    },
+    {
+      "zIndex": 150,
+      "danceEvery": 1.0,
+      "position": [1115, 1575],
+      "scale": [1, 1],
+      "animType": "sparrow",
+      "startingAnimation": "danceLeft",
+      "name": "primsGayGayHomosexual",
+      "isPixel": false,
+      "assetPath": "matPark/elRisum",
+      "scroll": [0.95, 0.95],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          "prefix": "Idle",
+          "name": "danceLeft",
+          "flipX": false
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "frameIndices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+          "prefix": "Idle",
+          "name": "danceRight",
+          "flipX": false
+        }
+      ]
+    }
+  ],
+  "cameraZoom": 0.4,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [2675, 2205],
+      "cameraOffsets": [-400, -300]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [900, 2255],
+      "cameraOffsets": [850, -225]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [-350, -150],
+      "position": [2315, 2075]
+    }
+  },
+  "name": "Mat Park"
+}

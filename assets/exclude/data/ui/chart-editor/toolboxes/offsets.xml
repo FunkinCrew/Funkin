@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="toolboxOffsets" title="Offsets" width="550" height="490">
+  <vbox width="100%">
+    <hbox width="100%">
+      <button id="offsetButtonPause" text="Pause" />
+      <button id="offsetButtonPlay" text="Play" />
+      <button id="offsetButtonStop" text="Stop" />
+      <label id="offsetLabelTime" text="0:00.0" height="100%" />
+      <spacer width="100%" />
+      <button id="offsetButtonZoomIn" text="Zoom In" />
+      <button id="offsetButtonZoomOut" text="Zoom Out" />
+    </hbox>
+    <hbox width="100%">
+      <vbox width="125" height="295">
+        <spacer height="100%" />
+        <frame width="100%" height="80" text="Player Vocals">
+          <vbox width="100%" height="100%">
+            <slider id="offsetPlayerVolume" styleName="compact" width="100%" majorTicks="10" minorTicks="5" pos="50" tooltip="Player Vocals Volume" />
+            <hbox width="100%">
+              <button id="offsetPlayerMute" styleName="compactButton" width="50%" text="Mute" tooltip="Mute the player vocals." />
+              <button id="offsetPlayerSolo" styleName="compactButton" width="50%" text="Solo" tooltip="Isolate the player vocals and mute other tracks." />
+            </hbox>
+          </vbox>
+        </frame>
+        <frame width="100%" height="80" text="Opponent Vocals">
+          <vbox width="100%" height="100%">
+            <slider id="offsetOpponentVolume" styleName="compact" width="100%" majorTicks="10" minorTicks="5" pos="50" tooltip="Opponent Vocals Volume" />
+            <hbox width="100%">
+              <button id="offsetOpponentMute" styleName="compactButton" width="50%" text="Mute" tooltip="Mute the opponent vocals." />
+              <button id="offsetOpponentSolo" styleName="compactButton" width="50%" text="Solo" tooltip="Isolate the opponent vocals and mute other tracks." />
+            </hbox>
+          </vbox>
+        </frame>
+        <frame width="100%" height="80" text="Instrumental">
+          <vbox width="100%" height="100%">
+            <slider id="offsetInstrumentalVolume" styleName="compact" width="100%" majorTicks="10" minorTicks="5" pos="50" tooltip="Instrumental Volume" />
+            <hbox width="100%">
+              <button id="offsetInstrumentalMute" styleName="compactButton" width="50%" text="Mute" tooltip="Mute the instrumental." />
+              <button id="offsetInstrumentalSolo" styleName="compactButton" width="50%" text="Solo" tooltip="Isolate the instrumental and mute other tracks." />
+            </hbox>
+          </vbox>
+        </frame>
+      </vbox>
+      <scrollview id="waveformScrollview" height="310" width="400" verticalScrollPolicy="never" horizontalScrollPolicy="always" scrollMode="normal" styleName="no-padding">
+        <absolute id="waveformContainer" width="3000" height="300" styleName="compact">
+          <vbox width="100%" height="100%" top="0" left="0">
+            <absolute id="offsetTicksContainer" width="100%" height="40" style="cursor: pointer;">
+              <sprite-wrapper id="offsetTicksSprite" height="100%" width="100%" style="background-color: #111111" top="0" left="0" />
+            </absolute>
+            <waveform-player id="waveformPlayer" style="cursor: pointer; pointer-events: true" />
+            <spacer height="10" />
+            <waveform-player id="waveformOpponent" style="cursor: pointer; pointer-events: true" />
+            <spacer height="8" />
+            <waveform-player id="waveformInstrumental" style="cursor: pointer; pointer-events: true" />
+          </vbox>
+          <sprite-wrapper id="playheadSprite" height="100%" width="2" style="background-color: #FF0000" top="0" left="0" />
+        </absolute>
+      </scrollview>
+    </hbox>
+    <grid columns="2" width="100%">
+      <label text="Player Offset (ms)" verticalAlign="center" />
+      <number-stepper id="offsetStepperPlayer" pos="0" horizontalAlign="right" tooltip="Adjust the start of the player vocal track by this many milliseconds, ON TOP OF the instrumental offset." />
+      <label text="Opponent Offset (ms)" verticalAlign="center" />
+      <number-stepper id="offsetStepperOpponent" pos="0" horizontalAlign="right" tooltip="Adjust the start of the opponent vocal track by this many milliseconds, ON TOP OF the instrumental offset." />
+      <label text="Instrumental Offset (ms)" verticalAlign="center" />
+      <number-stepper id="offsetStepperInstrumental" pos="0" horizontalAlign="right" tooltip="Adjust the start of the instrumental track by this many milliseconds." />
+    </grid>
+  </vbox>
+</collapsible-dialog>

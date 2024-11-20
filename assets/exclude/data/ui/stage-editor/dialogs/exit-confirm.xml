@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog title="Are you sure?">
+  <image resource="shared:assets/shared/images/ui/stage-editor/probably.png" imageScale=".25"/>
+</dialog>

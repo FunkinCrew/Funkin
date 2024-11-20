@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bfIcon.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="boyfriend icon instance 10000" x="0" y="0" width="133" height="94" frameX="-1" frameY="-9" frameWidth="134" frameHeight="116"/>
+	<SubTexture name="boyfriend icon instance 10001" x="0" y="0" width="133" height="94" frameX="-1" frameY="-9" frameWidth="134" frameHeight="116"/>
+	<SubTexture name="boyfriend icon instance 10002" x="139" y="0" width="134" height="92" frameX="0" frameY="-15" frameWidth="134" frameHeight="116"/>
+	<SubTexture name="boyfriend icon instance 10003" x="139" y="0" width="134" height="92" frameX="0" frameY="-15" frameWidth="134" frameHeight="116"/>
+	<SubTexture name="boyfriend icon instance 10004" x="0" y="100" width="121" height="116" frameX="-5" frameY="0" frameWidth="134" frameHeight="116"/>
+	<SubTexture name="boyfriend icon instance 10005" x="0" y="100" width="121" height="116" frameX="-5" frameY="0" frameWidth="134" frameHeight="116"/>
+	<SubTexture name="boyfriend icon instance 10006" x="127" y="100" width="125" height="107" frameX="-3" frameY="-3" frameWidth="134" frameHeight="116"/>
+	<SubTexture name="boyfriend icon instance 10007" x="127" y="100" width="125" height="107" frameX="-3" frameY="-3" frameWidth="134" frameHeight="116"/>
+</TextureAtlas>

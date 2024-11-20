@@ -1,0 +1,42 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.play.stage.Stage;
+import funkin.play.PlayState;
+import funkin.graphics.shaders.OverlayBlend;
+import funkin.graphics.shaders.AdjustColorShader;
+import flixel.addons.display.FlxBackdrop;
+
+class MatParkStage extends Stage
+{
+	function new() {
+		super('matPark');
+	}
+
+    var colorShader:AdjustColorShader;
+
+	function buildStage()
+	{
+		super.buildStage();
+		colorShader = new AdjustColorShader();
+	}
+
+    function onUpdate(event:UpdateScriptEvent):Void
+	{
+		super.onUpdate(event);
+
+		if(PlayState.instance.currentStage.getBoyfriend() != null && PlayState.instance.currentStage.getBoyfriend().shader == null)
+		{
+			PlayState.instance.currentStage.getBoyfriend().shader = colorShader;
+			PlayState.instance.currentStage.getGirlfriend().shader = colorShader;
+			PlayState.instance.currentStage.getDad().shader = colorShader;
+			getNamedProp('primsGayGayHomosexual').shader = colorShader;
+
+			colorShader.hue = -5;
+			colorShader.saturation = 25;
+			colorShader.contrast = -25;
+			colorShader.brightness = -20;
+		}
+	}
+}

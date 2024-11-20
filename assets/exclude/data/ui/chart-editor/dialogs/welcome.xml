@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="800" height="500" title="Chart Editor - New Song">
+	<!-- Body -->
+	<hbox width="100%" height="100%">
+		<card id="splashSectionLeft" width="25%" height="100%" text="Open Recent">
+			<scrollview width="100%" height="50%" contentWidth="100%">
+				<vbox width="100%" id="splashRecentContainer" />
+			</scrollview>
+			<button id="splashBrowse" text="Browse for Chart" />
+		</card>
+		<vbox width="25%" height="100%">
+			<card id="splashSectionCenter" width="100%" height="50%" text="Create New">
+				<link id="splashCreateFromSongBasicOnly" width="100%" text="Easy/Normal/Hard Only" />
+				<link id="splashCreateFromSongErectOnly" width="100%" text="Erect/Nightmare Only" />
+				<link id="splashCreateFromSongBasicErect" width="100%" text="Easy/Normal/Hard/Erect/Nightmare" />
+			</card>
+			<card id="splashSectionCenter" width="100%" height="50%" text="Import Chart">
+				<link id="splashImportChartLegacy" width="100%" text="FNF Legacy" />
+				<link id="splashImportChartOsuMania" width="100%" text="Osu!Mania" disabled="true" />
+				<link id="splashImportChartStepMania" width="100%" text="StepMania" disabled="true" />
+			</card>
+		</vbox>
+		<card id="splashSectionRight" width="25%" height="100%" text="Create From Song">
+			<scrollview width="100%" height="100%" contentWidth="100%">
+				<vbox width="100%" id="splashTemplateContainer" />
+			</scrollview>
+		</card>
+		<hbox width="10%" height="100%" id="spriteBox">
+			<!-- <sparrow-player id="boyfriendDJ" xmlFile="assets/images/freeplay/bfFreeplay.xml" pngFile="assets/images/freeplay/bfFreeplay.png" animationName="idle" width="192" height="224" verticalAlign="bottom">
+				<data>
+					<set name="idle" prefix="Boyfriend DJ0" frameRate="24" looped="true" />
+				</data>
+			</sparrow-player> -->
+		</hbox>
+	</hbox>
+</dialog>

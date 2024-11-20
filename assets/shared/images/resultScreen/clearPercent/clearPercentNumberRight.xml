@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="clearPercentNumberRight.png">
+	<SubTexture name="number 0 0001" x="4" y="4" width="87" height="88" frameX="0" frameY="-1" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 1 0001" x="95" y="4" width="63" height="88" frameX="-8" frameY="0" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 2 0001" x="162" y="4" width="75" height="84" frameX="-4" frameY="-3" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 3 0001" x="241" y="4" width="77" height="84" frameX="-5" frameY="-2" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 4 0001" x="322" y="4" width="77" height="85" frameX="-4" frameY="-2" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 5 0001" x="403" y="4" width="80" height="88" frameX="-3" frameY="-1" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 6 0001" x="4" y="96" width="76" height="89" frameX="-2" frameY="-1" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 7 0001" x="84" y="96" width="79" height="84" frameX="-5" frameY="-4" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 8 0001" x="167" y="96" width="80" height="90" frameX="-3" frameY="-1" frameWidth="87" frameHeight="91"/>
+	<SubTexture name="number 9 0001" x="251" y="96" width="80" height="88" frameX="-3" frameY="-1" frameWidth="87" frameHeight="91"/>
+</TextureAtlas>

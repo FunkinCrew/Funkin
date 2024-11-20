@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vbox width="100%" height="100%">
+	<import source="components/menu.xml" />
+	<import source="components/style.xml" />
+	<spacer height="100%" />
+	<import source="components/bottom-bar.xml" />
+</vbox>

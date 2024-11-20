@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collapsible-dialog id="toolboxMetadata" title="Song Metadata" width="345" height="492">
+    <vbox width="100%" height="100%">
+        <frame text="Variation: Default" width="100%" height="250" id="frameVariation">
+            <vbox width="100%" height="100%">
+                <grid columns="2" height="100%">
+                    <label text="Song Name:" verticalAlign="center" horizontalAlign="right" />
+                    <textfield id="inputSongName" value="Bopeebo" tooltip="The readable name of the song." />
+                    <label text="Song Artist:" verticalAlign="center" horizontalAlign="right" />
+                    <textfield id="inputSongArtist" value="Kawai Sprite" tooltip="The artist who composed the song." />
+                    <label text="Charter:" verticalAlign="center" horizontalAlign="right" />
+                    <textfield id="inputSongCharter" value="" tooltip="The person who charted the song. That's you!" />
+                    <label text="Stage:" verticalAlign="center" horizontalAlign="right" />
+                    <dropdown id="inputStage" value="Main Stage" width="100%" horizontalAlign="right" dropdownSize="10" dropdownWidth="300" searchable="true" tooltip="Which stage the level takes place on.">
+                        <data>
+                            <item text="Main Stage" />
+                            <item text="Spooky Mansion" />
+                            <item text="Philly Train" />
+                            <item text="Limo Ride" />
+                            <item text="Mall (Xmas)" />
+                            <item text="Mall (Evil)" />
+                            <item text="School" />
+                            <item text="School (Evil)" />
+                            <item text="Tankman Battlefield" />
+                            <item text="Philly Streets" />
+                            <item text="Philly Streets (Blazin')" />
+                        </data>
+                    </dropdown>
+                    <label text="Note Style:" verticalAlign="center" horizontalAlign="right" />
+                    <dropdown id="inputNoteStyle" value="Normal" width="100%" horizontalAlign="right" dropdownSize="10" dropdownWidth="300" searchable="true" tooltip="Which graphical style of notes to use.">
+                        <data>
+                            <item text="Normal" />
+                            <item text="Pixel" />
+                        </data>
+                    </dropdown>
+                </grid>
+                <hbox width="100%">
+                    <button id="buttonCharacterOpponent" width="70" height="70" padding="8" iconPosition="top">
+                        Daddy Dearest
+                    </button>
+                    <button id="buttonCharacterGirlfriend" width="70" height="70" padding="8" iconPosition="top">
+                        Girlfriend
+                    </button>
+                    <button id="buttonCharacterPlayer" width="70" height="70" padding="8" iconPosition="top">
+                        Boyfriend
+                    </button>
+                </hbox>
+            </vbox>
+        </frame>
+        <frame text="Difficulty: Normal" width="100%" height="170" id="frameDifficulty">
+            <grid columns="2">
+                <label text="Starting BPM" verticalAlign="center" />
+                <number-stepper id="inputBPM" pos="100" step="1" min="10" max="500" precision="1" horizontalAlign="right" tooltip="Adjust the BPM of the song, which helps align the grid and character animations to the music." />
+                <label text="Starting Time Signature" verticalAlign="center" />
+                <dropdown id="inputTimeSignature" value="4/4" horizontalAlign="right" tooltip="Adjust the time signature of the song, which helps align the grid.">
+                    <data>
+                        <item id="2/4" text="2/4" />
+                        <item id="3/4" text="3/4" />
+                        <item id="4/4" text="4/4" />
+                        <item id="5/4" text="5/4" />
+                        <item id="6/4" text="6/4" />
+                        <item id="3/8" text="3/8" />
+                        <item id="5/8" text="5/8" />
+                        <item id="7/8" text="7/8" />
+                        <item id="9/8" text="9/8" />
+                        <item id="15/16" text="15/16" />
+                    </data>
+                </dropdown>
+                <label id="labelScrollSpeed" text="Scroll Speed: 1.0x" />
+                <spacer />
+                <slider id="inputScrollSpeed" pos="1.0" step="0.1" precision="1" min="0.5" max="5.0" tooltip="Adjust the relative speed at which the notes move." />
+                <spacer />
+                <label id="labelDifficultyRating" text="Difficulty Rank" verticalAlign="center" />
+                <number-stepper id="inputDifficultyRating" pos="0" step="1" min="0" max="15" tooltip="Set the rating for this difficulty as shown in the Freeplay menu." />
+            </grid>
+        </frame>
+    </vbox>
+</collapsible-dialog>

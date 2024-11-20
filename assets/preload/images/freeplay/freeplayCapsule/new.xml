@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="new.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="NEW notif0000" x="0" y="0" width="68" height="32"/>
+	<SubTexture name="NEW notif0001" x="0" y="0" width="68" height="32"/>
+	<SubTexture name="NEW notif0002" x="73" y="0" width="68" height="32"/>
+	<SubTexture name="NEW notif0003" x="73" y="0" width="68" height="32"/>
+	<SubTexture name="NEW notif0004" x="146" y="0" width="68" height="32"/>
+	<SubTexture name="NEW notif0005" x="146" y="0" width="68" height="32"/>
+	<SubTexture name="NEW notif0006" x="0" y="37" width="68" height="32"/>
+	<SubTexture name="NEW notif0007" x="0" y="37" width="68" height="32"/>
+	<SubTexture name="NEW notif0008" x="73" y="37" width="68" height="32"/>
+	<SubTexture name="NEW notif0009" x="73" y="37" width="68" height="32"/>
+	<SubTexture name="NEW notif0010" x="146" y="37" width="68" height="32"/>
+	<SubTexture name="NEW notif0011" x="146" y="37" width="68" height="32"/>
+	<SubTexture name="NEW notif0012" x="0" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0013" x="0" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0014" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0015" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0016" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0017" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0018" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0019" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0020" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0021" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0022" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0023" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0024" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0025" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0026" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0027" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0028" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0029" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0030" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0031" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0032" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0033" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0034" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0035" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0036" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0037" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0038" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0039" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0040" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0041" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0042" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0043" x="73" y="74" width="68" height="32"/>
+	<SubTexture name="NEW notif0044" x="73" y="74" width="68" height="32"/>
+</TextureAtlas>

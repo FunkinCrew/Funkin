@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="mat.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Mat Blacklines0000" x="5" y="5" width="605" height="664" frameX="0" frameY="-17" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0001" x="5" y="5" width="605" height="664" frameX="0" frameY="-17" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0002" x="615" y="5" width="597" height="674" frameX="-2" frameY="-7" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0003" x="615" y="5" width="597" height="674" frameX="-2" frameY="-7" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0004" x="1217" y="5" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0005" x="1217" y="5" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0006" x="5" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0007" x="5" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0008" x="607" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0009" x="607" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0010" x="1209" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0011" x="1209" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0012" x="1209" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0013" x="1209" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+	<SubTexture name="Mat Blacklines0014" x="1209" y="691" width="597" height="681" frameX="-2" frameY="0" frameWidth="605" frameHeight="681"/>
+</TextureAtlas>
