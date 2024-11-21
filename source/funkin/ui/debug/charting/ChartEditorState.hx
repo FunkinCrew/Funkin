@@ -1827,9 +1827,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menuBarItemNoteSnapIncrease:MenuItem;
 
   /**
-   * The `Edit -> Stacked Note Threshold` menu item
+   * The `Edit -> Stacked Note Threshold` number stepper
    */
-  var menuBarItemStackedNoteThreshold:MenuItem;
+  var menuBarItemStackedNoteThreshold:NumberStepper;
 
   /**
    * The `View -> Downscroll` menu item.
@@ -3002,6 +3002,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       noteSnapQuantIndex++;
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
+
+    menuBarItemStackedNoteThreshold.pos = stackNoteThreshold;
+    menuBarItemStackedNoteThreshold.autoCorrect = true;
+    menuBarItemStackedNoteThreshold.onChange = event -> {
+      noteDisplayDirty = true;
+      stackNoteThreshold = event.value;
+    }
 
     menuBarItemInputStyleNone.onClick = function(event:UIEvent) {
       currentLiveInputStyle = None;

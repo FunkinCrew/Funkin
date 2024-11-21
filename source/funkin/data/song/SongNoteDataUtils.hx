@@ -120,7 +120,6 @@ class SongNoteDataUtils
       var noteB:SongNoteData = rhs[i];
       var hasOverlap:Bool = false;
 
-      // TODO: Since notes are generally sorted this could probably benefit of only cycling through notes in a certain range
       for (j in 0...lhs.length)
       {
         var noteA:SongNoteData = lhs[j];
