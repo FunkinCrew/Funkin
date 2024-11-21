@@ -18,7 +18,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.Highscore.Tallies;
-import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
@@ -2965,13 +2964,6 @@ class PlayState extends MusicBeatSubState
         // If score or rank are better, save the highest one.
         // If neither are higher, nothing will change.
         Save.instance.applySongRank(currentSong.id, suffixedDifficulty, data);
-
-        if (isNewHighscore)
-        {
-          #if newgrounds
-          NGio.postScore(score, currentSong.id);
-          #end
-        }
       }
     }
 
@@ -2989,8 +2981,6 @@ class PlayState extends MusicBeatSubState
       {
         if (currentSong.validScore)
         {
-          NGio.unlockMedal(60961);
-
           var data =
             {
               score: PlayStatePlaylist.campaignScore,
@@ -3012,9 +3002,6 @@ class PlayState extends MusicBeatSubState
           if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
             Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
-            #if newgrounds
-            NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
-            #end
             isNewHighscore = true;
           }
         }

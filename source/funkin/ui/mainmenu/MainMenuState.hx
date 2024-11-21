@@ -23,10 +23,6 @@ import funkin.util.WindowUtil;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
-#if newgrounds
-import funkin.ui.NgPrompt;
-import io.newgrounds.NG;
-#end
 
 class MainMenuState extends MusicBeatState
 {
@@ -190,13 +186,6 @@ class MainMenuState extends MusicBeatState
   override function finishTransIn():Void
   {
     super.finishTransIn();
-
-    // menuItems.enabled = true;
-
-    // #if newgrounds
-    // if (NGio.savedSessionFailed)
-    // 	showSavedSessionFailed();
-    // #end
   }
 
   function onMenuItemChange(selected:MenuListItem)
@@ -213,49 +202,6 @@ class MainMenuState extends MusicBeatState
   function selectMerch()
   {
     WindowUtil.openURL(Constants.URL_MERCH);
-  }
-  #end
-
-  #if newgrounds
-  function selectLogin()
-  {
-    openNgPrompt(NgPrompt.showLogin());
-  }
-
-  function selectLogout()
-  {
-    openNgPrompt(NgPrompt.showLogout());
-  }
-
-  function showSavedSessionFailed()
-  {
-    openNgPrompt(NgPrompt.showSavedSessionFailed());
-  }
-
-  /**
-   * Calls openPrompt and redraws the login/logout button
-   * @param prompt
-   * @param onClose
-   */
-  public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
-  {
-    var onPromptClose = checkLoginStatus;
-    if (onClose != null)
-    {
-      onPromptClose = function() {
-        checkLoginStatus();
-        onClose();
-      }
-    }
-
-    openPrompt(prompt, onPromptClose);
-  }
-
-  function checkLoginStatus()
-  {
-    var prevLoggedIn = menuItems.has("logout");
-    if (prevLoggedIn && !NGio.isLoggedIn) menuItems.resetItem("login", "logout", selectLogout);
-    else if (!prevLoggedIn && NGio.isLoggedIn) menuItems.resetItem("logout", "login", selectLogin);
   }
   #end
 

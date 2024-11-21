@@ -9,7 +9,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
-import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.FunkinSprite;
@@ -299,10 +298,6 @@ class TitleState extends MusicBeatState
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
-      NGio.unlockMedal(60960);
-
-      // If it's Friday according to da clock
-      if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
 
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);

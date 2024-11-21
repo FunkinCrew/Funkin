@@ -111,13 +111,6 @@ class InitState extends FlxState
     FlxTransitionableState.skipNextTransIn = true;
 
     //
-    // NEWGROUNDS API SETUP
-    //
-    #if newgrounds
-    NGio.init();
-    #end
-
-    //
     // DISCORD API SETUP
     //
     #if FEATURE_DISCORD_RPC
