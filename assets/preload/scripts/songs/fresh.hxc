@@ -1,44 +1,40 @@
-import flixel.tweens.FlxEase;
-import funkin.graphics.FunkinSprite;
-import flixel.tweens.FlxTween;
-import funkin.play.cutscene.dialogue.DialogueBox;
-import funkin.play.PlayState;
-import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.util.FlxTimer;
 import funkin.save.Save;
 
-import funkin.effects.RetroCameraFade;
-
 class FreshSong extends Song {
-  var hasPlayedCutscene:Bool;
-
 	public function new() {
 		super('fresh');
 	}
 
-	public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
-  {
-		if(currentVariation == 'pico')
-		  return !Save.instance.hasBeatenSong(this.id, null, 'pico');
-
-    if(currentVariation == 'mat')
-		  return !Save.instance.hasBeatenSong(this.id, null, 'mat');
-
-    return false;
-	}
-
   public override function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String> {
     if (difficultyId == 'easy' || difficultyId == 'normal' || difficultyId == 'hard') {
-      var hasBeatenPicoMix = Save.instance.hasBeatenSong(this.id, null, 'pico');
       var hasBeatenMatMix = Save.instance.hasBeatenSong(this.id, null, 'mat');
-
+      var hasBeatenPicoMix = Save.instance.hasBeatenSong(this.id, null, 'pico');
       switch (variationId) {
+        case 'mat' | 'pico':
+          // No Mat mix or Pico mix on BF instrumental, sorry!
+          // return hasBeatenMatMix ? [''] : [];
+          // return hasBeatenPicoMix ? [''] : [];
+          return [];
         default:
-          return ['pico', 'mat'];
+          // No BF mix or Pico mix on Mat instrumental!
+          // return hasBeatenMatMix ? ['mat'] : [];
+          // return hasBeatenPicoMix ? ['pico'] : [];
+          return [];
       }
     }
   }
+
+	public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool {
+		  if(currentVariation == 'mat')
+        return !Save.instance.hasBeatenSong(this.id, null, 'mat');
+
+    	if(currentVariation == 'pico')
+		    return !Save.instance.hasBeatenSong(this.id, null, 'pico');
+
+		  if(currentDifficulty == 'erect' || currentDifficulty == 'nightmare')
+			  return !Save.instance.hasBeatenSong(this.id, ['erect', 'nightmare']);
+
+    return false;
+	}
 }

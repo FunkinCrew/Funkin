@@ -87,6 +87,34 @@
       "flipX": false,
       "looped": false,
       "name": "drop70"
+    },
+    {
+      "offsets": [0, -1],
+      "frameRate": 24,
+      "name": "singLEFT",
+      "looped": false,
+      "prefix": "Left"
+    },
+    {
+      "offsets": [0, -14],
+      "frameRate": 24,
+      "name": "singDOWN",
+      "looped": false,
+      "prefix": "Down"
+    },
+    {
+      "offsets": [0, 6],
+      "frameRate": 24,
+      "name": "singUP",
+      "looped": false,
+      "prefix": "Up"
+    },
+    {
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "name": "singRIGHT",
+      "looped": false,
+      "prefix": "Right"
     }
   ]
 }
