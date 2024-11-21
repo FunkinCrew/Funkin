@@ -7,11 +7,13 @@
     "pico": ["picoSticker1", "picoSticker2", "picoSticker3"],
     "mom": ["momSticker1", "momSticker2", "momSticker3"],
     "monster": ["monsterSticker1", "monsterSticker2", "monsterSticker3"],
-    "gf": ["gfSticker1", "gfSticker2", "gfSticker3"]
+    "gf": ["gfSticker1", "gfSticker2", "gfSticker3"],
+    "mat": ["matSticker1", "matSticker2", "matSticker3"]
   },
   "stickerPacks": {
     "bf-gf": ["bf", "gf"],
     "parents": ["dad", "mom"],
-    "all": ["bf", "gf", "dad", "mom", "monster", "pico"]
+    "mat": ["mat"],
+    "all": ["bf", "gf", "dad", "mom", "monster", "pico", "mat"]
   }
 }
