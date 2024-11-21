@@ -84,7 +84,6 @@ class MainMenuState extends MusicBeatState
     magenta.visible = false;
 
     // TODO: Why doesn't this line compile I'm going fucking feral
-
     if (Preferences.flashingLights) add(magenta);
 
     menuItems = new MenuTypedList<AtlasMenuItem>();
@@ -125,17 +124,14 @@ class MainMenuState extends MusicBeatState
       menuItem.x = FlxG.width / 2;
       menuItem.y = top + spacing * i;
       menuItem.scrollFactor.x = 0.0;
-      // This one affects how much the menu items move when you scroll between them.
       menuItem.scrollFactor.y = 0.4;
     }
 
     menuItems.selectItem(rememberedSelectedIndex);
-
     resetCamStuff();
 
     // reset camera when debug menu is closed
     subStateClosed.add(_ -> resetCamStuff(false));
-
     subStateOpened.add(sub -> {
       if (Type.getClass(sub) == FreeplayState)
       {
@@ -145,15 +141,10 @@ class MainMenuState extends MusicBeatState
       }
     });
 
-    // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
-
     super.create();
 
     // This has to come AFTER!
-    this.leftWatermarkText.text = Constants.VERSION;
-    // this.rightWatermarkText.text = "blablabla test";
-
-    // NG.core.calls.event.logEvent('swag').send();
+    this.leftWatermarkText.text = "Funkin' " + Constants.VERSION + ' | Mat Mixes ' + Constants.VERSION_MOD;
   }
 
   function playMenuMusic():Void

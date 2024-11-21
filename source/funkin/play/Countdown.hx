@@ -1,18 +1,18 @@
 package funkin.play;
 
+import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.FlxSprite;
-import funkin.graphics.FunkinSprite;
-import funkin.modding.events.ScriptEventDispatcher;
-import funkin.modding.module.ModuleHandler;
-import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
 import flixel.util.FlxTimer;
-import funkin.util.EaseUtil;
 import funkin.audio.FunkinSound;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent.CountdownScriptEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.modding.module.ModuleHandler;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.util.EaseUtil;
 
 class Countdown
 {

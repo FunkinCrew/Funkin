@@ -4,19 +4,19 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.input.touch.FlxTouch;
+import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.effects.RetroCameraFade;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
-import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
-import funkin.effects.RetroCameraFade;
-import flixel.math.FlxPoint;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -54,6 +54,9 @@ class GameOverSubState extends MusicBeatSubState
    */
   public static var blueBallSuffix:String = '';
 
+  /**
+   * Did boyfriend blueballed?
+   */
   static var blueballed:Bool = false;
 
   /**

@@ -1,181 +1,92 @@
 {
-	"version": "1.0.0",
-	"renderType": "sparrow",
-	"offsets": [
-		0,
-		0
-	],
-	"danceEvery": 1,
-	"scale": 1,
-	"name": "Prism",
-	"cameraOffsets": [
-		0,
-		0
-	],
-	"flipX": false,
-	"singTime": 8,
-	"startingAnimation": "danceRight",
-	"isPixel": false,
-	"assetPath": "characters/Prism_Base",
-	"healthIcon": {
-		"offsets": [
-			0,
-			0
-		],
-		"id": "prism",
-		"flipX": false,
-		"isPixel": false,
-		"scale": 1
-	},
-	"animations": [
-		{
-			"flipY": false,
-			"offsets": [
-				0,
-				0
-			],
-			"frameRate": 24,
-			"prefix": "Idle",
-			"frameIndices": [
-				30,
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-				10,
-				11,
-				12,
-				13,
-				14
-			],
-			"flipX": false,
-			"looped": false,
-			"name": "danceLeft"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				0,
-				0
-			],
-			"frameRate": 24,
-			"prefix": "Idle",
-			"frameIndices": [
-				15,
-				16,
-				17,
-				18,
-				19,
-				20,
-				21,
-				22,
-				23,
-				24,
-				25,
-				26,
-				27,
-				28,
-				29
-			],
-			"flipX": false,
-			"looped": false,
-			"name": "danceRight"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-5,
-				-12
-			],
-			"frameRate": 24,
-			"prefix": "Cry",
-			"frameIndices": [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-				10,
-				11,
-				12
-			],
-			"flipX": false,
-			"looped": false,
-			"name": "sad"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				0,
-				-1
-			],
-			"frameRate": 24,
-			"prefix": "Cheer1",
-			"flipX": false,
-			"looped": false,
-			"name": "cheer"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				0,
-				-1
-			],
-			"frameRate": 24,
-			"prefix": "Cheer1",
-			"flipX": false,
-			"looped": false,
-			"name": "combo50"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				0,
-				-11
-			],
-			"frameRate": 24,
-			"prefix": "Cheer2",
-			"flipX": false,
-			"looped": false,
-			"name": "combo200"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-5,
-				-12
-			],
-			"frameRate": 24,
-			"prefix": "Cry",
-			"frameIndices": [
-				0,
-				1,
-				2,
-				3,
-				4,
-				5,
-				6,
-				7,
-				8,
-				9,
-				10,
-				11,
-				12
-			],
-			"flipX": false,
-			"looped": false,
-			"name": "drop70"
-		}
-	]
+  "version": "1.0.0",
+  "renderType": "sparrow",
+  "offsets": [0, 0],
+  "danceEvery": 1,
+  "scale": 1,
+  "name": "Prism",
+  "cameraOffsets": [0, -100],
+  "flipX": false,
+  "singTime": 8,
+  "startingAnimation": "danceRight",
+  "isPixel": false,
+  "assetPath": "characters/prismStuff/Prism_Base",
+  "healthIcon": {
+    "offsets": [0, 0],
+    "id": "prism",
+    "flipX": false,
+    "isPixel": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "flipY": false,
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "prefix": "Idle",
+      "frameIndices": [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "flipX": false,
+      "looped": false,
+      "name": "danceLeft"
+    },
+    {
+      "flipY": false,
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "prefix": "Idle",
+      "frameIndices": [
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+      ],
+      "flipX": false,
+      "looped": false,
+      "name": "danceRight"
+    },
+    {
+      "flipY": false,
+      "offsets": [-5, -12],
+      "frameRate": 24,
+      "prefix": "Cry",
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "flipX": false,
+      "looped": false,
+      "name": "sad"
+    },
+    {
+      "flipY": false,
+      "offsets": [0, -1],
+      "frameRate": 24,
+      "prefix": "Cheer1",
+      "flipX": false,
+      "looped": false,
+      "name": "cheer"
+    },
+    {
+      "flipY": false,
+      "offsets": [0, -1],
+      "frameRate": 24,
+      "prefix": "Cheer1",
+      "flipX": false,
+      "looped": false,
+      "name": "combo50"
+    },
+    {
+      "flipY": false,
+      "offsets": [0, -11],
+      "frameRate": 24,
+      "prefix": "Cheer2",
+      "flipX": false,
+      "looped": false,
+      "name": "combo200"
+    },
+    {
+      "flipY": false,
+      "offsets": [-5, -12],
+      "frameRate": 24,
+      "prefix": "Cry",
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "flipX": false,
+      "looped": false,
+      "name": "drop70"
+    }
+  ]
 }

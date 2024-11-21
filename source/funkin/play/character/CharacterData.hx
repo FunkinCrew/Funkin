@@ -1,5 +1,6 @@
 package funkin.play.character;
 
+import flixel.graphics.frames.FlxFrame;
 import funkin.data.animation.AnimationData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -8,10 +9,9 @@ import funkin.play.character.ScriptedCharacter.ScriptedBaseCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedMultiSparrowCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedPackerCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
-import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
+import funkin.util.assets.DataAssets;
 import haxe.Json;
-import flixel.graphics.frames.FlxFrame;
 
 class CharacterDataParser
 {
@@ -290,18 +290,23 @@ class CharacterDataParser
     // FunkinCrew please dont skin me alive for copying pixelated icon and changing it a tiny bit
     switch (char)
     {
+      // MAT MIXES CASES
+      case "mat" | "mat-playable" | "mat-christmas" | "mat-car" | "mat-dark" | "mat-playable-dark":
+        charPath += "matpixel";
+      case "prism" | "prism-christmas" | "prism-car" | "prism-dark":
+        charPath += "facepixel";
+
+      // BASE GAME CASES
       case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
         charPath += "bfpixel";
       case "monster-christmas":
         charPath += "monsterpixel";
       case "mom" | "mom-car":
         charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
+      case "pico-blazin" | "pico-playable" | "pico-speaker" | "pico-christmas" | "pico-dark":
         charPath += "picopixel";
       case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
         charPath += "gfpixel";
-      case "dad":
-        charPath += "dadpixel";
       case "darnell-blazin":
         charPath += "darnellpixel";
       case "senpai-angry":
@@ -310,16 +315,14 @@ class CharacterDataParser
         charPath += "spookypixel";
       case "tankman-atlas":
         charPath += "tankmanpixel";
-      case "pico-christmas" | "pico-dark":
-        charPath += "picopixel";
       default:
         charPath += '${char}pixel';
     }
 
     if (!Assets.exists(Paths.image(charPath)))
     {
-      trace('[WARN] Character ${char} has no freeplay icon.');
-      return null;
+      trace('[WARN] Character ${char} has no freeplay icon.\nLoading placeholder instead.');
+      charPath = "freeplay/icons/facepixel";
     }
 
     var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));

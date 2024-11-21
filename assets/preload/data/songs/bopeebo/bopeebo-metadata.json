@@ -12,7 +12,7 @@
   },
   "timeChanges": [{ "t": 0, "bpm": 100, "n": 4, "d": 4, "bt": [4, 4, 4, 4] }],
   "playData": {
-    "songVariations": ["erect", "pico"],
+    "songVariations": ["erect", "pico", "mat"],
     "difficulties": ["easy", "normal", "hard"],
     "ratings": { "easy": 1, "normal": 1, "hard": 1 },
     "characters": {

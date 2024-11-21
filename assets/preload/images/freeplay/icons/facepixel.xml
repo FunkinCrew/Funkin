@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="facepixel.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="confirm0000" x="0" y="0" width="33" height="33"/>
+	<SubTexture name="confirm0001" x="33" y="0" width="33" height="33"/>
+	<SubTexture name="confirm0002" x="66" y="0" width="33" height="33"/>
+	<SubTexture name="confirm-hold0000" x="66" y="0" width="33" height="33"/>
+	<SubTexture name="idle0000" x="66" y="0" width="33" height="33"/>
+</TextureAtlas>

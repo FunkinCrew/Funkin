@@ -28,6 +28,11 @@ class Constants
   public static var VERSION(get, never):String;
 
   /**
+   * The mod's version number.
+   */
+  public static var VERSION_MOD:String = "v0.1.0 Alpha";
+
+  /**
    * The generatedBy string embedded in the chart files made by this application.
    */
   public static var GENERATED_BY(get, never):String;

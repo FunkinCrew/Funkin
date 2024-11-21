@@ -86,9 +86,6 @@ class TitleState extends MusicBeatState
   {
     if (event.info.code == 'NetStream.Play.Complete')
     {
-      // netStream.dispose();
-      // FlxG.stage.removeChild(video);
-
       startIntro();
     }
 
@@ -270,22 +267,8 @@ class TitleState extends MusicBeatState
 
     Conductor.instance.update();
 
-    /* if (FlxG.onMobile)
-          {
-      if (gfDance != null)
-      {
-        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
-        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
-      }
-          }
-     */
-    if (FlxG.keys.justPressed.I)
-    {
-      FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
-    }
+    if (FlxG.keys.justPressed.I) FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
     if (FlxG.keys.pressed.D) outlineShaderShit.funnyX += 1;
-    // outlineShaderShit.xPos.value[0] += 1;
-
     if (FlxG.keys.justPressed.Y)
     {
       FlxTween.cancelTweensOf(FlxG.stage.window, ['x', 'y']);
@@ -297,7 +280,6 @@ class TitleState extends MusicBeatState
 
     // do controls.PAUSE | controls.ACCEPT instead?
     var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
-
     var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
     if (gamepad != null)
@@ -317,17 +299,17 @@ class TitleState extends MusicBeatState
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
-      // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
       NGio.unlockMedal(60960);
+
       // If it's Friday according to da clock
       if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
+
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
 
       var targetState:NextState = () -> new MainMenuState();
-
       new FlxTimer().start(2, function(tmr:FlxTimer) {
         // These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory
         // Saves about 50mb of RAM or so???
@@ -338,7 +320,6 @@ class TitleState extends MusicBeatState
         // ngSpr??
         FlxG.switchState(targetState);
       });
-      // FunkinSound.playOnce(Paths.music('titleShoot'), 0.7);
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
 
@@ -481,7 +462,7 @@ class TitleState extends MusicBeatState
               addMoreText('FNF');
             case 14:
               // MAT-ING TIME GUYS!
-              if (curWacky[0] == "mating") addMoreText('Mating');
+              if (curWacky[0] == "mat-ing") addMoreText('Mat-ing');
               else
                 addMoreText('Mat');
             case 15:

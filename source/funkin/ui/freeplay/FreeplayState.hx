@@ -132,6 +132,7 @@ class FreeplayState extends MusicBeatSubState
 
   var dj:Null<FreeplayDJ> = null;
 
+  var ostType:String;
   var ostName:FlxText;
   var albumRoll:AlbumRoll;
 
@@ -190,6 +191,7 @@ class FreeplayState extends MusicBeatSubState
   {
     currentCharacterId = params?.character ?? rememberedCharacterId;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
+    ostType = 'OFFICIAL SOUNDTRACK';
 
     var fetchPlayableCharacter = function():PlayableCharacter {
       var targetCharId = params?.character ?? rememberedCharacterId;
@@ -216,10 +218,13 @@ class FreeplayState extends MusicBeatSubState
         backingCard = new NewCharacterCard(currentCharacter);
       case 'bf':
         backingCard = new BoyfriendCard(currentCharacter);
+        ostType = 'OFFICIAL SOUNDTRACK';
       case 'pico':
         backingCard = new PicoCard(currentCharacter);
+        ostType = 'OFFICIAL SOUNDTRACK';
       case 'mat':
         backingCard = new MatCard(currentCharacter);
+        ostType = 'MAT MIXES OST';
       default:
         backingCard = new BackingCard(currentCharacter);
     }
@@ -238,7 +243,12 @@ class FreeplayState extends MusicBeatSubState
     sparksADD = new FlxSprite(0, 0);
     txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
-    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
+    if (ostType == '')
+    {
+      ostType = 'OFFICIAL SOUNDTRACK';
+    }
+
+    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, ostType, 48);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
     bgDad = new FlxSprite(backingCard.pinkBack.width * 0.74, 0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());

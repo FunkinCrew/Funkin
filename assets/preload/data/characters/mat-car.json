@@ -1,154 +1,142 @@
 {
-	"version": "1.0.0",
-	"renderType": "sparrow",
-	"offsets": [0, 0],
-	"danceEvery": 1,
-	"scale": 1,
-	"name": "Mat (Car)",
-	"cameraOffsets": [-75, 0],
-	"flipX": true,
-	"singTime": 8.0,
-	"startingAnimation": "idle",
-	"isPixel": false,
-	"assetPath": "characters/Mat_HairBlow",
-	"healthIcon": {
-		"id": "mat",
-		"flipX": false,
-		"isPixel": false,
-		"scale": 1
-	},
-	"animations": [
-		{
-			"name": "idle",
-			"prefix": "Idle",
-			"frameRate": 24,
-			"offsets": [0, 0],
-			"looped": true
-		},
-		{
-			"name": "idle-hold",
-			"prefix": "Idle",
-			"frameRate": 24,
-			"frameIndices": [10, 11, 12, 13],
-			"offsets": [0, 0],
-			"looped": true
-	    },
-		{
-			"name": "singLEFT",
-			"prefix": "Left",
-			"frameRate": 24,
-			"offsets": [55, 15],
-			"looped": false
-		},
-		{
-			"name": "singLEFT-hold",
-			"prefix": "Left",
-			"frameRate": 24,
-			"frameIndices": [10, 11, 12, 13],
-			"offsets": [55, 15],
-			"looped": true
-		},
-		{
-			"name": "singDOWN",
-			"prefix": "Down",
-			"frameRate": 24,
-			"offsets": [-9, -114],
-			"looped": false
-		},
-		{
-			"name": "singDOWN-hold",
-			"prefix": "Down",
-			"frameRate": 24,
-			"frameIndices": [10, 11, 12, 13],
-			"offsets": [-9, -114],
-			"looped": true
-		},
-		{
-			"name": "singUP",
-			"prefix": "Up",
-			"frameRate": 24,
-			"offsets": [-5, 90],
-			"looped": false
-		},
-		{
-			"name": "singUP-hold",
-			"prefix": "Up",
-			"frameRate": 24,
-			"frameIndices": [10, 11, 12, 13],
-			"offsets": [-5, 90],
-			"looped": true
-		},
-		{
-			"name": "singRIGHT",
-			"prefix": "Right",
-			"frameRate": 24,
-			"offsets": [-90, -42],
-			"looped": false
-		},
-		{
-			"name": "singRIGHT-hold",
-			"prefix": "Right",
-			"frameRate": 24,
-			"frameIndices": [10, 11, 12, 13],
-			"offsets": [-90, -42],
-			"looped": true
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				55,
-				15
-			],
-			"frameRate": 24,
-			"prefix": "MissLeft",
-			"flipX": false,
-			"looped": false,
-			"name": "singLEFTmiss"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-9,
-				-114
-			],
-			"frameRate": 24,
-			"prefix": "MissDown",
-			"flipX": false,
-			"looped": false,
-			"name": "singDOWNmiss"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-5,
-				90
-			],
-			"frameRate": 24,
-			"prefix": "MissUp",
-			"flipX": false,
-			"looped": false,
-			"name": "singUPmiss"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-90,
-				-42
-			],
-			"frameRate": 24,
-			"prefix": "MissRight",
-			"flipX": false,
-			"looped": false,
-			"name": "singRIGHTmiss"
-		},
-		{
-			"flipY": false,
-			"frameRate": 24,
-			"name": "hey",
-			"prefix": "Hey0",
-			"flipX": false,
-			"looped": false,
-			"offsets": [-7, 0]
-		}
-	]
+  "version": "1.0.0",
+  "renderType": "sparrow",
+  "offsets": [0, 0],
+  "danceEvery": 1,
+  "scale": 1,
+  "name": "Mat (Car)",
+  "cameraOffsets": [-75, 0],
+  "flipX": true,
+  "singTime": 8.0,
+  "startingAnimation": "idle",
+  "isPixel": false,
+  "assetPath": "characters/matStuff/Mat_HairBlow",
+  "healthIcon": {
+    "id": "mat",
+    "flipX": false,
+    "isPixel": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Idle",
+      "frameRate": 24,
+      "offsets": [0, 0],
+      "looped": true
+    },
+    {
+      "name": "idle-hold",
+      "prefix": "Idle",
+      "frameRate": 24,
+      "frameIndices": [10, 11, 12, 13],
+      "offsets": [0, 0],
+      "looped": true
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Left",
+      "frameRate": 24,
+      "offsets": [55, 15],
+      "looped": false
+    },
+    {
+      "name": "singLEFT-hold",
+      "prefix": "Left",
+      "frameRate": 24,
+      "frameIndices": [10, 11, 12, 13],
+      "offsets": [55, 15],
+      "looped": true
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Down",
+      "frameRate": 24,
+      "offsets": [-9, -114],
+      "looped": false
+    },
+    {
+      "name": "singDOWN-hold",
+      "prefix": "Down",
+      "frameRate": 24,
+      "frameIndices": [10, 11, 12, 13],
+      "offsets": [-9, -114],
+      "looped": true
+    },
+    {
+      "name": "singUP",
+      "prefix": "Up",
+      "frameRate": 24,
+      "offsets": [-5, 90],
+      "looped": false
+    },
+    {
+      "name": "singUP-hold",
+      "prefix": "Up",
+      "frameRate": 24,
+      "frameIndices": [10, 11, 12, 13],
+      "offsets": [-5, 90],
+      "looped": true
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Right",
+      "frameRate": 24,
+      "offsets": [-90, -42],
+      "looped": false
+    },
+    {
+      "name": "singRIGHT-hold",
+      "prefix": "Right",
+      "frameRate": 24,
+      "frameIndices": [10, 11, 12, 13],
+      "offsets": [-90, -42],
+      "looped": true
+    },
+    {
+      "flipY": false,
+      "offsets": [55, 15],
+      "frameRate": 24,
+      "prefix": "MissLeft",
+      "flipX": false,
+      "looped": false,
+      "name": "singLEFTmiss"
+    },
+    {
+      "flipY": false,
+      "offsets": [-9, -114],
+      "frameRate": 24,
+      "prefix": "MissDown",
+      "flipX": false,
+      "looped": false,
+      "name": "singDOWNmiss"
+    },
+    {
+      "flipY": false,
+      "offsets": [-5, 90],
+      "frameRate": 24,
+      "prefix": "MissUp",
+      "flipX": false,
+      "looped": false,
+      "name": "singUPmiss"
+    },
+    {
+      "flipY": false,
+      "offsets": [-90, -42],
+      "frameRate": 24,
+      "prefix": "MissRight",
+      "flipX": false,
+      "looped": false,
+      "name": "singRIGHTmiss"
+    },
+    {
+      "flipY": false,
+      "frameRate": 24,
+      "name": "hey",
+      "prefix": "Hey0",
+      "flipX": false,
+      "looped": false,
+      "offsets": [-7, 0]
+    }
+  ]
 }

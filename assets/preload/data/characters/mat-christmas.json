@@ -1,168 +1,132 @@
 {
-	"version": "1.0.0",
-	"renderType": "multisparrow",
-	"offsets": [
-		0,
-		0
-	],
-	"danceEvery": 1,
-	"scale": 1,
-	"name": "Mat (Festive)",
-	"cameraOffsets": [
-		-75,
-		0
-	],
-	"flipX": true,
-	"singTime": 8.0,
-	"startingAnimation": "idle",
-	"isPixel": false,
-	"assetPath": "characters/Mat_Jolly",
-	"healthIcon": {
-		"offsets": [
-			0,
-			0
-		],
-		"id": "mat",
-		"flipX": false,
-		"isPixel": false,
-		"scale": 1
-	},
-	"animations": [
-		{
-			"flipY": false,
-			"offsets": [
-				0,
-				0
-			],
-			"frameRate": 24,
-			"prefix": "Idle",
-			"flipX": false,
-			"looped": false,
-			"name": "idle"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				55,
-				15
-			],
-			"frameRate": 24,
-			"prefix": "Left",
-			"flipX": false,
-			"looped": false,
-			"name": "singLEFT"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-9,
-				-114
-			],
-			"frameRate": 24,
-			"prefix": "Down",
-			"flipX": false,
-			"looped": false,
-			"name": "singDOWN"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-5,
-				90
-			],
-			"frameRate": 24,
-			"prefix": "Up",
-			"flipX": false,
-			"looped": false,
-			"name": "singUP"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-90,
-				-42
-			],
-			"frameRate": 24,
-			"prefix": "Right",
-			"flipX": false,
-			"looped": false,
-			"name": "singRIGHT"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				55,
-				15
-			],
-			"frameRate": 24,
-			"prefix": "MissLeft",
-			"flipX": false,
-			"looped": false,
-			"name": "singLEFTmiss"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-9,
-				-114
-			],
-			"frameRate": 24,
-			"prefix": "MissDown",
-			"flipX": false,
-			"looped": false,
-			"name": "singDOWNmiss"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-5,
-				90
-			],
-			"frameRate": 24,
-			"prefix": "MissUp",
-			"flipX": false,
-			"looped": false,
-			"name": "singUPmiss"
-		},
-		{
-			"flipY": false,
-			"offsets": [
-				-90,
-				-42
-			],
-			"frameRate": 24,
-			"prefix": "MissRight",
-			"flipX": false,
-			"looped": false,
-			"name": "singRIGHTmiss"
-		},
-		{
-			"flipY": false,
-			"frameRate": 24,
-			"name": "hey",
-			"prefix": "Hey0",
-			"flipX": false,
-			"looped": false,
-			"offsets": [-7, 0]
-		},
-		{
-			"name": "firstDeath",
-			"prefix": "DeathStart",
-			"assetPath": "characters/MatDeath_Jolly",
-			"offsets": [-18, 37]
-		},
-		{
-			"name": "deathLoop",
-			"prefix": "DeathLoop",
-			"looped": true,
-			"assetPath": "characters/MatDeath_Jolly",
-			"offsets": [-18, 23]
-		},
-		{
-			"name": "deathConfirm",
-			"prefix": "DeathEnd",
-			"assetPath": "characters/MatDeath_Jolly",
-			"offsets": [137, 141]
-		}
-	]
+  "version": "1.0.0",
+  "renderType": "multisparrow",
+  "offsets": [0, 0],
+  "danceEvery": 1,
+  "scale": 1,
+  "name": "Mat (Festive)",
+  "cameraOffsets": [-75, 0],
+  "flipX": true,
+  "singTime": 8.0,
+  "startingAnimation": "idle",
+  "isPixel": false,
+  "assetPath": "characters/matStuff/Mat_Jolly",
+  "healthIcon": {
+    "offsets": [0, 0],
+    "id": "mat",
+    "flipX": false,
+    "isPixel": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "flipY": false,
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "prefix": "Idle",
+      "flipX": false,
+      "looped": false,
+      "name": "idle"
+    },
+    {
+      "flipY": false,
+      "offsets": [55, 15],
+      "frameRate": 24,
+      "prefix": "Left",
+      "flipX": false,
+      "looped": false,
+      "name": "singLEFT"
+    },
+    {
+      "flipY": false,
+      "offsets": [-9, -114],
+      "frameRate": 24,
+      "prefix": "Down",
+      "flipX": false,
+      "looped": false,
+      "name": "singDOWN"
+    },
+    {
+      "flipY": false,
+      "offsets": [-5, 90],
+      "frameRate": 24,
+      "prefix": "Up",
+      "flipX": false,
+      "looped": false,
+      "name": "singUP"
+    },
+    {
+      "flipY": false,
+      "offsets": [-90, -42],
+      "frameRate": 24,
+      "prefix": "Right",
+      "flipX": false,
+      "looped": false,
+      "name": "singRIGHT"
+    },
+    {
+      "flipY": false,
+      "offsets": [55, 15],
+      "frameRate": 24,
+      "prefix": "MissLeft",
+      "flipX": false,
+      "looped": false,
+      "name": "singLEFTmiss"
+    },
+    {
+      "flipY": false,
+      "offsets": [-9, -114],
+      "frameRate": 24,
+      "prefix": "MissDown",
+      "flipX": false,
+      "looped": false,
+      "name": "singDOWNmiss"
+    },
+    {
+      "flipY": false,
+      "offsets": [-5, 90],
+      "frameRate": 24,
+      "prefix": "MissUp",
+      "flipX": false,
+      "looped": false,
+      "name": "singUPmiss"
+    },
+    {
+      "flipY": false,
+      "offsets": [-90, -42],
+      "frameRate": 24,
+      "prefix": "MissRight",
+      "flipX": false,
+      "looped": false,
+      "name": "singRIGHTmiss"
+    },
+    {
+      "flipY": false,
+      "frameRate": 24,
+      "name": "hey",
+      "prefix": "Hey0",
+      "flipX": false,
+      "looped": false,
+      "offsets": [-7, 0]
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "DeathStart",
+      "assetPath": "characters/MatDeath_Jolly",
+      "offsets": [-18, 37]
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "DeathLoop",
+      "looped": true,
+      "assetPath": "characters/MatDeath_Jolly",
+      "offsets": [-18, 23]
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "DeathEnd",
+      "assetPath": "characters/MatDeath_Jolly",
+      "offsets": [137, 141]
+    }
+  ]
 }
