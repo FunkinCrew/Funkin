@@ -8,6 +8,8 @@ import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import funkin.util.TrackerUtil;
+import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
@@ -31,6 +33,7 @@ import funkin.util.CLIUtil;
 import funkin.util.TimerUtil;
 import funkin.util.WindowUtil;
 import funkin.util.macro.MacroUtil;
+import openfl.display.BitmapData;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end

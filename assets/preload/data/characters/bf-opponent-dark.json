@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "renderType": "multisparrow",
+  "offsets": [0, 0],
+  "danceEvery": 1,
+  "scale": 1,
+  "name": "Boyfriend (Dark - Opponent)",
+  "flipX": true,
+  "cameraOffsets": [0, 0],
+  "singTime": 8,
+  "startingAnimation": "idle",
+  "isPixel": false,
+  "assetPath": "characters/bf_dark",
+  "healthIcon": {
+    "offsets": [0, 0],
+    "id": "bf",
+    "flipX": false,
+    "isPixel": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "flipY": false,
+      "offsets": [-5, 0],
+      "frameRate": 24,
+      "prefix": "BF idle dance",
+      "flipX": false,
+      "looped": false,
+      "name": "idle"
+    },
+    {
+      "flipY": false,
+      "offsets": [-33, -6],
+      "frameRate": 24,
+      "prefix": "BF NOTE LEFT0",
+      "flipX": false,
+      "looped": false,
+      "name": "singRIGHT"
+    },
+    {
+      "flipY": false,
+      "offsets": [-25, -50],
+      "frameRate": 24,
+      "prefix": "BF NOTE DOWN0",
+      "flipX": false,
+      "looped": false,
+      "name": "singDOWN"
+    },
+    {
+      "flipY": false,
+      "offsets": [1, 28],
+      "frameRate": 24,
+      "prefix": "BF NOTE UP0",
+      "flipX": false,
+      "looped": false,
+      "name": "singUP"
+    },
+    {
+      "flipY": false,
+      "offsets": [37, -5],
+      "frameRate": 24,
+      "prefix": "BF NOTE RIGHT0",
+      "flipX": false,
+      "looped": false,
+      "name": "singLEFT"
+    },
+    {
+      "flipY": false,
+      "offsets": [7, 4],
+      "frameRate": 24,
+      "prefix": "BF HEY!!",
+      "flipX": false,
+      "looped": false,
+      "name": "hey"
+    },
+    {
+      "flipY": false,
+      "offsets": [-5, 0],
+      "frameRate": 24,
+      "prefix": "BF idle shaking",
+      "flipX": false,
+      "looped": false,
+      "name": "scared"
+    }
+  ]
+}

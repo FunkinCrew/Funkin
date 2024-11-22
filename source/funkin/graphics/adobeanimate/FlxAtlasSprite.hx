@@ -1,14 +1,14 @@
 package funkin.graphics.adobeanimate;
 
-import flixel.util.FlxSignal.FlxTypedSignal;
-import flxanimate.FlxAnimate;
-import flxanimate.FlxAnimate.Settings;
-import flxanimate.frames.FlxAnimateFrames;
 import flixel.graphics.frames.FlxFrame;
-import flixel.system.FlxAssets.FlxGraphicAsset;
-import openfl.display.BitmapData;
 import flixel.math.FlxPoint;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.util.FlxSignal.FlxTypedSignal;
+import flxanimate.FlxAnimate.Settings;
+import flxanimate.FlxAnimate;
 import flxanimate.animate.FlxKeyFrame;
+import flxanimate.frames.FlxAnimateFrames;
+import openfl.display.BitmapData;
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.

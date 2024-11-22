@@ -3,7 +3,10 @@
   "name": "Mat",
   "ownedChars": [
     "mat",
+    "mat-dark",
     "mat-playable",
+    "mat-playable-dark",
+    "mat-car",
     "mat-christmas"
   ],
   "showUnownedChars": false,
@@ -11,8 +14,8 @@
   "freeplayStyle": "mat",
   "freeplayDJ": {
     "assetPath": "freeplay/freeplay-mat",
-    "text1": "MATING TIME",
-    "text2": "BISEXUAL FURRY GUY",
+    "text1": "MAT-ING TIME",
+    "text2": "BISEXUAL FURRY LOSER",
     "text3": "DIGITAL ARTIST",
     "fistPump": {
       "introStartFrame": 0,

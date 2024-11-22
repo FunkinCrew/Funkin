@@ -29,7 +29,7 @@ class PixelatedIcon extends FlxFilteredSprite
         charPath += "facepixel";
 
       // BASE GAME CASES
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
+      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark" | "bf-opponent" | "bf-opponent-dark":
         charPath += "bfpixel";
       case "monster-christmas":
         charPath += "monsterpixel";

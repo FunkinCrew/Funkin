@@ -8,7 +8,7 @@
     "characters": {
       "player": "mat-playable-dark",
       "girlfriend": "prism-dark",
-      "opponent": "bf-dark",
+      "opponent": "bf-opponent-dark",
       "instrumental": "pico",
       "altInstrumentals": []
     },
