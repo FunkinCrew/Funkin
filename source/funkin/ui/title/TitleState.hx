@@ -457,7 +457,7 @@ class TitleState extends MusicBeatState
               addMoreText('FNF');
             case 14:
               // MAT-ING TIME GUYS!
-              if (curWacky[0] == "mat-ing") addMoreText('Mat-ing');
+              if (curWacky[0] == "mating") addMoreText('Mating');
               else
                 addMoreText('Mat');
             case 15:

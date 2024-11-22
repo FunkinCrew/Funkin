@@ -1,26 +1,19 @@
 package funkin.ui.transition;
 
-import flixel.FlxSprite;
-import haxe.Json;
-import funkin.graphics.FunkinSprite;
-// import flxtyped group
-import funkin.ui.MusicBeatSubState;
-import funkin.ui.story.StoryMenuState;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxTimer;
 import flixel.FlxG;
+import flixel.FlxState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
-import flixel.util.FlxSignal;
-import funkin.ui.mainmenu.MainMenuState;
-import flixel.addons.transition.FlxTransitionableState;
-import openfl.display.BitmapData;
-import funkin.ui.freeplay.FreeplayState;
-import openfl.geom.Matrix;
+import flixel.util.FlxTimer;
+// import flxtyped group
 import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.mainmenu.MainMenuState;
+import haxe.Json;
 import openfl.display.Sprite;
-import openfl.display.Bitmap;
-import flixel.FlxState;
 
 using Lambda;
 using StringTools;
@@ -97,8 +90,7 @@ class StickerSubState extends MusicBeatSubState
     add(grpStickers);
 
     // makes the stickers on the most recent camera, which is more often than not... a UI camera!!
-    // grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-    grpStickers.cameras = FlxG.cameras.list;
+    grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
     if (oldStickers != null)
     {
@@ -116,14 +108,6 @@ class StickerSubState extends MusicBeatSubState
   public function degenStickers():Void
   {
     grpStickers.cameras = FlxG.cameras.list;
-
-    /*
-      if (dipshit != null)
-      {
-        FlxG.removeChild(dipshit);
-        dipshit = null;
-      }
-     */
 
     if (grpStickers.members == null || grpStickers.members.length == 0)
     {
@@ -245,20 +229,6 @@ class StickerSubState extends MusicBeatSubState
 
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
-
-            // I think this grabs the screen and puts it under the stickers?
-            // Leaving this commented out rather than stripping it out because it's cool...
-            /*
-              dipshit = new Sprite();
-              var scrn:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
-              var mat:Matrix = new Matrix();
-              scrn.draw(grpStickers.cameras[0].canvas, mat);
-
-              var bitmap:Bitmap = new Bitmap(scrn);
-
-              dipshit.addChild(bitmap);
-              // FlxG.addChildBelowMouse(dipshit);
-             */
 
             FlxG.switchState(() -> {
               // TODO: Rework this asset caching stuff
