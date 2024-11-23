@@ -66,7 +66,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
     var fr = medal.anim.curSymbol.timeline.get(0).get(0);
     fr.name = "START"; // woerkaround
-    fr.add(() -> FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.));
+    // fr.add(() -> FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.));
 
     medal.anim.getFrameLabel("show").add(function() {
       points.visible = true;
@@ -134,6 +134,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
       instance.medal.visible = true;
       instance.medal.replaceFrameGraphic(3, graphic);
       instance.medal.anim.play(true);
+
+      FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
     }
 
     if (!instance.medal.anim.isPlaying && instance.funcs.length == 0) func();
