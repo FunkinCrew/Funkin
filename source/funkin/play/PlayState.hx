@@ -993,6 +993,7 @@ class PlayState extends MusicBeatSubState
     {
       #if mobile
       pauseButton.alpha = 0;
+      hitbox.visible = false;
       #end
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
@@ -1052,7 +1053,12 @@ class PlayState extends MusicBeatSubState
     }
 
     #if mobile
-    if (justUnpaused) pauseButton.alpha = 0.65;
+    if (justUnpaused)
+    {
+      pauseButton.alpha = 0.65;
+
+      if (!startingSong) hitbox.visible = true;
+    }
     #end
 
     // Cap health.
@@ -2967,6 +2973,7 @@ class PlayState extends MusicBeatSubState
         currentConversation.pauseMusic();
         #if mobile
         pauseButton.alpha = 0;
+        hitbox.visible = false;
         #end
 
         var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
@@ -2986,6 +2993,7 @@ class PlayState extends MusicBeatSubState
         VideoCutscene.pauseVideo();
         #if mobile
         pauseButton.alpha = 0;
+        hitbox.visible = false;
         #end
 
         var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
