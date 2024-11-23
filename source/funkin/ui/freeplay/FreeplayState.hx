@@ -186,7 +186,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * The backing card that has the toned dots, right now we just use that one dad graphic dave cooked up
    */
-  public var bgDad:FlxSprite;
+  public var backingImage:FunkinSprite;
 
   public var angleMaskShader:AngleMask = new AngleMask();
 
@@ -251,7 +251,7 @@ class FreeplayState extends MusicBeatSubState
     ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
-    bgDad = new FlxSprite(backingCard.pinkBack.width * 0.74, 0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());
+    backingImage = FunkinSprite.create(backingCard.pinkBack.width * 0.74, 0, styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey());
   }
 
   override function create():Void
@@ -349,37 +349,37 @@ class FreeplayState extends MusicBeatSubState
         });
     }
 
-    bgDad.shader = angleMaskShader;
-    bgDad.visible = false;
+    backingImage.shader = angleMaskShader;
+    backingImage.visible = false;
 
-    var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height), FlxColor.BLACK);
+    var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(backingImage.width), Std.int(backingImage.height), FlxColor.BLACK);
     add(blackOverlayBullshitLOLXD); // used to mask the text lol!
 
     // this makes the texture sizes consistent, for the angle shader
-    bgDad.setGraphicSize(0, FlxG.height);
+    backingImage.setGraphicSize(0, FlxG.height);
     blackOverlayBullshitLOLXD.setGraphicSize(0, FlxG.height);
 
-    bgDad.updateHitbox();
+    backingImage.updateHitbox();
     blackOverlayBullshitLOLXD.updateHitbox();
 
-    exitMovers.set([blackOverlayBullshitLOLXD, bgDad],
+    exitMovers.set([blackOverlayBullshitLOLXD, backingImage],
       {
         x: FlxG.width * 1.5,
         speed: 0.4,
         wait: 0
       });
 
-    exitMoversCharSel.set([blackOverlayBullshitLOLXD, bgDad],
+    exitMoversCharSel.set([blackOverlayBullshitLOLXD, backingImage],
       {
         y: -100,
         speed: 0.8,
         wait: 0.1
       });
 
-    add(bgDad);
+    add(backingImage);
     // backingCard.pinkBack.width * 0.74
 
-    blackOverlayBullshitLOLXD.shader = bgDad.shader;
+    blackOverlayBullshitLOLXD.shader = backingImage.shader;
 
     rankBg.makeSolidColor(FlxG.width, FlxG.height, 0xD3000000);
     add(rankBg);
@@ -574,11 +574,11 @@ class FreeplayState extends MusicBeatSubState
         // render optimisation
         if (_parentState != null) _parentState.persistentDraw = false;
 
-        FlxTween.color(bgDad, 0.6, 0xFF000000, 0xFFFFFFFF,
+        FlxTween.color(backingImage, 0.6, 0xFF000000, 0xFFFFFFFF,
           {
             ease: FlxEase.expoOut,
             onUpdate: function(_) {
-              angleMaskShader.extraColor = bgDad.color;
+              angleMaskShader.extraColor = backingImage.color;
             }
           });
       }
@@ -620,7 +620,7 @@ class FreeplayState extends MusicBeatSubState
         });
       });
 
-      bgDad.visible = true;
+      backingImage.visible = true;
       backingCard?.introDone();
 
       if (prepForNewRank && fromResultsParams != null)
@@ -2058,6 +2058,8 @@ class FreeplayState extends MusicBeatSubState
     {
       playCurSongPreview(daSongCapsule);
       grpCapsules.members[curSelected].selected = true;
+
+      switchBackingImage(daSongCapsule.freeplayData);
     }
   }
 
@@ -2118,6 +2120,12 @@ class FreeplayState extends MusicBeatSubState
         Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
       }
     }
+  }
+
+  public function switchBackingImage(?freeplaySongData:FreeplaySongData):Void
+  {
+    var path = Paths.image('freeplay/freeplayBG${freeplaySongData?.levelId ?? 'week1'}-${currentCharacterId ?? 'bf'}');
+    backingImage.loadTextureAsync(path);
   }
 
   /**
