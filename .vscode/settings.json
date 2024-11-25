@@ -70,7 +70,7 @@
   "files.eol": "\n",
 
   "haxe.displayPort": "auto",
-  "haxe.enableCompilationServer": false,
+  "haxe.enableCompilationServer": true,
   "haxe.enableServerView": true,
   "haxe.displayServer": {
     "arguments": ["-v"]
