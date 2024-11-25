@@ -646,7 +646,6 @@ class Save
   public function getSongScore(songId:String, difficultyId:String = 'normal', ?variation:String):Null<SaveScoreData>
   {
     var song = data.scores.songs.get(songId);
-    trace('Getting song score for $songId $difficultyId $variation');
     if (song == null)
     {
       trace('Could not find song data for $songId $difficultyId $variation');
