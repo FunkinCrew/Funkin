@@ -235,7 +235,7 @@ class InitState extends FlxState
         storyMode: true,
         title: "Cum Song Erect by Kawai Sprite",
         songId: "cum",
-        characterId: "pico-playable",
+        characterId: "bf",
         difficultyId: "nightmare",
         isNewHighscore: true,
         scoreData:
@@ -251,7 +251,7 @@ class InitState extends FlxState
                 combo: 69,
                 maxCombo: 69,
                 totalNotesHit: 140,
-                totalNotes: 275
+                totalNotes: 190
               }
             // 2400 total notes = 7% = LOSS
             // 275 total notes = 69% = NICE

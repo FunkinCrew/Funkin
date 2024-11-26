@@ -67,7 +67,9 @@ class ResultState extends MusicBeatSubState
     {
       sprite:FlxAtlasSprite,
       delay:Float,
-      forceLoop:Bool
+      forceLoop:Bool,
+      startFrameLabel:String,
+      sound:String
     }> = [];
   var characterSparrowAnimations:Array<
     {
@@ -184,6 +186,11 @@ class ResultState extends MusicBeatSubState
     {
       if (animData == null) continue;
 
+      if (animData.filter != "both")
+      {
+        if (Preferences.naughtyness && animData.filter != "naughty" || !Preferences.naughtyness && animData.filter != "safe") continue;
+      }
+
       var animPath:String = Paths.stripLibrary(animData.assetPath);
       var animLibrary:String = Paths.getLibrary(animData.assetPath);
       var offsets = animData.offsets ?? [0, 0];
@@ -199,7 +206,6 @@ class ResultState extends MusicBeatSubState
           {
             // Animation is not looped.
             animation.onAnimationComplete.add((_name:String) -> {
-              trace("AHAHAH 2");
               if (animation != null)
               {
                 animation.anim.pause();
@@ -209,7 +215,6 @@ class ResultState extends MusicBeatSubState
           else if (animData.loopFrameLabel != null)
           {
             animation.onAnimationComplete.add((_name:String) -> {
-              trace("AHAHAH 2");
               if (animation != null)
               {
                 animation.playAnimation(animData.loopFrameLabel ?? '', true, false, true); // unpauses this anim, since it's on PlayOnce!
@@ -227,7 +232,6 @@ class ResultState extends MusicBeatSubState
               }
             });
           }
-
           // Hide until ready to play.
           animation.visible = false;
           // Queue to play.
@@ -235,7 +239,9 @@ class ResultState extends MusicBeatSubState
             {
               sprite: animation,
               delay: animData.delay ?? 0.0,
-              forceLoop: (animData.loopFrame ?? -1) == 0
+              forceLoop: (animData.loopFrame ?? -1) == 0,
+              startFrameLabel: (animData.startFrameLabel ?? ""),
+              sound: (animData.sound ?? "")
             });
           // Add to the scene.
           add(animation);
@@ -599,7 +605,14 @@ class ResultState extends MusicBeatSubState
       new FlxTimer().start(atlas.delay, _ -> {
         if (atlas.sprite == null) return;
         atlas.sprite.visible = true;
-        atlas.sprite.playAnimation('');
+        atlas.sprite.playAnimation(atlas.startFrameLabel);
+        if (atlas.sound != "")
+        {
+          var sndPath:String = Paths.stripLibrary(atlas.sound);
+          var sndLibrary:String = Paths.getLibrary(atlas.sound);
+
+          FunkinSound.playOnce(Paths.sound(sndPath, sndLibrary), 1.0);
+        }
       });
     }
 

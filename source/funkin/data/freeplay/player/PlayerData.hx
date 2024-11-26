@@ -332,6 +332,10 @@ typedef PlayerResultsAnimationData =
   var offsets:Array<Float>;
 
   @:optional
+  @:default("both")
+  var filter:String;
+
+  @:optional
   @:default(500)
   var zIndex:Int;
 
@@ -346,6 +350,10 @@ typedef PlayerResultsAnimationData =
   @:optional
   @:default('')
   var startFrameLabel:Null<String>;
+
+  @:optional
+  @:default('')
+  var sound:Null<String>;
 
   @:optional
   @:default(true)
