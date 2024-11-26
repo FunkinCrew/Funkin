@@ -195,6 +195,19 @@ class CrashHandler
 
     fullContents += '\n';
 
+    fullContents += '=====================\n';
+
+    fullContents += '\n';
+
+    fullContents += 'Console Traces: \n';
+
+    for (line in AnsiTrace.allTraces)
+    {
+      fullContents += '${line}\n';
+    }
+
+    fullContents += '\n';
+
     return fullContents;
   }
   #end

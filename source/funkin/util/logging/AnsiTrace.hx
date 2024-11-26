@@ -2,6 +2,8 @@ package funkin.util.logging;
 
 class AnsiTrace
 {
+  public static var allTraces:Array<String> = [];
+
   // mostly a copy of haxe.Log.trace()
   // but adds nice cute ANSI things
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
@@ -10,6 +12,7 @@ class AnsiTrace
     return;
     #end
     var str = formatOutput(v, info);
+    allTraces.push(str);
     #if js
     if (js.Syntax.typeof(untyped console) != "undefined" && (untyped console).log != null) (untyped console).log(str);
     #elseif lua
