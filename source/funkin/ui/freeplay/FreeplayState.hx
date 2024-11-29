@@ -17,7 +17,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.effects.IntervalShake;
@@ -2054,8 +2053,12 @@ class FreeplayState extends MusicBeatSubState
         });
       FlxG.sound.music.fadeIn(2, 0, 0.8);
 
-      Conductor.instance.mapTimeChanges([new SongTimeChange(0, 145)]);
-      Conductor.instance.update();
+      var freeplayRandomData:Null<SongMusicData> = SongRegistry.instance.parseMusicData('freeplayRandom');
+      if (freeplayRandomData != null)
+      {
+        Conductor.instance.mapTimeChanges(freeplayRandomData.timeChanges);
+        Conductor.instance.update();
+      }
     }
     else
     {
