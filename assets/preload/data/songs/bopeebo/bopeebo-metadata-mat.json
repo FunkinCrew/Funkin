@@ -9,7 +9,8 @@
       "player": "mat-playable",
       "girlfriend": "prism",
       "opponent": "dad",
-      "instrumental": "mat"
+      "instrumental": "mat",
+      "altInstrumentals": []
     },
     "stage": "mainStageErect",
     "noteStyle": "funkin",
