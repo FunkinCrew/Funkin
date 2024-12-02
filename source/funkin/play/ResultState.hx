@@ -742,13 +742,6 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    if (FlxG.keys.justPressed.RIGHT) speedOfTween.x += 0.1;
-
-    if (FlxG.keys.justPressed.LEFT)
-    {
-      speedOfTween.x -= 0.1;
-    }
-
     if (controls.PAUSE)
     {
       if (introMusicAudio != null)
