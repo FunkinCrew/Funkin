@@ -301,7 +301,7 @@ enum abstract FunkinHitboxControlSchemes(String) from String to String
   final DoubleThumbTriangle = 'doubleThumbTriangle';
   final DoubleThumbSquare = 'doubleThumbSquare';
   final DoubleThumbDPad = 'doubleThumbDPad';
-  final NoteDPad = 'noteDPad';
+  final Arrows = 'arrows';
 }
 
 /**
@@ -396,7 +396,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
             add(createHintCircle(x, y, hintsNoteDirections[j % hintsNoteDirections.length], hintSize, hintsColors[j % hintsColors.length]));
           }
         }
-      case FunkinHitboxControlSchemes.NoteDPad:
+      case FunkinHitboxControlSchemes.Arrows:
         final hintWidth:Int = 146;
         final hintHeight:Int = 149;
         final noteSpacing:Int = 80;

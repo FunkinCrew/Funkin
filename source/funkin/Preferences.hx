@@ -461,7 +461,7 @@ class Preferences
 
   static function get_controlsScheme():String
   {
-    return Save?.instance?.mobileOptions?.controlsScheme ?? FunkinHitboxControlSchemes.NoteDPad;
+    return Save?.instance?.mobileOptions?.controlsScheme ?? FunkinHitboxControlSchemes.Arrows;
   }
 
   static function set_controlsScheme(value:String):String

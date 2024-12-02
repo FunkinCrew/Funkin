@@ -61,8 +61,8 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
   /**
    * An array of every single scheme.
    */
-  final availableSchemes:Array<String> = [
-    FunkinHitboxControlSchemes.NoteDPad,
+  private final availableSchemes:Array<String> = [
+    FunkinHitboxControlSchemes.Arrows,
     FunkinHitboxControlSchemes.FourLanes,
     FunkinHitboxControlSchemes.DoubleThumbTriangle,
     FunkinHitboxControlSchemes.DoubleThumbSquare,
@@ -139,7 +139,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
       var hitboxShowcase:HitboxShowcase = new HitboxShowcase(Std.int(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
       hitboxShowcases.add(hitboxShowcase);
 
-      if (availableSchemes[i] == FunkinHitboxControlSchemes.NoteDPad)
+      if (availableSchemes[i] == FunkinHitboxControlSchemes.Arrows)
       {
         hitboxShowcases.members[i].createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
           Preferences.downscroll = value;
@@ -216,7 +216,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
     addHitbox(true, false, availableSchemes[currentIndex]);
 
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.NoteDPad)
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
     {
       hitbox.forEachAlive(function(hint:FunkinHint):Void {
         hint.alpha = 1;

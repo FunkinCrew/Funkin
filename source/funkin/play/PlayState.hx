@@ -730,7 +730,7 @@ class PlayState extends MusicBeatSubState
     // Initialize the hitbox for mobile controls
     addHitbox(false);
 
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.NoteDPad)
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
     {
       for (direction in Strumline.DIRECTIONS)
       {
@@ -1907,7 +1907,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.cameras = [camHUD];
 
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.NoteDPad)
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
     {
       initNoteHitbox();
     }

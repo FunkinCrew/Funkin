@@ -2,9 +2,6 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
-#if mobile
-import funkin.mobile.ui.FunkinHitbox;
-#end
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -151,14 +148,13 @@ class Save
                 },
             },
         },
-
       #if mobile
       mobileOptions:
         {
           // Reasonable defaults.
           screenTimeout: false,
           vibration: true,
-          controlsScheme: FunkinHitboxControlSchemes.NoteDPad
+          controlsScheme: FunkinHitboxControlSchemes.Arrows
         },
       #end
 
@@ -663,9 +659,6 @@ class Save
 
   public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
   {
-    // need it for testing (REMOVE IT ON RELEASE)
-    return true;
-
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
@@ -1514,8 +1507,8 @@ typedef SaveDataMobileOptions =
   var vibration:Bool;
 
   /**
-   * Controls scheme for the hitbox.
-   * @default `fourLanes`
+   * Controls scheme for mobile.
+   * @default `Arrows`
    */
   var controlsScheme:String;
 };
