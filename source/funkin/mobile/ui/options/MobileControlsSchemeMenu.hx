@@ -46,12 +46,12 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
   /**
    * An object used for selecting the current hitbox scheme.
    */
-  private var theCenterHitbox:FunkinSprite;
+  private var itemNavHitbox:FunkinSprite;
 
   /**
    * An object used for selecting the current hitbox scheme's option.
    */
-  private var theBottomHitbox:FunkinSprite;
+  private var optionNavHitbox:FunkinSprite;
 
   /**
    * Returns true, if player is currently in hitbox demonstration.
@@ -95,10 +95,14 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
     for (i in 0...availableSchemes.length)
     {
-      if (availableSchemes[i] == Preferences.controlsScheme) currentIndex = i;
+      if (availableSchemes[i] == Preferences.controlsScheme)
+      {
+        currentIndex = i;
+        break;
+      }
     }
 
-    schemeNameText = new AtlasText(FlxG.width * 0.05, FlxG.height * 0.05, getCurrentSchemeName(), AtlasFont.BOLD);
+    schemeNameText = new AtlasText(FlxG.width * 0.05, FlxG.height * 0.05, availableSchemes[currentIndex], AtlasFont.BOLD);
     add(schemeNameText);
 
     setupCameras();
@@ -113,7 +117,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
    */
   function setupCameras()
   {
-    final mainCamera:FunkinCamera = new FunkinCamera('mobileControlsSchemeMainCamera');
+    final mainCamera:FunkinCamera = new FunkinCamera('SchemeMenuCamera');
     mainCamera.bgColor = FlxColor.BLACK;
     FlxG.cameras.add(mainCamera);
 
@@ -139,28 +143,27 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
       var hitboxShowcase:HitboxShowcase = new HitboxShowcase(Std.int(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
       hitboxShowcases.add(hitboxShowcase);
 
-      if (availableSchemes[i] == FunkinHitboxControlSchemes.Arrows)
-      {
-        hitboxShowcases.members[i].createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
-          Preferences.downscroll = value;
-        });
-      }
+      if (availableSchemes[i] != FunkinHitboxControlSchemes.Arrows) continue;
+
+      hitboxShowcases.members[i].createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
+        Preferences.downscroll = value;
+      });
     }
     add(hitboxShowcases);
 
-    theCenterHitbox = new FunkinSprite(FlxG.width * 0.295).makeSolidColor(Std.int(FlxG.width * 0.25), Std.int(FlxG.height * 0.25), FlxColor.GREEN);
-    theCenterHitbox.cameras = [camButtons];
-    theCenterHitbox.updateHitbox();
-    theCenterHitbox.screenCenter(Y);
-    theCenterHitbox.visible = false;
-    add(theCenterHitbox);
+    itemNavHitbox = new FunkinSprite(FlxG.width * 0.295).makeSolidColor(Std.int(FlxG.width * 0.25), Std.int(FlxG.height * 0.25), FlxColor.GREEN);
+    itemNavHitbox.cameras = [camButtons];
+    itemNavHitbox.updateHitbox();
+    itemNavHitbox.screenCenter(Y);
+    itemNavHitbox.visible = false;
+    add(itemNavHitbox);
 
-    theBottomHitbox = new FunkinSprite(FlxG.width * 0.312,
+    optionNavHitbox = new FunkinSprite(FlxG.width * 0.312,
       FlxG.height * 0.815).makeSolidColor(Std.int(FlxG.width * 0.2), Std.int(FlxG.height * 0.05), FlxColor.GREEN);
-    theBottomHitbox.cameras = [camButtons];
-    theBottomHitbox.updateHitbox();
-    theBottomHitbox.visible = false;
-    add(theBottomHitbox);
+    optionNavHitbox.cameras = [camButtons];
+    optionNavHitbox.updateHitbox();
+    optionNavHitbox.visible = false;
+    add(optionNavHitbox);
   }
 
   /**
@@ -216,17 +219,16 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
     addHitbox(true, false, availableSchemes[currentIndex]);
 
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
-    {
-      hitbox.forEachAlive(function(hint:FunkinHint):Void {
-        hint.alpha = 1;
-        @:privateAccess
-        if (hint.label != null) hint.label.alpha = 0.3;
-      });
-    }
-
     hitbox.forEachAlive(function(hint:FunkinHint) {
       if (!hint.deadZones.contains(cast(currentButton.body, FunkinSprite))) hint.deadZones.push(cast(currentButton.body, FunkinSprite));
+    });
+
+    if (Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows) return;
+
+    hitbox.forEachAlive(function(hint:FunkinHint):Void {
+      hint.alpha = 1;
+      @:privateAccess
+      if (hint.label != null) hint.label.alpha = 0.3;
     });
   }
 
@@ -261,45 +263,11 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
     FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
-    schemeNameText.text = getCurrentSchemeName();
+    schemeNameText.text = availableSchemes[currentIndex];
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.selectionIndex = currentIndex;
     });
-  }
-
-  /**
-   * Gets current scheme's name.
-   * Needed for schemeNameText.
-   * @return String
-   */
-  function getCurrentSchemeName():String
-  {
-    var scheme:String = availableSchemes[currentIndex];
-
-    // Make first character capital.
-    scheme = scheme.charAt(0).toUpperCase() + scheme.substr(1);
-
-    // Begin word separation process.
-    var regex = ~/[A-Z]/;
-    var wordsSeperated:Array<String> = [];
-    var word = "";
-    for (i in 0...scheme.length)
-    {
-      var char = scheme.charAt(i);
-
-      // Push the current word and move to next one if current character is capital.
-      if (regex.match(char) && word.length != 0)
-      {
-        wordsSeperated.push(word);
-        word = "";
-      }
-      word += char;
-    }
-
-    wordsSeperated.push(word);
-
-    return wordsSeperated.join(" ");
   }
 
   /**
@@ -323,17 +291,16 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
       return;
     }
 
-    if (TouchUtil.justPressed && TouchUtil.overlapsComplex(theCenterHitbox) && !SwipeUtil.swipeAny)
+    if (!TouchUtil.justPressed || SwipeUtil.swipeAny) return;
+
+    if (TouchUtil.overlapsComplex(itemNavHitbox))
     {
       hitboxShowcases.members[currentIndex].onPress();
       currentButton.busy = true;
       return;
     }
 
-    if (TouchUtil.justPressed
-      && TouchUtil.overlapsComplex(theBottomHitbox)
-      && !SwipeUtil.swipeAny
-      && hitboxShowcases.members[currentIndex].checkbox != null)
+    if (TouchUtil.overlapsComplex(optionNavHitbox) && hitboxShowcases.members[currentIndex].checkbox != null)
     {
       hitboxShowcases.members[currentIndex].checkbox.text.callback();
       return;

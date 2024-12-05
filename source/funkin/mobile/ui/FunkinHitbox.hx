@@ -297,11 +297,11 @@ class FunkinHint extends FunkinPolygonButton
 
 enum abstract FunkinHitboxControlSchemes(String) from String to String
 {
-  final FourLanes = 'fourLanes';
-  final DoubleThumbTriangle = 'doubleThumbTriangle';
-  final DoubleThumbSquare = 'doubleThumbSquare';
-  final DoubleThumbDPad = 'doubleThumbDPad';
-  final Arrows = 'arrows';
+  final FourLanes = 'Four Lanes';
+  final DoubleThumbTriangle = 'Double Thumb Triangle';
+  final DoubleThumbSquare = 'Double Thumb Square';
+  final DoubleThumbDPad = 'Double Thumb DPad';
+  final Arrows = 'Arrows';
 }
 
 /**

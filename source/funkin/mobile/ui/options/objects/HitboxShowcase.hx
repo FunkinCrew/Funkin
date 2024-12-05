@@ -7,7 +7,6 @@ import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import funkin.mobile.ui.FunkinHitbox;
-import funkin.graphics.FunkinSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
 import funkin.util.MathUtil;
@@ -15,7 +14,6 @@ import funkin.util.MathUtil;
 /**
  * Represents a showcase hitbox in the scheme menu.
  */
-@:nullSafety
 class HitboxShowcase extends FlxSpriteGroup
 {
   /**
@@ -116,6 +114,12 @@ class HitboxShowcase extends FlxSpriteGroup
     this.cameras = [camHitbox];
   }
 
+  /**
+   * Creates a HitboxOptionButton object.
+   * @param name Option's name.
+   * @param defaultValue Option's default value.
+   * @param callback A callback function that will be triggered when the HitboxOptionButton object is clicked.
+   */
   public function createOption(name:String = "", defaultValue:Bool = false, callback:Bool->Void)
   {
     if (checkbox != null) return;

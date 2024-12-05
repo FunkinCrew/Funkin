@@ -5,7 +5,6 @@ import flixel.effects.FlxFlicker;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
-import flixel.FlxSprite;
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
 import funkin.audio.FunkinSound;
@@ -15,7 +14,6 @@ import funkin.ui.AtlasText;
  * Represents a button in the scheme menu, specifically designed for mobile touch input.
  * The button displays text and allows selection through touch or an external callback.
  */
-@:nullSafety
 class SchemeMenuButton extends FlxSpriteGroup
 {
   /**
