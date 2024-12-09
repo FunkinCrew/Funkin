@@ -129,7 +129,10 @@ class PauseSubState extends MusicBeatSubState
    * Disallow input until transitions are complete!
    * This prevents the pause menu from immediately closing when opened, among other things.
    */
-  public var allowInput:Bool = false;
+  public var allowInput:Bool = true;
+
+  // If this is true, it means we are frame 1 of our substate.
+  var justOpened:Bool = true;
 
   /**
    * The entries currently displayed in the pause menu.
@@ -398,10 +401,6 @@ class PauseSubState extends MusicBeatSubState
       FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
       delay += 0.1;
     }
-
-    new FlxTimer().start(0.2, (_) -> {
-      allowInput = true;
-    });
   }
 
   // ===============
@@ -424,14 +423,17 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT && !justOpened)
     {
       currentMenuEntries[currentEntry].callback(this);
     }
-    else if (controls.PAUSE)
+    else if (controls.PAUSE && !justOpened)
     {
       resume(this);
     }
+
+    // we only want justOpened to be true for 1 single frame, when we first get into the pause menu substate
+    justOpened = false;
 
     #if FEATURE_DEBUG_FUNCTIONS
     // to pause the game and get screenshots easy, press H on pause menu!
