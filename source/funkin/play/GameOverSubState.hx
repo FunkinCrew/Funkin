@@ -96,6 +96,8 @@ class GameOverSubState extends MusicBeatSubState
 
   var targetCameraZoom:Float = 1.0;
 
+  var canInput:Bool = false;
+
   public function new(params:GameOverParams)
   {
     super();
@@ -170,6 +172,11 @@ class GameOverSubState extends MusicBeatSubState
     #if mobile
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE, goBack);
     #end
+
+    // Allow input a second later to prevent accidental gameover skips.
+    new FlxTimer().start(1, function(tmr:FlxTimer) {
+      canInput = true;
+    });
   }
 
   @:nullSafety(Off)
@@ -217,7 +224,6 @@ class GameOverSubState extends MusicBeatSubState
   }
 
   var hasStartedAnimation:Bool = false;
-  var canInput:Bool = false;
 
   override function update(elapsed:Float):Void
   {
@@ -297,7 +303,6 @@ class GameOverSubState extends MusicBeatSubState
           }
         }
       }
-      canInput = true;
     }
 
     // Start death music before firstDeath gets replaced
