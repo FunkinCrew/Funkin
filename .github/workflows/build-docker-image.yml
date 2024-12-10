@@ -3,16 +3,36 @@ name: Create and publish Docker image
 on:
   workflow_dispatch:
   push:
-    paths:
-    - '**/Dockerfile'
-    - '.github/workflows/build-docker-image.yml'
 
 jobs:
+  check-conditions:
+    runs-on: build-set
+    outputs:
+      should_build: ${{ steps.filter.outputs.docker }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          docker:
+            - '.github/workflows/build-docker-image.yml'
+            - '**/Dockerfile'
+    - name: trigger Dockerfile rebuild
+      if: steps.filter.outputs.workflows == 'true'
+      run: echo "rebuilding Dockerfile"
+    - name: inhibit Dockerfile rebuild
+      if: steps.filter.outputs.workflows != 'true'
+      run: echo "skipping Dockerfile rebuild"
+
   build-and-push-image:
     runs-on: build-set
     permissions:
       contents: read
       packages: write
+
+    needs: check-conditions
+    if: needs.check-conditions.outputs.should_build == 'true'
 
     steps:
     - name: Get checkout token

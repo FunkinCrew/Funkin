@@ -14,10 +14,6 @@ on:
   workflow_run:
     workflows: [Create and publish Docker image]
     types: [completed]
-  #push:
-  #  paths-ignore:
-  #  - '**/Dockerfile'
-  #  - '.github/workflows/build-docker-image.yml'
 
 jobs:
 
