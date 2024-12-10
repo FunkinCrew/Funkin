@@ -11,10 +11,13 @@ on:
         type: boolean
         description: Save the build artifact to Github Actions (sends to itch otherwise)
         default: false
-  push:
-    paths-ignore:
-    - '**/Dockerfile'
-    - '.github/workflows/build-docker-image.yml'
+  workflow_run:
+    workflows: [Create and publish Docker image]
+    types: [completed]
+  #push:
+  #  paths-ignore:
+  #  - '**/Dockerfile'
+  #  - '.github/workflows/build-docker-image.yml'
 
 jobs:
 
