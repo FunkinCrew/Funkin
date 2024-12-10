@@ -1,4 +1,4 @@
-FROM ubuntu:mantic
+FROM ubuntu:noble
 
 ARG haxe_version=4.3.4
 ARG haxelib_version=4.1.0
