@@ -105,7 +105,13 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     for (i in 0...min(group.members.length, levels.length))
     {
-      var animFrame:Int = Math.round(levels[i].value * 5);
+      var animFrame:Int = Math.round(levels[i].value * 6);
+
+      // don't display if we're at 0 volume from the level
+      group.members[i].visible = animFrame > 0;
+
+      // decrement our animFrame, so we can get a value from 0-5 for animation frames
+      animFrame -= 1;
 
       #if desktop
       // Web version scales with the Flixel volume level.

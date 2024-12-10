@@ -210,6 +210,7 @@ class FlxAtlasSprite extends FlxAnimate
   /**
    * Returns true if the animation has finished playing.
    * Never true if animation is configured to loop.
+   * @return Whether the animation has finished playing.
    */
   public function isAnimationFinished():Bool
   {
@@ -221,6 +222,7 @@ class FlxAtlasSprite extends FlxAnimate
   /**
    * Returns true if the animation has reached the last frame.
    * Can be true even if animation is configured to loop.
+   * @return Whether the animation has reached the last frame.
    */
   public function isLoopComplete():Bool
   {
@@ -255,7 +257,7 @@ class FlxAtlasSprite extends FlxAnimate
     this.anim.goToFrameLabel(label);
   }
 
-  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String> = null)
+  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String>):Array<String>
   {
     var labels = this.anim.getFrameLabels(layer);
     var array = [];
