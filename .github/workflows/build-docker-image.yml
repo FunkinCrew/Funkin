@@ -19,10 +19,10 @@ jobs:
             - '.github/workflows/build-docker-image.yml'
             - '**/Dockerfile'
     - name: trigger Dockerfile rebuild
-      if: steps.filter.outputs.workflows == 'true'
+      if: steps.filter.outputs.docker == 'true'
       run: echo "rebuilding Dockerfile"
     - name: inhibit Dockerfile rebuild
-      if: steps.filter.outputs.workflows != 'true'
+      if: steps.filter.outputs.docker != 'true'
       run: echo "skipping Dockerfile rebuild"
 
   build-and-push-image:
