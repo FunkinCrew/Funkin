@@ -51,10 +51,16 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
-  public function initAnalyzer()
+  public function initAnalyzer():Void
   {
     @:privateAccess
     analyzer = new SpectralAnalyzer(snd._channel.__audioSource, 7, 0.1, 40);
+    // A-Bot tuning...
+    analyzer.minDb = -65;
+    analyzer.maxDb = -25;
+    analyzer.maxFreq = 22000;
+    // we use a very low minFreq since some songs use low low subbass like a boss
+    analyzer.minFreq = 10;
 
     #if desktop
     // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
