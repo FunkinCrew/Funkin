@@ -155,7 +155,6 @@ class FreeplayDJ extends FlxAtlasSprite
         }
         else if (getCurrentAnimation() == animPrefixB)
         {
-          trace("Loss GYATT");
           var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
