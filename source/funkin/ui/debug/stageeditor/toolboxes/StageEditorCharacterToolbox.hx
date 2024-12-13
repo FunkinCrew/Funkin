@@ -3,7 +3,7 @@ package funkin.ui.debug.stageeditor.toolboxes;
 import haxe.ui.components.NumberStepper;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.util.SortUtil;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.components.DropDown;
@@ -17,7 +17,7 @@ import haxe.ui.core.Screen;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import haxe.ui.containers.Grid;
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
 
 using StringTools;
 
@@ -122,8 +122,8 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
 
     var prevText = characterTypeButton.text;
 
-    var charData = CharacterDataParser.fetchCharacterData(stageEditorState.selectedChar.characterId);
-    characterTypeButton.icon = (charData == null ? null : CharacterDataParser.getCharPixelIconAsset(stageEditorState.selectedChar.characterId));
+    var charData = CharacterRegistry.fetchCharacterData(stageEditorState.selectedChar.characterId);
+    characterTypeButton.icon = (charData == null ? null : CharacterRegistry.getCharPixelIconAsset(stageEditorState.selectedChar.characterId));
     characterTypeButton.text = (charData == null ? "None" : charData.name.length > 6 ? '${charData.name.substr(0, 6)}.' : '${charData.name}');
 
     if (prevText != characterTypeButton.text)
@@ -167,14 +167,14 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
     charGrid.width = this.width;
     charSelectScroll.addComponent(charGrid);
 
-    var charIds = CharacterDataParser.listCharacterIds();
+    var charIds = CharacterRegistry.listCharacterIds();
     charIds.sort(SortUtil.alphabetically);
 
     var defaultText:String = '(choose a character)';
 
     for (charIndex => charId in charIds)
     {
-      var charData:CharacterData = CharacterDataParser.fetchCharacterData(charId);
+      var charData:CharacterData = CharacterRegistry.fetchCharacterData(charId);
 
       var charButton = new haxe.ui.components.Button();
       charButton.width = 70;
@@ -192,7 +192,7 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
       }
 
       var LIMIT = 6;
-      charButton.icon = CharacterDataParser.getCharPixelIconAsset(charId);
+      charButton.icon = CharacterRegistry.getCharPixelIconAsset(charId);
       charButton.text = charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}';
 
       charButton.onClick = _ -> {
@@ -212,7 +212,7 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
         // okay i think that was enough cleaning phew you can see how clean this group is now!!!
         // anyways new character!!!!
 
-        var newChar = CharacterDataParser.fetchCharacter(charId, true);
+        var newChar = CharacterRegistry.fetchCharacter(charId, true);
         newChar.characterType = type;
 
         newChar.resetCharacter(true);
