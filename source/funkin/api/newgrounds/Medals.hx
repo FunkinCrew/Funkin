@@ -38,7 +38,12 @@ class Medals
     if (NewgroundsClient.instance.isLoggedIn())
     {
       var medalData = NewgroundsClient.instance.medals.get(medal.getId());
-      trace(medalData);
+      if (medalData == null)
+      {
+        trace('[NEWGROUNDS] Could not retrieve data for medal: ${medal}');
+        return;
+      }
+
       if (!medalData.unlocked)
       {
         trace('[NEWGROUNDS] Awarding medal (${medal}).');
