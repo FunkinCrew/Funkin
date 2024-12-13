@@ -33,12 +33,20 @@ class Medals
     return result;
   }
 
+  static function isValid(medalData:MedalData):Bool
+  {
+    // IDK why medalData can exist but _data can be null...
+    // TODO: Move checks to the NG library.
+    @:privateAccess
+    return (medalData != null && medalData._data != null);
+  }
+
   public static function award(medal:Medal):Void
   {
     if (NewgroundsClient.instance.isLoggedIn())
     {
       var medalData = NewgroundsClient.instance.medals.get(medal.getId());
-      if (medalData == null)
+      if (!isValid(medalData))
       {
         trace('[NEWGROUNDS] Could not retrieve data for medal: ${medal}');
         return;
