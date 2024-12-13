@@ -983,6 +983,7 @@ class Controls extends FlxActionSet
       Control.FREEPLAY_FAVORITE => getDefaultGamepadBinds(Control.FREEPLAY_FAVORITE),
       Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT),
       Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT),
+      Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT),
       Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
       Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
       Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
@@ -1033,11 +1034,13 @@ class Controls extends FlxActionSet
       case Control.CUTSCENE_ADVANCE:
         return [A];
       case Control.FREEPLAY_FAVORITE:
-        [FlxGamepadInputID.BACK]; // Back (i.e. Select)
+        return [Y]; // Back (i.e. Select)
       case Control.FREEPLAY_LEFT:
-        [LEFT_SHOULDER];
+        return [LEFT_SHOULDER];
       case Control.FREEPLAY_RIGHT:
-        [RIGHT_SHOULDER];
+        return [RIGHT_SHOULDER];
+      case Control.FREEPLAY_CHAR_SELECT:
+        return [X];
       case Control.VOLUME_UP:
         [];
       case Control.VOLUME_DOWN:
