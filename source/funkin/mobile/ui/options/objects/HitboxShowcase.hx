@@ -1,5 +1,6 @@
 package funkin.mobile.ui.options.objects;
 
+import flixel.system.scaleModes.FullScreenScaleMode;
 import flixel.addons.display.shapes.FlxShapeBox;
 import flixel.group.FlxSpriteGroup;
 import flixel.effects.FlxFlicker;
@@ -152,7 +153,7 @@ class HitboxShowcase extends FlxSpriteGroup
 
     alpha = MathUtil.smoothLerp(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.5);
 
-    x = MathUtil.smoothLerp(x, absoluteX + 1500 * -selectionIndex, elapsed, 0.5);
+    x = MathUtil.smoothLerp(x, absoluteX + 1500 * (-selectionIndex * FullScreenScaleMode.windowScale.x), elapsed, 0.5);
   }
 
   function get_selected():Bool

@@ -1,6 +1,7 @@
 package funkin.mobile.ui.options;
 
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.system.scaleModes.FullScreenScaleMode;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
 import flixel.FlxG;
