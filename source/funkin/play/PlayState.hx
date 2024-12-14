@@ -44,6 +44,7 @@ import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
+import funkin.play.notes.NoteVibrationsHandler;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
@@ -2683,11 +2684,6 @@ class PlayState extends MusicBeatSubState
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 
-    #if HAPTIC_VIBRATIONS
-    // Vibration each note hit.
-    HapticUtil.vibrate(0, 10);
-    #end
-
     // Send the note hit event.
     var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, isComboBreak, Highscore.tallies.combo + 1, noteDiff,
       daRating == 'sick');
@@ -2706,6 +2702,15 @@ class PlayState extends MusicBeatSubState
     // Display the combo meter and add the calculation to the score.
     applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
     popUpScore(event.judgement);
+
+    // Processes note vibrations.
+    #if HAPTIC_VIBRATIONS
+    // Handle note statuses. Mostly needed for stacked amplitude.
+    NoteVibrationsHandler.noteStatuses[input.noteDirection] = NoteStatus.isJustPressed;
+
+    // Try to vibrate. Works if atleast one note status is NoteStatus.isJustPressed.
+    NoteVibrationsHandler.tryNoteVibration();
+    #end
   }
 
   /**
