@@ -62,6 +62,11 @@ class GameOverSubState extends MusicBeatSubState
   var boyfriend:Null<BaseCharacter> = null;
 
   /**
+   * If this instance is a "fakeout death".
+   */
+  var isFakeout:Bool;
+
+  /**
    * The invisible object in the scene which the camera focuses on.
    */
   var cameraFollowPoint:FlxObject;
@@ -70,6 +75,11 @@ class GameOverSubState extends MusicBeatSubState
    * The music playing in the background of the state.
    */
   var gameOverMusic:Null<FunkinSound> = null;
+
+  /**
+   * The sound effect playing for this state.
+   */
+  var gameOverSfx:Null<FunkinSound> = null;
 
   /**
    * Whether the player has confirmed and prepared to restart the level or to go back to the freeplay menu.
@@ -88,6 +98,8 @@ class GameOverSubState extends MusicBeatSubState
 
   var transparent:Bool;
 
+  var confirmTimer:FlxTimer;
+
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
   var targetCameraZoom:Float = 1.0;
@@ -99,7 +111,10 @@ class GameOverSubState extends MusicBeatSubState
     this.isChartingMode = params?.isChartingMode ?? false;
     transparent = params.transparent;
 
+    isFakeout = FlxG.random.bool((1 / 4096) * 100);
+
     cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
+    confirmTimer = new FlxTimer();
   }
 
   /**
@@ -213,28 +228,44 @@ class GameOverSubState extends MusicBeatSubState
     {
       hasStartedAnimation = true;
 
-      if (boyfriend == null || PlayState.instance.isMinimalMode)
+      if (!isFakeout)
       {
         // Play the "blue balled" sound. May play a variant if one has been assigned.
-        playBlueBalledSFX();
+        gameOverSfx = playBlueBalledSFX();
+
+        if (gameOverSfx != null)
+        {
+          // Destroy when finished.
+          gameOverSfx.onComplete = destroyGameOverSfx;
+        }
       }
-      else
+
+      if (boyfriend != null && !PlayState.instance.isMinimalMode)
       {
-        if (boyfriend.hasAnimation('fakeoutDeath') && FlxG.random.bool((1 / 4096) * 100))
+        if (boyfriend.hasAnimation('fakeoutDeath') && isFakeout)
         {
           boyfriend.playAnimation('fakeoutDeath', true, false);
         }
         else
         {
           boyfriend.playAnimation('firstDeath', true, false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
-          // Play the "blue balled" sound. May play a variant if one has been assigned.
-          playBlueBalledSFX();
         }
       }
     }
 
     // Smoothly lerp the camera
     FlxG.camera.zoom = MathUtil.smoothLerp(FlxG.camera.zoom, targetCameraZoom, elapsed, CAMERA_ZOOM_DURATION);
+
+    if (controls.ACCEPT && !blueballed && !mustNotExit)
+    {
+      resetPlaying(musicSuffix == '-pixel');
+
+      if (confirmTimer != null)
+      {
+        confirmTimer.cancel();
+        confirmTimer.destroy();
+      }
+    }
 
     //
     // Handle user inputs.
@@ -346,32 +377,8 @@ class GameOverSubState extends MusicBeatSubState
       }
 
       // After the animation finishes...
-      new FlxTimer().start(0.7, function(tmr:FlxTimer) {
-        // ...fade out the graphics. Then after that happens...
-
-        var resetPlaying = function(pixel:Bool = false) {
-          // ...close the GameOverSubState.
-          if (pixel) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
-          else
-            FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
-          PlayState.instance.needsReset = true;
-
-          if (PlayState.instance.isMinimalMode || boyfriend == null) {}
-          else
-          {
-            // Readd Boyfriend to the stage.
-            boyfriend.isDead = false;
-            remove(boyfriend);
-            PlayState.instance.currentStage.addCharacter(boyfriend, BF);
-          }
-
-          // Snap reset the camera which may have changed because of the player character data.
-          resetCameraZoom();
-
-          // Close the substate.
-          close();
-        };
-
+      confirmTimer.start(0.7, function(tmr:FlxTimer) {
+        // ...fade out the graphics.
         if (musicSuffix == '-pixel')
         {
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
@@ -388,6 +395,37 @@ class GameOverSubState extends MusicBeatSubState
         }
       });
     }
+  }
+
+  public function resetPlaying(pixel:Bool = false)
+  {
+    // close the GameOverSubState.
+    if (pixel) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
+    else
+      FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
+    PlayState.instance.needsReset = true;
+
+    if (PlayState.instance.isMinimalMode || boyfriend == null) {}
+    else
+    {
+      // Readd Boyfriend to the stage.
+      boyfriend.isDead = false;
+      remove(boyfriend);
+      PlayState.instance.currentStage.addCharacter(boyfriend, BF);
+    }
+
+    // If you mash a little too fast...
+    if (gameOverMusic != null)
+    {
+      // Stop playing the music.
+      gameOverMusic.stop();
+    }
+
+    // Snap reset the camera which may have changed because of the player character data.
+    resetCameraZoom();
+
+    // Close the substate.
+    close();
   }
 
   public override function dispatchEvent(event:ScriptEvent):Void
@@ -427,6 +465,8 @@ class GameOverSubState extends MusicBeatSubState
   {
     var musicPath:Null<String> = resolveMusicPath(musicSuffix, isStarting, isEnding);
     var onComplete:() -> Void = () -> {};
+
+    if (gameOverSfx != null) destroyGameOverSfx();
 
     if (isStarting)
     {
@@ -473,17 +513,32 @@ class GameOverSubState extends MusicBeatSubState
   /**
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
+   * @return The `FunkinSound` object. Will be null if none is found.
    */
-  public static function playBlueBalledSFX():Void
+  public static function playBlueBalledSFX():Null<FunkinSound>
   {
     blueballed = true;
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
     {
-      FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      return FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
     }
     else
     {
       FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      return null;
+    }
+  }
+
+  /**
+   * Destroy the Death Sound Effect used in this instance.
+   * Used to clean up memory.
+   */
+  public function destroyGameOverSfx():Void
+  {
+    if (gameOverSfx != null)
+    {
+      gameOverSfx.destroy();
+      gameOverSfx = null;
     }
   }
 
