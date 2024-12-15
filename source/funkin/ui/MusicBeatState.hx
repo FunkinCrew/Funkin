@@ -18,6 +18,7 @@ import funkin.graphics.FunkinCamera;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.input.PreciseInputHandler;
 import funkin.mobile.ui.FunkinBackspace;
+import funkin.play.notes.NoteDirection;
 #end
 
 /**
@@ -67,7 +68,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public var backButton:FunkinBackspace;
   public var camControls:FunkinCamera;
 
-  public function addHitbox(?visible:Bool = true, ?initInput:Bool = true, ?schemeOverride:String = null):Void
+  public function addHitbox(?visible:Bool = true, ?initInput:Bool = true, ?schemeOverride:String = null, ?directionsOverride:Array<NoteDirection> = null,
+      ?colorsOverride:Array<FlxColor> = null):Void
   {
     if (hitbox != null)
     {
@@ -83,7 +85,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
       camControls.bgColor = 0x0;
     }
 
-    hitbox = new FunkinHitbox(schemeOverride);
+    hitbox = new FunkinHitbox(schemeOverride, directionsOverride, colorsOverride);
     hitbox.cameras = [camControls];
     hitbox.visible = visible;
     add(hitbox);

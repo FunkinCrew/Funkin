@@ -330,12 +330,12 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   /**
    * Creates a new `FunkinHitbox` object.
    */
-  public function new(?schemeOverride:String = null):Void
+  public function new(?schemeOverride:String = null, ?directionsOverride:Array<NoteDirection> = null, ?colorsOverride:Array<FlxColor> = null):Void
   {
     super();
 
-    final hintsColors:Array<FlxColor> = [0xFFC34B9A, 0xFF00FFFF, 0xFF12FB06, 0xFFF9393F];
-    final hintsNoteDirections:Array<NoteDirection> = [NoteDirection.LEFT, NoteDirection.DOWN, NoteDirection.UP, NoteDirection.RIGHT];
+    final hintsColors:Array<FlxColor> = (colorsOverride == null || colorsOverride.length == 0) ? [0xFFC34B9A, 0xFF00FFFF, 0xFF12FB06, 0xFFF9393F] : colorsOverride;
+    final hintsNoteDirections:Array<NoteDirection> = (directionsOverride == null || directionsOverride.length == 0) ? [NoteDirection.LEFT, NoteDirection.DOWN, NoteDirection.UP, NoteDirection.RIGHT] : directionsOverride;
     final controlsScheme:String = (schemeOverride == null || schemeOverride.length == 0) ? Preferences.controlsScheme : schemeOverride;
 
     switch (controlsScheme)
