@@ -17,7 +17,7 @@ import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
 import funkin.mobile.ui.FunkinBackspace;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 import funkin.mobile.ui.options.MobileControlsSchemeMenu;
 #end
 import flixel.util.FlxColor;

@@ -12,7 +12,7 @@ import flixel.input.touch.FlxTouch;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
-import funkin.mobile.util.SwipeUtil;
+import funkin.util.SwipeUtil;
 import openfl.display.Graphics;
 import haxe.ds.Map;
 
@@ -211,11 +211,9 @@ class FunkinButton extends FunkinSprite implements IFlxInput
           touchID = touch.touchPointID;
           if (buttonsTouchID.exists(touchID) && buttonsTouchID.get(touchID) != this)
           {
-            var prevButton = buttonsTouchID.get(touchID);
-            if (prevButton != null && !prevButton.limitToBounds)
-            {
-              prevButton.onOutHandler();
-            }
+            final prevButton:Null<FunkinButton> = buttonsTouchID.get(touchID);
+
+            if (prevButton != null && !prevButton.limitToBounds) prevButton.onOutHandler();
           }
           buttonsTouchID.set(touchID, this);
 

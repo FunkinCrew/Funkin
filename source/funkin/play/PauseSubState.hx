@@ -19,8 +19,8 @@ import funkin.play.cutscene.VideoCutscene;
 import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.StickerSubState;
-import funkin.mobile.util.SwipeUtil;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 #if NO_DISABLE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
 #end

@@ -5,7 +5,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 import funkin.util.FileUtil;
 import funkin.ui.MusicBeatSubState;
 import funkin.modding.PolymodHandler;

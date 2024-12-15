@@ -19,8 +19,8 @@ import funkin.ui.options.items.EnumPreferenceItem;
 import funkin.mobile.ui.FunkinBackspace;
 #if mobile
 import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 #end
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>

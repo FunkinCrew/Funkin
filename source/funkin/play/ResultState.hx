@@ -35,7 +35,7 @@ import funkin.play.components.ClearPercentCounter;
 import funkin.api.newgrounds.Medals;
 #end
 #if mobile
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 #if NO_DISABLE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
 #end

@@ -14,7 +14,7 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.mainmenu.MainMenuState;
 #if mobile
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 #end
 
 using flixel.util.FlxSpriteUtil;

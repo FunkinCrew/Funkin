@@ -11,7 +11,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
-import funkin.mobile.util.SwipeUtil;
+import funkin.util.SwipeUtil;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
@@ -23,7 +23,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end

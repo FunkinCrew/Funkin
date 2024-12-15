@@ -5,8 +5,8 @@ import flixel.effects.FlxFlicker;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 

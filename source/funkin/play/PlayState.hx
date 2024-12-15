@@ -58,7 +58,7 @@ import funkin.util.SerializerUtil;
 import funkin.util.HapticUtil;
 import haxe.Int64;
 #if mobile
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #if NO_DISABLE_ADMOB_ADS

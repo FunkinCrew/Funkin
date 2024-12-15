@@ -9,7 +9,7 @@ import flixel.util.FlxTimer;
 import flixel.text.FlxText;
 import flixel.text.FlxText.FlxTextAlign;
 #if mobile
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 #end
 
 @:nullSafety
@@ -94,8 +94,10 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
         currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls().ACCEPT #if mobile || ((TouchUtil.overlapsComplex(currentInstrumental) && TouchUtil.justPressed)
-        && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
+      if (parent.getControls()
+        .ACCEPT #if mobile
+        || ((TouchUtil.overlapsComplex(currentInstrumental) && TouchUtil.justPressed)
+          && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
       {
         busy = true;
         onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
@@ -108,6 +110,15 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     {
       currentInstrumental.text = instrumentalIds[currentInstrumentalIndex].toTitleCase() ?? '';
       if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
+    }
+
+    if (parent.getControls().ACCEPT #if mobile
+      || TouchUtil.overlapsComplex(currentInstrumental)
+      && TouchUtil.justPressed
+      && !TouchUtil.overlapsComplex(leftArrow)
+      && !TouchUtil.overlapsComplex(rightArrow) #end)
+    {
+      onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
     }
   }
 

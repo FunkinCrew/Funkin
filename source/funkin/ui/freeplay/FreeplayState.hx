@@ -49,10 +49,8 @@ import funkin.data.freeplay.style.FreeplayStyleRegistry;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
-#if TOUCH_CONTROLS
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
-#end
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 import flixel.system.scaleModes.FullScreenScaleMode;
 
 /**

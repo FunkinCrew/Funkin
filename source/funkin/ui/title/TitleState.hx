@@ -34,8 +34,8 @@ import funkin.ui.freeplay.FreeplayState;
 import openfl.display.BlendMode;
 import funkin.save.Save;
 #if mobile
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 #end
 
 #if desktop

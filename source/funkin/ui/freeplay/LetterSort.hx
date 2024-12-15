@@ -10,8 +10,8 @@ import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.input.Controls;
-import funkin.mobile.util.SwipeUtil;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class LetterSort extends FlxSpriteGroup

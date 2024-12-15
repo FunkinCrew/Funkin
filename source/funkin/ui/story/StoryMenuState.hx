@@ -23,8 +23,8 @@ import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
-import funkin.mobile.util.SwipeUtil;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 import openfl.utils.Assets;
 import flixel.system.scaleModes.FullScreenScaleMode;
 #if FEATURE_DISCORD_RPC

@@ -13,7 +13,7 @@ import funkin.play.notes.Strumline;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.data.song.SongData.SongNoteData;
 #if mobile
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
 import funkin.graphics.FunkinSprite;

@@ -4,7 +4,7 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
 #if mobile
-import funkin.mobile.util.SwipeUtil;
+import funkin.util.SwipeUtil;
 #end
 
 /**

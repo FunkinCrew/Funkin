@@ -7,8 +7,8 @@ import funkin.ui.MusicBeatState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.mainmenu.MainMenuState;
 #if mobile
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 #end
 
 class GitarooPause extends MusicBeatState

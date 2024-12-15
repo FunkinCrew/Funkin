@@ -5,7 +5,7 @@
 // Another slight note from little me, it turns out it WAS accurate, my ass during clean up just completely forgot. My fault!! I gotta focus on multi-touch next time.
 // Easy to fix but I'll tackle it for later.
 // - Zack
-package funkin.mobile.util;
+package funkin.util;
 
 import funkin.mobile.ui.TouchPointer;
 import flixel.FlxBasic;

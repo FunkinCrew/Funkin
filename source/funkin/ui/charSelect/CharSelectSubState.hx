@@ -35,10 +35,8 @@ import funkin.graphics.FunkinSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
-#if mobile
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
-#end
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 
 class CharSelectSubState extends MusicBeatSubState
 {

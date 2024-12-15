@@ -14,7 +14,7 @@ import openfl.display.BitmapData;
 import flixel.util.FlxDestroyUtil;
 import openfl.display.Sprite;
 import flixel.FlxSprite;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 import flixel.math.FlxAngle;
 import funkin.util.MathUtil;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;

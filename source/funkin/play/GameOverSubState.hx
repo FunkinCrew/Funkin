@@ -19,7 +19,7 @@ import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
 import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
-import funkin.mobile.util.TouchUtil;
+import funkin.util.TouchUtil;
 import openfl.utils.Assets;
 
 /**
