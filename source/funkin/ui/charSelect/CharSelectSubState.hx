@@ -95,9 +95,7 @@ class CharSelectSubState extends MusicBeatSubState
   var bopInfo:FramesJSFLInfo;
   var blackScreen:FunkinSprite;
 
-  #if mobile
-  var touchBuddy:Null<FlxSprite>;
-  #end
+  var charHitbox:FlxObject;
 
   public function new()
   {
@@ -297,6 +295,10 @@ class CharSelectSubState extends MusicBeatSubState
     grpCursors.add(cursorBlue);
     grpCursors.add(cursor);
 
+    charHitbox = new FlxObject(FlxG.width * 0.65, FlxG.height * 0.2, 300, 500);
+    charHitbox.active = false;
+    charHitbox.scrollFactor.set();
+
     selectSound = new FunkinSound();
     selectSound.loadEmbedded(Paths.sound('CS_select'));
     selectSound.pitch = 1;
@@ -427,15 +429,6 @@ class CharSelectSubState extends MusicBeatSubState
 
       Save.instance.oldChar = true;
     });
-
-    #if mobile
-    touchBuddy = new FlxSprite().makeGraphic(10, 10, FlxColor.GREEN);
-    touchBuddy.cameras = [charSelectCam]; // this is stupid but it works.
-
-    // addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
-
-    // FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
-    #end
   }
 
   function checkNewChar():Void
@@ -472,9 +465,7 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var grpIcons:FlxSpriteGroup;
-  #if mobile
-  var grpHitboxes:FlxSpriteGroup;
-  #end
+  var grpHitboxes:FlxTypedGroup<FlxObject>;
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
   var nonLocks = [];
@@ -483,10 +474,7 @@ class CharSelectSubState extends MusicBeatSubState
   {
     grpIcons = new FlxSpriteGroup();
     add(grpIcons);
-    #if mobile
-    grpHitboxes = new FlxSpriteGroup();
-    add(grpHitboxes);
-    #end
+    grpHitboxes = new FlxTypedGroup<FlxObject>();
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSpriteGroup, ["x", "y"]));
     // FlxG.debugger.track(grpIcons, "iconGrp");
@@ -519,11 +507,11 @@ class CharSelectSubState extends MusicBeatSubState
 
         grpIcons.add(temp);
       }
-      #if mobile
-      var hitTemp:FlxSprite = new FlxSprite(grpIcons.members[i].x, grpIcons.members[i].y).makeGraphic(64, 64, FlxColor.TRANSPARENT);
+
+      var hitTemp:FlxObject = new FlxObject(grpIcons.members[i].x, grpIcons.members[i].y, 86, 86);
       hitTemp.active = false;
+      hitTemp.scrollFactor.set();
       grpHitboxes.add(hitTemp);
-      #end
     }
 
     updateIconPositions();
@@ -649,8 +637,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   function updateIconPositions()
   {
-    #if mobile grpHitboxes.x = #end grpIcons.x = 450;
-    #if mobile grpHitboxes.y = #end grpIcons.y = 120;
+    grpIcons.x = 450;
+    grpIcons.y = 120;
     for (index => member in grpIcons.members)
     {
       var posX:Float = (index % 3);
@@ -663,7 +651,6 @@ class CharSelectSubState extends MusicBeatSubState
       member.y += grpIcons.y;
     }
 
-    #if mobile
     for (index => member in grpHitboxes.members)
     {
       var posX:Float = (index % 3);
@@ -672,10 +659,9 @@ class CharSelectSubState extends MusicBeatSubState
       member.x = posX * grpXSpread;
       member.y = posY * grpYSpread;
 
-      member.x += grpIcons.x + 40;
-      member.y += grpIcons.y + 40;
+      member.x += grpIcons.x + 20;
+      member.y += grpIcons.y + 20;
     }
-    #end
   }
 
   var sync:Bool = false;
@@ -753,9 +739,8 @@ class CharSelectSubState extends MusicBeatSubState
   var spamLeft:Bool = false;
   var spamRight:Bool = false;
 
-  #if mobile
   var mobileDeny:Bool = false;
-  #end
+  var mobileAccept:Bool = false;
 
   override public function update(elapsed:Float):Void
   {
@@ -763,47 +748,44 @@ class CharSelectSubState extends MusicBeatSubState
 
     Conductor.instance.update();
 
-    #if mobile
-    var mobileAccept:Bool = false;
-    if (TouchUtil.pressed) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
-    #end
+    mobileAccept = false;
 
-    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || TouchUtil.justReleased #end) selectSound.pitch = 1;
+    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R || TouchUtil.justReleased) selectSound.pitch = 1;
 
     syncAudio(elapsed);
 
     if (allowInput && !pressedSelect)
     {
-      //
-      #if mobile
       if (TouchUtil.pressed)
       {
-        for (i in 0...grpHitboxes.members.length)
+        for (i => hitbox in grpHitboxes.members)
         {
-          final tempBox:FlxSprite = grpHitboxes.members[i];
-          if (!TouchUtil.overlaps(tempBox)) continue;
+          if (hitbox == null || !TouchUtil.overlaps(hitbox)) continue;
 
-          final indexCY:Int = Std.int(i / 3) - 1;
           final indexCX:Int = (i % 3) - 1;
-          if (indexCY == cursorY && indexCX == cursorX)
-          {
-            // yeah this being separated is necessary
-            // yeah i know it sucks
-            if (TouchUtil.justPressed) mobileAccept = true;
-          }
-          else
+          final indexCY:Int = Math.floor(i / 3) - 1;
+
+          if (indexCY != cursorY || indexCX != cursorX)
           {
             cursorX = indexCX;
             cursorY = indexCY;
             cursorDenied.visible = false;
             selectSound.play(true);
           }
+          else if (TouchUtil.justReleased)
+          {
+            mobileAccept = true;
+          }
 
           trace("Index: " + i + ", Row: " + cursorY + ", Column: " + cursorX);
           break;
         }
       }
-      #end
+
+      if (TouchUtil.justReleased && TouchUtil.overlaps(charHitbox))
+      {
+        mobileAccept = true;
+      }
 
       //
       if (controls.UI_UP) holdTmrUp += elapsed;
@@ -895,11 +877,9 @@ class CharSelectSubState extends MusicBeatSubState
     {
       curChar = availableChars.get(getCurrentSelected());
 
-      if (allowInput && pressedSelect && (controls.BACK #if mobile || (mobileDeny && TouchUtil.justPressed) #end))
+      if (allowInput && pressedSelect && (controls.BACK || (mobileDeny && TouchUtil.justReleased)))
       {
-        #if mobile
         mobileDeny = false;
-        #end
         cursorConfirmed.visible = false;
         grpCursors.visible = true;
 
@@ -922,11 +902,9 @@ class CharSelectSubState extends MusicBeatSubState
         selectTimer.cancel();
       }
 
-      if (allowInput && !pressedSelect && (controls.ACCEPT #if mobile || mobileAccept #end))
+      if (allowInput && !pressedSelect && (controls.ACCEPT || mobileAccept))
       {
-        #if mobile
         mobileDeny = false;
-        #end
         spamUp = false;
         spamDown = false;
         spamLeft = false;
@@ -955,11 +933,9 @@ class CharSelectSubState extends MusicBeatSubState
           goToFreeplay();
         });
       }
-      #if mobile
-      else if (pressedSelect && TouchUtil.justPressed) mobileDeny = true;
+      else if (pressedSelect && TouchUtil.justReleased) mobileDeny = true;
 
       mobileAccept = false;
-      #end
     }
     else
     {
@@ -967,8 +943,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       gfChill.visible = false;
 
-      // what does this do -zack
-      if (allowInput && controls.ACCEPT #if mobile || TouchUtil.overlapsComplex(cursor) && TouchUtil.justPressed #end)
+      if (allowInput && (controls.ACCEPT || mobileAccept))
       {
         cursorDenied.visible = true;
 
