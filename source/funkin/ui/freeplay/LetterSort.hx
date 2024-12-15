@@ -1,16 +1,20 @@
 package funkin.ui.freeplay;
 
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.FlxObject;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.input.Controls;
-#if mobile
 import funkin.mobile.util.SwipeUtil;
 import funkin.mobile.util.TouchUtil;
-#end
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
-class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
+class LetterSort extends FlxSpriteGroup
 {
   public var letters:Array<FreeplayLetter> = [];
 
@@ -25,9 +29,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
   public var inputEnabled:Bool = true;
 
-  #if mobile
-  var swipeBounds:FlxSprite;
-  #end
+  var swipeBounds:FlxObject;
 
   public function new(x, y)
   {
@@ -66,14 +68,12 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     }
 
     rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
-
     // rightArrow.animation.play("arrow");
+    add(rightArrow);
 
-    #if mobile
-    swipeBounds = new FlxSprite(-20, -20).makeGraphic(420, 95, FlxColor.TRANSPARENT);
+    swipeBounds = new FlxObject(400, 60, 420, 80);
+    swipeBounds.cameras = cameras;
     swipeBounds.active = false;
-    add(swipeBounds);
-    #end
 
     changeSelection(0);
   }
@@ -89,8 +89,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     if (inputEnabled)
     {
-      if (controls.FREEPLAY_LEFT #if mobile || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.justSwipedRight) #end) changeSelection(-1);
-      if (controls.FREEPLAY_RIGHT #if mobile || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.justSwipedLeft) #end) changeSelection(1);
+      if (controls.FREEPLAY_LEFT || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.swipeRight)) changeSelection(-1);
+      if (controls.FREEPLAY_RIGHT || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.swipeLeft)) changeSelection(1);
     }
   }
 
