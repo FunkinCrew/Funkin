@@ -1389,60 +1389,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (controls.FREEPLAY_FAVORITE && !busy)
     {
-      var targetSong = grpCapsules.members[curSelected]?.freeplayData;
-      if (targetSong != null)
-      {
-        var realShit:Int = curSelected;
-        var isFav = targetSong.toggleFavorite();
-        if (isFav)
-        {
-          grpCapsules.members[realShit].favIcon.visible = true;
-          grpCapsules.members[realShit].favIconBlurred.visible = true;
-          grpCapsules.members[realShit].favIcon.animation.play('fav');
-          grpCapsules.members[realShit].favIconBlurred.animation.play('fav');
-          FunkinSound.playOnce(Paths.sound('fav'), 1);
-          grpCapsules.members[realShit].checkClip();
-          grpCapsules.members[realShit].selected = grpCapsules.members[realShit].selected; // set selected again, so it can run it's getter function to initialize movement
-          busy = true;
-
-          grpCapsules.members[realShit].doLerp = false;
-          FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1, {ease: FlxEase.expoOut});
-
-          FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1,
-            {
-              ease: FlxEase.expoIn,
-              startDelay: 0.1,
-              onComplete: function(_) {
-                grpCapsules.members[realShit].doLerp = true;
-                busy = false;
-              }
-            });
-        }
-        else
-        {
-          grpCapsules.members[realShit].favIcon.animation.play('fav', true, true, 9);
-          grpCapsules.members[realShit].favIconBlurred.animation.play('fav', true, true, 9);
-          FunkinSound.playOnce(Paths.sound('unfav'), 1);
-          new FlxTimer().start(0.2, _ -> {
-            grpCapsules.members[realShit].favIcon.visible = false;
-            grpCapsules.members[realShit].favIconBlurred.visible = false;
-            grpCapsules.members[realShit].checkClip();
-          });
-
-          busy = true;
-          grpCapsules.members[realShit].doLerp = false;
-          FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1, {ease: FlxEase.expoOut});
-          FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1,
-            {
-              ease: FlxEase.expoIn,
-              startDelay: 0.1,
-              onComplete: function(_) {
-                grpCapsules.members[realShit].doLerp = true;
-                busy = false;
-              }
-            });
-        }
-      }
+      favoriteSong();
     }
 
     if (controls.FREEPLAY_JUMP_TO_TOP && !busy)
@@ -1495,9 +1442,8 @@ class FreeplayState extends MusicBeatSubState
     #end
   }
 
-  var _sub:Float = 0;
+  var _dragOffset:Float = 0;
   var _pressedOn:Bool = false;
-  var _toggled:Bool = false;
 
   function handleInputs(elapsed:Float):Void
   {
@@ -1516,16 +1462,13 @@ class FreeplayState extends MusicBeatSubState
 
     // Nested as fuck
     @:nullSafety(Off)
-    if (TouchUtil.justReleased && !SwipeUtil.swipeAny && !TouchUtil.overlapsComplex(diffSelRight) && touches.velocityY == 0)
+    if (TouchUtil.justReleased
+      && !TouchUtil.overlaps(diffSelRight)
+      && !TouchUtil.justMoved
+      && TouchUtil.touch.ticksDeltaSincePress < 200)
     {
       for (i in 0...grpCapsules.members.length)
       {
-        if (_toggled)
-        {
-          _toggled = false;
-          break;
-        }
-
         final capsuleHit:FlxObject = grpCapsules.members[i].theActualHitbox;
         if (!TouchUtil.overlaps(capsuleHit)) continue;
 
@@ -1584,6 +1527,7 @@ class FreeplayState extends MusicBeatSubState
       spamTimer = 0;
     }
 
+    #if desktop
     final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
     #elseif mobile
     final wheelAmount:Float = FlxG.touches.horizontalWheel / 2;
@@ -1596,6 +1540,8 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
+
+    // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
     if (SwipeUtil.flickUp)
     {
       if (curSelected - 1 >= 0)
@@ -1623,40 +1569,22 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
-    if (controls.UI_LEFT_P #if TOUCH_CONTROLS
-      || (diffSelLeft != null && TouchUtil.overlapsComplex(diffSelLeft) && TouchUtil.justPressed) #end)
+    if (controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft) && TouchUtil.justReleased))
     {
       dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
-      #if TOUCH_CONTROLS
-      diffSelLeft?.setPress(true);
-      #end
     }
-    if (controls.UI_RIGHT_P #if TOUCH_CONTROLS
-      || (diffSelRight != null && TouchUtil.overlapsComplex(diffSelRight) && TouchUtil.justPressed) #end)
+
+    if (controls.UI_RIGHT_P || (diffSelRight != null && TouchUtil.overlaps(diffSelRight) && TouchUtil.justReleased))
     {
       dj?.resetAFKTimer();
       changeDiff(1);
       generateSongList(currentFilter, true);
-      #if TOUCH_CONTROLS
-      diffSelRight?.setPress(true);
-      #end
     }
     #if TOUCH_CONTROLS
-    if (TouchUtil.justReleased)
-    {
-      diffSelRight?.setPress(false);
-      diffSelLeft?.setPress(false);
-    }
-    if (diffSelLeft?.pressed && !TouchUtil.pressed)
-    {
-      diffSelLeft?.setPress(false);
-    }
-    if (diffSelRight?.pressed && !TouchUtil.pressed)
-    {
-      diffSelRight?.setPress(false);
-    }
+    if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight));
+    if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft));
 
     if (TouchUtil.pressed || TouchUtil.justReleased)
     {
@@ -1664,9 +1592,8 @@ class FreeplayState extends MusicBeatSubState
       final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
       _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected);
 
-      if (_pressedOn && TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 700)
+      if (_pressedOn && TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 500)
       {
-        _toggled = true;
         _pressedOn = false;
         favoriteSong();
       }
@@ -1683,62 +1610,25 @@ class FreeplayState extends MusicBeatSubState
 
         letterSort.inputEnabled = false;
 
-        if (TouchUtil.justPressed || _sub == 0) _sub = diff.x - TouchUtil.touch.x;
-
-        // Update position
-        diff.x = TouchUtil.touch.x + _sub;
+        if (TouchUtil.justPressed) _dragOffset = diff.x - TouchUtil.touch.x;
+        diff.x = TouchUtil.touch.x + _dragOffset;
 
         if (TouchUtil.justReleased)
         {
-          // Check left
-          if (diffSelLeft != null && diffSelLeft.x > diff.x)
-          {
-            dj?.resetAFKTimer();
-            changeDiff(-1);
-            generateSongList(currentFilter, true);
-          }
-          // Check right
-          else if (diffSelRight != null && diffSelRight.x - 140 < diff.x)
-          {
-            dj?.resetAFKTimer();
-            changeDiff(1);
-            generateSongList(currentFilter, true);
-          }
-          // Reset position if no significant drag
-          else
-          {
-            diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
-          }
-          _sub = 0;
-
-          letterSort.inputEnabled = true;
-
+          handleDragRelease(diff);
           break;
         }
 
         // Handle drag logic for left
-        if (diffSelLeft != null && diffSelLeft.x - 60 > diff.x)
-        {
-          dj?.resetAFKTimer();
-          changeDiff(-1);
-          generateSongList(currentFilter, true);
-          _sub = 0;
-        }
+        if (diffSelLeft != null && diffSelLeft.x - 60 > diff.x) handleBoundaryChange(-1);
 
         // Handle drag logic for right
-        if (diffSelRight != null && diffSelRight.x - 40 < diff.x)
-        {
-          dj?.resetAFKTimer();
-          changeDiff(1);
-          generateSongList(currentFilter, true);
-          _sub = 0;
-        }
+        if (diffSelRight != null && diffSelRight.x - 40 < diff.x) handleBoundaryChange(1);
 
         // Stop
         break;
       }
     }
-    // FlxG.mouse.visible = true;
     #end
 
     if (controls.BACK)
@@ -1983,6 +1873,33 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
   }
 
+  function handleDragRelease(diff:FlxSprite):Void
+  {
+    if (diffSelLeft != null && diffSelLeft.x > diff.x)
+    {
+      handleBoundaryChange(-1);
+    }
+    else if (diffSelRight != null && diffSelRight.x - 140 < diff.x)
+    {
+      handleBoundaryChange(1);
+    }
+    else
+    {
+      diff.x = 90; // Reset position
+    }
+
+    _dragOffset = 0;
+    letterSort.inputEnabled = true;
+  }
+
+  function handleBoundaryChange(change:Int):Void
+  {
+    dj?.resetAFKTimer();
+    changeDiff(change);
+    generateSongList(currentFilter, true);
+    _dragOffset = 0;
+  }
+
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
   {
     trace('RANDOM SELECTED');
@@ -2220,7 +2137,6 @@ class FreeplayState extends MusicBeatSubState
 
     curSelected += change;
 
-    // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
     if (curSelected < 0)
     {
       curSelected = (SwipeUtil.flickUp) ? 0 : grpCapsules.countLiving() - 1;
@@ -2467,7 +2383,7 @@ class DifficultySelector extends FlxSprite
     }
     else
     {
-      offset.y -= 5;
+      offset.y = -5;
       whiteShader.colorSet = true;
       scale.x = scale.y = 0.5;
     }
