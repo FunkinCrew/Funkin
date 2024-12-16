@@ -58,6 +58,7 @@ class CharacterUtil
       default: // nothing, what the fuck are you even doing
     }
 
+    char.importedFiles = null;
     char.characterCameraOffsets = other.characterCameraOffsets.copy();
     char.globalOffsets = other.globalOffsets.copy();
     char.characterFlipX = other.characterFlipX;
@@ -115,6 +116,7 @@ class CharacterUtil
       default: // nuthin
     }
 
+    char.importedFiles = data.assetPaths;
     char.characterCameraOffsets = data.cameraOffsets ?? [0, 0];
     char.globalOffsets = data.offsets ?? [0, 0];
     char.characterFlipX = data.flipX ?? false;

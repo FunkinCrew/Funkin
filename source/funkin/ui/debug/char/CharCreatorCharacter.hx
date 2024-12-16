@@ -22,6 +22,7 @@ import haxe.io.Path;
 class CharCreatorCharacter extends Bopper
 {
   public var generatedParams:WizardGenerateParams;
+  public var importedFiles:Null<Array<String>> = null;
   public var characterId(get, never):String;
   public var renderType(get, never):CharacterRenderType;
   public var files(get, never):Array<WizardFile>;
@@ -300,7 +301,7 @@ class CharCreatorCharacter extends Bopper
     return {
       version: CharacterRegistry.CHARACTER_DATA_VERSION,
       name: characterName,
-      assetPaths: generatedParams.files.filter((file) -> return file.name.endsWith(".png") || file.name.endsWith(".zip")).map((file) -> {
+      assetPaths: importedFiles ?? generatedParams.files.filter((file) -> return file.name.endsWith(".png") || file.name.endsWith(".zip")).map((file) -> {
         var path = Path.withoutExtension(Path.normalize(file.name));
         if (!CharCreatorUtil.isPathProvided(path, "images/characters"))
         {
