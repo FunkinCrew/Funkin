@@ -1460,10 +1460,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Nested as fuck
     @:nullSafety(Off)
-    if (TouchUtil.justReleased
-      && !TouchUtil.overlaps(diffSelRight)
-      && !TouchUtil.justMoved
-      && TouchUtil.touch.ticksDeltaSincePress < 200)
+    if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight) && TouchUtil.touch.ticksDeltaSincePress < 200)
     {
       for (i in 0...grpCapsules.members.length)
       {
