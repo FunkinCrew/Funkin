@@ -754,7 +754,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     if (allowInput && !pressedSelect)
     {
-      if (TouchUtil.pressed)
+      if (TouchUtil.pressed || TouchUtil.justReleased)
       {
         for (i => hitbox in grpHitboxes.members)
         {
