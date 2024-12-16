@@ -54,25 +54,25 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-    createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
+    createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
-    createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
+    createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
+    createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects.', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
+    createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    createPrefItemCheckbox('Play Miss Sound', 'Disable to stop the mute sound from playing when a miss occurs.', function(value:Bool):Void {
+    createPrefItemCheckbox('Play Miss Sound', 'Disable to stop the miss sound from playing when a miss happens.', function(value:Bool):Void {
       Preferences.playMissSound = value;
     }, Preferences.playMissSound);
-    createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
+    createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
+    createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
 
