@@ -32,6 +32,37 @@ class FlxMacro
 
     return fields;
   }
+
+  /**
+   * A macro to be called targeting the `DropDown` class.
+   * @return An array of fields that the class contains.
+   */
+  public static macro function buildDropDown():Array<haxe.macro.Expr.Field>
+  {
+    var pos:haxe.macro.Expr.Position = haxe.macro.Context.currentPos();
+    // The DropDown class. We can add new properties to this class.
+    var cls:haxe.macro.Type.ClassType = haxe.macro.Context.getLocalClass().get();
+    // The fields of the DropDown class.
+    var fields:Array<haxe.macro.Expr.Field> = haxe.macro.Context.getBuildFields();
+
+    // haxe.macro.Context.info('[INFO] ${cls.name}: Adding safeSelectedItem attribute...', pos);
+
+    // Here, we add the safeSelectedItem attribute to all DropDown objects.
+    // This attribute is a getter which returns dataSource.get(selectedIndex)
+    // This is a safer way than directly using selectedItem because
+    // selectedItem isn't immediately updated after changing selectedIndex
+    fields = fields.concat((macro class TempClass
+      {
+        public var safeSelectedItem(get, never):Dynamic;
+
+        function get_safeSelectedItem():Dynamic
+        {
+          return dataSource.get(selectedIndex);
+        }
+      }).fields);
+
+    return fields;
+  }
 }
 #end
 #end

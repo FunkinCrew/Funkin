@@ -13,7 +13,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.save.Save;
 import funkin.util.FileUtil;
 import funkin.util.macro.ClassMacro;
@@ -244,6 +244,8 @@ class PolymodHandler
 
     Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
 
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterRegistry);
+
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
@@ -333,8 +335,19 @@ class PolymodHandler
   {
     return {
       assetLibraryPaths: [
-        'default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'videos' => 'videos', 'tutorial' => 'tutorial', 'week1' => 'week1',
-        'week2' => 'week2', 'week3' => 'week3', 'week4' => 'week4', 'week5' => 'week5', 'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1',
+        'default' => 'preload',
+        'shared' => 'shared',
+        'songs' => 'songs',
+        'videos' => 'videos',
+        'tutorial' => 'tutorial',
+        'week1' => 'week1',
+        'week2' => 'week2',
+        'week3' => 'week3',
+        'week4' => 'week4',
+        'week5' => 'week5',
+        'week6' => 'week6',
+        'week7' => 'week7',
+        'weekend1' => 'weekend1',
       ],
       coreAssetRedirect: CORE_FOLDER,
     }
@@ -426,7 +439,7 @@ class PolymodHandler
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
-    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    CharacterRegistry.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();
     ModuleHandler.loadModuleCache();
   }
