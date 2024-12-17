@@ -177,8 +177,8 @@ class CharacterPlayer extends Box
   override function repositionChildren():Void
   {
     super.repositionChildren();
-    character.x = this.screenX;
-    character.y = this.screenY;
+    character.x = this.cachedScreenX;
+    character.y = this.cachedScreenY;
 
     // Apply animation offsets, so the character is positioned correctly based on the animation.
     @:privateAccess var animOffsets:Array<Float> = character.animOffsets;
