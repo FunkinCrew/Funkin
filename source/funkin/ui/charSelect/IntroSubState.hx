@@ -3,7 +3,7 @@ package funkin.ui.charSelect;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
-#if hxCodec
+#if hxvlc
 import funkin.graphics.video.FunkinVideoSprite;
 #end
 import funkin.ui.MusicBeatSubState;
@@ -15,7 +15,13 @@ import funkin.save.Save;
  */
 class IntroSubState extends MusicBeatSubState
 {
+  #if html5
   static final LIGHTS_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('introSelect'));
+  #end
+
+  #if hxvlc
+  static final LIGHTS_VIDEO_PATH:String = Paths.videos('introSelect');
+  #end
 
   public override function create():Void
   {
@@ -36,7 +42,7 @@ class IntroSubState extends MusicBeatSubState
     playVideoHTML5(LIGHTS_VIDEO_PATH);
     #end
 
-    #if hxCodec
+    #if hxvlc
     trace('Playing native video ${LIGHTS_VIDEO_PATH}');
     playVideoNative(LIGHTS_VIDEO_PATH);
     #end
@@ -71,7 +77,7 @@ class IntroSubState extends MusicBeatSubState
   }
   #end
 
-  #if hxCodec
+  #if hxvlc
   var vid:FunkinVideoSprite;
 
   function playVideoNative(filePath:String):Void
@@ -87,7 +93,7 @@ class IntroSubState extends MusicBeatSubState
       vid.bitmap.onEndReached.add(onLightsEnd);
 
       add(vid);
-      vid.play(filePath, false);
+      if (vid.load(filePath)) vid.play();
     }
     else
     {
@@ -105,7 +111,7 @@ class IntroSubState extends MusicBeatSubState
     //   #if html5
     //   @:privateAccess
     //   vid.netStream.seek(introSound.time);
-    //   #elseif hxCodec
+    //   #elseif hxvlc
     //   vid.bitmap.time = Std.int(introSound.time);
     //   #end
     // }
@@ -118,7 +124,7 @@ class IntroSubState extends MusicBeatSubState
   {
     if (vid != null)
     {
-      #if hxCodec
+      #if hxvlc
       vid.stop();
       #end
       remove(vid);

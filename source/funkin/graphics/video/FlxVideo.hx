@@ -12,8 +12,8 @@ import openfl.net.NetStream;
 
 /**
  * Plays a video via a NetStream. Only works on HTML5.
- * This does NOT replace hxCodec, nor does hxCodec replace this.
- * hxCodec only works on desktop and does not work on HTML5!
+ * This does NOT replace hxvlc, nor does hxvlc replace this.
+ * hxvlc only works on desktop and does not work on HTML5!
  */
 class FlxVideo extends FunkinSprite
 {
