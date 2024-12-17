@@ -588,7 +588,7 @@ class Constants
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
 
-  #if NO_DISABLE_ADMOB_ADS
+  #if FEATURE_ADMOB_ADS
   /**
    * A Counter that is increased by 1 each blueball.
    * Only used for interstital ads each 3 blueballs on mobile.

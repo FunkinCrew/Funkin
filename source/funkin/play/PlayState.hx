@@ -61,7 +61,7 @@ import haxe.Int64;
 import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
-#if NO_DISABLE_ADMOB_ADS
+#if FEATURE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
 #end
 #end
@@ -1194,7 +1194,7 @@ class PlayState extends MusicBeatSubState
   function moveToGameOver():Void
   {
     // Shows an interstital ad on mobile devices each 3 blueballs
-    #if NO_DISABLE_ADMOB_ADS
+    #if FEATURE_ADMOB_ADS
     Constants.GLOBAL_BLUEBALL_COUNTER++;
     if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0) AdMobUtil.loadInterstitial();
     #end

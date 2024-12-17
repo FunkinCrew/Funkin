@@ -1,5 +1,6 @@
 package funkin.mobile.util;
 
+#if FEATURE_ADMOB_ADS
 import admob.Admob;
 import admob.AdmobBannerAlign;
 import admob.AdmobBannerSize;
@@ -47,7 +48,8 @@ class AdMobUtil
    * Test ad unit ID for rewarded ads, used during development.
    */
   private static final REWARDED_AD_UNIT_ID:String = #if android "ca-app-pub-3940256099942544/5224354917" #elseif ios "ca-app-pub-3940256099942544/1712485313" #else "" #end;
-  #end
+
+  // #end
 
   /**
    * Initializes the AdMob SDK and sets up event listeners for interstitial and rewarded ads.
@@ -172,4 +174,4 @@ class AdMobUtil
   {
     Admob.showPrivacyOptionsForm();
   }
-}
+  }

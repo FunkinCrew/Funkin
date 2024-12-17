@@ -286,7 +286,7 @@ class PolymodHandler
     Polymod.blacklistImport('android.jni.JNICache');
     #end
 
-    #if NO_DISABLE_ADMOB_ADS
+    #if FEATURE_ADMOB_ADS
     Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
     for (cls in ClassMacro.listClassesInPackage('extension.admob'))
     {

@@ -36,7 +36,7 @@ import funkin.api.newgrounds.Medals;
 #end
 #if mobile
 import funkin.util.TouchUtil;
-#if NO_DISABLE_ADMOB_ADS
+#if FEATURE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
 #end
 #end
@@ -917,7 +917,7 @@ class ResultState extends MusicBeatSubState
       if (params.storyMode)
       {
         // Shows a interstital ad on mobile devices each week victory.
-        #if NO_DISABLE_ADMOB_ADS
+        #if FEATURE_ADMOB_ADS
         if (PlayStatePlaylist.isStoryMode) AdMobUtil.loadInterstitial();
         #end
 
@@ -955,7 +955,7 @@ class ResultState extends MusicBeatSubState
         var isPersonalBest = rank > Scoring.calculateRank(params?.prevScoreData);
 
         // Shows a interstital ad on mobile devices each 3 victories on freeplay.
-        #if NO_DISABLE_ADMOB_ADS
+        #if FEATURE_ADMOB_ADS
         Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER++;
         if ((Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0
           && Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0)) AdMobUtil.loadInterstitial();
