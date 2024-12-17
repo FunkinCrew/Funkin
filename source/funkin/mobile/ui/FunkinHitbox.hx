@@ -219,8 +219,8 @@ class FunkinHint extends FunkinPolygonButton
 
     if (followTarget != null)
     {
-      setPosition(followTarget.x, followTarget.y);
-      if (followTargetSize) setSize(followTarget.width, followTarget.height);
+      if (followTargetSize) setSize(followTarget.width * 1.5, followTarget.height);
+      setPosition(followTarget.x - (followTarget.width * 0.25), followTarget.y);
     }
   }
 
@@ -330,12 +330,12 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   /**
    * Creates a new `FunkinHitbox` object.
    */
-  public function new(?schemeOverride:String = null, ?directionsOverride:Array<NoteDirection> = null, ?colorsOverride:Array<FlxColor> = null):Void
+  public function new(?schemeOverride:String = null):Void
   {
     super();
 
-    final hintsColors:Array<FlxColor> = (colorsOverride == null || colorsOverride.length == 0) ? [0xFFC34B9A, 0xFF00FFFF, 0xFF12FB06, 0xFFF9393F] : colorsOverride;
-    final hintsNoteDirections:Array<NoteDirection> = (directionsOverride == null || directionsOverride.length == 0) ? [NoteDirection.LEFT, NoteDirection.DOWN, NoteDirection.UP, NoteDirection.RIGHT] : directionsOverride;
+    final hintsColors:Array<FlxColor> = [0xFFC34B9A, 0xFF00FFFF, 0xFF12FB06, 0xFFF9393F];
+    final hintsNoteDirections:Array<NoteDirection> = [NoteDirection.LEFT, NoteDirection.DOWN, NoteDirection.UP, NoteDirection.RIGHT];
     final controlsScheme:String = (schemeOverride == null || schemeOverride.length == 0) ? Preferences.controlsScheme : schemeOverride;
 
     switch (controlsScheme)
@@ -472,20 +472,24 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
       hint.animation.play('press', true);
       hint.centerOrigin();
       hint.centerOffsets();
+      hint.width = width * 1.5;
     });
     hint.onUp.add(() -> {
       hint.animation.play('static', true);
       hint.centerOrigin();
       hint.centerOffsets();
+      hint.width = width * 1.5;
     });
     hint.onOut.add(() -> {
       hint.animation.play('static', true);
       hint.centerOrigin();
       hint.centerOffsets();
+      hint.width = width * 1.5;
     });
 
     hint.centerOffsets();
     hint.centerOrigin();
+    hint.width = width * 1.5;
 
     return hint;
   }
