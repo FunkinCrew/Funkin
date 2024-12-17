@@ -209,7 +209,7 @@ class Project extends HXProject {
 	/**
 	 * `-DFEATURE_VIDEO_PLAYBACK`
 	 * If this flag is enabled, the game will enable support for video playback.
-	 * This requires the hxCodec library on desktop platforms.
+	 * This requires the hxvlc library on desktop platforms.
 	 */
 	static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
 
@@ -675,9 +675,9 @@ class Project extends HXProject {
 		}
 
     if (isDesktop() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
-      // hxCodec doesn't function on HashLink or non-desktop platforms
+      // hxvlc doesn't function on HashLink or non-desktop platforms
 			// It's also unnecessary if video playback is disabled
-      addHaxelib('hxCodec'); // Video playback
+      addHaxelib('hxvlc'); // Video playback
     }
 
 		if (FEATURE_DISCORD_RPC.isEnabled(this)) {
