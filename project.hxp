@@ -590,7 +590,6 @@ class Project extends HXProject {
     FEATURE_NEWGROUNDS.apply(this, false);
     FEATURE_GHOST_TAPPING.apply(this, false);
     EXCLUDE_ARMV7.apply(this, false);
-    LITE_VERSION.apply(this, false);
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
