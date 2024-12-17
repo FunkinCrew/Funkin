@@ -57,7 +57,7 @@ class Project extends HXProject {
   /**
    * The build's number and version code.
    */
-  static final BUILD_NUMBER:Int = 1;
+  static final BUILD_NUMBER:Int = 2;
 
   /**
    * The fully qualified class path for the entry point class to execute when launching the game.
