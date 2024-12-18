@@ -198,6 +198,16 @@ class CharacterPlayer extends Box
   }
 
   /**
+   * Called when the BPM changes in the song
+   * Used to play character animations.
+   * @param event The event.
+   */
+  public function onBpmChange(event:SongTimeScriptEvent):Void
+  {
+    if (character != null) character.onBpmChange(event);
+  }
+
+  /**
    * Called when an beat is hit in the song
    * Used to play character animations.
    * @param event The event.
