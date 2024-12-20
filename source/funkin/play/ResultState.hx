@@ -22,6 +22,7 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
+import funkin.input.Controls;
 import funkin.ui.freeplay.FreeplayState;
 import flixel.tweens.FlxTween;
 import flixel.addons.display.FlxBackdrop;
@@ -728,7 +729,7 @@ class ResultState extends MusicBeatSubState
       speedOfTween.x -= 0.1;
     }
 
-    if (controls.PAUSE)
+    if (controls.PAUSE || controls.ACCEPT)
     {
       if (introMusicAudio != null) {
         @:nullSafety(Off)
