@@ -1631,6 +1631,11 @@ class PlayState extends MusicBeatSubState
   {
     performCleanup();
 
+    #if mobile
+    // Syncing allowScreenTimeout with Preferences option.
+    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    #end
+
     super.destroy();
   }
 
@@ -3335,11 +3340,6 @@ class PlayState extends MusicBeatSubState
     criticalFailure = true; // Stop game updates.
     performCleanup();
     super.close();
-
-    #if mobile
-    // Syncing allowScreenTimeout with Preferences option.
-    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
-    #end
   }
 
   /**
