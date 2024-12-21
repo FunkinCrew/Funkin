@@ -56,7 +56,7 @@ class NoteVibrationsHandler
 
     for (currentNoteStatus in noteStatuses)
     {
-      if (currentNoteStatus != NoteStatus.isJustPressed) continue;
+      if (currentNoteStatus == NoteStatus.isReleased) continue;
 
       trace("Note Status is Just Pressed!");
 

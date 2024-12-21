@@ -532,10 +532,6 @@ class PlayState extends MusicBeatSubState
   var pauseButton:FunkinSprite;
   #end
 
-  #if HAPTIC_VIBRATIONS
-  var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
-  #end
-
   /**
    * PROPERTIES
    */
@@ -2653,7 +2649,7 @@ class PlayState extends MusicBeatSubState
 
       #if HAPTIC_VIBRATIONS
       // Set current note's status to isJustPressed.
-      noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isJustPressed;
+      playerStrumline.noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isJustPressed;
       #end
     }
     }
@@ -2669,13 +2665,13 @@ class PlayState extends MusicBeatSubState
 
       #if HAPTIC_VIBRATIONS
       // Set current note's status to isReleased.
-      noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isReleased;
+      playerStrumline.noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isReleased;
       #end
     }
 
     #if HAPTIC_VIBRATIONS
     // Try to vibrate. Works if atleast one note status is NoteStatus.isJustPressed.
-    noteVibrations.tryNoteVibration();
+    playerStrumline.noteVibrations.tryNoteVibration();
     #end
   }
 

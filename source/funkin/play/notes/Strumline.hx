@@ -14,6 +14,7 @@ import funkin.play.notes.NoteHoldCover;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.SustainTrail;
+import funkin.play.notes.NoteVibrationsHandler;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
 import funkin.play.notes.notekind.NoteKindManager;
@@ -129,6 +130,10 @@ class Strumline extends FlxSpriteGroup
 
   #if FEATURE_GHOST_TAPPING
   var ghostTapTimer:Float = 0.0;
+  #end
+
+  #if HAPTIC_VIBRATIONS
+  public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
   #end
 
   /**
@@ -531,6 +536,12 @@ class Strumline extends FlxSpriteGroup
         if (holdNote.cover != null && isPlayer)
         {
           holdNote.cover.playEnd();
+
+          #if HAPTIC_VIBRATIONS
+          trace("Sustain Note Splash Vibration");
+
+          noteVibrations.tryNoteVibration();
+          #end
         }
         else if (holdNote.cover != null)
         {
