@@ -532,6 +532,10 @@ class PlayState extends MusicBeatSubState
   var pauseButton:FunkinSprite;
   #end
 
+  #if HAPTIC_VIBRATIONS
+  var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
+  #end
+
   /**
    * PROPERTIES
    */
@@ -2646,6 +2650,11 @@ class PlayState extends MusicBeatSubState
 
       // Play the strumline animation.
       playerStrumline.playConfirm(input.noteDirection);
+
+      #if HAPTIC_VIBRATIONS
+      // Set current note's status to isJustPressed.
+      noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isJustPressed;
+      #end
     }
     }
 
@@ -2657,7 +2666,17 @@ class PlayState extends MusicBeatSubState
       playerStrumline.playStatic(input.noteDirection);
 
       playerStrumline.releaseKey(input.noteDirection);
+
+      #if HAPTIC_VIBRATIONS
+      // Set current note's status to isReleased.
+      noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isReleased;
+      #end
     }
+
+    #if HAPTIC_VIBRATIONS
+    // Try to vibrate. Works if atleast one note status is NoteStatus.isJustPressed.
+    noteVibrations.tryNoteVibration();
+    #end
   }
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
@@ -2711,15 +2730,6 @@ class PlayState extends MusicBeatSubState
     // Display the combo meter and add the calculation to the score.
     applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
     popUpScore(event.judgement);
-
-    // Processes note vibrations.
-    #if HAPTIC_VIBRATIONS
-    // Handle note statuses. Mostly needed for stacked amplitude.
-    NoteVibrationsHandler.noteStatuses[input.noteDirection] = NoteStatus.isJustPressed;
-
-    // Try to vibrate. Works if atleast one note status is NoteStatus.isJustPressed.
-    NoteVibrationsHandler.tryNoteVibration();
-    #end
   }
 
   /**
