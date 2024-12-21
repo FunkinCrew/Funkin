@@ -1515,6 +1515,11 @@ class PlayState extends MusicBeatSubState
     if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.instance.currentStep));
     if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.instance.currentStep));
 
+    #if HAPTIC_VIBRATIONS
+    // Try to vibrate each 2 step hits. Works if atleast one note status is NoteStatus.isHoldNotePressed.
+    if (Conductor.instance.currentStep % 2 == 0) playerStrumline.noteVibrations.tryHoldNoteVibration();
+    #end
+
     return true;
   }
 

@@ -540,6 +540,8 @@ class Strumline extends FlxSpriteGroup
           #if HAPTIC_VIBRATIONS
           trace("Sustain Note Splash Vibration");
 
+          noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isJustPressed;
+
           noteVibrations.tryNoteVibration();
           #end
         }
@@ -587,6 +589,10 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
+        #if HAPTIC_VIBRATIONS
+        if (isPlayer) noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isHoldNotePressed;
+        #end
+
         holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
 
         if (holdNote.sustainLength <= 10)
@@ -624,9 +630,8 @@ class Strumline extends FlxSpriteGroup
           }
         }
       }
-    }
+    } // Update rendering of pressed keys.
 
-    // Update rendering of pressed keys.
     for (dir in DIRECTIONS)
     {
       if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")

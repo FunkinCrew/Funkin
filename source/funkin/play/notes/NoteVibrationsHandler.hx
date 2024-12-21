@@ -56,9 +56,33 @@ class NoteVibrationsHandler
 
     for (currentNoteStatus in noteStatuses)
     {
-      if (currentNoteStatus == NoteStatus.isReleased) continue;
+      if (currentNoteStatus != NoteStatus.isJustPressed) continue;
 
-      trace("Note Status is Just Pressed!");
+      trace("Note is Just Pressed!");
+
+      stackingAmplitude += Math.ceil(Constants.MAX_VIBRATION_AMPLITUDE / 8);
+
+      if (stackingAmplitude > 255) stackingAmplitude = 255;
+    }
+
+    trace("amplitude: " + stackingAmplitude);
+
+    if (stackingAmplitude > defaultNoteAmplitude) HapticUtil.vibrate(0, 10, stackingAmplitude);
+  }
+
+  /**
+   * Checks if any note status is equal to NoteStatus.isHoldNotePressed.
+   * If yes, then vibration is being triggered, amplitude value is stacked depending on how much hold notes are pressed.
+   */
+  public function tryHoldNoteVibration():Void
+  {
+    var stackingAmplitude:Int = defaultNoteAmplitude;
+
+    for (currentNoteStatus in noteStatuses)
+    {
+      if (currentNoteStatus != NoteStatus.isHoldNotePressed) continue;
+
+      trace("Hold Note is Pressed!");
 
       stackingAmplitude += Math.ceil(Constants.MAX_VIBRATION_AMPLITUDE / 8);
 
