@@ -184,7 +184,7 @@ class Main extends Sprite
     {
       fpsCounter.scaleX = fpsCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
       #if mobile
-      fpsCounter.x = 10 + FullScreenScaleMode.notchSize.x;
+      fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x +;
       #end
     }
 
@@ -192,9 +192,9 @@ class Main extends Sprite
     {
       memoryCounter.scaleX = memoryCounter.scaleY = scale;
 
-      memoryCounter.y = 13 * #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+      memoryCounter.y = FlxG.game.y + (13 * #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end);
       #if mobile
-      memoryCounter.x = 10 + FullScreenScaleMode.notchSize.x;
+      memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
       #end
     }
   }

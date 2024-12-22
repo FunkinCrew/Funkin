@@ -156,8 +156,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       {
         final game = FlxG.game;
 
-        cutoutBitmaps[i] = bitmap = new Bitmap(new BitmapData(ratioAxis == X ? Math.ceil(cutoutSize.x / 2) : Math.ceil(instance.gameSize.x),
-          ratioAxis == Y ? Math.ceil(cutoutSize.y / 2) : Math.ceil(instance.gameSize.y), true, 0xFF000000));
+        cutoutBitmaps[i] = bitmap = new Bitmap(new BitmapData(ratioAxis == X ? Math.ceil(cutoutSize.x / 2) : Math.ceil(FlxG.scaleMode.gameSize.x),
+          ratioAxis == Y ? Math.ceil(cutoutSize.y / 2) : Math.ceil(FlxG.scaleMode.gameSize.y), true, 0xFF000000));
         game.parent.addChildAt(bitmap, game.parent.getChildIndex(game) + 1);
       }
 
@@ -166,8 +166,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
       if (ratioAxis == X)
       {
-        bitmap.x = (i == 0) ? -bitmap.width : instance.gameSize.x;
-        targetX = (i == 0) ? 0 : instance.gameSize.x - bitmap.width;
+        bitmap.x = (i == 0) ? -bitmap.width : FlxG.scaleMode.gameSize.x;
+        targetX = (i == 0) ? 0 : FlxG.scaleMode.gameSize.x - bitmap.width;
         bitmap.y = 0;
         targetY = 0;
       }
@@ -175,8 +175,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       {
         bitmap.x = 0;
         targetX = 0;
-        bitmap.y = (i == 0) ? -bitmap.height : instance.gameSize.y;
-        targetY = (i == 0) ? 0 : instance.gameSize.y - bitmap.height;
+        bitmap.y = (i == 0) ? -bitmap.height : FlxG.scaleMode.gameSize.y;
+        targetY = (i == 0) ? 0 : FlxG.scaleMode.gameSize.y - bitmap.height;
       }
 
       bitmap.alpha = 0;
@@ -206,12 +206,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     {
       if (bitmap == null)
       {
-        trace("[WARNING] Tried to remove a cutout bar but there don't seem to be any cuout bars.");
+        trace("[WARNING] Tried to remove a cutout bar but there don't seem to be any.");
         continue;
       }
 
-      final targetX:Float = (i == 0 || ratioAxis == Y) ? ratioAxis == Y ? 0 : -bitmap.width : instance.gameSize.x;
-      final targetY:Float = (i == 0 || ratioAxis == X) ? ratioAxis == X ? 0 : -bitmap.height : instance.gameSize.y;
+      final targetX:Float = (i == 0 || ratioAxis == Y) ? ratioAxis == Y ? 0 : -bitmap.width : FlxG.scaleMode.gameSize.x;
+      final targetY:Float = (i == 0 || ratioAxis == X) ? ratioAxis == X ? 0 : -bitmap.height : FlxG.scaleMode.gameSize.y;
 
       if (tweenDuration > 0.0)
       {
