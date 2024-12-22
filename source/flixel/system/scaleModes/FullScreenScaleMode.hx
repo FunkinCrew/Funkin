@@ -97,8 +97,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    */
   public override function onMeasure(Width:Int, Height:Int):Void
   {
-    FlxG.width = FlxG.initialWidth;
-    FlxG.height = FlxG.initialHeight;
+    untyped FlxG.width = FlxG.initialWidth;
+    untyped FlxG.height = FlxG.initialHeight;
 
     updateGameSize(Width, Height);
     updateDeviceSize(Width, Height);
@@ -114,21 +114,19 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
   private function updateDeviceCutout(Width:Int, Height:Int):Void
   {
-    cutoutSize.set(0, 0);
-    gameCutoutSize.set(0, 0);
-
     if (enabled)
     {
-      if (ratioAxis == Y)
-      {
-        cutoutSize.y = Height - gameSize.y;
-        gameCutoutSize.y = #if android cutoutSize.y / 2 #else cutoutSize.y #end;
-      }
-      else
-      {
-        cutoutSize.x = Width - gameSize.x;
-        gameCutoutSize.x = #if android cutoutSize.x / 2 #else cutoutSize.x #end;
-      }
+      cutoutSize.set(ratioAxis != Y ? Width - gameSize.x : 0, ratioAxis == Y ? Height - gameSize.y : 0);
+      #if android
+      gameCutoutSize.set(ratioAxis != Y ? cutoutSize.x / 2 : 0, ratioAxis == Y ? cutoutSize.y / 2 : 0);
+      #else
+      gameCutoutSize.set(ratioAxis != Y ? cutoutSize.x : 0, ratioAxis == Y ? cutoutSize.y : 0);
+      #end
+    }
+    else
+    {
+      cutoutSize.set(0, 0);
+      gameCutoutSize.set(0, 0);
     }
   }
 
@@ -166,7 +164,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           updateGamePosition();
         }
 
-        FlxG.height = Math.floor(gameHeight);
+        untyped FlxG.height = Math.floor(gameHeight);
+
         windowScale.y = FlxG.height / FlxG.initialHeight;
       }
       else
@@ -174,6 +173,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
         gameSize.x += cutoutSize.x;
 
         var gameWidth:Float = gameSize.x / scale.x;
+
         if (gameWidth / FlxG.height > maxAspectRatio.x / maxAspectRatio.y && maxRatioAxis.x)
         {
           gameWidth = ((gameSize.y / scale.y) / maxAspectRatio.y) * maxAspectRatio.x;
@@ -181,7 +181,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           updateGamePosition();
         }
 
-        FlxG.width = Math.floor(gameWidth);
+        untyped FlxG.width = Math.floor(gameWidth);
+
         windowScale.x = FlxG.width / FlxG.initialWidth;
       }
     }
