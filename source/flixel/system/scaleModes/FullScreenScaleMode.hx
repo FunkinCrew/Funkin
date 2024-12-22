@@ -22,6 +22,16 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   public static var notchSize:FlxPoint = FlxPoint.get(0, 0);
 
   /**
+   * The maximum aspect ratio a screen can have.
+   */
+  public static var maxAspectRatio:FlxPoint = FlxPoint.get(20, 9);
+
+  /**
+   * The maximum ratio axis indicating on which axis the black bar will be added.
+   */
+  public static var maxRatioAxis:FlxAxes = X;
+
+  /**
    * The aspect ratio of the game screen.
    */
   public static var gameRatio:Float = -1;
@@ -146,13 +156,32 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       if (ratioAxis == Y)
       {
         gameSize.y += cutoutSize.y;
-        FlxG.height = Math.floor(gameSize.y / scale.y);
+
+        var gameHeight:Float = gameSize.y / scale.y;
+
+        if (gameHeight / FlxG.width > maxAspectRatio.y / maxAspectRatio.x && maxRatioAxis.y)
+        {
+          gameHeight = ((gameSize.x / scale.x) / maxAspectRatio.x) * maxAspectRatio.y;
+          offset.y = Math.ceil((deviceSize.y - gameHeight) * 0.5);
+          updateGamePosition();
+        }
+
+        FlxG.height = Math.floor(gameHeight);
         windowScale.y = FlxG.height / FlxG.initialHeight;
       }
       else
       {
         gameSize.x += cutoutSize.x;
-        FlxG.width = Math.floor(gameSize.x / scale.x);
+
+        var gameWidth:Float = gameSize.x / scale.x;
+        if (gameWidth / FlxG.height > maxAspectRatio.x / maxAspectRatio.y && maxRatioAxis.x)
+        {
+          gameWidth = ((gameSize.y / scale.y) / maxAspectRatio.y) * maxAspectRatio.x;
+          offset.x = Math.ceil((deviceSize.x - gameWidth) * 0.5);
+          updateGamePosition();
+        }
+
+        FlxG.width = Math.floor(gameWidth);
         windowScale.x = FlxG.width / FlxG.initialWidth;
       }
     }
