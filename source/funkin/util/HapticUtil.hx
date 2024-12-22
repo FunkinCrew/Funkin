@@ -22,11 +22,9 @@ class HapticUtil
   public static inline function vibrate(period:Int = Constants.DEFAULT_VIBRATION_PERIOD, duration:Int = Constants.DEFAULT_VIBRATION_DURATION,
       amplitude:Int = 0):Void
   {
-    #if HAPTIC_VIBRATIONS
     if (!Preferences.vibration) return;
 
     Haptic.vibrate(period, duration, amplitude);
-    #end
   }
 
   /**
@@ -38,7 +36,6 @@ class HapticUtil
    */
   public static function increasingVibrate(startAmplitude:Float, targetAmplitude:Float, tweenDuration:Float = 1):Void
   {
-    #if HAPTIC_VIBRATIONS
     if (!Preferences.vibration) return;
 
     if (amplitudeTween != null) amplitudeTween.cancel();
@@ -52,6 +49,5 @@ class HapticUtil
       }, function(currentAmplitude:Float) {
         vibrate(0, Math.floor(Constants.DEFAULT_VIBRATION_DURATION / 10), Math.floor(currentAmplitude));
       });
-    #end
   }
 }

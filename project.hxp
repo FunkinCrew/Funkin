@@ -270,7 +270,7 @@ class Project extends HXProject {
   static final FEATURE_STAGE_EDITOR:FeatureFlag = "FEATURE_STAGE_EDITOR";
 
 	/**
-	 * `-DFEATURE_RESULTS_DEBUG
+	 * `-DFEATURE_RESULTS_DEBUG`
 	 * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
 	 */
 	static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
@@ -290,23 +290,17 @@ class Project extends HXProject {
 	static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
 	/**
-	 * `-DTOUCH_CONTROLS
+	 * `-DTOUCH_CONTROLS`
 	 * If this flag is enabled, the touch controls for the game is also enabled.
 	 * Works with desktop builds.
 	 */
 	static final TOUCH_CONTROLS:FeatureFlag = "TOUCH_CONTROLS";
 
-	/**
-	 * `-DHAPTIC_VIBRATIONS
-	 * If this flag is enabled, the vibrations for the game is also enabled.
-	 */
-	static final HAPTIC_VIBRATIONS:FeatureFlag = "HAPTIC_VIBRATIONS";
-
-	/**
-	 * `-DEXCLUDE_ARMV7`
-	 * If this flag is enabled, armv7 won't be compiled when building android.
-	 */
-	static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
+  /**
+   * `-DEXCLUDE_ARMV7`
+   * If this flag is enabled, armv7 won't be compiled when building android.
+   */
+  static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
 
   /**
    * `-DFEATURE_ADMOB_ADS`
@@ -638,9 +632,6 @@ class Project extends HXProject {
 
 		// Should be true only on mobile builds.
 		TOUCH_CONTROLS.apply(this, isMobile());
-
-		// Should be true only on mobile builds.
-		HAPTIC_VIBRATIONS.apply(this, isMobile());
 
     // Should be true only on mobile builds.
     FEATURE_ADMOB_ADS.apply(this, isMobile());

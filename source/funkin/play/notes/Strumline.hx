@@ -132,9 +132,7 @@ class Strumline extends FlxSpriteGroup
   var ghostTapTimer:Float = 0.0;
   #end
 
-  #if HAPTIC_VIBRATIONS
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
-  #end
 
   /**
    * The note data for the song. Should NOT be altered after the song starts,
@@ -537,13 +535,10 @@ class Strumline extends FlxSpriteGroup
         {
           holdNote.cover.playEnd();
 
-          #if HAPTIC_VIBRATIONS
           trace("Sustain Note Splash Vibration");
 
           noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isJustPressed;
-
           noteVibrations.tryNoteVibration();
-          #end
         }
         else if (holdNote.cover != null)
         {
@@ -589,9 +584,8 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
-        #if HAPTIC_VIBRATIONS
+        // Set current note's status to isHoldNotePressed.
         if (isPlayer) noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isHoldNotePressed;
-        #end
 
         holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
 
@@ -814,6 +808,9 @@ class Strumline extends FlxSpriteGroup
   public function playStatic(direction:NoteDirection):Void
   {
     getByDirection(direction).playStatic();
+
+    // Set current note's status to isReleased.
+    if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.isReleased;
   }
 
   public function playPress(direction:NoteDirection):Void

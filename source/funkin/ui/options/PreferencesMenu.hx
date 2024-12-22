@@ -157,13 +157,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, null, Preferences.jpegQuality, 0, 100, 5, 0);
+    createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
+      Preferences.vibration = value;
+    }, Preferences.vibration);
     #if mobile
     createPrefItemCheckbox('Allow Screen Timeout', 'Toggle screen timeout', function(value:Bool):Void {
       Preferences.screenTimeout = value;
     }, Preferences.screenTimeout);
-    createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
-      Preferences.vibration = value;
-    }, Preferences.vibration);
     #end
   }
 

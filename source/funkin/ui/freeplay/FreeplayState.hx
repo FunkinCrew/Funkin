@@ -949,9 +949,8 @@ class FreeplayState extends MusicBeatSubState
     capsuleToRank.ranking.visible = false;
     capsuleToRank.fakeRanking.visible = false;
 
-    #if HAPTIC_VIBRATIONS
+    // Rank animation vibrations.
     HapticUtil.increasingVibrate(Constants.MIN_VIBRATION_AMPLITUDE, Constants.MAX_VIBRATION_AMPLITUDE, 0.6);
-    #end
 
     rankCamera.zoom = 1.85;
     FlxTween.tween(rankCamera, {"zoom": 1.8}, 0.6, {ease: FlxEase.sineIn});
@@ -1065,9 +1064,8 @@ class FreeplayState extends MusicBeatSubState
 
     FlxTween.tween(capsuleToRank, {"targetPos.x": originalPos.x, "targetPos.y": originalPos.y}, 0.5, {ease: FlxEase.expoOut});
     new FlxTimer().start(0.5, _ -> {
-      #if HAPTIC_VIBRATIONS
+      // Capsule slam vibration.
       HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
-      #end
 
       funnyCam.shake(0.0045, 0.35);
 
@@ -1341,9 +1339,7 @@ class FreeplayState extends MusicBeatSubState
 
   var hintTimer:Float = 0;
 
-  #if HAPTIC_VIBRATIONS
   var allowPicoBulletsVibration:Bool = false;
-  #end
 
   override function update(elapsed:Float):Void
   {
@@ -1434,10 +1430,8 @@ class FreeplayState extends MusicBeatSubState
 
     if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
 
-    #if HAPTIC_VIBRATIONS
     // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
     if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 10, Std.int(Constants.MAX_VIBRATION_AMPLITUDE / 3));
-    #end
   }
 
   var _dragOffset:Float = 0;
@@ -2051,24 +2045,25 @@ class FreeplayState extends MusicBeatSubState
 
     backingCard?.confirm();
 
-    #if HAPTIC_VIBRATIONS
     // Start vibration after half of second.
-    new FlxTimer().start(0.5, function(tmr) {
-      switch (currentCharacterId)
-      {
-        // Toggles the bool that allows vibration on update.
-        case "pico":
-          allowPicoBulletsVibration = true;
-          new FlxTimer().start(0.5, function(tmr) {
-            allowPicoBulletsVibration = false;
-          });
+    if (Preferences.vibration)
+    {
+      new FlxTimer().start(0.5, function(tmr) {
+        switch (currentCharacterId)
+        {
+          // Toggles the bool that allows vibration on update.
+          case "pico":
+            allowPicoBulletsVibration = true;
+            new FlxTimer().start(0.5, function(tmr) {
+              allowPicoBulletsVibration = false;
+            });
 
-        // A single vibration.
-        default:
-          HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Std.int(Constants.MAX_VIBRATION_AMPLITUDE / 3));
-      }
-    });
-    #end
+          // A single vibration.
+          default:
+            HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Std.int(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+        }
+      });
+    }
 
     new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
       FunkinSound.emptyPartialQueue();
@@ -2182,10 +2177,8 @@ class FreeplayState extends MusicBeatSubState
       // switchBackingImage(daSongCapsule.freeplayData);
     }
 
-    #if HAPTIC_VIBRATIONS
     // Small vibrations every selection change.
     HapticUtil.vibrate(0, 10, 10);
-    #end
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

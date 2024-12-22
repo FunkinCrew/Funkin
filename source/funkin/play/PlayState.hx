@@ -1515,10 +1515,8 @@ class PlayState extends MusicBeatSubState
     if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.instance.currentStep));
     if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.instance.currentStep));
 
-    #if HAPTIC_VIBRATIONS
     // Try to vibrate each 2 step hits. Works if atleast one note status is NoteStatus.isHoldNotePressed.
     if (Conductor.instance.currentStep % 2 == 0) playerStrumline.noteVibrations.tryHoldNoteVibration();
-    #end
 
     return true;
   }
@@ -2652,10 +2650,8 @@ class PlayState extends MusicBeatSubState
       // Play the strumline animation.
       playerStrumline.playConfirm(input.noteDirection);
 
-      #if HAPTIC_VIBRATIONS
       // Set current note's status to isJustPressed.
       playerStrumline.noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isJustPressed;
-      #end
     }
     }
 
@@ -2667,17 +2663,10 @@ class PlayState extends MusicBeatSubState
       playerStrumline.playStatic(input.noteDirection);
 
       playerStrumline.releaseKey(input.noteDirection);
-
-      #if HAPTIC_VIBRATIONS
-      // Set current note's status to isReleased.
-      playerStrumline.noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isReleased;
-      #end
     }
 
-    #if HAPTIC_VIBRATIONS
     // Try to vibrate. Works if atleast one note status is NoteStatus.isJustPressed.
     playerStrumline.noteVibrations.tryNoteVibration();
-    #end
   }
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void

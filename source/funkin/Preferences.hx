@@ -146,6 +146,25 @@ class Preferences
   }
 
   /**
+   * If enabled, vibration will be enabled.
+   * @default `true`
+   */
+  public static var vibration(get, set):Bool;
+
+  static function get_vibration():Bool
+  {
+    return Save?.instance?.options?.vibration ?? true;
+  }
+
+  static function set_vibration(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.vibration = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
@@ -430,25 +449,6 @@ class Preferences
 
     var save:Save = Save.instance;
     save.mobileOptions.screenTimeout = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, vibration will be enabled.
-   * @default `true`
-   */
-  public static var vibration(get, set):Bool;
-
-  static function get_vibration():Bool
-  {
-    return Save?.instance?.mobileOptions?.vibration ?? true;
-  }
-
-  static function set_vibration(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.mobileOptions.vibration = value;
     save.flush();
     return value;
   }

@@ -117,6 +117,7 @@ class Save
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
+          vibration: true,
           autoPause: true,
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
@@ -153,7 +154,6 @@ class Save
         {
           // Reasonable defaults.
           screenTimeout: false,
-          vibration: true,
           controlsScheme: FunkinHitboxControlSchemes.Arrows
         },
       #end
@@ -1423,6 +1423,12 @@ typedef SaveDataOptions =
   var debugDisplay:Bool;
 
   /**
+   * If enabled, vibration will be enabled.
+   * @default `true`
+   */
+  var vibration:Bool;
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
@@ -1501,13 +1507,7 @@ typedef SaveDataMobileOptions =
   var screenTimeout:Bool;
 
   /**
-   * If enabled, vibration will be enabled.
-   * @default `true`
-   */
-  var vibration:Bool;
-
-  /**
-   * Controls scheme for mobile.
+   * Controls scheme for the hitbox.
    * @default `Arrows`
    */
   var controlsScheme:String;

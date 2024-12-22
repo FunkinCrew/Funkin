@@ -520,9 +520,8 @@ class GameOverSubState extends MusicBeatSubState
   {
     blueballed = true;
 
-    #if HAPTIC_VIBRATIONS
+    // Gameover vibration.
     HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD * 5, Constants.DEFAULT_VIBRATION_DURATION * 10);
-    #end
 
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
     {

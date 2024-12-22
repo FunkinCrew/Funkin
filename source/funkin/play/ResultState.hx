@@ -514,17 +514,13 @@ class ResultState extends MusicBeatSubState
             clearPercentLerp = clearPercentCounter.curNumber;
             FunkinSound.playOnce(Paths.sound('scrollMenu'));
 
-            #if HAPTIC_VIBRATIONS
             // Weak vibration each number increase.
             HapticUtil.vibrate(0, 10);
-            #end
           }
         },
         onComplete: _ -> {
-          #if HAPTIC_VIBRATIONS
           // Strong vibration when rank number tween ends.
           HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
-          #end
 
           // Play confirm sound.
           FunkinSound.playOnce(Paths.sound('confirmMenu'));
@@ -727,7 +723,6 @@ class ResultState extends MusicBeatSubState
     // maskShaderSongName.frameUV = songName.frame.uv;
   }
 
-  #if HAPTIC_VIBRATIONS
   private function handleAnimationVibrations()
   {
     for (atlas in characterAtlasAnimations)
@@ -826,7 +821,6 @@ class ResultState extends MusicBeatSubState
       }
     }
   }
-  #end
 
   override function update(elapsed:Float):Void
   {
@@ -1024,9 +1018,7 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    #if HAPTIC_VIBRATIONS
-    handleAnimationVibrations();
-    #end
+    if (Preferences.vibration) handleAnimationVibrations();
 
     super.update(elapsed);
   }

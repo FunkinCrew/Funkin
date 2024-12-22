@@ -374,9 +374,7 @@ class TitleState extends MusicBeatState
   {
     if (credGroup == null || textGroup == null) return;
 
-    #if HAPTIC_VIBRATIONS
     HapticUtil.vibrate();
-    #end
 
     var coolText:AtlasText = new AtlasText(0, 0, text.trim(), AtlasFont.BOLD);
     coolText.screenCenter(X);
