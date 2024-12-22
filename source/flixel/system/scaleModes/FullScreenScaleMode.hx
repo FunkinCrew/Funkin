@@ -1,8 +1,12 @@
 package flixel.system.scaleModes;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.math.FlxPoint;
 import flixel.util.FlxAxes;
 import flixel.FlxG;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 
 class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 {
@@ -76,6 +80,9 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    */
   public static var enabled(default, set):Bool;
 
+  @:noCompletion
+  private static var cutoutBitmaps:Array<Bitmap> = [null, null];
+
   /**
    * Constructor for `FullScreenScaleMode`.
    *
@@ -95,7 +102,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    * @param Width The width of the screen.
    * @param Height The height of the screen.
    */
-  public override function onMeasure(Width:Int, Height:Int):Void
+  override public function onMeasure(Width:Int, Height:Int):Void
   {
     untyped FlxG.width = FlxG.initialWidth;
     untyped FlxG.height = FlxG.initialHeight;
@@ -127,6 +134,95 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     {
       cutoutSize.set(0, 0);
       gameCutoutSize.set(0, 0);
+    }
+  }
+
+  /**
+   * Add fake cutouts into the screen.
+   * Useful for when switching from wide display into 16:9 seamlessly and directly is needed.
+   * @param tweenDuration The duration of the tweens that adds the cutout bars. Using 0 will instantly put them on screen.
+   * @param ease The function that's used for the tween.
+   */
+  public static function addCutouts(tweenDuration:Float = 0.0, ?ease:Float->Float):Void
+  {
+    if (cutoutSize.x == 0 && ratioAxis == X || cutoutSize.y == 0 && ratioAxis == Y)
+    {
+      return;
+    }
+
+    for (i => bitmap in cutoutBitmaps)
+    {
+      if (bitmap == null)
+      {
+        final game = FlxG.game;
+
+        cutoutBitmaps[i] = bitmap = new Bitmap(new BitmapData(ratioAxis == X ? Math.ceil(cutoutSize.x / 2) : Math.ceil(instance.gameSize.x),
+          ratioAxis == Y ? Math.ceil(cutoutSize.y / 2) : Math.ceil(instance.gameSize.y), true, 0xFF000000));
+        game.parent.addChildAt(bitmap, game.parent.getChildIndex(game) + 1);
+      }
+
+      var targetX:Float = 0;
+      var targetY:Float = 0;
+
+      if (ratioAxis == X)
+      {
+        bitmap.x = (i == 0) ? -bitmap.width : instance.gameSize.x;
+        targetX = (i == 0) ? 0 : instance.gameSize.x - bitmap.width;
+        bitmap.y = 0;
+        targetY = 0;
+      }
+      else
+      {
+        bitmap.x = 0;
+        targetX = 0;
+        bitmap.y = (i == 0) ? -bitmap.height : instance.gameSize.y;
+        targetY = (i == 0) ? 0 : instance.gameSize.y - bitmap.height;
+      }
+
+      bitmap.alpha = 0;
+
+      if (tweenDuration > 0.0)
+      {
+        FlxTween.tween(bitmap, {x: targetX, y: targetY, alpha: 1}, tweenDuration, {ease: ease ?? FlxEase.linear});
+      }
+      else
+      {
+        bitmap.x = targetX;
+        bitmap.y = targetY;
+        bitmap.alpha = 1;
+      }
+    }
+  }
+
+  /**
+   * Remove the fake cutouts from the screen.
+   * Used to go back from 16:9 into widescreen seamlessly and directly when needed.
+   * @param tweenDuration The duration of the tweens that remove the cutout bars. Using 0 will instantly put them off screen.
+   * @param ease The function that's used for the tween.
+   */
+  public static function removeCutouts(tweenDuration:Float = 0.0, ?ease:Float->Float):Void
+  {
+    for (i => bitmap in cutoutBitmaps)
+    {
+      if (bitmap == null)
+      {
+        trace("[WARNING] Tried to remove a cutout bar but there don't seem to be any cuout bars.");
+        continue;
+      }
+
+      final targetX:Float = (i == 0 || ratioAxis == Y) ? ratioAxis == Y ? 0 : -bitmap.width : instance.gameSize.x;
+      final targetY:Float = (i == 0 || ratioAxis == X) ? ratioAxis == X ? 0 : -bitmap.height : instance.gameSize.y;
+
+      if (tweenDuration > 0.0)
+      {
+        FlxTween.tween(bitmap, {x: targetX, y: targetY, alpha: 0}, tweenDuration, {ease: ease ?? FlxEase.linear});
+      }
+      else
+      {
+        bitmap.x = targetX;
+        bitmap.y = targetY;
+        bitmap.alpha = 0;
+      }
     }
   }
 
@@ -164,7 +260,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           updateGamePosition();
         }
 
-        untyped FlxG.height = Math.floor(gameHeight);
+        untyped FlxG.height = Math.ceil(gameHeight);
 
         windowScale.y = FlxG.height / FlxG.initialHeight;
       }
@@ -181,7 +277,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           updateGamePosition();
         }
 
-        untyped FlxG.width = Math.floor(gameWidth);
+        untyped FlxG.width = Math.ceil(gameWidth);
 
         windowScale.x = FlxG.width / FlxG.initialWidth;
       }
@@ -193,7 +289,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    * @param Width The width of the screen.
    * @param Height The height of the screen.
    */
-  public override function updateGameSize(Width:Int, Height:Int):Void
+  override public function updateGameSize(Width:Int, Height:Int):Void
   {
     gameRatio = FlxG.width / FlxG.height;
     windowRatio = Width / Height;
@@ -202,12 +298,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     if (ratioAxis == FlxAxes.Y)
     {
       gameSize.x = Width;
-      gameSize.y = Math.floor(gameSize.x / gameRatio);
+      gameSize.y = Math.ceil(gameSize.x / gameRatio);
     }
     else
     {
       gameSize.y = Height;
-      gameSize.x = Math.floor(gameSize.y * gameRatio);
+      gameSize.x = Math.ceil(gameSize.y * gameRatio);
     }
   }
 
