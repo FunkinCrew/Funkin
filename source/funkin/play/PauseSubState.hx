@@ -538,7 +538,7 @@ class PauseSubState extends MusicBeatSubState
 
     if (count <= 0)
     {
-      SwipeUtil.swipeThreshold = 80;
+      // FlxG.touches.swipeThreshold.set(100, 100);
       return;
     }
 
@@ -547,7 +547,7 @@ class PauseSubState extends MusicBeatSubState
     for (i in 0...items.length - 1)
       totalDistance += Math.abs(items[i + 1].y - items[i].y);
 
-    SwipeUtil.swipeThreshold = Math.ceil((totalDistance / count) * 0.9); // safety measure
+    // FlxG.touches.swipeThreshold.set(100, Math.ceil((totalDistance / count) * 0.9)); // safety measure
   }
 
   /**
