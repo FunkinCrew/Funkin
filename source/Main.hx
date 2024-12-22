@@ -184,7 +184,7 @@ class Main extends Sprite
     {
       fpsCounter.scaleX = fpsCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
       #if mobile
-      fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x +;
+      fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
       #end
     }
 

@@ -104,9 +104,8 @@ class AttractState extends MusicBeatState
   {
     super.update(elapsed);
 
-    // If the user presses any button, skip the video.
-    if ((FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN) #if mobile
-      || funkin.mobile.util.TouchUtil.justPressed #end)
+    // If the user presses any button or holds the screen for 0.8 seconds, skip the video.
+    if ((FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN))
     {
       onAttractEnd();
     }
