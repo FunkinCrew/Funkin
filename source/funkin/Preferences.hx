@@ -398,19 +398,19 @@ class Preferences
     if (show)
     {
       // Enable the debug display.
-      FlxG.stage.addChild(Main.fpsCounter);
+      FlxG.game.parent.addChild(Main.fpsCounter);
 
       #if !html5
-      FlxG.stage.addChild(Main.memoryCounter);
+      FlxG.game.parent.addChild(Main.memoryCounter);
       #end
     }
     else
     {
       // Disable the debug display.
-      FlxG.stage.removeChild(Main.fpsCounter);
+      FlxG.game.parent.removeChild(Main.fpsCounter);
 
       #if !html5
-      FlxG.stage.removeChild(Main.memoryCounter);
+      FlxG.game.parent.removeChild(Main.memoryCounter);
       #end
     }
   }

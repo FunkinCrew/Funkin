@@ -278,7 +278,7 @@ class PauseSubState extends MusicBeatSubState
   {
     // Using state.bgColor causes bugs!
     background = new FunkinSprite(0, 0);
-    background.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    background.makeSolidColor(camera.width, camera.height, FlxColor.BLACK);
     background.alpha = 0.0;
     background.scrollFactor.set(0, 0);
     background.updateHitbox();
@@ -294,7 +294,7 @@ class PauseSubState extends MusicBeatSubState
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20, 15, FlxG.width - 40, 'Song Name');
+    var metadataSong:FlxText = new FlxText(20, 15, camera.width - 40, 'Song Name');
     metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -303,7 +303,7 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.scrollFactor.set(0, 0);
     metadata.add(metadataSong);
 
-    metadataArtist = new FlxText(20, metadataSong.y + 32, FlxG.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataArtist = new FlxText(20, metadataSong.y + 32, camera.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
     metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -312,7 +312,7 @@ class PauseSubState extends MusicBeatSubState
     metadataArtist.scrollFactor.set(0, 0);
     metadata.add(metadataArtist);
 
-    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, FlxG.width - 40, 'Difficulty: ');
+    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, camera.width - 40, 'Difficulty: ');
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
@@ -321,12 +321,12 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
-    metadataPractice = new FlxText(20, metadataDeaths.y + 32, FlxG.width - 40, 'PRACTICE MODE');
+    metadataPractice = new FlxText(20, metadataDeaths.y + 32, camera.width - 40, 'PRACTICE MODE');
     metadataPractice.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
@@ -501,7 +501,7 @@ class PauseSubState extends MusicBeatSubState
 
       // Set the position.
       var targetX = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 20 + 90;
-      var targetY = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 120 + (FlxG.height * 0.48);
+      var targetY = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 120 + (camera.height * 0.48);
       FlxTween.globalManager.cancelTweensOf(text);
       FlxTween.tween(text, {x: targetX, y: targetY}, 0.33, {ease: FlxEase.quartOut});
     }

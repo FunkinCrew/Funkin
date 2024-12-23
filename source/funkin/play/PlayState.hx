@@ -2,6 +2,7 @@ package funkin.play;
 
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
+import flixel.system.scaleModes.FullScreenScaleMode;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -519,6 +520,11 @@ class PlayState extends MusicBeatSubState
    * The camera which contains, and controls visibility of, a video cutscene, dialogue, pause menu and sticker transition.
    */
   public var camCutscene:FlxCamera;
+
+  /**
+   * The camera which contains, and controls visibility of menus when there are fake cutouts added.
+   */
+  public var camCutouts:FlxCamera;
 
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
@@ -1660,10 +1666,13 @@ class PlayState extends MusicBeatSubState
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutscene = new FlxCamera();
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
+    camCutouts = new FlxCamera((FlxG.width - FlxG.initialWidth) / 2, (FlxG.height - FlxG.initialHeight) / 2, FlxG.initialWidth, FlxG.initialHeight);
+    camCutouts.bgColor.alpha = 0; // Show the game scene behind the camera.
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
     FlxG.cameras.add(camCutscene, false);
+    FlxG.cameras.add(camCutouts, false);
 
     // Configure camera follow point.
     if (previousCameraFollowPoint != null)
@@ -1899,7 +1908,7 @@ class PlayState extends MusicBeatSubState
     add(playerStrumline);
     add(opponentStrumline);
 
-    final cutoutSize = flixel.system.scaleModes.FullScreenScaleMode.gameCutoutSize.x / 2.0;
+    final cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2.0;
     // Position the player strumline on the right half of the screen
     playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
@@ -2872,7 +2881,7 @@ class PlayState extends MusicBeatSubState
     }
     #end
 
-    #if FEATURE_DEBUG_FUNCTIONS
+    // #if FEATURE_DEBUG_FUNCTIONS
     // H: Hide the HUD.
     if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
 
@@ -2884,19 +2893,19 @@ class PlayState extends MusicBeatSubState
 
     // 3: Lose 5% health.
     if (FlxG.keys.justPressed.THREE) health -= 0.05 * Constants.HEALTH_MAX;
-    #end
+    // #end
 
     // 9: Toggle the old icon.
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
-    #if FEATURE_DEBUG_FUNCTIONS
+    // #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
     // SHIFT+PAGEUP: Skip forward twenty sections.
     if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
     // PAGEDOWN: Skip backward two section. Doesn't replace notes.
     // SHIFT+PAGEDOWN: Skip backward twenty sections.
     if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
-    #end
+    // #end
 
     if (FlxG.keys.justPressed.B) trace(inputSpitter.join('\n'));
   }
@@ -3032,7 +3041,7 @@ class PlayState extends MusicBeatSubState
         persistentUpdate = false;
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-        pauseSubState.camera = camCutscene;
+        pauseSubState.camera = FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene;
         openSubState(pauseSubState);
       }
     }
@@ -3052,7 +3061,7 @@ class PlayState extends MusicBeatSubState
         persistentUpdate = false;
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-        pauseSubState.camera = camCutscene;
+        pauseSubState.camera = FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene;
         openSubState(pauseSubState);
       }
     }
@@ -3692,7 +3701,8 @@ class PlayState extends MusicBeatSubState
     scrollSpeedTweens = [];
   }
 
-  #if FEATURE_DEBUG_FUNCTIONS
+  // #if FEATURE_DEBUG_FUNCTIONS
+
   /**
      * Jumps forward or backward a number of sections in the song.
      * Accounts for BPM changes, does not prevent death from skipped notes.
@@ -3721,5 +3731,6 @@ class PlayState extends MusicBeatSubState
 
     resyncVocals();
   }
-  #end
+
+  // #end
 }

@@ -80,6 +80,11 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    */
   public static var enabled(default, set):Bool;
 
+  /**
+   * Wether fake cutouts are added to the screen.
+   */
+  public static var hasFakeCutouts:Bool = false;
+
   @:noCompletion
   private static var cutoutBitmaps:Array<Bitmap> = [null, null];
 
@@ -192,6 +197,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
         bitmap.alpha = 1;
       }
     }
+    hasFakeCutouts = true;
   }
 
   /**
@@ -224,6 +230,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
         bitmap.alpha = 0;
       }
     }
+    hasFakeCutouts = false;
   }
 
   #if mobile
