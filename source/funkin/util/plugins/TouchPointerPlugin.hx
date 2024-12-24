@@ -7,6 +7,7 @@ import flixel.FlxG;
 import flixel.input.touch.FlxTouch;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
+import flixel.util.FlxColor;
 import flixel.FlxCamera;
 
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
@@ -24,7 +25,7 @@ class TouchPointerPlugin extends FlxBasic
   {
     super();
     pointerGrp = new FlxTypedSpriteGroup<TouchPointer>();
-    add(pointerGrp);
+    // add(pointerGrp);
   }
 
   public static function initialize()
@@ -99,7 +100,7 @@ class TouchPointer extends FlxSprite
 
   public function initialize(touchId:Int):Void
   {
-    touchId = touchId;
+    this.touchId = touchId;
     loadGraphic("assets/images/cursor/michael.png");
   }
 
@@ -113,7 +114,7 @@ class TouchPointer extends FlxSprite
     if (lastPosition.x != touch.viewX || lastPosition.y != touch.viewY)
     {
       var angle = FlxAngle.angleBetweenPoints(lastPosition, new FlxPoint(touch.viewX, touch.viewY));
-      angle = angle;
+      this.angle = angle;
       loadGraphic("assets/images/cursor/kevin.png");
     }
 
