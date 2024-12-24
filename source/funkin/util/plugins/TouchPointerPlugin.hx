@@ -37,18 +37,18 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 
   public static function initialize()
   {
-    final pointerPlugin = new TouchPointerPlugin();
+    instance = new TouchPointerPlugin();
 
     function setCamera(camera:FlxCamera):Void
     {
-      pointerPlugin.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+      instance.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
     }
 
     FlxG.cameras.cameraAdded.add(setCamera);
     FlxG.cameras.cameraRemoved.add(setCamera);
 
     FlxG.plugins.drawOnTop = true;
-    FlxG.plugins.addPlugin(pointerPlugin);
+    FlxG.plugins.addPlugin(instance);
   }
 
   override public function update(elapsed:Float):Void
