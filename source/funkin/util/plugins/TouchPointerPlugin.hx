@@ -9,6 +9,7 @@ import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
+import funkin.graphics.FunkinCamera;
 
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
 // Thnk u agua and toffee <3
@@ -19,13 +20,16 @@ import flixel.FlxCamera;
  */
 class TouchPointerPlugin extends FlxBasic
 {
-  public var pointerGrp:FlxTypedSpriteGroup<TouchPointer>;
+  public static var pointerGrp:FlxTypedSpriteGroup<TouchPointer>;
+  public static var pointerCamera:FunkinCamera;
 
   public function new()
   {
     super();
     pointerGrp = new FlxTypedSpriteGroup<TouchPointer>();
-    // add(pointerGrp);
+    pointerCamera = new FunkinCamera('pointerCamera');
+    pointerCamera.bgColor = 0x0;
+    pointerGrp.cameras = [pointerCamera];
   }
 
   public static function initialize()
@@ -65,7 +69,7 @@ class TouchPointerPlugin extends FlxBasic
   {
     for (pointer in pointerGrp.members)
     {
-      if (pointer == null || pointer.touchId == touchId) continue;
+      if (pointer == null || pointer.touchId != touchId) continue;
 
       return pointer;
     }
