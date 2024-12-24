@@ -7,7 +7,6 @@
 // - Zack
 package funkin.util;
 
-import funkin.mobile.ui.TouchPointer;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -56,8 +55,6 @@ class TouchUtil
   #else
   public static var touch(get, never):FlxMouse;
   #end
-
-  public static var touchBuddy:TouchPointer;
 
   // static var _touchTween:FlxTween;
 

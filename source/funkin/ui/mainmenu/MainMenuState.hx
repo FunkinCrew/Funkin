@@ -187,8 +187,6 @@ class MainMenuState extends MusicBeatState
     FlxG.camera.snapToTarget();
     // FlxG.touches.swipeThreshold.set(100, menuItems.members[0].height);
     #end
-
-    funkin.mobile.ui.TouchPointer.TouchPointerGrp.load();
   }
 
   function playMenuMusic():Void

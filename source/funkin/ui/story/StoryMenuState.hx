@@ -230,7 +230,6 @@ class StoryMenuState extends MusicBeatState
     #if mobile
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, goBack);
     #end
-    // funkin.mobile.ui.TouchPointer.TouchPointerGrp.load();
   }
 
   function rememberSelection():Void

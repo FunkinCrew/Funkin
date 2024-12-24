@@ -721,14 +721,6 @@ class FreeplayState extends MusicBeatSubState
       enterFromCharSel();
       onDJIntroDone();
     }
-
-    #if TOUCH_CONTROLS
-    var pointer = new funkin.mobile.ui.TouchPointer.TouchPointerGrp(0, 0);
-    pointer.cameras = [funnyCam];
-    add(pointer);
-
-    // FlxG.touches.swipeThreshold.set(100, Math.round(grpCapsules.members[0].height / 1.4));
-    #end
   }
 
   var currentFilter:Null<SongFilter> = null;
