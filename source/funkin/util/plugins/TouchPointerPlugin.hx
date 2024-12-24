@@ -18,23 +18,37 @@ import funkin.graphics.FunkinCamera;
  * @author moondroidcoder
  * Tracks your touch points in your game.
  */
-class TouchPointerPlugin extends FlxBasic
+class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 {
-  public static var pointerGrp:FlxTypedSpriteGroup<TouchPointer>;
-  public static var pointerCamera:FunkinCamera;
+  /**
+   * Whether the plugin is enabled.
+   */
+  public static var enabled(default, set):Bool = true;
+
+  /**
+   * A singleton instance of the plugin.
+   */
+  private static var instance:TouchPointerPlugin = null;
 
   public function new()
   {
     super();
-    pointerGrp = new FlxTypedSpriteGroup<TouchPointer>();
-    pointerCamera = new FunkinCamera('pointerCamera');
-    pointerCamera.bgColor = 0x0;
-    pointerGrp.cameras = [pointerCamera];
   }
 
   public static function initialize()
   {
-    FlxG.plugins.addPlugin(new TouchPointerPlugin());
+    final pointerPlugin = new TouchPointerPlugin();
+
+    function setCamera(camera:FlxCamera):Void
+    {
+      pointerPlugin.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+    }
+
+    FlxG.cameras.cameraAdded.add(setCamera);
+    FlxG.cameras.cameraRemoved.add(setCamera);
+
+    FlxG.plugins.drawOnTop = true;
+    FlxG.plugins.addPlugin(pointerPlugin);
   }
 
   override public function update(elapsed:Float):Void
@@ -49,25 +63,25 @@ class TouchPointerPlugin extends FlxBasic
 
       if (pointer == null)
       {
-        pointer = pointerGrp.recycle(TouchPointer);
+        pointer = recycle(TouchPointer);
         pointer.initialize(touch.touchPointID);
-        pointerGrp.add(pointer);
+        add(pointer);
       }
 
       pointer.updateFromTouch(touch);
     }
 
-    for (pointer in pointerGrp.members)
+    for (pointer in members)
     {
       if (pointer == null || touchExists(pointer.touchId)) continue;
 
-      pointerGrp.remove(pointer, true);
+      remove(pointer, true);
     }
   }
 
   private function findPointerByTouchId(touchId:Int):TouchPointer
   {
-    for (pointer in pointerGrp.members)
+    for (pointer in members)
     {
       if (pointer == null || pointer.touchId != touchId) continue;
 
@@ -86,6 +100,27 @@ class TouchPointerPlugin extends FlxBasic
     }
     return false;
   }
+
+  private static function set_enabled(value:Bool):Bool
+  {
+    if (value == enabled) return value;
+
+    enabled = value;
+
+    if (instance != null)
+    {
+      if (enabled)
+      {
+        instance.exists = instance.visible = instance.active = instance.alive = true;
+      }
+      else
+      {
+        instance.exists = instance.visible = instance.active = instance.alive = false;
+      }
+    }
+
+    return enabled;
+  }
 }
 
 class TouchPointer extends FlxSprite
@@ -99,7 +134,7 @@ class TouchPointer extends FlxSprite
     super();
     makeGraphic(16, 16, FlxColor.RED);
     scrollFactor.set(0, 0);
-    lastPosition = new FlxPoint();
+    lastPosition = FlxPoint.get();
   }
 
   public function initialize(touchId:Int):Void
@@ -111,15 +146,26 @@ class TouchPointer extends FlxSprite
   public function updateFromTouch(touch:FlxTouch):Void
   {
     // Update position
-    x = touch.viewX;
-    y = touch.viewY;
+    x = touch.viewX - width / 2;
+    y = touch.viewY - height / 2;
+
+    if (camera.target != null)
+    {
+      x -= camera.target.x;
+      y -= camera.target.y;
+    }
 
     // Calculate angle if moving
-    if (lastPosition.x != touch.viewX || lastPosition.y != touch.viewY)
+    if (lastPosition.distanceTo(FlxPoint.weak(touch.viewX, touch.viewY)) > 3)
     {
-      var angle = FlxAngle.angleBetweenPoints(lastPosition, new FlxPoint(touch.viewX, touch.viewY));
+      var angle = FlxAngle.angleBetweenPoint(this, lastPosition, true);
       this.angle = angle;
       loadGraphic("assets/images/cursor/kevin.png");
+    }
+    else
+    {
+      angle = 0;
+      loadGraphic("assets/images/cursor/michael.png");
     }
 
     lastPosition.set(touch.viewX, touch.viewY);

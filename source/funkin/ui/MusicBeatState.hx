@@ -56,8 +56,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     initCallbacks();
 
-    add(TouchPointerPlugin.pointerGrp);
-    FlxG.cameras.add(TouchPointerPlugin.pointerCamera, false);
+    // add(TouchPointerPlugin.pointerGrp);
+    // FlxG.cameras.add(TouchPointerPlugin.pointerCamera, false);
   }
 
   function initCallbacks()

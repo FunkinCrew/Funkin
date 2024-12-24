@@ -683,6 +683,7 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Force allowScreenTimeout to be disabled
     lime.system.System.allowScreenTimeout = false;
+    funkin.util.plugins.TouchPointerPlugin.enabled = false;
     #end
 
     // Reduce physics accuracy (who cares!!!) to improve animation quality.
@@ -1643,6 +1644,7 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Syncing allowScreenTimeout with Preferences option.
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    funkin.util.plugins.TouchPointerPlugin.enabled = true;
     #end
 
     super.destroy();
