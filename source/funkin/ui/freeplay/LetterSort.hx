@@ -29,6 +29,8 @@ class LetterSort extends FlxSpriteGroup
 
   public var inputEnabled:Bool = true;
 
+  public var instance(default, set):FreeplayState;
+
   var swipeBounds:FlxObject;
 
   public function new(x, y)
@@ -89,8 +91,10 @@ class LetterSort extends FlxSpriteGroup
 
     if (inputEnabled)
     {
-      if (controls.FREEPLAY_LEFT || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.swipeRight)) changeSelection(-1);
-      if (controls.FREEPLAY_RIGHT || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.swipeLeft)) changeSelection(1);
+      if (controls.FREEPLAY_LEFT
+        || (instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft)) changeSelection(-1);
+      if (controls.FREEPLAY_RIGHT
+        || (instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight)) changeSelection(1);
     }
   }
 
@@ -167,6 +171,23 @@ class LetterSort extends FlxSpriteGroup
       letter.changeLetter(diff, curSelection);
 
     if (changeSelectionCallback != null) changeSelectionCallback(letters[2].regexLetters[letters[2].curLetter]); // bullshit and long lol!
+  }
+
+  @:noCompletion
+  private function set_instance(value:FreeplayState):FreeplayState
+  {
+    instance = value;
+
+    if (value != null)
+    {
+      swipeBounds.cameras = [value.funnyCam];
+    }
+    else
+    {
+      swipeBounds.cameras = cameras;
+    }
+
+    return instance;
   }
 }
 

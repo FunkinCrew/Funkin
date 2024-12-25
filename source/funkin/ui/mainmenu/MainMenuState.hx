@@ -181,10 +181,7 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    // Leave this here do not change it -Zack
     #if TOUCH_CONTROLS
-    camFollow.setPosition(640, 360);
-    FlxG.camera.snapToTarget();
     FlxG.touches.swipeThreshold.set(100, menuItems.members[0].height);
     #end
   }
@@ -228,19 +225,6 @@ class MainMenuState extends MusicBeatState
     FlxG.touches.swipeThreshold.set(100, menuItems.members[0].height);
 
     super.closeSubState();
-  }
-
-  override function openSubState(targetSubState:FlxSubState):Void
-  {
-    super.openSubState(targetSubState);
-    // Leave this here do not change it -Zack
-    #if TOUCH_CONTROLS
-    if (camFollow != null)
-    {
-      camFollow.setPosition(640, 360);
-      FlxG.camera.snapToTarget();
-    }
-    #end
   }
 
   override function finishTransIn():Void

@@ -193,7 +193,8 @@ class FreeplayState extends MusicBeatSubState
 
   var allDifficulties:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST_FULL;
 
-  var funnyCam:FunkinCamera;
+  public var funnyCam:FunkinCamera;
+
   var rankCamera:FunkinCamera;
   var rankBg:FunkinSprite;
   var rankVignette:FlxSprite;
@@ -514,6 +515,7 @@ class FreeplayState extends MusicBeatSubState
 
     add(letterSort);
     letterSort.visible = false;
+    letterSort.instance = this;
 
     exitMovers.set([letterSort],
       {
@@ -1367,7 +1369,8 @@ class FreeplayState extends MusicBeatSubState
     }
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
-    if ((controls.FREEPLAY_CHAR_SELECT #if mobile || (TouchUtil.overlaps(djHitbox) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
+    if ((controls.FREEPLAY_CHAR_SELECT #if TOUCH_CONTROLS
+      || (TouchUtil.overlaps(djHitbox, funnyCam) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
       && !busy)
     {
       tryOpenCharSelect();
@@ -1446,12 +1449,12 @@ class FreeplayState extends MusicBeatSubState
 
     // Nested as fuck
     @:nullSafety(Off)
-    if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight) && TouchUtil.touch.ticksDeltaSincePress < 200)
+    if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.touch.ticksDeltaSincePress < 200)
     {
       for (i in 0...grpCapsules.members.length)
       {
         final capsuleHit:FlxObject = grpCapsules.members[i].theActualHitbox;
-        if (!TouchUtil.overlaps(capsuleHit)) continue;
+        if (!TouchUtil.overlaps(capsuleHit, funnyCam)) continue;
 
         (i == curSelected) ? grpCapsules.members[i].onConfirm() : changeSelection(i - curSelected);
         break;
@@ -1462,7 +1465,7 @@ class FreeplayState extends MusicBeatSubState
     if (TouchUtil.justPressed)
     {
       final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
-      _pressedOn = (selected != null) && TouchUtil.overlaps(selected);
+      _pressedOn = (selected != null) && TouchUtil.overlaps(selected, funnyCam);
     }
 
     if (upP || downP)
@@ -1550,28 +1553,28 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
-    if (controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft) && TouchUtil.justReleased))
+    if (controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased))
     {
       dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
     }
 
-    if (controls.UI_RIGHT_P || (diffSelRight != null && TouchUtil.overlaps(diffSelRight) && TouchUtil.justReleased))
+    if (controls.UI_RIGHT_P || (diffSelRight != null && TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justReleased))
     {
       dj?.resetAFKTimer();
       changeDiff(1);
       generateSongList(currentFilter, true);
     }
     #if TOUCH_CONTROLS
-    if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight));
-    if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft));
+    if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam));
+    if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam));
 
     if (TouchUtil.pressed || TouchUtil.justReleased)
     {
       // Favorite
       final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
-      _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected);
+      _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected, funnyCam);
 
       if (_pressedOn && TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 500)
       {
@@ -1583,7 +1586,7 @@ class FreeplayState extends MusicBeatSubState
       {
         if (diff == null || diff.difficultyId != currentDifficulty) continue;
 
-        if (!TouchUtil.overlaps(diff))
+        if (!TouchUtil.overlaps(diff, funnyCam))
         {
           diff.x = 90;
           break;

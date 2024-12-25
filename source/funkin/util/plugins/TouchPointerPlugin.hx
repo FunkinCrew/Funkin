@@ -35,20 +35,65 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     super();
   }
 
-  public static function initialize()
+  public static function initialize():Void
   {
+    var pointerCamera:FlxCamera = new FlxCamera();
+    pointerCamera.bgColor.alpha = 0;
     instance = new TouchPointerPlugin();
+    instance.cameras = [pointerCamera];
 
-    function setCamera(camera:FlxCamera):Void
-    {
-      instance.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-    }
-
-    FlxG.cameras.cameraAdded.add(setCamera);
-    FlxG.cameras.cameraRemoved.add(setCamera);
-
+    FlxG.cameras.add(pointerCamera, false);
     FlxG.plugins.drawOnTop = true;
     FlxG.plugins.addPlugin(instance);
+
+    function moveCameraToTop(camera:FlxCamera):Void
+    {
+      if (camera == pointerCamera && pointerCamera == null) return;
+
+      // If there aren't any cameras then the CameraFrontEnd got reset so we have to wait for that finish (which is most of the time after state switch)
+      if (FlxG.cameras.list.length == 0)
+      {
+        FlxG.signals.postStateSwitch.addOnce(moveCameraToTop.bind(null));
+        return;
+      }
+
+      if (FlxG.cameras.list.contains(pointerCamera))
+      {
+        FlxG.cameras.list.remove(pointerCamera);
+      }
+
+      if (FlxG.game.contains(pointerCamera.flashSprite))
+      {
+        FlxG.game.removeChild(pointerCamera.flashSprite);
+      }
+
+      @:privateAccess
+      FlxG.game.addChildAt(pointerCamera.flashSprite, FlxG.game.getChildIndex(FlxG.game._inputContainer));
+      FlxG.cameras.list.push(pointerCamera);
+    }
+
+    FlxG.cameras.cameraAdded.add(moveCameraToTop);
+
+    FlxG.cameras.cameraRemoved.add(function(camera:FlxCamera) {
+      if (camera == pointerCamera)
+      {
+        if (!camera.exists) // The camera got destroyed, we make a new one!
+        {
+          instance.cameras = [pointerCamera = new FlxCamera()];
+          moveCameraToTop(null);
+          pointerCamera.bgColor.alpha = 0;
+          pointerCamera.ID = FlxG.cameras.list.length - 1;
+        }
+        else // It's not destroyed so just move it to the top!
+        {
+          moveCameraToTop(null);
+        }
+      }
+      else
+      {
+        moveCameraToTop(null);
+      }
+    });
   }
 
   override public function update(elapsed:Float):Void
@@ -101,25 +146,15 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     return false;
   }
 
+  @:noCompletion
   private static function set_enabled(value:Bool):Bool
   {
-    if (value == enabled) return value;
-
-    enabled = value;
-
     if (instance != null)
     {
-      if (enabled)
-      {
-        instance.exists = instance.visible = instance.active = instance.alive = true;
-      }
-      else
-      {
-        instance.exists = instance.visible = instance.active = instance.alive = false;
-      }
+      instance.exists = instance.visible = instance.active = instance.alive = value;
     }
 
-    return enabled;
+    return enabled = value;
   }
 }
 
