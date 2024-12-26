@@ -22,6 +22,7 @@ class AdMobUtil
   private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
   private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
   private static final REWARDED_AD_UNIT_ID:String = "";
+  private static final APP_OPEN_AD_UNIT_ID:String = "";
 
   #else
   /**
@@ -49,7 +50,11 @@ class AdMobUtil
    */
   private static final REWARDED_AD_UNIT_ID:String = #if android "ca-app-pub-3940256099942544/5224354917" #elseif ios "ca-app-pub-3940256099942544/1712485313" #else "" #end;
 
-  // #end
+  /**
+   * Test ad unit ID for rewarded ads, used during development.
+   */
+  private static final APP_OPEN_AD_UNIT_ID:String = "";
+  #end
 
   /**
    * Initializes the AdMob SDK and sets up event listeners for interstitial and rewarded ads.
@@ -64,6 +69,8 @@ class AdMobUtil
           Admob.showInterstitial();
         case AdmobEvent.REWARDED_LOADED:
           Admob.showRewarded();
+        case AdmobEvent.APP_OPEN_LOADED:
+          Admob.showAppOpen();
       }
 
       #if android
@@ -114,6 +121,14 @@ class AdMobUtil
   }
 
   /**
+   * Loads a app openad, preparing it to be displayed once loaded.
+   */
+  public static inline function loadAppOpen():Void
+  {
+    Admob.loadAppOpen(AdMobUtil.APP_OPEN_AD_UNIT_ID);
+  }
+
+  /**
    * Sets the volume level for ads with sound, allowing control over ad audio playback.
    * @param volume A Float representing the desired volume (0 = mute, 1 = full volume).
    */
@@ -139,7 +154,7 @@ class AdMobUtil
    */
   public static function hasFullConsent():Bool
   {
-    for (purpose in 0...10)
+    for (purpose in 0...11)
     {
       if (Admob.hasConsentForPurpose(purpose) != 1) return false;
     }
@@ -174,4 +189,4 @@ class AdMobUtil
   {
     Admob.showPrivacyOptionsForm();
   }
-  }
+}
