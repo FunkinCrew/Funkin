@@ -1,7 +1,10 @@
 package funkin.util;
 
 import lime.ui.Haptic;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
+import flixel.FlxG;
 
 /**
  * Utility class for extra vibration functions.
@@ -15,14 +18,24 @@ class HapticUtil
 
   /**
    * Triggers vibration.
+   * If there is any gamepad connected it tries to trigger SDL's rumble on all of the gamepads.
+   * If there is no any gamepad connected it triggers lime's vibration.
    * @param period The time for one complete vibration.
    * @param duration The time taken for a complete cycle.
    * @param amplitude The distance of movement of the wave from its original position.
    */
-  public static inline function vibrate(period:Int = Constants.DEFAULT_VIBRATION_PERIOD, duration:Int = Constants.DEFAULT_VIBRATION_DURATION,
-      amplitude:Int = 0):Void
+  public static function vibrate(period:Int = Constants.DEFAULT_VIBRATION_PERIOD, duration:Int = Constants.DEFAULT_VIBRATION_DURATION, amplitude:Int = 0):Void
   {
     if (!Preferences.vibration) return;
+
+    final strength:Float = FlxMath.clamp(amplitude / Constants.MAX_VIBRATION_AMPLITUDE, 0.0, 1.0);
+
+    for (i in 0...FlxG.gamepads.numActiveGamepads)
+    {
+      final gamepad:FlxGamepad = FlxG.gamepads.getByID(i);
+
+      if (gamepad != null) gamepad.rumble(duration * 1000, strength, strength);
+    }
 
     Haptic.vibrate(period, duration, amplitude);
   }
@@ -43,8 +56,9 @@ class HapticUtil
     amplitudeTween = FlxTween.num(startAmplitude, targetAmplitude, tweenDuration,
       {
         onComplete: function(_) {
-          final lastAmplitude:Int = Math.floor(targetAmplitude * 2);
-          vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, lastAmplitude);
+          final finalAmplitude:Int = Math.floor(targetAmplitude * 2);
+
+          vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, finalAmplitude);
         }
       }, function(currentAmplitude:Float) {
         vibrate(0, Math.floor(Constants.DEFAULT_VIBRATION_DURATION / 10), Math.floor(currentAmplitude));
