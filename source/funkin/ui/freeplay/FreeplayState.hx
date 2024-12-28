@@ -1868,9 +1868,18 @@ class FreeplayState extends MusicBeatSubState
     var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
       targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
-    if (altInstrumentalIds.length > 0)
+    var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
+    for (altInstrumentalId in instrumentalIds)
     {
-      var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
+      var altIsUnlocked = targetSong.isAltInstUnlocked(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? true;
+      if (!altIsUnlocked)
+      {
+        instrumentalIds.remove(altInstrumentalId);
+      }
+    }
+
+    if (instrumentalIds.length > 1)
+    {
       openInstrumentalList(cap, instrumentalIds);
     }
     else

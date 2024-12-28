@@ -552,8 +552,12 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   @:optional
   public var playerVocals:Null<Array<String>> = null;
 
+  @:optional
+  @:default(true)
+  public var unlockedByDefault:Null<Bool> = true;
+
   public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>,
-      ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
+      ?opponentVocals:Array<String>, ?playerVocals:Array<String>, ?unlockedByDefault:Bool)
   {
     this.player = player;
     this.girlfriend = girlfriend;
@@ -563,6 +567,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.altInstrumentals = altInstrumentals;
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
+    this.unlockedByDefault = unlockedByDefault;
 
     if (opponentVocals == null) this.opponentVocals = [opponent];
     if (playerVocals == null) this.playerVocals = [player];
@@ -572,6 +577,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   {
     var result:SongCharacterData = new SongCharacterData(this.player, this.girlfriend, this.opponent, this.instrumental);
     result.altInstrumentals = this.altInstrumentals.clone();
+    result.unlockedByDefault = this.unlockedByDefault;
 
     return result;
   }
@@ -581,7 +587,8 @@ class SongCharacterData implements ICloneable<SongCharacterData>
    */
   public function toString():String
   {
-    return 'SongCharacterData(${this.player}, ${this.girlfriend}, ${this.opponent}, ${this.instrumental}, [${this.altInstrumentals.join(', ')}])';
+    return
+      'SongCharacterData(${this.player}, ${this.girlfriend}, ${this.opponent}, ${this.instrumental}, [${this.altInstrumentals.join(', ')}], ${this.unlockedByDefault})';
   }
 }
 
