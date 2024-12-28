@@ -36,8 +36,21 @@ class Strumline extends FlxSpriteGroup
 
   static var RENDER_DISTANCE_MS(get, never):Float;
 
+  /**
+   * The custom render distance for the strumline.
+   * This should be in miliseconds only! Not pixels.
+   */
+  public static var CUSTOM_RENDER_DISTANCE_MS:Float = 0.0;
+
+  /**
+   * Whether to use the custom render distance.
+   * If false, the render distance will be calculated based on the screen height.
+   */
+  public static var USE_CUSTOM_RENDER_DISTANCE:Bool = false;
+
   static function get_RENDER_DISTANCE_MS():Float
   {
+    if (USE_CUSTOM_RENDER_DISTANCE) return CUSTOM_RENDER_DISTANCE_MS;
     return FlxG.height / Constants.PIXELS_PER_MS;
   }
 
