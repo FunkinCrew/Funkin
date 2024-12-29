@@ -554,10 +554,10 @@ class SongCharacterData implements ICloneable<SongCharacterData>
 
   @:optional
   @:default(true)
-  public var unlockedByDefault:Null<Bool> = true;
+  public var unlockedInstByDefault:Null<Bool> = true;
 
   public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>,
-      ?opponentVocals:Array<String>, ?playerVocals:Array<String>, ?unlockedByDefault:Bool)
+      ?opponentVocals:Array<String>, ?playerVocals:Array<String>, ?unlockedInstByDefault:Bool)
   {
     this.player = player;
     this.girlfriend = girlfriend;
@@ -567,7 +567,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.altInstrumentals = altInstrumentals;
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
-    this.unlockedByDefault = unlockedByDefault;
+    this.unlockedInstByDefault = unlockedInstByDefault;
 
     if (opponentVocals == null) this.opponentVocals = [opponent];
     if (playerVocals == null) this.playerVocals = [player];
@@ -577,7 +577,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   {
     var result:SongCharacterData = new SongCharacterData(this.player, this.girlfriend, this.opponent, this.instrumental);
     result.altInstrumentals = this.altInstrumentals.clone();
-    result.unlockedByDefault = this.unlockedByDefault;
+    result.unlockedInstByDefault = this.unlockedInstByDefault;
 
     return result;
   }
@@ -588,7 +588,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   public function toString():String
   {
     return
-      'SongCharacterData(${this.player}, ${this.girlfriend}, ${this.opponent}, ${this.instrumental}, [${this.altInstrumentals.join(', ')}], ${this.unlockedByDefault})';
+      'SongCharacterData(${this.player}, ${this.girlfriend}, ${this.opponent}, ${this.instrumental}, [${this.altInstrumentals.join(', ')}], ${this.unlockedInstByDefault})';
   }
 }
 

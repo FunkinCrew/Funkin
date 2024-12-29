@@ -599,7 +599,13 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
     if (targetDifficulty == null) return true;
 
-    return (targetDifficulty?.characters?.unlockedByDefault ?? true) || Save.instance.hasBeatenSong(this.id, null, variationId);
+    var unlocked:Bool = (targetDifficulty?.characters?.unlockedInstByDefault) || Save.instance.hasBeatenSong(this.id, null, variationId);
+
+    trace('Is ${this.id}-${variationId} alt inst unlocked: '
+      + unlocked
+      + ((targetDifficulty?.characters?.unlockedInstByDefault ?? true) ? ' (by default)' : ''));
+
+    return unlocked;
   }
 
   /**

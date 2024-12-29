@@ -32,7 +32,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
-  var inputIsUnlockedByDefault:CheckBox;
+  var inputIsunlockedInstByDefault:CheckBox;
   var buttonCharacterPlayer:Button;
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
@@ -123,8 +123,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
-    inputIsUnlockedByDefault.onChange = function(event:UIEvent) {
-      chartEditorState.currentSongMetadata.playData.characters.unlockedByDefault = event.target.value;
+    inputIsunlockedInstByDefault.onChange = function(event:UIEvent) {
+      chartEditorState.currentSongMetadata.playData.characters.unlockedInstByDefault = event.target.value;
     };
 
     inputBPM.onChange = function(event:UIEvent) {
@@ -201,7 +201,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
-    inputIsUnlockedByDefault.selected = chartEditorState.currentSongMetadata.playData.characters.unlockedByDefault;
+    inputIsunlockedInstByDefault.selected = chartEditorState.currentSongMetadata.playData.characters.unlockedInstByDefault;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
     inputDifficultyRating.value = chartEditorState.currentSongChartDifficultyRating;
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
