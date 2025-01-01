@@ -72,12 +72,6 @@ class AdMobUtil
         case AdmobEvent.APP_OPEN_LOADED:
           Admob.showAppOpen();
       }
-
-      #if android
-      android.widget.Toast.makeText(message.length > 0 ? '$event:$message' : event, android.widget.Toast.LENGTH_SHORT);
-      #else
-      lime.utils.Log.info(message.length > 0 ? '$event:$message' : event);
-      #end
     });
 
     Admob.init(#if TESTING_ADS true #else false #end);
