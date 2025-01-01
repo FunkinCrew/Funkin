@@ -78,6 +78,8 @@ class FunkinHint extends FunkinPolygonButton
   @:noCompletion
   var alphaTween:Null<FlxTween>;
 
+  public var isPixel:Bool = false;
+
   /**
    * Creates a new `FunkinHint` object.
    *
@@ -219,8 +221,23 @@ class FunkinHint extends FunkinPolygonButton
 
     if (followTarget != null)
     {
-      if (followTargetSize) setSize(followTarget.width * 1.5, followTarget.height);
-      setPosition(followTarget.x - (followTarget.width * 0.25), followTarget.y);
+      var widthMultiplier:Float = isPixel ? 1.1 : 1.5;
+      var heightMultiplier:Float = 4;
+      var xOffset:Float = isPixel ? 43.265 : -20;
+      var yOffset:Float = isPixel ? 57.65 : 0;
+
+      // TODO: THIS feels off when playing on regular notes but it's fine for pixel notes? Hard to explain needs more testing
+      if (followTargetSize)
+      {
+        var scaledWidth = followTarget.width * widthMultiplier + (isPixel ? 93.05 : 0);
+        var scaledHeight = followTarget.height * heightMultiplier + (isPixel ? 118 : 0);
+        setSize(scaledWidth, scaledHeight);
+      }
+
+      var newX = (followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset;
+      var newY = (followTarget.y - 80) - yOffset;
+
+      setPosition(newX, newY);
     }
   }
 
@@ -320,6 +337,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * A `FlxTypedSignal` that triggers every time a button is released.
    */
   public var onHintUp:FlxTypedSignal<FunkinHint->Void> = new FlxTypedSignal<FunkinHint->Void>();
+
+  public var isPixel(default, set):Bool = false;
 
   /**
    * The list of tracked inputs for the hitbox.
@@ -691,5 +710,15 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     FlxDestroyUtil.destroy(onHintUp);
 
     super.destroy();
+  }
+
+  @:noCompletion
+  function set_isPixel(value:Bool):Bool
+  {
+    isPixel = value;
+    forEachOfType(FunkinHint, function(hint:FunkinHint):Void {
+      hint.isPixel = value;
+    });
+    return value;
   }
 }

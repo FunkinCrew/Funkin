@@ -737,6 +737,7 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Initialize the hitbox for mobile controls
     addHitbox(false);
+    hitbox.isPixel = currentChart.noteStyle == "pixel";
 
     if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
     {
@@ -1943,8 +1944,8 @@ class PlayState extends MusicBeatSubState
   #if mobile
   function initNoteHitbox()
   {
-    final playerStrumlineScale:Float = (FlxG.height / FlxG.width) * 2;
-    final playerNoteSpacing:Float = (FlxG.height / FlxG.width) * 2.7;
+    final playerStrumlineScale:Float = (FlxG.height / FlxG.width) * 1.8;
+    final playerNoteSpacing:Float = (FlxG.height / FlxG.width) * 2.8;
 
     playerStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
     playerStrumline.setNoteSpacing(playerNoteSpacing);
@@ -1956,6 +1957,9 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = Preferences.downscroll ? (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    if (currentChart.noteStyle != "pixel") #if android playerStrumline.y += 10 #end;
+    else
+      playerStrumline.y -= 10;
     opponentStrumline.y = Preferences.downscroll ? Constants.STRUMLINE_Y_OFFSET * 0.3 : FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET;
   }
   #end
