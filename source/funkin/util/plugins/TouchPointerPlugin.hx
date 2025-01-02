@@ -1,14 +1,13 @@
 package funkin.util.plugins;
 
-import flixel.FlxBasic;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxAngle;
+import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.input.touch.FlxTouch;
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.input.touch.FlxTouch;
+import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
-import flixel.FlxCamera;
 import funkin.graphics.FunkinCamera;
 
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
@@ -35,6 +34,9 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     super();
   }
 
+  /**
+   * Initializes the TouchPointerPlugin by creating a new camera and setting it up to be drawn on top of other elements.
+   */
   public static function initialize():Void
   {
     var pointerCamera:FlxCamera = new FlxCamera();
@@ -124,6 +126,12 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     }
   }
 
+  /**
+   * Finds a TouchPointer object in the members list by its touch ID.
+   *
+   * @param touchId The ID of the touch to find.
+   * @return The TouchPointer object with the specified touch ID, or null if not found.
+   */
   private function findPointerByTouchId(touchId:Int):TouchPointer
   {
     for (pointer in members)
@@ -135,6 +143,12 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     return null;
   }
 
+  /**
+   * Checks if a touch with the specified ID exists in the current touch list.
+   *
+   * @param touchId The ID of the touch to check for.
+   * @return True if a touch with the specified ID exists, false otherwise.
+   */
   private function touchExists(touchId:Int):Bool
   {
     for (touch in FlxG.touches.list)
@@ -158,12 +172,25 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
   }
 }
 
+/**
+ * Represents a touch pointer in the game.
+ */
 class TouchPointer extends FlxSprite
 {
+  /**
+   * Represents a touch pointer plugin.
+   */
   public var touchId:Int = -1;
 
+  /**
+   * Stores the last position of the touch pointer.
+   */
   private var lastPosition:FlxPoint;
 
+  /**
+   * Constructor for the TouchPointerPlugin class.
+   * Initializes the touch pointer graphic and sets the scroll factor.
+   */
   public function new()
   {
     super();
@@ -172,12 +199,24 @@ class TouchPointer extends FlxSprite
     lastPosition = FlxPoint.get();
   }
 
+  /**
+   * Initializes the touch pointer object itself with the specified touch ID.
+   * Loads the graphic for the touch pointer.
+   *
+   * @param touchId The ID of the touch event to initialize.
+   */
   public function initialize(touchId:Int):Void
   {
     this.touchId = touchId;
     loadGraphic("assets/images/cursor/michael.png");
   }
 
+  /**
+   * Updates the position and angle of the touch pointer based on the given touch input.
+   * Used in TouchPointerPlugin's update method.
+   *
+   * @param touch The FlxTouch object containing the current touch input data.
+   */
   public function updateFromTouch(touch:FlxTouch):Void
   {
     // Update position
