@@ -28,8 +28,6 @@ class HapticUtil
   {
     if (!Preferences.vibration) return;
 
-    final strength:Float = FlxMath.clamp(amplitude / Constants.MAX_VIBRATION_AMPLITUDE, 0.0, 1.0);
-
     Haptic.vibrate(period, duration, amplitude);
   }
 
