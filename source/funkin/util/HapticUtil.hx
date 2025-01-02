@@ -30,13 +30,6 @@ class HapticUtil
 
     final strength:Float = FlxMath.clamp(amplitude / Constants.MAX_VIBRATION_AMPLITUDE, 0.0, 1.0);
 
-    for (i in 0...FlxG.gamepads.numActiveGamepads)
-    {
-      final gamepad:FlxGamepad = FlxG.gamepads.getByID(i);
-
-      if (gamepad != null) gamepad.rumble(duration * 1000, strength, strength);
-    }
-
     Haptic.vibrate(period, duration, amplitude);
   }
 
