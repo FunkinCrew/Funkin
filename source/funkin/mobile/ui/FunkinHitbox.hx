@@ -221,9 +221,9 @@ class FunkinHint extends FunkinPolygonButton
 
     if (followTarget != null)
     {
-      var widthMultiplier:Float = isPixel ? 1.1 : 1.5;
+      var widthMultiplier:Float = isPixel ? 1.1 : 1.3;
       var heightMultiplier:Float = 4;
-      var xOffset:Float = isPixel ? 43.265 : -20;
+      var xOffset:Float = isPixel ? 43.265 : 0;
       var yOffset:Float = isPixel ? 57.65 : 0;
 
       // TODO: THIS feels off when playing on regular notes but it's fine for pixel notes? Hard to explain needs more testing
@@ -355,6 +355,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 
     final hintsColors:Array<FlxColor> = (colorsOverride == null || colorsOverride.length == 0) ? [0xFFC34B9A, 0xFF00FFFF, 0xFF12FB06, 0xFFF9393F] : colorsOverride;
     final hintsNoteDirections:Array<NoteDirection> = (directionsOverride == null || directionsOverride.length == 0) ? [NoteDirection.LEFT, NoteDirection.DOWN, NoteDirection.UP, NoteDirection.RIGHT] : directionsOverride;
+    #if mobile
     final controlsScheme:String = (schemeOverride == null || schemeOverride.length == 0) ? Preferences.controlsScheme : schemeOverride;
 
     switch (controlsScheme)
@@ -427,6 +428,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
           add(createHintTransparentNote(xPos + i * hintWidth + noteSpacing * i, yPos, hintsNoteDirections[i % hintsNoteDirections.length], hintWidth,
             hintHeight));
     }
+    #end
 
     scrollFactor.set();
 
@@ -491,24 +493,20 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
       hint.animation.play('press', true);
       hint.centerOrigin();
       hint.centerOffsets();
-      hint.width = width * 1.5;
     });
     hint.onUp.add(() -> {
       hint.animation.play('static', true);
       hint.centerOrigin();
       hint.centerOffsets();
-      hint.width = width * 1.5;
     });
     hint.onOut.add(() -> {
       hint.animation.play('static', true);
       hint.centerOrigin();
       hint.centerOffsets();
-      hint.width = width * 1.5;
     });
 
     hint.centerOffsets();
     hint.centerOrigin();
-    hint.width = width * 1.5;
 
     return hint;
   }
