@@ -262,8 +262,16 @@ class ControlsSchemeMenu extends MusicBeatSubState
   {
     currentIndex += change;
 
-    if (currentIndex < 0) currentIndex = hitboxShowcases.length - 1;
-    if (currentIndex >= hitboxShowcases.length) currentIndex = 0;
+    if (currentIndex < 0)
+    {
+      currentIndex = 0;
+      return;
+    }
+    if (currentIndex >= hitboxShowcases.length)
+    {
+      currentIndex = hitboxShowcases.length - 1;
+      return;
+    }
 
     FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
