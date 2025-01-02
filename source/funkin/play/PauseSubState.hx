@@ -484,8 +484,13 @@ class PauseSubState extends MusicBeatSubState
     var prevEntry:Int = currentEntry;
     currentEntry += change;
 
+    #if TOUCH_CONTROLS
+    if (currentEntry < 0) currentEntry = 0;
+    if (currentEntry >= currentMenuEntries.length) currentEntry = currentMenuEntries.length - 1;
+    #else
     if (currentEntry < 0) currentEntry = currentMenuEntries.length - 1;
     if (currentEntry >= currentMenuEntries.length) currentEntry = 0;
+    #end
 
     if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
