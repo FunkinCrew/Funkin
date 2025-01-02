@@ -770,7 +770,7 @@ class CharSelectSubState extends MusicBeatSubState
             cursorDenied.visible = false;
             selectSound.play(true);
           }
-          else if (TouchUtil.justReleased)
+          else if (TouchUtil.justPressed)
           {
             mobileAccept = true;
           }
