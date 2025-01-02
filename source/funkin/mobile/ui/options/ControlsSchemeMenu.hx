@@ -19,10 +19,10 @@ import funkin.audio.FunkinSound;
 import funkin.Preferences;
 
 /**
- * Represents the mobile controls scheme menu.
+ * Represents the controls scheme menu.
  * In this menu, you can change your controls scheme.
  */
-class MobileControlsSchemeMenu extends MusicBeatSubState
+class ControlsSchemeMenu extends MusicBeatSubState
 {
   /**
    * Text that displays current scheme's name.

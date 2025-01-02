@@ -18,7 +18,7 @@ import funkin.api.newgrounds.NewgroundsClient;
 #if mobile
 import funkin.mobile.ui.FunkinBackspace;
 import funkin.util.TouchUtil;
-import funkin.mobile.ui.options.MobileControlsSchemeMenu;
+import funkin.mobile.ui.options.ControlsSchemeMenu;
 #end
 import flixel.util.FlxColor;
 
@@ -107,7 +107,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       createItem("CONTROLS", function() codex.switchPage(Controls));
     }
     createItem("CONTROL SCHEMES", function() {
-      FlxG.state.openSubState(new MobileControlsSchemeMenu());
+      FlxG.state.openSubState(new ControlsSchemeMenu());
     });
     #else
     createItem("CONTROLS", function() codex.switchPage(Controls));
