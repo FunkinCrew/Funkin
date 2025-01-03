@@ -1958,9 +1958,14 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = Preferences.downscroll ? (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
-    if (currentChart.noteStyle != "pixel") #if android playerStrumline.y += 10; #end
+    if (currentChart.noteStyle != "pixel")
+    {
+      #if android playerStrumline.y += 10; #end
+    }
     else
+    {
       playerStrumline.y -= 10;
+    }
     opponentStrumline.y = Preferences.downscroll ? Constants.STRUMLINE_Y_OFFSET * 0.3 : FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET;
   }
   #end
