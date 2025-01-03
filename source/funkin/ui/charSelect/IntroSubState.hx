@@ -89,6 +89,7 @@ class IntroSubState extends MusicBeatSubState
     if (vid != null)
     {
       vid.zIndex = 0;
+      vid.active = false;
       vid.bitmap.onEndReached.add(onLightsEnd);
       vid.bitmap.onFormatSetup.add(() -> {
         vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);

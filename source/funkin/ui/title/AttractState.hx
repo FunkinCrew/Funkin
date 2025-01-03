@@ -81,6 +81,7 @@ class AttractState extends MusicBeatState
     if (vid != null)
     {
       vid.zIndex = 0;
+      vid.active = false;
       vid.bitmap.onEndReached.add(onAttractEnd);
       vid.bitmap.onFormatSetup.add(() -> {
         vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
