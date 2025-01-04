@@ -183,9 +183,9 @@ class OptionsMenu extends Page
     super();
 
     add(items = new TextMenuList());
-    createItem("PREFERENCES", function() switchPage(Preferences));
-    createItem("CONTROLS", function() switchPage(Controls));
-    createItem("INPUT OFFSETS", function() {
+    createItem(Texts.instance.getOptionsPreferencesTabName(), function() switchPage(Preferences));
+    createItem(Texts.instance.getOptionsControlsTabName(), function() switchPage(Controls));
+    createItem(Texts.instance.getOptionsInputOffsetsTabName(), function() {
       #if web
       LoadingState.transitionToState(() -> new LatencyState());
       #else
@@ -198,7 +198,7 @@ class OptionsMenu extends Page
     else
       createItem("LOGIN", selectLogin);
     #end
-    createItem("EXIT", exit);
+    createItem(Texts.instance.getOptionsExit(), exit);
   }
 
   function createItem(name:String, callback:Void->Void, fireInstantly = false)

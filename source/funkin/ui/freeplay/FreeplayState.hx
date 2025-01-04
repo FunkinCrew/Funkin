@@ -248,7 +248,7 @@ class FreeplayState extends MusicBeatSubState
     sparksADD = new FlxSprite(0, 0);
     txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
-    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
+    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, Texts.instance.getFreeplayOSTText(), 48);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
     bgDad = new FlxSprite(backingCard.pinkBack.width * 0.74, 0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());
@@ -431,7 +431,7 @@ class FreeplayState extends MusicBeatSubState
       FlxTween.tween(blackOverlayBullshitLOLXD, {x: 387.76}, 0.7, {ease: FlxEase.quintOut});
     }
 
-    var fnfFreeplay:FlxText = new FlxText(8, 8, 0, 'FREEPLAY', 48);
+    var fnfFreeplay:FlxText = new FlxText(8, 8, 0, Texts.instance.getFreeplayTitle(), 48);
     fnfFreeplay.font = 'VCR OSD Mono';
     fnfFreeplay.visible = false;
 
@@ -442,9 +442,24 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.alignment = CENTER;
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
-    charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
+    charSelectHint.text = Texts.instance.getFreeplayCharSelectHint(controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true));
     charSelectHint.y -= 100;
     FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
+
+    // temp
+    trace(lime.system.System.fontsDirectory);
+    @:privateAccess
+    {
+      var font = openfl.text.Font.__fontByName.get(ostName.font);
+      if (font != null)
+      {
+        for (i in 0...ostName.text.length)
+        {
+          var char = ostName.text.charAt(i);
+          trace("Char: " + char + " Glyph: " + font.getGlyph(char));
+        }
+      }
+    }
 
     exitMovers.set([overhangStuff, fnfFreeplay, ostName, charSelectHint],
       {

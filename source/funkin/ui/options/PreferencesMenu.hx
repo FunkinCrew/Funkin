@@ -54,31 +54,31 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-    createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
+    createPrefItemCheckbox(Texts.instance.getOptionsPreferencesNaughtyness(), 'Toggle displaying raunchy content', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
-    createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
+    createPrefItemCheckbox(Texts.instance.getOptionsPreferencesDownscroll(), 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
+    createPrefItemCheckbox(Texts.instance.getOptionsPreferencesFlashing(), 'Disable to dampen flashing effects', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
+    createPrefItemCheckbox(Texts.instance.getOptionsPreferencesCamZoom(), 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
+    createPrefItemCheckbox(Texts.instance.getOptionsPreferencesDebug(), 'Enable to show FPS and other debug stats', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
+    createPrefItemCheckbox(Texts.instance.getOptionsPreferencesAutoPause(), 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+    createPrefItemCheckbox(Texts.instance.getOptionsPreferencesUnlockedFramerate(), 'Enable to unlock the framerate', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
+    createPrefItemNumber(Texts.instance.getOptionsPreferencesFPS(), 'The maximum framerate that the game targets', function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
