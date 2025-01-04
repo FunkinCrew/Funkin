@@ -133,6 +133,7 @@ class StageEditorState extends UIState
 
   function set_selectedSprite(value:StageEditorObject)
   {
+    selectedSprite?.selectedShader.setAmount(0);
     this.selectedSprite = value;
     updateDialog(StageEditorDialogType.OBJECT);
 
@@ -612,17 +613,19 @@ class StageEditorState extends UIState
 
     if (moveMode == "assets")
     {
+      if (selectedSprite != null && !FlxG.mouse.overlaps(selectedSprite) && FlxG.mouse.justPressed && !isCursorOverHaxeUI)
+      {
+        selectedSprite = null;
+      }
+
       for (spr in spriteArray)
       {
-        spr.active = spr.isOnScreen();
-
-        if (spr.pixelsOverlapPoint(FlxG.mouse.getWorldPosition()))
+        if (FlxG.mouse.overlaps(spr))
         {
           if (spr.visible && !FlxG.keys.pressed.SHIFT) nameTxt.text = spr.name;
 
           if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
           {
-            selectedSprite.selectedShader.setAmount(0);
             selectedSprite = spr;
             updateDialog(StageEditorDialogType.OBJECT);
           }
@@ -1133,8 +1136,6 @@ class StageEditorState extends UIState
           currentFile = path;
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
 
-        bitmaps.clear();
-
       case "save stage":
         if (currentFile == "")
         {
@@ -1154,8 +1155,7 @@ class StageEditorState extends UIState
 
         saved = true;
 
-        updateRecentFiles();
-        bitmaps.clear();
+        reloadRecentFiles();
 
       case "open stage":
         if (!saved)
@@ -1207,7 +1207,10 @@ class StageEditorState extends UIState
         FlxG.sound.music.stop();
 
       case "switch mode":
-        if (!testingMode) moveMode = (moveMode == "assets" ? "chars" : "assets");
+        if (testingMode) return;
+        moveMode = (moveMode == "assets" ? "chars" : "assets");
+
+        selectedSprite?.selectedShader.setAmount((moveMode == "assets" ? 1 : 0));
 
       case "switch focus":
         if (testingMode)
@@ -1287,6 +1290,7 @@ class StageEditorState extends UIState
 
         if (!testingMode) menubarItemWindowObject.selected = menubarItemWindowCharacter.selected = menubarItemWindowStage.selected = false;
 
+        selectedSprite?.selectedShader.setAmount((testingMode ? (moveMode == "assets" ? 1 : 0) : 0));
         testingMode = !testingMode;
 
       case "clear assets":
