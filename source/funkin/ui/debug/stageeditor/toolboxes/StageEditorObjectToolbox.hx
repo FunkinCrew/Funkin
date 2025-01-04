@@ -37,7 +37,6 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
   var objectImagePreview:Image;
   var objectLoadImageButton:Button;
   var objectLoadInternetButton:Button;
-  var objectDownloadImageButton:Button;
   var objectResetImageButton:Button;
   var objectZIdxStepper:NumberStepper;
   var objectZIdxReset:Button;
@@ -86,6 +85,8 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
 
   var objectMiscAntialias:CheckBox;
   var objectMiscAntialiasReset:Button;
+  var objectMiscFlipX:CheckBox;
+  var objectMiscFlipY:CheckBox;
   var objectMiscFlipReset:Button;
   var objectMiscBlendDrop:DropDown;
   var objectMiscBlendReset:Button;
@@ -136,13 +137,6 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
         linkedObject.updateHitbox();
         refresh();
       });
-    }
-
-    objectDownloadImageButton.onClick = function(_) {
-      if (linkedObject == null) return;
-
-      FileUtil.saveFile(linkedObject.pixels.image.encode(PNG), [FileUtil.FILE_FILTER_PNG], null, null,
-        linkedObject.name + "-graphic.png"); // i'on need any callbacks
     }
 
     objectZIdxStepper.max = StageEditorState.MAX_Z_INDEX;
@@ -404,6 +398,14 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
       if (linkedObject != null) linkedObject.antialiasing = objectMiscAntialias.selected;
     }
 
+    objectMiscFlipX.onChange = function(_) {
+      if (linkedObject != null) linkedObject.flipX = objectMiscFlipX.selected;
+    }
+
+    objectMiscFlipY.onChange = function(_) {
+      if (linkedObject != null) linkedObject.flipY = objectMiscFlipY.selected;
+    }
+
     objectMiscBlendDrop.onChange = function(_) {
       if (linkedObject != null)
         linkedObject.blend = objectMiscBlendDrop.selectedItem.text == "NONE" ? null : AssetDataHandler.blendFromString(objectMiscBlendDrop.selectedItem.text);
@@ -453,6 +455,7 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
       if (linkedObject != null)
       {
         linkedObject.scale.set(1, 1);
+        linkedObject.updateHitbox();
         refresh(); // refreshes like multiple shit
       }
     }
@@ -474,6 +477,10 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
       if (linkedObject != null) objectMiscAntialias.selected = true;
     }
 
+    objectMiscFlipReset.onClick = function(_) {
+      if (linkedObject != null) objectMiscFlipX.selected = objectMiscFlipY.selected = false;
+    }
+
     objectMiscBlendReset.onClick = function(_) {
       if (linkedObject != null) objectMiscBlendDrop.selectedItem = "NORMAL";
     }
@@ -493,7 +500,7 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
     refresh();
   }
 
-  var prevFrames:Array<FlxFrame> = [];
+  var prevFrames:Array<String> = [];
   var prevAnims:Array<String> = [];
 
   override public function refresh()
@@ -526,9 +533,11 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
     if (objectScrollXSlider.pos != linkedObject.scrollFactor.x) objectScrollXSlider.pos = linkedObject.scrollFactor.x;
     if (objectScrollYSlider.pos != linkedObject.scrollFactor.y) objectScrollYSlider.pos = linkedObject.scrollFactor.y;
     if (objectMiscAntialias.selected != linkedObject.antialiasing) objectMiscAntialias.selected = linkedObject.antialiasing;
+    if (objectMiscFlipX.selected != linkedObject.flipX) objectMiscFlipX.selected = linkedObject.flipX;
+    if (objectMiscFlipY.selected != linkedObject.flipY) objectMiscFlipY.selected = linkedObject.flipY;
 
     if (objectMiscColor.currentColor != Color.fromString(linkedObject.color.toHexString() ?? "white"))
-      objectMiscColor.currentColor = Color.fromString(linkedObject.color.toHexString());
+      objectMiscColor.currentColor = Color.fromString(linkedObject.color.toHexString() ?? "white");
 
     if (objectAnimDanceBeat.pos != linkedObject.danceEvery) objectAnimDanceBeat.pos = linkedObject.danceEvery;
     if (objectAnimStart.text != linkedObject.startingAnimation) objectAnimStart.text = linkedObject.startingAnimation;
@@ -537,11 +546,11 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
     if (objectMiscBlendDrop.selectedItem != objBlend.toUpperCase()) objectMiscBlendDrop.selectedItem = objBlend.toUpperCase();
 
     // ough the max
-    if (objectFrameImageWidth.max != linkedObject.pixels.width) objectFrameImageWidth.max = linkedObject.graphic.width;
-    if (objectFrameImageHeight.max != linkedObject.pixels.height) objectFrameImageHeight.max = linkedObject.graphic.height;
+    if (objectFrameImageWidth.max != linkedObject.pixels.width) objectFrameImageWidth.max = linkedObject.pixels.width;
+    if (objectFrameImageHeight.max != linkedObject.pixels.height) objectFrameImageHeight.max = linkedObject.pixels.height;
 
     // update some anim shit
-    if (prevFrames != linkedObject.frames.frames.copy()) updateFrameList();
+    if (prevFrames != [for (f in linkedObject.frames.frames) f.name]) updateFrameList();
     if (prevAnims != linkedObject.animation.getNameList().copy()) updateAnimList();
   }
 
@@ -556,7 +565,7 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
     {
       if (fname != null) objectAnimFrameList.dataSource.add({name: fname.name, tooltip: fname.name});
 
-      prevFrames.push(fname);
+      prevFrames.push(fname.name);
     }
   }
 
