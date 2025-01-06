@@ -128,4 +128,19 @@ class MathUtil
 
     return result;
   }
+
+  public static function gcd(m:Int, n:Int):Int
+  {
+    m = Math.floor(Math.abs(m));
+    n = Math.floor(Math.abs(n));
+    var t;
+    do
+    {
+      if (n == 0) return m;
+      t = m;
+      m = n;
+      n = t % m;
+    }
+    while (true);
+  }
 }

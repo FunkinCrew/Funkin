@@ -7,6 +7,7 @@ import flixel.util.FlxAxes;
 import flixel.FlxG;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import funkin.util.MathUtil;
 
 class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 {
@@ -260,6 +261,21 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         var gameHeight:Float = gameSize.y / scale.y;
 
+        if (MathUtil.gcd(FlxG.width, Math.ceil(gameHeight)) == 1)
+        {
+          gameSize.y -= cutoutSize.y;
+          cutoutSize.set(0, 0);
+          gameCutoutSize.set(0, 0);
+          notchSize.set(0, 0);
+          gameNotchSize.set(0, 0);
+          notchPosition.set(0, 0);
+          gameNotchPosition.set(0, 0);
+
+          offset.y = Math.ceil((deviceSize.y - gameSize.y) * 0.5);
+          updateGamePosition();
+          return;
+        }
+
         if (gameHeight / FlxG.width > maxAspectRatio.y / maxAspectRatio.x && maxRatioAxis.y)
         {
           gameHeight = ((gameSize.x / scale.x) / maxAspectRatio.x) * maxAspectRatio.y;
@@ -276,6 +292,22 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
         gameSize.x += cutoutSize.x;
 
         var gameWidth:Float = gameSize.x / scale.x;
+
+        if (MathUtil.gcd(FlxG.width, Math.ceil(gameWidth)) == 1)
+        {
+          trace('invalid aspect ratio');
+          gameSize.x -= cutoutSize.x;
+          cutoutSize.set(0, 0);
+          gameCutoutSize.set(0, 0);
+          notchSize.set(0, 0);
+          gameNotchSize.set(0, 0);
+          notchPosition.set(0, 0);
+          gameNotchPosition.set(0, 0);
+
+          offset.x = Math.ceil((deviceSize.x - gameSize.x) * 0.5);
+          updateGamePosition();
+          return;
+        }
 
         if (gameWidth / FlxG.height > maxAspectRatio.x / maxAspectRatio.y && maxRatioAxis.x)
         {
