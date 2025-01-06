@@ -28,9 +28,9 @@ class ScreenUtil
     ScreenUtils.getSafeAreaInsets(cpp.Pointer.addressOf(top).raw, cpp.Pointer.addressOf(bottom).raw, cpp.Pointer.addressOf(left).raw,
       cpp.Pointer.addressOf(right).raw);
     rectangle.x = left;
-    rectangle.y = top;
-    rectangle.width = right - left;
-    rectangle.height = bottom - top;
+    rectangle.y = right;
+    rectangle.width = top;
+    rectangle.height = bottom;
     #elseif android
     var rectDimensions:Array<Array<Float>> = [[], [], [], []];
     for (rect in Tools.getCutoutDimensions())
