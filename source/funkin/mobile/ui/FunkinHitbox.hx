@@ -221,7 +221,7 @@ class FunkinHint extends FunkinPolygonButton
 
     if (followTarget != null)
     {
-      var widthMultiplier:Float = isPixel ? 1.1 : 1.3;
+      var widthMultiplier:Float = isPixel ? 1.1 : 1.35;
       var heightMultiplier:Float = 4;
       var xOffset:Float = isPixel ? 43.265 : 0;
       var yOffset:Float = isPixel ? 57.65 : 0;
