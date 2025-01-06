@@ -293,7 +293,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         var gameWidth:Float = gameSize.x / scale.x;
 
-        if (MathUtil.gcd(FlxG.width, Math.ceil(gameHeight)) == 1)
+        if (MathUtil.gcd(Math.ceil(gameWidth), FlxG.height) == 1)
         {
           trace('invalid aspect ratio');
           gameSize.x -= cutoutSize.x;
