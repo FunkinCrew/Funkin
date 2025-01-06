@@ -8,7 +8,7 @@ import funkin.graphics.FunkinSprite;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.ui.FullScreenScaleMode;
 import flixel.math.FlxPoint;
 import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;

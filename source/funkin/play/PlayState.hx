@@ -2,7 +2,7 @@ package funkin.play;
 
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
-import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.ui.FullScreenScaleMode;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSubState;

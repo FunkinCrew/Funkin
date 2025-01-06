@@ -1,6 +1,6 @@
 package funkin.mobile.ui.options.objects;
 
-import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.ui.FullScreenScaleMode;
 import flixel.addons.display.shapes.FlxShapeBox;
 import flixel.group.FlxSpriteGroup;
 import flixel.effects.FlxFlicker;

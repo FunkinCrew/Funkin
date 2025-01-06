@@ -3,7 +3,7 @@ package funkin.ui.title;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
-import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.ui.FullScreenScaleMode;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;

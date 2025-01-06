@@ -11,7 +11,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
-import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
 import openfl.utils.Assets;
 

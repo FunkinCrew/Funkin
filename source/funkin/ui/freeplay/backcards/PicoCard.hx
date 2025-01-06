@@ -9,7 +9,7 @@ import flixel.util.FlxTimer;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import openfl.display.BlendMode;
 import flixel.addons.display.FlxBackdrop;
-import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
 import openfl.utils.Assets;
 

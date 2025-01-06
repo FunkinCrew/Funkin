@@ -163,8 +163,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     // Both have an xPos of 0, but a width equal to the full screen.
     // The rightWatermarkText is right aligned, which puts the text in the correct spot.
-    leftWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
-    rightWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
+    // Their xPos is only changed when there's a notch on the device so it doesn't get covered byt it.
+    leftWatermarkText = new FlxText(funkin.ui.FullScreenScaleMode.gameNotchSize.x, FlxG.height - 18, FlxG.width, '', 12);
+    rightWatermarkText = new FlxText(-(funkin.ui.FullScreenScaleMode.gameNotchSize.x), FlxG.height - 18, FlxG.width, '', 12);
 
     // 100,000 should be good enough.
     leftWatermarkText.zIndex = 100000;

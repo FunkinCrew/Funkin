@@ -3,7 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
-import flixel.system.scaleModes.FullScreenScaleMode;
+import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.MemoryCounter;
