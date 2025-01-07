@@ -1528,7 +1528,7 @@ class FreeplayState extends MusicBeatSubState
     // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
 
     // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
-    if (SwipeUtil.flickDown)
+    if (SwipeUtil.flickUp)
     {
       if (curSelected - 1 >= 0)
       {
@@ -1541,7 +1541,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    if (SwipeUtil.flickUp)
+    if (SwipeUtil.flickDown)
     {
       if (curSelected + 1 < grpCapsules.countLiving())
       {
