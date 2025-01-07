@@ -55,6 +55,13 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Whether to play note splashes or not
+   * TODO: Make this a setting!
+   * IE: Settings.noSplash
+   */
+  public var showNotesplash:Bool = true;
+
+  /**
    * Whether this strumline is controlled by the player's inputs.
    * False means it's controlled by the opponent or Bot Play.
    */
@@ -735,8 +742,7 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteSplash(direction:NoteDirection):Void
   {
-    // TODO: Add a setting to disable note splashes.
-    // if (Settings.noSplash) return;
+    if (!showNotesplash) return;
     if (!noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
@@ -756,8 +762,7 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
-    // TODO: Add a setting to disable note splashes.
-    // if (Settings.noSplash) return;
+    if (!showNotesplash) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();
