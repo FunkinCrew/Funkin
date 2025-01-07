@@ -341,13 +341,13 @@ class StoryMenuState extends MusicBeatState
     {
       if (!selectedLevel)
       {
-        if (controls.UI_UP_P || SwipeUtil.justSwipedUp)
+        if (controls.UI_UP_P || SwipeUtil.swipeUp)
         {
           changeLevel(-1);
           changeDifficulty(0);
         }
 
-        if (controls.UI_DOWN_P || SwipeUtil.justSwipedDown)
+        if (controls.UI_DOWN_P || SwipeUtil.swipeDown)
         {
           changeLevel(1);
           changeDifficulty(0);
