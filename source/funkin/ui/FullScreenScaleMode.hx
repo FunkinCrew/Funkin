@@ -261,6 +261,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         var gameHeight:Float = gameSize.y / scale.y;
 
+        #if desktop
         if (MathUtil.gcd(FlxG.width, Math.ceil(gameHeight)) == 1)
         {
           gameSize.y -= cutoutSize.y;
@@ -275,6 +276,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           updateGamePosition();
           return;
         }
+        #end
 
         if (gameHeight / FlxG.width > maxAspectRatio.y / maxAspectRatio.x && maxRatioAxis.y)
         {
@@ -293,6 +295,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         var gameWidth:Float = gameSize.x / scale.x;
 
+        #if desktop
         if (MathUtil.gcd(Math.ceil(gameWidth), FlxG.height) == 1)
         {
           trace('invalid aspect ratio');
@@ -308,6 +311,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           updateGamePosition();
           return;
         }
+        #end
 
         if (gameWidth / FlxG.height > maxAspectRatio.x / maxAspectRatio.y && maxRatioAxis.x)
         {
