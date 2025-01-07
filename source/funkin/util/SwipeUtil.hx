@@ -1,13 +1,12 @@
 package funkin.util;
 
-#if FLX_POINTER_INPUT
 import flixel.FlxG;
+import flixel.FlxObject;
+#if FLX_POINTER_INPUT
 import flixel.input.FlxSwipe;
 #end
 import funkin.util.TouchUtil;
-
-// Turning this into a library or something would be nice -Zack
-// NOTE DO NOT TOUCH THIS, I have a draft of a rework, and touching this would be a pain in the ass. -Zack
+import flixel.util.FlxAxes;
 
 /**
  * Utility class for handling swipe gestures in HaxeFlixel and dispatching signals for different swipe directions.
@@ -104,10 +103,41 @@ class SwipeUtil
   public static var flickAny(get, never):Bool;
 
   /**
-   * Detects an upward swipe gesture from the global mouse/touch.
+   * Updates the swipe threshold based on the provided group.
    *
-   * @return Bool
+   * @param items The array whose items' positions are used to calculate the swipe threshold.
+   * @param axes The axis to calculate the swipe threshold for.
+   * @param multiplier Optional value that multiplies the final swipe threshold with it.
    */
+  public static function calculateSwipeThreshold(items:Array<Dynamic>, axes:FlxAxes, ?multiplier:Float = 1):Void
+  {
+    #if TOUCH_CONTROLS
+    final itemCount:Int = items.length - 1;
+
+    if (itemCount <= 0)
+    {
+      FlxG.touches.swipeThreshold.set(100, 100);
+      return;
+    }
+
+    var totalDistanceX:Float = 0;
+    var totalDistanceY:Float = 0;
+
+    for (i in 0...itemCount)
+    {
+      if (axes.x) totalDistanceX += Math.abs(items[i + 1].x - items[i].x);
+      if (axes.y) totalDistanceY += Math.abs(items[i + 1].y - items[i].y);
+    }
+
+    totalDistanceX = Math.abs((totalDistanceX / itemCount) * 0.9);
+    totalDistanceY = Math.abs((totalDistanceY / itemCount) * 0.9);
+
+    FlxG.touches.swipeThreshold.x = (axes.x) ? totalDistanceX * multiplier : 100;
+    FlxG.touches.swipeThreshold.y = (axes.y) ? totalDistanceY * multiplier : 100;
+    #end
+    return;
+  }
+
   @:noCompletion
   inline static function get_swipeUp():Bool
   {
@@ -122,11 +152,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Detects a rightward swipe gesture from the global mouse/touch.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_swipeRight():Bool
   {
@@ -141,11 +166,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Detects a leftward swipe gesture from the global mouse/touch.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_swipeLeft():Bool
   {
@@ -160,11 +180,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Detects a downward swipe gesture from the global mouse/touch.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_swipeDown():Bool
   {
@@ -179,20 +194,10 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Determines if there is any swipe input.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_swipeAny():Bool
     return swipeDown || swipeLeft || swipeRight || swipeUp;
 
-  /**
-   * Determines if there is an up swipe in the FlxG.swipes array.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_justSwipedUp():Bool
   {
@@ -204,11 +209,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Determines if there is a left swipe in the FlxG.swipes array.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_justSwipedRight():Bool
   {
@@ -220,11 +220,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Determines if there is a right swipe in the FlxG.swipes array.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_justSwipedLeft():Bool
   {
@@ -236,11 +231,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Determines if there is a down swipe in the FlxG.swipes array.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_justSwipedDown():Bool
   {
@@ -252,20 +242,10 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Determines if there is any swipe in the FlxG.swipes array.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_justSwipedAny():Bool
     return justSwipedDown || justSwipedLeft || justSwipedRight || justSwipedUp;
 
-  /**
-   * Detects an upward flick gesture from the flick manager in either the global mouse or touch.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_flickUp():Bool
   {
@@ -280,11 +260,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Detects a rightward flick gesture from the flick manager in either the global mouse or touch.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_flickRight():Bool
   {
@@ -299,11 +274,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Detects a leftward flick gesture from the flick manager in either the global mouse or touch.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_flickLeft():Bool
   {
@@ -318,11 +288,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Detects a downward flick gesture from the flick manager in either the global mouse or touch.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_flickDown():Bool
   {
@@ -337,11 +302,6 @@ class SwipeUtil
     #end
   }
 
-  /**
-   * Detects if there is any flick input.
-   *
-   * @return Bool
-   */
   @:noCompletion
   inline static function get_flickAny():Bool
   {

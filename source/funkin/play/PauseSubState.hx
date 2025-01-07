@@ -533,26 +533,9 @@ class PauseSubState extends MusicBeatSubState
     clearAndAddMenuEntries();
     updateMetadataText();
     changeSelection();
-    updateSwipeThreshold();
-  }
-
-  function updateSwipeThreshold():Void
-  {
-    final items = menuEntryText.members;
-    final count:Int = items.length - 1;
-
-    if (count <= 0)
-    {
-      FlxG.touches.swipeThreshold.set(100, 100);
-      return;
-    }
-
-    var totalDistance:Float = 0;
-
-    for (i in 0...items.length - 1)
-      totalDistance += Math.abs(items[i + 1].y - items[i].y);
-
-    FlxG.touches.swipeThreshold.set(100, Math.abs((totalDistance / count) * 0.9)); // safety measure
+    #if TOUCH_CONTROLS
+    SwipeUtil.calculateSwipeThreshold(menuEntryText.members, Y);
+    #end
   }
 
   /**

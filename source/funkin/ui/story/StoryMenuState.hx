@@ -230,6 +230,10 @@ class StoryMenuState extends MusicBeatState
     #if mobile
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, goBack);
     #end
+
+    #if TOUCH_CONTROLS
+    SwipeUtil.calculateSwipeThreshold(levelTitles.members, Y, 4);
+    #end
   }
 
   function rememberSelection():Void

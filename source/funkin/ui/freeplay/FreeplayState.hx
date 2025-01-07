@@ -673,6 +673,11 @@ class FreeplayState extends MusicBeatSubState
       {
         rankAnimStart(fromResultsParams, grpCapsules.members[curSelected]);
       }
+
+      #if TOUCH_CONTROLS
+      SwipeUtil.calculateSwipeThreshold(grpCapsules.members, Y);
+      FlxG.touches.swipeThreshold.x = 60;
+      #end
     };
 
     if (dj != null)

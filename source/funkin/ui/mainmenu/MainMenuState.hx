@@ -182,7 +182,7 @@ class MainMenuState extends MusicBeatState
     #end
 
     #if TOUCH_CONTROLS
-    FlxG.touches.swipeThreshold.set(100, menuItems.members[0].height);
+    SwipeUtil.calculateSwipeThreshold(menuItems.members, Y);
     #end
   }
 
@@ -222,8 +222,9 @@ class MainMenuState extends MusicBeatState
   override function closeSubState():Void
   {
     magenta.visible = false;
-    FlxG.touches.swipeThreshold.set(100, menuItems.members[0].height);
-
+    #if TOUCH_CONTROLS
+    SwipeUtil.calculateSwipeThreshold(menuItems.members, Y);
+    #end
     super.closeSubState();
   }
 
