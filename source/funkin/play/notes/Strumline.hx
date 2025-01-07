@@ -1010,3 +1010,4 @@ class Strumline extends FlxSpriteGroup
   {
     return FlxSort.byValues(order, a?.strumTime, b?.strumTime);
   }
+}
