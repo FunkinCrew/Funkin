@@ -626,6 +626,12 @@ class FreeplayState extends MusicBeatSubState
           });
       }
 
+      for (diff in grpDifficulties)
+      {
+        if (diff == null) continue;
+        FlxTween.cancelTweensOf(diff);
+      }
+      FlxTween.cancelTweensOf(grpDifficulties);
       FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
 
       if (diffSelLeft != null) diffSelLeft.visible = true;
