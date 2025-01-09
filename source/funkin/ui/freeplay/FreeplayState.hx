@@ -626,12 +626,13 @@ class FreeplayState extends MusicBeatSubState
           });
       }
 
+      FlxTween.cancelTweensOf(grpDifficulties);
       for (diff in grpDifficulties)
       {
         if (diff == null) continue;
         FlxTween.cancelTweensOf(diff);
+        FlxTween.tween(diff, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
       }
-      FlxTween.cancelTweensOf(grpDifficulties);
       FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
 
       if (diffSelLeft != null) diffSelLeft.visible = true;
@@ -1326,14 +1327,6 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  var touchY:Float = 0;
-  var touchX:Float = 0;
-  var dxTouch:Float = 0;
-  var dyTouch:Float = 0;
-  var velTouch:Float = 0;
-
-  var initTouchPos:FlxPoint = new FlxPoint();
-
   var spamTimer:Float = 0;
   var spamming:Bool = false;
 
@@ -1539,7 +1532,7 @@ class FreeplayState extends MusicBeatSubState
     // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
 
     // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
-    if (SwipeUtil.flickUp)
+    if (SwipeUtil.flickDown)
     {
       if (curSelected - 1 >= 0)
       {
@@ -1552,7 +1545,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    if (SwipeUtil.flickDown)
+    if (SwipeUtil.flickUp)
     {
       if (curSelected + 1 < grpCapsules.countLiving())
       {
