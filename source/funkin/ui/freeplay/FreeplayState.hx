@@ -2223,7 +2223,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Small vibrations every selection change.
-    HapticUtil.vibrate(0, 10, 10);
+    if (change != 0) HapticUtil.vibrate(0, 10, 50);
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
