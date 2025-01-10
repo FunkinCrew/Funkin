@@ -9,6 +9,9 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinCamera;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
 // Thnk u agua and toffee <3
@@ -121,8 +124,17 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     for (pointer in members)
     {
       if (pointer == null || touchExists(pointer.touchId)) continue;
-
-      remove(pointer, true);
+      if (pointer.touchId != -2)
+      {
+        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.2, 0.3),
+          {
+            ease: FlxEase.cubeInOut,
+            onComplete: function(_) {
+              remove(pointer, true);
+            }
+          });
+      }
+      pointer.touchId = -2;
     }
   }
 
@@ -249,5 +261,13 @@ class TouchPointer extends FlxSprite
   {
     lastPosition.put();
     super.destroy();
+  }
+
+  override public function loadGraphic(graphic:FlxGraphicAsset, animated = false, frameWidth = 0, frameHeight = 0, unique = false, ?key:String):FlxSprite
+  {
+    super.loadGraphic(graphic, animated, frameWidth, frameHeight, unique, key);
+    color = 0xff6666e1;
+    blend = "screen";
+    return this;
   }
 }
