@@ -7,11 +7,12 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
-import funkin.graphics.FunkinCamera;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.graphics.FunkinCamera;
 
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
 // Thnk u agua and toffee <3
@@ -99,6 +100,10 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
         moveCameraToTop(null);
       }
     });
+
+    FlxG.signals.preStateSwitch.add(function() {
+      instance.removeAll();
+    });
   }
 
   override public function update(elapsed:Float):Void
@@ -133,8 +138,8 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
               remove(pointer, true);
             }
           });
+        pointer.touchId = -2;
       }
-      pointer.touchId = -2;
     }
   }
 
@@ -181,6 +186,21 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     }
 
     return enabled = value;
+  }
+
+  public function removeAll()
+  {
+    for (pointer in members)
+    {
+      if (pointer == null) continue;
+      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.2, 0.3),
+        {
+          ease: FlxEase.cubeInOut,
+          onComplete: function(_) {
+            remove(pointer, true);
+          }
+        });
+    }
   }
 }
 
