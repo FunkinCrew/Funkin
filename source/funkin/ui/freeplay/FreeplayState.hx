@@ -217,6 +217,10 @@ class FreeplayState extends MusicBeatSubState
   var styleData:Null<FreeplayStyle> = null;
   var fromCharSelect:Bool = false;
 
+  public var fnfFreeplay:Null<FlxText>;
+  public var freeplayTxtBg:Null<FlxSprite>;
+  public var freeplayArrow:Null<FlxText>;
+
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
     CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
@@ -454,9 +458,17 @@ class FreeplayState extends MusicBeatSubState
       FlxTween.tween(blackOverlayBullshitLOLXD, {x: bgDad.x}, 0.7, {ease: FlxEase.quintOut});
     }
 
-    var fnfFreeplay:FlxText = new FlxText(8, 8, 0, 'FREEPLAY', 48);
+    fnfFreeplay = new FlxText(FullScreenScaleMode.gameNotchSize.x + 8, 8, 0, 'FREEPLAY', 48);
     fnfFreeplay.font = 'VCR OSD Mono';
     fnfFreeplay.visible = false;
+
+    freeplayTxtBg = new FlxSprite().makeGraphic(Math.round(fnfFreeplay.width + 16), Math.round(fnfFreeplay.height + 16), FlxColor.BLACK);
+    freeplayTxtBg.x = fnfFreeplay.x - 8;
+    freeplayTxtBg.visible = false;
+
+    freeplayArrow = new FlxText(FullScreenScaleMode.gameNotchSize.x + 8, 8, 0, '<---', 48);
+    freeplayArrow.font = 'VCR OSD Mono';
+    freeplayArrow.visible = false;
 
     ostName.font = 'VCR OSD Mono';
     ostName.alignment = RIGHT;
@@ -473,7 +485,14 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.y -= 100;
     FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
 
-    exitMovers.set([overhangStuff, fnfFreeplay, ostName, charSelectHint],
+    exitMovers.set([
+      overhangStuff,
+      fnfFreeplay,
+      ostName,
+      charSelectHint,
+      freeplayTxtBg,
+      freeplayArrow
+    ],
       {
         y: -overhangStuff.height,
         x: 0,
@@ -481,7 +500,14 @@ class FreeplayState extends MusicBeatSubState
         wait: 0
       });
 
-    exitMoversCharSel.set([overhangStuff, fnfFreeplay, ostName, charSelectHint],
+    exitMoversCharSel.set([
+      overhangStuff,
+      fnfFreeplay,
+      ostName,
+      charSelectHint,
+      freeplayTxtBg,
+      freeplayArrow
+    ],
       {
         y: -300,
         speed: 0.8,
@@ -490,6 +516,7 @@ class FreeplayState extends MusicBeatSubState
 
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
+    freeplayArrow.shader = sillyStroke;
     ostName.shader = sillyStroke;
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(FlxG.width - 420, 70);
@@ -593,6 +620,8 @@ class FreeplayState extends MusicBeatSubState
 
     // putting these here to fix the layering
     add(overhangStuff);
+    add(freeplayArrow);
+    add(freeplayTxtBg);
     add(fnfFreeplay);
     add(ostName);
 
@@ -657,7 +686,9 @@ class FreeplayState extends MusicBeatSubState
 
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
-        fnfFreeplay.visible = true;
+        if (fnfFreeplay != null) fnfFreeplay.visible = true;
+        if (freeplayArrow != null) freeplayArrow.visible = true;
+        if (freeplayTxtBg != null) freeplayTxtBg.visible = true;
         ostName.visible = true;
         fp.visible = true;
         fp.updateScore(0);
@@ -1329,6 +1360,7 @@ class FreeplayState extends MusicBeatSubState
 
   var spamTimer:Float = 0;
   var spamming:Bool = false;
+  var pressedOnFreeplay:Bool = false;
 
   /**
    * If true, disable interaction with the interface.
@@ -1474,14 +1506,32 @@ class FreeplayState extends MusicBeatSubState
       _pressedOn = (selected != null) && TouchUtil.overlaps(selected, funnyCam);
     }
 
-    if (upP || downP)
+    if (!pressedOnFreeplay)
     {
-      if (spamming)
+      if (upP || downP)
       {
-        if (spamTimer >= 0.07)
+        if (spamming)
         {
-          spamTimer = 0;
+          if (spamTimer >= 0.07)
+          {
+            spamTimer = 0;
 
+            if (upP)
+            {
+              changeSelection(-1);
+            }
+            else
+            {
+              changeSelection(1);
+            }
+          }
+        }
+        else if (spamTimer >= 0.9)
+        {
+          spamming = true;
+        }
+        else if (spamTimer <= 0)
+        {
           if (upP)
           {
             changeSelection(-1);
@@ -1491,70 +1541,55 @@ class FreeplayState extends MusicBeatSubState
             changeSelection(1);
           }
         }
+
+        spamTimer += elapsed;
+        dj?.resetAFKTimer();
       }
-      else if (spamTimer >= 0.9)
+      else
       {
-        spamming = true;
+        spamming = false;
+        spamTimer = 0;
       }
-      else if (spamTimer <= 0)
+
+      #if desktop
+      final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+      #elseif mobile
+      final wheelAmount:Float = FlxG.touches.horizontalWheel / 2;
+      #end
+
+      if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
       {
-        if (upP)
+        dj?.resetAFKTimer();
+        changeSelection(-Math.round(wheelAmount));
+      }
+
+      // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
+
+      // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
+      if (SwipeUtil.flickDown)
+      {
+        if (curSelected - 1 >= 0)
         {
+          dj?.resetAFKTimer();
           changeSelection(-1);
         }
         else
         {
-          changeSelection(1);
+          SwipeUtil.resetSwipeVelocity();
         }
       }
 
-      spamTimer += elapsed;
-      dj?.resetAFKTimer();
-    }
-    else
-    {
-      spamming = false;
-      spamTimer = 0;
-    }
-
-    #if desktop
-    final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
-    #elseif mobile
-    final wheelAmount:Float = FlxG.touches.horizontalWheel / 2;
-    #end
-
-    if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
-    {
-      dj?.resetAFKTimer();
-      changeSelection(-Math.round(wheelAmount));
-    }
-
-    // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
-
-    // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
-    if (SwipeUtil.flickDown)
-    {
-      if (curSelected - 1 >= 0)
+      if (SwipeUtil.flickUp)
       {
-        dj?.resetAFKTimer();
-        changeSelection(-1);
-      }
-      else
-      {
-        SwipeUtil.resetSwipeVelocity();
-      }
-    }
-
-    if (SwipeUtil.flickUp)
-    {
-      if (curSelected + 1 < grpCapsules.countLiving())
-      {
-        dj?.resetAFKTimer();
-        changeSelection(1);
-      }
-      else
-      {
-        SwipeUtil.resetSwipeVelocity();
+        if (curSelected + 1 < grpCapsules.countLiving())
+        {
+          dj?.resetAFKTimer();
+          changeSelection(1);
+        }
+        else
+        {
+          SwipeUtil.resetSwipeVelocity();
+        }
       }
     }
 
@@ -1576,7 +1611,7 @@ class FreeplayState extends MusicBeatSubState
     if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam));
     if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam));
 
-    if (TouchUtil.pressed || TouchUtil.justReleased)
+    if ((TouchUtil.pressed || TouchUtil.justReleased) && !pressedOnFreeplay)
     {
       // Favorite
       final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
@@ -1617,6 +1652,32 @@ class FreeplayState extends MusicBeatSubState
 
         // Stop
         break;
+      }
+    }
+
+    if (fnfFreeplay != null && freeplayTxtBg != null && freeplayArrow != null)
+    {
+      if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
+      {
+        _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
+        pressedOnFreeplay = true;
+      }
+
+      if (pressedOnFreeplay && TouchUtil.pressed)
+      {
+        fnfFreeplay.x = TouchUtil.touch.x + _dragOffset;
+        freeplayTxtBg.x = TouchUtil.touch.x + _dragOffset - 8;
+        if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
+        {
+          pressedOnFreeplay = false;
+          goBack();
+        }
+      }
+      else
+      {
+        fnfFreeplay.x = FullScreenScaleMode.gameNotchSize.x + 8;
+        freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
+        pressedOnFreeplay = false;
       }
     }
     #end
