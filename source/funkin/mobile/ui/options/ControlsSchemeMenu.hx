@@ -1,17 +1,18 @@
 package funkin.mobile.ui.options;
 
 import flixel.addons.transition.FlxTransitionableState;
-import funkin.ui.FullScreenScaleMode;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxMath;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import funkin.mobile.ui.options.objects.SchemeMenuButton;
 import funkin.mobile.ui.options.objects.HitboxShowcase;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
+import funkin.util.MathUtil;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.AtlasText;
+import funkin.ui.FullScreenScaleMode;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.FunkinCamera;
@@ -35,6 +36,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
   private var camButtons:FunkinCamera;
 
   /**
+   * A camera for hitbox showcases group.
+   */
+  private var camHitboxes:FunkinCamera;
+
+  /**
    * A button that is changed depending if you are in the hitbox demo or not.
    */
   private var currentButton:SchemeMenuButton;
@@ -42,7 +48,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Group of hitbox showcase selection items.
    */
-  private var hitboxShowcases:FlxTypedGroup<HitboxShowcase>;
+  private var hitboxShowcases:FlxTypedSpriteGroup<HitboxShowcase>;
 
   /**
    * An object used for selecting the current hitbox scheme.
@@ -75,7 +81,17 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   private var currentIndex:Int = 0;
 
-  override function create()
+  /**
+   * Touch X position when touch was just pressed. Resets on release.
+   */
+  var dragStartingX:Int;
+
+  /**
+   * Touch X distance between dragStartingX and current touch position. Resets on release.
+   */
+  var dragDistance:Int;
+
+  public override function create():Void
   {
     super.create();
 
@@ -131,6 +147,10 @@ class ControlsSchemeMenu extends MusicBeatSubState
     camButtons = new FunkinCamera('camButtons');
     FlxG.cameras.add(camButtons, false);
     camButtons.bgColor = 0x0;
+
+    camHitboxes = new FunkinCamera('camHitboxes');
+    FlxG.cameras.add(camHitboxes, false);
+    camHitboxes.bgColor = 0x0;
   }
 
   /**
@@ -138,7 +158,9 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   function setupHitboxShowcases()
   {
-    hitboxShowcases = new FlxTypedGroup<HitboxShowcase>();
+    hitboxShowcases = new FlxTypedSpriteGroup<HitboxShowcase>();
+    hitboxShowcases.x = (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex);
+
     for (i in 0...availableSchemes.length)
     {
       final hitboxShowcase:HitboxShowcase = new HitboxShowcase(Math.floor(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i],
@@ -152,6 +174,9 @@ class ControlsSchemeMenu extends MusicBeatSubState
       });
     }
     add(hitboxShowcases);
+
+    hitboxShowcases.cameras = [camHitboxes];
+    camHitboxes.setScale(0.5, 0.5);
 
     itemNavHitbox = new FunkinSprite(FlxG.width * 0.295).makeSolidColor(Std.int(FlxG.width * 0.25), Std.int(FlxG.height * 0.25), FlxColor.GREEN);
     itemNavHitbox.cameras = [camButtons];
@@ -258,15 +283,16 @@ class ControlsSchemeMenu extends MusicBeatSubState
    * Updates selection using currentIndex.
    * @param change Used to change currentIndex.
    */
-  function updateSelection(change:Int)
+  private function setSelection(index:Int):Void
   {
-    currentIndex += change;
+    currentIndex = index;
 
     if (currentIndex < 0)
     {
       currentIndex = 0;
       return;
     }
+
     if (currentIndex >= hitboxShowcases.length)
     {
       currentIndex = hitboxShowcases.length - 1;
@@ -283,6 +309,24 @@ class ControlsSchemeMenu extends MusicBeatSubState
   }
 
   /**
+   * Handles touch dragging.
+   */
+  private function handleDrag():Void
+  {
+    if (TouchUtil.justPressed && TouchUtil.touch != null) dragStartingX = TouchUtil.touch.x;
+
+    if (TouchUtil.pressed && TouchUtil.touch != null) dragDistance = TouchUtil.touch.x - dragStartingX;
+
+    if (TouchUtil.justReleased)
+    {
+      dragStartingX = 0;
+      dragDistance = 0;
+    }
+
+    trace(dragDistance);
+  }
+
+  /**
    * Handles all the touch inputs.
    */
   function handleInputs()
@@ -291,38 +335,47 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     if (currentButton.busy) return;
 
-    if (SwipeUtil.swipeRight)
-    {
-      updateSelection(1);
-      return;
-    }
+    handleDrag();
 
-    if (SwipeUtil.swipeLeft)
-    {
-      updateSelection(-1);
-      return;
-    }
-
-    if (!TouchUtil.justPressed || SwipeUtil.swipeAny) return;
-
-    if (TouchUtil.overlapsComplex(itemNavHitbox))
+    if (TouchUtil.justPressed && TouchUtil.overlapsComplex(itemNavHitbox))
     {
       hitboxShowcases.members[currentIndex].onPress();
       currentButton.busy = true;
       return;
     }
 
-    if (TouchUtil.overlapsComplex(optionNavHitbox) && hitboxShowcases.members[currentIndex].checkbox != null)
+    if (TouchUtil.justPressed && TouchUtil.overlapsComplex(optionNavHitbox) && hitboxShowcases.members[currentIndex].checkbox != null)
     {
       hitboxShowcases.members[currentIndex].checkbox.text.callback();
       return;
     }
   }
 
+  /**
+   * HitboxShowcases X position when the player just pressed on the screen.
+   * Used for dragging.
+   */
+  var originX:Float;
+
   public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
     handleInputs();
+
+    if (TouchUtil.justPressed) originX = hitboxShowcases.x;
+
+    if (TouchUtil.pressed && dragDistance != 0)
+    {
+      final showcasesTargetX:Float = originX + dragDistance * 10;
+      hitboxShowcases.x = MathUtil.smoothLerp(hitboxShowcases.x, showcasesTargetX, elapsed, 0.5);
+
+      final targetIndex:Int = Math.round(hitboxShowcases.x / -1500);
+      if (currentIndex != targetIndex) setSelection(targetIndex);
+    }
+    else
+    {
+      hitboxShowcases.x = MathUtil.smoothLerp(hitboxShowcases.x, (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex), elapsed, 0.5);
+    }
   }
 }

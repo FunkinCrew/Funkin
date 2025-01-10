@@ -18,16 +18,6 @@ import funkin.util.MathUtil;
 class HitboxShowcase extends FlxSpriteGroup
 {
   /**
-   * The x position of the object that has been set at the very beginning.
-   */
-  public var absoluteX:Int;
-
-  /**
-   * The group's main camera.
-   */
-  public var camHitbox:Null<FunkinCamera>;
-
-  /**
    * Hitbox showcase's checkbox option.
    */
   public var checkbox:Null<HitboxOptionButton>;
@@ -76,7 +66,6 @@ class HitboxShowcase extends FlxSpriteGroup
   {
     super(x, y);
 
-    this.absoluteX = x;
     this.index = index;
     this.selectionIndex = selectionIndex;
 
@@ -94,11 +83,6 @@ class HitboxShowcase extends FlxSpriteGroup
    */
   function setupObjects(controlsScheme:String)
   {
-    camHitbox = new FunkinCamera('camHitbox' + index);
-    camHitbox.bgColor = 0x0;
-    camHitbox.setScale(0.5, 0.5);
-    FlxG.cameras.add(camHitbox, false);
-
     final bg:FlxShapeBox = new FlxShapeBox(0, 0, FlxG.width + 2, FlxG.height + 2, {thickness: 6, color: FlxColor.BLACK}, FlxColor.GRAY);
     bg.screenCenter();
     add(bg);
@@ -111,8 +95,6 @@ class HitboxShowcase extends FlxSpriteGroup
     });
     hitbox.active = false;
     add(hitbox);
-
-    this.cameras = [camHitbox];
   }
 
   /**
@@ -151,9 +133,7 @@ class HitboxShowcase extends FlxSpriteGroup
   {
     super.update(elapsed);
 
-    alpha = MathUtil.smoothLerp(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.5);
-
-    x = MathUtil.smoothLerp(x, absoluteX + 1500 * (-selectionIndex * FullScreenScaleMode.windowScale.x), elapsed, 0.5);
+    alpha = MathUtil.smoothLerp(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.2);
   }
 
   function get_selected():Bool
