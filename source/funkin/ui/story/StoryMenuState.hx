@@ -232,7 +232,7 @@ class StoryMenuState extends MusicBeatState
     #end
 
     #if TOUCH_CONTROLS
-    SwipeUtil.calculateSwipeThreshold(levelTitles.members, Y, 4);
+    FlxG.touches.swipeThreshold.y = 100;
     #end
   }
 
@@ -432,9 +432,15 @@ class StoryMenuState extends MusicBeatState
 
     currentIndex += change;
 
+    #if TOUCH_CONTROLS
+    // Dont wrap around w/ touch.
+    if (currentIndex < 0) currentIndex = 0;
+    if (currentIndex >= levelList.length) currentIndex = levelList.length - 1;
+    #else
     // Wrap around
     if (currentIndex < 0) currentIndex = levelList.length - 1;
     if (currentIndex >= levelList.length) currentIndex = 0;
+    #end
 
     var previousLevelId:String = currentLevelId;
     currentLevelId = levelList[currentIndex];
