@@ -1512,7 +1512,18 @@ class FreeplayState extends MusicBeatSubState
       {
         if (spamming)
         {
-          spamTimer = 0;
+          if (spamTimer >= 0.07)
+          {
+            spamTimer = 0;
+            changeSelection(upP ? -1 : 1);
+          }
+        }
+        else if (spamTimer >= 0.9)
+        {
+          spamming = true;
+        }
+        else if (spamTimer <= 0)
+        {
           changeSelection(upP ? -1 : 1);
         }
 
@@ -1525,15 +1536,27 @@ class FreeplayState extends MusicBeatSubState
         spamTimer = 0;
       }
 
-      #if desktop
       final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
-      #elseif mobile
-      final wheelAmount:Float = FlxG.touches.horizontalWheel / 2;
-      #end
-
-      if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
+      if (wheelAmount != 0)
       {
-        changeSelection(upP ? -1 : 1);
+        dj?.resetAFKTimer();
+        changeSelection(-Math.round(wheelAmount));
+      }
+
+      // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
+
+      // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
+      if (SwipeUtil.flickDown)
+      {
+        if (curSelected - 1 >= 0)
+        {
+          dj?.resetAFKTimer();
+          changeSelection(-1);
+        }
+        else
+        {
+          SwipeUtil.resetSwipeVelocity();
+        }
       }
 
       if (SwipeUtil.flickUp)
@@ -1589,8 +1612,6 @@ class FreeplayState extends MusicBeatSubState
           diff.x = 90;
           break;
         }
-
-        letterSort.inputEnabled = false;
 
         if (TouchUtil.justPressed) _dragOffset = diff.x - TouchUtil.touch.x;
         diff.x = TouchUtil.touch.x + _dragOffset;
@@ -1897,7 +1918,6 @@ class FreeplayState extends MusicBeatSubState
     }
 
     _dragOffset = 0;
-    letterSort.inputEnabled = true;
   }
 
   function handleBoundaryChange(change:Int):Void
@@ -1913,7 +1933,9 @@ class FreeplayState extends MusicBeatSubState
     trace('RANDOM SELECTED');
 
     busy = true;
+    #if NO_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
+    #end
 
     var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
       // Dead capsules are ones which were removed from the list when changing filters.
@@ -1928,7 +1950,9 @@ class FreeplayState extends MusicBeatSubState
     {
       trace('No songs available!');
       busy = false;
+      #if NO_TOUCH_CONTROLS
       letterSort.inputEnabled = true;
+      #end
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       return;
     }
@@ -2026,7 +2050,9 @@ class FreeplayState extends MusicBeatSubState
   function capsuleOnConfirmDefault(cap:SongMenuItem, ?targetInstId:String):Void
   {
     busy = true;
+    #if NO_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
+    #end
 
     PlayStatePlaylist.isStoryMode = false;
 

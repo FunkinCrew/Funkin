@@ -88,6 +88,9 @@ class LetterSort extends FlxSpriteGroup
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    #if TOUCH_CONTROLS
+    if (TouchUtil.justPressed) inputEnabled = instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam);
+    #end
 
     if (inputEnabled)
     {
