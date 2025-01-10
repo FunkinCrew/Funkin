@@ -1512,34 +1512,8 @@ class FreeplayState extends MusicBeatSubState
       {
         if (spamming)
         {
-          if (spamTimer >= 0.07)
-          {
-            spamTimer = 0;
-
-            if (upP)
-            {
-              changeSelection(-1);
-            }
-            else
-            {
-              changeSelection(1);
-            }
-          }
-        }
-        else if (spamTimer >= 0.9)
-        {
-          spamming = true;
-        }
-        else if (spamTimer <= 0)
-        {
-          if (upP)
-          {
-            changeSelection(-1);
-          }
-          else
-          {
-            changeSelection(1);
-          }
+          spamTimer = 0;
+          changeSelection(upP ? -1 : 1);
         }
 
         spamTimer += elapsed;
@@ -1559,24 +1533,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
       {
-        dj?.resetAFKTimer();
-        changeSelection(-Math.round(wheelAmount));
-      }
-
-      // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
-
-      // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
-      if (SwipeUtil.flickDown)
-      {
-        if (curSelected - 1 >= 0)
-        {
-          dj?.resetAFKTimer();
-          changeSelection(-1);
-        }
-        else
-        {
-          SwipeUtil.resetSwipeVelocity();
-        }
+        changeSelection(upP ? -1 : 1);
       }
 
       if (SwipeUtil.flickUp)
