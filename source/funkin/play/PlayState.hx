@@ -25,6 +25,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinText;
 import funkin.graphics.FunkinSprite;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
@@ -443,9 +444,9 @@ class PlayState extends MusicBeatSubState
    * RENDER OBJECTS
    */
   /**
-   * The FlxText which displays the current score.
+   * The FunkinText which displays the current score.
    */
-  var scoreText:FlxText;
+  var scoreText:FunkinText;
 
   /**
    * The bar which displays the player's health.
@@ -1575,7 +1576,7 @@ class PlayState extends MusicBeatSubState
     add(healthBar);
 
     // The score text below the health bar.
-    scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
+    scoreText = new FunkinText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
@@ -2120,13 +2121,14 @@ class PlayState extends MusicBeatSubState
     // TODO: Add functionality for modules to update the score text.
     if (isBotPlayMode)
     {
-      scoreText.text = 'Bot Play Enabled';
+      scoreText.text = Texts.instance.getText("game/scoreBotplay") ?? "Bot Play Enabled";
     }
     else
     {
       // TODO: Add an option for this maybe?
       var commaSeparated:Bool = true;
-      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
+      var scoreString:String = FlxStringUtil.formatMoney(songScore, false, commaSeparated);
+      scoreText.text = Texts.instance.getText("game/score", [scoreString]) ?? 'Score: $scoreString';
     }
   }
 
@@ -3253,7 +3255,8 @@ class PlayState extends MusicBeatSubState
         songId: currentChart.song.id,
         difficultyId: currentDifficulty,
         characterId: currentChart.characters.player,
-        title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
+        title: PlayStatePlaylist.isStoryMode ? ('${Texts.instance.getText("game/weekResults", [PlayStatePlaylist.campaignTitle]) ?? PlayStatePlaylist.campaignTitle}') : (Texts.instance.getText("game/songResults",
+          [currentChart.songName, currentChart.songArtist]) ?? '${currentChart.songName} by ${currentChart.songArtist}'),
         prevScoreData: prevScoreData,
         scoreData:
           {

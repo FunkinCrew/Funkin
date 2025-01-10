@@ -5,7 +5,7 @@ package funkin;
  */
 class Texts
 {
-  inline static final VALUE_REPLACER:String = "$value";
+  inline static final VALUE_REPLACER:String = "${value}";
 
   public static var instance(get, never):Texts;
   static var _instance:Null<Texts> = null;
@@ -21,7 +21,7 @@ class Texts
     _instance = new Texts();
   }
 
-  var _data:TextData;
+  var _data:Dynamic;
 
   function new()
   {
@@ -43,184 +43,53 @@ class Texts
     return _data?.title?.randomTextSplitter ?? "--";
   }
 
-  public function getFreeplayTitle()
+  public function getText(group:String, ?replacerValues:Array<Dynamic>)
   {
-    return _data?.freeplay?.title ?? "FREEPLAY";
+    var groups:Array<String> = group.split("/");
+    var output:Dynamic = null;
+
+    for (field in groups)
+    {
+      var useThing = output ?? _data;
+      if (Reflect.hasField(useThing, field))
+      {
+        output = Reflect.field(useThing, field);
+      }
+      else
+      {
+        return null;
+      }
+    }
+
+    if (Std.isOfType(output, String))
+    {
+      var strOutput:String = cast output;
+      if (replacerValues != null)
+      {
+        // first we check if the text has a macro "${value}", which we set to the 1st (0th technically teehee) member of the replacerValues
+        // if not then we go ${value1} ${value2} etc... to replace with corresponding replacerValues!!
+        // this is primarily cuz of the results screen requiring 2 replacer values, song title and song composers goddamnit
+
+        var newValueReplacer:Int->String = function(num:Int = 1) return VALUE_REPLACER.replace("}", num + "}");
+
+        if (!strOutput.contains(newValueReplacer(1)))
+        {
+          strOutput = strOutput.replace(VALUE_REPLACER, Std.string(replacerValues[0]));
+        }
+        else
+        {
+          for (i in 0...replacerValues.length)
+          {
+            strOutput = strOutput.replace(newValueReplacer(i + 1), Std.string(replacerValues[i]));
+          }
+        }
+      }
+
+      return strOutput;
+    }
+
+    return null;
   }
-
-  public function getFreeplayOSTText()
-  {
-    return _data?.freeplay?.ostText ?? "OFFICIAL OST";
-  }
-
-  public function getFreeplayCharSelectHint(control:String = "")
-  {
-    var text:String = _data?.freeplay?.charSelectHint ?? "Press [ $value ] to change characters";
-    return text.replace(VALUE_REPLACER, control);
-  }
-
-  public function getOptionsPreferencesTabName()
-  {
-    return _data?.options?.preferences?.tabName ?? "PREFERENCES";
-  }
-
-  public function getOptionsPreferencesNaughtyness()
-  {
-    return _data?.options?.preferences?.naughtyness ?? "Naughtyness";
-  }
-
-  public function getOptionsPreferencesDownscroll()
-  {
-    return _data?.options?.preferences?.downscroll ?? "Downscroll";
-  }
-
-  public function getOptionsPreferencesFlashing()
-  {
-    return _data?.options?.preferences?.flashing ?? "Flashing Lights";
-  }
-
-  public function getOptionsPreferencesCamZoom()
-  {
-    return _data?.options?.preferences?.camZoom ?? "Camera Zooming on Beat";
-  }
-
-  public function getOptionsPreferencesDebug()
-  {
-    return _data?.options?.preferences?.debug ?? "Debug Display";
-  }
-
-  public function getOptionsPreferencesAutoPause()
-  {
-    return _data?.options?.preferences?.autoPause ?? "Auto Pause";
-  }
-
-  public function getOptionsPreferencesUnlockedFramerate()
-  {
-    return _data?.options?.preferences?.unlockedFramerate ?? "Unlocked Framerate";
-  }
-
-  public function getOptionsPreferencesFPS()
-  {
-    return _data?.options?.preferences?.fps ?? "FPS";
-  }
-
-  public function getOptionsControlsTabName()
-  {
-    return _data?.options?.controls?.tabName ?? "CONTROLS";
-  }
-
-  public function getOptionsInputOffsetsTabName()
-  {
-    return _data?.options?.inputOffsets?.tabName ?? "INPUT OFFSETS";
-  }
-
-  public function getOptionsExit()
-  {
-    return _data?.options?.exit ?? "EXIT";
-  }
-}
-
-typedef TextData =
-{
-  @:optional
-  var title:TitleData;
-
-  @:optional
-  var freeplay:FreeplayData;
-
-  @:optional
-  var options:OptionsData;
-}
-
-typedef TitleData =
-{
-  @:optional
-  var texts:Array<TitleTextData>;
-
-  @:optional
-  @:default("--")
-  var randomTextSplitter:String;
-}
-
-typedef TitleTextData =
-{
-  var beat:Int;
-  var command:TitleTextCommand;
-
-  @:optional
-  @:default([])
-  var texts:Array<String>;
-
-  @:optional
-  @:default(-1)
-  var randomText:Int;
-}
-
-typedef FreeplayData =
-{
-  @:optional
-  var title:String;
-
-  @:optional
-  var ostText:String;
-
-  @:optional
-  var charSelectHint:String;
-}
-
-typedef OptionsData =
-{
-  @:optional
-  var preferences:OptionsPreferencesData;
-
-  @:optional
-  var controls:OptionsControlsData;
-
-  @:optional
-  var inputOffsets:OptionsInputOffsetsData;
-
-  @:optional
-  var exit:String;
-}
-
-typedef OptionsPreferencesData =
-{
-  @:optional
-  var tabName:String;
-
-  @:optional
-  var naughtyness:String;
-
-  @:optional
-  var downscroll:String;
-
-  @:optional
-  var flashing:String;
-
-  @:optional
-  var camZoom:String;
-
-  @:optional
-  var debug:String;
-
-  @:optional
-  var autoPause:String;
-
-  @:optional
-  var unlockedFramerate:String;
-
-  @:optional
-  var fps:String;
-}
-
-typedef OptionsControlsData =
-{
-  var tabName:String;
-}
-
-typedef OptionsInputOffsetsData =
-{
-  var tabName:String;
 }
 
 enum abstract TitleTextCommand(String) from String to String

@@ -464,12 +464,16 @@ class TitleState extends MusicBeatState
         {
           for (data in Texts.instance.getTitleTexts())
           {
-            if (data.beat != i + 1) continue;
-
+            var beat:Int = data.beat ?? -1;
             var randomText:Int = (data.randomText ?? -1);
-            var daTexts:Array<String> = randomText == -1 ? (data.texts ?? []) : [(curWacky[randomText] ?? "")];
+            var regularTexts:Array<Dynamic> = data.texts ?? [];
+            var command:funkin.Texts.TitleTextCommand = cast data.command ?? "finish-intro";
 
-            switch (data.command)
+            if (beat != i + 1) continue;
+
+            var daTexts:Array<String> = randomText == -1 ? cast regularTexts : [(curWacky[randomText] ?? "")];
+
+            switch (command)
             {
               case SHOW_TEXT:
                 createCoolText(daTexts);
