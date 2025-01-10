@@ -1,10 +1,7 @@
 package funkin.util;
 
 import lime.ui.Haptic;
-import flixel.input.gamepad.FlxGamepad;
-import flixel.math.FlxMath;
 import flixel.tweens.FlxTween;
-import flixel.FlxG;
 
 /**
  * Utility class for extra vibration functions.
@@ -15,6 +12,11 @@ class HapticUtil
    * Tween that is used in increasingVibrate function for tweening vibration amplitude.
    */
   public static var amplitudeTween:FlxTween;
+
+  /**
+   * A default vibration preset.
+   */
+  public static var defaultVibrationPreset(get, never):VibrationPreset;
 
   /**
    * Triggers vibration.
@@ -29,6 +31,23 @@ class HapticUtil
     if (!Preferences.vibration) return;
 
     Haptic.vibrate(period, duration, amplitude);
+  }
+
+  /**
+   * Triggers vibration using a preset.
+   * If there is any gamepad connected it tries to trigger SDL's rumble on all of the gamepads.
+   * If there is no any gamepad connected it triggers lime's vibration.
+   * @param vibrationPreset Vibration's data.
+   */
+  public static function vibrateByPreset(vibrationPreset:VibrationPreset = null):Void
+  {
+    if (!Preferences.vibration) return;
+
+    var preset:VibrationPreset = defaultVibrationPreset;
+
+    if (vibrationPreset != null) preset = vibrationPreset;
+
+    Haptic.vibrate(preset.period, preset.duration, preset.amplitude);
   }
 
   /**
@@ -55,4 +74,31 @@ class HapticUtil
         vibrate(0, Math.floor(Constants.DEFAULT_VIBRATION_DURATION / 10), Math.floor(currentAmplitude));
       });
   }
+
+  static function get_defaultVibrationPreset():VibrationPreset
+  {
+    var preset:VibrationPreset = {period: Constants.DEFAULT_VIBRATION_PERIOD, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: 0};
+    return preset;
+  }
+}
+
+/**
+ * A typedef containing data needed for vibrate function call.
+ */
+typedef VibrationPreset =
+{
+  /**
+   * The time for one complete vibration.
+   */
+  var period:Int;
+
+  /**
+   * The time taken for a complete cycle.
+   */
+  var duration:Int;
+
+  /**
+   * The distance of movement of the wave from its original position.
+   */
+  var amplitude:Int;
 }
