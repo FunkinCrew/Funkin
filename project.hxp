@@ -339,7 +339,12 @@ class Project extends HXProject {
     {
       configureAdMobKeys();
     }
-
+    if (isIOS())
+    {
+      Reflect.setField(config.get('ios'), 'identity', '<IOS_IDENTITY_GOES_HERE>');
+      Reflect.setField(config.get('ios'), 'team-id', '<IOS_TEAM_ID_GOES_HERE>');
+      Reflect.setField(config.get('ios'), 'provisioning-profile', '<IOS_PROVISIONNING_PROFILE_PATH_GOES_HERE>');
+    }
     if (isAndroid())
     {
       // TODO: okay so like im really fucking tired just regenerate this and make it use a proper secure password and alias :sob:
