@@ -22,7 +22,10 @@ abstract SongEventSchema(SongEventSchemaRaw)
   @:arrayAccess
   public function getByName(name:String):SongEventSchemaField
   {
-    for (field in this)
+    var allFields = [];
+    listAllFields(this, allFields);
+
+    for (field in allFields)
     {
       if (field.name == name) return field;
     }
@@ -86,6 +89,16 @@ abstract SongEventSchema(SongEventSchemaRaw)
     var unit:String = field.units;
 
     return value + (NO_SPACE_UNITS.contains(unit) ? '' : ' ') + '${unit}';
+  }
+
+  function listAllFields(schema:SongEventSchemaRaw, array:Array<SongEventSchemaField>)
+  {
+    for (field in schema)
+    {
+      if (field.children == null) array.push(field);
+      else
+        listAllFields(field.children, array);
+    }
   }
 }
 
