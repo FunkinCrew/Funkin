@@ -90,6 +90,9 @@ class InitState extends FlxState
     funkin.util.WindowUtil.initTracy();
     #end
 
+    // Setup Haptic feedback
+    funkin.haptic.Haptic.initialize();
+
     // This ain't a pixel art game! (most of the time)
     FlxSprite.defaultAntialiasing = true;
 
