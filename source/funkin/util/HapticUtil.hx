@@ -1,7 +1,7 @@
 package funkin.util;
 
-import lime.ui.Haptic;
 import flixel.tweens.FlxTween;
+import funkin.haptic.Haptic;
 
 /**
  * Utility class for extra vibration functions.
@@ -20,34 +20,47 @@ class HapticUtil
 
   /**
    * Triggers vibration.
-   * If there is any gamepad connected it tries to trigger SDL's rumble on all of the gamepads.
-   * If there is no any gamepad connected it triggers lime's vibration.
-   * @param period The time for one complete vibration.
-   * @param duration The time taken for a complete cycle.
-   * @param amplitude The distance of movement of the wave from its original position.
+   *
+   * @param period The time for one complete vibration in seconds.
+   * @param duration The time taken for a complete cycle in seconds.
+   * @param amplitude The intensity of the vibration (0.0 to 1.0).
    */
-  public static function vibrate(period:Int = Constants.DEFAULT_VIBRATION_PERIOD, duration:Int = Constants.DEFAULT_VIBRATION_DURATION, amplitude:Int = 0):Void
+  public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD, duration:Float = Constants.DEFAULT_VIBRATION_DURATION,
+      amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE):Void
   {
     if (!Preferences.vibration) return;
 
-    Haptic.vibrate(period, duration, amplitude);
+    if (period > 0)
+    {
+      final durations:Array<Float> = [];
+      final amplitudes:Array<Float> = [];
+
+      final durationPeriod:Float = period / 2;
+
+      for (i in 0...Math.ceil(duration / durationPeriod))
+      {
+        durations[i] = durationPeriod;
+        amplitudes[i] = amplitude;
+      }
+
+      Haptic.vibratePattern(durations, amplitudes);
+    }
+    else
+      Haptic.vibrate(duration, amplitude);
   }
 
   /**
    * Triggers vibration using a preset.
-   * If there is any gamepad connected it tries to trigger SDL's rumble on all of the gamepads.
-   * If there is no any gamepad connected it triggers lime's vibration.
+   *
    * @param vibrationPreset Vibration's data.
    */
   public static function vibrateByPreset(vibrationPreset:VibrationPreset = null):Void
   {
     if (!Preferences.vibration) return;
 
-    var preset:VibrationPreset = defaultVibrationPreset;
+    final preset:VibrationPreset = (vibrationPreset != null) ? vibrationPreset : defaultVibrationPreset;
 
-    if (vibrationPreset != null) preset = vibrationPreset;
-
-    Haptic.vibrate(preset.period, preset.duration, preset.amplitude);
+    vibrate(preset.period, preset.duration, preset.amplitude);
   }
 
   /**
@@ -66,19 +79,18 @@ class HapticUtil
     amplitudeTween = FlxTween.num(startAmplitude, targetAmplitude, tweenDuration,
       {
         onComplete: function(_) {
-          final finalAmplitude:Int = Math.floor(targetAmplitude * 2);
+          final finalAmplitude:Int = targetAmplitude * 2;
 
           vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, finalAmplitude);
         }
       }, function(currentAmplitude:Float) {
-        vibrate(0, Math.floor(Constants.DEFAULT_VIBRATION_DURATION / 10), Math.floor(currentAmplitude));
+        vibrate(0, Constants.DEFAULT_VIBRATION_DURATION / 10, currentAmplitude);
       });
   }
 
   static function get_defaultVibrationPreset():VibrationPreset
   {
-    var preset:VibrationPreset = {period: Constants.DEFAULT_VIBRATION_PERIOD, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: 0};
-    return preset;
+    return {period: Constants.DEFAULT_VIBRATION_PERIOD, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: Constants.DEFAULT_VIBRATION_AMPLITUDE};
   }
 }
 
@@ -90,15 +102,15 @@ typedef VibrationPreset =
   /**
    * The time for one complete vibration.
    */
-  var period:Int;
+  var period:Float;
 
   /**
    * The time taken for a complete cycle.
    */
-  var duration:Int;
+  var duration:Float;
 
   /**
    * The distance of movement of the wave from its original position.
    */
-  var amplitude:Int;
+  var amplitude:Float;
 }

@@ -1464,7 +1464,7 @@ class FreeplayState extends MusicBeatSubState
     if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
 
     // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
-    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 10, Std.int(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Math.floor(Constants.MAX_VIBRATION_AMPLITUDE / 3));
   }
 
   var _dragOffset:Float = 0;
@@ -2105,7 +2105,7 @@ class FreeplayState extends MusicBeatSubState
 
           // A single vibration.
           default:
-            HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Std.int(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+            HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE / 3);
         }
       });
     }
@@ -2223,7 +2223,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Small vibrations every selection change.
-    if (change != 0) HapticUtil.vibrate(0, 10, 50);
+    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.2);
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

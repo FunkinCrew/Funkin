@@ -62,7 +62,7 @@ class NoteVibrationsHandler
 
     trace("amplitude: " + stackingAmplitude);
 
-    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 10, stackingAmplitude);
+    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude);
   }
 
   /**
@@ -83,12 +83,12 @@ class NoteVibrationsHandler
 
       stackingAmplitude += Math.ceil(Constants.MAX_VIBRATION_AMPLITUDE / 4);
 
-      if (stackingAmplitude > 255) stackingAmplitude = 255;
+      if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
     }
 
     trace("amplitude: " + stackingAmplitude);
 
-    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 10, stackingAmplitude);
+    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude);
   }
 }
 

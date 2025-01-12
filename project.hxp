@@ -820,9 +820,14 @@ class Project extends HXProject {
       addHaxelib('grig.audio'); // Audio data utilities
 		}
 
-		if (FEATURE_PARTIAL_SOUNDS.isEnabled(this)) {
-			addHaxelib('FlxPartialSound'); // Partial sound
-		}
+    addHaxelib('funkin.haptic'); // Haptic feedback
+
+    addHaxelib('funkin.haptic'); // Haptic feedback
+
+    if (FEATURE_PARTIAL_SOUNDS.isEnabled(this))
+    {
+      addHaxelib('FlxPartialSound'); // Partial sound
+    }
 
     if (FEATURE_ADMOB_ADS.isEnabled(this))
     {

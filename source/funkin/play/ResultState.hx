@@ -515,7 +515,7 @@ class ResultState extends MusicBeatSubState
             FunkinSound.playOnce(Paths.sound('scrollMenu'));
 
             // Weak vibration each number increase.
-            HapticUtil.vibrate(0, 10);
+            HapticUtil.vibrate(0, 0.01);
           }
         },
         onComplete: _ -> {
@@ -738,14 +738,14 @@ class ResultState extends MusicBeatSubState
             case "bf":
               if (atlas.sprite.anim.curFrame > 87 && atlas.sprite.anim.curFrame % 5 == 0)
               {
-                HapticUtil.vibrate(0, 10, Constants.MAX_VIBRATION_AMPLITUDE);
+                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE);
                 break;
               }
 
               // GF slams into the wall.
               if (atlas.sprite.anim.curFrame == 51)
               {
-                HapticUtil.vibrate(0, 10, Math.floor(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
                 break;
               }
 
@@ -769,7 +769,7 @@ class ResultState extends MusicBeatSubState
               // Pico shoots.
               if (atlas.sprite.anim.curFrame == 45)
               {
-                HapticUtil.vibrate(0, 10, Math.floor(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
                 break;
               }
 
@@ -796,7 +796,7 @@ class ResultState extends MusicBeatSubState
               {
                 if (atlas.sprite.anim.curFrame < frames[i][0] || atlas.sprite.anim.curFrame > frames[i][1]) continue;
 
-                HapticUtil.vibrate(0, 10, Constants.MAX_VIBRATION_AMPLITUDE);
+                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE);
                 break;
               }
 
