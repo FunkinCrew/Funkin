@@ -1066,9 +1066,10 @@ class Strumline extends FlxSpriteGroup
 
   function getXPos(direction:NoteDirection):Float
   {
-    var pos = 0;
+    var pos:Float = 0;
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && isPlayer) pos = 20;
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
     #end
     return switch (direction)
     {
