@@ -13,10 +13,12 @@ import funkin.input.Controls;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.audio.FunkinSound;
 
 class LetterSort extends FlxSpriteGroup
 {
   public var letters:Array<FreeplayLetter> = [];
+  public var letterHitboxes:Array<FlxObject> = [];
 
   // starts at 2, cuz that's the middle letter on start (accounting for fav and #, it should begin at ALL filter)
   var curSelection:Int = 2;
@@ -50,6 +52,11 @@ class LetterSort extends FlxSpriteGroup
       // letter.visible = false;
       add(letter);
 
+      var letterHitbox:FlxObject = new FlxObject(letter.x - 50, letter.y - 50, 50, 50);
+      letterHitbox.cameras = cameras;
+      letterHitbox.active = false;
+      letterHitboxes.push(letterHitbox);
+
       letters.push(letter);
 
       if (i != 2) letter.scale.x = letter.scale.y = 0.8;
@@ -69,11 +76,16 @@ class LetterSort extends FlxSpriteGroup
       grpSeperators.push(sep);
     }
 
+    var letterHitbox:FlxObject = new FlxObject(0, 0, 1, 1);
+    letterHitbox.cameras = cameras;
+    letterHitbox.active = false;
+    letterHitboxes.push(letterHitbox);
+
     rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
     // rightArrow.animation.play("arrow");
     add(rightArrow);
 
-    swipeBounds = new FlxObject(400, 60, 420, 80);
+    swipeBounds = new FlxObject(440, 60, 460, 80);
     swipeBounds.cameras = cameras;
     swipeBounds.active = false;
 
@@ -94,14 +106,37 @@ class LetterSort extends FlxSpriteGroup
 
     if (inputEnabled)
     {
-      if (controls.FREEPLAY_LEFT
-        || (instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft)) changeSelection(-1);
-      if (controls.FREEPLAY_RIGHT
-        || (instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight)) changeSelection(1);
+      if (TouchUtil.justReleased && TouchUtil.touch.ticksDeltaSincePress < 200)
+      {
+        for (index => letter in letterHitboxes)
+        {
+          if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+          if (index == 2 || index == 5) continue;
+
+          var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
+          var changeValue = selectionChanges[index];
+
+          if (changeValue != 0)
+          {
+            changeSelection(changeValue);
+
+            if (index == 0 || index == 4)
+            {
+              changeSelection(changeValue, false);
+            }
+          }
+
+          break;
+        }
+      }
+
+      if (controls.FREEPLAY_LEFT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft)) changeSelection(-1);
+
+      if (controls.FREEPLAY_RIGHT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight)) changeSelection(1);
     }
   }
 
-  public function changeSelection(diff:Int = 0):Void
+  public function changeSelection(diff:Int = 0, playSound:Bool = true):Void
   {
     doLetterChangeAnims(diff);
 
@@ -114,6 +149,7 @@ class LetterSort extends FlxSpriteGroup
     new FlxTimer().start(2 / 24, function(_) {
       arrowToMove.offset.x = 0;
     });
+    if (playSound) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
   }
 
   /**

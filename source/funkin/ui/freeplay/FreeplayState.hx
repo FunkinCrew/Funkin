@@ -584,7 +584,6 @@ class FreeplayState extends MusicBeatSubState
       }
       else if (grpCapsules.members.length > 0)
       {
-        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
         curSelected = 1;
         changeSelection();
       }
