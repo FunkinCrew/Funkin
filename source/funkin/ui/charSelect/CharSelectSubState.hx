@@ -37,6 +37,7 @@ import funkin.api.newgrounds.Medals;
 #end
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+import funkin.util.HapticUtil;
 
 class CharSelectSubState extends MusicBeatSubState
 {
@@ -948,6 +949,8 @@ class CharSelectSubState extends MusicBeatSubState
         playerChill.playAnimation("cannot select Label", true);
 
         lockedSound.play(true);
+
+        HapticUtil.vibrate(0, 0.2);
 
         cursorDenied.animation.play("idle", true);
         cursorDenied.animation.finishCallback = (_) -> {
