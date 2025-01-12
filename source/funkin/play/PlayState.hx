@@ -1968,6 +1968,7 @@ class PlayState extends MusicBeatSubState
       playerStrumline.y -= 10;
     }
     opponentStrumline.y = Preferences.downscroll ? Constants.STRUMLINE_Y_OFFSET * 0.3 : FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET;
+    opponentStrumline.x -= 30;
   }
   #end
 
