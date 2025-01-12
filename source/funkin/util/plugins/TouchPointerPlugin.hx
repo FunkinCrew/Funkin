@@ -114,6 +114,8 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     {
       if (touch == null) continue;
 
+      if (touch.justPressed) removeAll(true);
+
       var pointer:TouchPointer = findPointerByTouchId(touch.touchPointID);
 
       if (pointer == null)
@@ -131,9 +133,10 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       if (pointer == null || touchExists(pointer.touchId)) continue;
       if (pointer.touchId != -2)
       {
-        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.2, 0.3),
+        pointer.alpha = 0.8;
+        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 0.9),
           {
-            ease: FlxEase.cubeInOut,
+            ease: FlxEase.cubeIn,
             onComplete: function(_) {
               remove(pointer, true);
             }
@@ -188,14 +191,23 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     return enabled = value;
   }
 
-  public function removeAll()
+  public function removeAll(skipTween:Bool = false)
   {
     for (pointer in members)
     {
       if (pointer == null) continue;
-      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.2, 0.3),
+
+      if (skipTween)
+      {
+        FlxTween.cancelTweensOf(pointer);
+        remove(pointer, true);
+        continue;
+      }
+
+      pointer.alpha = 0.8;
+      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 1),
         {
-          ease: FlxEase.cubeInOut,
+          ease: FlxEase.quadIn,
           onComplete: function(_) {
             remove(pointer, true);
           }
