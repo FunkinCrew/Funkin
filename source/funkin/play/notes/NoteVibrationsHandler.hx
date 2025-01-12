@@ -49,7 +49,7 @@ class NoteVibrationsHandler
   {
     if (!Preferences.vibration) return;
 
-    var stackingAmplitude:Int = 0;
+    var stackingAmplitude:Float = 0;
 
     for (currentNoteStatus in noteStatuses)
     {
@@ -57,7 +57,7 @@ class NoteVibrationsHandler
 
       trace("Note is Just Pressed!");
 
-      stackingAmplitude += Math.ceil(Constants.MAX_VIBRATION_AMPLITUDE / 4);
+      stackingAmplitude += Constants.MAX_VIBRATION_AMPLITUDE / 4;
     }
 
     trace("amplitude: " + stackingAmplitude);
@@ -73,7 +73,7 @@ class NoteVibrationsHandler
   {
     if (!Preferences.vibration) return;
 
-    var stackingAmplitude:Int = 0;
+    var stackingAmplitude:Float = 0;
 
     for (currentNoteStatus in noteStatuses)
     {
@@ -81,7 +81,7 @@ class NoteVibrationsHandler
 
       trace("Hold Note is Pressed!");
 
-      stackingAmplitude += Math.ceil(Constants.MAX_VIBRATION_AMPLITUDE / 4);
+      stackingAmplitude += Constants.MAX_VIBRATION_AMPLITUDE / 4;
 
       if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
     }
