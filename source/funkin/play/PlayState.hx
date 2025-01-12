@@ -1955,7 +1955,7 @@ class PlayState extends MusicBeatSubState
     {
       strum.width *= 2;
     }
-    opponentStrumline.enterMiniMode(0.4);
+    opponentStrumline.enterMiniMode(0.4 * amplification);
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = Preferences.downscroll ? (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
