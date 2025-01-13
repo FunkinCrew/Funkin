@@ -1946,7 +1946,7 @@ class PlayState extends MusicBeatSubState
   function initNoteHitbox()
   {
     final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-    final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.85) * amplification;
+    final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.9) * amplification;
     final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
 
     playerStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
