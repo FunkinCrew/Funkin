@@ -833,6 +833,8 @@ class Project extends HXProject {
     {
       addHaxelib('extension-admob'); // Ads Extension
     }
+
+    addHaxelib('extension-iap'); // In-app purchases Extension
   }
 
   function configureAssets() {
