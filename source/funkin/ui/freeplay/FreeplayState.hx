@@ -1463,7 +1463,7 @@ class FreeplayState extends MusicBeatSubState
     if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
 
     // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
-    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Math.floor(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
   }
 
   var _dragOffset:Float = 0;
