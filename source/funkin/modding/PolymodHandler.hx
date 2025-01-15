@@ -11,6 +11,7 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.data.song.SongRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
+import funkin.data.stickers.StickerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -438,6 +439,7 @@ class PolymodHandler
     SpeakerRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+    StickerRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();
