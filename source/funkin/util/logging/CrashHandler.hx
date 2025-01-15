@@ -135,7 +135,15 @@ class CrashHandler
 
     fullContents += '\n';
 
-    var currentState = FlxG.state != null ? Type.getClassName(Type.getClass(FlxG.state)) : 'No state loaded';
+    var currentState:String = 'No state loaded';
+    if (FlxG.state != null)
+    {
+      var currentStateCls:Null<Class<Dynamic>> = Type.getClass(FlxG.state);
+      if (currentStateCls != null)
+      {
+        currentState = Type.getClassName(currentStateCls) ?? 'No state loaded';
+      }
+    }
 
     fullContents += 'Flixel Current State: ${currentState}\n';
 
@@ -192,7 +200,9 @@ class CrashHandler
     fullContents += 'System timestamp: ${DateUtil.generateTimestamp()}\n';
     var driverInfo = FlxG?.stage?.context3D?.driverInfo ?? 'N/A';
     fullContents += 'Driver info: ${driverInfo}\n';
+    #if sys
     fullContents += 'Platform: ${Sys.systemName()}\n';
+    #end
     fullContents += 'Render method: ${renderMethod()}\n';
 
     fullContents += '\n';
