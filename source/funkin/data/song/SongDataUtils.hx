@@ -83,17 +83,6 @@ class SongDataUtils
   }
 
   /**
-   * Returns a new array which is a concatenation of two arrays of notes while preventing duplicate notes.
-   * NOTE: This modifies the `addend` array.
-   * @param notes The array of notes to be added to.
-   * @param addend The notes to add to the `notes` array.
-   */
-  public inline static function addNotes(notes:Array<SongNoteData>, addend:Array<SongNoteData>):Array<SongNoteData>
-  {
-    return SongNoteDataUtils.concatNoOverlap(notes, addend, ChartEditorState.stackNoteThreshold);
-  }
-
-  /**
    * Return a new array without a certain subset of notes from an array of SongNoteData objects.
    * Does not mutate the original array.
    *

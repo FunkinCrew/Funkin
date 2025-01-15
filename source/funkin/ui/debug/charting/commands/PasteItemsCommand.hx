@@ -44,10 +44,10 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    var noteConcat:Array<SongNoteData> = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, addedNotes, removedNotes,
+    var mergedNotes:Array<SongNoteData> = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, addedNotes, removedNotes,
       ChartEditorState.stackNoteThreshold);
 
-    state.currentSongChartNoteData = noteConcat;
+    state.currentSongChartNoteData = mergedNotes;
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
@@ -58,7 +58,6 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    // FIXME: execute() is reused as a redo function so these messages show up even when not actually pasting
     if (removedNotes.length > 0) state.warning('Paste Successful', 'However overlapped notes were overwritten.');
     else
       state.success('Paste Successful', 'Successfully pasted clipboard contents.');
@@ -68,7 +67,8 @@ class PasteItemsCommand implements ChartEditorCommand
   {
     state.playSound(Paths.sound('chartingSounds/undo'));
 
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes).concat(removedNotes);
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
+    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, removedNotes, ChartEditorState.stackNoteThreshold);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
     state.currentNoteSelection = removedNotes.copy();
     state.currentEventSelection = [];
