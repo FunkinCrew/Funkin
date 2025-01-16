@@ -896,12 +896,14 @@ class Strumline extends FlxSpriteGroup
       noteSprite.setupNoteGraphic(noteKindStyle);
 
       var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
+      #if mobile
       if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.15) * amplification,
           strumlineScale.y - ((FlxG.height / FlxG.width) * 0.15) * amplification);
       }
+      #end
 
       noteSprite.scale.scale(trueScale.x, trueScale.y);
       noteSprite.updateHitbox();
