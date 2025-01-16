@@ -4,9 +4,7 @@ import flixel.util.FlxSort;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongTimeChange;
-import funkin.ui.debug.charting.ChartEditorState;
 import funkin.util.ClipboardUtil;
-import funkin.util.SerializerUtil;
 
 using Lambda;
 
