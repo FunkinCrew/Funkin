@@ -655,11 +655,14 @@ class FreeplayState extends MusicBeatSubState
       }
 
       FlxTween.cancelTweensOf(grpDifficulties);
-      for (diff in grpDifficulties)
+      for (diff in grpDifficulties.group.members)
       {
         if (diff == null) continue;
         FlxTween.cancelTweensOf(diff);
         FlxTween.tween(diff, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
+        diff.y = 80;
+        final isCurrentDiff:Bool = diff.difficultyId == currentDifficulty;
+        diff.visible = isCurrentDiff;
       }
       FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
 
