@@ -894,7 +894,16 @@ class Strumline extends FlxSpriteGroup
     {
       var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
       noteSprite.setupNoteGraphic(noteKindStyle);
-      noteSprite.scale.scale(strumlineScale.x, strumlineScale.y);
+
+      var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
+      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
+      {
+        final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+        trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.15) * amplification,
+          strumlineScale.y - ((FlxG.height / FlxG.width) * 0.15) * amplification);
+      }
+
+      noteSprite.scale.scale(trueScale.x, trueScale.y);
       noteSprite.updateHitbox();
 
       noteSprite.direction = note.getDirection();
