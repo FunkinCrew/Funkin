@@ -2586,7 +2586,7 @@ class PlayState extends MusicBeatSubState
 
     Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
-    playerStrumline.hitNote(note, !isComboBreak);
+    playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     vocals.playerVolume = 1;
