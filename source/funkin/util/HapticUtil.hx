@@ -1,6 +1,7 @@
 package funkin.util;
 
 import flixel.tweens.FlxTween;
+import flixel.math.FlxMath;
 import funkin.haptic.Haptic;
 
 /**
@@ -30,6 +31,12 @@ class HapticUtil
   {
     if (!Preferences.vibration) return;
 
+    #if ios
+    final amplitudeValue = FlxMath.bound(amplitude * 2.5, 0, Constants.MAX_VIBRATION_AMPLITUDE);
+    #else
+    final amplitudeValue = amplitude;
+    #end
+
     if (period > 0)
     {
       final durations:Array<Float> = [];
@@ -40,13 +47,13 @@ class HapticUtil
       for (i in 0...Math.ceil(duration / durationPeriod))
       {
         durations[i] = durationPeriod;
-        amplitudes[i] = amplitude;
+        amplitudes[i] = amplitudeValue;
       }
 
       Haptic.vibratePattern(durations, amplitudes);
     }
     else
-      Haptic.vibrate(duration, amplitude);
+      Haptic.vibrateOneShot(duration, amplitudeValue);
   }
 
   /**
