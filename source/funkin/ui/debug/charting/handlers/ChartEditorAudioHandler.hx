@@ -51,7 +51,7 @@ class ChartEditorAudioHandler
    */
   public static function loadVocalsFromAsset(state:ChartEditorState, path:String, charId:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
-    var trackData:Null<Bytes> = Assets.getBytes(path);
+    var trackData:Null<Bytes> = Assets.exists(path) ? Assets.getBytes(path) : null;
     if (trackData != null)
     {
       return loadVocalsFromBytes(state, trackData, charId, instId, wipeFirst);
@@ -102,7 +102,7 @@ class ChartEditorAudioHandler
    */
   public static function loadInstFromAsset(state:ChartEditorState, path:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
-    var trackData:Null<Bytes> = Assets.getBytes(path);
+    var trackData:Null<Bytes> = Assets.exists(path) ? Assets.getBytes(path) : null;
     if (trackData != null)
     {
       return loadInstFromBytes(state, trackData, instId, wipeFirst);
