@@ -138,7 +138,7 @@ RUN <<EOF
 HOME=/etc haxelib setup "$HAXEPATH/lib"
 haxelib --global --never install haxelib $haxelib_version
 haxelib --global --never git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
-haxelib --global --never git hxpkg https://github.com/CobaltBar/HxPKG
+haxelib --global --never git hxpkg https://github.com/CCobaltDev/HxPKG
 EOF
 
 # hxcpp
