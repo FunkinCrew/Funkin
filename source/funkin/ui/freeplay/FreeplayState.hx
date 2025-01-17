@@ -1632,7 +1632,7 @@ class FreeplayState extends MusicBeatSubState
         caps.doJumpOut = true;
       }
 
-      if (Type.getClass(_parentState) == MainMenuState)
+      if (_parentState != null)
       {
         _parentState.persistentUpdate = false;
         _parentState.persistentDraw = true;
@@ -1641,22 +1641,15 @@ class FreeplayState extends MusicBeatSubState
       new FlxTimer().start(longestTimer, (_) -> {
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-        if (Type.getClass(_parentState) == MainMenuState)
+        FunkinSound.playMusic('freakyMenu',
         {
-          FunkinSound.playMusic('freakyMenu',
-            {
-              overrideExisting: true,
-              restartTrack: false,
-              // Continue playing this music between states, until a different music track gets played.
-              persist: true
-            });
-          FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
-          close();
-        }
-        else
-        {
-          FlxG.switchState(() -> new MainMenuState());
-        }
+          overrideExisting: true,
+          restartTrack: false,
+          // Continue playing this music between states, until a different music track gets played.
+          persist: true
+        });
+        FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+        close();
       });
     }
 
