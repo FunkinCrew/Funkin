@@ -4,7 +4,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData.CharacterRenderType;
 
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
@@ -53,42 +53,38 @@ class MultiSparrowCharacter extends BaseCharacter
 
   function buildSpritesheet():Void
   {
-    var assetList = [];
-    for (anim in _data.animations)
-    {
-      if (anim.assetPath != null && !assetList.contains(anim.assetPath))
-      {
-        assetList.push(anim.assetPath);
-      }
-    }
-
-    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath);
+    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPaths[0]);
 
     if (texture == null)
     {
-      trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
-      FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+      trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPaths[0]}');
+      FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPaths[0]}');
       return;
     }
     else
     {
-      trace('Creating multi-sparrow atlas: ${_data.assetPath}');
+      trace('Creating multi-sparrow atlas: ${_data.assetPaths[0]}');
       texture.parent.destroyOnNoUse = false;
     }
 
-    for (asset in assetList)
+    for (i => asset in _data.assetPaths)
     {
+      if (i == 0)
+      {
+        continue;
+      }
+
       var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset);
       // If we don't do this, the unused textures will be removed as soon as they're loaded.
 
       if (subTexture == null)
       {
         trace('Multi-Sparrow atlas could not load subtexture: ${asset}');
+        continue;
       }
       else
       {
         trace('Concatenating multi-sparrow atlas: ${asset}');
-        subTexture.parent.destroyOnNoUse = false;
       }
 
       texture.addAtlas(subTexture);

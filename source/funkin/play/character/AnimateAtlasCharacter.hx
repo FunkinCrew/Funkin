@@ -15,7 +15,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData.CharacterRenderType;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 
@@ -129,8 +129,8 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     trace('[ATLASCHAR] Loading sprite atlas for ${characterId}.');
 
-    var animLibrary:String = Paths.getLibrary(_data.assetPath);
-    var animPath:String = Paths.stripLibrary(_data.assetPath);
+    var animLibrary:String = Paths.getLibrary(_data.assetPaths[0]);
+    var animPath:String = Paths.stripLibrary(_data.assetPaths[0]);
     var assetPath:String = Paths.animateAtlas(animPath, animLibrary);
 
     var sprite:FlxAtlasSprite = new FlxAtlasSprite(0, 0, assetPath);
@@ -199,8 +199,8 @@ class AnimateAtlasCharacter extends BaseCharacter
       var prefix = anim.prefix;
       if (!this.mainSprite.hasAnimation(prefix))
       {
-        FlxG.log.warn('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPath}');
-        trace('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPath}');
+        FlxG.log.warn('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPaths[0]}');
+        trace('[ATLASCHAR] Animation ${prefix} not found in Animate Atlas ${_data.assetPaths[0]}');
         continue;
       }
       animations.set(anim.name, anim);

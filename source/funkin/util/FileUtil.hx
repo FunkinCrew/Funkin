@@ -20,6 +20,8 @@ class FileUtil
 {
   public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
   public static final FILE_FILTER_JSON:FileFilter = new FileFilter("JSON Data File (.json)", "*.json");
+  public static final FILE_FILTER_XML:FileFilter = new FileFilter("XML Data File (.xml)", "*.xml");
+  public static final FILE_FILTER_TXT:FileFilter = new FileFilter("Text File (.txt)", "*.txt");
   public static final FILE_FILTER_ZIP:FileFilter = new FileFilter("ZIP Archive (.zip)", "*.zip");
   public static final FILE_FILTER_PNG:FileFilter = new FileFilter("PNG Image (.png)", "*.png");
   public static final FILE_FILTER_FNFS:FileFilter = new FileFilter("Friday Night Funkin' Stage (.fnfs)", "*.fnfs");
@@ -34,10 +36,31 @@ class FileUtil
       extension: 'zip',
       label: 'ZIP Archive',
     };
+  public static final FILE_EXTENSION_INFO_JSON:FileDialogExtensionInfo =
+    {
+      extension: 'json',
+      label: 'JSON Data File',
+    };
+  public static final FILE_EXTENSION_INFO_XML:FileDialogExtensionInfo =
+    {
+      extension: 'xml',
+      label: 'XML Data File',
+    };
+  public static final FILE_EXTENSION_INFO_TXT:FileDialogExtensionInfo =
+    {
+      extension: 'txt',
+      label: 'Text File',
+    };
   public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo =
     {
       extension: 'png',
       label: 'PNG Image',
+    };
+
+  public static final FILE_EXTENSION_INFO_SND:FileDialogExtensionInfo =
+    {
+      extension: Constants.EXT_SOUND,
+      label: 'Sound File',
     };
 
   public static final FILE_EXTENSION_INFO_FNFS:FileDialogExtensionInfo =
@@ -61,11 +84,11 @@ class FileUtil
     var onComplete = function(button, selectedFiles) {
       if (button == DialogButton.OK && selectedFiles.length > 0)
       {
-        onSelect(selectedFiles[0]);
+        if (onSelect != null) onSelect(selectedFiles[0]);
       }
       else
       {
-        onCancel();
+        if (onCancel != null) onCancel();
       }
     };
 
@@ -94,11 +117,11 @@ class FileUtil
     var onComplete = function(button, selectedFiles) {
       if (button == DialogButton.OK && selectedFiles.length > 0)
       {
-        onSelect(selectedFiles[0]);
+        if (onSelect != null) onSelect(selectedFiles[0]);
       }
       else
       {
-        onCancel();
+        if (onCancel != null) onCancel();
       }
     };
 

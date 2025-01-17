@@ -10,8 +10,6 @@ import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongRegistry;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.song.Song;
 import funkin.data.stage.StageData;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;

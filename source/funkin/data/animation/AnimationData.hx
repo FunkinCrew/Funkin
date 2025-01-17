@@ -7,7 +7,6 @@ class AnimationDataUtil
     return {
       name: name,
       prefix: data.prefix,
-      assetPath: data.assetPath,
       offsets: data.offsets,
       looped: data.looped,
       flipX: data.flipX,
@@ -21,7 +20,6 @@ class AnimationDataUtil
   {
     return {
       prefix: data.prefix,
-      assetPath: data.assetPath,
       offsets: data.offsets,
       looped: data.looped,
       flipX: data.flipX,
@@ -64,14 +62,6 @@ typedef UnnamedAnimationData =
    */
   @:optional
   var prefix:String;
-
-  /**
-   * Optionally specify an asset path to use for this specific animation.
-   * ONLY for use by MultiSparrow characters.
-   * @default The assetPath of the parent sprite
-   */
-  @:optional
-  var assetPath:Null<String>;
 
   /**
    * Offset the character's position by this amount when playing this animation.

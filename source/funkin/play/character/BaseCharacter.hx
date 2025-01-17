@@ -2,8 +2,8 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterRegistry;
+import funkin.data.character.CharacterData;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
 
@@ -148,12 +148,12 @@ class BaseCharacter extends Bopper
 
   public function new(id:String, renderType:CharacterRenderType)
   {
-    super(CharacterDataParser.DEFAULT_DANCEEVERY);
+    super(CharacterRegistry.DEFAULT_DANCEEVERY);
     this.characterId = id;
 
     ignoreExclusionPref = ["sing"];
 
-    _data = CharacterDataParser.fetchCharacterData(this.characterId);
+    _data = CharacterRegistry.fetchCharacterData(this.characterId);
     if (_data == null)
     {
       throw 'Could not find character data for characterId: $characterId';
