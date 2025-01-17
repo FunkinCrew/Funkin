@@ -8,12 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This patch resolves a critical issue which could cause user's save data to become corrupted. It is recommended that users switch to this version immediately and avoid using version 0.5.2.
 ### Fixed
 - Fixed a critical issue in which the Stage Editor theme value could not be parsed by older versions of the game, resulting in all save data being destroyed.
-  - Added a check that prevents save data from being loaded if it is corrupted rather than overriding it.
-- `optionsChartEditor.chartEditorLiveInputStyle` in the save data converted from an Enum to a String to fix save data compatibility issues.
+  - Added a check which prevents save data from being loaded if it is corrupted rather than overriding it.
 - `optionsStageEditor.theme` in the save data converted from an Enum to a String to fix save data compatibility issues.
   - In the future, Enum values should not be used in order to prevent incompatibilities caused by introducing new types to the save data that older versions cannot parse.
-- Fixed an issue where some publicly distributed release builds of the game were not updated to the latest version.
-
+- `optionsChartEditor.theme` in the save data converted from an Enum to a String to fix save data compatibility issues.
+- `optionsChartEditor.chartEditorLiveInputStyle` in the save data converted from an Enum to a String to fix save data compatibility issues.
+- Fixed an issue where some publicly distributed builds of the game were debug builds instead of release builds.
 
 ## [0.5.2] - 2024-10-11
 ### Added
@@ -429,7 +429,7 @@ which would remove their rank if they had a lower one.
 - Improvements to video cutscenes and dialogue, allowing them to be easily skipped or restarted.
 - Updated Polymod by several major versions, allowing for fully dynamic asset replacement and support for scripted classes.
 - Completely refactored almost every part of the game's code for performance, stability, and extensibility.
-  - This is not the Ludem Dare game held together with sticks and glue you played three years ago.
+  - This is not the Ludum Dare game held together with sticks and glue you played three years ago.
 - Characters, stages, songs, story levels, and dialogue are now built from JSON data registries rather than being hardcoded.
   - All of these also support attaching scripts for custom behavior, more documentation on this soon.
   - You can forcibly reload the game's JSON data and scripts by pressing F5.
