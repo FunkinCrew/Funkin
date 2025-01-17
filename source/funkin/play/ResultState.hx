@@ -113,7 +113,7 @@ class ResultState extends MusicBeatSubState
     songName.angle = -4.4;
     songName.zIndex = 1000;
 
-    difficulty = new FlxSprite(555);
+    difficulty = new FlxSprite(555 + FullScreenScaleMode.gameNotchSize.x);
     difficulty.zIndex = 1000;
 
     clearPercentSmall = new ClearPercentCounter(FlxG.width / 2 + 300, FlxG.height / 2 - 100, 100, true);
@@ -658,7 +658,7 @@ class ResultState extends MusicBeatSubState
   {
     movingSongStuff = false;
 
-    difficulty.x = 555;
+    difficulty.x = 555 + FullScreenScaleMode.gameNotchSize.x;
 
     var diffYTween:Float = 122;
 
