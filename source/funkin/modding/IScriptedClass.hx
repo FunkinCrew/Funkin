@@ -79,6 +79,11 @@ interface INoteScriptedClass extends IScriptedClass
 interface IBPMSyncedScriptedClass extends IScriptedClass
 {
   /**
+   * Called when the BPM changes.
+   */
+  public function onBpmChange(event:SongTimeScriptEvent):Void;
+
+  /**
    * Called once every step of the song.
    */
   public function onStepHit(event:SongTimeScriptEvent):Void;

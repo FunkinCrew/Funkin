@@ -2,6 +2,7 @@ package funkin.play.stage;
 
 import flixel.FlxSprite;
 import flixel.FlxCamera;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
@@ -23,7 +24,16 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * Supports up to 0.25 precision.
    * @default 0.0 on props, 1.0 on characters
    */
-  public var danceEvery:Float = 0.0;
+  public var danceEvery(default, set):Float = 1;
+
+  var _realDanceEvery:Float = 1;
+
+  function set_danceEvery(value:Float):Float
+  {
+    this.danceEvery = value;
+    this.update_danceEvery();
+    return value;
+  }
 
   /**
    * Whether the bopper should dance left and right.
@@ -45,6 +55,13 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public var idleSuffix(default, set):String = '';
 
+  function set_idleSuffix(value:String):String
+  {
+    this.idleSuffix = value;
+    this.dance();
+    return value;
+  }
+
   /**
    * If this bopper is rendered with pixel art, disable anti-aliasing.
    * @default `false`
@@ -62,13 +79,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * for characters/players, it should be false so it doesn't cut off their animations!!!!!
    */
   public var shouldBop:Bool = true;
-
-  function set_idleSuffix(value:String):String
-  {
-    this.idleSuffix = value;
-    this.dance();
-    return value;
-  }
 
   /**
    * The offset of the character relative to the position specified by the stage.
@@ -160,17 +170,56 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   /**
+   * Called when the BPM of the song changes.
+   */
+  public function onBpmChange(event:SongTimeScriptEvent)
+  {
+    update_danceEvery();
+  }
+
+  /**
    * Called once every step of the song.
    */
   public function onStepHit(event:SongTimeScriptEvent)
   {
-    if (danceEvery > 0 && (event.step % (danceEvery * Constants.STEPS_PER_BEAT)) == 0)
+    if (_realDanceEvery > 0 && (event.step % (_realDanceEvery * Constants.STEPS_PER_BEAT)) == 0)
     {
       dance(shouldBop);
     }
   }
 
   public function onBeatHit(event:SongTimeScriptEvent):Void {}
+
+  function update_danceEvery():Void
+  {
+    if (danceEvery == 0 || shouldAlternate || this.animation.getByName('idle$idleSuffix') == null || shouldBop)
+    {
+      // for forced bopping, alternating dance and non-existing animation, it just works the same as before
+      _realDanceEvery = danceEvery;
+      return;
+    }
+
+    var daIdle = this.animation.getByName('idle$idleSuffix');
+    var numeratorTweak:Int = (Conductor.instance.timeSignatureNumerator % 2 == 0) ? 2 : Conductor.instance.timeSignatureNumerator; // hopefully we get only prime numbers...
+    if (FlxMath.getDecimals(danceEvery) == 0) // for int danceEvery
+    {
+      var idlePerBeat:Float = (daIdle.numFrames / daIdle.frameRate) / (Conductor.instance.beatLengthMs / 1000);
+      var danceEveryNumBeats:Int = Math.ceil(idlePerBeat);
+      if (danceEveryNumBeats > numeratorTweak)
+      {
+        while (danceEveryNumBeats % numeratorTweak != 0)
+          danceEveryNumBeats++;
+      }
+      _realDanceEvery = Math.max(danceEvery, danceEveryNumBeats);
+    }
+    else // for decymal danceEvery (X.25, X.50 and X.75)
+    {
+      // maybe to rework, for the moment it tries to have the same patern every sections
+      _realDanceEvery = danceEvery;
+      while ((4 * _realDanceEvery * Conductor.instance.stepLengthMs) < (daIdle.numFrames / daIdle.frameRate))
+        _realDanceEvery *= numeratorTweak;
+    }
+  }
 
   /**
    * Called every `danceEvery` beats of the song.
