@@ -21,16 +21,17 @@ class ScreenUtil
     var rectangle:Rectangle = new Rectangle();
 
     #if ios
-    final top:Float = -1;
-    final left:Float = -1;
-    final right:Float = -1;
-    final bottom:Float = -1;
+    var top:Float = -1;
+    var left:Float = -1;
+    var right:Float = -1;
+    var bottom:Float = -1;
     ScreenUtils.getSafeAreaInsets(cpp.Pointer.addressOf(top).raw, cpp.Pointer.addressOf(bottom).raw, cpp.Pointer.addressOf(left).raw,
       cpp.Pointer.addressOf(right).raw);
-    rectangle.x = left;
-    rectangle.y = right;
-    rectangle.width = top;
-    rectangle.height = bottom;
+    rectangle.top = top;
+    rectangle.left = left;
+    rectangle.right = right;
+    rectangle.bottom = bottom;
+    trace('Notch Rect: Width: ' + rectangle.width + ' Height: ' + rectangle.height + ' X: ' + rectangle.x + ' Y: ' + rectangle.y);
     #elseif android
     var rectDimensions:Array<Array<Float>> = [[], [], [], []];
     for (rect in Tools.getCutoutDimensions())
