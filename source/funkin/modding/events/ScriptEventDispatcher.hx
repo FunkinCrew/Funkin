@@ -177,6 +177,12 @@ class ScriptEventDispatcher
         case SUBSTATE_CLOSE_END:
           t.onSubStateCloseEnd(cast event);
           return;
+        case FOCUS_LOST:
+          t.onFocusLost(cast event);
+          return;
+        case FOCUS_GAINED:
+          t.onFocusGained(cast event);
+          return;
         default: // Continue;
       }
     }
