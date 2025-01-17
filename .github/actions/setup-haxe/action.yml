@@ -63,7 +63,7 @@ runs:
       haxelib --global remove hxpkg || true
       rm -rf .haxelib
       haxelib --debug --never --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
-      haxelib --debug --never --global git hxpkg https://github.com/CobaltBar/HxPKG
+      haxelib --debug --never --global git hxpkg https://github.com/CCobaltDev/HxPKG
       haxelib --debug --never newrepo
       haxelib version
       echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
