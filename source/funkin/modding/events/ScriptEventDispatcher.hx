@@ -124,7 +124,7 @@ class ScriptEventDispatcher
           t.onSongEnd(event);
           return;
         case SONG_RETRY:
-          t.onSongRetry(event);
+          t.onSongRetry(cast event);
           return;
         case GAME_OVER:
           t.onGameOver(event);

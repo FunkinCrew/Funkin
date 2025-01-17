@@ -121,5 +121,5 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   public function onSubStateCloseEnd(event:SubStateScriptEvent) {}
 
-  public function onSongRetry(event:ScriptEvent) {}
+  public function onSongRetry(event:SongRetryEvent) {}
 }

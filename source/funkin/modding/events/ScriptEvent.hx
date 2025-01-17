@@ -415,6 +415,28 @@ class SongLoadScriptEvent extends ScriptEvent
 }
 
 /**
+ * AAn event that is fired when the player retries the song.
+ */
+class SongRetryEvent extends ScriptEvent
+{
+  /**
+   * The new difficulty of the song.
+   */
+  public var difficulty(default, null):String;
+
+  public function new(difficulty:String):Void
+  {
+    super(SONG_RETRY, false);
+    this.difficulty = difficulty;
+  }
+
+  public override function toString():String
+  {
+    return 'SongRetryEvent(difficulty=$difficulty)';
+  }
+}
+
+/**
  * An event that is fired when moving out of or into an FlxState.
  */
 class StateChangeScriptEvent extends ScriptEvent
