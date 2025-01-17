@@ -49,6 +49,8 @@ class StageDataHandler
           animations: data.animations,
           startingAnimation: data.startingAnimation,
           animType: data.animType,
+          flipX: data.flipX,
+          flipY: data.flipY,
           angle: data.angle,
           blend: data.blend,
           color: data.assetPath.startsWith("#") ? "#FFFFFF" : data.color
@@ -210,6 +212,8 @@ class StageDataHandler
           scroll: objData.scroll.copy(),
           color: objData.color,
           blend: objData.blend,
+          flipX: objData.flipX,
+          flipY: objData.flipY,
           startingAnimation: objData.startingAnimation,
           xmlData: xmls[objData.assetPath] ?? ""
         });
@@ -309,6 +313,8 @@ class StageDataHandler
           scroll: objData.scroll.copy(),
           color: objData.color,
           blend: objData.blend,
+          flipX: objData.flipX,
+          flipY: objData.flipY,
           startingAnimation: objData.startingAnimation,
           xmlData: Assets.exists(Paths.file("images/" + objData.assetPath + ".xml")) ? Assets.getText(Paths.file("images/" + objData.assetPath + ".xml")) : ""
         });
