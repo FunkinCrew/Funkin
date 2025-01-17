@@ -1572,11 +1572,15 @@ class PlayState extends MusicBeatSubState
     healthBar.scrollFactor.set();
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
     healthBar.zIndex = 801;
+    // One division for each pixel of the bar's width ensures maximum bar smoothness.
+    // This is better looking, and syncs with the lerped icon movement better.
+    // This can be slightly more heavy on the CPU, though, so if lower end device performance options are added, maybe make them affect this?
+    healthBar.numDivisions = Std.int(healthBarBG.width - 8);
     add(healthBar);
 
     // The score text below the health bar.
     scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
-    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE_FAST, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
