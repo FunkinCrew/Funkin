@@ -437,6 +437,22 @@ class StateChangeScriptEvent extends ScriptEvent
 }
 
 /**
+ * An event that is fired when the game loses or gains focus.
+ */
+class FocusScriptEvent extends ScriptEvent
+{
+  public function new(type:ScriptEventType):Void
+  {
+    super(type, false);
+  }
+
+  public override function toString():String
+  {
+    return 'FocusScriptEvent(type=' + type + ')';
+  }
+}
+
+/**
  * An event that is fired when moving out of or into an FlxSubState.
  */
 class SubStateScriptEvent extends ScriptEvent
