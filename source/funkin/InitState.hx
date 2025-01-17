@@ -181,6 +181,8 @@ class InitState extends FlxState
     // Move it to use a BaseRegistry.
     CharacterDataParser.loadCharacterCache();
 
+    Texts.reloadTexts();
+
     NoteKindManager.loadScripts();
 
     ModuleHandler.buildModuleCallbacks();
