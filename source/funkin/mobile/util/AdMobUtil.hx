@@ -14,46 +14,69 @@ import admob.AdmobEvent;
  */
 class AdMobUtil
 {
-  /**
-   * Production ad unit IDs (to be set for actual ad campaigns).
-   */
   #if !TESTING_ADS
-  private static final BANNER_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
-  private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
-  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
-  private static final REWARDED_AD_UNIT_ID:String = "";
-  private static final APP_OPEN_AD_UNIT_ID:String = "";
+  /**
+   * AdMob publisher ID used for the application.
+   */
+  private static final ADMOB_PUBLISHER:String = "";
 
-  #else
   /**
    * Test ad unit IDs for development and testing purposes.
    * These IDs are provided by Google AdMob for testing ads without incurring costs.
    * They should not be used in production applications.
    */
   /**
-   * Test ad unit ID for banner ads, used during development.
+   * Ad unit ID for displaying banner ads.
    */
-  private static final BANNER_AD_UNIT_ID:String = #if android "ca-app-pub-3940256099942544/6300978111" #elseif ios "ca-app-pub-3940256099942544/2934735716" #else "" #end;
+  private static final BANNER_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
 
   /**
-   * Test ad unit ID for interstitial ads, used during development.
+   * Ad unit ID for displaying interstitial ads.
    */
-  private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "ca-app-pub-3940256099942544/1033173712" #elseif ios "ca-app-pub-3940256099942544/4411468910" #else "" #end;
+  private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
 
   /**
-   * Test ad unit ID for interstitial video ads, used during development.
+   * Ad unit ID for displaying interstitial video ads.
    */
-  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = #if android "ca-app-pub-3940256099942544/8691691433" #elseif ios "ca-app-pub-3940256099942544/5135589807" #else "" #end;
+  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
+  #else
 
   /**
-   * Test ad unit ID for rewarded ads, used during development.
+   * AdMob publisher ID used for the application.
+   * This ID is a test publisher ID provided by Google AdMob.
+   * Replace with your actual publisher ID for production.
    */
-  private static final REWARDED_AD_UNIT_ID:String = #if android "ca-app-pub-3940256099942544/5224354917" #elseif ios "ca-app-pub-3940256099942544/1712485313" #else "" #end;
+  private static final ADMOB_PUBLISHER:String = "ca-app-pub-3940256099942544";
 
   /**
-   * Test ad unit ID for rewarded ads, used during development.
+   * Ad unit ID for displaying banner ads.
+   * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
+   * Replace with your actual banner ad unit ID for production.
+   *
+   * - Android: "6300978111" (test ad unit ID)
+   * - iOS: "2934735716" (test ad unit ID)
    */
-  private static final APP_OPEN_AD_UNIT_ID:String = "";
+  private static final BANNER_AD_UNIT_ID:String = #if android "6300978111" #elseif ios "2934735716" #else "" #end;
+
+  /**
+   * Ad unit ID for displaying interstitial ads.
+   * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
+   * Replace with your actual interstitial ad unit ID for production.
+   *
+   * - Android: "1033173712" (test ad unit ID)
+   * - iOS: "4411468910" (test ad unit ID)
+   */
+  private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "1033173712" #elseif ios "4411468910" #else "" #end;
+
+  /**
+   * Ad unit ID for displaying interstitial video ads.
+   * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
+   * Replace with your actual interstitial video ad unit ID for production.
+   *
+   * - Android: "8691691433" (test ad unit ID)
+   * - iOS: "5135589807" (test ad unit ID)
+   */
+  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = #if android "8691691433" #elseif ios "5135589807" #else "" #end;
   #end
 
   /**
@@ -67,10 +90,6 @@ class AdMobUtil
       {
         case AdmobEvent.INTERSTITIAL_LOADED:
           Admob.showInterstitial();
-        case AdmobEvent.REWARDED_LOADED:
-          Admob.showRewarded();
-        case AdmobEvent.APP_OPEN_LOADED:
-          Admob.showAppOpen();
       }
     });
 
@@ -84,7 +103,7 @@ class AdMobUtil
    */
   public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM):Void
   {
-    Admob.showBanner(AdMobUtil.BANNER_AD_UNIT_ID, size, align);
+    Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.BANNER_AD_UNIT_ID].join('/'), size, align);
   }
 
   /**
@@ -96,30 +115,14 @@ class AdMobUtil
   }
 
   /**
-   * Loads an interstitial ad. Depending on the forceVideo parameter or random selection,
-   * it loads either a video or a standard interstitial ad.
-   * @param forceVideo If true, forces loading an interstitial video ad. Otherwise, it uses a 50% chance.
+   * Loads an interstitial ad. It loads either a video (if avalible) or a standard interstitial ad (it uses a 50% chance to decide that).
    */
   public static inline function loadInterstitial():Void
   {
-    Admob.loadInterstitial(#if TESTING_ADS FlxG.random.bool(50) ? AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID : #end AdMobUtil.INTERSTITIAL_AD_UNIT_ID);
-  }
-
-  /**
-   * Loads a rewarded ad, preparing it to be displayed once loaded.
-   * Rewarded ads typically grant rewards upon user completion, like game items or bonuses.
-   */
-  public static inline function loadRewarded():Void
-  {
-    Admob.loadRewarded(AdMobUtil.REWARDED_AD_UNIT_ID);
-  }
-
-  /**
-   * Loads a app openad, preparing it to be displayed once loaded.
-   */
-  public static inline function loadAppOpen():Void
-  {
-    Admob.loadAppOpen(AdMobUtil.APP_OPEN_AD_UNIT_ID);
+    if (AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID.length > 0
+      && FlxG.random.bool(50)) Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID].join('/'));
+    else
+      Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_AD_UNIT_ID].join('/'));
   }
 
   /**
