@@ -74,6 +74,25 @@ class Preferences
     return value;
   }
 
+   /**
+   * If enabled, the miss sound will play when the player misses a note.
+   * @default `true`
+   */
+  public static var playMissSound(get, set):Bool;
+
+  static function get_playMissSound():Bool
+  {
+    return Save?.instance?.options?.playMissSound;
+  }
+
+  static function set_playMissSound(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.playMissSound = value;
+    save.flush();
+    return value;
+  }
+
   /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
