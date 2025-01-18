@@ -520,7 +520,7 @@ class ResultState extends MusicBeatSubState
         },
         onComplete: _ -> {
           // Strong vibration when rank number tween ends.
-          HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
+          HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE);
 
           // Play confirm sound.
           FunkinSound.playOnce(Paths.sound('confirmMenu'));
