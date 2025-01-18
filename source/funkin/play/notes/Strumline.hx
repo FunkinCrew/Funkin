@@ -537,15 +537,19 @@ class Strumline extends FlxSpriteGroup
           holdNote.cover.playEnd();
 
           trace("Sustain Note Splash Vibration");
-
-          noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isJustPressed;
-          noteVibrations.tryNoteVibration();
         }
         else if (holdNote.cover != null)
         {
           // *lightning* *zap* *crackle*
           holdNote.cover.visible = false;
           holdNote.cover.kill();
+        }
+
+        if (isPlayer)
+        {
+          // Hold note's final vibration.
+          noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isJustPressed;
+          noteVibrations.tryNoteVibration();
         }
 
         holdNote.visible = false;
