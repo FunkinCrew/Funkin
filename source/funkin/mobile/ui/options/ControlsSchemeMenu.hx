@@ -370,6 +370,9 @@ class ControlsSchemeMenu extends MusicBeatSubState
       final showcasesTargetX:Float = originX + dragDistance * 10;
       hitboxShowcases.x = MathUtil.smoothLerp(hitboxShowcases.x, showcasesTargetX, elapsed, 0.5);
 
+      final minShowcasesX:Float = -1500 * availableSchemes.length;
+      hitboxShowcases.x = FlxMath.bound(hitboxShowcases.x, minShowcasesX, 400);
+
       final targetIndex:Int = Math.round(hitboxShowcases.x / -1500);
       if (currentIndex != targetIndex) setSelection(targetIndex);
     }
