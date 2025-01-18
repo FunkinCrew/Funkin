@@ -633,6 +633,9 @@ class Strumline extends FlxSpriteGroup
       {
         playPress(dir);
       }
+
+      // Added this to prevent sustained vibrations not ending issue.
+      if (!isKeyHeld(dir) && isPlayer) noteVibrations.noteStatuses[dir] = NoteStatus.isReleased;
     }
   }
 
