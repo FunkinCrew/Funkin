@@ -638,15 +638,7 @@ class FreeplayState extends MusicBeatSubState
       onDJIntroDone();
     }
 
-    allDifficulties = [];
-    for (song in songs)
-    {
-      if (song == null) continue;
-      for (diff in song.data.listDifficulties(null, song.data.getVariationsByCharacterId(rememberedCharacterId)))
-      {
-        if (!allDifficulties.contains(diff)) allDifficulties.push(diff);
-      }
-    }
+    allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId);
 
     // Generates song list with the starter params (who our current character is, last remembered difficulty, etc.)
     generateSongList(null, false);
