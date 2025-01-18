@@ -97,7 +97,7 @@ class Save
           downscroll: false,
           flashingLights: true,
           zoomCamera: true,
-          playMissSound: false,
+          playMissSound: true,
           debugDisplay: false,
           autoPause: true,
           inputOffset: 0,
