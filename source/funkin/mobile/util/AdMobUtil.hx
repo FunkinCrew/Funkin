@@ -119,10 +119,14 @@ class AdMobUtil
    */
   public static inline function loadInterstitial():Void
   {
-    if (AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID.length > 0
-      && FlxG.random.bool(50)) Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID].join('/'));
+    if (FlxG.random.bool(50) && AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID.length > 0)
+    {
+      Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID].join('/'));
+    }
     else
+    {
       Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_AD_UNIT_ID].join('/'));
+    }
   }
 
   /**
