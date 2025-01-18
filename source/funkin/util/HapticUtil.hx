@@ -41,6 +41,7 @@ class HapticUtil
     {
       final durations:Array<Float> = [];
       final amplitudes:Array<Float> = [];
+      final sharpnesses:Array<Float> = [];
 
       final durationPeriod:Float = period / 2;
 
@@ -48,12 +49,16 @@ class HapticUtil
       {
         durations[i] = durationPeriod;
         amplitudes[i] = amplitudeValue;
+        sharpnesses[i] = (durationPeriod < 0.1) ? 1 : 0;
       }
 
-      Haptic.vibratePattern(durations, amplitudes);
+      Haptic.vibratePattern(durations, amplitudes, sharpnesses);
     }
     else
-      Haptic.vibrateOneShot(duration, amplitudeValue);
+    {
+      final sharpness:Float = (duration < 0.1) ? 1 : 0;
+      Haptic.vibrateOneShot(duration, amplitudeValue, sharpness);
+    }
   }
 
   /**
