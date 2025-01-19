@@ -4,9 +4,9 @@ import funkin.data.freeplay.player.PlayerData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
 import funkin.save.Save;
+import funkin.data.DefaultRegistryImpl;
 
-@:build(funkin.util.macro.RegistryMacro.buildRegistry())
-class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
+class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.

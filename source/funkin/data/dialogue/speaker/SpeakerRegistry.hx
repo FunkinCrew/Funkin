@@ -3,8 +3,9 @@ package funkin.data.dialogue.speaker;
 import funkin.play.cutscene.dialogue.Speaker;
 import funkin.data.dialogue.speaker.SpeakerData;
 import funkin.play.cutscene.dialogue.ScriptedSpeaker;
+import funkin.data.DefaultRegistryImpl;
 
-class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData>
+class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the speaker data format.

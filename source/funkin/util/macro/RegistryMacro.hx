@@ -4,6 +4,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+using Lambda;
 using haxe.macro.ExprTools;
 using haxe.macro.TypeTools;
 using StringTools;
@@ -16,21 +17,23 @@ class RegistryMacro
 
     var cls = Context.getLocalClass().get();
 
-    if (!cls.name.endsWith('Registry'))
+    var baseMeta = cls.meta.get().find(function(m) return m.name == ':funkinBase');
+    if (baseMeta != null || alreadyProcessed(cls))
     {
-      throw '${cls.module}.${cls.name} needs to end with "Registry"';
+      return fields;
     }
 
     var typeParams = getTypeParams(cls);
     var entryCls = typeParams.entryCls;
     var jsonCls = typeParams.jsonCls;
-    var scriptedEntryCls = getScriptedEntryClass(entryCls);
+
+    buildEntryImpl(entryCls, cls);
+    buildRegistryImpl(cls, entryCls, jsonCls);
 
     fields = fields.concat(buildRegistryVariables(cls));
     fields = fields.concat(buildRegistryMethods(cls));
 
-    buildEntryImpl(entryCls, cls);
-    buildRegistryImpl(cls, entryCls, scriptedEntryCls, jsonCls);
+    cls.meta.add(":funkinProcessed", [], cls.pos);
 
     return fields;
   }
@@ -41,52 +44,23 @@ class RegistryMacro
 
     var cls = Context.getLocalClass().get();
 
-    var entryData = getEntryData(cls);
+    var baseMeta = cls.meta.get().find(function(m) return m.name == ':funkinBase');
+    if (baseMeta != null || alreadyProcessed(cls))
+    {
+      return fields;
+    }
 
-    // since the registries also use a build macro
-    // the fields aren't callable unless we first get
-    // the class type of the registry
-    makeFieldsCallable(cls);
+    var entryData = getEntryData(cls);
 
     fields = fields.concat(buildEntryVariables(cls, entryData));
     fields = fields.concat(buildEntryMethods(cls));
+
+    cls.meta.add(":funkinProcessed", [], cls.pos);
 
     return fields;
   }
 
   #if macro
-  static function makeFieldsCallable(cls:ClassType)
-  {
-    // TODO: lets not have this if statement
-    // like what the hell is wrong with this
-    if (cls.name == 'Song')
-    {
-      MacroUtil.getClassTypeFromExpr(macro funkin.data.song.SongRegistry);
-      return;
-    }
-
-    var registries:Array<String> = [];
-    for (localImport in Context.getLocalImports())
-    {
-      var names = [];
-      for (path in localImport.path)
-      {
-        names.push(path.name);
-      }
-      var fullName = names.join('.');
-
-      if (fullName.endsWith('Registry'))
-      {
-        registries.push(fullName);
-      }
-    }
-
-    for (registry in registries)
-    {
-      MacroUtil.getClassTypeFromExpr(Context.parse(registry, Context.currentPos()));
-    }
-  }
-
   static function fieldAlreadyExists(name:String):Bool
   {
     for (field in Context.getBuildFields())
@@ -119,6 +93,23 @@ class RegistryMacro
     return fieldAlreadyExistsSuper(name, Context.getLocalClass().get().superClass?.t.get());
   }
 
+  static function alreadyProcessed(cls:ClassType):Bool
+  {
+    var processedMeta = cls.meta.get().find(function(m) return m.name == ':funkinProcessed');
+
+    if (processedMeta != null)
+    {
+      return true;
+    }
+
+    if (cls.superClass != null)
+    {
+      return alreadyProcessed(cls.superClass.t.get());
+    }
+
+    return false;
+  }
+
   static function getTypeParams(cls:ClassType):RegistryTypeParamsNew
   {
     switch (cls.superClass.t.get().kind)
@@ -143,28 +134,27 @@ class RegistryMacro
     }
   }
 
-  static function getScriptedEntryClass(entryCls:ClassType):ClassType
-  {
-    var scriptedEntryClsName = entryCls.pack.join('.') + '.Scripted' + entryCls.name;
-    switch (Context.getType(scriptedEntryClsName))
-    {
-      case Type.TInst(t, _):
-        return t.get();
-      default:
-        throw 'Not A Class (${scriptedEntryClsName})';
-    };
-  }
-
   static function getEntryData(cls:ClassType):Dynamic // DefType or ClassType
   {
-    switch (cls.interfaces[0].params[0])
+    try
     {
-      case Type.TInst(t, _):
-        return t.get();
-      case Type.TType(t, _):
-        return t.get();
-      default:
-        throw 'Entry Data is not a class or typedef';
+      switch (cls.interfaces[0].params[0])
+      {
+        case Type.TInst(t, _):
+          return t.get();
+        case Type.TType(t, _):
+          return t.get();
+        default:
+          throw 'Entry Data is not a class or typedef';
+      }
+    }
+    catch (e)
+    {
+      throw '
+        ${cls.name}:
+        Make sure IRegistryEntry is the last implement
+        class ExampleEntry implements ... implements IRegistryEntry
+      ';
     }
   }
 
@@ -253,13 +243,15 @@ class RegistryMacro
       }).fields.filter((field) -> !fieldAlreadyExists(field.name));
   }
 
-  static function buildRegistryImpl(cls:ClassType, entryCls:ClassType, scriptedEntryCls:ClassType, jsonCls:Dynamic):Void
+  static function buildRegistryImpl(cls:ClassType, entryCls:ClassType, jsonCls:Dynamic):Void
   {
     var clsType:ComplexType = Context.getType('${cls.module}.${cls.name}').toComplexType();
 
-    var getScriptedClassName:String = '${scriptedEntryCls.module}.${scriptedEntryCls.name}';
+    var scriptedEntryClsName:String = entryCls.pack.join('.') + '.Scripted' + entryCls.name;
 
-    var createScriptedEntry:String = '${scriptedEntryCls.module}.${scriptedEntryCls.name}.init(clsName, "unknown")';
+    var getScriptedClassName:String = '${scriptedEntryClsName}';
+
+    var createScriptedEntry:String = '${scriptedEntryClsName}.init(clsName, "unknown")';
 
     var newJsonParser:String = 'new json2object.JsonParser<${jsonCls.module}.${jsonCls.name}>()';
 

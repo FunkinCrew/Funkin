@@ -3,8 +3,9 @@ package funkin.data.freeplay.album;
 import funkin.ui.freeplay.Album;
 import funkin.data.freeplay.album.AlbumData;
 import funkin.ui.freeplay.ScriptedAlbum;
+import funkin.data.DefaultRegistryImpl;
 
-class AlbumRegistry extends BaseRegistry<Album, AlbumData>
+class AlbumRegistry extends BaseRegistry<Album, AlbumData> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the album data format.

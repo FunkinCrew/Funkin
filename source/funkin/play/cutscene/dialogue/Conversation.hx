@@ -30,7 +30,6 @@ import funkin.util.EaseUtil;
  *
  * This shit is great for modders but it's pretty elaborate for how much it'll actually be used, lolol. -Eric
  */
-@:build(funkin.util.macro.RegistryMacro.buildEntry())
 class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
   /**

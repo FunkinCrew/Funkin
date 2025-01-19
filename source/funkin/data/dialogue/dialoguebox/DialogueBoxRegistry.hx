@@ -3,8 +3,9 @@ package funkin.data.dialogue.dialoguebox;
 import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.data.dialogue.dialoguebox.DialogueBoxData;
 import funkin.play.cutscene.dialogue.ScriptedDialogueBox;
+import funkin.data.DefaultRegistryImpl;
 
-class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData>
+class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the dialogue box data format.

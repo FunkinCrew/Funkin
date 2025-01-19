@@ -3,8 +3,9 @@ package funkin.data.stage;
 import funkin.data.stage.StageData;
 import funkin.play.stage.Stage;
 import funkin.play.stage.ScriptedStage;
+import funkin.data.DefaultRegistryImpl;
 
-class StageRegistry extends BaseRegistry<Stage, StageData>
+class StageRegistry extends BaseRegistry<Stage, StageData> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
@@ -93,8 +94,22 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
   public function listBaseGameStageIds():Array<String>
   {
     return [
-      "mainStage", "mainStageErect", "spookyMansion", "phillyTrain", "phillyTrainErect", "limoRide", "limoRideErect", "mallXmas", "mallXmasErect", "mallEvil",
-      "school", "schoolEvil", "tankmanBattlefield", "phillyStreets", "phillyStreetsErect", "phillyBlazin",
+      "mainStage",
+      "mainStageErect",
+      "spookyMansion",
+      "phillyTrain",
+      "phillyTrainErect",
+      "limoRide",
+      "limoRideErect",
+      "mallXmas",
+      "mallXmasErect",
+      "mallEvil",
+      "school",
+      "schoolEvil",
+      "tankmanBattlefield",
+      "phillyStreets",
+      "phillyStreetsErect",
+      "phillyBlazin",
     ];
   }
 

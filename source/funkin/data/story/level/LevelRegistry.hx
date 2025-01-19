@@ -4,8 +4,9 @@ import funkin.util.SortUtil;
 import funkin.ui.story.Level;
 import funkin.data.story.level.LevelData;
 import funkin.ui.story.ScriptedLevel;
+import funkin.data.DefaultRegistryImpl;
 
-class LevelRegistry extends BaseRegistry<Level, LevelData>
+class LevelRegistry extends BaseRegistry<Level, LevelData> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the level data format.

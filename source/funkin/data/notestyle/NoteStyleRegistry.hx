@@ -3,9 +3,9 @@ package funkin.data.notestyle;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notestyle.ScriptedNoteStyle;
 import funkin.data.notestyle.NoteStyleData;
+import funkin.data.DefaultRegistryImpl;
 
-@:build(funkin.util.macro.RegistryMacro.buildRegistry())
-class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
+class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the note style data format.

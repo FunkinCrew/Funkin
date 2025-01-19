@@ -9,12 +9,12 @@ import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
+import funkin.data.DefaultRegistryImpl;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
 @:nullSafety
-@:build(funkin.util.macro.RegistryMacro.buildRegistry())
-class SongRegistry extends BaseRegistry<Song, SongMetadata>
+class SongRegistry extends BaseRegistry<Song, SongMetadata> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
