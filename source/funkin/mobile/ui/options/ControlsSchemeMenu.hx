@@ -28,58 +28,58 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Text that displays current scheme's name.
    */
-  private var schemeNameText:AtlasText;
+  var schemeNameText:AtlasText;
 
   /**
    * A camera for buttons.
    */
-  private var camButtons:FunkinCamera;
+  var camButtons:FunkinCamera;
 
   /**
    * A camera for hitbox showcases group.
    */
-  private var camHitboxes:FunkinCamera;
+  var camHitboxes:FunkinCamera;
 
   /**
    * A button that is changed depending if you are in the hitbox demo or not.
    */
-  private var currentButton:SchemeMenuButton;
+  var currentButton:SchemeMenuButton;
 
   /**
    * Group of hitbox showcase selection items.
    */
-  private var hitboxShowcases:FlxTypedSpriteGroup<HitboxShowcase>;
+  var hitboxShowcases:FlxTypedSpriteGroup<HitboxShowcase>;
 
   /**
    * An object used for selecting the current hitbox scheme.
    */
-  private var itemNavHitbox:FunkinSprite;
+  var itemNavHitbox:FunkinSprite;
 
   /**
    * An object used for selecting the current hitbox scheme's option.
    */
-  private var optionNavHitbox:FunkinSprite;
+  var optionNavHitbox:FunkinSprite;
 
   /**
    * Returns true, if player is currently in hitbox demonstration.
    */
-  private var isInDemo:Bool;
+  var isInDemo:Bool;
 
   /**
    * An array of every single scheme.
    */
-  private final availableSchemes:Array<String> = [
-    FunkinHitboxControlSchemes.Arrows,
-    FunkinHitboxControlSchemes.FourLanes,
-    FunkinHitboxControlSchemes.DoubleThumbTriangle,
-    FunkinHitboxControlSchemes.DoubleThumbSquare,
-    FunkinHitboxControlSchemes.DoubleThumbDPad
+  final availableSchemes:Array<String> = [
+    FunkinHitbox.FunkinHitboxControlSchemes.Arrows,
+    FunkinHitbox.FunkinHitboxControlSchemes.FourLanes,
+    FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbTriangle,
+    FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbSquare,
+    FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbDPad
   ];
 
   /**
    * Current selected index
    */
-  private var currentIndex:Int = 0;
+  var currentIndex:Int = 0;
 
   /**
    * Touch X position when touch was just pressed. Resets on release.
@@ -132,7 +132,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Setups every needed camera.
    */
-  function setupCameras()
+  function setupCameras():Void
   {
     final mainCamera:FunkinCamera = new FunkinCamera('SchemeMenuCamera');
     mainCamera.bgColor = FlxColor.BLACK;
@@ -156,7 +156,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Setups the hitbox showcase items.
    */
-  function setupHitboxShowcases()
+  function setupHitboxShowcases():Void
   {
     hitboxShowcases = new FlxTypedSpriteGroup<HitboxShowcase>();
     hitboxShowcases.x = (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex);
@@ -197,7 +197,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
    * Creates or recreates a scheme menu button.
    * @param isDemoScreen Returns true, if player is currently in hitbox demo.
    */
-  function createButton(isDemoScreen:Bool)
+  function createButton(isDemoScreen:Bool):Void
   {
     if (currentButton != null) remove(currentButton);
 
@@ -217,7 +217,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Called when current hitbox has been selected.
    */
-  function onSelectHitbox()
+  function onSelectHitbox():Void
   {
     currentButton.busy = true;
 
@@ -232,7 +232,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Called when the current button is pressed and player is not in demo right now.
    */
-  function onHitboxDemo()
+  function onHitboxDemo():Void
   {
     isInDemo = true;
 
@@ -264,7 +264,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Called when the current button is pressed and player is in demo right now.
    */
-  function onHitboxDemoBack()
+  function onHitboxDemoBack():Void
   {
     isInDemo = false;
 
@@ -283,7 +283,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
    * Updates selection using currentIndex.
    * @param change Used to change currentIndex.
    */
-  private function setSelection(index:Int):Void
+  function setSelection(index:Int):Void
   {
     currentIndex = index;
 
@@ -311,7 +311,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Handles touch dragging.
    */
-  private function handleDrag():Void
+  function handleDrag():Void
   {
     if (TouchUtil.justPressed && TouchUtil.touch != null) dragStartingX = TouchUtil.touch.x;
 
@@ -329,7 +329,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * Handles all the touch inputs.
    */
-  function handleInputs()
+  function handleInputs():Void
   {
     if (isInDemo) return;
 

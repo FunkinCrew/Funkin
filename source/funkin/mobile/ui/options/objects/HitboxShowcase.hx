@@ -1,6 +1,5 @@
 package funkin.mobile.ui.options.objects;
 
-import funkin.ui.FullScreenScaleMode;
 import flixel.addons.display.shapes.FlxShapeBox;
 import flixel.group.FlxSpriteGroup;
 import flixel.effects.FlxFlicker;
@@ -8,7 +7,6 @@ import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import funkin.mobile.ui.FunkinHitbox;
-import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
 import funkin.util.MathUtil;
 
@@ -25,7 +23,7 @@ class HitboxShowcase extends FlxSpriteGroup
   /**
    * An array of values for lerping object's alpha.
    */
-  private static final HITBOX_SHOWCASE_ALPHA:Array<Float> = [0.3, 1];
+  static final HITBOX_SHOWCASE_ALPHA:Array<Float> = [0.3, 1];
 
   /**
    * Object's own index.
@@ -62,7 +60,7 @@ class HitboxShowcase extends FlxSpriteGroup
    * @param controlsScheme Hitbox's controls scheme.
    * @param onClick An optional callback function that will be triggered when the object is clicked.
    */
-  public function new(x:Int = 0, y:Int = 0, index:Int, selectionIndex:Int = 0, controlsScheme:String, ?onClick:Void->Void = null)
+  public function new(x:Int = 0, y:Int = 0, index:Int, selectionIndex:Int = 0, controlsScheme:String, ?onClick:Void->Void):Void
   {
     super(x, y);
 
@@ -81,7 +79,7 @@ class HitboxShowcase extends FlxSpriteGroup
    *
    * @param controlsScheme Hitbox's controls scheme.
    */
-  function setupObjects(controlsScheme:String)
+  function setupObjects(controlsScheme:String):Void
   {
     final bg:FlxShapeBox = new FlxShapeBox(0, 0, FlxG.width + 2, FlxG.height + 2, {thickness: 6, color: FlxColor.BLACK}, FlxColor.GRAY);
     bg.screenCenter();
@@ -103,7 +101,7 @@ class HitboxShowcase extends FlxSpriteGroup
    * @param defaultValue Option's default value.
    * @param callback A callback function that will be triggered when the HitboxOptionButton object is clicked.
    */
-  public function createOption(name:String = "", defaultValue:Bool = false, callback:Bool->Void)
+  public function createOption(name:String = "", defaultValue:Bool = false, callback:Bool->Void):Void
   {
     if (checkbox != null) return;
 
@@ -114,7 +112,7 @@ class HitboxShowcase extends FlxSpriteGroup
   /**
    * Called when the object is both selected and pressed.
    */
-  public function onPress()
+  public function onPress():Void
   {
     if (!busy)
     {
@@ -129,7 +127,7 @@ class HitboxShowcase extends FlxSpriteGroup
     }
   }
 
-  public override function update(elapsed:Float)
+  public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

@@ -16,7 +16,7 @@ class HitboxOptionButton extends FlxSpriteGroup
    * The button's checkbox member.
    * Indicates the current value of the option.
    */
-  private var checkbox:CheckboxPreferenceItem;
+  var checkbox:CheckboxPreferenceItem;
 
   /**
    * The button's text.
@@ -39,7 +39,7 @@ class HitboxOptionButton extends FlxSpriteGroup
     add(checkbox);
 
     text = new TextMenuItem(checkbox.x + checkbox.width, checkbox.y + 30, "Downscroll", AtlasFont.BOLD, function() {
-      var value = !checkbox.currentValue;
+      final value:Bool = !checkbox.currentValue;
       onClick(value);
       checkbox.currentValue = value;
     });
@@ -47,7 +47,7 @@ class HitboxOptionButton extends FlxSpriteGroup
 
     setSize(500, 500);
 
-    var optionCamera = new FunkinCamera('optionCamera');
+    final optionCamera:FunkinCamera = new FunkinCamera('optionCamera');
     FlxG.cameras.add(optionCamera, false);
     optionCamera.bgColor = 0x0;
 

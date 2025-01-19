@@ -9,6 +9,7 @@ void getSafeAreaInsets(double* top, double* bottom, double* left, double* right)
         {
                 UIWindow* window = [UIApplication sharedApplication].windows[0];
                 UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
+
                 float scale = [UIScreen mainScreen].scale;
 
                 (*top) = safeAreaInsets.top * scale;

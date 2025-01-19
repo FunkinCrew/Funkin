@@ -35,7 +35,7 @@ enum FunkinHintAlphaStyle
  * The `FunkinHint` class represents a button with HSV color properties, allowing hue and saturation adjustments.
  */
 @:nullSafety
-class FunkinHint extends FunkinPolygonButton
+class FunkinHint extends FunkinButton
 {
   /**
    * A map defining different alpha styles for hint visibility during press and release states.
@@ -292,7 +292,7 @@ class FunkinHint extends FunkinPolygonButton
   }
 
   @:noCompletion
-  private override function set_x(Value:Float):Float
+  override function set_x(Value:Float):Float
   {
     super.set_x(Value);
 
@@ -302,7 +302,7 @@ class FunkinHint extends FunkinPolygonButton
   }
 
   @:noCompletion
-  private override function set_y(Value:Float):Float
+  override function set_y(Value:Float):Float
   {
     super.set_y(Value);
 
@@ -448,8 +448,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return A new `FunkinHint` object.
    */
   @:noCompletion
-  private function createHintLane(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF,
-      label:Bool = true):FunkinHint
+  function createHintLane(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF, label:Bool = true):FunkinHint
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, label ? createHintLaneLabelGraphic(width, height, Math.floor(height * 0.035), color) : null);
     hint.loadGraphic(createHintLaneGraphic(width, height, color));
@@ -470,7 +469,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return A new `FunkinHint` object.
    */
   @:noCompletion
-  private function createHintTransparentNote(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int):FunkinHint
+  function createHintTransparentNote(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int):FunkinHint
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
     hint.alpha = 0;
@@ -524,7 +523,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return A new `FunkinHint` triangle object.
    */
   @:noCompletion
-  private function createHintTriangle(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF):FunkinHint
+  function createHintTriangle(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF):FunkinHint
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
     hint.polygon = getTriangleVertices(width, height, noteDirection);
@@ -547,7 +546,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return A new `FunkinHint` circular object.
    */
   @:noCompletion
-  private function createHintCircle(x:Float, y:Float, noteDirection:NoteDirection, radius:Float, color:FlxColor = 0xFFFFFFFF):FunkinHint
+  function createHintCircle(x:Float, y:Float, noteDirection:NoteDirection, radius:Float, color:FlxColor = 0xFFFFFFFF):FunkinHint
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
     hint.loadGraphic(createHintCircleGraphic(radius, color));
@@ -570,7 +569,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return A `FlxGraphic` object representing the button graphic.
    */
   @:noCompletion
-  private function createHintLaneGraphic(width:Int, height:Int, baseColor:FlxColor = 0xFFFFFFFF, gradient:Bool = true):FlxGraphic
+  function createHintLaneGraphic(width:Int, height:Int, baseColor:FlxColor = 0xFFFFFFFF, gradient:Bool = true):FlxGraphic
   {
     final shape:Shape = new Shape();
 
@@ -592,7 +591,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   }
 
   @:noCompletion
-  private function createHintLaneLabelGraphic(width:Int, height:Int, labelHeight:Int, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
+  function createHintLaneLabelGraphic(width:Int, height:Int, labelHeight:Int, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
   {
     final shape:Shape = new Shape();
 
@@ -622,7 +621,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return A `FlxGraphic` object representing the triangle button graphic.
    */
   @:noCompletion
-  private function createHintTriangleGraphic(width:Int, height:Int, facing:NoteDirection, baseColor:FlxColor = 0xFFFFFFFF, gradient:Bool = true):FlxGraphic
+  function createHintTriangleGraphic(width:Int, height:Int, facing:NoteDirection, baseColor:FlxColor = 0xFFFFFFFF, gradient:Bool = true):FlxGraphic
   {
     final shape:Shape = new Shape();
 
@@ -652,7 +651,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return A `FlxGraphic` object representing the circular button graphic.
    */
   @:noCompletion
-  private function createHintCircleGraphic(radius:Float, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
+  function createHintCircleGraphic(radius:Float, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
   {
     final shape:Shape = new Shape();
     shape.graphics.beginFill(baseColor.to24Bit(), baseColor.alphaFloat);
@@ -672,7 +671,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @return array of vertices
    */
   @:noCompletion
-  private function getTriangleVertices(width:Int, height:Int, facing:NoteDirection):Array<Float>
+  function getTriangleVertices(width:Int, height:Int, facing:NoteDirection):Array<Float>
   {
     if (facing == UP) facing = DOWN;
     else if (facing == DOWN) facing = UP;

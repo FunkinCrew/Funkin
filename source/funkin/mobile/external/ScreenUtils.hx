@@ -1,5 +1,8 @@
 package funkin.mobile.external;
 
+/**
+ * A Utility class to get iOS screen related informations.
+ */
 @:build(funkin.mobile.macros.LinkerMacro.xml('project/Build.xml'))
 @:include('ScreenUtils.hpp')
 @:unreflective

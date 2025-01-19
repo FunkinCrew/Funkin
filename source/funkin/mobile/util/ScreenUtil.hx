@@ -18,22 +18,11 @@ class ScreenUtil
    */
   public static function getNotchRect():Rectangle
   {
-    var rectangle:Rectangle = new Rectangle();
+    final rectangle:Rectangle = new Rectangle();
 
-    #if ios
-    var top:Float = -1;
-    var left:Float = -1;
-    var right:Float = -1;
-    var bottom:Float = -1;
-    ScreenUtils.getSafeAreaInsets(cpp.Pointer.addressOf(top).raw, cpp.Pointer.addressOf(bottom).raw, cpp.Pointer.addressOf(left).raw,
-      cpp.Pointer.addressOf(right).raw);
-    rectangle.top = top;
-    rectangle.left = left;
-    rectangle.right = right;
-    rectangle.bottom = bottom;
-    trace('Notch Rect: Width: ' + rectangle.width + ' Height: ' + rectangle.height + ' X: ' + rectangle.x + ' Y: ' + rectangle.y);
-    #elseif android
-    var rectDimensions:Array<Array<Float>> = [[], [], [], []];
+    #if android
+    final rectDimensions:Array<Array<Float>> = [[], [], [], []];
+
     for (rect in Tools.getCutoutDimensions())
     {
       rectDimensions[0].push(rect.x);
@@ -59,6 +48,9 @@ class ScreenUtil
         }
       }
     }
+    #elseif ios
+    ScreenUtils.getSafeAreaInsets(cpp.Pointer.addressOf(rectangle.top).raw, cpp.Pointer.addressOf(rectangle.bottom).raw,
+      cpp.Pointer.addressOf(rectangle.left).raw, cpp.Pointer.addressOf(rectangle.right).raw);
     #end
 
     return rectangle;

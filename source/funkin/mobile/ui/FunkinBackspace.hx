@@ -2,11 +2,18 @@ package funkin.mobile.ui;
 
 import flixel.FlxG;
 import flixel.util.FlxColor;
-import funkin.mobile.ui.FunkinButton;
 
 class FunkinBackspace extends FunkinButton
 {
-  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE, ?onClick:Void->Void = null):Void
+  /**
+   * Creates a new FunkinBackspace instance.
+   *
+   * @param xPos The x position of the object.
+   * @param yPos The y position of the object.
+   * @param theColor Button's optional color.
+   * @param onClick An optional callback function that will be triggered when the object is clicked.
+   */
+  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE, ?onClick:Void->Void):Void
   {
     super(xPos, yPos);
 
