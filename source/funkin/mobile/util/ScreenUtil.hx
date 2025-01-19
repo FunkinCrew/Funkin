@@ -49,8 +49,18 @@ class ScreenUtil
       }
     }
     #elseif ios
-    ScreenUtils.getSafeAreaInsets(cpp.Pointer.addressOf(rectangle.top).raw, cpp.Pointer.addressOf(rectangle.bottom).raw,
-      cpp.Pointer.addressOf(rectangle.left).raw, cpp.Pointer.addressOf(rectangle.right).raw);
+    var top:Float = -1;
+    var left:Float = -1;
+    var right:Float = -1;
+    var bottom:Float = -1;
+
+    ScreenUtils.getSafeAreaInsets(cpp.Pointer.addressOf(top).raw, cpp.Pointer.addressOf(bottom).raw, cpp.Pointer.addressOf(left).raw,
+      cpp.Pointer.addressOf(right).raw);
+
+    rectangle.top = top;
+    rectangle.left = left;
+    rectangle.right = right;
+    rectangle.bottom = bottom;
     #end
 
     return rectangle;
