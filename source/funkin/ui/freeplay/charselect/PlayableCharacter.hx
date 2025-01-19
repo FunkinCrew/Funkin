@@ -12,8 +12,6 @@ import funkin.play.scoring.Scoring.ScoringRank;
 @:nullSafety
 class PlayableCharacter implements IRegistryEntry<PlayerData>
 {
-  public final id:String;
-
   /**
    * @param id The ID of the JSON file to parse.
    */

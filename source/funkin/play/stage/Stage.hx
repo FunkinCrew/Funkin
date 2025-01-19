@@ -35,10 +35,6 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
-  public final id:String;
-
-  public final _data:StageData;
-
   public var stageName(get, never):String;
 
   function get_stageName():String
@@ -851,16 +847,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
       return null;
     }
-  }
-
-  public override function toString():String
-  {
-    return 'Stage($id)';
-  }
-
-  static function _fetchData(id:String):Null<StageData>
-  {
-    return StageRegistry.instance.parseEntryDataWithMigration(id, StageRegistry.instance.fetchEntryVersion(id));
   }
 
   public function onScriptEvent(event:ScriptEvent)
