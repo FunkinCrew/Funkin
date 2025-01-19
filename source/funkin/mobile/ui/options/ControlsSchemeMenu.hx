@@ -3,6 +3,7 @@ package funkin.mobile.ui.options;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import funkin.mobile.ui.options.objects.SchemeMenuButton;
@@ -91,6 +92,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   var dragDistance:Int;
 
+  /**
+   * Represents the background shader for the menu, utilizing HSV color adjustments.
+   */
+  var hsv:HSVShader = new HSVShader();
+
   public override function create():Void
   {
     super.create();
@@ -167,15 +173,18 @@ class ControlsSchemeMenu extends MusicBeatSubState
         onSelectHitbox);
       hitboxShowcases.add(hitboxShowcase);
 
-      if (availableSchemes[i] != FunkinHitboxControlSchemes.Arrows) continue;
-
-      hitboxShowcases.members[i].createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
-        Preferences.downscroll = value;
-      });
+      switch (availableSchemes[i])
+      {
+        case FunkinHitbox.FunkinHitboxControlSchemes.Arrows:
+          hitboxShowcases.members[i].createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
+            Preferences.downscroll = value;
+          });
+      }
     }
-    add(hitboxShowcases);
 
     hitboxShowcases.cameras = [camHitboxes];
+    add(hitboxShowcases);
+
     camHitboxes.setScale(0.5, 0.5);
 
     itemNavHitbox = new FunkinSprite(FlxG.width * 0.295).makeSolidColor(Std.int(FlxG.width * 0.25), Std.int(FlxG.height * 0.25), FlxColor.GREEN);
@@ -236,6 +245,10 @@ class ControlsSchemeMenu extends MusicBeatSubState
   {
     isInDemo = true;
 
+    FlxTween.num(hsv.hue, 0, 0.5, (v:Float) -> hsv.hue = v);
+    FlxTween.num(hsv.saturation, 0, 0.5, (v:Float) -> hsv.saturation = v);
+    FlxTween.num(hsv.value, 0.5, 0.5, (v:Float) -> hsv.value = v);
+
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.visible = false;
     });
@@ -267,6 +280,10 @@ class ControlsSchemeMenu extends MusicBeatSubState
   function onHitboxDemoBack():Void
   {
     isInDemo = false;
+
+    FlxTween.num(hsv.hue, -0.6, 0.5, (v:Float) -> hsv.hue = v);
+    FlxTween.num(hsv.saturation, 0.9, 0.5, (v:Float) -> hsv.saturation = v);
+    FlxTween.num(hsv.value, 3.6, 0.5, (v:Float) -> hsv.value = v);
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.visible = true;
