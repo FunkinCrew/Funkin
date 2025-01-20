@@ -58,6 +58,9 @@ import haxe.Int64;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
+#if sys
+import sys.thread.Thread;
+#end
 
 /**
  * Parameters used to initialize the PlayState.
@@ -707,6 +710,10 @@ class PlayState extends MusicBeatSubState
 
     initPreciseInputs();
 
+    #if sys
+    initThreads();
+    #end
+
     FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
     // The song is loaded and in the process of starting.
@@ -801,6 +808,10 @@ class PlayState extends MusicBeatSubState
     if (criticalFailure) return;
 
     super.update(elapsed);
+
+    #if sys
+    isMainThreadFrozen = false;
+    #end
 
     var list = FlxG.sound.list;
     updateHealthBar();
@@ -1763,6 +1774,58 @@ class PlayState extends MusicBeatSubState
       currentStage.refresh();
     }
   }
+
+  #if sys
+  var destroyThread:Bool = false;
+
+  var isMainThreadFrozen:Bool = false;
+  var sideThread:Thread;
+
+  /**
+     * All of this to prevent one small bug.
+     */
+  function initThreads()
+  {
+    // Main thread sends the message via the boolean and side thread checks if it has been updated in the main thread
+    sideThread = Thread.create(function() {
+      Sys.sleep(1); // start the thing after a sec to let everything generate and such
+
+      while (true)
+      {
+        if (destroyThread) break;
+
+        var lostFocus:Bool = false;
+        @:privateAccess
+        lostFocus = FlxG.game._lostFocus;
+
+        if (!initialized || health <= Constants.HEALTH_MIN || isGamePaused || !generatedMusic || criticalFailure || lostFocus || justUnpaused) continue;
+
+        if (isMainThreadFrozen)
+        {
+          trace("The game is frozen! Pausing.");
+
+          persistentUpdate = false;
+          persistentDraw = true;
+
+          var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
+
+          FlxTransitionableState.skipNextTransIn = true;
+          FlxTransitionableState.skipNextTransOut = true;
+          pauseSubState.camera = camCutscene;
+          openSubState(pauseSubState);
+        }
+        else
+        {
+          // trace("Not frozen! We resetting and checking again!");
+        }
+
+        isMainThreadFrozen = true;
+
+        Sys.sleep(FlxG.maxElapsed); // we sleep so that we can let the damn thing update!
+      }
+    });
+  }
+  #end
 
   /**
      * Constructs the strumlines for each player.
@@ -3108,6 +3171,11 @@ class PlayState extends MusicBeatSubState
      */
   function performCleanup():Void
   {
+    #if sys
+    // If we have a thread running, kill it.
+    destroyThread = true;
+    #end
+
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
 
