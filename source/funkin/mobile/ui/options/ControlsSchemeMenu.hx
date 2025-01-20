@@ -245,9 +245,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   {
     isInDemo = true;
 
-    FlxTween.num(hsv.hue, 0, 0.5, (v:Float) -> hsv.hue = v);
-    FlxTween.num(hsv.saturation, 0, 0.5, (v:Float) -> hsv.saturation = v);
-    FlxTween.num(hsv.value, 0.5, 0.5, (v:Float) -> hsv.value = v);
+    FlxTween.tween(hsv, {hue: 0, saturation: 0, value: 0.5}, 0.5);
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.visible = false;
@@ -281,9 +279,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
   {
     isInDemo = false;
 
-    FlxTween.num(hsv.hue, -0.6, 0.5, (v:Float) -> hsv.hue = v);
-    FlxTween.num(hsv.saturation, 0.9, 0.5, (v:Float) -> hsv.saturation = v);
-    FlxTween.num(hsv.value, 3.6, 0.5, (v:Float) -> hsv.value = v);
+    FlxTween.tween(hsv, {hue: -0.6, saturation: 0.9, value: 3.6}, 0.5);
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.visible = true;
