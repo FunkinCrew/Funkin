@@ -59,7 +59,7 @@ import haxe.Int64;
 import funkin.api.discord.DiscordClient;
 #end
 #if sys
-import sys.thread.Thread;
+import funkin.util.ThreadUtil;
 #end
 
 /**
@@ -1776,54 +1776,41 @@ class PlayState extends MusicBeatSubState
   }
 
   #if sys
-  var destroyThread:Bool = false;
-
   var isMainThreadFrozen:Bool = false;
-  var sideThread:Thread;
 
   /**
-     * All of this to prevent one small bug.
+     * Setups the Thread to check if the game has been dragged by the window's title bar.
      */
   function initThreads()
   {
-    // Main thread sends the message via the boolean and side thread checks if it has been updated in the main thread
-    sideThread = Thread.create(function() {
-      Sys.sleep(1); // start the thing after a sec to let everything generate and such
+    ThreadUtil.createLoopingThread("playStateWindow", function() {
+      var lostFocus:Bool = false;
+      @:privateAccess
+      lostFocus = FlxG.game._lostFocus;
 
-      while (true)
+      if (!initialized || health <= Constants.HEALTH_MIN || isGamePaused || !generatedMusic || criticalFailure || lostFocus || justUnpaused) return;
+
+      if (isMainThreadFrozen)
       {
-        if (destroyThread) break;
+        trace("The game is frozen! Pausing.");
 
-        var lostFocus:Bool = false;
-        @:privateAccess
-        lostFocus = FlxG.game._lostFocus;
+        persistentUpdate = false;
+        persistentDraw = true;
 
-        if (!initialized || health <= Constants.HEALTH_MIN || isGamePaused || !generatedMusic || criticalFailure || lostFocus || justUnpaused) continue;
+        var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
 
-        if (isMainThreadFrozen)
-        {
-          trace("The game is frozen! Pausing.");
-
-          persistentUpdate = false;
-          persistentDraw = true;
-
-          var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
-
-          FlxTransitionableState.skipNextTransIn = true;
-          FlxTransitionableState.skipNextTransOut = true;
-          pauseSubState.camera = camCutscene;
-          openSubState(pauseSubState);
-        }
-        else
-        {
-          // trace("Not frozen! We resetting and checking again!");
-        }
-
-        isMainThreadFrozen = true;
-
-        Sys.sleep(FlxG.maxElapsed); // we sleep so that we can let the damn thing update!
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        pauseSubState.camera = camCutscene;
+        openSubState(pauseSubState);
       }
-    });
+      else
+      {
+        // trace("Not frozen! We resetting and checking again!");
+      }
+
+      isMainThreadFrozen = true;
+    }, 1, FlxG.maxElapsed);
   }
   #end
 
@@ -3172,8 +3159,8 @@ class PlayState extends MusicBeatSubState
   function performCleanup():Void
   {
     #if sys
-    // If we have a thread running, kill it.
-    destroyThread = true;
+    // If we have a thread running, stop it.
+    ThreadUtil.stopThread("playStateWindow");
     #end
 
     // If the camera is being tweened, stop it.
