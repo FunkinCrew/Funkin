@@ -58,6 +58,9 @@ import haxe.Int64;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
+#if sys
+import funkin.util.ThreadUtil;
+#end
 
 /**
  * Parameters used to initialize the PlayState.
@@ -713,6 +716,10 @@ class PlayState extends MusicBeatSubState
 
     initPreciseInputs();
 
+    #if sys
+    initThreads();
+    #end
+
     FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
     // The song is loaded and in the process of starting.
@@ -807,6 +814,10 @@ class PlayState extends MusicBeatSubState
     if (criticalFailure) return;
 
     super.update(elapsed);
+
+    #if sys
+    isMainThreadFrozen = false;
+    #end
 
     var list = FlxG.sound.list;
     updateHealthBar();
@@ -1775,6 +1786,45 @@ class PlayState extends MusicBeatSubState
       currentStage.refresh();
     }
   }
+
+  #if sys
+  var isMainThreadFrozen:Bool = false;
+
+  /**
+     * Setups the Thread to check if the game has been dragged by the window's title bar.
+     */
+  function initThreads()
+  {
+    ThreadUtil.createLoopingThread("playStateWindow", function() {
+      var lostFocus:Bool = false;
+      @:privateAccess
+      lostFocus = FlxG.game._lostFocus;
+
+      if (!initialized || health <= Constants.HEALTH_MIN || isGamePaused || !generatedMusic || criticalFailure || lostFocus || justUnpaused) return;
+
+      if (isMainThreadFrozen)
+      {
+        trace("The game is frozen! Pausing.");
+
+        persistentUpdate = false;
+        persistentDraw = true;
+
+        var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
+
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        pauseSubState.camera = camCutscene;
+        openSubState(pauseSubState);
+      }
+      else
+      {
+        // trace("Not frozen! We resetting and checking again!");
+      }
+
+      isMainThreadFrozen = true;
+    }, 1, FlxG.maxElapsed);
+  }
+  #end
 
   /**
      * Constructs the strumlines for each player.
@@ -3120,6 +3170,11 @@ class PlayState extends MusicBeatSubState
      */
   function performCleanup():Void
   {
+    #if sys
+    // If we have a thread running, stop it.
+    ThreadUtil.stopThread("playStateWindow");
+    #end
+
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
 
