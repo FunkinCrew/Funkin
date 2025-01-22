@@ -147,16 +147,17 @@ class ControlsSchemeMenu extends MusicBeatSubState
     if (camControls != null) FlxG.cameras.remove(camControls);
 
     camControls = new FunkinCamera('camControls');
-    FlxG.cameras.add(camControls, false);
     camControls.bgColor = 0x0;
+    FlxG.cameras.add(camControls, false);
 
     camButtons = new FunkinCamera('camButtons');
-    FlxG.cameras.add(camButtons, false);
     camButtons.bgColor = 0x0;
+    FlxG.cameras.add(camButtons, false);
 
     camHitboxes = new FunkinCamera('camHitboxes');
-    FlxG.cameras.add(camHitboxes, false);
+    camHitboxes.setScale(0.5, 0.5);
     camHitboxes.bgColor = 0x0;
+    FlxG.cameras.add(camHitboxes, false);
   }
 
   /**
@@ -169,23 +170,22 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     for (i in 0...availableSchemes.length)
     {
-      final hitboxShowcase:HitboxShowcase = new HitboxShowcase(Math.floor(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i],
-        onSelectHitbox);
-      hitboxShowcases.add(hitboxShowcase);
+      final hitboxShowcase:HitboxShowcase = new HitboxShowcase(Math.floor(FlxG.width * -0.16 + (1500 * (i * FullScreenScaleMode.windowScale.x))), 0, i,
+        currentIndex, availableSchemes[i], onSelectHitbox);
 
       switch (availableSchemes[i])
       {
         case FunkinHitbox.FunkinHitboxControlSchemes.Arrows:
-          hitboxShowcases.members[i].createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
+          hitboxShowcase.createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
             Preferences.downscroll = value;
           });
       }
+
+      hitboxShowcases.add(hitboxShowcase);
     }
 
     hitboxShowcases.cameras = [camHitboxes];
     add(hitboxShowcases);
-
-    camHitboxes.setScale(0.5, 0.5);
 
     itemNavHitbox = new FunkinSprite(FlxG.width * 0.295).makeSolidColor(Std.int(FlxG.width * 0.25), Std.int(FlxG.height * 0.25), FlxColor.GREEN);
     itemNavHitbox.cameras = [camButtons];
@@ -298,17 +298,14 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   function setSelection(index:Int):Void
   {
-    currentIndex = index;
+    final newIndex:Int = Math.floor(FlxMath.bound(index, 0, hitboxShowcases.length - 1));
 
-    if (currentIndex < 0)
+    if (currentIndex != newIndex)
     {
-      currentIndex = 0;
-      return;
+      currentIndex = newIndex;
     }
-
-    if (currentIndex >= hitboxShowcases.length)
+    else
     {
-      currentIndex = hitboxShowcases.length - 1;
       return;
     }
 
@@ -353,14 +350,12 @@ class ControlsSchemeMenu extends MusicBeatSubState
     if (TouchUtil.justPressed && TouchUtil.overlapsComplex(itemNavHitbox))
     {
       hitboxShowcases.members[currentIndex].onPress();
-      currentButton.busy = true;
-      return;
-    }
 
-    if (TouchUtil.justPressed && TouchUtil.overlapsComplex(optionNavHitbox) && hitboxShowcases.members[currentIndex].checkbox != null)
+      currentButton.busy = true;
+    }
+    else if (TouchUtil.justPressed && TouchUtil.overlapsComplex(optionNavHitbox) && hitboxShowcases.members[currentIndex].checkbox != null)
     {
       hitboxShowcases.members[currentIndex].checkbox.text.callback();
-      return;
     }
   }
 
@@ -380,13 +375,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     if (TouchUtil.pressed && dragDistance != 0)
     {
-      final showcasesTargetX:Float = originX + dragDistance * 10;
-      hitboxShowcases.x = MathUtil.smoothLerp(hitboxShowcases.x, showcasesTargetX, elapsed, 0.5);
-
-      final minShowcasesX:Float = -1500 * availableSchemes.length;
-      hitboxShowcases.x = FlxMath.bound(hitboxShowcases.x, minShowcasesX, 400);
+      hitboxShowcases.x = FlxMath.bound(MathUtil.smoothLerp(hitboxShowcases.x, originX + dragDistance * 10, elapsed, 0.5), -1500 * availableSchemes.length,
+        400);
 
       final targetIndex:Int = Math.round(hitboxShowcases.x / -1500);
+
       if (currentIndex != targetIndex) setSelection(targetIndex);
     }
     else

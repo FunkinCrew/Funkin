@@ -44,7 +44,7 @@ class SchemeMenuButton extends FlxSpriteGroup
    * @param labelText The text displayed on the button.
    * @param onClick An optional callback function that will be triggered when the button is clicked.
    */
-  public function new(?xPos:Float = 0, ?yPos:Float = 0, labelText:String, ?onClick:Void->Void = null):Void
+  public function new(?xPos:Float = 0, ?yPos:Float = 0, labelText:String, ?onClick:Void->Void):Void
   {
     super(xPos, yPos);
 

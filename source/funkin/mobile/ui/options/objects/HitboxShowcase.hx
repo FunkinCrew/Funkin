@@ -85,11 +85,9 @@ class HitboxShowcase extends FlxSpriteGroup
     bg.screenCenter();
     add(bg);
 
-    final hitbox:FunkinHitbox = new FunkinHitbox(controlsScheme);
+    final hitbox:FunkinHitbox = new FunkinHitbox(controlsScheme, false);
     hitbox.forEachAlive(function(hint:FunkinHint):Void {
-      hint.alpha = 0.3;
-      @:privateAccess
-      if (hint.label != null) hint.label.alpha = 0.3;
+      if (controlsScheme != FunkinHitbox.FunkinHitboxControlSchemes.FourLanes) hint.alpha = 0.3;
     });
     hitbox.active = false;
     add(hitbox);
@@ -105,7 +103,7 @@ class HitboxShowcase extends FlxSpriteGroup
   {
     if (checkbox != null) return;
 
-    checkbox = new HitboxOptionButton(width / 2 - width / 4, height + 50, defaultValue, callback);
+    checkbox = new HitboxOptionButton(name, width / 2 - width / 4, height + 50, defaultValue, callback);
     add(checkbox);
   }
 

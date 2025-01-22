@@ -147,7 +147,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     ignoreDrawDebug = true;
     #end
     scrollFactor.set();
-
     input = new FlxInput(0);
   }
 
@@ -286,19 +285,18 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     return isPointInPolygon(polygon, pos, getScreenPosition(_point, camera));
   }
 
-  @:noCompletion
-  static function isPointInPolygon(polygon:Array<Float>, point:FlxPoint, ?offset:FlxPoint):Bool
+  static function isPointInPolygon(vertices:Array<Float>, point:FlxPoint, ?offset:FlxPoint):Bool
   {
     if (offset == null) offset = FlxPoint.weak();
 
     var inside:Bool = false;
 
-    final numsPoints:Int = Math.floor(polygon.length / 2);
+    final numsPoints:Int = Math.floor(vertices.length / 2);
 
     for (i in 0...numsPoints)
     {
-      final vertex1:FlxPoint = FlxPoint.weak(polygon[i * 2] + offset.x, polygon[i * 2 + 1] + offset.y);
-      final vertex2:FlxPoint = FlxPoint.weak(polygon[(i + 1) % numsPoints * 2] + offset.x, polygon[(i + 1) % numsPoints * 2 + 1] + offset.y);
+      final vertex1:FlxPoint = FlxPoint.weak(vertices[i * 2] + offset.x, vertices[i * 2 + 1] + offset.y);
+      final vertex2:FlxPoint = FlxPoint.weak(vertices[(i + 1) % numsPoints * 2] + offset.x, vertices[(i + 1) % numsPoints * 2 + 1] + offset.y);
 
       if (checkRayIntersection(vertex1, vertex2, point))
       {
@@ -312,7 +310,6 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     return inside;
   }
 
-  @:noCompletion
   static inline function checkRayIntersection(vertex1:FlxPoint, vertex2:FlxPoint, point:FlxPoint):Bool
   {
     final result:Bool = (vertex1.y > point.y) != (vertex2.y > point.y)
@@ -329,17 +326,17 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     return !(status != FunkinButtonStatus.NORMAL && (!check || (currentInput != null && currentInput.justReleased)));
   }
 
-  function updateStatus(input:IFlxInput):Void
+  function updateStatus(newInput:IFlxInput):Void
   {
-    if (input.justPressed)
+    if (newInput.justPressed)
     {
-      currentInput = input;
+      currentInput = newInput;
 
       onDownHandler();
     }
     else if (status == FunkinButtonStatus.NORMAL && !isBackButton)
     {
-      if (input.pressed)
+      if (newInput.pressed)
       {
         onDownHandler();
       }
@@ -386,19 +383,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   #if FLX_DEBUG
   public override function drawDebugOnCamera(camera:FlxCamera):Void
   {
-    if (isCircle)
-    {
-      if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
-
-      getScreenPosition(_point, camera);
-
-      final gfx:Graphics = beginDrawDebug(camera);
-
-      drawDebugCircleColor(gfx, getDebugBoundingBoxColor(allowCollisions));
-
-      endDrawDebug(camera);
-    }
-    else if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)
+    if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)
     {
       if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
 
@@ -410,20 +395,30 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       endDrawDebug(camera);
     }
+    else if (radius > 0)
+    {
+      if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
+
+      getScreenPosition(_point, camera);
+
+      final gfx:Graphics = beginDrawDebug(camera);
+
+      drawDebugCircleColor(gfx, getDebugBoundingBoxColor(allowCollisions));
+
+      endDrawDebug(camera);
+    }
     else
     {
       super.drawDebugOnCamera(camera);
     }
   }
 
-  @:noCompletion
   function drawDebugCircleColor(gfx:Graphics, color:FlxColor):Void
   {
     gfx.lineStyle(2, color, 0.75);
     gfx.drawCircle(radius, radius, radius);
   }
 
-  @:noCompletion
   function drawDebugPolygonColor(gfx:Graphics, vertices:Array<Float>, color:FlxColor):Void
   {
     gfx.lineStyle(2, color, 0.75);
