@@ -333,6 +333,11 @@ class PlayState extends MusicBeatSubState
    */
   public var disableKeys:Bool = false;
 
+  /**
+   * The previous difficulty the player was playing on.
+   */
+  public var previousDifficulty:String = Constants.DEFAULT_DIFFICULTY;
+
   public var isSubState(get, never):Bool;
 
   function get_isSubState():Bool
@@ -604,6 +609,7 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
+    previousDifficulty = currentDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
@@ -814,7 +820,11 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      dispatchEvent(new ScriptEvent(SONG_RETRY));
+      var retryEvent = new SongRetryEvent(currentDifficulty);
+
+      previousDifficulty = currentDifficulty;
+
+      dispatchEvent(retryEvent);
 
       resetCamera();
 
@@ -907,7 +917,7 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.instance.update(); // Normal conductor update.
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
     }
 
     var androidPause:Bool = false;
@@ -1448,7 +1458,9 @@ class PlayState extends MusicBeatSubState
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(playerVoicesError) > 5 || Math.abs(opponentVoicesError) > 5))
+        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
+          || Math.abs(playerVoicesError) > 100
+          || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
@@ -2548,7 +2560,7 @@ class PlayState extends MusicBeatSubState
 
     Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
-    playerStrumline.hitNote(note, !isComboBreak);
+    playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     vocals.playerVolume = 1;
