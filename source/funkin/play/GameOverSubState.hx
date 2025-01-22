@@ -10,6 +10,7 @@ import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
@@ -97,6 +98,12 @@ class GameOverSubState extends MusicBeatSubState
   var targetCameraZoom:Float = 1.0;
 
   var canInput:Bool = false;
+
+  var justDied:Bool = true;
+
+  var isSpecialAnimation:Bool = false;
+
+  var gameOverVibrationPreset:VibrationPreset = {period: 0, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: Constants.MIN_VIBRATION_AMPLITUDE};
 
   public function new(params:GameOverParams)
   {
@@ -304,6 +311,9 @@ class GameOverSubState extends MusicBeatSubState
         }
       }
     }
+
+    // Handle vibrations on update.
+    if (Preferences.vibration) handleAnimationVibrations();
 
     // Start death music before firstDeath gets replaced
     super.update(elapsed);
@@ -520,9 +530,6 @@ class GameOverSubState extends MusicBeatSubState
   {
     blueballed = true;
 
-    // Gameover vibration.
-    HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD * 5, Constants.DEFAULT_VIBRATION_DURATION * 10);
-
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
     {
       FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
@@ -534,6 +541,100 @@ class GameOverSubState extends MusicBeatSubState
   }
 
   var hasPlayedDeathQuote:Bool = false;
+
+  /**
+   * Used for death haptics.
+   */
+  private var startedTimerHaptics:Bool = false;
+
+  /**
+   * Unique vibrations for each death animation.
+   */
+  private function handleAnimationVibrations():Void
+  {
+    if (PlayState.instance.isMinimalMode || boyfriend == null) return;
+
+    if (justDied)
+    {
+      if (isSpecialAnimation)
+      {
+        HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION * 5);
+        trace("It's a special game over animation.");
+      }
+      else
+      {
+        HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION);
+      }
+      justDied = false;
+    }
+
+    if (boyfriend.animation == null) return;
+
+    final curFrame:Int = (boyfriend.animation.curAnim != null) ? boyfriend.animation.curAnim.curFrame : -1;
+    switch (boyfriend.characterId)
+    {
+      case "bf" | "bf-pixel":
+        // BF's mic drops.
+        if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 27)
+        {
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+        }
+
+        // BF's balls pulsating.
+        if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && (curFrame == 0 || curFrame == 18))
+        {
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+        }
+
+      case "pico-playable":
+        if (isSpecialAnimation)
+        {
+          if (startedTimerHaptics) return;
+
+          startedTimerHaptics = true;
+
+          // Death by Darnell's can.
+          new FlxTimer().start(1.85, function(tmr:FlxTimer) {
+            // Pico falls on his knees.
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          });
+        }
+        else
+        {
+          // Pico falls on his back.
+          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 20)
+          {
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          }
+
+          // Blood firework woohoo!!!!
+          if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && curFrame % 2 == 0)
+          {
+            final randomAmplitude:Float = FlxG.random.float(Constants.MIN_VIBRATION_AMPLITUDE / 100, Constants.MIN_VIBRATION_AMPLITUDE);
+            final randomDuration:Float = FlxG.random.float(Constants.DEFAULT_VIBRATION_DURATION / 10, Constants.DEFAULT_VIBRATION_DURATION);
+
+            HapticUtil.vibrate(0, randomDuration, randomAmplitude);
+          }
+        }
+
+      case "pico-blazin":
+        // Pico dies because of Darnell beating him up.
+        if (!startedTimerHaptics)
+        {
+          startedTimerHaptics = true;
+
+          new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+            // Pico falls on his knees.
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+
+            new FlxTimer().start(0.6, function(tmr:FlxTimer) {
+              // Pico falls "asleep". :)
+              HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+            });
+          });
+        }
+    }
+  }
 
   public override function destroy():Void
   {
