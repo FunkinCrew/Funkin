@@ -139,11 +139,6 @@ class ReflectUtil
     return Type.getClassFields(cls);
   }
 
-  public static function getClassFields(cls:Class<Dynamic>):Array<String>
-  {
-    return Type.getClassFields(cls);
-  }
-
   public static function getClassFieldsOf(obj:Dynamic):Array<String>
   {
     return Type.getClassFields(Type.getClass(obj));
