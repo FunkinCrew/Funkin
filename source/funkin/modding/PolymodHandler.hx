@@ -257,12 +257,12 @@ class PolymodHandler
     Polymod.blacklistImport('Sys');
 
     // `Reflect`
-    // Reflect.callMethod() can access blacklisted packages
-    Polymod.blacklistImport('Reflect');
+    // Reflect.callMethod() can access blacklisted packages, but some functions are whitelisted
+    Polymod.addImportAlias('Reflect', funkin.util.ReflectUtil);
 
     // `Type`
-    // Type.createInstance(Type.resolveClass()) can access blacklisted packages
-    Polymod.blacklistImport('Type');
+    // Type.createInstance(Type.resolveClass()) can access blacklisted packages, but some functions are whitelisted
+    Polymod.addImportAlias('Type', funkin.util.ReflectUtil);
 
     // `cpp.Lib`
     // Lib.load() can load malicious DLLs
@@ -335,8 +335,19 @@ class PolymodHandler
   {
     return {
       assetLibraryPaths: [
-        'default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'videos' => 'videos', 'tutorial' => 'tutorial', 'week1' => 'week1',
-        'week2' => 'week2', 'week3' => 'week3', 'week4' => 'week4', 'week5' => 'week5', 'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1',
+        'default' => 'preload',
+        'shared' => 'shared',
+        'songs' => 'songs',
+        'videos' => 'videos',
+        'tutorial' => 'tutorial',
+        'week1' => 'week1',
+        'week2' => 'week2',
+        'week3' => 'week3',
+        'week4' => 'week4',
+        'week5' => 'week5',
+        'week6' => 'week6',
+        'week7' => 'week7',
+        'weekend1' => 'weekend1',
       ],
       coreAssetRedirect: CORE_FOLDER,
     }
