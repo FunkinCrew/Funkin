@@ -860,6 +860,32 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return currentNoteSelection;
   }
 
+  var currentOverlappingNotes(default, set):Array<SongNoteData> = [];
+
+  function set_currentOverlappingNotes(value:Array<SongNoteData>):Array<SongNoteData>
+  {
+    // This value is true if all elements of the current overlapping array are also in the new array.
+    var isSuperset:Bool = currentOverlappingNotes.isSubset(value);
+    var isEqual:Bool = currentOverlappingNotes.isEqualUnordered(value);
+
+    currentOverlappingNotes = value;
+
+    if (!isEqual)
+    {
+      if (currentOverlappingNotes.length > 0 && isSuperset)
+      {
+        notePreview.addOverlappingNotes(currentOverlappingNotes, Std.int(songLengthInMs));
+      }
+      else
+      {
+        // The new array might add or remove elements from the old array, so we have to redraw the note preview.
+        notePreviewDirty = true;
+      }
+    }
+
+    return currentOverlappingNotes;
+  }
+
   /**
    * The events which are currently in the user's selection.
    */
@@ -3724,7 +3750,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
 
       // Gather stacked notes to render later
-      var stackedNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackNoteThreshold);
+      currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackNoteThreshold);
 
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.
@@ -3788,7 +3814,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           var stepLength = noteSprite.noteData.getStepLength();
           selectionSquare.height = (stepLength <= 0) ? GRID_SIZE : ((stepLength + 1) * GRID_SIZE);
         }
-        else if (doesNoteStack(noteSprite.noteData, stackedNotes))
+        else if (doesNoteStack(noteSprite.noteData, currentOverlappingNotes))
         {
           // TODO: Maybe use another way to display these notes
           var selectionSquare:ChartEditorSelectionSquareSprite = renderedSelectionSquares.recycle(buildSelectionSquare);
@@ -6228,6 +6254,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       notePreview.erase();
       notePreview.addNotes(currentSongChartNoteData, Std.int(songLengthInMs));
       notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
+      notePreview.addOverlappingNotes(currentOverlappingNotes, Std.int(songLengthInMs));
       notePreview.addEvents(currentSongChartEventData, Std.int(songLengthInMs));
     }
 
