@@ -1,5 +1,6 @@
 package funkin.ui.options;
 
+import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -145,8 +146,8 @@ class Page extends FlxGroup
   {
     if (canExit && controls.BACK)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exit();
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
   }
 
@@ -185,7 +186,11 @@ class OptionsMenu extends Page
     createItem("PREFERENCES", function() switchPage(Preferences));
     createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
+      #if web
+      LoadingState.transitionToState(() -> new LatencyState());
+      #else
       FlxG.state.openSubState(new LatencyState());
+      #end
     });
 
     #if newgrounds

@@ -37,6 +37,9 @@ interface IStateChangingScriptedClass extends IScriptedClass
   public function onSubStateOpenEnd(event:SubStateScriptEvent):Void;
   public function onSubStateCloseBegin(event:SubStateScriptEvent):Void;
   public function onSubStateCloseEnd(event:SubStateScriptEvent):Void;
+
+  public function onFocusLost(event:FocusScriptEvent):Void;
+  public function onFocusGained(event:FocusScriptEvent):Void;
 }
 
 /**
@@ -74,6 +77,22 @@ interface INoteScriptedClass extends IScriptedClass
 }
 
 /**
+ * Defines a set of callbacks available to scripted classes which represent sprites synced with the BPM.
+ */
+interface IBPMSyncedScriptedClass extends IScriptedClass
+{
+  /**
+   * Called once every step of the song.
+   */
+  public function onStepHit(event:SongTimeScriptEvent):Void;
+
+  /**
+   * Called once every beat of the song.
+   */
+  public function onBeatHit(event:SongTimeScriptEvent):Void;
+}
+
+/**
  * Developer note:
  *
  * I previously considered adding events for onKeyDown, onKeyUp, mouse events, etc.
@@ -86,7 +105,7 @@ interface INoteScriptedClass extends IScriptedClass
 /**
  * Defines a set of callbacks available to scripted classes that involve the lifecycle of the Play State.
  */
-interface IPlayStateScriptedClass extends INoteScriptedClass
+interface IPlayStateScriptedClass extends INoteScriptedClass extends IBPMSyncedScriptedClass
 {
   /**
    * Called when the game is paused.
@@ -124,7 +143,7 @@ interface IPlayStateScriptedClass extends INoteScriptedClass
   /**
    * Called when the player restarts the song, either via pause menu or restarting after a game over.
    */
-  public function onSongRetry(event:ScriptEvent):Void;
+  public function onSongRetry(event:SongRetryEvent):Void;
 
   /**
    * Called when the player presses a key when no note is on the strumline.
@@ -135,16 +154,6 @@ interface IPlayStateScriptedClass extends INoteScriptedClass
    * Called when the song reaches an event.
    */
   public function onSongEvent(event:SongEventScriptEvent):Void;
-
-  /**
-   * Called once every step of the song.
-   */
-  public function onStepHit(event:SongTimeScriptEvent):Void;
-
-  /**
-   * Called once every beat of the song.
-   */
-  public function onBeatHit(event:SongTimeScriptEvent):Void;
 
   /**
    * Called when the countdown of the song starts.

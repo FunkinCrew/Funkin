@@ -6,7 +6,6 @@ import flixel.system.FlxAssets;
 import flixel.tweens.FlxEase;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.utils.Assets;
 import funkin.util.MathUtil;
 
 /**
@@ -34,6 +33,7 @@ class FunkinSoundTray extends FlxSoundTray
     var bg:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/volumebox")));
     bg.scaleX = graphicScale;
     bg.scaleY = graphicScale;
+    bg.smoothing = true;
     addChild(bg);
 
     y = -height;
@@ -45,6 +45,7 @@ class FunkinSoundTray extends FlxSoundTray
     backingBar.y = 5;
     backingBar.scaleX = graphicScale;
     backingBar.scaleY = graphicScale;
+    backingBar.smoothing = true;
     addChild(backingBar);
     backingBar.alpha = 0.4;
 
@@ -61,6 +62,7 @@ class FunkinSoundTray extends FlxSoundTray
       bar.y = 5;
       bar.scaleX = graphicScale;
       bar.scaleY = graphicScale;
+      bar.smoothing = true;
       addChild(bar);
       _bars.push(bar);
     }
@@ -80,10 +82,12 @@ class FunkinSoundTray extends FlxSoundTray
     y = MathUtil.coolLerp(y, lerpYPos, 0.1);
     alpha = MathUtil.coolLerp(alpha, alphaTarget, 0.25);
 
+    var shouldHide = (FlxG.sound.muted == false && FlxG.sound.volume > 0);
+
     // Animate sound tray thing
     if (_timer > 0)
     {
-      _timer -= (MS / 1000);
+      if (shouldHide) _timer -= (MS / 1000);
       alphaTarget = 1;
     }
     else if (y >= -height)
@@ -120,9 +124,9 @@ class FunkinSoundTray extends FlxSoundTray
     lerpYPos = 10;
     visible = true;
     active = true;
-    var globalVolume:Int = Math.round(FlxG.sound.volume * 10);
+    var globalVolume:Int = Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
 
-    if (FlxG.sound.muted)
+    if (FlxG.sound.muted || FlxG.sound.volume == 0)
     {
       globalVolume = 0;
     }

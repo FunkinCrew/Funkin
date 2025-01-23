@@ -103,7 +103,7 @@ class NoteScriptEvent extends ScriptEvent
   public var comboCount(default, null):Int;
 
   /**
-   * Whether to play the record scratch sound (if this eventn type is `NOTE_MISS`).
+   * Whether to play the record scratch sound (if this event type is `NOTE_MISS`).
    */
   public var playSound(default, default):Bool;
 
@@ -151,7 +151,8 @@ class HitNoteScriptEvent extends NoteScriptEvent
   public var hitDiff:Float = 0;
 
   /**
-   * If the hit causes a notesplash
+   * Whether this note hit causes a note splash to display.
+   * Defaults to true only on "sick" notes.
    */
   public var doesNotesplash:Bool = false;
 
@@ -414,6 +415,28 @@ class SongLoadScriptEvent extends ScriptEvent
 }
 
 /**
+ * AAn event that is fired when the player retries the song.
+ */
+class SongRetryEvent extends ScriptEvent
+{
+  /**
+   * The new difficulty of the song.
+   */
+  public var difficulty(default, null):String;
+
+  public function new(difficulty:String):Void
+  {
+    super(SONG_RETRY, false);
+    this.difficulty = difficulty;
+  }
+
+  public override function toString():String
+  {
+    return 'SongRetryEvent(difficulty=$difficulty)';
+  }
+}
+
+/**
  * An event that is fired when moving out of or into an FlxState.
  */
 class StateChangeScriptEvent extends ScriptEvent
@@ -432,6 +455,22 @@ class StateChangeScriptEvent extends ScriptEvent
   public override function toString():String
   {
     return 'StateChangeScriptEvent(type=' + type + ', targetState=' + targetState + ')';
+  }
+}
+
+/**
+ * An event that is fired when the game loses or gains focus.
+ */
+class FocusScriptEvent extends ScriptEvent
+{
+  public function new(type:ScriptEventType):Void
+  {
+    super(type, false);
+  }
+
+  public override function toString():String
+  {
+    return 'FocusScriptEvent(type=' + type + ')';
   }
 }
 

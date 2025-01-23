@@ -7,6 +7,6 @@ medium:
   min: 10
   max: 99
 
-# Add 'large' to any changes for more than 100 lines
+# Add 'large' to any changes of at least 100 lines
 large:
   min: 100

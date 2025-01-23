@@ -24,18 +24,19 @@ import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import flixel.util.FlxColor;
+import funkin.ui.PixelatedIcon;
 
 class SongMenuItem extends FlxSpriteGroup
 {
   public var capsule:FlxSprite;
 
-  var pixelIcon:FlxSprite;
+  var pixelIcon:PixelatedIcon;
 
   /**
    * Modify this by calling `init()`
    * If `null`, assume this SongMenuItem is for the "Random Song" option.
    */
-  public var songData(default, null):Null<FreeplaySongData> = null;
+  public var freeplayData(default, null):Null<FreeplaySongData> = null;
 
   public var selected(default, set):Bool;
 
@@ -87,7 +88,7 @@ class SongMenuItem extends FlxSpriteGroup
     super(x, y);
 
     capsule = new FlxSprite();
-    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule');
+    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/capsule/freeplayCapsule');
     capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
     capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
     // capsule.animation
@@ -161,7 +162,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     sparkle = new FlxSprite(ranking.x, ranking.y);
     sparkle.frames = Paths.getSparrowAtlas('freeplay/sparkle');
-    sparkle.animation.addByPrefix('sparkle', 'sparkle', 24, false);
+    sparkle.animation.addByPrefix('sparkle', 'sparkle Export0', 24, false);
     sparkle.animation.play('sparkle', true);
     sparkle.scale.set(0.8, 0.8);
     sparkle.blend = BlendMode.ADD;
@@ -201,11 +202,7 @@ class SongMenuItem extends FlxSpriteGroup
     // TODO: Use value from metadata instead of random.
     updateDifficultyRating(FlxG.random.int(0, 20));
 
-    pixelIcon = new FlxSprite(160, 35);
-
-    pixelIcon.makeGraphic(32, 32, 0x00000000);
-    pixelIcon.antialiasing = false;
-    pixelIcon.active = false;
+    pixelIcon = new PixelatedIcon(160, 35);
     add(pixelIcon);
     grpHide.add(pixelIcon);
 
@@ -213,6 +210,7 @@ class SongMenuItem extends FlxSpriteGroup
     favIconBlurred.frames = Paths.getSparrowAtlas('freeplay/favHeart');
     favIconBlurred.animation.addByPrefix('fav', 'favorite heart', 24, false);
     favIconBlurred.animation.play('fav');
+
     favIconBlurred.setGraphicSize(50, 50);
     favIconBlurred.blend = BlendMode.ADD;
     favIconBlurred.shader = new GaussianBlurShader(1.2);
@@ -424,6 +422,34 @@ class SongMenuItem extends FlxSpriteGroup
     return evilTrail.color;
   }
 
+  public function refreshDisplay():Void
+  {
+    if (freeplayData == null)
+    {
+      songText.text = 'Random';
+      pixelIcon.visible = false;
+      ranking.visible = false;
+      blurredRanking.visible = false;
+      favIcon.visible = false;
+      favIconBlurred.visible = false;
+      newText.visible = false;
+    }
+    else
+    {
+      songText.text = freeplayData.fullSongName;
+      if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.songCharacter);
+      pixelIcon.visible = true;
+      updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
+      updateDifficultyRating(freeplayData.difficultyRating ?? 0);
+      updateScoringRank(freeplayData.scoringRank);
+      newText.visible = freeplayData.isNew;
+      favIcon.visible = freeplayData.isFav;
+      favIconBlurred.visible = freeplayData.isFav;
+      checkClip();
+    }
+    updateSelected();
+  }
+
   function updateDifficultyRating(newRating:Int):Void
   {
     var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
@@ -502,71 +528,30 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, songData:Null<FreeplaySongData>):Void
+  public function init(?x:Float, ?y:Float, freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
   {
     if (x != null) this.x = x;
     if (y != null) this.y = y;
-    this.songData = songData;
+    this.freeplayData = freeplayData;
 
-    // Update capsule text.
-    songText.text = songData?.songName ?? 'Random';
-    // Update capsule character.
-    if (songData?.songCharacter != null) setCharacter(songData.songCharacter);
-    updateBPM(Std.int(songData?.songStartingBpm) ?? 0);
-    updateDifficultyRating(songData?.difficultyRating ?? 0);
-    updateScoringRank(songData?.scoringRank);
-    newText.visible = songData?.isNew;
-    // Update opacity, offsets, etc.
-    updateSelected();
-
-    checkWeek(songData?.songId);
-  }
-
-  /**
-   * Set the character displayed next to this song in the freeplay menu.
-   * @param char The character ID used by this song.
-   *             If the character has no freeplay icon, a warning will be thrown and nothing will display.
-   */
-  public function setCharacter(char:String):Void
-  {
-    var charPath:String = "freeplay/icons/";
-
-    // TODO: Put this in the character metadata where it belongs.
-    // TODO: Also, can use CharacterDataParser.getCharPixelIconAsset()
-    switch (char)
+    // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
+    // if thats possible someone Please change the new function to be something like
+    // capsule.frames = Paths.getSparrowAtlas(styleData == null ? 'freeplay/freeplayCapsule/capsule/freeplayCapsule' : styleData.getCapsuleAssetKey()); thank u luv u
+    if (styleData != null)
     {
-      case 'monster-christmas':
-        charPath += 'monsterpixel';
-      case 'mom-car':
-        charPath += 'mommypixel';
-      case 'dad':
-        charPath += 'daddypixel';
-      case 'darnell-blazin':
-        charPath += 'darnellpixel';
-      case 'senpai-angry':
-        charPath += 'senpaipixel';
-      default:
-        charPath += '${char}pixel';
+      capsule.frames = Paths.getSparrowAtlas(styleData.getCapsuleAssetKey());
+      capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
+      capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
+      songText.applyStyle(styleData);
     }
 
-    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
-    {
-      trace('[WARN] Character ${char} has no freeplay icon.');
-      return;
-    }
+    updateScoringRank(freeplayData?.scoringRank);
+    favIcon.animation.curAnim.curFrame = favIcon.animation.curAnim.numFrames - 1;
+    favIconBlurred.animation.curAnim.curFrame = favIconBlurred.animation.curAnim.numFrames - 1;
 
-    pixelIcon.loadGraphic(Paths.image(charPath));
-    pixelIcon.scale.x = pixelIcon.scale.y = 2;
+    refreshDisplay();
 
-    switch (char)
-    {
-      case 'parents-christmas':
-        pixelIcon.origin.x = 140;
-      default:
-        pixelIcon.origin.x = 100;
-    }
-    // pixelIcon.origin.x = capsule.origin.x;
-    // pixelIcon.offset.x -= pixelIcon.origin.x;
+    checkWeek(freeplayData?.data.id);
   }
 
   var frameInTicker:Float = 0;
@@ -707,6 +692,18 @@ class SongMenuItem extends FlxSpriteGroup
     super.update(elapsed);
   }
 
+  /**
+   * Play any animations associated with selecting this song.
+   */
+  public function confirm():Void
+  {
+    if (songText != null) songText.flickerText();
+    if (pixelIcon != null && pixelIcon.visible)
+    {
+      pixelIcon.animation.play('confirm');
+    }
+  }
+
   public function intendedY(index:Int):Float
   {
     return (index * ((height * realScaled) + 10)) + 120;
@@ -761,7 +758,7 @@ class FreeplayRank extends FlxSprite
       switch (val)
       {
         case SHIT:
-        // offset.x -= 1;
+          // offset.x -= 1;
         case GOOD:
           // offset.x -= 1;
           offset.y -= 8;
@@ -769,11 +766,11 @@ class FreeplayRank extends FlxSprite
           // offset.x -= 1;
           offset.y -= 8;
         case EXCELLENT:
-        // offset.y += 5;
+          // offset.y += 5;
         case PERFECT:
-        // offset.y += 5;
+          // offset.y += 5;
         case PERFECT_GOLD:
-        // offset.y += 5;
+          // offset.y += 5;
         default:
           centerOffsets(false);
           this.visible = false;
@@ -830,9 +827,9 @@ class CapsuleNumber extends FlxSprite
       case 6:
 
       case 4:
-      // offset.y += 5;
+        // offset.y += 5;
       case 9:
-      // offset.y += 5;
+        // offset.y += 5;
       default:
         centerOffsets(false);
     }

@@ -20,7 +20,7 @@ enum abstract ScriptEventType(String) from String to String
   var DESTROY = 'DESTROY';
 
   /**
-   * Called when the relevent object is added to the game state.
+   * Called when the relevant object is added to the game state.
    * This assumes all data is loaded and ready to go.
    *
    * This event is not cancelable.
@@ -222,6 +222,20 @@ enum abstract ScriptEventType(String) from String to String
    * This event is not cancelable.
    */
   var SUBSTATE_CLOSE_END = 'SUBSTATE_CLOSE_END';
+
+  /**
+   * Called when the game regains focus.
+   *
+   * This event is not cancelable.
+   */
+  var FOCUS_GAINED = 'FOCUS_GAINED';
+
+  /**
+   * Called when the game loses focus.
+   *
+   * This event is not cancelable.
+   */
+  var FOCUS_LOST = 'FOCUS_LOST';
 
   /**
    * Called when the game starts a conversation.
