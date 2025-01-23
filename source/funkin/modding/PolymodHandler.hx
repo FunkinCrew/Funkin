@@ -257,12 +257,12 @@ class PolymodHandler
     Polymod.blacklistImport('Sys');
 
     // `Reflect`
-    // Reflect.callMethod() can access blacklisted packages
-    Polymod.blacklistImport('Reflect');
+    // Reflect.callMethod() can access blacklisted packages, but some functions are whitelisted
+    Polymod.addImportAlias('Reflect', funkin.util.ReflectUtil);
 
     // `Type`
-    // Type.createInstance(Type.resolveClass()) can access blacklisted packages
-    Polymod.blacklistImport('Type');
+    // Type.createInstance(Type.resolveClass()) can access blacklisted packages, but some functions are whitelisted
+    Polymod.addImportAlias('Type', funkin.util.ReflectUtil);
 
     // `cpp.Lib`
     // Lib.load() can load malicious DLLs
