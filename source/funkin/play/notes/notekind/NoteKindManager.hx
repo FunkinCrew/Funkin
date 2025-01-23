@@ -130,6 +130,23 @@ class NoteKindManager
   }
 
   /**
+   * Retrieve custom params of the given note kind
+   * @param noteKind Name of the note kind
+   * @return Array<NoteKindParam>
+   */
+  public static function getNoteKind(noteKind:Null<String>):Null<NoteKind>
+  {
+    if (noteKind == null)
+    {
+      return null;
+    }
+    else
+    {
+      return noteKinds.get(noteKind);
+    }
+  }
+
+  /**
    * Retrive custom params of the given note kind
    * @param noteKind Name of the note kind
    * @return Array<NoteKindParam>
