@@ -1,17 +1,13 @@
 package funkin.play;
 
-import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
-import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
@@ -22,7 +18,6 @@ import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
-import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongEventData;
@@ -45,7 +40,6 @@ import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
-import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
@@ -58,15 +52,9 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.options.PreferencesMenu;
-import funkin.ui.story.StoryMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
-import lime.ui.Haptic;
-import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
-import openfl.Lib;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -344,6 +332,11 @@ class PlayState extends MusicBeatSubState
    */
   public var disableKeys:Bool = false;
 
+  /**
+   * The previous difficulty the player was playing on.
+   */
+  public var previousDifficulty:String = Constants.DEFAULT_DIFFICULTY;
+
   public var isSubState(get, never):Bool;
 
   function get_isSubState():Bool
@@ -615,6 +608,7 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
+    previousDifficulty = currentDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
@@ -760,24 +754,6 @@ class PlayState extends MusicBeatSubState
     refresh();
   }
 
-  public override function draw():Void
-  {
-    // if (FlxG.renderBlit)
-    // {
-    //  camGame.fill(BACKGROUND_COLOR);
-    // }
-    // else if (FlxG.renderTile)
-    // {
-    //  FlxG.log.warn("PlayState background not displayed properly on tile renderer!");
-    // }
-    // else
-    // {
-    //  FlxG.log.warn("PlayState background not displayed properly, unknown renderer!");
-    // }
-
-    super.draw();
-  }
-
   function assertChartExists():Bool
   {
     // Returns null if the song failed to load or doesn't have the selected difficulty.
@@ -843,7 +819,11 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      dispatchEvent(new ScriptEvent(SONG_RETRY));
+      var retryEvent = new SongRetryEvent(currentDifficulty);
+
+      previousDifficulty = currentDifficulty;
+
+      dispatchEvent(retryEvent);
 
       resetCamera();
 
@@ -936,7 +916,7 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.instance.update(); // Normal conductor update.
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
     }
 
     var androidPause:Bool = false;
@@ -1510,7 +1490,9 @@ class PlayState extends MusicBeatSubState
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(playerVoicesError) > 5 || Math.abs(opponentVoicesError) > 5))
+        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
+          || Math.abs(playerVoicesError) > 100
+          || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
@@ -2595,8 +2577,8 @@ class PlayState extends MusicBeatSubState
         healthChange = Constants.HEALTH_BAD_BONUS;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
-        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
         healthChange = Constants.HEALTH_SHIT_BONUS;
+        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 
     // Send the note hit event.
@@ -2609,7 +2591,7 @@ class PlayState extends MusicBeatSubState
 
     Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
-    playerStrumline.hitNote(note, !isComboBreak);
+    playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     vocals.playerVolume = 1;
@@ -2665,8 +2647,6 @@ class PlayState extends MusicBeatSubState
       }
     }
     vocals.playerVolume = 0;
-
-    if (Highscore.tallies.combo != 0) if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
 
     applyScore(-10, 'miss', healthChange, true);
 
@@ -2886,7 +2866,7 @@ class PlayState extends MusicBeatSubState
       }
     }
     comboPopUps.displayRating(daRating);
-    if (combo >= 10 || combo == 0) comboPopUps.displayCombo(combo);
+    if (combo >= 10) comboPopUps.displayCombo(combo);
 
     vocals.playerVolume = 1;
   }
