@@ -357,6 +357,23 @@ class FileUtil
     #end
   }
 
+  /**
+   * Read directory contents direct from a given path.
+   * Only works on desktop.
+   *
+   * @param dir The path to the directory.
+   * @return The directory contents.
+   */
+  public static function readDirContent(dir:String):Array<String>
+  {
+    #if sys
+    if (!doesFileExist(dir) || !sys.FileSystem.isDirectory(dir)) return [];
+    return sys.FileSystem.readDirectory(dir);
+    #else
+    return [];
+    #end
+  }
+
   public static function doesFileExist(path:String):Bool
   {
     #if sys
