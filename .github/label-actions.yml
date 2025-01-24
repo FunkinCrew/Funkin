@@ -16,6 +16,7 @@
       - 'status: bug reproduced'
       - 'status: cannot reproduce'
       - 'status: needs clarification'
+      - 'status: needs r&d'
       - 'status: needs revision'
       - 'status: pending pull request'
       - 'status: pending triage'
@@ -31,14 +32,13 @@
       This pull request is a duplicate. Please direct all discussion to the original pull request.
     # Close the pull request
     close: false
-    # Set a close reason
-    # close-reason: 'not planned'
     # Remove other status labels
     unlabel:
       - 'status: accepted'
       - 'status: bug reproduced'
       - 'status: cannot reproduce'
       - 'status: needs clarification'
+      - 'status: needs r&d'
       - 'status: needs revision'
       - 'status: pending pull request'
       - 'status: pending triage'
@@ -62,6 +62,7 @@
       - 'status: cannot reproduce'
       - 'status: duplicate'
       - 'status: needs clarification'
+      - 'status: needs r&d'
       - 'status: needs revision'
       - 'status: pending pull request'
       - 'status: pending triage'
@@ -73,8 +74,6 @@
   prs:
     # Close the pull request
     close: true
-    # Set a close reason
-    close-reason: 'not planned'
     # Remove other status labels
     unlabel:
       - 'status: accepted'
@@ -82,6 +81,7 @@
       - 'status: cannot reproduce'
       - 'status: duplicate'
       - 'status: needs clarification'
+      - 'status: needs r&d'
       - 'status: needs revision'
       - 'status: pending pull request'
       - 'status: pending triage'
@@ -104,6 +104,7 @@
       - 'status: cannot reproduce'
       - 'status: duplicate'
       - 'status: needs clarification'
+      - 'status: needs r&d'
       - 'status: needs revision'
       - 'status: pending pull request'
       - 'status: pending triage'
@@ -115,8 +116,6 @@
   prs:
     # Close the pull request
     close: true
-    # Set a close reason
-    close-reason: 'not planned'
     # Remove other status labels
     unlabel:
       - 'status: accepted'
@@ -124,6 +123,7 @@
       - 'status: cannot reproduce'
       - 'status: duplicate'
       - 'status: needs clarification'
+      - 'status: needs r&d'
       - 'status: needs revision'
       - 'status: pending pull request'
       - 'status: pending triage'
@@ -146,6 +146,7 @@
       - 'status: cannot reproduce'
       - 'status: duplicate'
       - 'status: needs clarification'
+      - 'status: needs r&d'
       - 'status: needs revision'
       - 'status: pending pull request'
       - 'status: pending triage'
