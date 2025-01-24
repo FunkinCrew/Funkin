@@ -586,7 +586,7 @@ class GameOverSubState extends MusicBeatSubState
           HapticUtil.vibrateByPreset(gameOverVibrationPreset);
         }
 
-      case "pico-playable":
+      case "pico-playable" | "pico-dark" | "pico-christmas":
         if (isSpecialAnimation)
         {
           if (startedTimerHaptics) return;
