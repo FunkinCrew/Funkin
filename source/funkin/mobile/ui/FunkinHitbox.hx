@@ -167,7 +167,7 @@ class FunkinHint extends FunkinButton
 
     if (followTarget != null)
     {
-      final widthMultiplier:Float = isPixel ? 1.1 : 1.35;
+      final widthMultiplier:Float = isPixel ? 1.2 : 1.35;
       final heightMultiplier:Float = 4;
 
       final xOffset:Float = isPixel ? 43.265 : 0;

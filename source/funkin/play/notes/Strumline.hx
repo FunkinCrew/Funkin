@@ -907,8 +907,8 @@ class Strumline extends FlxSpriteGroup
       if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-        trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.15) * amplification,
-          strumlineScale.y - ((FlxG.height / FlxG.width) * 0.15) * amplification);
+        trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
+          strumlineScale.y - ((FlxG.height / FlxG.width) * 0.2) * amplification);
       }
       #end
 
