@@ -16,3 +16,8 @@
   - any-glob-to-any-file:
       - github/*
       - '**/*.yml'
+
+# Add pending triage label to all PR's
+'status: pending triage':
+- changed-files:
+  - any-glob-to-any-file: '**'
