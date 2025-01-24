@@ -56,7 +56,7 @@ class ReflectUtil
 
   public static function getFieldsOf(obj:Dynamic):Array<String>
   {
-    return getAnonymousFieldsOf(obj, name);
+    return getAnonymousFieldsOf(obj);
   }
 
   public static function getAnonymousFieldsOf(obj:Dynamic):Array<String>
