@@ -330,6 +330,7 @@ class Project extends HXProject {
 
 		this.window.hardware = true;
 		this.window.vsync = false;
+		this.window.allowHighDPI = true;
 
 		if (isWeb()) {
 			this.window.resizable = true;
