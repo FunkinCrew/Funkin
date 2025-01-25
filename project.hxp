@@ -25,7 +25,7 @@ class Project extends HXProject {
 	 * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
 	 * You only have to change it here, the rest of the game will query this value.
 	 */
-	static final VERSION:String = "0.5.2";
+	static final VERSION:String = "0.5.3";
 
 	/**
 	 * The game's name. Used as the default window title.
@@ -460,7 +460,6 @@ class Project extends HXProject {
 
 		// Should be false unless explicitly requested.
 		GITHUB_BUILD.apply(this, false);
-		FEATURE_STAGE_EDITOR.apply(this, false);
 		FEATURE_NEWGROUNDS.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
 
@@ -471,10 +470,14 @@ class Project extends HXProject {
 		FEATURE_FUNKVIS.apply(this, true);
 		FEATURE_PARTIAL_SOUNDS.apply(this, true);
 		FEATURE_VIDEO_PLAYBACK.apply(this, true);
+		FEATURE_STAGE_EDITOR.apply(this, true);
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-		FEATURE_LOG_TRACE.apply(this, isDebug());
+
+		// Got a lot of complains about this being turned off by default on some builds.
+		// TODO: Look into ways to optimize logging (maybe by using a thread pool?)
+		FEATURE_LOG_TRACE.apply(this, true);
 
 		// Should default to true on workspace builds and false on release builds.
 		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());

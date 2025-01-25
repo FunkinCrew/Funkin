@@ -1,17 +1,13 @@
 package funkin.play;
 
-import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
-import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
@@ -22,7 +18,6 @@ import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
-import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongEventData;
@@ -45,7 +40,6 @@ import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
-import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
@@ -58,15 +52,9 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.options.PreferencesMenu;
-import funkin.ui.story.StoryMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
-import lime.ui.Haptic;
-import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
-import openfl.Lib;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -758,24 +746,6 @@ class PlayState extends MusicBeatSubState
     // This step ensures z-indexes are applied properly,
     // and it's important to call it last so all elements get affected.
     refresh();
-  }
-
-  public override function draw():Void
-  {
-    // if (FlxG.renderBlit)
-    // {
-    //  camGame.fill(BACKGROUND_COLOR);
-    // }
-    // else if (FlxG.renderTile)
-    // {
-    //  FlxG.log.warn("PlayState background not displayed properly on tile renderer!");
-    // }
-    // else
-    // {
-    //  FlxG.log.warn("PlayState background not displayed properly, unknown renderer!");
-    // }
-
-    super.draw();
   }
 
   function assertChartExists():Bool
@@ -2576,7 +2546,7 @@ class PlayState extends MusicBeatSubState
 
     Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
-    playerStrumline.hitNote(note, !isComboBreak);
+    playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     vocals.playerVolume = 1;

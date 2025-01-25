@@ -55,16 +55,19 @@ class DebugMenuSubState extends MusicBeatSubState
     // Create each menu item.
     // Call onMenuChange when the first item is created to move the camera .
     #if FEATURE_CHART_EDITOR
-    onMenuChange(createItem("CHART EDITOR", openChartEditor));
+    createItem("CHART EDITOR", openChartEditor);
+    #end
+    createItem("ANIMATION EDITOR", openAnimationEditor);
+    #if FEATURE_STAGE_EDITOR
+    createItem("STAGE EDITOR", openStageEditor);
     #end
     // createItem("Input Offset Testing", openInputOffsetTesting);
-    createItem("CHARACTER SELECT", openCharSelect, true);
-    createItem("ANIMATION EDITOR", openAnimationEditor);
-    createItem("STAGE EDITOR", openStageEditor);
+    // createItem("CHARACTER SELECT", openCharSelect, true);
     // createItem("TEST STICKERS", testStickers);
     #if sys
     createItem("OPEN CRASH LOG FOLDER", openLogFolder);
     #end
+    onMenuChange(items.members[0]);
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
   }
 

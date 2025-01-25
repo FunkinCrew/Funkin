@@ -1458,17 +1458,17 @@ class StageEditorState extends UIState
 /**
  * Available themes for the stage editor state.
  */
-enum StageEditorTheme
+enum abstract StageEditorTheme(String)
 {
   /**
    * The default theme for the stage editor.
    */
-  Light;
+  var Light;
 
   /**
    * A theme which introduces stage colors.
    */
-  Dark;
+  var Dark;
 }
 
 enum StageEditorDialogType
