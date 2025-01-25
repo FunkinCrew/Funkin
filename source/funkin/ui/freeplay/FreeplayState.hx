@@ -117,6 +117,7 @@ class FreeplayState extends MusicBeatSubState
   var songs:Array<Null<FreeplaySongData>> = [];
 
   var curSelected:Int = 0;
+  var curSelectedFloat:Float = 0;
 
   /**
    * Currently selected difficulty, in string form.
@@ -1476,8 +1477,8 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    final upP:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
-    final downP:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
+    final upP:Bool = controls.UI_UP_P /* || SwipeUtil.swipeUp */;
+    final downP:Bool = controls.UI_DOWN_P /* || SwipUtil.swipeDown */;
     final accepted:Bool = controls.ACCEPT;
 
     #if TOUCH_CONTROLS
@@ -1496,7 +1497,16 @@ class FreeplayState extends MusicBeatSubState
         final capsuleHit:FlxObject = grpCapsules.members[i].theActualHitbox;
         if (!TouchUtil.overlaps(capsuleHit, funnyCam)) continue;
 
-        (i == curSelected) ? grpCapsules.members[i].onConfirm() : changeSelection(i - curSelected);
+        if (i == curSelected)
+        {
+          grpCapsules.members[i].onConfirm();
+        }
+        else
+        {
+          curSelected = i;
+          changeSelection(0, true, true);
+        }
+
         break;
       }
     }
@@ -1548,30 +1558,50 @@ class FreeplayState extends MusicBeatSubState
       // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
 
       // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
-      if (SwipeUtil.flickDown)
-      {
-        if (curSelected - 1 >= 0)
-        {
-          dj?.resetAFKTimer();
-          changeSelection(-1);
-        }
-        else
-        {
-          SwipeUtil.resetSwipeVelocity();
-        }
-      }
+      // if (SwipeUtil.flickDown)
+      // {
+      //   if (curSelected - 1 >= 0)
+      //   {
+      //     dj?.resetAFKTimer();
+      //     changeSelection(-1);
+      //   }
+      //   else
+      //   {
+      //     SwipeUtil.resetSwipeVelocity();
+      //   }
+      // }
 
-      if (SwipeUtil.flickUp)
+      // if (SwipeUtil.flickUp)
+      // {
+      //   if (curSelected + 1 < grpCapsules.countLiving())
+      //   {
+      //     dj?.resetAFKTimer();
+      //     changeSelection(1);
+      //   }
+      //   else
+      //   {
+      //     SwipeUtil.resetSwipeVelocity();
+      //   }
+      // }
+
+      for (touch in FlxG.touches.list)
       {
-        if (curSelected + 1 < grpCapsules.countLiving())
+        final delta:Float = touch.deltaY;
+        if (Math.abs(delta) < 2) break;
+
+        curSelectedFloat -= delta / FlxG.updateFramerate; // This might need more testing i don't think having frame dependant is good but on 60 FPS it's doing great
+
+        if (curSelectedFloat < 0)
         {
-          dj?.resetAFKTimer();
-          changeSelection(1);
+          curSelectedFloat = grpCapsules.countLiving() - 1;
         }
-        else
+
+        if (curSelectedFloat >= grpCapsules.countLiving())
         {
-          SwipeUtil.resetSwipeVelocity();
+          curSelectedFloat = 0;
         }
+
+        changeSelection(0, false);
       }
     }
 
@@ -2168,11 +2198,33 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function changeSelection(change:Int = 0):Void
+  function changeSelection(change:Int = 0, updateSelection:Bool = true, forceSound:Bool = false):Void
   {
+    if (!updateSelection)
+    {
+      var prevSelected:Int = curSelected;
+      curSelected = Std.int(curSelectedFloat);
+
+      for (index => capsule in grpCapsules.members)
+      {
+        index += 1;
+
+        capsule.targetPos.y = capsule.intendedY(index - curSelectedFloat);
+        capsule.targetPos.x = (270 + (60 * (Math.sin(index - curSelectedFloat)))) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
+      }
+
+      if (curSelected != prevSelected)
+      {
+        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+        HapticUtil.vibrate(0, 0.01, 0.2);
+      }
+      return;
+    }
+
     var prevSelected:Int = curSelected;
 
     curSelected += change;
+    curSelectedFloat = curSelected;
 
     if (curSelected < 0)
     {
@@ -2185,7 +2237,7 @@ class FreeplayState extends MusicBeatSubState
       SwipeUtil.resetSwipeVelocity();
     }
 
-    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (!prepForNewRank && curSelected != prevSelected || forceSound) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
     if (daSongCapsule.freeplayData != null)
@@ -2225,7 +2277,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Small vibrations every selection change.
-    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.2);
+    if (change != 0 || forceSound) HapticUtil.vibrate(0, 0.01, 0.2);
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

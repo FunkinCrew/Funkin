@@ -664,7 +664,7 @@ class SongMenuItem extends FlxSpriteGroup
     }
   }
 
-  public function intendedY(index:Int):Float
+  public function intendedY(index:Float):Float
   {
     return (index * ((height * realScaled) + 10)) + 120;
   }
