@@ -1478,7 +1478,7 @@ class FreeplayState extends MusicBeatSubState
     if (busy) return;
 
     final upP:Bool = controls.UI_UP_P /* || SwipeUtil.swipeUp */;
-    final downP:Bool = controls.UI_DOWN_P /* || SwipUtil.swipeDown */;
+    final downP:Bool = controls.UI_DOWN_P /* || SwipeUtil.swipeDown */;
     final accepted:Bool = controls.ACCEPT;
 
     #if TOUCH_CONTROLS
@@ -1497,7 +1497,7 @@ class FreeplayState extends MusicBeatSubState
         final capsuleHit:FlxObject = grpCapsules.members[i].theActualHitbox;
         if (!TouchUtil.overlaps(capsuleHit, funnyCam)) continue;
 
-        if (i == curSelected)
+        if (grpCapsules.members[i].selected)
         {
           grpCapsules.members[i].onConfirm();
         }
