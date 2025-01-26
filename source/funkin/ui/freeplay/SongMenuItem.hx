@@ -37,6 +37,7 @@ class SongMenuItem extends FlxSpriteGroup
   public var freeplayData(default, null):Null<FreeplaySongData> = null;
 
   public var selected(default, set):Bool;
+  public var forceHighlight(default, set):Bool;
 
   public var songText:CapsuleText;
   public var favIconBlurred:FlxSprite;
@@ -677,17 +678,25 @@ class SongMenuItem extends FlxSpriteGroup
     return selected;
   }
 
+  function set_forceHighlight(value:Bool):Bool
+  {
+    // cute one liners, lol!
+    forceHighlight = value;
+    updateSelected();
+    return forceHighlight;
+  }
+
   function updateSelected():Void
   {
-    grayscaleShader.setAmount(this.selected ? 0 : 0.8);
-    songText.alpha = this.selected ? 1 : 0.6;
-    songText.blurredText.visible = this.selected ? true : false;
-    capsule.offset.x = this.selected ? 0 : -5;
-    capsule.animation.play(this.selected ? "selected" : "unselected");
-    ranking.alpha = this.selected ? 1 : 0.7;
-    favIcon.alpha = this.selected ? 1 : 0.6;
-    favIconBlurred.alpha = this.selected ? 1 : 0;
-    ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
+    grayscaleShader.setAmount((this.selected || this.forceHighlight) ? 0 : 0.8);
+    songText.alpha = (this.selected || this.forceHighlight) ? 1 : 0.6;
+    songText.blurredText.visible = (this.selected || this.forceHighlight) ? true : false;
+    capsule.offset.x = (this.selected || this.forceHighlight) ? 0 : -5;
+    capsule.animation.play((this.selected || this.forceHighlight) ? "selected" : "unselected");
+    ranking.alpha = (this.selected || this.forceHighlight) ? 1 : 0.7;
+    favIcon.alpha = (this.selected || this.forceHighlight) ? 1 : 0.6;
+    favIconBlurred.alpha = (this.selected || this.forceHighlight) ? 1 : 0;
+    ranking.color = (this.selected || this.forceHighlight) ? 0xFFFFFFFF : 0xFFAAAAAA;
 
     if (songText.tooLong) songText.resetText();
 

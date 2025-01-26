@@ -1472,6 +1472,7 @@ class FreeplayState extends MusicBeatSubState
 
   var _dragOffset:Float = 0;
   var _pressedOn:Bool = false;
+  var _moveLength:Float = 0;
 
   function handleInputs(elapsed:Float):Void
   {
@@ -1588,10 +1589,19 @@ class FreeplayState extends MusicBeatSubState
 
       for (touch in FlxG.touches.list)
       {
+        if (touch.justReleased && _moveLength > 0)
+        {
+          _moveLength = 0;
+          changeSelection(0);
+          break;
+        }
+
         final delta:Float = touch.deltaY;
         if (Math.abs(delta) < 2) break;
 
-        curSelectedFloat -= delta / FlxG.updateFramerate; // This might need more testing i don't think having frame dependant is good but on 60 FPS it's doing great
+        final moveLength = delta / FlxG.updateFramerate; // This might need more testing i don't think having frame dependant is good but on 60 FPS it's doing great
+        _moveLength += Math.abs(moveLength);
+        curSelectedFloat -= moveLength;
 
         if (curSelectedFloat < 0)
         {
@@ -2211,14 +2221,16 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.targetPos.y = capsule.intendedY(index - curSelectedFloat);
       capsule.targetPos.x = (270 + (60 * (Math.sin(index - curSelectedFloat)))) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
+      capsule.forceHighlight = false;
     }
+
+    grpCapsules.members[curSelected].forceHighlight = true;
 
     if (curSelected != prevSelected)
     {
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       HapticUtil.vibrate(0, 0.01, 0.2);
     }
-    return;
   }
 
   function changeSelection(change:Int = 0):Void
@@ -2263,6 +2275,7 @@ class FreeplayState extends MusicBeatSubState
     {
       index += 1;
 
+      capsule.forceHighlight = false;
       capsule.selected = index == curSelected + 1;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
