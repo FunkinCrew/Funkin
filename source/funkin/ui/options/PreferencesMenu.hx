@@ -75,7 +75,7 @@ class PreferencesMenu extends Page
   function createPrefDescription():Void
   {
     itemDescBox.makeSolidColor(1, 1, FlxColor.BLACK);
-    itemDescBox.alpha = 0.6;
+    itemDescBox.alpha = 0.8;
     itemDesc.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     itemDesc.borderSize = 3;
 
