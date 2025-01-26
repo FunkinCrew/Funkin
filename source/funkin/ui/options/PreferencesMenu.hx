@@ -95,31 +95,33 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
+    createPrefItemCheckbox('Naughtyness', 'Enables content that is not suitable for a younger audience. (Profanity, gore, etc.)', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
-    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+    createPrefItemCheckbox('Downscroll', 'Vertically flips the playfield, DDR style.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
-      Preferences.flashingLights = value;
-    }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+    createPrefItemCheckbox('Flashing Lights', 'Shows rapid, high-contrast lighting effects during certain events. (Disable if sensitive to epilepsy)',
+      function(value:Bool):Void {
+        Preferences.flashingLights = value;
+      }, Preferences.flashingLights);
+    createPrefItemCheckbox('Camera Zooming on Beat', 'Whether or not the camera should bop/bounce\non beat with the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
-      Preferences.debugDisplay = value;
-    }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    createPrefItemCheckbox('Debug Display', 'Enables an overlay that shows additional debugging information. (frame rate & memory usage)',
+      function(value:Bool):Void {
+        Preferences.debugDisplay = value;
+      }, Preferences.debugDisplay);
+    createPrefItemCheckbox('Auto Pause', 'Automatically pauses the game when tabbed out.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+    createPrefItemCheckbox('Unlocked Framerate', 'Disables the frame rate cap.\n(Performance may vary depending on system specs)', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
+    createPrefItemNumber('FPS', "Adjust the game's target frame rate.", function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
