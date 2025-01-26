@@ -1,24 +1,23 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
-import funkin.util.FileUtil;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
-import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
+import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
+import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
-import thx.semver.Version;
 import thx.semver.Version;
 
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.4";
-  public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.0";
+  public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
   static final SAVE_PATH:String = 'FunkinCrew';
@@ -146,6 +145,14 @@ class Save
           hitsoundVolumeOpponent: 1.0,
           themeMusic: true
         },
+
+      optionsStageEditor:
+        {
+          previousFiles: [],
+          moveStep: "1px",
+          angleStep: 5,
+          theme: StageEditorTheme.Light
+        }
     };
   }
 
@@ -426,6 +433,91 @@ class Save
     data.unlocks.oldChar = value;
     flush();
     return data.unlocks.oldChar;
+  }
+
+  public var stageEditorPreviousFiles(get, set):Array<String>;
+
+  function get_stageEditorPreviousFiles():Array<String>
+  {
+    if (data.optionsStageEditor.previousFiles == null) data.optionsStageEditor.previousFiles = [];
+
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  function set_stageEditorPreviousFiles(value:Array<String>):Array<String>
+  {
+    // Set and apply.
+    data.optionsStageEditor.previousFiles = value;
+    flush();
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  public var stageEditorHasBackup(get, set):Bool;
+
+  function get_stageEditorHasBackup():Bool
+  {
+    if (data.optionsStageEditor.hasBackup == null) data.optionsStageEditor.hasBackup = false;
+
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  function set_stageEditorHasBackup(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsStageEditor.hasBackup = value;
+    flush();
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  public var stageEditorMoveStep(get, set):String;
+
+  function get_stageEditorMoveStep():String
+  {
+    if (data.optionsStageEditor.moveStep == null) data.optionsStageEditor.moveStep = "1px";
+
+    return data.optionsStageEditor.moveStep;
+  }
+
+  function set_stageEditorMoveStep(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.moveStep = value;
+    flush();
+    return data.optionsStageEditor.moveStep;
+  }
+
+  public var stageEditorAngleStep(get, set):Float;
+
+  function get_stageEditorAngleStep():Float
+  {
+    if (data.optionsStageEditor.angleStep == null) data.optionsStageEditor.angleStep = 5;
+
+    return data.optionsStageEditor.angleStep;
+  }
+
+  function set_stageEditorAngleStep(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsStageEditor.angleStep = value;
+    flush();
+    return data.optionsStageEditor.angleStep;
+  }
+
+  public var stageEditorTheme(get, set):StageEditorTheme;
+
+  function get_stageEditorTheme():StageEditorTheme
+  {
+    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = StageEditorTheme.Light;
+
+    return data.optionsStageEditor.theme;
+  }
+
+  function set_stageEditorTheme(value:StageEditorTheme):StageEditorTheme
+  {
+    // Set and apply.
+    data.optionsStageEditor.theme = value;
+    flush();
+    return data.optionsStageEditor.theme;
   }
 
   /**
@@ -867,39 +959,61 @@ class Save
    */
   static function loadFromSlot(slot:Int):Save
   {
-    trace("[SAVE] Loading save from slot " + slot + "...");
-
-    // Prevent crashes if the save data is corrupted.
-    SerializerUtil.initSerializer();
+    trace('[SAVE] Loading save from slot $slot...');
 
     FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
 
-    if (FlxG.save.isEmpty())
+    switch (FlxG.save.status)
     {
-      trace('[SAVE] Save data is empty, checking for legacy save data...');
-      var legacySaveData = fetchLegacySaveData();
-      if (legacySaveData != null)
-      {
-        trace('[SAVE] Found legacy save data, converting...');
-        var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
+      case EMPTY:
+        trace('[SAVE] Save data in slot ${slot} is empty, checking for legacy save data...');
+        var legacySaveData = fetchLegacySaveData();
+        if (legacySaveData != null)
+        {
+          trace('[SAVE] Found legacy save data, converting...');
+          var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
+          FlxG.save.mergeData(gameSave.data, true);
+          return gameSave;
+        }
+        else
+        {
+          trace('[SAVE] No legacy save data found.');
+          var gameSave = new Save();
+          FlxG.save.mergeData(gameSave.data, true);
+          return gameSave;
+        }
+      case ERROR(_):
+        return handleSaveDataError(slot);
+      case BOUND(_, _):
+        trace('[SAVE] Loaded existing save data in slot ${slot}.');
+        var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
         FlxG.save.mergeData(gameSave.data, true);
+
         return gameSave;
-      }
-      else
-      {
-        trace('[SAVE] No legacy save data found.');
-        var gameSave = new Save();
-        FlxG.save.mergeData(gameSave.data, true);
-        return gameSave;
-      }
+    }
+  }
+
+  /**
+   * Call this when there is an error loading the save data in slot X.
+   */
+  static function handleSaveDataError(slot:Int):Save
+  {
+    var msg = 'There was an error loading your save data in slot ${slot}.';
+    msg += '\nPlease report this issue to the developers.';
+    lime.app.Application.current.window.alert(msg, "Save Data Failure");
+
+    // Don't touch that slot anymore.
+    // Instead, load the next available slot.
+
+    var nextSlot = slot + 1;
+
+    if (nextSlot < 1000)
+    {
+      return loadFromSlot(nextSlot);
     }
     else
     {
-      trace('[SAVE] Found existing save data.');
-      var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
-      FlxG.save.mergeData(gameSave.data, true);
-
-      return gameSave;
+      throw "End of save data slots. Can't load any more.";
     }
   }
 
@@ -964,7 +1078,15 @@ class Save
   {
     var targetSaveData = new FlxSave();
     targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
-    return !targetSaveData.isEmpty();
+    switch (targetSaveData.status)
+    {
+      case EMPTY:
+        return false;
+      case ERROR(_):
+        return false;
+      case BOUND(_, _):
+        return true;
+    }
   }
 
   /**
@@ -1068,6 +1190,11 @@ typedef RawSaveData =
    * The user's preferences specific to the Chart Editor.
    */
   var optionsChartEditor:SaveDataChartEditorOptions;
+
+  /**
+   * The user's preferences specific to the Stage Editor.
+   */
+  var optionsStageEditor:SaveDataStageEditorOptions;
 };
 
 typedef SaveApiData =
@@ -1440,4 +1567,40 @@ typedef SaveDataChartEditorOptions =
    * @default `1.0`
    */
   var ?playbackSpeed:Float;
+};
+
+typedef SaveDataStageEditorOptions =
+{
+  // a lot of these things were copied from savedatacharteditoroptions
+
+  /**
+   * Whether the Stage Editor created a backup the last time it closed.
+   * Prompt the user to load it, then set this back to `false`.
+   * @default `false`
+   */
+  var ?hasBackup:Bool;
+
+  /**
+   * Previous files opened in the Stage Editor.
+   * @default `[]`
+   */
+  var ?previousFiles:Array<String>;
+
+  /**
+   * The Step at which an Object or Character is moved.
+   * @default `1px`
+   */
+  var ?moveStep:String;
+
+  /**
+   * The Step at which an Object is rotated.
+   * @default `5`
+   */
+  var ?angleStep:Float;
+
+  /**
+   * Theme in the Stage Editor.
+   * @default `StageEditorTheme.Light`
+   */
+  var ?theme:StageEditorTheme;
 };

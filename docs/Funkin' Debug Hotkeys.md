@@ -15,8 +15,8 @@ Most of this functionality is only available on debug builds of the game!
 - `2`: ***GAIN HEALTH***: Debug function, add 10% to the player's health.
 - `3`: ***LOSE HEALTH***: Debug function, subtract 5% to the player's health.
 - `9`: NEATO!
-- `PAGEUP` (MacOS: `Fn-Up`): ***FORWARDS TIME TRAVEL****: Move forward by 2 sections. Hold SHIFT to move forward by 20 sections instead.
-- `PAGEDOWN` (MacOS: `Fn-Down`): ***BACKWARDS TIME TRAVEL****: Move backward by 2 sections. Hold SHIFT to move backward by 20 sections instead.
+- `PAGEUP` (MacOS: `Fn-Up`): ***FORWARDS TIME TRAVEL***: Move forward by 2 sections. Hold SHIFT to move forward by 20 sections instead.
+- `PAGEDOWN` (MacOS: `Fn-Down`): ***BACKWARDS TIME TRAVEL***: Move backward by 2 sections. Hold SHIFT to move backward by 20 sections instead.
 
 ## **Freeplay State**
 - `F` (Freeplay Menu) - Move to Favorites
@@ -27,5 +27,5 @@ Most of this functionality is only available on debug builds of the game!
 - `Y` - WOAH
 
 ## **Main Menu**
-- `~`: ***DEBUG****: Opens a menu to access the Chart Editor and other work-in-progress editors. Rebindable in the options menu.
+- `~`: ***DEBUG***: Opens a menu to access the Chart Editor and other work-in-progress editors. Rebindable in the options menu.
 - `CTRL-ALT-SHIFT-W`: ***ALL ACCESS***: Unlocks all songs in Freeplay. Only available on debug builds.
