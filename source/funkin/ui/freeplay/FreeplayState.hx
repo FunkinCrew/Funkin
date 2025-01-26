@@ -1504,7 +1504,9 @@ class FreeplayState extends MusicBeatSubState
         else
         {
           curSelected = i;
-          changeSelection(0, true, true);
+          changeSelection(0);
+          FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+          HapticUtil.vibrate(0, 0.01, 0.2);
         }
 
         break;
@@ -1601,7 +1603,7 @@ class FreeplayState extends MusicBeatSubState
           curSelectedFloat = 0;
         }
 
-        changeSelection(0, false);
+        updateSongsScroll();
       }
     }
 
@@ -2198,29 +2200,29 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function changeSelection(change:Int = 0, updateSelection:Bool = true, forceSound:Bool = false):Void
+  function updateSongsScroll():Void
   {
-    if (!updateSelection)
+    var prevSelected:Int = curSelected;
+    curSelected = Std.int(curSelectedFloat);
+
+    for (index => capsule in grpCapsules.members)
     {
-      var prevSelected:Int = curSelected;
-      curSelected = Std.int(curSelectedFloat);
+      index += 1;
 
-      for (index => capsule in grpCapsules.members)
-      {
-        index += 1;
-
-        capsule.targetPos.y = capsule.intendedY(index - curSelectedFloat);
-        capsule.targetPos.x = (270 + (60 * (Math.sin(index - curSelectedFloat)))) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
-      }
-
-      if (curSelected != prevSelected)
-      {
-        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-        HapticUtil.vibrate(0, 0.01, 0.2);
-      }
-      return;
+      capsule.targetPos.y = capsule.intendedY(index - curSelectedFloat);
+      capsule.targetPos.x = (270 + (60 * (Math.sin(index - curSelectedFloat)))) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
     }
 
+    if (curSelected != prevSelected)
+    {
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      HapticUtil.vibrate(0, 0.01, 0.2);
+    }
+    return;
+  }
+
+  function changeSelection(change:Int = 0):Void
+  {
     var prevSelected:Int = curSelected;
 
     curSelected += change;
@@ -2237,7 +2239,7 @@ class FreeplayState extends MusicBeatSubState
       SwipeUtil.resetSwipeVelocity();
     }
 
-    if (!prepForNewRank && curSelected != prevSelected || forceSound) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
     if (daSongCapsule.freeplayData != null)
@@ -2277,7 +2279,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Small vibrations every selection change.
-    if (change != 0 || forceSound) HapticUtil.vibrate(0, 0.01, 0.2);
+    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.2);
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
