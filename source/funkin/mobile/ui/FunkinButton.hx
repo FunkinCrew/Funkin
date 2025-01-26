@@ -217,7 +217,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
           {
             final prevButton:Null<FunkinButton> = buttonsTouchID.get(touchID);
 
-            if (prevButton != null && !prevButton.limitToBounds) prevButton.onOutHandler();
+            if (input != null && prevButton != null && !prevButton.limitToBounds) prevButton.onOutHandler();
           }
           buttonsTouchID.set(touchID, this);
 

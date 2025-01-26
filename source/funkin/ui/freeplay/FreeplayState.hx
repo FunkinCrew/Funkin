@@ -1589,10 +1589,13 @@ class FreeplayState extends MusicBeatSubState
 
       for (touch in FlxG.touches.list)
       {
-        if (touch.justReleased && _moveLength > 0)
+        if (!touch.pressed)
         {
-          _moveLength = 0;
-          changeSelection(0);
+          if (_moveLength > 0)
+          {
+            _moveLength = 0.0;
+            changeSelection(0);
+          }
           break;
         }
 
@@ -2219,12 +2222,12 @@ class FreeplayState extends MusicBeatSubState
     {
       index += 1;
 
+      capsule.selected = false;
+      capsule.forceHighlight = index == curSelected + 1;
+
       capsule.targetPos.y = capsule.intendedY(index - curSelectedFloat);
       capsule.targetPos.x = (270 + (60 * (Math.sin(index - curSelectedFloat)))) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
-      capsule.forceHighlight = false;
     }
-
-    grpCapsules.members[curSelected].forceHighlight = true;
 
     if (curSelected != prevSelected)
     {
