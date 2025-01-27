@@ -105,6 +105,9 @@ class ScriptEventDispatcher
         case SONG_STEP_HIT:
           t.onStepHit(cast event);
           return;
+        case SONG_BPM_CHANGE:
+          t.onBpmChange(cast event);
+          return;
         default: // Continue;
       }
     }

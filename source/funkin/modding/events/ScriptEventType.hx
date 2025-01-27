@@ -64,6 +64,13 @@ enum abstract ScriptEventType(String) from String to String
   var SONG_STEP_HIT = 'STEP_HIT';
 
   /**
+   * Called when the BPM changes.
+   *
+   * This event is not cancelable.
+   */
+  var SONG_BPM_CHANGE = 'BPM_CHANGE';
+
+  /**
    * Called when a note comes on screen and starts approaching the strumline.
    *
    * This event is not cancelable.

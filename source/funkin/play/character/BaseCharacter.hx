@@ -429,6 +429,7 @@ class BaseCharacter extends Bopper
       // super.onBeatHit handles the regular `dance()` calls.
     }
     FlxG.watch.addQuick('holdTimer-${characterId}', holdTimer);
+    FlxG.watch.addQuick('_realDanceEvery-${characterId}', _realDanceEvery);
   }
 
   public function isSinging():Bool
