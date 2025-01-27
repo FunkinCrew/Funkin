@@ -8,8 +8,9 @@ body:
       label: Issue Checklist
       description: Be sure to complete these steps to increase the chances of your suggestion being considered!
       options:
-        - label: I have properly named my enhancement
+        - label: I have read the pinned [Issues Guide](https://github.com/FunkinCrew/Funkin/issues/4050)
         - label: I have checked the Issues/Discussions pages to see if my enhancement has already been suggested
+        - label: I have properly named my enhancement
 
   - type: textarea
     attributes:
