@@ -1,0 +1,47 @@
+name: Compiling Report
+description: Report an issue with compiling the game.
+labels: ["type: compilation help", "status: pending triage"]
+title: "Compiling Report: "
+body:
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      description: Be sure to complete these steps to increase the chances of your issue being addressed!
+      options:
+        - label: I have properly named my issue
+        - label: I have checked the Issues/Discussions pages to see if my issue has already been reported
+
+  - type: dropdown
+    attributes:
+      label: Platform
+      description: Which platform are you compiling to/for?
+      options:
+       - Web/HTML5
+       - Desktop
+       - Other
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Version
+      description: Which version are you compiling? The game version is in the bottom left corner of the main menu or in the project.hxp file. 
+      placeholder: ex. 0.5.3
+    validations:
+      required: true
+  
+  - type: markdown
+    attributes:
+      value: "## Describe your compiling error."
+
+  - type: markdown
+    attributes:
+      value: "### Please do not report issues from other engines. These must be reported in their respective repositories."
+
+  - type: textarea
+    attributes:
+      label: Description (include any images, videos, errors of terminal or console, error logs)
+      description: Provide as much detail as you can. The better others understand your issue, the more they can help you!  
+      placeholder: Describe your issue here...
+    validations:
+      required: true

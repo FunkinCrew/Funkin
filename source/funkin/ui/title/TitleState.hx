@@ -264,14 +264,11 @@ class TitleState extends MusicBeatState
   {
     FlxG.bitmapLog.add(FlxG.camera.buffer);
 
-    #if HAS_PITCH
-    if (FlxG.keys.pressed.UP) FlxG.sound.music.pitch += 0.5 * elapsed;
-
-    if (FlxG.keys.pressed.DOWN) FlxG.sound.music.pitch -= 0.5 * elapsed;
-    #end
-
     #if desktop
-    if (FlxG.keys.justPressed.ESCAPE)
+    // Pressing BACK on the title screen should close the game.
+    // This lets you exit without leaving fullscreen mode.
+    // Only applicable on desktop.
+    if (controls.BACK)
     {
       openfl.Lib.application.window.close();
     }

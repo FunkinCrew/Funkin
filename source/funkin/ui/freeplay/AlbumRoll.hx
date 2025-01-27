@@ -112,7 +112,7 @@ class AlbumRoll extends FlxSpriteGroup
     var albumGraphic = Paths.image(albumData.getAlbumArtAssetKey());
     newAlbumArt.replaceFrameGraphic(0, albumGraphic);
 
-    buildAlbumTitle(albumData.getAlbumTitleAssetKey());
+    buildAlbumTitle(albumData.getAlbumTitleAssetKey(), albumData.getAlbumTitleOffsets());
 
     applyExitMovers();
 
@@ -198,12 +198,17 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.visible = true;
   }
 
-  public function buildAlbumTitle(assetKey:String):Void
+  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Null<Array<Float>>):Void
   {
     if (albumTitle != null)
     {
       remove(albumTitle);
       albumTitle = null;
+    }
+
+    if (titleOffsets == null)
+    {
+      titleOffsets = [0, 0];
     }
 
     albumTitle = FunkinSprite.createSparrow(925, 500, assetKey);
@@ -218,6 +223,9 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.animation.play('idle');
 
     albumTitle.zIndex = 1000;
+
+    albumTitle.x += titleOffsets[0];
+    albumTitle.y += titleOffsets[1];
 
     if (_exitMovers != null) _exitMovers.set([albumTitle],
       {
