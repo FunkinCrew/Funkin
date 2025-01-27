@@ -8,8 +8,9 @@ body:
       label: Issue Checklist
       description: Be sure to complete these steps to increase the chances of your issue being addressed!
       options:
-        - label: I have properly named my issue
+        - label: I have read the pinned [Issues Guide](https://github.com/FunkinCrew/Funkin/issues/4050)
         - label: I have checked the Issues/Discussions pages to see if my issue has already been reported
+        - label: I have properly named my issue
 
   - type: dropdown
     attributes:
