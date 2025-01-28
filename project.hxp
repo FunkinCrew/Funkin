@@ -581,7 +581,7 @@ class Project extends HXProject {
     // Should be false unless explicitly requested.
     GITHUB_BUILD.apply(this, false);
     FEATURE_NEWGROUNDS.apply(this, false);
-    FEATURE_GHOST_TAPPING.apply(this, false);
+    FEATURE_GHOST_TAPPING.apply(this, isTest());
     EXCLUDE_ARMV7.apply(this, false);
 
 		// Should be true unless explicitly requested.
@@ -597,9 +597,9 @@ class Project extends HXProject {
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 		FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
-		// Got a lot of complains about this being turned off by default on some builds.
-		// TODO: Look into ways to optimize logging (maybe by using a thread pool?)
-		FEATURE_LOG_TRACE.apply(this, true);
+    // Got a lot of complains about this being turned off by default on some builds.
+    // TODO: Look into ways to optimize logging (maybe by using a thread pool?)
+    FEATURE_LOG_TRACE.apply(this, isDebug() || isTest());
 
 		FEATURE_NEWGROUNDS.apply(this, true);
 		FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
@@ -641,9 +641,9 @@ class Project extends HXProject {
     // Should be true only on mobile builds.
     FEATURE_ADMOB_ADS.apply(this, isMobile());
 
-		// Should be true only on debug mobile builds.
-		TESTING_ADS.apply(this, isDebug() && isMobile());
-	}
+    // Should be true only on debug mobile builds.
+    TESTING_ADS.apply(this, (isTest() || isDebug()) && FEATURE_ADMOB_ADS.isEnabled(this));
+  }
 
   /**
    * Set compilation flags which are not feature flags.
@@ -1007,6 +1007,11 @@ class Project extends HXProject {
   public function isBundle():Bool
   {
     return this.targetFlags.exists("bundle") && isAndroid();
+  }
+
+  public function isTest():Bool
+  {
+    return this.targetFlags.exists("test");
   }
 
   public function getHaxedef(name:String):Null<Dynamic>
