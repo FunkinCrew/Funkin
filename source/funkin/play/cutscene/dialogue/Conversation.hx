@@ -407,7 +407,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
             ease: EaseUtil.stepped(8)
           });
 
-        FlxTween.tween(this.music, {volume: 0.0}, outroData.fadeTime);
+        if (this.music != null) FlxTween.tween(this.music, {volume: 0.0}, outroData.fadeTime);
       case NONE(_):
         // Immediately clean up.
         endOutro();
