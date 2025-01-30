@@ -33,7 +33,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
       loopNum--;
     }
 
-    while (loopNum > 0)
+    while (loopNum >= 0) // The last digit doesn't get cleared if this isn't greater than and equal to
     {
       group.members[loopNum].digit = 0;
       loopNum--;
