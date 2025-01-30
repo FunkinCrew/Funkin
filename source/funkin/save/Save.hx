@@ -90,6 +90,7 @@ class Save
       options:
         {
           // Reasonable defaults.
+          locale: "en-US",
           framerate: 60,
           naughtyness: true,
           downscroll: false,
@@ -1297,6 +1298,12 @@ typedef SaveScoreTallyData =
  */
 typedef SaveDataOptions =
 {
+  /**
+   * The display language/localization for texts.
+   * @default `en-US`
+   */
+  var locale:String;
+
   /**
    * FPS
    * @default `60`

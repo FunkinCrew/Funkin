@@ -8,6 +8,30 @@ import funkin.save.Save;
 class Preferences
 {
   /**
+   * The display language/localization for texts.
+   * @default `en-US`
+   */
+  public static var locale(get, set):String;
+
+  static function get_locale():String
+  {
+    return Save?.instance?.options?.locale ?? 'en-US';
+  }
+
+  static function set_locale(value:String):String
+  {
+    var save:Save = Save.instance;
+    save.options.locale = value;
+    save.flush();
+    Localization.tongue.initialize(
+      {
+        locale: value,
+        checkMissing: true
+      });
+    return value;
+  }
+
+  /**
    * FPS
    * @default `60`
    */
@@ -211,6 +235,11 @@ class Preferences
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end
+    Localization.tongue.initialize(
+      {
+        locale: locale,
+        checkMissing: true
+      });
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void
