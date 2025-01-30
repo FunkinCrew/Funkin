@@ -391,7 +391,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       final gfx:Graphics = beginDrawDebug(camera);
 
-      drawDebugPolygonColor(gfx, polygon, getDebugBoundingBoxColor(allowCollisions));
+      final boundingBoxColor:Null<FlxColor> = getDebugBoundingBoxColor(allowCollisions);
+
+      if (boundingBoxColor != null)
+        drawDebugPolygonColor(gfx, polygon, boundingBoxColor);
 
       endDrawDebug(camera);
     }
@@ -403,7 +406,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       final gfx:Graphics = beginDrawDebug(camera);
 
-      drawDebugCircleColor(gfx, getDebugBoundingBoxColor(allowCollisions));
+      final boundingBoxColor:Null<FlxColor> = getDebugBoundingBoxColor(allowCollisions);
+
+      if (boundingBoxColor != null)
+        drawDebugCircleColor(gfx, boundingBoxColor);
 
       endDrawDebug(camera);
     }
