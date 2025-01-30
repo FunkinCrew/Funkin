@@ -125,6 +125,12 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     }
   }
 
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    this.update_danceEvery();
+  }
+
   /**
    * Called when an animation finishes.
    * @param name The name of the animation that just finished.
