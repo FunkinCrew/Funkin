@@ -215,7 +215,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       }
       _realDanceEvery = Math.max(danceEvery, danceEveryNumBeats);
     }
-    else // to do: for danceEvery with decimals
     else // for decymal danceEvery (X.25, X.50 and X.75)
     {
       // maybe to rework, for the moment it tries to have the same patern every sections
