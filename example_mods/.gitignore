@@ -1,4 +1,5 @@
 # Exclude any experimental mods that my have been added.
 /*
+!french-language
 !introMod
 !testing123

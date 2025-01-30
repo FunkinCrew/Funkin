@@ -90,7 +90,8 @@ class Save
       options:
         {
           // Reasonable defaults.
-          locale: "en-US",
+          // locale: (Localization.tongue.locales.contains(Localization.sysLocale) ? Localization.sysLocale : 'en-US'),
+          locale: 'en-US',
           framerate: 60,
           naughtyness: true,
           downscroll: false,

@@ -15,6 +15,7 @@ class Preferences
 
   static function get_locale():String
   {
+    // return Save?.instance?.options?.locale ?? (Localization.tongue.locales.contains(Localization.sysLocale) ? Localization.sysLocale : 'en-US');
     return Save?.instance?.options?.locale ?? 'en-US';
   }
 
@@ -23,11 +24,8 @@ class Preferences
     var save:Save = Save.instance;
     save.options.locale = value;
     save.flush();
-    Localization.tongue.initialize(
-      {
-        locale: value,
-        checkMissing: true
-      });
+    // Reloads the Localization system
+    Localization.init();
     return value;
   }
 
@@ -235,11 +233,9 @@ class Preferences
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end
-    Localization.tongue.initialize(
-      {
-        locale: locale,
-        checkMissing: true
-      });
+
+    // Setup the Localization system
+    Localization.init();
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void
