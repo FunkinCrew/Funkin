@@ -90,6 +90,7 @@ class Save
       options:
         {
           // Reasonable defaults.
+          noteSplashes: true,
           framerate: 60,
           naughtyness: true,
           downscroll: false,
@@ -1297,6 +1298,12 @@ typedef SaveScoreTallyData =
  */
 typedef SaveDataOptions =
 {
+  /**
+   * If enabled, plays a splash particle effect when sick notes are hit.
+   * @default `true`
+   */
+  var noteSplashes:Bool;
+
   /**
    * FPS
    * @default `60`
