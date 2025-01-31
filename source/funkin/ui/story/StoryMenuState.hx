@@ -177,8 +177,7 @@ class StoryMenuState extends MusicBeatState
 
     updateProps();
 
-    tracklistText = new FunkinText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, Texts.instance.getText("story/tracks") ?? "Tracks",
-      32);
+    tracklistText = new FunkinText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
     tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFE55777;
@@ -315,7 +314,7 @@ class StoryMenuState extends MusicBeatState
 
     highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.25));
 
-    scoreText.text = Texts.instance.getText("story/score", [Math.round(highScoreLerp)]) ?? 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
+    scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
     levelTitleText.text = currentLevel.getTitle();
     levelTitleText.x = FlxG.width - (levelTitleText.width + 10); // Right align.
@@ -653,7 +652,7 @@ class StoryMenuState extends MusicBeatState
 
   function updateText():Void
   {
-    tracklistText.text = (Texts.instance.getText("story/tracks") ?? "TRACKS") + '\n\n';
+    tracklistText.text = 'TRACKS\n\n';
     tracklistText.text += currentLevel.getSongDisplayNames(currentDifficultyId).join('\n');
 
     tracklistText.screenCenter(X);

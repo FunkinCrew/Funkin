@@ -250,7 +250,7 @@ class TitleState extends MusicBeatState
 
     for (i in firstArray)
     {
-      swagGoodArray.push(i.split(Texts.instance.getTitleSplitter()));
+      swagGoodArray.push(i.split('--'));
     }
 
     return swagGoodArray;
@@ -462,43 +462,41 @@ class TitleState extends MusicBeatState
         // TODO: Why does it perform ALL the previous steps each beat?
         for (i in lastBeat...Conductor.instance.currentBeat)
         {
-          for (data in Texts.instance.getTitleTexts())
+          switch (i + 1)
           {
-            var beat:Int = data.beat ?? -1;
-            var randomText:Int = (data.randomText ?? -1);
-            var regularTexts:Array<Dynamic> = data.texts ?? [];
-            var command:funkin.Texts.TitleTextCommand = cast data.command ?? "finish-intro";
+            case 1:
+              createCoolText(['The', 'Funkin Crew Inc']);
+            case 3:
+              addMoreText('presents');
+            case 4:
+              deleteCoolText();
+            case 5:
+              createCoolText(['In association', 'with']);
+            case 7:
+              addMoreText('newgrounds');
+              if (ngSpr != null) ngSpr.visible = true;
+            case 8:
+              deleteCoolText();
+              if (ngSpr != null) ngSpr.visible = false;
+            case 9:
+              createCoolText([curWacky[0]]);
+            case 11:
+              addMoreText(curWacky[1]);
+            case 12:
+              deleteCoolText();
+            case 13:
+              addMoreText('Friday');
+            case 14:
+              // easter egg for when the game is trending with the wrong spelling
+              // the random intro text would be "trending--only on x"
 
-            if (beat != i + 1) continue;
-
-            var daTexts:Array<String> = randomText == -1 ? cast regularTexts : [(curWacky[randomText] ?? "")];
-
-            switch (command)
-            {
-              case SHOW_TEXT:
-                createCoolText(daTexts);
-
-              case APPEND_TEXT:
-                for (txt in daTexts)
-                {
-                  // easter egg for when the game is trending with the wrong spelling
-                  // the random intro text would be "trending--only on x"
-                  if (curWacky[0] == "trending" && txt.toLowerCase() == "night") txt = "Nigth";
-                  addMoreText(txt);
-                }
-
-              case CLEAR_TEXT:
-                deleteCoolText();
-
-              case SHOW_LOGO:
-                if (ngSpr != null) ngSpr.visible = true;
-
-              case HIDE_LOGO:
-                if (ngSpr != null) ngSpr.visible = false;
-
-              case FINISH_INTRO:
-                skipIntro();
-            }
+              if (curWacky[0] == "trending") addMoreText('Nigth');
+              else
+                addMoreText('Night');
+            case 15:
+              addMoreText('Funkin');
+            case 16:
+              skipIntro();
           }
         }
       }

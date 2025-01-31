@@ -167,7 +167,7 @@ class LatencyState extends MusicBeatSubState
 
     var helpText:FunkinText = new FunkinText();
     helpText.setFormat(Paths.font("vcr.ttf"), 20);
-    helpText.text = Texts.instance.getText("options/inputOffsets/helpText3") ?? "Press BACK to return to main menu";
+    helpText.text = "Press BACK to return to main menu";
     helpText.x = FlxG.width - helpText.width;
     helpText.y = FlxG.height - (helpText.height * 2) - 2;
     add(helpText);
@@ -261,16 +261,12 @@ class LatencyState extends MusicBeatSubState
     songVisFollowAudio.x = songPosToX(localConductor.songPosition - localConductor.audioVisualOffset);
     songVisFollowVideo.x = songPosToX(localConductor.songPosition - localConductor.inputOffset);
 
-    visualOffsetText.text = (Texts.instance.getText("options/inputOffsets/visualOffset", [localConductor.audioVisualOffset]) ?? "Visual Offset: "
-      + localConductor.audioVisualOffset
-      + "ms");
-    visualOffsetText.text += "\n\n" + (Texts.instance.getText("options/inputOffsets/helpText1") ?? "You can press SPACE+Left/Right to change this value.");
-    visualOffsetText.text += "\n\n" + (Texts.instance.getText("options/inputOffsets/helpText2") ?? "You can hold SHIFT to step 1ms at a time.");
+    visualOffsetText.text = "Visual Offset: " + localConductor.audioVisualOffset + "ms";
+    visualOffsetText.text += "\n\nYou can press SPACE+Left/Right to change this value.";
+    visualOffsetText.text += "\n\nYou can hold SHIFT to step 1ms at a time";
 
-    offsetText.text = (Texts.instance.getText("options/inputOffsets/inputOffset", [localConductor.inputOffset]) ?? "INPUT Offset (Left/Right to change): "
-      + localConductor.inputOffset
-      + "ms");
-    offsetText.text += "\n\n" + (Texts.instance.getText("options/inputOffsets/helpText2") ?? "You can hold SHIFT to step 1ms at a time.");
+    offsetText.text = "INPUT Offset (Left/Right to change): " + localConductor.inputOffset + "ms";
+    offsetText.text += "\n\nYou can hold SHIFT to step 1ms at a time";
 
     var avgOffsetInput:Float = 0;
 
@@ -284,8 +280,7 @@ class LatencyState extends MusicBeatSubState
 
     avgOffsetInput /= loopInd;
 
-    offsetText.text += "\n\n"
-      + (Texts.instance.getText("options/inputOffsets/estimate", [avgOffsetInput]) ?? "Estimated average input offset needed: " + avgOffsetInput);
+    offsetText.text += "\n\nEstimated average input offset needed: " + avgOffsetInput;
 
     var multiply:Int = 10;
 

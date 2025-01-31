@@ -248,7 +248,7 @@ class FreeplayState extends MusicBeatSubState
     sparksADD = new FlxSprite(0, 0);
     txtCompletion = new AtlasText(1185, 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
-    ostName = new FunkinText(8, 8, FlxG.width - 8 - 8, Texts.instance.getText("freeplay/ost") ?? "OFFICIAL OST", 48);
+    ostName = new FunkinText(8, 8, FlxG.width - 8 - 8, "OFFICIAL OST", 48);
     charSelectHint = new FunkinText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
     bgDad = new FlxSprite(backingCard.pinkBack.width * 0.74, 0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());
@@ -431,7 +431,7 @@ class FreeplayState extends MusicBeatSubState
       FlxTween.tween(blackOverlayBullshitLOLXD, {x: 387.76}, 0.7, {ease: FlxEase.quintOut});
     }
 
-    var fnfFreeplay:FunkinText = new FunkinText(8, 8, 0, Texts.instance.getText("freeplay/title") ?? "FREEPLAY", 48);
+    var fnfFreeplay:FunkinText = new FunkinText(8, 8, 0, "FREEPLAY", 48);
     fnfFreeplay.font = 'VCR OSD Mono';
     fnfFreeplay.visible = false;
 
@@ -439,12 +439,10 @@ class FreeplayState extends MusicBeatSubState
     ostName.alignment = RIGHT;
     ostName.visible = false;
 
-    var charSelectControlName:String = controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true);
-
     charSelectHint.alignment = CENTER;
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
-    charSelectHint.text = Texts.instance.getText("freeplay/charSelectHint", [charSelectControlName]) ?? 'Press [ $charSelectControlName ] to change characters';
+    charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
     charSelectHint.y -= 100;
     FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
 

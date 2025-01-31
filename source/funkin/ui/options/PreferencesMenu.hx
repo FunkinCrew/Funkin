@@ -10,6 +10,7 @@ import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.FunkinText;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.audio.FunkinSound;
 import funkin.ui.options.MenuItemEnums;
@@ -22,7 +23,7 @@ class PreferencesMenu extends Page
   var items:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
   var preferenceDesc:Array<String> = [];
-  var itemDesc:FlxText;
+  var itemDesc:FunkinText;
   var itemDescBox:FunkinSprite;
 
   var menuCamera:FlxCamera;
@@ -49,7 +50,7 @@ class PreferencesMenu extends Page
     add(itemDescBox = new FunkinSprite());
     itemDescBox.cameras = [hudCamera];
 
-    add(itemDesc = new FlxText(0, 0, 1180, null, 32));
+    add(itemDesc = new FunkinText(0, 0, 1180, null, 32));
     itemDesc.cameras = [hudCamera];
 
     createPrefItems();
@@ -95,33 +96,32 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-
-    createPrefItemCheckbox(Texts.instance.getText("options/preferences/naughtyness") ?? "Naughtyness", 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
+    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
-    createPrefItemCheckbox(Texts.instance.getText("options/preferences/downscroll") ?? "Downscroll", 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox(Texts.instance.getText("options/preferences/flashing") ?? "Flashing Lights", 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
-      Preferences.flashingLights = value;
-    }, Preferences.flashingLights);
-    createPrefItemCheckbox(Texts.instance.getText("options/preferences/camZoom") ?? "Camera Zooming on Beat", 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
+      function(value:Bool):Void {
+        Preferences.flashingLights = value;
+      }, Preferences.flashingLights);
+    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    createPrefItemCheckbox(Texts.instance.getText("options/preferences/debug") ?? "Debug Display", 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
+    createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    createPrefItemCheckbox(Texts.instance.getText("options/preferences/autoPause") ?? "Auto Pause", 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
 
     #if web
-    createPrefItemCheckbox(Texts.instance.getText("options/preferences/unlockedFramerate") ?? "Unlocked Framerate", 'Enable to unlock the framerate',
-      function(value:Bool):Void {
-        Preferences.unlockedFramerate = value;
-      }, Preferences.unlockedFramerate);
+    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+      Preferences.unlockedFramerate = value;
+    }, Preferences.unlockedFramerate);
     #else
-    createPrefItemNumber(Texts.instance.getText("options/preferences/fps") ?? "FPS", 'The maximum framerate that the game targets', function(value:Float) {
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end

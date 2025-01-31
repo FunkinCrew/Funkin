@@ -2133,14 +2133,13 @@ class PlayState extends MusicBeatSubState
     // TODO: Add functionality for modules to update the score text.
     if (isBotPlayMode)
     {
-      scoreText.text = Texts.instance.getText("game/scoreBotplay") ?? "Bot Play Enabled";
+      scoreText.text = "Bot Play Enabled";
     }
     else
     {
       // TODO: Add an option for this maybe?
       var commaSeparated:Bool = true;
-      var scoreString:String = FlxStringUtil.formatMoney(songScore, false, commaSeparated);
-      scoreText.text = Texts.instance.getText("game/score", [scoreString]) ?? 'Score: $scoreString';
+      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
     }
   }
 
@@ -3267,8 +3266,7 @@ class PlayState extends MusicBeatSubState
         songId: currentChart.song.id,
         difficultyId: currentDifficulty,
         characterId: currentChart.characters.player,
-        title: PlayStatePlaylist.isStoryMode ? ('${Texts.instance.getText("game/weekResults", [PlayStatePlaylist.campaignTitle]) ?? PlayStatePlaylist.campaignTitle}') : (Texts.instance.getText("game/songResults",
-          [currentChart.songName, currentChart.songArtist]) ?? '${currentChart.songName} by ${currentChart.songArtist}'),
+        title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
         prevScoreData: prevScoreData,
         scoreData:
           {

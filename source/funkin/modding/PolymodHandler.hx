@@ -439,8 +439,6 @@ class PolymodHandler
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
-    Texts.reloadTexts();
-
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();
     ModuleHandler.loadModuleCache();
