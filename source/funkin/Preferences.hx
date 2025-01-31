@@ -158,6 +158,24 @@ class Preferences
   }
 
   /**
+   * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?) - Lasercar
+   * @default `true`
+   */
+  public static var rememberFreeplayChar(get, set):Bool;
+
+  static function get_rememberFreeplayChar():Bool
+  {
+    return Save?.instance?.options?.rememberFreeplayChar ?? true;
+  }
+
+  static function set_rememberFreeplayChar(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.rememberFreeplayChar = value;
+    return value;
+  }
+
+  /**
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
    */
