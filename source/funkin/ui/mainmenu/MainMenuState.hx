@@ -395,6 +395,50 @@ class MainMenuState extends MusicBeatState
         });
     }
 
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.O)
+    {
+      // Give the user a score of 1 point on Bopeebo Pico Mix (Easy difficulty).
+      // This makes the song count as cleared and allow alt inst selection for BF in Freeplay.
+      funkin.save.Save.instance.setSongScore('bopeebo', 'easy-pico',
+        {
+          score: 1,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 1,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 1,
+              totalNotes: 10,
+            }
+        });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.I)
+    {
+      // Give the user a score of 0 point on Bopeebo Pico Mix (Easy difficulty).
+      // This makes the song count as uncleared and skips alt inst selection for BF in Freeplay.
+      funkin.save.Save.instance.setSongScore('bopeebo', 'easy-pico',
+        {
+          score: 0,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            }
+        });
+    }
+
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.N)
     {
       @:privateAccess
