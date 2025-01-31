@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+
+  "backdrop": {
+    "type": "solid",
+    "fadeTime": 2.0,
+    "color": "#BFB3DFD8"
+  },
+
+  "music": {
+    "asset": "Lunchbox",
+    "fadeTime": 2.0,
+    "looped": true
+  },
+
+  "outro": {
+    "type": "fade",
+    "fadeTime": 1.0
+  },
+
+  "dialogue": [
+    {
+      "speaker": "senpai-angry",
+      "speakerAnimation": "talk",
+      "box": "roses",
+      "boxAnimation": "angrySenpai",
+
+      "text": ["Pas mauvais pour un ver de terre."]
+    },
+    {
+      "speaker": "senpai-angry",
+      "speakerAnimation": "talk",
+      "box": "roses",
+      "boxAnimation": "idle",
+
+      "text": [
+        "Mais cette fois, je t'arracherai les noix juste après que ta copine aura fini de jouer avec les miennes."
+      ]
+    },
+    {
+      "speaker": "bf-pixel",
+      "speakerAnimation": "talkEnter",
+      "box": "roses",
+      "boxAnimation": "idle",
+
+      "text": ["Bop beep be be skdoo bep"]
+    }
+  ]
+}
