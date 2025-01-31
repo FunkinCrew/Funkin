@@ -111,9 +111,9 @@ class MainMenuState extends MusicBeatState
 
       #if FEATURE_DEBUG_FUNCTIONS
       // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
-      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
+      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : funkin.save.Save.instance.getFreeplayCharacter() ?? null;
       #else
-      var targetCharacter:Null<String> = null;
+      var targetCharacter:Null<String> = funkin.save.Save.instance.getFreeplayCharacter() ?? null; // So that's why it wasn't working. *Sigh* - Lasercar
       #end
 
       openSubState(new FreeplayState(

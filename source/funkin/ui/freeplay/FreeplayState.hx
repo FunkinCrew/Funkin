@@ -199,7 +199,12 @@ class FreeplayState extends MusicBeatSubState
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
+    // If a character was selected, use that character.
+    // If not, and a save exists and that save has a value for the previous freeplay character, use that.
+    // Otherwise, use the default character.
+    rememberedCharacterId = Save.instance.getFreeplayCharacter() ?? rememberedCharacterId;
     currentCharacterId = params?.character ?? rememberedCharacterId;
+
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
 
     var fetchPlayableCharacter = function():PlayableCharacter {
@@ -213,6 +218,10 @@ class FreeplayState extends MusicBeatSubState
     currentVariation = rememberedVariation;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacter.getFreeplayStyleID());
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
+    if (rememberedCharacterId != Constants.DEFAULT_CHARACTER && Save?.instance?.options?.rememberFreeplayChar == true)
+    {
+      Save.instance.setFreeplayCharacter(rememberedCharacterId); // If the option is enabled, save the character selected for freeplay if it's not the default.
+    }
     fromCharSelect = params?.fromCharSelect ?? false;
     fromResultsParams = params?.fromResults;
     prepForNewRank = fromResultsParams?.playRankAnim ?? false;

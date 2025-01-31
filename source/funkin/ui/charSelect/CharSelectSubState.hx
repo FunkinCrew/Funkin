@@ -431,6 +431,7 @@ class CharSelectSubState extends MusicBeatSubState
     else
     {
       // I think I can do the character preselect thing here? This better work - Lasercar
+      // Edit: [UH-OH!] yes! It does!
       if (rememberedChar != "bf")
       {
         setCursorPosition(charTargetPosition.get(rememberedChar));
@@ -1065,6 +1066,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     var xThing = (copy - index - 2) * -1;
     // Look, I'd write better code but I had better aneurysms, my bad - Cheems
+    // Hey, don't worry, your code was very useful for my even worse code - Lasercar
     cursorY = yThing;
     cursorX = xThing;
   }

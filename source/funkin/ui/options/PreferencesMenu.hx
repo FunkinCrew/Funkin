@@ -113,6 +113,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+    createPrefItemCheckbox('Remember Freeplay Character', 'Enable to have Freeplay remember the character you previously selected', function(value:Bool):Void {
+      Preferences.rememberFreeplayChar = value;
+    }, Preferences.rememberFreeplayChar);
 
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
