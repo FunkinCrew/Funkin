@@ -1,5 +1,6 @@
 package funkin.audio.visualize;
 
+import funkin.graphics.FunkinSprite;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -18,35 +19,40 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   public var snd:FlxSound;
 
-  public function new(snd:FlxSound)
+  // TODO: Make the sprites easier to soft code.
+  public function new(snd:FlxSound, pixel:Bool)
   {
     super();
 
     this.snd = snd;
 
-    // vis = new VisShit(snd);
-    // vis.snd = snd;
+    var visCount = pixel ? (7 + 1) : (7 + 1);
+    var visScale = pixel ? 6 : 1;
 
-    var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas('aBotViz');
+    var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas(pixel ? 'characters/abotPixel/aBotVizPixel' : 'characters/abot/aBotViz');
 
     // these are the differences in X position, from left to right
-    var positionX:Array<Float> = [0, 59, 56, 66, 54, 52, 51];
-    var positionY:Array<Float> = [0, -8, -3.5, -0.4, 0.5, 4.7, 7];
+    var positionX:Array<Float> = pixel ? [0, 7 * 6, 8 * 6, 9 * 6, 10 * 6, 8 * 6, 7 * 6] : [0, 59, 56, 66, 54, 52, 51];
+    var positionY:Array<Float> = pixel ? [0, -2 * 6, -1 * 6, 0, 0, 1 * 6, 2 * 6] : [0, -8, -3.5, -0.4, 0.5, 4.7, 7];
 
-    for (lol in 1...8)
+    for (index in 1...visCount)
     {
       // pushes initial value
       volumes.push(0.0);
-      var sum = function(num:Float, total:Float) return total += num;
-      var posX:Float = positionX.slice(0, lol).fold(sum, 0);
-      var posY:Float = positionY.slice(0, lol).fold(sum, 0);
 
-      var viz:FlxSprite = new FlxSprite(posX, posY);
+      // Sum the offsets up to the current index
+      var sum = function(num:Float, total:Float) return total += num;
+      var posX:Float = positionX.slice(0, index).fold(sum, 0);
+      var posY:Float = positionY.slice(0, index).fold(sum, 0);
+
+      var viz:FunkinSprite = new FunkinSprite(posX, posY);
       viz.frames = visFrms;
+      viz.antialiasing = pixel ? false : true;
+      viz.scale.set(visScale, visScale);
       add(viz);
 
       var visStr = 'viz';
-      viz.animation.addByPrefix('VIZ', visStr + lol, 0);
+      viz.animation.addByPrefix('VIZ', '$visStr${index}0', 0);
       viz.animation.play('VIZ', false, false, 6);
     }
   }
