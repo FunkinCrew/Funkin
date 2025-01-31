@@ -42,8 +42,9 @@ class OptionsState extends MusicBeatState
     add(menuBG);
 
     var options = addPage(Options, new OptionsMenu());
-    var language = new LanguageMenu();
-    if (language.hasMultipleOptions()) addPage(Language, new LanguageMenu());
+    // var language = new LanguageMenu();
+    // if (language.hasMultipleOptions()) addPage(Language, new LanguageMenu());
+    var language = addPage(Language, new LanguageMenu());
     var preferences = addPage(Preferences, new PreferencesMenu());
     var controls = addPage(Controls, new ControlsMenu());
 
