@@ -29,3 +29,9 @@ Most of this functionality is only available on debug builds of the game!
 ## **Main Menu**
 - `~`: ***DEBUG***: Opens a menu to access the Chart Editor and other work-in-progress editors. Rebindable in the options menu.
 - `CTRL-ALT-SHIFT-W`: ***ALL ACCESS***: Unlocks all songs in Freeplay. Only available on debug builds.
+- `CTRL-ALT-SHIFT-M`: ***NO MORE ACCESS***: Locks back songs in Freeplay (those unloked by default aren't locked. Only available on debug builds.
+- `CTRL-ALT-SHIFT-R`: ***GREAT SCORE?***: Give the user a hypothetical overridden score, and see if we can maintain that golden P rank. Only available on debug builds.
+- `Ctrl-Alt-Shift-P`: ***Character Unlock screen***: Froce the character select screen to play Pico being unlocked. Only available on debug builds.
+- `Ctrl-Alt-Shift-N`: ***Character Not seen***: Mark all characters as not seen and make BF glow again as there is a character to unlock. Only available on debug builds.
+- `Ctrl-Alt-Shift-E`: ***Dump save data***: Self explainatory. Only available on debug builds.
+- `Ctrl-Alt-Shift-L`: ***Force crash***: Force crash and create a log dump. Only available on debug builds.
