@@ -151,7 +151,7 @@ class PolymodHandler
         frameworkParams: buildFrameworkParams(),
 
         // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
-        ignoredFiles: Polymod.getDefaultIgnoreList(),
+        ignoredFiles: buildIgnoreList(),
 
         // Parsing rules for various data formats.
         parseRules: buildParseRules(),
@@ -331,6 +331,21 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+  }
+
+  /**
+   * Build a list of file paths that will be ignored in mods.
+   */
+  static function buildIgnoreList():Array<String>
+  {
+    var result = Polymod.getDefaultIgnoreList();
+
+    result.push('.git');
+    result.push('.gitignore');
+    result.push('.gitattributes');
+    result.push('README.md');
+
+    return result;
   }
 
   static function buildParseRules():polymod.format.ParseRules
