@@ -35,5 +35,4 @@ Most of this functionality is only available on debug builds of the game!
 - `CTRL-ALT-SHIFT-R`: ***GREAT SCORE?***: Give the user a hypothetical overridden score, and see if we can maintain that golden P rank. Only available on debug builds.
 - `CTRL-ALT-SHIFT-P`: ***CHARACTER UNLOCK SCREEN***: Forces the Character Select screen to play Pico's unlocking animation. Only available on debug builds.
 - `CTRL-ALT-SHIFT-N`: ***CHARACTER NOT SEEN***: Marks all characters as not seen and enables BF's new character unlocked animation in Freeplay. Only available on debug builds.
-- `CTRL-ALT-SHIFT-E`: ***DUMP SAVE DATA***: Export a JSON file of your current save data. Only available on debug builds.
-- `CTRL-ALT-SHIFT-L`: ***FORCE CRASH***: Immediately crash the game with a detailed crash log and a stack trace. Only available on debug builds.
+- `CTRL-ALT-SHIFT-E`: ***DUMP SAVE DATA***: Prompts the user to save their save data as a JSON file, so its contents can be viewed. Only available on debug builds.
