@@ -29,6 +29,7 @@ import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
 import funkin.play.components.ClearPercentCounter;
+import funkin.ui.debug.charting.ChartEditorState;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -80,6 +81,13 @@ class ResultState extends MusicBeatSubState
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;
   final cameraEverything:FunkinCamera;
+
+  public var isChartingMode(get, never):Bool;
+
+  function get_isChartingMode():Bool
+  {
+    return PlayState.instance.isChartingMode;
+  }
 
   public function new(params:ResultsStateParams)
   {
@@ -721,21 +729,24 @@ class ResultState extends MusicBeatSubState
       if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
         close(); // IF we are a substate, we will close ourselves. This is used from ResultsDebugSubState
       if (introMusicAudio != null)
+
       {
         @:nullSafety(Off)
         introMusicAudio.onComplete = null;
 
         FlxTween.tween(introMusicAudio, {volume: 0}, 0.8,
+
           {
-            onComplete: _ -> {
-              if (introMusicAudio != null)
+              onComplete: _ -> {
+                if (introMusicAudio != null)
+
               {
-                introMusicAudio.stop();
-                introMusicAudio.destroy();
-                introMusicAudio = null;
+                  introMusicAudio.stop();
+                  introMusicAudio.destroy();
+                  introMusicAudio = null;
+                }
               }
-            }
-          });
+            });
         FlxTween.tween(introMusicAudio, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
@@ -814,6 +825,12 @@ class ResultState extends MusicBeatSubState
           trace('THE RANK IS Higher.....');
 
           shouldTween = true;
+          if (isChartingMode)
+          {
+            PlayState.instance.close();
+            this.close();
+            break; // Don't do this garbage code at home, kids - Lasercar
+          }
           targetState = FreeplayState.build(
             {
               {
@@ -831,6 +848,12 @@ class ResultState extends MusicBeatSubState
         }
         else
         {
+          if (isChartingMode)
+          {
+            PlayState.instance.close();
+            this.close();
+            break;
+          }
           shouldTween = false;
           shouldUseSubstate = true;
           targetState = new funkin.ui.transition.StickerSubState(
