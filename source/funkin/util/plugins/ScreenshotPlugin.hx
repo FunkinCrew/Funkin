@@ -61,6 +61,25 @@ class ScreenshotPlugin extends FlxBasic
    */
   public var onPostScreenshot(default, null):FlxTypedSignal<Bitmap->Void>;
 
+  var previewSprite:Sprite = null;
+
+  var flashSpr:Sprite = null;
+
+  var wasMouseAlreadyHidden = false;
+  var wasMouseHidden = false;
+
+  var screenshotBeingSpammed:Bool = false;
+
+  var screenshotSpammedTimer:FlxTimer;
+
+  var screenshotBuffer:Array<Bitmap> = [];
+  var screenshotNameBuffer:Array<String> = [];
+
+  var flashTween:FlxTween;
+
+  var previewFadeInTween:FlxTween;
+  var previewFadeOutTween:FlxTween;
+
   public function new(params:ScreenshotPluginParams)
   {
     super();
@@ -82,6 +101,21 @@ class ScreenshotPlugin extends FlxBasic
     if (hasPressedScreenshot())
     {
       capture();
+      if (screenshotSpammedTimer == null)
+      {
+        screenshotSpammedTimer = new FlxTimer().start(1, function(_) {
+          screenshotBeingSpammed = false;
+          screenshotSpammedTimer = null;
+          if (screenshotBuffer.length > 1 && screenshotBuffer[0] != null) saveBufferedScreenshots(screenshotBuffer, screenshotNameBuffer);
+          screenshotBuffer = [];
+          screenshotNameBuffer = [];
+        });
+      }
+      else
+      {
+        screenshotBeingSpammed = true;
+        screenshotSpammedTimer.reset(1);
+      }
     }
   }
 
@@ -96,7 +130,7 @@ class ScreenshotPlugin extends FlxBasic
 
         // TODO: Add a way to configure screenshots from the options menu.
         hotkeys: [FlxKey.F3],
-        shouldHideMouse: false,
+        shouldHideMouse: true,
         fancyPreview: true,
       }));
   }
@@ -133,34 +167,69 @@ class ScreenshotPlugin extends FlxBasic
 
     var captureRegion = _region != null ? _region : new Rectangle(0, 0, FlxG.stage.stageWidth, FlxG.stage.stageHeight);
 
-    var wasMouseHidden = false;
+    // The actual work.
+    // var bitmap = new Bitmap(new BitmapData(Math.floor(captureRegion.width), Math.floor(captureRegion.height), true, 0x00000000)); // Create a transparent empty bitmap.
+    // var drawMatrix = new Matrix(1, 0, 0, 1, -captureRegion.x, -captureRegion.y); // Modifying this will scale or skew the bitmap.
+    // bitmap.bitmapData.draw(FlxG.stage, drawMatrix);
+
+    // Hiding all the garbage with garbage code
+    if (flashTween != null)
+    {
+      FlxTweenUtil.pauseTween(flashTween);
+      flashSpr.alpha = 0.0;
+    }
+    if (previewFadeInTween != null) previewFadeInTween.cancel();
+    if (previewFadeOutTween != null) previewFadeOutTween.cancel();
+    if (previewSprite != null)
+    {
+      FlxG.stage.removeChild(previewSprite);
+      previewSprite.alpha = 0.0;
+    }
     if (_shouldHideMouse && FlxG.mouse.visible)
     {
       wasMouseHidden = true;
       Cursor.hide();
     }
-
-    // The actual work.
-    // var bitmap = new Bitmap(new BitmapData(Math.floor(captureRegion.width), Math.floor(captureRegion.height), true, 0x00000000)); // Create a transparent empty bitmap.
-    // var drawMatrix = new Matrix(1, 0, 0, 1, -captureRegion.x, -captureRegion.y); // Modifying this will scale or skew the bitmap.
-    // bitmap.bitmapData.draw(FlxG.stage, drawMatrix);
-    previewSprite.alpha = 0; // No more screenshots in screenshots
-
-    var bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
-
-    if (wasMouseHidden)
+    var bitmap = null;
+    // This is the only way to be super sure, though it makes this code awful
+    if (previewSprite == null && flashSpr == null && _shouldHideMouse && !FlxG.mouse.visible)
+      bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels())); // first screenshot
+    else if (previewSprite == null && flashSpr == null && !_shouldHideMouse && FlxG.mouse.visible)
+      bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels())); // first screenshot
+    else if (previewSprite.alpha == 0.0 && flashSpr.alpha == 0.0 && _shouldHideMouse && !FlxG.mouse.visible)
+      bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
+    else if (previewSprite.alpha == 0.0 && flashSpr.alpha == 0.0 && !_shouldHideMouse && FlxG.mouse.visible)
+      bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
+    if (_shouldHideMouse && !FlxG.mouse.visible)
     {
+      wasMouseHidden = false;
       Cursor.show();
     }
 
-    // Save the bitmap to a file.
-    saveScreenshot(bitmap);
+    if (screenshotBeingSpammed == false)
+    { // Save the bitmap to a file.
+      if (bitmap != null) saveScreenshot(bitmap, 'screenshot-${DateUtil.generateTimestamp()}');
+    }
+    else // Save the screenshots to the buffer instead
+    {
+      if (screenshotBuffer.length < 100)
+      {
+        if (bitmap != null)
+        {
+          screenshotBuffer.push(bitmap);
+          screenshotNameBuffer.push('screenshot-${DateUtil.generateTimestamp()}');
+        }
+      }
+      else
+        throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez.";
+    }
 
     // Show some feedback.
-    showCaptureFeedback();
-    if (_fancyPreview)
+    if (flashTween != null) FlxTweenUtil.resumeTween(flashTween);
+    if (bitmap != null) showCaptureFeedback();
+    if (_fancyPreview && screenshotBeingSpammed == false)
     {
-      showFancyPreview(bitmap);
+      if (bitmap != null) showFancyPreview(bitmap);
     }
 
     onPostScreenshot.dispatch(bitmap);
@@ -173,12 +242,23 @@ class ScreenshotPlugin extends FlxBasic
    */
   function showCaptureFeedback():Void
   {
-    var flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
-    var flashSpr = new Sprite();
-    flashSpr.addChild(flashBitmap);
-    FlxG.stage.addChild(flashSpr);
-    FlxTween.tween(flashSpr, {alpha: 0}, 0.15, {ease: FlxEase.quadOut, onComplete: _ -> FlxG.stage.removeChild(flashSpr)});
-
+    var flashBitmap;
+    flashSpr = new Sprite();
+    if (screenshotBeingSpammed == false)
+    {
+      flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
+      // flashSpr = new Sprite();
+      flashSpr.addChild(flashBitmap);
+      FlxG.stage.addChild(flashSpr);
+    }
+    flashTween = FlxTween.tween(flashSpr, {alpha: 0}, 0.15,
+      {
+        ease: FlxEase.quadOut,
+        onComplete: function(_) {
+          flashTween = null;
+          FlxG.stage.removeChild(flashSpr);
+        }
+      });
     // Play a sound (auto-play is true).
     FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
   }
@@ -188,13 +268,10 @@ class ScreenshotPlugin extends FlxBasic
   static final PREVIEW_FADE_OUT_DELAY = 1.25; // How long the preview stays on screen.
   static final PREVIEW_FADE_OUT_DURATION = 0.3; // How long the preview takes to fade out.
 
-  var previewSprite;
-
   function showFancyPreview(bitmap:Bitmap):Void
   {
     // ermmm stealing this??
-    var wasMouseHidden = false;
-    if (!FlxG.mouse.visible)
+    if (!wasMouseHidden && !FlxG.mouse.visible && screenshotBeingSpammed == false)
     {
       wasMouseHidden = true;
       Cursor.show();
@@ -212,6 +289,28 @@ class ScreenshotPlugin extends FlxBasic
     var onHoverOut = function(e:MouseEvent) {
       if (!changingAlpha) e.target.alpha = 1;
     }
+
+    var cancelPreview = function():Void {
+      if (screenshotBeingSpammed == true)
+      {
+        previewSprite.removeEventListener(MouseEvent.MOUSE_DOWN, openScreenshotsFolder);
+        previewSprite.removeEventListener(MouseEvent.MOUSE_OVER, onHover);
+        previewSprite.removeEventListener(MouseEvent.MOUSE_OUT, onHoverOut);
+
+        FlxG.stage.removeChild(previewSprite);
+
+        if (previewFadeInTween != null) previewFadeInTween.cancel();
+        if (previewFadeOutTween != null) previewFadeOutTween.cancel();
+
+        if (wasMouseHidden)
+        {
+          Cursor.hide();
+          wasMouseHidden = false;
+        }
+
+        return;
+      }
+    };
 
     var scale:Float = 0.25;
     var w:Int = Std.int(bitmap.bitmapData.width * scale);
@@ -238,28 +337,33 @@ class ScreenshotPlugin extends FlxBasic
     var previewBitmap = new Bitmap(preview);
     previewSprite.addChild(previewBitmap);
 
+    cancelPreview();
+
     // Wait to fade in.
     new FlxTimer().start(PREVIEW_INITIAL_DELAY, function(_) {
+      cancelPreview();
       // Fade in.
       changingAlpha = true;
-      FlxTween.tween(previewSprite, {alpha: 1.0, y: 0}, PREVIEW_FADE_IN_DURATION,
+      previewFadeInTween = FlxTween.tween(previewSprite, {alpha: 1.0, y: 0}, PREVIEW_FADE_IN_DURATION,
         {
           ease: FlxEase.quartOut,
           onComplete: function(_) {
             changingAlpha = false;
+            cancelPreview();
             // Wait to fade out.
             new FlxTimer().start(PREVIEW_FADE_OUT_DELAY, function(_) {
               changingAlpha = true;
               // Fade out.
-              FlxTween.tween(previewSprite, {alpha: 0.0, y: 10}, PREVIEW_FADE_OUT_DURATION,
+              previewFadeOutTween = FlxTween.tween(previewSprite, {alpha: 0.0, y: 10}, PREVIEW_FADE_OUT_DURATION,
                 {
                   ease: FlxEase.quartInOut,
                   onComplete: function(_) {
                     if (wasMouseHidden)
                     {
                       Cursor.hide();
+                      wasMouseHidden = false;
                     }
-
+                    // else if (!wasMouseAlreadyHidden)
                     previewSprite.removeEventListener(MouseEvent.MOUSE_DOWN, openScreenshotsFolder);
                     previewSprite.removeEventListener(MouseEvent.MOUSE_OVER, onHover);
                     previewSprite.removeEventListener(MouseEvent.MOUSE_OUT, onHoverOut);
@@ -290,7 +394,7 @@ class ScreenshotPlugin extends FlxBasic
 
   static function getScreenshotPath():String
   {
-    return '$SCREENSHOT_FOLDER/screenshot-${DateUtil.generateTimestamp()}.png';
+    return '$SCREENSHOT_FOLDER/';
   }
 
   static function makeScreenshotPath():Void
@@ -306,20 +410,42 @@ class ScreenshotPlugin extends FlxBasic
     return bitmap.bitmapData.encode(bitmap.bitmapData.rect, new PNGEncoderOptions());
   }
 
+  var previousScreenshotName:String;
+  var previousScreenshotCopyNum:Int;
+
   /**
    * Save the generated bitmap to a file.
    * @param bitmap The bitmap to save.
    */
-  static function saveScreenshot(bitmap:Bitmap)
+  function saveScreenshot(bitmap:Bitmap, targetPath)
   {
     makeScreenshotPath();
-    var targetPath:String = getScreenshotPath();
-
+    // Check that we're not overriding a previous image, and keep making a unqiue path until we can
+    if (previousScreenshotName != targetPath)
+    {
+      previousScreenshotName = targetPath;
+      targetPath = getScreenshotPath() + targetPath + '.png';
+      previousScreenshotCopyNum = 2;
+      trace(previousScreenshotName);
+      trace(targetPath);
+    }
+    else
+    {
+      var newTargetPath:String = targetPath;
+      while (previousScreenshotName == newTargetPath)
+      {
+        newTargetPath = targetPath + ' (${previousScreenshotCopyNum})';
+        previousScreenshotCopyNum++;
+      }
+      previousScreenshotName = newTargetPath;
+      targetPath = getScreenshotPath() + newTargetPath + '.png';
+    }
     var pngData = encodePNG(bitmap);
 
     if (pngData == null)
     {
       trace('[WARN] Failed to encode PNG data.');
+      previousScreenshotName = null;
       return;
     }
     else
@@ -327,6 +453,17 @@ class ScreenshotPlugin extends FlxBasic
       trace('Saving screenshot to: ' + targetPath);
       // TODO: Make this work on browser.
       FileUtil.writeBytesToPath(targetPath, pngData);
+    }
+  }
+
+  // If you want to do some multithreading, this'd be a great place to start
+  function saveBufferedScreenshots(screenshots:Array<Bitmap>, screenshotNames)
+  {
+    // var screenshotsCopy:Array<Bitmap> = screenshots;
+    trace('Saving screenshot buffer');
+    for (i in 0...screenshots.length)
+    {
+      if (screenshots[i] != null) saveScreenshot(screenshots[i], screenshotNames[i]);
     }
   }
 }
