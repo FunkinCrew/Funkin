@@ -144,6 +144,8 @@ class ScreenshotPlugin extends FlxBasic
     // var bitmap = new Bitmap(new BitmapData(Math.floor(captureRegion.width), Math.floor(captureRegion.height), true, 0x00000000)); // Create a transparent empty bitmap.
     // var drawMatrix = new Matrix(1, 0, 0, 1, -captureRegion.x, -captureRegion.y); // Modifying this will scale or skew the bitmap.
     // bitmap.bitmapData.draw(FlxG.stage, drawMatrix);
+    previewSprite.alpha = 0; // No more screenshots in screenshots
+
     var bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
 
     if (wasMouseHidden)
@@ -186,6 +188,8 @@ class ScreenshotPlugin extends FlxBasic
   static final PREVIEW_FADE_OUT_DELAY = 1.25; // How long the preview stays on screen.
   static final PREVIEW_FADE_OUT_DURATION = 0.3; // How long the preview takes to fade out.
 
+  var previewSprite;
+
   function showFancyPreview(bitmap:Bitmap):Void
   {
     // ermmm stealing this??
@@ -219,7 +223,7 @@ class ScreenshotPlugin extends FlxBasic
     preview.draw(bitmap.bitmapData, matrix);
 
     // used for movement + button stuff
-    var previewSprite = new Sprite();
+    previewSprite = new Sprite();
 
     previewSprite.buttonMode = true;
     previewSprite.addEventListener(MouseEvent.MOUSE_DOWN, openScreenshotsFolder);
