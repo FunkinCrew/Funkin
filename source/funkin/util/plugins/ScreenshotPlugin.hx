@@ -538,7 +538,6 @@ class ScreenshotPlugin extends FlxBasic
       {
         saveScreenshot(screenshots[i], screenshotNames[i], i);
       }
-      currentScreenshotInBuffer++;
     }, 1);
     // for (i in 0...screenshots.length)
     // {
