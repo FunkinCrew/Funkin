@@ -11,6 +11,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
+import flixel.addons.util.FlxAsyncLoop;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.audio.FunkinSound;
@@ -85,6 +86,8 @@ class ScreenshotPlugin extends FlxBasic
   var previewFadeInTween:FlxTween;
   var previewFadeOutTween:FlxTween;
 
+  var asyncLoop:FlxAsyncLoop;
+
   public function new(params:ScreenshotPluginParams)
   {
     super();
@@ -128,6 +131,29 @@ class ScreenshotPlugin extends FlxBasic
 
   public override function update(elapsed:Float):Void
   {
+    if (asyncLoop != null)
+    {
+      // If my loop hasn't started yet, start it
+      if (!asyncLoop.started)
+      {
+        asyncLoop.start();
+      }
+      else
+      {
+        // if the loop has been started, and is finished, then we swich which groups are active
+        if (asyncLoop.finished)
+        {
+          trace("finished screenshot buffer");
+          screenshotBuffer = [];
+          screenshotNameBuffer = [];
+          // clean up our loop
+          asyncLoop.kill();
+          asyncLoop.destroy();
+          asyncLoop = null;
+        }
+      }
+      // Examples ftw! - Lasercar
+    }
     super.update(elapsed);
 
     if (hasPressedScreenshot())
@@ -490,27 +516,32 @@ class ScreenshotPlugin extends FlxBasic
     }
     else
     {
-      trace('Saving screenshot to: ' + targetPath);
       // TODO: Make this work on browser.
       // Maybe make the images into a buffer that you can download as a zip or something? That'd work
+      // new FlxTimer().start(screenShotNum + 1, function(_) {
+      trace('Saving screenshot to: ' + targetPath);
       FileUtil.writeBytesToPath(targetPath, pngData);
+      // });
     }
   }
 
-  // If you want to do some multithreading, this'd be a great place to start, because idk how to do it (unless someone wants to teach me or point to a tutorial) - Lasercar
+  // I'm very happy with this code, all of it just works - Lasercar
   function saveBufferedScreenshots(screenshots:Array<Bitmap>, screenshotNames)
   {
     trace('Saving screenshot buffer');
-    // Game freeze in 3, 2, 1...
-    for (i in 0...screenshots.length)
-    {
+    var i:Int = 0;
+    asyncLoop = new FlxAsyncLoop(screenshots.length, () -> {
       if (screenshots[i] != null)
       {
         saveScreenshot(screenshots[i], screenshotNames[i]);
       }
-    }
+      i++;
+    }, 1);
+    // for (i in 0...screenshots.length)
+    // {
+
+    // }
+    getCurrentState().add(asyncLoop);
     showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
-    screenshotBuffer = [];
-    screenshotNameBuffer = [];
   }
 }
