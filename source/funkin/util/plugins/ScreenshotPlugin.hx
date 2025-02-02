@@ -143,13 +143,13 @@ class ScreenshotPlugin extends FlxBasic
         // if the loop has been started, and is finished, then we swich which groups are active
         if (asyncLoop.finished)
         {
-          trace("finished screenshot buffer");
+          trace("finished saving screenshot buffer");
           screenshotBuffer = [];
           screenshotNameBuffer = [];
           // clean up our loop
           asyncLoop.kill();
           asyncLoop.destroy();
-          asyncLoop = null;
+          // asyncLoop = null;
         }
       }
       // Examples ftw! - Lasercar
@@ -270,7 +270,7 @@ class ScreenshotPlugin extends FlxBasic
     {
       // I wish I could have these effects and hide them too, but this works too. Hey, that rhymes!
       shot = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
-      saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}');
+      saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}', 1);
       // Show some feedback.
       flashSprite.alpha = 1;
       FlxTween.tween(flashSprite, {alpha: 0}, 0.15);
@@ -483,7 +483,7 @@ class ScreenshotPlugin extends FlxBasic
    * Save the generated bitmap to a file.
    * @param bitmap The bitmap to save.
    */
-  function saveScreenshot(bitmap:Bitmap, targetPath)
+  function saveScreenshot(bitmap:Bitmap, targetPath, screenShotNum:Int)
   {
     makeScreenshotPath();
     // Check that we're not overriding a previous image, and keep making a unique path until we can
@@ -518,8 +518,11 @@ class ScreenshotPlugin extends FlxBasic
     {
       // TODO: Make this work on browser.
       // Maybe make the images into a buffer that you can download as a zip or something? That'd work
+      /* Unhide the FlxTimer here to space out the screenshot saving some more,
+        though note that when the state changes any screenshots not already saved will be lost - Lasercar */
+
       // new FlxTimer().start(screenShotNum + 1, function(_) {
-      trace('Saving screenshot to: ' + targetPath);
+      //  trace('Saving screenshot to: ' + targetPath);
       FileUtil.writeBytesToPath(targetPath, pngData);
       // });
     }
@@ -533,9 +536,9 @@ class ScreenshotPlugin extends FlxBasic
     asyncLoop = new FlxAsyncLoop(screenshots.length, () -> {
       if (screenshots[i] != null)
       {
-        saveScreenshot(screenshots[i], screenshotNames[i]);
+        saveScreenshot(screenshots[i], screenshotNames[i], i);
       }
-      i++;
+      currentScreenshotInBuffer++;
     }, 1);
     // for (i in 0...screenshots.length)
     // {
