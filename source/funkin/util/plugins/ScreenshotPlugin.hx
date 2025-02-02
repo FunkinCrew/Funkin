@@ -225,6 +225,7 @@ class ScreenshotPlugin extends FlxBasic
     var shot = null;
     if (containerThing.alpha == 0 && screenshotBeingSpammed == true)
     {
+      // Save the screenshots to the buffer instead
       // Hmm, the container is hiding, but it's still not hiding fast enough for this first spammed shot, so a timer?
       // [UH-OH!] yes! it works, finally!
       new FlxTimer().start(0.05, function(_) {
@@ -244,36 +245,21 @@ class ScreenshotPlugin extends FlxBasic
       // I wish I could have these effects and hide them too, but this works too. Hey, that rhymes!
       shot = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
       saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}');
+      // Show some feedback.
       flashSprite.alpha = 1;
       FlxTween.tween(flashSprite, {alpha: 0}, 0.15);
 
-      shotDisplayBitmap.bitmapData = shot.bitmapData;
-      shotDisplayBitmap.x = outlineBitmap.x + 5;
-      shotDisplayBitmap.y = outlineBitmap.y + 5;
-
-      previewSprite.alpha = 1;
-      FlxTween.tween(previewSprite, {alpha: 0}, 0.5, {startDelay: .5});
+      showFancyPreview(shot);
 
       if (_shouldHideMouse && wasMouseHidden && !FlxG.mouse.visible)
       {
         wasMouseHidden = false;
         Cursor.show();
       }
-
       FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
     }
 
     onPostScreenshot.dispatch(shot);
-    // if (screenshotBeingSpammed == false)
-    // { // Save the bitmap to a file.
-
-    /*}
-      //else // Save the screenshots to the buffer instead
-      {
-
-    }*/
-
-    // Show some feedback.
   }
 
   final CAMERA_FLASH_DURATION = 0.25;
@@ -283,25 +269,27 @@ class ScreenshotPlugin extends FlxBasic
    */
   function showCaptureFeedback():Void
   {
+    // I don't need this
     /*var flashBitmap;
-      flashSprite = new Sprite();
-      if (screenshotBeingSpammed == false)
-      {
-        flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
-        // flashSpr = new Sprite();
-        flashSprite.addChild(flashBitmap);
-        FlxG.stage.addChild(flashSprite);
-      }
-      flashTween = FlxTween.tween(flashSprite, {alpha: 0}, 0.15,
+        flashSprite = new Sprite();
+        if (screenshotBeingSpammed == false)
         {
-          ease: FlxEase.quadOut,
-          onComplete: function(_) {
-            flashTween = null;
-            FlxG.stage.removeChild(flashSprite);
-          }
-    });*/
-    // Play a sound (auto-play is true).
-    FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
+          flashBitmap = new Bitmap(new BitmapData(Std.int(FlxG.stage.width), Std.int(FlxG.stage.height), false, 0xFFFFFFFF));
+          // flashSpr = new Sprite();
+          flashSprite.addChild(flashBitmap);
+          FlxG.stage.addChild(flashSprite);
+        }
+        flashTween = FlxTween.tween(flashSprite, {alpha: 0}, 0.15,
+          {
+            ease: FlxEase.quadOut,
+            onComplete: function(_) {
+              flashTween = null;
+              FlxG.stage.removeChild(flashSprite);
+            }
+      });
+      // Play a sound (auto-play is true).
+      FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
+     */
   }
 
   static final PREVIEW_INITIAL_DELAY = 0.25; // How long before the preview starts fading in.
@@ -309,8 +297,14 @@ class ScreenshotPlugin extends FlxBasic
   static final PREVIEW_FADE_OUT_DELAY = 1.25; // How long the preview stays on screen.
   static final PREVIEW_FADE_OUT_DURATION = 0.3; // How long the preview takes to fade out.
 
-  function showFancyPreview(bitmap:Bitmap):Void
+  function showFancyPreview(shot:Bitmap):Void
   {
+    shotDisplayBitmap.bitmapData = shot.bitmapData;
+    shotDisplayBitmap.x = outlineBitmap.x + 5;
+    shotDisplayBitmap.y = outlineBitmap.y + 5;
+
+    previewSprite.alpha = 1;
+    FlxTween.tween(previewSprite, {alpha: 0}, 0.5, {startDelay: .5});
     // I just can't for the live of me get this thing to hide properly, so it's being disabled
     // I mean, steam doesn't make their screenshots this advanced anyways - Lasercar
 
@@ -498,19 +492,24 @@ class ScreenshotPlugin extends FlxBasic
     {
       trace('Saving screenshot to: ' + targetPath);
       // TODO: Make this work on browser.
+      // Maybe make the images into a buffer that you can download as a zip or something? That'd work
       FileUtil.writeBytesToPath(targetPath, pngData);
     }
   }
 
-  // If you want to do some multithreading, this'd be a great place to start, because idk how to do it - Lasercar
+  // If you want to do some multithreading, this'd be a great place to start, because idk how to do it (unless someone wants to teach me or point to a tutorial) - Lasercar
   function saveBufferedScreenshots(screenshots:Array<Bitmap>, screenshotNames)
   {
     trace('Saving screenshot buffer');
     // Game freeze in 3, 2, 1...
     for (i in 0...screenshots.length)
     {
-      if (screenshots[i] != null) saveScreenshot(screenshots[i], screenshotNames[i]);
+      if (screenshots[i] != null)
+      {
+        saveScreenshot(screenshots[i], screenshotNames[i]);
+      }
     }
+    showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
     screenshotBuffer = [];
     screenshotNameBuffer = [];
   }
