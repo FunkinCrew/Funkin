@@ -149,7 +149,7 @@ class ScreenshotPlugin extends FlxBasic
           // clean up our loop
           asyncLoop.kill();
           asyncLoop.destroy();
-          // asyncLoop = null;
+          asyncLoop = null;
         }
       }
       // Examples ftw! - Lasercar
