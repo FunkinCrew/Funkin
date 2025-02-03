@@ -2712,7 +2712,7 @@ class PlayState extends MusicBeatSubState
         this.remove(currentStage);
         FlxG.switchState(() -> new ChartEditorState(
           {
-            targetSongId: currentSong.id,
+            targetSongId: currentSong.id
           }));
       }
     }
