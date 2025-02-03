@@ -87,6 +87,20 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
+  override function onFocus():Void
+  {
+    super.onFocus();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
+  }
+
+  override function onFocusLost():Void
+  {
+    super.onFocusLost();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
+  }
+
   function createWatermarkText()
   {
     // Both have an xPos of 0, but a width equal to the full screen.
