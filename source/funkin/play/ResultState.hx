@@ -88,6 +88,7 @@ class ResultState extends MusicBeatSubState
 
   public var isChartingMode(get, never):Bool;
 
+  // This is stupid, but it works - Lasercar
   function get_isChartingMode():Bool
   {
     return PlayState.instance.isChartingMode;
@@ -855,9 +856,12 @@ class ResultState extends MusicBeatSubState
           shouldTween = true;
           if (isChartingMode)
           {
+            // Don't do this garbage code at home, kids - Lasercar
             PlayState.instance.close();
+            FlxTimer.globalManager.clear();
             this.close();
-            break; // Don't do this garbage code at home, kids - Lasercar
+            // PlayState.instance.remove(PlayState.instance.currentStage);
+            return;
           }
           targetState = FreeplayState.build(
             {
@@ -879,8 +883,10 @@ class ResultState extends MusicBeatSubState
           if (isChartingMode)
           {
             PlayState.instance.close();
+            FlxTimer.globalManager.clear();
             this.close();
-            break;
+            // PlayState.instance.remove(PlayState.instance.currentStage);
+            return;
           }
           shouldTween = false;
           shouldUseSubstate = true;
