@@ -12,7 +12,6 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.graphics.shaders.HSVShader;
 import funkin.util.WindowUtil;
-import funkin.audio.FunkinSound;
 import funkin.input.Controls;
 
 class OptionsState extends MusicBeatState
