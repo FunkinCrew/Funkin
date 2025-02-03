@@ -1148,7 +1148,7 @@ class PlayState extends MusicBeatSubState
           {
             event.activated = true;
             continue;
-          };
+          }
 
           var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
           dispatchEvent(eventEvent);
@@ -1540,7 +1540,7 @@ class PlayState extends MusicBeatSubState
     FlxG.console.registerFunction("debugUnbindCameraZoom", () -> {
       debugUnbindCameraZoom = !debugUnbindCameraZoom;
     });
-  };
+  }
 
   /**
      * Initializes the game and HUD cameras.
