@@ -2,11 +2,8 @@ package funkin.play;
 
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
-import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -19,7 +16,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
 import funkin.ui.AtlasText;
-import funkin.ui.debug.latency.LatencyState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.StickerSubState;
 
@@ -741,11 +737,11 @@ class PauseSubState extends MusicBeatSubState
     if (PlayStatePlaylist.isStoryMode)
     {
       PlayStatePlaylist.reset();
-      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState(sticker)));
+      state.openSubState(new StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState(sticker)));
     }
     else
     {
-      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
+      state.openSubState(new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
     }
   }
 

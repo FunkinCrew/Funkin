@@ -1,7 +1,5 @@
 package funkin.play.cutscene.dialogue;
 
-import flixel.addons.display.FlxPieDial;
-import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -11,9 +9,7 @@ import funkin.audio.FunkinSound;
 import funkin.data.dialogue.conversation.ConversationData;
 import funkin.data.dialogue.conversation.ConversationData.DialogueEntryData;
 import funkin.data.dialogue.conversation.ConversationRegistry;
-import funkin.data.dialogue.dialoguebox.DialogueBoxData;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
-import funkin.data.dialogue.speaker.SpeakerData;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.IRegistryEntry;
 import funkin.graphics.FunkinSprite;

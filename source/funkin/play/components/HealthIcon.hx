@@ -1,7 +1,6 @@
 package funkin.play.components;
 
 import funkin.play.character.CharacterData;
-import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import funkin.play.character.CharacterData.CharacterDataParser;

@@ -1,8 +1,5 @@
 package funkin.play.event;
 
-import flixel.tweens.FlxTween;
-import flixel.FlxCamera;
-import flixel.tweens.FlxEase;
 // Data from the chart
 import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
