@@ -237,7 +237,7 @@ class SongEventScriptEvent extends ScriptEvent
    */
   public var eventData(default, null):SongEventData;
 
-  public function new(SongEventData):Void
+  public function new(eventData:SongEventData):Void
   {
     super(SONG_EVENT, true);
     this.eventData = eventData;
