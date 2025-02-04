@@ -5,7 +5,6 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.util.ClipboardUtil;
-import funkin.util.SerializerUtil;
 
 using Lambda;
 
