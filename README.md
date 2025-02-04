@@ -15,7 +15,7 @@ To learn how to install the necessary dependencies and compile the game from sou
 
 # Contributing
 
-Please check out our [Contributor's guide](./CONTRIBUTORS.md) on how you can actively participate in the development of Friday Night Funkin'.
+You can actively participate in the development of Friday Night Funkin' by opening a [bug report](https://github.com/FunkinCrew/Funkin/issues) or submitting a [code contribution](https://github.com/FunkinCrew/Funkin/pulls)!
 
 # Modding
 
