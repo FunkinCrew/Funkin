@@ -1400,6 +1400,16 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
+    if (controls.FREEPLAY_BOTTOM_SCROLL && !busy)
+    {
+      changeSelection(grpCapsules.countLiving() - curSelected - 1);
+    }
+
+    if (controls.FREEPLAY_TOP_SCROLL && !busy)
+    {
+      changeSelection(-curSelected);
+    }
+
     lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
     lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
 
