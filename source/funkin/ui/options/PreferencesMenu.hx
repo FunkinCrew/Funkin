@@ -119,6 +119,19 @@ class PreferencesMenu extends Page
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
 
+    createPrefItemCheckbox('Hide Mouse', 'Enable to hide the mouse when taking a screenshot', function(value:Bool):Void {
+      Preferences.shouldHideMouse = value;
+    }, Preferences.shouldHideMouse);
+    createPrefItemCheckbox('Fancy Preview', 'Enable to show a preview after taking a screenshot', function(value:Bool):Void {
+      Preferences.fancyPreview = value;
+    }, Preferences.fancyPreview);
+    createPrefItemEnum('Save Format', 'Save screenshots to this format', ['PNG' => 'PNG', 'JPEG' => 'JPEG'], function(value:String):Void {
+      Preferences.saveFormat = value;
+    }, Preferences.saveFormat);
+    createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots', function(value:Float) {
+      Preferences.jpegQuality = Std.int(value);
+    }, null, Preferences.jpegQuality, 0, 100, 5, 0);
+
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;

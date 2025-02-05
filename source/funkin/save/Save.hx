@@ -107,6 +107,14 @@ class Save
           audioVisualOffset: 0,
           unlockedFramerate: false,
 
+          screenshot:
+            {
+              shouldHideMouse: true,
+              fancyPreview: true,
+              saveFormat: 'PNG',
+              jpegQuality: 80,
+            },
+
           controls:
             {
               // Leave controls blank so defaults are loaded.
@@ -1387,6 +1395,19 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var unlockedFramerate:Bool;
+
+  // screenshot options
+  var screenshot:
+    {
+      // Should the mouse be hidden when taking a screenshot?
+      var shouldHideMouse:Bool;
+      // Show a fancy preview
+      var fancyPreview:Bool;
+      // The save format of the screenshot, PNG or JPEG
+      var saveFormat:String;
+      // The JPEG Quality, if we're saving to the format
+      var jpegQuality:Int;
+    };
 
   var controls:
     {
