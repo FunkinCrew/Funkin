@@ -62,6 +62,7 @@ class Controls extends FlxActionSet
   var _freeplay_char_select = new FunkinAction(Action.FREEPLAY_CHAR_SELECT);
   var _freeplay_jump_to_top = new FunkinAction(Action.FREEPLAY_JUMP_TO_TOP);
   var _freeplay_jump_to_bottom = new FunkinAction(Action.FREEPLAY_JUMP_TO_BOTTOM);
+  var _freeplay_results_screen = new FunkinAction(Action.FREEPLAY_RESULTS_SCREEN);
   var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
   #if FEATURE_DEBUG_MENU
   var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
@@ -283,6 +284,11 @@ class Controls extends FlxActionSet
   inline function get_FREEPLAY_JUMP_TO_BOTTOM()
     return _freeplay_jump_to_bottom.check();
 
+  public var FREEPLAY_RESULTS_SCREEN(get, never):Bool;
+
+  inline function get_FREEPLAY_RESULTS_SCREEN()
+    return _freeplay_results_screen.check();
+
   public var CUTSCENE_ADVANCE(get, never):Bool;
 
   inline function get_CUTSCENE_ADVANCE()
@@ -348,6 +354,7 @@ class Controls extends FlxActionSet
     add(_freeplay_char_select);
     add(_freeplay_jump_to_top);
     add(_freeplay_jump_to_bottom);
+    add(_freeplay_results_screen);
     add(_cutscene_advance);
     #if FEATURE_DEBUG_MENU add(_debug_menu); #end
     #if FEATURE_CHART_EDITOR add(_debug_chart); #end
@@ -476,6 +483,7 @@ class Controls extends FlxActionSet
       case FREEPLAY_CHAR_SELECT: _freeplay_char_select;
       case FREEPLAY_JUMP_TO_TOP: _freeplay_jump_to_top;
       case FREEPLAY_JUMP_TO_BOTTOM: _freeplay_jump_to_bottom;
+      case FREEPLAY_RESULTS_SCREEN: _freeplay_results_screen;
       case CUTSCENE_ADVANCE: _cutscene_advance;
       #if FEATURE_DEBUG_MENU case DEBUG_MENU: _debug_menu; #end
       #if FEATURE_CHART_EDITOR case DEBUG_CHART: _debug_chart; #end
@@ -559,6 +567,8 @@ class Controls extends FlxActionSet
         func(_freeplay_jump_to_top, JUST_PRESSED);
       case FREEPLAY_JUMP_TO_BOTTOM:
         func(_freeplay_jump_to_bottom, JUST_PRESSED);
+      case FREEPLAY_RESULTS_SCREEN:
+        func(_freeplay_results_screen, JUST_PRESSED);
       case CUTSCENE_ADVANCE:
         func(_cutscene_advance, JUST_PRESSED);
       #if FEATURE_DEBUG_MENU
@@ -786,6 +796,7 @@ class Controls extends FlxActionSet
     bindKeys(Control.FREEPLAY_CHAR_SELECT, getDefaultKeybinds(scheme, Control.FREEPLAY_CHAR_SELECT));
     bindKeys(Control.FREEPLAY_JUMP_TO_TOP, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_TOP));
     bindKeys(Control.FREEPLAY_JUMP_TO_BOTTOM, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_BOTTOM));
+    bindKeys(Control.FREEPLAY_RESULTS_SCREEN, getDefaultKeybinds(scheme, Control.FREEPLAY_RESULTS_SCREEN));
     bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
     #if FEATURE_DEBUG_MENU
     bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
@@ -828,6 +839,7 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_CHAR_SELECT: return [TAB];
           case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
           case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
+          case Control.FREEPLAY_RESULTS_SCREEN: return [R];
           case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
           #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -859,6 +871,7 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_CHAR_SELECT: return [TAB];
           case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
           case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
+          case Control.FREEPLAY_RESULTS_SCREEN: return [R];
           case Control.CUTSCENE_ADVANCE: return [G, Z];
           #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -890,6 +903,7 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_CHAR_SELECT: return [];
           case Control.FREEPLAY_JUMP_TO_TOP: return [];
           case Control.FREEPLAY_JUMP_TO_BOTTOM: return [];
+          case Control.FREEPLAY_RESULTS_SCREEN: return [];
           case Control.CUTSCENE_ADVANCE: return [ENTER];
           #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return []; #end
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -984,6 +998,7 @@ class Controls extends FlxActionSet
       Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT),
       Control.FREEPLAY_JUMP_TO_TOP => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_TOP),
       Control.FREEPLAY_JUMP_TO_BOTTOM => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_BOTTOM),
+      Control.FREEPLAY_RESULTS_SCREEN => getDefaultGamepadBinds(Control.FREEPLAY_RESULTS_SCREEN),
       Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
       Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
       Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
@@ -1047,6 +1062,8 @@ class Controls extends FlxActionSet
         return [RIGHT_STICK_DIGITAL_UP];
       case Control.FREEPLAY_JUMP_TO_BOTTOM:
         return [RIGHT_STICK_DIGITAL_DOWN];
+      case Control.FREEPLAY_RESULTS_SCREEN:
+        return [];
       case Control.VOLUME_UP:
         [];
       case Control.VOLUME_DOWN:
@@ -1471,6 +1488,7 @@ enum Control
   FREEPLAY_CHAR_SELECT;
   FREEPLAY_JUMP_TO_TOP;
   FREEPLAY_JUMP_TO_BOTTOM;
+  FREEPLAY_RESULTS_SCREEN;
   // WINDOW
   #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT; #end
   WINDOW_FULLSCREEN;
@@ -1530,6 +1548,7 @@ enum abstract Action(String) to String from String
   var FREEPLAY_CHAR_SELECT = "freeplay_char_select";
   var FREEPLAY_JUMP_TO_TOP = "freeplay_jump_to_top";
   var FREEPLAY_JUMP_TO_BOTTOM = "freeplay_jump_to_bottom";
+  var FREEPLAY_RESULTS_SCREEN = "freeplay_results_screen";
   // VOLUME
   var VOLUME_UP = "volume_up";
   var VOLUME_DOWN = "volume_down";
