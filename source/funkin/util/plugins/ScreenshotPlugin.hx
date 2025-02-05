@@ -620,7 +620,7 @@ enum abstract FileFormatOption(String) from String
       // I have to make this check the string value rather than the var because I can't get it to work as a var
       // JPEG encoder causes the game to crash?????
       // case 'JPEG': new openfl.display.JPEGEncoderOptions(Preferences.jpegQuality);
-      default: new openfl.display.JPEGEncoderOptions();
+      default: new openfl.display.PNGEncoderOptions();
     }
   }
 }
