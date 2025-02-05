@@ -239,6 +239,82 @@ class Preferences
   }
 
   /**
+   * If enabled, the game will hide the mouse when taking a screenshot.
+   * @default `true`
+   */
+  public static var shouldHideMouse(get, set):Bool;
+
+  static function get_shouldHideMouse():Bool
+  {
+    return Save?.instance?.options?.screenshot?.shouldHideMouse ?? true;
+  }
+
+  static function set_shouldHideMouse(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.shouldHideMouse = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will show a preview after taking a screenshot.
+   * @default `true`
+   */
+  public static var fancyPreview(get, set):Bool;
+
+  static function get_fancyPreview():Bool
+  {
+    return Save?.instance?.options?.screenshot?.fancyPreview ?? true;
+  }
+
+  static function set_fancyPreview(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.fancyPreview = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will save any screenshots taken to this format.
+   * @default `PNG`
+   */
+  public static var saveFormat(get, set):Any;
+
+  static function get_saveFormat():Any
+  {
+    return Save?.instance?.options?.screenshot?.saveFormat ?? 'PNG';
+  }
+
+  static function set_saveFormat(value):Any
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.saveFormat = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will save JEPG screenshots with this quality percentage.
+   * @default `80`
+   */
+  public static var jpegQuality(get, set):Int;
+
+  static function get_jpegQuality():Int
+  {
+    return Save?.instance?.options?.screenshot?.jpegQuality ?? 80;
+  }
+
+  static function set_jpegQuality(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.jpegQuality = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * Loads the user's preferences from the save data and apply them.
    */
   public static function init():Void
