@@ -59,17 +59,6 @@ class ScreenshotPlugin extends FlxBasic
   }
 
   /**
-   * The save format used to save the screenshots, default to `PNG`.
-   * The current available formats are `PNG` and `JPEG`
-   */
-  public static var saveFormat(get, null):FileFormatOption;
-
-  public static function get_saveFormat()
-  {
-    return Preferences.saveFormat;
-  }
-
-  /**
    * A signal fired before the screenshot is taken.
    */
   public var onPreScreenshot(default, null):FlxTypedSignal<Void->Void>;
@@ -503,9 +492,10 @@ class ScreenshotPlugin extends FlxBasic
   /**
    * Convert a Bitmap to a PNG or JPEG ByteArray to save to a file.
    */
-  static function encode(bitmap:Bitmap):ByteArray
+  function encode(bitmap:Bitmap):ByteArray
   {
-    return bitmap.bitmapData.encode(bitmap.bitmapData.rect, saveFormat.returnEncoder());
+    var compressor = returnEncoder(Preferences.saveFormat);
+    return bitmap.bitmapData.encode(bitmap.bitmapData.rect, compressor);
   }
 
   var previousScreenshotName:String;
@@ -522,8 +512,7 @@ class ScreenshotPlugin extends FlxBasic
     if (previousScreenshotName != targetPath)
     {
       previousScreenshotName = targetPath;
-      targetPath = getScreenshotPath() + targetPath + '.' + Std.string(saveFormat)
-        .toLowerCase(); // This is stupid, I'd pefer it did this in the FileFormatOption but idk how
+      targetPath = getScreenshotPath() + targetPath + '.' + Std.string(Preferences.saveFormat).toLowerCase();
       previousScreenshotCopyNum = 2;
       trace(previousScreenshotName);
       trace(targetPath);
@@ -537,13 +526,13 @@ class ScreenshotPlugin extends FlxBasic
         previousScreenshotCopyNum++;
       }
       previousScreenshotName = newTargetPath;
-      targetPath = getScreenshotPath() + newTargetPath + '.' + Std.string(saveFormat).toLowerCase();
+      targetPath = getScreenshotPath() + newTargetPath + '.' + Std.string(Preferences.saveFormat).toLowerCase();
     }
     var pngData = encode(bitmap);
 
     if (pngData == null)
     {
-      trace('[WARN] Failed to encode ${saveFormat} data');
+      trace('[WARN] Failed to encode ${Preferences.saveFormat} data');
       previousScreenshotName = null;
       return;
     }
@@ -581,6 +570,16 @@ class ScreenshotPlugin extends FlxBasic
     showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
   }
 
+  public function returnEncoder(saveFormat:String):Any
+  {
+    return switch (saveFormat)
+    {
+      // JPEG encoder causes the game to crash?????
+      case "JPEG": new openfl.display.JPEGEncoderOptions();
+      default: new openfl.display.PNGEncoderOptions();
+    }
+  }
+
   override public function destroy():Void
   {
     if (instance == this) instance = null;
@@ -605,22 +604,5 @@ class ScreenshotPlugin extends FlxBasic
     previewSprite = null;
     shotPreviewBitmap = null;
     outlineBitmap = null;
-  }
-}
-
-enum abstract FileFormatOption(String) from String
-{
-  var JPEG = ".jpg";
-  var PNG = ".png";
-
-  public function returnEncoder():Any
-  {
-    return switch (this : FileFormatOption)
-    {
-      // I have to make this check the string value rather than the var because I can't get it to work as a var
-      // JPEG encoder causes the game to crash?????
-      // case 'JPEG': new openfl.display.JPEGEncoderOptions(Preferences.jpegQuality);
-      default: new openfl.display.PNGEncoderOptions();
-    }
   }
 }
