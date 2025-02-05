@@ -180,13 +180,8 @@ class ScreenshotPlugin extends FlxBasic
       }
       if (FlxG.keys.pressed.SHIFT)
       {
-        // If there's no preview and we have the option enabled we're not going to bother opening the folder
-        if (containerThing.alpha == 0 && Preferences.fancyPreview == true || previewSprite.alpha == 0 && Preferences.fancyPreview == true) return;
-        else
-        {
-          openScreenshotsFolder();
-          return; // We're only opening the screenshots folder (we don't want to accidently take a screenshot after this)
-        }
+        openScreenshotsFolder();
+        return; // We're only opening the screenshots folder (we don't want to accidently take a screenshot after this)
       }
       // screenshot spamming timer
       if (screenshotSpammedTimer == null || screenshotSpammedTimer.finished == true)
@@ -575,7 +570,7 @@ class ScreenshotPlugin extends FlxBasic
     return switch (saveFormat)
     {
       // JPEG encoder causes the game to crash?????
-      case "JPEG": new openfl.display.JPEGEncoderOptions();
+      // case "JPEG": new openfl.display.JPEGEncoderOptions();
       default: new openfl.display.PNGEncoderOptions();
     }
   }
