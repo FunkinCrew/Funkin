@@ -77,6 +77,7 @@ class SetCameraBopSongEvent extends SongEvent
         name: 'intensity',
         title: 'Intensity',
         defaultValue: 1.0,
+        min: 0,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
         units: 'x'
@@ -85,6 +86,7 @@ class SetCameraBopSongEvent extends SongEvent
         name: 'rate',
         title: 'Rate',
         defaultValue: 4,
+        min: 0,
         step: 1,
         type: SongEventFieldType.INTEGER,
         units: 'beats/zoom'
