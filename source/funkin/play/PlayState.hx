@@ -3162,8 +3162,7 @@ class PlayState extends MusicBeatSubState
     {
       if (isSubState)
       {
-        moveToResultsScreen(false, prevScoreData); // I wonder if it's a simple as doing this? - Lasercar
-        // this.close();
+        moveToResultsScreen(false, prevScoreData);
       }
       else
       {
