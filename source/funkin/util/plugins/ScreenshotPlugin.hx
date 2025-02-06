@@ -184,7 +184,7 @@ class ScreenshotPlugin extends FlxBasic
       if (FlxG.keys.pressed.SHIFT)
       {
         openScreenshotsFolder();
-        return; // We're only opening the screenshots folder (we don't want to accidently take a screenshot after this)
+        return; // We're only opening the screenshots folder (we don't want to accidentally take a screenshot after this)
       }
       for (sprite in [flashSprite, previewSprite])
       {
