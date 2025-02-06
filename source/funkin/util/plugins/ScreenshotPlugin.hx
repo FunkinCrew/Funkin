@@ -79,7 +79,8 @@ class ScreenshotPlugin extends FlxBasic
   var shotPreviewBitmap:Bitmap;
   var outlineBitmap:Bitmap;
 
-  var wasMouseHidden = false;
+  var wasMouseHidden:Bool = false;
+  var screenshotTakenFrame:Int = 0;
 
   var screenshotBeingSpammed:Bool = false;
 
@@ -158,24 +159,26 @@ class ScreenshotPlugin extends FlxBasic
           trace("finished saving screenshot buffer");
           screenshotBuffer = [];
           screenshotNameBuffer = [];
-          // clean up our loop
+          // your honor, league of legends
           asyncLoop.kill();
           asyncLoop.destroy();
           asyncLoop = null;
         }
       }
-      // Examples ftw! - Lasercar
+      // Examples ftw!
     }
     super.update(elapsed);
 
-    if (hasPressedScreenshot())
+    /*
+      This looks scary, oh no I pressed the button but no screenshot because screenshotTakenFrame != 0!
+      But if you're crazy enough to have a macro that bumps into this
+      then you're probably also going to hit 100 screenshots real fast
+     */
+    if (hasPressedScreenshot() && screenshotTakenFrame == 0)
     {
       if (Preferences.shouldHideMouse && !wasMouseHidden && FlxG.mouse.visible)
       {
         wasMouseHidden = true;
-        // argh, even though this is happening, it's not happening fast enough before the screenshot is taken!
-        // Whatever, I made the popup not show up, that's all I need
-        // If I just have enough things here and run this first, it'll eventually work, right?
         Cursor.hide();
       }
       if (FlxG.keys.pressed.SHIFT)
@@ -183,12 +186,17 @@ class ScreenshotPlugin extends FlxBasic
         openScreenshotsFolder();
         return; // We're only opening the screenshots folder (we don't want to accidently take a screenshot after this)
       }
+      for (sprite in [flashSprite, previewSprite])
+      {
+        FlxTween.cancelTweensOf(sprite);
+        sprite.alpha = 0;
+      }
       // screenshot spamming timer
       if (screenshotSpammedTimer == null || screenshotSpammedTimer.finished == true)
       {
         screenshotSpammedTimer = new FlxTimer().start(1, function(_) {
           // The player's stopped spamming shots, so we can stop the screenshot spam mode too
-          containerThing.alpha = 1;
+          if (!Preferences.flashingLights) containerThing.alpha = 1;
           screenshotBeingSpammed = false;
           if (screenshotBuffer[0] != null) saveBufferedScreenshots(screenshotBuffer, screenshotNameBuffer);
           if (wasMouseHidden && !FlxG.mouse.visible)
@@ -201,10 +209,19 @@ class ScreenshotPlugin extends FlxBasic
       else // Pressing the screenshot key more than once every second enables the screenshot spam mode and resets the timer
       {
         screenshotBeingSpammed = true;
-        containerThing.alpha = 0;
+        if (!Preferences.flashingLights) containerThing.alpha = 0; // hide the preview completely
         screenshotSpammedTimer.reset(1);
       }
-      capture(); // After all these checks, we finally try taking a screenshot
+      screenshotTakenFrame++;
+    }
+    else if (screenshotTakenFrame > 1)
+    {
+      screenshotTakenFrame = 0;
+      capture(); // After all these checks and waiting a frame, we finally try taking a screenshot
+    }
+    else if (screenshotTakenFrame > 0)
+    {
+      screenshotTakenFrame++;
     }
   }
 
@@ -263,43 +280,37 @@ class ScreenshotPlugin extends FlxBasic
     // var bitmap = new Bitmap(new BitmapData(Math.floor(captureRegion.width), Math.floor(captureRegion.height), true, 0x00000000)); // Create a transparent empty bitmap.
     // var drawMatrix = new Matrix(1, 0, 0, 1, -captureRegion.x, -captureRegion.y); // Modifying this will scale or skew the bitmap.
     // bitmap.bitmapData.draw(FlxG.stage, drawMatrix);
-    var shot = null;
-    if (containerThing.alpha == 0 && screenshotBeingSpammed == true)
+    var shot = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
+    if (screenshotBeingSpammed == true)
     {
       // Save the screenshots to the buffer instead
-      // Hmm, the container is hiding, but it's still not hiding fast enough for this first spammed shot, so a timer?
-      // [UH-OH!] yes! it works, finally!
-      new FlxTimer().start(0.05, function(_) {
-        shot = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
-        if (screenshotBuffer.length < 100)
-        {
-          screenshotBuffer.push(shot);
-          screenshotNameBuffer.push('screenshot-${DateUtil.generateTimestamp()}');
-        }
-        else
-          throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez. If you wanted those screenshots, well too bad!";
-        FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
-      });
+      if (screenshotBuffer.length < 100)
+      {
+        screenshotBuffer.push(shot);
+        screenshotNameBuffer.push('screenshot-${DateUtil.generateTimestamp()}');
+      }
+      else
+        throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez. If you wanted those screenshots, well too bad!";
+      showCaptureFeedback();
+      showFancyPreview(shot);
+      if (wasMouseHidden && !FlxG.mouse.visible && Preferences.flashingLights) // Just in case
+      {
+        wasMouseHidden = false;
+        Cursor.show();
+      }
     }
     else
     {
-      // I wish I could have these effects and hide them too, but this works too. Hey, that rhymes!
-      shot = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
       saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}', 1);
       // Show some feedback.
-      flashSprite.alpha = 1;
-      FlxTween.tween(flashSprite, {alpha: 0}, 0.15);
-
+      showCaptureFeedback();
       showFancyPreview(shot);
-
       if (wasMouseHidden && !FlxG.mouse.visible)
       {
         wasMouseHidden = false;
         Cursor.show();
       }
-      FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
     }
-
     onPostScreenshot.dispatch(shot);
   }
 
@@ -310,6 +321,10 @@ class ScreenshotPlugin extends FlxBasic
    */
   function showCaptureFeedback():Void
   {
+    flashSprite.alpha = 1;
+    FlxTween.tween(flashSprite, {alpha: 0}, 0.15);
+
+    FunkinSound.playOnce(Paths.sound('screenshot'), 1.0);
     // I don't need this
     /*var flashBitmap;
         flashSprite = new Sprite();
@@ -347,8 +362,8 @@ class ScreenshotPlugin extends FlxBasic
 
     previewSprite.alpha = 1;
     FlxTween.tween(previewSprite, {alpha: 0}, 0.5, {startDelay: .5});
-    // I just can't for the live of me get this thing to hide properly, so it's being disabled
-    // I mean, steam doesn't make their screenshots this advanced anyways - Lasercar
+    // I just can't for the life of me get this thing to hide properly, so it's being disabled
+    // I mean, steam doesn't make their screenshots this advanced anyways
 
     // ermmm stealing this??
     /*
@@ -509,8 +524,6 @@ class ScreenshotPlugin extends FlxBasic
       previousScreenshotName = targetPath;
       targetPath = getScreenshotPath() + targetPath + '.' + Std.string(Preferences.saveFormat).toLowerCase();
       previousScreenshotCopyNum = 2;
-      trace(previousScreenshotName);
-      trace(targetPath);
     }
     else
     {
@@ -535,17 +548,18 @@ class ScreenshotPlugin extends FlxBasic
     {
       // TODO: Make this work on browser.
       // Maybe make the images into a buffer that you can download as a zip or something? That'd work
-      /* Unhide the FlxTimer here to space out the screenshot saving some more,
-        though note that when the state changes any screenshots not already saved will be lost - Lasercar */
 
-      // new FlxTimer().start(screenShotNum + 1, function(_) {
-      //  trace('Saving screenshot to: ' + targetPath);
-      FileUtil.writeBytesToPath(targetPath, pngData);
-      // });
+      /* Unhide the FlxTimer here to space out the screenshot saving some more,
+        though note that when the state changes any screenshots not already saved will be lost */
+
+      new FlxTimer().start(screenShotNum + 1, function(_) {
+        trace('Saving screenshot to: ' + targetPath);
+        FileUtil.writeBytesToPath(targetPath, pngData);
+      });
     }
   }
 
-  // I' m very happy with this code, all of it just works - Lasercar function
+  // I' m very happy with this code, all of it just works
   function saveBufferedScreenshots(screenshots:Array<Bitmap>, screenshotNames)
   {
     trace('Saving screenshot buffer');
@@ -562,7 +576,7 @@ class ScreenshotPlugin extends FlxBasic
     // {
     // }
     getCurrentState().add(asyncLoop);
-    showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
+    if (!Preferences.flashingLights) showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
   }
 
   public function returnEncoder(saveFormat:String):Any
