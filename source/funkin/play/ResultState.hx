@@ -856,11 +856,9 @@ class ResultState extends MusicBeatSubState
           shouldTween = true;
           if (isChartingMode)
           {
-            // Don't do this garbage code at home, kids - Lasercar
             PlayState.instance.close();
             FlxTimer.globalManager.clear();
             this.close();
-            // PlayState.instance.remove(PlayState.instance.currentStage);
             return;
           }
           targetState = FreeplayState.build(
@@ -885,7 +883,6 @@ class ResultState extends MusicBeatSubState
             PlayState.instance.close();
             FlxTimer.globalManager.clear();
             this.close();
-            // PlayState.instance.remove(PlayState.instance.currentStage);
             return;
           }
           shouldTween = false;
