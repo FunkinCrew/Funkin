@@ -8,11 +8,11 @@ import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.audio.FunkinSound;
-import funkin.ui.options.MenuItemEnums;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.audio.FunkinSound;
+import funkin.play.notes.notesound.NoteSoundType;
 
 class PreferencesMenu extends Page
 {
@@ -63,6 +63,21 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Note Splashes', 'Disable to turn off note splash particle effects', function(value:Bool):Void {
       Preferences.noteSplashes = value;
     }, Preferences.noteSplashes);
+    createPrefItemEnum('Note Sound', 'Enable to play a sound effect when a note is hit', [
+      NoteSoundType.None => 'None',
+      NoteSoundType.PingPong => 'Ping Pong',
+      NoteSoundType.PoolBall => 'Pool Ball',
+      NoteSoundType.VineBoom => 'Vine Boom'
+    ], function(value:String):Void {
+      Preferences.noteSoundType = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'));
+    }, Preferences.noteSoundType);
+    createPrefItemPercentage('Note Sound Volume', 'The volume to play the note hit sound effects at', function(value:Int) {
+      Preferences.noteSoundVolume = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'), Preferences.noteSoundVolume / 100.0);
+    }, Preferences.noteSoundVolume);
     createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);
