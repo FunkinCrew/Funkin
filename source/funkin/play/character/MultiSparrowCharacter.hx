@@ -44,8 +44,8 @@ class MultiSparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
-      pixelPerfectRender = true;
-      pixelPerfectPosition = true;
+      // pixelPerfectRender = true;
+      // pixelPerfectPosition = true;
     }
     else
     {
