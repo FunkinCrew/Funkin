@@ -519,7 +519,7 @@ class ScreenshotPlugin extends FlxBasic
   {
     makeScreenshotPath();
     // Check that we're not overriding a previous image, and keep making a unique path until we can
-    if (previousScreenshotName != targetPath)
+    if (previousScreenshotName != targetPath && previousScreenshotName != (targetPath + ' (${previousScreenshotCopyNum})'))
     {
       previousScreenshotName = targetPath;
       targetPath = getScreenshotPath() + targetPath + '.' + Std.string(Preferences.saveFormat).toLowerCase();
@@ -527,11 +527,11 @@ class ScreenshotPlugin extends FlxBasic
     }
     else
     {
-      var newTargetPath:String = targetPath;
+      var newTargetPath:String = targetPath + ' (${previousScreenshotCopyNum})';
       while (previousScreenshotName == newTargetPath)
       {
-        newTargetPath = targetPath + ' (${previousScreenshotCopyNum})';
         previousScreenshotCopyNum++;
+        newTargetPath = targetPath + ' (${previousScreenshotCopyNum})';
       }
       previousScreenshotName = newTargetPath;
       targetPath = getScreenshotPath() + newTargetPath + '.' + Std.string(Preferences.saveFormat).toLowerCase();
@@ -547,13 +547,12 @@ class ScreenshotPlugin extends FlxBasic
     else
     {
       // TODO: Make this work on browser.
-      // Maybe make the images into a buffer that you can download as a zip or something? That'd work
+      // Maybe save the images into a buffer that you can download as a zip or something? That'd work
 
       /* Unhide the FlxTimer here to space out the screenshot saving some more,
         though note that when the state changes any screenshots not already saved will be lost */
-
+      trace('Saving screenshot to: ' + targetPath);
       new FlxTimer().start(screenShotNum + 1, function(_) {
-        trace('Saving screenshot to: ' + targetPath);
         FileUtil.writeBytesToPath(targetPath, pngData);
       });
     }
@@ -572,9 +571,6 @@ class ScreenshotPlugin extends FlxBasic
       }
       i++;
     }, 1);
-    // for (i in 0...screenshots.length)
-    // {
-    // }
     getCurrentState().add(asyncLoop);
     if (!Preferences.flashingLights) showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
   }
