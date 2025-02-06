@@ -228,7 +228,8 @@ class FreeplayState extends MusicBeatSubState
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
     if (Save?.instance?.options?.rememberFreeplayChar == true)
     {
-      Save.instance.setFreeplayCharacter(rememberedCharacterId); // If the option is enabled, save the character selected for freeplay if it's not the default.
+      // If the option is enabled, save the character selected for freeplay if it's not the default.
+      Save.instance.setFreeplayCharacter(rememberedCharacterId);
     }
     fromCharSelect = params?.fromCharSelect ?? false;
     fromResultsParams = params?.fromResults;
@@ -1200,7 +1201,7 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
-      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState({character: currentCharacterId} // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected - Lasercar
+      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState({character: currentCharacterId} // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
         // ,
         // fromFreeplaySelect: true
       ));

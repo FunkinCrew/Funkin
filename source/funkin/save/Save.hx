@@ -1265,7 +1265,7 @@ typedef SaveDataFreeplay =
   /**
    * The user's last selected freeplay character.
    */
-  var freeplayCharacter:String; // Why do strings have to be saved in typedefs to load properly??? - Lasercar
+  var freeplayCharacter:String; // Why do strings have to be saved in typedefs to load properly???
 
 };
 
@@ -1371,7 +1371,7 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
-   * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?) - Lasercar
+   * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
    * @default `true`
    */
   var rememberFreeplayChar:Bool;

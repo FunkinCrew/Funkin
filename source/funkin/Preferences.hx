@@ -158,7 +158,7 @@ class Preferences
   }
 
   /**
-   * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?) - Lasercar
+   * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
    * @default `true`
    */
   public static var rememberFreeplayChar(get, set):Bool;

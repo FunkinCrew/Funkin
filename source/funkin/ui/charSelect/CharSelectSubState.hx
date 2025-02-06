@@ -64,7 +64,7 @@ class CharSelectSubState extends MusicBeatSubState
   var chooseDipshit:FlxSprite;
   var dipshitBlur:FlxSprite;
   var transitionGradient:FlxSprite;
-  var curChar(default, set):String = "pico";
+  var curChar(default, set):String = Constants.DEFAULT_CHARACTER;
   var rememberedChar:String;
   var nametag:Nametag;
   var camFollow:FlxObject;
@@ -173,18 +173,32 @@ class CharSelectSubState extends MusicBeatSubState
     charLightGF.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLightGF);
 
-    gfChill = new CharSelectGF();
-    gfChill.switchGF("bf");
-    add(gfChill);
+    function setupPlayerChill(character:String)
+    {
+      gfChill = new CharSelectGF();
+      gfChill.switchGF(character);
+      add(gfChill);
 
-    playerChillOut = new CharSelectPlayer(0, 0);
-    playerChillOut.switchChar("bf");
-    playerChillOut.visible = false;
-    add(playerChillOut);
+      playerChillOut = new CharSelectPlayer(0, 0);
+      playerChillOut.switchChar(character);
+      playerChillOut.visible = false;
+      add(playerChillOut);
 
-    playerChill = new CharSelectPlayer(0, 0);
-    playerChill.switchChar("bf");
-    add(playerChill);
+      playerChill = new CharSelectPlayer(0, 0);
+      playerChill.switchChar(character);
+      add(playerChill);
+    }
+
+    // I think I can do the character preselect thing here? This better work
+    // Edit: [UH-OH!] yes! It does!
+    if (rememberedChar != null && charTargetPosition[rememberedChar] != null && rememberedChar != Constants.DEFAULT_CHARACTER)
+    {
+      setupPlayerChill(rememberedChar);
+      setCursorPosition(charTargetPosition.get(rememberedChar));
+      @:bypassAccessor curChar = rememberedChar;
+    }
+    else
+      setupPlayerChill(Constants.DEFAULT_CHARACTER);
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
@@ -230,7 +244,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.scrollFactor.set();
     dipshitBlur.scrollFactor.set();
 
-    nametag = new Nametag();
+    nametag = new Nametag(curChar);
     add(nametag);
 
     nametag.scrollFactor.set();
@@ -430,14 +444,6 @@ class CharSelectSubState extends MusicBeatSubState
     });
     else
     {
-      // I think I can do the character preselect thing here? This better work - Lasercar
-      // Edit: [UH-OH!] yes! It does!
-      if (rememberedChar != "bf")
-      {
-        setCursorPosition(charTargetPosition.get(rememberedChar));
-        curChar = rememberedChar;
-      }
-
       FunkinSound.playMusic('stayFunky',
         {
           startingVolume: 1,
@@ -1051,7 +1057,7 @@ class CharSelectSubState extends MusicBeatSubState
     return gridPosition;
   }
 
-  // I've moved this code into a function because I need to use it myself - Lasercar
+  // Moved this code into a function because is now used twice
   function setCursorPosition(index:Int)
   {
     var copy = 3;
@@ -1066,7 +1072,6 @@ class CharSelectSubState extends MusicBeatSubState
 
     var xThing = (copy - index - 2) * -1;
     // Look, I'd write better code but I had better aneurysms, my bad - Cheems
-    // Hey, don't worry, your code was very useful for my even worse code - Lasercar
     cursorY = yThing;
     cursorX = xThing;
   }
