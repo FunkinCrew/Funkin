@@ -536,26 +536,28 @@ class ScreenshotPlugin extends FlxBasic
       previousScreenshotName = newTargetPath;
       targetPath = getScreenshotPath() + newTargetPath + '.' + Std.string(Preferences.saveFormat).toLowerCase();
     }
-    var pngData = encode(bitmap);
 
-    if (pngData == null)
-    {
-      trace('[WARN] Failed to encode ${Preferences.saveFormat} data');
-      previousScreenshotName = null;
-      return;
-    }
-    else
-    {
-      // TODO: Make this work on browser.
-      // Maybe save the images into a buffer that you can download as a zip or something? That'd work
+    // TODO: Make this work on browser.
+    // Maybe save the images into a buffer that you can download as a zip or something? That'd work
 
-      /* Unhide the FlxTimer here to space out the screenshot saving some more,
-        though note that when the state changes any screenshots not already saved will be lost */
-      trace('Saving screenshot to: ' + targetPath);
-      new FlxTimer().start(screenShotNum + 1, function(_) {
+    /* Unhide the FlxTimer here to space out the screenshot saving some more,
+      though note that when the state changes any screenshots not already saved will be lost */
+
+    new FlxTimer().start(screenShotNum + 1, function(_) {
+      var pngData = encode(bitmap);
+
+      if (pngData == null)
+      {
+        trace('[WARN] Failed to encode ${Preferences.saveFormat} data');
+        previousScreenshotName = null;
+        return;
+      }
+      else
+      {
+        trace('Saving screenshot to: ' + targetPath);
         FileUtil.writeBytesToPath(targetPath, pngData);
-      });
-    }
+      }
+    });
   }
 
   // I' m very happy with this code, all of it just works
