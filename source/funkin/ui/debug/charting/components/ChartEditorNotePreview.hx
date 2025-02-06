@@ -59,7 +59,7 @@ class ChartEditorNotePreview extends FlxSprite
    * @param note The data for the note.
    * @param songLengthInMs The total length of the song in milliseconds.
    */
-  public function addNote(note:SongNoteData, songLengthInMs:Int, ?previewType:NotePreviewType = None):Void
+  public function addNote(note:SongNoteData, songLengthInMs:Int, previewType:NotePreviewType = None):Void
   {
     var noteDir:Int = note.getDirection();
     var mustHit:Bool = note.getStrumlineIndex() == 0;
@@ -150,7 +150,7 @@ class ChartEditorNotePreview extends FlxSprite
    * @param songLengthInMs Length of the song in milliseconds.
    * @param previewType If the note should forcibly be colored as selected or overlapping.
    */
-  public function drawNote(dir:Int, mustHit:Bool, strumTimeInMs:Int, songLengthInMs:Int, ?previewType:NotePreviewType = None):Void
+  public function drawNote(dir:Int, mustHit:Bool, strumTimeInMs:Int, songLengthInMs:Int, previewType:NotePreviewType = None):Void
   {
     var color:FlxColor = switch (dir)
     {
