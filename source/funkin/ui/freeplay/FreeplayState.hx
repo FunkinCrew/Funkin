@@ -1660,6 +1660,18 @@ class FreeplayState extends MusicBeatSubState
     {
       grpCapsules.members[curSelected].onConfirm();
     }
+    if (controls.DEBUG_CHART && !busy)
+    {
+      /*
+        Doing it this way rather than passing the rememberedSongId
+        so that in the future, this can be made to load a random song when given this
+       */
+      var targetSong = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      FlxG.switchState(() -> new ChartEditorState(
+        {
+          targetSongId: targetSong,
+        }));
+    }
   }
 
   override function beatHit():Bool
