@@ -6167,20 +6167,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     measureTicks.reloadTickBitmap();
   }
 
-  public override function closeSubState():Void
-  {
-    super.closeSubState();
-    if (Std.isOfType(subState, funkin.play.ResultState))
-    {
-      if (FlxG.sound.music != null) FlxG.sound.music.stop();
-
-      // Override music.
-      if (audioInstTrack != null)
-      {
-        FlxG.sound.music = audioInstTrack;
-      }
-    }
-  }
   /**
    * HAXEUI FUNCTIONS
    */
