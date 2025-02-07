@@ -452,6 +452,7 @@ class ResultState extends MusicBeatSubState
         // Play the intro music.
         introMusicAudio = FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
           introMusicAudio = null;
+          if (!isChartingMode) // Don't override the music and cause problems on the chart editor
           FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
             {
               startingVolume: 1.0,
@@ -462,7 +463,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
+        if (!isChartingMode) FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
           {
             startingVolume: 1.0,
             overrideExisting: true,
