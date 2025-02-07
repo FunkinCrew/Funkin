@@ -99,6 +99,11 @@ typedef PlayStateParams =
    */
   ?botPlayMode:Bool,
   /**
+   * Whether the results screen should show up before returning to the chart editor.
+   * @default `false`
+   */
+  ?playtestResults:Bool,
+  /**
    * Whether the song should be in minimal mode.
    * @default `false`
    */
@@ -313,6 +318,11 @@ class PlayState extends MusicBeatSubState
    * If true, player will not lose gain or lose score from notes.
    */
   public var isBotPlayMode:Bool = false;
+
+  /**
+   * Whether the results screen should show up before returning to the chart editor.
+   */
+  public var isPlaytestResults:Bool = false;
 
   /**
    * Whether the player has dropped below zero health,
@@ -617,6 +627,7 @@ class PlayState extends MusicBeatSubState
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
     isBotPlayMode = params.botPlayMode ?? false;
+    isPlaytestResults = params.playtestResults ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
     playbackRate = params.playbackRate ?? 1.0;
@@ -3114,10 +3125,19 @@ class PlayState extends MusicBeatSubState
     {
       if (isSubState)
       {
-        var tallies:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
-        var clearPercentFloat = tallies.totalNotes == 0 ? 0.0 : (tallies.sick + tallies.good) / tallies.totalNotes * 100;
-        // Only move to the score screen if more than 30% of the song was successfully hit.
-        if (clearPercentFloat >= 30) moveToResultsScreen(false, prevScoreData);
+        if (isPlaytestResults)
+        {
+          var tallies:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
+          var clearPercentFloat = tallies.totalNotes == 0 ? 0.0 : (tallies.sick + tallies.good) / tallies.totalNotes * 100;
+          /*
+              Only move to the score screen if more than 30% of the song was successfully hit.
+              While that might sound like a low clear percent, consider the fact that some songs are hard,
+              and the user might be only playtesting one third or half the song.
+             */
+          if (clearPercentFloat >= 30) moveToResultsScreen(false, prevScoreData);
+          else
+            this.close();
+        }
         else
           this.close();
       }
