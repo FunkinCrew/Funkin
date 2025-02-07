@@ -3114,7 +3114,12 @@ class PlayState extends MusicBeatSubState
     {
       if (isSubState)
       {
-        moveToResultsScreen(false, prevScoreData);
+        var tallies:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
+        var clearPercentFloat = tallies.totalNotes == 0 ? 0.0 : (tallies.sick + tallies.good) / tallies.totalNotes * 100;
+        // Only move to the score screen if more than 30% of the song was successfully hit.
+        if (clearPercentFloat >= 30) moveToResultsScreen(false, prevScoreData);
+        else
+          this.close();
       }
       else
       {
