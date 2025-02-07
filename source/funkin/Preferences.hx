@@ -257,7 +257,7 @@ class Preferences
   }
 
   /**
-   * If enabled, the game will save any screenshots taken to this format.
+   * The game will save any screenshots taken to this format.
    * @default `PNG`
    */
   public static var saveFormat(get, set):Any;
@@ -276,7 +276,7 @@ class Preferences
   }
 
   /**
-   * If enabled, the game will save JEPG screenshots with this quality percentage.
+   * The game will save JPEG screenshots with this quality percentage.
    * @default `80`
    */
   public static var jpegQuality(get, set):Int;
