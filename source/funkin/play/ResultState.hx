@@ -90,9 +90,6 @@ class ResultState extends MusicBeatSubState
     return PlayState.instance.isChartingMode;
   }
 
-  // Chart Editor State varible that needs to be reset after closing the results screen and going back the chart editor
-  public var audioInstTrack:Null<FunkinSound> = null;
-
   public function new(params:ResultsStateParams)
   {
     super();
@@ -139,10 +136,6 @@ class ResultState extends MusicBeatSubState
 
   override function create():Void
   {
-    if (isChartingMode)
-    {
-      if (FlxG.sound.music != null) audioInstTrack = Flxg.sound.music;
-    }
     if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
     // We need multiple cameras so we can put one at an angle.
@@ -838,7 +831,6 @@ class ResultState extends MusicBeatSubState
             PlayState.instance.close();
             FlxTimer.globalManager.clear();
             FlxTween.globalManager.clear();
-            if (audioInstTrack != null) FlxG.sound.music = audioInstTrack;
             this.close();
             return;
           }
@@ -864,7 +856,6 @@ class ResultState extends MusicBeatSubState
             PlayState.instance.close();
             FlxTimer.globalManager.clear();
             FlxTween.globalManager.clear();
-            if (audioInstTrack != null) FlxG.sound.music = audioInstTrack;
             this.close();
             return;
           }
