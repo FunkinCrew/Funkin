@@ -1396,16 +1396,18 @@ typedef SaveDataOptions =
    */
   var unlockedFramerate:Bool;
 
-  // screenshot options
+  /**
+   * Screenshot options
+   * @param shouldHideMouse Should the mouse be hidden when taking a screenshot? Default: `true`
+   * @param fancyPreview Show a fancy preview? Default: `true`
+   * @param saveFormat The save format of the screenshot, PNG or JPEG. Default: `PNG`
+   * @param jpegQuality The JPEG Quality, if we're saving to the format. Default: `80`
+   */
   var screenshot:
     {
-      // Should the mouse be hidden when taking a screenshot?
       var shouldHideMouse:Bool;
-      // Show a fancy preview
       var fancyPreview:Bool;
-      // The save format of the screenshot, PNG or JPEG
       var saveFormat:String;
-      // The JPEG Quality, if we're saving to the format
       var jpegQuality:Int;
     };
 
