@@ -31,10 +31,30 @@ class Strumline extends FlxSpriteGroup
 
   static var RENDER_DISTANCE_MS(get, never):Float;
 
+  /**
+   * The custom render distance for the strumline.
+   * This should be in miliseconds only! Not pixels.
+   */
+  public static var CUSTOM_RENDER_DISTANCE_MS:Float = 0.0;
+
+  /**
+   * Whether to use the custom render distance.
+   * If false, the render distance will be calculated based on the screen height.
+   */
+  public static var USE_CUSTOM_RENDER_DISTANCE:Bool = false;
+
   static function get_RENDER_DISTANCE_MS():Float
   {
+    if (USE_CUSTOM_RENDER_DISTANCE) return CUSTOM_RENDER_DISTANCE_MS;
     return FlxG.height / Constants.PIXELS_PER_MS;
   }
+
+  /**
+   * Whether to play note splashes or not
+   * TODO: Make this a setting!
+   * IE: Settings.noSplash
+   */
+  public var showNotesplash:Bool = true;
 
   /**
    * Whether this strumline is controlled by the player's inputs.
@@ -68,6 +88,11 @@ class Strumline extends FlxSpriteGroup
   {
     return _conductorInUse = value;
   }
+
+  /**
+   * Whether the game should auto position notes.
+   */
+  public var customPositionData:Bool = false;
 
   /**
    * The notes currently being rendered on the strumline.
@@ -375,7 +400,7 @@ class Strumline extends FlxSpriteGroup
 
       var vwoosh:Bool = note.holdNoteSprite == null;
       // Set the note's position.
-      note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime, vwoosh);
+      if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime, vwoosh);
 
       // If the note is miss
       var isOffscreen = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
@@ -445,13 +470,16 @@ class Strumline extends FlxSpriteGroup
 
         var vwoosh:Bool = false;
 
-        if (Preferences.downscroll)
+        if (!customPositionData)
         {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
-        }
-        else
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2;
+          if (Preferences.downscroll)
+          {
+            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
+          }
+          else
+          {
+            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + yOffset + STRUMLINE_SIZE / 2;
+          }
         }
 
         // Clean up the cover.
@@ -474,13 +502,16 @@ class Strumline extends FlxSpriteGroup
           holdNote.visible = false;
         }
 
-        if (Preferences.downscroll)
+        if (!customPositionData)
         {
-          holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
-        }
-        else
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
+          if (Preferences.downscroll)
+          {
+            holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
+          }
+          else
+          {
+            holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
+          }
         }
       }
       else
@@ -489,13 +520,16 @@ class Strumline extends FlxSpriteGroup
         holdNote.visible = true;
         var vwoosh:Bool = false;
 
-        if (Preferences.downscroll)
+        if (!customPositionData)
         {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
-        }
-        else
-        {
-          holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2;
+          if (Preferences.downscroll)
+          {
+            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
+          }
+          else
+          {
+            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) + STRUMLINE_SIZE / 2;
+          }
         }
       }
     }
@@ -707,7 +741,7 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteSplash(direction:NoteDirection):Void
   {
-    if (!Preferences.noteSplashes) return;
+    if (!Preferences.noteSplashes || !showNotesplash) return;
     if (!noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
@@ -727,7 +761,7 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
-    if (!Preferences.noteSplashes) return;
+    if (!Preferences.noteSplashes || !showNotesplash) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();

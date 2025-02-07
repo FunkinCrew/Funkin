@@ -626,7 +626,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          return false;
+          continue;
         }
       }
     }
@@ -821,7 +821,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          return false;
+          continue;
         }
       }
     }
