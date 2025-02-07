@@ -659,7 +659,7 @@ class StoryMenuState extends MusicBeatState
     tracklistText.x -= FlxG.width * 0.35;
 
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
-    highScore = levelScore?.score ?? 0;
+    highScore = levelScore?.score ?? 69;
     // levelScore.accuracy
   }
 }
