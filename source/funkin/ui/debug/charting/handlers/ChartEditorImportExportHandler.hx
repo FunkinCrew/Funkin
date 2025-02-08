@@ -26,7 +26,7 @@ class ChartEditorImportExportHandler
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
    */
-  public static function loadSongAsTemplate(state:ChartEditorState, songId:String):Void
+  public static function loadSongAsTemplate(state:ChartEditorState, songId:String, targetSongDifficulty:String):Void
   {
     trace('===============START');
 
@@ -92,6 +92,10 @@ class ChartEditorImportExportHandler
         {
           trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
         }
+        // Set the difficulty of the song if one was passed in the params, and it isn't the default
+        if (targetSongDifficulty != null
+          && targetSongDifficulty != state.selectedDifficulty
+          && targetSongDifficulty == difficultyId) state.selectedDifficulty = targetSongDifficulty;
       }
     }
 

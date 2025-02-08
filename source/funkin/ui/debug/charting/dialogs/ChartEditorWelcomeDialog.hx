@@ -154,7 +154,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
         this.hideDialog(DialogButton.CANCEL);
 
         // Load song from template
-        chartEditorState.loadSongAsTemplate(targetSongId);
+        chartEditorState.loadSongAsTemplate(targetSongId, Constants.DEFAULT_DIFFICULTY);
       });
     }
   }
