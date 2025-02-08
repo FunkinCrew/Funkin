@@ -432,7 +432,7 @@ class ChartEditorImportExportHandler
         targetMode = Skip;
         targetPath = Path.join([
           BACKUPS_PATH,
-          'chart-editor-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
+            'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
         ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
