@@ -2231,7 +2231,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else if (params != null && params.targetSongId != null)
     {
-      this.loadSongAsTemplate(params.targetSongId);
+      // pass the targetSongDifficulty if one was given, otherwise, don't
+      if (params.targetSongDifficulty != null) this.loadSongAsTemplate(params.targetSongId, params.targetSongDifficulty);
+      else
+        this.loadSongAsTemplate(params.targetSongId, Constants.DEFAULT_DIFFICULTY);
     }
     else
     {
@@ -6521,6 +6524,10 @@ typedef ChartEditorParams =
    * If non-null, load this song immediately instead of the welcome screen.
    */
   var ?targetSongId:String;
+  /**
+   * If non-null, load this difficulty immediately instead of the default difficulty.
+   */
+  var ?targetSongDifficulty:String;
 };
 
 /**
