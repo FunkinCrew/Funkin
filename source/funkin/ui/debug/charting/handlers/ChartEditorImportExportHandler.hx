@@ -430,6 +430,7 @@ class ChartEditorImportExportHandler
       {
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
+        if (state.currentSongId == '') state.currentSongName = 'New Chart'; // Hopefully no one notices this silliness
         targetPath = Path.join([
           BACKUPS_PATH,
             'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
