@@ -211,7 +211,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (FlxMath.getDecimals(danceEvery) == 0) // for int danceEvery
     {
       trace("THAT'S AN INT FOR DANCEEVERY");
-      var idlePerBeat:Float = (daIdle.numFrames / daIdle.frameRate) / (Conductor.instance.beatLengthMs / 1000);
+      var idlePerBeat:Float = ((daIdle.numFrames + 1) / daIdle.frameRate) / (Conductor.instance.beatLengthMs / 1000);
       var danceEveryNumBeats:Int = Math.ceil(idlePerBeat);
       var numeratorTweak:Int = (Conductor.instance.timeSignatureNumerator % 2 == 0) ? 2 : 3;
       if (danceEveryNumBeats > numeratorTweak)
@@ -225,7 +225,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     {
       // maybe to rework, for the moment it tries to have the same patern every sections
       _realDanceEvery = danceEvery;
-      while ((4 * _realDanceEvery * Conductor.instance.stepLengthMs) < (daIdle.numFrames / daIdle.frameRate))
+      while ((4 * _realDanceEvery * Conductor.instance.stepLengthMs) < ((daIdle.numFrames + 1) / daIdle.frameRate))
         _realDanceEvery *= numeratorTweak;
     }
   }
