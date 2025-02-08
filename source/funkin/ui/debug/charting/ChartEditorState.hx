@@ -2231,10 +2231,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else if (params != null && params.targetSongId != null)
     {
-      // pass the targetSongDifficulty if one was given, otherwise, don't
-      if (params.targetSongDifficulty != null) this.loadSongAsTemplate(params.targetSongId, params.targetSongDifficulty);
-      else
-        this.loadSongAsTemplate(params.targetSongId, Constants.DEFAULT_DIFFICULTY);
+      var targetSongDifficulty = params.targetSongDifficulty ?? Constants.DEFAULT_DIFFICULTY;
+      var targetSongVariation = params.targetSongVariation ?? Constants.DEFAULT_VARIATION;
+      this.loadSongAsTemplate(params.targetSongId, targetSongDifficulty, targetSongVariation);
     }
     else
     {
@@ -6528,6 +6527,10 @@ typedef ChartEditorParams =
    * If non-null, load this difficulty immediately instead of the default difficulty.
    */
   var ?targetSongDifficulty:String;
+  /**
+   * If non-null, load this variation immediately instead of the default variation.
+   */
+  var ?targetSongVariation:String;
 };
 
 /**
