@@ -111,7 +111,11 @@ class ChartEditorImportExportHandler
 
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
-    state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
+    // Actually state the correct variation loaded
+    for (metadata in rawSongMetadata)
+    {
+      if (metadata.variation == state.selectedVariation) state.success('Success', 'Loaded song (${metadata.songName})');
+    }
 
     trace('===============END');
   }
