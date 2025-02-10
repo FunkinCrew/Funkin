@@ -10,7 +10,7 @@ import funkin.util.WindowUtil;
 using StringTools;
 
 @:xml('
-<dialog id="backupAvailableDialog" width="475" height="150" title="Hey! Listen!">
+<dialog id="backupAvailableDialog" width="475" height="200" title="Hey! Listen!">
 	<vbox width="100%" height="100%">
 		<label text="There is a chart backup available, would you like to open it?\n" width="100%" textAlign="center" />
 		<spacer height="6" />
@@ -41,7 +41,7 @@ class BackupAvailableDialog extends Dialog
     var stat = sys.FileSystem.stat(filePath);
     var sizeInKB = stat.size;
 
-    backupTimeLabel.text = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + "KB";
+    backupTimeLabel.text = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + " KB";
     #end
 
     // button callbacks
