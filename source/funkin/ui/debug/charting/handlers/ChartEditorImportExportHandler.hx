@@ -333,33 +333,6 @@ class ChartEditorImportExportHandler
     #end
   }
 
-  public static function getLatestBackupDate():Null<Date>
-  {
-    #if sys
-    var latestBackupPath:Null<String> = getLatestBackupPath();
-    if (latestBackupPath == null) return null;
-
-    var latestBackupName:String = haxe.io.Path.withoutDirectory(latestBackupPath);
-    latestBackupName = haxe.io.Path.withoutExtension(latestBackupName);
-
-    var parts = latestBackupName.split('-');
-
-    // var chart:String = parts[0];
-    // var editor:String = parts[1];
-    var year:Int = Std.parseInt(parts[2] ?? '0') ?? 0;
-    var month:Int = Std.parseInt(parts[3] ?? '1') ?? 1;
-    var day:Int = Std.parseInt(parts[4] ?? '0') ?? 0;
-    var hour:Int = Std.parseInt(parts[5] ?? '0') ?? 0;
-    var minute:Int = Std.parseInt(parts[6] ?? '0') ?? 0;
-    var second:Int = Std.parseInt(parts[7] ?? '0') ?? 0;
-
-    var date:Date = new Date(year, month - 1, day, hour, minute, second);
-    return date;
-    #else
-    return null;
-    #end
-  }
-
   /**
    * @param force Whether to export without prompting. `false` will prompt the user for a location.
    * @param targetPath where to export if `force` is `true`. If `null`, will export to the `backups` folder.
