@@ -343,9 +343,9 @@ class ChartEditorImportExportHandler
     latestBackupName = haxe.io.Path.withoutExtension(latestBackupName);
 
     var stat = sys.FileSystem.stat(latestBackupPath);
-    var sizeInKB = stat.size;
+    var sizeInMB = (stat.size / 1000000).round(3);
 
-    return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + " KB";
+    return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
     #else
     return null;
     #end
