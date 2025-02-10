@@ -333,6 +333,24 @@ class ChartEditorImportExportHandler
     #end
   }
 
+  public static function getLatestBackupDate():Null<String>
+  {
+    #if sys
+    var latestBackupPath:Null<String> = getLatestBackupPath();
+    if (latestBackupPath == null) return null;
+
+    var latestBackupName:String = haxe.io.Path.withoutDirectory(latestBackupPath);
+    latestBackupName = haxe.io.Path.withoutExtension(latestBackupName);
+
+    var stat = sys.FileSystem.stat(latestBackupPath);
+    var sizeInKB = stat.size;
+
+    return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + "KB";
+    #else
+    return null;
+    #end
+  }
+
   /**
    * @param force Whether to export without prompting. `false` will prompt the user for a location.
    * @param targetPath where to export if `force` is `true`. If `null`, will export to the `backups` folder.
