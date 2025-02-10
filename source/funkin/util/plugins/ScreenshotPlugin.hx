@@ -289,7 +289,7 @@ class ScreenshotPlugin extends FlxBasic
       else
         throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez. If you wanted those screenshots, well too bad!";
       showCaptureFeedback();
-      showFancyPreview(shot);
+      if (!Preferences.previewOnSave) showFancyPreview(shot);
       if (wasMouseHidden && !FlxG.mouse.visible && Preferences.flashingLights) // Just in case
       {
         wasMouseHidden = false;
@@ -301,7 +301,7 @@ class ScreenshotPlugin extends FlxBasic
       saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}', 1);
       // Show some feedback.
       showCaptureFeedback();
-      showFancyPreview(shot);
+      if (!Preferences.previewOnSave) showFancyPreview(shot);
       if (wasMouseHidden && !FlxG.mouse.visible)
       {
         wasMouseHidden = false;
@@ -422,6 +422,7 @@ class ScreenshotPlugin extends FlxBasic
       {
         trace('Saving screenshot to: ' + targetPath);
         FileUtil.writeBytesToPath(targetPath, pngData);
+        if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
       }
     });
   }
@@ -440,7 +441,8 @@ class ScreenshotPlugin extends FlxBasic
       i++;
     }, 1);
     getCurrentState().add(asyncLoop);
-    if (!Preferences.flashingLights) showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
+    if (!Preferences.flashingLights && !Preferences.previewOnSave)
+      showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
   }
 
   public function returnEncoder(saveFormat:String):Any
@@ -448,7 +450,7 @@ class ScreenshotPlugin extends FlxBasic
     return switch (saveFormat)
     {
       // JPEG encoder causes the game to crash?????
-      // case "JPEG": new openfl.display.JPEGEncoderOptions();
+      // case "JPEG": new openfl.display.JPEGEncoderOptions(Preferences.jpegQuality);
       default: new openfl.display.PNGEncoderOptions();
     }
   }

@@ -277,6 +277,25 @@ class Preferences
   }
 
   /**
+   * If enabled, the game will show the preview only after a screenshot is saved.
+   * @default `true`
+   */
+  public static var previewOnSave(get, set):Bool;
+
+  static function get_previewOnSave():Bool
+  {
+    return Save?.instance?.options?.screenshot?.previewOnSave ?? true;
+  }
+
+  static function set_previewOnSave(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.previewOnSave = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * The game will save any screenshots taken to this format.
    * @default `PNG`
    */
