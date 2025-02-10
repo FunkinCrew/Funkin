@@ -315,7 +315,7 @@ class ChartEditorImportExportHandler
     var stat = sys.FileSystem.stat(latestBackupPath);
     var sizeInKB = stat.size;
 
-    return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + "KB";
+    return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + " KB";
     #else
     return null;
     #end

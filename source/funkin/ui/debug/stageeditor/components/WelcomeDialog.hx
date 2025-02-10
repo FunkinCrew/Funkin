@@ -48,7 +48,7 @@ class WelcomeDialog extends Dialog
       var stat = sys.FileSystem.stat(file);
       var sizeInKB = stat.size;
 
-      fileText.tooltip = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + "KB";
+      fileText.tooltip = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInKB + " KB";
       #end
 
       contentRecent.addComponent(fileText);
