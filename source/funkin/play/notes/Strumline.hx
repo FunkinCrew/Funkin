@@ -215,6 +215,15 @@ class Strumline extends FlxSpriteGroup
     return value;
   }
 
+  override function set_alpha(value:Float):Float
+  {
+    super.set_alpha(value);
+
+    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0 * alpha;
+
+    return value;
+  }
+
   public function refresh():Void
   {
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
