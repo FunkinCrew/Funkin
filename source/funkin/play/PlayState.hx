@@ -1514,14 +1514,16 @@ class PlayState extends MusicBeatSubState
 
   public override function dispatchEvent(event:ScriptEvent):Void
   {
-    // ORDER: Module, Song, Note, Stage, Conversation, Character
+    // ORDER: Module, Song, Events, Notes, Stage, Conversation, Characters
     // Modules should get the first chance to cancel the event.
 
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);
-
     // Dispatch event to song script.
     ScriptEventDispatcher.callEvent(currentSong, event);
+
+    // Dispatch event to event notes
+    if (songEvents != null && songEvents.length > 0) SongEventRegistry.callEvent(songEvents, event);
 
     // Dispatch event to note kind scripts
     NoteKindManager.callEvent(event);
