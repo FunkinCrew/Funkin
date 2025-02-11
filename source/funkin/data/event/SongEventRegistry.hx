@@ -5,6 +5,8 @@ import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongData.SongEventData;
 import funkin.util.macro.ClassMacro;
 import funkin.play.event.ScriptedSongEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 
 /**
  * This class statically handles the parsing of internal and scripted song event handlers.
@@ -180,6 +182,32 @@ class SongEventRegistry
     {
       event.activated = false;
       // TODO: Add an onReset() method to SongEvent?
+    }
+  }
+
+  /**
+   * Dispatches a ScriptEvent to an event.
+   */
+  public static function callEventForEvent(data:SongEventData, scriptEvent:ScriptEvent):Void
+  {
+    var eventKind:String = data.eventKind;
+    var eventHandler:SongEvent = eventCache.get(eventKind);
+
+    if (eventHandler != null)
+    {
+      ScriptEventDispatcher.callEvent(eventHandler, scriptEvent);
+    }
+    else
+    {
+      trace('WARNING: No event handler for event with kind: ${eventKind}');
+    }
+  }
+
+  public static inline function callEvent(events:Array<SongEventData>, scriptEvent:ScriptEvent):Void
+  {
+    for (event in events)
+    {
+      callEventForEvent(event, scriptEvent);
     }
   }
 }
