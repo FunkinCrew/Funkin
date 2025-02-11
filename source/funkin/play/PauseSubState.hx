@@ -443,6 +443,7 @@ class PauseSubState extends MusicBeatSubState
 
       metadata.visible = visible;
       menuEntryText.visible = visible;
+      background.visible = visible;
       this.bgColor = visible ? 0x99000000 : 0x00000000; // 60% or fully transparent black
     }
     #end
