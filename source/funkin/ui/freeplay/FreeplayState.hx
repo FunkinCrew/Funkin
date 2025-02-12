@@ -327,18 +327,11 @@ class FreeplayState extends MusicBeatSubState
     if (currentCharacter?.getFreeplayDJData() != null)
     {
       dj = new FreeplayDJ(640, 366, currentCharacterId);
-      exitMovers.set([dj],
-        {
-          x: -dj.width * 1.6,
-          speed: 0.5
-        });
+
+      addToExitMovers([dj], -dj.width * 1.6, null, 0.5, null);
+      addToExitMoversCharSel([dj], null, -175, 0.8, 0.1);
+
       add(dj);
-      exitMoversCharSel.set([dj],
-        {
-          y: -175,
-          speed: 0.8,
-          wait: 0.1
-        });
     }
 
     backingImage.shader = angleMaskShader;
@@ -354,19 +347,8 @@ class FreeplayState extends MusicBeatSubState
     backingImage.updateHitbox();
     blackOverlayBullshitLOLXD.updateHitbox();
 
-    exitMovers.set([blackOverlayBullshitLOLXD, backingImage],
-      {
-        x: FlxG.width * 1.5,
-        speed: 0.4,
-        wait: 0
-      });
-
-    exitMoversCharSel.set([blackOverlayBullshitLOLXD, backingImage],
-      {
-        y: -100,
-        speed: 0.8,
-        wait: 0.1
-      });
+    addToExitMovers([blackOverlayBullshitLOLXD, backingImage], FlxG.width * 1.5, null, 0.4, 0);
+    addToExitMoversCharSel([blackOverlayBullshitLOLXD, backingImage], null, -100, 0.8, 0.1);
 
     add(backingImage);
     // backingCard.pinkBack.width * 0.74
@@ -380,19 +362,8 @@ class FreeplayState extends MusicBeatSubState
 
     add(grpDifficulties);
 
-    exitMovers.set([grpDifficulties],
-      {
-        x: -300,
-        speed: 0.25,
-        wait: 0
-      });
-
-    exitMoversCharSel.set([grpDifficulties],
-      {
-        y: -270,
-        speed: 0.8,
-        wait: 0.1
-      });
+    addToExitMovers([grpDifficulties], -300, null, 0.25, 0);
+    addToExitMoversCharSel([grpDifficulties], null, -270, 0.8, 0.1);
 
     for (diffId in Constants.DEFAULT_DIFFICULTY_LIST_FULL)
     {
@@ -436,20 +407,8 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.y -= 100;
     FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
 
-    exitMovers.set([overhangStuff, fnfFreeplay, ostName, charSelectHint],
-      {
-        y: -overhangStuff.height,
-        x: 0,
-        speed: 0.2,
-        wait: 0
-      });
-
-    exitMoversCharSel.set([overhangStuff, fnfFreeplay, ostName, charSelectHint],
-      {
-        y: -300,
-        speed: 0.8,
-        wait: 0.1
-      });
+    addToExitMovers([overhangStuff, fnfFreeplay, ostName, charSelectHint], 0, -overhangStuff.height, 0.2, 0);
+    addToExitMoversCharSel([overhangStuff, fnfFreeplay, ostName, charSelectHint], null, -300, 0.8, 0.1);
 
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     fnfFreeplay.shader = sillyStroke;
@@ -481,18 +440,8 @@ class FreeplayState extends MusicBeatSubState
     add(letterSort);
     letterSort.visible = false;
 
-    exitMovers.set([letterSort],
-      {
-        y: -100,
-        speed: 0.3
-      });
-
-    exitMoversCharSel.set([letterSort],
-      {
-        y: -270,
-        speed: 0.8,
-        wait: 0.1
-      });
+    addToExitMovers([letterSort], null, -100, 0.3, null);
+    addToExitMoversCharSel([letterSort], null, -270, 0.8, 0.1);
 
     // Reminder, this is a callback function being set, rather than these being called here in create()
     letterSort.changeSelectionCallback = (str) -> {
@@ -525,18 +474,8 @@ class FreeplayState extends MusicBeatSubState
       }
     };
 
-    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
-      {
-        x: FlxG.width,
-        speed: 0.3
-      });
-
-    exitMoversCharSel.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
-      {
-        y: -270,
-        speed: 0.8,
-        wait: 0.1
-      });
+    addToExitMovers([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite], FlxG.width, null, 0.3, null);
+    addToExitMoversCharSel([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite], null, -270, 0.8, 0.1);
 
     var diffSelLeft:DifficultySelector = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls, styleData);
     var diffSelRight:DifficultySelector = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls, styleData);
@@ -586,18 +525,8 @@ class FreeplayState extends MusicBeatSubState
       diffSelRight.visible = true;
       letterSort.visible = true;
 
-      exitMovers.set([diffSelLeft, diffSelRight],
-        {
-          x: -diffSelLeft.width * 2,
-          speed: 0.26
-        });
-
-      exitMoversCharSel.set([diffSelLeft, diffSelRight],
-        {
-          y: -270,
-          speed: 0.8,
-          wait: 0.1
-        });
+      addToExitMovers([diffSelLeft, diffSelRight], -diffSelLeft.width * 2, null, 0.26, null);
+      addToExitMoversCharSel([diffSelLeft, diffSelRight], null, -270, 0.8, 0.1);
 
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
@@ -1916,6 +1845,50 @@ class FreeplayState extends MusicBeatSubState
   public function getControls():Controls
   {
     return controls;
+  }
+
+  /**
+   * Adds a specified object to the `exitMovers` map.
+   * NOTE: You must specify your input as an array!
+   * Example: `addToExitMovers([sprite], x, y, speed, wait)`
+   *
+   * @param input The object to add.
+   * @param x The target x position of the object.
+   * @param y The target y position of the object.
+   * @param speed The speed the object should move at.
+   * @param wait Literally no idea what this does.
+   */
+  function addToExitMovers(input:Dynamic, x:Null<Float>, y:Null<Float>, speed:Null<Float>, wait:Null<Float>):Void
+  {
+    exitMovers.set(input,
+      {
+        x: x,
+        y: y,
+        speed: speed,
+        wait: wait
+      });
+  }
+
+  /**
+   * Adds a specified object to the `exitMoversCharSel` map.
+   * NOTE: You must specify your input as an array!
+   * Example: `addToExitMovers([sprite], x, y, speed, wait)`
+   *
+   * @param input The object to add.
+   * @param x The target x position of the object.
+   * @param y The target y position of the object.
+   * @param speed The speed the object should move at.
+   * @param wait Literally no idea what this does.
+   */
+  function addToExitMoversCharSel(input:Dynamic, x:Null<Float>, y:Null<Float>, speed:Null<Float>, wait:Null<Float>):Void
+  {
+    exitMoversCharSel.set(input,
+      {
+        x: x,
+        y: y,
+        speed: speed,
+        wait: wait
+      });
   }
 
   function openInstrumentalList(cap:SongMenuItem, instrumentalIds:Array<String>):Void
