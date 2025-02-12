@@ -77,6 +77,11 @@ class ResultState extends MusicBeatSubState
 
   var introMusicAudio:Null<FunkinSound>;
 
+  /**
+   * The music playing in the background of the state.
+   */
+  var resultsMusic:Null<FunkinSound> = null;
+
   var rankBg:FunkinSprite;
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;
@@ -433,7 +438,14 @@ class ResultState extends MusicBeatSubState
               overrideExisting: true,
               restartTrack: true
             });
+          else // Play the results music as a looped sound instead (that we cancel before closing and returning to the chart editor)
+          {
+            resultsMusic = FunkinSound.load(Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank)), 1.0, true, false,
+              true);
+            false; // Why is this necessary for this to work?
+          }
         });
+
       }
       else
       {
@@ -443,6 +455,10 @@ class ResultState extends MusicBeatSubState
             overrideExisting: true,
             restartTrack: true
           });
+        else
+        {
+          resultsMusic = FunkinSound.load(Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank)), 1.0, true, false, true);
+        }
       }
     });
 
@@ -822,6 +838,8 @@ class ResultState extends MusicBeatSubState
             PlayState.instance.close();
             FlxTimer.globalManager.clear();
             FlxTween.globalManager.clear();
+            if (introMusicAudio != null) introMusicAudio.stop();
+            if (resultsMusic != null) resultsMusic.stop();
             this.close();
             return;
           }
@@ -847,6 +865,8 @@ class ResultState extends MusicBeatSubState
             PlayState.instance.close();
             FlxTimer.globalManager.clear();
             FlxTween.globalManager.clear();
+            if (introMusicAudio != null) introMusicAudio.stop();
+            if (resultsMusic != null) resultsMusic.stop();
             this.close();
             return;
           }

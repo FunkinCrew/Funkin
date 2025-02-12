@@ -2001,7 +2001,7 @@ class PlayState extends MusicBeatSubState
           opponentNoteData.push(songNote);
       }
     }
-    if (isPlaytestResults)
+    if (isPlaytestResults && removedNotes > 0)
     {
       trace('playtesting results! Removed ${removedNotes} notes from total');
       trace('Total notes: ${Highscore.tallies.totalNotes}');
