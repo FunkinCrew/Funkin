@@ -2,12 +2,14 @@ package funkin.play.event;
 
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.event.SongEventSchema;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * This class represents a handler for a type of song event.
  * It is used by the ScriptedSongEvent class to handle user-defined events.
  */
-class SongEvent
+class SongEvent implements IPlayStateScriptedClass
 {
   /**
    * The internal song event ID that this handler is responsible for.
@@ -60,4 +62,46 @@ class SongEvent
   {
     return 'SongEvent(${this.id})';
   }
+
+  public function onScriptEvent(event:ScriptEvent) {}
+
+  public function onCreate(event:ScriptEvent) {}
+
+  public function onDestroy(event:ScriptEvent) {}
+
+  public function onUpdate(event:UpdateScriptEvent) {}
+
+  public function onStepHit(event:SongTimeScriptEvent) {}
+
+  public function onBeatHit(event:SongTimeScriptEvent) {}
+
+  public function onPause(event:PauseScriptEvent) {}
+
+  public function onResume(event:ScriptEvent) {}
+
+  public function onSongStart(event:ScriptEvent) {}
+
+  public function onSongEnd(event:ScriptEvent) {}
+
+  public function onGameOver(event:ScriptEvent) {}
+
+  public function onNoteIncoming(event:NoteScriptEvent) {}
+
+  public function onNoteHit(event:HitNoteScriptEvent) {}
+
+  public function onNoteMiss(event:NoteScriptEvent) {}
+
+  public function onSongEvent(event:SongEventScriptEvent) {}
+
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+
+  public function onCountdownStart(event:CountdownScriptEvent) {}
+
+  public function onCountdownStep(event:CountdownScriptEvent) {}
+
+  public function onCountdownEnd(event:CountdownScriptEvent) {}
+
+  public function onSongLoaded(event:SongLoadScriptEvent) {}
+
+  public function onSongRetry(event:SongRetryEvent) {}
 }
