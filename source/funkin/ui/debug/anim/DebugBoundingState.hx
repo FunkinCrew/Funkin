@@ -12,8 +12,8 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.MouseUtil;
 import funkin.util.SerializerUtil;
@@ -192,9 +192,9 @@ class DebugBoundingState extends FlxState
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
     offsetView.add(txtOffsetShit);
 
-    var characters:Array<String> = CharacterDataParser.listCharacterIds();
+    var characters:Array<String> = CharacterRegistry.listCharacterIds();
     characters = characters.filter(function(charId:String) {
-      var char = CharacterDataParser.fetchCharacterData(charId);
+      var char = CharacterRegistry.fetchCharacterData(charId);
       return char.renderType != AnimateAtlas;
     });
     characters.sort(SortUtil.alphabetically);
@@ -489,7 +489,7 @@ class DebugBoundingState extends FlxState
       swagChar.destroy();
     }
 
-    swagChar = CharacterDataParser.fetchCharacter(char);
+    swagChar = CharacterRegistry.fetchCharacter(char);
     swagChar.x = 100;
     swagChar.y = 100;
     swagChar.debug = true;
@@ -504,7 +504,7 @@ class DebugBoundingState extends FlxState
     bf.pixels = swagChar.pixels;
 
     clearInfo();
-    addInfo(swagChar._data.assetPath, "");
+    addInfo(swagChar._data.assetPaths[0], "");
     addInfo('Width', bf.width);
     addInfo('Height', bf.height);
 

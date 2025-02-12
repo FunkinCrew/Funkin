@@ -4,7 +4,8 @@ import funkin.input.Cursor;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.FileUtil;
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import haxe.io.Path;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
@@ -64,7 +65,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
     {
       trace('Adding vocal upload for character ${charKey}');
 
-      var charMetadata:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charKey);
+      var charMetadata:Null<CharacterData> = CharacterRegistry.fetchCharacterData(charKey);
       var charName:String = charMetadata?.name ?? charKey;
 
       var vocalsEntry = new ChartEditorUploadVocalsEntry(charName);

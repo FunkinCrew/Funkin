@@ -90,7 +90,7 @@ class BGScrollingText extends FlxSpriteGroup
       }
       else
       {
-        if (txt.x > txt.frameWidth * 2)
+        if (txt.x > widthShit)
         {
           txt.x = grpTexts.group.members[0].x - grpTexts.group.members[0].frameWidth - placementOffset;
 
