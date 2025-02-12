@@ -81,8 +81,20 @@ class AssetDataHandler
   {
     if (data.bitmap != null)
     {
-      var bitToLoad = state.addBitmap(data.bitmap.clone());
-      object.loadGraphic(state.bitmaps[bitToLoad]);
+      if (data.animations != null && data.animations.length > 0)
+      {
+        var bitToLoad = state.addBitmap(data.bitmap.clone());
+        object.frames = flixel.graphics.frames.FlxAtlasFrames.fromSparrow(state.bitmaps[bitToLoad], data.xmlData);
+      }
+      else if (areTheseBitmapsEqual(data.bitmap, getDefaultGraphic()))
+      {
+        object.loadGraphic(getDefaultGraphic());
+      }
+      else
+      {
+        var bitToLoad = state.addBitmap(data.bitmap.clone());
+        object.loadGraphic(state.bitmaps[bitToLoad]);
+      }
     }
     else
     {
