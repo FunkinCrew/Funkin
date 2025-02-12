@@ -167,6 +167,17 @@ class DropShadowShader extends FlxShader
     return spr;
   }
 
+  public function loadAltMask(path:String)
+  {
+    #if html5
+    BitmapData.loadFromFile(path).onComplete(function(bmp:BitmapData) {
+      altMaskImage = bmp;
+    });
+    #else
+    altMaskImage = BitmapData.fromFile(path);
+    #end
+  }
+
   public function onAttachedFrame(name, frameNum, frameIndex)
   {
     if (attachedSprite != null) updateFrameInfo(attachedSprite.frame);
