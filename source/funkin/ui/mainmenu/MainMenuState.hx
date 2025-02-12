@@ -109,11 +109,12 @@ class MainMenuState extends MusicBeatState
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
+      var rememberedFreeplayCharacter = funkin.save.Save.instance.getFreeplayCharacter();
       #if FEATURE_DEBUG_FUNCTIONS
       // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
-      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
+      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : rememberedFreeplayCharacter ?? null;
       #else
-      var targetCharacter:Null<String> = null;
+      var targetCharacter:Null<String> = rememberedFreeplayCharacter ?? null; // So that's why it wasn't working. *Sigh*
       #end
 
       openSubState(new FreeplayState(

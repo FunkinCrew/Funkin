@@ -87,6 +87,11 @@ class Save
 
       favoriteSongs: [],
 
+      freeplay:
+        {
+          freeplayCharacter: null,
+        },
+
       options:
         {
           // Reasonable defaults.
@@ -97,6 +102,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          rememberFreeplayChar: true,
           inputOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
@@ -854,6 +860,20 @@ class Save
     }
   }
 
+  public function getFreeplayCharacter():String
+  {
+    trace('Getting last freeplay character ${data.freeplay.freeplayCharacter}');
+    return data.freeplay.freeplayCharacter;
+  }
+
+  public function setFreeplayCharacter(value:String):String
+  {
+    data.freeplay.freeplayCharacter = value;
+    trace('Setting last freeplay character to: ${data.freeplay.freeplayCharacter}');
+    flush();
+    return data.freeplay.freeplayCharacter;
+  }
+
   public function getControls(playerId:Int, inputType:Device):Null<SaveControlsData>
   {
     switch (inputType)
@@ -1184,6 +1204,8 @@ typedef RawSaveData =
    */
   var favoriteSongs:Array<String>;
 
+  var freeplay:SaveDataFreeplay;
+
   var mods:SaveDataMods;
 
   /**
@@ -1200,12 +1222,12 @@ typedef RawSaveData =
 typedef SaveApiData =
 {
   var newgrounds:SaveApiNewgroundsData;
-}
+};
 
 typedef SaveApiNewgroundsData =
 {
   var sessionId:Null<String>;
-}
+};
 
 typedef SaveDataUnlocks =
 {
@@ -1220,7 +1242,7 @@ typedef SaveDataUnlocks =
    * For the first time ever
    */
   var oldChar:Bool;
-}
+};
 
 /**
  * An anoymous structure containing options about the user's high scores.
@@ -1238,6 +1260,15 @@ typedef SaveHighScoresData =
   var songs:SaveScoreSongsData;
 };
 
+typedef SaveDataFreeplay =
+{
+  /**
+   * The user's last selected freeplay character.
+   */
+  var freeplayCharacter:String; // Why do strings have to be saved in typedefs to load properly???
+
+};
+
 typedef SaveDataMods =
 {
   var enabledMods:Array<String>;
@@ -1245,7 +1276,7 @@ typedef SaveDataMods =
   // TODO: Make this not trip up the serializer when debugging.
   @:jignored
   var modOptions:Map<String, Dynamic>;
-}
+};
 
 /**
  * Key is the level ID, value is the SaveScoreLevelData.
@@ -1276,7 +1307,7 @@ typedef SaveScoreData =
    * The count of each judgement hit.
    */
   var tallies:SaveScoreTallyData;
-}
+};
 
 typedef SaveScoreTallyData =
 {
@@ -1289,7 +1320,7 @@ typedef SaveScoreTallyData =
   var maxCombo:Int;
   var totalNotesHit:Int;
   var totalNotes:Int;
-}
+};
 
 /**
  * An anonymous structure containing all the user's options and preferences for the main game.
@@ -1338,6 +1369,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
+   * @default `true`
+   */
+  var rememberFreeplayChar:Bool;
 
   /**
    * Offset the user's inputs by this many ms.
