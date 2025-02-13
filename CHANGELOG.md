@@ -4,6 +4,54 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2024-02-??
+The Pit Stop 2 update!
+### Added
+- Added six new playable songs! Check them out in the Freeplay menu for their respective characters.
+  - Cocoa (Pico Mix)
+  - Senpai (Pico Mix)
+  - Roses (Pico Mix)
+  - Stress (Pico Mix)
+  - Darnell Erect
+  - Lit Up (BF Mix)
+- Senpai (Pico Mix) and Roses (Pico Mix) take place on a new Erect variant of the Week 6 stage!
+  - This stage is now used by Senpai Erect, Roses Erect, and Thorns Erect.
+- Stress (Pico Mix) takes place on a new Erect variant of the Week 7 stage!
+  - This stage is now used by Ugh Erect, Ugh (Pico Mix), and Guns (Pico Mix).
+- Newly revamped Newgrounds integration! You can now earn Medals and submit scores to the Leaderboards while logged in on Newgrounds!
+  - Existing medals have been re-enabled, and new medals have been added! Think you're a Rap God?
+  - This feature is also available on desktop, check the options menu to find the prompt to login.
+  - There is no feature to view unlocked medals in-game yet, but the feature is planned.
+- Reworked the sticker system to allow different sets of stickers to be used for different characters and songs.
+  - Added new stickers which appear when exiting Pico songs!
+  - The new sticker system isn't fully available to mods yet, but we're working on it!
+- New option in the Preferences menu: Strumline Backgrounds!
+- Options in the Preferences menu now display an on-screen description when selected.
+- Added a little easter egg to Pico's Good Results Screen animation.
+- Added some more functions to `ReflectUtil` for use by mods. - by @AbnormalPoof in [#4019](https://github.com/FunkinCrew/Funkin/pull/4019)
+- Added internal value `Constants.DEBUG_BUILD` which can be queried by mods. - by @AbnormalPoof in [#3853](https://github.com/FunkinCrew/Funkin/pull/3853)
+- Added new `albumTitleOffsets` field to Album data for the Freeplay menu. - by @AbnormalPoof in [#3618](https://github.com/FunkinCrew/Funkin/pull/3618)
+- Added new `onFocusLost` and `onFocusGained` script events, called when focus leaves the game window. - by @AbnormalPoof in [#3721](https://github.com/FunkinCrew/Funkin/pull/3721)
+### Changed
+- Switched from hxCodec to hxvlc for video playback. This may break a mod or two.
+  - Check the [Funkin Modding Docs](https://funkincrew.github.io/funkin-modding-docs/09-migration/09-02-0.5.0-to-0.6.0.html) for more info on how to update your mods.
+- Polymod should now ignore `.git` files when loading mods.
+- Lots of improvements to issue and pull request organization. - by @Hundrec and @AbnormalPoof
+- Reorder the UI controls in the Options menu to match the order of the Note controls. - by @lemz1 in [#3027](https://github.com/FunkinCrew/Funkin/pull/3027)
+- Polymod no longer refuses to load all mods if any of them have a missing dependency; only the mods with missing dependencies will be skipped. - by @AbnormalPoof in [#3995](https://github.com/FunkinCrew/Funkin/pull/3993)
+- Added default controller binds for the Freeplay menu. - by @MrMadera in [#3934](https://github.com/FunkinCrew/Funkin/pull/3934)
+- Added a parameter to the Strumline for mods to reconfigure the note render distance. - by @Kade-github in [#4009](https://github.com/FunkinCrew/Funkin/pull/4009)
+- Added a parameter to SustainTrail for mods to modify the vertex data of hold notes. - by @Kade-github in [#4009](https://github.com/FunkinCrew/Funkin/pull/4009)
+- Added a parameter to the Strumline for mods to disable note splashes on a given strumline. - by @Kade-github in [#4009](https://github.com/FunkinCrew/Funkin/pull/4009)
+- Added an argument to `onSongRetry` for mods to detect when the player changes difficulty mid-song. - by @Kade-github in [#4009](https://github.com/FunkinCrew/Funkin/pull/4009)
+### Fixed
+- Fixed an issue where songs would sometimes restart at the end while missed notes pass by. - by @Techniktil in [#3955](https://github.com/FunkinCrew/Funkin/pull/3955)
+- Fixed an issue where songs would sometimes stutter when resyncing. - by @Techniktil in [#3955](https://github.com/FunkinCrew/Funkin/pull/3955)
+- Fixed a crash which could happen when a dialogue cutscene had no music attached.
+- Fixed an issue where `playerStrumline.hitNote`'s comboBreak parameter could not be overridden by mods. - by @TechnikTil in [#3936](https://github.com/FunkinCrew/Funkin/pull/3936)
+- Fixed an issue where the cursor would sometimes be visible outside of the game's editor views. - by @sphis-Sinco in [#3881](https://github.com/FunkinCrew/Funkin/pull/3881)
+- Lots of smaller bug fixes.
+
 ## [0.5.3] - 2024-10-18
 This patch resolves a critical issue which could cause user's save data to become corrupted. It is recommended that users switch to this version immediately and avoid using version 0.5.2.
 ### Fixed
@@ -146,6 +194,7 @@ This patch resolves a critical issue which could cause user's save data to becom
 
 
 ## [0.5.0] - 2024-09-12
+The Playable Pico Update!
 ### Added
 - Added a new Character Select screen to switch between playable characters in Freeplay
   - Modding isn't 100% there but we're working on it!
@@ -270,6 +319,7 @@ which would remove their rank if they had a lower one.
 
 
 ## [0.4.0] - 2024-06-06
+The Pit Stop 1 update!
 ### Added
 - 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
 - Major visual improvements to the Results screen, with additional animations and audio based on your performance.
@@ -407,6 +457,7 @@ which would remove their rank if they had a lower one.
 
 
 ## [0.3.0] - 2024-04-30
+The Weekend 1 update!
 ### Added
 - New Story Level: Weekend 1, starting Pico, Darnell, and Nene.
   - Beat the level in Story Mode to unlock the songs for Freeplay!
