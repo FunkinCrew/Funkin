@@ -3,16 +3,15 @@ package funkin.ui.options;
 import funkin.util.InputUtil;
 import flixel.FlxCamera;
 import flixel.FlxObject;
-import flixel.FlxSprite;
 import funkin.graphics.FunkinCamera;
-import flixel.group.FlxGroup;
-import flixel.input.actions.FlxActionInput;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import funkin.graphics.FunkinSprite;
-import funkin.input.Controls;
+import funkin.input.Controls.Device;
+import funkin.input.Controls.Control;
 import funkin.ui.AtlasText;
-import funkin.ui.MenuList;
+import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.TextMenuList;
 
 class ControlsMenu extends funkin.ui.options.OptionsState.Page
@@ -209,7 +208,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     prompt.exists = true;
   }
 
-  function goToDeviceList()
+  function goToDeviceList():Void
   {
     controlGrid.selectedItem.idle();
     labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 0.6;
@@ -220,7 +219,7 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     deviceListSelected = true;
   }
 
-  function selectDevice(device:Device)
+  function selectDevice(device:Device):Void
   {
     currentDevice = device;
 

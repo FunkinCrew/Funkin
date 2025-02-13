@@ -11,7 +11,6 @@ import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song.SongDifficulty;
-import funkin.ui.MusicBeatState;
 import haxe.io.Path;
 import lime.app.Future;
 import lime.app.Promise;

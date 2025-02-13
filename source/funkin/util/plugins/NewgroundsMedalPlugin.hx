@@ -7,7 +7,6 @@ import funkin.audio.FunkinSound;
 import flixel.graphics.FlxGraphic;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.math.FlxRect;
-import flixel.util.FlxTimer;
 import funkin.api.newgrounds.Medals;
 
 class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>

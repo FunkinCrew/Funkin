@@ -13,8 +13,6 @@ import funkin.data.song.SongRegistry;
 import funkin.util.tools.ICloneable;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.Paths.PathsFunction;
-import openfl.Assets;
-import lime.app.Future;
 import lime.app.Promise;
 import openfl.media.SoundMixer;
 

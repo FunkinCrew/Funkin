@@ -1,12 +1,10 @@
 package funkin.play.stage;
 
-import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.stage.StageProp;
 
 typedef AnimationFrameCallback = String->Int->Int->Void;
 typedef AnimationFinishedCallback = String->Void;

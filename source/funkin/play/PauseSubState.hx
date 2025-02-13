@@ -5,26 +5,19 @@ import funkin.ui.story.StoryMenuState;
 import funkin.data.freeplay.player.PlayerRegistry;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
-import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
-import funkin.play.PlayState;
 import funkin.ui.AtlasText;
-import funkin.ui.debug.latency.LatencyState;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.transition.StickerSubState;
 
 /**
  * Parameters for initializing the PauseSubState.

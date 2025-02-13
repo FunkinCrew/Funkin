@@ -1,11 +1,9 @@
 package funkin.api.newgrounds;
 
 #if FEATURE_NEWGROUNDS
-import io.newgrounds.Call;
+import io.newgrounds.Call.CallError;
 import io.newgrounds.objects.ScoreBoard as LeaderboardData;
 import io.newgrounds.objects.events.Outcome;
-import io.newgrounds.objects.events.Response;
-import io.newgrounds.objects.events.Result;
 
 class Leaderboards
 {

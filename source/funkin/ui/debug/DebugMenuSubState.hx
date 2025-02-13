@@ -7,7 +7,6 @@ import funkin.ui.MusicBeatSubState;
 import funkin.audio.FunkinSound;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.MusicBeatSubState;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.util.FileUtil;

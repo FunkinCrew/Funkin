@@ -11,8 +11,6 @@ import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.audio.FunkinSound;
-import funkin.ui.options.MenuItemEnums;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
