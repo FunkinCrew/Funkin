@@ -1,19 +1,11 @@
 package funkin.ui.debug.charting.toolboxes;
 
-import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.data.stage.StageData;
-import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
-import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
-import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
-import haxe.ui.components.HorizontalSlider;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
-import haxe.ui.components.Slider;
 import haxe.ui.core.Component;
 import funkin.data.event.SongEventRegistry;
 import haxe.ui.components.TextField;
@@ -23,8 +15,6 @@ import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.containers.Grid;
-import haxe.ui.components.DropDown;
-import haxe.ui.containers.Frame;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.

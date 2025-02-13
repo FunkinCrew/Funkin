@@ -1,8 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
-import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuItem;
-import haxe.ui.core.Screen;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;

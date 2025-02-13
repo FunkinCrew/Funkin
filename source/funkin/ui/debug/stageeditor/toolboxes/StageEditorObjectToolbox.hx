@@ -14,17 +14,13 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import haxe.ui.components.DropDown;
 import haxe.ui.containers.ListView;
 import haxe.ui.components.CheckBox;
-import haxe.ui.components.Switch;
 import flixel.util.FlxTimer;
 import haxe.ui.data.ArrayDataSource;
-import haxe.ui.events.ItemEvent;
 import haxe.ui.components.ColorPicker;
 import flixel.util.FlxColor;
 import haxe.ui.util.Color;
 import flixel.graphics.frames.FlxFrame;
-import flixel.animation.FlxAnimation;
 import funkin.util.FileUtil;
-import funkin.ui.debug.stageeditor.components.LoadFromUrlDialog;
 import openfl.display.BitmapData;
 
 using StringTools;

@@ -2,12 +2,10 @@ package funkin.play.notes.notestyle;
 
 import funkin.play.Countdown;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.animation.AnimationData;
 import funkin.data.IRegistryEntry;
 import funkin.graphics.FunkinSprite;
 import funkin.data.notestyle.NoteStyleData;
-import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.util.assets.FlxAnimationUtil;
 
@@ -36,7 +34,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
    */
   var fallback(get, never):Null<NoteStyle>;
 
-  function get_fallback():Null<NoteStyle> {
+  function get_fallback():Null<NoteStyle>
+  {
     if (_data == null || _data.fallback == null) return null;
     return NoteStyleRegistry.instance.fetchEntry(_data.fallback);
   }

@@ -1,6 +1,6 @@
 package funkin.util;
 
-import Type;
+import Type.ValueType;
 
 class ReflectUtil
 {

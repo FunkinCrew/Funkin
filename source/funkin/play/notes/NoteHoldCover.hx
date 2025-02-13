@@ -1,11 +1,8 @@
 package funkin.play.notes;
 
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import funkin.play.notes.NoteDirection;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
-import flixel.FlxG;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
 
 class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>

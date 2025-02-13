@@ -2,7 +2,7 @@ package funkin.api.discord;
 
 #if FEATURE_DISCORD_RPC
 import hxdiscord_rpc.Discord;
-import hxdiscord_rpc.Types;
+import hxdiscord_rpc.Types.DiscordEventHandlers;
 import sys.thread.Thread;
 
 class DiscordClient

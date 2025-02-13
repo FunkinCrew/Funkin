@@ -1,8 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
-import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuItem;
-import haxe.ui.core.Screen;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveItemsCommand;

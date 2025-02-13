@@ -1,20 +1,10 @@
 package funkin.ui.debug.dialogue;
 
-import flixel.FlxState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
-import flixel.util.FlxColor;
 import funkin.ui.MusicBeatState;
-import funkin.data.dialogue.conversation.ConversationData;
 import funkin.data.dialogue.conversation.ConversationRegistry;
-import funkin.data.dialogue.dialoguebox.DialogueBoxData;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
-import funkin.data.dialogue.speaker.SpeakerData;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
-import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.dialogue.DialogueBox;
-import funkin.play.cutscene.dialogue.Speaker;
 
 /**
  * A state with displays a conversation with no background.

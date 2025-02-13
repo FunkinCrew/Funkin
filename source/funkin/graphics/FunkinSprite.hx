@@ -9,7 +9,7 @@ import funkin.graphics.framebuffer.FixedBitmapData;
 import openfl.display.BitmapData;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
-import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
 
 /**

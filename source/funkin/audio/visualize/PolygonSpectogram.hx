@@ -4,7 +4,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
-import funkin.audio.visualize.VisShit;
+import funkin.audio.visualize.VisShit.CurAudioInfo;
 import funkin.graphics.rendering.MeshRender;
 import lime.utils.Int16Array;
 

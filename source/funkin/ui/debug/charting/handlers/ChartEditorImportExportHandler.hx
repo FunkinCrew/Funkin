@@ -3,7 +3,6 @@ package funkin.ui.debug.charting.handlers;
 import funkin.util.VersionUtil;
 import funkin.util.DateUtil;
 import haxe.io.Path;
-import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import funkin.util.FileUtil;
 import funkin.util.FileUtil.FileWriteMode;

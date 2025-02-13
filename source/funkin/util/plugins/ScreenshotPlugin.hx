@@ -1,24 +1,20 @@
 package funkin.util.plugins;
 
 import flixel.FlxBasic;
-import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxState;
-import flixel.graphics.FlxGraphic;
 import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
-import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.audio.FunkinSound;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
 import openfl.display.BitmapData;
 import openfl.display.PNGEncoderOptions;
-import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.events.MouseEvent;
@@ -53,7 +49,7 @@ class ScreenshotPlugin extends FlxBasic
   /**
    * A signal fired before the screenshot is taken.
    */
-  public var onPreScreenshot(default, null):FlxTypedSignal<Void->Void>;
+  public var onPreScreenshot(default, null):FlxSignal;
 
   /**
    * A signal fired after the screenshot is taken.

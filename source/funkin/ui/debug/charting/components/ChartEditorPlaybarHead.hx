@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.components;
 
 import haxe.ui.containers.Box;
-import haxe.ui.components.HorizontalSlider;
 
 /**
  * The component which contains the playhead for the chart editor.

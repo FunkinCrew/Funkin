@@ -1,14 +1,11 @@
 package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
-import flixel.util.FlxDirectionFlags;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.tile.FlxDrawTrianglesItem;
+import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
-import funkin.ui.options.PreferencesMenu;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -90,7 +87,7 @@ class SustainTrail extends FlxSprite
    * Whether the note will recieve custom vertex data
    */
   public var customVertexData:Bool = false;
-  
+
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
 
@@ -176,7 +173,7 @@ class SustainTrail extends FlxSprite
       this.uvtData = new DrawData<Float>(uvtData.length, false, uvtData);
     }
   }
-  
+
   /**
    * Creates hold note graphic and applies correct zooming
    * @param noteStyle The note style

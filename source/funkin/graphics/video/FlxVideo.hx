@@ -1,9 +1,7 @@
 package funkin.graphics.video;
 
 import flixel.util.FlxColor;
-import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.FunkinSound;
-import openfl.display3D.textures.TextureBase;
 import openfl.events.NetStatusEvent;
 import openfl.media.SoundTransform;
 import openfl.media.Video;
