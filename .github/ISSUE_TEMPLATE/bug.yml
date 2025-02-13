@@ -5,7 +5,7 @@ title: "Bug Report: "
 body:
   - type: markdown
     attributes:
-      value: "# PLEASE READ THE [CONTRIBUTING GUIDE](/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!
+      value: "# PLEASE READ THE [CONTRIBUTING GUIDE](/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!"
   
   - type: checkboxes
     attributes:
