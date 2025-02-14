@@ -12,12 +12,6 @@ class FunkinVideoSprite extends FlxVideoSprite
   public function new(x:Float = 0, y:Float = 0)
   {
     super(x, y);
-
-    #if FLX_SOUND_SYSTEM
-    getCalculatedVolume = function():Float {
-      return (FlxG.sound.muted ? 0 : 1) * FlxG.sound.logToLinear(FlxG.sound.volume);
-    }
-    #end
   }
 }
 #end

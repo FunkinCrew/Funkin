@@ -144,7 +144,6 @@ class VideoCutscene
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
-      vid.autoPause = FlxG.autoPause;
 
       vid.cameras = [PlayState.instance.camCutscene];
 
