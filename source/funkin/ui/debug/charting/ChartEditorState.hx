@@ -6647,7 +6647,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     cleanupAutoSave();
 
-    this.closeAllMenus();
+    this.closeExistingMenu();
 
     // Hide the mouse cursor on other states.
     Cursor.hide();
