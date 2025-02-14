@@ -596,7 +596,7 @@ class Project extends HXProject {
 
 		// Ensure all Flixel classes are available at runtime.
 		// Explicitly ignore packages which require additional dependencies.
-		addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])");
+		addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
 	}
 
 	/**
