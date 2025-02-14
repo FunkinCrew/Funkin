@@ -6,6 +6,7 @@ body:
   - type: markdown
     attributes:
       value: "# PLEASE READ THE [CONTRIBUTING GUIDE](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!"
+
   - type: checkboxes
     attributes:
       label: Issue Checklist
