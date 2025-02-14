@@ -1856,7 +1856,7 @@ class FreeplayState extends MusicBeatSubState
    * @param x The target x position of the object.
    * @param y The target y position of the object.
    * @param speed The speed the object should move at.
-   * @param wait Literally no idea what this does.
+   * @param wait An additional delay.
    */
   function addToExitMovers(input:Dynamic, x:Null<Float>, y:Null<Float>, speed:Null<Float>, wait:Null<Float>):Void
   {
@@ -1878,7 +1878,7 @@ class FreeplayState extends MusicBeatSubState
    * @param x The target x position of the object.
    * @param y The target y position of the object.
    * @param speed The speed the object should move at.
-   * @param wait Literally no idea what this does.
+   * @param wait An additional delay.
    */
   function addToExitMoversCharSel(input:Dynamic, x:Null<Float>, y:Null<Float>, speed:Null<Float>, wait:Null<Float>):Void
   {
