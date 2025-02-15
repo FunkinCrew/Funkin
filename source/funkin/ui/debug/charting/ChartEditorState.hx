@@ -2880,6 +2880,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (FlxG.keys.pressed.CONTROL)
       {
         this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, true);
+        // TODO: Figure out a way to prevent this from calling the on change event / opening the dialog twice
+        menubarItemToggleToolboxMetadata.selected = true;
       }
       else
       {
@@ -2897,6 +2899,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (FlxG.keys.pressed.CONTROL)
       {
         this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
+        // TODO: Figure out a way to prevent this from calling the on change event / opening the dialog twice
+        menubarItemToggleToolboxDifficulty.selected = true;
       }
       else
       {
