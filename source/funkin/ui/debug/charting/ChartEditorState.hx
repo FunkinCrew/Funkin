@@ -2318,13 +2318,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentTheme = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
-    hitsoundVolumePlayer = save.chartEditorHitsoundVolumeOpponent;
+    hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent;
     this.welcomeMusic.active = save.chartEditorThemeMusic;
 
-    // audioInstTrack.volume = save.chartEditorInstVolume;
-    // audioInstTrack.pitch = save.chartEditorPlaybackSpeed;
-    // audioVocalTrackGroup.volume = save.chartEditorVoicesVolume;
-    // audioVocalTrackGroup.pitch = save.chartEditorPlaybackSpeed;
+    menubarItemVolumeInstrumental.value = save.chartEditorInstVolume;
+    menubarItemVolumeVocalsPlayer.value = save.chartEditorPlayerVoiceVolume;
+    menubarItemVolumeVocalsOpponent.value = save.chartEditorOpponentVoiceVolume;
+    menubarItemPlaybackSpeed.value = save.chartEditorPlaybackSpeed;
   }
 
   public function writePreferences(hasBackup:Bool):Void
@@ -2350,9 +2350,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
     save.chartEditorThemeMusic = this.welcomeMusic.active;
 
-    // save.chartEditorInstVolume = audioInstTrack.volume;
-    // save.chartEditorVoicesVolume = audioVocalTrackGroup.volume;
-    // save.chartEditorPlaybackSpeed = audioInstTrack.pitch;
+    save.chartEditorInstVolume = menubarItemVolumeInstrumental.value;
+    save.chartEditorPlayerVoiceVolume = menubarItemVolumeVocalsPlayer.value;
+    save.chartEditorOpponentVoiceVolume = menubarItemVolumeVocalsOpponent.value;
+    save.chartEditorPlaybackSpeed = menubarItemPlaybackSpeed.value;
   }
 
   public function populateOpenRecentMenu():Void
