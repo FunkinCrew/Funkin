@@ -7,7 +7,8 @@
     "mat-playable",
     "mat-playable-dark",
     "mat-car",
-    "mat-christmas"
+    "mat-christmas",
+    "mat-pixel"
   ],
   "showUnownedChars": false,
   "unlocked": true,
@@ -15,7 +16,7 @@
   "freeplayDJ": {
     "assetPath": "freeplay/freeplay-mat",
     "text1": "MAT-ING TIME",
-    "text2": "BISEXUAL FURRY LOSER",
+    "text2": "BISEXUAL FURRY GUY",
     "text3": "DIGITAL ARTIST",
     "fistPump": {
       "introStartFrame": 0,

@@ -1,0 +1,35 @@
+{
+  "version": "2.2.4",
+  "songName": "Self Portrait",
+  "artist": "The Conenter",
+  "playData": {
+    "album": "matmixes1",
+    "difficulties": ["easy", "normal", "hard"],
+    "characters": {
+      "player": "pico-playable",
+      "girlfriend": "nene",
+      "opponent": "mat"
+    },
+    "stage": "matPark",
+    "noteStyle": "funkin",
+    "ratings": {
+      "easy": 4,
+      "normal": 6,
+      "hard": 8
+    },
+    "previewStart": 0,
+    "previewEnd": 10000
+  },
+  "generatedBy": "Friday Night Funkin' - v0.5.3",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 140,
+      "n": 4,
+      "d": 4,
+      "bt": [4, 4, 4, 4]
+    }
+  ]
+}
