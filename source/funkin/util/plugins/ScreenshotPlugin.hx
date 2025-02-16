@@ -86,6 +86,11 @@ class ScreenshotPlugin extends FlxBasic
   var screenshotBuffer:Array<Bitmap> = [];
   var screenshotNameBuffer:Array<String> = [];
 
+  var unsavedScreenshotBuffer:Array<Bitmap> = [];
+  var unsavedScreenshotNameBuffer:Array<String> = [];
+
+  var stateChanging:Bool = false;
+
   var flashTween:FlxTween;
 
   var previewFadeInTween:FlxTween;
@@ -137,6 +142,8 @@ class ScreenshotPlugin extends FlxBasic
     onPreScreenshot = new FlxTypedSignal<Void->Void>();
     onPostScreenshot = new FlxTypedSignal<Bitmap->Void>();
     FlxG.signals.gameResized.add(this.resizeBitmap);
+    FlxG.signals.preStateSwitch.add(this.saveUnsavedBufferedScreenshots);
+    FlxG.signals.postStateSwitch.add(this.postStateSwitch);
   }
 
   public override function update(elapsed:Float):Void
@@ -153,7 +160,7 @@ class ScreenshotPlugin extends FlxBasic
         // if the loop has been started, and is finished, then we kill. it
         if (asyncLoop.finished)
         {
-          trace("finished saving screenshot buffer");
+          trace("finished processing screenshot buffer");
           screenshotBuffer = [];
           screenshotNameBuffer = [];
           // your honor, league of legends
@@ -285,6 +292,9 @@ class ScreenshotPlugin extends FlxBasic
       {
         screenshotBuffer.push(shot);
         screenshotNameBuffer.push('screenshot-${DateUtil.generateTimestamp()}');
+
+        unsavedScreenshotBuffer.push(shot);
+        unsavedScreenshotNameBuffer.push('screenshot-${DateUtil.generateTimestamp()}');
       }
       else
         throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez. If you wanted those screenshots, well too bad!";
@@ -298,7 +308,8 @@ class ScreenshotPlugin extends FlxBasic
     }
     else
     {
-      saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}', 1);
+      // Save the screenshot immediately, so it doesn't get lost by a state change
+      saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}', 1, false);
       // Show some feedback.
       showCaptureFeedback();
       if (!Preferences.previewOnSave) showFancyPreview(shot);
@@ -318,6 +329,7 @@ class ScreenshotPlugin extends FlxBasic
    */
   function showCaptureFeedback():Void
   {
+    if (stateChanging) return; // Flash off!
     flashSprite.alpha = 1;
     FlxTween.tween(flashSprite, {alpha: 0}, 0.15);
 
@@ -329,9 +341,12 @@ class ScreenshotPlugin extends FlxBasic
   static final PREVIEW_FADE_OUT_DELAY = 1.25; // How long the preview stays on screen.
   static final PREVIEW_FADE_OUT_DURATION = 0.3; // How long the preview takes to fade out.
 
+  /**
+   * Show a fancy preview for the screenshot
+   */
   function showFancyPreview(shot:Bitmap):Void
   {
-    if (!Preferences.fancyPreview) return; // Sorry, the previews' been cancelled
+    if (!Preferences.fancyPreview || stateChanging) return; // Sorry, the previews' been cancelled
     shotPreviewBitmap.bitmapData = shot.bitmapData;
     shotPreviewBitmap.x = outlineBitmap.x + 5;
     shotPreviewBitmap.y = outlineBitmap.y + 5;
@@ -380,8 +395,11 @@ class ScreenshotPlugin extends FlxBasic
   /**
    * Save the generated bitmap to a file.
    * @param bitmap The bitmap to save.
+   * @param targetPath The name of the screenshot.
+   * @param screenShotNum Used for the delay save option, to space out the saving of the images.
+   * @param delaySave If true, the image gets saved with a one second delay + the screenShotNum.
    */
-  function saveScreenshot(bitmap:Bitmap, targetPath, screenShotNum:Int)
+  function saveScreenshot(bitmap:Bitmap, targetPath = "image", screenShotNum:Int = 0, delaySave:Bool = true)
   {
     makeScreenshotPath();
     // Check that we're not overriding a previous image, and keep making a unique path until we can
@@ -406,10 +424,31 @@ class ScreenshotPlugin extends FlxBasic
     // TODO: Make this work on browser.
     // Maybe save the images into a buffer that you can download as a zip or something? That'd work
 
-    /* Unhide the FlxTimer here to space out the screenshot saving some more,
-      though note that when the state changes any screenshots not already saved will be lost */
-
+    if (delaySave) // Save the images with a delay (a timer)
     new FlxTimer().start(screenShotNum + 1, function(_) {
+      var pngData = encode(bitmap);
+
+      if (pngData == null)
+      {
+        trace('[WARN] Failed to encode ${Preferences.saveFormat} data');
+        previousScreenshotName = null;
+          // Just in case
+          unsavedScreenshotBuffer.shift();
+          unsavedScreenshotNameBuffer.shift();
+        return;
+      }
+      else
+      {
+        trace('Saving screenshot to: ' + targetPath);
+        FileUtil.writeBytesToPath(targetPath, pngData);
+          // Remove the screenshot from the unsaved buffer because we literally just saved it
+          unsavedScreenshotBuffer.shift();
+          unsavedScreenshotNameBuffer.shift();
+        if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
+      }
+    });
+    else // Save the screenshot immediately
+    {
       var pngData = encode(bitmap);
 
       if (pngData == null)
@@ -424,7 +463,7 @@ class ScreenshotPlugin extends FlxBasic
         FileUtil.writeBytesToPath(targetPath, pngData);
         if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
       }
-    });
+    }
   }
 
   // I' m very happy with this code, all of it just works
@@ -445,6 +484,34 @@ class ScreenshotPlugin extends FlxBasic
       showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
   }
 
+  // Similar to the above function, but cancels the tweens and doesn't have the async loop because this is called before the state changes
+  function saveUnsavedBufferedScreenshots()
+  {
+    stateChanging = true;
+    // Cancel the tweens of the capture feedback if they're running
+    if (flashSprite.alpha != 0 && previewSprite.alpha != 0)
+    {
+      for (sprite in [flashSprite, previewSprite])
+      {
+        FlxTween.cancelTweensOf(sprite);
+        sprite.alpha = 0;
+      }
+    }
+
+    if (unsavedScreenshotBuffer[0] == null) return;
+    // There's unsaved screenshots, let's save them! (haha, get it?)
+
+    trace('Saving unsaved screenshots in buffer!');
+
+    for (i in 0...unsavedScreenshotBuffer.length)
+    {
+      if (unsavedScreenshotBuffer[i] != null) saveScreenshot(unsavedScreenshotBuffer[i], unsavedScreenshotNameBuffer[i], i, false);
+    }
+
+    unsavedScreenshotBuffer = [];
+    unsavedScreenshotNameBuffer = [];
+  }
+
   public function returnEncoder(saveFormat:String):Any
   {
     return switch (saveFormat)
@@ -455,6 +522,11 @@ class ScreenshotPlugin extends FlxBasic
     }
   }
 
+  function postStateSwitch()
+  {
+    stateChanging = false;
+  }
+
   override public function destroy():Void
   {
     if (instance == this) instance = null;
@@ -462,6 +534,8 @@ class ScreenshotPlugin extends FlxBasic
     if (FlxG.plugins.list.contains(this)) FlxG.plugins.remove(this);
 
     FlxG.signals.gameResized.remove(this.resizeBitmap);
+    FlxG.signals.preStateSwitch.remove(this.saveUnsavedBufferedScreenshots);
+    FlxG.signals.postStateSwitch.remove(this.postStateSwitch);
     FlxG.stage.removeChild(containerThing);
 
     super.destroy();
