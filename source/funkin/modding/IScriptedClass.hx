@@ -37,6 +37,9 @@ interface IStateChangingScriptedClass extends IScriptedClass
   public function onSubStateOpenEnd(event:SubStateScriptEvent):Void;
   public function onSubStateCloseBegin(event:SubStateScriptEvent):Void;
   public function onSubStateCloseEnd(event:SubStateScriptEvent):Void;
+
+  public function onFocusLost(event:FocusScriptEvent):Void;
+  public function onFocusGained(event:FocusScriptEvent):Void;
 }
 
 /**
@@ -140,7 +143,7 @@ interface IPlayStateScriptedClass extends INoteScriptedClass extends IBPMSyncedS
   /**
    * Called when the player restarts the song, either via pause menu or restarting after a game over.
    */
-  public function onSongRetry(event:ScriptEvent):Void;
+  public function onSongRetry(event:SongRetryEvent):Void;
 
   /**
    * Called when the player presses a key when no note is on the strumline.

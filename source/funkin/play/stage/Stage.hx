@@ -31,7 +31,7 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 /**
  * A Stage is a group of objects rendered in the PlayState.
  *
- * A Stage is comprised of one or more props, each of which is a FlxSprite.
+ * A Stage is comprised of one or more props, each of which is an FlxSprite.
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
@@ -901,5 +901,5 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onSongLoaded(event:SongLoadScriptEvent) {}
 
-  public function onSongRetry(event:ScriptEvent) {}
+  public function onSongRetry(event:SongRetryEvent) {}
 }

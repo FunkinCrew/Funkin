@@ -44,8 +44,58 @@ class ReflectUtil
     return Reflect.field(obj, name);
   }
 
+  public static function setAnonymousField(obj:Dynamic, name:String, value:Dynamic):Void
+  {
+    return Reflect.setField(obj, name, value);
+  }
+
   public static function hasAnonymousField(obj:Dynamic, name:String):Bool
   {
     return Reflect.hasField(obj, name);
+  }
+
+  public static function copyAnonymousFieldsOf(obj:Dynamic):Dynamic
+  {
+    return Reflect.copy(obj);
+  }
+
+  public static function deleteAnonymousField(obj:Dynamic, name:String):Bool
+  {
+    return Reflect.deleteField(obj, name);
+  }
+
+  public static function compareValues(valueA:Dynamic, valueB:Dynamic):Int
+  {
+    return Reflect.compare(valueA, valueB);
+  }
+
+  public static function isObject(value:Dynamic):Bool
+  {
+    return Reflect.isObject(value);
+  }
+
+  public static function isFunction(value:Dynamic):Bool
+  {
+    return Reflect.isFunction(value);
+  }
+
+  public static function isEnumValue(value:Dynamic):Bool
+  {
+    return Reflect.isEnumValue(value);
+  }
+
+  public static function getProperty(obj:Dynamic, name:String):Dynamic
+  {
+    return Reflect.getProperty(obj, name);
+  }
+
+  public static function setProperty(obj:Dynamic, name:String, value:Dynamic):Void
+  {
+    return Reflect.setProperty(obj, name, value);
+  }
+
+  public static function compareMethods(functionA:Dynamic, functionB:Dynamic):Bool
+  {
+    return Reflect.compareMethods(functionA, functionB);
   }
 }
