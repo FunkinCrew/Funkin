@@ -528,6 +528,7 @@ class ScreenshotPlugin extends FlxBasic
   function postStateSwitch()
   {
     stateChanging = false;
+    screenshotBeingSpammed = false;
   }
 
   override public function destroy():Void
