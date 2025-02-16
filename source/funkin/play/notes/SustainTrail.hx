@@ -88,7 +88,7 @@ class SustainTrail extends FlxSprite
    * Whether the note will recieve custom vertex data
    */
   public var customVertexData:Bool = false;
-  
+
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
 
@@ -174,7 +174,7 @@ class SustainTrail extends FlxSprite
       this.uvtData = new DrawData<Float>(uvtData.length, false, uvtData);
     }
   }
-  
+
   /**
    * Creates hold note graphic and applies correct zooming
    * @param noteStyle The note style

@@ -43,6 +43,7 @@ class LevelTitle extends FlxSpriteGroup
   }
 
   public var isFlashing:Bool = false;
+
   var flashTick:Float = 0;
   final flashFramerate:Float = 20;
 
