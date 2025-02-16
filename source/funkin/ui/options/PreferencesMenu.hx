@@ -201,6 +201,7 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
+
     // Clean up before generating.
     while (itemsArray.length > 0)
     {
