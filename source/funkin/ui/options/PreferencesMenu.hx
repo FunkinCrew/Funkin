@@ -60,7 +60,8 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
+    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
+      function(value:Bool):Void {
       Preferences.flashingLights = value;
       funkin.util.plugins.ScreenshotPlugin.instance.updateFlashColor(); // immediately update the flash color of the screenshot plugin
     }, Preferences.flashingLights);
