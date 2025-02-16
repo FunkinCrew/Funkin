@@ -160,9 +160,12 @@ class ScreenshotPlugin extends FlxBasic
         // if the loop has been started, and is finished, then we kill. it
         if (asyncLoop.finished)
         {
-          trace("finished processing screenshot buffer");
-          screenshotBuffer = [];
-          screenshotNameBuffer = [];
+          if (screenshotBuffer != [])
+          {
+            trace("finished processing screenshot buffer");
+            screenshotBuffer = [];
+            screenshotNameBuffer = [];
+          }
           // your honor, league of legends
           asyncLoop.kill();
           asyncLoop.destroy();
@@ -489,7 +492,7 @@ class ScreenshotPlugin extends FlxBasic
   {
     stateChanging = true;
     // Cancel the tweens of the capture feedback if they're running
-    if (flashSprite.alpha != 0 && previewSprite.alpha != 0)
+    if (flashSprite.alpha != 0 || previewSprite.alpha != 0)
     {
       for (sprite in [flashSprite, previewSprite])
       {
