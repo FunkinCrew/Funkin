@@ -991,7 +991,11 @@ class Save
           FlxG.save.mergeData(gameSave.data, true);
           return gameSave;
         }
-      case ERROR(_):
+      case ERROR(_): // DEPRECATED: Unused
+        return handleSaveDataError(slot);
+      case SAVE_ERROR(_):
+        return handleSaveDataError(slot);
+      case LOAD_ERROR(_):
         return handleSaveDataError(slot);
       case BOUND(_, _):
         trace('[SAVE] Loaded existing save data in slot ${slot}.');
@@ -1091,7 +1095,11 @@ class Save
     {
       case EMPTY:
         return false;
-      case ERROR(_):
+      case ERROR(_): // DEPRECATED: Unused
+        return false;
+      case LOAD_ERROR(_):
+        return false;
+      case SAVE_ERROR(_):
         return false;
       case BOUND(_, _):
         return true;
