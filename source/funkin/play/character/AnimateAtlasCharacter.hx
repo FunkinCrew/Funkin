@@ -16,6 +16,7 @@ import flixel.util.FlxDestroyUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.CharacterData.CharacterRenderType;
+import flixel.util.FlxDirectionFlags;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 
@@ -389,7 +390,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   inline function directAlphaTransform(sprite:FlxSprite, alpha:Float):Void
     sprite.alpha = alpha; // direct set
 
-  inline function facingTransform(sprite:FlxSprite, facing:Int):Void
+  inline function facingTransform(sprite:FlxSprite, facing:FlxDirectionFlags):Void
     sprite.facing = facing;
 
   inline function flipXTransform(sprite:FlxSprite, flipX:Bool):Void
@@ -588,7 +589,7 @@ class AnimateAtlasCharacter extends BaseCharacter
     return alpha = value;
   }
 
-  override function set_facing(value:Int):Int
+  override function set_facing(value:FlxDirectionFlags):FlxDirectionFlags
   {
     if (exists && facing != value) transformChildren(facingTransform, value);
     return facing = value;
