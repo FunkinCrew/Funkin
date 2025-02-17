@@ -1527,16 +1527,21 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
         case JUST_PRESSED:
           if (swp.touchLength >= activateLength)
           {
-            switch (inputID)
+            if (inputID == FlxDirectionFlags.UP.toInt())
             {
-              case FlxDirectionFlags.UP:
-                if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.DOWN:
-                if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.LEFT:
-                if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
-              case FlxDirectionFlags.RIGHT:
-                if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
+              if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.DOWN.toInt())
+            {
+              if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.LEFT.toInt())
+            {
+              if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.RIGHT.toInt())
+            {
+              if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
             }
           }
         default:
