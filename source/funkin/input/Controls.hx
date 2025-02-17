@@ -705,7 +705,7 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, state) addKeys(action, keys, state));
   }
 
-  public function bindSwipe(control:Control, swipeDir:Int = FlxDirectionFlags.UP, ?swpLength:Float = 90)
+  public function bindSwipe(control:Control, swipeDir:FlxDirectionFlags = FlxDirectionFlags.UP, ?swpLength:Float = 90)
   {
     forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press, swpLength)));
   }
@@ -1443,9 +1443,9 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
   var activateLength:Float = 90;
   var hapticPressure:Int = 100;
 
-  public function new(swipeDir:Int = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
+  public function new(swipeDir:FlxDirectionFlags = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
   {
-    super(OTHER, swipeDir, Trigger);
+    super(OTHER, swipeDir.toInt(), Trigger);
 
     activateLength = swipeLength;
   }
