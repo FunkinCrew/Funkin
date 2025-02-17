@@ -618,26 +618,6 @@ class SongMenuItem extends FlxSpriteGroup
   {
     if (impactThing != null) impactThing.angle = capsule.angle;
 
-    // if (FlxG.keys.justPressed.I)
-    // {
-    //   newText.y -= 1;
-    //   trace(this.x - newText.x, this.y - newText.y);
-    // }
-    // if (FlxG.keys.justPressed.J)
-    // {
-    //   newText.x -= 1;
-    //   trace(this.x - newText.x, this.y - newText.y);
-    // }
-    // if (FlxG.keys.justPressed.L)
-    // {
-    //   newText.x += 1;
-    //   trace(this.x - newText.x, this.y - newText.y);
-    // }
-    // if (FlxG.keys.justPressed.K)
-    // {
-    //   newText.y += 1;
-    //   trace(this.x - newText.x, this.y - newText.y);
-    // }
     if (doJumpIn)
     {
       frameInTicker += elapsed;
