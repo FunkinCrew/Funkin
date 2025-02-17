@@ -1,6 +1,50 @@
 # Contributing
 Welcome to the Contributing Guide!
-You can contribute to the Funkin' repository by opening issues or pull requests. This guide will cover best practices for each type of contribution.
+You can contribute to the Funkin' repository by opening issues or pull requests. 
+
+This guide will cover best practices for each type of contribution.
+
+# Table of Contents
+<details open>
+<summary><b>Contents</b></summary>
+
+[Part 1: Etiquette](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-1-etiquette)
+
+<details>
+<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-2-issues">Part 2: Issues</a></summary> 
+
+* [Requirements](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#requirements)
+
+* [Rejected Features](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#rejected-features)
+
+* [Issue Types](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#issue-types)
+
+* [Before You Submit...](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#before-you-submit)
+
+</details>
+
+<details>
+  
+<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-3-pull-requests">Part 3: Pull Requests</a></summary> 
+
+* [Choosing a base branch](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#choosing-a-base-branch)
+
+* [Merge conflicts and rebasing](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#merge-conflicts-and-rebasing)
+
+* [Code PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#code-prs)
+
+* [Documentation PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#documentation-prs)
+
+* [GitHub PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#github-prs)
+
+* [funkin.assets PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#funkinassets-prs)
+
+</details>
+
+[Closing](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#closing)
+
+</details>
+
 
 # Part 1: Etiquette
 - Be respectful to one another. We're here to help each other out!
@@ -192,7 +236,9 @@ Here are some guidelines for writing comments in your code:
 
 ## Documentation PRs
 Documentation-based PRs make changes such as **fixing typos** or **adding new information** in documentation files. 
+
 This involves modifying one or several of the repository’s `.md` files, found throughout the repository.
+
 Make sure your changes are easy to understand and formatted consistently to maximize clarity and readability.
 
 > [!CAUTION]
@@ -229,16 +275,21 @@ Make sure your changes are easy to understand and formatted consistently to maxi
 
 ## GitHub PRs
 GitHub-related PRs make changes such as **tweaking Issue Templates** or **updating the repository’s workflows**.
+
 This involves modifying one or several of the repository’s `.yml` files, or any other file in the `.github` folder.
+
 Please test these changes on your fork’s main branch to avoid breaking anything in this repository (e.g. GitHub Actions, issue templates, etc.)!
 
 ## funkin.assets PRs
 The `assets` submodule has its own repository called [funkin.assets](https://github.com/FunkinCrew/funkin.assets).
+
 If you only modify files in the `assets` folder, open a PR in the `funkin.assets` repository instead of the main repository.
+
 If you simultaneously modify files from both repositories, then open two separate PRs and explain the connection in your PR descriptions.
 
 Be sure to choose `main` as the base branch for `funkin.assets` PRs, as no `develop` branch exists for that repository.
 
 # Closing
 Thank you for reading the Contributing Guide.
+
 We look forward to seeing your contributions to the game!
