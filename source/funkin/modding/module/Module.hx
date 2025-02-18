@@ -68,7 +68,7 @@ class Module implements IGlobalScriptedClass
    * Called when the game is closed for any reason.
    * This happens only once, immediately before the module's last `onDestroy` event.
    */
-  public function onGameClose(event:ScriptEvent) {}
+  public function onGameClose(event:GameCloseScriptEvent) {}
 
   /**
    * Called when the module is created.

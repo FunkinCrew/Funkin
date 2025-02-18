@@ -201,7 +201,7 @@ class ScriptEventDispatcher
           t.onGameInit(event);
           return;
         case GAME_CLOSE:
-          t.onGameClose(event);
+          t.onGameClose(cast event);
           return;
         default: // Continue;
       }

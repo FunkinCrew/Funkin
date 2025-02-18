@@ -162,6 +162,6 @@ class ModuleHandler
 
   public static inline function callOnGameClose(exitCode:Int):Void
   {
-    callEvent(new ScriptEvent(GAME_CLOSE, false));
+    callEvent(new GameCloseScriptEvent(exitCode));
   }
 }

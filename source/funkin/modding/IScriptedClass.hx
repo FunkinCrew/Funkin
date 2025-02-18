@@ -212,5 +212,5 @@ interface IGlobalScriptedClass extends IPlayStateScriptedClass extends IStateCha
    * Called when the game is closed for any reason.
    * This event is only called once.
    */
-  public function onGameClose(event:ScriptEvent):Void;
+  public function onGameClose(event:GameCloseScriptEvent):Void;
 }
