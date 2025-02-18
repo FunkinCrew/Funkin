@@ -61,8 +61,8 @@ class Controls extends FlxActionSet
   var _freeplay_left = new FunkinAction(Action.FREEPLAY_LEFT);
   var _freeplay_right = new FunkinAction(Action.FREEPLAY_RIGHT);
   var _freeplay_char_select = new FunkinAction(Action.FREEPLAY_CHAR_SELECT);
-  var _freeplay_top_scroll = new FunkinAction(Action.FREEPLAY_TOP_SCROLL);
-  var _freeplay_bottom_scroll = new FunkinAction(Action.FREEPLAY_BOTTOM_SCROLL);
+  var _freeplay_jump_to_top = new FunkinAction(Action.FREEPLAY_JUMP_TO_TOP);
+  var _freeplay_jump_to_bottom = new FunkinAction(Action.FREEPLAY_JUMP_TO_BOTTOM);
   var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
   var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
   #if FEATURE_CHART_EDITOR
@@ -272,15 +272,15 @@ class Controls extends FlxActionSet
   inline function get_FREEPLAY_CHAR_SELECT()
     return _freeplay_char_select.check();
 
-  public var FREEPLAY_BOTTOM_SCROLL(get, never):Bool;
+  public var FREEPLAY_JUMP_TO_TOP(get, never):Bool;
 
-  inline function get_FREEPLAY_BOTTOM_SCROLL()
-    return _freeplay_bottom_scroll.check();
+  inline function get_FREEPLAY_JUMP_TO_TOP()
+    return _freeplay_jump_to_top.check();
 
-  public var FREEPLAY_TOP_SCROLL(get, never):Bool;
+  public var FREEPLAY_JUMP_TO_BOTTOM(get, never):Bool;
 
-  inline function get_FREEPLAY_TOP_SCROLL()
-    return _freeplay_top_scroll.check();
+  inline function get_FREEPLAY_JUMP_TO_BOTTOM()
+    return _freeplay_jump_to_bottom.check();
 
   public var CUTSCENE_ADVANCE(get, never):Bool;
 
@@ -343,8 +343,8 @@ class Controls extends FlxActionSet
     add(_freeplay_left);
     add(_freeplay_right);
     add(_freeplay_char_select);
-    add(_freeplay_bottom_scroll);
-    add(_freeplay_top_scroll);
+    add(_freeplay_jump_to_top);
+    add(_freeplay_jump_to_bottom);
     add(_cutscene_advance);
     add(_debug_menu);
     #if FEATURE_CHART_EDITOR add(_debug_chart); #end
@@ -470,8 +470,8 @@ class Controls extends FlxActionSet
       case FREEPLAY_LEFT: _freeplay_left;
       case FREEPLAY_RIGHT: _freeplay_right;
       case FREEPLAY_CHAR_SELECT: _freeplay_char_select;
-      case FREEPLAY_BOTTOM_SCROLL: _freeplay_bottom_scroll;
-      case FREEPLAY_TOP_SCROLL: _freeplay_top_scroll;
+      case FREEPLAY_JUMP_TO_TOP: _freeplay_jump_to_top;
+      case FREEPLAY_JUMP_TO_BOTTOM: _freeplay_jump_to_bottom;
       case CUTSCENE_ADVANCE: _cutscene_advance;
       case DEBUG_MENU: _debug_menu;
       #if FEATURE_CHART_EDITOR case DEBUG_CHART: _debug_chart; #end
@@ -552,10 +552,10 @@ class Controls extends FlxActionSet
         func(_freeplay_right, JUST_PRESSED);
       case FREEPLAY_CHAR_SELECT:
         func(_freeplay_char_select, JUST_PRESSED);
-      case FREEPLAY_BOTTOM_SCROLL:
-        func(_freeplay_bottom_scroll, JUST_PRESSED);
-      case FREEPLAY_TOP_SCROLL:
-        func(_freeplay_top_scroll, JUST_PRESSED);
+      case FREEPLAY_JUMP_TO_TOP:
+        func(_freeplay_jump_to_top, JUST_PRESSED);
+      case FREEPLAY_JUMP_TO_BOTTOM:
+        func(_freeplay_jump_to_bottom, JUST_PRESSED);
       case CUTSCENE_ADVANCE:
         func(_cutscene_advance, JUST_PRESSED);
       case DEBUG_MENU:
@@ -784,8 +784,8 @@ class Controls extends FlxActionSet
     bindKeys(Control.FREEPLAY_LEFT, getDefaultKeybinds(scheme, Control.FREEPLAY_LEFT));
     bindKeys(Control.FREEPLAY_RIGHT, getDefaultKeybinds(scheme, Control.FREEPLAY_RIGHT));
     bindKeys(Control.FREEPLAY_CHAR_SELECT, getDefaultKeybinds(scheme, Control.FREEPLAY_CHAR_SELECT));
-    bindKeys(Control.FREEPLAY_BOTTOM_SCROLL, getDefaultKeybinds(scheme, Control.FREEPLAY_BOTTOM_SCROLL));
-    bindKeys(Control.FREEPLAY_TOP_SCROLL, getDefaultKeybinds(scheme, Control.FREEPLAY_TOP_SCROLL));
+    bindKeys(Control.FREEPLAY_JUMP_TO_TOP, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_TOP));
+    bindKeys(Control.FREEPLAY_JUMP_TO_BOTTOM, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_BOTTOM));
     bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
     bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
     #if FEATURE_CHART_EDITOR
@@ -826,8 +826,8 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
           case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
           case Control.FREEPLAY_CHAR_SELECT: return [TAB];
-          case Control.FREEPLAY_BOTTOM_SCROLL: return [END];
-          case Control.FREEPLAY_TOP_SCROLL: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
           case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -857,8 +857,8 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
           case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
           case Control.FREEPLAY_CHAR_SELECT: return [TAB];
-          case Control.FREEPLAY_BOTTOM_SCROLL: return [END];
-          case Control.FREEPLAY_TOP_SCROLL: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
           case Control.CUTSCENE_ADVANCE: return [G, Z];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -888,8 +888,8 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_LEFT: return [];
           case Control.FREEPLAY_RIGHT: return [];
           case Control.FREEPLAY_CHAR_SELECT: return [];
-          case Control.FREEPLAY_BOTTOM_SCROLL: return [];
-          case Control.FREEPLAY_TOP_SCROLL: return [];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [];
           case Control.CUTSCENE_ADVANCE: return [ENTER];
           case Control.DEBUG_MENU: return [];
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -1006,8 +1006,8 @@ class Controls extends FlxActionSet
       Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT),
       Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT),
       Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT),
-      Control.FREEPLAY_BOTTOM_SCROLL => getDefaultGamepadBinds(Control.FREEPLAY_BOTTOM_SCROLL),
-      Control.FREEPLAY_TOP_SCROLL => getDefaultGamepadBinds(Control.FREEPLAY_TOP_SCROLL),
+      Control.FREEPLAY_JUMP_TO_TOP => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_TOP),
+      Control.FREEPLAY_JUMP_TO_BOTTOM => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_BOTTOM),
       Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
       Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
       Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
@@ -1065,9 +1065,9 @@ class Controls extends FlxActionSet
         return [RIGHT_SHOULDER];
       case Control.FREEPLAY_CHAR_SELECT:
         return [X];
-      case Control.FREEPLAY_BOTTOM_SCROLL:
+      case Control.FREEPLAY_JUMP_TO_TOP:
         return [];
-      case Control.FREEPLAY_TOP_SCROLL:
+      case Control.FREEPLAY_JUMP_TO_BOTTOM:
         return [];
       case Control.VOLUME_UP:
         [];
@@ -1653,8 +1653,8 @@ enum Control
   FREEPLAY_LEFT;
   FREEPLAY_RIGHT;
   FREEPLAY_CHAR_SELECT;
-  FREEPLAY_BOTTOM_SCROLL;
-  FREEPLAY_TOP_SCROLL;
+  FREEPLAY_JUMP_TO_TOP;
+  FREEPLAY_JUMP_TO_BOTTOM;
   // WINDOW
   #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT; #end
   WINDOW_FULLSCREEN;
@@ -1712,8 +1712,8 @@ enum abstract Action(String) to String from String
   var FREEPLAY_LEFT = "freeplay_left";
   var FREEPLAY_RIGHT = "freeplay_right";
   var FREEPLAY_CHAR_SELECT = "freeplay_char_select";
-  var FREEPLAY_BOTTOM_SCROLL = "freeplay_bottom_scroll";
-  var FREEPLAY_TOP_SCROLL = "freeplay_top_scroll";
+  var FREEPLAY_JUMP_TO_TOP = "freeplay_jump_to_top";
+  var FREEPLAY_JUMP_TO_BOTTOM = "freeplay_jump_to_bottom";
   // VOLUME
   var VOLUME_UP = "volume_up";
   var VOLUME_DOWN = "volume_down";
