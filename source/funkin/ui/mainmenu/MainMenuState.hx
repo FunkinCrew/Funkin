@@ -362,6 +362,8 @@ class MainMenuState extends MusicBeatState
     // Ctrl+Alt+Shift+M = Revoke requirements for Pico Unlock
     // Ctrl+Alt+Shift+R = Score/Rank conflict test
     // Ctrl+Alt+Shift+N = Mark all characters as not seen
+    // Ctrl+Alt+Shift+O = Meet requirements for Bopeebo alt inst
+    // Ctrl+Alt+Shift+I = Revoke requirements for Bopeebo alt inst
     // Ctrl+Alt+Shift+E = Dump save data
     // Ctrl+Alt+Shift+L = Force crash and create a log dump
 
@@ -439,6 +441,56 @@ class MainMenuState extends MusicBeatState
               totalNotes: 10,
             }
         });
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.O)
+    {
+      // Give the user a score of 1 point on both Bopeebo regular and Pico Mix.
+      // This makes the song count as cleared and allow alt inst selection for BF in Freeplay.
+      for (diff in ['easy', 'easy-pico', 'normal', 'normal-pico', 'hard', 'hard-pico'])
+      {
+        funkin.save.Save.instance.setSongScore('bopeebo', diff,
+          {
+            score: 1,
+            tallies:
+              {
+                sick: 0,
+                good: 0,
+                bad: 0,
+                shit: 1,
+                missed: 0,
+                combo: 0,
+                maxCombo: 0,
+                totalNotesHit: 1,
+                totalNotes: 10,
+              }
+          });
+      }
+    }
+
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.I)
+    {
+      // Give the user a score of 0 point on both Bopeebo regular and Pico Mix.
+      // This makes the song count as uncleared and skips alt inst selection for BF in Freeplay.
+      for (diff in ['easy', 'easy-pico', 'normal', 'normal-pico', 'hard', 'hard-pico'])
+      {
+        funkin.save.Save.instance.setSongScore('bopeebo', diff,
+          {
+            score: 0,
+            tallies:
+              {
+                sick: 0,
+                good: 0,
+                bad: 0,
+                shit: 0,
+                missed: 0,
+                combo: 0,
+                maxCombo: 0,
+                totalNotesHit: 0,
+                totalNotes: 0,
+              }
+          });
+      }
     }
 
     if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.N)
