@@ -117,6 +117,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Remember Freeplay Dipshit', 'Enable to have Freeplay remember the dipshit you previously selected', function(value:Bool):Void {
       Preferences.rememberFreeplayChar = value;
     }, Preferences.rememberFreeplayChar);
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+      Preferences.autoFullscreen = value;
+    }, Preferences.autoFullscreen);
 
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {

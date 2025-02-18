@@ -107,7 +107,7 @@ class Main extends Sprite
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
-    // create() in there, which gets called when it's added to stage
+    // create() in there, which gets called when it's added to the stage
     // which is why it needs to be added before addChild(game) here
     @:privateAccess
     game._customSoundTray = funkin.ui.options.FunkinSoundTray;

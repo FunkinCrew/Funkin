@@ -157,7 +157,6 @@ class Preferences
     return value;
   }
 
-  /**
    * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
    * @default `true`
    */
@@ -172,6 +171,24 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.rememberFreeplayChar = value;
+    save.flush();
+    return value;
+  }
+   * If enabled, the game will automatically launch in fullscreen on startup.
+   * @default `true`
+   */
+  public static var autoFullscreen(get, set):Bool;
+
+  static function get_autoFullscreen():Bool
+  {
+    return Save?.instance?.options?.autoFullscreen ?? true;
+  }
+
+  static function set_autoFullscreen(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.autoFullscreen = value;
+    save.flush();
     return value;
   }
 
@@ -229,6 +246,8 @@ class Preferences
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end
+    // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
+    FlxG.fullscreen = Preferences.autoFullscreen;
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void
