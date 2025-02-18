@@ -23,6 +23,7 @@ class FileUtil
   public static final FILE_FILTER_ZIP:FileFilter = new FileFilter("ZIP Archive (.zip)", "*.zip");
   public static final FILE_FILTER_PNG:FileFilter = new FileFilter("PNG Image (.png)", "*.png");
   public static final FILE_FILTER_FNFS:FileFilter = new FileFilter("Friday Night Funkin' Stage (.fnfs)", "*.fnfs");
+  public static final FILE_FILTER_FNFR:FileFilter = new FileFilter("Friday Night Funkin' Replay (.fnfr)", "*.fnfr");
 
   public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo =
     {
@@ -44,6 +45,12 @@ class FileUtil
     {
       extension: 'fnfs',
       label: 'Friday Night Funkin\' Stage',
+    };
+
+  public static final FILE_EXTENSION_INFO_FNFR:FileDialogExtensionInfo =
+    {
+      extension: 'fnfr',
+      label: 'Friday Night Funkin\' Replay',
     };
 
   /**
@@ -305,6 +312,16 @@ class FileUtil
   }
 
   /**
+   * Saves replay data as a FNFR file
+   * @param bytes The bytes from the ReplaySystem object
+   * @return Whether the dialog was opened sucessfully
+   */
+  public static function saveReplay(bytes:Bytes):Bool
+  {
+    return saveFile(bytes, [FILE_FILTER_FNFR], null, null, 'replay', 'Save replay');
+  }
+
+  /**
    * Takes an array of file entries and forcibly writes a ZIP to the given path.
    * Only works on desktop, because HTML5 doesn't allow you to write files to arbitrary paths.
    * Use `saveFilesAsZIP` instead.
@@ -320,6 +337,37 @@ class FileUtil
     return true;
     #else
     return false;
+    #end
+  }
+
+  /**
+   * Lists the files in a directory
+   * @param path Path to the directory
+   * @param extension The extension of the files
+   * @return Array<String>
+   */
+  public static function listFiles(path:String, extension:String):Array<String>
+  {
+    #if sys
+    if (!sys.FileSystem.exists(path))
+    {
+      trace('ERROR: path does not exist');
+      return [];
+    }
+
+    if (!sys.FileSystem.isDirectory(path))
+    {
+      trace('ERROR: path is not a directory');
+      return [];
+    }
+
+    var files:Array<String> = sys.FileSystem.readDirectory(path);
+    var filteredFiles:Array<String> = files.filter((file) -> file.endsWith(extension));
+
+    return filteredFiles;
+    #else
+    trace('ERROR: listFiles not implemented for this platform');
+    return [];
     #end
   }
 
