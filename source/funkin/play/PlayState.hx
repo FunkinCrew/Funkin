@@ -2162,7 +2162,12 @@ class PlayState extends MusicBeatSubState
      */
   function onKeyPress(event:PreciseInputEvent):Void
   {
-    if (isGamePaused) return;
+    if (isGamePaused)
+    {
+      // The player released and repressed the key, so pop the release input
+      if (controls.check("note_" + event.noteDirection.toString(), JUST_PRESSED)) inputReleaseQueue.pop();
+      return;
+    }
 
     // Do the minimal possible work here.
     inputPressQueue.push(event);
@@ -2173,8 +2178,11 @@ class PlayState extends MusicBeatSubState
      */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
-    if (isGamePaused) return;
-
+    if (isGamePaused)
+    {
+      // If the key's still being pressed, don't add a release input
+      if (controls.check("note_" + event.noteDirection.toString(), PRESSED)) return;
+    }
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }
