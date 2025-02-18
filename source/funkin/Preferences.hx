@@ -157,6 +157,7 @@ class Preferences
     return value;
   }
 
+  /**
    * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
    * @default `true`
    */

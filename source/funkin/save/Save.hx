@@ -1371,16 +1371,18 @@ typedef SaveDataOptions =
    */
   var autoPause:Bool;
 
+  /**
    * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
    * @default `true`
    */
   var rememberFreeplayChar:Bool;
-  
+
+  /**
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
    */
   var autoFullscreen:Bool;
-  
+
   /**
    * Offset the user's inputs by this many ms.
    * @default `0`
