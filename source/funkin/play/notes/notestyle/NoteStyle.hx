@@ -36,7 +36,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
    */
   var fallback(get, never):Null<NoteStyle>;
 
-  function get_fallback():Null<NoteStyle> {
+  function get_fallback():Null<NoteStyle>
+  {
     if (_data == null || _data.fallback == null) return null;
     return NoteStyleRegistry.instance.fetchEntry(_data.fallback);
   }

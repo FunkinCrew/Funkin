@@ -1,0 +1,63 @@
+name: Compiling Help
+description: Report an issue with compiling the game.
+labels: ["type: compilation help", "status: pending triage"]
+title: "Compiling Help: "
+body:
+  - type: markdown
+    attributes:
+      value: "# PLEASE READ THE [CONTRIBUTING GUIDE](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!"
+      
+  - type: checkboxes
+    attributes:
+      label: Issue Checklist
+      description: Be sure to complete these steps to increase the chances of your issue being addressed!
+      options:
+        - label: I have followed the [Compiling Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/COMPILING.md) and the [Troubleshooting Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/TROUBLESHOOTING.md)
+        - label: I have read the [Contributing Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md)
+        - label: I have checked the Issues/Discussions pages to see if my issue has already been reported
+        - label: I have properly titled my issue
+
+  - type: dropdown
+    attributes:
+      label: Platform
+      description: Which platform are you compiling for?
+      options:
+       - Web/HTML5
+       - Desktop (Windows)
+       - Desktop (Mac)
+       - Desktop (Linux)
+       - Other
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Version
+      description: Which version are you compiling? The game version is in the bottom left corner of the main menu or in the project.hxp file. 
+      placeholder: ex. 0.5.3
+    validations:
+      required: true
+  
+  - type: markdown
+    attributes:
+      value: "## Describe your compiling issue."
+
+  - type: markdown
+    attributes:
+      value: "### Please do not report issues from other engines. These must be reported in their respective repositories."
+
+  - type: textarea
+    attributes:
+      label: Console Output
+      description: Paste any errors or warnings from the console here.
+      placeholder: Paste output here...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Context
+      description: Provide as much detail as you can. Did you modify any code? Provide any relevant images or videos.
+      placeholder: Describe the context here...
+    validations:
+      required: true
