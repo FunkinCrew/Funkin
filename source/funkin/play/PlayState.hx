@@ -2164,6 +2164,8 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused)
     {
+      // If the key's still being pressed, return?
+      if (controls.check("note_" + event.noteDirection.toString(), PRESSED)) return;
       // The player released and repressed the key, so pop the release input
       inputReleaseQueue.pop();
       return;
