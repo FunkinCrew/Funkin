@@ -2895,7 +2895,7 @@ class PlayState extends MusicBeatSubState
     }
     #end
 
-    // #if FEATURE_DEBUG_FUNCTIONS
+    #if FEATURE_DEBUG_FUNCTIONS
     // H: Hide the HUD.
     if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
 
@@ -2907,19 +2907,19 @@ class PlayState extends MusicBeatSubState
 
     // 3: Lose 5% health.
     if (FlxG.keys.justPressed.THREE) health -= 0.05 * Constants.HEALTH_MAX;
-    // #end
+    #end
 
     // 9: Toggle the old icon.
     if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
 
-    // #if FEATURE_DEBUG_FUNCTIONS
+    #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
     // SHIFT+PAGEUP: Skip forward twenty sections.
     if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
     // PAGEDOWN: Skip backward two section. Doesn't replace notes.
     // SHIFT+PAGEDOWN: Skip backward twenty sections.
     if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
-    // #end
+    #end
 
     if (FlxG.keys.justPressed.B) trace(inputSpitter.join('\n'));
   }
@@ -3715,8 +3715,7 @@ class PlayState extends MusicBeatSubState
     scrollSpeedTweens = [];
   }
 
-  // #if FEATURE_DEBUG_FUNCTIONS
-
+  #if FEATURE_DEBUG_FUNCTIONS
   /**
      * Jumps forward or backward a number of sections in the song.
      * Accounts for BPM changes, does not prevent death from skipped notes.
@@ -3745,6 +3744,5 @@ class PlayState extends MusicBeatSubState
 
     resyncVocals();
   }
-
-  // #end
+  #end
 }
