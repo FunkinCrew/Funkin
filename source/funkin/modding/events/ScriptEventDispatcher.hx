@@ -1,6 +1,5 @@
 package funkin.modding.events;
 
-import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass;
 
 /**
@@ -114,6 +113,12 @@ class ScriptEventDispatcher
       var t:IPlayStateScriptedClass = cast(target, IPlayStateScriptedClass);
       switch (event.type)
       {
+        case PLAYSTATE_CREATE:
+          t.onPlayStateCreate(event);
+          return;
+        case PLAYSTATE_CLOSE:
+          t.onPlayStateClose(event);
+          return;
         case NOTE_GHOST_MISS:
           t.onNoteGhostMiss(cast event);
           return;
@@ -182,6 +187,21 @@ class ScriptEventDispatcher
           return;
         case FOCUS_GAINED:
           t.onFocusGained(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+
+    if (Std.isOfType(target, IGlobalScriptedClass))
+    {
+      var t = cast(target, IGlobalScriptedClass);
+      switch (event.type)
+      {
+        case GAME_INIT:
+          t.onGameInit(event);
+          return;
+        case GAME_CLOSE:
+          t.onGameClose(event);
           return;
         default: // Continue;
       }
