@@ -1,20 +1,12 @@
 package funkin.effects;
 
+import flixel.FlxObject;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.util.FlxPool;
 import flixel.util.FlxTimer;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase.EaseFunction;
 import flixel.math.FlxMath;
-
-/**
- * Matches anything that has `x` and `y` properties.
- */
-typedef PointLike =
-{
-  public var x:Float;
-  public var y:Float;
-}
 
 /**
  * pretty much a copy of FlxFlicker geared towards making sprites
@@ -27,7 +19,7 @@ class IntervalShake implements IFlxDestroyable
   /**
    * Internal map for looking up which objects are currently shaking and getting their shake data.
    */
-  static var _boundObjects:Map<PointLike, IntervalShake> = new Map<PointLike, IntervalShake>();
+  static var _boundObjects:Map<FlxObject, IntervalShake> = new Map<FlxObject, IntervalShake>();
 
   /**
    * An effect that shakes the sprite on a set interval and a starting intensity that goes down over time.
@@ -43,7 +35,7 @@ class IntervalShake implements IFlxDestroyable
    * @param   ProgressCallback     Callback on each shake interval
    * @return The `IntervalShake` object. `IntervalShake`s are pooled internally, so beware of storing references.
    */
-  public static function shake(Object:PointLike, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0,
+  public static function shake(Object:FlxObject, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0,
       ?Scale:FlxPoint, Ease:EaseFunction, ?CompletionCallback:IntervalShake->Void, ?ProgressCallback:IntervalShake->Void):IntervalShake
   {
     if (isShaking(Object))
@@ -74,7 +66,7 @@ class IntervalShake implements IFlxDestroyable
    *
    * @param   Object The object to test.
    */
-  public static function isShaking(Object:PointLike):Bool
+  public static function isShaking(Object:FlxObject):Bool
   {
     return _boundObjects.exists(Object);
   }
@@ -84,7 +76,7 @@ class IntervalShake implements IFlxDestroyable
    *
    * @param   Object The object to stop shaking.
    */
-  public static function stopShaking(Object:PointLike):Void
+  public static function stopShaking(Object:FlxObject):Void
   {
     var boundShake:IntervalShake = _boundObjects[Object];
     if (boundShake != null)
@@ -96,7 +88,7 @@ class IntervalShake implements IFlxDestroyable
   /**
    * The shaking object.
    */
-  public var object(default, null):PointLike;
+  public var object(default, null):FlxObject;
 
   /**
    * The shaking timer. You can check how many seconds has passed since shaking started etc.
@@ -163,7 +155,7 @@ class IntervalShake implements IFlxDestroyable
   /**
    * Starts shaking behavior.
    */
-  function start(Object:PointLike, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0, ?Scale:FlxPoint,
+  function start(Object:FlxObject, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0, ?Scale:FlxPoint,
       Ease:EaseFunction, ?CompletionCallback:IntervalShake->Void, ?ProgressCallback:IntervalShake->Void):Void
   {
     object = Object;
