@@ -1,8 +1,6 @@
 package funkin.util;
 
-import flixel.addons.plugin.taskManager.FlxTask;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
 
 class FlxTweenUtil
 {

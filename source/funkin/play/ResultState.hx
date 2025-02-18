@@ -1,6 +1,5 @@
 package funkin.play;
 
-import funkin.util.MathUtil;
 import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxSprite;
@@ -14,8 +13,6 @@ import flixel.math.FlxPoint;
 import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
-import funkin.ui.freeplay.FreeplayScore;
-import flixel.text.FlxText;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
@@ -34,6 +31,7 @@ import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
 import funkin.play.components.ClearPercentCounter;
+import funkin.ui.transition.StickerSubState;
 
 /**
  * The state for the results screen after a song or week is finished.
@@ -771,7 +769,7 @@ class ResultState extends MusicBeatSubState
 
       // Determining the target state(s) to go to.
       // Default to main menu because that's better than `null`.
-      var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var targetState:FlxState = new funkin.ui.mainmenu.MainMenuState();
       var shouldTween = false;
       var shouldUseSubstate = false;
 
@@ -796,7 +794,7 @@ class ResultState extends MusicBeatSubState
           // No new characters.
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker));
+          targetState = new StickerSubState(null, (sticker) -> new StoryMenuState(sticker));
         }
       }
       else
@@ -825,7 +823,7 @@ class ResultState extends MusicBeatSubState
         {
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker));
+          targetState = new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker));
         }
       }
 

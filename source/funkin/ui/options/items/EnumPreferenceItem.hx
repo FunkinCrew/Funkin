@@ -3,8 +3,6 @@ package funkin.ui.options.items;
 import funkin.ui.TextMenuList;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
-import funkin.ui.options.MenuItemEnums;
-import haxe.EnumTools;
 
 /**
  * Preference item that allows the player to pick a value from an enum (list of values)

@@ -1,13 +1,9 @@
 package funkin.ui.freeplay;
 
 import flixel.FlxObject;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxMath;
 import flixel.text.FlxText;
-import flixel.util.FlxColor;
 import flixel.util.FlxSort;
-import flixel.util.FlxTimer;
 
 // its kinda like marqeee html lol!
 class BGScrollingText extends FlxSpriteGroup

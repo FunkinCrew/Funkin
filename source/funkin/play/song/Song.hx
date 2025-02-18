@@ -631,47 +631,47 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   public function destroy():Void {}
 
-  public function onPause(event:PauseScriptEvent):Void {};
+  public function onPause(event:PauseScriptEvent):Void {}
 
-  public function onResume(event:ScriptEvent):Void {};
+  public function onResume(event:ScriptEvent):Void {}
 
-  public function onSongLoaded(event:SongLoadScriptEvent):Void {};
+  public function onSongLoaded(event:SongLoadScriptEvent):Void {}
 
-  public function onSongStart(event:ScriptEvent):Void {};
+  public function onSongStart(event:ScriptEvent):Void {}
 
-  public function onSongEnd(event:ScriptEvent):Void {};
+  public function onSongEnd(event:ScriptEvent):Void {}
 
-  public function onGameOver(event:ScriptEvent):Void {};
+  public function onGameOver(event:ScriptEvent):Void {}
 
-  public function onSongRetry(event:SongRetryEvent):Void {};
+  public function onSongRetry(event:SongRetryEvent):Void {}
 
-  public function onNoteIncoming(event:NoteScriptEvent) {};
+  public function onNoteIncoming(event:NoteScriptEvent) {}
 
-  public function onNoteHit(event:HitNoteScriptEvent) {};
+  public function onNoteHit(event:HitNoteScriptEvent) {}
 
-  public function onNoteMiss(event:NoteScriptEvent):Void {};
+  public function onNoteMiss(event:NoteScriptEvent):Void {}
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {};
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {}
 
-  public function onSongEvent(event:SongEventScriptEvent):Void {};
+  public function onSongEvent(event:SongEventScriptEvent):Void {}
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {};
+  public function onStepHit(event:SongTimeScriptEvent):Void {}
 
-  public function onBeatHit(event:SongTimeScriptEvent):Void {};
+  public function onBeatHit(event:SongTimeScriptEvent):Void {}
 
-  public function onCountdownStart(event:CountdownScriptEvent):Void {};
+  public function onCountdownStart(event:CountdownScriptEvent):Void {}
 
-  public function onCountdownStep(event:CountdownScriptEvent):Void {};
+  public function onCountdownStep(event:CountdownScriptEvent):Void {}
 
-  public function onCountdownEnd(event:CountdownScriptEvent):Void {};
+  public function onCountdownEnd(event:CountdownScriptEvent):Void {}
 
-  public function onScriptEvent(event:ScriptEvent):Void {};
+  public function onScriptEvent(event:ScriptEvent):Void {}
 
-  public function onCreate(event:ScriptEvent):Void {};
+  public function onCreate(event:ScriptEvent):Void {}
 
-  public function onDestroy(event:ScriptEvent):Void {};
+  public function onDestroy(event:ScriptEvent):Void {}
 
-  public function onUpdate(event:UpdateScriptEvent):Void {};
+  public function onUpdate(event:UpdateScriptEvent):Void {}
 
   static function _fetchData(id:String):Null<SongMetadata>
   {

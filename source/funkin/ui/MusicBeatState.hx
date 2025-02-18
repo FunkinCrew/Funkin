@@ -2,7 +2,6 @@ package funkin.ui;
 
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.ui.mainmenu.MainMenuState;
-import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.text.FlxText;

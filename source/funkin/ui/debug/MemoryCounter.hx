@@ -2,7 +2,6 @@ package funkin.ui.debug;
 
 import funkin.util.MemoryUtil;
 import openfl.text.TextFormat;
-import openfl.system.System;
 import openfl.text.TextField;
 
 class MemoryCounter extends TextField

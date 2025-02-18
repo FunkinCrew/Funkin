@@ -2,7 +2,6 @@ package funkin.play.notes.notekind;
 
 import funkin.modding.IScriptedClass.INoteScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import flixel.math.FlxMath;
 
 /**
  * Class for note scripts

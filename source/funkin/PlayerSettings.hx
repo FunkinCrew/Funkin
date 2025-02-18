@@ -2,9 +2,7 @@ package funkin;
 
 import funkin.save.Save;
 import funkin.input.Controls;
-import flixel.FlxCamera;
 import funkin.input.PreciseInputManager;
-import flixel.input.actions.FlxActionInput;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxSignal;
 

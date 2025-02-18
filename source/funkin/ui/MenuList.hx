@@ -3,7 +3,6 @@ package funkin.ui;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
-import flixel.math.FlxPoint;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 

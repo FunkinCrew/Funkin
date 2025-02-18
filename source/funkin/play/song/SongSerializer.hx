@@ -2,11 +2,7 @@ package funkin.play.song;
 
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
-import funkin.util.SerializerUtil;
 import funkin.util.FileUtil;
-import lime.utils.Bytes;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
 
 /**

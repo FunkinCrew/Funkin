@@ -1,14 +1,10 @@
 package funkin.ui.freeplay;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
 import funkin.data.freeplay.album.AlbumRegistry;
-import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
 

@@ -6,7 +6,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
-import flixel.util.FlxTimer;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end

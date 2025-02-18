@@ -7,7 +7,6 @@ import funkin.graphics.video.FlxVideo;
 import funkin.graphics.video.FunkinVideoSprite;
 #end
 import funkin.ui.MusicBeatSubState;
-import funkin.audio.FunkinSound;
 import funkin.save.Save;
 
 /**

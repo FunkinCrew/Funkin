@@ -1,6 +1,5 @@
 package funkin.play.stage;
 
-import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;

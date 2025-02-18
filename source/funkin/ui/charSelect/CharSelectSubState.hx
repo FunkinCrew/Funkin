@@ -9,12 +9,10 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.data.freeplay.player.PlayerData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import openfl.filters.DropShadowFilter;
@@ -30,11 +28,9 @@ import funkin.ui.PixelatedIcon;
 import funkin.util.MathUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
 import openfl.display.BlendMode;
-import funkin.save.Save;
 import openfl.filters.ShaderFilter;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
-import funkin.util.FramesJSFLParser.FramesJSFLFrame;
 import funkin.graphics.FunkinSprite;
 
 class CharSelectSubState extends MusicBeatSubState

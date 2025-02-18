@@ -1,19 +1,13 @@
 package funkin.ui.mainmenu;
 
-import funkin.graphics.FunkinSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.typeLimit.NextState;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
-import flixel.text.FlxText;
-import funkin.data.song.SongData.SongMusicData;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;

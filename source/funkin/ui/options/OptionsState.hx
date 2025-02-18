@@ -4,15 +4,12 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.graphics.shaders.HSVShader;
-import funkin.util.WindowUtil;
-import funkin.audio.FunkinSound;
 import funkin.input.Controls;
 
 class OptionsState extends MusicBeatState

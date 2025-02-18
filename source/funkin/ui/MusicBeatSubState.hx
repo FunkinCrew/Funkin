@@ -1,6 +1,5 @@
 package funkin.ui;
 
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
