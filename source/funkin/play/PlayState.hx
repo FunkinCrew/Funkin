@@ -1170,6 +1170,9 @@ class PlayState extends MusicBeatSubState
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);
 
+    // Dispatch event to event notes
+    if (songEvents != null && songEvents.length > 0) SongEventRegistry.callEvent(songEvents, event);
+
     // Dispatch event to note kind scripts
     NoteKindManager.callEvent(event);
 
