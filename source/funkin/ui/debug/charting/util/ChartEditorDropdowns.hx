@@ -158,6 +158,8 @@ class ChartEditorDropdowns
     // Base
     "" => "Default",
     "~CUSTOM~" => "Custom",
+    // custom noanim
+    "noanim" => "No animation",
     // Weeks 1-7
     "mom" => "Mom Sings (Week 5)",
     "ugh" => "Ugh (Week 7)",
