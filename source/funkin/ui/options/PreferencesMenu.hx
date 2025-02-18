@@ -83,7 +83,7 @@ class PreferencesMenu extends Page
         Preferences.unlockedFramerate = cast value;
       },
       defaultValue: Preferences.unlockedFramerate
-    }
+    },
     #else
     {
       type: "number",
@@ -96,8 +96,17 @@ class PreferencesMenu extends Page
       min: 30,
       max: 300,
       step: 5
-    }
+    },
     #end
+    {
+      type: "checkbox",
+      name: 'Launch in Fullscreen',
+      desc: 'Automatically launch the game in fullscreen on startup',
+      onChange: function(value:Dynamic) {
+        Preferences.autoFullscreen = cast value;
+      },
+      defaultValue: Preferences.autoFullscreen
+    }
   ];
 
   public var preferencePages:Array<PreferencePageData> = [
@@ -201,7 +210,6 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-
     // Clean up before generating.
     while (itemsArray.length > 0)
     {
