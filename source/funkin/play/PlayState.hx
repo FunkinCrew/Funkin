@@ -47,6 +47,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
+import funkin.play.stage.Bopper;
 import funkin.save.Save;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
@@ -1005,8 +1006,6 @@ class PlayState extends MusicBeatSubState
     }
     FlxG.watch.addQuick('health', health);
     FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
-
-    // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.
     if (!isInCutscene && !disableKeys)
