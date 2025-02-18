@@ -984,7 +984,8 @@ class FreeplayState extends MusicBeatSubState
       grpCapsules.members[curSelected].capsule.angle = -3;
       FlxTween.tween(grpCapsules.members[curSelected].capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
 
-      IntervalShake.shake(grpCapsules.members[curSelected].capsule, 0.3, 1 / 30, 0.1, 0, FlxEase.quadOut);
+	  var shakeScale:FlxPoint = new FlxPoint(grpCapsules.members[curSelected].capsule.width, grpCapsules.members[curSelected].capsule.height);
+      IntervalShake.shake(grpCapsules.members[curSelected].capsule, 0.3, 1 / 30, 0.1, 0, shakeScale, FlxEase.quadOut);
     });
 
     new FlxTimer().start(0.4, _ -> {
@@ -1059,7 +1060,7 @@ class FreeplayState extends MusicBeatSubState
 
             capsule.doLerp = false;
             capsule.setPosition(originalPos.x, originalPos.y);
-            IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12, 0, FlxEase.quadOut, function(_) {
+            IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12, 0, new FlxPoint(capsule.width, capsule.height), FlxEase.quadOut, function(_) {
               capsule.doLerp = true;
               capsule.cameras = [funnyCam];
 
@@ -1087,7 +1088,7 @@ class FreeplayState extends MusicBeatSubState
               capsule.capsule.angle = FlxG.random.float(-10 + (distFromSelected * 2), 10 - (distFromSelected * 2));
               FlxTween.tween(capsule.capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
 
-              IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, FlxEase.quadOut, function(_) {
+              IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, new FlxPoint(capsule.width, capsule.height), FlxEase.quadOut, function(_) {
                 capsule.doLerp = true;
               });
             });
@@ -1102,7 +1103,7 @@ class FreeplayState extends MusicBeatSubState
               capsule.capsule.angle = FlxG.random.float(-10 + (distFromSelected * 2), 10 - (distFromSelected * 2));
               FlxTween.tween(capsule.capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
 
-              IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, FlxEase.quadOut, function(_) {
+              IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, new FlxPoint(capsule.width, capsule.height), FlxEase.quadOut, function(_) {
                 capsule.doLerp = true;
               });
             });
