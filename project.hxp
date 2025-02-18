@@ -637,6 +637,7 @@ class Project extends HXProject {
     addHaxelib('flixel-text-input'); // Improved text field rendering for HaxeUI
 
     addHaxelib('polymod'); // Modding framework
+    addHaxelib('firetongue'); // Localization framework
     addHaxelib('flxanimate'); // Texture atlas rendering
 
 		addHaxelib('json2object'); // JSON parsing
@@ -692,6 +693,10 @@ class Project extends HXProject {
 		// Font assets
 		var shouldEmbedFonts = true;
 		addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts);
+
+		// Localization asset
+		var shouldPreloadDefault = true;
+		addAssetPath("assets/locales", "assets/locales", "default", ["*"], exclude, shouldEmbed);
 
 		// Shared asset libraries
 		addAssetLibrary("songs", shouldEmbed, shouldPreload);

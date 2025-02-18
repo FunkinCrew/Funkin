@@ -96,52 +96,18 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     {
       var control = controlList[i];
       var name = control.getName();
-      if (currentHeader != "UI_" && name.indexOf("UI_") == 0)
+      var controlHeader:String = name.substr(0, name.indexOf("_"));
+      if (controlHeader != currentHeader && name.contains("_"))
       {
-        currentHeader = "UI_";
-        headers.add(new AtlasText(0, y, "UI", AtlasFont.BOLD)).screenCenter(X);
-        y += spacer;
-      }
-      else if (currentHeader != "NOTE_" && name.indexOf("NOTE_") == 0)
-      {
-        currentHeader = "NOTE_";
-        headers.add(new AtlasText(0, y, "NOTES", AtlasFont.BOLD)).screenCenter(X);
-        y += spacer;
-      }
-      else if (currentHeader != "CUTSCENE_" && name.indexOf("CUTSCENE_") == 0)
-      {
-        currentHeader = "CUTSCENE_";
-        headers.add(new AtlasText(0, y, "CUTSCENE", AtlasFont.BOLD)).screenCenter(X);
-        y += spacer;
-      }
-      else if (currentHeader != "FREEPLAY_" && name.indexOf("FREEPLAY_") == 0)
-      {
-        currentHeader = "FREEPLAY_";
-        headers.add(new AtlasText(0, y, "FREEPLAY", AtlasFont.BOLD)).screenCenter(X);
-        y += spacer;
-      }
-      else if (currentHeader != "WINDOW_" && name.indexOf("WINDOW_") == 0)
-      {
-        currentHeader = "WINDOW_";
-        headers.add(new AtlasText(0, y, "WINDOW", AtlasFont.BOLD)).screenCenter(X);
-        y += spacer;
-      }
-      else if (currentHeader != "VOLUME_" && name.indexOf("VOLUME_") == 0)
-      {
-        currentHeader = "VOLUME_";
-        headers.add(new AtlasText(0, y, "VOLUME", AtlasFont.BOLD)).screenCenter(X);
-        y += spacer;
-      }
-      else if (currentHeader != "DEBUG_" && name.indexOf("DEBUG_") == 0)
-      {
-        currentHeader = "DEBUG_";
-        headers.add(new AtlasText(0, y, "DEBUG", AtlasFont.BOLD)).screenCenter(X);
+        currentHeader = controlHeader;
+        headers.add(new AtlasText(0, y, Localization.tongue.get("$CATEGORY_" + currentHeader, "option_controls"), AtlasFont.BOLD)).screenCenter(X);
         y += spacer;
       }
 
-      if (currentHeader != null && name.indexOf(currentHeader) == 0) name = name.substr(currentHeader.length);
+      // if (currentHeader != null && name.indexOf(currentHeader) == 0) name = name.substr(currentHeader.length);
 
-      var formatName = name.replace('_', ' ');
+      // var formatName = name.replace('_', ' ');
+      var formatName = Localization.tongue.get("$" + name, "controls");
       var label = labels.add(new AtlasText(100, y, formatName, AtlasFont.BOLD));
       label.alpha = 0.6;
       for (i in 0...COLUMNS)

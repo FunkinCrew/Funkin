@@ -313,7 +313,7 @@ class StoryMenuState extends MusicBeatState
 
     highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.25));
 
-    scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
+    scoreText.text = Localization.tongue.get("$LEVEL_SCORE", "story_menu") + ' ${Math.round(highScoreLerp)}';
 
     levelTitleText.text = currentLevel.getTitle();
     levelTitleText.x = FlxG.width - (levelTitleText.width + 10); // Right align.

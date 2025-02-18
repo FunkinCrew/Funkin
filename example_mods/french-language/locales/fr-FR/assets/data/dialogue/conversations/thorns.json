@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+
+  "backdrop": {
+    "type": "solid",
+    "fadeTime": 2.0,
+    "color": "#BFB3DFD8"
+  },
+
+  "music": {
+    "asset": "LunchboxScary",
+    "fadeTime": 2.0,
+    "looped": true
+  },
+
+  "outro": {
+    "type": "fade",
+    "fadeTime": 1.0
+  },
+
+  "dialogue": [
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "enter",
+
+      "text": [
+        "Contact direct avec de vrais humains, après avoir été enfermé ici pendant si longtemps...",
+        " et avec ELLE parmis tant de monde."
+      ],
+      "speed": 1.0
+    },
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "idle",
+
+      "text": [
+        "Je ferai payer à son père ce qu'il m'a fait, à moi et à tous les autres..."
+      ]
+    },
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "idle",
+
+      "text": ["Je te battrai et tu prendras ma place."]
+    },
+    {
+      "speaker": "spirit",
+      "speakerAnimation": "talk",
+      "box": "thorns",
+      "boxAnimation": "idle",
+
+      "text": [
+        "Cela ne vous dérange pas que vos corps soient empruntés, n'est-ce pas ?",
+        " C'est ce qu'il y a de plus juste..."
+      ]
+    }
+  ]
+}

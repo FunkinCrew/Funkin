@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<data>
+	<locale id="fr-FR" is_default="false" sort="1">
+		<contributors value="MidyGamy"/>
+		<ui language="Langue" region="Region" accept="Ok" />
+		<label id="fr-FR" language="Francais" region="France"/>
+		<label id="en-US,en-GB,en-CA" language="French" region="France"/>
+	</locale>
+</data>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="nightmare.png" width="503" height="440">
+  <SubTexture name="idle0001" x="342" y="8" width="69" height="303" rotated="true" frameX="-12" frameY="-5" frameWidth="318" frameHeight="78" />
+  <SubTexture name="idle0002" x="8" y="182" width="305" height="76" frameX="-13" frameY="-0" frameWidth="318" frameHeight="78" />
+  <SubTexture name="idle0003" x="8" y="274" width="305" height="73" frameX="-13" frameY="-0" frameWidth="318" frameHeight="78" />
+  <SubTexture name="idle0004" x="8" y="363" width="303" height="69" frameX="-9" frameY="-5" frameWidth="318" frameHeight="78" />
+  <SubTexture name="idle0005" x="8" y="8" width="318" height="73" frameX="-0" frameY="-5" frameWidth="318" frameHeight="78" />
+  <SubTexture name="idle0006" x="8" y="97" width="315" height="69" frameX="-0" frameY="-5" frameWidth="318" frameHeight="78" />
+  <SubTexture name="idle0007" x="427" y="8" width="68" height="302" rotated="true" frameX="-16" frameY="-4" frameWidth="318" frameHeight="78" />
+</TextureAtlas>

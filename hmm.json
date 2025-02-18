@@ -1,6 +1,13 @@
 {
   "dependencies": [
     {
+      "name": "firetongue",
+      "type": "git",
+      "dir": null,
+      "ref": "a6d8cd3927885aa7b0de881ddb202a74da2603b2",
+      "url": "https://github.com/larsiusprime/firetongue.git"
+    },
+    {
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,

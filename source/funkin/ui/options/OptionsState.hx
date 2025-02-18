@@ -42,6 +42,9 @@ class OptionsState extends MusicBeatState
     add(menuBG);
 
     var options = addPage(Options, new OptionsMenu());
+    // var language = new LanguageMenu();
+    // if (language.hasMultipleOptions()) addPage(Language, new LanguageMenu());
+    var language = addPage(Language, new LanguageMenu());
     var preferences = addPage(Preferences, new PreferencesMenu());
     var controls = addPage(Controls, new ControlsMenu());
 
@@ -49,6 +52,8 @@ class OptionsState extends MusicBeatState
     {
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
+      language.onExit.add(switchPage.bind(Options));
+      language.exitToMainMenu = exitToMainMenu;
       preferences.onExit.add(switchPage.bind(Options));
     }
     else
@@ -183,6 +188,7 @@ class OptionsMenu extends Page
     super();
 
     add(items = new TextMenuList());
+    createItem("LANGUAGE", function() switchPage(Language));
     createItem("PREFERENCES", function() switchPage(Preferences));
     createItem("CONTROLS", function() switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
@@ -271,4 +277,5 @@ enum abstract PageName(String)
   var Colors = "colors";
   var Mods = "mods";
   var Preferences = "preferences";
+  var Language = "language";
 }
