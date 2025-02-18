@@ -1,5 +1,6 @@
 package funkin.play.notes.notekind;
 
+import funkin.data.notes.SongNoteSchema;
 import funkin.modding.IScriptedClass.INoteScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import flixel.math.FlxMath;
@@ -15,9 +16,9 @@ class NoteKind implements INoteScriptedClass
   public var noteKind:String;
 
   /**
-   * Description used in chart editor
+   * Title used in chart editor
    */
-  public var description:String;
+  public var title:String;
 
   /**
    * Custom note style
@@ -25,16 +26,16 @@ class NoteKind implements INoteScriptedClass
   public var noteStyleId:Null<String>;
 
   /**
-   * Custom parameters for the chart editor
+   * Schema for the chart editor
    */
-  public var params:Array<NoteKindParam>;
+  public var schema:Null<SongNoteSchema>;
 
-  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>)
+  public function new(noteKind:String, title:String = "", ?noteStyleId:String, ?schema:SongNoteSchema)
   {
     this.noteKind = noteKind;
-    this.description = description;
+    this.title = title;
     this.noteStyleId = noteStyleId;
-    this.params = params ?? [];
+    this.schema = schema;
   }
 
   public function toString():String
@@ -67,53 +68,4 @@ class NoteKind implements INoteScriptedClass
   public function onNoteHit(event:HitNoteScriptEvent):Void {}
 
   public function onNoteMiss(event:NoteScriptEvent):Void {}
-}
-
-/**
- * Abstract for setting the type of the `NoteKindParam`
- * This was supposed to be an enum but polymod kept being annoying
- */
-abstract NoteKindParamType(String) from String to String
-{
-  public static final STRING:String = 'String';
-
-  public static final INT:String = 'Int';
-
-  public static final FLOAT:String = 'Float';
-}
-
-typedef NoteKindParamData =
-{
-  /**
-   * If `min` is null, there is no minimum
-   */
-  ?min:Null<Float>,
-
-  /**
-   * If `max` is null, there is no maximum
-   */
-  ?max:Null<Float>,
-
-  /**
-   * If `step` is null, it will use 1.0
-   */
-  ?step:Null<Float>,
-
-  /**
-   * If `precision` is null, there will be 0 decimal places
-   */
-  ?precision:Null<Int>,
-
-  ?defaultValue:Dynamic
-}
-
-/**
- * Typedef for creating custom parameters in the chart editor
- */
-typedef NoteKindParam =
-{
-  name:String,
-  description:String,
-  type:NoteKindParamType,
-  ?data:NoteKindParamData
 }
