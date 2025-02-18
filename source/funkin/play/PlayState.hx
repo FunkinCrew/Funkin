@@ -1372,9 +1372,42 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocusLost():Void
   {
-    #if html5
-    if (FlxG.autoPause) VideoCutscene.pauseVideo();
-    #end
+    if (FlxG.autoPause)
+    {
+      #if html5
+      VideoCutscene.pauseVideo();
+      #end
+
+      if (health >= Constants.HEALTH_MIN && !isPlayerDying && isInCountdown && mayPauseGame && !justUnpaused)
+      {
+        var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
+
+        dispatchEvent(event);
+
+        if (!event.eventCanceled)
+        {
+          // Pause updates while the substate is open, preventing the game state from advancing.
+          persistentUpdate = false;
+          // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
+          persistentDraw = true;
+
+          var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
+
+          // Prevent the game from crashing if Boyfriend isn't present.
+          if (currentStage != null && currentStage.getBoyfriend() != null)
+          {
+            boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
+          }
+
+          var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
+
+          FlxTransitionableState.skipNextTransIn = true;
+          FlxTransitionableState.skipNextTransOut = true;
+          pauseSubState.camera = camCutscene;
+          openSubState(pauseSubState);
+        }
+      }
+    }
 
     #if FEATURE_DISCORD_RPC
     if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
