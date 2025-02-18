@@ -2178,6 +2178,11 @@ class PlayState extends MusicBeatSubState
      */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    if (isGamePaused)
+    {
+      // If the key's still being pressed, don't add a release input
+      if (playerStrumline.isKeyHeld(event.noteDirection)) return;
+    }
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }
