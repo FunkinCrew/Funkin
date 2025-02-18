@@ -11,16 +11,6 @@ import flixel.graphics.FlxGraphic;
  */
 class Album implements IRegistryEntry<AlbumData>
 {
-  /**
-   * The internal ID for this album.
-   */
-  public final id:String;
-
-  /**
-   * The full data for an album.
-   */
-  public final _data:AlbumData;
-
   public function new(id:String)
   {
     this.id = id;
@@ -92,17 +82,5 @@ class Album implements IRegistryEntry<AlbumData>
   public function getAlbumTitleAnimations():Array<AnimationData>
   {
     return _data.albumTitleAnimations;
-  }
-
-  public function toString():String
-  {
-    return 'Album($id)';
-  }
-
-  public function destroy():Void {}
-
-  static function _fetchData(id:String):Null<AlbumData>
-  {
-    return AlbumRegistry.instance.parseEntryDataWithMigration(id, AlbumRegistry.instance.fetchEntryVersion(id));
   }
 }
