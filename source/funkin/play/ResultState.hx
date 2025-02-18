@@ -278,8 +278,7 @@ class ResultState extends MusicBeatSubState
     songName.shader = maskShaderSongName;
     difficulty.shader = maskShaderDifficulty;
 
-    // maskShaderSongName.swagMaskX = difficulty.x - 15;
-    maskShaderDifficulty.swagMaskX = difficulty.x - 15;
+    maskShaderDifficulty.swagMaskX = difficulty.x - 30;
 
     var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
     blackTopBar.y = -blackTopBar.height;
@@ -730,19 +729,22 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE)
     {
-      if (introMusicAudio != null) {
+      if (introMusicAudio != null)
+      {
         @:nullSafety(Off)
         introMusicAudio.onComplete = null;
 
-        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8, {
-          onComplete: _ -> {
-            if (introMusicAudio != null) {
-              introMusicAudio.stop();
-              introMusicAudio.destroy();
-              introMusicAudio = null;
+        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8,
+          {
+            onComplete: _ -> {
+              if (introMusicAudio != null)
+              {
+                introMusicAudio.stop();
+                introMusicAudio.destroy();
+                introMusicAudio = null;
+              }
             }
-          }
-        });
+          });
         FlxTween.tween(introMusicAudio, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
@@ -752,12 +754,13 @@ class ResultState extends MusicBeatSubState
       }
       else if (FlxG.sound.music != null)
       {
-        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8, {
-          onComplete: _ -> {
-            FlxG.sound.music.stop();
-            FlxG.sound.music.destroy();
-          }
-        });
+        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8,
+          {
+            onComplete: _ -> {
+              FlxG.sound.music.stop();
+              FlxG.sound.music.destroy();
+            }
+          });
         FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
