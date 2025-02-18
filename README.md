@@ -21,6 +21,10 @@ Check out our [Contributing Guide](/docs/CONTRIBUTING.md) to learn how you can a
 
 Feel free to start learning to mod the game by reading our [documentation](https://funkincrew.github.io/funkin-modding-docs/) and guide to modding.
 
+# Modding
+
+Feel free to start learning to mod the game by reading our [documentation](https://funkincrew.github.io/funkin-modding-docs/) and guide to modding.
+
 # Credits and Special Thanks
 
 Full credits can be found in-game, or in the `credits.json` file which is located [here](https://github.com/FunkinCrew/funkin.assets/blob/main/exclude/data/credits.json).
