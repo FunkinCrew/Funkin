@@ -156,6 +156,25 @@ class Preferences
   }
 
   /**
+  * If enabled, the game will automatically launch in fullscreen on startup.
+  * @default `true`
+  */
+  public static var autoFullscreen(get, set):Bool;
+
+  static function get_autoFullscreen():Bool
+  {
+    return Save?.instance?.options?.autoFullscreen ?? true;
+  }
+ 
+  static function set_autoFullscreen(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.autoFullscreen = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
@@ -175,25 +194,6 @@ class Preferences
     save.flush();
     return value;
   }
-
-    /**
-   * If enabled, the game will automatically launch in fullscreen on startup.
-   * @default `true`
-   */
-   public static var autoFullscreen(get, set):Bool;
-
-   static function get_autoFullscreen():Bool
-   {
-     return Save?.instance?.options?.autoFullscreen ?? true;
-   }
- 
-   static function set_autoFullscreen(value:Bool):Bool
-   {
-     var save:Save = Save.instance;
-     save.options.autoFullscreen = value;
-     save.flush();
-     return value;
-   }
 
   public static var unlockedFramerate(get, set):Bool;
 
