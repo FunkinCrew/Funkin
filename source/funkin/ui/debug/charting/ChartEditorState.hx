@@ -4673,7 +4673,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           if (dragDistanceMs == 0 && dragDistanceColumns == 0)
           {
-            // There's no need to move anything
+            // There's no need to move anything.
+            // Also prevents the selection boxes on notes from disappearing when they're 'moved' like this.
             dragTargetNote = null;
             dragTargetEvent = null;
             dragTargetCurrentStep = 0;
