@@ -4671,6 +4671,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
           var dragDistanceColumns:Int = dragTargetCurrentColumn;
 
+          if (dragDistanceMs == 0 && dragDistanceColumns == 0)
+          {
+            // There's no need to move anything
+            dragTargetNote = null;
+            dragTargetEvent = null;
+            dragTargetCurrentStep = 0;
+            dragTargetCurrentColumn = 0;
+            return;
+          }
+
           if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
           {
             // Both notes and events are selected.
