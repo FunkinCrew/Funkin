@@ -915,8 +915,9 @@ class PlayState extends MusicBeatSubState
       {
         Conductor.instance.formatOffset = 0.0;
       }
-
-      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
+      // Pass the music time instead if the pitch is different, aka, the song is lower or faster
+      Conductor.instance.update((FlxG.sound.music.pitch != 1) ? FlxG.sound.music.time + elapsed * 1000 : (Conductor.instance.songPosition + elapsed * 1000),
+        false); // Normal conductor update.
     }
 
     var androidPause:Bool = false;
