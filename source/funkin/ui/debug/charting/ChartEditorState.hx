@@ -4747,6 +4747,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else if (dragTargetEvent != null)
           {
             data = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
+            noteGridPos = noteDataToGridColumn(data) - 1;
           }
           var dragDistanceColumns:Int = cursorGridPos - noteGridPos;
 
