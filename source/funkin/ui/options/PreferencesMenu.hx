@@ -11,11 +11,11 @@ import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.audio.FunkinSound;
-import funkin.ui.options.MenuItemEnums;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.audio.FunkinSound;
+import funkin.play.notes.notesound.NoteSoundType;
 
 class PreferencesMenu extends Page
 {
@@ -101,6 +101,24 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemCheckbox('Note Splashes', 'If enabled, will show a splash particle effect when hitting a note', function(value:Bool):Void {
+      Preferences.noteSplashes = value;
+    }, Preferences.noteSplashes);
+    createPrefItemEnum('Note Sound', 'If enabled, plays a sound effect when a note is hit', [
+      NoteSoundType.None => 'None',
+      NoteSoundType.PingPong => 'Ping Pong',
+      NoteSoundType.PoolBall => 'Pool Ball',
+      NoteSoundType.VineBoom => 'Vine Boom'
+    ], function(value:String):Void {
+      Preferences.noteSoundType = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'));
+    }, Preferences.noteSoundType);
+    createPrefItemPercentage('Note Sound Volume', 'The volume to play the note hit sound effects at', function(value:Int) {
+      Preferences.noteSoundVolume = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'), Preferences.noteSoundVolume / 100.0);
+    }, Preferences.noteSoundVolume);
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;

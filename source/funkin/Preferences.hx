@@ -1,12 +1,70 @@
 package funkin;
 
 import funkin.save.Save;
+import funkin.play.notes.notesound.NoteSoundType;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
  */
 class Preferences
 {
+  /**
+   * The type of sound to play when hitting a note
+   * @default `NoteSoundType.None`
+   */
+  public static var noteSoundType(get, set):NoteSoundType;
+
+  static function get_noteSoundType():NoteSoundType
+  {
+    return Save?.instance?.options?.noteSoundType;
+  }
+
+  static function set_noteSoundType(value:NoteSoundType):NoteSoundType
+  {
+    var save:Save = Save.instance;
+    save.options.noteSoundType = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * A value ranging from 0 to 100 representing the volume for note hit sounds
+   * @default `100`
+   */
+  public static var noteSoundVolume(get, set):Int;
+
+  static function get_noteSoundVolume():Int
+  {
+    return Save?.instance?.options?.noteSoundVolume;
+  }
+
+  static function set_noteSoundVolume(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.noteSoundVolume = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, plays a splash particle effect when sick notes are hit.
+   * @default `true`
+   */
+  public static var noteSplashes(get, set):Bool;
+
+  static function get_noteSplashes():Bool
+  {
+    return Save?.instance?.options?.noteSplashes;
+  }
+
+  static function set_noteSplashes(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.noteSplashes = value;
+    save.flush();
+    return value;
+  }
+
   /**
    * FPS
    * @default `60`
