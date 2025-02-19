@@ -332,6 +332,11 @@ class PlayState extends MusicBeatSubState
    */
   public var disableKeys:Bool = false;
 
+   /**
+   * The previous difficulty the player was playing on.
+   */
+   public var previousDifficulty:String = Constants.DEFAULT_DIFFICULTY;
+
   public var isSubState(get, never):Bool;
 
   function get_isSubState():Bool
@@ -603,6 +608,7 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
+    previousDifficulty = currentDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
@@ -813,7 +819,11 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      dispatchEvent(new ScriptEvent(SONG_RETRY));
+      var retryEvent = new SongRetryEvent(currentDifficulty);
+
+      previousDifficulty = currentDifficulty;
+
+      dispatchEvent(retryEvent);
 
       resetCamera();
 
@@ -906,7 +916,7 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.instance.update(); // Normal conductor update.
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
     }
 
     var androidPause:Bool = false;
@@ -1447,7 +1457,9 @@ class PlayState extends MusicBeatSubState
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(playerVoicesError) > 5 || Math.abs(opponentVoicesError) > 5))
+        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
+        || Math.abs(playerVoicesError) > 100
+        || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
@@ -1578,7 +1590,7 @@ class PlayState extends MusicBeatSubState
     scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
-    scoreText.zIndex = 810;
+    scoreText.zIndex = 802;
     add(scoreText);
 
     // Move the health bar to the HUD camera.
