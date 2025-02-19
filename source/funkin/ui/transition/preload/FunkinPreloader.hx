@@ -13,7 +13,7 @@ import flash.display.Sprite;
 import flash.Lib;
 import flixel.system.FlxBasePreloader;
 import funkin.modding.PolymodHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.util.MathUtil;
 import lime.app.Future;
 import lime.math.Rectangle;
@@ -703,7 +703,7 @@ class FunkinPreloader extends FlxBasePreloader
 
           /*
             // TODO: Reimplement this.
-            var future:Future<Array<String>> = []; // CharacterDataParser.loadCharacterCacheAsync();
+            var future:Future<Array<String>> = []; // CharacterRegistry.loadCharacterCacheAsync();
 
             future.onProgress((loaded:Int, total:Int) -> {
               parsingCharactersPercent = loaded / total;

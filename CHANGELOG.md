@@ -487,6 +487,7 @@ which would remove their rank if they had a lower one.
 - Idle animation bug with BF christmas and BF hair blow sprites ([Thanks to Injourn for the Pull Request!](https://github.com/FunkinCrew/Funkin/pull/237))
 
 
+
 ## [0.2.6] - 2021-01-20
 ### Added
 - 3 NEW CHRISTMAS SONGS. 2 BY KAWAISPRITE, 1 BY BASSETFILMS!!!!! BF WITH DRIP! SANTA HANGIN OUT!
@@ -526,6 +527,7 @@ which would remove their rank if they had a lower one.
 - IDK i think backing out of song menu should play main menu songs again hehe ([shoutouts gedehari for the Pull Request!](https://github.com/FunkinCrew/Funkin/pull/48))
 
 
+
 ## [0.2.4] - 2020-12-11
 ### Added
 - 3 NEW SONGS BY KAWAISPRITE. Pico, Philly, and Blammed.
@@ -548,6 +550,7 @@ which would remove their rank if they had a lower one.
 - Fixed tiny note bleed over thingies (shoutouts [lotusotho](https://github.com/FunkinCrew/Funkin/pull/24))
 
 
+
 ## [0.2.2] - 2020-11-20
 ### Added
 - Music playing on the freeplay menu.
@@ -564,6 +567,7 @@ which would remove their rank if they had a lower one.
 - Cleaned up some charting on South on hard mode
 - Fixed some animation timings, should feel both better to play, and watch. (shoutouts Dave/Ivan lol)
 - Animation issue where GF would freak out on the title screen if you returned to it([shoutouts MultiXIII](https://github.com/FunkinCrew/Funkin/issues/12)).
+
 
 
 ## [0.2.1.2] - 2020-11-06

@@ -3,7 +3,7 @@ package funkin.play.character;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import flixel.graphics.frames.FlxFramesCollection;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData.CharacterRenderType;
 
 /**
  * A SparrowCharacter is a Character which is rendered by
@@ -31,12 +31,12 @@ class SparrowCharacter extends BaseCharacter
 
   function loadSpritesheet()
   {
-    trace('[SPARROWCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
+    trace('[SPARROWCHAR] Loading spritesheet ${_data.assetPaths[0]} for ${characterId}');
 
-    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
+    var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPaths[0]);
     if (tex == null)
     {
-      trace('Could not load Sparrow sprite: ${_data.assetPath}');
+      trace('Could not load Sparrow sprite: ${_data.assetPaths[0]}');
       return;
     }
 

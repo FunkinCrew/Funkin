@@ -5,12 +5,12 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.stage.StageData;
 import funkin.play.event.SongEvent;
 import funkin.data.stage.StageRegistry;
-import funkin.play.character.CharacterData;
 import haxe.ui.components.DropDown;
 import funkin.play.stage.Stage;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.event.SongEventRegistry;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 
 /**
  * Functions for populating dropdowns based on game data.
@@ -28,7 +28,7 @@ class ChartEditorDropdowns
     dropDown.dataSource.clear();
 
     // TODO: Filter based on charType.
-    var charIds:Array<String> = CharacterDataParser.listCharacterIds();
+    var charIds:Array<String> = CharacterRegistry.listCharacterIds();
 
     var returnValue:DropDownEntry = switch (charType)
     {
@@ -42,7 +42,7 @@ class ChartEditorDropdowns
 
     for (charId in charIds)
     {
-      var character:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charId);
+      var character:Null<CharacterData> = CharacterRegistry.fetchCharacterData(charId);
       if (character == null) continue;
 
       var value = {id: charId, text: character.name};
