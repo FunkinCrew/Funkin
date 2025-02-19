@@ -96,6 +96,11 @@ typedef PlayStateParams =
    */
   ?botPlayMode:Bool,
   /**
+   * Whether the results screen should show up before returning to the chart editor.
+   * @default `false`
+   */
+  ?playtestResults:Bool,
+  /**
    * Whether the song should be in minimal mode.
    * @default `false`
    */
@@ -310,6 +315,11 @@ class PlayState extends MusicBeatSubState
    * If true, player will not lose gain or lose score from notes.
    */
   public var isBotPlayMode:Bool = false;
+
+  /**
+   * Whether the results screen should show up before returning to the chart editor.
+   */
+  public var isPlaytestResults:Bool = false;
 
   /**
    * Whether the player has dropped below zero health,
@@ -613,6 +623,7 @@ class PlayState extends MusicBeatSubState
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
     isBotPlayMode = params.botPlayMode ?? false;
+    isPlaytestResults = params.playtestResults ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
     playbackRate = params.playbackRate ?? 1.0;
@@ -682,6 +693,7 @@ class PlayState extends MusicBeatSubState
     var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
 
     trace('Attempting to start at ' + pre);
+    trace('startTimestamp ${startTimestamp}');
 
     Conductor.instance.update(pre);
 
@@ -876,7 +888,7 @@ class PlayState extends MusicBeatSubState
       opponentStrumline.clean();
 
       // Delete all notes and reset the arrays.
-      regenNoteData();
+      regenNoteData(startTimestamp);
 
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
@@ -1919,7 +1931,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    regenNoteData();
+    regenNoteData(startTimestamp); // ok, who forgot to pass the startTimestamp into this?
 
     var event:ScriptEvent = new ScriptEvent(CREATE, false);
     ScriptEventDispatcher.callEvent(currentSong, event);
@@ -1937,6 +1949,8 @@ class PlayState extends MusicBeatSubState
 
     var event:SongLoadScriptEvent = new SongLoadScriptEvent(currentChart.song.id, currentChart.difficulty, currentChart.notes.copy(), currentChart.getEvents());
 
+    var removedNotes:Int = 0;
+
     dispatchEvent(event);
 
     var builtNoteData = event.notes;
@@ -1952,8 +1966,26 @@ class PlayState extends MusicBeatSubState
     for (songNote in builtNoteData)
     {
       var strumTime:Float = songNote.time;
-      if (strumTime < startTime) continue; // Skip notes that are before the start time.
+      if (strumTime < startTime)
+      {
+        if (isPlaytestResults) // only do the following if we're playtesting with the results screen
+        {
+          var noteData:Int = songNote.getDirection();
+          var playerNote:Bool = true;
 
+          if (noteData > 3) playerNote = false;
+
+          switch (songNote.getStrumlineIndex())
+          {
+            case 0:
+              // Don't add the player note to total, to make the clear percent be of only the following notes
+              removedNotes++;
+            case 1:
+              // Nothing!
+          }
+        }
+        continue; // Skip notes that are before the start time.
+      }
       var noteData:Int = songNote.getDirection();
       var playerNote:Bool = true;
 
@@ -1968,6 +2000,11 @@ class PlayState extends MusicBeatSubState
         case 1:
           opponentNoteData.push(songNote);
       }
+    }
+    if (isPlaytestResults)
+    {
+      trace('playtesting results! Removed ${removedNotes} notes from total');
+      trace('Total notes: ${Highscore.tallies.totalNotes}');
     }
 
     playerStrumline.applyNoteData(playerNoteData);
@@ -3092,7 +3129,21 @@ class PlayState extends MusicBeatSubState
     {
       if (isSubState)
       {
-        this.close();
+        if (isPlaytestResults)
+        {
+          var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
+          var clearPercentFloat = talliesToUse.totalNotes == 0 ? 0.0 : (talliesToUse.sick + talliesToUse.good) / talliesToUse.totalNotes * 100;
+          /*
+              Only move to the score screen if more than 30% of the song was successfully hit.
+              While that might sound like a low clear percent, consider the fact that some songs are hard,
+              and the user might be only playtesting one third or half the song.
+             */
+          if (clearPercentFloat >= 30) moveToResultsScreen(false, prevScoreData);
+          else
+            this.close();
+        }
+        else
+          this.close();
       }
       else
       {
