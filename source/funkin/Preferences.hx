@@ -74,6 +74,25 @@ class Preferences
     return value;
   }
 
+     /**
+   * If enabled, the miss sound will play when the player misses a note.
+   * @default `true`
+   */
+   public static var playMissSound(get, set):Bool;
+
+   static function get_playMissSound():Bool
+   {
+     return Save?.instance?.options?.playMissSound;
+   }
+ 
+   static function set_playMissSound(value:Bool):Bool
+   {
+     var save:Save = Save.instance;
+     save.options.playMissSound = value;
+     save.flush();
+     return value;
+   }
+
   /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
@@ -157,25 +176,6 @@ class Preferences
     return value;
   }
 
-  /**
-   * If enabled, the game will automatically launch in fullscreen on startup.
-   * @default `true`
-   */
-  public static var autoFullscreen(get, set):Bool;
-
-  static function get_autoFullscreen():Bool
-  {
-    return Save?.instance?.options?.autoFullscreen ?? true;
-  }
-
-  static function set_autoFullscreen(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.autoFullscreen = value;
-    save.flush();
-    return value;
-  }
-
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
@@ -230,8 +230,6 @@ class Preferences
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end
-    // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
-    FlxG.fullscreen = Preferences.autoFullscreen;
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void
