@@ -16,6 +16,7 @@ import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.FunkinText;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
 import funkin.ui.AtlasText;
@@ -155,23 +156,23 @@ class PauseSubState extends MusicBeatSubState
   /**
    * The metadata displayed in the top right.
    */
-  var metadata:FlxTypedSpriteGroup<FlxText>;
+  var metadata:FlxTypedSpriteGroup<FunkinText>;
 
   /**
    * A text object that displays the current practice mode status.
    */
-  var metadataPractice:FlxText;
+  var metadataPractice:FunkinText;
 
   /**
    * A text object that displays the current death count.
    */
-  var metadataDeaths:FlxText;
+  var metadataDeaths:FunkinText;
 
   /**
    * A text object which displays the current song's artist.
    * Fades to the charter after a period before fading back.
    */
-  var metadataArtist:FlxText;
+  var metadataArtist:FunkinText;
 
   /**
    * The actual text objects for the menu entries.
@@ -280,11 +281,11 @@ class PauseSubState extends MusicBeatSubState
    */
   function buildMetadata():Void
   {
-    metadata = new FlxTypedSpriteGroup<FlxText>();
+    metadata = new FlxTypedSpriteGroup<FunkinText>();
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20, 15, FlxG.width - 40, 'Song Name');
+    var metadataSong:FunkinText = new FunkinText(20, 15, FlxG.width - 40, 'Song Name');
     metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -293,7 +294,7 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.scrollFactor.set(0, 0);
     metadata.add(metadataSong);
 
-    metadataArtist = new FlxText(20, metadataSong.y + 32, FlxG.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataArtist = new FunkinText(20, metadataSong.y + 32, FlxG.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
     metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -302,7 +303,7 @@ class PauseSubState extends MusicBeatSubState
     metadataArtist.scrollFactor.set(0, 0);
     metadata.add(metadataArtist);
 
-    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, FlxG.width - 40, 'Difficulty: ');
+    var metadataDifficulty:FunkinText = new FunkinText(20, metadataArtist.y + 32, FlxG.width - 40, 'Difficulty: ');
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
@@ -311,12 +312,12 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataDeaths = new FunkinText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
-    metadataPractice = new FlxText(20, metadataDeaths.y + 32, FlxG.width - 40, 'PRACTICE MODE');
+    metadataPractice = new FunkinText(20, metadataDeaths.y + 32, FlxG.width - 40, 'PRACTICE MODE');
     metadataPractice.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
@@ -361,6 +362,7 @@ class PauseSubState extends MusicBeatSubState
         startDelay: CHARTER_FADE_DELAY,
         ease: FlxEase.quartOut,
         onComplete: (_) -> {
+          var artist:String = PlayState.instance?.currentChart?.songArtist ?? Constants.DEFAULT_ARTIST;
           if (PlayState.instance?.currentChart != null)
           {
             metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
@@ -369,7 +371,6 @@ class PauseSubState extends MusicBeatSubState
           {
             metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
           }
-
           FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
             {
               ease: FlxEase.quartOut,
