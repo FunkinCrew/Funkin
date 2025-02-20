@@ -2295,10 +2295,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent;
     this.welcomeMusic.active = save.chartEditorThemeMusic;
 
-    menubarItemVolumeInstrumental.value = save.chartEditorInstVolume;
-    menubarItemVolumeVocalsPlayer.value = save.chartEditorPlayerVoiceVolume;
-    menubarItemVolumeVocalsOpponent.value = save.chartEditorOpponentVoiceVolume;
-    menubarItemPlaybackSpeed.value = save.chartEditorPlaybackSpeed;
+    menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume * 100);
+    menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume * 100);
+    menubarItemVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume * 100);
+    menubarItemPlaybackSpeed.value = Std.int(save.chartEditorPlaybackSpeed * 100);
   }
 
   public function writePreferences(hasBackup:Bool):Void
@@ -2324,10 +2324,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
     save.chartEditorThemeMusic = this.welcomeMusic.active;
 
-    save.chartEditorInstVolume = menubarItemVolumeInstrumental.value;
-    save.chartEditorPlayerVoiceVolume = menubarItemVolumeVocalsPlayer.value;
-    save.chartEditorOpponentVoiceVolume = menubarItemVolumeVocalsOpponent.value;
-    save.chartEditorPlaybackSpeed = menubarItemPlaybackSpeed.value;
+    save.chartEditorInstVolume = menubarItemVolumeInstrumental.value / 100.0;
+    save.chartEditorPlayerVoiceVolume = menubarItemVolumeVocalsPlayer.value / 100.0;
+    save.chartEditorOpponentVoiceVolume = menubarItemVolumeVocalsOpponent.value / 100.0;
+    save.chartEditorPlaybackSpeed = menubarItemPlaybackSpeed.value / 100.0;
   }
 
   public function populateOpenRecentMenu():Void
@@ -6193,9 +6193,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
 
     // Reapply the volume.
-    var instTargetVolume:Float = menubarItemVolumeInstrumental.value ?? 1.0;
-    var vocalPlayerTargetVolume:Float = menubarItemVolumeVocalsPlayer.value ?? 1.0;
-    var vocalOpponentTargetVolume:Float = menubarItemVolumeVocalsOpponent.value ?? 1.0;
+    var instTargetVolume:Float = menubarItemVolumeInstrumental.value / 100.0 ?? 1.0;
+    var vocalPlayerTargetVolume:Float = menubarItemVolumeVocalsPlayer.value / 100.0 ?? 1.0;
+    var vocalOpponentTargetVolume:Float = menubarItemVolumeVocalsOpponent.value / 100.0 ?? 1.0;
 
     if (audioInstTrack != null)
     {
