@@ -175,7 +175,6 @@ class Preferences
     save.options.rememberFreeplayChar = value;
     return value;
   }
-
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
