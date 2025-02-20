@@ -165,6 +165,13 @@ class Project extends HXProject {
 	static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
 
 	/**
+	 * `-DBLACKLIST_TRACE_CLASSES`
+	 * If this flag is enabled, the crash logs won't output traces from certain classes.
+	 * Enable to reduce the file size and improve clarity of the crash logs.
+	 */
+	static final BLACKLIST_TRACE_CLASSES:FeatureFlag = "BLACKLIST_TRACE_CLASSES";
+
+	/**
 	 * `-DFEATURE_DISCORD_RPC`
 	 * If this flag is enabled, the game will enable the Discord Remote Procedure Call library.
 	 * This is used to provide Discord Rich Presence support.
@@ -471,6 +478,7 @@ class Project extends HXProject {
 		FEATURE_PARTIAL_SOUNDS.apply(this, true);
 		FEATURE_VIDEO_PLAYBACK.apply(this, true);
 		FEATURE_STAGE_EDITOR.apply(this, true);
+		BLACKLIST_TRACE_CLASSES.apply(this, true);
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
