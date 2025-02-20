@@ -157,4 +157,16 @@ class WindowUtil
   {
     lime.app.Application.current.window.title = value;
   }
+
+  public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
+  {
+    // Apply the new value.
+    var success = FlxG.stage.application.window.setVSyncMode(value);
+
+    if (!success)
+    {
+      // Maybe throw an error?
+      FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+    }
+  }
 }
