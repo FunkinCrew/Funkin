@@ -175,6 +175,7 @@ class Preferences
     save.flush();
     return value;
   }
+  /**
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
    */
