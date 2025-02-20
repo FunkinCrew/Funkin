@@ -1958,7 +1958,13 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Visual and audio effects.
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    if (currentCharacterId == 'pico')
+    {
+      // Gunshot SFX when confirming a song as pico, why not?
+      FunkinSound.playOnce(Paths.soundRandom('shot', 1, 4, 'weekend1'));
+    }
+    else
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
     if (dj != null) dj.confirm();
 
     grpCapsules.members[curSelected].forcePosition();
