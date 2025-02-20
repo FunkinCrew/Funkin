@@ -36,11 +36,12 @@ class PreferencesMenu extends Page
     menuCamera = new FunkinCamera('prefMenu');
     FlxG.cameras.add(menuCamera, false);
     menuCamera.bgColor = 0x0;
-    camera = menuCamera;
 
     hudCamera = new FlxCamera();
     FlxG.cameras.add(hudCamera, false);
     hudCamera.bgColor = 0x0;
+
+    camera = menuCamera;
 
     add(items = new TextMenuList());
     add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
