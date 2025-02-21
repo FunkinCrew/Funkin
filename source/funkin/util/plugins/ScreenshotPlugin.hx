@@ -9,6 +9,8 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
+import funkin.util.WindowUtil;
+import funkin.util.logging.CrashHandler;
 import flixel.addons.util.FlxAsyncLoop;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
@@ -21,6 +23,7 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.events.MouseEvent;
 import funkin.Preferences;
+import flixel.addons.plugin.screengrab.FlxScreenGrab;
 
 typedef ScreenshotPluginParams =
 {
@@ -29,7 +32,6 @@ typedef ScreenshotPluginParams =
 };
 
 /**
- * What if `flixel.addons.plugin.screengrab.FlxScreenGrab` but it's better?
  * TODO: Contribute this upstream.
  */
 class ScreenshotPlugin extends FlxBasic
@@ -69,14 +71,14 @@ class ScreenshotPlugin extends FlxBasic
   private static var lastWidth:Int;
   private static var lastHeight:Int;
 
-  var containerThing:Sprite;
   var flashSprite:Sprite;
   var flashBitmap:Bitmap;
   var previewSprite:Sprite;
   var shotPreviewBitmap:Bitmap;
   var outlineBitmap:Bitmap;
 
-  var wasMouseHidden:Bool = false;
+  var wasMouseHidden:Bool = false; // Used for hiding and then showing the mouse
+  var wasMouseShown:Bool = false; // Used for showing and then hiding the mouse
   var screenshotTakenFrame:Int = 0;
 
   var screenshotBeingSpammed:Bool = false;
@@ -90,6 +92,7 @@ class ScreenshotPlugin extends FlxBasic
   var unsavedScreenshotNameBuffer:Array<String> = [];
 
   var stateChanging:Bool = false;
+  var noSavingScreenshots:Bool = false;
 
   var flashTween:FlxTween;
 
@@ -113,9 +116,6 @@ class ScreenshotPlugin extends FlxBasic
     lastWidth = FlxG.width;
     lastHeight = FlxG.height;
 
-    containerThing = new Sprite();
-    FlxG.stage.addChild(containerThing);
-
     flashSprite = new Sprite();
     flashSprite.alpha = 0;
     flashBitmap = new Bitmap(new BitmapData(lastWidth, lastHeight, true, params.flashColor));
@@ -123,7 +123,6 @@ class ScreenshotPlugin extends FlxBasic
 
     previewSprite = new Sprite();
     previewSprite.alpha = 0;
-    containerThing.addChild(previewSprite);
 
     outlineBitmap = new Bitmap(new BitmapData(Std.int(lastWidth / 5) + 10, Std.int(lastHeight / 5) + 10, true, 0xFFFFFFFF));
     outlineBitmap.x = 5;
@@ -133,8 +132,9 @@ class ScreenshotPlugin extends FlxBasic
     shotPreviewBitmap = new Bitmap();
     shotPreviewBitmap.scaleX /= 5;
     shotPreviewBitmap.scaleY /= 5;
+
     previewSprite.addChild(shotPreviewBitmap);
-    containerThing.addChild(flashSprite);
+    FlxG.stage.addChild(flashSprite);
 
     region = params.region ?? null;
     flashColor = params.flashColor;
@@ -144,13 +144,19 @@ class ScreenshotPlugin extends FlxBasic
     FlxG.signals.gameResized.add(this.resizeBitmap);
     FlxG.signals.preStateSwitch.add(this.saveUnsavedBufferedScreenshots);
     FlxG.signals.postStateSwitch.add(this.postStateSwitch);
+    // Called when clicking the X button on the window.
+    WindowUtil.windowExit.add(onWindowClose);
+
+    // Called when the game crashes.
+    CrashHandler.errorSignal.add(onWindowCrash);
+    CrashHandler.criticalErrorSignal.add(onWindowCrash);
   }
 
   public override function update(elapsed:Float):Void
   {
     if (asyncLoop != null)
     {
-      // If my loop hasn't started yet, start it
+      // If the loop hasn't started yet, start it
       if (!asyncLoop.started)
       {
         asyncLoop.start();
@@ -183,15 +189,15 @@ class ScreenshotPlugin extends FlxBasic
      */
     if (hasPressedScreenshot() && screenshotTakenFrame == 0)
     {
-      if (Preferences.shouldHideMouse && !wasMouseHidden && FlxG.mouse.visible)
-      {
-        wasMouseHidden = true;
-        Cursor.hide();
-      }
       if (FlxG.keys.pressed.SHIFT)
       {
         openScreenshotsFolder();
         return; // We're only opening the screenshots folder (we don't want to accidentally take a screenshot after this)
+      }
+      if (Preferences.shouldHideMouse && !wasMouseHidden && FlxG.mouse.visible)
+      {
+        wasMouseHidden = true;
+        Cursor.hide();
       }
       for (sprite in [flashSprite, previewSprite])
       {
@@ -203,10 +209,9 @@ class ScreenshotPlugin extends FlxBasic
       {
         screenshotSpammedTimer = new FlxTimer().start(1, function(_) {
           // The player's stopped spamming shots, so we can stop the screenshot spam mode too
-          if (!Preferences.flashingLights) containerThing.alpha = 1;
           screenshotBeingSpammed = false;
           if (screenshotBuffer[0] != null) saveBufferedScreenshots(screenshotBuffer, screenshotNameBuffer);
-          if (wasMouseHidden && !FlxG.mouse.visible)
+          if (!Preferences.fancyPreview && wasMouseHidden && !FlxG.mouse.visible)
           {
             wasMouseHidden = false;
             Cursor.show();
@@ -216,9 +221,9 @@ class ScreenshotPlugin extends FlxBasic
       else // Pressing the screenshot key more than once every second enables the screenshot spam mode and resets the timer
       {
         screenshotBeingSpammed = true;
-        if (!Preferences.flashingLights) containerThing.alpha = 0; // hide the preview completely
         screenshotSpammedTimer.reset(1);
       }
+      FlxG.stage.removeChild(previewSprite);
       screenshotTakenFrame++;
     }
     else if (screenshotTakenFrame > 1)
@@ -268,6 +273,7 @@ class ScreenshotPlugin extends FlxBasic
   /**
    * Defines the region of the screen that should be captured.
    * You don't need to call this method if you want to capture the entire screen, that's the default behavior.
+   * Currently unused.
    */
   public function defineCaptureRegion(x:Int, y:Int, width:Int, height:Int):Void
   {
@@ -287,6 +293,7 @@ class ScreenshotPlugin extends FlxBasic
     // var bitmap = new Bitmap(new BitmapData(Math.floor(captureRegion.width), Math.floor(captureRegion.height), true, 0x00000000)); // Create a transparent empty bitmap.
     // var drawMatrix = new Matrix(1, 0, 0, 1, -captureRegion.x, -captureRegion.y); // Modifying this will scale or skew the bitmap.
     // bitmap.bitmapData.draw(FlxG.stage, drawMatrix);
+
     var shot = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
     if (screenshotBeingSpammed == true)
     {
@@ -300,14 +307,17 @@ class ScreenshotPlugin extends FlxBasic
         unsavedScreenshotNameBuffer.push('screenshot-${DateUtil.generateTimestamp()}');
       }
       else
+      {
+        noSavingScreenshots = true;
         throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez. If you wanted those screenshots, well too bad!";
+      }
       showCaptureFeedback();
-      if (!Preferences.previewOnSave) showFancyPreview(shot);
       if (wasMouseHidden && !FlxG.mouse.visible && Preferences.flashingLights) // Just in case
       {
         wasMouseHidden = false;
         Cursor.show();
       }
+      if (!Preferences.previewOnSave) showFancyPreview(shot);
     }
     else
     {
@@ -315,12 +325,12 @@ class ScreenshotPlugin extends FlxBasic
       saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}', 1, false);
       // Show some feedback.
       showCaptureFeedback();
-      if (!Preferences.previewOnSave) showFancyPreview(shot);
       if (wasMouseHidden && !FlxG.mouse.visible)
       {
         wasMouseHidden = false;
         Cursor.show();
       }
+      if (!Preferences.previewOnSave) showFancyPreview(shot);
     }
     onPostScreenshot.dispatch(shot);
   }
@@ -349,18 +359,116 @@ class ScreenshotPlugin extends FlxBasic
    */
   function showFancyPreview(shot:Bitmap):Void
   {
-    if (!Preferences.fancyPreview || stateChanging) return; // Sorry, the previews' been cancelled
+    if (!Preferences.fancyPreview || screenshotBeingSpammed && !Preferences.flashingLights || stateChanging) return; // Sorry, the previews' been cancelled
     shotPreviewBitmap.bitmapData = shot.bitmapData;
     shotPreviewBitmap.x = outlineBitmap.x + 5;
     shotPreviewBitmap.y = outlineBitmap.y + 5;
+    // Remove the existing preview
+    FlxG.stage.removeChild(previewSprite);
 
-    previewSprite.alpha = 1;
-    FlxTween.tween(previewSprite, {alpha: 0}, 0.5, {startDelay: .5});
+    // ermmm stealing this??
+
+    if (!wasMouseShown && !wasMouseHidden && !FlxG.mouse.visible)
+    {
+      wasMouseShown = true;
+      Cursor.show();
+    }
+
+    // so that it doesnt change the alpha when tweening in/out
+    var changingAlpha:Bool = false;
+    var targetAlpha:Float = 1;
+
+    // fuck it, cursed locally scoped functions, purely because im lazy
+    // (and so we can check changingAlpha, which is locally scoped.... because I'm lazy...)
+    var onHover = function(e:MouseEvent) {
+      if (!changingAlpha) e.target.alpha = 0.6;
+      targetAlpha = 0.6;
+    };
+
+    var onHoverOut = function(e:MouseEvent) {
+      if (!changingAlpha) e.target.alpha = 1;
+      targetAlpha = 1;
+    }
+
+    // used for movement + button stuff
+    previewSprite.buttonMode = true;
+    previewSprite.addEventListener(MouseEvent.MOUSE_DOWN, previewSpriteOpenScreenshotsFolder);
+    previewSprite.addEventListener(MouseEvent.MOUSE_MOVE, onHover);
+    previewSprite.addEventListener(MouseEvent.MOUSE_OUT, onHoverOut);
+
+    FlxTween.cancelTweensOf(previewSprite); // Reset the tweens
+    FlxG.stage.addChild(previewSprite);
+    previewSprite.alpha = 0.0;
+    previewSprite.y -= 10;
+    // set the alpha to 0.6 if the mouse is already over the preview sprite
+    if (previewSprite.hitTestPoint(previewSprite.mouseX, previewSprite.mouseY)) targetAlpha = 0.6;
+    // Wait to fade in.
+    new FlxTimer().start(PREVIEW_INITIAL_DELAY, function(_) {
+      // Fade in.
+      changingAlpha = true;
+      FlxTween.tween(previewSprite, {alpha: targetAlpha, y: 0}, PREVIEW_FADE_IN_DURATION,
+        {
+          ease: FlxEase.quartOut,
+          onComplete: function(_) {
+            changingAlpha = false;
+            // Wait to fade out.
+            new FlxTimer().start(PREVIEW_FADE_OUT_DELAY, function(_) {
+              changingAlpha = true;
+              // Fade out.
+              FlxTween.tween(previewSprite, {alpha: 0.0, y: 10}, PREVIEW_FADE_OUT_DURATION,
+                {
+                  ease: FlxEase.quartInOut,
+                  onComplete: function(_) {
+                    if (wasMouseShown && FlxG.mouse.visible)
+                    {
+                      wasMouseShown = false;
+                      Cursor.hide();
+                    }
+                    else if (wasMouseHidden && !FlxG.mouse.visible)
+                    {
+                      wasMouseHidden = false;
+                      Cursor.show();
+                    }
+
+                    previewSprite.removeEventListener(MouseEvent.MOUSE_DOWN, previewSpriteOpenScreenshotsFolder);
+                    previewSprite.removeEventListener(MouseEvent.MOUSE_OVER, onHover);
+                    previewSprite.removeEventListener(MouseEvent.MOUSE_OUT, onHoverOut);
+
+                    FlxG.stage.removeChild(previewSprite);
+                  }
+                });
+            });
+          }
+        });
+    });
+  }
+
+  /* This is a separate function, as running the previewsprite check
+    in the other one would mean you can't open the folder when the preview's hidden, lol
+    That, and it needs a mouse event as a parameter to work.
+   */
+  function previewSpriteOpenScreenshotsFolder(e:MouseEvent):Void
+  {
+    if (previewSprite.alpha <= 0) return;
+    openScreenshotsFolder();
   }
 
   function openScreenshotsFolder():Void
   {
     FileUtil.openFolder(SCREENSHOT_FOLDER);
+  }
+
+  // Save them, save the screenshots
+  function onWindowClose(exitCode:Int):Void
+  {
+    if (noSavingScreenshots) return; // sike
+    saveUnsavedBufferedScreenshots();
+  }
+
+  function onWindowCrash(message:String):Void
+  {
+    if (noSavingScreenshots) return;
+    saveUnsavedBufferedScreenshots();
   }
 
   static function getCurrentState():FlxState
@@ -426,9 +534,10 @@ class ScreenshotPlugin extends FlxBasic
 
     // TODO: Make this work on browser.
     // Maybe save the images into a buffer that you can download as a zip or something? That'd work
+    // Shouldn't be too hard to do something similar to the chart editor saving
 
     if (delaySave) // Save the images with a delay (a timer)
-    new FlxTimer().start(screenShotNum + 1, function(_) {
+      new FlxTimer().start(screenShotNum + 2, function(_) {
       var pngData = encode(bitmap);
 
       if (pngData == null)
@@ -529,6 +638,11 @@ class ScreenshotPlugin extends FlxBasic
   {
     stateChanging = false;
     screenshotBeingSpammed = false;
+    if (wasMouseHidden && FlxG.mouse.visible)
+    {
+      wasMouseHidden = false;
+      Cursor.hide();
+    }
   }
 
   override public function destroy():Void
@@ -540,18 +654,19 @@ class ScreenshotPlugin extends FlxBasic
     FlxG.signals.gameResized.remove(this.resizeBitmap);
     FlxG.signals.preStateSwitch.remove(this.saveUnsavedBufferedScreenshots);
     FlxG.signals.postStateSwitch.remove(this.postStateSwitch);
-    FlxG.stage.removeChild(containerThing);
+    FlxG.stage.removeChild(previewSprite);
+    FlxG.stage.removeChild(flashSprite);
+    WindowUtil.windowExit.remove(onWindowClose);
+    CrashHandler.errorSignal.remove(onWindowCrash);
+    CrashHandler.criticalErrorSignal.remove(onWindowCrash);
 
     super.destroy();
 
-    if (containerThing == null) return;
-
     @:privateAccess
-    for (parent in [containerThing, flashSprite, previewSprite])
+    for (parent in [flashSprite, previewSprite])
       for (child in parent.__children)
         parent.removeChild(child);
 
-    containerThing = null;
     flashSprite = null;
     flashBitmap = null;
     previewSprite = null;
