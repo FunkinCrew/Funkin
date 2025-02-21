@@ -120,28 +120,28 @@ class PreferencesMenu extends Page
     }, Preferences.autoFullscreen);
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
 
-    createPrefItemCheckbox('Hide Mouse', 'Enable to hide the mouse when taking a screenshot', function(value:Bool):Void {
+    createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
-    createPrefItemCheckbox('Fancy Preview', 'Enable to show a preview after taking a screenshot', function(value:Bool):Void {
+    createPrefItemCheckbox('Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
       Preferences.fancyPreview = value;
     }, Preferences.fancyPreview);
-    createPrefItemCheckbox('Preview on save', 'Enable to have the preview show only after a screenshot is saved', function(value:Bool):Void {
+    createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
-    createPrefItemEnum('Save Format', 'Save screenshots to this format', ['PNG' => 'PNG', 'JPEG' => 'JPEG'], function(value:String):Void {
+    createPrefItemEnum('Save Format', 'Save screenshots to this format.', ['PNG' => 'PNG', 'JPEG' => 'JPEG'], function(value:String):Void {
       Preferences.saveFormat = value;
     }, Preferences.saveFormat);
-    createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots', function(value:Float) {
+    createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, null, Preferences.jpegQuality, 0, 100, 5, 0);
   }
