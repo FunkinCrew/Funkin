@@ -190,7 +190,7 @@ class Save
           instVolume: 1.0,
           playerVoiceVolume: 1.0,
           opponentVoiceVolume: 1.0,
-          playbackSpeed: 1.0,
+          playbackSpeed: 0.5,
           themeMusic: true
         },
 
@@ -509,7 +509,7 @@ class Save
 
   function get_chartEditorPlaybackSpeed():Float
   {
-    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 1.0;
+    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 0.5;
 
     return data.optionsChartEditor.playbackSpeed;
   }
