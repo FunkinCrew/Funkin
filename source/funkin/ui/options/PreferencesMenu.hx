@@ -78,12 +78,12 @@ class PreferencesMenu extends Page
     itemDescBox.alpha = 0.6;
     itemDesc.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     itemDesc.borderSize = 3;
-  
+
     // Update the text.
     itemDesc.text = preferenceDesc[items.selectedIndex];
     itemDesc.screenCenter();
     itemDesc.y += 270;
-  
+
     // Create the box around the text.
     itemDescBox.setPosition(itemDesc.x - 10, itemDesc.y - 10);
     itemDescBox.setGraphicSize(Std.int(itemDesc.width + 20), Std.int(itemDesc.height + 25));
