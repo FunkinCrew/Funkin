@@ -26,7 +26,7 @@ class ChartEditorImportExportHandler
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
    */
-  public static function loadSongAsTemplate(state:ChartEditorState, songId:String, targetSongDifficulty:String, targetSongVariation:String):Void
+  public static function loadSongAsTemplate(state:ChartEditorState, songId:String, targetSongDifficulty:String = null, targetSongVariation:String = null):Void
   {
     trace('===============START');
 

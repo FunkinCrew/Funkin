@@ -2235,8 +2235,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else if (params != null && params.targetSongId != null)
     {
-      var targetSongDifficulty = params.targetSongDifficulty ?? Constants.DEFAULT_DIFFICULTY;
-      var targetSongVariation = params.targetSongVariation ?? Constants.DEFAULT_VARIATION;
+      var targetSongDifficulty = params.targetSongDifficulty ?? null;
+      var targetSongVariation = params.targetSongVariation ?? null;
       this.loadSongAsTemplate(params.targetSongId, targetSongDifficulty, targetSongVariation);
     }
     else
