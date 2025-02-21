@@ -103,9 +103,10 @@ class PreferencesMenu extends Page
     }, Preferences.downscroll);
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
-        Preferences.flashingLights = value;
-      }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+      Preferences.flashingLights = value;
+      funkin.util.plugins.ScreenshotPlugin.instance.updateFlashColor(); // immediately update the flash color of the screenshot plugin
+    }, Preferences.flashingLights);
+    createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
@@ -127,6 +128,22 @@ class PreferencesMenu extends Page
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
+
+    createPrefItemCheckbox('Hide Mouse', 'Enable to hide the mouse when taking a screenshot', function(value:Bool):Void {
+      Preferences.shouldHideMouse = value;
+    }, Preferences.shouldHideMouse);
+    createPrefItemCheckbox('Fancy Preview', 'Enable to show a preview after taking a screenshot', function(value:Bool):Void {
+      Preferences.fancyPreview = value;
+    }, Preferences.fancyPreview);
+    createPrefItemCheckbox('Preview on save', 'Enable to have the preview show only after a screenshot is saved', function(value:Bool):Void {
+      Preferences.previewOnSave = value;
+    }, Preferences.previewOnSave);
+    createPrefItemEnum('Save Format', 'Save screenshots to this format', ['PNG' => 'PNG', 'JPEG' => 'JPEG'], function(value:String):Void {
+      Preferences.saveFormat = value;
+    }, Preferences.saveFormat);
+    createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots', function(value:Float) {
+      Preferences.jpegQuality = Std.int(value);
+    }, null, Preferences.jpegQuality, 0, 100, 5, 0);
   }
 
   override function update(elapsed:Float):Void
