@@ -1351,7 +1351,7 @@ typedef SaveDataOptions =
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
    */
-   var autoFullscreen:Bool;
+  var autoFullscreen:Bool;
 
   /**
    * Offset the user's inputs by this many ms.
