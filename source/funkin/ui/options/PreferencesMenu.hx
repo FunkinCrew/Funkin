@@ -101,16 +101,18 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
-      function(value:Bool):Void {
-        Preferences.flashingLights = value;
-      }, Preferences.flashingLights);
+    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
+      Preferences.flashingLights = value;
+    }, Preferences.flashingLights);
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
+    createPrefItemCheckbox('Play Miss Sound', 'Disable to stop the miss sound from playing when a miss happens.', function(value:Bool):Void {
+      Preferences.playMissSound = value;
+    }, Preferences.playMissSound);
     createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);

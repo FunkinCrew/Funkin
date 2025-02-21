@@ -1458,8 +1458,8 @@ class PlayState extends MusicBeatSubState
 
       if (!startingSong
         && (Math.abs(FlxG.sound.music.time - correctSync) > 100
-          || Math.abs(playerVoicesError) > 100
-          || Math.abs(opponentVoicesError) > 100))
+         || Math.abs(playerVoicesError) > 100
+         || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
@@ -2620,7 +2620,10 @@ class PlayState extends MusicBeatSubState
     if (playSound)
     {
       vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+      if (Preferences.playMissSound)
+      {
+        FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+      }
     }
   }
 
@@ -2675,7 +2678,10 @@ class PlayState extends MusicBeatSubState
     if (event.playSound)
     {
       vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      if (Preferences.playMissSound)
+      {
+        FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      }
     }
   }
 
