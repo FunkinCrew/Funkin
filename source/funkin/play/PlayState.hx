@@ -197,7 +197,7 @@ class PlayState extends MusicBeatSubState
    * The player's current score.
    * TODO: Move this to its own class.
    */
-  public var songScore:Int = 0;
+  public var songScore:Float = 0;
 
   /**
    * Start at this point in the song once the countdown is done.
@@ -572,6 +572,17 @@ class PlayState extends MusicBeatSubState
   function get_currentSongLengthMs():Float
   {
     return FlxG?.sound?.music?.length;
+  }
+
+  /**
+   * The player's current score, as an integer.
+   * TODO: Move songScore to its own class with this functionality.
+   */
+  var songScoreInt(get, never):Int;
+
+  function get_songScoreInt():Int
+  {
+    return Std.int(songScore);
   }
 
   // TODO: Refactor or document
@@ -2138,7 +2149,7 @@ class PlayState extends MusicBeatSubState
     {
       // TODO: Add an option for this maybe?
       var commaSeparated:Bool = true;
-      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
+      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScoreInt, false, commaSeparated)}';
     }
   }
 
@@ -2368,7 +2379,6 @@ class PlayState extends MusicBeatSubState
     }
 
     // Process hold notes on the player's side.
-    // This handles scoring so we don't need it on the opponent's side.
     for (holdNote in playerStrumline.holdNotes.members)
     {
       if (holdNote == null || !holdNote.alive) continue;
@@ -2376,13 +2386,6 @@ class PlayState extends MusicBeatSubState
       // While the hold note is being hit, and there is length on the hold note...
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
-        // Grant the player health.
-        if (!isBotPlayMode)
-        {
-          health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-          songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
-        }
-
         // Make sure the player keeps singing while the note is held by the bot.
         if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
         {
@@ -2513,6 +2516,20 @@ class PlayState extends MusicBeatSubState
 
       playerStrumline.releaseKey(input.noteDirection);
     }
+  }
+
+  public function sustainHit(note:SustainTrail, lastLength:Float):Void
+  {
+    // Don't grant sustain bonuses on botplay.
+    // TODO: Maybe make this scriptable? Performance is a concern, though.
+    if (isBotPlayMode) return;
+
+    // Calculate song score and health gain based on sustain amount eaten, not by elapsed --
+    // This is to avoid inconsistency with sustain scores. Previously handled by the animation handling...
+    // NOTE: Having PlayState stuff be handled by the strumline is weird. Maybe find a way around that?
+    var processed = Math.max(Math.min(lastLength, note.fullSustainLength) - Math.max(note.sustainLength, 0), 0) * 0.001;
+    health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * processed;
+    songScore += Constants.SCORE_HOLD_BONUS_PER_SECOND * processed;
   }
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
@@ -2750,7 +2767,7 @@ class PlayState extends MusicBeatSubState
   /**
      * Handles applying health, score, and ratings.
      */
-  function applyScore(score:Int, daRating:String, healthChange:Float, isComboBreak:Bool)
+  function applyScore(score:Float, daRating:String, healthChange:Float, isComboBreak:Bool)
   {
     switch (daRating)
     {
@@ -2933,7 +2950,7 @@ class PlayState extends MusicBeatSubState
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
       var data =
         {
-          score: songScore,
+          score: songScoreInt,
           tallies:
             {
               sick: Highscore.tallies.sick,
@@ -2973,7 +2990,7 @@ class PlayState extends MusicBeatSubState
     {
       isNewHighscore = false;
 
-      PlayStatePlaylist.campaignScore += songScore;
+      PlayStatePlaylist.campaignScore += songScoreInt;
 
       // Pop the next song ID from the list.
       // Returns null if the list is empty.
@@ -3269,7 +3286,7 @@ class PlayState extends MusicBeatSubState
         prevScoreData: prevScoreData,
         scoreData:
           {
-            score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
+            score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScoreInt,
             tallies:
               {
                 sick: talliesToUse.sick,
