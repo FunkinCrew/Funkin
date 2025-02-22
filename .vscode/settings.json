@@ -92,26 +92,6 @@
 
   "lime.targetConfigurations": [
     {
-      "label": "Windows / Debug",
-      "target": "windows",
-      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "Windows / Debug (Tracy)",
-      "target": "windows",
-      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "Linux / Debug",
-      "target": "linux",
-      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "HashLink / Debug",
-      "target": "hl",
-      "args": ["-debug"]
-    },
-    {
       "label": "Windows / Debug (Discord)",
       "target": "windows",
       "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS", "-DFEATURE_DISCORD_RPC"]
@@ -171,16 +151,6 @@
       "args": ["-debug", "-DRESULTS"]
     },
     {
-      "label": "Windows / Debug (Straight to Chart Editor)",
-      "target": "windows",
-      "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "HashLink / Debug (Straight to Chart Editor)",
-      "target": "hl",
-      "args": ["-debug", "-DCHARTING"]
-    },
-    {
       "label": "Windows / Debug (Straight to Animation Editor)",
       "target": "windows",
       "args": ["-debug", "-DANIMDEBUG", "-DFEATURE_DEBUG_FUNCTIONS"]
@@ -211,11 +181,6 @@
       "args": ["-debug", "-DWAVEFORM", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "Windows / Release",
-      "target": "windows",
-      "args": ["-release"]
-    },
-    {
       "label": "Windows / Release (GitHub Actions)",
       "target": "windows",
       "args": ["-release", "-DGITHUB_BUILD"]
@@ -226,28 +191,30 @@
       "args": ["-debug", "-DWAVEFORM"]
     },
     {
-      "label": "HTML5 / Debug",
-      "target": "html5",
-      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
       "label": "HTML5 / Debug (Watch)",
       "target": "html5",
       "args": ["-debug", "-watch", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
+    }
+  ],
+  "lime.buildTypes": [
     {
-      "label": "macOS / Debug",
-      "target": "mac",
+      "label": "Debug",
       "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "macOS / Release",
-      "target": "mac",
+      "label": "Debug (Tracy)",
+      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Debug (Straight to Chart Editor)",
+      "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Release",
       "args": ["-release"]
     },
     {
-      "label": "macOS / Release (GitHub Actions)",
-      "target": "mac",
+      "label": "Release (GitHub Actions)",
       "args": ["-release", "-DGITHUB_BUILD"]
     }
   ],
