@@ -116,15 +116,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Remember Freeplay Dipshit', 'Enable to have Freeplay remember the dipshit you previously selected', function(value:Bool):Void {
-      Preferences.rememberFreeplayChar = value;
-    }, Preferences.rememberFreeplayChar);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+    createPrefItemCheckbox('Save Freeplay Character', 'If enabled, the freeplay menu will remember the character you previously selected.',
+      function(value:Bool):Void {
+      Preferences.saveFreeplayChar = value;
+    }, Preferences.saveFreeplayChar);
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
+    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked..', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
