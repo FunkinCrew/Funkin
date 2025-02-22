@@ -3089,6 +3089,16 @@ class PlayState extends MusicBeatSubState
     // PAGEDOWN: Skip backward two section. Doesn't replace notes.
     // SHIFT+PAGEDOWN: Skip backward twenty sections.
     if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
+    #else
+    if (isChartingMode)
+    {
+      // PAGEUP: Skip forward two sections.
+      // SHIFT+PAGEUP: Skip forward twenty sections.
+      if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
+      // PAGEDOWN: Skip backward two section. Doesn't replace notes.
+      // SHIFT+PAGEDOWN: Skip backward twenty sections.
+      if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
+    }
     #end
   }
 
@@ -3873,7 +3883,6 @@ class PlayState extends MusicBeatSubState
     soundsPausedBySubState.clear();
   }
 
-  #if FEATURE_DEBUG_FUNCTIONS
   /**
      * Jumps forward or backward a number of sections in the song.
      * Accounts for BPM changes, does not prevent death from skipped notes.
@@ -3902,5 +3911,4 @@ class PlayState extends MusicBeatSubState
 
     resyncVocals();
   }
-  #end
 }
