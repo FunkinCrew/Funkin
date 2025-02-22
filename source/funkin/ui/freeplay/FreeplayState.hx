@@ -202,7 +202,7 @@ class FreeplayState extends MusicBeatSubState
     // If a character was selected, use that character.
     // If not, and a save exists and that save has a value for the previous freeplay character, use that.
     // Otherwise, use the default character.
-    if (Save?.instance?.options?.rememberFreeplayChar == true)
+    if (Save?.instance?.options?.saveFreeplayChar == true)
     {
       rememberedCharacterId = Save.instance.getFreeplayCharacter() ?? rememberedCharacterId;
     }
@@ -226,7 +226,7 @@ class FreeplayState extends MusicBeatSubState
     currentVariation = rememberedVariation;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
-    if (Save?.instance?.options?.rememberFreeplayChar == true)
+    if (Save?.instance?.options?.saveFreeplayChar == true)
     {
       // If the option is enabled, save the character selected for freeplay if it's not the default.
       Save.instance.setFreeplayCharacter(rememberedCharacterId);

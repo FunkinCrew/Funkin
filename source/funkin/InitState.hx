@@ -209,7 +209,7 @@ class InitState extends FlxState
     startLevel(defineLevel(), defineDifficulty());
     #elseif FREEPLAY
     // -DFREEPLAY
-    var targetCharacter:Null<String> = funkin.save.Save.instance.getFreeplayCharacter() ?? null;
+    var targetCharacter:Null<String> = (funkin.save.Save?.instance?.options?.saveFreeplayChar == true) ? funkin.save.Save.instance.getFreeplayCharacter() : Constants.DEFAULT_CHARACTER;
     FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState(
       {
         character: targetCharacter

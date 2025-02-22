@@ -114,19 +114,20 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Remember Freeplay Dipshit', 'Enable to have Freeplay remember the dipshit you previously selected', function(value:Bool):Void {
-      Preferences.rememberFreeplayChar = value;
-    }, Preferences.rememberFreeplayChar);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+    createPrefItemCheckbox('Save Freeplay Character', 'If enabled, the freeplay menu will remember the character you previously selected.',
+      function(value:Bool):Void {
+      Preferences.saveFreeplayChar = value;
+    }, Preferences.saveFreeplayChar);
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end

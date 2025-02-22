@@ -102,7 +102,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
-          rememberFreeplayChar: true,
+          saveFreeplayChar: true,
           autoFullscreen: false,
           inputOffset: 0,
           audioVisualOffset: 0,
@@ -1375,7 +1375,7 @@ typedef SaveDataOptions =
    * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
    * @default `true`
    */
-  var rememberFreeplayChar:Bool;
+  var saveFreeplayChar:Bool;
 
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.
