@@ -144,7 +144,9 @@ class Save
           metronomeVolume: 1.0,
           hitsoundVolumePlayer: 1.0,
           hitsoundVolumeOpponent: 1.0,
-          themeMusic: true
+          themeMusic: true,
+          themeMusicFadeInDelay: 30.0,
+          themeMusicFadeInDuration: 10.0,
         },
 
       optionsStageEditor:
@@ -152,7 +154,7 @@ class Save
           previousFiles: [],
           moveStep: "1px",
           angleStep: 5,
-          theme: StageEditorTheme.Light
+          theme: StageEditorTheme.Light,
         }
     };
   }
@@ -393,6 +395,40 @@ class Save
     data.optionsChartEditor.themeMusic = value;
     flush();
     return data.optionsChartEditor.themeMusic;
+  }
+
+  public var chartEditorThemeMusicFadeInDelay(get, set):Float;
+
+  function get_chartEditorThemeMusicFadeInDelay():Float
+  {
+    if (data.optionsChartEditor.themeMusicFadeInDelay == null) data.optionsChartEditor.themeMusicFadeInDelay = 30.0;
+
+    return data.optionsChartEditor.themeMusicFadeInDelay;
+  }
+
+  function set_chartEditorThemeMusicFadeInDelay(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.themeMusicFadeInDelay = value;
+    flush();
+    return data.optionsChartEditor.themeMusicFadeInDelay;
+  }
+
+  public var chartEditorThemeMusicFadeInDuration(get, set):Float;
+
+  function get_chartEditorThemeMusicFadeInDuration():Float
+  {
+    if (data.optionsChartEditor.themeMusicFadeInDuration == null) data.optionsChartEditor.themeMusicFadeInDuration = 10.0;
+
+    return data.optionsChartEditor.themeMusicFadeInDuration;
+  }
+
+  function set_chartEditorThemeMusicFadeInDuration(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.themeMusicFadeInDuration = value;
+    flush();
+    return data.optionsChartEditor.themeMusicFadeInDuration;
   }
 
   public var chartEditorPlaybackSpeed(get, set):Float;
@@ -1556,6 +1592,18 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?themeMusic:Bool;
+
+  /**
+   * Theme music fade in delay in the Chart Editor.
+   * @default `30.0`
+   */
+  var ?themeMusicFadeInDelay:Float;
+
+  /**
+   * Theme music fade in duration in the Chart Editor.
+   * @default `10.0`
+   */
+  var ?themeMusicFadeInDuration:Float;
 
   /**
    * Instrumental volume in the Chart Editor.
