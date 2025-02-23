@@ -137,6 +137,10 @@ class ChartEditorAudioHandler
     result = playVocals(state, DAD, opponentId, instId);
     // if (!result) return false;
 
+    state.postLoadVocals();
+
+    var perfE:Float = TimerUtil.start();
+
     state.hardRefreshOffsetsToolbox();
 
     state.hardRefreshFreeplayToolbox();

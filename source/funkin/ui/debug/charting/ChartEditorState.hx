@@ -6364,20 +6364,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
 
-    // Reapply the volume.
+    // Reapply the volume and playback rate.
     var instTargetVolume:Float = menubarItemVolumeInstrumental.value / 100.0 ?? 1.0;
     var vocalPlayerTargetVolume:Float = menubarItemVolumeVocalsPlayer.value / 100.0 ?? 1.0;
     var vocalOpponentTargetVolume:Float = menubarItemVolumeVocalsOpponent.value / 100.0 ?? 1.0;
 
+    var playbackRate = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+
     if (audioInstTrack != null)
     {
       audioInstTrack.volume = instTargetVolume;
+      #if FLX_PITCH
+      audioInstTrack.pitch = playbackRate;
+      #end
       audioInstTrack.onComplete = null;
     }
     if (audioVocalTrackGroup != null)
     {
       audioVocalTrackGroup.playerVolume = vocalPlayerTargetVolume;
       audioVocalTrackGroup.opponentVolume = vocalOpponentTargetVolume;
+      #if FLX_PITCH
+      audioVocalTrackGroup.pitch = playbackRate;
+      #end
     }
   }
 
@@ -6532,6 +6542,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function postLoadInstrumental():Void
   {
+    // Reapply the volume and playback rate.
+    var instTargetVolume:Float = menubarItemVolumeInstrumental.value ?? 1.0;
+    var playbackRate = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
     if (audioInstTrack != null)
     {
       // Prevent the time from skipping back to 0 when the song ends.
@@ -6544,6 +6559,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         audioVocalTrackGroup.pause();
       };
+      audioInstTrack.volume = instTargetVolume;
+      #if FLX_PITCH
+      audioInstTrack.pitch = playbackRate;
+      #end
     }
     else
     {
@@ -6558,6 +6577,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
+  }
+
+  public function postLoadVocals():Void
+  {
+    // Reapply the volume and playback rate.
+    var vocalPlayerTargetVolume:Float = menubarItemVolumeVocalsPlayer.value ?? 1.0;
+    var vocalOpponentTargetVolume:Float = menubarItemVolumeVocalsOpponent.value ?? 1.0;
+    var playbackRate = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+
+    if (audioVocalTrackGroup != null)
+    {
+      audioVocalTrackGroup.playerVolume = vocalPlayerTargetVolume;
+      audioVocalTrackGroup.opponentVolume = vocalOpponentTargetVolume;
+      #if FLX_PITCH
+      audioVocalTrackGroup.pitch = playbackRate;
+      #end
+    }
   }
 
   function hardRefreshOffsetsToolbox():Void
