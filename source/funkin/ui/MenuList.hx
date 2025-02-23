@@ -239,6 +239,12 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     }
   }
 
+  public function cancelAccept()
+  {
+    FlxFlicker.stopFlickering(members[selectedIndex]);
+    busy = false;
+  }
+
   public function selectItem(index:Int)
   {
     members[selectedIndex].idle();
