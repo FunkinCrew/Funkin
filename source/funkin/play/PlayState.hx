@@ -1215,15 +1215,24 @@ class PlayState extends MusicBeatSubState
 
         // Pause any sounds that are playing and keep track of them.
         // Vocals are also paused here but are not included as they are handled separately.
-        var flixelVocals = vocals?.members.map(function(voice:FunkinSound):FlxSound {
-          return cast voice;
-        });
-        FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
-          if (sound != null && (sound == FlxG.sound.music || !sound.playing)) return;
-          sound.pause();
+        if (Std.isOfType(subState, PauseSubState))
+        {
+          FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
+            // This previously only paused a sound if it was playing but scheduled sounds
+            // like Darnell's can kick sounds would still play after pausing.
+            if (sound == FlxG.sound.music) return;
+            sound.pause();
 
-          if (flixelVocals != null && flixelVocals.indexOf(sound) == -1) soundsPausedBySubState.add(sound);
-        });
+            soundsPausedBySubState.add(sound);
+          });
+          vocals?.forEach(function(voice:FunkinSound) {
+            soundsPausedBySubState.remove(voice);
+          });
+        }
+        else
+        {
+          vocals?.pause();
+        }
       }
 
       // Pause camera tweening, and keep track of which tweens we pause.
@@ -1334,16 +1343,6 @@ class PlayState extends MusicBeatSubState
       #end
 
       justUnpaused = true;
-    }
-    else if (Std.isOfType(subState, GameOverSubState))
-    {
-      // Prevents a sound (like thunder) from playing after dying,
-      // pausing then resuming the game even though it's not supposed to.
-      for (sound in soundsPausedBySubState)
-      {
-        sound.kill();
-      }
-      soundsPausedBySubState.clear();
     }
     else if (Std.isOfType(subState, Transition))
     {
@@ -3187,6 +3186,12 @@ class PlayState extends MusicBeatSubState
         remove(vocals);
       }
     }
+
+    for (sound in soundsPausedBySubState)
+    {
+      sound.destroy();
+    }
+    soundsPausedBySubState.clear();
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
