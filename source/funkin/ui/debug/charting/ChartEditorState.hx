@@ -6322,6 +6322,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function postLoadInstrumental():Void
   {
+    var playbackRate = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
     if (audioInstTrack != null)
     {
       // Prevent the time from skipping back to 0 when the song ends.
@@ -6331,8 +6334,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           audioInstTrack.pause();
           // Keep the track at the end.
           audioInstTrack.time = audioInstTrack.length;
+          audioInstTrack.pitch = playbackRate;
         }
         audioVocalTrackGroup.pause();
+        audioVocalTrackGroup.pitch = playbackRate;
       };
     }
     else
