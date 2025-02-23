@@ -101,7 +101,10 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox('Note Splashes', 'If enabled, will show a splash particle effect when hitting a note', function(value:Bool):Void {
+    createPrefItemCheckbox('Note Highlights', 'If enabled, this will show a highlight effect while hitting a note', function(value:Bool):Void {
+      Preferences.noteHighlights = value;
+    }, Preferences.noteHighlights);
+    createPrefItemCheckbox('Note Splashes', 'If enabled, this will show a splash particle effect when hitting a note', function(value:Bool):Void {
       Preferences.noteSplashes = value;
     }, Preferences.noteSplashes);
     createPrefItemEnum('Note Sound', 'If enabled, plays a sound effect when a note is hit', [

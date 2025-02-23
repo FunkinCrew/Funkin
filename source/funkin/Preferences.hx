@@ -47,6 +47,25 @@ class Preferences
   }
 
   /**
+   * If enabled, plays a highlight animation when notes are hit.
+   * @default `true`
+   */
+  public static var noteHighlights(get, set):Bool;
+
+  static function get_noteHighlights():Bool
+  {
+    return Save?.instance?.options?.noteHighlights;
+  }
+
+  static function set_noteHighlights(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.noteHighlights = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, plays a splash particle effect when sick notes are hit.
    * @default `true`
    */

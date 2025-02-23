@@ -90,6 +90,7 @@ class Save
       options:
         {
           // Reasonable defaults.
+          noteHighlights: true,
           noteSplashes: true,
           noteSoundType: NoteSoundType.None,
           noteSoundVolume: 100,
@@ -1312,6 +1313,12 @@ typedef SaveDataOptions =
    * @default `100`
    */
   var noteSoundVolume:Int;
+
+  /**
+   * If enabled, plays a highlight animation when notes are hit.
+   * @default `true`
+   */
+  var noteHighlights:Bool;
 
   /**
    * If enabled, plays a splash particle effect when sick notes are hit.
