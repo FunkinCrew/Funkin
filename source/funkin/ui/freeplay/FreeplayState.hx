@@ -340,12 +340,6 @@ class FreeplayState extends MusicBeatSubState
     DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
     #end
 
-    var isDebug:Bool = false;
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    isDebug = true;
-    #end
-
     // Block input until the intro finishes.
     busy = true;
 
