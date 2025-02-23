@@ -10,5 +10,4 @@ abstract NoteSoundType(String) from String to String
   public static inline var None:String = ""; // Special case
   public static inline var PingPong:String = "pingPong";
   public static inline var PoolBall:String = "poolBall";
-  public static inline var VineBoom:String = "vineBoom";
 }

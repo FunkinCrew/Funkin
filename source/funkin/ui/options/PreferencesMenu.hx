@@ -108,7 +108,6 @@ class PreferencesMenu extends Page
       NoteSoundType.None => 'None',
       NoteSoundType.PingPong => 'Ping Pong',
       NoteSoundType.PoolBall => 'Pool Ball',
-      NoteSoundType.VineBoom => 'Vine Boom'
     ], function(value:String):Void {
       Preferences.noteSoundType = value;
       if (Preferences.noteSoundType == NoteSoundType.None) return;
