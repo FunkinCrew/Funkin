@@ -237,82 +237,100 @@ class PolymodHandler
   static function buildImports():Void
   {
     // Add default imports for common classes.
-    Polymod.addDefaultImport(funkin.Assets);
-    Polymod.addDefaultImport(funkin.Paths);
+    final defaultImports:Array<Class<Dynamic>> = [
+      flixel.FlxG,
+
+      funkin.Assets,
+      funkin.Conductor,
+      funkin.Paths,
+      funkin.modding.module.ModuleHandler,
+      funkin.play.PlayState,
+    ];
 
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
-    Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
+    final importAliases:Map<String, Class<Dynamic>> = [
+      "flixel.math.FlxPoint" => flixel.math.FlxPoint.FlxBasePoint,
 
-    Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
+      "funkin.data.event.SongEventSchema" => funkin.data.event.SongEventSchema.SongEventSchemaRaw,
 
-    // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
-    Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
-    Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
+      // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
+      "lime.utils.Assets" => funkin.Assets,
+      "openfl.utils.Assets" => funkin.Assets
+    ];
 
-    // Add blacklisting for prohibited classes and packages.
+    // Add blacklisting for prohibited classes.
+    final importBlacklist:Array<String> = [
+      // `Sys`
+      // Sys.command() can run malicious processes
+      'Sys',
 
-    // `Sys`
-    // Sys.command() can run malicious processes
-    Polymod.blacklistImport('Sys');
+      // `Reflect`
+      // Reflect.callMethod() can access blacklisted packages
+      'Reflect',
 
-    // `Reflect`
-    // Reflect.callMethod() can access blacklisted packages
-    Polymod.blacklistImport('Reflect');
+      // `Type`
+      // Type.createInstance(Type.resolveClass()) can access blacklisted packages
+      'Type',
 
-    // `Type`
-    // Type.createInstance(Type.resolveClass()) can access blacklisted packages
-    Polymod.blacklistImport('Type');
+      // `cpp.Lib`
+      // Lib.load() can load malicious DLLs
+      'cpp.Lib',
 
-    // `cpp.Lib`
-    // Lib.load() can load malicious DLLs
-    Polymod.blacklistImport('cpp.Lib');
+      // `Unserializer`
+      // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
+      'Unserializer',
 
-    // `Unserializer`
-    // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
-    Polymod.blacklistImport('Unserializer');
+      // `lime.system.CFFI`
+      // Can load and execute compiled binaries.
+      'lime.system.CFFI',
 
-    // `lime.system.CFFI`
-    // Can load and execute compiled binaries.
-    Polymod.blacklistImport('lime.system.CFFI');
+      // `lime.system.JNI`
+      // Can load and execute compiled binaries.
+      'lime.system.JNI',
 
-    // `lime.system.JNI`
-    // Can load and execute compiled binaries.
-    Polymod.blacklistImport('lime.system.JNI');
+      // `lime.system.System`
+      // System.load() can load malicious DLLs
+      'lime.system.System',
 
-    // `lime.system.System`
-    // System.load() can load malicious DLLs
-    Polymod.blacklistImport('lime.system.System');
+      // `lime.utils.Assets`
+      // Literally just has a private `resolveClass` function for some reason?
+      'lime.utils.Assets',
+      'openfl.utils.Assets',
+      'openfl.Lib',
+      'openfl.system.ApplicationDomain',
+      'openfl.net.SharedObject',
 
-    // `lime.utils.Assets`
-    // Literally just has a private `resolveClass` function for some reason?
-    Polymod.blacklistImport('lime.utils.Assets');
-    Polymod.blacklistImport('openfl.utils.Assets');
-    Polymod.blacklistImport('openfl.Lib');
-    Polymod.blacklistImport('openfl.system.ApplicationDomain');
-    Polymod.blacklistImport('openfl.net.SharedObject');
+      // `openfl.desktop.NativeProcess`
+      // Can load native processes on the host operating system.
+      'openfl.desktop.NativeProcess',
+      
+      // Access to the file system.
+      'sys.FileSystem'
+    ];
 
-    // `openfl.desktop.NativeProcess`
-    // Can load native processes on the host operating system.
-    Polymod.blacklistImport('openfl.desktop.NativeProcess');
+    // Add blacklisting for prohibited packages.
+    final importBlacklistPackages:Array<String> = [
+      // Contains functions which may allow for un-blacklisting other modules.
+      'polymod',
+      
+      // Access to the file system as well as `Process` which can run malicious processes
+      'sys.io'
+    ];
 
-    // `polymod.*`
-    // Contains functions which may allow for un-blacklisting other modules.
-    for (cls in ClassMacro.listClassesInPackage('polymod'))
+    for (packageName in importBlacklistPackages)
     {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
+      for (cls in ClassMacro.listClassesInPackage(packageName, true))
+      {
+        if (cls == null) continue;
+        importBlacklist.push(Type.getClassName(cls));
+      }
     }
 
-    // `sys.*`
-    // Access to system utilities such as the file system.
-    for (cls in ClassMacro.listClassesInPackage('sys'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
+    // apply to Polymod
+    for (className in defaultImports) Polymod.addDefaultImport(className);
+    for (className in importAliases.keys()) Polymod.addImportAlias(className, importAliases.get(className));
+    for (className in importBlacklist) Polymod.blacklistImport(className);
   }
 
   static function buildParseRules():polymod.format.ParseRules
