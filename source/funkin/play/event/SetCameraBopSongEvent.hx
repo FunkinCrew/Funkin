@@ -79,7 +79,8 @@ class SetCameraBopSongEvent extends SongEvent
         defaultValue: 1.0,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
-        units: 'x'
+        units: 'x',
+        tooltip: "The multiplier intensity to bop the camera",
       },
       {
         name: 'rate',
@@ -87,7 +88,8 @@ class SetCameraBopSongEvent extends SongEvent
         defaultValue: 4,
         step: 1,
         type: SongEventFieldType.INTEGER,
-        units: 'beats/zoom'
+        units: 'beats/zoom',
+        tooltip: "The rate the camera will bop at",
       }
     ]);
   }
