@@ -721,7 +721,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
-    randomCapsule.init(FlxG.width, 0, null, styleData);
+    randomCapsule.init(FlxG.width, 0, null, styleData, 0);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
     randomCapsule.alpha = 0;
@@ -748,7 +748,7 @@ class FreeplayState extends MusicBeatSubState
 
       var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
 
-      funnyMenu.init(FlxG.width, 0, tempSong, styleData);
+      funnyMenu.init(FlxG.width, 0, tempSong, styleData, i + 1);
       funnyMenu.onConfirm = function() {
         capsuleOnOpenDefault(funnyMenu);
       };
@@ -758,7 +758,11 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.capsule.alpha = 0.5;
       funnyMenu.hsvShader = hsvShader;
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
-      funnyMenu.forcePosition();
+      // I would like to use to use the jump in now that it looks better,
+      // but I still can't because switching from harder to normal difficulties causes the x positions to mess up
+      /*if (fromCharSelect)*/ funnyMenu.forcePosition();
+      /*else
+        funnyMenu.initJumpIn(0, force); */
 
       grpCapsules.add(funnyMenu);
     }
@@ -2029,7 +2033,7 @@ class FreeplayState extends MusicBeatSubState
       capsule.selected = index == curSelected + 1;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
+      capsule.targetPos.x = capsule.intendedX(index - curSelected);
 
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
