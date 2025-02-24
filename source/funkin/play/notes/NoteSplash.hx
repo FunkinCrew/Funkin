@@ -36,15 +36,6 @@ class NoteSplash extends FlxSprite
   {
     if (frames == null) noteStyle.buildSplashSprite(this);
 
-    // this.animation.addByPrefix('splash1Left', 'note impact 1 purple0', FRAMERATE_DEFAULT, false, false, false);
-    // this.animation.addByPrefix('splash1Down', 'note impact 1  blue0', FRAMERATE_DEFAULT, false, false, false);
-    // this.animation.addByPrefix('splash1Up', 'note impact 1 green0', FRAMERATE_DEFAULT, false, false, false);
-    // this.animation.addByPrefix('splash1Right', 'note impact 1 red0', FRAMERATE_DEFAULT, false, false, false);
-    // this.animation.addByPrefix('splash2Left', 'note impact 2 purple0', FRAMERATE_DEFAULT, false, false, false);
-    // this.animation.addByPrefix('splash2Down', 'note impact 2 blue0', FRAMERATE_DEFAULT, false, false, false);
-    // this.animation.addByPrefix('splash2Up', 'note impact 2 green0', FRAMERATE_DEFAULT, false, false, false);
-    // this.animation.addByPrefix('splash2Right', 'note impact 2 red0', FRAMERATE_DEFAULT, false, false, false);
-
     if (this.animation.getAnimationList().length < 8)
     {
       trace('WARNING: NoteSplash failed to initialize all animations.');
@@ -58,19 +49,15 @@ class NoteSplash extends FlxSprite
 
   public function play(direction:NoteDirection, variant:Int = null):Void
   {
-    if (variant == null) variant = FlxG.random.int(0, 1);
-
-    switch (direction)
+    if (variant == null)
     {
-      case NoteDirection.LEFT:
-        this.playAnimation('splashLeft${variant}');
-      case NoteDirection.DOWN:
-        this.playAnimation('splashDown${variant}');
-      case NoteDirection.UP:
-        this.playAnimation('splashUp${variant}');
-      case NoteDirection.RIGHT:
-        this.playAnimation('splashRight${variant}');
+      var animationAmount:Int = this.animation.getAnimationList().filter(function(anim) return anim.name.startsWith('splash${direction.nameUpper}')).length
+        - 1;
+      variant = FlxG.random.int(0, animationAmount);
     }
+
+    // splashUP0, splashUP1, splashRIGHT0, etc.
+    this.playAnimation('splash${direction.nameUpper}${variant}');
 
     if (animation.curAnim == null) return;
 
