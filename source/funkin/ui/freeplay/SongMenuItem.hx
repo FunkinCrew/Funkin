@@ -74,6 +74,8 @@ class SongMenuItem extends FlxSpriteGroup
 
   var sparkleTimer:FlxTimer;
 
+  var index:Int;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
@@ -489,7 +491,7 @@ class SongMenuItem extends FlxSpriteGroup
       spr.visible = value;
     }
 
-    if (value) textAppear();
+    textAppear();
 
     updateSelected();
   }
@@ -500,9 +502,11 @@ class SongMenuItem extends FlxSpriteGroup
     this.y = y;
   }
 
-  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
+  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, index:Int = null):Void
   {
     this.freeplayData = freeplayData;
+
+    if (index != null) this.index = index;
 
     // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
     // if thats possible someone Please change the new function to be something like
@@ -605,12 +609,17 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
+        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
+      }
+      else if (frameInTypeBeat == xFrames.length)
+      {
+        doJumpIn = false;
+        targetPos.x = intendedX(index);
       }
     }
 
@@ -624,12 +633,16 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameOutTypeBeat];
         capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
-        x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+        this.x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
         frameOutTypeBeat += 1;
+      }
+      else if (frameOutTypeBeat == xFrames.length)
+      {
+        doJumpOut = false;
       }
     }
 
@@ -652,6 +665,11 @@ class SongMenuItem extends FlxSpriteGroup
     {
       pixelIcon.animation.play('confirm');
     }
+  }
+
+  public function intendedX(index:Int):Float
+  {
+    return 270 + (60 * (Math.sin(index)));
   }
 
   public function intendedY(index:Int):Float
