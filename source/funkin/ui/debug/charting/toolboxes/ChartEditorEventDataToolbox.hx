@@ -189,6 +189,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case INTEGER:
           var numberStepper:NumberStepper = new NumberStepper();
           numberStepper.id = field.name;
+          numberStepper.tooltip = field.tooltip;
           numberStepper.step = field.step ?? 1.0;
           if (field.min != null) numberStepper.min = field.min;
           if (field.min != null) numberStepper.max = field.max;
@@ -197,6 +198,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case FLOAT:
           var numberStepper:NumberStepper = new NumberStepper();
           numberStepper.id = field.name;
+          numberStepper.tooltip = field.tooltip;
           numberStepper.step = field.step ?? 0.1;
           if (field.min != null) numberStepper.min = field.min;
           if (field.max != null) numberStepper.max = field.max;
@@ -205,11 +207,13 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case BOOL:
           var checkBox:CheckBox = new CheckBox();
           checkBox.id = field.name;
+          checkBox.tooltip = field.tooltip;
           if (field.defaultValue != null) checkBox.selected = field.defaultValue;
           input = checkBox;
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
+          dropDown.tooltip = field.tooltip;
           dropDown.width = 200.0;
           dropDown.dropdownSize = 10;
           dropDown.dropdownWidth = 300;
@@ -236,6 +240,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case STRING:
           input = new TextField();
           input.id = field.name;
+          input.tooltip = field.tooltip;
           if (field.defaultValue != null) input.text = field.defaultValue;
         default:
           // Unknown type. Display a label that proclaims the type so we can debug it.
