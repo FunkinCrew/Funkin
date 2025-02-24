@@ -127,6 +127,8 @@ jobs:
     defaults:
       run:
         shell: bash
+    env:
+      BUILD_DEFINES: ${{ github.event.inputs.build-defines || '-DGITHUB_BUILD' }}
     steps:
       - name: Make git happy
         run: |
@@ -153,15 +155,15 @@ jobs:
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
-      - name: Build game
+      - name: Build game (windows)
         if: ${{ matrix.target == 'windows' }}
         run: |
-          haxelib run lime build windows -v -release ${{ github.event.inputs.build-defines }}
+          haxelib run lime build windows -v -release $BUILD_DEFINES
         timeout-minutes: 120
-      - name: Build game
+      - name: Build game (unix)
         if: ${{ matrix.target != 'windows' }}
         run: |
-          haxelib run lime build ${{ matrix.target }} -v -release --times ${{ github.event.inputs.build-defines }}
+          haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
         timeout-minutes: 120
       - name: Save build artifact to Github Actions
         if: ${{ github.event.inputs.save-artifact }}
@@ -188,6 +190,8 @@ jobs:
     defaults:
       run:
         shell: bash
+    env:
+      BUILD_DEFINES: ${{ github.event.inputs.build-defines || '-DGITHUB_BUILD' }}
     steps:
       - name: Get checkout token
         uses: actions/create-github-app-token@v1
@@ -228,7 +232,7 @@ jobs:
           restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
       - name: Build game
         run: |
-          haxelib run lime build ${{ matrix.target }} -v -release --times ${{ github.event.inputs.build-defines }}
+          haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
         timeout-minutes: 120
       - name: Save build artifact to Github Actions
         if: ${{ github.event.inputs.save-artifact }}
