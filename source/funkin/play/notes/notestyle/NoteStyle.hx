@@ -950,40 +950,19 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   function buildSplashAnimations(target:NoteSplash):Void
   {
-    var leftData:Null<Array<AnimationData>> = fetchSplashAnimationData(LEFT);
-    if (leftData != null)
-    {
-      for (anim in leftData)
+    final addSplashAnim:NoteDirection->Void = function(dir:NoteDirection) {
+      var animData:Null<Array<AnimationData>> = fetchSplashAnimationData(dir);
+      if (animData != null)
       {
-        FlxAnimationUtil.addAtlasAnimation(target, anim);
+        for (anim in animData)
+          FlxAnimationUtil.addAtlasAnimation(target, anim);
       }
-    }
+    };
 
-    var rightData:Null<Array<AnimationData>> = fetchSplashAnimationData(RIGHT);
-    if (rightData != null)
-    {
-      for (anim in rightData)
-      {
-        FlxAnimationUtil.addAtlasAnimation(target, anim);
-      }
-    }
-
-    var upData:Null<Array<AnimationData>> = fetchSplashAnimationData(UP);
-    if (upData != null)
-    {
-      for (anim in upData)
-      {
-        FlxAnimationUtil.addAtlasAnimation(target, anim);
-      }
-    }
-    var downData:Null<Array<AnimationData>> = fetchSplashAnimationData(DOWN);
-    if (downData != null)
-    {
-      for (anim in downData)
-      {
-        FlxAnimationUtil.addAtlasAnimation(target, anim);
-      }
-    }
+    addSplashAnim(LEFT);
+    addSplashAnim(RIGHT);
+    addSplashAnim(UP);
+    addSplashAnim(DOWN);
   }
 
   public function isSplashAnimated():Bool
@@ -1000,10 +979,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     var result:Null<Array<AnimationData>> = switch (dir)
     {
-      case LEFT: _data.assets?.noteSplash?.data?.leftSplashes?.toNamedArray("splashLeft");
-      case DOWN: _data.assets?.noteSplash?.data?.downSplashes?.toNamedArray("splashDown");
-      case UP: _data.assets?.noteSplash?.data?.upSplashes?.toNamedArray("splashUp");
-      case RIGHT: _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRight");
+      case LEFT: _data.assets?.noteSplash?.data?.leftSplashes?.toNamedArray("splashLEFT");
+      case DOWN: _data.assets?.noteSplash?.data?.downSplashes?.toNamedArray("splashDOWN");
+      case UP: _data.assets?.noteSplash?.data?.upSplashes?.toNamedArray("splashUP");
+      case RIGHT: _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRIGHT");
     };
     return result ?? fallback?.fetchSplashAnimationData(dir);
   }
