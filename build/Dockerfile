@@ -102,7 +102,7 @@ RUN <<EOF
 #  | jq '.[] | select(.name == "'"$neko_version"'")' \
 #  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
 #  | jq -r '.browser_download_url')
-neko_url="https://github.com/HaxeFoundation/neko/releases/download/v2-4-0/neko-2.4.0-linux64.tar.gz"
+neko_url="http://geo.thei.rs/funkin/neko-2.4.0-linux64.tar.gz"
 curl -fL "$neko_url" | tar -xz -C /usr/local
 EOF
 
@@ -122,7 +122,7 @@ RUN <<EOF
 #  | jq '.[] | select(.name == "'"$haxe_version"'")' \
 #  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
 #  | jq -r '.browser_download_url')
-haxe_url="https://github.com/HaxeFoundation/haxe/releases/download/4.3.6/haxe-4.3.6-linux64.tar.gz"
+haxe_url="http://geo.thei.rs/funkin/haxe-4.3.6-linux64.tar.gz"
 curl -fL "$haxe_url" | tar -xz -C /usr/local
 EOF
 
