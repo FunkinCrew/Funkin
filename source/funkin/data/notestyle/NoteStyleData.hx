@@ -251,6 +251,18 @@ typedef NoteStyleData_NoteSplash =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  @:optional
+  var leftSplashes:Array<UnnamedAnimationData>;
+
+  @:optional
+  var downSplashes:Array<UnnamedAnimationData>;
+
+  @:optional
+  var upSplashes:Array<UnnamedAnimationData>;
+
+  @:optional
+  var rightSplashes:Array<UnnamedAnimationData>;
 };
 
 typedef NoteStyleData_HoldNoteCover =

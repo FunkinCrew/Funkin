@@ -123,9 +123,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     if (noteFrames != null && !force) return noteFrames;
 
-    var noteAssetPath = getNoteAssetPath();
-    if (noteAssetPath == null) return null;
-
     noteFrames = Paths.getSparrowAtlas(noteAssetPath, getNoteAssetLibrary());
 
     if (noteFrames == null)
@@ -179,7 +176,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function isNoteAnimated():Bool
   {
-    // LOL is double ?? bad practice?
     return _data.assets?.note?.animated ?? fallback?.isNoteAnimated() ?? false;
   }
 
@@ -877,6 +873,139 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       default:
         return [0, 0];
     }
+  }
+
+  public function buildSplashSprite(target:NoteSplash):Void
+  {
+    var atlas:Null<FlxAtlasFrames> = buildSplashFrames(false);
+
+    if (atlas == null)
+    {
+      throw 'Could not load spritesheet for note style: $id';
+    }
+    target.frames = atlas;
+    target.antialiasing = !(_data.assets.noteSplash?.isPixel ?? false);
+
+    buildSplashAnimations(target);
+
+    var scale = getSplashScale();
+    target.scale.set(scale, scale);
+    target.updateHitbox();
+  }
+
+  var splashFrames:Null<FlxAtlasFrames> = null;
+
+  function buildSplashFrames(force:Bool = false):Null<FlxAtlasFrames>
+  {
+    var splashAssetPath:Null<String> = getSplashAssetPath();
+    if (splashAssetPath == null)
+    {
+      FlxG.log.warn('Note Splash asset path not found: ${id}');
+      return null;
+    }
+
+    if (!FunkinSprite.isTextureCached(Paths.image(splashAssetPath)))
+    {
+      FlxG.log.warn('Note Splash texture not cached: ${splashAssetPath}');
+    }
+
+    @:nullSafety(Off)
+    {
+      if (splashFrames?.parent?.isDestroyed ?? false) splashFrames = null;
+    }
+
+    if (splashFrames != null && !force) return splashFrames;
+
+    splashFrames = Paths.getSparrowAtlas(splashAssetPath, getSplashAssetLibrary());
+    splashFrames.parent.persist = true;
+    if (splashFrames == null)
+    {
+      throw 'Could not load notesplash frames for note style: $id';
+    }
+    return splashFrames;
+  }
+
+  function getSplashAssetPath(raw:Bool = false):Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data?.assets?.noteSplash?.assetPath;
+      if (rawPath == null) return fallback?.getSplashAssetPath(true);
+      return rawPath;
+    }
+
+    var parts = getSplashAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getSplashAssetPath(true);
+    return parts[1];
+  }
+
+  function getSplashAssetLibrary():Null<String>
+  {
+    var parts = getSplashAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return null;
+    return parts[0];
+  }
+
+  function buildSplashAnimations(target:NoteSplash):Void
+  {
+    var leftData:Null<Array<AnimationData>> = fetchSplashAnimationData(LEFT);
+    if (leftData != null)
+    {
+      for (anim in leftData)
+      {
+        FlxAnimationUtil.addAtlasAnimation(target, anim);
+      }
+    }
+
+    var rightData:Null<Array<AnimationData>> = fetchSplashAnimationData(RIGHT);
+    if (rightData != null)
+    {
+      for (anim in rightData)
+      {
+        FlxAnimationUtil.addAtlasAnimation(target, anim);
+      }
+    }
+
+    var upData:Null<Array<AnimationData>> = fetchSplashAnimationData(UP);
+    if (upData != null)
+    {
+      for (anim in upData)
+      {
+        FlxAnimationUtil.addAtlasAnimation(target, anim);
+      }
+    }
+    var downData:Null<Array<AnimationData>> = fetchSplashAnimationData(DOWN);
+    if (downData != null)
+    {
+      for (anim in downData)
+      {
+        FlxAnimationUtil.addAtlasAnimation(target, anim);
+      }
+    }
+  }
+
+  public function isSplashAnimated():Bool
+  {
+    return _data?.assets?.noteSplash?.animated ?? fallback?.isSplashAnimated() ?? false;
+  }
+
+  public function getSplashScale():Float
+  {
+    return _data?.assets?.noteSplash?.scale ?? fallback?.getSplashScale() ?? 1.0;
+  }
+
+  function fetchSplashAnimationData(dir:NoteDirection):Null<Array<AnimationData>>
+  {
+    var result:Null<Array<AnimationData>> = switch (dir)
+    {
+      case LEFT: _data.assets?.noteSplash?.data?.leftSplashes?.toNamedArray("splashLeft");
+      case DOWN: _data.assets?.noteSplash?.data?.downSplashes?.toNamedArray("splashDown");
+      case UP: _data.assets?.noteSplash?.data?.upSplashes?.toNamedArray("splashUp");
+      case RIGHT: _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRight");
+    };
+    return result ?? fallback?.fetchSplashAnimationData(dir);
   }
 
   public function destroy():Void {}

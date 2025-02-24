@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -18,11 +19,11 @@ class NoteSplash extends FlxSprite
     frameCollection.parent.persist = true;
   }
 
-  public function new()
+  public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
 
-    setup();
+    setupSplashGraphic(noteStyle);
 
     this.alpha = ALPHA;
     this.animation.finishCallback = this.onAnimationFinished;
@@ -31,21 +32,18 @@ class NoteSplash extends FlxSprite
   /**
    * Add ALL the animations to this sprite. We will recycle and reuse the FlxSprite multiple times.
    */
-  function setup():Void
+  function setupSplashGraphic(noteStyle:NoteStyle):Void
   {
-    if (frameCollection?.parent?.isDestroyed ?? false) frameCollection = null;
-    if (frameCollection == null) preloadFrames();
+    if (frames == null) noteStyle.buildSplashSprite(this);
 
-    this.frames = frameCollection;
-
-    this.animation.addByPrefix('splash1Left', 'note impact 1 purple0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash1Down', 'note impact 1  blue0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash1Up', 'note impact 1 green0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash1Right', 'note impact 1 red0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Left', 'note impact 2 purple0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Down', 'note impact 2 blue0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Up', 'note impact 2 green0', FRAMERATE_DEFAULT, false, false, false);
-    this.animation.addByPrefix('splash2Right', 'note impact 2 red0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash1Left', 'note impact 1 purple0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash1Down', 'note impact 1  blue0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash1Up', 'note impact 1 green0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash1Right', 'note impact 1 red0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash2Left', 'note impact 2 purple0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash2Down', 'note impact 2 blue0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash2Up', 'note impact 2 green0', FRAMERATE_DEFAULT, false, false, false);
+    // this.animation.addByPrefix('splash2Right', 'note impact 2 red0', FRAMERATE_DEFAULT, false, false, false);
 
     if (this.animation.getAnimationList().length < 8)
     {
@@ -60,18 +58,18 @@ class NoteSplash extends FlxSprite
 
   public function play(direction:NoteDirection, variant:Int = null):Void
   {
-    if (variant == null) variant = FlxG.random.int(1, 2);
+    if (variant == null) variant = FlxG.random.int(0, 1);
 
     switch (direction)
     {
       case NoteDirection.LEFT:
-        this.playAnimation('splash${variant}Left');
+        this.playAnimation('splashLeft${variant}');
       case NoteDirection.DOWN:
-        this.playAnimation('splash${variant}Down');
+        this.playAnimation('splashDown${variant}');
       case NoteDirection.UP:
-        this.playAnimation('splash${variant}Up');
+        this.playAnimation('splashUp${variant}');
       case NoteDirection.RIGHT:
-        this.playAnimation('splash${variant}Right');
+        this.playAnimation('splashRight${variant}');
     }
 
     if (animation.curAnim == null) return;
