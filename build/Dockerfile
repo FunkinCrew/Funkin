@@ -98,10 +98,11 @@ EOF
 # neko
 # https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-linux64.tar.gz
 RUN <<EOF
-neko_url=$(curl https://api.github.com/repos/HaxeFoundation/neko/releases -fL \
-  | jq '.[] | select(.name == "'"$neko_version"'")' \
-  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
-  | jq -r '.browser_download_url')
+#neko_url=$(curl https://api.github.com/repos/HaxeFoundation/neko/releases -fL \
+#  | jq '.[] | select(.name == "'"$neko_version"'")' \
+#  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
+#  | jq -r '.browser_download_url')
+neko_url="https://github.com/HaxeFoundation/neko/releases/download/v2-4-0/neko-2.4.0-linux64.tar.gz"
 curl -fL "$neko_url" | tar -xz -C /usr/local
 EOF
 
@@ -117,10 +118,11 @@ ENV PATH="$NEKOPATH:$PATH"
 # haxe
 # https://github.com/HaxeFoundation/haxe/releases/download/4.0.5/haxe-4.0.5-linux64.tar.gz
 RUN <<EOF
-haxe_url=$(curl https://api.github.com/repos/HaxeFoundation/haxe/releases -fL \
-  | jq '.[] | select(.name == "'"$haxe_version"'")' \
-  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
-  | jq -r '.browser_download_url')
+#haxe_url=$(curl https://api.github.com/repos/HaxeFoundation/haxe/releases -fL \
+#  | jq '.[] | select(.name == "'"$haxe_version"'")' \
+#  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
+#  | jq -r '.browser_download_url')
+haxe_url="https://github.com/HaxeFoundation/haxe/releases/download/4.3.6/haxe-4.3.6-linux64.tar.gz"
 curl -fL "$haxe_url" | tar -xz -C /usr/local
 EOF
 
