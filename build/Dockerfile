@@ -1,8 +1,8 @@
 FROM ubuntu:noble
 
-ARG haxe_version=4.3.4
+ARG haxe_version=4.3.6
 ARG haxelib_version=4.1.0
-ARG neko_version=2.3.0
+ARG neko_version=2.4.0
 
 # prepare runner
 ENV GITHUB_HOME="/github/home"
