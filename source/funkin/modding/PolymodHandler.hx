@@ -259,7 +259,7 @@ class PolymodHandler
       "openfl.utils.Assets" => funkin.Assets
     ];
 
-    // Add blacklisting for prohibited classes and packages.
+    // Add blacklisting for prohibited classes.
     final importBlacklist:Array<String> = [
       // `Sys`
       // Sys.command() can run malicious processes
@@ -309,20 +309,22 @@ class PolymodHandler
       'sys.FileSystem'
     ];
 
-    // `polymod.*`
-    // Contains functions which may allow for un-blacklisting other modules.
-    for (cls in ClassMacro.listClassesInPackage('polymod'))
-    {
-      if (cls == null) continue;
-      importBlacklist.push(Type.getClassName(cls));
-    }
+    // Add blacklisting for prohibited packages.
+    final importBlacklistPackages:Array<String> = [
+      // Contains functions which may allow for un-blacklisting other modules.
+      'polymod',
+      
+      // Access to the file system as well as `Process` which can run malicious processes
+      'sys.io'
+    ];
 
-    // `sys.io.*`
-    // Access to the file system as well as `Process` which can run malicious processes
-    for (cls in ClassMacro.listClassesInPackage('sys.io'))
+    for (packageName in importBlacklistPackages)
     {
-      if (cls == null) continue;
-      importBlacklist.push(Type.getClassName(cls));
+      for (cls in ClassMacro.listClassesInPackage(packageName, true))
+      {
+        if (cls == null) continue;
+        importBlacklist.push(Type.getClassName(cls));
+      }
     }
 
     // apply to Polymod
