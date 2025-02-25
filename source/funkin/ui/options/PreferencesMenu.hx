@@ -110,7 +110,7 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Play Miss Sound', 'Disable to stop the miss sound from playing when a miss happens.', function(value:Bool):Void {
+    createPrefItemCheckbox('Play Miss Sound', 'If disabled, miss sounds will not play when missing notes.', function(value:Bool):Void {
       Preferences.playMissSound = value;
     }, Preferences.playMissSound);
     createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
