@@ -613,6 +613,18 @@ class ScreenshotPlugin extends FlxBasic
       }
     }
 
+    // Undo the mouse stuff - we don't know what the next state will do with it
+    if (wasMouseShown && FlxG.mouse.visible)
+    {
+      wasMouseShown = false;
+      Cursor.hide();
+    }
+    else if (wasMouseHidden && !FlxG.mouse.visible)
+    {
+      wasMouseHidden = false;
+      Cursor.show();
+    }
+
     if (unsavedScreenshotBuffer[0] == null) return;
     // There's unsaved screenshots, let's save them! (haha, get it?)
 
@@ -641,11 +653,7 @@ class ScreenshotPlugin extends FlxBasic
   {
     stateChanging = false;
     screenshotBeingSpammed = false;
-    if (wasMouseHidden && FlxG.mouse.visible)
-    {
-      wasMouseHidden = false;
-      Cursor.hide();
-    }
+    FlxG.stage.removeChild(previewSprite);
   }
 
   override public function destroy():Void
