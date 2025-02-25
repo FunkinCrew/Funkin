@@ -1769,7 +1769,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
-      grpCapsules.members[curSelected].refreshDisplay();
+      grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
@@ -2073,7 +2073,7 @@ class FreeplayState extends MusicBeatSubState
         songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
       changeDiff();
-      daSongCapsule.refreshDisplay();
+      daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
