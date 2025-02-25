@@ -392,7 +392,7 @@ class SongMenuItem extends FlxSpriteGroup
     return evilTrail.color;
   }
 
-  public function refreshDisplay():Void
+  public function refreshDisplay(updateRank:Bool = true):Void
   {
     if (freeplayData == null)
     {
@@ -410,7 +410,7 @@ class SongMenuItem extends FlxSpriteGroup
       pixelIcon.visible = true;
       updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
       updateDifficultyRating(freeplayData.difficultyRating ?? 0);
-      updateScoringRank(freeplayData.scoringRank);
+      if (updateRank) updateScoringRank(freeplayData.scoringRank);
       newText.visible = freeplayData.isNew;
       favIcon.visible = freeplayData.isFav;
       favIconBlurred.visible = freeplayData.isFav;
