@@ -16,7 +16,7 @@ class MoveEventsCommand implements ChartEditorCommand
   var offset:Float;
   var setPos:Bool;
 
-  public function new(events:Array<SongEventData>, offset:Float, setPos:Bool = false, offsetInSteps = false)
+  public function new(events:Array<SongEventData>, offset:Float, setPos:Bool = false, offsetInSteps:Bool = false)
   {
     // Clone the events to prevent editing from affecting the history.
     this.events = [for (event in events) event.clone()];
