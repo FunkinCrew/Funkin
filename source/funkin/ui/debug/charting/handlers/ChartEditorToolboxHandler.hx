@@ -24,6 +24,7 @@ class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void
   {
+    FlxG.log.add("setToolbox called, value: " + shown);
     if (shown)
     {
       showToolbox(state, id);
@@ -34,14 +35,40 @@ class ChartEditorToolboxHandler
     }
   }
 
+  public static function switchToolboxState(state:ChartEditorState, id:String):Void
+  {
+    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
+
+    if (toolbox == null) toolbox = initToolbox(state, id);
+
+    if (toolbox != null) {
+      var show:Bool = !toolbox.visible;
+      switch (id){
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
+          state.menubarItemToggleToolboxDifficulty.selected = show;
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
+          state.menubarItemToggleToolboxMetadata.selected = show;
+          case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:
+            state.menubarItemToggleToolboxNoteData.selected = show;
+          case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
+            state.menubarItemToggleToolboxOffsets.selected = show;
+        default:
+          trace("ChartEditorToolboxHandler.switchToolboxState() - Unknown toolbox ID: $id");
+          return;
+      }
+      setToolboxState(state, id, show);
+    }
+  }
+
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     if (toolbox == null) toolbox = initToolbox(state, id);
 
-    if (toolbox != null)
+    if (toolbox != null && !toolbox.visible)
     {
+      toolbox.visible = true;
       toolbox.showDialog(false);
 
       state.playSound(Paths.sound('chartingSounds/openWindow'));
@@ -84,8 +111,9 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) toolbox = initToolbox(state, id);
 
-    if (toolbox != null)
+    if (toolbox != null && toolbox.visible)
     {
+      toolbox.visible = false;
       toolbox.hideDialog(DialogButton.CANCEL);
 
       state.playSound(Paths.sound('chartingSounds/exitWindow'));

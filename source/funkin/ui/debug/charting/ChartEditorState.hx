@@ -2842,6 +2842,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         noteSnapQuantIndex = BASE_QUANT_INDEX;
       }
+      if (FlxG.keys.pressed.CONTROL)
+      {
+        this.switchToolboxState(CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
+      }
       else
       {
         noteSnapQuantIndex++;
@@ -2852,7 +2856,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarBPM.onClick = _ -> {
       if (pressingControl())
       {
-        this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, true);
+        this.switchToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       }
       else
       {
@@ -2869,7 +2873,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarDifficulty.onClick = _ -> {
       if (pressingControl())
       {
-        this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
+        this.switchToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       }
       else
       {
@@ -2881,6 +2885,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarDifficulty.onRightClick = _ -> {
       incrementDifficulty(1);
       this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    }
+
+    playbarSongRemaining.onClick = _ -> {
+      this.switchToolboxState(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT);
     }
 
     // Add functionality to the menu items.
