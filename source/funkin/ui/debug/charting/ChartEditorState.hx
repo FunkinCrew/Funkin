@@ -3750,7 +3750,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
 
       // Gather stacked notes to render later
-      currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackNoteThreshold);
+      if (Math.abs(currentScrollEase - scrollPositionInPixels) < .5) // No need to update it every time we scroll
+        currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackNoteThreshold);
 
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.
