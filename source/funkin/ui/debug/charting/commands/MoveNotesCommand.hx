@@ -16,7 +16,7 @@ class MoveNotesCommand implements ChartEditorCommand
   var columns:Int;
   var setPos:Bool;
 
-  public function new(notes:Array<SongNoteData>, offset:Float, columns:Int, setPos:Bool = false, offsetInSteps = false)
+  public function new(notes:Array<SongNoteData>, offset:Float, columns:Int, setPos:Bool = false, offsetInSteps:Bool = false)
   {
     // Clone the notes to prevent editing from affecting the history.
     this.notes = [for (note in notes) note.clone()];
