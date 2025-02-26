@@ -137,6 +137,25 @@ class Preferences
   }
 
   /**
+  * If enabled, the miss sound will play when the player misses a note.
+  * @default `true`
+  */
+  public static var playMissSound(get, set):Bool;
+
+  static function get_playMissSound():Bool
+  {
+    return Save?.instance?.options?.playMissSound;
+  }
+
+  static function set_playMissSound(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.playMissSound = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
