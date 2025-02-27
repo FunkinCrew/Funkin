@@ -2,96 +2,214 @@ package funkin.ui.debug.mods.components;
 
 import funkin.modding.PolymodHandler;
 import funkin.util.WindowUtil;
+import haxe.io.Path;
 import haxe.ui.components.Button;
 import haxe.ui.components.Image;
 import haxe.ui.components.Label;
-import haxe.ui.containers.windows.Window;
+import haxe.ui.components.Link;
+import haxe.ui.components.Spacer;
+import haxe.ui.containers.TreeViewNode;
+import haxe.ui.containers.VBox;
 import haxe.ui.containers.windows.WindowManager;
 import polymod.Polymod.ModMetadata;
+import thx.semver.VersionRule;
+#if sys
+import sys.FileSystem;
+#end
 
+@:access(funkin.ui.debug.mods.ModsSelectState)
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/mod-select/components/mod-info.xml"))
-class ModInfoWindow extends Window
+class ModInfoWindow extends VBox
 {
-  public var linkedButton:ModButton = null;
+  public var parentState:ModsSelectState;
+  public var linkedMod:ModMetadata;
 
-  var modWindowIcon:Image;
-  var modWindowName:Label;
-  var modWindowDesc:Label;
-  var modWindowDependencies:Label;
+  public var modWindowIcon:Image;
+  public var modWindowName:Label;
+  public var modWindowVersion:Label;
+  public var modWindowDependency:Label;
+  public var modWindowOptional:Label;
+  public var modWindowHomepage:Button;
+  public var modWindowDesc:Label;
+  public var modWindowDependencies:VBox;
+  public var modWindowContributors:VBox;
+  public var modWindowFiles:VBox;
+  public var modWindowLicense:Label;
 
-  var modWindowVisitHomepage:Button;
-  var modWindowViewContributors:Button;
-  var modWindowViewContents:Button;
-
-  override public function new(data:ModMetadata)
+  override public function new(parentState:ModsSelectState, data:ModMetadata)
   {
     super();
+    this.parentState = parentState;
+    linkedMod = data;
 
     var img = openfl.display.BitmapData.fromBytes(data.icon);
     if (img != null) modWindowIcon.resource = new flixel.FlxSprite().loadGraphic(img).frames.frames[0]; // such a hacky thing I hate it
 
     modWindowName.text = data.title;
     modWindowDesc.text = data.description;
-
-    title = "Mod: " + data.title + " (" + data.modVersion + ")";
-
-    // dependencies text
-    var needed = "None";
-    if (data.dependencies.keys().array().length > 0)
-    {
-      needed = "";
-
-      for (mod => version in data.dependencies)
-        needed += mod + ":" + version + "\n";
-    }
-
-    var optional = "None";
-    if (data.optionalDependencies.keys().array().length > 0)
-    {
-      optional = "";
-
-      for (mod => version in data.optionalDependencies)
-        optional += mod + ":" + version + "\n";
-    }
-
-    modWindowDependencies.text = "Required:\n" + needed + "\nOptional:\n" + optional;
+    modWindowVersion.text = "Mod Version: " + data.modVersion;
     modWindowLicense.text = "License: " + data.license;
 
-    // some buttons n stuff
     #if CAN_OPEN_LINKS
-    modWindowVisitHomepage.disabled = (data.homepage == "" || data.homepage == null);
-    modWindowVisitHomepage.onClick = function(_) WindowUtil.openURL(data.homepage);
+    modWindowHomepage.disabled = (data.homepage == "" || data.homepage == null);
+    modWindowHomepage.onClick = function(_) WindowUtil.openURL(data.homepage);
     #else
-    modWindowVisitHomepage.disabled = true;
+    modWindowHomepage.disabled = true;
     #end
 
-    modWindowViewContributors.disabled = (data.contributors.length == 0 || data.contributors == null);
-    modWindowViewContributors.onClick = function(_) WindowManager.instance.addWindow(new ModContributorWindow(data));
+    // Dependencies.
+    if (data.dependencies.keys().array().length > 0)
+    {
+      var nameLabel = new Label();
+      nameLabel.text = "Required:";
+      modWindowDependencies.addComponent(nameLabel);
 
-    modWindowViewContents.onClick = function(_) WindowManager.instance.addWindow(new ModDefaultFileViewer(PolymodHandler.MOD_FOLDER + "/" + data.id));
-
-    modWindowMoveUp.onClick = function(_) {
-      if (linkedButton == null) return;
-
-      var parent = linkedButton.parentComponent;
-      var idx = parent.childComponents.indexOf(linkedButton);
-
-      if (idx == 0) return;
-
-      parent.removeComponent(linkedButton, false);
-      parent.addComponentAt(linkedButton, idx - 1);
+      for (mod => version in data.dependencies)
+      {
+        var depLink = new Link();
+        depLink.text = mod + " (" + version + ")";
+        depLink.onClick = function(_) openDifferentMod(mod, version);
+        modWindowDependencies.addComponent(depLink);
+      }
     }
 
-    modWindowMoveDown.onClick = function(_) {
-      if (linkedButton == null) return;
+    if (data.optionalDependencies.keys().array().length > 0)
+    {
+      var nameLabel = new Label();
+      nameLabel.text = "Optional:";
+      modWindowDependencies.addComponent(nameLabel);
 
-      var parent = linkedButton.parentComponent;
-      var idx = parent.childComponents.indexOf(linkedButton);
-
-      if (idx == parent.childComponents.length - 1) return;
-
-      parent.removeComponent(linkedButton, false);
-      parent.addComponentAt(linkedButton, idx + 1);
+      for (mod => version in data.optionalDependencies)
+      {
+        var depLink = new Link();
+        depLink.text = mod + " (" + version + ")";
+        depLink.onClick = function(_) openDifferentMod(mod, version);
+        modWindowDependencies.addComponent(depLink);
+      }
     }
+
+    // Contributors.
+    for (info in data.contributors)
+    {
+      var nameLabel = new Label();
+      nameLabel.text = info.name;
+      nameLabel.styleString = "font-size: 18px; font-bold: true; font-underline: true;";
+      modWindowContributors.addComponent(nameLabel);
+
+      if (info.role != null)
+      {
+        var roleLabel = new Label();
+        roleLabel.text = info.role;
+        modWindowContributors.addComponent(roleLabel);
+      }
+
+      if (info.email != null)
+      {
+        var emailLabel = new Label();
+        emailLabel.text = info.email;
+        modWindowContributors.addComponent(emailLabel);
+      }
+
+      #if CAN_OPEN_LINKS
+      if (info.url != null)
+      {
+        var urlLink = new Link();
+        urlLink.text = "Visit URL";
+        urlLink.onClick = function(_) WindowUtil.openURL(info.url);
+        modWindowContributors.addComponent(urlLink);
+      }
+      #end
+
+      var spacer = new Spacer();
+      spacer.height = 25;
+      modWindowContributors.addComponent(spacer);
+    }
+
+    // Files.
+    var modPath:String = PolymodHandler.MOD_FOLDER + "/" + data.id;
+    var pathObj:Path = new Path(modPath);
+    var rootFileNode:TreeViewNode = modWindowFileTree.addNode({text: pathObj.file, icon: "haxeui-core/styles/shared/folder-light.png"});
+    fillUpTreeView(rootFileNode, modPath);
+  }
+
+  function openDifferentMod(mod:String, version:VersionRule)
+  {
+    parentState.cleanupBeforeSwitch();
+
+    for (button in parentState.modListUnloadedBox.childComponents.concat(parentState.modListLoadedBox.childComponents))
+    {
+      if (Std.isOfType(button, ModButton))
+      {
+        var realButton:ModButton = cast button;
+        if (realButton.linkedMod.id == mod && version.isSatisfiedBy(realButton.linkedMod.modVersion))
+        {
+          var dependableChildren:Array<String> = [];
+          var optionalChildren:Array<String> = [];
+
+          for (childMod in parentState.listAllModsOrdered())
+          {
+            if (childMod.id == mod) continue;
+            for (dep => ver in childMod.dependencies)
+            {
+              if (dep == mod
+                && ver.isSatisfiedBy(realButton.linkedMod.modVersion)
+                && !dependableChildren.contains(mod)) dependableChildren.push(mod);
+            }
+            for (dep => ver in childMod.optionalDependencies)
+            {
+              if (dep == mod
+                && ver.isSatisfiedBy(realButton.linkedMod.modVersion)
+                && !optionalChildren.contains(mod)) optionalChildren.push(mod);
+            }
+          }
+          realButton.styleNames = "modBoxSelected";
+
+          var infoWindow = new ModInfoWindow(parentState, realButton.linkedMod);
+          if (dependableChildren.length > 0) infoWindow.modWindowDependency.text = "This Mod is a Dependency of: " + dependableChildren.join(", ");
+          if (optionalChildren.length > 0) infoWindow.modWindowOptional.text = "This Mod is an Optional Dependency of: " + optionalChildren.join(", ");
+          parentState.windowContainer.addComponent(infoWindow);
+          break;
+        }
+      }
+    }
+  }
+
+  function fillUpTreeView(parent:TreeViewNode, path:String)
+  {
+    #if sys
+    for (item in FileSystem.readDirectory(path))
+    {
+      var fullPath = path + "/" + item;
+      var pathObj = new haxe.io.Path(fullPath);
+      var isFolder = FileSystem.isDirectory(fullPath);
+
+      var newNode = parent.addNode(
+        {
+          text: pathObj.file + (isFolder ? "" : " (." + pathObj.ext + ")"),
+          icon: isFolder ? "haxeui-core/styles/shared/folder-light.png" : null
+        });
+
+      if (isFolder)
+      {
+        fillUpTreeView(newNode, fullPath);
+      }
+      else
+      {
+        newNode.onDblClick = function(_) {
+          switch (pathObj.ext)
+          {
+            case "txt" | "json" | "xml" | "hx" | "hxc" | "hscript" | "hxs":
+              WindowManager.instance.addWindow(new ModTxtFileViewer(sys.io.File.getContent(fullPath)));
+
+            case "png" | "jpg" | "jpeg":
+              var bitmap = openfl.display.BitmapData.fromFile(fullPath);
+              var graphic = flixel.graphics.FlxGraphic.fromBitmapData(bitmap, false, fullPath);
+
+              WindowManager.instance.addWindow(new ModImageFileViewer(graphic.imageFrame.frame));
+          }
+        }
+      }
+    }
+    #end
   }
 }
