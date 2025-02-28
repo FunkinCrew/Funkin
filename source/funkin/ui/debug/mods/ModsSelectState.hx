@@ -15,6 +15,7 @@ import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.tooltips.ToolTipManager;
 import polymod.util.DependencyUtil;
 import polymod.Polymod.ModMetadata;
+import thx.semver.VersionRule;
 
 using StringTools;
 
@@ -85,57 +86,25 @@ class ModsSelectState extends UISubState
     for (mod in allMods)
     {
       var isLoaded:Bool = changeableModList.contains(mod.id);
-      var dependableChildren:Array<String> = [];
-      var optionalChildren:Array<String> = [];
-
-      for (childMod in allMods)
-      {
-        if (childMod.id == mod.id) continue;
-        for (dep => ver in childMod.dependencies)
-        {
-          if (dep == mod.id && ver.isSatisfiedBy(mod.modVersion) && !dependableChildren.contains(mod.id)) dependableChildren.push(mod.id);
-        }
-        for (dep => ver in childMod.optionalDependencies)
-        {
-          if (dep == mod.id && ver.isSatisfiedBy(mod.modVersion) && !optionalChildren.contains(mod.id)) optionalChildren.push(mod.id);
-        }
-      }
-
-      // Update color of the mod title based on if it's an optional dependency, a required dependency or not a dependency at all.
-      var overrideColor:Null<String> = null;
-      if (optionalChildren.length > 0 && dependableChildren.length == 0)
-      {
-        overrideColor = "0xffff00";
-      }
-      else if (dependableChildren.length > 0)
-      {
-        overrideColor = "0xff8c00";
-      }
-
-      var button = new ModButton(mod, overrideColor);
+      var button = new ModButton(mod);
       button.tooltip = "Click to Enable/Disable.\nRight Click to View Info.";
       if (isLoaded) button.tooltip += "\nShift+Click to Move Upwards.\nCtrl+Click to Move Downwards.";
 
-      // Check if there is a window present and apply a different style to the corresponding button.
-      if (windowContainer.childComponents.length > 0)
-      {
-        var firstComp = windowContainer.childComponents[0];
-        if (Std.isOfType(firstComp, ModInfoWindow))
-        {
-          var modWindow:ModInfoWindow = cast firstComp;
-          if (button.linkedMod.id == modWindow.linkedMod.id
-            && button.linkedMod.modVersion == modWindow.linkedMod.modVersion) button.styleNames = "modBoxSelected";
-        }
-      }
-
       button.onRightClick = function(_) {
+        // Do not refresh if there is no change in the mods.
+        if (windowContainer.childComponents.length > 0)
+        {
+          var firstComp = windowContainer.childComponents[0];
+          if (Std.isOfType(firstComp, ModInfoWindow))
+          {
+            var modWindow:ModInfoWindow = cast firstComp;
+            if (mod.id == modWindow.linkedMod.id) return;
+          }
+        }
+
         cleanupBeforeSwitch();
         button.styleNames = "modBoxSelected";
         var infoWindow = new ModInfoWindow(this, mod);
-
-        if (dependableChildren.length > 0) infoWindow.modWindowDependency.text = "This Mod is a Dependency of: " + dependableChildren.join(", ");
-        if (optionalChildren.length > 0) infoWindow.modWindowOptional.text = "This Mod is an Optional Dependency of: " + optionalChildren.join(", ");
-
         windowContainer.addComponent(infoWindow);
       }
 
@@ -186,6 +155,24 @@ class ModsSelectState extends UISubState
       else
         modListUnloadedBox.addComponent(button);
     }
+
+    // Check if there is a window present and apply a different style to the corresponding button.
+    if (windowContainer.childComponents.length > 0 && Std.isOfType(windowContainer.childComponents[0], ModInfoWindow))
+    {
+      var modWindow:ModInfoWindow = cast windowContainer.childComponents[0];
+      for (button in modListUnloadedBox.childComponents.concat(modListLoadedBox.childComponents))
+      {
+        if (!Std.isOfType(button, ModButton)) continue;
+        var realButton:ModButton = cast button;
+
+        if (realButton.linkedMod.id == modWindow.linkedMod.id && realButton.linkedMod.modVersion == modWindow.linkedMod.modVersion)
+        {
+          realButton.styleNames = "modBoxSelected";
+          colorButtonLabels(realButton.linkedMod.dependencies.keys().array(), realButton.linkedMod.optionalDependencies.keys().array());
+          break;
+        }
+      }
+    }
   }
 
   /**
@@ -221,6 +208,9 @@ class ModsSelectState extends UISubState
     return finishedList;
   }
 
+  /**
+   * A clean-up of the menu to do before selecting another mod.
+   */
   function cleanupBeforeSwitch()
   {
     for (window in WindowManager.instance.windows)
@@ -238,6 +228,27 @@ class ModsSelectState extends UISubState
     windowContainer.removeAllComponents();
   }
 
+  /**
+   * Color the buttons based on the provided arrays of required and optional mod ids.
+   */
+  function colorButtonLabels(?required:Array<String>, ?optional:Array<String>)
+  {
+    if (required == null) required = [];
+    if (optional == null) optional = [];
+
+    for (button in modListUnloadedBox.childComponents.concat(modListLoadedBox.childComponents))
+    {
+      if (Std.isOfType(button, ModButton))
+      {
+        var realButton:ModButton = cast button;
+        if (optional.contains(realButton.id) && !required.contains(realButton.id)) realButton.modButtonLabel.styleString = "color: 0xffff00;"
+        else if (!optional.contains(realButton.id) && required.contains(realButton.id)) realButton.modButtonLabel.styleString = "color: 0xff8c00;";
+        else
+          realButton.modButtonLabel.styleString = "color: $normal-text-color;";
+      }
+    }
+  }
+
   override public function close()
   {
     FlxG.state.persistentDraw = prevPersistentDraw;
@@ -250,6 +261,9 @@ class ModsSelectState extends UISubState
     super.close();
   }
 
+  /**
+   * Load the selected mods.
+   */
   function save()
   {
     trace("Loading Mods: " + changeableModList);

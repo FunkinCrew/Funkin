@@ -8,7 +8,7 @@ class ModButton extends HBox
 {
   public var linkedMod:ModMetadata;
 
-  override public function new(mod:ModMetadata, ?changeTextColor:String)
+  override public function new(mod:ModMetadata)
   {
     super();
 
@@ -16,7 +16,7 @@ class ModButton extends HBox
     linkedMod = mod;
 
     modButtonLabel.text = mod.id + " (" + mod.modVersion + ")";
-    if (changeTextColor != null) modButtonLabel.styleString = 'color: $changeTextColor;';
+    // if (changeTextColor != null) modButtonLabel.styleString = 'color: $changeTextColor;';
 
     var img = openfl.display.BitmapData.fromBytes(mod.icon);
     if (img != null) modButtonIcon.resource = new flixel.FlxSprite().loadGraphic(img).frames.frames[0]; // hacky way but it works

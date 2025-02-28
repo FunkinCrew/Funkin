@@ -130,6 +130,30 @@ class ModInfoWindow extends VBox
     var pathObj:Path = new Path(modPath);
     var rootFileNode:TreeViewNode = modWindowFileTree.addNode({text: pathObj.file, icon: "haxeui-core/styles/shared/folder-light.png"});
     fillUpTreeView(rootFileNode, modPath);
+
+    // Dependencies.
+    var dependableChildren:Array<String> = [];
+    var optionalChildren:Array<String> = [];
+
+    for (childMod in parentState.listAllModsOrdered())
+    {
+      if (childMod.id == data.id) continue;
+      for (dep => ver in childMod.dependencies)
+      {
+        if (dep == data.id
+          && ver.isSatisfiedBy(data.modVersion)
+          && !dependableChildren.contains(childMod.id)) dependableChildren.push(childMod.id);
+      }
+      for (dep => ver in childMod.optionalDependencies)
+      {
+        if (dep == data.id && ver.isSatisfiedBy(data.modVersion) && !optionalChildren.contains(childMod.id)) optionalChildren.push(childMod.id);
+      }
+    }
+
+    if (dependableChildren.length != 0) modWindowDependency.text = "This Mod is a Dependency of: " + dependableChildren.join(", ");
+    if (optionalChildren.length != 0) modWindowOptional.text = "This Mod is an Optional Dependency of: " + optionalChildren.join(", ");
+
+    parentState.colorButtonLabels(data.dependencies.keys().array(), data.optionalDependencies.keys().array());
   }
 
   function openDifferentMod(mod:String, version:VersionRule)
@@ -143,30 +167,9 @@ class ModInfoWindow extends VBox
         var realButton:ModButton = cast button;
         if (realButton.linkedMod.id == mod && version.isSatisfiedBy(realButton.linkedMod.modVersion))
         {
-          var dependableChildren:Array<String> = [];
-          var optionalChildren:Array<String> = [];
-
-          for (childMod in parentState.listAllModsOrdered())
-          {
-            if (childMod.id == mod) continue;
-            for (dep => ver in childMod.dependencies)
-            {
-              if (dep == mod
-                && ver.isSatisfiedBy(realButton.linkedMod.modVersion)
-                && !dependableChildren.contains(mod)) dependableChildren.push(mod);
-            }
-            for (dep => ver in childMod.optionalDependencies)
-            {
-              if (dep == mod
-                && ver.isSatisfiedBy(realButton.linkedMod.modVersion)
-                && !optionalChildren.contains(mod)) optionalChildren.push(mod);
-            }
-          }
           realButton.styleNames = "modBoxSelected";
 
           var infoWindow = new ModInfoWindow(parentState, realButton.linkedMod);
-          if (dependableChildren.length > 0) infoWindow.modWindowDependency.text = "This Mod is a Dependency of: " + dependableChildren.join(", ");
-          if (optionalChildren.length > 0) infoWindow.modWindowOptional.text = "This Mod is an Optional Dependency of: " + optionalChildren.join(", ");
           parentState.windowContainer.addComponent(infoWindow);
           break;
         }
