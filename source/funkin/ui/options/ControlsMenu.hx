@@ -50,6 +50,10 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
   var currentDevice:Device = Keys;
   var deviceListSelected:Bool = false;
 
+  static final CONTROL_BASE_X = 50;
+  static final CONTROL_MARGIN_X = 700;
+  static final CONTROL_SPACING_X = 300;
+
   public function new()
   {
     super();
@@ -142,10 +146,10 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
       if (currentHeader != null && name.indexOf(currentHeader) == 0) name = name.substr(currentHeader.length);
 
       var formatName = name.replace('_', ' ');
-      var label = labels.add(new AtlasText(100, y, formatName, AtlasFont.BOLD));
+      var label = labels.add(new AtlasText(CONTROL_BASE_X, y, formatName, AtlasFont.BOLD));
       label.alpha = 0.6;
       for (i in 0...COLUMNS)
-        createItem(label.x + 550 + i * 400, y, control, i);
+        createItem(label.x + CONTROL_MARGIN_X + i * CONTROL_SPACING_X, y, control, i);
 
       y += spacer;
     }
