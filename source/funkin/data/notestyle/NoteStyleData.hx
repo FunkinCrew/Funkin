@@ -187,6 +187,10 @@ typedef NoteStyleAssetData<T> =
   @:optional
   var isPixel:Bool;
 
+  @:default(1.0)
+  @:optional
+  var alpha:Float;
+
   /**
    * If true, animations will be played on the graphic.
    * @default `false` to save performance.
@@ -251,6 +255,18 @@ typedef NoteStyleData_NoteSplash =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  @:optional
+  @:default(24)
+  var framerateDefault:Int;
+
+  @:optional
+  @:default(2)
+  var framerateVariance:Int;
+
+  @:optional
+  @:default("normal")
+  var blendMode:String;
 
   @:optional
   var leftSplashes:Array<UnnamedAnimationData>;
