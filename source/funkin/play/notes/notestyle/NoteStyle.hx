@@ -888,6 +888,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     buildSplashAnimations(target);
 
+    target.splashFramerate = getSplashFramerate();
+    target.splashFramerateVariance = getSplashFramerateVariance();
+    target.alpha = _data.assets.noteSplash?.alpha ?? 1.0;
+    target.blend = _data.assets.noteSplash?.data?.blendMode ?? "normal";
+
     var scale = getSplashScale();
     target.scale.set(scale, scale);
     target.updateHitbox();
@@ -985,6 +990,21 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       case RIGHT: _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRIGHT");
     };
     return result ?? fallback?.fetchSplashAnimationData(dir);
+  }
+
+  public function getSplashOffsets():Array<Float>
+  {
+    return _data?.assets?.noteSplash?.offsets ?? fallback?.getSplashOffsets() ?? [0.0, 0.0];
+  }
+
+  public function getSplashFramerate():Int
+  {
+    return _data?.assets?.noteSplash?.data?.framerateDefault ?? fallback?.getSplashFramerate() ?? 24;
+  }
+
+  public function getSplashFramerateVariance():Int
+  {
+    return _data?.assets?.noteSplash?.data?.framerateVariance ?? fallback?.getSplashFramerateVariance() ?? 2;
   }
 
   public function destroy():Void {}

@@ -7,9 +7,8 @@ import flixel.FlxSprite;
 
 class NoteSplash extends FlxSprite
 {
-  static final ALPHA:Float = 0.6;
-  static final FRAMERATE_DEFAULT:Int = 24;
-  static final FRAMERATE_VARIANCE:Int = 2;
+  public var splashFramerate:Int = 24;
+  public var splashFramerateVariance:Int = 2;
 
   static var frameCollection:FlxFramesCollection;
 
@@ -25,7 +24,6 @@ class NoteSplash extends FlxSprite
 
     setupSplashGraphic(noteStyle);
 
-    this.alpha = ALPHA;
     this.animation.finishCallback = this.onAnimationFinished;
   }
 
@@ -62,7 +60,7 @@ class NoteSplash extends FlxSprite
     if (animation.curAnim == null) return;
 
     // Vary the speed of the animation a bit.
-    animation.curAnim.frameRate = FRAMERATE_DEFAULT + FlxG.random.int(-FRAMERATE_VARIANCE, FRAMERATE_VARIANCE);
+    animation.curAnim.frameRate = splashFramerate + FlxG.random.int(-splashFramerateVariance, splashFramerateVariance);
 
     // Center the animation on the note splash.
     offset.set(width * 0.3, height * 0.3);
