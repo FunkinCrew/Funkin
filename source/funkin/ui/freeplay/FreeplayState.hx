@@ -723,7 +723,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
-    randomCapsule.init(FlxG.width, 0, null, styleData);
+    randomCapsule.init(FlxG.width, 0, null, styleData, 0);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
     randomCapsule.alpha = 0;
@@ -751,7 +751,7 @@ class FreeplayState extends MusicBeatSubState
 
       var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
 
-      funnyMenu.init(FlxG.width, 0, tempSong, styleData);
+      funnyMenu.init(FlxG.width, 0, tempSong, styleData, i + 1);
       funnyMenu.onConfirm = function() {
         capsuleOnOpenDefault(funnyMenu);
       };
@@ -761,7 +761,11 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.capsule.alpha = 0.5;
       funnyMenu.hsvShader = hsvShader;
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
-      funnyMenu.forcePosition();
+      // I would like to use to use the jump in now that it looks better,
+      // but I still can't because switching from harder to normal difficulties causes the x positions to mess up
+      /*if (fromCharSelect)*/ funnyMenu.forcePosition();
+      /*else
+        funnyMenu.initJumpIn(0, force); */
 
       grpCapsules.add(funnyMenu);
     }
@@ -1744,7 +1748,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
-      grpCapsules.members[curSelected].refreshDisplay();
+      grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
@@ -1850,11 +1854,15 @@ class FreeplayState extends MusicBeatSubState
    */
   function capsuleOnOpenDefault(cap:SongMenuItem):Void
   {
+    busy = true;
+    letterSort.inputEnabled = false;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
     var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
     var targetSong:Song = targetSongNullable;
@@ -1868,6 +1876,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetDifficulty == null)
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
 
@@ -1897,9 +1907,7 @@ class FreeplayState extends MusicBeatSubState
 
   function openInstrumentalList(cap:SongMenuItem, instrumentalIds:Array<String>):Void
   {
-    busy = true;
-
-    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.x + 175, cap.y + 115, instrumentalIds);
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.targetPos.x + 175, cap.targetPos.y + 115, instrumentalIds);
     capsuleOptionsMenu.cameras = [funnyCam];
     capsuleOptionsMenu.zIndex = 10000;
     add(capsuleOptionsMenu);
@@ -1914,6 +1922,7 @@ class FreeplayState extends MusicBeatSubState
   public function cleanupCapsuleOptionsMenu():Void
   {
     this.busy = false;
+    letterSort.inputEnabled = true;
 
     if (capsuleOptionsMenu != null)
     {
@@ -1927,9 +1936,6 @@ class FreeplayState extends MusicBeatSubState
    */
   function capsuleOnConfirmDefault(cap:SongMenuItem, ?targetInstId:String):Void
   {
-    busy = true;
-    letterSort.inputEnabled = false;
-
     PlayStatePlaylist.isStoryMode = false;
 
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
@@ -1937,6 +1943,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
     var targetSong:Song = targetSongNullable;
@@ -1948,6 +1956,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetDifficulty == null)
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${currentDifficulty})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
 
@@ -2041,7 +2051,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
       changeDiff();
-      daSongCapsule.refreshDisplay();
+      daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
@@ -2059,7 +2069,7 @@ class FreeplayState extends MusicBeatSubState
       capsule.selected = index == curSelected + 1;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
+      capsule.targetPos.x = capsule.intendedX(index - curSelected);
 
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
