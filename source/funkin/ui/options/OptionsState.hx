@@ -193,6 +193,12 @@ class OptionsMenu extends Page
       #end
     });
 
+    #if !web
+    createItem("MODS", function() {
+      FlxG.state.openSubState(new funkin.ui.debug.mods.ModsSelectState());
+    });
+    #end
+
     #if newgrounds
     if (NGio.isLoggedIn) createItem("LOGOUT", selectLogout);
     else

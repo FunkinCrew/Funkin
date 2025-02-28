@@ -43,7 +43,7 @@ class PolymodHandler
   /**
    * Where relative to the executable that mods are located.
    */
-  static final MOD_FOLDER:String =
+  public static final MOD_FOLDER:String =
     #if (REDIRECT_ASSETS_FOLDER && macos)
     '../../../../../../../example_mods'
     #elseif REDIRECT_ASSETS_FOLDER
@@ -414,8 +414,7 @@ class PolymodHandler
     Polymod.clearScripts();
 
     // Forcibly reload Polymod so it finds any new files.
-    // TODO: Replace this with loadEnabledMods().
-    funkin.modding.PolymodHandler.loadAllMods();
+    funkin.modding.PolymodHandler.loadEnabledMods();
 
     // Reload scripted classes so stages and modules will update.
     Polymod.registerAllScriptClasses();
