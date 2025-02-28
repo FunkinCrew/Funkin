@@ -100,6 +100,11 @@ class WindowUtil
     #end
 
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
+      if (haxe.ui.focus.FocusManager.instance.focus != null)
+      {
+        return;
+      }
+
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
         // FlxG.stage.focus is set to null by the debug console stuff,
