@@ -382,7 +382,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     // Determine the position of the mouse relative to the
     var mouseXPos = FlxG.mouse.x;
 
-    var relativeMouseXPos = mouseXPos - waveformScrollview.screenX;
+    var relativeMouseXPos = mouseXPos - waveformScrollview.cachedScreenX;
     var targetPlayheadPos = relativeMouseXPos + waveformScrollview.hscrollPos;
 
     // Move the playhead to the mouse position.
@@ -415,8 +415,8 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     var currentAbsMousePos = FlxG.mouse.x;
     var dragDiff = currentAbsMousePos - waveformDragStartPos;
 
-    var currentRelativeMousePos = currentAbsMousePos - waveformScrollview.screenX;
-    var relativeStartPos = waveformDragStartPos - waveformScrollview.screenX;
+    var currentRelativeMousePos = currentAbsMousePos - waveformScrollview.cachedScreenX;
+    var relativeStartPos = waveformDragStartPos - waveformScrollview.cachedScreenX;
 
     var isDraggingRight = dragDiff > 0;
     var hasDraggedEnough = Math.abs(dragDiff) > 10;
