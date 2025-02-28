@@ -96,6 +96,7 @@ class Save
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
+          playMissSound: true,
           autoPause: true,
           autoFullscreen: false,
           inputOffset: 0,
@@ -1333,6 +1334,12 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var debugDisplay:Bool;
+
+  /**
+   * If enabled, the miss sound will play when the player misses a note.
+   * @default `true`
+   */
+   var playMissSound:Bool;
 
   /**
    * If enabled, the game will automatically pause when tabbing out.
