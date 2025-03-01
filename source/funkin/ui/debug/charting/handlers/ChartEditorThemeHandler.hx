@@ -59,6 +59,15 @@ class ChartEditorThemeHandler
   static final SELECTION_SQUARE_FILL_COLOR_LIGHT:FlxColor = 0x4033FF33;
   static final SELECTION_SQUARE_FILL_COLOR_DARK:FlxColor = 0x4033FF33;
 
+  // Border on the square highlighting selected notes.
+  static final HINT_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFFFFFFFF;
+  static final HINT_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFFFFFFFF;
+  public static final HINT_SQUARE_BORDER_WIDTH:Int = 1;
+
+  // Fill on the square highlighting selected notes.
+  static final HINT_SQUARE_FILL_COLOR_LIGHT:FlxColor = 0x40FFFFFF;
+  static final HINT_SQUARE_FILL_COLOR_DARK:FlxColor = 0x40FFFFFF;
+
   static final PLAYHEAD_BLOCK_BORDER_WIDTH:Int = 2;
   static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF9D0011;
   static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFFBD0231;
@@ -84,6 +93,7 @@ class ChartEditorThemeHandler
     updateMeasureTicks(state);
     updateOffsetTicks(state);
     updateSelectionSquare(state);
+    updateHintSquare(state);
     updateNotePreview(state);
   }
 
@@ -355,6 +365,30 @@ class ChartEditorThemeHandler
     state.add(state.selectionBoxSprite);
 
     state.setSelectionBoxBounds();
+  }
+
+  static function updateHintSquare(state:ChartEditorState):Void
+  {
+    var hintSquareBorderColor:FlxColor = switch (state.currentTheme)
+    {
+      case Light: HINT_SQUARE_BORDER_COLOR_LIGHT;
+      case Dark: HINT_SQUARE_BORDER_COLOR_DARK;
+      default: HINT_SQUARE_BORDER_COLOR_LIGHT;
+    };
+
+    var hintSquareFillColor:FlxColor = switch (state.currentTheme)
+    {
+      case Light: HINT_SQUARE_FILL_COLOR_LIGHT;
+      case Dark: HINT_SQUARE_FILL_COLOR_DARK;
+      default: HINT_SQUARE_FILL_COLOR_LIGHT;
+    };
+
+    state.hintSquareBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
+
+    state.hintSquareBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE), hintSquareBorderColor);
+    state.hintSquareBitmap.fillRect(new Rectangle(HINT_SQUARE_BORDER_WIDTH, HINT_SQUARE_BORDER_WIDTH,
+      ChartEditorState.GRID_SIZE - (HINT_SQUARE_BORDER_WIDTH * 2), ChartEditorState.GRID_SIZE - (HINT_SQUARE_BORDER_WIDTH * 2)),
+      hintSquareFillColor);
   }
 
   static function updateNotePreview(state:ChartEditorState):Void
