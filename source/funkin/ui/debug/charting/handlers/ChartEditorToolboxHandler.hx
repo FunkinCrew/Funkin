@@ -308,6 +308,16 @@ class ChartEditorToolboxHandler
       state.playtestBotPlayMode = checkboxBotPlay.selected;
     };
 
+    var checkboxShowResults:Null<CheckBox> = toolbox.findComponent('playtestShowResultsCheckbox', CheckBox);
+    if (checkboxShowResults == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestShowResultsCheckbox component.';
+
+    checkboxShowResults.selected = state.playtestShowResults;
+
+    checkboxShowResults.onClick = _ -> {
+      state.playtestShowResults = checkboxShowResults.selected;
+    };
+
     var checkboxSongScripts:Null<CheckBox> = toolbox.findComponent('playtestSongScriptsCheckbox', CheckBox);
 
     if (checkboxSongScripts == null)
