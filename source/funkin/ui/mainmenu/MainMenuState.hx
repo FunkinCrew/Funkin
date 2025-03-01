@@ -194,6 +194,7 @@ class MainMenuState extends MusicBeatState
     FlxG.camera.follow(camFollow, null, 0.06);
 
     if (snap) FlxG.camera.snapToTarget();
+    if (menuItems.busy) menuItems.busy = false;
   }
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
@@ -352,6 +353,9 @@ class MainMenuState extends MusicBeatState
     if (controls.DEBUG_MENU)
     {
       persistentUpdate = false;
+
+      // Cancel the currently flickering menu item because it's about to call a state switch
+      if (menuItems.busy) FlxFlicker.stopFlickering(menuItems.members[menuItems.selectedIndex]);
 
       FlxG.state.openSubState(new DebugMenuSubState());
     }
