@@ -178,11 +178,10 @@ class ChartEditorDialogHandler
     var backupTimeLabel:Null<Label> = dialog.findComponent('backupTimeLabel', Label);
     if (backupTimeLabel == null) throw 'Could not locate backupTimeLabel button in Backup Available dialog';
 
-    var latestBackupDate:Null<Date> = ChartEditorImportExportHandler.getLatestBackupDate();
+    var latestBackupDate:Null<String> = ChartEditorImportExportHandler.getLatestBackupDate();
     if (latestBackupDate != null)
     {
-      var latestBackupDateStr:String = DateUtil.generateCleanTimestamp(latestBackupDate);
-      backupTimeLabel.text = latestBackupDateStr;
+      backupTimeLabel.text = latestBackupDate;
     }
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
