@@ -4986,8 +4986,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleCursor():Void
   {
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
-    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
+    if (FlxG.mouse.justPressed) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'), 1.0, 1.0, 0.2);
+    if (FlxG.mouse.justReleased) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'), 1.0, 1.0, 0.2);
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool =
@@ -5576,10 +5576,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         var dragDistanceColumns:Int = cursorGridPos - noteGridPos;
 
-        if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
-        {
-          // Play a sound as we drag.
-          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+          if (dragTargetCurrentStep != dragDistanceSteps || dragTargetCurrentColumn != dragDistanceColumns)
+          {
+            // Play a sound as we drag.
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'), 1.0, 1.0, 0.05);
 
           dragTargetCurrentStep = dragDistanceSteps;
           dragTargetCurrentColumn = dragDistanceColumns;
@@ -5625,23 +5625,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
-      if (FlxG.mouse.justReleased)
-      {
-        if (dragLengthSteps > 0)
+        if (FlxG.mouse.justReleased)
         {
-          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
-          // Apply the new length.
-          performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
-        }
-        else
-        {
-          // Apply the new (zero) length if we are changing the length.
-          if (currentPlaceNoteData.length > 0)
+          if (dragLengthSteps > 0)
           {
-            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
-            performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'), 1.0, 1.0, 0.2);
+            // Apply the new length.
+            performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
           }
-        }
+          else
+          {
+            // Apply the new (zero) length if we are changing the length.
+            if (currentPlaceNoteData.length > 0)
+            {
+              this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'), 1.0, 1.0, 0.2);
+              performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
+            }
+          }
 
         // Finished dragging. Release the note.
         currentPlaceNoteData = null;
@@ -5853,7 +5853,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else
           {
             // Right click removes hold from the note.
-            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'), 1.0, 1.0, 0.2);
             performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
           }
         }
@@ -6345,7 +6345,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Extend the note to the playhead position.
       trace('Extending note. ${column}');
-      this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
+      this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'), 1.0, 1.0, 0.2);
       performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
       currentLiveInputPlaceNoteData[column] = null;
       gridPlayheadGhostHoldNotes[column].noteData = null;
@@ -7881,9 +7881,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         switch (noteData.getStrumlineIndex())
         {
           case 0: // Player
-            if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player'), hitsoundVolumePlayer);
+            if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player'), hitsoundVolumePlayer, 1.0, 0.1);
           case 1: // Opponent
-            if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'), hitsoundVolumeOpponent);
+            if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'), hitsoundVolumeOpponent, 1.0, 0.1);
         }
       }
 
