@@ -81,6 +81,19 @@ class ResultState extends MusicBeatSubState
   final cameraScroll:FunkinCamera;
   final cameraEverything:FunkinCamera;
 
+  /**
+   * Whether the game is currently in Practice Mode.
+   * If true, player will not lose gain or lose score from notes.
+   */
+  var isPracticeMode(get, never):Bool;
+
+  function get_isPracticeMode():Bool
+  {
+    return PlayState.instance.isPracticeMode;
+  }
+
+
+
   public function new(params:ResultsStateParams)
   {
     super();
@@ -816,7 +829,7 @@ class ResultState extends MusicBeatSubState
                     newRank: rank,
                     songId: params.songId,
                     difficultyId: params.difficultyId,
-                    playRankAnim: true
+                    playRankAnim: (isPracticeMode == true) ? false : true
                   }
               }
             });
