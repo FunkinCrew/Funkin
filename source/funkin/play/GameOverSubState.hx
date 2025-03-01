@@ -234,7 +234,7 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // Smoothly lerp the camera
-    FlxG.camera.zoom = MathUtil.smoothLerp(FlxG.camera.zoom, targetCameraZoom, elapsed, CAMERA_ZOOM_DURATION);
+    FlxG.camera.zoom = MathUtil.smoothLerpPrecision(FlxG.camera.zoom, targetCameraZoom, elapsed, CAMERA_ZOOM_DURATION);
 
     //
     // Handle user inputs.
