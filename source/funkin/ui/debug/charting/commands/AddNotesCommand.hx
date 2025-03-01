@@ -36,7 +36,7 @@ class AddNotesCommand implements ChartEditorCommand
       state.currentEventSelection = [];
     }
 
-    state.playSound(Paths.sound('chartingSounds/noteLay'));
+    state.playSound(Paths.sound('chartingSounds/noteLay'), 1.0, 1.0, 0.1);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -50,7 +50,7 @@ class AddNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('chartingSounds/undo'));
+    state.playSound(Paths.sound('chartingSounds/undo'), 1.0, 1.0, 0.1);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

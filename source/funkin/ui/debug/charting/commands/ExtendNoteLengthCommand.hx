@@ -42,7 +42,7 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
-    state.playSound(Paths.sound('chartingSounds/undo'));
+    state.playSound(Paths.sound('chartingSounds/undo'), 1.0, 1.0, 0.1);
 
     // Always use milliseconds for undoing
     this.note.length = oldLength;
