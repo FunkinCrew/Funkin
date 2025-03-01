@@ -25,16 +25,29 @@ class NoteKind implements INoteScriptedClass
   public var noteStyleId:Null<String>;
 
   /**
+   * should this have anims
+   */
+  public var noanim:Bool;
+
+  /**
+   * the anim suffix
+   */
+  public var suffix:String;
+
+  /**
    * Custom parameters for the chart editor
    */
   public var params:Array<NoteKindParam>;
 
-  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>)
+  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?anim:Bool, ?suffix:String)
   {
     this.noteKind = noteKind;
     this.description = description;
     this.noteStyleId = noteStyleId;
     this.params = params ?? [];
+    this.noanim = anim ?? false;
+    trace(this.noanim);
+    this.suffix = suffix ?? '';
   }
 
   public function toString():String
