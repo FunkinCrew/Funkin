@@ -292,8 +292,9 @@ class ChartEditorAudioHandler
    * Automatically cleans up after itself and recycles previous FlxSound instances if available, for performance.
    * @param path The path to the sound effect. Use `Paths` to build this.
    */
-  public static function playSound(_state:ChartEditorState, path:String, volume:Float = 1.0):Void
+  public static function playSound(_state:ChartEditorState, path:String, volume:Float = 1.0, pitch:Float = 1.0):Void
   {
+    if (volume == 0) return;
     var asset:Null<FlxSoundAsset> = FlxG.sound.cache(path);
     if (asset == null)
     {
@@ -305,6 +306,7 @@ class ChartEditorAudioHandler
     snd.autoDestroy = true;
     snd.play(true);
     snd.volume = volume;
+    snd.pitch = pitch;
   }
 
   public static function wipeInstrumentalData(state:ChartEditorState):Void
