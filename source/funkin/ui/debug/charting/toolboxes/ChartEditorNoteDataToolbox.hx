@@ -138,6 +138,14 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     super.refresh();
 
     toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
+    if (toolboxNotesNoteKind.value.id == '~CUSTOM~' && chartEditorState.noteKindToPlace != null)
+    {
+      showCustom();
+    }
+    else
+    {
+      hideCustom();
+    }
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
 
     createNoteKindParams(chartEditorState.noteKindToPlace);
