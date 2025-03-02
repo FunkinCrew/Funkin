@@ -19,6 +19,7 @@ import funkin.data.event.SongEventRegistry;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.HBox;
+import haxe.ui.containers.VBox;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 import haxe.ui.data.ArrayDataSource;
@@ -36,7 +37,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
   var toolboxEventsDataFrame:Frame;
-  var toolboxEventsDataGrid:Grid;
+  var toolboxEventsDataBox:VBox;
 
   var _initializing:Bool = true;
 
@@ -74,7 +75,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         return;
       }
 
-      buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
+      buildEventDataFormFromSchema(toolboxEventsDataBox, schema, chartEditorState.eventKindToPlace);
 
       if (!_initializing && chartEditorState.currentEventSelection.length > 0)
       {
@@ -116,7 +117,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       else
       {
         trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind changed: ${toolboxEventsEventKind.value.id} != ${newDropdownElement.id} != ${lastEventKind}, rebuilding form');
-        buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
+        buildEventDataFormFromSchema(toolboxEventsDataBox, schema, chartEditorState.eventKindToPlace);
       }
     }
     else
@@ -129,7 +130,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var fieldId:String = pair.key;
       var value:Null<Dynamic> = pair.value;
 
-      var field:Component = toolboxEventsDataGrid.findComponent(fieldId);
+      var field:Component = toolboxEventsDataBox.findComponent(fieldId);
 
       if (field == null)
       {
@@ -172,15 +173,24 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     chartEditorState.eventDataToPlace = {};
 
+    recursiveChildAdd(target, schema);
+  }
+
+  function recursiveChildAdd(parent:Component, schema:SongEventSchema)
+  {
     for (field in schema)
     {
       if (field == null) continue;
+
+      var hbox:HBox = new HBox();
+      hbox.percentWidth = 100;
+      parent.addComponent(hbox);
 
       // Add a label for the data field.
       var label:Label = new Label();
       label.text = field.title;
       label.verticalAlign = "center";
-      target.addComponent(label);
+      hbox.addComponent(label);
 
       // Add an input field for the data field.
       var input:Component;
@@ -237,6 +247,20 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           input = new TextField();
           input.id = field.name;
           if (field.defaultValue != null) input.text = field.defaultValue;
+        case FRAME:
+          hbox.removeComponent(label, true);
+
+          input = new Frame();
+          input.id = field.name;
+          input.text = field.title;
+          input.percentWidth = 100;
+
+          var frameVBox:VBox = new VBox();
+          frameVBox.percentWidth = 100;
+          input.addComponent(frameVBox);
+
+          if (field.children != null) recursiveChildAdd(frameVBox, new SongEventSchema(field.children));
+
         default:
           // Unknown type. Display a label that proclaims the type so we can debug it.
           input = new Label();
@@ -246,7 +270,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       // Putting in a box so we can add a unit label easily if there is one.
       var inputBox:HBox = new HBox();
-      inputBox.addComponent(input);
+      if (field.type != FRAME) inputBox.addComponent(input);
 
       // Add a unit label if applicable.
       if (field.units != null && field.units != "")
@@ -257,10 +281,12 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         inputBox.addComponent(units);
       }
 
-      target.addComponent(inputBox);
+      hbox.addComponent(field.type == FRAME ? input : inputBox);
 
       // Update the value of the event data.
       input.onChange = function(event:UIEvent) {
+        if (field.type == FRAME) return;
+
         var value = event.target.value;
         if (field.type == ENUM)
         {
