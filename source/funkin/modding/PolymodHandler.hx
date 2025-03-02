@@ -224,7 +224,7 @@ class PolymodHandler
     #end
   }
 
-  static function buildFileSystem():polymod.fs.ZipFileSystem
+  static function buildFileSystem():ZipFileSystem
   {
     polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
     return new ZipFileSystem(

@@ -1,15 +1,10 @@
 package funkin.ui.freeplay;
 
-import flixel.FlxSprite;
 import flixel.util.FlxSignal;
-import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.audio.FunkinSound;
-import flixel.util.FlxTimer;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
-import funkin.audio.FunkinSound;
-import funkin.audio.FlxStreamSound;
 
 class FreeplayDJ extends FlxAtlasSprite
 {

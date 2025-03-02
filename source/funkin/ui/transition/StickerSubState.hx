@@ -1,21 +1,17 @@
 package funkin.ui.transition;
 
-import flixel.FlxSprite;
 import haxe.Json;
 import funkin.graphics.FunkinSprite;
 // import flxtyped group
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.story.StoryMenuState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxTimer;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
-import flixel.util.FlxSignal;
 import funkin.ui.mainmenu.MainMenuState;
 import flixel.addons.transition.FlxTransitionableState;
 import openfl.display.BitmapData;
-import funkin.ui.freeplay.FreeplayState;
 import openfl.geom.Matrix;
 import funkin.audio.FunkinSound;
 import openfl.display.Sprite;

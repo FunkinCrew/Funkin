@@ -3,7 +3,6 @@ package funkin.play.notes;
 import funkin.play.notes.NoteDirection;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.FlxG;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
 
 class NoteSplash extends FlxSprite

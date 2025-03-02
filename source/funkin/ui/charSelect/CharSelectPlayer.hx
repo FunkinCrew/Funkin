@@ -1,6 +1,5 @@
 package funkin.ui.charSelect;
 
-import flixel.FlxSprite;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flxanimate.animate.FlxKeyFrame;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
@@ -49,7 +48,7 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     {
       playAnimation("idle", true, false, false);
     }
-  };
+  }
 
   public function updatePosition(str:String)
   {
@@ -80,11 +79,11 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     updatePosition(str);
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {};
+  public function onScriptEvent(event:ScriptEvent):Void {}
 
-  public function onCreate(event:ScriptEvent):Void {};
+  public function onCreate(event:ScriptEvent):Void {}
 
-  public function onDestroy(event:ScriptEvent):Void {};
+  public function onDestroy(event:ScriptEvent):Void {}
 
-  public function onUpdate(event:UpdateScriptEvent):Void {};
+  public function onUpdate(event:UpdateScriptEvent):Void {}
 }
