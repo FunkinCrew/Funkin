@@ -3343,6 +3343,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleViewKeybinds();
     handleTestKeybinds();
     handleHelpKeybinds();
+    handleAudioKeybinds();
 
     #if FEATURE_DEBUG_FUNCTIONS
     handleQuickWatch();
@@ -5641,6 +5642,80 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.keys.justPressed.F1 && !isHaxeUIDialogOpen)
     {
       this.openUserGuideDialog();
+    }
+  }
+
+  /**
+   * Handle keybinds for audio playback.
+   */
+  function handleAudioKeybinds():Void
+  {
+    // Metronome volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
+    {
+      // Set the volume to 100 if it's higher or equal to 50 or zero, otherwise set it to zero if it's below that or equal to 100.
+      // Changing values of the audio slider directly because it'll update the audio anyway and makes this code much cleaner, though more verbose.
+      if (menubarItemVolumeMetronome.value < 100
+        && menubarItemVolumeMetronome.value >= 50
+        || menubarItemVolumeMetronome.value == 0) menubarItemVolumeMetronome.value = 100;
+      else if (menubarItemVolumeMetronome.value < 50 || menubarItemVolumeMetronome.value == 100) menubarItemVolumeMetronome.value = 0;
+    }
+    // Hitsounds volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.H)
+    {
+      if (menubarItemVolumeHitsoundPlayer.value < 100
+        && menubarItemVolumeHitsoundPlayer.value >= 50
+        || menubarItemVolumeHitsoundPlayer.value == 0) menubarItemVolumeHitsoundPlayer.value = 100;
+      else if (menubarItemVolumeHitsoundPlayer.value < 50
+        || menubarItemVolumeHitsoundPlayer.value == 100) menubarItemVolumeHitsoundPlayer.value = 0;
+
+      if (menubarItemVolumeHitsoundOpponent.value < 100
+        && menubarItemVolumeHitsoundOpponent.value >= 50
+        || menubarItemVolumeHitsoundOpponent.value == 0) menubarItemVolumeHitsoundOpponent.value = 100;
+      else if (menubarItemVolumeHitsoundOpponent.value < 50
+        || menubarItemVolumeHitsoundOpponent.value == 100) menubarItemVolumeHitsoundOpponent.value = 0;
+    }
+    // Instrumental volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.I)
+    {
+      if (menubarItemVolumeInstrumental.value < 100
+        && menubarItemVolumeInstrumental.value >= 50
+        || menubarItemVolumeInstrumental.value == 0) menubarItemVolumeInstrumental.value = 100;
+      else if (menubarItemVolumeInstrumental.value < 50
+        || menubarItemVolumeInstrumental.value == 100) menubarItemVolumeInstrumental.value = 0;
+    }
+    // Vocals volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.V)
+    {
+      if (menubarItemVolumeVocalsPlayer.value < 100
+        && menubarItemVolumeVocalsPlayer.value >= 50
+        || menubarItemVolumeVocalsPlayer.value == 0) menubarItemVolumeVocalsPlayer.value = 100;
+      else if (menubarItemVolumeVocalsPlayer.value < 50
+        || menubarItemVolumeVocalsPlayer.value == 100) menubarItemVolumeVocalsPlayer.value = 0;
+
+      if (menubarItemVolumeVocalsOpponent.value < 100
+        && menubarItemVolumeVocalsOpponent.value >= 50
+        || menubarItemVolumeVocalsOpponent.value == 0) menubarItemVolumeVocalsOpponent.value = 100;
+      else if (menubarItemVolumeVocalsOpponent.value < 50
+        || menubarItemVolumeVocalsOpponent.value == 100) menubarItemVolumeVocalsOpponent.value = 0;
+    }
+    // Boyfriend vocals volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.B)
+    {
+      if (menubarItemVolumeVocalsPlayer.value < 100
+        && menubarItemVolumeVocalsPlayer.value >= 50
+        || menubarItemVolumeVocalsPlayer.value == 0) menubarItemVolumeVocalsPlayer.value = 100;
+      else if (menubarItemVolumeVocalsPlayer.value < 50
+        || menubarItemVolumeVocalsPlayer.value == 100) menubarItemVolumeVocalsPlayer.value = 0;
+    }
+    // Dad vocals volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.D)
+    {
+      if (menubarItemVolumeVocalsOpponent.value < 100
+        && menubarItemVolumeVocalsOpponent.value >= 50
+        || menubarItemVolumeVocalsOpponent.value == 0) menubarItemVolumeVocalsOpponent.value = 100;
+      else if (menubarItemVolumeVocalsOpponent.value < 50
+        || menubarItemVolumeVocalsOpponent.value == 100) menubarItemVolumeVocalsOpponent.value = 0;
     }
   }
 
