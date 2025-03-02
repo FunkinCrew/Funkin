@@ -47,6 +47,8 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
+import funkin.play.ReplaySystem;
+import funkin.ui.debug.replay.ReplayState;
 import funkin.save.Save;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
@@ -54,6 +56,7 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
+import funkin.util.FileUtil;
 import haxe.Int64;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -95,6 +98,11 @@ typedef PlayStateParams =
    * @default `false`
    */
   ?botPlayMode:Bool,
+  /**
+   * The replay data to use.
+   * @default `null`
+   */
+  ?replayData:ReplayData,
   /**
    * Whether the song should be in minimal mode.
    * @default `false`
@@ -312,6 +320,16 @@ class PlayState extends MusicBeatSubState
   public var isBotPlayMode:Bool = false;
 
   /**
+   * Whether the game is currently in Replay Mode.
+   */
+  public var isReplayMode:Bool = false;
+
+  /**
+   * The current replay data.
+   */
+  public var replayData:Null<ReplayData> = null;
+
+  /**
    * Whether the player has dropped below zero health,
    * and we are just waiting for an animation to play out before transitioning.
    */
@@ -355,6 +373,11 @@ class PlayState extends MusicBeatSubState
    * The current dialogue.
    */
   public var currentConversation:Conversation;
+
+  /**
+   * The replay system that collects note inputs
+   */
+  var replaySystem:ReplaySystem;
 
   /**
    * Key press inputs which have been received but not yet processed.
@@ -613,6 +636,8 @@ class PlayState extends MusicBeatSubState
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
     isBotPlayMode = params.botPlayMode ?? false;
+    isReplayMode = params.replayData != null ? true : false;
+    replayData = params.replayData;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
     playbackRate = params.playbackRate ?? 1.0;
@@ -713,6 +738,8 @@ class PlayState extends MusicBeatSubState
 
     initPreciseInputs();
 
+    replaySystem = new ReplaySystem(currentChart.song.id, currentChart.variation, currentChart.difficulty);
+
     FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
     // The song is loaded and in the process of starting.
@@ -805,6 +832,10 @@ class PlayState extends MusicBeatSubState
     // TOTAL: 9.42% CPU Time when profiled in VS 2019.
 
     if (criticalFailure) return;
+
+    // we are calling this earlier because
+    // this will dispatch keyboard events
+    replaySystem.update(elapsed);
 
     super.update(elapsed);
 
@@ -1875,6 +1906,10 @@ class PlayState extends MusicBeatSubState
       {
         return 'Freeplay [Bot Play]';
       }
+      else if (isReplayMode)
+      {
+        return 'Freeplay [Replay]';
+      }
       else
       {
         return 'Freeplay';
@@ -2097,6 +2132,15 @@ class PlayState extends MusicBeatSubState
     {
       // FlxG.sound.music.time = startTimestamp - Conductor.instance.combinedOffset;
       handleSkippedNotes();
+    }
+
+    if (isReplayMode)
+    {
+      replaySystem.startPlaying(replayData.inputs);
+    }
+    else if (!isBotPlayMode)
+    {
+      replaySystem.startRecording();
     }
 
     dispatchEvent(new ScriptEvent(SONG_START));
@@ -2911,6 +2955,18 @@ class PlayState extends MusicBeatSubState
     dispatchEvent(event);
     if (event.eventCanceled) return;
 
+    if (isReplayMode)
+    {
+      replaySystem.stopPlaying();
+      FlxG.switchState(() -> new ReplayState());
+      return;
+    }
+    else if (!isBotPlayMode)
+    {
+      replaySystem.stopRecording();
+      replaySystem.saveReplay();
+    }
+
     #if sys
     // spitter for ravy, teehee!!
     var writer = new json2object.JsonWriter<Array<ScoreInput>>();
@@ -2972,9 +3028,7 @@ class PlayState extends MusicBeatSubState
     if (PlayStatePlaylist.isStoryMode)
     {
       isNewHighscore = false;
-
       PlayStatePlaylist.campaignScore += songScore;
-
       // Pop the next song ID from the list.
       // Returns null if the list is empty.
       var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
@@ -2984,7 +3038,6 @@ class PlayState extends MusicBeatSubState
         if (currentSong.validScore)
         {
           NGio.unlockMedal(60961);
-
           var data =
             {
               score: PlayStatePlaylist.campaignScore,
@@ -3012,7 +3065,6 @@ class PlayState extends MusicBeatSubState
             isNewHighscore = true;
           }
         }
-
         if (isSubState)
         {
           this.close();
@@ -3034,23 +3086,20 @@ class PlayState extends MusicBeatSubState
         var difficulty:String = '';
 
         trace('Loading next song ($targetSongId : $difficulty)');
-
         FlxTransitionableState.skipNextTransIn = true;
         FlxTransitionableState.skipNextTransOut = true;
-
         if (FlxG.sound.music != null) FlxG.sound.music.stop();
         vocals.stop();
-
         // TODO: Softcode this cutscene.
         if (currentSong.id == 'eggnog')
         {
           var blackBG:FunkinSprite = new FunkinSprite(-FlxG.width * FlxG.camera.zoom, -FlxG.height * FlxG.camera.zoom);
+
           blackBG.makeSolidColor(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
           blackBG.scrollFactor.set();
           add(blackBG);
           camHUD.visible = false;
           isInCutscene = true;
-
           FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), function() {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
