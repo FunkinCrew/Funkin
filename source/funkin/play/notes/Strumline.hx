@@ -68,6 +68,13 @@ class Strumline extends FlxSpriteGroup
   public var isPlayer:Bool;
 
   /**
+   * Whether this strumline should reward scores on hold.
+   * Should usually be the same as isPlayer, but modders may want to modify sustain/input behavior.
+   * Assumes strumline is in PlayState, nothing happens otherwise.
+   */
+  public var rewardSustains:Bool;
+
+  /**
    * Usually you want to keep this as is, but if you are using a Strumline and
    * playing a sound that has it's own conductor, set this (LatencyState for example)
    */
@@ -138,6 +145,7 @@ class Strumline extends FlxSpriteGroup
     super();
 
     this.isPlayer = isPlayer;
+    this.rewardSustains = isPlayer;
     this.noteStyle = noteStyle;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
@@ -496,7 +504,11 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
-        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
+        var lastLength = holdNote.sustainLength;
+        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition + conductorInUse.inputOffset;
+
+        // Don't reward hitting too early, don't penalize hitting too late
+        if (rewardSustains) PlayState?.instance.sustainHit(holdNote, lastLength);
 
         if (holdNote.sustainLength <= 10)
         {
@@ -683,7 +695,11 @@ class Strumline extends FlxSpriteGroup
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
 
-      note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
+      var lastLength = note.holdNoteSprite.sustainLength;
+      note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength)
+        - (conductorInUse.songPosition - conductorInUse.inputOffset);
+
+      if (rewardSustains) PlayState?.instance.sustainHit(note.holdNoteSprite, lastLength);
     }
 
     #if FEATURE_GHOST_TAPPING
