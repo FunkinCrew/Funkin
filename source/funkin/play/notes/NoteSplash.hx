@@ -12,19 +12,13 @@ class NoteSplash extends FlxSprite
 
   static var frameCollection:FlxFramesCollection;
 
-  public static function preloadFrames():Void
-  {
-    frameCollection = Paths.getSparrowAtlas('noteSplashes');
-    frameCollection.parent.persist = true;
-  }
-
   public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
 
     setupSplashGraphic(noteStyle);
 
-    this.animation.finishCallback = this.onAnimationFinished;
+    this.animation.onFinish.add(this.onAnimationFinished);
   }
 
   /**
