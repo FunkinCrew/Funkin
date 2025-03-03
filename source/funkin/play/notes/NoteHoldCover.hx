@@ -20,7 +20,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
   {
     super(0, 0);
 
-    setup();
+    setupHoldNoteCover();
   }
 
   public static function preloadFrames():Void
@@ -47,7 +47,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
   /**
    * Add ALL the animations to this sprite. We will recycle and reuse the FlxSprite multiple times.
    */
-  function setup():Void
+  function setupHoldNoteCover():Void
   {
     glow = new FlxSprite();
     add(glow);
@@ -63,7 +63,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
       glow.animation.addByPrefix('holdCoverEnd$directionName', 'holdCoverEnd${directionName}0', FRAMERATE_DEFAULT, false, false, false);
     }
 
-    glow.animation.finishCallback = this.onAnimationFinished;
+    glow.animation.onFinish.add(this.onAnimationFinished);
 
     if (glow.animation.getAnimationList().length < 3 * 4)
     {

@@ -99,6 +99,15 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     target.updateHitbox();
   }
 
+  function getNoteAssetLibrary():Null<String>
+  {
+    // library:path
+    var parts = getNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return null;
+    return parts[0];
+  }
+
   var noteFrames:Null<FlxAtlasFrames> = null;
 
   function buildNoteFrames(force:Bool = false):Null<FlxAtlasFrames>
@@ -123,7 +132,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     if (noteFrames != null && !force) return noteFrames;
 
-    noteFrames = Paths.getSparrowAtlas(noteAssetPath, getNoteAssetLibrary());
+    noteFrames = Paths.getSparrowAtlas(noteAssetPath, getAssetLibrary(getNoteAssetPath(true)));
 
     if (noteFrames == null)
     {
@@ -147,15 +156,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     if (parts.length == 0) return null;
     if (parts.length == 1) return getNoteAssetPath(true);
     return parts[1];
-  }
-
-  function getNoteAssetLibrary():Null<String>
-  {
-    // library:path
-    var parts = getNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return null;
-    return parts[0];
   }
 
   function buildNoteAnimations(target:NoteSprite):Void
@@ -232,7 +232,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     // TODO: Add support for multi-Sparrow.
     // Will be less annoying after this is merged: https://github.com/HaxeFlixel/flixel/pull/2772
 
-    var atlas:FlxAtlasFrames = Paths.getSparrowAtlas(getStrumlineAssetPath() ?? '', getStrumlineAssetLibrary());
+    var atlas:FlxAtlasFrames = Paths.getSparrowAtlas(getStrumlineAssetPath() ?? '', getAssetLibrary(getStrumlineAssetPath(true)));
 
     if (atlas == null)
     {
@@ -256,14 +256,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var parts = getStrumlineAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
     if (parts.length <= 1) return getStrumlineAssetPath(true);
     return parts[1];
-  }
-
-  function getStrumlineAssetLibrary():Null<String>
-  {
-    // library:path
-    var parts = getStrumlineAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length <= 1) return null;
-    return parts[0];
   }
 
   public function applyStrumlineAnimations(target:StrumlineNote, dir:NoteDirection):Void
@@ -921,7 +913,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     if (splashFrames != null && !force) return splashFrames;
 
-    splashFrames = Paths.getSparrowAtlas(splashAssetPath, getSplashAssetLibrary());
+    splashFrames = Paths.getSparrowAtlas(splashAssetPath, getAssetLibrary(getSplashAssetPath(true)));
     splashFrames.parent.persist = true;
     if (splashFrames == null)
     {
@@ -943,14 +935,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     if (parts.length == 0) return null;
     if (parts.length == 1) return getSplashAssetPath(true);
     return parts[1];
-  }
-
-  function getSplashAssetLibrary():Null<String>
-  {
-    var parts = getSplashAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return null;
-    return parts[0];
   }
 
   function buildSplashAnimations(target:NoteSplash):Void
@@ -1007,7 +991,136 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data?.assets?.noteSplash?.data?.framerateVariance ?? fallback?.getSplashFramerateVariance() ?? 2;
   }
 
+  public function buildHoldCoverSprite(target:NoteHoldCover):Void
+  {
+    var atlas:Null<FlxAtlasFrames> = buildHoldCoverFrames(false);
+    if (atlas == null)
+    {
+      throw 'Could not load spritesheet for note style: $id';
+    }
+    target.frames = atlas;
+    target.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
+
+    buildHoldCoverAnimations(target);
+  }
+
+  var holdCoverFrames:Null<FlxAtlasFrames> = null;
+
+  function buildHoldCoverFrames(force:Bool = false):Null<FlxAtlasFrames>
+  {
+    @:nullSafety(Off)
+    {
+      if (splashFrames?.parent?.isDestroyed ?? false) splashFrames = null;
+    }
+    if (holdCoverFrames != null && !force) return holdCoverFrames;
+
+    for (direction in Strumline.DIRECTIONS)
+    {
+      var atlas = buildHoldCoverFrameForDirection(direction);
+      if (holdCoverFrames == null)
+      {
+        holdCoverFrames = atlas;
+      }
+      else
+      {
+        if (atlas != null)
+        {
+          holdCoverFrames = FlxAnimationUtil.combineFramesCollection(holdCoverFrames, atlas);
+        }
+      }
+    }
+
+    return holdCoverFrames;
+  }
+
+  function buildHoldCoverFrameForDirection(direction:NoteDirection):Null<FlxAtlasFrames>
+  {
+    var directionData = switch (direction)
+    {
+      case LEFT: _data.assets?.holdNoteCover?.data?.left;
+      case DOWN: _data.assets?.holdNoteCover?.data?.down;
+      case UP: _data.assets?.holdNoteCover?.data?.up;
+      case RIGHT: _data.assets?.holdNoteCover?.data?.right;
+    };
+
+    if (directionData == null) return null;
+
+    var holdCoverAssetPath:Null<String> = getHoldCoverAssetPath(direction) ?? fallback?.getHoldCoverAssetPath(direction);
+    if (holdCoverAssetPath == null)
+    {
+      FlxG.log.warn('Hold Note Cover asset path not found: ${id}');
+      return null;
+    }
+
+    if (!FunkinSprite.isTextureCached(Paths.image(holdCoverAssetPath)))
+    {
+      FlxG.log.warn('Hold Note Cover texture not cached: ${holdCoverAssetPath}');
+    }
+
+    var atlas:FlxFramesCollection = Paths.getSparrowAtlas(holdCoverAssetPath, getAssetLibrary(getHoldCoverDirectionAssetPath(direction, true)));
+    atlas.parent.persist = true;
+    if (atlas == null) return null;
+
+    return atlas;
+  }
+
+  function buildHoldCoverAnimations(target:NoteHoldCover):Void
+  {
+    return;
+  }
+
+  // fallbacks:
+  // assetPath for a direction -> root assetpath -> fallback assetpath for direction -> fallback root assetpath
+  function getHoldCoverAssetPath(direction:NoteDirection):Null<String>
+  {
+    return getHoldCoverDirectionAssetPath(direction) ?? getHoldCoverRootAssetPath();
+  }
+
+  function getHoldCoverRootAssetPath():Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data?.assets?.holdNoteCover?.assetPath;
+      if (rawPath == null) return fallback?.getHoldCoverRootAssetPath();
+      return rawPath;
+    }
+
+    var parts:Array<String> = getHoldCoverRootAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getHoldCoverRootAssetPath(true);
+    return parts[1];
+  }
+
+  function getHoldCoverDirectionAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = switch (direction)
+      {
+        case LEFT: _data?.assets?.holdNoteCover?.data?.left?.assetPath;
+        case DOWN: _data?.assets?.holdNoteCover?.data?.down?.assetPath;
+        case UP: _data?.assets?.holdNoteCover?.data?.up?.assetPath;
+        case RIGHT: _data?.assets?.holdNoteCover?.data?.right?.assetPath;
+      };
+
+      if (rawPath == null) return fallback?.getHoldCoverDirectionAssetPath(direction, true);
+      return rawPath;
+    }
+    var parts:Array<String> = getHoldCoverDirectionAssetPath(direction, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getHoldCoverDirectionAssetPath(direction, true);
+    return parts[1];
+    return switch (direction)
+  }
+
   public function destroy():Void {}
+
+  function getAssetLibrary(?id:String):Null<String>
+  {
+    var parts = id?.split(Constants.LIBRARY_SEPARATOR);
+    if (parts.length <= 1) return null;
+    return parts[0];
+  }
 
   public function toString():String
   {
