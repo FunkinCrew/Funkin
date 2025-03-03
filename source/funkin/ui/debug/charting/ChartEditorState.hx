@@ -4305,12 +4305,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               currentScrollEase += (diff * 0.5); // Too fast!
             }
 
-            // Render the selection box.
+            // Render the selection box, and keep the rendered graphic clamped to the size of the screen
             var selectionRect:FlxRect = new FlxRect();
             selectionRect.x = Math.min(FlxG.mouse.viewX, selectionBoxStartPos.x);
-            selectionRect.y = Math.min(FlxG.mouse.viewY, selectionBoxStartPos.y);
+            selectionRect.y = Math.min(Math.max(0, selectionBoxStartPos.y), FlxG.mouse.viewY);
             selectionRect.width = Math.abs(FlxG.mouse.viewX - selectionBoxStartPos.x);
-            selectionRect.height = Math.abs(FlxG.mouse.viewY - selectionBoxStartPos.y);
+            selectionRect.height = Math.abs(FlxG.mouse.viewY - Math.max(Math.min(FlxG.height, selectionBoxStartPos.y), 0));
             setSelectionBoxBounds(selectionRect);
 
             targetCursorMode = Crosshair;
