@@ -1237,9 +1237,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_songManifestData():ChartManifestData
   {
     if (_songManifestData != null) return _songManifestData;
-    return _songManifestData = new ChartManifestData(
-      currentSongName.toLowerKebabCase().replace(' ', '-').sanitize()
-    );
+    return _songManifestData = new ChartManifestData(getDefaultSongId());
   }
 
   function set_songManifestData(value:ChartManifestData):ChartManifestData
@@ -1521,6 +1519,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_currentSongId():String
   {
     return songManifestData.songId;
+  }
+
+  function getDefaultSongId():String
+  {
+    return currentSongName.toLowerKebabCase().replace(' ', '-').sanitize();
   }
 
   var currentSongArtist(get, set):String;
