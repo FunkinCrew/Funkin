@@ -80,16 +80,16 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
         case "STEPS":
           contextmenuPosition.label = "Time (Steps)";
           contextmenuLength.label = "Length (Steps)";
-          if (contextmenuPosition.value != data.getStepTime())
+          if (contextmenuPosition.value != (Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
           {
             contextmenuPosition.pauseEvent(UIEvent.CHANGE, true);
-            contextmenuPosition.value = data.getStepTime();
+            contextmenuPosition.value = Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
             contextmenuPosition.resumeEvent(UIEvent.CHANGE, true, true);
           }
-          if (contextmenuLength.value != data.getStepLength())
+          if (contextmenuLength.value != (Math.round(data.getStepLength() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
           {
             contextmenuLength.pauseEvent(UIEvent.CHANGE, true);
-            contextmenuLength.value = data.getStepLength();
+            contextmenuLength.value = Math.round(data.getStepLength() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
             contextmenuLength.resumeEvent(UIEvent.CHANGE, true, true);
           }
         default:
@@ -122,20 +122,28 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
       switch (contextmenuUnit.value.id)
       {
         case "MILLISECONDS":
-          // Don't move the hold note if we don't have to
-          if (newTime != 0 && newTime != data.time)
+          // Don't move the note if we don't have to
+          if (newTime != 0 || data.time != 0) if (newTime != data.time)
           {
             data.time = newTime;
             chartEditorState.performCommand(new MoveNotesCommand(chartEditorState.currentNoteSelection, newTime, 0, true));
           }
         case "STEPS":
-          if (newTime != 0 && newTime != data.getStepTime())
+          if (newTime != 0 || data.time != 0)
           {
-            data.time = Conductor.instance.getStepTimeInMs(newTime);
-            chartEditorState.performCommand(new MoveNotesCommand(chartEditorState.currentNoteSelection, newTime, 0, true, true));
+            newTime = Math.round(newTime / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
+            if (newTime != (Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
+            {
+              data.time = Conductor.instance.getStepTimeInMs(newTime); // There isn't a function for this in the SongData sadly
+              chartEditorState.performCommand(new MoveNotesCommand(chartEditorState.currentNoteSelection, newTime, 0, true, true));
+              // update the value because it was actually valid
+              contextmenuPosition.pauseEvent(UIEvent.CHANGE, true);
+              contextmenuPosition.value = Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
+              contextmenuPosition.resumeEvent(UIEvent.CHANGE, true, true);
+            }
           }
         default:
-          if (newTime != 0 && newTime != data.time)
+          if (newTime != 0 || data.time != 0) if (newTime != data.time)
           {
             data.time = newTime;
             chartEditorState.performCommand(new MoveNotesCommand(chartEditorState.currentNoteSelection, newTime, 0, true));
@@ -149,10 +157,11 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
       contextmenuPosition.value = data.time;
       contextmenuPosition.resumeEvent(UIEvent.CHANGE, true, true);
     }
-    else if (id == "STEPS" && contextmenuPosition.value != data.getStepTime())
+    else if (id == "STEPS"
+      && contextmenuPosition.value != (Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
     {
       contextmenuPosition.pauseEvent(UIEvent.CHANGE, true);
-      contextmenuPosition.value = data.getStepTime();
+      contextmenuPosition.value = Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
       contextmenuPosition.resumeEvent(UIEvent.CHANGE, true, true);
     }
 
@@ -168,19 +177,26 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
       {
         case "MILLISECONDS":
           // Don't change the length of the hold note if we don't have to
-          if (newLength != 0 && newLength != data.length)
+          if (newLength != 0 || data.length != 0) if (newLength != data.length)
           {
             data.length = newLength;
             chartEditorState.performCommand(new ExtendNoteLengthCommand(data, data.length, MILLISECONDS));
           }
         case "STEPS":
-          if (newLength != 0 && newLength != data.getStepLength())
+          if (newLength != 0 || data.length != 0)
           {
-            data.setStepLength(newLength);
-            chartEditorState.performCommand(new ExtendNoteLengthCommand(data, newLength, STEPS));
+            newLength = Math.round(newLength / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
+            if (newLength != (Math.round(data.getStepLength() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
+            {
+              data.setStepLength(newLength);
+              chartEditorState.performCommand(new ExtendNoteLengthCommand(data, newLength, STEPS));
+              contextmenuLength.pauseEvent(UIEvent.CHANGE, true);
+              contextmenuLength.value = Math.round(data.getStepLength() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
+              contextmenuLength.resumeEvent(UIEvent.CHANGE, true, true);
+            }
           }
         default:
-          if (newLength != 0 && newLength != data.length)
+          if (newLength != 0 || data.length != 0) if (newLength != data.length)
           {
             data.length = newLength;
             chartEditorState.performCommand(new ExtendNoteLengthCommand(data, data.length, MILLISECONDS));
@@ -193,10 +209,11 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
       contextmenuLength.value = data.length;
       contextmenuLength.resumeEvent(UIEvent.CHANGE, true, true);
     }
-    else if (id == "STEPS" && contextmenuLength.value != data.getStepLength())
+    else if (id == "STEPS"
+      && contextmenuLength.value != (Math.round(data.getStepLength() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
     {
       contextmenuLength.pauseEvent(UIEvent.CHANGE, true);
-      contextmenuLength.value = data.getStepLength();
+      contextmenuLength.value = Math.round(data.getStepLength() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;
       contextmenuLength.resumeEvent(UIEvent.CHANGE, true, true);
     }
 
