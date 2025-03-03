@@ -221,13 +221,11 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
 
-    FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
-
     // Attempt to strip a `-alt` suffix, if it exists.
     if (name.lastIndexOf('-') != -1)
     {
       var correctName = name.substring(0, name.lastIndexOf('-'));
-      FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
+      FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes ($correctName)...');
       return correctAnimationName(correctName);
     }
     else
