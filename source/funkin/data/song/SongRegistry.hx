@@ -171,7 +171,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
   public function parseEntryMetadataWithMigration(id:String, variation:String, version:thx.semver.Version):Null<SongMetadata>
   {
-    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
+    variation = variation ?? Constants.DEFAULT_VARIATION;
 
     // If a version rule is not specified, do not check against it.
     if (SONG_METADATA_VERSION_RULE == null || VersionUtil.validateVersion(version, SONG_METADATA_VERSION_RULE))
