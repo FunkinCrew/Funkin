@@ -270,7 +270,7 @@ class ChartEditorImportExportHandler
         throw 'Could not find instrumental ($instFileName).';
       }
 
-      var playerVocalsFileName:String = manifest.getVocalsFileName(playerCharId, variation);
+      var playerVocalsFileName:String = manifest.getVocalsFileName(playerCharId);
       var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
       if (playerVocalsFileBytes != null)
       {
@@ -288,7 +288,7 @@ class ChartEditorImportExportHandler
 
       if (opponentCharId != null)
       {
-        var opponentVocalsFileName:String = manifest.getVocalsFileName(opponentCharId, variation);
+        var opponentVocalsFileName:String = manifest.getVocalsFileName(opponentCharId);
         var opponentVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(opponentVocalsFileName)?.data;
         if (opponentVocalsFileBytes != null)
         {
