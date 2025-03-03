@@ -21,19 +21,12 @@ class ChartManifestData
    * The internal song ID for this chart.
    * The metadata and chart data file names are derived from this.
    */
-  public var songId(get, set):String;
-  private var _songId:String;
-
-  public function get_songId():String
-  {
-    return _songId;
-  }
-
+  public var songId(default, set):String;
   public function set_songId(value:String):String
   {
     value = value.trim();
     for (invalidChar in invalidIdChars) value = value.replace(invalidChar, "");
-    return _songId = value;
+    return songId = value;
   }
 
   public function new(songId:String)
