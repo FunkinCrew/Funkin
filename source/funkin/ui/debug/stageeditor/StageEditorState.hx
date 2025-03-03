@@ -582,7 +582,7 @@ class StageEditorState extends UIState
       if (FlxG.keys.justPressed.DELETE) onMenuItemClick("delete object");
       if (FlxG.keys.justPressed.ENTER) onMenuItemClick("test stage");
       if (FlxG.keys.justPressed.ESCAPE) onMenuItemClick("exit");
-      if (FlxG.keys.justPressed.F1) onMenuItemClick("user guide");
+      if (FlxG.keys.justPressed.F1 && welcomeDialog == null && userGuideDialog == null) onMenuItemClick("user guide");
 
       if (FlxG.keys.justPressed.T)
       {
@@ -1268,6 +1268,10 @@ class StageEditorState extends UIState
       case "user guide":
         userGuideDialog = new UserGuideDialog();
         userGuideDialog.showDialog();
+
+        userGuideDialog.onDialogClosed = function(_) {
+          userGuideDialog = null;
+        }
 
       case "open folder":
         #if sys
