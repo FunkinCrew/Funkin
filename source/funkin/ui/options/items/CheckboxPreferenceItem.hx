@@ -1,8 +1,8 @@
 package funkin.ui.options.items;
 
-import flixel.FlxSprite.FlxSprite;
+import funkin.graphics.FunkinSprite;
 
-class CheckboxPreferenceItem extends FlxSprite
+class CheckboxPreferenceItem extends FunkinSprite
 {
   public var currentValue(default, set):Bool;
 
@@ -10,27 +10,15 @@ class CheckboxPreferenceItem extends FlxSprite
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas('checkboxThingie');
+    loadSparrow('checkboxThingie');
     animation.addByPrefix('static', 'Check Box unselected', 24, false);
     animation.addByPrefix('checked', 'Check Box selecting animation', 24, false);
+    setAnimationOffsets('checked', 17, 70);
 
     setGraphicSize(Std.int(width * 0.7));
     updateHitbox();
 
     this.currentValue = defaultValue;
-  }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-
-    switch (animation.curAnim.name)
-    {
-      case 'static':
-        offset.set();
-      case 'checked':
-        offset.set(17, 70);
-    }
   }
 
   function set_currentValue(value:Bool):Bool

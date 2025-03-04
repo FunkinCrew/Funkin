@@ -250,14 +250,10 @@ class BaseCharacter extends Bopper
    * Set the character's sprite scale to the appropriate value.
    * @param scale The desired scale.
    */
-  public function setScale(scale:Null<Float>):Void
+  public override function setScale(scale:Null<Float>):Void
   {
-    if (scale == null) scale = 1.0;
-
+    super.setScale(scale);
     var feetPos:FlxPoint = feetPosition;
-    this.scale.x = scale;
-    this.scale.y = scale;
-    this.updateHitbox();
     // Reposition with newly scaled sprite.
     this.x = feetPos.x - characterOrigin.x + globalOffsets[0];
     this.y = feetPos.y - characterOrigin.y + globalOffsets[1];

@@ -33,11 +33,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public var shouldAlternate:Null<Bool> = null;
 
   /**
-   * Offset the character's sprite by this much when playing each animation.
-   */
-  public var animationOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
-
-  /**
    * Add a suffix to the `idle` animation (or `danceLeft` and `danceRight` animations)
    * that this bopper will play.
    */
@@ -68,31 +63,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return value;
   }
 
-  /**
-   * The offset of the character relative to the position specified by the stage.
-   */
-  public var globalOffsets(default, set):Array<Float> = [0, 0];
-
-  function set_globalOffsets(value:Array<Float>):Array<Float>
-  {
-    if (globalOffsets == null) globalOffsets = [0, 0];
-    if (globalOffsets == value) return value;
-
-    return globalOffsets = value;
-  }
-
-  @:allow(funkin.ui.debug.anim.DebugBoundingState)
-  var animOffsets(default, set):Array<Float> = [0, 0];
-
   public var originalPosition:FlxPoint = new FlxPoint(0, 0);
-
-  function set_animOffsets(value:Array<Float>):Array<Float>
-  {
-    if (animOffsets == null) animOffsets = [0, 0];
-    if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
-
-    return animOffsets = value;
-  }
 
   /**
    * Whether to play `danceRight` next iteration.
@@ -203,13 +174,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     }
   }
 
-  public function hasAnimation(id:String):Bool
-  {
-    if (this.animation == null) return false;
-
-    return this.animation.getByName(id) != null;
-  }
-
   /**
    * Ensure that a given animation exists before playing it.
    * Will gracefully check for name, then name with stripped suffixes, then fail to play.
@@ -293,8 +257,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     {
       canPlayOtherAnims = false;
     }
-
-    applyAnimationOffsets(correctName);
   }
 
   var forceAnimationTimer:FlxTimer = new FlxTimer();
@@ -313,7 +275,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (correctName == null) return;
 
     this.animation.play(correctName, false, false);
-    applyAnimationOffsets(correctName);
 
     canPlayOtherAnims = false;
     forceAnimationTimer.start(duration, (timer) -> {
@@ -321,40 +282,18 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     }, 1);
   }
 
-  function applyAnimationOffsets(name:String):Void
-  {
-    var offsets = animationOffsets.get(name);
-    this.animOffsets = offsets;
-  }
-
-  public function isAnimationFinished():Bool
-  {
-    return this.animation?.finished ?? false;
-  }
-
-  public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
-  {
-    animationOffsets.set(name, [xOffset, yOffset]);
-  }
-
-  /**
-   * Returns the name of the animation that is currently playing.
-   * If no animation is playing (usually this means the character is BROKEN!),
-   *   returns an empty string to prevent NPEs.
-   */
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
-  }
-
   // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
-    var output:FlxPoint = super.getScreenPosition(result, camera);
-    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
-    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
-    return output;
+    if (result == null) result = FlxPoint.get();
+
+    if (camera == null) camera = getDefaultCamera();
+
+    result.set(x, y);
+
+    result.x -= (currentAnimationOffsets[0] - globalOffsets[0]) * this.scale.x;
+    result.y -= (currentAnimationOffsets[1] - globalOffsets[1]) * this.scale.y;
+    return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
   }
 
   public function onPause(event:PauseScriptEvent) {}
