@@ -48,7 +48,8 @@ class FunkTrail extends FlxTrail
     {
       var targ:Bopper = cast target;
       @:privateAccess
-      frameOffset.set((targ.animOffsets[0] - targ.globalOffsets[0]) * targ.scale.x, (targ.animOffsets[1] - targ.globalOffsets[1]) * targ.scale.y);
+      frameOffset.set((targ.currentAnimationOffsets[0] - targ.globalOffsets[0]) * targ.scale.x,
+        (targ.currentAnimationOffsets[1] - targ.globalOffsets[1]) * targ.scale.y);
 
       _recentPositions[0]?.subtract(frameOffset.x, frameOffset.y);
     }
