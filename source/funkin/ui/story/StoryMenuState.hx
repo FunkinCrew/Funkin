@@ -12,6 +12,7 @@ import funkin.audio.FunkinSound;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.FunkinText;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayStatePlaylist;
@@ -53,22 +54,22 @@ class StoryMenuState extends MusicBeatState
   /**
    * The title of the level at the top.
    */
-  var levelTitleText:FlxText;
+  var levelTitleText:FunkinText;
 
   /**
    * The score text at the top.
    */
-  var scoreText:FlxText;
+  var scoreText:FunkinText;
 
   /**
    * The mode text at the top-middle.
    */
-  var modeText:FlxText;
+  var modeText:FunkinText;
 
   /**
    * The list of songs on the left.
    */
-  var tracklistText:FlxText;
+  var tracklistText:FunkinText;
 
   /**
    * The titles of the levels in the middle.
@@ -176,18 +177,18 @@ class StoryMenuState extends MusicBeatState
 
     updateProps();
 
-    tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
+    tracklistText = new FunkinText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
     tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFE55777;
     add(tracklistText);
 
-    scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
+    scoreText = new FunkinText(10, 10, 0, 'HIGH SCORE: 42069420');
     scoreText.setFormat('VCR OSD Mono', 32);
     scoreText.zIndex = 1000;
     add(scoreText);
 
-    levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
+    levelTitleText = new FunkinText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
     levelTitleText.setFormat('VCR OSD Mono', 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
     levelTitleText.zIndex = 1000;
