@@ -8,15 +8,10 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
-import funkin.play.notes.NoteHoldCover;
-import funkin.play.notes.NoteSplash;
-import funkin.play.notes.NoteSprite;
-import funkin.play.notes.SustainTrail;
 import funkin.data.song.SongData.SongNoteData;
-import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
-import funkin.modding.events.ScriptEvent;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notesound.NoteSoundPlayer;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -133,6 +128,8 @@ class Strumline extends FlxSpriteGroup
 
   var heldKeys:Array<Bool> = [];
 
+  public var noteSoundPlayer:NoteSoundPlayer;
+
   public function new(noteStyle:NoteStyle, isPlayer:Bool)
   {
     super();
@@ -170,6 +167,8 @@ class Strumline extends FlxSpriteGroup
     this.add(this.noteSplashes);
 
     this.refresh();
+
+    this.noteSoundPlayer = new NoteSoundPlayer();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
     resetScrollSpeed();
@@ -742,7 +741,7 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteSplash(direction:NoteDirection):Void
   {
-    if (!showNotesplash) return;
+    if (!Preferences.noteSplashes || !showNotesplash) return;
     if (!noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
@@ -762,7 +761,7 @@ class Strumline extends FlxSpriteGroup
 
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
-    if (!showNotesplash) return;
+    if (!Preferences.noteSplashes || !showNotesplash) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();
