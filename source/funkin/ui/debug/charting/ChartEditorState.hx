@@ -5838,6 +5838,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     uiCamera.revive();
     FlxG.cameras.reset(uiCamera);
+    uiCamera.onResize();
 
     add(this.root);
   }
