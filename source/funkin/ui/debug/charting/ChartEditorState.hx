@@ -2768,6 +2768,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
     hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
     shouldPlayWelcomeMusic = save.chartEditorThemeMusic.value;
+    menubarItemHitsoundPitchNoteDirection.selected = save.chartEditorHitsoundPitchNoteDirection;
+    menubarItemRandomPitch.selected = save.chartEditorRandomPitch;
 
     menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
     menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
@@ -2805,6 +2807,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent.value = hitsoundVolumeOpponent;
     save.chartEditorThemeMusic.value = shouldPlayWelcomeMusic;
+    save.chartEditorHitsoundPitchNoteDirection = menubarItemHitsoundPitchNoteDirection.selected;
+    save.chartEditorRandomPitch = menubarItemRandomPitch.selected;
 
     save.chartEditorInstVolume.value = menubarItemVolumeInstrumental.value / 100.0;
     save.chartEditorPlayerVoiceVolume.value = menubarItemVolumeVocalsPlayer.value / 100.0;
@@ -5629,7 +5633,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           if (dragLengthSteps > 0)
           {
-            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'), 1.0, 1.0, 0.2);
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
             // Apply the new length.
             performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
           }
@@ -5638,7 +5642,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             // Apply the new (zero) length if we are changing the length.
             if (currentPlaceNoteData.length > 0)
             {
-              this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'), 1.0, 1.0, 0.2);
+              this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
               performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
             }
           }
@@ -5781,87 +5785,90 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // We right clicked on the grid.
 
-        if (highlightedNote != null && highlightedNote.noteData != null)
-        {
-          // TODO: Handle the case of clicking on a sustain piece.
-          if (FlxG.keys.pressed.SHIFT)
+          if (highlightedNote != null && highlightedNote.noteData != null)
           {
-            // Shift + Right click opens the context menu.
-            // If we are clicking a large selection, open the Selection context menu, otherwise open the Note context menu.
-            var isHighlightedNoteSelected:Bool = isNoteSelected(highlightedNote.noteData);
-            var useSingleNoteContextMenu:Bool = (!isHighlightedNoteSelected) || (isHighlightedNoteSelected && currentNoteSelection.length == 1);
-            // Show the context menu connected to the note.
-            if (useSingleNoteContextMenu)
+            // TODO: Handle the case of clicking on a sustain piece.
+            if (FlxG.keys.pressed.SHIFT)
             {
-              // Open the hold note menu instead if the highlighted note has a length value
-              if (highlightedNote.noteData.length > 0) this.openHoldNoteContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedNote.noteData);
+              // Shift + Right click opens the context menu.
+              // If we are clicking a large selection, open the Selection context menu, otherwise open the Note context menu.
+              var isHighlightedNoteSelected:Bool = isNoteSelected(highlightedNote.noteData);
+              var useSingleNoteContextMenu:Bool = (!isHighlightedNoteSelected)
+                || (isHighlightedNoteSelected && currentNoteSelection.length == 1);
+              // Show the context menu connected to the note.
+              if (useSingleNoteContextMenu)
+              {
+                // Open the hold note menu instead if the highlighted note has a length value
+                if (highlightedNote.noteData.length > 0) this.openHoldNoteContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedNote.noteData);
+                else
+                  this.openNoteContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedNote.noteData);
+              }
               else
-                this.openNoteContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedNote.noteData);
+              {
+                this.openSelectionContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY);
+              }
             }
             else
             {
-              this.openSelectionContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY);
+              // Right click removes the note.
+              performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
+            }
+          }
+          else if (highlightedEvent != null && highlightedEvent.eventData != null)
+          {
+            if (FlxG.keys.pressed.SHIFT)
+            {
+              // Shift + Right click opens the context menu.
+              // If we are clicking a large selection, open the Selection context menu, otherwise open the Event context menu.
+              var isHighlightedEventSelected:Bool = isEventSelected(highlightedEvent.eventData);
+              var useSingleEventContextMenu:Bool = (!isHighlightedEventSelected)
+                || (isHighlightedEventSelected && currentEventSelection.length == 1);
+              if (useSingleEventContextMenu)
+              {
+                this.openEventContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedEvent.eventData);
+              }
+              else
+              {
+                this.openSelectionContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY);
+              }
+            }
+            else
+            {
+              // Right click removes the event.
+              performCommand(new RemoveEventsCommand([highlightedEvent.eventData]));
+            }
+          }
+          else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+          {
+            if (FlxG.keys.pressed.SHIFT)
+            {
+              // Shift + Right click opens the context menu.
+              // If we are clicking a large selection, open the Selection context menu, otherwise open the Note context menu.
+              var isHighlightedNoteSelected:Bool = isNoteSelected(highlightedHoldNote.noteData);
+              var useSingleNoteContextMenu:Bool = (!isHighlightedNoteSelected)
+                || (isHighlightedNoteSelected && currentNoteSelection.length == 1);
+              // Show the context menu connected to the note.
+              if (useSingleNoteContextMenu)
+              {
+                this.openHoldNoteContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedHoldNote.noteData);
+              }
+              else
+              {
+                this.openSelectionContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY);
+              }
+            }
+            else
+            {
+              // Right click removes hold from the note.
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
+              performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
             }
           }
           else
           {
-            // Right click removes the note.
-            performCommand(new RemoveNotesCommand([highlightedNote.noteData]));
+            // Right clicked on nothing.
           }
         }
-        else if (highlightedEvent != null && highlightedEvent.eventData != null)
-        {
-          if (FlxG.keys.pressed.SHIFT)
-          {
-            // Shift + Right click opens the context menu.
-            // If we are clicking a large selection, open the Selection context menu, otherwise open the Event context menu.
-            var isHighlightedEventSelected:Bool = isEventSelected(highlightedEvent.eventData);
-            var useSingleEventContextMenu:Bool = (!isHighlightedEventSelected) || (isHighlightedEventSelected && currentEventSelection.length == 1);
-            if (useSingleEventContextMenu)
-            {
-              this.openEventContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedEvent.eventData);
-            }
-            else
-            {
-              this.openSelectionContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY);
-            }
-          }
-          else
-          {
-            // Right click removes the event.
-            performCommand(new RemoveEventsCommand([highlightedEvent.eventData]));
-          }
-        }
-        else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
-        {
-          if (FlxG.keys.pressed.SHIFT)
-          {
-            // Shift + Right click opens the context menu.
-            // If we are clicking a large selection, open the Selection context menu, otherwise open the Note context menu.
-            var isHighlightedNoteSelected:Bool = isNoteSelected(highlightedHoldNote.noteData);
-            var useSingleNoteContextMenu:Bool = (!isHighlightedNoteSelected) || (isHighlightedNoteSelected && currentNoteSelection.length == 1);
-            // Show the context menu connected to the note.
-            if (useSingleNoteContextMenu)
-            {
-              this.openHoldNoteContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY, highlightedHoldNote.noteData);
-            }
-            else
-            {
-              this.openSelectionContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY);
-            }
-          }
-          else
-          {
-            // Right click removes hold from the note.
-            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'), 1.0, 1.0, 0.2);
-            performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
-          }
-        }
-        else
-        {
-          // Right clicked on nothing.
-        }
-      }
 
       var isOrWillSelect =
         overlapsSelection
