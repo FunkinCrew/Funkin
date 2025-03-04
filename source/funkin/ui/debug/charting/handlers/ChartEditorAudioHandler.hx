@@ -268,7 +268,7 @@ class ChartEditorAudioHandler
   public static function playSound(_state:ChartEditorState, path:String, volume:Float = 1.0, pitch:Float = 1.0, pitchRandom:Float = 0):Void
   {
     if (volume == 0) return;
-    if (pitchRandom != 0)
+    if (funkin.save.Save.instance.chartEditorRandomPitch /* _state.menubarItemRandomPitch.selected */ && pitchRandom != 0)
     {
       pitch = FlxG.random.float(pitch - pitchRandom / 2, pitch + pitchRandom / 2);
     }

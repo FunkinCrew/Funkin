@@ -1904,6 +1904,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeMetronome:Slider;
 
   /**
+   * The `Audio -> Pitch hitsound by note direction` menu checkbox.
+   */
+  var menubarItemHitsoundPitchNoteDirection:MenuCheckBox;
+
+  /**
+   * The `Audio -> "Random pitch for SFX` menu checkbox.
+   */
+  var menubarItemRandomPitch:MenuCheckBox;
+
+  /**
    * The `Audio -> Play Theme Music` menu checkbox.
    */
   var menubarItemThemeMusic:MenuCheckBox;
@@ -2378,6 +2388,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
     hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent;
     this.welcomeMusic.active = save.chartEditorThemeMusic;
+    menubarItemHitsoundPitchNoteDirection.selected = save.chartEditorHitsoundPitchNoteDirection;
+    menubarItemRandomPitch.selected = save.chartEditorRandomPitch;
 
     menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume * 100);
     menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume * 100);
@@ -2408,6 +2420,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
     save.chartEditorThemeMusic = this.welcomeMusic.active;
+    save.chartEditorHitsoundPitchNoteDirection = menubarItemHitsoundPitchNoteDirection.selected;
+    save.chartEditorRandomPitch = menubarItemRandomPitch.selected;
 
     save.chartEditorInstVolume = menubarItemVolumeInstrumental.value / 100.0;
     save.chartEditorPlayerVoiceVolume = menubarItemVolumeVocalsPlayer.value / 100.0;
@@ -6491,13 +6505,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Calling event.cancelEvent() skips all the other logic! Neat!
       if (event.eventCanceled) continue;
 
+      var pitch:Float = 1.0;
+      // Pitch the hitsound based on the note's direction, if the option is enabled
+      if (Save.instance.chartEditorHitsoundPitchNoteDirection /* menubarItemHitsoundPitchNoteDirection.selected */)
+      {
+        switch (noteData.getDirection())
+        {
+          case 0:
+            pitch = 0.75;
+          case 1:
+            pitch = 0.65;
+          case 2:
+            pitch = 1;
+          case 3:
+            pitch = 0.85;
+        }
+      }
       // Hitsounds.
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer, 1.0, 0.1);
+          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer, pitch, 0.1);
         case 1: // Opponent
-          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent, 1.0, 0.1);
+          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent, pitch, 0.1);
       }
     }
   }
