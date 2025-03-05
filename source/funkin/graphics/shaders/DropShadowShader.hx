@@ -363,20 +363,31 @@ class DropShadowShader extends FlxShader
       // the threshold because without any sort of smoothing it produces horrible edges
       float antialias(vec2 fragCoord, float curThreshold, bool useMask) {
 
+        // In GLSL 100, we need to use constant loop bounds
+        // Well assume a reasonable maximum for AA_STAGES and use a fixed loop
+        // The actual number of iterations will be controlled by a condition inside
+        const int MAX_AA = 8; // This should be large enough for most uses
+
         float AA_TOTAL_PASSES = AA_STAGES * AA_STAGES + 1.0;
         const float AA_JITTER = 0.5;
 
         // Run the shader multiple times with a random subpixel offset each time and average the results
         float color = intensityPass(fragCoord, curThreshold, useMask);
-          for (float x = 0.0; x < AA_STAGES; x++)
-          {
-            for (float y = 0.0; y < AA_STAGES; y++)
-            {
-              vec2 offset = AA_JITTER * (2.0 * hash22(vec2(x, y)) - 1.0) / openfl_TextureSize.xy;
-              color += intensityPass(fragCoord + offset, curThreshold, useMask);
-            }
+        for (int i = 0; i < MAX_AA * MAX_AA; i++) {
+          // Calculate x and y from i
+          int x = i / MAX_AA;
+          int y = i - (MAX_AA * int(i/MAX_AA)); // poor mans modulus
+
+          // Skip iterations beyond our desired AA_STAGES
+          if (float(x) >= AA_STAGES || float(y) >= AA_STAGES) {
+            continue;
           }
-          return color / AA_TOTAL_PASSES;
+
+          vec2 offset = AA_JITTER * (2.0 * hash22(vec2(float(x), float(y))) - 1.0) / openfl_TextureSize.xy;
+          color += intensityPass(fragCoord + offset, curThreshold, useMask);
+        }
+
+        return color / AA_TOTAL_PASSES;
       }
 
       vec3 createDropShadow(vec3 col, float curThreshold, bool useMask) {
