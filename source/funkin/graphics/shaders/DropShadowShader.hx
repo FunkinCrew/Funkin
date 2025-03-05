@@ -35,7 +35,8 @@ class DropShadowShader extends FlxShader
   public var angle(default, set):Float;
 
   /*
-    The distance or size of the drop shadow.
+    The distance or size of the drop shadow, in pixels,
+    relative to the texture itself... NOT the camera.
    */
   public var distance(default, set):Float;
 
@@ -48,11 +49,20 @@ class DropShadowShader extends FlxShader
   /*
     The brightness threshold for the drop shadow.
     Anything below this number will NOT be affected by the drop shadow shader.
+    A value of 0 effectively means theres no threshold, and vice versa.
    */
   public var threshold(default, set):Float;
 
   /*
+    The amount of antialias samples per-pixel,
+    used to smooth out any hard edges the brightness thresholding creates.
+    Defaults to 2, and 0 will remove any smoothing.
+   */
+  public var antialiasAmt(default, set):Float;
+
+  /*
     Whether the shader should try and use the alternate mask.
+    False by default.
    */
   public var useAltMask(default, set):Bool;
 
@@ -60,6 +70,7 @@ class DropShadowShader extends FlxShader
     The image for the alternate mask.
     At the moment, it uses the blue channel to specify what is or isnt going to use the alternate threshold.
     (its kinda sloppy rn i need to make it work a little nicer)
+    TODO: maybe have a sort of "threshold intensity texture" as well? where higher/lower values indicate threshold strength..
    */
   public var altMaskImage(default, set):BitmapData;
 
@@ -96,6 +107,17 @@ class DropShadowShader extends FlxShader
    */
   public var baseContrast(default, set):Float;
 
+  /*
+    Sets all 4 adjust color values.
+   */
+  public function setAdjustColor(b:Float, h:Float, c:Float, s:Float)
+  {
+    baseBrightness = b;
+    baseHue = h;
+    baseContrast = c;
+    baseSaturation = s;
+  }
+
   function set_baseHue(val:Float):Float
   {
     baseHue = val;
@@ -128,6 +150,13 @@ class DropShadowShader extends FlxShader
   {
     threshold = val;
     thr.value = [val];
+    return val;
+  }
+
+  function set_antialiasAmt(val:Float):Float
+  {
+    antialiasAmt = val;
+    AA_STAGES.value = [val];
     return val;
   }
 
@@ -167,6 +196,10 @@ class DropShadowShader extends FlxShader
     return spr;
   }
 
+  /*
+    Loads an image for the mask.
+    While you *could* directly set the value of the mask, this function works for both HTML5 and desktop targets.
+   */
   public function loadAltMask(path:String)
   {
     #if html5
@@ -178,11 +211,18 @@ class DropShadowShader extends FlxShader
     #end
   }
 
+  /*
+    Should be called on the animation.callback of the attached sprite.
+    TODO: figure out why the reference to the attachedSprite breaks on web??
+   */
   public function onAttachedFrame(name, frameNum, frameIndex)
   {
     if (attachedSprite != null) updateFrameInfo(attachedSprite.frame);
   }
 
+  /*
+    Updates the frame bounds and angle offset of the sprite for the shader.
+   */
   public function updateFrameInfo(frame:FlxFrame)
   {
     // NOTE: uv.width is actually the right pos and uv.height is the bottom pos
@@ -244,6 +284,8 @@ class DropShadowShader extends FlxShader
       uniform float saturation;
       uniform float brightness;
       uniform float contrast;
+
+      uniform float AA_STAGES;
 
       const vec3 grayscaleValues = vec3(0.3098039215686275, 0.607843137254902, 0.0823529411764706);
 		  const float e = 2.718281828459045;
@@ -321,9 +363,7 @@ class DropShadowShader extends FlxShader
       // the threshold because without any sort of smoothing it produces horrible edges
       float antialias(vec2 fragCoord, float curThreshold, bool useMask) {
 
-        const float AA_STAGES = 2.0;
-
-        const float AA_TOTAL_PASSES = AA_STAGES * AA_STAGES + 1.0;
+        float AA_TOTAL_PASSES = AA_STAGES * AA_STAGES + 1.0;
         const float AA_JITTER = 0.5;
 
         // Run the shader multiple times with a random subpixel offset each time and average the results
@@ -390,6 +430,8 @@ class DropShadowShader extends FlxShader
     baseSaturation = 0;
     baseBrightness = 0;
     baseContrast = 0;
+
+    antialiasAmt = 2;
 
     useAltMask = false;
 
