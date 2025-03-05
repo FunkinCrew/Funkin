@@ -1,5 +1,7 @@
 package funkin.data.song;
 
+import funkin.Conductor;
+
 using SongData.SongNoteData;
 
 /**
@@ -10,13 +12,13 @@ class SongNoteDataUtils
   static final CHUNK_INTERVAL_MS:Float = 2500;
 
   /**
-   * Retrieves all stacked notes
+   * Retrieves all stacked notes.
    *
-   * @param notes Sorted notes by time
-   * @param threshold Threshold in ms
-   * @return Stacked notes
+   * @param notes Sorted notes by time.
+   * @param snapThreshold The note snap threshold.
+   * @return Stacked notes.
    */
-  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float):Array<SongNoteData>
+  public static function listStackedNotes(notes:Array<SongNoteData>, snapThreshold:Int):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
 
@@ -25,7 +27,7 @@ class SongNoteDataUtils
 
     for (note in notes)
     {
-      if (note == null || chunks[chunks.length - 1].contains(note))
+      if (note == null)
       {
         continue;
       }
@@ -48,7 +50,7 @@ class SongNoteDataUtils
           var noteI:SongNoteData = chunk[i];
           var noteJ:SongNoteData = chunk[j];
 
-          if (doNotesStack(noteI, noteJ, threshold))
+          if (doNotesStack(noteI, noteJ, snapThreshold))
           {
             if (!stackedNotes.fastContains(noteI))
             {
@@ -75,11 +77,11 @@ class SongNoteDataUtils
    * @param lhs An array of notes
    * @param rhs An array of notes to concatenate into `lhs`
    * @param overwrittenNotes An optional array that is modified in-place with the notes in `lhs` that were overwritten.
-   * @param threshold Threshold in ms.
+   * @param snapThreshold The note snap threshold.
    * @return The unsorted resulting array.
    */
   public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>,
-      threshold:Float):Array<SongNoteData>
+      snapThreshold:Int):Array<SongNoteData>
   {
     if (lhs == null || rhs == null || rhs.length == 0) return lhs;
     if (lhs.length == 0) return rhs;
@@ -93,9 +95,9 @@ class SongNoteDataUtils
       for (j in 0...lhs.length)
       {
         var noteA:SongNoteData = lhs[j];
-        if (doNotesStack(noteA, noteB, threshold))
+        if (doNotesStack(noteA, noteB, snapThreshold))
         {
-          // Longer hold notes should have priority over shorter hold notes
+          // Long hold notes should have priority over shorter hold notes
           if (noteA.length <= noteB.length)
           {
             overwrittenNotes?.push(result[j].clone());
@@ -113,11 +115,15 @@ class SongNoteDataUtils
   }
 
   /**
-   * @param threshold Time difference in milliseconds.
-   * @return Returns `true` if both notes are on the same strumline, have the same direction and their time difference is less than `threshold`.
+   * @param noteA First note.
+   * @param noteB Second note.
+   * @param snapFraction The note snap threshold.
+   * @return Returns `true` if both notes are on the same strumline, have the same direction
+   * and their time difference is less than the snap-based threshold.
    */
-  public static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float = 20):Bool
+  public static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, snapFraction:Int = 32):Bool
   {
-    return noteA.data == noteB.data && Math.ffloor(Math.abs(noteA.time - noteB.time)) <= threshold;
+    final snapThreshold:Float = Conductor.instance.beatLengthMs / snapFraction;
+    return noteA.data == noteB.data && Math.abs(noteA.time - noteB.time) <= snapThreshold;
   }
 }
