@@ -622,7 +622,7 @@ class ChartEditorDialogHandler
     var inputStage:Null<DropDown> = dialog.findComponent('inputStage', DropDown);
     if (inputStage == null) throw 'Could not locate inputStage DropDown in Song Metadata dialog';
     inputStage.onChange = function(event:UIEvent) {
-      if (event.data == null && event.data.id == null) return;
+      if (event.data == null || event.data?.id == null) return;
       newSongMetadata.playData.stage = event.data.id;
     };
     var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(inputStage, newSongMetadata.playData.stage);
@@ -631,7 +631,7 @@ class ChartEditorDialogHandler
     var inputNoteStyle:Null<DropDown> = dialog.findComponent('inputNoteStyle', DropDown);
     if (inputNoteStyle == null) throw 'Could not locate inputNoteStyle DropDown in Song Metadata dialog';
     inputNoteStyle.onChange = function(event:UIEvent) {
-      if (event.data.id == null) return;
+      if (event.data?.id == null) return;
       newSongMetadata.playData.noteStyle = event.data.id;
     };
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, newSongMetadata.playData.noteStyle);
