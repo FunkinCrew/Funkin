@@ -339,12 +339,8 @@ class Project extends HXProject {
     {
       configureAdMobKeys();
     }
-    if (isIOS())
-    {
-      config.set("ios.team-id", "");
-      config.set("ios.identity", "");
-      config.set("ios.provisioning-profile", "");
-    }
+
+    // To sign in ios, use -xcode.
     if (isAndroid())
     {
       if (isRelease())
@@ -902,11 +898,19 @@ class Project extends HXProject {
   /**
    * Configure the application's favicon and executable icon.
    */
-  function configureIcons() {
-		addIcon("art/icon16.png", 16);
-		addIcon("art/icon32.png", 32);
-		addIcon("art/icon64.png", 64);
-		addIcon("art/iconOG.png");
+  function configureIcons()
+  {
+    if (!isIOS()) {
+      addIcon("art/icon16.png", 16);
+      addIcon("art/icon32.png", 32);
+      addIcon("art/icon64.png", 64);
+      addIcon("art/iconOG.png");
+    } else {
+      addIcon("icon16_noalpha.png", 16);
+      addIcon("art/icon32_noalpha.png", 32);
+      addIcon("art/icon64_noalpha.png", 64);
+      addIcon("art/iconOG_noalpha.png");
+    }
   }
 
 	/**
