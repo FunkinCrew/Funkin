@@ -1473,6 +1473,7 @@ class FreeplayState extends MusicBeatSubState
   var _dragOffset:Float = 0;
   var _pressedOn:Bool = false;
   var _moveLength:Float = 0;
+  var _flickEnded:Bool = true;
 
   function handleInputs(elapsed:Float):Void
   {
@@ -1558,65 +1559,85 @@ class FreeplayState extends MusicBeatSubState
         changeSelection(-Math.round(wheelAmount));
       }
 
-      // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
-
-      // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
-      // if (SwipeUtil.flickDown)
-      // {
-      //   if (curSelected - 1 >= 0)
-      //   {
-      //     dj?.resetAFKTimer();
-      //     changeSelection(-1);
-      //   }
-      //   else
-      //   {
-      //     SwipeUtil.resetSwipeVelocity();
-      //   }
-      // }
-
-      // if (SwipeUtil.flickUp)
-      // {
-      //   if (curSelected + 1 < grpCapsules.countLiving())
-      //   {
-      //     dj?.resetAFKTimer();
-      //     changeSelection(1);
-      //   }
-      //   else
-      //   {
-      //     SwipeUtil.resetSwipeVelocity();
-      //   }
-      // }
-
       for (touch in FlxG.touches.list)
       {
-        if (!touch.pressed)
+        if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
         {
+          if (!touch.pressed)
+          {
+            if (_moveLength > 0)
+            {
+              _moveLength = 0.0;
+              changeSelection(0);
+            }
+          }
+          else
+          {
+            final delta:Float = touch.deltaViewY;
+            trace("THIS IS DELTA " + touch.deltaViewY);
+            if (Math.abs(delta) >= 2)
+            {
+              var moveLength = delta / FlxG.updateFramerate;
+              moveLength *= 0.8;
+              _moveLength += Math.abs(moveLength);
+              curSelectedFloat -= moveLength;
+
+              updateSongsScroll();
+            }
+          }
+        }
+      }
+
+      // Apply flick velocity movement only if a flick has been detected
+      if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
+      {
+        if (FlxG.touches.flickManager.initialized && Math.isFinite(FlxG.touches.flickManager.velocity.y))
+        {
+          _flickEnded = false;
+          trace(FlxG.touches.flickManager.velocity.y);
+          var velocityMove:Float = FlxG.touches.flickManager.velocity.y / FlxG.updateFramerate;
+          velocityMove /= 100;
+          velocityMove *= 3;
+          trace("THIS VBELOCITY MOVE: " + velocityMove);
+
+          _moveLength += Math.abs(velocityMove);
+          curSelectedFloat -= velocityMove;
+
+          updateSongsScroll();
+        }
+        else if (!_flickEnded)
+        {
+          _flickEnded = true;
           if (_moveLength > 0)
           {
             _moveLength = 0.0;
             changeSelection(0);
           }
-          break;
         }
+      }
 
-        final delta:Float = touch.deltaY;
-        if (Math.abs(delta) < 2) break;
-
-        final moveLength = delta / FlxG.updateFramerate; // This might need more testing i don't think having frame dependant is good but on 60 FPS it's doing great
-        _moveLength += Math.abs(moveLength);
-        curSelectedFloat -= moveLength;
-
-        if (curSelectedFloat < 0)
+      if (curSelectedFloat < 0)
+      {
+        curSelectedFloat = 0;
+        FlxG.touches.flickManager.destroy();
+        _flickEnded = true;
+        if (_moveLength > 0)
         {
-          curSelectedFloat = grpCapsules.countLiving() - 1;
+          _moveLength = 0.0;
+          changeSelection(0);
         }
+      }
 
-        if (curSelectedFloat >= grpCapsules.countLiving())
+      if (curSelectedFloat >= grpCapsules.countLiving())
+      {
+        curSelectedFloat = grpCapsules.countLiving();
+        FlxG.touches.flickManager.destroy();
+        _flickEnded = true;
+        if (_moveLength > 0)
         {
-          curSelectedFloat = 0;
+          _moveLength = 0.0;
+          changeSelection(0);
         }
-
-        updateSongsScroll();
       }
     }
 
