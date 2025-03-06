@@ -141,6 +141,8 @@ class Save
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
           downscroll: false,
+          hitsoundPitchNoteDirection: false,
+          randomPitch: true,
           metronomeVolume: 1.0,
           hitsoundVolumePlayer: 1.0,
           hitsoundVolumeOpponent: 1.0,
@@ -326,6 +328,41 @@ class Save
     flush();
     return data.optionsChartEditor.theme;
   }
+
+  public var chartEditorHitsoundPitchNoteDirection(get, set):Bool;
+
+  function get_chartEditorHitsoundPitchNoteDirection():Bool
+  {
+    if (data.optionsChartEditor.hitsoundPitchNoteDirection == null) data.optionsChartEditor.hitsoundPitchNoteDirection = false;
+
+    return data.optionsChartEditor.hitsoundPitchNoteDirection;
+  }
+
+  function set_chartEditorHitsoundPitchNoteDirection(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.hitsoundPitchNoteDirection = value;
+    flush();
+    return data.optionsChartEditor.hitsoundPitchNoteDirection;
+  }
+
+  public var chartEditorRandomPitch(get, set):Bool;
+
+  function get_chartEditorRandomPitch():Bool
+  {
+    if (data.optionsChartEditor.randomPitch == null) data.optionsChartEditor.randomPitch = true;
+
+    return data.optionsChartEditor.randomPitch;
+  }
+
+  function set_chartEditorRandomPitch(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.randomPitch = value;
+    flush();
+    return data.optionsChartEditor.randomPitch;
+  }
+
 
   public var chartEditorMetronomeVolume(get, set):Float;
 
@@ -1526,6 +1563,18 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?downscroll:Bool;
+
+  /**
+   * Pitch the hitsound by note direction in the Chart editor.
+   * @default `false`
+   */
+  var ?hitsoundPitchNoteDirection:Bool;
+
+  /**
+   * Random pitch for sounds in the Chart Editor.
+   * @default `true`
+   */
+  var ?randomPitch:Bool;
 
   /**
    * Metronome volume in the Chart Editor.

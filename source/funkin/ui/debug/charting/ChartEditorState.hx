@@ -1860,6 +1860,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeMetronome:Slider;
 
   /**
+   * The `Audio -> Pitch hitsound by note direction` menu checkbox.
+   */
+  var menubarItemHitsoundPitchNoteDirection:MenuCheckBox;
+
+  /**
+   * The `Audio -> "Random pitch for SFX` menu checkbox.
+   */
+  var menubarItemRandomPitch:MenuCheckBox;
+
+  /**
    * The `Audio -> Play Theme Music` menu checkbox.
    */
   var menubarItemThemeMusic:MenuCheckBox;
@@ -2325,6 +2335,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // audioInstTrack.pitch = save.chartEditorPlaybackSpeed;
     // audioVocalTrackGroup.volume = save.chartEditorVoicesVolume;
     // audioVocalTrackGroup.pitch = save.chartEditorPlaybackSpeed;
+    /*
+      menubarItemHitsoundPitchNoteDirection.selected = save.chartEditorHitsoundPitchNoteDirection;
+      menubarItemRandomPitch.selected = save.chartEditorRandomPitch;
+     */
   }
 
   public function writePreferences(hasBackup:Bool):Void
@@ -2353,6 +2367,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // save.chartEditorInstVolume = audioInstTrack.volume;
     // save.chartEditorVoicesVolume = audioVocalTrackGroup.volume;
     // save.chartEditorPlaybackSpeed = audioInstTrack.pitch;
+    /*
+      save.chartEditorHitsoundPitchNoteDirection = menubarItemHitsoundPitchNoteDirection.selected;
+      save.chartEditorRandomPitch = menubarItemRandomPitch.selected;
+     */
   }
 
   public function populateOpenRecentMenu():Void
@@ -4098,8 +4116,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleCursor():Void
   {
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+    if (FlxG.mouse.justPressed) this.playSound(Paths.sound("chartingSounds/ClickDown"), 1.0, 1.0, 0.2);
+    if (FlxG.mouse.justReleased) this.playSound(Paths.sound("chartingSounds/ClickUp"), 1.0, 1.0, 0.2);
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
@@ -4565,7 +4583,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           if (dragTargetCurrentStep != dragDistanceSteps || dragTargetCurrentColumn != dragDistanceColumns)
           {
             // Play a sound as we drag.
-            this.playSound(Paths.sound('chartingSounds/noteLay'));
+            this.playSound(Paths.sound('chartingSounds/noteLay'), 1.0, 1.0, 0.05);
 
             trace('Dragged ${dragDistanceColumns} X and ${dragDistanceSteps} Y.');
             dragTargetCurrentStep = dragDistanceSteps;
@@ -4591,7 +4609,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             if (dragLengthCurrent != dragLengthSteps)
             {
               stretchySounds = !stretchySounds;
-              this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
+              this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'), 1.0, 1.0, 0.2);
 
               dragLengthCurrent = dragLengthSteps;
             }
@@ -4614,7 +4632,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           if (dragLengthSteps > 0)
           {
-            this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+            this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'), 1.0, 1.0, 0.2);
             // Apply the new length.
             performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
           }
@@ -4623,7 +4641,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             // Apply the new (zero) length if we are changing the length.
             if (currentPlaceNoteData.length > 0)
             {
-              this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+              this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'), 1.0, 1.0, 0.2);
               performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
             }
           }
@@ -4873,7 +4891,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             else
             {
               // Right click removes hold from the note.
-              this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+              this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'), 1.0, 1.0, 0.2);
               performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
             }
           }
@@ -5309,7 +5327,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (playheadDragLengthCurrent[column] != targetNoteLengthStepsInt)
         {
           stretchySounds = !stretchySounds;
-          this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
+          this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'), 1.0, 1.0, 0.2);
           playheadDragLengthCurrent[column] = targetNoteLengthStepsInt;
         }
         ghostHold.visible = true;
@@ -5352,7 +5370,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Extend the note to the playhead position.
       trace('Extending note. ${column}');
-      this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+      this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'), 1.0, 1.0, 0.2);
       performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
       currentLiveInputPlaceNoteData[column] = null;
       gridPlayheadGhostHoldNotes[column].noteData = null;
@@ -6281,13 +6299,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Calling event.cancelEvent() skips all the other logic! Neat!
       if (event.eventCanceled) continue;
 
+      var pitch:Float = 1.0;
+      // Pitch the hitsound based on the note's direction, if the option is enabled
+      if (Save.instance.chartEditorHitsoundPitchNoteDirection /* menubarItemHitsoundPitchNoteDirection.selected */)
+      {
+        switch (noteData.getDirection())
+        {
+          case 0:
+            pitch = 0.75;
+          case 1:
+            pitch = 0.65;
+          case 2:
+            pitch = 1;
+          case 3:
+            pitch = 0.85;
+        }
+      }
       // Hitsounds.
       switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
+          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer, pitch, 0.1);
         case 1: // Opponent
-          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
+          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent, pitch, 0.1);
       }
     }
   }
