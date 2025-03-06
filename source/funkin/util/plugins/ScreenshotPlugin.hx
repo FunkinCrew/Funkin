@@ -182,10 +182,10 @@ class ScreenshotPlugin extends FlxBasic
     }
     super.update(elapsed);
 
-    /*
-      This looks scary, oh no I pressed the button but no screenshot because screenshotTakenFrame != 0!
-      But if you're crazy enough to have a macro that bumps into this
-      then you're probably also going to hit 100 screenshots real fast
+    /**
+     * This looks scary, oh no I pressed the button but no screenshot because screenshotTakenFrame != 0!
+     * But if you're crazy enough to have a macro that bumps into this
+     * then you're probably also going to hit 100 screenshots real fast
      */
     if (hasPressedScreenshot() && screenshotTakenFrame == 0)
     {
@@ -271,28 +271,11 @@ class ScreenshotPlugin extends FlxBasic
   }
 
   /**
-   * Defines the region of the screen that should be captured.
-   * You don't need to call this method if you want to capture the entire screen, that's the default behavior.
-   * Currently unused.
-   */
-  public function defineCaptureRegion(x:Int, y:Int, width:Int, height:Int):Void
-  {
-    region = new Rectangle(x, y, width, height);
-  }
-
-  /**
    * Capture the game screen as a bitmap.
    */
   public function capture():Void
   {
     onPreScreenshot.dispatch();
-
-    // var captureRegion = region != null ? region : new Rectangle(0, 0, FlxG.stage.stageWidth, FlxG.stage.stageHeight);
-
-    // The actual work.
-    // var bitmap = new Bitmap(new BitmapData(Math.floor(captureRegion.width), Math.floor(captureRegion.height), true, 0x00000000)); // Create a transparent empty bitmap.
-    // var drawMatrix = new Matrix(1, 0, 0, 1, -captureRegion.x, -captureRegion.y); // Modifying this will scale or skew the bitmap.
-    // bitmap.bitmapData.draw(FlxG.stage, drawMatrix);
 
     var shot = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
     if (screenshotBeingSpammed == true)
@@ -443,9 +426,10 @@ class ScreenshotPlugin extends FlxBasic
     });
   }
 
-  /* This is a separate function, as running the previewsprite check
-    in the other one would mean you can't open the folder when the preview's hidden, lol
-    That, and it needs a mouse event as a parameter to work.
+  /**
+   * This is a separate function, as running the previewsprite check
+   * in the other one would mean you can't open the folder when the preview's hidden, lol
+   * That, and it needs a mouse event as a parameter to work.
    */
   function previewSpriteOpenScreenshotsFolder(e:MouseEvent):Void
   {
@@ -508,7 +492,7 @@ class ScreenshotPlugin extends FlxBasic
    * @param bitmap The bitmap to save.
    * @param targetPath The name of the screenshot.
    * @param screenShotNum Used for the delay save option, to space out the saving of the images.
-   * @param delaySave If true, the image gets saved with a one second delay + the screenShotNum.
+   * @param delaySave If true, the image gets saved with the screenShotNum as the delay.
    */
   function saveScreenshot(bitmap:Bitmap, targetPath = "image", screenShotNum:Int = 0, delaySave:Bool = true)
   {
@@ -537,7 +521,7 @@ class ScreenshotPlugin extends FlxBasic
     // Shouldn't be too hard to do something similar to the chart editor saving
 
     if (delaySave) // Save the images with a delay (a timer)
-      new FlxTimer().start(screenShotNum + 2, function(_) {
+      new FlxTimer().start(screenShotNum, function(_) {
       var pngData = encode(bitmap);
 
       if (pngData == null)
@@ -596,7 +580,10 @@ class ScreenshotPlugin extends FlxBasic
       showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
   }
 
-  // Similar to the above function, but cancels the tweens and doesn't have the async loop because this is called before the state changes
+  /**
+   * Similar to the above function, but cancels the tweens, undos the mouse
+   * and doesn't have the async loop because this is called before the state changes
+   */
   function saveUnsavedBufferedScreenshots()
   {
     stateChanging = true;
