@@ -743,6 +743,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var hitsoundVolumeOpponent:Float = 1.0;
 
   /**
+   * The audio volume before it was toggled to zero.
+   * Metronome, hitsounds (player and enemy), instrumental, vocals (player and enemy)
+   */
+  var previousAudioVolumes:Array<Float> = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+
+  /**
    * Whether hitsounds are enabled for at least one character.
    */
   var hitsoundsEnabled(get, never):Bool;
@@ -3059,6 +3065,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
     };
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
+    previousAudioVolumes[0] = (metronomeVolume == 0) ? 100 : metronomeVolume;
 
     menubarItemThemeMusic.onChange = event -> {
       this.welcomeMusic.active = event.value;
@@ -3072,6 +3079,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       menubarLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
     menubarItemVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
+    previousAudioVolumes[1] = (hitsoundVolumePlayer == 0) ? 100 : hitsoundVolumePlayer;
 
     menubarItemVolumeHitsoundOpponent.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -3079,24 +3087,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       menubarLabelVolumeHitsoundOpponent.text = 'Enemy - ${Std.int(event.value)}%';
     };
     menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
+    previousAudioVolumes[2] = (hitsoundVolumeOpponent == 0) ? 100 : hitsoundVolumeOpponent;
 
     menubarItemVolumeInstrumental.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
+    previousAudioVolumes[3] = (menubarLabelVolumeInstrumental.value == 0) ? 100 : menubarLabelVolumeInstrumental.value;
 
     menubarItemVolumeVocalsPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.playerVolume = volume;
       menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
+    previousAudioVolumes[4] = (menubarLabelVolumeVocalsPlayer.value == 0) ? 100 : menubarLabelVolumeVocalsPlayer.value;
 
     menubarItemVolumeVocalsOpponent.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.opponentVolume = volume;
       menubarLabelVolumeVocalsOpponent.text = 'Enemy - ${Std.int(event.value)}%';
     };
+    previousAudioVolumes[5] = (menubarLabelVolumeVocalsOpponent.value == 0) ? 100 : menubarLabelVolumeVocalsOpponent.value;
 
     menubarItemPlaybackSpeed.onChange = event -> {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
@@ -3343,6 +3355,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleViewKeybinds();
     handleTestKeybinds();
     handleHelpKeybinds();
+    handleAudioKeybinds();
 
     #if FEATURE_DEBUG_FUNCTIONS
     handleQuickWatch();
@@ -5641,6 +5654,88 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.keys.justPressed.F1 && !isHaxeUIDialogOpen)
     {
       this.openUserGuideDialog();
+    }
+  }
+
+  /**
+   * Handle keybinds for audio playback.
+   */
+  function handleAudioKeybinds():Void
+  {
+    // Metronome volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
+    {
+      // Changing values of the audio slider directly because it'll update the audio anyway and makes this code much cleaner, though more verbose.
+      if (previousAudioVolumes[0] > menubarItemVolumeMetronome.value) menubarItemVolumeMetronome.value = previousAudioVolumes[0];
+      else
+      {
+        previousAudioVolumes[0] = menubarItemVolumeMetronome.value;
+        menubarItemVolumeMetronome.value = 0;
+      }
+    }
+    // Hitsounds volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.H)
+    {
+
+
+      if (previousAudioVolumes[1] > menubarItemVolumeHitsoundPlayer.value) menubarItemVolumeHitsoundPlayer.value = previousAudioVolumes[1];
+      else
+      {
+        previousAudioVolumes[1] = menubarItemVolumeHitsoundPlayer.value;
+        menubarItemVolumeHitsoundPlayer.value = 0;
+      }
+      if (previousAudioVolumes[2] > menubarItemVolumeHitsoundOpponent.value) menubarItemVolumeHitsoundOpponent.value = previousAudioVolumes[2];
+      else
+      {
+        previousAudioVolumes[2] = menubarItemVolumeHitsoundOpponent.value;
+        menubarItemVolumeHitsoundOpponent.value = 0;
+      }
+    }
+    // Instrumental volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.I)
+    {
+      if (previousAudioVolumes[3] > menubarItemVolumeInstrumental.value) menubarItemVolumeInstrumental.value = previousAudioVolumes[3];
+      else
+      {
+        previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
+        menubarItemVolumeInstrumental.value = 0;
+      }
+    }
+    // Vocals volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.V)
+    {
+      if (previousAudioVolumes[4] > menubarItemVolumeVocalsPlayer.value) menubarItemVolumeVocalsPlayer.value = previousAudioVolumes[4];
+      else
+      {
+        previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
+        menubarItemVolumeVocalsPlayer.value = 0;
+      }
+      if (previousAudioVolumes[5] > menubarItemVolumeVocalsOpponent.value) menubarItemVolumeVocalsOpponent.value = previousAudioVolumes[5];
+      else
+      {
+        previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
+        menubarItemVolumeVocalsOpponent.value = 0;
+      }
+    }
+    // Boyfriend vocals volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.B)
+    {
+      if (previousAudioVolumes[4] > menubarItemVolumeVocalsPlayer.value) menubarItemVolumeVocalsPlayer.value = previousAudioVolumes[4];
+      else
+      {
+        previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
+        menubarItemVolumeVocalsPlayer.value = 0;
+      }
+    }
+    // Dad vocals volume toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.D)
+    {
+      if (previousAudioVolumes[5] > menubarItemVolumeVocalsOpponent.value) menubarItemVolumeVocalsOpponent.value = previousAudioVolumes[5];
+      else
+      {
+        previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
+        menubarItemVolumeVocalsOpponent.value = 0;
+      }
     }
   }
 
