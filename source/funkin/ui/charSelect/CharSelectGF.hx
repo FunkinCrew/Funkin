@@ -85,8 +85,9 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
   /**
    * For switching between 'GFs' such as GF, Nene, etc
    * @param bf Which BF we are selecting, so that we know the accompanying GF
+   * @param pressedSelect If select was pressed while switching character, play the confirm animation instead
    */
-  public function switchGF(bf:String):Void
+  public function switchGF(bf:String, pressedSelect:Bool = false):Void
   {
     var previousGFPath:String = currentGFPath;
 
@@ -123,6 +124,8 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
       enableVisualizer = gfData?.visualizer ?? false;
     }
 
+    if (pressedSelect) animation.play("confirm", true);
+    else
     animation.play('idle', true);
 
     updateHitbox();

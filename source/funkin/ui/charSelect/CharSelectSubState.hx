@@ -1191,8 +1191,8 @@ class CharSelectSubState extends MusicBeatSubState
       if (!playerChill.visible)
       {
         playerChill.visible = true;
-        playerChill.switchChar(value);
-        gfChill.switchGF(value);
+        playerChill.switchChar(value, true, pressedSelect);
+        gfChill.switchGF(value, pressedSelect);
         gfChill.visible = true;
       }
     });
