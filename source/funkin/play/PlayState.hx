@@ -889,6 +889,10 @@ class PlayState extends MusicBeatSubState
       Highscore.tallies.combo = 0;
       Countdown.performCountdown();
 
+      // Reset the health icons.
+      currentStage.getBoyfriend().initHealthIcon(false);
+      currentStage.getDad().initHealthIcon(true);
+
       needsReset = false;
     }
 
