@@ -2192,9 +2192,9 @@ class PlayState extends MusicBeatSubState
       if (note == null) continue;
 
       // TODO: Are offsets being accounted for in the correct direction?
-      var hitWindowStart = note.strumTime + Conductor.instance.inputOffset - Constants.HIT_WINDOW_MS;
       var hitWindowCenter = note.strumTime + Conductor.instance.inputOffset;
-      var hitWindowEnd = note.strumTime + Conductor.instance.inputOffset + Constants.HIT_WINDOW_MS;
+      var hitWindowStart = hitWindowCenter - Constants.HIT_WINDOW_MS;
+      var hitWindowEnd = hitWindowCenter + Constants.HIT_WINDOW_MS;
 
       if (Conductor.instance.songPosition > hitWindowEnd)
       {
@@ -2288,9 +2288,10 @@ class PlayState extends MusicBeatSubState
         continue;
       }
 
-      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
+      // TODO: Are offsets being accounted for in the correct direction?
+      var hitWindowCenter = note.strumTime + Conductor.instance.inputOffset;
+      var hitWindowStart = hitWindowCenter - Constants.HIT_WINDOW_MS;
+      var hitWindowEnd = hitWindowCenter + Constants.HIT_WINDOW_MS;
 
       if (Conductor.instance.songPosition > hitWindowEnd)
       {
