@@ -801,6 +801,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public override function remove(Sprite:FlxSprite, Splice:Bool = false):FlxSprite
   {
+    if (Sprite == null) return Sprite;
     var sprite:FlxSprite = cast Sprite;
     sprite.x -= x;
     sprite.y -= y;
