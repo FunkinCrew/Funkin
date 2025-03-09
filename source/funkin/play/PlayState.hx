@@ -295,6 +295,13 @@ class PlayState extends MusicBeatSubState
   public var cameraZoomRate:Int = Constants.DEFAULT_ZOOM_RATE;
 
   /**
+   * How many beats (quarter notes) the zoom rate is offset.
+   * For if you want the zoom to happen off-beat.
+   * @default Zero beats (on-beat).
+   */
+  public var cameraZoomRateOffset:Int = Constants.DEFAULT_ZOOM_OFFSET;
+
+  /**
    * Whether the game is currently in the countdown before the song resumes.
    */
   public var isInCountdown:Bool = false;
@@ -1477,7 +1484,7 @@ class PlayState extends MusicBeatSubState
     if (Preferences.zoomCamera
       && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
       && cameraZoomRate > 0
-      && Conductor.instance.currentBeat % cameraZoomRate == 0)
+      && (Conductor.instance.currentBeat + cameraZoomRateOffset) % cameraZoomRate == 0)
     {
       // Set zoom multiplier for camera bop.
       cameraBopMultiplier = cameraBopIntensity;
