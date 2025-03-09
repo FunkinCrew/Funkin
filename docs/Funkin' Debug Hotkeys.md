@@ -29,3 +29,5 @@ Most of this functionality is only available on debug builds of the game!
 ## **Main Menu**
 - `~`: ***DEBUG***: Opens a menu to access the Chart Editor and other work-in-progress editors. Rebindable in the options menu.
 - `CTRL-ALT-SHIFT-W`: ***ALL ACCESS***: Unlocks all songs in Freeplay. Only available on debug builds.
+- `CTRL-ALT-SHIFT-O`: ***ALT INST***: Unlocks Bopeebo (Pico Mix) alt inst in Freeplay. Only available on debug builds.
+- `CTRL-ALT-SHIFT-I`:***NO ALT INST***:  Locks back Bopeebo (Pico Mix) alt inst in Freeplay. Only available on debug builds.
