@@ -1559,50 +1559,49 @@ class FreeplayState extends MusicBeatSubState
         changeSelection(-Math.round(wheelAmount));
       }
 
-      for (touch in FlxG.touches.list)
+      if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
       {
-        if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
+        for (touch in FlxG.touches.list)
         {
-          if (!touch.pressed)
-          {
-            if (_moveLength > 0)
-            {
-              _moveLength = 0.0;
-              changeSelection(0);
-            }
-          }
-          else
+          if (touch.pressed)
           {
             final delta:Float = touch.deltaViewY;
 
             if (Math.abs(delta) >= 2)
             {
-              var moveLength = delta / FlxG.updateFramerate;
-              moveLength *= 1.2;
+              var moveLength:Float = delta / FlxG.updateFramerate * 1.2;
+
               _moveLength += Math.abs(moveLength);
               curSelectedFloat -= moveLength;
 
               updateSongsScroll();
             }
+            continue;
+          }
+
+          if (_moveLength > 0)
+          {
+            _moveLength = 0.0;
+            changeSelection(0);
           }
         }
-      }
 
-      // Apply flick velocity movement only if a flick has been detected
-      if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
-      {
-        if (FlxG.touches.flickManager.initialized && Math.isFinite(FlxG.touches.flickManager.velocity.y))
+        // Apply flick velocity movement only if a flick has been detected
+        if (FlxG.touches.flickManager.initialized)
         {
-          _flickEnded = false;
+          var flickVelocity = FlxG.touches.flickManager.velocity.y;
 
-          var velocityMove:Float = FlxG.touches.flickManager.velocity.y / FlxG.updateFramerate;
-          velocityMove /= 100;
-          velocityMove *= 3;
+          if (Math.isFinite(flickVelocity))
+          {
+            _flickEnded = false;
 
-          _moveLength += Math.abs(velocityMove);
-          curSelectedFloat -= velocityMove;
+            var velocityMove:Float = flickVelocity / FlxG.updateFramerate * 0.03;
 
-          updateSongsScroll();
+            _moveLength += Math.abs(velocityMove);
+            curSelectedFloat -= velocityMove;
+
+            updateSongsScroll();
+          }
         }
         else if (!_flickEnded)
         {
@@ -1615,29 +1614,22 @@ class FreeplayState extends MusicBeatSubState
         }
       }
 
-      if (curSelectedFloat < 0)
-      {
-        curSelected = 0;
-        curSelectedFloat = 0;
-        FlxG.touches.flickManager.destroy();
-        _flickEnded = true;
-        if (_moveLength > 0)
-        {
-          _moveLength = 0.0;
-          changeSelection(0);
-        }
-      }
+      // Clamp selection to valid range
 
-      if (curSelectedFloat >= grpCapsules.countLiving() - 1)
+      curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
+      curSelected = Std.int(curSelectedFloat);
+      if (!TouchUtil.pressed)
       {
-        curSelected = grpCapsules.countLiving() - 1;
-        curSelectedFloat = grpCapsules.countLiving() - 1;
-        FlxG.touches.flickManager.destroy();
-        _flickEnded = true;
-        if (_moveLength > 0)
+        // Reset flick state if clamped
+        if (curSelected == 0 || curSelected == grpCapsules.countLiving() - 1)
         {
-          _moveLength = 0.0;
-          changeSelection(0);
+          FlxG.touches.flickManager.destroy();
+          _flickEnded = true;
+          if (_moveLength > 0)
+          {
+            _moveLength = 0.0;
+            changeSelection(0);
+          }
         }
       }
     }
