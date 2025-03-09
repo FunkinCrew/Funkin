@@ -333,7 +333,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
     else
     {
-      throw '[${registryId}] Chart entry ${id}:${variation} does not support migration to version ${SONG_CHART_DATA_VERSION_RULE}.';
+      throw '[${registryId}] Chart entry ${id}:${variation} does not support migration to version ${SONG_MUSIC_DATA_VERSION_RULE}.';
     }
   }
 
@@ -346,7 +346,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
     else
     {
-      throw '[${registryId}] Chart entry "$fileName" does not support migration to version ${SONG_CHART_DATA_VERSION_RULE}.';
+      throw '[${registryId}] Chart entry "$fileName" does not support migration to version ${SONG_MUSIC_DATA_VERSION_RULE}.';
     }
   }
 
