@@ -144,7 +144,7 @@ class GameOverSubState extends MusicBeatSubState
     // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
     // We can then play the character's `firstDeath` animation.
     if (PlayState.instance.isMinimalMode) {}
-    else
+    else if (boyfriend != null)
     {
       boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
       boyfriend.canPlayOtherAnims = true;
