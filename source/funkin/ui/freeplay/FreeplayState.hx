@@ -1574,11 +1574,11 @@ class FreeplayState extends MusicBeatSubState
           else
           {
             final delta:Float = touch.deltaViewY;
-            trace("THIS IS DELTA " + touch.deltaViewY);
+
             if (Math.abs(delta) >= 2)
             {
               var moveLength = delta / FlxG.updateFramerate;
-              moveLength *= 0.8;
+              moveLength *= 1.2;
               _moveLength += Math.abs(moveLength);
               curSelectedFloat -= moveLength;
 
@@ -1594,11 +1594,10 @@ class FreeplayState extends MusicBeatSubState
         if (FlxG.touches.flickManager.initialized && Math.isFinite(FlxG.touches.flickManager.velocity.y))
         {
           _flickEnded = false;
-          trace(FlxG.touches.flickManager.velocity.y);
+
           var velocityMove:Float = FlxG.touches.flickManager.velocity.y / FlxG.updateFramerate;
           velocityMove /= 100;
           velocityMove *= 3;
-          trace("THIS VBELOCITY MOVE: " + velocityMove);
 
           _moveLength += Math.abs(velocityMove);
           curSelectedFloat -= velocityMove;
@@ -1618,6 +1617,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (curSelectedFloat < 0)
       {
+        curSelected = 0;
         curSelectedFloat = 0;
         FlxG.touches.flickManager.destroy();
         _flickEnded = true;
@@ -1628,9 +1628,10 @@ class FreeplayState extends MusicBeatSubState
         }
       }
 
-      if (curSelectedFloat >= grpCapsules.countLiving())
+      if (curSelectedFloat >= grpCapsules.countLiving() - 1)
       {
-        curSelectedFloat = grpCapsules.countLiving();
+        curSelected = grpCapsules.countLiving() - 1;
+        curSelectedFloat = grpCapsules.countLiving() - 1;
         FlxG.touches.flickManager.destroy();
         _flickEnded = true;
         if (_moveLength > 0)
