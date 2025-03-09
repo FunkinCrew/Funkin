@@ -75,6 +75,7 @@ class SongMenuItem extends FlxSpriteGroup
   var sparkleTimer:FlxTimer;
 
   var index:Int;
+  public var curSelected:Int;
 
   public function new(x:Float, y:Float)
   {
@@ -615,11 +616,13 @@ class SongMenuItem extends FlxSpriteGroup
         capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
+        // Move the targetPos set to the if statement below if you want them to shift to their target positions after jumping in instead
+        // I have no idea why this if instead of frameInTypeBeat == xFrames.length works even though they're the same thing
+        if (targetPos.x <= 320) targetPos.x = intendedX(index - curSelected);
       }
       else if (frameInTypeBeat == xFrames.length)
       {
         doJumpIn = false;
-        targetPos.x = intendedX(index);
       }
     }
 
