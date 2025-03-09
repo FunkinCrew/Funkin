@@ -113,7 +113,10 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
 
-    if (toolbox == null) return;
+    if (toolbox == null)
+    {
+      toolbox = cast initToolbox(state, id);
+    }
 
     if (toolbox != null)
     {
