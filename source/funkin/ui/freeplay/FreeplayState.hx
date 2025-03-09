@@ -758,11 +758,9 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.capsule.alpha = 0.5;
       funnyMenu.hsvShader = hsvShader;
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
-      // I would like to use to use the jump in now that it looks better,
-      // but I still can't because switching from harder to normal difficulties causes the x positions to mess up
-      /*if (fromCharSelect)*/ funnyMenu.forcePosition();
-      /*else
-        funnyMenu.initJumpIn(0, force); */
+      if (fromCharSelect) funnyMenu.forcePosition();
+      else
+        funnyMenu.initJumpIn(0, force);
 
       grpCapsules.add(funnyMenu);
     }
@@ -2031,6 +2029,8 @@ class FreeplayState extends MusicBeatSubState
       index += 1;
 
       capsule.selected = index == curSelected + 1;
+
+      if (index > 1) capsule.curSelected = curSelected;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = capsule.intendedX(index - curSelected);
