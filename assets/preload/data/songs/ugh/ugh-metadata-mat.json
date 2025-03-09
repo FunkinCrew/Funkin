@@ -1,27 +1,21 @@
 {
   "version": "2.2.4",
-  "songName": "Ugh",
-  "artist": "Kawai Sprite",
-  "offsets": {
-    "instrumental": 0,
-    "altInstrumentals": {},
-    "vocals": {},
-    "altVocals": {}
-  },
+  "songName": "Ugh (Mat Mix)",
+  "artist": "zhadnii.",
+  "charter": "Unknown",
   "playData": {
     "difficulties": ["easy", "normal", "hard"],
     "characters": {
-      "player": "bf",
-      "girlfriend": "gf-tankmen",
+      "player": "mat-playable",
+      "girlfriend": "prism",
       "opponent": "tankman",
-      "instrumental": "",
-      "altInstrumentals": ["pico"]
+      "instrumental": "mat",
+      "altInstrumentals": []
     },
-    "songVariations": ["erect", "pico", "mat"],
     "stage": "tankmanBattlefield",
     "noteStyle": "funkin",
     "ratings": { "easy": 2, "normal": 3, "hard": 4 },
-    "album": "volume2",
+    "album": "matmixes1",
     "previewStart": 0,
     "previewEnd": 15000
   },
