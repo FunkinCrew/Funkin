@@ -19,7 +19,7 @@ class FreshSong extends Song {
         default:
           // No BF mix or Pico mix on Mat instrumental!
           // return hasBeatenMatMix ? ['mat'] : [];
-          // return hasBeatenPicoMix ? ['pico'] : [];
+          return hasBeatenPicoMix ? ['pico'] : [];
           return [];
       }
     }

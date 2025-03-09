@@ -9,6 +9,7 @@ import funkin.audio.FunkinSound;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import funkin.ui.options.PreferencesMenu;
+import funkin.save.Save;
 
 class RosesSong extends Song {
   var hasPlayedCutscene:Bool;
@@ -94,4 +95,29 @@ class RosesSong extends Song {
     // We may need to wait for the outro to play.
     Countdown.performCountdown();
   }
+
+  public override function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String> {
+    if (difficultyId == 'easy' || difficultyId == 'normal' || difficultyId == 'hard') {
+      var hasBeatenMatMix = Save.instance.hasBeatenSong(this.id, null, 'mat');
+
+      switch (variationId) {
+        case 'mat':
+          // return hasBeatenMatMix ? [''] : [];
+          // No Mat mix on BF instrumental, sorry!
+          return [];
+        default:
+          return hasBeatenMatMix ? ['mat'] : [];
+      }
+    }
+  }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool {
+		  if(currentVariation == 'mat')
+        return !Save.instance.hasBeatenSong(this.id, null, 'mat');
+
+		  if(currentDifficulty == 'erect' || currentDifficulty == 'nightmare')
+			  return !Save.instance.hasBeatenSong(this.id, ['erect', 'nightmare']);
+
+    return false;
+	}
 }

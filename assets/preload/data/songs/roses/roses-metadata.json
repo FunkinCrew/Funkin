@@ -10,10 +10,10 @@
       "girlfriend": "gf-pixel",
       "opponent": "senpai-angry",
       "instrumental": "",
-      "altInstrumentals": []
+      "altInstrumentals": ["mat"]
     },
     "ratings": { "easy": 2, "normal": 3, "hard": 4 },
-    "songVariations": ["erect"],
+    "songVariations": ["erect", "mat"],
     "difficulties": ["easy", "normal", "hard"],
     "noteStyle": "pixel",
     "album": "volume2",
