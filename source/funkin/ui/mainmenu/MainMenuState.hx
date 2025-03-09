@@ -180,11 +180,15 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu',
+    var currentHour:Int = Date.now().getHours();
+    var isNight:Bool = (currentHour < 6 || currentHour >= 18); // Night from 6 PM to 6 AM
+
+    var song:String = isNight ? 'chillMenu' : 'freakyMenu';
+
+    FunkinSound.playMusic(song,
       {
         overrideExisting: true,
         restartTrack: false,
-        // Continue playing this music between states, until a different music track gets played.
         persist: true
       });
   }

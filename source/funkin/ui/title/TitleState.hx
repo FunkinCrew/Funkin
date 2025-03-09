@@ -184,8 +184,14 @@ class TitleState extends MusicBeatState
   function playMenuMusic():Void
   {
     var shouldFadeIn:Bool = (FlxG.sound.music == null);
+
+    var currentHour:Int = Date.now().getHours();
+    var isNight:Bool = (currentHour < 6 || currentHour >= 18); // Night from 6 PM to 6 AM
+
+    var song:String = isNight ? 'chillMenu' : 'freakyMenu';
+
     // Load music. Includes logic to handle BPM changes.
-    FunkinSound.playMusic('freakyMenu',
+    FunkinSound.playMusic(song,
       {
         startingVolume: 0.0,
         overrideExisting: true,

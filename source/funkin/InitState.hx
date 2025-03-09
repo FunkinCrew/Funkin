@@ -285,7 +285,11 @@ class InitState extends FlxState
     }
     else
     {
-      FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      var currentHour:Int = Date.now().getHours();
+      var isNight:Bool = (currentHour < 6 || currentHour >= 18); // Night from 6 PM to 6 AM
+      var song:String = isNight ? 'chillMenu/chillMenu' : 'freakyMenu/freakyMenu';
+      
+      FlxG.sound.cache(Paths.music(song));
       FlxG.switchState(() -> new TitleState());
     }
   }
