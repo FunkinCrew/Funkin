@@ -366,8 +366,25 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (shouldLoadPartial)
     {
-      var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0.0, params.partialParams?.end ?? 1.0, params?.startingVolume ?? 1.0,
-        params.loop ?? true, false, false, params.onComplete);
+      var partialStart:Float = params.partialParams?.start ?? 0.0;
+      var partialEnd:Float = params.partialParams?.end ?? 1.0;
+
+      // If a raw start or end time is provided, load a sound to serve as a reference to calculate the percentage to be used in partial sound loading.
+      var tempSound:openfl.media.Sound = Assets.getSound(pathToUse);
+
+      if (params.partialParams?.startRaw != null)
+      {
+        partialStart = FlxMath.bound((params.partialParams?.startRaw ?? 0) / tempSound.length, 0, tempSound.length);
+      }
+
+      if (params.partialParams?.endRaw != null)
+      {
+        // The partial sound preview end should come later than the beginning.
+        partialEnd = FlxMath.bound((params.partialParams?.endRaw ?? 15000) / tempSound.length, partialStart, tempSound.length);
+      }
+
+      var music = FunkinSound.loadPartial(pathToUse, partialStart, partialEnd, params?.startingVolume ?? 1.0, params.loop ?? true, false, false,
+        params.onComplete);
 
       if (music != null)
       {
@@ -644,4 +661,6 @@ typedef PartialSoundParams =
   var loadPartial:Bool;
   var start:Float;
   var end:Float;
+  var ?startRaw:Int;
+  var ?endRaw:Int;
 }
