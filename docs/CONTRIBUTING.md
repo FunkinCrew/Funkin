@@ -71,13 +71,21 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Combo Break + Accuracy Displays | https://github.com/FunkinCrew/Funkin/pull/2681#issuecomment-2156308982 |
 | Toggleable Ghost Tapping | https://github.com/FunkinCrew/Funkin/pull/2564#issuecomment-2119701802 |
 | Perfectly Centered Strumlines | _same as above^_ |
+| MultiKey, 9k, More than 4 keys, etc. | https://github.com/FunkinCrew/Funkin/issues/4243#issuecomment-2692371969 |
 | Losing Icons for DD and Parents | https://github.com/FunkinCrew/Funkin/issues/3048#issuecomment-2243491536 |
 | Playable GF / Speaker BF / Speaker Pico | https://github.com/FunkinCrew/Funkin/issues/2953#issuecomment-2216985230 |
+| Fresh (Chill Mix) as Title Screen Music | https://github.com/FunkinCrew/Funkin/pull/4282#issuecomment-2709334718 |
 | Adjusted Difficulty Ratings | https://github.com/FunkinCrew/Funkin/issues/2781#issuecomment-2172053144 |
-| Countdown after Unpausing | https://github.com/FunkinCrew/Funkin/issues/2721#issuecomment-2159330106 |
+| Difficulty Ratings above 20 | https://github.com/FunkinCrew/Funkin/issues/3075#issuecomment-2368984497 |
+| Ability to Reset a Song's Score | https://github.com/FunkinCrew/Funkin/issues/3916#issuecomment-2525408261 |
+| Quick Restart Keybind (not R) | https://github.com/FunkinCrew/Funkin/issues/3268#issuecomment-2351095232 |
+| Countdown after Unpausing Song | https://github.com/FunkinCrew/Funkin/issues/2721#issuecomment-2159330106 |
+| 4:3 Aspect Ratio for Week 6 | https://github.com/FunkinCrew/Funkin/issues/3840#issuecomment-2689158438 |
+| "Philly Glow" Effect from Psych Engine | https://github.com/FunkinCrew/Funkin/issues/3788#issuecomment-2688966982 |
 | Importing Charts from Psych Engine (and other mod content) | https://github.com/FunkinCrew/Funkin/issues/2586#issuecomment-2125733327 |
 | Backwards Compatibility for Modding | https://github.com/FunkinCrew/Funkin/issues/3949#issuecomment-2608391329 |
-| Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 |
+| Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 | 
+
 
 ## Issue Types
 Choose the issue template that best suits your needs!
