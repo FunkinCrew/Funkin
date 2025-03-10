@@ -165,6 +165,11 @@ class NoteSprite extends FunkinSprite
    */
   public var handledMiss:Bool;
 
+  /**
+   * Whether hitting or missing this note causes the sing animation for the character to play.
+   */
+  public var playSingAnimation:Bool = true;
+
   public function new(noteStyle:NoteStyle, direction:Int = 0)
   {
     super(0, -9999);
