@@ -102,6 +102,7 @@ class Save
           debugDisplay: false,
           autoPause: true,
           strumlineBackgroundOpacity: 0,
+          autoFullscreen: false,
           inputOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
@@ -1364,7 +1365,13 @@ typedef SaveDataOptions =
   var strumlineBackgroundOpacity:Int;
 
   /**
-   * Offset the users inputs by this many ms.
+   * If enabled, the game will automatically launch in fullscreen on startup.
+   * @default `true`
+   */
+  var autoFullscreen:Bool;
+
+  /**
+   * Offset the user's inputs by this many ms.
    * @default `0`
    */
   var inputOffset:Int;

@@ -171,7 +171,7 @@ typedef StageDataProp =
    * How much the prop scrolls relative to the camera. Used to create a parallax effect.
    * Represented as an [x, y] array of two floats.
    * [1, 1] means the prop moves 1:1 with the camera.
-   * [0.5, 0.5] means the prop half as much as the camera.
+   * [0.5, 0.5] means the prop moves half as much as the camera.
    * [0, 0] means the prop is not moved.
    * @default [0, 0]
    */
@@ -261,4 +261,32 @@ typedef StageDataCharacter =
    */
   @:optional
   var cameraOffsets:Array<Float>;
+
+  /**
+   * How much the character scrolls relative to the camera. Used to create a parallax effect.
+   * Represented as an [x, y] array of two floats.
+   * [1, 1] means the character moves 1:1 with the camera.
+   * [0.5, 0.5] means the character moves half as much as the camera.
+   * [0, 0] means the character is not moved.
+   * @default [0, 0]
+   */
+  @:optional
+  @:default([0, 0])
+  var scroll:Array<Float>;
+
+  /**
+   * The alpha of the character, as a float.
+   * @default 1.0
+   */
+  @:optional
+  @:default(1.0)
+  var alpha:Float;
+
+  /**
+   * The angle of the character, as a float.
+   * @default 1.0
+   */
+  @:optional
+  @:default(0.0)
+  var angle:Float;
 };
