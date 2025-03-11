@@ -58,9 +58,8 @@ This patch resolves a critical issue which could cause user's save data to becom
 ### Fixed
 
 - Fixed a critical issue in which the Stage Editor theme value could not be parsed by older versions of the game, resulting in all save data being destroyed.
-  - Added a check that prevents save data from being loaded if it is corrupted rather than overriding it.
-- `optionsChartEditor.chartEditorLiveInputStyle` in the save data converted from an Enum to a String to fix save data compatibility issues.
-- `optionsStageEditor.theme` in the save data converted from an Enum to a String to fix save data compatibility issues.
+  - Added a check which prevents save data from being loaded if it is corrupted rather than overriding it.
+- `optionsStageEditor.theme` and `optionsChartEditor.theme` in the save data converted from an Enum to a String to fix save data compatibility issues.
   - In the future, Enum values should not be used in order to prevent incompatibilities caused by introducing new types to the save data that older versions cannot parse.
 - `optionsChartEditor.chartEditorLiveInputStyle` in the save data converted from an Enum to a String to fix save data compatibility issues.
 - Fixed an issue where some publicly distributed builds of the game were debug builds instead of release builds.
