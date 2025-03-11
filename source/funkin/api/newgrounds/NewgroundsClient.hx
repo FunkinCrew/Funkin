@@ -259,8 +259,6 @@ class NewgroundsClient
   function onFetchedMedals(outcome:Outcome<CallError>):Void
   {
     trace('[NEWGROUNDS] Fetched medals!');
-
-    if (Date.now().getDay() == 5) Medals.award(Medal.FridayNight);
   }
 
   function onFetchedLeaderboards(outcome:Outcome<CallError>):Void
