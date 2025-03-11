@@ -49,13 +49,13 @@ This patch resolves a critical issue which could cause user's save data to becom
 - Volume sound tray is now anti-aliased/smoothed ([e66290c](https://github.com/FunkinCrew/Funkin/commit/e66290c55f7141402223644f06ec8a69edeee089)) - by @Kn1ghtNight in [#2853](https://github.com/FunkinCrew/Funkin/pull/2853)
 - Fixed looping animations for modded StrumlineNote sprites ([bc546e8](https://github.com/FunkinCrew/Funkin/commit/bc546e86aa77ffc795b3f079de5f590289a9c583)) - by @DaWaterMalone in [#3577](https://github.com/FunkinCrew/Funkin/pull/3577)
 - Stopped allowing inputs after selecting a character in Character Select ([dbf66ac](https://github.com/FunkinCrew/Funkin/commit/dbf66ac250137262866d75f7c1387645b35d88d0)) - by @ACrazyTown in [#3398](https://github.com/FunkinCrew/Funkin/pull/3398)
-- Player and girlfriend no longer disappear or overlap themselves in Character Select ([9324359](https://github.com/FunkinCrew/Funkin/commit/9324359d2fce6a7097077d169a0efcd80e6fefa1)) - by @gamerbross in [#3457](https://github.com/FunkinCrew/Funkin/pull/3457)
-- Player no longer enters twice after entering Character Select or when spamming buttons ([30a9887](https://github.com/FunkinCrew/Funkin/commit/30a98871367b494c85934cd3fcfa91eeb774a7d5)) - by @gamerbross in [#3457](https://github.com/FunkinCrew/Funkin/pull/3457)
-- Wrong girlfriend no longer appears in Character Select ([9324359](https://github.com/FunkinCrew/Funkin/commit/9324359d2fce6a7097077d169a0efcd80e6fefa1)) - by @gamerbross in [#3457](https://github.com/FunkinCrew/Funkin/pull/3457)
+- The player and girlfriend no longer disappear or overlap themselves in Character Select ([9324359](https://github.com/FunkinCrew/Funkin/commit/9324359d2fce6a7097077d169a0efcd80e6fefa1)) - by @gamerbross in [#3457](https://github.com/FunkinCrew/Funkin/pull/3457)
+- The player no longer enters twice after entering Character Select or when spamming buttons ([30a9887](https://github.com/FunkinCrew/Funkin/commit/30a98871367b494c85934cd3fcfa91eeb774a7d5)) - by @gamerbross in [#3457](https://github.com/FunkinCrew/Funkin/pull/3457)
+- The wrong girlfriend no longer appears in Character Select ([9324359](https://github.com/FunkinCrew/Funkin/commit/9324359d2fce6a7097077d169a0efcd80e6fefa1)) - by @gamerbross in [#3457](https://github.com/FunkinCrew/Funkin/pull/3457)
 - Cursor now updates properly when moving and selecting in Character Select ([9324359](https://github.com/FunkinCrew/Funkin/commit/9324359d2fce6a7097077d169a0efcd80e6fefa1)) - by @gamerbross in [#3457](https://github.com/FunkinCrew/Funkin/pull/3457)
 - Cursor now moves properly at lower framerates in Character Select ([ab5bda3](https://github.com/FunkinCrew/Funkin/commit/ab5bda3ee573a6e03595ec6941e6de38df851889)) - by @ninjamuffin99 in [#3507](https://github.com/FunkinCrew/Funkin/pull/3507)
 - Exiting the Chart Editor no longer crashes the game ([f52472a](https://github.com/FunkinCrew/Funkin/commit/f52472a4767388b22cfbab0f5f7860f6e6762856)) - by @EliteMasterEric and @ianharrigan in [#3519](https://github.com/FunkinCrew/Funkin/pull/3519)
-- Properly format the millisecond counter in the Chart Editor playbar ([f1b6e6c](https://github.com/FunkinCrew/Funkin/commit/f1b6e6c4e42455e0c2900d738ebc24893f2479a0)) - by @afreetoplaynoob in [#3537](https://github.com/FunkinCrew/Funkin/pull/3537)
+- The millisecond counter in the Chart Editor playbar is now properly formatted ([f1b6e6c](https://github.com/FunkinCrew/Funkin/commit/f1b6e6c4e42455e0c2900d738ebc24893f2479a0)) - by @afreetoplaynoob in [#3537](https://github.com/FunkinCrew/Funkin/pull/3537)
 - Pressing F1 multiple times no longer creates more than one help window in the Chart Editor ([777978f](https://github.com/FunkinCrew/Funkin/commit/777978f5a544e1b7c89b47dcc365f734eb6d0df1)) - by @amyspark-ng in [#3552](https://github.com/FunkinCrew/Funkin/pull/3552)
 - The dialog box now shows up in the Animation Editor ([1fde59f](https://github.com/FunkinCrew/Funkin/commit/1fde59f999eac94eb10fc22094885de2f5310705)) - by @EliteMasterEric in [#3530](https://github.com/FunkinCrew/Funkin/pull/3530)
 - (debug) No more fullscreening when typing "F" in the flixel debugger console ([29b6763](https://github.com/FunkinCrew/Funkin/commit/29b6763290df05d42039806f3d142740568c80f0)) - by @ninjamuffin99
@@ -104,53 +104,53 @@ This patch resolves a critical issue which could cause user's save data to becom
 
 ### Fixed
 
-- DadBattle (Pico Mix) is now properly credited to `TeraVex (ft. Saruky)`.
-- DadBattle (Pico Mix) now has charts for Normal and Easy difficulties.
-- Spookeez (Pico Mix) is now properly credited to `Six Impala (ft. Saster)`.
-- The "Shit!" judgement no longer displays with anti-aliasing in Week 6.
-- Pico Erect can no longer be played with different instrumentals.
-- Pico now plays his shooting animations in Stress.
-- Freeplay now displays custom songs when switching characters.
+- Pico is no longer locked every time the game starts, and you no longer have to watch the unlock animation each game boot.
+  - The animation should now play only once per save file.
+- The clear % now displays in Freeplay after switching characters.
+- Character remixes no longer display the base song's highscore in Freeplay.
 - Freeplay no longer displays the wrong text on capsules.
+- Freeplay now displays custom songs when switching characters.
 - Duplicate difficulties from custom variations now display properly in Freeplay.
-- Custom note styles no longer sometimes use default values rather than the fallback note style
+- DadBattle (Pico Mix) now has charts for Normal and Easy difficulties.
+- DadBattle (Pico Mix) is now properly credited to `TeraVex (ft. Saruky)`.
+- Spookeez (Pico Mix) is now properly credited to `Six Impala (ft. Saster)`.
+- The audio track now unmutes if you miss a note just before Pico burps.
+- Pico now plays out his full burp animation in South (Pico Mix).
+- Removed a tap note stacked on top of a hold note in Cocoa Erect (Erect difficulty). 
+- Pico Erect can no longer be played with different instrumentals.
+- The curtains in Week 1 no longer display in front of larger characters.
+- Boyfriend now plays his death animation properly on the Week 2 Remix stage.
+- The game no longer stutters when playing on the Week 5 Remix stage.
+- The "Shit!" judgement no longer displays with anti-aliasing in Week 6.
+- Spirit's trail in Week 6 now displays correctly.
+- Pico now plays his shooting animations in Stress.
+- Characters with high offsets no longer shift over after the player dies or restarts.
+- Custom note styles no longer sometimes use default values rather than the fallback note style.
 - Custom note styles no longer randomly fail to fetch information about their fallback note style.
 - Screenshots and Chart Editor binds no longer display in the controls menu on Web builds (where they are disabled).
 - Stage Editor bind no longer displays in the controls menu even when the feature is disabled.
 - Freeplay Character Select keybind no longer displays strangely in the controls menu.
-- Setting the input offset or visual offset to high values no longer causes the song to skip.
+- Audio tracks no longer get destroyed if they are flagged as persistent.
 - Video cutscenes now scale their volume properly.
-- The game no longer stutters when playing on the Week 5 Remix stage.
+- Results screen audio no longer continues into Freeplay or gameplay.
+- The Results screen now plays the percentage tick sound when the value changes instead of spamming the sound.
 - The save data version number is now written to the save data properly.
 - The example mod can now be loaded.
-- Entering Blazin' no longer displays a script error.
 - Pressing F5 to force reload a song no longer occasionally causes the game to crash.
 - Animations on Animate Atlas characters no longer throw a bunch of warnings in the console.
-- Characters with high offsets no longer shift over after the player dies or restarts.
-- The audio track now unmutes if you miss a note just before Pico burps.
-- Pico now plays out his full burp animation in South (Pico Mix).
-- Removed a tap note stacked on top of a hold note in Cocoa Erect (Erect difficulty). 
-- Results screen audio no longer continues into Freeplay or gameplay.
-- Audio tracks no longer get destroyed if they are flagged as persistent.
-- The curtains in Week 1 no longer display in front of larger characters.
-- Boyfriend now plays his death animation properly on the Week 2 Remix stage.
-- The clear % now displays in Freeplay after switching characters.
-- Character remixes no longer display the base song's highscore in Freeplay.
-- Pico is no longer locked every time the game starts, and you no longer have to watch the unlock animation each game boot.
-  - The animation should now play only once per save file.
-- Spirit's trail in Week 6 now displays correctly.
+- Entering Blazin' no longer displays a script error.
 - The Input Offsets menu no longer crashes when entering it before playing a song on web builds.
-- The Results screen now plays the percentage tick sound when the value changes instead of spamming the sound.
-- The Chart Editor can now be interacted with properly. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3337))
+- Setting the input offset or visual offset to high values no longer causes the song to skip.
 - Classic FocusCamera song events no longer cause the camera to snap in place. ([community fix by nebulazorua](https://github.com/FunkinCrew/Funkin/pull/2331))
+- Pixel hold note trails in Week 6 are now scaled/positioned correctly. ([community fix by dombomb64](https://github.com/FunkinCrew/Funkin/pull/3351))
 - Achieving the same rank on a song with a lower clear % no longer overwrites your clear %. ([community fix by lemz1](https://github.com/FunkinCrew/Funkin/pull/3019))
 - The FPS counter no longer displays if Debug Display is turned off. ([community fix by Lethrial](https://github.com/FunkinCrew/Funkin/pull/3356))
+- The Chart Editor can now be interacted with properly. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3337))
 - Selecting the area to the left of the Chart Editor no longer selects some of the player's notes. ([community fix by NotHyper-474](https://github.com/FunkinCrew/Funkin/pull/3093))
 - Pixel icons now display correctly in the Chart Editor. ([community fix by Techniktil](https://github.com/FunkinCrew/Funkin/pull/3339))
-- `Stage.addCharacter` now properly assigns the `characterType`. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3357))
-- Players can no longer crash the game by interacting with Character Select during the unlock sequence. ([community fix by ActualMandM](https://github.com/FunkinCrew/Funkin/pull/3355))
-- Pixel hold note trails in Week 6 are now scaled/positioned correctly. ([community fix by dombomb64](https://github.com/FunkinCrew/Funkin/pull/3351))
 - Audio offsets now interact with the Chart Editor properly. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3384))
+- Players can no longer crash the game by interacting with Character Select during the unlock sequence. ([community fix by ActualMandM](https://github.com/FunkinCrew/Funkin/pull/3355))
+- `Stage.addCharacter` now properly assigns the `characterType`. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3357))
 - Fetching Modules during the `onDestroy` event no longer fails at random. ([community fix by cyn0x8](https://github.com/FunkinCrew/Funkin/pull/3131))
 - `onSubStateOpenEnd` and `onSubStateCloseEnd` script events are now called consistently. ([community fix by lemz1](https://github.com/FunkinCrew/Funkin/pull/3138))
 
@@ -180,7 +180,7 @@ This patch resolves a critical issue which could cause user's save data to becom
   - Eggnog (Pico Mix)
   - Ugh (Pico Mix)
   - Guns (Pico Mix)
-- Added 1 new Boyfriend remix! Access it by completing Weekend 1 as Pico and then selecting Boyfriend from in the Character Select screen
+- Added 1 new Boyfriend remix! Access it by completing Weekend 1 as Pico and then selecting Boyfriend in the Character Select screen
   - Darnell (BF Mix)
 - Added 2 new Erect remixes! Access them by switching difficulty on the song
   - Cocoa Erect
@@ -194,7 +194,7 @@ This patch resolves a critical issue which could cause user's save data to becom
   - Week 4 Erect Stage
   - Week 5 Erect Stage
   - Weekend 1 Erect Stage
-- Implemented alternate animations and music for Pico in the results screen.
+- Implemented alternate animations and music for Pico in the Results screen.
   - These display on Pico remixes, as well as when playing Weekend 1.
 - Implemented support for scripted Note Kinds. You can use HScript define a different note style to display for these notes as well as custom behavior. (community feature by lemz1)
 - Implemented support for Numeric and Selector options in the Options menu. ([community feature by FlooferLand](https://github.com/FunkinCrew/Funkin/pull/2942))
@@ -208,42 +208,42 @@ This patch resolves a critical issue which could cause user's save data to becom
 - Character offsets are now independent of the character's scale.
   - This should resolve issues with offsets when porting characters from older mods.
   - Pixel character offsets have been modified to compensate.
+- Reworked the JSON merging system in Polymod; you can now include JSONPatch files under `_merge` in your mod folder to add, modify, or remove values in a JSON without replacing it entirely!
+- The `danceEvery` property of characters and stage props can now use values with a precision of `0.25`, to play their idle animation up to four times per beat.
+- Characters now respect the `danceEvery` property ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2925))
 - Note style data can now specify custom combo count graphics, judgement graphics, countdown graphics, and countdown audio. ([community feature by anysad](https://github.com/FunkinCrew/Funkin/pull/3020))
   - These were previously using hardcoded values based on whether the stage was `school` or `schoolEvil`.
-- The `danceEvery` property of characters and stage props can now use values with a precision of `0.25`, to play their idle animation up to four times per beat.
-- Reworked the JSON merging system in Polymod; you can now include JSONPatch files under `_merge` in your mod folder to add, modify, or remove values in a JSON without replacing it entirely!
-- Cutscenes now automatically pause when tabbing out ([community fix by AbnormalPoof](https://github.com/FunkinCrew/Funkin/pull/2903))
-- Characters will now respect the `danceEvery` property ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2925))
-- The F5 function now reloads the current song's chart data from disc ([community feature by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2990))
-- Refactored the compilation guide and added common troubleshooting steps ([community fix by Hundrec](https://github.com/FunkinCrew/Funkin/pull/2813))
-- Made several layout improvements and fixes to the Animation Offsets editor in the Debug menu ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2820))
-- Fixed a bug where the Back sound would be not played when leaving the Story menu and Options menu ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/2986))
-- Animation offsets no longer directly modify the `x` and `y` position of props, which makes props work better with tweens ([community fix by Sword352](https://github.com/FunkinCrew/Funkin/pull/2310))
 - The YEAH! events in Tutorial now use chart events rather than being hard-coded ([community fix by anysad](https://github.com/FunkinCrew/Funkin/pull/3007))
+- Cutscenes now automatically pause when tabbing out ([community fix by AbnormalPoof](https://github.com/FunkinCrew/Funkin/pull/2903))
+- The F5 function now reloads the current song's chart data from disk ([community feature by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2990))
+- Made several layout improvements and fixes to the Animation Offsets editor in the Debug menu ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2820))
+- Animation offsets no longer directly modify the `x` and `y` position of props, which makes props work better with tweens ([community fix by Sword352](https://github.com/FunkinCrew/Funkin/pull/2310))
+- Fixed a bug where the Back sound would be not played when leaving the Story menu and Options menu ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/2986))
 - The player's Score now displays commas in it (community fix by loggo)
+- Refactored the compilation guide and added common troubleshooting steps ([community fix by Hundrec](https://github.com/FunkinCrew/Funkin/pull/2813))
 
 ## Fixed
 
-- Fixed an issue where songs with no notes would crash on the Results screen.
-- Fixed an issue where the old icon easter egg would not work properly on pixel levels.
-- Fixed an issue where you could play notes during the Thorns cutscene.
-- Fixed an issue where the Heart icon when favoriting a song in Freeplay would be malformed.
-- Fixed an issue where Pico's death animation displays a faint blue background ([community fix by doggogit](https://github.com/FunkinCrew/funkin.assets/pull/1))
-- Fixed an issue where mod songs would not play a preview in the Freeplay menu ([community fix by KarimAkra](https://github.com/FunkinCrew/Funkin/pull/2724))
-- Fixed an issue where the Memory Usage counter could overflow and display a negative number ([community fix by KarimAkra](https://github.com/FunkinCrew/Funkin/pull/2713))
-- Fixed an issue where pressing the Chart Editor keybind while playtesting a chart would reset the chart editor ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2739))
-- Fixed a crash bug when pressing F5 after seeing the sticker transition ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2863))
-- Fixed an issue where the Story Mode menu couldn't be scrolled with a mouse ([community fix by JVNpixels](https://github.com/FunkinCrew/Funkin/pull/2873))
-- Fixed an issue causing the song to majorly desync sometimes ([community fix by Burgerballs](https://github.com/FunkinCrew/Funkin/pull/3058))
-- Fixed an issue where the Freeplay song preview would not respect the instrumental ID specified in the song metadata ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/2742))
-- Fixed an issue where Tankman's icon wouldn't display in the Chart Editor ([community fix by Hundrec](https://github.com/FunkinCrew/Funkin/pull/2912))
-- Fixed an issue where pausing the game during a camera zoom would zoom the pause menu. ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2567))
-- Fixed an issue where certain UI elements would not flash at a consistent rate ([community fix by cyn0x8](https://github.com/FunkinCrew/Funkin/pull/2494))
-- Fixed an issue where the game would not use the placeholder health icon as a fallback ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/3005))
-- Fixed an issue where the chart editor could get stuck creating a hold note when using Live Inputs ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2992))
-- Fixed an issue where character graphics could not be placed in week folders ([community fix by 7oltan](https://github.com/FunkinCrew/Funkin/pull/3035))
-- Fixed a crash issue when a Freeplay song has no `Normal` difficulty ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/3036) and [gamerbross](https://github.com/FunkinCrew/Funkin/pull/2712))
-- Fixed an issue in Story Mode where a song that isn't valid for the current variation could be selected ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/3037))
+- Songs with no notes no longer crash on the Results screen.
+- Note inputs are no longer accepted during the Thorns cutscene.
+- The old icon easter egg now works properly on pixel levels.
+- The Heart icon is no longer malformed when favoriting a song in Freeplay.
+- Freeplay songs with no `Normal` difficulty no longer crash the game ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/3036) and [gamerbross](https://github.com/FunkinCrew/Funkin/pull/2712))
+- Songs that aren't valid for the current variation can no longer be selected ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/3037))
+- The Freeplay song preview now respects the instrumental ID specified in the song metadata ([community fix by AppleHair](https://github.com/FunkinCrew/Funkin/pull/2742))
+-  Modded songs now play previews in the Freeplay menu ([community fix by KarimAkra](https://github.com/FunkinCrew/Funkin/pull/2724))
+- The Story Mode menu can now be scrolled using the mouse wheel ([community fix by JVNpixels](https://github.com/FunkinCrew/Funkin/pull/2873))
+- Pressing F5 after seeing the sticker transition no longer crashes the game ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2863))
+- Pausing the game during a camera zoom no longer zooms the pause menu as well ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2567))
+- The song no longer majorly desyncs at times ([community fix by Burgerballs](https://github.com/FunkinCrew/Funkin/pull/3058))
+- Pico's death animation no longer displays a faint blue background ([community fix by doggogit](https://github.com/FunkinCrew/funkin.assets/pull/1))
+- The game now uses the placeholder health icon as a fallback ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/3005))
+- Pressing the Chart Editor keybind while playtesting a chart no longer resets the Chart Editor ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2739))
+- The Chart Editor no longer gets stuck creating a hold note when using Live Inputs ([community fix by gamerbross](https://github.com/FunkinCrew/Funkin/pull/2992))
+- Tankman's icon now displays in the Chart Editor ([community fix by Hundrec](https://github.com/FunkinCrew/Funkin/pull/2912))
+- The Memory Usage counter no longer overflows and displays a negative number ([community fix by KarimAkra](https://github.com/FunkinCrew/Funkin/pull/2713))
+- Certain UI elements now flash at a consistent rate ([community fix by cyn0x8](https://github.com/FunkinCrew/Funkin/pull/2494))
+- Character graphics can now be placed in week folders ([community fix by 7oltan](https://github.com/FunkinCrew/Funkin/pull/3035))
 
 ## New Contributors for 0.5.0
 
@@ -270,7 +270,7 @@ This patch resolves a critical issue which could cause user's save data to becom
 which would remove their rank if they had a lower one.
 - A-Bot speaker now reacts to the user's volume preference on desktop ([thanks to M7theguy for the issue report/suggestion](https://github.com/FunkinCrew/Funkin/issues/2744)!)
 - On Freeplay, heart icons are shifted to the right when you favorite a song that has no rank on it.
-- Only play `scrollMenu` sound effect when there's a real change on the freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
+- Only play `scrollMenu` sound effect when there's a real change on the Freeplay menu ([thanks gamerbross for the PR!](https://github.com/FunkinCrew/Funkin/pull/2741))
 - Gave antialiasing to the edge of the dad graphic on Freeplay
 - Rearranged some controls in the controls menu
 - Made several chart revisions
@@ -280,17 +280,17 @@ which would remove their rank if they had a lower one.
 
 ### Fixed
 
-- Fixed an issue in the controls menu where some control binds would overlap their names
-- Fixed crash when attempting to exit the gameover screen when also attempting to retry the song ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
-- Fix botplay sustain release bug ([thanks Hundrec!](https://github.com/FunkinCrew/Funkin/pull/2683))
-- Fix for the camera not pausing during a gameplay pause ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2684))
-- Fixed issue where Pico's gameplay sprite would unintentionally appear on the gameover screen when dying on 2hot from an explosion
-- Freeplay previews properly fade volume during the BF idle animation
-- Fixed bug where DadBattle incorrectly appeared as DadBattle Erect when returning to freeplay on Hard
-- Fixed 2hot not appearing under the "#" category in Freeplay menu
-- Fixed a bug where the Chart Editor would crash when attempting to select an event with the Event toolbox open
-- Improved offsets for Pico and Tankman opponents so they don't slide around as much.
-- Fixed the black "temp" graphic on freeplay from being incorrectly sized / masked, now it's identical to the dad freeplay graphic
+- Control binds in the controls menu no longer overlap their names
+- Attempting to exit the gameover screen and retry the song at the same time no longer crashes the game ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
+- Botplay mode now handles the player's animations properly during hold notes ([thanks Hundrec!](https://github.com/FunkinCrew/Funkin/pull/2683))
+- Camera movement now pauses when the game is paused ([thanks Matriculaso!](https://github.com/FunkinCrew/Funkin/pull/2684))
+- Pico's gameplay sprite no longer appears on the gameover screen when dying from an explosion in 2hot
+- Freeplay previews now properly fade in volume during the BF idle animation
+- DadBattle no longer incorrectly appears as DadBattle Erect when returning to Freeplay on Hard
+- 2hot now appears under the "#" category in Freeplay menu
+- The Chart Editor no longer crashes when selecting an event with the Event toolbox open
+- Improved offsets for Pico and Tankman opponents so they don't slide around as much
+- The black "temp" graphic in Freeplay is now correctly sized/masked, now it's identical to the Dad Freeplay graphic
 
 ## New Contributors for 0.4.1
 
@@ -334,26 +334,26 @@ which would remove their rank if they had a lower one.
 
 ### Fixed
 
-- Fixed an issue where Nene's visualizer would not play on Desktop builds
-- Fixed a bug where the game would silently fail to load saves on HTML5
-- Fixed some bugs with the props on the Story Menu not bopping properly
-- Additional fixes to the Loading bar on HTML5 ([thanks lemz1!](https://github.com/FunkinCrew/Funkin/pull/2553))
+- Nene's visualizer now plays on Desktop builds
+- The game no longer silently fails to load saves on HTML5
+- Props on the Story Menu now bop properly
+- Additional fixes for the loading bar on HTML5 ([thanks lemz1!](https://github.com/FunkinCrew/Funkin/pull/2553))
 - Fixed several bugs with the TitleState, including missing music when returning from the Main Menu ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2539))
-- Fixed a camera bug in the Main Menu ([thanks richTrash21!](https://github.com/FunkinCrew/Funkin/pull/2576))
-- Fixed a bug where changing difficulties in Story mode wouldn't update the score ([thanks sector-a!](https://github.com/FunkinCrew/Funkin/pull/2585))
+- The Main Menu camera now properly follows the selected item ([thanks richTrash21!](https://github.com/FunkinCrew/Funkin/pull/2576))
+- Changing difficulties in Story Mode now updates the score text ([thanks sector-a!](https://github.com/FunkinCrew/Funkin/pull/2585))
 - Fixed a crash in Freeplay caused by a level referencing an invalid song ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2457))
-- Fixed a bug where pressing the volume keys would stop the Toy commercial ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2540))
-- Fixed a bug where the Chart Editor Playtest would crash when losing ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2518))
-- Fixed a bug where hold notes would display improperly in the Chart Editor when downscroll was enabled for gameplay ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2565))
-- Fixed a bug where hold notes would be positioned wrong on downscroll ([thanks MaybeMaru!](https://github.com/FunkinCrew/Funkin/pull/2488))
+- Pressing the volume keys no longer stops the Toy commercial ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2540))
+- Playtesting in the Chart Editor no longer crashes when losing ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2518))
+- Hold notes now display properly in the Chart Editor when downscroll is enabled for gameplay ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2565))
+- Hold notes are now positioned correctly with downscroll enabled ([thanks MaybeMaru!](https://github.com/FunkinCrew/Funkin/pull/2488))
 - Removed a large number of unused imports to optimize builds ([thanks Ethan-makes-music!](https://github.com/FunkinCrew/Funkin/pull/2624))
 - Improved debug logging for unscripted stages ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2603))
 - Fixed a crash on Linux caused by an old version of hxCodec ([thanks Noobz4Life!](https://github.com/FunkinCrew/Funkin/pull/2472))
 - Optimized animation handling for characters ([thanks richTrash21!](https://github.com/FunkinCrew/Funkin/pull/2493))
+- The Chart Editor no longer uses an incorrect instrumental on imported Legacy songs ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2604))
+- Opening the game from the command line no longer crashes the preloader ([thanks NotHyper-474!](https://github.com/FunkinCrew/Funkin/pull/2629))
+- Characters no longer use the wrong scale value sometimes ([thanks PurSnake!](https://github.com/FunkinCrew/Funkin/pull/2610))
 - Made improvements to compiling documentation (thanks gedehari!)
-- Fixed an issue where the Chart Editor would use an incorrect instrumental on imported Legacy songs ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2604))
-- Fixed a bug where opening the game from the command line would crash the preloader ([thanks NotHyper-474!](https://github.com/FunkinCrew/Funkin/pull/2629))
-- Fixed a bug where characters would sometimes use the wrong scale value ([thanks PurSnake!](https://github.com/FunkinCrew/Funkin/pull/2610))
 - Additional bug fixes and optimizations.
 
 ## New Contributors for 0.4.0
@@ -376,21 +376,21 @@ which would remove their rank if they had a lower one.
 
 ### Fixed
 
-- Fixes to the Loading bar on HTML5 ([thanks lemz1!](https://github.com/FunkinCrew/Funkin/pull/2499))
-- Don't allow any more inputs when exiting freeplay ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2470))
-- Fixed using mouse wheel to scroll on freeplay ([thanks JugieNoob!](https://github.com/FunkinCrew/Funkin/pull/2466))
-- Fixed the resets of the health icons, score, and notes when re-entering gameplay from gameover ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2390))
-- Fixed the chart editor character selector's hitbox width ([thanks MadBear422!](https://github.com/FunkinCrew/Funkin/pull/2370))
+- Fixes for the Loading bar on HTML5 ([thanks lemz1!](https://github.com/FunkinCrew/Funkin/pull/2499))
+- Don't allow inputs when exiting Freeplay ([thanks gamerbross!](https://github.com/FunkinCrew/Funkin/pull/2470))
+- Fixed mouse wheel scrolling in Freeplay ([thanks JugieNoob!](https://github.com/FunkinCrew/Funkin/pull/2466))
+- Health icons, score, and notes now reset properly when re-entering gameplay from gameover ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2390))
+- Fixed the character selector's hitbox width in the Chart Editor ([thanks MadBear422!](https://github.com/FunkinCrew/Funkin/pull/2370))
 - Fixed camera stutter once a wipe transition to the Main Menu completes ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2315))
-- Fixed an issue where hold note would be invisible for a single frame ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2309))
-- Fix tween accumulation on title screen when pressing Y multiple times ([thanks TheGaloXx!](https://github.com/FunkinCrew/Funkin/pull/2300))
-- Fix a crash when querying FlxG.state in the crash handler
-- Fix for a game over easter egg so you don't accidentally exit it when viewing
-- Fix an issue where the Freeplay menu never displays 100% clear
-- Fix an issue where Weekend 1 Pico attempted to retrieve a missing asset.
-- Fix an issue where duplicate keybinds would be stored, potentially causing a crash
+- Hold notes no longer become invisible for a single frame ([thanks ImCodist!](https://github.com/FunkinCrew/Funkin/pull/2309))
+- Tweens no longer accumulate on the Title screen when pressing Y multiple times ([thanks TheGaloXx!](https://github.com/FunkinCrew/Funkin/pull/2300))
+- Fixed a crash when querying FlxG.state in the crash handler
+- Fixed a game over easter egg so you don't accidentally exit it when viewing
+- The Freeplay menu can now display 100% clear
+- Weekend 1 Pico no longer attempts to retrieve a missing asset
+- Fixed an issue where duplicate keybinds would be stored, potentially causing a crash
 - Chart debug key now properly returns you to the previous chart editor session if you were playtesting a chart ([thanks nebulazorua!](https://github.com/FunkinCrew/Funkin/pull/2323))
-- Fix a crash on Freeplay found on AMD graphics cards
+- Fixed a crash on Freeplay found on AMD graphics cards
 
 ## New Contributors for 0.3.3
 
@@ -430,7 +430,7 @@ which would remove their rank if they had a lower one.
 - Fixed an issue where some substate lifecycle events were not being dispatched.
 - Fixed a crash when trying to load into the Animation Offsets menu with an invalid character.
 - Fixed an issue where the preloader would spam the logs when it was complete and waiting for user input.
-- Should definitely have the fix for freeplay where it stops taking control of the main menu below it
+- Should definitely have the fix for Freeplay where it stops taking control of the main menu below it
 - Changed the code for the story menu difficulties so that "normal" doesn't overlap the arrows after leaving Weekend 1
 
 ### Removed
@@ -446,17 +446,17 @@ which would remove their rank if they had a lower one.
 - Added whether the local Git repo was modified to the log files.
 - Removed "PROTOTYPE" text on release builds only (it still shows on debug builds).
 - Added additional credits and special thanks.
-- Updated peepo in creds to peepo173
+- Updated peepo in creds to peepo173.
 
 ### Fixed
 
-- Fix a crash when retrieving system specs while handing a crash.
-- Fix a crash triggered when pausing before the song started.
-- Fix a crash triggered when dying before the song started.
-- Fix a crash triggered when unloading certain graphics.
-- Pico game over confirm plays correctly
-- When exiting from a song into freeplay, main menu no longer takes inputs unintentionally (aka issues with merch links opening up when selecting songs)
-- Fix for arrow keys causing web browser page scroll
+- Fixed a crash when retrieving system specs while handing a crash.
+- Fixed a crash triggered when pausing before the song starts.
+- Fixed a crash triggered when dying before the song starts.
+- Fixed a crash triggered when unloading certain graphics.
+- Pico game over confirm now plays correctly.
+- When exiting from a song into Freeplay, main menu no longer takes inputs unintentionally (aka issues with merch links opening up when selecting songs).
+- Arrow keys no longer cause the web browser page to scroll.
 
 
 ## [0.3.0] - 2024-04-30
@@ -465,10 +465,10 @@ which would remove their rank if they had a lower one.
 
 - New Story Level: Weekend 1, starting Pico, Darnell, and Nene.
   - Beat the level in Story Mode to unlock the songs for Freeplay!
-- 12 new Erect remixes, featuring Kawai Sprite, Saruky, Kohta Takahashi, and Saster
+- 12 new Erect remixes, featuring Kawai Sprite, Saruky, Kohta Takahashi, and Saster.
   - Unlocked instantly in Freeplay
 - New visually enhanced Freeplay menu.
-  - Sorting, favorites, and more.
+  - Sorting, favorites, and more
 - New Results screen upon completing any song or story level.
 - New refactored Chart Editor prototype (accessible via `~` in the main menu or `7` in the Play State, rebindable). (VERY EARLY PROTOTYPE. EXPECT BUGS AND CRASHES)
 - Implemented a new scripting system using HScript (an interpreted language with Haxe-like syntax) for incredible flexibility.
