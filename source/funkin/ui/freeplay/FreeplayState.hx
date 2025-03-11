@@ -1782,6 +1782,10 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
+    #if mobile
+    FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, 0.2, {ease: FlxEase.backIn});
+    #end
+
     for (caps in grpCapsules.members)
     {
       caps.doJumpIn = false;
