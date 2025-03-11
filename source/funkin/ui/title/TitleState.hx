@@ -29,7 +29,6 @@ import openfl.net.NetStream;
 import funkin.api.newgrounds.Medals;
 #end
 import funkin.ui.freeplay.FreeplayState;
-import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
 import funkin.save.Save;
 
