@@ -1346,6 +1346,80 @@ class PlayState extends MusicBeatSubState
 
       justUnpaused = true;
     }
+    else if (Std.isOfType(subState, ResultState))
+    {
+      if (PlayStatePlaylist.isStoryMode)
+      {
+        // Load the first song if in story mode
+        var currentLevel:funkin.ui.story.Level = funkin.data.story.level.LevelRegistry.instance.fetchEntry(PlayStatePlaylist.campaignId);
+
+        PlayStatePlaylist.playlistSongIds = currentLevel.getSongs();
+
+        var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
+
+        var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
+        var targetVariation:String = currentVariation;
+        if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
+        {
+          targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
+        }
+        this.remove(currentStage);
+        LoadingState.loadPlayState(
+          {
+            targetSong: targetSong,
+            targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+            targetVariation: targetVariation,
+            cameraFollowPoint: cameraFollowPoint.getPosition(),
+          });
+      }
+      else
+      {
+        needsReset = true;
+        mayPauseGame = true;
+        // Reset the cameras and UI, otherwise stuff breaks idk
+        initCameras();
+        initHealthBar();
+        initStrumlines();
+        initPopups();
+
+        // Ugh, I have to copy this code out of the initcharacters for the healthbar and icons
+
+        var currentCharacterData:SongCharacterData = currentChart.characters;
+
+        var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+
+        if (dad != null)
+        {
+          //
+          // OPPONENT HEALTH ICON
+          //
+          iconP2 = new HealthIcon('dad', 1);
+          iconP2.y = healthBar.y - (iconP2.height / 2);
+          dad.initHealthIcon(true); // Apply the character ID here
+          iconP2.zIndex = 850;
+          add(iconP2);
+          iconP2.cameras = [camHUD];
+        }
+
+        var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+
+        if (boyfriend != null)
+        {
+          //
+          // PLAYER HEALTH ICON
+          //
+          iconP1 = new HealthIcon('bf', 0);
+          iconP1.y = healthBar.y - (iconP1.height / 2);
+          boyfriend.initHealthIcon(false); // Apply the character ID here
+          iconP1.zIndex = 850;
+          add(iconP1);
+          iconP1.cameras = [camHUD];
+        }
+
+        leftWatermarkText.cameras = [camHUD];
+        rightWatermarkText.cameras = [camHUD];
+      }
+    }
     else if (Std.isOfType(subState, Transition))
     {
       // Do nothing.
