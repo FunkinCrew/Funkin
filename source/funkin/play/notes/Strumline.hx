@@ -782,6 +782,8 @@ class Strumline extends FlxSpriteGroup
       splash.y = this.y;
       splash.y -= INITIAL_OFFSET;
       splash.y += 0;
+      splash.x += noteStyle.getSplashOffsets()[0] * splash.scale.x;
+      splash.y += noteStyle.getSplashOffsets()[1] * splash.scale.y;
     }
   }
 
@@ -880,7 +882,7 @@ class Strumline extends FlxSpriteGroup
     if (noteSplashes.length < noteSplashes.maxSize)
     {
       // Create a new note splash.
-      result = new NoteSplash();
+      result = new NoteSplash(noteStyle);
       this.noteSplashes.add(result);
     }
     else
