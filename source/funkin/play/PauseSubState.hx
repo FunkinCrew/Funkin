@@ -196,11 +196,6 @@ class PauseSubState extends MusicBeatSubState
   {
     super();
     this.currentMode = params?.mode ?? Standard;
-
-    // Add banner ad when game is paused.
-    #if FEATURE_ADMOB_ADS
-    AdMobUtil.addBanner(admob.AdmobBannerSize.BANNER, admob.AdmobBannerAlign.TOP);
-    #end
   }
 
   // ===============
@@ -212,6 +207,11 @@ class PauseSubState extends MusicBeatSubState
    */
   public override function create():Void
   {
+    // Add banner ad when game is state is first loaded.
+    #if FEATURE_ADMOB_ADS
+    AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
+    #end
+
     super.create();
 
     startPauseMusic();
@@ -294,7 +294,7 @@ class PauseSubState extends MusicBeatSubState
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20, 15, camera.width - 40, 'Song Name');
+    var metadataSong:FlxText = new FlxText(20, 15, camera.width - 40 - funkin.ui.FullScreenScaleMode.gameNotchSize.x, 'Song Name');
     metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -303,7 +303,8 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.scrollFactor.set(0, 0);
     metadata.add(metadataSong);
 
-    metadataArtist = new FlxText(20, metadataSong.y + 32, camera.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataArtist = new FlxText(20, metadataSong.y + 32, camera.width - 40 - funkin.ui.FullScreenScaleMode.gameNotchSize.x,
+      'Artist: ${Constants.DEFAULT_ARTIST}');
     metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -312,7 +313,7 @@ class PauseSubState extends MusicBeatSubState
     metadataArtist.scrollFactor.set(0, 0);
     metadata.add(metadataArtist);
 
-    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, camera.width - 40, 'Difficulty: ');
+    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, camera.width - 40 - funkin.ui.FullScreenScaleMode.gameNotchSize.x, 'Difficulty: ');
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
@@ -321,12 +322,13 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - 40 - funkin.ui.FullScreenScaleMode.gameNotchSize.x,
+      '${PlayState.instance?.deathCounter} Blue Balls');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
-    metadataPractice = new FlxText(20, metadataDeaths.y + 32, camera.width - 40, 'PRACTICE MODE');
+    metadataPractice = new FlxText(20, metadataDeaths.y + 32, camera.width - 40 - funkin.ui.FullScreenScaleMode.gameNotchSize.x, 'PRACTICE MODE');
     metadataPractice.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
@@ -505,7 +507,7 @@ class PauseSubState extends MusicBeatSubState
       text.alpha = isCurrent ? 1.0 : 0.6;
 
       // Set the position.
-      var targetX = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 20 + 90;
+      var targetX = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 20 + 90 + funkin.ui.FullScreenScaleMode.gameNotchSize.x;
       var targetY = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 120 + (camera.height * 0.48);
       FlxTween.globalManager.cancelTweensOf(text);
       FlxTween.tween(text, {x: targetX, y: targetY}, 0.33, {ease: FlxEase.quartOut});

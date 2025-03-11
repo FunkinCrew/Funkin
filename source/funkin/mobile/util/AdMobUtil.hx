@@ -101,7 +101,7 @@ class AdMobUtil
    * @param size The size of the banner ad, defaulting to the standard banner size.
    * @param align The alignment of the banner ad, defaulting to the bottom of the screen.
    */
-  public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM):Void
+  public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM_CENTER):Void
   {
     Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.BANNER_AD_UNIT_ID].join('/'), size, align);
   }
