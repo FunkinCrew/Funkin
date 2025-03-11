@@ -770,6 +770,17 @@ class ResultState extends MusicBeatSubState
       }
     }
 
+    if (controls.RESET)
+    {
+      if (PlayState.instance == null) return; // Do nothing - there's no playstate to return to
+      FlxTimer.globalManager.clear();
+      FlxTween.globalManager.clear();
+      if (introMusicAudio != null) introMusicAudio.stop();
+      // if (resultsMusic != null) resultsMusic.stop();
+      this.close();
+      return;
+    }
+
     if (controls.PAUSE || controls.ACCEPT #if mobile || TouchUtil.pressAction() #end)
     {
       if (busy) return;
