@@ -2973,7 +2973,7 @@ class PlayState extends MusicBeatSubState
     // Only award medals if we are LEGIT.
     if (!isPracticeMode && !isBotPlayMode && !isChartingMode && currentSong.validScore)
     {
-      // Award a medal for beating a song on a Friday.
+      // Award a medal for beating at least one song on any difficulty on a Friday.
       if (Date.now().getDay() == 5) Medals.award(FridayNight);
 
       // Determine the score rank for this song we just finished.
