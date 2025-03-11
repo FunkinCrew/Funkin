@@ -75,7 +75,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
       else
       {
-        chartEditorState.songManifestData.songId = chartEditorState.getDefaultSongId();
+        chartEditorState._songManifestData = null;
       }
     };
 

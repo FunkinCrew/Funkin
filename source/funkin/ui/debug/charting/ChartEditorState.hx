@@ -1523,7 +1523,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function getDefaultSongId():String
   {
-    return currentSongName.toLowerKebabCase().replace(' ', '-').sanitize();
+    var defaultSongId:String = currentSongName.trim().toLowerKebabCase().sanitize();
+    if (defaultSongId == '') defaultSongId = 'new-song';
+    return defaultSongId;
   }
 
   var currentSongArtist(get, set):String;
