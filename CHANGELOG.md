@@ -425,13 +425,13 @@ which would remove their rank if they had a lower one.
 ### Fixed
 
 - Fixed a typo in the credits folder (`Custcene` -> `Cutscene`)
-- Fixed an issue where health icon transition animations would loop and never finish properly.
-- Fixed an issue where video cutscenes flagged as mid-song would crash the game when they finish.
-- Fixed an issue where some substate lifecycle events were not being dispatched.
-- Fixed a crash when trying to load into the Animation Offsets menu with an invalid character.
-- Fixed an issue where the preloader would spam the logs when it was complete and waiting for user input.
-- Should definitely have the fix for Freeplay where it stops taking control of the main menu below it
-- Changed the code for the story menu difficulties so that "normal" doesn't overlap the arrows after leaving Weekend 1
+- Health icon transition animations now finish properly instead of looping forever.
+- Video cutscenes flagged as mid-song no longer crash the game when they finish.
+- Substate lifecycle events are now dispatched consistently.
+- Trying to load into the Animation Offsets menu with an invalid character no longer crashes the game.
+- The preloader no longer spams the logs when it is complete and waiting for user input.
+- Should definitely have the fix for Freeplay where it stops taking control of the main menu below it.
+- Changed the code for the Story Mode menu difficulties so that "normal" doesn't overlap the arrows after leaving Weekend 1
 
 ### Removed
 
