@@ -59,6 +59,8 @@ import haxe.Int64;
 import funkin.api.discord.DiscordClient;
 #end
 
+using StringTools;
+
 /**
  * Parameters used to initialize the PlayState.
  */
@@ -385,6 +387,11 @@ class PlayState extends MusicBeatSubState
   var songEvents:Array<SongEventData>;
 
   /**
+   * The Array containing every miss sound path that can be played when the player misses a note.
+   */
+  var missSoundPaths:Array<String> = [];
+
+  /**
    * If true, the player is allowed to pause the game.
    * Disabled during the ending of a song.
    */
@@ -699,6 +706,7 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
     initPopups();
+    initMissSounds();
 
     #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
@@ -1825,6 +1833,25 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+     * Configures the miss sounds.
+     */
+  function initMissSounds():Void
+  {
+    var allSounds:Array<String> = Assets.list(SOUND);
+    missSoundPaths = allSounds.filter(function(snd:String) {
+      return snd.startsWith("assets/shared/sounds/gameplay/miss/");
+    });
+
+    for (i in 0...missSoundPaths.length)
+    {
+      missSoundPaths[i] = missSoundPaths[i].replace("assets/shared/sounds/", "");
+      missSoundPaths[i] = missSoundPaths[i].substring(0, missSoundPaths[i].lastIndexOf('.'));
+    }
+
+    trace("Found viable miss sounds at: " + missSoundPaths);
+  }
+
+  /**
      * Initializes the Discord Rich Presence.
      */
   function initDiscord():Void
@@ -2620,7 +2647,7 @@ class PlayState extends MusicBeatSubState
     if (playSound)
     {
       vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+      FunkinSound.playOnce(Paths.sound(FlxG.random.getObject(missSoundPaths)), FlxG.random.float(0.5, 0.6));
     }
   }
 
@@ -2675,7 +2702,7 @@ class PlayState extends MusicBeatSubState
     if (event.playSound)
     {
       vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playOnce(Paths.sound(FlxG.random.getObject(missSoundPaths)), FlxG.random.float(0.1, 0.2));
     }
   }
 
