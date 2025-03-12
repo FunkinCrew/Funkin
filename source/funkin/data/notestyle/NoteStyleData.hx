@@ -291,9 +291,16 @@ typedef NoteStyleData_HoldNoteCover =
   @:default(true)
   var enabled:Bool;
 
+  @:optional
   var left:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
   var down:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
   var up:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
   var right:NoteStyleData_HoldNoteCoverDirectionData;
 };
 

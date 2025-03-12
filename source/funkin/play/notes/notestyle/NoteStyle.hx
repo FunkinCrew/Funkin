@@ -2,6 +2,7 @@ package funkin.play.notes.notestyle;
 
 import funkin.play.Countdown;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.animation.AnimationData;
 import funkin.data.IRegistryEntry;
 import funkin.graphics.FunkinSprite;
@@ -993,47 +994,41 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function buildHoldCoverSprite(target:NoteHoldCover):Void
   {
-    var atlas:Null<FlxAtlasFrames> = buildHoldCoverFrames(false);
-    if (atlas == null)
+    // NoteHoldCover has "glow" and "sparks". Right now it only implements "glow"
+    // but "sparks" I believe is meant to be used for the ending of the hold note
+    var glowAtlas:Null<FlxFramesCollection> = buildHoldCoverFrames(false);
+    if (glowAtlas == null)
     {
       throw 'Could not load spritesheet for note style: $id';
     }
-    target.frames = atlas;
+    target.glow.frames = glowAtlas;
+
     target.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
+    target.glow.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
+    target.scale.set(_data.assets.holdNoteCover?.scale ?? 1.0, _data.assets.holdNoteCover?.scale ?? 1.0);
+    target.updateHitbox();
+    target.glow.updateHitbox();
 
     buildHoldCoverAnimations(target);
   }
 
-  var holdCoverFrames:Null<FlxAtlasFrames> = null;
+  // we use FlxFramesCollection here so we can combine em into one atlas later
+  var holdCoverFrames:Null<FlxFramesCollection> = null;
 
-  function buildHoldCoverFrames(force:Bool = false):Null<FlxAtlasFrames>
+  function buildHoldCoverFrames(force:Bool = false):Null<FlxFramesCollection>
   {
-    @:nullSafety(Off)
-    {
-      if (splashFrames?.parent?.isDestroyed ?? false) splashFrames = null;
-    }
     if (holdCoverFrames != null && !force) return holdCoverFrames;
-
     for (direction in Strumline.DIRECTIONS)
     {
-      var atlas = buildHoldCoverFrameForDirection(direction);
-      if (holdCoverFrames == null)
-      {
-        holdCoverFrames = atlas;
-      }
-      else
-      {
-        if (atlas != null)
-        {
-          holdCoverFrames = FlxAnimationUtil.combineFramesCollection(holdCoverFrames, atlas);
-        }
-      }
+      // We make a FlxFramesCollection here so we can combine em into one atlas later
+      var atlas:Null<FlxFramesCollection> = buildHoldCoverFrameForDirection(direction);
+      if (holdCoverFrames == null) holdCoverFrames = atlas;
+      else if (atlas != null) holdCoverFrames = FlxAnimationUtil.combineFramesCollections(holdCoverFrames, atlas);
     }
-
     return holdCoverFrames;
   }
 
-  function buildHoldCoverFrameForDirection(direction:NoteDirection):Null<FlxAtlasFrames>
+  function buildHoldCoverFrameForDirection(direction:NoteDirection):Null<FlxFramesCollection>
   {
     var directionData = switch (direction)
     {
@@ -1045,7 +1040,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     if (directionData == null) return null;
 
-    var holdCoverAssetPath:Null<String> = getHoldCoverAssetPath(direction) ?? fallback?.getHoldCoverAssetPath(direction);
+    var holdCoverAssetPath:Null<String> = getHoldCoverDirectionAssetPath(direction) ?? fallback?.getHoldCoverDirectionAssetPath(direction);
     if (holdCoverAssetPath == null)
     {
       FlxG.log.warn('Hold Note Cover asset path not found: ${id}');
@@ -1058,36 +1053,80 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
 
     var atlas:FlxFramesCollection = Paths.getSparrowAtlas(holdCoverAssetPath, getAssetLibrary(getHoldCoverDirectionAssetPath(direction, true)));
-    atlas.parent.persist = true;
     if (atlas == null) return null;
+
+    atlas.parent.persist = true;
 
     return atlas;
   }
 
   function buildHoldCoverAnimations(target:NoteHoldCover):Void
   {
-    return;
+    for (direction in Strumline.DIRECTIONS)
+    {
+      var animData:Null<Array<AnimationData>> = fetchHoldCoverAnimationData(direction);
+      if (animData != null)
+      {
+        // this entry is the base animation that plays ("holdCover$noteColor" animation), which we want to loop
+        animData[1].looped = true;
+        FlxAnimationUtil.addAtlasAnimations(target.glow, animData);
+      }
+    }
+  }
+
+  function fetchHoldCoverAnimationData(dir:NoteDirection):Null<Array<AnimationData>>
+  {
+    var noteColor:String = dir.colorName.toTitleCase();
+    var result:Array<Null<AnimationData>> = switch (dir)
+    {
+      case LEFT: [
+          _data.assets?.holdNoteCover?.data?.left?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.left?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.left?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case DOWN: [
+          _data.assets?.holdNoteCover?.data?.down?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.down?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.down?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case UP: [
+          _data.assets?.holdNoteCover?.data?.up?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.up?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.up?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case RIGHT: [
+          _data.assets?.holdNoteCover?.data?.right?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.right?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.right?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      default: [];
+    };
+
+    // New variable so we can change the type.
+    var filteredResult:Array<AnimationData> = thx.Arrays.filterNull(result);
+
+    if (filteredResult.length == 0) return fallback?.fetchHoldCoverAnimationData(dir) ?? [];
+
+    return filteredResult;
   }
 
   // fallbacks:
   // assetPath for a direction -> root assetpath -> fallback assetpath for direction -> fallback root assetpath
-  function getHoldCoverAssetPath(direction:NoteDirection):Null<String>
-  {
-    return getHoldCoverDirectionAssetPath(direction) ?? getHoldCoverRootAssetPath();
-  }
-
-  function getHoldCoverRootAssetPath():Null<String>
+  // `direction` here is required, however it only is used for fallback purposes
+  function getHoldCoverRootAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
   {
     if (raw)
     {
       var rawPath:Null<String> = _data?.assets?.holdNoteCover?.assetPath;
-      if (rawPath == null) return fallback?.getHoldCoverRootAssetPath();
+      // remember, if we need a fallback for our *root* asset path,
+      // we fallback and look for the *direction* asset path first
+      if (rawPath == null) return fallback?.getHoldCoverDirectionAssetPath(direction, true);
       return rawPath;
     }
 
-    var parts:Array<String> = getHoldCoverRootAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    var parts:Array<String> = getHoldCoverRootAssetPath(direction, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
     if (parts.length == 0) return null;
-    if (parts.length == 1) return getHoldCoverRootAssetPath(true);
+    if (parts.length == 1) return getHoldCoverRootAssetPath(direction, true);
     return parts[1];
   }
 
@@ -1103,22 +1142,36 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         case RIGHT: _data?.assets?.holdNoteCover?.data?.right?.assetPath;
       };
 
-      if (rawPath == null) return fallback?.getHoldCoverDirectionAssetPath(direction, true);
+      // we don't want to fallback directly just yet, we want to check our root assetpath first
+      if (rawPath == null) return getHoldCoverRootAssetPath(direction, true);
       return rawPath;
     }
+
     var parts:Array<String> = getHoldCoverDirectionAssetPath(direction, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
     if (parts.length == 0) return null;
     if (parts.length == 1) return getHoldCoverDirectionAssetPath(direction, true);
     return parts[1];
-    return switch (direction)
+  }
+
+  public function getHoldCoverOffsets():Array<Float>
+  {
+    return _data?.assets?.holdNoteCover?.offsets ?? fallback?.getHoldCoverOffsets() ?? [0.0, 0.0];
   }
 
   public function destroy():Void {}
 
+  /**
+   * Returns a string of the library name for the given asset id
+   * `default:assets/images/awesome.png` returns `default`
+   * If you pass a asset path with no library name (no `:` aka LIBRARY_SEPARATOR) it will return null
+   * @param id The asset id to get the library name from
+   * @return Null<String> The library name, or null if no library name is present
+   */
   function getAssetLibrary(?id:String):Null<String>
   {
-    var parts = id?.split(Constants.LIBRARY_SEPARATOR);
+    var parts:Array<String> = id?.split(Constants.LIBRARY_SEPARATOR) ?? [];
     if (parts.length <= 1) return null;
+
     return parts[0];
   }
 

@@ -49,6 +49,7 @@ class NoteSplash extends FlxSprite
     }
 
     // splashUP0, splashUP1, splashRIGHT0, etc.
+    // the animations are processed via `NoteStyle.fetchSplashAnimationData()` in this format
     this.playAnimation('splash${direction.nameUpper}${variant}');
 
     if (animation.curAnim == null) return;
