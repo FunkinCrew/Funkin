@@ -7,6 +7,7 @@ import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
@@ -427,6 +428,11 @@ class PlayState extends MusicBeatSubState
    * Track any camera tweens we've paused for a Pause substate, so we can unpause them when we return.
    */
   var cameraTweensPausedBySubState:List<FlxTween> = new List<FlxTween>();
+
+  /**
+   * Track any sounds we've paused for a Pause substate, so we can unpause them when we return.
+   */
+  var soundsPausedBySubState:List<FlxSound> = new List<FlxSound>();
 
   /**
    * False until `create()` has completed.
@@ -1207,9 +1213,26 @@ class PlayState extends MusicBeatSubState
           musicPausedBySubState = true;
         }
 
-        // Pause vocals.
-        // Not tracking that we've done this via a bool because vocal re-syncing involves pausing the vocals anyway.
-        if (vocals != null) vocals.pause();
+        // Pause any sounds that are playing and keep track of them.
+        // Vocals are also paused here but are not included as they are handled separately.
+        if (Std.isOfType(subState, PauseSubState))
+        {
+          FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
+            // This previously only paused a sound if it was playing but scheduled sounds
+            // like Darnell's can kick sounds would still play after pausing.
+            if (sound == FlxG.sound.music) return;
+            sound.pause();
+
+            soundsPausedBySubState.add(sound);
+          });
+          vocals?.forEach(function(voice:FunkinSound) {
+            soundsPausedBySubState.remove(voice);
+          });
+        }
+        else
+        {
+          vocals?.pause();
+        }
       }
 
       // Pause camera tweening, and keep track of which tweens we pause.
@@ -1274,6 +1297,12 @@ class PlayState extends MusicBeatSubState
 
       // Resume camera follow
       FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
+
+      for (sound in soundsPausedBySubState)
+      {
+        sound.resume();
+      }
+      soundsPausedBySubState.clear();
 
       if (currentConversation != null)
       {
@@ -3157,6 +3186,12 @@ class PlayState extends MusicBeatSubState
         remove(vocals);
       }
     }
+
+    for (sound in soundsPausedBySubState)
+    {
+      sound.destroy();
+    }
+    soundsPausedBySubState.clear();
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
