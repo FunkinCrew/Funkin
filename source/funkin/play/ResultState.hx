@@ -736,7 +736,7 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    if (controls.PAUSE)
+    if (controls.PAUSE || controls.ACCEPT)
     {
       if (introMusicAudio != null)
       {
