@@ -1336,6 +1336,8 @@ class PlayState extends MusicBeatSubState
     {
       if (PlayStatePlaylist.isStoryMode)
       {
+        // Reset the tallies of the level
+        Highscore.talliesLevel = new Tallies();
         // Load the first song if in story mode
         var currentLevel:funkin.ui.story.Level = funkin.data.story.level.LevelRegistry.instance.fetchEntry(PlayStatePlaylist.campaignId);
 
@@ -1362,6 +1364,21 @@ class PlayState extends MusicBeatSubState
       {
         needsReset = true;
         mayPauseGame = true;
+        // Reset and prepare the Conductor.
+        Conductor.reset();
+        Conductor.instance.forceBPM(null);
+
+        if (currentChart.offsets != null)
+        {
+          Conductor.instance.instrumentalOffset = currentChart.offsets.getInstrumentalOffset(currentInstrumental);
+        }
+
+        Conductor.instance.mapTimeChanges(currentChart.timeChanges);
+        var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
+
+        trace('Attempting to start at ' + pre);
+
+        Conductor.instance.update(pre);
         // Reset the cameras and UI, otherwise stuff breaks idk
         initCameras();
         initHealthBar();
