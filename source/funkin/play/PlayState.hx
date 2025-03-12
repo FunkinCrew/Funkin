@@ -891,34 +891,6 @@ class PlayState extends MusicBeatSubState
       needsReset = false;
     }
 
-    // Update the conductor.
-    if (startingSong)
-    {
-      if (isInCountdown)
-      {
-        // Do NOT apply offsets at this point, because they already got applied the previous frame!
-        Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
-        if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
-        {
-          trace("started song at " + Conductor.instance.songPosition);
-          startSong();
-        }
-      }
-    }
-    else
-    {
-      if (Constants.EXT_SOUND == 'mp3')
-      {
-        Conductor.instance.formatOffset = Constants.MP3_DELAY_MS;
-      }
-      else
-      {
-        Conductor.instance.formatOffset = 0.0;
-      }
-
-      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
-    }
-
     var androidPause:Bool = false;
 
     #if android
@@ -1096,6 +1068,33 @@ class PlayState extends MusicBeatSubState
     if (!isInCutscene) processNotes(elapsed);
 
     justUnpaused = false;
+    // Update the conductor last.
+    if (startingSong)
+    {
+      if (isInCountdown)
+      {
+        // Do NOT apply offsets at this point, because they already got applied the previous frame!
+        Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
+        if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
+        {
+          trace("started song at " + Conductor.instance.songPosition);
+          startSong();
+        }
+      }
+    }
+    else
+    {
+      if (Constants.EXT_SOUND == 'mp3')
+      {
+        Conductor.instance.formatOffset = Constants.MP3_DELAY_MS;
+      }
+      else
+      {
+        Conductor.instance.formatOffset = 0.0;
+      }
+
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
+    }
   }
 
   function moveToGameOver():Void
@@ -2525,7 +2524,10 @@ class PlayState extends MusicBeatSubState
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
-    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
+    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time);
+    // Correctly apply the input latency
+    if (noteDiff > 0) noteDiff -= Std.int(inputLatencyMs);
+    else if (noteDiff < 0) noteDiff += Std.int(inputLatencyMs);
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
