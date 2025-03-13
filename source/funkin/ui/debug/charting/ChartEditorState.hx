@@ -62,6 +62,7 @@ import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.CopyItemsCommand;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
+import funkin.ui.debug.charting.commands.DeselectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
@@ -74,6 +75,7 @@ import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
+import funkin.ui.debug.charting.commands.SelectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
@@ -4033,7 +4035,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // HOME = Scroll to Top
-    if (FlxG.keys.justPressed.HOME)
+    if (!FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.HOME)
     {
       // Scroll amount is the difference between the current position and the top.
       scrollAmount = 0 - this.scrollPositionInPixels;
@@ -4049,7 +4051,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // END = Scroll to Bottom
-    if (FlxG.keys.justPressed.END)
+    if (!FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.END)
     {
       // Scroll amount is the difference between the current position and the bottom.
       scrollAmount = this.songLengthInPixels - this.scrollPositionInPixels;
@@ -5593,6 +5595,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Deselect all items.
       performCommand(new DeselectAllItemsCommand());
+    }
+
+    // SHIFT + Home = Select all above playhead
+    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.HOME)
+    {
+      // CTRL +  SHIFT + Home = Inverse - deselect all above playhead
+      if (FlxG.keys.pressed.CONTROL)
+      performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
+      else
+        performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
+    }
+
+    // SHIFT + End = Select all below playhead
+    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.END)
+    {
+      // CTRL +  SHIFT + Home = Inverse - deselect all below playhead
+      if (FlxG.keys.pressed.CONTROL)
+      performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
+      else
+        performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
     }
   }
 
