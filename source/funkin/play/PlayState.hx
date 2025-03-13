@@ -917,6 +917,9 @@ class PlayState extends MusicBeatSubState
       }
 
       Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
+
+      // Fallback in case music's onComplete function doesn't get called.
+      if (FlxG.sound.music.time >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length) && mayPauseGame) endSong(skipEndingTransition);
     }
 
     var androidPause:Bool = false;
@@ -1440,7 +1443,7 @@ class PlayState extends MusicBeatSubState
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
 
-      if (vocals != null)
+      if (vocals != null && vocals.playing)
       {
         @:privateAccess // todo: maybe make the groups public :thinking:
         {
