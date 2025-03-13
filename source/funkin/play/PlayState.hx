@@ -1440,7 +1440,7 @@ class PlayState extends MusicBeatSubState
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
 
-      if (vocals != null)
+      if (vocals != null && vocals.playing)
       {
         @:privateAccess // todo: maybe make the groups public :thinking:
         {
