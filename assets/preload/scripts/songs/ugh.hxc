@@ -43,7 +43,6 @@ class UghSong extends Song {
 		if (currentDifficulty == 'erect' || currentDifficulty == 'nightmare')
 			return !Save.instance.hasBeatenSong(this.id, ['erect', 'nightmare']);
 
-
     return false;
 	}
 

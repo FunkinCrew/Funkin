@@ -102,9 +102,7 @@ class RosesSong extends Song {
 
       switch (variationId) {
         case 'mat':
-          // return hasBeatenMatMix ? [''] : [];
-          // No Mat mix on BF instrumental, sorry!
-          return [];
+          return hasBeatenMatMix ? [''] : [];
         default:
           return hasBeatenMatMix ? ['mat'] : [];
       }

@@ -9,9 +9,9 @@
       "player": "bf",
       "girlfriend": "gf",
       "opponent": "spooky",
-      "altInstrumentals": ["pico"]
+      "altInstrumentals": ["pico", "mat"]
     },
-    "songVariations": ["erect", "pico"],
+    "songVariations": ["erect", "pico", "mat"],
     "ratings": { "easy": 1, "normal": 2, "hard": 2 },
     "difficulties": ["easy", "normal", "hard"],
     "noteStyle": "funkin",

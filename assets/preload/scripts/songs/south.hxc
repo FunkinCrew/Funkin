@@ -19,24 +19,33 @@ class SouthSong extends Song {
 		super('south');
 	}
 
-  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool{
-		if(currentVariation == 'pico')
+	public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool{
+    if(currentVariation == 'pico')
 		  return !Save.instance.hasBeatenSong(this.id, null, 'pico');
+
+    if(currentVariation == 'mat')
+		  return !Save.instance.hasBeatenSong(this.id, null, 'mat');
+
+		if (currentDifficulty == 'erect' || currentDifficulty == 'nightmare')
+			return !Save.instance.hasBeatenSong(this.id, ['erect', 'nightmare']);
 
     return false;
 	}
 
   public override function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String> {
     if (difficultyId == 'easy' || difficultyId == 'normal' || difficultyId == 'hard') {
+      var hasBeatenMatMix = Save.instance.hasBeatenSong(this.id, null, 'mat');
       var hasBeatenPicoMix = Save.instance.hasBeatenSong(this.id, null, 'pico');
-
       switch (variationId) {
-        case 'pico':
-          // return hasBeatenPicoMix ? [''] : [];
+        case 'mat' | 'pico':
           // No Pico mix on BF instrumental, sorry!
+          // return hasBeatenPicoMix ? [''] : [];
+          return hasBeatenMatMix ? [''] : [];
           return [];
         default:
+          return hasBeatenMatMix ? ['mat'] : [];
           return hasBeatenPicoMix ? ['pico'] : [];
+          return [];
       }
     }
   }
