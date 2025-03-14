@@ -58,7 +58,6 @@ This patch resolves a critical issue that could cause user's save data to become
 
 * @Kn1ghtNight made their first contribution in [#2853](https://github.com/FunkinCrew/Funkin/pull/2853)
 * @Cartridge-Man made their first contribution in [#3082](https://github.com/FunkinCrew/Funkin/pull/3082)
-* @KoloInDaCrib made their first contribution in [#3482](https://github.com/FunkinCrew/Funkin/pull/3482)
 * @afreetoplaynoob made their first contribution in [#3537](https://github.com/FunkinCrew/Funkin/pull/3537)
 * @amyspark-ng made their first contribution in [#3552](https://github.com/FunkinCrew/Funkin/pull/3552)
 * @DaWaterMalone made their first contribution in [#3577](https://github.com/FunkinCrew/Funkin/pull/3577)
@@ -140,7 +139,7 @@ This patch resolves a critical issue that could cause user's save data to become
 - The FPS counter no longer displays if Debug Display is turned off. ([community fix by Lethrial](https://github.com/FunkinCrew/Funkin/pull/3356))
 - The Chart Editor can now be interacted with properly. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3337))
 - Selecting the area to the left of the Chart Editor no longer selects some of the player's notes. ([community fix by NotHyper-474](https://github.com/FunkinCrew/Funkin/pull/3093))
-- Pixel icons now display correctly in the Chart Editor. ([community fix by Techniktil](https://github.com/FunkinCrew/Funkin/pull/3339))
+- Pixel icons now display correctly in the Chart Editor. ([community fix by TechnikTil](https://github.com/FunkinCrew/Funkin/pull/3339))
 - Audio offsets now interact with the Chart Editor properly. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3384))
 - Players can no longer crash the game by interacting with Character Select during the unlock sequence. ([community fix by ActualMandM](https://github.com/FunkinCrew/Funkin/pull/3355))
 - `Stage.addCharacter` now properly assigns the `characterType`. ([community fix by Kade-github](https://github.com/FunkinCrew/Funkin/pull/3357))
@@ -151,6 +150,7 @@ This patch resolves a critical issue that could cause user's save data to become
 
 * @dombomb64 made their first contribution in [#3351](https://github.com/FunkinCrew/Funkin/pull/3351)
 * @Lethrial made their first contribution in [#3356](https://github.com/FunkinCrew/Funkin/pull/3356)
+* @KoloInDaCrib made their first contribution in [#3371](https://github.com/FunkinCrew/Funkin/pull/3371)
 
 
 
@@ -243,9 +243,11 @@ This patch resolves a critical issue that could cause user's save data to become
 * @Sword352 made their first contribution in [#2310](https://github.com/FunkinCrew/Funkin/pull/2310)
 * @cyn0x8 made their first contribution in [#2494](https://github.com/FunkinCrew/Funkin/pull/2494)
 * @KarimAkra made their first contribution in [#2713](https://github.com/FunkinCrew/Funkin/pull/2713)
+* @tposejank made their first contribution in [#2717](https://github.com/FunkinCrew/Funkin/pull/2717)
 * @AppleHair made their first contribution in [#2742](https://github.com/FunkinCrew/Funkin/pull/2742)
 * @JVNpixels made their first contribution in [#2873](https://github.com/FunkinCrew/Funkin/pull/2873)
 * @Flooferland made their first contribution in [#2942](https://github.com/FunkinCrew/Funkin/pull/2942)
+* @Punkinator7 made their first contribution in [#2962](https://github.com/FunkinCrew/Funkin/pull/2962)
 * @anysad made their first contribution in [#3007](https://github.com/FunkinCrew/Funkin/pull/3007)
 * @7oltan made their first contribution in [#3035](https://github.com/FunkinCrew/Funkin/pull/3035)
 
@@ -287,8 +289,9 @@ This patch resolves a critical issue that could cause user's save data to become
 
 ## New Contributors for 0.4.1
 
-* @Hundrec made their first contribution in [#2683](https://github.com/FunkinCrew/Funkin/pull/2683)
+* @Hundrec made their first contribution in [#2661](https://github.com/FunkinCrew/Funkin/pull/2661)
 * @DMMaster636 made their first contribution in [#2709](https://github.com/FunkinCrew/Funkin/pull/2709)
+* @eltociear made their first contribution in [#2730](https://github.com/FunkinCrew/Funkin/pull/2730)
 
 
 
@@ -353,12 +356,17 @@ This patch resolves a critical issue that could cause user's save data to become
 
 * @Noobz4Life made their first contribution in [#2472](https://github.com/FunkinCrew/Funkin/pull/2472)
 * @MaybeMaru made their first contribution in [#2488](https://github.com/FunkinCrew/Funkin/pull/2488)
+* @NotHyper-474 made their first contribution in [#2490](https://github.com/FunkinCrew/Funkin/pull/2490)
 * @richTrash21 made their first contribution in [#2493](https://github.com/FunkinCrew/Funkin/pull/2493)
+* @TechnikTil made their first contribution in [#2508](https://github.com/FunkinCrew/Funkin/pull/2508)
+* @SanicBTW made their first contribution in [#2544](https://github.com/FunkinCrew/Funkin/pull/2544)
+* @EnterTheVoid-x86 made their first contribution in [#2573](https://github.com/FunkinCrew/Funkin/pull/2573)
 * @Keoiki made their first contribution in [#2581](https://github.com/FunkinCrew/Funkin/pull/2581)
 * @sector-a made their first contribution in [#2585](https://github.com/FunkinCrew/Funkin/pull/2585)
 * @PurSnake made their first contribution in [#2610](https://github.com/FunkinCrew/Funkin/pull/2610)
 * @Ethan-makes-music made their first contribution in [#2624](https://github.com/FunkinCrew/Funkin/pull/2624)
-* @NotHyper-474 made their first contribution in [#2629](https://github.com/FunkinCrew/Funkin/pull/2629)
+* @An-enderman made their first contribution in [#2662](https://github.com/FunkinCrew/Funkin/pull/2662)
+* @moondroidcoder made their first contribution in [#2701](https://github.com/FunkinCrew/Funkin/pull/2701)
 
 
 
@@ -388,6 +396,7 @@ This patch resolves a critical issue that could cause user's save data to become
 
 ## New Contributors for 0.3.3
 
+* @Chubercik made their first contribution in [#2297](https://github.com/FunkinCrew/Funkin/pull/2297)
 * @TheGaloXx made their first contribution in [#2300](https://github.com/FunkinCrew/Funkin/pull/2300)
 * @Burgerballs made their first contribution in [#2308](https://github.com/FunkinCrew/Funkin/pull/2308)
 * @ImCodist made their first contribution in [#2309](https://github.com/FunkinCrew/Funkin/pull/2309)
