@@ -5,10 +5,11 @@ import haxe.ds.StringMap;
 /**
  * Temporary persistent data storage for mods to use.
  */
+@:nullSafety
 class ModStore
 {
   /**
-   * All registered stores for this runtime.
+   * All registered stores for this session.
    */
   public static final stores:StringMap<Dynamic> = new StringMap<Dynamic>();
 
@@ -16,36 +17,24 @@ class ModStore
    * Registers a new store with the given ID.
    * If a store with the same ID already exists, it will be returned instead.
    * 
-   * @id The ID for this store.
-   * @data Optional initial data for this store. If none, it'll use an empty object.
-   * @return The store data.
+   * @id The ID for this store. Make sure it's unique!
+   * @data Optional initial data for this store. Uses an empty object by default.
+   * @return The store data at the given ID.
    */
   public static function register(id:String, ?data:Dynamic):Dynamic
   {
     if (stores.exists(id)) return stores.get(id);
-
-    data = data ?? {};
-    stores.set(id, data);
+    stores.set(id, data ??= {});
     return data;
   }
 
   /**
-   * Helper function to get a store by ID.
-   * If the store does not exist, one will be created under the ID with an empty object.
-   */
-  public static function get(id:String):Dynamic
-  {
-    if (stores.exists(id)) return stores.get(id);
-    return register(id, {});
-  }
-
-  /**
-   * Removes a store by ID and returns whatever data it had, if any.
+   * Removes a store by ID and returns whatever data it had.
    * 
    * @id The ID of the store.
    * @return The store data, or `null` if the store did not exist.
    */
-  public static function remove(id:String):Null<Dynamic>
+  public static function remove(id:String):Dynamic
   {
     if (stores.exists(id))
     {
