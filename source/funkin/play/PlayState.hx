@@ -3153,7 +3153,7 @@ class PlayState extends MusicBeatSubState
 
     if (playSound)
     {
-      if (vocals != null) vocals.playerVolume = 0;
+      if (vocals != null && !currentStage.getBoyfriend().tempVocals) vocals.playerVolume = 0;
       FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), FlxG.random.float(0.5, 0.6));
     }
   }
@@ -3194,7 +3194,7 @@ class PlayState extends MusicBeatSubState
 
     if (event.playSound)
     {
-      if (vocals != null) vocals.playerVolume = 0;
+      if (vocals != null && !currentStage.getBoyfriend().tempVocals) vocals.playerVolume = 0;
       FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }
