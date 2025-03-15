@@ -494,7 +494,7 @@ class Conductor
       prevTimestamp = Std.int(Timer.stamp() * 1000);
     }
 
-    if (this == Conductor.instance) SongSequence.update.dispatch();
+    if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();
   }
 
   /**
