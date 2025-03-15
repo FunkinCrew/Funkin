@@ -81,9 +81,10 @@ class AdMobUtil
 
   /**
    * Initializes the AdMob SDK and sets up event listeners for interstitial and rewarded ads.
+   *
    * The listeners display ads automatically when they are loaded.
    */
-  public static inline function init():Void
+  public static function init():Void
   {
     Admob.onStatus.add(function(event:String, message:String):Void {
       switch (event)

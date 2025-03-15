@@ -93,6 +93,16 @@ class InitState extends FlxState
     // Setup Haptic feedback
     funkin.haptic.Haptic.initialize();
 
+    #if FEATURE_ADMOB_ADS
+    // Setup Admob
+    funkin.mobile.util.AdMobUtil.init();
+    #end
+
+    #if android
+    // Setup In-App purchases
+    funkin.mobile.util.InAppPurchasesUtil.init();
+    #end
+
     // This ain't a pixel art game! (most of the time)
     FlxSprite.defaultAntialiasing = true;
 
