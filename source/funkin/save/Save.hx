@@ -97,7 +97,6 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
-          autoFullscreen: false,
           inputOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
@@ -624,7 +623,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          continue;
+          return false;
         }
       }
     }
@@ -819,7 +818,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          continue;
+          return false;
         }
       }
     }
@@ -1339,12 +1338,6 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
-
-  /**
-   * If enabled, the game will automatically launch in fullscreen on startup.
-   * @default `true`
-   */
-  var autoFullscreen:Bool;
 
   /**
    * Offset the user's inputs by this many ms.

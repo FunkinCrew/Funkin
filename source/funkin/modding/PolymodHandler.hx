@@ -290,7 +290,7 @@ class PolymodHandler
     Polymod.blacklistImport('openfl.utils.Assets');
     Polymod.blacklistImport('openfl.Lib');
     Polymod.blacklistImport('openfl.system.ApplicationDomain');
-    Polymod.blacklistImport('openfl.net.SharedObject');
+    Polymod.blacklistImport('funkin.util.FunkinTypeResolver');
 
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
@@ -335,19 +335,8 @@ class PolymodHandler
   {
     return {
       assetLibraryPaths: [
-        'default' => 'preload',
-        'shared' => 'shared',
-        'songs' => 'songs',
-        'videos' => 'videos',
-        'tutorial' => 'tutorial',
-        'week1' => 'week1',
-        'week2' => 'week2',
-        'week3' => 'week3',
-        'week4' => 'week4',
-        'week5' => 'week5',
-        'week6' => 'week6',
-        'week7' => 'week7',
-        'weekend1' => 'weekend1',
+        'default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'videos' => 'videos', 'tutorial' => 'tutorial', 'week1' => 'week1',
+        'week2' => 'week2', 'week3' => 'week3', 'week4' => 'week4', 'week5' => 'week5', 'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1',
       ],
       coreAssetRedirect: CORE_FOLDER,
     }
