@@ -598,17 +598,7 @@ class ResultState extends MusicBeatSubState
         // scorePopin.animation.play("score");
 
         // scorePopin.visible = true;
-
-        if (params.isNewHighscore ?? false)
-        {
-          highscoreNew.visible = true;
-          highscoreNew.animation.play("new");
-        }
-        else
-        {
-          highscoreNew.visible = false;
-        }
-      });
+      };
     }
 
     refresh();
