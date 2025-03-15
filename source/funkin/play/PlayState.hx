@@ -840,7 +840,7 @@ class PlayState extends MusicBeatSubState
       // Reset music properly.
       if (FlxG.sound.music != null)
       {
-        FlxG.sound.music.time = startTimestamp - Conductor.instance.combinedOffset;
+        FlxG.sound.music.time = startTimestamp;
         FlxG.sound.music.pitch = playbackRate;
         FlxG.sound.music.pause();
       }
@@ -857,7 +857,7 @@ class PlayState extends MusicBeatSubState
         }
       }
       vocals.pause();
-      vocals.time = 0 - Conductor.instance.combinedOffset;
+      vocals.time = 0;
 
       if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
@@ -1095,6 +1095,17 @@ class PlayState extends MusicBeatSubState
     // Moving notes into position is now done by Strumline.update().
     if (!isInCutscene) processNotes(elapsed);
 
+    // If none of the music is null, process the vocal resyncing.
+    if (Conductor.instance.currentStep >= 1 && FlxG.sound.music != null && vocals != null)
+    {
+      // CHECK IF THE MUSIC IS PLAYING
+      if (FlxG.sound.music.playing && vocals.playing)
+      {
+        // If the vocals' time is offset from `FlxG.sound.music.time` by 1 tenth of a millisecond, resync them.
+        if (vocals.time < FlxG.sound.music.time - 30 || vocals.time > FlxG.sound.music.time + 30) resyncVocals();
+      }
+    }
+
     justUnpaused = false;
   }
 
@@ -1281,7 +1292,12 @@ class PlayState extends MusicBeatSubState
       }
 
       // Re-sync vocals.
-      if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
+      if (FlxG.sound.music != null && !startingSong && !isInCutscene)
+      {
+        FlxG.sound.music.play();
+
+        resyncVocals();
+      }
 
       // Resume the countdown.
       Countdown.resumeCountdown();
@@ -1432,45 +1448,6 @@ class PlayState extends MusicBeatSubState
     {
       // TODO: Sort more efficiently, or less often, to improve performance.
       // activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
-    }
-
-    if (FlxG.sound.music != null)
-    {
-      var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
-      var playerVoicesError:Float = 0;
-      var opponentVoicesError:Float = 0;
-
-      if (vocals != null)
-      {
-        @:privateAccess // todo: maybe make the groups public :thinking:
-        {
-          vocals.playerVoices.forEachAlive(function(voice:FunkinSound) {
-            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset;
-            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError)) playerVoicesError = currentRawVoiceTime - correctSync;
-          });
-
-          vocals.opponentVoices.forEachAlive(function(voice:FunkinSound) {
-            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset;
-            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError)) opponentVoicesError = currentRawVoiceTime - correctSync;
-          });
-        }
-      }
-
-      if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
-          || Math.abs(playerVoicesError) > 100
-          || Math.abs(opponentVoicesError) > 100))
-      {
-        trace("VOCALS NEED RESYNC");
-        if (vocals != null)
-        {
-          trace(playerVoicesError);
-          trace(opponentVoicesError);
-        }
-        trace(FlxG.sound.music.time);
-        trace(correctSync);
-        resyncVocals();
-      }
     }
 
     // Only bop camera if zoom level is below 135%
@@ -2063,7 +2040,7 @@ class PlayState extends MusicBeatSubState
     };
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
-    FlxG.sound.music.play(true, Math.max(0, startTimestamp - Conductor.instance.combinedOffset));
+    FlxG.sound.music.play(true, Math.max(0, startTimestamp));
     FlxG.sound.music.pitch = playbackRate;
 
     // Prevent the volume from being wrong.
@@ -2072,12 +2049,12 @@ class PlayState extends MusicBeatSubState
 
     trace('Playing vocals...');
     add(vocals);
-    vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
-    vocals.time = FlxG.sound.music.time;
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
+    FlxG.sound.music.pause();
+    FlxG.sound.music.play();
     resyncVocals();
 
     #if FEATURE_DISCORD_RPC
@@ -2107,21 +2084,22 @@ class PlayState extends MusicBeatSubState
      */
   function resyncVocals():Void
   {
-    if (vocals == null) return;
+    // NULL PROTECTION
+    if (vocals == null || FlxG.sound.music == null) return;
 
-    // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
-    if (!(FlxG.sound.music?.playing ?? false)) return;
+    // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.), or if the vocals are empty.
+    if (!FlxG.sound.music.playing || vocals.length <= 0) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
-    trace('Resyncing vocals to ${timeToPlayAt}');
-    FlxG.sound.music.pause();
+    if (!vocals.playing)
+    {
+      trace('Playing vocals at ${FlxG.sound.music.time}');
+      vocals.play(true, FlxG.sound.music.time);
+    }
+
     vocals.pause();
 
-    FlxG.sound.music.time = timeToPlayAt;
-    FlxG.sound.music.play(false, timeToPlayAt);
-
-    vocals.time = timeToPlayAt;
-    vocals.play(false, timeToPlayAt);
+    trace('Resyncing vocals to ${FlxG.sound.music.time}');
+    vocals.play(true, FlxG.sound.music.time); // Resyncs the vocals
   }
 
   /**
@@ -3490,6 +3468,8 @@ class PlayState extends MusicBeatSubState
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 
+    FlxG.sound.music.pause();
+    FlxG.sound.music.play();
     resyncVocals();
   }
   #end
