@@ -3,13 +3,10 @@ package funkin.ui.options;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
-import funkin.graphics.FunkinSprite;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.audio.FunkinSound;
 import funkin.ui.options.MenuItemEnums;
@@ -21,12 +18,8 @@ class PreferencesMenu extends Page
 {
   var items:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
-  var preferenceDesc:Array<String> = [];
-  var itemDesc:FlxText;
-  var itemDescBox:FunkinSprite;
 
   var menuCamera:FlxCamera;
-  var hudCamera:FlxCamera;
   var camFollow:FlxObject;
 
   public function new()
@@ -36,58 +29,24 @@ class PreferencesMenu extends Page
     menuCamera = new FunkinCamera('prefMenu');
     FlxG.cameras.add(menuCamera, false);
     menuCamera.bgColor = 0x0;
-
-    hudCamera = new FlxCamera();
-    FlxG.cameras.add(hudCamera, false);
-    hudCamera.bgColor = 0x0;
-
     camera = menuCamera;
 
     add(items = new TextMenuList());
     add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
 
-    add(itemDescBox = new FunkinSprite());
-    itemDescBox.cameras = [hudCamera];
-
-    add(itemDesc = new FlxText(0, 0, 1180, null, 32));
-    itemDesc.cameras = [hudCamera];
-
     createPrefItems();
-    createPrefDescription();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
     if (items != null) camFollow.y = items.selectedItem.y;
 
-    menuCamera.follow(camFollow, null, 0.085);
+    menuCamera.follow(camFollow, null, 0.06);
     var margin = 160;
-    menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
+    menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
     menuCamera.minScrollY = 0;
 
     items.onChange.add(function(selected) {
       camFollow.y = selected.y;
-      itemDesc.text = preferenceDesc[items.selectedIndex];
     });
-  }
-
-  /**
-   * Create the description for preferences.
-   */
-  function createPrefDescription():Void
-  {
-    itemDescBox.makeSolidColor(1, 1, FlxColor.BLACK);
-    itemDescBox.alpha = 0.6;
-    itemDesc.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    itemDesc.borderSize = 3;
-
-    // Update the text.
-    itemDesc.text = preferenceDesc[items.selectedIndex];
-    itemDesc.screenCenter();
-    itemDesc.y += 270;
-
-    // Create the box around the text.
-    itemDescBox.setPosition(itemDesc.x - 10, itemDesc.y - 10);
-    itemDescBox.setGraphicSize(Std.int(itemDesc.width + 20), Std.int(itemDesc.height + 25));
-    itemDescBox.updateHitbox();
   }
 
   /**
@@ -95,28 +54,24 @@ class PreferencesMenu extends Page
    */
   function createPrefItems():Void
   {
-    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
+    createPrefItemCheckbox('Naughtyness', 'Toggle displaying raunchy content', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
-    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+    createPrefItemCheckbox('Downscroll', 'Enable to make notes move downwards', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
-      function(value:Bool):Void {
-        Preferences.flashingLights = value;
-      }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+    createPrefItemCheckbox('Flashing Lights', 'Disable to dampen flashing effects', function(value:Bool):Void {
+      Preferences.flashingLights = value;
+    }, Preferences.flashingLights);
+    createPrefItemCheckbox('Camera Zooming on Beat', 'Disable to stop the camera bouncing to the song', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
+    createPrefItemCheckbox('Debug Display', 'Enable to show FPS and other debug stats', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    createPrefItemCheckbox('Auto Pause', 'Automatically pause the game when it loses focus', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
-      Preferences.autoFullscreen = value;
-    }, Preferences.autoFullscreen);
 
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
@@ -179,7 +134,6 @@ class PreferencesMenu extends Page
     });
 
     preferenceItems.add(checkbox);
-    preferenceDesc.push(prefDesc);
   }
 
   /**
@@ -198,7 +152,6 @@ class PreferencesMenu extends Page
     var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
-    preferenceDesc.push(prefDesc);
   }
 
   /**
@@ -219,7 +172,6 @@ class PreferencesMenu extends Page
     var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0, newCallback, formatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
-    preferenceDesc.push(prefDesc);
   }
 
   /**
@@ -233,6 +185,5 @@ class PreferencesMenu extends Page
     var item = new EnumPreferenceItem(0, (120 * items.length) + 30, prefName, values, defaultValue, onChange);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
-    preferenceDesc.push(prefDesc);
   }
 }

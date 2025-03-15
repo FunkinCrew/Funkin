@@ -37,13 +37,6 @@ typedef AlbumData =
   public var albumTitleAsset:String;
 
   /**
-   * Offsets for the album title.
-   */
-  @:optional
-  @:default([0, 0])
-  public var albumTitleOffsets:Null<Array<Float>>;
-
-  /**
    * An optional array of animations for the album title.
    */
   @:optional
