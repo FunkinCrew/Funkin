@@ -86,11 +86,6 @@ class SustainTrail extends FlxSprite
    */
   public var bottomClip:Float = 0.9;
 
-  /**
-   * Whether the note will recieve custom vertex data
-   */
-  public var customVertexData:Bool = false;
-
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
 
@@ -115,66 +110,9 @@ class SustainTrail extends FlxSprite
     setupHoldNoteGraphic(noteStyle);
     noteStyleOffsets = noteStyle.getHoldNoteOffsets();
 
-    setIndices(TRIANGLE_VERTEX_INDICES);
+    indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
-  }
-
-  /**
-   * Sets the indices for the triangles.
-   * @param indices The indices to set.
-   */
-  public function setIndices(indices:Array<Int>):Void
-  {
-    if (this.indices.length == indices.length)
-    {
-      for (i in 0...indices.length)
-      {
-        this.indices[i] = indices[i];
-      }
-    }
-    else
-    {
-      this.indices = new DrawData<Int>(indices.length, false, indices);
-    }
-  }
-
-  /**
-   * Sets the vertices for the triangles.
-   * @param vertices The vertices to set.
-   */
-  public function setVertices(vertices:Array<Float>):Void
-  {
-    if (this.vertices.length == vertices.length)
-    {
-      for (i in 0...vertices.length)
-      {
-        this.vertices[i] = vertices[i];
-      }
-    }
-    else
-    {
-      this.vertices = new DrawData<Float>(vertices.length, false, vertices);
-    }
-  }
-
-  /**
-   * Sets the UV data for the triangles.
-   * @param uvtData The UV data to set.
-   */
-  public function setUVTData(uvtData:Array<Float>):Void
-  {
-    if (this.uvtData.length == uvtData.length)
-    {
-      for (i in 0...uvtData.length)
-      {
-        this.uvtData[i] = uvtData[i];
-      }
-    }
-    else
-    {
-      this.uvtData = new DrawData<Float>(uvtData.length, false, uvtData);
-    }
   }
 
   /**
@@ -276,7 +214,7 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping(songTime:Float = 0):Void
   {
-    if (graphic == null || customVertexData)
+    if (graphic == null)
     {
       return;
     }

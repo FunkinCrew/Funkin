@@ -22,8 +22,6 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
 
   var currentInstrumental:FlxText;
 
-  var busy:Bool = false;
-
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
   {
     super(x, y);
@@ -68,40 +66,35 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       destroy();
       return;
     }
-    var changedInst = false;
-
-    if (!busy)
+    @:privateAccess
+    if (parent.controls.BACK)
     {
-      @:privateAccess
-      if (parent.controls.BACK)
-      {
-        close();
-        return;
-      }
-
-      if (parent.getControls().UI_LEFT_P)
-      {
-        currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
-        changedInst = true;
-      }
-      if (parent.getControls().UI_RIGHT_P)
-      {
-        currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
-        changedInst = true;
-      }
-      if (parent.getControls().ACCEPT)
-      {
-        busy = true;
-        onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
-      }
+      close();
+      return;
     }
 
+    var changedInst = false;
+    if (parent.getControls().UI_LEFT_P)
+    {
+      currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
+      changedInst = true;
+    }
+    if (parent.getControls().UI_RIGHT_P)
+    {
+      currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
+      changedInst = true;
+    }
     if (!changedInst && currentInstrumental.text == '') changedInst = true;
 
     if (changedInst)
     {
       currentInstrumental.text = instrumentalIds[currentInstrumentalIndex].toTitleCase() ?? '';
       if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
+    }
+
+    if (parent.getControls().ACCEPT)
+    {
+      onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
     }
   }
 

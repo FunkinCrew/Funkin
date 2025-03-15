@@ -31,7 +31,7 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 /**
  * A Stage is a group of objects rendered in the PlayState.
  *
- * A Stage is comprised of one or more props, each of which is an FlxSprite.
+ * A Stage is comprised of one or more props, each of which is a FlxSprite.
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
@@ -453,12 +453,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.setScale(finalScale); // Don't use scale.set for characters!
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
-
-      character.scrollFactor.x = stageCharData.scroll[0];
-      character.scrollFactor.y = stageCharData.scroll[1];
-
-      character.alpha = stageCharData.alpha;
-      character.angle = stageCharData.angle;
 
       #if FEATURE_DEBUG_FUNCTIONS
       // Draw the debug icon at the character's feet.
@@ -907,5 +901,5 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onSongLoaded(event:SongLoadScriptEvent) {}
 
-  public function onSongRetry(event:SongRetryEvent) {}
+  public function onSongRetry(event:ScriptEvent) {}
 }

@@ -332,11 +332,6 @@ class PlayState extends MusicBeatSubState
    */
   public var disableKeys:Bool = false;
 
-  /**
-   * The previous difficulty the player was playing on.
-   */
-  public var previousDifficulty:String = Constants.DEFAULT_DIFFICULTY;
-
   public var isSubState(get, never):Bool;
 
   function get_isSubState():Bool
@@ -608,7 +603,6 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
-    previousDifficulty = currentDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
@@ -819,11 +813,7 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      var retryEvent = new SongRetryEvent(currentDifficulty);
-
-      previousDifficulty = currentDifficulty;
-
-      dispatchEvent(retryEvent);
+      dispatchEvent(new ScriptEvent(SONG_RETRY));
 
       resetCamera();
 

@@ -109,10 +109,6 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   public function onStateChangeEnd(event:StateChangeScriptEvent) {}
 
-  public function onFocusGained(event:FocusScriptEvent) {}
-
-  public function onFocusLost(event:FocusScriptEvent) {}
-
   public function onSubStateOpenBegin(event:SubStateScriptEvent) {}
 
   public function onSubStateOpenEnd(event:SubStateScriptEvent) {}
@@ -121,5 +117,5 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   public function onSubStateCloseEnd(event:SubStateScriptEvent) {}
 
-  public function onSongRetry(event:SongRetryEvent) {}
+  public function onSongRetry(event:ScriptEvent) {}
 }
