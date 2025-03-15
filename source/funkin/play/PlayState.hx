@@ -1088,7 +1088,7 @@ class PlayState extends MusicBeatSubState
     // If none of the music is null, process the vocal resyncing.
     if (FlxG.sound.music != null && vocals != null) {
       // If the vocals' time is not `FlxG.sound.music.time`, resync them.
-      if (Math.abs(vocals.time) > FlxG.sound.music.time) resyncVocals();
+      if (vocals.time != FlxG.sound.music.time) resyncVocals();
     }
 
     justUnpaused = false;
@@ -2073,7 +2073,7 @@ class PlayState extends MusicBeatSubState
     if (vocals == null || !(FlxG.sound.music?.playing ?? false) || vocals.length <= 0) return;
 
     trace('Resyncing vocals to ${FlxG.sound.music.time}');
-    vocals.time = FlxG.sound.music.time; // Resyncs the vocals
+    vocals.time = FlxG.sound.music.time; // Resyncs the vocals with our offset in mind
   }
 
   /**
