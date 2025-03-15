@@ -68,4 +68,34 @@ class ReflectUtil
   {
     return Reflect.compare(valueA, valueB);
   }
+
+  public static function isObject(value:Dynamic):Bool
+  {
+    return Reflect.isObject(value);
+  }
+
+  public static function isFunction(value:Dynamic):Bool
+  {
+    return Reflect.isFunction(value);
+  }
+
+  public static function isEnumValue(value:Dynamic):Bool
+  {
+    return Reflect.isEnumValue(value);
+  }
+
+  public static function getProperty(obj:Dynamic, name:String):Dynamic
+  {
+    return Reflect.getProperty(obj, name);
+  }
+
+  public static function setProperty(obj:Dynamic, name:String, value:Dynamic):Void
+  {
+    return Reflect.setProperty(obj, name, value);
+  }
+
+  public static function compareMethods(functionA:Dynamic, functionB:Dynamic):Bool
+  {
+    return Reflect.compareMethods(functionA, functionB);
+  }
 }
