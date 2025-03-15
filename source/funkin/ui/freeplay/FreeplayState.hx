@@ -1670,7 +1670,7 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    if (accepted)
+    if (accepted && !busy)
     {
       grpCapsules.members[curSelected].onConfirm();
     }
