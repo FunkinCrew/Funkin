@@ -28,8 +28,6 @@ import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
 import funkin.ui.freeplay.FreeplayState;
-import openfl.media.Video;
-import openfl.net.NetStream;
 import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
 import funkin.save.Save;
@@ -52,10 +50,6 @@ class TitleState extends MusicBeatState
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
 
-  var video:Video;
-  var netStream:NetStream;
-  var overlay:Sprite;
-
   override public function create():Void
   {
     super.create();
@@ -67,48 +61,11 @@ class TitleState extends MusicBeatState
 
     // DEBUG BULLSHIT
 
-    // netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
     if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
       startIntro();
     });
     else
       startIntro();
-  }
-
-  function client_onMetaData(metaData:Dynamic)
-  {
-    video.attachNetStream(netStream);
-
-    video.width = video.videoWidth;
-    video.height = video.videoHeight;
-    // video.
-  }
-
-  function netStream_onAsyncError(event:AsyncErrorEvent):Void
-  {
-    trace("Error loading video");
-  }
-
-  function netConnection_onNetStatus(event:NetStatusEvent):Void
-  {
-    if (event.info.code == 'NetStream.Play.Complete')
-    {
-      // netStream.dispose();
-      // FlxG.stage.removeChild(video);
-
-      startIntro();
-    }
-
-    trace(event.toString());
-  }
-
-  function overlay_onMouseDown(event:MouseEvent):Void
-  {
-    netStream.soundTransform.volume = 0.2;
-    netStream.soundTransform.pan = -1;
-    // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
-
-    FlxG.stage.removeChild(overlay);
   }
 
   var logoBl:FlxSprite;
@@ -324,7 +281,6 @@ class TitleState extends MusicBeatState
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
-      // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
       NGio.unlockMedal(60960);
       // If it's Friday according to da clock
       if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
