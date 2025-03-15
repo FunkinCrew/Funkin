@@ -1087,8 +1087,8 @@ class PlayState extends MusicBeatSubState
 
     // If none of the music is null, process the vocal resyncing.
     if (FlxG.sound.music != null && vocals != null) {
-      // If the vocals' time is not `FlxG.sound.music.time`, resync them.
-      if (Math.abs(vocals.time) > FlxG.sound.music.time) resyncVocals();
+      // If the vocals' time is offset from `FlxG.sound.music.time` by 1ms, resync them.
+      if (vocals.time < FlxG.sound.music.time - 100 || vocals.time > FlxG.sound.music.time + 100) resyncVocals();
     }
 
     justUnpaused = false;
@@ -2037,7 +2037,6 @@ class PlayState extends MusicBeatSubState
     vocals.play();
     vocals.volume = 1.0;
     vocals.pitch = playbackRate;
-    vocals.time = FlxG.sound.music.time;
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
     resyncVocals();
@@ -2069,11 +2068,16 @@ class PlayState extends MusicBeatSubState
      */
   function resyncVocals():Void
   {
-    // Skip this if there's no vocals, the music is paused (GameOver, Pause menu, start-of-song offset, etc.), or if the vocals are empty.
-    if (vocals == null || !(FlxG.sound.music?.playing ?? false) || vocals.length <= 0) return;
+    // NULL PROTECTION
+    if (vocals == null || FlxG.sound.music == null) return;
+
+    // Skip this if the music is paused, the vocals are paused (GameOver, Pause menu, start-of-song offset, etc.), or if the vocals are empty.
+    if (!FlxG.sound.music.playing || !vocals.playing || vocals.length <= 0) return;
+
+    vocals.pause();
 
     trace('Resyncing vocals to ${FlxG.sound.music.time}');
-    vocals.time = FlxG.sound.music.time; // Resyncs the vocals
+    vocals.play(true, FlxG.sound.music.time); // Resyncs the vocals
   }
 
   /**
