@@ -918,8 +918,12 @@ class PlayState extends MusicBeatSubState
 
       Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
 
-      // Fallback in case music's onComplete function doesn't get called.
-      if (FlxG.sound.music.time >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length) && mayPauseGame) endSong(skipEndingTransition);
+      // If, after updating the conductor, the instrumental has finished, end the song immediately.
+      // This helps prevent a major bug where the level suddenly loops back to the start or middle.
+      if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
+      {
+        if (mayPauseGame) endSong(skipEndingTransition);
+      }
     }
 
     var androidPause:Bool = false;
@@ -2062,7 +2066,7 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = function() {
-      endSong(skipEndingTransition);
+      if (mayPauseGame) endSong(skipEndingTransition);
     };
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
