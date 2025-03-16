@@ -959,7 +959,7 @@ class PlayState extends MusicBeatSubState
         // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
         persistentDraw = true;
 
-        // There is a 1/1000 change to use a special pause menu.
+        // There is a 1/1000 chance to use a special pause menu.
         // This prevents the player from resuming, but that's the point.
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
         if (!isSubState && event.gitaroo)
