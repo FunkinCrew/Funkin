@@ -24,7 +24,6 @@ import funkin.ui.AtlasText;
 import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
-import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
 import funkin.ui.freeplay.FreeplayState;
@@ -318,7 +317,7 @@ class TitleState extends MusicBeatState
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
-      FlxG.switchState(() -> new MainMenuState());
+      FlxG.switchState(MusicBeatState.requestNewMainMenuState());
     }
 
     if (pressedEnter && !transitioning && skippedIntro)
@@ -333,7 +332,7 @@ class TitleState extends MusicBeatState
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
 
-      var targetState:NextState = () -> new MainMenuState();
+      var targetState:NextState = MusicBeatState.requestNewMainMenuState();
 
       new FlxTimer().start(2, function(tmr:FlxTimer) {
         // These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory

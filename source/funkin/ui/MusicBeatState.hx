@@ -14,6 +14,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
+import funkin.modding.base.ScriptedMusicBeatState;
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -74,10 +75,16 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     Conductor.stepHit.remove(this.stepHit);
   }
 
+  public static var moddedMainMenuState = null;
+  public static function requestNewMainMenuState(){
+    if(moddedMainMenuState != null) return ScriptedMusicBeatState.init(moddedMainMenuState);
+    return () -> new MainMenuState();
+  }
+
   function handleFunctionControls():Void
   {
     // Emergency exit button.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
+    if (FlxG.keys.justPressed.F4) FlxG.switchState(requestNewMainMenuState());
   }
 
   override function update(elapsed:Float)
