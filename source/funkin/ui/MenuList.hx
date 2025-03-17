@@ -99,7 +99,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     if (enabled && !busy) updateControls();
   }
 
-  inline function updateControls()
+  inline function updateControls():Void
   {
     var controls = PlayerSettings.player1.controls;
 
@@ -132,18 +132,15 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
     }
 
-    // refactor da loop
     if (TouchUtil.pressed)
     {
       for (i in 0...members.length)
       {
         final item = members[i];
 
-        final offset:Int = (currentPage == Preferences && selectedIndex != 0) ? 130 : 20;
         final menuCamera = FlxG.cameras.list[1];
 
-        final itemOverlaps:Bool = !_isMainMenuState
-          && TouchUtil.overlapsComplexPoint(item, FlxPoint.weak(TouchUtil.touch.x, TouchUtil.touch.y + menuCamera.target.y - offset), false, menuCamera);
+        final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
         final itemPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, item, 0) && _isMainMenuState;
 
         if ((itemOverlaps && TouchUtil.justPressed) || itemPixelOverlap)
@@ -165,6 +162,8 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     // Todo: bypass popup blocker on firefox
     if (controls.ACCEPT) accept();
+
+    return;
   }
 
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int

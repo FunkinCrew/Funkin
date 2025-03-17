@@ -97,7 +97,13 @@ class MainMenuState extends MusicBeatState
     });
 
     menuItems.enabled = true; // can move on intro
-    createMenuItem('storymode', 'mainmenu/storymode', function() startExitState(() -> new StoryMenuState()));
+    createMenuItem('storymode', 'mainmenu/storymode', function() {
+      FlxG.signals.preStateSwitch.addOnce(function() {
+        funkin.FunkinMemory.clearFreeplay();
+        funkin.FunkinMemory.purgeCache();
+      });
+      startExitState(() -> new StoryMenuState());
+    });
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
