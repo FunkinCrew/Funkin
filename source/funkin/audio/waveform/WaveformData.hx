@@ -195,6 +195,8 @@ class WaveformData
       var thatChannel = that.channel(channelIndex);
       var resultChannel = result.channel(channelIndex);
 
+      if (thatChannel == null) return this.clone();
+
       for (index in 0...this.length)
       {
         var thisMinSample = thisChannel.minSample(index);

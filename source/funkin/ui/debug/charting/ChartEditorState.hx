@@ -122,6 +122,7 @@ import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
+import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
@@ -163,7 +164,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
 
   // Validation
-  public static final SUPPORTED_MUSIC_FORMATS:Array<String> = #if sys ['ogg'] #else ['mp3'] #end;
+  public static final SUPPORTED_MUSIC_FORMATS:Array<String> = #if sys ['ogg', 'mp3', 'wav'] #else ['mp3'] #end;
+
+  // All 3 audio file formats supported by haxeflixel.
+  public static final AUDIOS:Array<FileDialogExtensionInfo> = [
+    {label: 'Audio File (*.ogg, *.mp3, *.wav)', extension: 'ogg, mp3, wav'}];
 
   // Layout
 

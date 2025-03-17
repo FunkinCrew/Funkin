@@ -290,10 +290,11 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     // Build player waveform.
     // waveformMusic.waveform.forceUpdate = true;
     var perfStart:Float = TimerUtil.start();
-    var waveformData1 = playerVoice?.waveformData;
-    var waveformData2 = opponentVoice?.waveformData ?? playerVoice?.waveformData; // this null check is for songs that only have 1 vocals file!
-    var waveformData3 = chartEditorState.audioInstTrack.waveformData;
-    var waveformData = waveformData3.merge(waveformData1).merge(waveformData2);
+    var waveformData1 = playerVoice?.waveformData ?? null;
+    var waveformData2 = opponentVoice?.waveformData ?? playerVoice?.waveformData ?? null; // this null check is for songs that only have 1 vocals file!
+    var waveformData3 = chartEditorState.audioInstTrack.waveformData ?? null;
+    var waveformData = (waveformData1 != null && waveformData2 != null && waveformData3 != null) ? waveformData3.merge(waveformData1)
+      .merge(waveformData2) : null;
     trace('Waveform data merging took: ${TimerUtil.seconds(perfStart)}');
 
     waveformMusic.waveform.waveformData = waveformData;
@@ -319,7 +320,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     for (index in 0...numberOfTicks)
     {
       var tickPos = chartEditorState.offsetTickBitmap.width / 2 * index;
-      var tickTime = tickPos * (waveformScale / BASE_SCALE * waveformMagicFactor) / waveformMusic.waveform.waveformData.pointsPerSecond();
+      var tickTime = tickPos * (waveformScale / BASE_SCALE * waveformMagicFactor) / waveformMusic.waveform.waveformData?.pointsPerSecond();
 
       var tickLabel:Label = new Label();
       tickLabel.text = formatTime(tickTime);
@@ -390,7 +391,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     // Move the audio preview to the playhead position.
     var currentWaveformIndex:Int = Std.int(playheadAbsolutePos * (waveformScale / BASE_SCALE * waveformMagicFactor));
-    var targetSongTimeSeconds:Float = waveformMusic.waveform.waveformData.indexToSeconds(currentWaveformIndex);
+    var targetSongTimeSeconds:Float = waveformMusic.waveform.waveformData?.indexToSeconds(currentWaveformIndex);
     audioPreviewTracks.time = targetSongTimeSeconds * Constants.MS_PER_SEC;
   }
 
@@ -445,11 +446,11 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     var previewStartPosAbsolute = waveformDragPreviewStartPos + waveformScrollview.hscrollPos;
     var previewStartPosIndex:Int = Std.int(previewStartPosAbsolute * (waveformScale / BASE_SCALE * waveformMagicFactor));
-    var previewStartPosMs:Int = Std.int(waveformMusic.waveform.waveformData.indexToSeconds(previewStartPosIndex) * Constants.MS_PER_SEC);
+    var previewStartPosMs:Int = Std.int(waveformMusic.waveform.waveformData?.indexToSeconds(previewStartPosIndex) * Constants.MS_PER_SEC);
 
     var previewEndPosAbsolute = waveformDragPreviewEndPos + waveformScrollview.hscrollPos;
     var previewEndPosIndex:Int = Std.int(previewEndPosAbsolute * (waveformScale / BASE_SCALE * waveformMagicFactor));
-    var previewEndPosMs:Int = Std.int(waveformMusic.waveform.waveformData.indexToSeconds(previewEndPosIndex) * Constants.MS_PER_SEC);
+    var previewEndPosMs:Int = Std.int(waveformMusic.waveform.waveformData?.indexToSeconds(previewEndPosIndex) * Constants.MS_PER_SEC);
 
     chartEditorState.performCommand(new SetFreeplayPreviewCommand(previewStartPosMs, previewEndPosMs));
 
@@ -621,7 +622,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     if (audioPreviewTracks.playing)
     {
-      var targetScrollPos:Float = waveformMusic.waveform.waveformData.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
+      var targetScrollPos:Float = waveformMusic.waveform.waveformData?.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
       // waveformScrollview.hscrollPos = targetScrollPos;
       var prevPlayheadAbsolutePos = playheadAbsolutePos;
       playheadAbsolutePos = targetScrollPos;
@@ -644,11 +645,11 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     {
       var previewStartPosAbsolute = waveformDragPreviewStartPos + waveformScrollview.hscrollPos;
       var previewStartPosIndex:Int = Std.int(previewStartPosAbsolute * (waveformScale / BASE_SCALE * waveformMagicFactor));
-      var previewStartPosMs:Int = Std.int(waveformMusic.waveform.waveformData.indexToSeconds(previewStartPosIndex) * Constants.MS_PER_SEC);
+      var previewStartPosMs:Int = Std.int(waveformMusic.waveform.waveformData?.indexToSeconds(previewStartPosIndex) * Constants.MS_PER_SEC);
 
       var previewEndPosAbsolute = waveformDragPreviewEndPos + waveformScrollview.hscrollPos;
       var previewEndPosIndex:Int = Std.int(previewEndPosAbsolute * (waveformScale / BASE_SCALE * waveformMagicFactor));
-      var previewEndPosMs:Int = Std.int(waveformMusic.waveform.waveformData.indexToSeconds(previewEndPosIndex) * Constants.MS_PER_SEC);
+      var previewEndPosMs:Int = Std.int(waveformMusic.waveform.waveformData?.indexToSeconds(previewEndPosIndex) * Constants.MS_PER_SEC);
 
       // Set the values in milliseconds.
       freeplayPreviewStart.value = previewStartPosMs;
@@ -659,8 +660,8 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     }
     else
     {
-      previewBoxStartPosAbsolute = waveformMusic.waveform.waveformData.secondsToIndex(chartEditorState.currentSongFreeplayPreviewStart / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
-      previewBoxEndPosAbsolute = waveformMusic.waveform.waveformData.secondsToIndex(chartEditorState.currentSongFreeplayPreviewEnd / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
+      previewBoxStartPosAbsolute = waveformMusic.waveform.waveformData?.secondsToIndex(chartEditorState.currentSongFreeplayPreviewStart / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
+      previewBoxEndPosAbsolute = waveformMusic.waveform.waveformData?.secondsToIndex(chartEditorState.currentSongFreeplayPreviewEnd / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
 
       freeplayPreviewStart.value = chartEditorState.currentSongFreeplayPreviewStart;
       freeplayPreviewEnd.value = chartEditorState.currentSongFreeplayPreviewEnd;
@@ -671,7 +672,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
   {
     super.refresh();
 
-    waveformMagicFactor = MAGIC_SCALE_BASE_TIME / (chartEditorState.offsetTickBitmap.width / waveformMusic.waveform.waveformData.pointsPerSecond());
+    waveformMagicFactor = MAGIC_SCALE_BASE_TIME / (chartEditorState.offsetTickBitmap.width / waveformMusic.waveform.waveformData?.pointsPerSecond());
 
     var currentZoomFactor = waveformScale / BASE_SCALE * waveformMagicFactor;
 
