@@ -16,9 +16,10 @@ class SongNoteDataUtils
    *
    * @param notes Sorted notes by time.
    * @param snapThreshold The note snap threshold.
+   * @param includeOverlapped (Optional) If overlapped notes should be included.
    * @return Stacked notes.
    */
-  public static function listStackedNotes(notes:Array<SongNoteData>, snapThreshold:Int):Array<SongNoteData>
+  public static function listStackedNotes(notes:Array<SongNoteData>, snapThreshold:Int, includeOverlapped:Bool = true):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
 
@@ -52,7 +53,7 @@ class SongNoteDataUtils
 
           if (doNotesStack(noteI, noteJ, snapThreshold))
           {
-            if (!stackedNotes.fastContains(noteI))
+            if (includeOverlapped && !stackedNotes.fastContains(noteI))
             {
               stackedNotes.push(noteI);
             }
