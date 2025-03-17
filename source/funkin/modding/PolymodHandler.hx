@@ -250,6 +250,11 @@ class PolymodHandler
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
 
+    // Backward compatibility for certain scripted classes outside `funkin.modding.base`.
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.ScriptedFunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.ScriptedMusicBeatState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
