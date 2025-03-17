@@ -14,7 +14,6 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.event.SongEvent;
-import funkin.play.song.SongSerializer;
 import funkin.data.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
@@ -145,7 +144,10 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
 
-    if (toolbox == null) return;
+    if (toolbox == null)
+    {
+      toolbox = cast initToolbox(state, id);
+    }
 
     if (toolbox != null)
     {
