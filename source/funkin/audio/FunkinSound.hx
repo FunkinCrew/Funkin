@@ -96,16 +96,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * Waveform data for this sound.
    * This is lazily loaded, so it will be built the first time it is accessed.
    */
-  public var waveformData(get, never):WaveformData;
+  public var waveformData(get, never):Null<WaveformData>;
 
   var _waveformData:Null<WaveformData> = null;
 
-  function get_waveformData():WaveformData
+  function get_waveformData():Null<WaveformData>
   {
     if (_waveformData == null)
     {
       _waveformData = WaveformDataParser.interpretFlxSound(this);
-      if (_waveformData == null) throw 'Could not interpret waveform data!';
+      if (_waveformData == null) trace('Could not interpret waveform data!');
     }
     return _waveformData;
   }

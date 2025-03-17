@@ -33,6 +33,18 @@ class ChartEditorAudioHandler
   public static function loadVocalsFromPath(state:ChartEditorState, path:Path, charId:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
     #if sys
+    switch (path.ext)
+    {
+      case 'ogg':
+        // nothing
+      case 'mp3':
+        // nothing
+      case 'wav':
+        // nothing
+      default:
+        trace("[ERROR] Unsupported file format! Only ogg, mp3 and wav are supported by haxeflixel.");
+        return false;
+    }
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
     return loadVocalsFromBytes(state, fileBytes, charId, instId, wipeFirst);
     #else
@@ -85,6 +97,18 @@ class ChartEditorAudioHandler
   public static function loadInstFromPath(state:ChartEditorState, path:Path, instId:String = '', wipeFirst:Bool = false):Bool
   {
     #if sys
+    switch (path.ext)
+    {
+      case 'ogg':
+        // nothing
+      case 'mp3':
+        // nothing
+      case 'wav':
+        // nothing
+      default:
+        trace("[ERROR] Unsupported file format! Only ogg, mp3 and wav are supported by haxeflixel.");
+        return false;
+    }
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
     return loadInstFromBytes(state, fileBytes, instId, wipeFirst);
     #else
@@ -122,6 +146,7 @@ class ChartEditorAudioHandler
     if (instId == '') instId = 'default';
     if (wipeFirst) wipeInstrumentalData(state);
     state.audioInstTrackData.set(instId, bytes);
+    trace('instId: ${instId} bytes:${state.audioInstTrackData.get(instId)?.length}');
     return true;
   }
 
