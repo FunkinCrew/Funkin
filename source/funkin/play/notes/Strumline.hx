@@ -784,7 +784,7 @@ class Strumline extends FlxSpriteGroup
       cover.y = this.y;
       cover.y += INITIAL_OFFSET;
       cover.y += STRUMLINE_SIZE / 2;
-      cover.y += -96; // Manual tweaking because fuck.
+      cover.y += -87; // Manual tweaking because fuck.
     }
   }
 
