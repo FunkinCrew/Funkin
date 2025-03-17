@@ -83,6 +83,9 @@ class SongMenuItem extends FlxSpriteGroup
 
   var sparkleTimer:FlxTimer;
 
+  var index:Int;
+  public var curSelected:Int;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
@@ -422,7 +425,7 @@ class SongMenuItem extends FlxSpriteGroup
     return evilTrail.color;
   }
 
-  public function refreshDisplay():Void
+  public function refreshDisplay(updateRank:Bool = true):Void
   {
     if (freeplayData == null)
     {
@@ -441,7 +444,7 @@ class SongMenuItem extends FlxSpriteGroup
       pixelIcon.visible = true;
       updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
       updateDifficultyRating(freeplayData.difficultyRating ?? 0);
-      updateScoringRank(freeplayData.scoringRank);
+      if (updateRank) updateScoringRank(freeplayData.scoringRank);
       newText.visible = freeplayData.isNew;
       favIcon.visible = freeplayData.isFav;
       favIconBlurred.visible = freeplayData.isFav;
@@ -523,16 +526,18 @@ class SongMenuItem extends FlxSpriteGroup
       spr.visible = value;
     }
 
-    if (value) textAppear();
+    textAppear();
 
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
+  public function init(?x:Float, ?y:Float, freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, index:Int = null):Void
   {
     if (x != null) this.x = x;
     if (y != null) this.y = y;
     this.freeplayData = freeplayData;
+
+    if (index != null) this.index = index;
 
     // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
     // if thats possible someone Please change the new function to be something like
@@ -655,12 +660,19 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
+        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
+        // Move the targetPos set to the if statement below if you want them to shift to their target positions after jumping in instead
+        // I have no idea why this if instead of frameInTypeBeat == xFrames.length works even though they're the same thing
+        if (targetPos.x <= 320) targetPos.x = intendedX(index - curSelected);
+      }
+      else if (frameInTypeBeat == xFrames.length)
+      {
+        doJumpIn = false;
       }
     }
 
@@ -674,12 +686,16 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameOutTypeBeat];
         capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
-        x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+        this.x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
         frameOutTypeBeat += 1;
+      }
+      else if (frameOutTypeBeat == xFrames.length)
+      {
+        doJumpOut = false;
       }
     }
 
@@ -702,6 +718,11 @@ class SongMenuItem extends FlxSpriteGroup
     {
       pixelIcon.animation.play('confirm');
     }
+  }
+
+  public function intendedX(index:Int):Float
+  {
+    return 270 + (60 * (Math.sin(index)));
   }
 
   public function intendedY(index:Int):Float
