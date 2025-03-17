@@ -1016,7 +1016,7 @@ class PlayState extends MusicBeatSubState
     // TODO: Add a song event for Handle GF dance speed.
 
     // Handle player death.
-    if (!isInCutscene && !disableKeys)
+    if (!isInCutscene && !disableKeys && !startingSong)
     {
       // RESET = Quick Game Over Screen
       if (controls.RESET)
