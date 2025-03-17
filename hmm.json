@@ -84,7 +84,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "v4.3.68",
+      "ref": "v4.3.75",
       "url": "https://github.com/HaxeFoundation/hxcpp"
     },
     {
