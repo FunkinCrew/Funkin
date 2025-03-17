@@ -52,6 +52,7 @@ class PlayAnimationSongEvent extends SongEvent
       if (Std.isOfType(target, BaseCharacter))
       {
         var targetChar:BaseCharacter = cast target;
+        targetChar.tempVocals = force;
         targetChar.playAnimation(anim, force, force);
       }
       else
