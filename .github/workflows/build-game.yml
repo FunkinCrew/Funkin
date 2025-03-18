@@ -121,9 +121,11 @@ jobs:
       matrix:
         include:
           - target: windows
+            runs-on: windows-latest
           - target: macos
+            runs-on: macos
     runs-on:
-      - ${{ matrix.target }}
+      - ${{ matrix.runs-on }}
     defaults:
       run:
         shell: bash
