@@ -4,7 +4,7 @@ This short document is designed to give a run-down on how code should be formatt
 
 ## Notes on IDEs and Extensions
 
-The Visual Studio Code IDE is highly recommended, as this repo contains various configuration that works with VSCode extensions to automatically style certain things for you.
+The Visual Studio Code IDE is highly recommended, as this repo contains various configurations that work with VSCode extensions to automatically style certain things for you.
 
 VSCode is also the only IDE that has any good tools for Haxe so yeah.
 
