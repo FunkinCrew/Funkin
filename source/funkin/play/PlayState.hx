@@ -1376,19 +1376,33 @@ class PlayState extends MusicBeatSubState
     if (FlxG.autoPause) VideoCutscene.pauseVideo();
     #end
 
-    #if FEATURE_DISCORD_RPC
     if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
     {
+      // Only pause the game during gameplay.
+      if (currentConversation == null && !VideoCutscene.isPlaying())
+      {
+        var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
+
+        persistentUpdate = false;
+        persistentDraw = true;
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        pauseSubState.camera = camCutscene;
+        openSubState(pauseSubState);
+      }
+
+      #if FEATURE_DISCORD_RPC
       DiscordClient.instance.setPresence(
         {
+          details: 'Paused - ${buildDiscordRPCDetails()}',
+
           state: buildDiscordRPCState(),
-          details: buildDiscordRPCDetails(),
 
           largeImageKey: discordRPCAlbum,
           smallImageKey: discordRPCIcon
         });
+      #end
     }
-    #end
 
     super.onFocusLost();
   }
