@@ -119,6 +119,7 @@ class ChartEditorImportExportHandler
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
+    state.selectedDifficulty = state.availableDifficulties[0];
 
     Conductor.instance.forceBPM(null); // Disable the forced BPM.
     Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
@@ -372,6 +373,12 @@ class ChartEditorImportExportHandler
     var zipEntries:Array<haxe.zip.Entry> = [];
 
     var variations = state.availableVariations;
+
+    if (state.currentSongMetadata.playData.difficulties.pushUnique(state.selectedDifficulty))
+    {
+      // Just in case the user deleted all or didn't add a difficulty
+      state.difficultySelectDirty = true;
+    }
 
     for (variation in variations)
     {
