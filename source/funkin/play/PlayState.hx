@@ -2171,8 +2171,26 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused)
     {
-      // The player released and repressed the key, so pop the release input
-      if (controls.check("note_" + event.noteDirection.toString(), JUST_PRESSED)) inputReleaseQueue.pop();
+      var totalKeys:Int = 0;
+      var totalPressed:Int = 0;
+      var totalJustPressed:Int = 0;
+      for (key in controls.getKeysForAction("note_" + event.noteDirection.toString()))
+      {
+        totalKeys++;
+        if (FlxG.keys.anyPressed([key]))
+        {
+          totalPressed++;
+        }
+        if (FlxG.keys.anyJustPressed([key]))
+        {
+          totalJustPressed++;
+        }
+      }
+      trace('totalKeys ${totalKeys} totalPressed ${totalPressed} totalJustPressed ${totalJustPressed}');
+      // If one or both of the note's keys is being held down, do nothing
+      // Otherwise, the player has released and repressed the key, so pop the release input
+      if ((totalPressed - totalJustPressed) <= 0) return;
+      inputReleaseQueue.pop();
       return;
     }
 
@@ -2187,8 +2205,25 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused)
     {
+      var totalKeys:Int = 0;
+      var totalPressed:Int = 0;
+      var totalJustPressed:Int = 0;
       // If the key's still being pressed, don't add a release input
-      if (controls.check("note_" + event.noteDirection.toString(), PRESSED)) return;
+      for (key in controls.getKeysForAction("note_" + event.noteDirection.toString()))
+      {
+        totalKeys++;
+        if (FlxG.keys.anyPressed([key]))
+        {
+          totalPressed++;
+          return;
+        }
+        if (FlxG.keys.anyJustPressed([key]))
+        {
+          totalJustPressed++;
+          return;
+        }
+      }
+      trace('release totalKeys ${totalKeys} totalPressed ${totalPressed} totalJustPressed ${totalJustPressed}');
     }
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
