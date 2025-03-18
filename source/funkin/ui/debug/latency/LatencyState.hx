@@ -8,7 +8,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import funkin.ui.MusicBeatSubState;
 import flixel.sound.FlxSound;
-import flixel.text.FlxText;
+import funkin.graphics.FunkinText;
 import flixel.util.FlxColor;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.play.notes.NoteSprite;
@@ -26,8 +26,8 @@ import flixel.FlxCamera;
 
 class LatencyState extends MusicBeatSubState
 {
-  var visualOffsetText:FlxText;
-  var offsetText:FlxText;
+  var visualOffsetText:FunkinText;
+  var offsetText:FunkinText;
   var noteGrp:Array<SongNoteData> = [];
   var strumLine:Strumline;
 
@@ -38,7 +38,7 @@ class LatencyState extends MusicBeatSubState
   var songVisFollowAudio:FlxSprite;
 
   var beatTrail:FlxSprite;
-  var diffGrp:FlxTypedGroup<FlxText>;
+  var diffGrp:FlxTypedGroup<FunkinText>;
   var offsetsPerBeat:Array<Null<Int>> = [];
   var swagSong:HomemadeMusic;
 
@@ -99,7 +99,7 @@ class LatencyState extends MusicBeatSubState
 
     Conductor.instance.forceBPM(60);
 
-    diffGrp = new FlxTypedGroup<FlxText>();
+    diffGrp = new FlxTypedGroup<FunkinText>();
     add(diffGrp);
 
     for (beat in 0...Math.floor(swagSong.length / (localConductor.stepLengthMs * 2)))
@@ -109,7 +109,7 @@ class LatencyState extends MusicBeatSubState
       beatTick.alpha = 0.3;
       add(beatTick);
 
-      var offsetTxt:FlxText = new FlxText(songPosToX(beat * (localConductor.stepLengthMs * 2)), FlxG.height - 26, 0, "");
+      var offsetTxt:FunkinText = new FunkinText(songPosToX(beat * (localConductor.stepLengthMs * 2)), FlxG.height - 26, 0, "");
       offsetTxt.alpha = 0.5;
       diffGrp.add(offsetTxt);
 
@@ -151,21 +151,21 @@ class LatencyState extends MusicBeatSubState
     strumlineBG.makeGraphic(Std.int(strumLine.width), FlxG.height, 0xFFFFFFFF);
     strumlineBG.alpha = 0.1;
 
-    visualOffsetText = new FlxText();
+    visualOffsetText = new FunkinText();
     visualOffsetText.setFormat(Paths.font("vcr.ttf"), 20);
     visualOffsetText.x = (FlxG.height / 8) + 10;
     visualOffsetText.y = 10;
     visualOffsetText.fieldWidth = strumLine.x - visualOffsetText.x - 10;
     add(visualOffsetText);
 
-    offsetText = new FlxText();
+    offsetText = new FunkinText();
     offsetText.setFormat(Paths.font("vcr.ttf"), 20);
     offsetText.x = strumLine.x + strumLine.width + 10;
     offsetText.y = 10;
     offsetText.fieldWidth = FlxG.width - offsetText.x - 10;
     add(offsetText);
 
-    var helpText:FlxText = new FlxText();
+    var helpText:FunkinText = new FunkinText();
     helpText.setFormat(Paths.font("vcr.ttf"), 20);
     helpText.text = "Press BACK to return to main menu";
     helpText.x = FlxG.width - helpText.width;

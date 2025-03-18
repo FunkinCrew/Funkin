@@ -10,6 +10,7 @@ import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.options.OptionsState.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.FunkinText;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.audio.FunkinSound;
 import funkin.ui.options.MenuItemEnums;
@@ -22,7 +23,7 @@ class PreferencesMenu extends Page
   var items:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
   var preferenceDesc:Array<String> = [];
-  var itemDesc:FlxText;
+  var itemDesc:FunkinText;
   var itemDescBox:FunkinSprite;
 
   var menuCamera:FlxCamera;
@@ -49,7 +50,7 @@ class PreferencesMenu extends Page
     add(itemDescBox = new FunkinSprite());
     itemDescBox.cameras = [hudCamera];
 
-    add(itemDesc = new FlxText(0, 0, 1180, null, 32));
+    add(itemDesc = new FunkinText(0, 0, 1180, null, 32));
     itemDesc.cameras = [hudCamera];
 
     createPrefItems();
