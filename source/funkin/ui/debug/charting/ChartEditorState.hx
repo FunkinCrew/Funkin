@@ -5569,26 +5569,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       var noteSelection = currentNoteSelection.length > 0;
       var eventSelection = currentEventSelection.length > 0;
-      var stackedSelection = SongNoteDataUtils.listStackedNotes(noteSelection ? currentNoteSelection : currentSongChartNoteData, stackNoteThreshold, false);
 
       if (FlxG.keys.pressed.SHIFT)
       {
         // Delete stacked notes.
-        if (noteSelection && eventSelection)
-        {
-          performCommand(new RemoveItemsCommand(stackedSelection, currentEventSelection));
-        }
-        else if (noteSelection)
+        var stackedSelection = SongNoteDataUtils.listStackedNotes(noteSelection ? currentNoteSelection : currentSongChartNoteData, stackNoteThreshold, false);
+        if (noteSelection)
         {
           performCommand(new RemoveNotesCommand(stackedSelection));
         }
         else if (eventSelection)
         {
           performCommand(new RemoveEventsCommand(currentEventSelection));
-        }
-        else
-        {
-          performCommand(new RemoveNotesCommand(stackedSelection));
         }
       }
       else
