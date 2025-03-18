@@ -35,6 +35,8 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     });
   }
 
+  public function onBpmChange(event:SongTimeScriptEvent):Void {}
+
   public function onStepHit(event:SongTimeScriptEvent):Void {}
 
   public function onBeatHit(event:SongTimeScriptEvent):Void
