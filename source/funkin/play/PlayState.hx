@@ -391,11 +391,6 @@ class PlayState extends MusicBeatSubState
   var mayPauseGame:Bool = true;
 
   /**
-   * True when the window is focused, false when not.
-   */
-  var focus:Bool = true;
-
-  /**
    * The displayed value of the player's health.
    * Used to provide smooth animations based on linear interpolation of the player's health.
    */
@@ -902,7 +897,8 @@ class PlayState extends MusicBeatSubState
       if (isInCountdown)
       {
         // Do NOT apply offsets at this point, because they already got applied the previous frame!
-        if (focus) Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
+        @:privateAccess
+        if (FlxG.game._lostFocus && Preferences.autoPause) Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
         if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
         {
           trace("started song at " + Conductor.instance.songPosition);
@@ -921,9 +917,9 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      if (focus) Conductor.instance.update((FlxG.sound.music.pitch != 1) ? FlxG.sound.music.time + elapsed * 1000 : (Conductor.instance.songPosition
-        + elapsed * 1000),
-        false); // Normal conductor update.
+      @:privateAccess
+      if (FlxG.game._lostFocus && Preferences.autoPause)  Conductor.instance.update((FlxG.sound.music.pitch != 1) ? FlxG.sound.music.time + elapsed * 1000
+        : (Conductor.instance.songPosition + elapsed * 1000), false); // Normal conductor update.
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
@@ -1342,8 +1338,6 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocus():Void
   {
-    focus = true;
-
     if (VideoCutscene.isPlaying() && FlxG.autoPause && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
     else
@@ -1388,7 +1382,6 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocusLost():Void
   {
-    focus = false;
     #if html5
     if (FlxG.autoPause) VideoCutscene.pauseVideo();
     #end
