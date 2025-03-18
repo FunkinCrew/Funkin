@@ -60,6 +60,7 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_STAGE_EDITOR
     createItem("STAGE EDITOR", openStageEditor);
     #end
+    createItem("RESULTS SCREEN DEBUG", openTestResultsScreen);
     // createItem("Input Offset Testing", openInputOffsetTesting);
     // createItem("CHARACTER SELECT", openCharSelect, true);
     // createItem("TEST STICKERS", testStickers);
@@ -75,7 +76,7 @@ class DebugMenuSubState extends MusicBeatSubState
     camFocusPoint.setPosition(selected.x + selected.width / 2, selected.y + selected.height / 2);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -86,7 +87,7 @@ class DebugMenuSubState extends MusicBeatSubState
     }
   }
 
-  function createItem(name:String, callback:Void->Void, fireInstantly = false)
+  function createItem(name:String, callback:Void->Void, fireInstantly = false):TextMenuItem
   {
     var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
     item.fireInstantly = fireInstantly;
@@ -128,6 +129,41 @@ class DebugMenuSubState extends MusicBeatSubState
   {
     trace('Stage Editor');
     FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
+  }
+
+  function openTestResultsScreen():Void
+  {
+    FlxG.switchState(() -> new funkin.play.ResultState(
+      {
+        storyMode: true,
+        title: "Cum Song Erect by Kawai Sprite",
+        songId: "cum",
+        characterId: "bf",
+        difficultyId: "nightmare",
+        isNewHighscore: true,
+        scoreData:
+          {
+            score: 1_234_567,
+            tallies:
+              {
+                sick: 130,
+                good: 60,
+                bad: 69,
+                shit: 69,
+                missed: 69,
+                combo: 69,
+                maxCombo: 69,
+                totalNotesHit: 140,
+                totalNotes: 190
+              }
+            // 2400 total notes = 7% = LOSS
+            // 275 total notes = 69% = NICE
+            // 240 total notes = 79% = GOOD
+            // 230 total notes = 82% = GREAT
+            // 210 total notes = 91% = EXCELLENT
+            // 190 total notes = PERFECT
+          },
+      }));
   }
 
   #if sys
