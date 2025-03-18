@@ -2102,7 +2102,7 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Resyncronize the vocal tracks if they have become offset from the instrumental.
+     * Resynchronize the vocal tracks if they have become offset from the instrumental.
      */
   function resyncVocals():Void
   {
@@ -3429,7 +3429,7 @@ class PlayState extends MusicBeatSubState
     cancelCameraZoomTween();
   }
 
-  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruely
+  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruly
 
   /**
      * The magical function that shall tween the scroll speed.
