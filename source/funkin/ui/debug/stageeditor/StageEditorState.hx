@@ -138,6 +138,8 @@ class StageEditorState extends UIState
 
   function set_selectedSprite(value:StageEditorObject)
   {
+
+    selectedSprite?.selectedShader.setAmount(0);
     this.selectedSprite = value;
     updateDialog(StageEditorDialogType.OBJECT);
 
@@ -583,6 +585,8 @@ class StageEditorState extends UIState
       if (FlxG.keys.justPressed.ENTER) onMenuItemClick("test stage");
       if (FlxG.keys.justPressed.ESCAPE) onMenuItemClick("exit");
       if (FlxG.keys.justPressed.F1) onMenuItemClick("user guide");
+      if (FlxG.keys.justPressed.BACKSPACE) selectedSprite = null;
+
 
       if (FlxG.keys.justPressed.T)
       {
@@ -627,7 +631,7 @@ class StageEditorState extends UIState
 
           if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
           {
-            selectedSprite.selectedShader.setAmount(0);
+
             selectedSprite = spr;
             updateDialog(StageEditorDialogType.OBJECT);
           }
@@ -1136,9 +1140,8 @@ class StageEditorState extends UIState
         FileUtil.saveFile(bytes, [FileUtil.FILE_FILTER_FNFS], function(path:String) {
           saved = true;
           currentFile = path;
+          reloadRecentFiles();
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
-
-        bitmaps.clear();
 
       case "save stage":
         if (currentFile == "")
@@ -1158,9 +1161,7 @@ class StageEditorState extends UIState
         FileUtil.writeBytesToPath(currentFile, bytes, Force); // mhm
 
         saved = true;
-
-        updateRecentFiles();
-        bitmaps.clear();
+        reloadRecentFiles();
 
       case "open stage":
         if (!saved)
