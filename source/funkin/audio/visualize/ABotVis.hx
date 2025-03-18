@@ -5,24 +5,20 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.sound.FlxSound;
 import funkin.vis.dsp.SpectralAnalyzer;
-import funkin.vis.audioclip.frontends.LimeAudioClip;
+import funkin.audio.visualize.dsp.FlxSoundAnalyzer;
 
 using Lambda;
 
 class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 {
   // public var vis:VisShit;
-  var analyzer:SpectralAnalyzer;
+  var analyzer:FlxSoundAnalyzer;
 
   var volumes:Array<Float> = [];
 
-  public var snd:FlxSound;
-
-  public function new(snd:FlxSound)
+  public function new()
   {
     super();
-
-    this.snd = snd;
 
     // vis = new VisShit(snd);
     // vis.snd = snd;
@@ -51,10 +47,15 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
-  public function initAnalyzer()
+  public function initAnalyzer(snd:FlxSound)
   {
+    if (analyzer != null)
+    {
+      analyzer.snd = snd;
+      return;
+    }
     @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__audioSource, 7, 0.1, 40);
+    analyzer = new FlxSoundAnalyzer(snd, 7, 0.1, 40);
 
     #if desktop
     // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
