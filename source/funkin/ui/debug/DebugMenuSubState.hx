@@ -115,7 +115,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openAnimationEditor()
   {
-    FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
+    FlxG.switchState(() -> new funkin.ui.debug.anim.AnimationEditorState());
     trace('Animation Editor');
   }
 
