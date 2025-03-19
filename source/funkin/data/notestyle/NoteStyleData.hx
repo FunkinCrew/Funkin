@@ -1,6 +1,5 @@
 package funkin.data.notestyle;
 
-import haxe.DynamicAccess;
 import funkin.data.animation.AnimationData;
 
 /**

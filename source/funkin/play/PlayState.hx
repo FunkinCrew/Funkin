@@ -1155,7 +1155,7 @@ class PlayState extends MusicBeatSubState
           {
             event.activated = true;
             continue;
-          };
+          }
 
           var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
           dispatchEvent(eventEvent);
@@ -1547,7 +1547,7 @@ class PlayState extends MusicBeatSubState
     FlxG.console.registerFunction("debugUnbindCameraZoom", () -> {
       debugUnbindCameraZoom = !debugUnbindCameraZoom;
     });
-  };
+  }
 
   /**
      * Initializes the game and HUD cameras.
@@ -2719,7 +2719,7 @@ class PlayState extends MusicBeatSubState
         this.remove(currentStage);
         FlxG.switchState(() -> new ChartEditorState(
           {
-            targetSongId: currentSong.id,
+            targetSongId: currentSong.id
           }));
       }
     }
