@@ -1,5 +1,6 @@
 package funkin.data.song;
 
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.song.SongData;
 import funkin.data.song.migrator.SongData_v2_0_0.SongMetadata_v2_0_0;
 import funkin.data.song.migrator.SongData_v2_1_0.SongMetadata_v2_1_0;
@@ -545,5 +546,40 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return listEntryIds().filter(function(id:String):Bool {
       return listBaseGameSongIds().indexOf(id) == -1;
     });
+  }
+
+  /**
+   * A list of all difficulties for a specific character.
+   */
+  public function listAllDifficulties(characterId:String):Array<String>
+  {
+    var allDifficulties:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST.copy();
+    var character = PlayerRegistry.instance.fetchEntry(characterId);
+
+    if (character == null)
+    {
+      trace('  [WARN] Could not locate character $characterId');
+      return allDifficulties;
+    }
+
+    allDifficulties = [];
+    for (songId in listEntryIds())
+    {
+      var song = fetchEntry(songId);
+      if (song == null) continue;
+
+      for (diff in song.listDifficulties(null, song.getVariationsByCharacter(character)))
+      {
+        if (!allDifficulties.contains(diff)) allDifficulties.push(diff);
+      }
+    }
+
+    if (allDifficulties.length == 0)
+    {
+      trace('  [WARN] No difficulties found. Returning default difficulty list.');
+      allDifficulties = Constants.DEFAULT_DIFFICULTY_LIST.copy();
+    }
+
+    return allDifficulties;
   }
 }
