@@ -22,7 +22,7 @@ import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.PlayStatePlaylist;
 import funkin.ui.debug.charting.ChartEditorState;
@@ -177,9 +177,9 @@ class InitState extends FlxState
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
 
-    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
+    // TODO: CharacterRegistry doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.
-    CharacterDataParser.loadCharacterCache();
+    CharacterRegistry.loadCharacterCache();
 
     NoteKindManager.loadScripts();
 

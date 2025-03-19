@@ -2,8 +2,8 @@ package funkin.ui.debug.charting.dialogs;
 
 import flixel.math.FlxPoint;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import funkin.play.components.HealthIcon;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.SortUtil;
@@ -70,14 +70,14 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     charGrid.width = this.width;
     charSelectScroll.addComponent(charGrid);
 
-    var charIds:Array<String> = CharacterDataParser.listCharacterIds();
+    var charIds:Array<String> = CharacterRegistry.listCharacterIds();
     charIds.sort(SortUtil.alphabetically);
 
     var defaultText:String = '(choose a character)';
 
     for (charIndex => charId in charIds)
     {
-      var charData:CharacterData = CharacterDataParser.fetchCharacterData(charId);
+      var charData:CharacterData = CharacterRegistry.fetchCharacterData(charId);
 
       var charButton = new haxe.ui.components.Button();
       charButton.width = 70;
@@ -95,7 +95,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       }
 
       var LIMIT = 6;
-      charButton.icon = haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(charId));
+      charButton.icon = haxe.ui.util.Variant.fromImageData(CharacterRegistry.getCharPixelIconAsset(charId));
       charButton.text = charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}';
 
       charButton.onClick = _ -> {
