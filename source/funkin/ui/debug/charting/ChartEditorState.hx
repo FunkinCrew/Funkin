@@ -5576,13 +5576,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Delete stacked notes.
         var stackedSelection = SongNoteDataUtils.listStackedNotes(noteSelection ? currentNoteSelection : currentSongChartNoteData, stackNoteThreshold, false);
-        if (noteSelection)
-        {
-          performCommand(new RemoveNotesCommand(stackedSelection));
-        }
-        else if (eventSelection)
+        if (eventSelection)
         {
           performCommand(new RemoveEventsCommand(currentEventSelection));
+        }
+        else
+        {
+          performCommand(new RemoveNotesCommand(stackedSelection));
         }
       }
       else
