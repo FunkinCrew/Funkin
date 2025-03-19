@@ -203,6 +203,13 @@
       "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
+    },
+    {
+      "name": "HtmlParser",
+      "type": "git",
+      "dir": "library",
+      "ref": "28dad3f2cc40240d0aac8b595b4002b87f5986c3",
+      "url": "https://github.com/yar3333/haxe-htmlparser"
     }
   ]
 }
