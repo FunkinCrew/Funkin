@@ -124,7 +124,10 @@ class SongNoteDataUtils
    */
   public static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, snapFraction:Int = 32):Bool
   {
+    final timeDiff:Float = Math.abs(noteA.time - noteB.time);
+    if (snapFraction == 0) return noteA.data == noteB.data && Math.floor(timeDiff) == 0;
+
     final snapThreshold:Float = Conductor.instance.beatLengthMs / snapFraction;
-    return noteA.data == noteB.data && Math.abs(noteA.time - noteB.time) <= snapThreshold;
+    return noteA.data == noteB.data && timeDiff <= snapThreshold;
   }
 }
