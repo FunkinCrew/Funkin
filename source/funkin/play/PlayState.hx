@@ -331,7 +331,8 @@ class PlayState extends MusicBeatSubState
   public var isInCutscene:Bool = false;
 
   /**
-   * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
+   * Whether the inputs should be disabled for whatever reason...
+   * Used after the song ends, and in the Stage Editor.
    */
   public var disableKeys:Bool = false;
 
@@ -361,13 +362,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Key press inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputPressQueue:Array<PreciseInputEvent> = [];
 
   /**
    * Key release inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
@@ -2917,6 +2918,9 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;
+
+    // Prevent ghost misses while the song is ending.
+    disableKeys = true;
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);
