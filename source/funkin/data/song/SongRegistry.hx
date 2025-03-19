@@ -9,11 +9,12 @@ import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
+import funkin.data.DefaultRegistryImpl;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
 @:nullSafety
-class SongRegistry extends BaseRegistry<Song, SongMetadata>
+class SongRegistry extends BaseRegistry<Song, SongMetadata> implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
@@ -37,19 +38,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   static function get_DEFAULT_GENERATEDBY():String
   {
     return '${Constants.TITLE} - ${Constants.VERSION}';
-  }
-
-  /**
-   * TODO: What if there was a Singleton macro which automatically created the property for us?
-   */
-  public static var instance(get, never):SongRegistry;
-
-  static var _instance:Null<SongRegistry> = null;
-
-  static function get_instance():SongRegistry
-  {
-    if (_instance == null) _instance = new SongRegistry();
-    return _instance;
   }
 
   public function new()
@@ -415,16 +403,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     {
       throw '[${registryId}] Chart entry "${fileName}" does not support migration to version ${SONG_CHART_DATA_VERSION_RULE}.';
     }
-  }
-
-  function createScriptedEntry(clsName:String):Song
-  {
-    return ScriptedSong.init(clsName, "unknown");
-  }
-
-  function getScriptedClassNames():Array<String>
-  {
-    return ScriptedSong.listScriptClasses();
   }
 
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>

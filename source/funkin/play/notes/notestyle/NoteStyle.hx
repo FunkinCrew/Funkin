@@ -21,11 +21,6 @@ using funkin.data.animation.AnimationData.AnimationDataUtil;
 class NoteStyle implements IRegistryEntry<NoteStyleData>
 {
   /**
-   * The ID of the note style.
-   */
-  public final id:String;
-
-  /**
    * Note style data as parsed from the JSON file.
    */
   public final _data:NoteStyleData;
@@ -879,13 +874,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       default:
         return [0, 0];
     }
-  }
-
-  public function destroy():Void {}
-
-  public function toString():String
-  {
-    return 'NoteStyle($id)';
   }
 
   static function _fetchData(id:String):NoteStyleData
