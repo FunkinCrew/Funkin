@@ -1809,6 +1809,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemDelete:MenuItem;
 
   /**
+   * The `Edit -> Delete Stacked` menu item.
+   */
+  var menubarItemDeleteStacked:MenuItem;
+
+  /**
    * The `Edit -> Flip Notes` menu item.
    */
   var menubarItemFlipNotes:MenuItem;
@@ -3008,6 +3013,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
 
+    menubarItemDeleteStacked.onClick = _ -> {
+      // Delete stacked notes.
+      if (currentEventSelection.length > 0 && currentNoteSelection.length == 0)
+      {
+        performCommand(new RemoveEventsCommand(currentEventSelection));
+      }
+      else
+      {
+        var stackedSelection = SongNoteDataUtils.listStackedNotes(currentNoteSelection.length > 0 ? currentNoteSelection : currentSongChartNoteData,
+          stackNoteThreshold, false);
+        performCommand(new RemoveNotesCommand(stackedSelection));
+      }
+    };
+
     menubarItemFlipNotes.onClick = _ -> performCommand(new FlipNotesCommand(currentNoteSelection));
 
     menubarItemSelectAllNotes.onClick = _ -> performCommand(new SelectAllItemsCommand(true, false));
@@ -3781,8 +3800,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
 
       // Gather stacked notes to render later
-      if (Math.abs(currentScrollEase - scrollPositionInPixels) < .5) // No need to update it every time we scroll
+      // No need to update it every time we scroll
+      if (Math.abs(currentScrollEase - scrollPositionInPixels) < .5)
+      {
         currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackNoteThreshold);
+      }
 
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.
@@ -5599,13 +5621,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (FlxG.keys.pressed.SHIFT)
       {
         // Delete stacked notes.
-        var stackedSelection = SongNoteDataUtils.listStackedNotes(noteSelection ? currentNoteSelection : currentSongChartNoteData, stackNoteThreshold, false);
-        if (eventSelection)
+        if (eventSelection && !noteSelection)
         {
           performCommand(new RemoveEventsCommand(currentEventSelection));
         }
         else
         {
+          var stackedSelection = SongNoteDataUtils.listStackedNotes(noteSelection ? currentNoteSelection : currentSongChartNoteData, stackNoteThreshold, false);
           performCommand(new RemoveNotesCommand(stackedSelection));
         }
       }
