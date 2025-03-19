@@ -81,7 +81,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return globalOffsets = value;
   }
 
-  @:allow(funkin.ui.debug.anim.DebugBoundingState)
+  @:allow(funkin.ui.debug.anim.AnimationEditorState)
   var animOffsets(default, set):Array<Float> = [0, 0];
 
   public var originalPosition:FlxPoint = new FlxPoint(0, 0);
