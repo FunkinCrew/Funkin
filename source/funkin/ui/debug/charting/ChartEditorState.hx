@@ -3864,6 +3864,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.y = eventSprite.y;
           selectionSquare.width = eventSprite.width;
           selectionSquare.height = eventSprite.height;
+          selectionSquare.color = FlxColor.WHITE;
         }
 
         // Additional cleanup on notes.
