@@ -20,6 +20,8 @@ import funkin.ui.debug.charting.dialogs.ChartEditorCharacterIconSelectorMenu;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadChartDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
+import funkin.ui.debug.charting.dialogs.ChartEditorGenerateChartDialog;
+import funkin.ui.debug.charting.dialogs.ChartEditorGenerateDifficultyDialog;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.util.Constants;
 import funkin.util.DateUtil;
@@ -134,6 +136,38 @@ class ChartEditorDialogHandler
     var charIdsForVocals:Array<String> = [charData.player, charData.opponent];
 
     var dialog = ChartEditorUploadVocalsDialog.build(state, charIdsForVocals, closable);
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog where the user generates a chart.
+   * @param state The current chart editor state.
+   * @param closable Whether the dialog can be closed by the user.
+   * @return The dialog that was opened.
+   */
+  public static function openGenerateChartDialog(state:ChartEditorState, closable:Bool = true):Dialog
+  {
+    var dialog = ChartEditorGenerateChartDialog.build(state, closable);
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog where the user generates difficulties.
+   * @param state The current chart editor state.
+   * @param closable Whether the dialog can be closed by the user.
+   * @return The dialog that was opened.
+   */
+  public static function openGenerateDifficultyDialog(state:ChartEditorState, closable:Bool = true):Dialog
+  {
+    var dialog = ChartEditorGenerateDifficultyDialog.build(state, closable);
 
     dialog.zIndex = 1000;
     state.isHaxeUIDialogOpen = true;
