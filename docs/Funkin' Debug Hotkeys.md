@@ -18,7 +18,7 @@ Most of this functionality is only available on debug builds of the game!
 - `3`: ***LOSE HEALTH***: Debug function, subtract 5% to the player's health.
 - `9`: NEATO!
 - `PAGEUP` (MacOS: `Fn-Up`): ***FORWARDS TIME TRAVEL***: Move forward by 2 sections. Hold SHIFT to move forward by 20 sections instead.
-- `PAGEDOWN` (MacOS: `Fn-Down`): ***BACKWARDS TIME TRAVEL***: Move backward by 2 sections. Hold SHIFT to move backward by 20 sections instead.
+- `PAGEDOWN` (MacOS: `Fn-Down`): ***BACKWARDS TIME TRAVEL***: Move backward by 2 sections. Hold SHIFT to move backward by 20 sections instead. On release builds, this is only available when playtesting in the Chart Editor.
 
 ## **Freeplay State**
 - `F` (Freeplay Menu) - Move to Favorites
