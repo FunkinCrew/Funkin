@@ -358,13 +358,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Key press inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputPressQueue:Array<PreciseInputEvent> = [];
 
   /**
    * Key release inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
@@ -2429,7 +2429,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    // Respawns notes that were b
+    // Respawns notes that were between the previous time and the current time when skipping backward, or destroy notes between the previous time and the current time when skipping forward.
     playerStrumline.handleSkippedNotes();
     opponentStrumline.handleSkippedNotes();
   }
