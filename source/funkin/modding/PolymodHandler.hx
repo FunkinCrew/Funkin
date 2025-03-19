@@ -156,6 +156,8 @@ class PolymodHandler
         // Parsing rules for various data formats.
         parseRules: buildParseRules(),
 
+        skipDependencyErrors: true,
+
         // Parse hxc files and register the scripted classes in them.
         useScriptedClasses: true,
         loadScriptsAsync: #if html5 true #else false #end,
@@ -290,7 +292,7 @@ class PolymodHandler
     Polymod.blacklistImport('openfl.utils.Assets');
     Polymod.blacklistImport('openfl.Lib');
     Polymod.blacklistImport('openfl.system.ApplicationDomain');
-    Polymod.blacklistImport('funkin.util.FunkinTypeResolver');
+    Polymod.blacklistImport('openfl.net.SharedObject');
 
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
