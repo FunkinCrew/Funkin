@@ -783,10 +783,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var currentLiveInputPlaceNoteData:Array<SongNoteData> = [];
 
   /**
-   * How "close" in milliseconds two notes have to be to be considered as stacked.
-   * For instance, `0` means the notes should be exactly on top of each other.
+   * Defines how "close" two notes must be to be considered stacked, based on note snaps.
+   * For example, setting this to `128` treats notes closer than a 128th note (relative to the song's BPM) as stacked.
+   * Setting it to `0` only detects notes that are perfectly aligned.
    */
-  public static var stackNoteThreshold:Int = 10;
+  public static var stackNoteThreshold:Int = 0;
 
   // Note Movement
 
