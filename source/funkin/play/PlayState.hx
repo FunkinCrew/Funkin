@@ -2448,7 +2448,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    // Respawns notes that were b
+    // Respawns notes that were between the previous time and the current time when skipping backward, or destroy notes between the previous time and the current time when skipping forward.
     playerStrumline.handleSkippedNotes();
     opponentStrumline.handleSkippedNotes();
   }
