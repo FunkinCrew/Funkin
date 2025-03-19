@@ -784,7 +784,6 @@ class ResultState extends MusicBeatSubState
       var shouldTween = false;
       var shouldUseSubstate = false;
 
-      var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
       var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
       var stickerPack = switch (PlayState.instance.currentChart.song.id)
       {
