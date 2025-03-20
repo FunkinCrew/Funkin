@@ -2384,17 +2384,44 @@ class PlayState extends MusicBeatSubState
         // The player dropped a hold note.
         holdNote.handledMiss = true;
 
-        // Mute vocals and play miss animation, but don't penalize.
+        // Mute vocals and play miss animation.
         // vocals.playerVolume = 0;
         // if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
+
+        if (!isBotPlayMode)
+        {
+          if (holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
+          {
+            // Penalize the player for letting go of a hold note too early.
+            trace('Player dropped a hold note, penalizing... (has hit: ${holdNote.hitNote})');
+
+            // Different penalty based on whether the note itself was missed,
+            // or the note was hit and then the hold was dropped.
+            var remainingLengthSec = holdNote.sustainLength / Constants.MS_PER_SEC;
+            var healthChangeUncapped = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
+            // If the base note of the hold was missed, don't penalize them more on top of that.
+            var healthChangeMax = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
+            var healthChange = Math.max(healthChangeUncapped, healthChangeMax);
+            var scoreChange = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec);
+
+            var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true);
+            dispatchEvent(event);
+
+            trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
+            applyScore(event.score, 'miss', event.healthChange, event.isComboBreak);
+
+            // Play the miss sound.
+            vocals.playerVolume = 0;
+            FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+          }
+          else
+          {
+            trace('Hold note too short, not penalizing...');
+          }
+        }
       }
     }
   }
-
-  /**
-     * Spitting out the input for ravy 🙇‍♂️!!
-     */
-  var inputSpitter:Array<ScoreInput> = [];
 
   function handleSkippedNotes():Void
   {

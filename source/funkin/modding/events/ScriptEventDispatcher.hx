@@ -90,6 +90,9 @@ class ScriptEventDispatcher
         case NOTE_MISS:
           t.onNoteMiss(cast event);
           return;
+        case NOTE_HOLD_DROP:
+          t.onNoteHoldDrop(cast event);
+          return;
         default: // Continue;
       }
     }

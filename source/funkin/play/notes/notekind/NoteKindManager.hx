@@ -49,7 +49,7 @@ class NoteKindManager
     {
       var noteEvent:NoteScriptEvent = cast(event, NoteScriptEvent);
 
-      var noteKind:NoteKind = noteKinds.get(noteEvent.note.kind);
+      var noteKind:NoteKind = noteKinds.get(noteEvent?.note?.kind);
 
       if (noteKind != null)
       {
