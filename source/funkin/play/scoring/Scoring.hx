@@ -69,6 +69,19 @@ class Scoring
     }
   }
 
+  public static function getMissScore(scoringSystem:ScoringSystem = PBOT1):Int
+  {
+    return switch (scoringSystem)
+    {
+      case LEGACY: LEGACY_MISS_SCORE;
+      case WEEK7: WEEK7_MISS_SCORE;
+      case PBOT1: PBOT1_MISS_SCORE;
+      default:
+        FlxG.log.error('Unknown scoring system: ${scoringSystem}');
+        0;
+    }
+  }
+
   /**
    * The maximum score a note can receive.
    */
@@ -92,7 +105,7 @@ class Scoring
   /**
    * The score a note receives when it is missed.
    */
-  public static final PBOT1_MISS_SCORE:Int = 0;
+  public static final PBOT1_MISS_SCORE:Int = -250;
 
   /**
    * The threshold at which a note hit is considered perfect and always given the max score.
@@ -228,6 +241,11 @@ class Scoring
    */
   public static final LEGACY_SHIT_SCORE:Int = 50;
 
+  /**
+   * The score a note receives when missed.
+   */
+  public static final LEGACY_MISS_SCORE:Int = -10;
+
   static function scoreNoteLEGACY(msTiming:Float):Int
   {
     var absTiming:Float = Math.abs(msTiming);
@@ -276,6 +294,7 @@ class Scoring
   public static final WEEK7_BAD_THRESHOLD:Float = 0.8; // 80% of the hit window, or ~125ms
   public static final WEEK7_GOOD_THRESHOLD:Float = 0.55; // 55% of the hit window, or ~91ms
   public static final WEEK7_SICK_THRESHOLD:Float = 0.2; // 20% of the hit window, or ~33ms
+  public static final WEEK7_MISS_SCORE:Int = -10;
   public static final WEEK7_SHIT_SCORE:Int = 50;
   public static final WEEK7_BAD_SCORE:Int = 100;
   public static final WEEK7_GOOD_SCORE:Int = 200;

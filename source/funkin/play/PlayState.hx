@@ -2606,7 +2606,7 @@ class PlayState extends MusicBeatSubState
     }
     vocals.playerVolume = 0;
 
-    applyScore(-10, 'miss', healthChange, true);
+    applyScore(Scoring.getMissScore(), 'miss', healthChange, true);
 
     if (playSound)
     {
