@@ -837,8 +837,6 @@ class PlayState extends MusicBeatSubState
       startingSong = true;
       isPlayerDying = false;
 
-      inputSpitter = [];
-
       // Reset music properly.
       if (FlxG.sound.music != null)
       {
@@ -2582,27 +2580,6 @@ class PlayState extends MusicBeatSubState
       {
         if (pressArray[i]) indices.push(i);
       }
-      if (indices.length > 0)
-      {
-        for (i in 0...indices.length)
-        {
-          inputSpitter.push(
-            {
-              t: Std.int(Conductor.instance.songPosition),
-              d: indices[i],
-              l: 20
-            });
-        }
-      }
-      else
-      {
-        inputSpitter.push(
-          {
-            t: Std.int(Conductor.instance.songPosition),
-            d: -1,
-            l: 20
-          });
-      }
     }
     vocals.playerVolume = 0;
 
@@ -2651,15 +2628,6 @@ class PlayState extends MusicBeatSubState
       for (i in 0...pressArray.length)
       {
         if (pressArray[i]) indices.push(i);
-      }
-      for (i in 0...indices.length)
-      {
-        inputSpitter.push(
-          {
-            t: Std.int(Conductor.instance.songPosition),
-            d: indices[i],
-            l: 20
-          });
       }
     }
 
@@ -2734,8 +2702,6 @@ class PlayState extends MusicBeatSubState
     // SHIFT+PAGEDOWN: Skip backward twenty sections.
     if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
     #end
-
-    if (FlxG.keys.justPressed.B) trace(inputSpitter.join('\n'));
   }
 
   /**
@@ -2800,27 +2766,6 @@ class PlayState extends MusicBeatSubState
       for (i in 0...pressArray.length)
       {
         if (pressArray[i]) indices.push(i);
-      }
-      if (indices.length > 0)
-      {
-        for (i in 0...indices.length)
-        {
-          inputSpitter.push(
-            {
-              t: Std.int(Conductor.instance.songPosition),
-              d: indices[i],
-              l: 20
-            });
-        }
-      }
-      else
-      {
-        inputSpitter.push(
-          {
-            t: Std.int(Conductor.instance.songPosition),
-            d: -1,
-            l: 20
-          });
       }
     }
     comboPopUps.displayRating(daRating);
@@ -2904,13 +2849,6 @@ class PlayState extends MusicBeatSubState
     var event = new ScriptEvent(SONG_END, true);
     dispatchEvent(event);
     if (event.eventCanceled) return;
-
-    #if sys
-    // spitter for ravy, teehee!!
-    var writer = new json2object.JsonWriter<Array<ScoreInput>>();
-    var output = writer.write(inputSpitter, '  ');
-    sys.io.File.saveContent("./scores.json", output);
-    #end
 
     deathCounter = 0;
 
