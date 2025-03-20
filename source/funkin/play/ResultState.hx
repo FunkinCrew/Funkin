@@ -366,6 +366,11 @@ class ResultState extends MusicBeatSubState
     var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.scoreData.tallies.maxCombo);
     ratingGrp.add(maxCombo);
 
+    if (params.scoreData.tallies.totalNotesHit >= 1000) {
+      totalHit.x -= 30;
+      maxCombo.x -= 30;
+    }
+  
     hStuf += 2;
     var extraYOffset:Float = 7;
 
