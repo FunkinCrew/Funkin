@@ -13,8 +13,9 @@ import funkin.input.Controls.Control;
 import funkin.ui.AtlasText;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.TextMenuList;
+import funkin.ui.Page;
 
-class ControlsMenu extends funkin.ui.options.OptionsState.Page
+class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   public static inline final COLUMNS = 2;
   static var controlList = Control.createAll();
