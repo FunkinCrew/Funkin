@@ -41,11 +41,9 @@ class SouthSong extends Song {
           // No Pico mix on BF instrumental, sorry!
           // return hasBeatenPicoMix ? [''] : [];
           return hasBeatenMatMix ? [''] : [];
-          return [];
         default:
           return hasBeatenMatMix ? ['mat'] : [];
           return hasBeatenPicoMix ? ['pico'] : [];
-          return [];
       }
     }
   }
