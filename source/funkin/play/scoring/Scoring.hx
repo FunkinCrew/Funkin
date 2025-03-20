@@ -382,10 +382,9 @@ class Scoring
 
     // Else, use the standard grades
 
-    // Grade % (only good and sick), 1.00 is a full combo
+    // Final Grade = (Sick + Good - Miss) / (Total Notes)
+
     var grade = (scoreData.tallies.sick + scoreData.tallies.good) / scoreData.tallies.totalNotes;
-    // Clear % (including bad and shit). 1.00 is a full clear but not a full combo
-    var clear = (scoreData.tallies.totalNotesHit) / scoreData.tallies.totalNotes;
 
     if (grade == Constants.RANK_PERFECT_THRESHOLD)
     {
