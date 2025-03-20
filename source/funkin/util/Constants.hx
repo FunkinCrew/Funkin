@@ -509,7 +509,7 @@ class Constants
   /**
    * The minimum amount of the hold note, in milliseconds, before the player gets penalized for letting go of it early.
    */
-  public static final HOLD_DROP_PENALTY_THRESHOLD_MS:Float = 250.0;
+  public static final HOLD_DROP_PENALTY_THRESHOLD_MS:Float = 160.0;
 
   public static final JUDGEMENT_KILLER_COMBO_BREAK:Bool = false;
   public static final JUDGEMENT_SICK_COMBO_BREAK:Bool = false;
