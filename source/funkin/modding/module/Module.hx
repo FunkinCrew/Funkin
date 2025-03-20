@@ -122,6 +122,8 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    */
   public function onNoteMiss(event:NoteScriptEvent) {}
 
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+
   /**
    * Called when the player presses a key without any notes present.
    */
