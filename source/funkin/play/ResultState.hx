@@ -823,7 +823,11 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        if (rank > Scoring.calculateRank(params?.prevScoreData))
+        var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
+
+        var isPersonalBest = rank > Scoring.calculateRank(params?.prevScoreData);
+
+        if (isScoreValid && isPersonalBest)
         {
           trace('THE RANK IS Higher.....');
 
@@ -918,6 +922,16 @@ typedef ResultsStateParams =
    * Whether the displayed score is a new highscore
    */
   var ?isNewHighscore:Bool;
+
+  /**
+   * Whether the displayed score is from a song played with Practice Mode enabled.
+   */
+  var ?isPracticeMode:Bool;
+
+  /**
+   * Whether the displayed score is from a song played with Bot Play Mode enabled.
+   */
+  var ?isBotPlayMode:Bool;
 
   /**
    * The difficulty ID of the song/week we just played.

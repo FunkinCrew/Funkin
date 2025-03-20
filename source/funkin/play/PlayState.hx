@@ -3333,7 +3333,9 @@ class PlayState extends MusicBeatSubState
                 totalNotes: talliesToUse.totalNotes,
               },
           },
-        isNewHighscore: isNewHighscore
+        isNewHighscore: isNewHighscore,
+        isPracticeMode: isPracticeMode,
+        isBotPlayMode: isBotPlayMode,
       });
     this.persistentDraw = false;
     openSubState(res);
