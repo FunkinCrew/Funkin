@@ -910,11 +910,6 @@ class ResultState extends MusicBeatSubState
 
       if (params.storyMode)
       {
-        // Shows a interstital ad on mobile devices each week victory.
-        #if FEATURE_ADMOB_ADS
-        if (PlayStatePlaylist.isStoryMode) AdMobUtil.loadInterstitial();
-        #end
-
         if (PlayerRegistry.instance.hasNewCharacter())
         {
           // New character, display the notif.
@@ -945,15 +940,7 @@ class ResultState extends MusicBeatSubState
       else
       {
         var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
-
         var isPersonalBest = rank > Scoring.calculateRank(params?.prevScoreData);
-
-        // Shows a interstital ad on mobile devices each 3 victories on freeplay.
-        #if FEATURE_ADMOB_ADS
-        Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER++;
-        if ((Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0
-          && Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0)) AdMobUtil.loadInterstitial();
-        #end
 
         if (isScoreValid && isPersonalBest)
         {
@@ -994,6 +981,15 @@ class ResultState extends MusicBeatSubState
           {
             ease: FlxEase.expoOut,
             onComplete: function(_) {
+              // Shows a interstital ad on mobile devices each week victory.
+              #if FEATURE_ADMOB_ADS
+              if (PlayStatePlaylist.isStoryMode
+                || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+              {
+                AdMobUtil.loadInterstitial();
+              }
+              #end
+
               if (shouldUseSubstate && targetState is FlxSubState)
               {
                 openSubState(cast targetState);
@@ -1007,6 +1003,15 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
+        // Shows a interstital ad on mobile devices each week victory.
+        #if FEATURE_ADMOB_ADS
+        if (PlayStatePlaylist.isStoryMode
+          || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+        {
+          AdMobUtil.loadInterstitial();
+        }
+        #end
+
         if (shouldUseSubstate && targetState is FlxSubState)
         {
           openSubState(cast targetState);
