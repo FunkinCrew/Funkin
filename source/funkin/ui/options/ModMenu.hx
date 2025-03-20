@@ -5,9 +5,9 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import polymod.Polymod.ModMetadata;
-import funkin.ui.options.OptionsState.Page;
+import funkin.ui.Page;
 
-class ModMenu extends Page
+class ModMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   var grpMods:FlxTypedGroup<ModMenuItem>;
   var enabledMods:Array<ModMetadata> = [];
