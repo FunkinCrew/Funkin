@@ -2401,7 +2401,7 @@ class PlayState extends MusicBeatSubState
             var healthChangeUncapped = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
             // If the base note of the hold was missed, don't penalize them more on top of that.
             var healthChangeMax = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
-            var healthChange = Math.max(healthChangeUncapped, healthChangeMax);
+            var healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
             var scoreChange = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec);
 
             var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true);
