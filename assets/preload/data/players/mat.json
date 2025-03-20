@@ -126,11 +126,10 @@
     "excellent": [
       {
         "renderType": "animateatlas",
-        "assetPath": "shared:resultScreen/results-bf/resultsEXCELLENT",
+        "assetPath": "shared:resultScreen/results-mat/resultsEXCELLENT",
         "zIndex": 500,
-        "offsets": [1329, 429],
-
-        "loopFrame": 29
+        "offsets": [1200, 50],
+        "loopFrame": 48
       }
     ],
     "great": [
