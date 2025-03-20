@@ -463,7 +463,7 @@ class Constants
   /**
    * The amount of health the player gains, while holding a hold note, per second.
    */
-  public static final HEALTH_HOLD_BONUS_PER_SECOND:Float = 7.5 / 100.0 * HEALTH_MAX; // +7.5% / second
+  public static final HEALTH_HOLD_BONUS_PER_SECOND:Float = 6.0 / 100.0 * HEALTH_MAX; // +6.0% / second
 
   /**
    * The amount of health the player loses upon missing a note.
