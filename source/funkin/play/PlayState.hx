@@ -2339,7 +2339,7 @@ class PlayState extends MusicBeatSubState
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, -Constants.HEALTH_MISS_PENALTY, 0, true);
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Constants.HEALTH_MISS_PENALTY, 0, true);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2627,7 +2627,7 @@ class PlayState extends MusicBeatSubState
   {
     var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
       hasPossibleNotes, // Whether there was a note you could have hit.
-      - 1 * Constants.HEALTH_MISS_PENALTY, // How much health to add (negative).
+      Constants.HEALTH_GHOST_MISS_PENALTY, // How much health to add (negative).
       - 10 // Amount of score to add (negative).
     );
     dispatchEvent(event);
