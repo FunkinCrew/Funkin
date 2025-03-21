@@ -290,4 +290,33 @@ typedef NoteStyleData_HoldNoteCover =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  @:optional
+  var left:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
+  var down:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
+  var up:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
+  var right:NoteStyleData_HoldNoteCoverDirectionData;
 };
+
+typedef NoteStyleData_HoldNoteCoverDirectionData =
+{
+  /**
+   * Optionally specify an asset path to use for this specific animation.
+   * @:default The assetPath of the main holdNoteCover asset
+   */
+  @:optional
+  var assetPath:String;
+
+  @:optional
+  var start:UnnamedAnimationData;
+  @:optional
+  var hold:UnnamedAnimationData;
+  @:optional
+  var end:UnnamedAnimationData;
+}

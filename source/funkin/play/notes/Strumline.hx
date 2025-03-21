@@ -779,10 +779,10 @@ class Strumline extends FlxSpriteGroup
       splash.x = this.x;
       splash.x += getXPos(direction);
       splash.x += INITIAL_OFFSET;
+      splash.x += noteStyle.getSplashOffsets()[0] * splash.scale.x;
+
       splash.y = this.y;
       splash.y -= INITIAL_OFFSET;
-      splash.y += 0;
-      splash.x += noteStyle.getSplashOffsets()[0] * splash.scale.x;
       splash.y += noteStyle.getSplashOffsets()[1] * splash.scale.y;
     }
   }
@@ -806,12 +806,14 @@ class Strumline extends FlxSpriteGroup
       cover.x += getXPos(holdNote.noteDirection);
       cover.x += STRUMLINE_SIZE / 2;
       cover.x -= cover.width / 2;
-      cover.x += -12; // Manual tweaking because fuck.
+      cover.x += noteStyle.getHoldCoverOffsets()[0] * cover.scale.x;
+      cover.x += -12; // hardcoded adjustment, because we are evil.
 
       cover.y = this.y;
       cover.y += INITIAL_OFFSET;
       cover.y += STRUMLINE_SIZE / 2;
-      cover.y += -96; // Manual tweaking because fuck.
+      cover.y += noteStyle.getHoldCoverOffsets()[1] * cover.scale.y;
+      cover.y += -96; // hardcoded adjustment, because we are evil.
     }
   }
 
@@ -916,7 +918,7 @@ class Strumline extends FlxSpriteGroup
     if (noteHoldCovers.length < noteHoldCovers.maxSize)
     {
       // Create a new note hold cover.
-      result = new NoteHoldCover();
+      result = new NoteHoldCover(noteStyle);
       this.noteHoldCovers.add(result);
     }
     else
