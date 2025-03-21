@@ -12,6 +12,9 @@ import openfl.Lib;
 /**
  * A debug overlay showing useful info.
  */
+#if lime_cffi
+@:access(lime._internal.backend.native.NativeCFFI)
+#end
 class FunkinDebugDisplay extends Sprite
 {
   static final UPDATE_DELAY:Int = 100;
@@ -153,7 +156,13 @@ class FunkinDebugDisplay extends Sprite
 
   override function __enterFrame(deltaTime:Float):Void
   {
-    var currentTime:Float = Lib.getTimer();
+    #if lime_cffi
+    final currentTime:Float = lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks();
+    #elseif html5
+    final currentTime:Float = js.Browser.window.performance.now();
+    #else
+    final currentTime:Float = haxe.Timer.stamp() * 1000;
+    #end
 
     times.push(currentTime);
 

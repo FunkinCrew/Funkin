@@ -18,7 +18,6 @@ class SongItemGroup extends FlxTypedGroup<SongMenuItem>
 
   #if hl
   // What the hell is the compiler about on here?
-
   override function recycle(?cls:Class<Dynamic>, ?factory:Void->Dynamic, force:Bool = false, revive:Bool = true):SongMenuItem
   #else
   override function recycle(?cls:Class<SongMenuItem>, ?factory:Void->SongMenuItem, force:Bool = false, revive:Bool = true):SongMenuItem

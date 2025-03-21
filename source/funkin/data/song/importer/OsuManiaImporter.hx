@@ -46,7 +46,7 @@ class OsuManiaImporter
       {
         var parts:Array<String> = line.split(':');
         var key:String = StringTools.trim(parts.shift());
-        var value:Any = parseValue(StringTools.trim(parts.join(':')));
+        var value:Any = parseValue(StringTools.trim(parts.join(":")));
         if (Reflect.field(result, currentSection) == null) Reflect.setField(result, currentSection, {
         });
         Reflect.setField(Reflect.field(result, currentSection), key, value);

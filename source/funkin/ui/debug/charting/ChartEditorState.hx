@@ -4157,7 +4157,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         eventSprite.parentState = this;
         // trace('Creating new Event... (${renderedEvents.members.length})');
 
-        if (eventData?.value != null && (eventData.getString('ease') != null && eventData.getInt('easeDir') == null))
+        if (eventData?.value != null && (eventData.getString("ease") != null && eventData.getInt("easeDir") == null))
         {
           eventData.value = migrateEventEaseDirectionFields(eventData.value);
         }

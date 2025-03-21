@@ -61,6 +61,8 @@ class TitleState extends MusicBeatState
   var gfDance:FunkinSprite;
   var danceLeft:Bool = false;
   var titleText:FunkinSprite;
+  var maskShader = new LeftMaskShader();
+
   #if FEATURE_VIDEO_PLAYBACK
   var attractTimer:FlxTimer;
   #end
