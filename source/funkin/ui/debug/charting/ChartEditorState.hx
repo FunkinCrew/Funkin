@@ -3455,7 +3455,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
-    previousAudioVolumes[3] = menubarLabelVolumeInstrumental.value;
+    previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
 
     menubarItemVolumeVocalsPlayer.onChange = event ->
     {
@@ -3463,7 +3463,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioVocalTrackGroup.playerVolume = volume;
       menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
-    previousAudioVolumes[4] = menubarLabelVolumeVocalsPlayer.value;
+    previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
 
     menubarItemVolumeVocalsOpponent.onChange = event ->
     {
@@ -3471,7 +3471,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioVocalTrackGroup.opponentVolume = volume;
       menubarLabelVolumeVocalsOpponent.text = 'Enemy - ${Std.int(event.value)}%';
     };
-    previousAudioVolumes[5] = menubarLabelVolumeVocalsOpponent.value;
+    previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
 
     menubarItemPlaybackSpeed.onChange = event ->
     {
@@ -4071,7 +4071,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         eventSprite.parentState = this;
         // trace('Creating new Event... (${renderedEvents.members.length})');
 
-        if (eventData?.value != null && (eventData?.value?.ease != null && eventData?.value?.easeDir == null))
+        if (eventData?.value != null && (eventData.getString("ease") != null && eventData.getInt("easeDir") == null))
         {
           eventData.value = migrateEventEaseDirectionFields(eventData.value);
         }

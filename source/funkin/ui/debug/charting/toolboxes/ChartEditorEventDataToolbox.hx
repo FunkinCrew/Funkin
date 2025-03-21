@@ -374,7 +374,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       {
         if (field.type == FRAME) return;
 
-        var value = event.target.value;
+        var value:Any = event.target.value;
         if (field.type == ENUM)
         {
           var drp:DropDown = cast event.target;

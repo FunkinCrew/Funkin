@@ -114,11 +114,7 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
-  static final ANDROID_EXTENSIONS:Array<String> = [
-    "funkin.extensions.CallbackUtil",
-    "funkin.extensions.FNFCExtension",
-    "funkin.extensions.AudioSession"
-  ];
+  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil", "funkin.extensions.FNFCExtension", "funkin.extensions.AudioSession"];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
@@ -171,11 +167,7 @@ class Project extends HXProject
   /**
    * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` disabled.
    */
-  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = [
-    "stressCutscene-censored.mp4",
-    "stressPicoCutscene-censored.mp4",
-    "darnellCutscene-censored.mp4"
-  ];
+  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = ["stressCutscene-censored.mp4", "stressPicoCutscene-censored.mp4", "darnellCutscene-censored.mp4"];
 
   //
   // ASSET EMBEDDING
@@ -894,7 +886,7 @@ class Project extends HXProject
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
-    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this) && !isHashLink());
 
     FEATURE_LOST_FOCUS_VOLUME.apply(this, isDesktop());
 
@@ -1228,21 +1220,12 @@ class Project extends HXProject
       intentFilter.addChild(category);
     }
 
-    final intentFilterDatas:Map<String, Array<String>> = [
-      "android:mimeType" => ["application/zip"],
-      // When this is added, it makes the game show up only when it's a FNFC file.
+    final intentFilterDatas:Map<String,
+      Array<String>> = ["android:mimeType" => ["application/zip"], // When this is added, it makes the game show up only when it's a FNFC file.
       // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
       // "android:host"        => ["*"],
-      "android:scheme" => ["file", "content"],
-      // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
-      "android:pathPattern" => [
-        ".*\\.fnfc",
-        ".*\\..*\\.fnfc",
-        ".*\\..*\\..*\\.fnfc",
-        ".*\\..*\\..*\\..*\\.fnfc",
-        ".*\\..*\\..*\\..*\\..*\\.fnfc"
-      ]
-    ];
+      "android:scheme" => ["file", "content"], // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
+      "android:pathPattern" => [".*\\.fnfc", ".*\\..*\\.fnfc", ".*\\..*\\..*\\.fnfc", ".*\\..*\\..*\\..*\\.fnfc", ".*\\..*\\..*\\..*\\..*\\.fnfc"]];
 
     for (key => values in intentFilterDatas)
     {
@@ -1351,12 +1334,12 @@ class Project extends HXProject
     addHaxelib('thx.core'); // General utility library, "the lodash of Haxe"
     addHaxelib('thx.semver'); // Version string handling
 
-    if (isDebug())
+    if (isDebug() && isCPP())
     {
       addHaxelib('hxcpp-debug-server'); // VSCode debug support
     }
 
-    if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    if ((isDesktop() || isMobile()) && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       // hxvlc doesn't function on HashLink or non-desktop platforms
       // It's also unnecessary if video playback is disabled
