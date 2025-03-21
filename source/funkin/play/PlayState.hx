@@ -526,7 +526,7 @@ class PlayState extends MusicBeatSubState
   {
     // Note: If there is a substate which requires the game to act unpaused,
     //       this should be changed to include something like `&& Std.isOfType()`
-    return this.subState != null;
+    return this.subState != null || this._requestedSubState != null;
   }
 
   var isExitingViaPauseMenu(get, never):Bool;
@@ -1336,10 +1336,8 @@ class PlayState extends MusicBeatSubState
   public override function onFocus():Void
   {
     if (VideoCutscene.isPlaying() && FlxG.autoPause && isGamePaused) VideoCutscene.pauseVideo();
-    #if html5
     else
       VideoCutscene.resumeVideo();
-    #end
 
     #if FEATURE_DISCORD_RPC
     if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
@@ -1379,9 +1377,57 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocusLost():Void
   {
-    #if html5
-    if (FlxG.autoPause) VideoCutscene.pauseVideo();
-    #end
+    if (FlxG.autoPause)
+    {
+      VideoCutscene.pauseVideo();
+
+      var isAllowedIn:Bool = isInCountdown;
+
+      if (currentConversation != null || VideoCutscene.isPlaying()) isAllowedIn = true;
+
+      if (health >= Constants.HEALTH_MIN && !isPlayerDying && isAllowedIn && mayPauseGame && !justUnpaused && !isGamePaused)
+      {
+        var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
+
+        dispatchEvent(event);
+
+        if (!event.eventCanceled)
+        {
+          var pauseMode:PauseSubState.PauseMode = isChartingMode ? Charting : Standard;
+
+          if (currentConversation != null)
+          {
+            pauseMode = Conversation;
+            currentConversation.pauseMusic();
+          }
+          else if (VideoCutscene.isPlaying())
+          {
+            pauseMode = Cutscene;
+            VideoCutscene.pauseVideo();
+          }
+
+          // Pause updates while the substate is open, preventing the game state from advancing.
+          persistentUpdate = false;
+          // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
+          persistentDraw = true;
+
+          var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
+
+          // Prevent the game from crashing if Boyfriend isn't present.
+          if (currentStage != null && currentStage.getBoyfriend() != null)
+          {
+            boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
+          }
+
+          var pauseSubState:FlxSubState = new PauseSubState({mode: pauseMode});
+
+          FlxTransitionableState.skipNextTransIn = true;
+          FlxTransitionableState.skipNextTransOut = true;
+          pauseSubState.camera = camCutscene;
+          openSubState(pauseSubState);
+        }
+      }
+    }
 
     #if FEATURE_DISCORD_RPC
     if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
