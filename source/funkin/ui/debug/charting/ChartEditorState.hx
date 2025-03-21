@@ -2834,7 +2834,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     });
 
-
     buttonSelectOpponent = new Button();
     buttonSelectOpponent.allowFocus = false;
     buttonSelectOpponent.text = "Opponent"; // Default text.
