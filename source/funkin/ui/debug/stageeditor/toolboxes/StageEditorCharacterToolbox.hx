@@ -57,7 +57,7 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
     charCamX.onChange = charCamY.onChange = function(_)
     {
       if (state.selectedChar == null) return;
-      state.charCamOffsets[state.selectedChar.characterType] = [charCamX.pos, charCamY.pos];
+      state.charCamOffsets[state.selectedChar.characterType] = [charCamX.pos ?? 0, charCamY.pos ?? 0];
       state.updateMarkerPos();
     }
 

@@ -72,7 +72,6 @@
   "haxecheckstyle.externalSourceRoots": [],
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
-  "lime.projectFile": "project.hxp",
   "lime.targets": [
     { "name": "windows", "enabled": true, "label": "Windows" },
     { "name": "mac", "enabled": true, "label": "macOS" },
@@ -80,8 +79,8 @@
     { "name": "html5", "enabled": true, "label": "HTML5" },
     { "name": "android", "enabled": true, "label": "Android" },
     { "name": "ios", "enabled": true, "label": "iOS" },
+    { "name": "hl", "enabled": true, "label": "HashLink" },
     // Disabled targets
-    { "name": "hl", "enabled": false, "label": "HashLink" },
     { "name": "air", "enabled": false },
     { "name": "electron", "enabled": false },
     { "name": "flash", "enabled": false },

@@ -7,7 +7,9 @@ import haxe.macro.Expr;
 #end
 
 #if (linux && !macro)
+#if cpp
 import hxgamemode.GamemodeClient;
+#end
 
 @:image('art/icons/iconOG.png')
 class ApplicationIcon extends lime.graphics.Image {}
@@ -56,7 +58,7 @@ class ApplicationMain
 
   public static function create(config):Void
   {
-    #if linux
+    #if (linux && cpp)
     GamemodeClient.request_start();
     #end
 
@@ -192,7 +194,7 @@ class ApplicationMain
     lime.system.System.exit(result);
     #end
 
-    #if linux
+    #if (linux && cpp)
     GamemodeClient.request_end();
     #end
   }

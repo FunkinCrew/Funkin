@@ -4,7 +4,7 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "26ed20b9c181a576f4cbe18ccdea38912c01476e",
+      "ref": "2f984e244f1544ca98c0e03b9b21ae570f07ac55",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
@@ -169,7 +169,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "cae0c0bc10915f6281625d07e5527f3cecb4347f",
+      "ref": "a3c915161ae66c24e76d968b1b6f4c08d61e314f",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -183,14 +183,14 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "5399946b68fd98f345d6b3e52b95ed6b78bf427c",
+      "ref": "92d7607f309c6c0705456a2e943f1aa0f052463d",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "6ed7a8940bacec2b474020fc0c155838ad280b8d",
+      "ref": "47f8f74a8498647cfbda2feb7fb8c943845b4c62",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
