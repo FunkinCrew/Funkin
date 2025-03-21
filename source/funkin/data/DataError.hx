@@ -53,7 +53,7 @@ class DataError
       case TEnum(c):
         trace(' ERROR '.error() + '(${Type.getEnumName(c)}) ${e.toString()}');
       default:
-        trace(' ERROR '.error() + '(${Type.typeof(e)}) ${e.toString()}');
+        trace(' ERROR '.error() + '(${Type.typeof(e)}) ${Std.string(e)}');
     }
   }
 

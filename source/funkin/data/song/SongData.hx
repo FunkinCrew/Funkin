@@ -863,7 +863,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   public function getInt(key:String):Null<Int>
   {
     if (this.value == null) return null;
-    var result = Reflect.field(this.value, key);
+    var result:Any = Reflect.field(this.value, key);
     if (result == null) return null;
     if (Std.isOfType(result, Int)) return result;
     if (Std.isOfType(result, String)) return Std.parseInt(cast result);
@@ -878,7 +878,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   public function getFloat(key:String):Null<Float>
   {
     if (this.value == null) return null;
-    var result = Reflect.field(this.value, key);
+    var result:Any = Reflect.field(this.value, key);
     if (result == null) return null;
     if (Std.isOfType(result, Float)) return result;
     if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
