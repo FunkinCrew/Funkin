@@ -948,7 +948,7 @@ class PlayState extends MusicBeatSubState
     // Attempt to pause the game.
     if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
     {
-      var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
+      var event = new PauseScriptEvent(FlxG.random.bool((1 / 1000) * 100));
 
       dispatchEvent(event);
 
