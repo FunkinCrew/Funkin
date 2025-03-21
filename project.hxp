@@ -1066,15 +1066,7 @@ class Project extends HXProject {
 	 * Display an info message. This should not interfere with the build process.
 	 */
 	public function info(message:String):Void {
-		// CURSED: We have to disable info() log calls because of a bug.
-		// https://github.com/haxelime/lime-vscode-extension/issues/88
-
-		// Log.info('[INFO] ${message}');
-
-		// trace(message);
-		// Sys.println(message);
-		// Sys.stdout().writeString(message);
-		// Sys.stderr().writeString(message);
+		if(command != "display") { Log.info('[INFO] ${message}'); }
 	}
 }
 
