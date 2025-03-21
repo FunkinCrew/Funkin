@@ -16,6 +16,11 @@ import funkin.input.Controls;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 
+/**
+ * The main options menu
+ * It mainly is controlled via the "optionsCodex" object,
+ * which handles paging and going to the different submenus
+ */
 class OptionsState extends MusicBeatState
 {
   var optionsCodex:Codex<OptionsMenuPageName>;
@@ -25,12 +30,8 @@ class OptionsState extends MusicBeatState
     persistentUpdate = true;
 
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
-    var hsv = new HSVShader();
-    hsv.hue = -0.6;
-    hsv.saturation = 0.9;
-    hsv.value = 3.6;
+    var hsv = new HSVShader(-0.6, 0.9, 3.6);
     menuBG.shader = hsv;
-    FlxG.debugger.track(hsv);
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();

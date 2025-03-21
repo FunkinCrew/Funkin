@@ -738,6 +738,7 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE || controls.ACCEPT)
     {
+      close(); // IF we are a substate, we will close ourselves. This is used from ResultsDebugSubState
       if (introMusicAudio != null)
       {
         @:nullSafety(Off)
