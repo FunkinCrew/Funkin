@@ -14,6 +14,7 @@ class FunkinVideoSprite extends FlxVideoSprite
   public function new(x:Float = 0, y:Float = 0)
   {
     super(x, y);
+    autoPause = false;
 
     set_volume(1);
   }
