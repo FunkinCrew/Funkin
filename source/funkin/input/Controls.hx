@@ -417,6 +417,7 @@ class Controls extends FlxActionSet
 
   public function getDialogueName(action:FlxActionDigital, ?ignoreSurrounding:Bool = false):String
   {
+    if (action.inputs.length == 0) return 'N/A';
     var input = action.inputs[0];
     if (ignoreSurrounding == false)
     {
