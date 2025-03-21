@@ -277,7 +277,7 @@ class MenuTypedItem<T:FlxSprite> extends MenuListItem
   /**
    * Use this when you only want to show the label
    */
-  function setEmptyBackground()
+  public function setEmptyBackground()
   {
     var oldWidth = width;
     var oldHeight = height;

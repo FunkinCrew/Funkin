@@ -133,37 +133,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openTestResultsScreen():Void
   {
-    FlxG.switchState(() -> new funkin.play.ResultState(
-      {
-        storyMode: true,
-        title: "Cum Song Erect by Kawai Sprite",
-        songId: "cum",
-        characterId: "bf",
-        difficultyId: "nightmare",
-        isNewHighscore: true,
-        scoreData:
-          {
-            score: 1_234_567,
-            tallies:
-              {
-                sick: 130,
-                good: 60,
-                bad: 69,
-                shit: 69,
-                missed: 69,
-                combo: 69,
-                maxCombo: 69,
-                totalNotesHit: 140,
-                totalNotes: 190
-              }
-            // 2400 total notes = 7% = LOSS
-            // 275 total notes = 69% = NICE
-            // 240 total notes = 79% = GOOD
-            // 230 total notes = 82% = GREAT
-            // 210 total notes = 91% = EXCELLENT
-            // 190 total notes = PERFECT
-          },
-      }));
+    FlxG.switchState(() -> new funkin.ui.debug.results.ResultsDebugSubState());
   }
 
   #if sys
