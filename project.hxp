@@ -854,13 +854,9 @@ class Project extends HXProject
     // Video subtitles only work via using hxvlc.
     FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK.isEnabled(this) && !isWeb());
 
-    // Should be true on debug builds or if GITHUB_BUILD is enabled.
-    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
-    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this) && !isHashLink());
 
     // Newgrounds features
     FEATURE_NEWGROUNDS.apply(this, !isMobile());
@@ -1317,7 +1313,7 @@ class Project extends HXProject
       addHaxelib('hxcpp-debug-server'); // VSCode debug support
     }
 
-    if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    if ((isDesktop() || isMobile()) && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       // hxvlc doesn't function on HashLink or non-desktop platforms
       // It's also unnecessary if video playback is disabled

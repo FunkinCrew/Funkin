@@ -48,6 +48,10 @@ class IntroSubState extends MusicBeatSubState
     playVideoNative(LIGHTS_VIDEO_PATH);
     #end
 
+    #if NO_FEATURE_VIDEO_PLAYBACK
+    onLightsEnd();
+    #end
+
     // // Im TOO lazy to even care, so uh, yep
     // FlxG.camera.zoom = 0.66666666666666666666666666666667;
     // vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));

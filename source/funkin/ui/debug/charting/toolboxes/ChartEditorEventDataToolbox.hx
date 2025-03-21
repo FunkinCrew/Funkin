@@ -267,7 +267,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       // Update the value of the event data.
       input.onChange = function(event:UIEvent) {
-        var value = event.target.value;
+        var value:Any = event.target.value;
         if (field.type == ENUM)
         {
           var drp:DropDown = cast event.target;

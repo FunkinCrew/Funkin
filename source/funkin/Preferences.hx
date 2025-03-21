@@ -148,6 +148,17 @@ class Preferences
     return DebugDisplayMode.Off;
     #end
 
+    #if hl
+    // Account for when debugDisplay used to be a boolean
+    var options:Dynamic = Save.instance?.options;
+    if (options != null && Std.isOfType(options.debugDisplay, Bool))
+    {
+      var convertedDebugDisplay = (options.debugDisplay : Bool) ? DebugDisplayMode.Simple : DebugDisplayMode.Off;
+      options.debugDisplay = convertedDebugDisplay;
+      Save.instance.flush();
+    }
+    #end
+
     return Save?.instance?.options?.debugDisplay ?? 'Off';
   }
 

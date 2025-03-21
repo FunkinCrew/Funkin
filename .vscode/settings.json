@@ -90,8 +90,6 @@
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
 
-  "lime.projectFile": "project.hxp",
-
   "lime.targetConfigurations": [
     {
       "label": "Windows / Debug (Discord)",

@@ -100,12 +100,17 @@ class VideoCutscene
     }
     #end
 
+    #if NO_FEATURE_VIDEO_PLAYBACK
+    trace("WARNING: Video playback is not enabled. Calling video end callback instead.");
+    finishVideo();
+    #else
     #if html5
     playVideoHTML5(rawFilePath);
     #elseif hxvlc
     playVideoNative(filePath);
     #else
     throw "No video support for this platform!";
+    #end
     #end
   }
 
