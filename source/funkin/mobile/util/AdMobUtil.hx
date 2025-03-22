@@ -86,7 +86,7 @@ class AdMobUtil
    */
   public static function init():Void
   {
-    Admob.onStatus.add(function(event:String, message:String):Void {
+    Admob.onEvent.add(function(event:String, message:String):Void {
       switch (event)
       {
         case AdmobEvent.INTERSTITIAL_LOADED:

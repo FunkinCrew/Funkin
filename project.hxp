@@ -819,7 +819,7 @@ class Project extends HXProject {
 
     addHaxelib('funkin.haptic'); // Haptic feedback
 
-    addHaxelib('funkin.haptic'); // Haptic feedback
+    addHaxelib('extension-haptics'); // Haptic feedback
 
     if (FEATURE_PARTIAL_SOUNDS.isEnabled(this))
     {

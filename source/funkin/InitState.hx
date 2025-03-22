@@ -91,7 +91,7 @@ class InitState extends FlxState
     #end
 
     // Setup Haptic feedback
-    funkin.haptic.Haptic.initialize();
+    extension.haptics.Haptic.initialize();
 
     #if FEATURE_ADMOB_ADS
     // Setup Admob

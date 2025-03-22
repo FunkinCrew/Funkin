@@ -2,7 +2,7 @@ package funkin.util;
 
 import flixel.tweens.FlxTween;
 import flixel.math.FlxMath;
-import funkin.haptic.Haptic;
+import extension.haptics.Haptic;
 
 /**
  * Utility class for extra vibration functions.
