@@ -496,6 +496,13 @@ class SongPlayData implements ICloneable<SongPlayData>
   @:default(15000)
   public var previewEnd:Int;
 
+  /**
+   * The pixel icon for the song in Freeplay.
+   * Defaults to the opponent's icon.
+   */
+  @:optional
+  public var freeplayIcon:Null<PixelIconData>;
+
   public function new()
   {
     ratings = new Map<String, Int>();
@@ -514,6 +521,7 @@ class SongPlayData implements ICloneable<SongPlayData>
     result.album = this.album;
     result.previewStart = this.previewStart;
     result.previewEnd = this.previewEnd;
+    result.freeplayIcon = this.freeplayIcon;
 
     return result;
   }
@@ -1264,4 +1272,29 @@ class NoteParamData implements ICloneable<NoteParamData>
   {
     return 'NoteParamData(${this.name}, ${this.value})';
   }
+}
+
+typedef PixelIconData =
+{
+  /**
+   * The ID to use for the icon.
+   */
+  @:optional
+  var id:String;
+
+  /**
+   * The offsets of the icon.
+   * @default [0, 0]
+   */
+  @:optional
+  @:default([0, 0])
+  var ?offsets:Array<Float>;
+
+  /**
+   * Whether to flip the icon horizontally.
+   * @default false
+   */
+  @:optional
+  @:default(false)
+  var ?flipX:Bool;
 }

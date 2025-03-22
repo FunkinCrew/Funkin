@@ -3,6 +3,7 @@ package funkin.play.song;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
 import funkin.data.IRegistryEntry;
+import funkin.data.song.SongData.PixelIconData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
@@ -326,6 +327,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.difficultyRating = metadata.playData.ratings.get(diffId) ?? 0;
         difficulty.album = metadata.playData.album;
+        difficulty.freeplayIcon = metadata.playData.freeplayIcon;
         difficulty.stickerPack = metadata.playData.stickerPack;
 
         difficulty.stage = metadata.playData.stage;
@@ -741,6 +743,7 @@ class SongDifficulty
 
   public var difficultyRating:Int = 0;
   public var album:Null<String> = null;
+  public var freeplayIcon:Null<PixelIconData> = null;
   public var stickerPack:Null<String> = null;
 
   public function new(song:Song, diffId:String, variation:String)
