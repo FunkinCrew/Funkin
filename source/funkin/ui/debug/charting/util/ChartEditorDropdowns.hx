@@ -8,6 +8,8 @@ import funkin.data.stage.StageRegistry;
 import funkin.data.character.CharacterData;
 import haxe.ui.components.DropDown;
 import funkin.play.stage.Stage;
+import funkin.ui.freeplay.Album;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -278,6 +280,33 @@ class ChartEditorDropdowns
     for (variationId in variationIds)
     {
       dropDown.dataSource.add({id: variationId, text: variationId.toTitleCase()});
+    }
+
+    dropDown.dataSource.sort('text', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Populate a dropdown with a list of albums.
+   */
+  public static function populateDropdownWithAlbums(dropDown:DropDown, startingAlbumId:Null<String>):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var albumIds:Array<String> = AlbumRegistry.instance.listEntryIds();
+
+    var returnValue:DropDownEntry = {id: "", text: "placeholder"};
+
+    for (albumId in albumIds)
+    {
+      var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
+      if (album == null) continue;
+
+      var value = {id: album.id, text: album.getAlbumName()};
+      if (startingAlbumId == albumId) returnValue = value;
+
+      dropDown.dataSource.add(value);
     }
 
     dropDown.dataSource.sort('text', ASCENDING);
