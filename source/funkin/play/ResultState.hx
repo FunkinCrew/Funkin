@@ -82,6 +82,13 @@ class ResultState extends MusicBeatSubState
   final cameraScroll:FunkinCamera;
   final cameraEverything:FunkinCamera;
 
+  var isPracticeMode(get, never):Bool;
+
+  function get_isPracticeMode():Bool
+  {
+    return PlayState.instance.isPracticeMode;
+  }
+
   public function new(params:ResultsStateParams)
   {
     super();
@@ -802,7 +809,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        if (rank > Scoring.calculateRank(params?.prevScoreData))
+        if (!isPracticeMode && rank > Scoring.calculateRank(params?.prevScoreData))
         {
           trace('THE RANK IS Higher.....');
 
