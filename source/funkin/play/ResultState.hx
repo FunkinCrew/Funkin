@@ -808,7 +808,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        if (rank > Scoring.calculateRank(params?.prevScoreData))
+        if (!isPracticeMode && rank > Scoring.calculateRank(params?.prevScoreData))
         {
           trace('THE RANK IS Higher.....');
 
@@ -823,7 +823,7 @@ class ResultState extends MusicBeatSubState
                     newRank: rank,
                     songId: params.songId,
                     difficultyId: params.difficultyId,
-                    playRankAnim: (isPracticeMode == true) ? false : true
+                    playRankAnim: true
                   }
               }
             });
