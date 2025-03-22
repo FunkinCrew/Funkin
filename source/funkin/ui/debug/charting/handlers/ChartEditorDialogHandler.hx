@@ -648,6 +648,14 @@ class ChartEditorDialogHandler
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, newSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
+    var inputAlbum:Null<DropDown> = dialog.findComponent('inputAlbum', DropDown);
+    if (inputAlbum == null) throw 'Could not locate inputAlbum DropDown in Song Metadata dialog';
+    inputAlbum.onChange = function(event:UIEvent) {
+      if (event.data != null && event.data.id != null) newSongMetadata.playData.album = event.data.id;
+    };
+    var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(inputAlbum, newSongMetadata.playData.album);
+    inputAlbum.value = startingValueAlbum;
+
     var inputCharacterPlayer:Null<DropDown> = dialog.findComponent('inputCharacterPlayer', DropDown);
     if (inputCharacterPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterPlayer component.';
     inputCharacterPlayer.onChange = function(event:UIEvent) {
@@ -1180,6 +1188,11 @@ class ChartEditorDialogHandler
     var dialogNoteStyle:Null<DropDown> = dialog.findComponent('dialogNoteStyle', DropDown);
     if (dialogNoteStyle == null) throw 'Could not locate dialogNoteStyle DropDown in Add Variation dialog';
     dialogNoteStyle.value = state.currentSongMetadata.playData.noteStyle;
+
+    var dialogAlbum:Null<DropDown> = dialog.findComponent('dialogAlbum', DropDown);
+    if (dialogAlbum == null) throw 'Could not locate dialogAlbum DropDown in Add Variation dialog';
+    var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(dialogAlbum, state.currentSongMetadata.playData.album);
+    dialogAlbum.value = startingValueAlbum;
 
     var dialogCharacterPlayer:Null<DropDown> = dialog.findComponent('dialogCharacterPlayer', DropDown);
     if (dialogCharacterPlayer == null) throw 'Could not locate dialogCharacterPlayer DropDown in Add Variation dialog';
