@@ -16,6 +16,7 @@ import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
 /**
  * Utilities for reading and writing files on various platforms.
  */
+@:nullSafety
 class FileUtil
 {
   public static final FILE_FILTER_FNFC:FileFilter = new FileFilter("Friday Night Funkin' Chart (.fnfc)", "*.fnfc");
@@ -59,11 +60,11 @@ class FileUtil
       ?onCancel:Void->Void)
   {
     var onComplete = function(button, selectedFiles) {
-      if (button == DialogButton.OK && selectedFiles.length > 0)
+      if (onSelect != null && button == DialogButton.OK && selectedFiles.length > 0)
       {
         onSelect(selectedFiles[0]);
       }
-      else
+      else if (onCancel != null)
       {
         onCancel();
       }
@@ -92,11 +93,11 @@ class FileUtil
       ?onCancel:Void->Void)
   {
     var onComplete = function(button, selectedFiles) {
-      if (button == DialogButton.OK && selectedFiles.length > 0)
+      if (onSelect != null && button == DialogButton.OK && selectedFiles.length > 0)
       {
         onSelect(selectedFiles[0]);
       }
-      else
+      else if (onCancel != null)
       {
         onCancel();
       }
@@ -123,17 +124,17 @@ class FileUtil
       ?dialogTitle:String):Bool
   {
     #if desktop
-    var filter:String = convertTypeFilter(typeFilter);
+    var filter:Null<String> = convertTypeFilter(typeFilter);
     var fileDialog:FileDialog = new FileDialog();
     if (onSelect != null) fileDialog.onSelect.add(onSelect);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
     fileDialog.browse(OPEN_DIRECTORY, filter, defaultPath, dialogTitle);
     return true;
     #elseif html5
-    onCancel();
+    if (onCancel != null) onCancel();
     return false;
     #else
-    onCancel();
+    if (onCancel != null) onCancel();
     return false;
     #end
   }
@@ -148,17 +149,17 @@ class FileUtil
       ?dialogTitle:String):Bool
   {
     #if desktop
-    var filter:String = convertTypeFilter(typeFilter);
+    var filter:Null<String> = convertTypeFilter(typeFilter);
     var fileDialog:FileDialog = new FileDialog();
     if (onSelect != null) fileDialog.onSelectMultiple.add(onSelect);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
     fileDialog.browse(OPEN_MULTIPLE, filter, defaultPath, dialogTitle);
     return true;
     #elseif html5
-    onCancel();
+    if (onCancel != null) onCancel();
     return false;
     #else
-    onCancel();
+    if (onCancel != null) onCancel();
     return false;
     #end
   }
@@ -174,17 +175,17 @@ class FileUtil
       ?dialogTitle:String):Bool
   {
     #if desktop
-    var filter:String = convertTypeFilter(typeFilter);
+    var filter:Null<String> = convertTypeFilter(typeFilter);
     var fileDialog:FileDialog = new FileDialog();
     if (onSelect != null) fileDialog.onSelect.add(onSelect);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
     fileDialog.browse(SAVE, filter, defaultPath, dialogTitle);
     return true;
     #elseif html5
-    onCancel();
+    if (onCancel != null) onCancel();
     return false;
     #else
-    onCancel();
+    if (onCancel != null) onCancel();
     return false;
     #end
   }
@@ -199,14 +200,14 @@ class FileUtil
       ?dialogTitle:String):Bool
   {
     #if desktop
-    var filter:String = convertTypeFilter(typeFilter);
+    var filter:Null<String> = convertTypeFilter(typeFilter);
     var fileDialog:FileDialog = new FileDialog();
     if (onSave != null) fileDialog.onSave.add(onSave);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
     fileDialog.save(data, filter, defaultFileName, dialogTitle);
     return true;
     #elseif html5
-    var filter:String = defaultFileName != null ? Path.extension(defaultFileName) : null;
+    var filter:Null<String> = defaultFileName != null ? Path.extension(defaultFileName) : null;
     var fileDialog:FileDialog = new FileDialog();
     if (onSave != null) fileDialog.onSave.add(onSave);
     if (onCancel != null) fileDialog.onCancel.add(onCancel);
@@ -254,7 +255,7 @@ class FileUtil
         }
         paths.push(filePath);
       }
-      onSaveAll(paths);
+      if (onSaveAll != null) onSaveAll(paths);
     }
     trace('Browsing for directory to save individual files to...');
     #if mac
@@ -335,8 +336,7 @@ class FileUtil
     #if sys
     return sys.io.File.getContent(path);
     #else
-    trace('ERROR: readStringFromPath not implemented for this platform');
-    return null;
+    throw 'ERROR: readStringFromPath not implemented for this platform';
     #end
   }
 
@@ -347,7 +347,7 @@ class FileUtil
    * @param path The path to the file.
    * @return The file contents.
    */
-  public static function readBytesFromPath(path:String):Bytes
+  public static function readBytesFromPath(path:String):Null<Bytes>
   {
     #if sys
     if (!doesFileExist(path)) return null;
@@ -413,7 +413,7 @@ class FileUtil
    * @param path The path to the file.
    * @return The JSON data.
    */
-  public static function readJSONFromPath(path:String):Dynamic
+  public static function readJSONFromPath(path:String):Null<Dynamic>
   {
     #if sys
     try
@@ -545,7 +545,7 @@ class FileUtil
     #end
   }
 
-  static var tempDir:String = null;
+  static var tempDir:Null<String> = null;
   static final TEMP_ENV_VARS:Array<String> = ['TEMP', 'TMPDIR', 'TEMPDIR', 'TMP'];
 
   /**
@@ -554,18 +554,19 @@ class FileUtil
    *
    * @return The path to the temporary directory.
    */
-  public static function getTempDir():String
+  public static function getTempDir():Null<String>
   {
     if (tempDir != null) return tempDir;
     #if sys
     #if windows
-    var path:String = null;
+    var path:Null<String> = null;
     for (envName in TEMP_ENV_VARS)
     {
       path = Sys.getEnv(envName);
       if (path == '') path = null;
       if (path != null) break;
     }
+    if (path == null) throw 'Could not find a temporary directory in environment variables. This should not happen.';
     tempDir = Path.join([path, 'funkin/']);
     return tempDir;
     #else
@@ -670,9 +671,8 @@ class FileUtil
     // some shit with xdg-open :thinking: emoji...
   }
 
-  static function convertTypeFilter(typeFilter:Array<FileFilter>):String
+  static function convertTypeFilter(typeFilter:Null<Array<FileFilter>>):Null<String>
   {
-    var filter:String = null;
     if (typeFilter != null)
     {
       var filters:Array<String> = [];
@@ -680,9 +680,9 @@ class FileUtil
       {
         filters.push(StringTools.replace(StringTools.replace(type.extension, '*.', ''), ';', ','));
       }
-      filter = filters.join(';');
+      return filters.join(';');
     }
-    return filter;
+    return null;
   }
 }
 
