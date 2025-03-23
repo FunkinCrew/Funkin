@@ -114,6 +114,11 @@ class Main extends Sprite
     memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
     #end
 
+    #if mobile
+    // Add this signal so we can repososition and resize the memory and fps counter.
+    FlxG.signals.preUpdate.add(repositionCounters.bind(true));
+    #end
+
     // George recommends binding the save before FlxGame is created.
     Save.load();
 
@@ -145,6 +150,11 @@ class Main extends Sprite
     FlxG.scaleMode = new FullScreenScaleMode();
     #end
 
+    #if mobile
+    // Repososition and resize the memory and fps counter without lerping.
+    repositionCounters(false);
+    #end
+
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
     #else
@@ -167,7 +177,8 @@ class Main extends Sprite
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
   }
 
-  function resizeGame(width:Int, height:Int):Void
+  #if mobile
+  function repositionCounters(lerp:Bool):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
     var scale:Float = Math.min(flixel.FlxG.stage.stageWidth / flixel.FlxG.width, flixel.FlxG.stage.stageHeight / flixel.FlxG.height);
@@ -179,20 +190,34 @@ class Main extends Sprite
 
     if (fpsCounter != null)
     {
-      fpsCounter.scaleX = fpsCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
-      #if mobile
-      fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
-      #end
+      fpsCounter.scaleX = fpsCounter.scaleY = scale;
+
+      if (FlxG.game != null)
+      {
+        if (lerp) fpsCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + FullScreenScaleMode.notchSize.x + 10, FlxG.elapsed * 3);
+        else
+        {
+          fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+        }
+
+        fpsCounter.y = FlxG.game.y + (3 * scale);
+      }
     }
 
     if (memoryCounter != null)
     {
       memoryCounter.scaleX = memoryCounter.scaleY = scale;
 
-      memoryCounter.y = FlxG.game.y + (13 * #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end);
-      #if mobile
-      memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
-      #end
+      if (FlxG.game != null)
+      {
+        if (lerp) memoryCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + FullScreenScaleMode.notchSize.x + 10, FlxG.elapsed * 3);
+        else
+        {
+          memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+        }
+
+        memoryCounter.y = FlxG.game.y + (13 * scale);
+      }
     }
   }
-}
+  }
