@@ -2164,6 +2164,7 @@ class PlayState extends MusicBeatSubState
     }
   }
 
+  var totalPressed:Int;
   /**
      * Callback executed when one of the note keys is pressed.
      */
@@ -2186,7 +2187,11 @@ class PlayState extends MusicBeatSubState
           totalJustPressed++;
         }
       }
-      trace('totalKeys ${totalKeys} totalPressed ${totalPressed} totalJustPressed ${totalJustPressed}');
+      // A hack to ensure this all properly works despite the flixel moment
+      if (playerStrumline.isKeyHeld(event.noteDirection) && totalPressed == 0) this.totalPressed = 3;
+      else
+        this.totalPressed = totalPressed;
+      // trace('totalKeys ${totalKeys} totalPressed ${totalPressed} totalJustPressed ${totalJustPressed}');
       // If one or both of the note's keys is being held down, do nothing
       // Otherwise, the player has released and repressed the key, so pop the release input
       if ((totalPressed - totalJustPressed) <= 0) return;
@@ -2206,24 +2211,28 @@ class PlayState extends MusicBeatSubState
     if (isGamePaused)
     {
       var totalKeys:Int = 0;
-      var totalPressed:Int = 0;
-      var totalJustPressed:Int = 0;
+      var totalJustReleased:Int = 0;
+
       // If the key's still being pressed, don't add a release input
       for (key in controls.getKeysForAction("note_" + event.noteDirection.toString()))
       {
         totalKeys++;
         if (FlxG.keys.anyPressed([key]))
         {
-          totalPressed++;
           return;
         }
         if (FlxG.keys.anyJustPressed([key]))
         {
-          totalJustPressed++;
           return;
         }
+        if (FlxG.keys.anyJustReleased([key]))
+        {
+          totalJustReleased++;
+        }
       }
-      trace('release totalKeys ${totalKeys} totalPressed ${totalPressed} totalJustPressed ${totalJustPressed}');
+      // trace('release totalKeys ${totalKeys} totalPressed ${this.totalPressed} totalJustReleased ${totalJustReleased}');
+      // Wait a second, a key's still being pressed, return!
+      if (this.totalPressed >= 3 && totalJustReleased >= 3) return;
     }
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
