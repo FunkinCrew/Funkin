@@ -151,7 +151,7 @@ class StickerSubState extends MusicBeatSubState
         FunkinSound.playOnce(Paths.sound(daSound));
 
         // Do the small vibration each time sticker disappears.
-        HapticUtil.vibrate(0, 0.2, Constants.MIN_VIBRATION_AMPLITUDE);
+        HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
 
         if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
@@ -247,7 +247,7 @@ class StickerSubState extends MusicBeatSubState
         FunkinSound.playOnce(Paths.sound(daSound));
 
         // Do the small vibration each time sticker appears.
-        HapticUtil.vibrate(0, 0.2, Constants.MIN_VIBRATION_AMPLITUDE);
+        HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
 
         var frameTimer:Int = FlxG.random.int(0, 2);
 
