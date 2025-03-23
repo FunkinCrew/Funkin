@@ -14,10 +14,14 @@ class MirrorNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData> = [];
   var mirroredNotes:Array<SongNoteData> = [];
+  var mirrorX:Bool = true;
+  var mirrorY:Bool = true;
 
   public function new(notes:Array<SongNoteData>, mirrorIndividually:Bool = true, flipMiddle:Bool = false, mirrorX:Bool = true, mirrorY:Bool = true)
   {
     this.notes = notes;
+    this.mirrorX = mirrorX;
+    this.mirrorY = mirrorY;
     if (mirrorIndividually)
     {
       var playerNotes:Array<SongNoteData> = [];
@@ -82,12 +86,12 @@ class MirrorNotesCommand implements ChartEditorCommand
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
     // This command is undoable. Add to the history if we actually performed an action.
-    return (notes.length > 0);
+    return (notes.length > 0 && mirrorX || !mirrorX && mirrorY && notes.length > 1);
   }
 
   public function toString():String
   {
     var len:Int = notes.length;
-    return 'Flip $len Notes';
+    return 'Mirror ${(notes.length > 1) ? '$len Notes' : 'Note'} on ${(mirrorX) ? 'X' : (mirrorY) ? 'Y' : 'huh?'} Axis';
   }
 }
