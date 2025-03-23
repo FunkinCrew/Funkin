@@ -44,15 +44,24 @@ class FunkinHint extends FunkinButton
   static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [INVISIBLE_TILL_PRESS => [0.3, 0.00001], VISIBLE_TILL_PRESS => [0.35, 0.5]];
 
   /**
+   * Indicates whether the hint is pixel.
+   */
+  public var isPixel:Bool = false;
+
+  /**
    * The direction of the note associated with the button.
    */
   var noteDirection:NoteDirection;
 
   /**
-   * The label associated with the button, represented as a `FunkinSprite`.
-   * It is displayed on top of the button.
+   * The label associated with the button.
    */
   var label:Null<FunkinSprite>;
+
+  /**
+   * The tween used to animate the alpha changes of the button.
+   */
+  var labelAlphaTween:Null<FlxTween>;
 
   /**
    * The HSV shader used to adjust the hue and saturation of the button.
@@ -67,8 +76,6 @@ class FunkinHint extends FunkinButton
   var followTarget:Null<FunkinSprite>;
 
   var followTargetSize:Bool = false;
-
-  public var isPixel:Bool = false;
 
   /**
    * Creates a new `FunkinHint` object.
@@ -110,21 +117,13 @@ class FunkinHint extends FunkinButton
 
     function createTween(targetAlpha:Float, transitionTime:Float, isPressed:Bool):Void
     {
-      if (alphaTween != null) alphaTween.cancel();
+      alphaTween?.cancel();
+      alphaTween = FlxTween.tween(this, {alpha: targetAlpha}, transitionTime, {ease: FlxEase.circInOut});
 
       if (label != null)
       {
-        alphaTween = FlxTween.tween(this, {alpha: targetAlpha}, transitionTime,
-          {
-            ease: FlxEase.circInOut,
-            onUpdate: function(tween:FlxTween):Void {
-              label.alpha = isPressed ? targetAlpha - (targetAlpha * tween.percent) : transitionTime * tween.percent;
-            }
-          });
-      }
-      else
-      {
-        alphaTween = FlxTween.tween(this, {alpha: targetAlpha}, transitionTime, {ease: FlxEase.circInOut});
+        labelAlphaTween?.cancel();
+        labelAlphaTween = FlxTween.tween(label, {alpha: (hintAlpha[0] + hintAlpha[1]) - targetAlpha}, transitionTime, {ease: FlxEase.circInOut});
       }
     }
 
@@ -137,6 +136,12 @@ class FunkinHint extends FunkinButton
     if (label != null && hintAlpha != null) label.alpha = hintAlpha[0];
   }
 
+  /**
+   * Makes the hitbox follow the specified sprite.
+   *
+   * @param sprite The FunkinSprite instance that the hitbox should follow.
+   * @param followTargetSize A boolean indicating whether the hitbox should adjust to the target's size. Default is true.
+   */
   public function follow(sprite:FunkinSprite, followTargetSize:Bool = true):Void
   {
     this.followTargetSize = followTargetSize;
@@ -208,9 +213,11 @@ class FunkinHint extends FunkinButton
    */
   public override function destroy():Void
   {
-    if (label != null) label = FlxDestroyUtil.destroy(label);
-
     if (alphaTween != null) alphaTween = FlxDestroyUtil.destroy(alphaTween);
+
+    if (labelAlphaTween != null) labelAlphaTween = FlxDestroyUtil.destroy(labelAlphaTween);
+
+    if (label != null) label = FlxDestroyUtil.destroy(label);
 
     super.destroy();
   }
@@ -250,6 +257,11 @@ enum abstract FunkinHitboxControlSchemes(String) from String to String
 class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 {
   /**
+   * Indicates whether the hitbox is pixel.
+   */
+  public var isPixel(default, set):Bool = false;
+
+  /**
    * A `FlxTypedSignal` that triggers every time a button is pressed.
    */
   public var onHintDown:FlxTypedSignal<FunkinHint->Void> = new FlxTypedSignal<FunkinHint->Void>();
@@ -258,8 +270,6 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * A `FlxTypedSignal` that triggers every time a button is released.
    */
   public var onHintUp:FlxTypedSignal<FunkinHint->Void> = new FlxTypedSignal<FunkinHint->Void>();
-
-  public var isPixel(default, set):Bool = false;
 
   /**
    * The list of tracked inputs for the hitbox.
