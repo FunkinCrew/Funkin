@@ -1,0 +1,45 @@
+{
+  "version": "2.2.4",
+  "songName": "It's Mat-Ing Time!",
+  "artist": "Honton129",
+  "charter": "Honton129",
+  "playData": {
+    "difficulties": [
+      "easy",
+      "normal",
+      "hard"
+    ],
+    "characters": {
+      "player": "mat-playable",
+      "girlfriend": "prism",
+      "opponent": "tankman"
+    },
+    "album": "matmixes1",
+    "stage": "mainStage",
+    "noteStyle": "funkin",
+    "ratings": {
+      "easy": 0,
+      "normal": 1,
+      "hard": 2
+    },
+    "previewStart": 0,
+    "previewEnd": 0
+  },
+  "generatedBy": "Friday Night Funkin' - v0.5.2",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 160,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}

@@ -128,8 +128,8 @@
         "renderType": "animateatlas",
         "assetPath": "shared:resultScreen/results-mat/resultsEXCELLENT",
         "zIndex": 500,
-        "offsets": [1200, 50],
-        "loopFrame": 48
+        "offsets": [1150, 50],
+        "loopFrame": 50
       }
     ],
     "great": [
