@@ -62,6 +62,7 @@ import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
 import funkin.ui.debug.charting.commands.MoveItemsCommand;
@@ -1918,6 +1919,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemFlipNotes:MenuItem;
 
   /**
+   * The `Edit -> Mirror Notes -> X Axis` menu item.
+   */
+  var menubarItemMirrorX:MenuItem;
+
+  /**
+   * The `Edit -> Mirror Notes -> Y Axis` menu item.
+   */
+  var menubarItemMirrorY:MenuItem;
+
+  /**
+   * The `Edit -> Mirror Notes -> XY Axis` menu item.
+   */
+  var menubarItemMirrorXY:MenuItem;
+
+  /**
+   * The `Edit -> Mirror Notes -> Flip Within Strumline` menu checkbox.
+   */
+  var menubarItemMirrorFlipWithinStrumline:MenuCheckBox;
+
+  /**
    * The `Edit -> Select All` menu item.
    */
   var menubarItemSelectAll:MenuItem;
@@ -3227,6 +3248,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemFlipNotes.onClick = _ -> performCommand(new FlipNotesCommand(currentNoteSelection));
 
+    menubarItemMirrorX.onClick = _ -> performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+      !menubarItemMirrorFlipWithinStrumline.selected, true, false));
+
+    menubarItemMirrorY.onClick = _ -> performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+      !menubarItemMirrorFlipWithinStrumline.selected, false, true));
+
+    menubarItemMirrorXY.onClick = _ -> performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+      !menubarItemMirrorFlipWithinStrumline.selected, true, true));
+
     menubarItemSelectAllNotes.onClick = _ -> performCommand(new SelectAllItemsCommand(true, false));
 
     menubarItemSelectAllEvents.onClick = _ -> performCommand(new SelectAllItemsCommand(false, true));
@@ -3744,7 +3774,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       currentScrollEase = scrollPositionInPixels;
 
-      if (FlxG.keys.pressed.ALT)
+      if (FlxG.keys.pressed.ALT && !FlxG.keys.pressed.CONTROL)
       {
         // If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
@@ -5886,7 +5916,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleFileKeybinds():Void
   {
     // CTRL + N = New Chart
-    if (pressingControl() && FlxG.keys.justPressed.N && !isHaxeUIDialogOpen)
+    if (pressingControl()
+      && FlxG.keys.justPressed.N
+      && !isHaxeUIDialogOpen
+      && !FlxG.keys.pressed.SHIFT
+      && !FlxG.keys.pressed.ALT)
     {
       this.openWelcomeDialog(true);
     }
@@ -6044,6 +6078,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Flip selected notes.
       performCommand(new FlipNotesCommand(currentNoteSelection));
+    }
+
+    // CTRL + SHIFT + ALT + M = Mirror Notes along XY axis
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.ALT && FlxG.keys.justPressed.M)
+    {
+      performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+        !menubarItemMirrorFlipWithinStrumline.selected, true, true));
+    }
+
+    // CTRL + SHIFT + M = Mirror Notes along X axis
+    if (!FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
+    {
+      performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+        !menubarItemMirrorFlipWithinStrumline.selected, true, false));
+    }
+
+    // CTRL + ALT + M = Mirror Notes along the Y axis
+    if (!FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.justPressed.M)
+    {
+      performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+        !menubarItemMirrorFlipWithinStrumline.selected, false, true));
     }
 
     // CTRL + A = Select All Notes
