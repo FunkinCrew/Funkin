@@ -94,7 +94,7 @@ class StrumlineNote extends FunkinSprite
     }
   }
 
-  function setup(noteStyle:NoteStyle):Void
+  public function setup(noteStyle:NoteStyle):Void
   {
     if (noteStyle == null)
     {
