@@ -637,7 +637,8 @@ class FreeplayState extends MusicBeatSubState
     allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId);
 
     // Generates song list with the starter params (who our current character is, last remembered difficulty, etc.)
-    generateSongList(null, false);
+    // Set this to false if you prefer the 50% transparency on the capsules when they first appear.
+    generateSongList(null, true);
 
     // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
     funnyCam.bgColor = FlxColor.TRANSPARENT;
@@ -721,10 +722,10 @@ class FreeplayState extends MusicBeatSubState
 
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
-    randomCapsule.init(FlxG.width, 0, null, styleData, 0);
+    randomCapsule.init(FlxG.width, 0, null, styleData, 1);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
-    randomCapsule.alpha = 0;
+    randomCapsule.alpha = 0.5;
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
     randomCapsule.favIconBlurred.visible = false;
@@ -2030,7 +2031,7 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.selected = index == curSelected + 1;
 
-      if (index > 1) capsule.curSelected = curSelected;
+      capsule.curSelected = curSelected;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = capsule.intendedX(index - curSelected);
