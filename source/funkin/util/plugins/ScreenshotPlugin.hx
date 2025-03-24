@@ -346,6 +346,10 @@ class ScreenshotPlugin extends FlxBasic
     shotPreviewBitmap.bitmapData = shot.bitmapData;
     shotPreviewBitmap.x = outlineBitmap.x + 5;
     shotPreviewBitmap.y = outlineBitmap.y + 5;
+
+    shotPreviewBitmap.width = outlineBitmap.width - 10;
+    shotPreviewBitmap.height = outlineBitmap.height - 10;
+
     // Remove the existing preview
     FlxG.stage.removeChild(previewSprite);
 
@@ -522,27 +526,27 @@ class ScreenshotPlugin extends FlxBasic
 
     if (delaySave) // Save the images with a delay (a timer)
       new FlxTimer().start(screenShotNum, function(_) {
-      var pngData = encode(bitmap);
+        var pngData = encode(bitmap);
 
-      if (pngData == null)
-      {
-        trace('[WARN] Failed to encode ${Preferences.saveFormat} data');
-        previousScreenshotName = null;
+        if (pngData == null)
+        {
+          trace('[WARN] Failed to encode ${Preferences.saveFormat} data');
+          previousScreenshotName = null;
           // Just in case
           unsavedScreenshotBuffer.shift();
           unsavedScreenshotNameBuffer.shift();
-        return;
-      }
-      else
-      {
-        trace('Saving screenshot to: ' + targetPath);
-        FileUtil.writeBytesToPath(targetPath, pngData);
+          return;
+        }
+        else
+        {
+          trace('Saving screenshot to: ' + targetPath);
+          FileUtil.writeBytesToPath(targetPath, pngData);
           // Remove the screenshot from the unsaved buffer because we literally just saved it
           unsavedScreenshotBuffer.shift();
           unsavedScreenshotNameBuffer.shift();
-        if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
-      }
-    });
+          if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
+        }
+      });
     else // Save the screenshot immediately
     {
       var pngData = encode(bitmap);
