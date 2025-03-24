@@ -133,7 +133,7 @@ class LatencyState extends MusicBeatSubState
     var strumlineBG:FlxSprite = new FlxSprite();
     add(strumlineBG);
 
-    strumLine = new Strumline(NoteStyleRegistry.instance.fetchDefault(), true);
+    strumLine = new Strumline(Constants.DEFAULT_NOTE_STYLE, true);
     strumLine.conductorInUse = localConductor;
     strumLine.screenCenter();
     add(strumLine);
