@@ -42,6 +42,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   // BaseCharacter extends FlxSprite but we can't make it also extend FlxAtlasSprite UGH
   // I basically copied the code from FlxSpriteGroup to make the FlxAtlasSprite a "child" of this class
   var mainSprite:FlxAtlasSprite;
+  var originalSizes(default, never):FlxPoint = new FlxPoint();
 
   var _skipTransformChildren:Bool = false;
 
@@ -172,6 +173,8 @@ class AnimateAtlasCharacter extends BaseCharacter
     this.mainSprite.alpha = 0.0001;
     this.mainSprite.draw();
     this.mainSprite.alpha = 1.0;
+
+    originalSizes.set(this.mainSprite.width, this.mainSprite.height);
 
     var feetPos:FlxPoint = feetPosition;
     this.updateHitbox();
@@ -597,7 +600,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     if (this.mainSprite == null) return 0;
 
-    return this.mainSprite.width;
+    return this.originalSizes.x;
   }
 
   /**
@@ -646,7 +649,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     if (this.mainSprite == null) return 0;
 
-    return this.mainSprite.height;
+    return this.originalSizes.y;
   }
 
   /**
