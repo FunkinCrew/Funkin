@@ -638,7 +638,8 @@ class FreeplayState extends MusicBeatSubState
     allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId);
 
     // Generates song list with the starter params (who our current character is, last remembered difficulty, etc.)
-    generateSongList(null, false);
+    // Set this to false if you prefer the 50% transparency on the capsules when they first appear.
+    generateSongList(null, true);
 
     // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
     funnyCam.bgColor = FlxColor.TRANSPARENT;
@@ -734,10 +735,10 @@ class FreeplayState extends MusicBeatSubState
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
     randomCapsule.initPosition(FlxG.width, 0);
-    randomCapsule.initData(null, styleData, 0);
+    randomCapsule.initData(null, styleData, 1);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
-    randomCapsule.alpha = 0;
+    randomCapsule.alpha = 0.5;
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
     randomCapsule.favIconBlurred.visible = false;
@@ -749,8 +750,7 @@ class FreeplayState extends MusicBeatSubState
     if (fromCharSelect) randomCapsule.forcePosition();
     else
     {
-      // randomCapsule.initJumpIn(0, force);
-      randomCapsule.forcePosition();
+      randomCapsule.initJumpIn(0, force);
     }
 
     var hsvShader:HSVShader = new HSVShader();
@@ -776,7 +776,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.hsvShader = hsvShader;
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
 
-      // Stops the bounce-in animation when returning to freeplay from the character selection screen.
+      // Stop the bounce-in animation when returning to freeplay from the character selection screen.
       if (fromCharSelect) funnyMenu.forcePosition();
       else
         funnyMenu.initJumpIn(0, force);
@@ -2086,7 +2086,7 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.selected = index == curSelected + 1;
 
-      if (index > 1) capsule.curSelected = curSelected;
+      capsule.curSelected = curSelected;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = capsule.intendedX(index - curSelected);
