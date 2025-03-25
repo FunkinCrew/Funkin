@@ -59,6 +59,16 @@ The Pit Stop 2 update!
 - Introduced several QoL modding changes. ([785c4be](https://github.com/FunkinCrew/Funkin/commit/785c4be88b52dc1b5899013822fc004ba7d9894d)) - by @Kade-github in [#4009](https://github.com/FunkinCrew/Funkin/pull/4009)
 - Lots of smaller bug fixes.
 
+## New Contributors for 0.6.0
+
+* @PatoFlamejanteTV made their first contribution in [#3843](https://github.com/FunkinCrew/Funkin/pull/3843)
+* @sphis-Sinco made their first contribution in [#3881](https://github.com/FunkinCrew/Funkin/pull/3881)
+* @MrMadera made their first contribution in [#3934](https://github.com/FunkinCrew/Funkin/pull/3934)
+* @Lasercar made their first contribution in [#4100](https://github.com/FunkinCrew/Funkin/pull/4065)
+* @MidyGamy made their first contribution in [#4068](https://github.com/FunkinCrew/Funkin/pull/4068)
+* @MrScottyPieey made their first contribution in [#4085](https://github.com/FunkinCrew/Funkin/pull/4085)
+* @JackXson-Real made their first contribution in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
+
 # Fixed
 - Fixed a bug where the song would restart from the beginning instead of moving to the Results screen. ([3667c51](https://github.com/FunkinCrew/Funkin/commit/3667c51c1efe14cfe7c810e2f35991f08f50781a)) - by @KoloInDaCrib in [#4309](https://github.com/FunkinCrew/Funkin/pull/4309) and @Lasercar in [#4330](https://github.com/FunkinCrew/Funkin/pull/4330)
 - Reduced stuttering when resyncing instrumental and voices tracks. ([22d41d2](https://github.com/FunkinCrew/Funkin/commit/22d41d21b88acb7422a0afcda8414682710bd2ed)) - by @TechnikTil in [#3955](https://github.com/FunkinCrew/Funkin/pull/3955)
