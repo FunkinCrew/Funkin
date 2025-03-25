@@ -180,7 +180,8 @@ class Project extends HXProject {
 
 	/**
 	 * `-DFEATURE_NEWGROUNDS_DEBUG`
-	 * If this flag is enabled, the game will enable the Newgrounds library's debug functions.
+	 * If this flag is enabled, the game will enable Newgrounds.io's debug functions.
+	 * This provides additional information in requests, as well as "faking" medal and leaderboard submissions.
 	 */
 	static final FEATURE_NEWGROUNDS_DEBUG:FeatureFlag = "FEATURE_NEWGROUNDS_DEBUG";
 
@@ -189,6 +190,13 @@ class Project extends HXProject {
 	 * If this flag is enabled, the game will attempt to automatically login to Newgrounds on startup.
 	 */
 	static final FEATURE_NEWGROUNDS_AUTOLOGIN:FeatureFlag = "FEATURE_NEWGROUNDS_AUTOLOGIN";
+
+	/**
+	 * `-DFEATURE_NEWGROUNDS_TESTING_MEDALS`
+	 * If this flag is enabled, use the medal IDs from the debug test bench.
+	 * If disabled, use the actual medal IDs.
+	 */
+	static final FEATURE_NEWGROUNDS_TESTING_MEDALS:FeatureFlag = "FEATURE_NEWGROUNDS_TESTING_MEDALS";
 
 	/**
 	 * `-DFEATURE_FUNKVIS`
@@ -493,7 +501,8 @@ class Project extends HXProject {
 		FEATURE_LOG_TRACE.apply(this, true);
 
 		FEATURE_NEWGROUNDS.apply(this, true);
-		FEATURE_NEWGROUNDS_DEBUG.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+		FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
+		FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 		FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
 
 		// Should default to true on workspace builds and false on release builds.
