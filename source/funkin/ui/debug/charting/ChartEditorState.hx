@@ -5879,80 +5879,68 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Changing values of the audio slider directly because it'll update the audio anyway and makes this code much cleaner, though more verbose.
       var oldValue = previousAudioVolumes[0];
       previousAudioVolumes[0] = menubarItemVolumeMetronome.value;
-      if (oldValue > menubarItemVolumeMetronome.value) menubarItemVolumeMetronome.value = oldValue;
-      else
-      {
-        menubarItemVolumeMetronome.value = (menubarItemVolumeMetronome.value == 0) ? 100 : 0;
-      }
+      menubarItemVolumeMetronome.value = (menubarItemVolumeMetronome.value == 0) ? (oldValue > menubarItemVolumeMetronome.value) ? oldValue : 100 : 0;
     }
     // Hitsounds volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.H)
     {
-      var oldValue = previousAudioVolumes[1];
+      var oldBFValue = previousAudioVolumes[1];
       previousAudioVolumes[1] = menubarItemVolumeHitsoundPlayer.value;
-      if (oldValue > menubarItemVolumeHitsoundPlayer.value) menubarItemVolumeHitsoundPlayer.value = oldValue;
-      else
-      {
-        menubarItemVolumeHitsoundPlayer.value = (menubarItemVolumeHitsoundPlayer.value == 0) ? 100 : 0;
-      }
-      oldValue = previousAudioVolumes[2];
+      var oldDadValue = previousAudioVolumes[2];
       previousAudioVolumes[2] = menubarItemVolumeHitsoundOpponent.value;
-      if (oldValue > menubarItemVolumeHitsoundOpponent.value) menubarItemVolumeHitsoundOpponent.value = oldValue;
+      if (oldBFValue <= menubarItemVolumeHitsoundPlayer.value || oldDadValue <= menubarItemVolumeHitsoundOpponent.value)
+      {
+        if (menubarItemVolumeHitsoundPlayer.value == 0 && menubarItemVolumeHitsoundOpponent.value == 0)
+        {
+          menubarItemVolumeHitsoundPlayer.value = (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100;
+          menubarItemVolumeHitsoundOpponent.value = (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100;
+        }
+        else
+        {
+          if (oldBFValue > menubarItemVolumeHitsoundPlayer.value) previousAudioVolumes[1] = oldBFValue;
+          if (oldDadValue > menubarItemVolumeHitsoundOpponent.value) previousAudioVolumes[2] = oldDadValue;
+          menubarItemVolumeHitsoundPlayer.value = 0;
+          menubarItemVolumeHitsoundOpponent.value = 0;
+        }
+      }
       else
       {
-        menubarItemVolumeHitsoundOpponent.value = (menubarItemVolumeHitsoundOpponent.value == 0) ? 100 : 0;
+        menubarItemVolumeHitsoundPlayer.value = (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100;
+        menubarItemVolumeHitsoundOpponent.value = (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100;
       }
+      // menubarItemVolumeHitsoundPlayer.value = (menubarItemVolumeHitsoundPlayer.value == 0) ? (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100 : 0;
+      // menubarItemVolumeHitsoundOpponent.value = (menubarItemVolumeHitsoundOpponent.value == 0) ? (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100 : 0;
     }
     // Instrumental volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.I)
     {
       var oldValue = previousAudioVolumes[3];
       previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
-      if (oldValue > menubarItemVolumeInstrumental.value) menubarItemVolumeInstrumental.value = oldValue;
-      else
-      {
-        menubarItemVolumeInstrumental.value = (menubarItemVolumeInstrumental.value == 0) ? 100 : 0;
-      }
+      menubarItemVolumeInstrumental.value = (menubarItemVolumeInstrumental.value == 0) ? (oldValue > menubarItemVolumeInstrumental.value) ? oldValue : 100 : 0;
     }
     // Vocals volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.V)
     {
       var oldValue = previousAudioVolumes[4];
       previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
-      if (oldValue > menubarItemVolumeVocalsPlayer.value) menubarItemVolumeVocalsPlayer.value = oldValue;
-      else
-      {
-        menubarItemVolumeVocalsPlayer.value = (menubarItemVolumeVocalsPlayer.value == 0) ? 100 : 0;
-      }
+      menubarItemVolumeVocalsPlayer.value = (menubarItemVolumeVocalsPlayer.value == 0) ? (oldValue > menubarItemVolumeVocalsPlayer.value) ? oldValue : 100 : 0;
       oldValue = previousAudioVolumes[5];
       previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
-      if (oldValue > menubarItemVolumeVocalsOpponent.value) menubarItemVolumeVocalsOpponent.value = oldValue;
-      else
-      {
-        menubarItemVolumeVocalsOpponent.value = (menubarItemVolumeVocalsOpponent.value == 0) ? 100 : 0;
-      }
+      menubarItemVolumeVocalsOpponent.value = (menubarItemVolumeVocalsOpponent.value == 0) ? (oldValue > menubarItemVolumeVocalsOpponent.value) ? oldValue : 100 : 0;
     }
     // Boyfriend vocals volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.B)
     {
       var oldValue = previousAudioVolumes[4];
       previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
-      if (oldValue > menubarItemVolumeVocalsPlayer.value) menubarItemVolumeVocalsPlayer.value = oldValue;
-      else
-      {
-        menubarItemVolumeVocalsPlayer.value = (menubarItemVolumeVocalsPlayer.value == 0) ? 100 : 0;
-      }
+      menubarItemVolumeVocalsPlayer.value = (menubarItemVolumeVocalsPlayer.value == 0) ? (oldValue > menubarItemVolumeVocalsPlayer.value) ? oldValue : 100 : 0;
     }
     // Dad vocals volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.D)
     {
       var oldValue = previousAudioVolumes[5];
       previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
-      if (oldValue > menubarItemVolumeVocalsOpponent.value) menubarItemVolumeVocalsOpponent.value = oldValue;
-      else
-      {
-        menubarItemVolumeVocalsOpponent.value = (menubarItemVolumeVocalsOpponent.value == 0) ? 100 : 0;
-      }
+      menubarItemVolumeVocalsOpponent.value = (menubarItemVolumeVocalsOpponent.value == 0) ? (oldValue > menubarItemVolumeVocalsOpponent.value) ? oldValue : 100 : 0;
     }
   }
 
