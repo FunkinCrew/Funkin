@@ -145,6 +145,7 @@ class GameOverSubState extends MusicBeatSubState
     else
     {
       boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
+      if (boyfriend == null) return;
       boyfriend.canPlayOtherAnims = true;
       boyfriend.isDead = true;
       add(boyfriend);

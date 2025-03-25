@@ -1121,8 +1121,8 @@ class PlayState extends MusicBeatSubState
 
     if (!isMinimalMode)
     {
-      iconP1.updatePosition();
-      iconP2.updatePosition();
+      if (iconP1 != null) iconP1.updatePosition();
+      if (iconP2 != null) iconP2.updatePosition();
     }
 
     // Transition to the game over substate.
@@ -2740,7 +2740,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // 9: Toggle the old icon.
-    if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
+    if (FlxG.keys.justPressed.NINE && iconP1 != null) iconP1.toggleOldIcon();
 
     #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
