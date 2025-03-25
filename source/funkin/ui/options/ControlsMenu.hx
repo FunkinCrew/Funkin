@@ -339,6 +339,17 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
   function onInputSelect(input:Int):Void
   {
     var item = controlGrid.selectedItem;
+    var leftItem = controlGrid.members[controlGrid.selectedIndex - 1];
+    var rightItem = controlGrid.members[controlGrid.selectedIndex + 1];
+
+    // check if all keybinds are being removed and this is a UI control, prevent removing last keybind for this
+    if (input == FlxKey.NONE && controlGrid.selectedIndex != 1 && rightItem.input == FlxKey.NONE)
+    {
+      for (group in itemGroups)
+      {
+        if (group.toString() == itemGroups[1].toString() && group.contains(item)) return;
+      }
+    }
 
     // check if that key is already set for this
     if (input != FlxKey.NONE)
@@ -379,7 +390,6 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     if (controlGrid.selectedIndex % 2 == 1)
     {
       trace('Modified item on right side of grid');
-      var leftItem = controlGrid.members[controlGrid.selectedIndex - 1];
       if (leftItem != null && input != FlxKey.NONE && leftItem.input == FlxKey.NONE)
       {
         trace('Left item is unbound and right item is not!');
@@ -395,7 +405,6 @@ class ControlsMenu extends funkin.ui.options.OptionsState.Page
     else
     {
       trace('Modified item on left side of grid');
-      var rightItem = controlGrid.members[controlGrid.selectedIndex + 1];
       if (rightItem != null && input == FlxKey.NONE && rightItem.input != FlxKey.NONE)
       {
         trace('Left item is unbound and right item is not!');
