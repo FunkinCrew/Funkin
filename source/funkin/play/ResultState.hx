@@ -369,11 +369,12 @@ class ResultState extends MusicBeatSubState
     var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.scoreData.tallies.maxCombo);
     ratingGrp.add(maxCombo);
 
-    if (params.scoreData.tallies.totalNotesHit >= 1000) {
+    if (params.scoreData.tallies.totalNotesHit >= 1000)
+    {
       totalHit.x -= 30;
       maxCombo.x -= 30;
     }
-  
+
     hStuf += 2;
     var extraYOffset:Float = 7;
 
@@ -743,7 +744,8 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE || controls.ACCEPT)
     {
-      close(); // IF we are a substate, we will close ourselves. This is used from ResultsDebugSubState
+      if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
+        close(); // IF we are a substate, we will close ourselves. This is used from ResultsDebugSubState
       if (introMusicAudio != null)
       {
         @:nullSafety(Off)
