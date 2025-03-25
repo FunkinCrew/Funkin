@@ -235,7 +235,7 @@ class Constants
   /**
    * Standardized variations for charts
    */
-  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
+  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico', 'bf'];
 
   /**
    * The default intensity multiplier for camera bops.
