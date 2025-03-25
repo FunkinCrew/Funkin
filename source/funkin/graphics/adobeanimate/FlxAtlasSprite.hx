@@ -199,7 +199,7 @@ class FlxAtlasSprite extends FlxAnimate
     }
   }
 
-  override public function update(elapsed:Float)
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
   }
