@@ -775,6 +775,13 @@ typedef HealthIconData =
    * @default [0, 25]
    */
   var offsets:Null<Array<Float>>;
+
+  /**
+   * The height/width of one icon frame (if it's legacy).
+   * @default 150 or 32 (pixel)
+   */
+  @:optional
+  var iconDivisor:Null<Int>;
 }
 
 typedef DeathData =
