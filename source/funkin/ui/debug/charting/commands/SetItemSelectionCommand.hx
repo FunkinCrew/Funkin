@@ -80,6 +80,7 @@ class SetItemSelectionCommand implements ChartEditorCommand
     }
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -88,6 +89,7 @@ class SetItemSelectionCommand implements ChartEditorCommand
     state.currentEventSelection = previousEventSelection;
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
