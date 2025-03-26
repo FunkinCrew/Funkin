@@ -128,7 +128,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     // Purge the note frames if the cached atlas is invalid.
     @:nullSafety(Off)
     {
-      if (noteFrames?.parent?.isDestroyed ?? false) noteFrames = null;
+      if (noteFrames?.parent?.isDestroyed ?? true) noteFrames = null;
     }
 
     if (noteFrames != null && !force) return noteFrames;
@@ -909,7 +909,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     @:nullSafety(Off)
     {
-      if (splashFrames?.parent?.isDestroyed ?? false) splashFrames = null;
+      if (splashFrames?.parent?.isDestroyed ?? true) splashFrames = null;
     }
 
     if (splashFrames != null && !force) return splashFrames;
@@ -1017,7 +1017,12 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   function buildHoldCoverFrames(force:Bool = false):Null<FlxFramesCollection>
   {
+    // If the hold cover frames got unloaded, ensure they get reloaded.
+    if (holdCoverFrames?.parent?.isDestroyed ?? true) holdCoverFrames = null;
+
+    // If the hold cover frames are already loaded, just use those.
     if (holdCoverFrames != null && !force) return holdCoverFrames;
+
     for (direction in Strumline.DIRECTIONS)
     {
       // We make a FlxFramesCollection here so we can combine em into one atlas later
