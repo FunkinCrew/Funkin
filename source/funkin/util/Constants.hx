@@ -478,12 +478,12 @@ class Constants
   /**
    * The amount of health the player loses upon letting go of a hold note, per second remaining.
    */
-  public static final HEALTH_HOLD_DROP_PENALTY_PER_SECOND:Float = -4.5 / 100.0 * HEALTH_MAX; // -4.5% / second
+  public static final HEALTH_HOLD_DROP_PENALTY_PER_SECOND:Float = 0 / 100.0 * HEALTH_MAX; // -4.5% / second
 
   /**
    * The maximum amount of health the player can lose upon letting go of a hold note.
    */
-  public static final HEALTH_HOLD_DROP_PENALTY_MAX:Float = -10.0 / 100.0 * HEALTH_MAX; // -10.0%
+  public static final HEALTH_HOLD_DROP_PENALTY_MAX:Float = 0 / 100.0 * HEALTH_MAX; // -10.0%
 
   /**
    * The amount of health the player loses upon hitting a mine.
