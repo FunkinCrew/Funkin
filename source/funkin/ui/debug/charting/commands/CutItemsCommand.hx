@@ -39,6 +39,9 @@ class CutItemsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
+    state.clipboardDirty = true;
+    state.clipboardValid = true;
     state.sortChartData();
   }
 
@@ -53,6 +56,7 @@ class CutItemsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
     state.sortChartData();
   }
 
