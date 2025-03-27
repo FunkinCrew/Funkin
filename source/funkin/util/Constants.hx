@@ -67,8 +67,9 @@ class Constants
 
   /**
    * Link to buy merch for the game.
+   * This is usually fetched from the Newgrounds API but we use this as a fallback.
    */
-  public static final URL_MERCH:String = 'https://www.makeship.com/shop/creator/friday-night-funkin';
+  public static final URL_MERCH_FALLBACK:String = 'https://needlejuicerecords.com/en-ca/pages/friday-night-funkin';
 
   /**
    * Preloader sitelock.

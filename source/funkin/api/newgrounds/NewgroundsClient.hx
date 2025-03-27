@@ -125,7 +125,11 @@ class NewgroundsClient
 
   public function isLoggedIn():Bool
   {
+    #if FEATURE_NEWGROUNDS
     return NG.core != null && NG.core.loggedIn;
+    #else
+    return false;
+    #end
   }
 
   /**
@@ -265,7 +269,7 @@ class NewgroundsClient
   {
     trace('[NEWGROUNDS] Fetched leaderboards!');
 
-    trace(funkin.api.newgrounds.Leaderboards.listLeaderboardData());
+    // trace(funkin.api.newgrounds.Leaderboards.listLeaderboardData());
   }
 
   function get_user():Null<User>

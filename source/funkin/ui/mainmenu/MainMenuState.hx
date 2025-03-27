@@ -238,7 +238,7 @@ class MainMenuState extends MusicBeatState
       .addResponseHandler(response -> {
         if (response.success) WindowUtil.openURL(response.result.data.url)
         else
-          WindowUtil.openURL(Constants.URL_MERCH);
+          WindowUtil.openURL(Constants.URL_MERCH_FALLBACK);
       })
       .send();
   }
