@@ -13,12 +13,9 @@ class LevelTitle extends FlxSpriteGroup
   public final level:Level;
 
   public var targetY:Float;
-  public var isFlashing:Bool = false;
 
   var title:FlxSprite;
   var lock:FlxSprite;
-
-  var flashingInt:Int = 0;
 
   public function new(x:Int, y:Int, level:Level)
   {
@@ -46,20 +43,23 @@ class LevelTitle extends FlxSpriteGroup
     }
   }
 
-  // if it runs at 60fps, fake framerate will be 6
-  // if it runs at 144 fps, fake framerate will be like 14, and will update the graphic every 0.016666 * 3 seconds still???
-  // so it runs basically every so many seconds, not dependant on framerate??
-  // I'm still learning how math works thanks whoever is reading this lol
-  var fakeFramerate:Int = Math.round((1 / FlxG.elapsed) / 10);
+  public var isFlashing:Bool = false;
+  var flashTick:Float = 0;
+  final flashFramerate:Float = 20;
 
   public override function update(elapsed:Float):Void
   {
     this.y = MathUtil.coolLerp(y, targetY, 0.17);
 
-    if (isFlashing) flashingInt += 1;
-    if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2)) title.color = 0xFF33ffff;
-    else
-      title.color = FlxColor.WHITE;
+    if (isFlashing)
+    {
+      flashTick += elapsed;
+      if (flashTick >= 1 / flashFramerate)
+      {
+        flashTick %= 1 / flashFramerate;
+        title.color = (title.color == FlxColor.WHITE) ? 0xFF33ffff : FlxColor.WHITE;
+      }
+    }
   }
 
   public function showLock():Void

@@ -327,7 +327,8 @@
           "INLINE",
           "DYNAMIC",
           "FINAL"
-        ]
+        ],
+        "severity": "IGNORE"
       },
       "type": "ModifierOrder"
     },

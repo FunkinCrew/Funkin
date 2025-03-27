@@ -83,7 +83,7 @@ apt-fast install -y --no-install-recommends \
   libc6-dev libffi-dev \
   libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev \
   libgl-dev libgl1-mesa-dev \
-  libasound2-dev \
+  libasound2-dev libpulse-dev \
   libvlc-dev libvlccore-dev
 EOF
 
@@ -137,8 +137,8 @@ ENV PATH="$HAXEPATH:$PATH"
 RUN <<EOF
 HOME=/etc haxelib setup "$HAXEPATH/lib"
 haxelib --global --never install haxelib $haxelib_version
-haxelib --global --never git haxelib https://github.com/HaxeFoundation/haxelib.git master
-haxelib --global --never install hmm
+haxelib --global --never git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
+haxelib --global --never git hmm https://github.com/FunkinCrew/hmm funkin-patches
 EOF
 
 # hxcpp

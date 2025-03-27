@@ -11,9 +11,9 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData>
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateNoteStyleData()` function.
    */
-  public static final NOTE_STYLE_DATA_VERSION:thx.semver.Version = "1.0.0";
+  public static final NOTE_STYLE_DATA_VERSION:thx.semver.Version = "1.1.0";
 
-  public static final NOTE_STYLE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
+  public static final NOTE_STYLE_DATA_VERSION_RULE:thx.semver.VersionRule = "1.1.x";
 
   public static var instance(get, never):NoteStyleRegistry;
   static var _instance:Null<NoteStyleRegistry> = null;

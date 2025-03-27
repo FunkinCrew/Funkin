@@ -1,0 +1,157 @@
+# Configuration for Label Actions - https://github.com/dessant/label-actions
+
+# Automatically close issues and pull requests when the `status: duplicate` label is applied
+'status: duplicate':
+  issues:
+    # Post a comment
+    comment: >
+      This issue is a duplicate. Please direct all discussion to the original issue.
+    # Close the issue
+    close: false
+    # Set a close reason
+    # close-reason: 'not planned'
+    # Remove other status labels
+    unlabel:
+      - 'status: accepted'
+      - 'status: bug reproduced'
+      - 'status: cannot reproduce'
+      - 'status: needs clarification'
+      - 'status: needs r&d'
+      - 'status: needs revision'
+      - 'status: pending pull request'
+      - 'status: pending triage'
+      - 'status: planned'
+      - 'status: rejected'
+      - 'status: resolved'
+      - 'status: resolved internally'
+      - 'status: reviewing internally'
+      - 'status: stale'
+  prs:
+    # Post a comment
+    comment: >
+      This pull request is a duplicate. Please direct all discussion to the original pull request.
+    # Close the pull request
+    close: false
+    # Remove other status labels
+    unlabel:
+      - 'status: accepted'
+      - 'status: bug reproduced'
+      - 'status: cannot reproduce'
+      - 'status: needs clarification'
+      - 'status: needs r&d'
+      - 'status: needs revision'
+      - 'status: pending pull request'
+      - 'status: pending triage'
+      - 'status: planned'
+      - 'status: rejected'
+      - 'status: resolved'
+      - 'status: resolved internally'
+      - 'status: reviewing internally'
+      - 'status: stale'
+
+'status: stale':
+  issues:
+    # Close the issue
+    close: true
+    # Set a close reason
+    close-reason: 'not planned'
+    # Remove other status labels
+    unlabel:
+      - 'status: accepted'
+      - 'status: bug reproduced'
+      - 'status: cannot reproduce'
+      - 'status: duplicate'
+      - 'status: needs clarification'
+      - 'status: needs r&d'
+      - 'status: needs revision'
+      - 'status: pending pull request'
+      - 'status: pending triage'
+      - 'status: planned'
+      - 'status: rejected'
+      - 'status: resolved'
+      - 'status: resolved internally'
+      - 'status: reviewing internally'
+  prs:
+    # Close the pull request
+    close: true
+    # Remove other status labels
+    unlabel:
+      - 'status: accepted'
+      - 'status: bug reproduced'
+      - 'status: cannot reproduce'
+      - 'status: duplicate'
+      - 'status: needs clarification'
+      - 'status: needs r&d'
+      - 'status: needs revision'
+      - 'status: pending pull request'
+      - 'status: pending triage'
+      - 'status: planned'
+      - 'status: rejected'
+      - 'status: resolved'
+      - 'status: resolved internally'
+      - 'status: reviewing internally'
+
+'status: rejected':
+  issues:
+    # Close the issue
+    close: true
+    # Set a close reason
+    close-reason: 'not planned'
+    # Remove other status labels
+    unlabel:
+      - 'status: accepted'
+      - 'status: bug reproduced'
+      - 'status: cannot reproduce'
+      - 'status: duplicate'
+      - 'status: needs clarification'
+      - 'status: needs r&d'
+      - 'status: needs revision'
+      - 'status: pending pull request'
+      - 'status: pending triage'
+      - 'status: planned'
+      - 'status: resolved'
+      - 'status: resolved internally'
+      - 'status: reviewing internally'
+      - 'status: stale'
+  prs:
+    # Close the pull request
+    close: true
+    # Remove other status labels
+    unlabel:
+      - 'status: accepted'
+      - 'status: bug reproduced'
+      - 'status: cannot reproduce'
+      - 'status: duplicate'
+      - 'status: needs clarification'
+      - 'status: needs r&d'
+      - 'status: needs revision'
+      - 'status: pending pull request'
+      - 'status: pending triage'
+      - 'status: planned'
+      - 'status: resolved'
+      - 'status: resolved internally'
+      - 'status: reviewing internally'
+      - 'status: stale'
+
+'status: resolved':
+  issues:
+    # Close the issue
+    close: true
+    # Set a close reason
+    close-reason: 'completed'
+    # Remove other status labels
+    unlabel:
+      - 'status: accepted'
+      - 'status: bug reproduced'
+      - 'status: cannot reproduce'
+      - 'status: duplicate'
+      - 'status: needs clarification'
+      - 'status: needs r&d'
+      - 'status: needs revision'
+      - 'status: pending pull request'
+      - 'status: pending triage'
+      - 'status: planned'
+      - 'status: rejected'
+      - 'status: resolved internally'
+      - 'status: reviewing internally'
+      - 'status: stale'

@@ -2,7 +2,6 @@ package funkin;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
-import openfl.utils.Assets as OpenFlAssets;
 
 /**
  * A core class which handles determining asset paths.
@@ -11,9 +10,16 @@ class Paths
 {
   static var currentLevel:Null<String> = null;
 
-  public static function setCurrentLevel(name:String):Void
+  public static function setCurrentLevel(name:Null<String>):Void
   {
-    currentLevel = name.toLowerCase();
+    if (name == null)
+    {
+      currentLevel = null;
+    }
+    else
+    {
+      currentLevel = name.toLowerCase();
+    }
   }
 
   public static function stripLibrary(path:String):String
@@ -37,11 +43,11 @@ class Paths
     if (currentLevel != null)
     {
       var levelPath:String = getLibraryPathForce(file, currentLevel);
-      if (OpenFlAssets.exists(levelPath, type)) return levelPath;
+      if (Assets.exists(levelPath, type)) return levelPath;
     }
 
     var levelPath:String = getLibraryPathForce(file, 'shared');
-    if (OpenFlAssets.exists(levelPath, type)) return levelPath;
+    if (Assets.exists(levelPath, type)) return levelPath;
 
     return getPreloadPath(file);
   }

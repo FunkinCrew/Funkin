@@ -42,13 +42,20 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
     return val;
   }
 
-  public function new(x:Float, y:Float, digitCount:Int, scoreShit:Int = 100)
+  public function new(x:Float, y:Float, digitCount:Int, scoreShit:Int = 100, ?styleData:FreeplayStyle)
   {
     super(x, y);
 
     for (i in 0...digitCount)
     {
-      add(new ScoreNum(x + (45 * i), y, 0));
+      if (styleData == null)
+      {
+        add(new ScoreNum(x + (45 * i), y, 0));
+      }
+      else
+      {
+        add(new ScoreNum(x + (45 * i), y, 0, styleData));
+      }
     }
 
     this.scoreShit = scoreShit;
@@ -76,16 +83,16 @@ class ScoreNum extends FlxSprite
         case 1:
           offset.x -= 15;
         case 5:
-        // set offsets
-        // offset.x += 0;
-        // offset.y += 10;
+          // set offsets
+          // offset.x += 0;
+          // offset.y += 10;
 
         case 7:
-        // offset.y += 6;
+          // offset.y += 6;
         case 4:
-        // offset.y += 5;
+          // offset.y += 5;
         case 9:
-        // offset.y += 5;
+          // offset.y += 5;
         default:
           centerOffsets(false);
       }
@@ -99,14 +106,21 @@ class ScoreNum extends FlxSprite
 
   var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
 
-  public function new(x:Float, y:Float, ?initDigit:Int = 0)
+  public function new(x:Float, y:Float, ?initDigit:Int = 0, ?styleData:FreeplayStyle)
   {
     super(x, y);
 
     baseY = y;
     baseX = x;
 
-    frames = Paths.getSparrowAtlas('digital_numbers');
+    if (styleData == null)
+    {
+      frames = Paths.getSparrowAtlas('digital_numbers');
+    }
+    else
+    {
+      frames = Paths.getSparrowAtlas(styleData.getNumbersAssetKey());
+    }
 
     for (i in 0...10)
     {

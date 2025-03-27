@@ -7,7 +7,11 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
+import funkin.data.animation.AnimationData;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.NoteDirection;
 
 /**
  * A sprite that can be used to display a note in a chart.
@@ -36,7 +40,8 @@ class ChartEditorNoteSprite extends FlxSprite
   /**
    * The name of the note style currently in use.
    */
-  public var noteStyle(get, never):String;
+  @:isVar
+  public var noteStyle(get, set):Null<String>;
 
   public var overrideStepTime(default, set):Null<Float> = null;
 
@@ -66,70 +71,78 @@ class ChartEditorNoteSprite extends FlxSprite
 
     this.parentState = parent;
 
+    var entries:Array<String> = NoteStyleRegistry.instance.listEntryIds();
+
     if (noteFrameCollection == null)
     {
-      initFrameCollection();
+      buildEmptyFrameCollection();
+
+      for (entry in entries)
+      {
+        addNoteStyleFrames(fetchNoteStyle(entry));
+      }
     }
 
     if (noteFrameCollection == null) throw 'ERROR: Could not initialize note sprite animations.';
 
     this.frames = noteFrameCollection;
 
-    // Initialize all the animations, not just the one we're going to use immediately,
-    // so that later we can reuse the sprite without having to initialize more animations during scrolling.
-    this.animation.addByPrefix('tapLeftFunkin', 'purple instance');
-    this.animation.addByPrefix('tapDownFunkin', 'blue instance');
-    this.animation.addByPrefix('tapUpFunkin', 'green instance');
-    this.animation.addByPrefix('tapRightFunkin', 'red instance');
-
-    this.animation.addByPrefix('holdLeftFunkin', 'LeftHoldPiece');
-    this.animation.addByPrefix('holdDownFunkin', 'DownHoldPiece');
-    this.animation.addByPrefix('holdUpFunkin', 'UpHoldPiece');
-    this.animation.addByPrefix('holdRightFunkin', 'RightHoldPiece');
-
-    this.animation.addByPrefix('holdEndLeftFunkin', 'LeftHoldEnd');
-    this.animation.addByPrefix('holdEndDownFunkin', 'DownHoldEnd');
-    this.animation.addByPrefix('holdEndUpFunkin', 'UpHoldEnd');
-    this.animation.addByPrefix('holdEndRightFunkin', 'RightHoldEnd');
-
-    this.animation.addByPrefix('tapLeftPixel', 'pixel4');
-    this.animation.addByPrefix('tapDownPixel', 'pixel5');
-    this.animation.addByPrefix('tapUpPixel', 'pixel6');
-    this.animation.addByPrefix('tapRightPixel', 'pixel7');
+    for (entry in entries)
+    {
+      addNoteStyleAnimations(fetchNoteStyle(entry));
+    }
   }
 
   static var noteFrameCollection:Null<FlxFramesCollection> = null;
 
-  /**
-   * We load all the note frames once, then reuse them.
-   */
-  static function initFrameCollection():Void
+  function fetchNoteStyle(noteStyleId:String):NoteStyle
   {
-    buildEmptyFrameCollection();
-    if (noteFrameCollection == null) return;
+    var result = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (result != null) return result;
+    return NoteStyleRegistry.instance.fetchDefault();
+  }
 
-    // TODO: Automatically iterate over the list of note skins.
+  @:access(funkin.play.notes.notestyle.NoteStyle)
+  @:nullSafety(Off)
+  static function addNoteStyleFrames(noteStyle:NoteStyle):Void
+  {
+    var prefix:String = noteStyle.id.toTitleCase();
 
-    // Normal notes
-    var frameCollectionNormal:FlxAtlasFrames = Paths.getSparrowAtlas('NOTE_assets');
-
-    for (frame in frameCollectionNormal.frames)
+    var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary());
+    if (frameCollection == null)
     {
-      noteFrameCollection.pushFrame(frame);
+      trace('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
+      FlxG.log.error('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
+      return;
     }
-
-    // Pixel notes
-    var graphicPixel = FlxG.bitmap.add(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), false, null);
-    if (graphicPixel == null) trace('ERROR: Could not load graphic: ' + Paths.image('weeb/pixelUI/arrows-pixels', 'week6'));
-    var frameCollectionPixel = FlxTileFrames.fromGraphic(graphicPixel, new FlxPoint(17, 17));
-    for (i in 0...frameCollectionPixel.frames.length)
+    for (frame in frameCollection.frames)
     {
-      var frame:Null<FlxFrame> = frameCollectionPixel.frames[i];
-      if (frame == null) continue;
-
-      frame.name = 'pixel' + i;
-      noteFrameCollection.pushFrame(frame);
+      // cloning the frame because else
+      // we will fuck up the frame data used in game
+      var clonedFrame:FlxFrame = frame.copyTo();
+      clonedFrame.name = '$prefix${clonedFrame.name}';
+      noteFrameCollection.pushFrame(clonedFrame);
     }
+  }
+
+  @:access(funkin.play.notes.notestyle.NoteStyle)
+  @:nullSafety(Off)
+  function addNoteStyleAnimations(noteStyle:NoteStyle):Void
+  {
+    var prefix:String = noteStyle.id.toTitleCase();
+    var suffix:String = noteStyle.id.toTitleCase();
+
+    var leftData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.LEFT);
+    this.animation.addByPrefix('tapLeft$suffix', '$prefix${leftData.prefix}', leftData.frameRate, leftData.looped, leftData.flipX, leftData.flipY);
+
+    var downData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.DOWN);
+    this.animation.addByPrefix('tapDown$suffix', '$prefix${downData.prefix}', downData.frameRate, downData.looped, downData.flipX, downData.flipY);
+
+    var upData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.UP);
+    this.animation.addByPrefix('tapUp$suffix', '$prefix${upData.prefix}', upData.frameRate, upData.looped, upData.flipX, upData.flipY);
+
+    var rightData:AnimationData = noteStyle.fetchNoteAnimationData(NoteDirection.RIGHT);
+    this.animation.addByPrefix('tapRight$suffix', '$prefix${rightData.prefix}', rightData.frameRate, rightData.looped, rightData.flipX, rightData.flipY);
   }
 
   @:nullSafety(Off)
@@ -185,12 +198,24 @@ class ChartEditorNoteSprite extends FlxSprite
     }
   }
 
-  function get_noteStyle():String
+  function get_noteStyle():Null<String>
   {
-    // Fall back to Funkin' if it's not a valid note style.
-    return if (NOTE_STYLES.contains(this.parentState.currentSongNoteStyle)) this.parentState.currentSongNoteStyle else 'funkin';
+    if (this.noteStyle == null)
+    {
+      var result = this.parentState.currentSongNoteStyle;
+      return result;
+    }
+    return this.noteStyle;
   }
 
+  function set_noteStyle(value:Null<String>):Null<String>
+  {
+    this.noteStyle = value;
+    this.playNoteAnimation();
+    return value;
+  }
+
+  @:nullSafety(Off)
   public function playNoteAnimation():Void
   {
     if (this.noteData == null) return;
@@ -200,6 +225,7 @@ class ChartEditorNoteSprite extends FlxSprite
 
     // Play the appropriate animation for the type, direction, and skin.
     var dirName:String = overrideData != null ? SongNoteData.buildDirectionName(overrideData) : this.noteData.getDirectionName();
+    var noteStyleSuffix:String = this.noteStyle?.toTitleCase() ?? Constants.DEFAULT_NOTE_STYLE.toTitleCase();
     var animationName:String = '${baseAnimationName}${dirName}${this.noteStyle.toTitleCase()}';
 
     this.animation.play(animationName);
@@ -209,12 +235,12 @@ class ChartEditorNoteSprite extends FlxSprite
     switch (baseAnimationName)
     {
       case 'tap':
-        this.setGraphicSize(0, ChartEditorState.GRID_SIZE);
+        this.setGraphicSize(ChartEditorState.GRID_SIZE, 0);
+        this.updateHitbox();
     }
-    this.updateHitbox();
 
-    // TODO: Make this an attribute of the note skin.
-    this.antialiasing = (this.parentState.currentSongNoteStyle != 'Pixel');
+    var bruhStyle:NoteStyle = fetchNoteStyle(this.noteStyle);
+    this.antialiasing = !bruhStyle._data?.assets?.note?.isPixel ?? true;
   }
 
   /**

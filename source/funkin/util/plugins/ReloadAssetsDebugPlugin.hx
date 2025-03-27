@@ -1,6 +1,9 @@
 package funkin.util.plugins;
 
+import flixel.FlxG;
 import flixel.FlxBasic;
+import funkin.ui.MusicBeatState;
+import funkin.ui.MusicBeatSubState;
 
 /**
  * A plugin which adds functionality to press `F5` to reload all game assets, then reload the current state.
@@ -28,10 +31,15 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     if (FlxG.keys.justPressed.F5)
     #end
     {
-      funkin.modding.PolymodHandler.forceReloadAssets();
+      var state:Dynamic = FlxG.state;
+      if (state is MusicBeatState || state is MusicBeatSubState) state.reloadAssets();
+      else
+      {
+        funkin.modding.PolymodHandler.forceReloadAssets();
 
-      // Create a new instance of the current state, so old data is cleared.
-      FlxG.resetState();
+        // Create a new instance of the current state, so old data is cleared.
+        FlxG.resetState();
+      }
     }
   }
 

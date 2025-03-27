@@ -44,7 +44,7 @@ runs:
         g++ \
         libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev \
         libgl-dev libgl1-mesa-dev \
-        libasound2-dev
+        libasound2-dev libpulse-dev
       ln -s /usr/lib/x86_64-linux-gnu/libffi.so.8 /usr/lib/x86_64-linux-gnu/libffi.so.6 || true
   - name: Install linux-specific dependencies
     if: ${{ runner.os == 'Linux' && contains(inputs.targets, 'linux') }}
@@ -56,12 +56,17 @@ runs:
     shell: bash
     run: |
       echo "TIMER_HAXELIB=$(date +%s)" >> "$GITHUB_ENV"
-      haxelib --debug --never install haxelib 4.1.0 --global
-      haxelib --debug --never deleterepo || true
+      haxelib fixrepo --global || true
+      haxelib --debug --never --global install haxelib 4.1.0
+      haxelib --debug --global set haxelib 4.1.0
+      haxelib --global remove haxelib git || true
+      haxelib --global remove hmm || true
+      rm -rf .haxelib
+      haxelib --debug --never --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
+      haxelib --debug --never --global git hmm https://github.com/FunkinCrew/hmm funkin-patches
       haxelib --debug --never newrepo
+      haxelib version
       echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
-      haxelib --debug --never git haxelib https://github.com/HaxeFoundation/haxelib.git master
-      haxelib --debug --global install hmm
       echo "TIMER_DEPS=$(date +%s)" >> "$GITHUB_ENV"
 
   - name: Restore cached dependencies
@@ -75,7 +80,12 @@ runs:
     name: Prep git for dependency install
     uses: gacts/run-and-post-run@v1
     with:
-      run: git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
+      run: |
+        git config --global --name-only --get-regexp 'url\.https\:\/\/x-access-token:.+@github\.com\/\.insteadOf' \
+        | xargs -I {} git config --global --unset {}
+
+        git config -l --show-scope --show-origin
+        git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
       post: git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf'
 
   - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}

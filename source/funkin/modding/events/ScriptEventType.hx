@@ -20,7 +20,7 @@ enum abstract ScriptEventType(String) from String to String
   var DESTROY = 'DESTROY';
 
   /**
-   * Called when the relevent object is added to the game state.
+   * Called when the relevant object is added to the game state.
    * This assumes all data is loaded and ready to go.
    *
    * This event is not cancelable.

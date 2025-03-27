@@ -11,7 +11,7 @@ import flixel.util.FlxTimer;
 import funkin.graphics.video.FlxVideo;
 #end
 #if hxCodec
-import hxcodec.flixel.FlxVideoSprite;
+import funkin.graphics.video.FunkinVideoSprite;
 #end
 
 /**
@@ -26,7 +26,7 @@ class VideoCutscene
   static var vid:FlxVideo;
   #end
   #if hxCodec
-  static var vid:FlxVideoSprite;
+  static var vid:FunkinVideoSprite;
   #end
 
   /**
@@ -81,7 +81,6 @@ class VideoCutscene
     // Trigger the cutscene. Don't play the song in the background.
     PlayState.instance.isInCutscene = true;
     PlayState.instance.camHUD.visible = false;
-    PlayState.instance.camCutscene.visible = true;
 
     // Display a black screen to hide the game while the video is playing.
     blackScreen = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
@@ -139,13 +138,13 @@ class VideoCutscene
   static function playVideoNative(filePath:String):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FlxVideoSprite(0, 0);
+    vid = new FunkinVideoSprite(0, 0);
 
     if (vid != null)
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
-      vid.autoPause = false;
+      vid.autoPause = FlxG.autoPause;
 
       vid.cameras = [PlayState.instance.camCutscene];
 
@@ -305,7 +304,6 @@ class VideoCutscene
     vid = null;
     #end
 
-    PlayState.instance.camCutscene.visible = true;
     PlayState.instance.camHUD.visible = true;
 
     FlxTween.tween(blackScreen, {alpha: 0}, transitionTime,

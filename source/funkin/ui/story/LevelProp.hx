@@ -16,7 +16,7 @@ class LevelProp extends Bopper
       this.propData = value;
 
       this.visible = this.propData != null;
-      danceEvery = this.propData?.danceEvery ?? 0;
+      danceEvery = this.propData?.danceEvery ?? 1.0;
 
       applyData();
     }
@@ -32,7 +32,7 @@ class LevelProp extends Bopper
 
   public function playConfirm():Void
   {
-    playAnimation('confirm', true, true);
+    if (hasAnimation('confirm')) playAnimation('confirm', true, true);
   }
 
   function applyData():Void

@@ -41,6 +41,8 @@ class MultiSparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
+      pixelPerfectRender = true;
+      pixelPerfectPosition = true;
     }
     else
     {
@@ -60,11 +62,13 @@ class MultiSparrowCharacter extends BaseCharacter
       }
     }
 
-    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath, 'shared');
+    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath);
 
     if (texture == null)
     {
       trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+      FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+      return;
     }
     else
     {
@@ -74,7 +78,7 @@ class MultiSparrowCharacter extends BaseCharacter
 
     for (asset in assetList)
     {
-      var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset, 'shared');
+      var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset);
       // If we don't do this, the unused textures will be removed as soon as they're loaded.
 
       if (subTexture == null)

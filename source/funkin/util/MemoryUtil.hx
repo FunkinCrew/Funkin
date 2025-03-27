@@ -48,11 +48,11 @@ class MemoryUtil
    * Calculate the total memory usage of the program, in bytes.
    * @return Int
    */
-  public static function getMemoryUsed():Int
+  public static function getMemoryUsed():#if cpp Float #else Int #end
   {
     #if cpp
     // There is also Gc.MEM_INFO_RESERVED, MEM_INFO_CURRENT, and MEM_INFO_LARGE.
-    return cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_USAGE);
+    return cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE);
     #else
     return openfl.system.System.totalMemory;
     #end

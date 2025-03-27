@@ -87,6 +87,7 @@ class SustainTrail extends FlxSprite
   public var bottomClip:Float = 0.9;
 
   public var isPixel:Bool;
+  public var noteStyleOffsets:Array<Float>;
 
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
@@ -99,7 +100,28 @@ class SustainTrail extends FlxSprite
    */
   public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
   {
-    super(0, 0, noteStyle.getHoldNoteAssetPath());
+    super(0, 0);
+
+    // BASIC SETUP
+    this.sustainLength = sustainLength;
+    this.fullSustainLength = sustainLength;
+    this.noteDirection = noteDirection;
+
+    setupHoldNoteGraphic(noteStyle);
+    noteStyleOffsets = noteStyle.getHoldNoteOffsets();
+
+    indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
+
+    this.active = true; // This NEEDS to be true for the note to be drawn!
+  }
+
+  /**
+   * Creates hold note graphic and applies correct zooming
+   * @param noteStyle The note style
+   */
+  public function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
+  {
+    loadGraphic(noteStyle.getHoldNoteAssetPath());
 
     antialiasing = true;
 
@@ -109,14 +131,14 @@ class SustainTrail extends FlxSprite
       endOffset = bottomClip = 1;
       antialiasing = false;
     }
+    else
+    {
+      endOffset = 0.5;
+      bottomClip = 0.9;
+    }
+
+    zoom = 1.0;
     zoom *= noteStyle.fetchHoldNoteScale();
-
-    // BASIC SETUP
-    this.sustainLength = sustainLength;
-    this.fullSustainLength = sustainLength;
-    this.noteDirection = noteDirection;
-
-    zoom *= 0.7;
 
     // CALCULATE SIZE
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
@@ -131,9 +153,6 @@ class SustainTrail extends FlxSprite
     updateColorTransform();
 
     updateClipping();
-    indices = new DrawData<Int>(12, true, TRIANGLE_VERTEX_INDICES);
-
-    this.active = true; // This NEEDS to be true for the note to be drawn!
   }
 
   function getBaseScrollSpeed()
@@ -160,7 +179,7 @@ class SustainTrail extends FlxSprite
    */
   public static inline function sustainHeight(susLength:Float, scroll:Float)
   {
-    return (susLength * 0.45 * scroll);
+    return (susLength * Constants.PIXELS_PER_MS * scroll);
   }
 
   function set_sustainLength(s:Float):Float
@@ -184,7 +203,7 @@ class SustainTrail extends FlxSprite
   {
     width = graphicWidth;
     height = graphicHeight;
-    offset.set(0, 0);
+    offset.set(noteStyleOffsets[0], noteStyleOffsets[1]);
     origin.set(width * 0.5, height * 0.5);
   }
 
@@ -195,6 +214,11 @@ class SustainTrail extends FlxSprite
    */
   public function updateClipping(songTime:Float = 0):Void
   {
+    if (graphic == null)
+    {
+      return;
+    }
+
     var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
     if (clipHeight <= 0.1)
     {
