@@ -81,7 +81,7 @@ class Medals
       }
       else
       {
-        trace('[NEWGROUNDS] User already awarded medal (${medal}).');
+        trace('[NEWGROUNDS] User already has medal (${medal}).');
       }
     }
     else

@@ -28,6 +28,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
+import funkin.api.newgrounds.Events;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -1046,6 +1047,9 @@ class PlayState extends MusicBeatSubState
         if (FlxG.sound.music != null) FlxG.sound.music.pause();
 
         deathCounter += 1;
+        #if FEATURE_NEWGROUNDS
+        Events.logFailSong(currentSong.id, currentVariation);
+        #end
 
         dispatchEvent(new ScriptEvent(GAME_OVER));
 
@@ -2113,6 +2117,10 @@ class PlayState extends MusicBeatSubState
     }
 
     dispatchEvent(new ScriptEvent(SONG_START));
+
+    #if FEATURE_NEWGROUNDS
+    Events.logStartSong(currentSong.id, currentVariation);
+    #end
   }
 
   /**
@@ -2969,6 +2977,10 @@ class PlayState extends MusicBeatSubState
 
       if (!isPracticeMode && !isBotPlayMode)
       {
+        #if FEATURE_NEWGROUNDS
+        Events.logCompleteSong(currentSong.id, currentVariation);
+        #end
+
         isNewHighscore = Save.instance.isSongHighScore(currentSong.id, suffixedDifficulty, data);
 
         // If no high score is present, save both score and rank.
@@ -3012,6 +3024,8 @@ class PlayState extends MusicBeatSubState
       if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentDifficulty)) Medals.award(ErectDifficulty);
       if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'nightmare') Medals.award(GoldPerfectRatingNightmare);
       if (currentVariation == 'pico' && !PlayStatePlaylist.isStoryMode) Medals.award(FreeplayPicoMix);
+
+      Events.logEarnRank(scoreRank.toString());
     }
     #end
 
@@ -3056,6 +3070,8 @@ class PlayState extends MusicBeatSubState
 
             // Submit the score for the Story level to Newgrounds.
             Leaderboards.submitLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, PlayStatePlaylist.campaignScore);
+
+            Events.logCompleteLevel(PlayStatePlaylist.campaignId);
             #end
 
             Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);

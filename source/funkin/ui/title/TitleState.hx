@@ -287,6 +287,7 @@ class TitleState extends MusicBeatState
       #if FEATURE_NEWGROUNDS
       // Award the "Start Game" medal.
       Medals.award(Medal.StartGame);
+      funkin.api.newgrounds.Events.logStartGame();
       #end
 
       var targetState:NextState = () -> new MainMenuState();

@@ -194,9 +194,16 @@ class Project extends HXProject {
 	/**
 	 * `-DFEATURE_NEWGROUNDS_TESTING_MEDALS`
 	 * If this flag is enabled, use the medal IDs from the debug test bench.
-	 * If disabled, use the actual medal IDs.
+	 * If disabled, use the actual medal IDs from the release project on Newgrounds.
 	 */
 	static final FEATURE_NEWGROUNDS_TESTING_MEDALS:FeatureFlag = "FEATURE_NEWGROUNDS_TESTING_MEDALS";
+
+	/**
+	 * `-DFEATURE_NEWGROUNDS_EVENTS`
+	 * If this flag is enabled, the game will attempt to send events to Newgrounds when the user does stuff.
+	 * This lets us see cool anonymized stats! It only works if the user is logged in.
+	 */
+	static final FEATURE_NEWGROUNDS_EVENTS:FeatureFlag = "FEATURE_NEWGROUNDS_EVENTS";
 
 	/**
 	 * `-DFEATURE_FUNKVIS`
@@ -504,6 +511,7 @@ class Project extends HXProject {
 		FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
 		FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 		FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
+		FEATURE_NEWGROUNDS_EVENTS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this));
 
 		// Should default to true on workspace builds and false on release builds.
 		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());

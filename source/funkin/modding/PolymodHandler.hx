@@ -323,6 +323,15 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
+    // `io.newgrounds.*`
+    // Contains functions which allow for cheating medals and leaderboards.
+    for (cls in ClassMacro.listClassesInPackage('io.newgrounds'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
     // `sys.*`
     // Access to system utilities such as the file system.
     for (cls in ClassMacro.listClassesInPackage('sys'))

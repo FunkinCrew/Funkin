@@ -618,4 +618,9 @@ enum abstract ScoringRank(String)
         return 'resultScreen/rankText/rankTextGOOD';
     }
   }
+
+  public function toString():String
+  {
+    return this;
+  }
 }
