@@ -23,7 +23,7 @@ class Events
       if (eventHandler != null)
       {
         var sanitizedEventName = EVENT_NAME_REGEX.replace(eventName, '');
-        var outcomeHandler = onEventLogged.bind(ssanitizedEventName, _);
+        var outcomeHandler = onEventLogged.bind(sanitizedEventName, _);
         eventHandler.logEvent(sanitizedEventName).addOutcomeHandler(outcomeHandler).send();
       }
     }
