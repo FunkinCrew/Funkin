@@ -1281,6 +1281,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var songMetadata:Map<String, SongMetadata> = [];
 
   /**
+   * Updates the current song's play data variations list.
+   */
+  function refreshPlayDataVariations():Void
+  {
+    var songVariations:Array<String> = songMetadata.get(Constants.DEFAULT_VARIATION).playData.songVariations;
+    songVariations.clear();
+    for (variation in availableVariations)
+    {
+      if (variation == Constants.DEFAULT_VARIATION) continue;
+      songVariations.push(variation);
+    }
+  }
+
+  /**
    * Retrieves the list of variations for the current song.
    */
   var availableVariations(get, never):Array<String>;
@@ -6343,7 +6357,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (songMetadata.size() > 1)
     {
-      if (variationMetadata.playData.difficulties.length == 0)
+      if (variation != Constants.DEFAULT_VARIATION && variationMetadata.playData.difficulties.length == 0)
       {
         songMetadata.remove(variation);
         songChartData.remove(variation);
@@ -6360,6 +6374,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (selectedDifficulty == difficulty
       || !variationMetadata.playData.difficulties.contains(selectedDifficulty)) selectedDifficulty = variationMetadata.playData.difficulties[0];
 
+    refreshPlayDataVariations();
     difficultySelectDirty = true; // Force the Difficulty toolbox to update.
   }
 
