@@ -395,12 +395,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
     }
   }
 
-  public function parseEntryChartDataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version):Null<SongChartData>
+  public function parseEntryChartDataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version,
+      ?variation:String):Null<SongChartData>
   {
     // If a version rule is not specified, do not check against it.
     if (SONG_CHART_DATA_VERSION_RULE == null || VersionUtil.validateVersion(version, SONG_CHART_DATA_VERSION_RULE))
     {
-      return parseEntryChartDataRaw(contents, fileName);
+      return parseEntryChartDataRaw(contents, fileName, variation);
     }
     else
     {

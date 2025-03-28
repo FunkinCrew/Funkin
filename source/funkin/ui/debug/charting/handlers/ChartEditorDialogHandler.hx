@@ -1207,6 +1207,7 @@ class ChartEditorDialogHandler
       pendingVariation.timeChanges[0].bpm = dialogBPM.value;
 
       state.songMetadata.set(pendingVariation.variation, pendingVariation);
+      state.refreshPlayDataVariations();
       state.difficultySelectDirty = true; // Force the Difficulty toolbox to update.
 
       // Don't update conductor since we haven't switched to the new variation yet.
