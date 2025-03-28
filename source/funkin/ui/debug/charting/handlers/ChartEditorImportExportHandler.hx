@@ -227,7 +227,8 @@ class ChartEditorImportExportHandler
       var variMetadataVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(variMetadataString);
       if (variMetadataVersion == null) throw 'Could not read metadata ($variation) version.';
 
-      var variMetadata:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, variMetadataPath, variMetadataVersion);
+      var variMetadata:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(variMetadataString, variMetadataPath,
+        variMetadataVersion, variation);
       if (variMetadata == null) throw 'Could not read metadata ($variation).';
       songMetadatas.set(variation, variMetadata);
 
@@ -238,7 +239,7 @@ class ChartEditorImportExportHandler
       if (variChartDataVersion == null) throw 'Could not read chart data version ($variation).';
 
       var variChartData:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
-        variChartDataVersion);
+        variChartDataVersion, variation);
       if (variChartData == null) throw 'Could not read chart data ($variation).';
       songChartDatas.set(variation, variChartData);
     }
