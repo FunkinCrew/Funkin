@@ -192,12 +192,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
   }
 
-  public function parseEntryMetadataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version):Null<SongMetadata>
+  public function parseEntryMetadataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version,
+      ?variation:String):Null<SongMetadata>
   {
     // If a version rule is not specified, do not check against it.
     if (SONG_METADATA_VERSION_RULE == null || VersionUtil.validateVersion(version, SONG_METADATA_VERSION_RULE))
     {
-      return parseEntryMetadataRaw(contents, fileName);
+      return parseEntryMetadataRaw(contents, fileName, variation);
     }
     else if (VersionUtil.validateVersion(version, "2.1.x"))
     {
@@ -404,12 +405,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
   }
 
-  public function parseEntryChartDataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version):Null<SongChartData>
+  public function parseEntryChartDataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version,
+      ?variation:String):Null<SongChartData>
   {
     // If a version rule is not specified, do not check against it.
     if (SONG_CHART_DATA_VERSION_RULE == null || VersionUtil.validateVersion(version, SONG_CHART_DATA_VERSION_RULE))
     {
-      return parseEntryChartDataRaw(contents, fileName);
+      return parseEntryChartDataRaw(contents, fileName, variation);
     }
     else
     {
