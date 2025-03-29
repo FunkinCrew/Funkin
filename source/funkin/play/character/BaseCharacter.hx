@@ -644,6 +644,11 @@ class BaseCharacter extends Bopper
   {
     super.playAnimation(name, restart, ignoreOther, reversed);
   }
+
+  public function getDeathQuote():Null<String>
+  {
+    return null;
+  }
 }
 
 /**

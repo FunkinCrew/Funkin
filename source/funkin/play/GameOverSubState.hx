@@ -319,32 +319,48 @@ class GameOverSubState extends MusicBeatSubState
       else
       {
         // Music hasn't started yet.
-        switch (PlayStatePlaylist.campaignId)
+
+        if (boyfriend.getDeathQuote() != null)
         {
-          // TODO: Make the behavior for playing Jeff's voicelines generic or un-hardcoded.
-          // This will simplify the class and make it easier for mods to add death quotes.
-          case 'week7':
-            if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !playingJeffQuote)
-            {
-              playingJeffQuote = true;
-              playJeffQuote();
-              // Start music at lower volume
-              startDeathMusic(0.2, false);
-              boyfriend.playAnimation('deathLoop' + animationSuffix);
-            }
-          default:
-            // Start music at normal volume once the initial death animation finishes.
-            if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
-            {
-              startDeathMusic(1.0, false);
-              boyfriend.playAnimation('deathLoop' + animationSuffix);
-            }
+          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !hasPlayedDeathQuote)
+          {
+            hasPlayedDeathQuote = true;
+            playDeathQuote();
+          }
+        }
+        else
+        {
+          // Start music at normal volume once the initial death animation finishes.
+          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
+          {
+            startDeathMusic(1.0, false);
+            boyfriend.playAnimation('deathLoop' + animationSuffix);
+          }
         }
       }
     }
 
     // Start death music before firstDeath gets replaced
     super.update(elapsed);
+  }
+
+  function playDeathQuote():Void
+  {
+    if (boyfriend == null) return;
+
+    var deathQuote = boyfriend.getDeathQuote();
+    if (deathQuote == null) return;
+
+    // Start music at lower volume
+    startDeathMusic(0.2, false);
+    boyfriend.playAnimation('deathLoop' + animationSuffix);
+    FunkinSound.playOnce(deathQuote, function() {
+      // Once the quote ends, fade in the game over music.
+      if (!isEnding && gameOverMusic != null)
+      {
+        gameOverMusic.fadeIn(4, 0.2, 1);
+      }
+    });
   }
 
   /**
@@ -505,26 +521,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  var playingJeffQuote:Bool = false;
-
-  /**
-   * Week 7-specific hardcoded behavior, to play a custom death quote.
-   * TODO: Make this a module somehow.
-   */
-  function playJeffQuote():Void
-  {
-    var randomCensor:Array<Int> = [];
-
-    if (!Preferences.naughtyness) randomCensor = [1, 3, 8, 13, 17, 21];
-
-    FunkinSound.playOnce(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), function() {
-      // Once the quote ends, fade in the game over music.
-      if (!isEnding && gameOverMusic != null)
-      {
-        gameOverMusic.fadeIn(4, 0.2, 1);
-      }
-    });
-  }
+  var hasPlayedDeathQuote:Bool = false;
 
   public override function destroy():Void
   {
