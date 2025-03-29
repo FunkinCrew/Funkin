@@ -539,6 +539,7 @@ class InputItem extends TextMenuItem
   function getInput()
   {
     var list = PlayerSettings.player1.controls.getInputsFor(control, device);
+    list = list.distinct();
     if (list.length > index)
     {
       if (list[index] != FlxKey.ESCAPE || list[index] != FlxGamepadInputID.BACK) return list[index];
