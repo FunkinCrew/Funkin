@@ -31,6 +31,9 @@ import openfl.filters.ShaderFilter;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.graphics.FunkinSprite;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+#end
 
 class CharSelectSubState extends MusicBeatSubState
 {
@@ -421,6 +424,10 @@ class CharSelectSubState extends MusicBeatSubState
     });
     else
     {
+      #if FEATURE_NEWGROUNDS
+      if (availableChars.size() > 1) Medals.award(CharSelect);
+      #end
+
       FunkinSound.playMusic('stayFunky',
         {
           startingVolume: 1,
@@ -561,6 +568,10 @@ class CharSelectSubState extends MusicBeatSubState
           playerChillOut.visible = false;
           playerChillOut.switchChar(char);
         });
+
+        #if FEATURE_NEWGROUNDS
+        Medals.award(CharSelect);
+        #end
 
         Save.instance.addCharacterSeen(char);
         if (nonLocks.length == 0)

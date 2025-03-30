@@ -3024,6 +3024,7 @@ class PlayState extends MusicBeatSubState
       if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentDifficulty)) Medals.award(ErectDifficulty);
       if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'nightmare') Medals.award(GoldPerfectRatingNightmare);
       if (currentVariation == 'pico' && !PlayStatePlaylist.isStoryMode) Medals.award(FreeplayPicoMix);
+      if (currentVariation == 'pico' && currentSong.id == 'stress') Medals.award(FreeplayStressPico);
 
       Events.logEarnRank(scoreRank.toString());
     }

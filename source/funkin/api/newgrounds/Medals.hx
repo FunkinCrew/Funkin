@@ -68,8 +68,21 @@ class Medals
         #else
         if (medalJSON == null) loadMedalJSON();
         // We have to use a medal image from the game files. We use a Base64 encoded image that NG spits out.
+        // TODO: Wait, don't they give us the medal icon?
+
         var g:FlxGraphic = null;
-        var str:String = medalJSON.filter(function(jsonMedal) return medal == jsonMedal.id)[0].icon;
+
+        var localMedalData:Null<MedalJSON> = medalJSON.filter(function(jsonMedal) {
+          #if FEATURE_NEWGROUNDS_TESTING_MEDALS
+          return medal == jsonMedal.idTest;
+          #else
+          return medal == jsonMedal.id;
+          #end
+        })[0];
+
+        if (localMedalData == null) throw "You forgot to encode a Base64 image for medal: " + medal;
+
+        var str:String = localMedalData.icon;
         // Lime/OpenFL parses it without the included prefix stuff, so we remove it.
         str = str.replace("data:image/png;base64,", "").trim();
         var bitmapData = BitmapData.fromBase64(str, "image/png");
@@ -93,8 +106,25 @@ class Medals
   public static function loadMedalJSON():Void
   {
     var jsonPath = Paths.json('medals');
+
     var jsonString = Assets.getText(jsonPath);
-    medalJSON = cast Json.parse(jsonString);
+
+    var parser = new json2object.JsonParser<Array<MedalJSON>>();
+    parser.ignoreUnknownVariables = false;
+    trace('[NEWGROUNDS] Parsing local medal data...');
+    parser.fromJson(jsonString, jsonPath);
+
+    if (parser.errors.length > 0)
+    {
+      trace('[NEWGROUNDS] Failed to parse local medal data!');
+      for (error in parser.errors)
+        funkin.data.DataError.printError(error);
+      medalJSON = null;
+    }
+    else
+    {
+      medalJSON = parser.value;
+    }
   }
 
   public static function awardStoryLevel(id:String):Void
@@ -131,8 +161,24 @@ class Medals
  */
 typedef MedalJSON =
 {
+  /**
+   * Medal ID to use for release builds
+   */
   var id:Int;
+
+  /**
+   * Medal ID to use for testing builds
+   */
+  var idTest:Int;
+
+  /**
+   * The English name for the medal
+   */
   var name:String;
+
+  /**
+   * The English name for the medal
+   */
   var icon:String;
 }
 
@@ -168,7 +214,7 @@ enum abstract Medal(Int) from Int to Int
   var StoryWeek2 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80900 #else 1000000 #end;
 
   /**
-   * Zeboim Damn Ima Nut
+   * Pico Funny
    * Beat Week 3 in Story Mode (on any difficulty).
    */
   var StoryWeek3 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80901 #else 1000000 #end;
@@ -180,19 +226,19 @@ enum abstract Medal(Int) from Int to Int
   var StoryWeek4 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80902 #else 1000000 #end;
 
   /**
-   * FNF Corruption Mod (real)
+   * Yule Tide Joy
    * Beat Week 5 in Story Mode (on any difficulty).
    */
   var StoryWeek5 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80903 #else 1000000 #end;
 
   /**
-   * The Original .EXE
+   * A Visual Novelty
    * Beat Week 6 in Story Mode (on any difficulty).
    */
   var StoryWeek6 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80904 #else 1000000 #end;
 
   /**
-   * I'm Gonna Beep-Beep a Garbage Truck Into Your Girlfriend's Face!
+   * I <3 JohnnyUtah
    * Beat Week 7 in Story Mode (on any difficulty).
    */
   var StoryWeek7 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80905 #else 1000000 #end;
@@ -204,23 +250,35 @@ enum abstract Medal(Int) from Int to Int
   var StoryWeekend1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80907 #else 1000000 #end;
 
   /**
+   * Stay Funky
+   * Press TAB in Freeplay and unlock your first character.
+   */
+  var CharSelect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 83633 #else 1000000 #end;
+
+  /**
    * A Challenger Appears
    * Beat any Pico remix in Freeplay (on any difficulty).
    */
   var FreeplayPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80910 #else 1000000 #end;
 
   /**
-   * The Sex Update
+   * De-Stressing
+   * Beat Stress (Pico Mix) in Freeplay (on Normal difficulty or higher).
+   */
+  var FreeplayStressPico = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 83629 #else 1000000 #end;
+
+  /**
+   * L
+   * Earn a Loss rating on any song (on any difficulty).
+   */
+  var LossRating = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80915 #else 1000000 #end;
+
+  /**
+   * Getting Freaky
    * Earn a Perfect rating on any song on Hard difficulty or higher.
    * NOTE: Should also be awarded for a Gold Perfect because otherwise that would be annoying.
    */
   var PerfectRatingHard = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80908 #else 1000000 #end;
-
-  /**
-   * Get Ratio'd
-   * Earn a Loss rating on any song (on any difficulty).
-   */
-  var LossRating = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80915 #else 1000000 #end;
 
   /**
    * You Should Drink More Water
@@ -241,7 +299,7 @@ enum abstract Medal(Int) from Int to Int
   var GoldPerfectRatingNightmare = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80912 #else 1000000 #end;
 
   /**
-   * Just Like The Game!
+   * Just like the game!
    * Get freaky on a Friday.
    * NOTE: You must beat at least one song on any difficulty.
    */
