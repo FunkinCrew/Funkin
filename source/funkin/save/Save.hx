@@ -30,6 +30,12 @@ class Save
   static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
   static final SAVE_NAME_LEGACY:String = 'funkin';
 
+  /**
+   * We always use this save slot.
+   * Alter this if you want to use a different save slot.
+   */
+  static final BASE_SAVE_SLOT:Int = 1;
+
   public static var instance(get, never):Save;
   static var _instance:Null<Save> = null;
 
@@ -49,7 +55,12 @@ class Save
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    return loadFromSlot(1);
+    return loadFromSlot(BASE_SAVE_SLOT);
+  }
+
+  public static function clearData():Void
+  {
+    _instance = clearSlot(BASE_SAVE_SLOT);
   }
 
   /**
@@ -973,7 +984,7 @@ class Save
   }
 
   /**
-   * If you set slot to `2`, it will load an independe
+   * If you set slot to `2`, it will load an independent save file from slot 2.
    * @param slot
    */
   static function loadFromSlot(slot:Int):Save
@@ -1013,6 +1024,26 @@ class Save
         FlxG.save.mergeData(gameSave.data, true);
 
         return gameSave;
+    }
+  }
+
+  static function clearSlot(slot:Int):Save
+  {
+    FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
+
+    if (FlxG.save.status != EMPTY)
+    {
+      // Archive the save data just in case.
+      // Not reliable but better than nothing.
+      var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+
+      FlxG.save.erase();
+
+      return new Save();
+    }
+    else
+    {
+      return new Save();
     }
   }
 
