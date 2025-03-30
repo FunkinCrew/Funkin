@@ -253,42 +253,23 @@ class ChartEditorThemeHandler
     var bottomTickY:Float = state.measureTickBitmap.height - (measureTickWidth / 2);
     state.measureTickBitmap.fillRect(new Rectangle(0, bottomTickY, state.measureTickBitmap.width, measureTickWidth / 2), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
 
-    // Draw the beat ticks.
-    var beatTick2Y:Float = state.measureTickBitmap.height * 1 / Conductor.instance.beatsPerMeasure - (beatTickWidth / 2);
-    var beatTick3Y:Float = state.measureTickBitmap.height * 2 / Conductor.instance.beatsPerMeasure - (beatTickWidth / 2);
-    var beatTick4Y:Float = state.measureTickBitmap.height * 3 / Conductor.instance.beatsPerMeasure - (beatTickWidth / 2);
-    var beatTickLength:Float = state.measureTickBitmap.width * 2 / 3;
-    state.measureTickBitmap.fillRect(new Rectangle(0, beatTick2Y, beatTickLength, beatTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, beatTick3Y, beatTickLength, beatTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, beatTick4Y, beatTickLength, beatTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-
-    // Draw the step ticks.
-    // TODO: Make this a loop or something.
-    var stepTick2Y:Float = state.measureTickBitmap.height * 1 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick3Y:Float = state.measureTickBitmap.height * 2 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick4Y:Float = state.measureTickBitmap.height * 3 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick6Y:Float = state.measureTickBitmap.height * 5 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick7Y:Float = state.measureTickBitmap.height * 6 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick8Y:Float = state.measureTickBitmap.height * 7 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick10Y:Float = state.measureTickBitmap.height * 9 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick11Y:Float = state.measureTickBitmap.height * 10 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick12Y:Float = state.measureTickBitmap.height * 11 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick14Y:Float = state.measureTickBitmap.height * 13 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick15Y:Float = state.measureTickBitmap.height * 14 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTick16Y:Float = state.measureTickBitmap.height * 15 / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-    var stepTickLength:Float = state.measureTickBitmap.width * 1 / 3;
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick2Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick3Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick4Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick6Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick7Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick8Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick10Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick11Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick12Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick14Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick15Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.measureTickBitmap.fillRect(new Rectangle(0, stepTick16Y, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    // Draw the beat and step ticks. No need for two seperate loops thankfully.
+    // This'll be fun to update when beat tuplets become functional.
+    for (i in 1...(Conductor.instance.stepsPerMeasure))
+    {
+      if ((i % Constants.STEPS_PER_BEAT) == 0) // If we're on a beat, draw a beat tick.
+      {
+        var beatTickY:Float = state.measureTickBitmap.height * i / Conductor.instance.stepsPerMeasure - (beatTickWidth / 2);
+        var beatTickLength:Float = state.measureTickBitmap.width * 2 / 3;
+        state.measureTickBitmap.fillRect(new Rectangle(0, beatTickY, beatTickLength, beatTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+      }
+      else // Else, draw a step tick.
+      {
+        var stepTickY:Float = state.measureTickBitmap.height * i / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
+        var stepTickLength:Float = state.measureTickBitmap.width * 1 / 3;
+        state.measureTickBitmap.fillRect(new Rectangle(0, stepTickY, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+      }
+    }
   }
 
   /**
@@ -314,23 +295,16 @@ class ChartEditorThemeHandler
     state.offsetTickBitmap.fillRect(new Rectangle(rightTickX, 0, majorTickWidth / 2, majorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
 
     // Draw the minor ticks.
-    var minorTick2X:Float = state.offsetTickBitmap.width * 1 / 10 - (minorTickWidth / 2);
-    var minorTick3X:Float = state.offsetTickBitmap.width * 2 / 10 - (minorTickWidth / 2);
-    var minorTick4X:Float = state.offsetTickBitmap.width * 3 / 10 - (minorTickWidth / 2);
-    var minorTick5X:Float = state.offsetTickBitmap.width * 4 / 10 - (minorTickWidth / 2);
-    var minorTick7X:Float = state.offsetTickBitmap.width * 6 / 10 - (minorTickWidth / 2);
-    var minorTick8X:Float = state.offsetTickBitmap.width * 7 / 10 - (minorTickWidth / 2);
-    var minorTick9X:Float = state.offsetTickBitmap.width * 8 / 10 - (minorTickWidth / 2);
-    var minorTick10X:Float = state.offsetTickBitmap.width * 9 / 10 - (minorTickWidth / 2);
-    var minorTickLength:Float = state.offsetTickBitmap.height * 1 / 3;
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick2X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick3X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick4X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick5X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick7X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick8X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick9X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    state.offsetTickBitmap.fillRect(new Rectangle(minorTick10X, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    for (i in 1...11)
+    {
+      if (i % 5 == 0)
+      {
+        continue;
+      }
+      var minorTickX:Float = state.offsetTickBitmap.width * i / 10 - (minorTickWidth / 2);
+      var minorTickLength:Float = state.offsetTickBitmap.height * 1 / 3;
+      state.offsetTickBitmap.fillRect(new Rectangle(minorTickX, 0, minorTickWidth, minorTickLength), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    }
 
     // Draw the offset ticks.
     // var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT); // 1 grid squares wide.

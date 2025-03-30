@@ -63,31 +63,6 @@ class SerializerUtil
     }
   }
 
-  public static function initSerializer():Void
-  {
-    haxe.Unserializer.DEFAULT_RESOLVER = new FunkinTypeResolver();
-  }
-
-  /**
-   * Serialize a Haxe object using the built-in Serializer.
-   * @param input The object to serialize
-   * @return The serialized object as a string
-   */
-  public static function fromHaxeObject(input:Dynamic):String
-  {
-    return haxe.Serializer.run(input);
-  }
-
-  /**
-   * Convert a serialized Haxe object back into a Haxe object.
-   * @param input The serialized object as a string
-   * @return The deserialized object
-   */
-  public static function toHaxeObject(input:String):Dynamic
-  {
-    return haxe.Unserializer.run(input);
-  }
-
   /**
    * Customize how certain types are serialized when converting to JSON.
    */
@@ -114,27 +89,4 @@ class SerializerUtil
     if (value.build.length > 0) result += '+${value.build}';
     return result;
   }
-}
-
-class FunkinTypeResolver
-{
-  public function new()
-  {
-    // Blank constructor.
-  }
-
-  public function resolveClass(name:String):Class<Dynamic>
-  {
-    if (name == 'Dynamic')
-    {
-      FlxG.log.warn('Found invalid class type in save data, indicates partial save corruption.');
-      return null;
-    }
-    return Type.resolveClass(name);
-  };
-
-  public function resolveEnum(name:String):Enum<Dynamic>
-  {
-    return Type.resolveEnum(name);
-  };
 }

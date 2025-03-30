@@ -901,5 +901,5 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function onSongLoaded(event:SongLoadScriptEvent) {}
 
-  public function onSongRetry(event:ScriptEvent) {}
+  public function onSongRetry(event:SongRetryEvent) {}
 }
