@@ -274,6 +274,14 @@ class GameOverSubState extends MusicBeatSubState
       // PlayState.seenCutscene = false; // old thing...
       if (gameOverMusic != null) gameOverMusic.stop();
 
+      // Stop death quotes immediately.
+      hasPlayedDeathQuote = true;
+      if (deathQuoteSound != null)
+      {
+        deathQuoteSound.stop();
+        deathQuoteSound = null;
+      }
+
       if (isChartingMode)
       {
         this.close();
@@ -344,6 +352,8 @@ class GameOverSubState extends MusicBeatSubState
     super.update(elapsed);
   }
 
+  var deathQuoteSound:Null<FunkinSound> = null;
+
   function playDeathQuote():Void
   {
     if (boyfriend == null) return;
@@ -351,10 +361,16 @@ class GameOverSubState extends MusicBeatSubState
     var deathQuote = boyfriend.getDeathQuote();
     if (deathQuote == null) return;
 
+    if (deathQuoteSound != null)
+    {
+      deathQuoteSound.stop();
+      deathQuoteSound = null;
+    }
+
     // Start music at lower volume
     startDeathMusic(0.2, false);
     boyfriend.playAnimation('deathLoop' + animationSuffix);
-    FunkinSound.playOnce(deathQuote, function() {
+    deathQuoteSound = FunkinSound.playOnce(deathQuote, function() {
       // Once the quote ends, fade in the game over music.
       if (!isEnding && gameOverMusic != null)
       {
@@ -372,6 +388,14 @@ class GameOverSubState extends MusicBeatSubState
     {
       isEnding = true;
       startDeathMusic(1.0, true); // isEnding changes this function's behavior.
+
+      // Stop death quotes immediately.
+      hasPlayedDeathQuote = true;
+      if (deathQuoteSound != null)
+      {
+        deathQuoteSound.stop();
+        deathQuoteSound = null;
+      }
 
       if (PlayState.instance.isMinimalMode || boyfriend == null) {}
       else
