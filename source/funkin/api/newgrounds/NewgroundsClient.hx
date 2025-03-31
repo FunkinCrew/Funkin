@@ -72,7 +72,7 @@ class NewgroundsClient
       #if FEATURE_NEWGROUNDS_AUTOLOGIN
       // Attempt an automatic login.
       trace('[NEWGROUNDS] Attempting new login immediately!');
-      this.login();
+      this.autoLogin();
       #else
       trace('[NEWGROUNDS] Not logged in, you have to login manually!');
       #end
@@ -99,6 +99,32 @@ class NewgroundsClient
     else
     {
       NG.core.requestLogin(onLoginResolved);
+    }
+  }
+
+  public function autoLogin(?onSuccess:Void->Void, ?onError:Void->Void):Void
+  {
+    if (NG.core == null)
+    {
+      FlxG.log.warn("No Newgrounds client initialized! Are your credentials invalid?");
+      return;
+    }
+
+    var dummyPassport:String->Void = function(_) {
+      // just a dummy passport, so we don't create a popup
+      // otherwise `NG.core.requestLogin()` will automatically attempt to open a tab at the beginning of the game
+      // users should go to the Options Menu to login to NG
+      // we cancel the request, so we can call it later
+      NG.core.cancelLoginRequest();
+    };
+
+    if (onSuccess != null && onError != null)
+    {
+      NG.core.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError), dummyPassport);
+    }
+    else
+    {
+      NG.core.requestLogin(onLoginResolved, dummyPassport);
     }
   }
 
