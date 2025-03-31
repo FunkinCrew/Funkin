@@ -240,8 +240,6 @@ enum abstract Leaderboard(Int)
       case "pico":
         switch (songId)
         {
-          case "tutorial":
-            return TutorialPicoMix;
           case "bopeebo":
             return BopeeboPicoMix;
           case "fresh":
@@ -252,32 +250,20 @@ enum abstract Leaderboard(Int)
             return SpookeezPicoMix;
           case "south":
             return SouthPicoMix;
-          case "monster":
-            return MonsterPicoMix;
           case "pico":
             return PicoPicoMix;
           case "philly-nice":
             return PhillyNicePicoMix;
           case "blammed":
             return BlammedPicoMix;
-          case "satin-panties":
-            return SatinPantiesPicoMix;
-          case "high":
-            return HighPicoMix;
-          case "milf":
-            return MILFPicoMix;
           case "cocoa":
             return CocoaPicoMix;
           case "eggnog":
             return EggnogPicoMix;
-          case "winter-horrorland":
-            return WinterHorrorlandPicoMix;
           case "senpai":
             return SenpaiPicoMix;
           case "roses":
             return RosesPicoMix;
-          case "thorns":
-            return ThornsPicoMix;
           case "ugh":
             return UghPicoMix;
           case "guns":
@@ -294,18 +280,12 @@ enum abstract Leaderboard(Int)
             return DarnellBFMix;
           case "litup":
             return LitUpBFMix;
-          case "2hot":
-            return TwoHotBFMix;
-          case "blazin":
-            return BlazinBFMix;
           default:
             return Unknown;
         }
       case "erect":
         switch (songId)
         {
-          case "tutorial":
-            return TutorialErect;
           case "bopeebo":
             return BopeeboErect;
           case "fresh":
@@ -316,8 +296,6 @@ enum abstract Leaderboard(Int)
             return SpookeezErect;
           case "south":
             return SouthErect;
-          case "monster":
-            return MonsterErect;
           case "pico":
             return PicoErect;
           case "philly-nice":
@@ -328,14 +306,10 @@ enum abstract Leaderboard(Int)
             return SatinPantiesErect;
           case "high":
             return HighErect;
-          case "milf":
-            return MILFErect;
           case "cocoa":
             return CocoaErect;
           case "eggnog":
             return EggnogErect;
-          case "winter-horrorland":
-            return WinterHorrorlandErect;
           case "senpai":
             return SenpaiErect;
           case "roses":
@@ -344,18 +318,8 @@ enum abstract Leaderboard(Int)
             return ThornsErect;
           case "ugh":
             return UghErect;
-          case "guns":
-            return GunsErect;
-          case "stress":
-            return StressErect;
           case "darnell":
             return DarnellErect;
-          case "litup":
-            return LitUpErect;
-          case "2hot":
-            return TwoHotErect;
-          case "blazin":
-            return BlazinErect;
           default:
             return Unknown;
         }
