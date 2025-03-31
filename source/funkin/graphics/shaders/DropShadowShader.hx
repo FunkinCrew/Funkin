@@ -354,7 +354,7 @@ class DropShadowShader extends FlxShader
 
         float intensity = dot(col.rgb, vec3(0.3098, 0.6078, 0.0823));
 
-        intensity = maskIntensity > 0.0 ? intensity = float(intensity > thr2) : intensity = float(intensity > thr);
+        intensity = maskIntensity > 0.0 ? float(intensity > thr2) : float(intensity > thr);
 
         return intensity;
       }
