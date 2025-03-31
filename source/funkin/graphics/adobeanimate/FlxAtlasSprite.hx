@@ -61,8 +61,6 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
     }
 
-    onAnimationComplete.add(cleanupAnimation);
-
     // This defaults the sprite to play the first animation in the atlas,
     // then pauses it. This ensures symbols are intialized properly.
     this.anim.play('');
@@ -196,6 +194,8 @@ class FlxAtlasSprite extends FlxAnimate
       goToFrameLabel(id);
       fr = anim.getFrameLabel(id);
       anim.curFrame += startFrame;
+      // Resume animation if it's paused.
+      anim.resume();
     }
   }
 
@@ -206,13 +206,10 @@ class FlxAtlasSprite extends FlxAnimate
 
   /**
    * Returns true if the animation has finished playing.
-   * Never true if animation is configured to loop.
    * @return Whether the animation has finished playing.
    */
   public function isAnimationFinished():Bool
   {
-    if (!looping) return false;
-
     return isLoopComplete();
   }
 
@@ -226,7 +223,15 @@ class FlxAtlasSprite extends FlxAnimate
     if (this.anim == null) return false;
     if (!this.anim.isPlaying) return false;
 
-    if (fr != null) return (anim.reversed && anim.curFrame < fr.index || !anim.reversed && anim.curFrame >= (fr.index + fr.duration));
+    if (fr != null)
+    {
+      var curFrame = anim.curFrame;
+
+      var startFrame = fr.index;
+      var endFrame = (fr.index + fr.duration);
+
+      return (anim.reversed) ? (curFrame < startFrame) : (curFrame >= endFrame);
+    }
 
     return (anim.reversed && anim.curFrame == 0 || !(anim.reversed) && (anim.curFrame) >= (anim.length - 1));
   }
@@ -297,17 +302,18 @@ class FlxAtlasSprite extends FlxAnimate
       if (isLoopComplete())
       {
         anim.pause();
-        _onAnimationComplete();
 
         if (looping)
         {
           anim.curFrame = (fr != null) ? fr.index : 0;
           anim.resume();
+          // _onAnimationComplete not called since this is a loop.
         }
         else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
-          cleanupAnimation("");
+          cleanupAnimation(currentAnimation ?? "");
+          _onAnimationComplete();
         }
       }
     }

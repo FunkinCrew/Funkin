@@ -75,7 +75,11 @@ class AlbumRoll extends FlxSpriteGroup
     // Play the idle animation for the current album.
     if (animName != "idle")
     {
-      newAlbumArt.playAnimation('idle', true);
+      newAlbumArt.playAnimation('idle', true, false, true);
+    }
+    else
+    {
+      newAlbumArt.cleanupAnimation('idle');
     }
   }
 
@@ -213,7 +217,7 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);
     add(albumTitle);
 
-    albumTitle.animation.finishCallback = (function(name) {
+    albumTitle.animation.onFinish.add(function(name) {
       if (name == 'switch') albumTitle.animation.play('idle');
     });
     albumTitle.animation.play('idle');
