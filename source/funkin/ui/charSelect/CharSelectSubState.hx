@@ -425,6 +425,7 @@ class CharSelectSubState extends MusicBeatSubState
     else
     {
       #if FEATURE_NEWGROUNDS
+      // Make the character unlock medal retroactive.
       if (availableChars.size() > 1) Medals.award(CharSelect);
       #end
 
@@ -570,6 +571,7 @@ class CharSelectSubState extends MusicBeatSubState
         });
 
         #if FEATURE_NEWGROUNDS
+        // Grant the medal when the player unlocks a character.
         Medals.award(CharSelect);
         #end
 

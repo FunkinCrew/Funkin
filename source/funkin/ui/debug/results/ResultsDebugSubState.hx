@@ -126,6 +126,8 @@ class ResultsDebugSubState extends MusicBeatSubState
         characterId: "bf",
         difficultyId: "nightmare",
         isNewHighscore: true,
+        isPracticeMode: true, // Invalidates achievements/scores.
+        isBotPlayMode: true, // Invalidates achievements/scores.
         scoreData:
           {
             score: 1_234_567,
