@@ -151,6 +151,14 @@ enum abstract ScriptEventType(String) from String to String
    */
   var GAME_OVER = 'GAME_OVER';
 
+
+  /**
+   * Called after the game over screen triggers, but before the death loop animation plays.
+   *
+   * This event is cancelable.
+   */
+  var GAME_OVER_LOOP = 'GAME_OVER_LOOP';
+
   /**
    * Called after the player presses a key to restart the game.
    * This can happen from the pause menu or the game over screen.
