@@ -12,6 +12,7 @@ import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import haxe.Json;
 import flixel.graphics.frames.FlxFrame;
+import openfl.utils.Assets;
 
 class CharacterDataParser
 {
@@ -281,40 +282,73 @@ class CharacterDataParser
   }
 
   /**
+   * Fetches the character's pixel icon data.
+   * @param char The character to load.
+   * @return The pixel icon data, or null if validation failed.
+   */
+  public static function getCharPixelIconData(char:String):Null<PixelIconData>
+  {
+    if (char == null || char == '' || !characterCache.exists(char))
+    {
+      trace('Failed to fetch pixel icon, character not found in cache: ${char}');
+      return null;
+    }
+
+    var charData:CharacterData = characterCache.get(char);
+
+    if (charData != null && charData.pixelIcon != null)
+    {
+      return charData.pixelIcon;
+    }
+    else
+    {
+      trace('Pixel icon data not found for character: ${char}');
+      return null;
+    }
+  }
+
+  /**
    * Returns the idle frame of a character.
    */
   public static function getCharPixelIconAsset(char:String):FlxFrame
   {
-    var charPath:String = "freeplay/icons/";
+    if (char == null || char == '' || !characterCache.exists(char))
+    {
+      trace('Failed to fetch pixel icon, character not found in cache: ${char}');
+      return null;
+    }
+
+    var charData:CharacterData = characterCache.get(char);
+    var charPath:String = "freeplay/icons/" + charData.pixelIcon.id + "pixel";
 
     // FunkinCrew please dont skin me alive for copying pixelated icon and changing it a tiny bit
-    switch (char)
-    {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
-        charPath += "bfpixel";
-      case "monster-christmas":
-        charPath += "monsterpixel";
-      case "mom" | "mom-car":
-        charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
-        charPath += "picopixel";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
-        charPath += "gfpixel";
-      case "dad":
-        charPath += "dadpixel";
-      case "darnell-blazin":
-        charPath += "darnellpixel";
-      case "senpai-angry":
-        charPath += "senpaipixel";
-      case "spooky-dark":
-        charPath += "spookypixel";
-      case "tankman-atlas":
-        charPath += "tankmanpixel";
-      case "pico-christmas" | "pico-dark":
-        charPath += "picopixel";
-      default:
-        charPath += '${char}pixel';
-    }
+    // switch (char)
+    // {
+    //   case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
+    //     charPath += "bfpixel";
+    //   case "monster-christmas":
+    //     charPath += "monsterpixel";
+    //   case "mom" | "mom-car":
+    //     charPath += "mommypixel";
+    //   case "pico-blazin" | "pico-playable" | "pico-speaker":
+    //     charPath += "picopixel";
+    //   case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
+    //     charPath += "gfpixel";
+    //   case "dad":
+    //     charPath += "dadpixel";
+    //   case "darnell-blazin":
+    //     charPath += "darnellpixel";
+    //   case "senpai-angry":
+    //     charPath += "senpaipixel";
+    //   case "spooky-dark":
+    //     charPath += "spookypixel";
+    //   case "tankman-atlas":
+    //     charPath += "tankmanpixel";
+    //   case "pico-christmas" | "pico-dark":
+    //     charPath += "picopixel";
+    //   default:
+    //     charPath += '${char}pixel';
+    // }
 
     if (!Assets.exists(Paths.image(charPath)))
     {
@@ -433,6 +467,7 @@ class CharacterDataParser
   public static final DEFAULT_NAME:String = 'Untitled Character';
   public static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
   public static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
+  public static final DEFAULT_PIXELICON_ORIGIN_OFFSETS:Array<Int> = [0, 0];
   public static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   public static final DEFAULT_SCALE:Float = 1;
   public static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -522,6 +557,31 @@ class CharacterDataParser
     if (input.healthIcon.offsets == null)
     {
       input.healthIcon.offsets = DEFAULT_OFFSETS;
+    }
+
+    if (input.pixelIcon == null)
+    {
+      input.pixelIcon =
+        {
+          id: null,
+          flipX: null,
+          originOffsets: null
+        };
+    }
+
+    if (input.pixelIcon.id == null)
+    {
+      input.pixelIcon.id = id;
+    }
+
+    if (input.pixelIcon.flipX == null)
+    {
+      input.pixelIcon.flipX = DEFAULT_FLIPX;
+    }
+
+    if (input.pixelIcon.originOffsets == null)
+    {
+      input.pixelIcon.originOffsets = DEFAULT_PIXELICON_ORIGIN_OFFSETS;
     }
 
     if (input.startingAnimation == null)
@@ -680,6 +740,11 @@ typedef CharacterData =
    */
   var healthIcon:Null<HealthIconData>;
 
+  /**
+   * Optional data about the pixel icon for the character.
+   */
+  var pixelIcon:Null<PixelIconData>;
+
   var death:Null<DeathData>;
 
   /**
@@ -775,6 +840,30 @@ typedef HealthIconData =
    * @default [0, 25]
    */
   var offsets:Null<Array<Float>>;
+}
+
+/**
+ * The JSON data schema used to define the pixel icon for a character.
+ */
+typedef PixelIconData =
+{
+  /**
+   * The ID to use for the pixel icon.
+   * @default The character's ID
+   */
+  var id:Null<String>;
+
+  /**
+   * Whether to flip the pixel icon horizontally.
+   * @default false
+   */
+  var flipX:Null<Bool>;
+
+  /**
+   * The origin offsets of the pixel icon, in pixels.
+   * @default [0, 0]
+   */
+  var originOffsets:Null<Array<Int>>;
 }
 
 typedef DeathData =

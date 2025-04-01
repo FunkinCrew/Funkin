@@ -2,6 +2,8 @@ package funkin.ui;
 
 import flixel.FlxSprite;
 import funkin.graphics.FlxFilteredSprite;
+import funkin.play.character.CharacterData;
+import funkin.play.character.CharacterData.CharacterDataParser;
 
 /**
  * The icon that gets used for Freeplay capsules and char select
@@ -12,6 +14,7 @@ class PixelatedIcon extends FlxFilteredSprite
   public function new(x:Float, y:Float)
   {
     super(x, y);
+
     this.makeGraphic(32, 32, 0x00000000);
     this.antialiasing = false;
     this.active = false;
@@ -20,32 +23,15 @@ class PixelatedIcon extends FlxFilteredSprite
   public function setCharacter(char:String):Void
   {
     var charPath:String = "freeplay/icons/";
+    var charPixelIconData = CharacterDataParser.getCharPixelIconData(char);
 
-    switch (char)
+    if (charPixelIconData == null)
     {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
-        charPath += "bfpixel";
-      case "monster-christmas":
-        charPath += "monsterpixel";
-      case "mom" | "mom-car":
-        charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
-        charPath += "picopixel";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
-        charPath += "gfpixel";
-      case "dad":
-        charPath += "dadpixel";
-      case "darnell-blazin":
-        charPath += "darnellpixel";
-      case "senpai-angry":
-        charPath += "senpaipixel";
-      case "spooky-dark":
-        charPath += "spookypixel";
-      case "tankman-atlas":
-        charPath += "tankmanpixel";
-      default:
-        charPath += '${char}pixel';
+      trace('[WARN] Character ${char} has no pixel icon data.');
+      return;
     }
+
+    charPath += '${charPixelIconData.id}pixel';
 
     if (!openfl.utils.Assets.exists(Paths.image(charPath)))
     {
@@ -71,13 +57,14 @@ class PixelatedIcon extends FlxFilteredSprite
 
     this.scale.x = this.scale.y = 2;
 
-    switch (char)
-    {
-      case 'parents-christmas':
-        this.origin.x = 140;
-      default:
-        this.origin.x = 100;
-    }
+    // Set to 100 for default position
+    this.origin.x = 100;
+
+    // Add the pixel icon origin with offsets for position adjustments
+    this.origin.x += charPixelIconData.originOffsets[0];
+    this.origin.y += charPixelIconData.originOffsets[1];
+    // Set whether or not to flip the pixel icon
+    this.flipX = charPixelIconData.flipX;
 
     if (isAnimated)
     {
