@@ -308,7 +308,9 @@ class CharacterDataParser
   }
 
   /**
-   * Returns the idle frame of a character.
+   * Fetches the character's pixel icon asset.
+   * @param char The character to load.
+   * @return The pixel icon frame, or null if validation failed.
    */
   public static function getCharPixelIconAsset(char:String):FlxFrame
   {
@@ -320,35 +322,6 @@ class CharacterDataParser
 
     var charData:CharacterData = characterCache.get(char);
     var charPath:String = "freeplay/icons/" + charData.pixelIcon.id + "pixel";
-
-    // FunkinCrew please dont skin me alive for copying pixelated icon and changing it a tiny bit
-    // switch (char)
-    // {
-    //   case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
-    //     charPath += "bfpixel";
-    //   case "monster-christmas":
-    //     charPath += "monsterpixel";
-    //   case "mom" | "mom-car":
-    //     charPath += "mommypixel";
-    //   case "pico-blazin" | "pico-playable" | "pico-speaker":
-    //     charPath += "picopixel";
-    //   case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
-    //     charPath += "gfpixel";
-    //   case "dad":
-    //     charPath += "dadpixel";
-    //   case "darnell-blazin":
-    //     charPath += "darnellpixel";
-    //   case "senpai-angry":
-    //     charPath += "senpaipixel";
-    //   case "spooky-dark":
-    //     charPath += "spookypixel";
-    //   case "tankman-atlas":
-    //     charPath += "tankmanpixel";
-    //   case "pico-christmas" | "pico-dark":
-    //     charPath += "picopixel";
-    //   default:
-    //     charPath += '${char}pixel';
-    // }
 
     if (!Assets.exists(Paths.image(charPath)))
     {
