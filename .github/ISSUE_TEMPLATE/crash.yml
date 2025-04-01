@@ -61,7 +61,7 @@ body:
   - type: textarea
     attributes:
       label: Description
-      description: Include screenshots or videos of the crash happening. Provide as much detail as you can.
+      description: Include screenshots or videos of the crash happening. Provide as much detail as you can. 
       placeholder: Describe the crash here...
     validations:
       required: true
