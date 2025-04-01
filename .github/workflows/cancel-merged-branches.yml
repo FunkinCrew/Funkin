@@ -1,0 +1,38 @@
+name: Cancel queued workflows on PR merge
+
+on:
+  pull_request:
+    types:
+    - closed
+
+jobs:
+
+  cancel_stuff:
+    if: github.event.pull_request.merged == true
+    runs-on: build-set
+    permissions:
+      actions: write
+
+    steps:
+    - name: Cancel queued workflows for ${{ github.event.pull_request.head.ref }}
+      uses: actions/github-script@v7
+      with:
+        result-encoding: string
+        retries: 3
+        script: |
+          let branch_workflows = await github.rest.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: "build-shit.yml",
+            status: "queued",
+            branch: "${{ github.event.pull_request.head.ref }}"
+          });
+          let runs = branch_workflows.data.workflow_runs;
+          runs.forEach((run) => {
+            github.rest.actions.cancelWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: run.id
+            });
+          });
+          console.log(runs);

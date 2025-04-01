@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "name": "Test2",
+  "author": "Eric",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "shared:coolstuff",
+      "scale": 1.8,
+      "data": {
+        "left": { "prefix": "noteLeft1" },
+        "down": { "prefix": "noteDown3" },
+        "up": { "prefix": "noteUp2" },
+        "right": { "prefix": "noteRight4" }
+      }
+    }
+  }
+}

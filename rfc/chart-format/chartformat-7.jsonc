@@ -1,0 +1,1300 @@
+/**********
+ * This is the seventh iteration of a chart format proposal workshopped by Eric and Emma.
+ * 
+ * The chart format is split into several files.
+ */
+
+/**********
+ * Playable: `gameplay/songs/<id>/<id>_metadata.json`
+ * Non-playable: `core/music/<SONGNAME>_metadata.json`
+ * 
+ * This is the first file the game searches for when loading a song.
+ * It provides important information such as readable name and credits,
+ * information on how to read the song such as BPM and time signatures,
+ * and custom data used by mods.
+ *
+ * This file is mandatory for playable songs,
+ * and is optional (but useful) for non-playable songs such as menu music.
+ */
+{
+	/**
+	 * The file version. 
+	 * Patch version increments (2.0.x) should only be used for bug fixes.
+	 * Minor version increments (2.x.0) should be used for new features.
+	 * Major version increments (x.0.0) should be used for breaking changes,
+	 *	 and should include a migration function such that older charts can still be used.
+	 * 
+	 * An additional suffix (2.0.0-custom) should be used if the chart uses additional data
+	 *	 or changes that can only be utilized by a mod or engine.
+	 * The base game will ignore this suffix, and the chart ought to function as expected in this case.
+	 *	 Other engines may choose to either accomodate or ignore the additional suffix.
+	 */
+	"version": "2.0.0",
+
+	/**
+	 * The canonical name of the song in question and its artist.
+	 * This is only supposed to be used to show the proper name of the song, and not for anything to do with loading files!
+	 * In the future, this will need to be changed to a localization key.
+	 */
+	"songName": "Philly Nice",
+	"artist": "Kawai Sprite",
+
+	/**
+	 * timeFormat specifies what kind of timestamps will be used by timeChanges, events, and notes (see chart.json).
+	 * The supported formats are `ticks, ms, and float`. `ticks` will be used in this document for demonstration.
+	 * 
+	 * ticks:
+	 *	If the chosen format is `ticks`, an extra value called `divisions` needs to be specified as well.
+	 * 
+	 * float:
+	 *	If the chosen format is `float`, timestamps are based around quarter notes.
+	 *	A timestamp of 4.0 is equal to one whole note.
+	 * 
+	 * ms:
+	 *	If the chosen format is `ms`, timestamps are based on hard millisecond time.
+	 *	This means notes are entirely independent of BPM, and cannot be exactly converted from one to another if needed.
+	 * 
+	 * Every format is converted to `ms` when the song is loaded in for playing.
+	 * These options mostly exist to allow more flexibility while creating a chart.
+	 * 
+	 * If the song is not playable, and there are no BPM or time signature changes,
+	 * this value has no effect and can be excluded.
+	 * @default "ms"
+	 */
+	"timeFormat": "ticks",
+	"divisions": 96,
+
+	/**
+	 * timeChanges is an array of objects that specify changes in BPM and time signature. It should always be sorted by `t`.
+	 * 
+	 * The first element in the list is used to initialize the BPM and time signature, and its `t` is ignored.
+	 * To ensure that it's at the top of the list, the first element should ideally have a `t` of 0 or below.
+	 * 
+	 * - t: Timestamp in specified `timeFormat`.
+	 * - b: Time in beats (int). The game will calculate further beat values based on this one, so it can do it in a simple linear fashion.
+	 * - bpm: Quarter notes per minute (float). Cannot be empty in the first element of the list, but otherwise it's optional,
+	 *		and defaults to the value of the previous element.
+	 * - n: Time signature numerator (int). Optional, defaults to 4.
+	 * - d: Time signature denominator (int). Optional, defaults to 4. Should only ever be a power of two.
+	 * - bt: Beat tuplets (Array<int> or int). This defines how many steps each beat is divided into.
+	 *		It can either be an array of length `n` (see above) or a single integer number. Optional, defaults to 4.
+	 */
+	"timeChanges": [
+		{"t": -1, "b": 0, "bpm": 175, "n": 4, "d": 4, "bt": [4, 4, 4, 4]}
+	],
+
+	/**
+	 * Whether the song should loop or not. Only relevant for non-playable songs.
+	 * TODO: Add properties for loopStart and loopEnd, once Flixel supports this functionality
+	 */
+	"loop": false,
+
+	/**
+	 * playData contains any information that is ONLY relevant to playable songs.
+	 * It is therefore excluded when the metadata file is describing a non-playable song.
+	 * 
+	 * The metadata file should include any information that is needed by the game before loading the chart,
+	 * such as available difficulties and the characters/stages used.
+	 */
+	"playData": {
+		/**
+		 * Informs the game that there is a secondary metadata/chart file pair for this song.
+		 *
+		 * For example, with the song variation `erect`, the game would search for
+		 * `data/songs/<id>/erect_metadata.json` and load it, and later load `data/songs/<id>/erect_chart.json` if relevant.
+		 * 
+		 * Any difficulties defined in the other metadata files will use
+		 * the secondary file's values for `playableChars`, `stage`, etc.
+		 *
+		 * Additionally, the audio files that the game loads for the instrumental and vocals
+		 * will also change, from `songs/<id>/Inst.ogg` to `songs/<id>/<variation>/Inst.ogg`.
+		 */
+		 "songVariations": ["erect"],
+		
+		/**
+		 * The available difficulties for this song.
+		 * The game should not allow attempting to load difficulties that are not specified in this array.
+		 * 
+		 * Any custom difficulties should automatically work.
+		 */
+		"difficulties": ["easy", "normal", "hard"],
+
+		/**
+		 * The list of allowed playable characters, for this song and set of difficulties.
+		 * The keys define the set of playable characters,
+		 * with the values definining what other characters are to be loaded alongside them.
+		 * If no character or `null` is given, there will be no character loaded for that specific role.
+		 * 
+		 * - g: The supporting character (ex. gf).
+		 * - o: The opponent character.
+		 * - i: The instrumental track to use. Default is used if not specified.
+		 */
+		"playableChars": {
+			"bf": {"g": "gf", "o": "pico"},
+			"pico": { "g": "nene", "o": "bf", "i": "Pico"},
+			"tankman": { "o": "pico", "f": false}
+		},
+
+		/**
+		 * The stage this song is played on. See `data/stages/`.
+		 * This information is relevant to the loading state, so stage assets can reliably be loaded ahead of time.
+		 * @default "stage"
+		 */
+		"stage": "phillyTrain",
+
+		/**
+		 * The note skin used by the song.
+		 * Noteskin would have its own format, which also specifies the number of notes on the strumline.
+		 * @default "default"
+		 */
+		"noteSkin": "default"
+
+		/**
+		 * Additional information for use in menus can be added here as needed.
+		 * TODO: How do we allow mods to access this info?
+		 */
+	},
+	// Not used by anything, but just a note to keep this value free so you can keep track of tool versions to help with troubleshooting.
+	"generatedBy": "FNF SongConverter v69"
+}
+
+/*****
+ * `data/songs/<id>/chart.json`
+ * This is the file which contains the actual chart data, as loaded and used for gameplay.
+ */
+{
+	/**
+	 * The file version. See above for more information.
+	 */
+	"version": "2.0.0",
+
+	/**
+	 * The scroll speed used for each difficulty.
+	 * scrollSpeed can be one of the following:
+	 * - A single number; the chosen scroll speed will be used for all difficulties in this chart file.
+	 * - An object; the keys of the object are the difficulties, and the values are the scroll speeds.
+	 *	 The "default" key is also supported, and will be used if no scroll speed is specified for a specific difficulty.
+	 */
+	"scrollSpeed": {
+		"easy": 1,
+		"normal": 1.3,
+		"hard": 2,
+		"default": 1.3
+	},
+
+	/**
+	 * The list of song events in this chart.
+	 * 
+	 * Song events represent behavior which occurs at a specific time in the song.
+	 * - t: A number providing timestamp at which the event triggers, in the `timeFormat` specified in the metadata file.
+	 * - e: A string specifying the event type. See below for more info.
+	 * - v: The (optional) value for this event. Its type depends on the associated event (it could be a number, bool, string, array, object...)
+	 * 
+     * This list is assumed to be in timestamp order, and unexpected behavior may occur if it is not.
+     *
+	 * This list will be iterated through before the song is loaded, allowing for modules to mutate them before the song starts.
+	 * It also serves to allow for pre-loading certain assets that may be added to the game mid-song through events.
+	 *
+	 * Many event types will be supported, all with the goal of keeping the game's logic dynamic and synchronized with the song.
+	 * Common actions (such as triggering a specific animation at a certain time in the song) should be supported through this mechanism,
+	 * without having to create any additional scripts.
+	 * 
+	 * Several possible ideas for event types include:
+	 * - "FocusCamera": Sets which character the camera is currently focused on.
+	 *	 This would fully replace "mustHitSection", which is great because it drives me insane.
+	 * - "PlayAnimation": Forces a character to play a specific animation.
+	 * - "SetIdleSuffix": Sets the suffix to be added to a character's idle animation.
+	 *	 For example, if the value is "-alt", the character will play the "idle-alt" or "danceLeft-alt" animations, as appropriate.
+	 * - "SetScrollSpeed": Multiply the current difficulty's scroll speed by the given value.
+	 *	 For example, if this difficulty has a scroll speed of 1.3, and the event specifies a value of 1.5, the scroll speed will be set to 1.95.
+	 * - "ScriptEvent": Fires a script event, which is received by all scripts, including character, stage, song, and module scripts.
+	 *	 This should be more than sufficient for mods to implement custom events.
+	 */
+	"events": [
+		{"t":0,"e":"FocusCamera","v":1},
+		{"t":2304,"e":"FocusCamera","v":0},
+		{"t":3840,"e":"FocusCamera","v":1},
+		{"t":5376,"e":"FocusCamera","v":0},
+		{"t":6912,"e":"FocusCamera","v":1},
+		{"t":8448,"e":"FocusCamera","v":0},
+		{"t":9984,"e":"FocusCamera","v":1},
+		{"t":11520,"e":"FocusCamera","v":0},
+		{"t":13056,"e":"FocusCamera","v":1},
+		{"t":14592,"e":"FocusCamera","v":0},
+		{"t":16128,"e":"FocusCamera","v":1},
+		{"t":17664,"e":"FocusCamera","v":0},
+		{"t":19200,"e":"FocusCamera","v":1},
+		{"t":20736,"e":"FocusCamera","v":0},
+		{"t":22272,"e":"FocusCamera","v":1},
+		{"t":23808,"e":"FocusCamera","v":0}
+	],
+
+	/**
+	 * The actual playable charts for each difficulty.
+	 * The keys are the difficulty names, and the values are arrays of NoteData objects.
+	 * Notes are key/value objects, rather than arrays, to allow for easier manipulation.
+	 * Each difficulty's chart is assumed to be in timestamp order, and unexpected behavior may occur if it is not.
+	 * Note that optional keys should be scrubbed to save space.
+	 * 
+	 * - t: Timestamp in the timeFormat specified in the metadata file.
+	 * - d: Index on the strumline (i.e. direction).
+	 *			The `strumlineSize` value is determined by the song's `noteSkin`.
+	 *			Performing `floor(d / strumlineSize)` specifies which strumline the note appears on.
+	 *			(with 0 being the player, 1 being the opponent, etc.).
+	 *			Performing `d % strumlineSize` specifies the actual note direction (index) on the strumline.
+	 * - l: Hold length in specified timeFormat. If none is given, no sustain trail is created.
+	 * - k: Kind of this note. If unspecified, defaults to `"normal"`.
+	 *			This can allow the note to either include custom behavior defined in a module script,
+	 *			or have a custom appearance defined by the noteSkin (or both).
+	 * - el: Editor layer (index) which this note is placed on.
+	 *			Optional, defaults to 0.
+	 * 			The user can use the UI to toggle visibility of notes placed on different layers.
+	 * - ep: Editor pattern child note.
+	 * 			Optional.
+	 *          If specified, this note is in the chart because it is part of a placed pattern.
+	 *          The value is the ID of the pattern the note was copied from.
+	 *          The final chart should be able to be fully recreated by deleting all notes with non-empty `ep`,
+	 *          then applying the pattern placement data from the `editor` object.
+	 */
+	"notes": {
+		"easy": [
+			{"t":816,"d":6},
+			{"t":960,"d":5,"l":72},
+			{"t":1056,"d":7,"l":48},
+			{"t":1200,"d":6},
+			{"t":1344,"d":5,"l":72},
+			{"t":1440,"d":7,"l":48},
+			{"t":1584,"d":6},
+			{"t":1728,"d":5,"l":72},
+			{"t":1824,"d":7,"l":48},
+			{"t":1920,"d":4},
+			{"t":2016,"d":6},
+			{"t":2112,"d":6},
+			{"t":2208,"d":4},
+			{"t":2352,"d":2},
+			{"t":2496,"d":1,"l":72},
+			{"t":2592,"d":3,"l":48},
+			{"t":2736,"d":2},
+			{"t":2880,"d":1,"l":72},
+			{"t":2976,"d":3,"l":48},
+			{"t":3120,"d":2},
+			{"t":3264,"d":1,"l":72},
+			{"t":3360,"d":3,"l":48},
+			{"t":3456,"d":0},
+			{"t":3552,"d":2},
+			{"t":3648,"d":2},
+			{"t":3744,"d":0},
+			{"t":3936,"d":6},
+			{"t":4032,"d":4},
+			{"t":4320,"d":7},
+			{"t":4416,"d":6},
+			{"t":4560,"d":5},
+			{"t":4704,"d":7},
+			{"t":4800,"d":4},
+			{"t":4896,"d":7},
+			{"t":4992,"d":7},
+			{"t":5088,"d":5},
+			{"t":5184,"d":7},
+			{"t":5472,"d":2},
+			{"t":5568,"d":0},
+			{"t":5856,"d":3},
+			{"t":5952,"d":2},
+			{"t":6096,"d":1},
+			{"t":6240,"d":3},
+			{"t":6336,"d":0},
+			{"t":6432,"d":3},
+			{"t":6528,"d":3},
+			{"t":6624,"d":1},
+			{"t":6720,"d":3},
+			{"t":6912,"d":6},
+			{"t":7104,"d":4},
+			{"t":7200,"d":7},
+			{"t":7392,"d":7},
+			{"t":7488,"d":6},
+			{"t":7632,"d":5},
+			{"t":7776,"d":7},
+			{"t":7872,"d":4},
+			{"t":7968,"d":7},
+			{"t":8064,"d":7},
+			{"t":8160,"d":5},
+			{"t":8256,"d":7},
+			{"t":8448,"d":2},
+			{"t":8640,"d":0},
+			{"t":8736,"d":3},
+			{"t":8928,"d":3},
+			{"t":9024,"d":2},
+			{"t":9168,"d":1},
+			{"t":9312,"d":3},
+			{"t":9408,"d":0},
+			{"t":9504,"d":3},
+			{"t":9600,"d":3},
+			{"t":9696,"d":1},
+			{"t":9792,"d":3},
+			{"t":9984,"d":6},
+			{"t":10176,"d":6},
+			{"t":10272,"d":4},
+			{"t":10368,"d":6},
+			{"t":10560,"d":6},
+			{"t":10656,"d":4},
+			{"t":10752,"d":6},
+			{"t":10944,"d":6},
+			{"t":11040,"d":4},
+			{"t":11136,"d":6},
+			{"t":11328,"d":6},
+			{"t":11424,"d":4},
+			{"t":11520,"d":2},
+			{"t":11712,"d":2},
+			{"t":11808,"d":0},
+			{"t":11904,"d":2},
+			{"t":12096,"d":2},
+			{"t":12192,"d":0},
+			{"t":12288,"d":2},
+			{"t":12480,"d":2},
+			{"t":12576,"d":0},
+			{"t":12672,"d":2},
+			{"t":12864,"d":2},
+			{"t":12960,"d":0},
+			{"t":13056,"d":6},
+			{"t":13248,"d":6},
+			{"t":13344,"d":4},
+			{"t":13440,"d":6},
+			{"t":13632,"d":6},
+			{"t":13728,"d":4},
+			{"t":13824,"d":6},
+			{"t":14016,"d":6},
+			{"t":14112,"d":4},
+			{"t":14208,"d":7},
+			{"t":14400,"d":6},
+			{"t":14496,"d":4},
+			{"t":14592,"d":2},
+			{"t":14784,"d":2},
+			{"t":14880,"d":0},
+			{"t":14976,"d":2},
+			{"t":15168,"d":2},
+			{"t":15264,"d":0},
+			{"t":15360,"d":2},
+			{"t":15552,"d":2},
+			{"t":15648,"d":0},
+			{"t":15744,"d":3},
+			{"t":15936,"d":2},
+			{"t":16032,"d":0},
+			{"t":16128,"d":7},
+			{"t":16320,"d":6},
+			{"t":16512,"d":6},
+			{"t":16608,"d":7},
+			{"t":16704,"d":6},
+			{"t":16896,"d":7},
+			{"t":17088,"d":6},
+			{"t":17232,"d":4},
+			{"t":17280,"d":6},
+			{"t":17376,"d":4},
+			{"t":17472,"d":6},
+			{"t":17568,"d":4},
+			{"t":17664,"d":3},
+			{"t":17856,"d":2},
+			{"t":18048,"d":2},
+			{"t":18144,"d":3},
+			{"t":18240,"d":2},
+			{"t":18432,"d":3},
+			{"t":18624,"d":2},
+			{"t":18768,"d":0},
+			{"t":18816,"d":2},
+			{"t":18912,"d":0},
+			{"t":19008,"d":2},
+			{"t":19104,"d":0},
+			{"t":19200,"d":6},
+			{"t":19392,"d":6},
+			{"t":19584,"d":4},
+			{"t":19776,"d":6},
+			{"t":19968,"d":7},
+			{"t":20160,"d":6},
+			{"t":20256,"d":4},
+			{"t":20352,"d":7},
+			{"t":20544,"d":6},
+			{"t":20640,"d":4},
+			{"t":20736,"d":2},
+			{"t":20928,"d":2},
+			{"t":21120,"d":0},
+			{"t":21312,"d":2},
+			{"t":21504,"d":3},
+			{"t":21696,"d":2},
+			{"t":21792,"d":0},
+			{"t":21888,"d":3},
+			{"t":22080,"d":2},
+			{"t":22176,"d":0},
+			{"t":22272,"d":6},
+			{"t":22464,"d":6},
+			{"t":22560,"d":4},
+			{"t":22656,"d":6},
+			{"t":22848,"d":6},
+			{"t":22944,"d":4},
+			{"t":23040,"d":6},
+			{"t":23232,"d":6},
+			{"t":23328,"d":4},
+			{"t":23424,"d":7},
+			{"t":23616,"d":6},
+			{"t":23712,"d":4},
+			{"t":23808,"d":2},
+			{"t":24000,"d":2},
+			{"t":24096,"d":0},
+			{"t":24192,"d":2},
+			{"t":24384,"d":2},
+			{"t":24480,"d":0},
+			{"t":24576,"d":2},
+			{"t":24768,"d":2},
+			{"t":24864,"d":0},
+			{"t":24960,"d":3},
+			{"t":25152,"d":2},
+			{"t":25248,"d":0},
+			{"t":25296,"d":0},
+			{"t":25344,"d":1}
+		],
+		"normal": [
+			{"t":816,"d":6},
+			{"t":960,"d":5,"l":72},
+			{"t":1056,"d":7,"l":48},
+			{"t":1200,"d":6},
+			{"t":1344,"d":5,"l":72},
+			{"t":1440,"d":7,"l":48},
+			{"t":1584,"d":6},
+			{"t":1728,"d":5,"l":72},
+			{"t":1824,"d":7,"l":48},
+			{"t":1920,"d":4},
+			{"t":2112,"d":6},
+			{"t":2208,"d":4},
+			{"t":2352,"d":2},
+			{"t":2496,"d":1,"l":72},
+			{"t":2592,"d":3,"l":48},
+			{"t":2736,"d":2},
+			{"t":2880,"d":1,"l":72},
+			{"t":2976,"d":3,"l":48},
+			{"t":3120,"d":2},
+			{"t":3264,"d":1,"l":72},
+			{"t":3360,"d":3,"l":48},
+			{"t":3456,"d":0},
+			{"t":3552,"d":2},
+			{"t":3648,"d":2},
+			{"t":3744,"d":0},
+			{"t":3936,"d":6},
+			{"t":4032,"d":4},
+			{"t":4128,"d":7},
+			{"t":4176,"d":6},
+			{"t":4320,"d":7},
+			{"t":4416,"d":6},
+			{"t":4512,"d":4},
+			{"t":4560,"d":5},
+			{"t":4656,"d":4},
+			{"t":4704,"d":7},
+			{"t":4800,"d":4},
+			{"t":4896,"d":7},
+			{"t":4992,"d":7},
+			{"t":5088,"d":5},
+			{"t":5184,"d":6},
+			{"t":5280,"d":7},
+			{"t":5472,"d":2},
+			{"t":5568,"d":0},
+			{"t":5664,"d":3},
+			{"t":5712,"d":2},
+			{"t":5856,"d":3},
+			{"t":5952,"d":2},
+			{"t":6048,"d":0},
+			{"t":6096,"d":1},
+			{"t":6192,"d":0},
+			{"t":6240,"d":3},
+			{"t":6336,"d":0},
+			{"t":6432,"d":3},
+			{"t":6528,"d":3},
+			{"t":6624,"d":1},
+			{"t":6720,"d":2},
+			{"t":6816,"d":3},
+			{"t":6912,"d":6},
+			{"t":6960,"d":6},
+			{"t":7008,"d":6},
+			{"t":7104,"d":4},
+			{"t":7200,"d":7},
+			{"t":7248,"d":6},
+			{"t":7392,"d":7},
+			{"t":7488,"d":6},
+			{"t":7584,"d":4},
+			{"t":7632,"d":5},
+			{"t":7728,"d":4},
+			{"t":7776,"d":7},
+			{"t":7824,"d":7},
+			{"t":7872,"d":4},
+			{"t":7920,"d":4},
+			{"t":7968,"d":7},
+			{"t":8016,"d":7},
+			{"t":8064,"d":7},
+			{"t":8160,"d":5},
+			{"t":8256,"d":6},
+			{"t":8352,"d":7},
+			{"t":8448,"d":2},
+			{"t":8496,"d":2},
+			{"t":8544,"d":2},
+			{"t":8640,"d":0},
+			{"t":8736,"d":3},
+			{"t":8784,"d":2},
+			{"t":8928,"d":3},
+			{"t":9024,"d":2},
+			{"t":9120,"d":0},
+			{"t":9168,"d":1},
+			{"t":9264,"d":0},
+			{"t":9312,"d":3},
+			{"t":9360,"d":3},
+			{"t":9408,"d":0},
+			{"t":9456,"d":0},
+			{"t":9504,"d":3},
+			{"t":9552,"d":3},
+			{"t":9600,"d":3},
+			{"t":9696,"d":1},
+			{"t":9792,"d":2},
+			{"t":9888,"d":3},
+			{"t":9984,"d":6},
+			{"t":10176,"d":6},
+			{"t":10224,"d":7},
+			{"t":10272,"d":4},
+			{"t":10320,"d":7},
+			{"t":10368,"d":6},
+			{"t":10560,"d":6},
+			{"t":10608,"d":7},
+			{"t":10656,"d":4},
+			{"t":10704,"d":5},
+			{"t":10752,"d":6},
+			{"t":10944,"d":6},
+			{"t":10992,"d":7},
+			{"t":11040,"d":4},
+			{"t":11088,"d":7},
+			{"t":11136,"d":6},
+			{"t":11328,"d":6},
+			{"t":11376,"d":7},
+			{"t":11424,"d":4},
+			{"t":11472,"d":4},
+			{"t":11520,"d":2},
+			{"t":11712,"d":2},
+			{"t":11760,"d":3},
+			{"t":11808,"d":0},
+			{"t":11856,"d":3},
+			{"t":11904,"d":2},
+			{"t":12096,"d":2},
+			{"t":12144,"d":3},
+			{"t":12192,"d":0},
+			{"t":12240,"d":1},
+			{"t":12288,"d":2},
+			{"t":12480,"d":2},
+			{"t":12528,"d":3},
+			{"t":12576,"d":0},
+			{"t":12624,"d":3},
+			{"t":12672,"d":2},
+			{"t":12864,"d":2},
+			{"t":12912,"d":3},
+			{"t":12960,"d":0},
+			{"t":13008,"d":0},
+			{"t":13056,"d":6},
+			{"t":13152,"d":5},
+			{"t":13248,"d":6},
+			{"t":13296,"d":7},
+			{"t":13344,"d":4},
+			{"t":13392,"d":7},
+			{"t":13440,"d":6},
+			{"t":13536,"d":6},
+			{"t":13632,"d":6},
+			{"t":13680,"d":7},
+			{"t":13728,"d":4},
+			{"t":13776,"d":5},
+			{"t":13824,"d":6},
+			{"t":13920,"d":5},
+			{"t":14016,"d":6},
+			{"t":14064,"d":7},
+			{"t":14112,"d":4},
+			{"t":14160,"d":7},
+			{"t":14208,"d":6},
+			{"t":14304,"d":6},
+			{"t":14400,"d":6},
+			{"t":14448,"d":7},
+			{"t":14496,"d":4},
+			{"t":14544,"d":4},
+			{"t":14592,"d":2},
+			{"t":14688,"d":1},
+			{"t":14784,"d":2},
+			{"t":14832,"d":3},
+			{"t":14880,"d":0},
+			{"t":14928,"d":3},
+			{"t":14976,"d":2},
+			{"t":15072,"d":2},
+			{"t":15168,"d":2},
+			{"t":15216,"d":3},
+			{"t":15264,"d":0},
+			{"t":15312,"d":1},
+			{"t":15360,"d":2},
+			{"t":15456,"d":1},
+			{"t":15552,"d":2},
+			{"t":15600,"d":3},
+			{"t":15648,"d":0},
+			{"t":15696,"d":3},
+			{"t":15744,"d":2},
+			{"t":15840,"d":2},
+			{"t":15936,"d":2},
+			{"t":15984,"d":3},
+			{"t":16032,"d":0},
+			{"t":16080,"d":0},
+			{"t":16128,"d":7},
+			{"t":16224,"d":5},
+			{"t":16320,"d":6},
+			{"t":16464,"d":4},
+			{"t":16512,"d":6},
+			{"t":16608,"d":7},
+			{"t":16704,"d":6},
+			{"t":16848,"d":5},
+			{"t":16896,"d":7},
+			{"t":16992,"d":5},
+			{"t":17088,"d":6},
+			{"t":17232,"d":4},
+			{"t":17280,"d":6},
+			{"t":17376,"d":4},
+			{"t":17472,"d":6},
+			{"t":17568,"d":4},
+			{"t":17616,"d":6},
+			{"t":17664,"d":3},
+			{"t":17760,"d":1},
+			{"t":17856,"d":2},
+			{"t":18000,"d":0},
+			{"t":18048,"d":2},
+			{"t":18144,"d":3},
+			{"t":18240,"d":2},
+			{"t":18384,"d":1},
+			{"t":18432,"d":3},
+			{"t":18528,"d":1},
+			{"t":18624,"d":2},
+			{"t":18768,"d":0},
+			{"t":18816,"d":2},
+			{"t":18912,"d":0},
+			{"t":19008,"d":2},
+			{"t":19104,"d":0},
+			{"t":19152,"d":2},
+			{"t":19200,"d":6},
+			{"t":19296,"d":5},
+			{"t":19392,"d":6},
+			{"t":19488,"d":5},
+			{"t":19584,"d":4},
+			{"t":19680,"d":5},
+			{"t":19776,"d":6},
+			{"t":19872,"d":6},
+			{"t":19968,"d":7},
+			{"t":20064,"d":4},
+			{"t":20160,"d":6},
+			{"t":20256,"d":4},
+			{"t":20352,"d":7},
+			{"t":20448,"d":6},
+			{"t":20544,"d":6},
+			{"t":20592,"d":7},
+			{"t":20640,"d":4},
+			{"t":20688,"d":5},
+			{"t":20736,"d":2},
+			{"t":20832,"d":1},
+			{"t":20928,"d":2},
+			{"t":21024,"d":1},
+			{"t":21120,"d":0},
+			{"t":21216,"d":1},
+			{"t":21312,"d":2},
+			{"t":21408,"d":2},
+			{"t":21504,"d":3},
+			{"t":21600,"d":0},
+			{"t":21696,"d":2},
+			{"t":21792,"d":0},
+			{"t":21888,"d":3},
+			{"t":21984,"d":2},
+			{"t":22080,"d":2},
+			{"t":22128,"d":3},
+			{"t":22176,"d":0},
+			{"t":22224,"d":1},
+			{"t":22272,"d":6},
+			{"t":22368,"d":5},
+			{"t":22464,"d":6},
+			{"t":22512,"d":7},
+			{"t":22560,"d":4},
+			{"t":22608,"d":7},
+			{"t":22656,"d":6},
+			{"t":22752,"d":6},
+			{"t":22848,"d":6},
+			{"t":22896,"d":7},
+			{"t":22944,"d":4},
+			{"t":22992,"d":5},
+			{"t":23040,"d":6},
+			{"t":23136,"d":5},
+			{"t":23232,"d":6},
+			{"t":23280,"d":7},
+			{"t":23328,"d":4},
+			{"t":23376,"d":7},
+			{"t":23424,"d":6},
+			{"t":23520,"d":6},
+			{"t":23616,"d":6},
+			{"t":23664,"d":7},
+			{"t":23712,"d":4},
+			{"t":23760,"d":4},
+			{"t":23808,"d":2},
+			{"t":23904,"d":1},
+			{"t":24000,"d":2},
+			{"t":24048,"d":3},
+			{"t":24096,"d":0},
+			{"t":24144,"d":3},
+			{"t":24192,"d":2},
+			{"t":24288,"d":2},
+			{"t":24384,"d":2},
+			{"t":24432,"d":3},
+			{"t":24480,"d":0},
+			{"t":24528,"d":1},
+			{"t":24576,"d":2},
+			{"t":24672,"d":1},
+			{"t":24768,"d":2},
+			{"t":24816,"d":3},
+			{"t":24864,"d":0},
+			{"t":24912,"d":3},
+			{"t":24960,"d":2},
+			{"t":25056,"d":2},
+			{"t":25152,"d":2},
+			{"t":25200,"d":3},
+			{"t":25248,"d":0},
+			{"t":25296,"d":0},
+			{"t":25344,"d":1}
+		],
+		"hard": [
+			{"t":816,"d":6},
+			{"t":864,"d":4},
+			{"t":960,"d":5,"l":72},
+			{"t":1056,"d":7,"l":48},
+			{"t":1200,"d":6},
+			{"t":1248,"d":4},
+			{"t":1344,"d":5,"l":72},
+			{"t":1440,"d":7,"l":48},
+			{"t":1584,"d":6},
+			{"t":1632,"d":4},
+			{"t":1728,"d":5,"l":72},
+			{"t":1824,"d":7,"l":48},
+			{"t":1920,"d":4},
+			{"t":1968,"d":7},
+			{"t":2016,"d":6},
+			{"t":2112,"d":6},
+			{"t":2208,"d":4},
+			{"t":2256,"d":4},
+			{"t":2352,"d":2},
+			{"t":2400,"d":0},
+			{"t":2496,"d":1,"l":72},
+			{"t":2592,"d":3,"l":48},
+			{"t":2736,"d":2},
+			{"t":2784,"d":0},
+			{"t":2880,"d":1,"l":72},
+			{"t":2976,"d":3,"l":48},
+			{"t":3120,"d":2},
+			{"t":3168,"d":0},
+			{"t":3264,"d":1,"l":72},
+			{"t":3360,"d":3,"l":48},
+			{"t":3456,"d":0},
+			{"t":3504,"d":3},
+			{"t":3552,"d":2},
+			{"t":3648,"d":2},
+			{"t":3744,"d":0},
+			{"t":3888,"d":6},
+			{"t":3936,"d":4},
+			{"t":4032,"d":4},
+			{"t":4128,"d":7},
+			{"t":4176,"d":5},
+			{"t":4272,"d":7},
+			{"t":4320,"d":4},
+			{"t":4416,"d":6},
+			{"t":4512,"d":4},
+			{"t":4560,"d":5},
+			{"t":4656,"d":4},
+			{"t":4704,"d":5},
+			{"t":4752,"d":7},
+			{"t":4800,"d":5},
+			{"t":4848,"d":4},
+			{"t":4896,"d":5},
+			{"t":4944,"d":7},
+			{"t":4968,"d":4},
+			{"t":4992,"d":7},
+			{"t":5040,"d":7},
+			{"t":5088,"d":5},
+			{"t":5184,"d":6},
+			{"t":5280,"d":6},
+			{"t":5328,"d":7},
+			{"t":5424,"d":2},
+			{"t":5472,"d":0},
+			{"t":5568,"d":0},
+			{"t":5664,"d":3},
+			{"t":5712,"d":1},
+			{"t":5808,"d":3},
+			{"t":5856,"d":0},
+			{"t":5952,"d":2},
+			{"t":6048,"d":0},
+			{"t":6096,"d":1},
+			{"t":6192,"d":0},
+			{"t":6240,"d":1},
+			{"t":6288,"d":3},
+			{"t":6336,"d":1},
+			{"t":6384,"d":0},
+			{"t":6432,"d":1},
+			{"t":6480,"d":3},
+			{"t":6504,"d":0},
+			{"t":6528,"d":3},
+			{"t":6576,"d":3},
+			{"t":6624,"d":1},
+			{"t":6720,"d":2},
+			{"t":6816,"d":2},
+			{"t":6864,"d":3},
+			{"t":6912,"d":6},
+			{"t":6960,"d":6},
+			{"t":7008,"d":4},
+			{"t":7104,"d":4},
+			{"t":7200,"d":7},
+			{"t":7248,"d":5},
+			{"t":7344,"d":7},
+			{"t":7392,"d":4},
+			{"t":7488,"d":6},
+			{"t":7584,"d":4},
+			{"t":7632,"d":5},
+			{"t":7728,"d":4},
+			{"t":7776,"d":5},
+			{"t":7824,"d":7},
+			{"t":7872,"d":5},
+			{"t":7920,"d":4},
+			{"t":7968,"d":5},
+			{"t":8016,"d":7},
+			{"t":8040,"d":4},
+			{"t":8064,"d":7},
+			{"t":8112,"d":7},
+			{"t":8160,"d":5},
+			{"t":8256,"d":6},
+			{"t":8352,"d":6},
+			{"t":8400,"d":7},
+			{"t":8448,"d":2},
+			{"t":8496,"d":2},
+			{"t":8544,"d":0},
+			{"t":8640,"d":0},
+			{"t":8736,"d":3},
+			{"t":8784,"d":1},
+			{"t":8880,"d":3},
+			{"t":8928,"d":0},
+			{"t":9024,"d":2},
+			{"t":9120,"d":0},
+			{"t":9168,"d":1},
+			{"t":9264,"d":0},
+			{"t":9312,"d":1},
+			{"t":9360,"d":3},
+			{"t":9408,"d":1},
+			{"t":9456,"d":0},
+			{"t":9504,"d":1},
+			{"t":9552,"d":3},
+			{"t":9576,"d":0},
+			{"t":9600,"d":3},
+			{"t":9648,"d":3},
+			{"t":9696,"d":1},
+			{"t":9792,"d":2},
+			{"t":9888,"d":2},
+			{"t":9936,"d":3},
+			{"t":9984,"d":6},
+			{"t":10032,"d":7},
+			{"t":10080,"d":5},
+			{"t":10128,"d":4},
+			{"t":10176,"d":6},
+			{"t":10224,"d":7},
+			{"t":10272,"d":4},
+			{"t":10320,"d":7},
+			{"t":10368,"d":6},
+			{"t":10416,"d":7},
+			{"t":10464,"d":6},
+			{"t":10512,"d":4},
+			{"t":10560,"d":6},
+			{"t":10608,"d":7},
+			{"t":10656,"d":4},
+			{"t":10704,"d":5},
+			{"t":10752,"d":6},
+			{"t":10800,"d":7},
+			{"t":10848,"d":5},
+			{"t":10896,"d":4},
+			{"t":10944,"d":6},
+			{"t":10992,"d":7},
+			{"t":11040,"d":4},
+			{"t":11088,"d":7},
+			{"t":11136,"d":6},
+			{"t":11184,"d":7},
+			{"t":11232,"d":6},
+			{"t":11280,"d":4},
+			{"t":11328,"d":6},
+			{"t":11376,"d":7},
+			{"t":11424,"d":4},
+			{"t":11472,"d":4},
+			{"t":11520,"d":2},
+			{"t":11568,"d":3},
+			{"t":11616,"d":1},
+			{"t":11664,"d":0},
+			{"t":11712,"d":2},
+			{"t":11760,"d":3},
+			{"t":11808,"d":0},
+			{"t":11856,"d":3},
+			{"t":11904,"d":2},
+			{"t":11952,"d":3},
+			{"t":12000,"d":2},
+			{"t":12048,"d":0},
+			{"t":12096,"d":2},
+			{"t":12144,"d":3},
+			{"t":12192,"d":0},
+			{"t":12240,"d":1},
+			{"t":12288,"d":2},
+			{"t":12336,"d":3},
+			{"t":12384,"d":1},
+			{"t":12432,"d":0},
+			{"t":12480,"d":2},
+			{"t":12528,"d":3},
+			{"t":12576,"d":0},
+			{"t":12624,"d":3},
+			{"t":12672,"d":2},
+			{"t":12720,"d":3},
+			{"t":12768,"d":2},
+			{"t":12816,"d":0},
+			{"t":12864,"d":2},
+			{"t":12912,"d":3},
+			{"t":12960,"d":0},
+			{"t":13008,"d":0},
+			{"t":13056,"d":6},
+			{"t":13104,"d":7},
+			{"t":13152,"d":5},
+			{"t":13200,"d":4},
+			{"t":13248,"d":6},
+			{"t":13296,"d":7},
+			{"t":13344,"d":4},
+			{"t":13392,"d":7},
+			{"t":13440,"d":6},
+			{"t":13488,"d":7},
+			{"t":13536,"d":6},
+			{"t":13584,"d":4},
+			{"t":13632,"d":6},
+			{"t":13680,"d":7},
+			{"t":13728,"d":4},
+			{"t":13776,"d":4},
+			{"t":13824,"d":6},
+			{"t":13872,"d":7},
+			{"t":13920,"d":5},
+			{"t":13968,"d":4},
+			{"t":14016,"d":6},
+			{"t":14064,"d":7},
+			{"t":14112,"d":4},
+			{"t":14160,"d":7},
+			{"t":14208,"d":6},
+			{"t":14256,"d":7},
+			{"t":14304,"d":6},
+			{"t":14352,"d":4},
+			{"t":14400,"d":6},
+			{"t":14448,"d":7},
+			{"t":14496,"d":4},
+			{"t":14544,"d":4},
+			{"t":14592,"d":2},
+			{"t":14640,"d":3},
+			{"t":14688,"d":1},
+			{"t":14736,"d":0},
+			{"t":14784,"d":2},
+			{"t":14832,"d":3},
+			{"t":14880,"d":0},
+			{"t":14928,"d":3},
+			{"t":14976,"d":2},
+			{"t":15024,"d":3},
+			{"t":15072,"d":2},
+			{"t":15120,"d":0},
+			{"t":15168,"d":2},
+			{"t":15216,"d":3},
+			{"t":15264,"d":0},
+			{"t":15312,"d":0},
+			{"t":15360,"d":2},
+			{"t":15408,"d":3},
+			{"t":15456,"d":1},
+			{"t":15504,"d":0},
+			{"t":15552,"d":2},
+			{"t":15600,"d":3},
+			{"t":15648,"d":0},
+			{"t":15696,"d":3},
+			{"t":15744,"d":2},
+			{"t":15792,"d":3},
+			{"t":15840,"d":2},
+			{"t":15888,"d":0},
+			{"t":15936,"d":2},
+			{"t":15984,"d":3},
+			{"t":16032,"d":0},
+			{"t":16080,"d":0},
+			{"t":16128,"d":7},
+			{"t":16176,"d":7},
+			{"t":16224,"d":5},
+			{"t":16272,"d":5},
+			{"t":16320,"d":6},
+			{"t":16368,"d":6},
+			{"t":16464,"d":4},
+			{"t":16512,"d":6},
+			{"t":16560,"d":7},
+			{"t":16584,"d":4},
+			{"t":16608,"d":7},
+			{"t":16656,"d":7},
+			{"t":16704,"d":6},
+			{"t":16752,"d":4},
+			{"t":16800,"d":4},
+			{"t":16848,"d":5},
+			{"t":16896,"d":7},
+			{"t":16944,"d":7},
+			{"t":16968,"d":4},
+			{"t":16992,"d":7},
+			{"t":17040,"d":5},
+			{"t":17088,"d":6},
+			{"t":17136,"d":6},
+			{"t":17184,"d":4},
+			{"t":17232,"d":4},
+			{"t":17280,"d":6},
+			{"t":17328,"d":7},
+			{"t":17376,"d":4},
+			{"t":17424,"d":7},
+			{"t":17472,"d":6},
+			{"t":17568,"d":5},
+			{"t":17616,"d":7},
+			{"t":17664,"d":3},
+			{"t":17712,"d":3},
+			{"t":17760,"d":1},
+			{"t":17808,"d":1},
+			{"t":17856,"d":2},
+			{"t":17904,"d":2},
+			{"t":18000,"d":0},
+			{"t":18048,"d":2},
+			{"t":18096,"d":3},
+			{"t":18120,"d":0},
+			{"t":18144,"d":3},
+			{"t":18192,"d":3},
+			{"t":18240,"d":2},
+			{"t":18288,"d":0},
+			{"t":18336,"d":0},
+			{"t":18384,"d":1},
+			{"t":18432,"d":3},
+			{"t":18480,"d":3},
+			{"t":18504,"d":0},
+			{"t":18528,"d":3},
+			{"t":18576,"d":1},
+			{"t":18624,"d":2},
+			{"t":18672,"d":2},
+			{"t":18720,"d":0},
+			{"t":18768,"d":0},
+			{"t":18816,"d":2},
+			{"t":18864,"d":3},
+			{"t":18912,"d":0},
+			{"t":18960,"d":3},
+			{"t":19008,"d":2},
+			{"t":19104,"d":1},
+			{"t":19152,"d":3},
+			{"t":19200,"d":6},
+			{"t":19296,"d":5},
+			{"t":19344,"d":7},
+			{"t":19392,"d":6},
+			{"t":19488,"d":5},
+			{"t":19536,"d":7},
+			{"t":19584,"d":4},
+			{"t":19632,"d":7},
+			{"t":19680,"d":5},
+			{"t":19728,"d":7},
+			{"t":19776,"d":6},
+			{"t":19872,"d":6},
+			{"t":19920,"d":6},
+			{"t":19968,"d":7},
+			{"t":20016,"d":5},
+			{"t":20064,"d":4},
+			{"t":20112,"d":7},
+			{"t":20160,"d":6},
+			{"t":20256,"d":4},
+			{"t":20304,"d":4},
+			{"t":20352,"d":7},
+			{"t":20400,"d":7},
+			{"t":20448,"d":6},
+			{"t":20496,"d":4},
+			{"t":20544,"d":6},
+			{"t":20592,"d":7},
+			{"t":20640,"d":4},
+			{"t":20688,"d":5},
+			{"t":20736,"d":2},
+			{"t":20832,"d":1},
+			{"t":20880,"d":3},
+			{"t":20928,"d":2},
+			{"t":21024,"d":1},
+			{"t":21072,"d":3},
+			{"t":21120,"d":0},
+			{"t":21168,"d":3},
+			{"t":21216,"d":1},
+			{"t":21264,"d":3},
+			{"t":21312,"d":2},
+			{"t":21408,"d":2},
+			{"t":21456,"d":2},
+			{"t":21504,"d":3},
+			{"t":21552,"d":1},
+			{"t":21600,"d":0},
+			{"t":21648,"d":3},
+			{"t":21696,"d":2},
+			{"t":21792,"d":0},
+			{"t":21840,"d":0},
+			{"t":21888,"d":3},
+			{"t":21936,"d":3},
+			{"t":21984,"d":2},
+			{"t":22032,"d":0},
+			{"t":22080,"d":2},
+			{"t":22128,"d":3},
+			{"t":22176,"d":0},
+			{"t":22224,"d":1},
+			{"t":22272,"d":6},
+			{"t":22320,"d":7},
+			{"t":22368,"d":5},
+			{"t":22416,"d":4},
+			{"t":22464,"d":6},
+			{"t":22512,"d":7},
+			{"t":22560,"d":4},
+			{"t":22608,"d":7},
+			{"t":22656,"d":6},
+			{"t":22704,"d":7},
+			{"t":22752,"d":6},
+			{"t":22800,"d":4},
+			{"t":22848,"d":6},
+			{"t":22896,"d":7},
+			{"t":22944,"d":4},
+			{"t":22992,"d":4},
+			{"t":23040,"d":6},
+			{"t":23088,"d":7},
+			{"t":23136,"d":5},
+			{"t":23184,"d":4},
+			{"t":23232,"d":6},
+			{"t":23280,"d":7},
+			{"t":23328,"d":4},
+			{"t":23376,"d":7},
+			{"t":23424,"d":6},
+			{"t":23472,"d":7},
+			{"t":23520,"d":6},
+			{"t":23568,"d":4},
+			{"t":23616,"d":6},
+			{"t":23664,"d":7},
+			{"t":23712,"d":4},
+			{"t":23760,"d":4},
+			{"t":23808,"d":2},
+			{"t":23856,"d":3},
+			{"t":23904,"d":1},
+			{"t":23952,"d":0},
+			{"t":24000,"d":2},
+			{"t":24048,"d":3},
+			{"t":24096,"d":0},
+			{"t":24144,"d":3},
+			{"t":24192,"d":2},
+			{"t":24240,"d":3},
+			{"t":24288,"d":2},
+			{"t":24336,"d":0},
+			{"t":24384,"d":2},
+			{"t":24432,"d":3},
+			{"t":24480,"d":0},
+			{"t":24528,"d":0},
+			{"t":24576,"d":2},
+			{"t":24624,"d":3},
+			{"t":24672,"d":1},
+			{"t":24720,"d":0},
+			{"t":24768,"d":2},
+			{"t":24816,"d":3},
+			{"t":24864,"d":0},
+			{"t":24912,"d":3},
+			{"t":24960,"d":2},
+			{"t":25008,"d":3},
+			{"t":25056,"d":2},
+			{"t":25104,"d":0},
+			{"t":25152,"d":2},
+			{"t":25200,"d":3},
+			{"t":25248,"d":0},
+			{"t":25296,"d":0},
+			{"t":25344,"d":1}
+		]
+	},
+
+	/**
+	 * Data used only by the chart editor.
+	 * This object is optional, and the chart file ought to be fully playable when it is excluded.
+	 */
+	"editor": {
+		/**
+		 * An map of patterns which exist for this chart.
+		 * You can browse through these using the interface on the right side,
+		 * place them in the chart in multiple places, create them from an existing selection,
+		 * and double click to enter the pattern for editing.
+		 * 
+		 * Editing a pattern will affect the grouped notes in all locations that the pattern was placed.
+		 * If a user destroys a pattern from the UI, they will be prompted to either
+		 * ungroup the notes (leaving them in the chart) or remove the grouped notes from the chart.
+		 *
+		 * The key for the map is a randomized unique ID for the pattern, used to quickly reference it elsewhere in the chart.
+		 */
+		"patternDefinitions": {
+			"a7be4f8": {
+				/**
+				 * A label to identify the pattern.
+				 * Should be customizable by the user, and does not need to be unique (the key for the map keeps patterns separate)
+				 */
+				"label": "Secondary Motif",
+				/**
+				 * A color to highlight the grouped notes with in the UI.
+				 * Should be customizable by the user (HaxeUI has a color picker, yay!).
+				 */
+				"color": "#FF3333",
+				/**
+				 * The notes placed in the pattern.
+				 * These are of the same format as the main `notes` object, with the exception that
+				 * editor attributes (such as layer and pattern child) are not allowed.
+				 * 
+				 * `t` acts as an offset with 0 representing the timestamp the pattern was placed.
+				 */
+				"notes": [
+					{"t":300, "d":4},
+					{"t":600, "d":2},
+					{"t":900, "d":1},-
+					{"t":1300, "d":3},
+				]
+			}
+		},
+
+		/**
+		 * Defines where in the chart that patterns are currently placed.
+		 * Add one key for each difficulty in the chart.
+		 *
+		 * When placing a pattern in a chart, an element should be added to the appropriate array below,
+		 * then the pattern should be fetched, and the pattern notes (with `t = pattern time + offset)
+		 * copied to the chart, with `ep` set so the chart editor knows the notes are part of a pattern.
+		 */
+		"patternPlacements": {
+			"easy": [],
+			"normal": [
+				{
+					"t": 3000,
+					"p": "a7be4f8",
+					"f": false,
+					"el": 2
+				}
+			],
+			"hard": [
+				{
+					"t": 3000,
+					"p": "a7be4f8",
+					"f": false,
+					"el": 2
+				}
+			]	
+		},
+
+		/**
+		 * Metadata about the layers in the chart.
+		 * The first layer (0) is always named "Default" and it cannot be rearranged or deleted.
+		 * If there are no other layers in the chart, this array will be empty.
+		 */
+		"layers": [
+			{
+				/**
+				 * The name this note layer has in the interface.
+				 */
+				"label": "Test"
+			}
+		]
+	},
+
+	// Not used by anything, but just a note to keep this value free so you can keep track of tool versions to help with troubleshooting.
+	"generatedBy": "FNF SongConverter v69"
+}

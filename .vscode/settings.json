@@ -1,0 +1,262 @@
+{
+  "[haxe]": {
+    // Automatically keep Haxe files formatted.
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "never"
+    },
+    "editor.defaultFormatter": "nadako.vshaxe",
+    "editor.tabSize": 2
+  },
+
+  "[json]": {
+    // Automatically keep JSON files formatted.
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[jsonc]": {
+    // Automatically keep JSONC files formatted.
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.tabWidth": 2,
+
+  // XML formatting style configuration
+  "xml.format.enabled": true,
+  "xml.format.legacy": false,
+  "xml.format.emptyElements": "collapse",
+  "xml.preferences.quoteStyle": "double",
+  "xml.format.enforceQuoteStyle": "preferred",
+  "xml.format.preserveAttributeLineBreaks": false,
+  "xml.format.preservedNewlines": 0,
+  "xml.format.splitAttributes": false,
+  "xml.format.joinCDATALines": true,
+  "xml.format.preserveEmptyContent": false,
+  "xml.format.joinCommentLines": false,
+  "xml.format.joinContentLines": false,
+  "xml.format.spaceBeforeEmptyCloseTag": true,
+  "xml.format.xsiSchemaLocationSplit": "onPair",
+  "xml.format.splitAttributesIndentSize": 2,
+  "xml.format.closingBracketNewLine": false,
+  "xml.format.preserveSpace": [
+    "xsl:text",
+    "xsl:comment",
+    "xsl:processing-instruction",
+    "literallayout",
+    "programlisting",
+    "screen",
+    "synopsis",
+    "pre",
+    "xd:pre"
+  ],
+  "xml.format.maxLineWidth": 0,
+  "xml.format.grammarAwareFormatting": true,
+
+  // Generic file formatting style configuration
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": false,
+  "files.trimTrailingWhitespace": true,
+
+  // Automatically detect indentation.
+  "editor.detectIndentation": true,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+
+  // Automatically enforce Linux style line endings.
+  "files.eol": "\n",
+
+  "haxe.displayPort": "auto",
+  "haxe.enableCompilationServer": false,
+  "haxe.enableServerView": true,
+  "haxe.displayServer": {
+    "arguments": ["-v"]
+  },
+  // Fix file associations for HScript.
+  "files.associations": {
+    "*.hxp": "haxe",
+    "*.hscript": "haxe",
+    "*.haxe": "haxe",
+    "*.hxs": "haxe",
+    "*.hxc": "haxe"
+  },
+  "projectManager.git.baseFolders": ["./"],
+
+  "haxecheckstyle.sourceFolders": ["src", "source"],
+  "haxecheckstyle.externalSourceRoots": [],
+  "haxecheckstyle.configurationFile": "checkstyle.json",
+  "haxecheckstyle.codeSimilarityBufferSize": 100,
+
+  "lime.targetConfigurations": [
+    {
+      "label": "Windows / Debug",
+      "target": "windows",
+      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Tracy)",
+      "target": "windows",
+      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Linux / Debug",
+      "target": "linux",
+      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug",
+      "target": "hl",
+      "args": ["-debug"]
+    },
+    {
+      "label": "Windows / Debug (Discord)",
+      "target": "windows",
+      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS", "-DFEATURE_DISCORD_RPC"]
+    },
+    {
+      "label": "Windows / Debug (FlxAnimate Test)",
+      "target": "windows",
+      "args": ["-debug", "-DANIMATE", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug (FlxAnimate Test)",
+      "target": "hl",
+      "args": ["-debug", "-DANIMATE"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Freeplay)",
+      "target": "windows",
+      "args": ["-debug", "-DFREEPLAY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Freeplay)",
+      "target": "hl",
+      "args": ["-debug", "-DFREEPLAY"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Play - Bopeebo Normal)",
+      "target": "windows",
+      "args": [
+        "-debug",
+        "-DSONG=bopeebo -DDIFFICULTY=normal",
+        "-DFEATURE_DEBUG_FUNCTIONS"
+      ]
+    },
+    {
+      "label": "Windows / Debug (Straight to Play - 2hot)",
+      "target": "windows",
+      "args": ["-debug", "-DSONG=2hot", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Play - Bopeebo Normal)",
+      "target": "hl",
+      "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
+    },
+    {
+      "label": "Windows / Debug (Conversation Test)",
+      "target": "windows",
+      "args": ["-debug", "-DDIALOGUE", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug (Conversation Test)",
+      "target": "hl",
+      "args": ["-debug", "-DDIALOGUE"]
+    },
+    {
+      "label": "Windows / Debug (Results Screen Test)",
+      "target": "windows",
+      "args": ["-debug", "-DRESULTS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Chart Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Chart Editor)",
+      "target": "hl",
+      "args": ["-debug", "-DCHARTING"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Animation Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DANIMDEBUG", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Debug hxCodec)",
+      "target": "windows",
+      "args": ["-debug", "-DHXC_LIBVLC_LOGGING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug (Straight to Animation Editor)",
+      "target": "hl",
+      "args": ["-debug", "-DANIMDEBUG"]
+    },
+    {
+      "label": "Windows / Debug (Latency Test)",
+      "target": "windows",
+      "args": ["-debug", "-DLATENCY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HashLink / Debug (Latency Test)",
+      "target": "hl",
+      "args": ["-debug", "-DLATENCY"]
+    },
+    {
+      "label": "Windows / Debug (Waveform Test)",
+      "target": "windows",
+      "args": ["-debug", "-DWAVEFORM", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Release",
+      "target": "windows",
+      "args": ["-release"]
+    },
+    {
+      "label": "Windows / Release (GitHub Actions)",
+      "target": "windows",
+      "args": ["-release", "-DGITHUB_BUILD"]
+    },
+    {
+      "label": "HashLink / Debug (Waveform Test)",
+      "target": "hl",
+      "args": ["-debug", "-DWAVEFORM"]
+    },
+    {
+      "label": "HTML5 / Debug",
+      "target": "html5",
+      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "HTML5 / Debug (Watch)",
+      "target": "html5",
+      "args": ["-debug", "-watch", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "macOS / Debug",
+      "target": "mac",
+      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "macOS / Release",
+      "target": "mac",
+      "args": ["-release"]
+    },
+    {
+      "label": "macOS / Release (GitHub Actions)",
+      "target": "mac",
+      "args": ["-release", "-DGITHUB_BUILD"]
+    }
+  ],
+  "cmake.configureOnOpen": false,
+  "coverage-gutters.coverageFileNames": [
+    "lcov.info",
+    "cov.xml",
+    "coverage.xml",
+    "jacoco.xml",
+    "coverage.cobertura.xml"
+  ]
+}

@@ -1,0 +1,6 @@
+# Updates TestSuite.hx to include all tests
+-cmd haxelib run munit gen
+# Actually performs the tests
+# Lime is used for compatibility reasons, and build flags in `project.xml` ensure coverage is enabled
+-cmd haxelib run lime test cpp -debug
+

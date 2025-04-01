@@ -1,0 +1,124 @@
+name: upload-itch
+description: "installs Butler, and uploads to itch.io!"
+
+inputs:
+  butler-key:
+    description: "Butler API secret key"
+    required: true
+  itch-repo:
+    description: "Where to upload the game to"
+    required: true
+    default: "ninja-muffin24/funkin-secret"
+  build-dir:
+    description: "Directory of the game build"
+    required: false
+  target:
+    description: "Target (html5, windows, linux, macos)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+  # RUNNER_OS = Windows | macOS | Linux
+  # TARGET_BUILD = windows | macos | linux
+  # TARGET_ITCH = win | macos | linux
+  # TARGET_BUTLER_DOWNLOAD = windows-amd64 | darwin-amd64 | linux-amd64
+  - name: Setup variables
+    shell: bash
+    run: |
+      TARGET_OS=${{ inputs.target }}
+      RUNNER=${RUNNER_OS@L}
+      TARGET=${TARGET_OS@L}
+      case "$TARGET" in
+        "windows")
+          TARGET_ITCH=win
+          ;;
+        *)
+          TARGET_ITCH=$TARGET
+          ;;
+      esac
+      case "$RUNNER" in
+        "macos")
+          OS_NODE=darwin
+          ;;
+        *)
+          OS_NODE=$RUNNER
+          ;;
+      esac
+      BUTLER_PATH=$RUNNER_TEMP/butler
+
+      echo BUILD_DIR="export/release/$TARGET/bin" >> "$GITHUB_ENV"
+      echo ITCH_TAG=${{ inputs.itch-repo }}:$TARGET_ITCH-$GITHUB_REF_NAME >> "$GITHUB_ENV"
+      echo OS_AND_ARCH=$OS_NODE-amd64 >> "$GITHUB_ENV"
+      echo BUTLER_API_KEY=${{ inputs.butler-key }} >> "$GITHUB_ENV"
+      echo BUTLER_INSTALL_PATH=$BUTLER_PATH >> "$GITHUB_ENV"
+      echo TIMER_BUTLER=$(date +%s) >> "$GITHUB_ENV"
+      echo TARGET_ITCH=$TARGET_ITCH >> "$GITHUB_ENV"
+
+      echo "$BUTLER_PATH" >> "$GITHUB_PATH"
+
+  - name: Get latest butler version
+    shell: bash
+    run: |
+      LATEST=$(curl -sfL https://broth.itch.ovh/butler/$OS_AND_ARCH/LATEST)
+      echo BUTLER_LATEST=$LATEST >> "$GITHUB_ENV"
+
+      command -v butler \
+        && echo BUTLER_CURRENT=$(butler -V 2>&1 | cut -d ',' -f 1) >> "$GITHUB_ENV" \
+        || echo BUTLER_CURRENT=none >> "$GITHUB_ENV"
+
+  - name: Try to get butler from cache
+    id: cache-butler
+    uses: actions/cache@v4
+    with:
+      path: ${{ env.BUTLER_INSTALL_PATH }}
+      key: butler-${{ runner.os }}-${{ env.BUTLER_LATEST }}
+
+  - if: steps.cache-butler.outputs.cache-hit == 'true'
+    name: Make sure butler is executable
+    shell: bash
+    run: |
+      chmod +x $BUTLER_INSTALL_PATH/butler
+
+  - if: steps.cache-butler.outputs.cache-hit != 'true'
+    name: Install butler
+    shell: bash
+    run: |
+      mkdir -p $BUTLER_INSTALL_PATH
+      cd $BUTLER_INSTALL_PATH
+
+      curl -L -o butler.zip https://broth.itch.ovh/butler/$OS_AND_ARCH/LATEST/archive/default
+      unzip butler.zip
+      chmod +x butler
+
+  - name: Upload game to itch.io
+    shell: bash
+    run: |
+      echo "TIMER_UPLOAD=$(date +%s)" >> "$GITHUB_ENV"
+      butler login
+      butler push $BUILD_DIR $ITCH_TAG
+      echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
+
+  - name: Print debug info
+    shell: bash
+    run: |
+      cat << EOF
+      butler:
+        version: $(
+          if [[ "$BUTLER_CURRENT" == "$BUTLER_LATEST" ]]
+          then
+            echo $BUTLER_CURRENT
+          else
+            echo $BUTLER_CURRENT -> $BUTLER_LATEST
+          fi
+        )
+        install:
+          took: $(($TIMER_UPLOAD-$TIMER_BUTLER))s
+        upload:
+          tag: $TARGET_ITCH/$GITHUB_REF_NAME
+          took: $(($TIMER_DONE-$TIMER_UPLOAD))s
+      EOF
+      cat << EOF >> "$GITHUB_STEP_SUMMARY"
+      ### open in launcher: [$TARGET_ITCH/$GITHUB_REF_NAME](https://run.funkin.me/$TARGET_ITCH/$GITHUB_REF_NAME)
+      EOF

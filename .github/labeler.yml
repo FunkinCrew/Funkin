@@ -1,0 +1,18 @@
+# Add Documentation tag to PR's changing markdown files, or anything in the docs folder
+'pr: documentation':
+- changed-files:
+  - any-glob-to-any-file:
+      - docs/*
+      - '**/*.md'
+
+# Add Haxe tag to PR's changing haxe code files
+'pr: haxe':
+- changed-files:
+  - any-glob-to-any-file: '**/*.hx'
+
+# Add GitHub tag to PR's changing yml files, or anything in the .github folder 
+'pr: github':
+- changed-files:
+  - any-glob-to-any-file:
+      - github/*
+      - '**/*.yml'

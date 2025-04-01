@@ -1,0 +1,60 @@
+## CPP
+--next
+--verbose
+--debug
+-main TestMain
+-cpp build/cpp_test
+# Funkin' deps
+-lib lime
+-lib openfl
+-lib flixel
+-lib flixel-addons
+-lib flixel-ui
+-lib hscript
+-lib polymod
+-lib haxeui-core
+-lib haxeui-flixel
+-lib flxanimate
+-lib hxCodec
+-lib thx.semver
+-lib json2object
+-lib tink_json
+# Test deps
+-lib munit
+-lib hamcrest
+-lib mcover
+-lib mockatoo
+# Class paths
+-cp source
+-cp ../../source
+# Flixel macros
+--remap flash:openfl
+--macro flixel.system.macros.FlxDefines.run()
+# Funkin' macros
+--macro addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')
+
+
+## JavaScript HTML5
+--next
+-js build/js_test.js
+# Funkin' deps
+-lib lime
+-lib openfl
+-lib flixel
+-lib flixel-addons
+-lib hscript
+-lib flixel-ui
+-lib haxeui-core
+-lib haxeui-flixel
+-lib polymod
+-lib flxanimate
+-lib hxCodec
+-lib thx.semver
+-lib json2object
+-lib tink_json
+# Test deps
+-lib munit
+-lib hamcrest
+# Class paths
+-cp source
+-cp ../../source

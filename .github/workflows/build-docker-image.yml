@@ -1,0 +1,53 @@
+name: Create and publish Docker image
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - '**/Dockerfile'
+    - '.github/workflows/build-docker-image.yml'
+
+jobs:
+  build-and-push-image:
+    runs-on: build-set
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Get checkout token
+      uses: actions/create-github-app-token@v1
+      id: app_token
+      with:
+        app-id: ${{ vars.APP_ID }}
+        private-key: ${{ secrets.APP_PEM }}
+        owner: ${{ github.repository_owner }}
+
+    - name: Checkout repo
+      uses: funkincrew/ci-checkout@v6
+      with:
+        submodules: false
+        token: ${{ steps.app_token.outputs.token }}
+
+    - name: Log into GitHub Container Registry
+      uses: docker/login-action@v3.1.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5.3.0
+      with:
+        context: ./build
+        push: true
+        tags: |
+          ghcr.io/funkincrew/build-dependencies:latest
+          ghcr.io/funkincrew/build-dependencies:${{ github.sha }}
+        labels: |
+          org.opencontainers.image.description=precooked haxe build-dependencies
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          org.opencontainers.image.title=${{ github.repository_owner }}/build-dependencies
+          org.opencontainers.image.url=https://github.com/${{ github.repository }}
+          org.opencontainers.image.version=${{ github.sha }}

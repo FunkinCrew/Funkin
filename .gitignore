@@ -1,0 +1,16 @@
+.DS_STORE
+.haxelib/
+.vs/
+APIStuff.hx
+dump/
+export/
+RECOVER_*.fla
+shitAudio/
+.build_time
+.swp
+
+# Exclude JS stuff
+node_modules/
+package.json
+package-lock.json
+.aider*

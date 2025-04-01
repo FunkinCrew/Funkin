@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project
+	xmlns="http://lime.software/project/1.0.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://lime.software/project/1.0.2 http://lime.software/xsd/project-1.0.2.xsd">
+
+	<meta title="FunkinUnitTests" version="1.0.0" />
+	<app file="TestMain" main="TestMain" />
+
+	<!-- Test sources -->
+	<source path="source" />
+
+	<!-- Funkin' sources -->
+	<source path="../../source" />
+
+	<!-- Funkin' dependencies -->
+	<haxelib name="lime" /> <!-- Game engine -->
+	<haxelib name="openfl" /> <!-- Game engine -->
+	<haxelib name="flixel" /> <!-- Game engine -->
+	<haxelib name="flixel-addons" /> <!-- Additional utilities for Flixel -->
+	<haxelib name="hscript" /> <!-- Scripting -->
+	<haxelib name="flixel-ui" /> <!-- UI framework (deprecate this? -->
+	<haxelib name="haxeui-core" /> <!-- UI framework -->
+	<haxelib name="haxeui-flixel" /> <!-- Integrate HaxeUI with Flixel -->
+	<haxelib name="polymod" /> <!-- Modding framework -->
+	<haxelib name="flxanimate" /> <!-- Texture atlas rendering -->
+	<haxelib name="hxCodec" /> <!-- Video playback -->
+	<haxelib name="thx.semver" /> <!-- Semantic version handling -->
+	<haxelib name="json2object" /> <!-- JSON parsing -->
+
+	<!-- Test dependencies -->
+	<haxelib name="munit" /> <!-- Unit test execution -->
+	<haxelib name="mcover" /> <!-- Code coverage -->
+	<haxelib name="mockatoo" /> <!-- Mocking -->
+	<haxelib name="hamcrest" /> <!-- Assertions/matching -->
+
+	<!-- This macro allows addition of new functionality to existing Flixel. -->
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
+	<!-- Macros to satisfy null safety (null safety can't check nested functions, so assertions must be inlined) -->
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.InlineMacro.makeInline(\'fail\', true))', 'massive.munit.Assert')" />
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.InlineMacro.makeInline(\'isNotNull\', true))', 'massive.munit.Assert')" />
+
+	<!-- Assets -->
+	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web" />
+	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/shared" library="shared" exclude="*.fla|*.mp3" unless="web" />
+	<library name="shared" preload="true" />
+	<!--
+	<assets path="assets/songs" library="songs" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/songs" library="songs" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week1" library="week1" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week1" library="week1" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week2" library="week2" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week2" library="week2" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week3" library="week3" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week3" library="week3" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week4" library="week4" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week4" library="week4" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week5" library="week5" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week5" library="week5" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week6" library="week6" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week6" library="week6" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/week7" library="week7" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/week7" library="week7" exclude="*.fla|*.mp3" unless="web" />
+	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.ogg" if="web" />
+	<assets path="assets/weekend1" library="weekend1" exclude="*.fla|*.mp3" unless="web" />
+	<library name="songs" preload="true" />
+	<library name="tutorial" preload="true" />
+	<library name="week1" preload="true" />
+	<library name="week2" preload="true" />
+	<library name="week3" preload="true" />
+	<library name="week4" preload="true" />
+	<library name="week5" preload="true" />
+	<library name="week6" preload="true" />
+	<library name="week7" preload="true" />
+	<library name="weekend1" preload="true" />
+	-->
+
+	<!-- Test defines -->
+	<set name="no-custom-backend" />
+	<set name="unit-test" />
+	<haxedef name="FLX_UNIT_TEST" />
+	<haxedef name="FLX_RECORD" />
+
+	<!-- Clean up the output -->
+	<!--
+		<haxedef name="echo-traces" />
+	-->
+	<haxedef name="ignore-inline" />
+	<haxeflag name="-w" value="-WDeprecated" />
+
+	<!-- Manually set up code coverage (because munit report and lime test are mutually exclusive) -->
+	<haxeflag name="--macro" value="mcover.MCover.coverage(['funkin'],['../../source', 'source/'],[''])" />
+	<haxelib name="mcover" />
+	<haxedef name="MCOVER" />
+	<haxedef name="safeMode"/>
+	<haxedef name="HXCPP_CHECK_POINTER" />
+	<haxedef name="HXCPP_STACK_LINE" />
+	<haxedef name="HXCPP_STACK_TRACE" />
+</project>

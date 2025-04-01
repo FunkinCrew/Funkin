@@ -1,0 +1,5 @@
+#!/bin/sh
+if git diff --cached --submodule | grep -q "^+"; then
+  echo "WARNING: You have unpushed changes in submodules."
+  exit 1
+fi

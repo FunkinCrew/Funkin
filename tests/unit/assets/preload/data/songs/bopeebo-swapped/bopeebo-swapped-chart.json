@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "songName": "Bopeebo",
+  "artist": "Kawai Sprite",
+  "timeFormat": "ms",
+  "timeChanges": [{ "t": 0, "bpm": 100, "n": 4, "d": 4, "bt": [4, 4, 4, 4] }],
+  "playData": {
+    "songVariations": [],
+    "difficulties": ["easy", "normal", "hard"],
+    "playableChars": { "bf": { "g": "gf", "o": "dad" } },
+    "stage": "mainStage",
+    "noteSkin": "Normal"
+  },
+  "generatedBy": "MasterEric (by hand)"
+}

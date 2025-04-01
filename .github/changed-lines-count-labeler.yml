@@ -1,0 +1,12 @@
+# Add 'size: small' to any changes below 10 lines
+'size: small':
+  max: 9
+
+# Add 'size: medium' to any changes between 10 and 100 lines
+'size: medium':
+  min: 10
+  max: 99
+
+# Add 'size: large' to any changes of at least 100 lines
+'size: large':
+  min: 100

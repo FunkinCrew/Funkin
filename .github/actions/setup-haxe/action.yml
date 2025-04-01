@@ -1,0 +1,154 @@
+name: setup-haxeshit
+description: "sets up haxe shit, using HMM!"
+
+inputs:
+  haxe:
+    description: 'Version of haxe to install'
+    required: true
+    default: '4.3.4'
+  hxcpp-cache:
+    description: 'Whether to use a shared hxcpp compile cache'
+    required: true
+    default: 'true'
+  hxcpp-cache-path:
+    description: 'Path to create hxcpp cache in'
+    required: true
+    default: ${{ runner.temp }}/hxcpp_cache
+  targets:
+    description: 'Targets we plan to compile to. Installs native dependencies needed.'
+    required: true
+  gh-token:
+    description: 'GitHub secret for private repos as dependencies'
+
+runs:
+  using: "composite"
+  steps:
+
+  - name: Setup timers
+    shell: bash
+    run: |
+      echo "TIMER_HAXE=$(date +%s)" >> "$GITHUB_ENV"
+
+  - name: Install Haxe
+    uses: funkincrew/ci-haxe@v3.1.0
+    with:
+      haxe-version: ${{ inputs.haxe }}
+
+  - name: Install native dependencies
+    if: ${{ runner.os == 'Linux' }}
+    shell: bash
+    run: |
+      ls -lah /usr/lib/x86_64-linux-gnu/
+      apt-get update
+      apt-get install -y \
+        g++ \
+        libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev \
+        libgl-dev libgl1-mesa-dev \
+        libasound2-dev libpulse-dev
+      ln -s /usr/lib/x86_64-linux-gnu/libffi.so.8 /usr/lib/x86_64-linux-gnu/libffi.so.6 || true
+  - name: Install linux-specific dependencies
+    if: ${{ runner.os == 'Linux' && contains(inputs.targets, 'linux') }}
+    shell: bash
+    run: |
+      apt-get install -y libvlc-dev libvlccore-dev
+
+  - name: Config haxelib
+    shell: bash
+    run: |
+      echo "TIMER_HAXELIB=$(date +%s)" >> "$GITHUB_ENV"
+      haxelib fixrepo --global || true
+      haxelib --debug --never --global install haxelib 4.1.0
+      haxelib --debug --global set haxelib 4.1.0
+      haxelib --global remove haxelib git || true
+      haxelib --global remove hmm || true
+      rm -rf .haxelib
+      haxelib --debug --never --global git haxelib https://github.com/FunkinCrew/haxelib.git funkin-patches --skip-dependencies
+      haxelib --debug --never --global git hmm https://github.com/FunkinCrew/hmm funkin-patches
+      haxelib --debug --never newrepo
+      haxelib version
+      echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
+      echo "TIMER_DEPS=$(date +%s)" >> "$GITHUB_ENV"
+
+  - name: Restore cached dependencies
+    id: cache-hmm
+    uses: actions/cache@v4
+    with:
+      path: .haxelib
+      key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
+
+  - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+    name: Prep git for dependency install
+    uses: gacts/run-and-post-run@v1
+    with:
+      run: |
+        git config --global --name-only --get-regexp 'url\.https\:\/\/x-access-token:.+@github\.com\/\.insteadOf' \
+        | xargs -I {} git config --global --unset {}
+
+        git config -l --show-scope --show-origin
+        git config --global 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf' https://github.com/
+      post: git config --global --unset 'url.https://x-access-token:${{ inputs.gh-token }}@github.com/.insteadOf'
+
+  - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+    name: Install dependencies
+    shell: bash
+    run: |
+      haxelib --global run hmm install -q
+      echo "TIMER_DONE=$(date +%s)" >> "$GITHUB_ENV"
+
+  # by default use a shared hxcpp cache
+  - if: ${{ inputs.hxcpp-cache == 'true' }}
+    name: Restore hxcpp cache
+    uses: actions/cache@v4
+    with:
+      path: ${{ inputs.hxcpp-cache-path }}
+      key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+      restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
+  # export env for it to reuse in builds
+  - if: ${{ inputs.hxcpp-cache == 'true' }}
+    name: Persist env for hxcpp cache
+    shell: bash
+    run: |
+      echo "HXCPP_COMPILE_CACHE=${{ inputs.hxcpp-cache-path }}" >> "$GITHUB_ENV"
+      echo 'HXCPP_CACHE_MB="4096"' >> "$GITHUB_ENV"
+
+  # if it's explicitly disabled, still cache export/ since that then contains the builds
+  - if: ${{ inputs.hxcpp-cache != 'true' }}
+    name: Restore export cache
+    uses: actions/cache@v4
+    with:
+      path: ${{ inputs.hxcpp-cache-path }}
+      key: haxe-export-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+      restore-keys: haxe-export-${{ runner.os }}-${{ github.ref_name }}
+
+  - name: Print debug info
+    shell: bash
+    run: |
+      cat << EOF
+      runner:
+        kernel: $(uname -a)
+      haxe:
+        version: $(haxe -version)
+        which: $(which haxe)
+        haxepath: $HAXEPATH
+        took: $((TIMER_HAXELIB - TIMER_HAXE))s
+      haxelib:
+        version: $(haxelib version)
+        which: $(which haxelib)
+        local:
+          config: $(haxelib config)
+          path: $(haxelib path haxelib || true)
+        global
+          config: $(haxelib config --global)
+          path: $(haxelib path haxelib --global || true)
+        system
+          version: $(haxelib --system version)
+          local:
+            config: $(haxelib --system config)
+          global:
+            config: $(haxelib --system config --global)
+        took: $((TIMER_DEPS - TIMER_HAXELIB))s
+      deps:
+        took: $((TIMER_DONE - TIMER_DEPS))s
+      hxcpp_cache: |
+      $(haxelib run hxcpp cache list || true)
+      EOF
