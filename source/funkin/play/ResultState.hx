@@ -502,8 +502,9 @@ class ResultState extends MusicBeatSubState
           clearPercentCounter.curNumber = clearPercentTarget;
 
           #if FEATURE_NEWGROUNDS
+          var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
           // This is the easiest spot to do the medal calculation lol.
-          if (clearPercentTarget == 69) Medals.award(Nice);
+          if (isScoreValid && clearPercentTarget == 69) Medals.award(Nice);
           #end
 
           clearPercentCounter.flash(true);

@@ -3017,7 +3017,7 @@ class PlayState extends MusicBeatSubState
             }
         });
 
-      // Award various medals based on variation, difficulty, and scoring rank.
+      // Award various medals based on variation, difficulty, song ID, and scoring rank.
       if (scoreRank == ScoringRank.SHIT) Medals.award(LossRating);
       if (scoreRank >= ScoringRank.PERFECT && currentDifficulty == 'hard') Medals.award(PerfectRatingHard);
       if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'hard') Medals.award(GoldPerfectRatingHard);
@@ -3062,19 +3062,18 @@ class PlayState extends MusicBeatSubState
                 },
             };
 
-          if (currentSong.validScore
-            && Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
+          #if FEATURE_NEWGROUNDS
+          // Award a medal for beating a Story level.
+          Medals.awardStoryLevel(PlayStatePlaylist.campaignId);
+
+          // Submit the score for the Story level to Newgrounds.
+          Leaderboards.submitLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, PlayStatePlaylist.campaignScore);
+
+          Events.logCompleteLevel(PlayStatePlaylist.campaignId);
+          #end
+
+          if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
-            #if FEATURE_NEWGROUNDS
-            // Award a medal for beating a Story level.
-            Medals.awardStoryLevel(PlayStatePlaylist.campaignId);
-
-            // Submit the score for the Story level to Newgrounds.
-            Leaderboards.submitLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, PlayStatePlaylist.campaignScore);
-
-            Events.logCompleteLevel(PlayStatePlaylist.campaignId);
-            #end
-
             Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
             isNewHighscore = true;
           }
