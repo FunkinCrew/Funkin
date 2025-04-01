@@ -83,6 +83,8 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   public function onGameOver(event:ScriptEvent) {}
 
+  public function onGameOverLoop(event:GameOverLoopScriptEvent) {}
+
   public function onNoteIncoming(event:NoteScriptEvent) {}
 
   public function onNoteHit(event:HitNoteScriptEvent) {}

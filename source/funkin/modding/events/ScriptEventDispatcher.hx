@@ -129,6 +129,8 @@ class ScriptEventDispatcher
         case GAME_OVER:
           t.onGameOver(event);
           return;
+        case GAME_OVER_LOOP:
+          t.onGameOverLoop(cast event);
         case PAUSE:
           t.onPause(cast event);
           return;
