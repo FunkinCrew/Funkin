@@ -17,6 +17,8 @@ import funkin.ui.options.PreferencesMenu;
 import funkin.util.SortUtil;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.input.PreciseInputManager;
+import haxe.Int64;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -114,6 +116,7 @@ class Strumline extends FlxSpriteGroup
   var nextNoteIndex:Int = -1;
 
   var heldKeys:Array<Bool> = [];
+  var releaseTime:Array<Null<Int64>> = [];
 
   public function new(noteStyle:NoteStyle, isPlayer:Bool)
   {
@@ -407,7 +410,23 @@ class Strumline extends FlxSpriteGroup
           playStatic(holdNote.noteDirection);
           holdNote.missedNote = true;
           holdNote.visible = true;
+
           holdNote.alpha = 0.0; // Completely hide the dropped hold note.
+
+          if (releaseTime[holdNote.noteDirection] != null)
+          {
+            var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - releaseTime[holdNote.noteDirection];
+            var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
+
+            var lastLength = holdNote.sustainLength;
+            holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition - inputLatencyMs
+              + conductorInUse.inputOffset;
+
+            // Don't reward hitting too early, don't penalize hitting too late
+            if (rewardSustains) PlayState?.instance.sustainHit(holdNote, lastLength);
+
+            releaseTime[holdNote.noteDirection] = null;
+          }
         }
       }
 
@@ -451,7 +470,6 @@ class Strumline extends FlxSpriteGroup
         holdNote.visible = true;
 
         var yOffset:Float = (holdNote.fullSustainLength - holdNote.sustainLength) * Constants.PIXELS_PER_MS;
-
         var vwoosh:Bool = false;
 
         if (Preferences.downscroll)
@@ -572,9 +590,11 @@ class Strumline extends FlxSpriteGroup
     heldKeys[dir] = true;
   }
 
-  public function releaseKey(dir:NoteDirection):Void
+  public function releaseKey(dir:NoteDirection, ?timestamp:Int64):Void
   {
     heldKeys[dir] = false;
+    // Only record the first releaseTime in a frame.
+    if (releaseTime[dir] == null) releaseTime[dir] = timestamp;
   }
 
   public function isKeyHeld(dir:NoteDirection):Bool
