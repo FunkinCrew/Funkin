@@ -41,6 +41,11 @@ class Countdown
   static var countdownTimer:FlxTimer = null;
 
   /**
+   * Secondary countdown used when the Audio/Visual offset is set.
+   */
+  static var countdownOffsetTimer:FlxTimer = null;
+
+  /**
    * Performs the countdown.
    * Pauses the song, plays the countdown graphics/sound, and then starts the song.
    * This will automatically stop and restart the countdown if it is already running.
@@ -66,6 +71,7 @@ class Countdown
 
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
+    if (Conductor.instance.audioVisualOffset != 0) countdownOffsetTimer = new FlxTimer();
 
     countdownTimer.start(Conductor.instance.beatLengthMs / 1000, function(tmr:FlxTimer) {
       if (PlayState.instance == null)
@@ -81,10 +87,14 @@ class Countdown
       // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
-      showCountdownGraphic(countdownStep);
+      if (Conductor.instance.audioVisualOffset >= 0) showCountdownGraphic(countdownStep);
+      else
+        countdownOffsetTimer.start(-Conductor.instance.audioVisualOffset / Constants.MS_PER_SEC, (tmr) -> showCountdownGraphic(countdownStep));
 
       // Countdown sound.
-      playCountdownSound(countdownStep);
+      if (Conductor.instance.audioVisualOffset <= 0) playCountdownSound(countdownStep);
+      else
+        countdownOffsetTimer.start(Conductor.instance.audioVisualOffset / Constants.MS_PER_SEC, (tmr) -> playCountdownSound(countdownStep));
 
       // Event handling bullshit.
       var cancelled:Bool = propagateCountdownEvent(countdownStep);
@@ -140,6 +150,11 @@ class Countdown
     {
       countdownTimer.active = false;
     }
+
+    if (countdownOffsetTimer != null && !countdownOffsetTimer.finished)
+    {
+      countdownOffsetTimer.active = false;
+    }
   }
 
   /**
@@ -152,6 +167,11 @@ class Countdown
     if (countdownTimer != null && !countdownTimer.finished)
     {
       countdownTimer.active = true;
+    }
+
+    if (countdownOffsetTimer != null && !countdownOffsetTimer.finished)
+    {
+      countdownOffsetTimer.active = true;
     }
   }
 
@@ -167,6 +187,13 @@ class Countdown
       countdownTimer.cancel();
       countdownTimer.destroy();
       countdownTimer = null;
+    }
+
+    if (countdownOffsetTimer != null)
+    {
+      countdownOffsetTimer.cancel();
+      countdownOffsetTimer.destroy();
+      countdownOffsetTimer = null;
     }
   }
 
@@ -189,6 +216,13 @@ class Countdown
     if (countdownTimer != null)
     {
       countdownTimer.reset();
+    }
+
+    if (countdownOffsetTimer != null)
+    {
+      countdownOffsetTimer.cancel();
+      countdownOffsetTimer.destroy();
+      countdownOffsetTimer = null;
     }
   }
 
