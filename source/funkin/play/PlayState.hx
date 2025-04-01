@@ -2975,6 +2975,10 @@ class PlayState extends MusicBeatSubState
       // adds current song data into the tallies for the level (story levels)
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
+      #if FEATURE_NEWGROUNDS
+      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, data);
+      #end
+
       if (!isPracticeMode && !isBotPlayMode)
       {
         #if FEATURE_NEWGROUNDS

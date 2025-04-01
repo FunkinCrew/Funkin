@@ -730,10 +730,6 @@ class Save
       // Directly set the highscore.
       setSongScore(songId, difficultyId, newScoreData);
 
-      #if FEATURE_NEWGROUNDS
-      Leaderboards.submitSongScore(songId, difficultyId, newScoreData.score);
-      #end
-
       return;
     }
 
