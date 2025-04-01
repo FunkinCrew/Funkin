@@ -983,6 +983,7 @@ class Save
    * If you set slot to `2`, it will load an independent save file from slot 2.
    * @param slot
    */
+  @:haxe.warning("-WDeprecated")
   static function loadFromSlot(slot:Int):Save
   {
     trace('[SAVE] Loading save from slot $slot...');
