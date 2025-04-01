@@ -505,10 +505,10 @@ class Project extends HXProject {
 		FEATURE_PARTIAL_SOUNDS.apply(this, true);
 		FEATURE_VIDEO_PLAYBACK.apply(this, true);
 		FEATURE_STAGE_EDITOR.apply(this, true);
-		FEATURE_RESULTS_DEBUG.apply(this, true);
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+		FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
 		// Got a lot of complains about this being turned off by default on some builds.
 		// TODO: Look into ways to optimize logging (maybe by using a thread pool?)
