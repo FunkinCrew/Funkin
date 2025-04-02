@@ -79,6 +79,11 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     return false;
   }
 
+  public function getStickerPackID():String
+  {
+    return _data?.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
+  }
+
   public function getFreeplayStyleID():String
   {
     return _data?.freeplayStyle ?? Constants.DEFAULT_FREEPLAY_STYLE;

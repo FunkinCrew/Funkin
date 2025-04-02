@@ -1,34 +1,38 @@
-package funkin.ui.transition;
+package funkin.ui.transition.stickers;
 
-import haxe.Json;
-import funkin.graphics.FunkinSprite;
-// import flxtyped group
-import funkin.ui.MusicBeatSubState;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxTimer;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
+import flixel.FlxState;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
-import funkin.ui.mainmenu.MainMenuState;
-import flixel.addons.transition.FlxTransitionableState;
-import openfl.display.BitmapData;
-import funkin.data.stickers.StickerRegistry;
-import funkin.data.stickers.StickerSet;
-import funkin.ui.freeplay.FreeplayState;
-import openfl.geom.Matrix;
+import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import flixel.FlxState;
+import funkin.data.stickers.StickerRegistry;
+import funkin.graphics.FunkinSprite;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.transition.stickers.StickerPack;
 
 using Lambda;
 using StringTools;
 
 typedef StickerSubStateParams =
 {
+  /*
+   * The state to transition into.
+   */
   ?targetState:StickerSubState->FlxState,
 
-  ?stickerSet:String,
+  /**
+   * The sticker pack to retrieve and use.
+   * @default `Constants.DEFAULT_STICKER_PACK`
+   */
   ?stickerPack:String,
 
+  /**
+   * An existing set of stickers to transition out with.
+   */
   ?oldStickers:Array<StickerSprite>,
 }
 
@@ -37,9 +41,6 @@ class StickerSubState extends MusicBeatSubState
 {
   public var grpStickers:FlxTypedGroup<StickerSprite>;
 
-  // yes... a damn OpenFL sprite!!!
-  // public var dipshit:Sprite;
-
   /**
    * The state to switch to after the stickers are done.
    * This is a FUNCTION so we can pass it directly to `FlxG.switchState()`,
@@ -47,9 +48,8 @@ class StickerSubState extends MusicBeatSubState
    */
   var targetState:StickerSubState->FlxState;
 
-  // what stickers to use
-  var stickerSet:String;
-  var stickerPack:String;
+  var stickerPackId:String;
+  var stickerPack:StickerPack;
 
   // what "folders" to potentially load from (as of writing only "keys" exist)
   var soundSelections:Array<String> = [];
@@ -61,21 +61,20 @@ class StickerSubState extends MusicBeatSubState
   {
     super();
 
-    this.stickerSet = params.stickerSet ?? 'stickers-set-1';
-    this.stickerPack = params.stickerPack ?? 'all';
+    // Define the target state, with a default fallback.
+    this.targetState = params?.targetState ?? (sticker) -> FreeplayState.build(null, sticker);
 
-    this.targetState = params.targetState ?? (sticker) -> new MainMenuState();
+    this.stickerPackId = params.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
 
-    // todo still
-    // make sure that ONLY plays mp3/ogg files
-    // if there's no mp3/ogg file, then it regenerates/reloads the random folder
+    var targetStickerPack = StickerRegistry.instance.fetchEntry(this.stickerPackId);
 
+    this.stickerPack = targetStickerPack ?? StickerRegistry.instance.fetchDefault();
+
+    // TODO: Make this tied to the sticker pack more closely.
     var assetsInList = Assets.list();
-
     var soundFilterFunc = function(a:String) {
       return a.startsWith('assets/shared/sounds/stickersounds/');
     };
-
     soundSelections = assetsInList.filter(soundFilterFunc);
     soundSelections = soundSelections.map(function(a:String) {
       return a.replace('assets/shared/sounds/stickersounds/', '').split('/')[0];
@@ -94,12 +93,10 @@ class StickerSubState extends MusicBeatSubState
       soundSelections.push(i);
     }
 
-    trace(soundSelections);
-
     soundSelection = FlxG.random.getObject(soundSelections);
 
     var filterFunc = function(a:String) {
-      return a.startsWith('assets/shared/sounds/stickersounds/' + this.soundSelection + '/');
+      return a.startsWith('assets/shared/sounds/stickersounds/' + soundSelection + '/');
     };
     var assetsInList3 = Assets.list();
     sounds = assetsInList3.filter(filterFunc);
@@ -108,8 +105,6 @@ class StickerSubState extends MusicBeatSubState
       sounds[i] = sounds[i].replace('assets/shared/sounds/', '');
       sounds[i] = sounds[i].substring(0, sounds[i].lastIndexOf('.'));
     }
-
-    trace(sounds);
 
     // makes the stickers on the most recent camera, which is more often than not... a UI camera!!
     // grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
@@ -125,7 +120,9 @@ class StickerSubState extends MusicBeatSubState
       degenStickers();
     }
     else
+    {
       regenStickers();
+    }
   }
 
   public function degenStickers():Void
@@ -170,26 +167,14 @@ class StickerSubState extends MusicBeatSubState
       grpStickers.clear();
     }
 
-    var stickerSets:Array<String> = StickerRegistry.instance.listEntryIds();
-    var stickers:Map<String, Array<String>> = new Map<String, Array<String>>();
-
-    for (stickerSets in stickerInfo.getPack(this.stickerPack))
-    for (stickerSets in stickerInfo.getPack("all"))
-      var assetKey:String = stickerSet.getStickerSetAssetKey();
-      for (sticker in stickerSet.getPack("all"))
-        // add the asset key at the beginning of each sticker name because it's just easier lol
-        var stickerPack:Array<String> = stickerSet.getStickers(sticker).map(s -> '${assetKey}/${s}');
-        stickers.set(sticker, stickerPack);
-      }
-    }
-
+    // Initialize stickers at each point on the screen, then shuffle up the order they will get placed.
+    // This ensures stickers consistently cover the screen.
     var xPos:Float = -100;
     var yPos:Float = -100;
     while (xPos <= FlxG.width)
     {
-      var stickerSet:String = FlxG.random.getObject(stickers.keyValues());
-      var sticker:String = FlxG.random.getObject(stickers.get(stickerSet));
-      var sticky:StickerSprite = new StickerSprite(0, 0, sticker);
+      var stickerPath:String = stickerPack.getRandomStickerPath(false);
+      var sticky:StickerSprite = new StickerSprite(0, 0, stickerPath);
       sticky.visible = false;
 
       sticky.x = xPos;
@@ -211,32 +196,14 @@ class StickerSubState extends MusicBeatSubState
 
     FlxG.random.shuffle(grpStickers.members);
 
-    // var stickerCount:Int = 0;
-
-    // for (w in 0...6)
-    // {
-    //   var xPos:Float = FlxG.width * (w / 6);
-    //   for (h in 0...6)
-    //   {
-    //     var yPos:Float = FlxG.height * (h / 6);
-    //     var sticker = grpStickers.members[stickerCount];
-    //     xPos -= sticker.width / 2;
-    //     yPos -= sticker.height * 0.9;
-    //     sticker.x = xPos;
-    //     sticker.y = yPos;
-
-    //     stickerCount++;
-    //   }
-    // }
-
-    // for (ind => sticker in grpStickers.members)
-    // {
-    //   sticker.x = (ind % 8) * sticker.width;
-    //   var yShit:Int = Math.floor(ind / 8);
-    //   sticker.y += yShit * sticker.height;
-    //   // scales it juuuust a smidge
-    //   sticker.y += 20 * yShit;
-    // }
+    // Creates a new sticker for the very center.
+    var lastStickerPath:String = stickerPack.getRandomStickerPath(true);
+    var lastSticker:StickerSprite = new StickerSprite(0, 0, lastStickerPath);
+    lastSticker.visible = false;
+    lastSticker.updateHitbox();
+    lastSticker.angle = 0;
+    lastSticker.screenCenter();
+    grpStickers.add(lastSticker);
 
     // another damn for loop... apologies!!!
     for (ind => sticker in grpStickers.members)
@@ -298,12 +265,6 @@ class StickerSubState extends MusicBeatSubState
     grpStickers.sort((ord, a, b) -> {
       return FlxSort.byValues(ord, a.timing, b.timing);
     });
-
-    // centers the very last sticker
-    var lastOne:StickerSprite = grpStickers.members[grpStickers.members.length - 1];
-    lastOne.updateHitbox();
-    lastOne.angle = 0;
-    lastOne.screenCenter();
   }
 
   override public function update(elapsed:Float):Void
