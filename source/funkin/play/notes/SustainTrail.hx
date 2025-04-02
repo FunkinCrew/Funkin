@@ -9,6 +9,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMath;
 import funkin.ui.options.PreferencesMenu;
+import funkin.graphics.shaders.HSVShader;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -27,6 +28,8 @@ class SustainTrail extends FlxSprite
    */
   static final TRIANGLE_VERTEX_INDICES:Array<Int> = [0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7];
 
+  var hsvShader:HSVShader;
+
   public var strumTime:Float = 0; // millis
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
@@ -44,9 +47,15 @@ class SustainTrail extends FlxSprite
 
   /**
    * Set to `true` if the user missed the note or released the sustain.
-   * Should make the trail transparent.
+   * Should make the trail desaturated if released.
    */
   public var missedNote:Bool = false;
+
+  /**
+   * Set whenever the sustain is held, decrements when released.
+   * If it isn't regrabbed by the time it reaches `0`, handle the miss.
+   */
+  public var regrabTimer:Float = 0;
 
   /**
    * Set to `true` after handling additional logic for missing notes.
@@ -111,6 +120,8 @@ class SustainTrail extends FlxSprite
     this.sustainLength = sustainLength;
     this.fullSustainLength = sustainLength;
     this.noteDirection = noteDirection;
+
+    hsvShader = new HSVShader();
 
     setupHoldNoteGraphic(noteStyle);
     noteStyleOffsets = noteStyle.getHoldNoteOffsets();
@@ -211,6 +222,8 @@ class SustainTrail extends FlxSprite
 
     // alpha = 0.6;
     alpha = 1.0;
+    this.shader = hsvShader;
+
     // calls updateColorTransform(), which initializes processedGraphic!
     updateColorTransform();
 
@@ -232,6 +245,17 @@ class SustainTrail extends FlxSprite
       triggerRedraw();
     }
     previousScrollSpeed = parentStrumline?.scrollSpeed ?? 1.0;
+
+    if (regrabTimer > 0)
+    {
+      regrabTimer -= elapsed;
+      if (regrabTimer <= 0)
+      {
+        regrabTimer = 0;
+        desaturate();
+        alpha *= 0.75;
+      }
+    }
   }
 
   /**
@@ -395,12 +419,22 @@ class SustainTrail extends FlxSprite
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
       getScreenPosition(_point, camera).subtractPoint(offset);
-      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
+      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing, colorTransform, shader);
     }
 
     #if FLX_DEBUG
     if (FlxG.debugger.drawDebug) drawDebug();
     #end
+  }
+
+  public function desaturate():Void
+  {
+    hsvShader.saturation = 0.2;
+  }
+
+  public function setHue(hue:Float):Void
+  {
+    hsvShader.hue = hue;
   }
 
   public override function kill():Void
@@ -415,6 +449,7 @@ class SustainTrail extends FlxSprite
 
     hitNote = false;
     missedNote = false;
+    regrabTimer = 0;
   }
 
   public override function revive():Void
@@ -430,6 +465,11 @@ class SustainTrail extends FlxSprite
     hitNote = false;
     missedNote = false;
     handledMiss = false;
+    regrabTimer = 0;
+
+    hsvShader.hue = 1.0;
+    hsvShader.saturation = 1.0;
+    hsvShader.value = 1.0;
   }
 
   override public function destroy():Void
