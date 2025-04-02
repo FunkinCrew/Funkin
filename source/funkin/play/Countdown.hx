@@ -41,9 +41,11 @@ class Countdown
   static var countdownTimer:FlxTimer = null;
 
   /**
-   * Secondary countdown used when the Audio/Visual offset is set.
+   * Secondary timers used when the Audio/Visual offset is set.
+   * Sometimes the offset is larger than the beat crochet. In that case, an array is neccesary.
+   * We're not using another standalone looping timer because an array to store event handling information would be needed anyway.
    */
-  static var countdownOffsetTimer:FlxTimer = null;
+  static var countdownOffsetTimers:Array<FlxTimer> = [];
 
   /**
    * Performs the countdown.
@@ -71,7 +73,6 @@ class Countdown
 
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
-    if (Conductor.instance.audioVisualOffset != 0) countdownOffsetTimer = new FlxTimer();
 
     countdownTimer.start(Conductor.instance.beatLengthMs / 1000, function(tmr:FlxTimer) {
       if (PlayState.instance == null)
@@ -85,16 +86,28 @@ class Countdown
       // onBeatHit events are now properly dispatched by the Conductor even at negative timestamps,
       // so calling this is no longer necessary.
       // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
+      var offsetTimer:FlxTimer = null;
+      if (Conductor.instance.audioVisualOffset != 0)
+      {
+        offsetTimer = new FlxTimer();
+        countdownOffsetTimers.push(offsetTimer);
+      }
 
       // Countdown graphic.
       if (Conductor.instance.audioVisualOffset >= 0) showCountdownGraphic(countdownStep);
       else
-        countdownOffsetTimer.start(-Conductor.instance.audioVisualOffset / Constants.MS_PER_SEC, (tmr) -> showCountdownGraphic(countdownStep));
+        offsetTimer.start(-Conductor.instance.audioVisualOffset / Constants.MS_PER_SEC, (tmr) -> {
+          showCountdownGraphic(countdownStep);
+          stopOffsetTimer(tmr);
+        });
 
       // Countdown sound.
       if (Conductor.instance.audioVisualOffset <= 0) playCountdownSound(countdownStep);
       else
-        countdownOffsetTimer.start(Conductor.instance.audioVisualOffset / Constants.MS_PER_SEC, (tmr) -> playCountdownSound(countdownStep));
+        offsetTimer.start(Conductor.instance.audioVisualOffset / Constants.MS_PER_SEC, (tmr) -> {
+          playCountdownSound(countdownStep);
+          stopOffsetTimer(tmr);
+        });
 
       // Event handling bullshit.
       var cancelled:Bool = propagateCountdownEvent(countdownStep);
@@ -150,11 +163,6 @@ class Countdown
     {
       countdownTimer.active = false;
     }
-
-    if (countdownOffsetTimer != null && !countdownOffsetTimer.finished)
-    {
-      countdownOffsetTimer.active = false;
-    }
   }
 
   /**
@@ -167,11 +175,6 @@ class Countdown
     if (countdownTimer != null && !countdownTimer.finished)
     {
       countdownTimer.active = true;
-    }
-
-    if (countdownOffsetTimer != null && !countdownOffsetTimer.finished)
-    {
-      countdownOffsetTimer.active = true;
     }
   }
 
@@ -188,12 +191,16 @@ class Countdown
       countdownTimer.destroy();
       countdownTimer = null;
     }
+  }
 
-    if (countdownOffsetTimer != null)
+  public static function stopOffsetTimer(tmr):Void
+  {
+    if (tmr != null)
     {
-      countdownOffsetTimer.cancel();
-      countdownOffsetTimer.destroy();
-      countdownOffsetTimer = null;
+      countdownOffsetTimers.remove(tmr);
+      tmr.cancel();
+      tmr.destroy();
+      tmr = null;
     }
   }
 
@@ -216,13 +223,6 @@ class Countdown
     if (countdownTimer != null)
     {
       countdownTimer.reset();
-    }
-
-    if (countdownOffsetTimer != null)
-    {
-      countdownOffsetTimer.cancel();
-      countdownOffsetTimer.destroy();
-      countdownOffsetTimer = null;
     }
   }
 
