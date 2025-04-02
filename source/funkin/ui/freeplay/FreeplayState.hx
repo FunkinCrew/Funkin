@@ -40,7 +40,7 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.Level;
 import funkin.ui.transition.LoadingState;
-import funkin.ui.transition.StickerSubState;
+import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;

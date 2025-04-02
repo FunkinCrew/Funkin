@@ -125,6 +125,7 @@ class ResultsDebugSubState extends MusicBeatSubState
         songId: "cum",
         characterId: "bf",
         difficultyId: "nightmare",
+        variationId: "erect",
         isNewHighscore: true,
         isPracticeMode: true, // Invalidates achievements/scores.
         isBotPlayMode: true, // Invalidates achievements/scores.

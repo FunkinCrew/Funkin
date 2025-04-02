@@ -291,7 +291,7 @@ class GameOverSubState extends MusicBeatSubState
       }
       else
       {
-        var targetState:funkin.ui.transition.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
+        var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
           new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
 
         if (PlayStatePlaylist.isStoryMode)
@@ -299,16 +299,20 @@ class GameOverSubState extends MusicBeatSubState
           PlayStatePlaylist.reset();
         }
 
-        var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
-        var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
-        var stickerPack = switch (PlayState.instance.currentChart.song.id)
-        {
-          case "tutorial": "tutorial";
-          case "darnell" | "lit-up" | "2hot": "weekend";
-          default: "all";
-        };
+        var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
 
-        openSubState(new funkin.ui.transition.StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
+        if (stickerPackId == null)
+        {
+          var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+          var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
+
+          if (playerCharacter != null)
+          {
+            stickerPackId = playerCharacter.getStickerPackID();
+          }
+        }
+
+        openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
       }
     }
 

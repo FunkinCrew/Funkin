@@ -239,6 +239,11 @@ class Constants
   public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico', 'bf'];
 
   /**
+   * Default sticker pack for transitions
+   */
+  public static final DEFAULT_STICKER_PACK:String = 'default';
+
+  /**
    * The default intensity multiplier for camera bops.
    * Prolly needs to be tuned bc it's a multiplier now.
    */

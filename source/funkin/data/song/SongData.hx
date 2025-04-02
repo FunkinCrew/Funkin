@@ -472,6 +472,13 @@ class SongPlayData implements ICloneable<SongPlayData>
   public var album:Null<String>;
 
   /**
+   * The sticker pack for the song to use during transitions.
+   * If `null`, display the character's sticker pack.
+   */
+  @:optional
+  public var stickerPack:Null<String>;
+
+  /**
    * The start time for the audio preview in Freeplay.
    * Defaults to 0 seconds in.
    * @since `2.2.2`

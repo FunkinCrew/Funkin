@@ -1,13 +1,13 @@
 package funkin.data.stickers;
 
-import funkin.data.stickers.StickerSet;
 import funkin.data.stickers.StickerData;
-import funkin.ui.transition.ScriptedStickerSet;
+import funkin.ui.transition.stickers.StickerPack;
+import funkin.ui.transition.stickers.ScriptedStickerPack;
 
-class StickerRegistry extends BaseRegistry<StickerSet, StickerData>
+class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
 {
   /**
-   * The current version string for the sticker set data format.
+   * The current version string for the sticker pack data format.
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStickerData()` function.
    */
@@ -19,7 +19,12 @@ class StickerRegistry extends BaseRegistry<StickerSet, StickerData>
 
   public function new()
   {
-    super('STICKER', 'stickersets', STICKER_DATA_VERSION_RULE);
+    super('STICKER', 'stickerpacks', STICKER_DATA_VERSION_RULE);
+  }
+
+  public function fetchDefault():StickerPack
+  {
+    return fetchEntry(Constants.DEFAULT_STICKER_PACK);
   }
 
   /**
@@ -72,13 +77,13 @@ class StickerRegistry extends BaseRegistry<StickerSet, StickerData>
     return parser.value;
   }
 
-  function createScriptedEntry(clsName:String):StickerSet
+  function createScriptedEntry(clsName:String):StickerPack
   {
-    return ScriptedStickerSet.init(clsName, 'unknown');
+    return ScriptedStickerPack.init(clsName, 'unknown');
   }
 
   function getScriptedClassNames():Array<String>
   {
-    return ScriptedStickerSet.listScriptClasses();
+    return ScriptedStickerPack.listScriptClasses();
   }
 }

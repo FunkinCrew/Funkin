@@ -1,8 +1,8 @@
 package funkin.data.stickers;
 
 /**
- * A type definition for a sticker set.
- * It includes things like its name, the artist, and the stickers.
+ * A type definition for a sticker pack.
+ * It includes things like its name, the artist, and what sticker graphics to use.
  * @see https://lib.haxe.org/p/json2object/
  */
 typedef StickerData =
@@ -18,22 +18,13 @@ typedef StickerData =
   public var name:String;
 
   /**
-   * The asset key for this sticker set.
-   */
-  public var assetPath:String;
-
-  /**
    * The artist of the sticker set.
    */
   public var artist:String;
 
   /**
    * The stickers in the set.
+   * This is simply a list of asset files to use.
    */
-  public var stickers:Map<String, Array<String>>;
-
-  /**
-   * The sticker packs in this set.
-   */
-  public var stickerPacks:Map<String, Array<String>>;
+  public var stickers:Array<String>;
 }

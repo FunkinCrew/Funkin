@@ -21,7 +21,7 @@ import funkin.save.Save.SaveScoreData;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
-import funkin.ui.transition.StickerSubState;
+import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.MathUtil;
 import openfl.utils.Assets;
 #if FEATURE_DISCORD_RPC

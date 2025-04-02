@@ -2946,7 +2946,7 @@ class PlayState extends MusicBeatSubState
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
       #if FEATURE_NEWGROUNDS
-      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, data.score);
+      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, songScore);
       #end
 
       if (!isPracticeMode && !isBotPlayMode)
@@ -3304,6 +3304,7 @@ class PlayState extends MusicBeatSubState
         storyMode: PlayStatePlaylist.isStoryMode,
         songId: currentChart.song.id,
         difficultyId: currentDifficulty,
+        variationId: currentVariation,
         characterId: currentChart.characters.player,
         title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
         prevScoreData: prevScoreData,

@@ -289,6 +289,14 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return diff.album ?? '';
   }
 
+  public function getStickerPackId(diffId:String, variation:String):Null<String>
+  {
+    var diff:Null<SongDifficulty> = getDifficulty(diffId, variation);
+    if (diff == null) return null;
+
+    return diff.stickerPack;
+  }
+
   /**
    * Populate the difficulty data from the provided metadata.
    * Does not load chart data (that is triggered later when we want to play the song).
@@ -331,6 +339,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.difficultyRating = metadata.playData.ratings.get(diffId) ?? 0;
         difficulty.album = metadata.playData.album;
+        difficulty.stickerPack = metadata.playData.stickerPack;
 
         difficulty.stage = metadata.playData.stage;
         difficulty.noteStyle = metadata.playData.noteStyle;
@@ -750,6 +759,7 @@ class SongDifficulty
 
   public var difficultyRating:Int = 0;
   public var album:Null<String> = null;
+  public var stickerPack:Null<String> = null;
 
   public function new(song:Song, diffId:String, variation:String)
   {
