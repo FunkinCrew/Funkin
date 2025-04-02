@@ -4,12 +4,16 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.ui.MusicBeatSubState;
 import thx.semver.Version;
+import thx.semver.VersionRule;
+import funkin.util.VersionUtil;
 import lime.app.Application;
-import funkin.ui.mainmenu.MainMenuState;
 import flixel.util.typeLimit.NextState;
 import haxe.Http;
 import json2object.JsonParser;
 
+/**
+ * A substate that shows
+ */
 class OutdatedSubState extends MusicBeatSubState
 {
   /**
@@ -20,12 +24,17 @@ class OutdatedSubState extends MusicBeatSubState
   /**
    * The newest version.
    */
-  public static var updateVersion:Version;
+  public static var updateVersion:Null<Version>;
 
   /**
    * Is there a new version available?
    */
   public static var isNewVersion:Bool;
+
+  /**
+   * Is the new version a minor patch?
+   */
+  public static var isMinorVersion:Bool;
 
   /**
    * If the user has seen this state already.
@@ -35,33 +44,40 @@ class OutdatedSubState extends MusicBeatSubState
   /**
    * State to go to when this is finished.
    */
-  public var targetState:NextState;
+  public var targetState:Null<NextState>;
 
   override public function create():Void
   {
+    // Disable the parent state.
     FlxG.state.persistentDraw = false;
     FlxG.state.persistentUpdate = false;
 
+    // Updates variables required if not cached already.
+    if (updateVersion == null)
+    {
+      checkForUpdates();
+    }
+
+    // Close if we have already seen this, or if there is no update.
     if (!isNewVersion || leftState)
     {
       close();
       return;
     }
 
-    var txt:FlxText = new FlxText(0, 0, FlxG.width
-      - 50,
-      "HEY! You're running an outdated version of the game!\nCurrent version is "
+    var updateText:String = "HEY! There is a new " + (isMinorVersion ? 'patch' : 'update') + " available!\nCurrent version is "
       + "v"
       + Application.current.meta.get('version')
-      + ", while the most recent version is "
+      + ", while newest version is "
       + "v"
       + updateVersion
       + "!\nPress "
       + controls.getDialogueNameFromControl(ACCEPT, true)
       + " to go to itch.io, or "
       + controls.getDialogueNameFromControl(BACK, true)
-      + " to ignore this!!",
-      32);
+      + " to ignore this!!";
+
+    var txt:FlxText = new FlxText(0, 0, FlxG.width - 50, updateText, 32);
     txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
     txt.screenCenter();
     add(txt);
@@ -85,11 +101,12 @@ class OutdatedSubState extends MusicBeatSubState
 
   override public function close():Void
   {
-    FlxG.state.persistentDraw = true;
-    FlxG.state.persistentUpdate = true;
-
     leftState = true;
-    FlxG.switchState(targetState);
+    if (targetState != null)
+    {
+      FlxG.switchState(targetState);
+    }
+
     super.close();
   }
 
@@ -103,7 +120,7 @@ class OutdatedSubState extends MusicBeatSubState
 
     if (request.responseData == null)
     {
-      trace('Error while loading itch.io game uploads! Is the Game ID correct?');
+      trace('[UPDATE_CHECK] Error while loading itch.io game uploads! Are you sure that you are connected to the internet?');
       return;
     }
 
@@ -113,7 +130,7 @@ class OutdatedSubState extends MusicBeatSubState
 
     if (parser.errors.length > 0)
     {
-      trace('Failed to parse itch.io upload version!');
+      trace('[UPDATE_CHECK] Failed to parse itch.io upload version!');
 
       for (error in parser.errors)
       {
@@ -127,7 +144,7 @@ class OutdatedSubState extends MusicBeatSubState
 
     if (parser.value?.latest == null)
     {
-      trace('Failed to get itch.io build! (Channel name: ${getChannelName()})');
+      trace('[UPDATE_CHECK] Failed to get itch.io build! (Channel name: ${getChannelName()})');
       return;
     }
 
@@ -135,14 +152,18 @@ class OutdatedSubState extends MusicBeatSubState
     updateVersion = updateVersion.withPre(''); // for -notarized-stapled-dmg in macos build at the moment
 
     var currentVersion:Version = Application.current.meta.get('version');
+    var newVersionRule:VersionRule = '>$currentVersion';
 
-    isNewVersion = (updateVersion > currentVersion);
-
+    isNewVersion = VersionUtil.validateVersion(updateVersion, newVersionRule);
     if (isNewVersion)
     {
-      trace('A new update is available!');
-      trace('Current: ' + currentVersion);
-      trace('Newest: ' + updateVersion);
+      trace('[UPDATE_CHECK] A new update is available! ($updateVersion)');
+      var minorVersionRule:VersionRule = '${currentVersion.major}.${currentVersion.minor}.x';
+      isMinorVersion = VersionUtil.validateVersion(updateVersion, minorVersionRule);
+      if (isMinorVersion)
+      {
+        trace('[UPDATE_CHECK] Looks like Newest Version is a patch!');
+      }
     }
   }
 
@@ -174,6 +195,9 @@ class OutdatedSubState extends MusicBeatSubState
   }
 }
 
+/**
+ * The structure of what `https://itch.io/api/1/x/wharf/latest` returns.
+ */
 typedef ItchIOUploadStructure =
 {
   var latest:String;
