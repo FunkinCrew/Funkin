@@ -31,7 +31,7 @@ import funkin.api.newgrounds.Medals;
 import funkin.ui.freeplay.FreeplayState;
 import openfl.display.BlendMode;
 import funkin.save.Save;
-import funkin.ui.title.OutdatedState;
+import funkin.ui.title.OutdatedSubState;
 import lime.app.Application;
 
 #if desktop
@@ -264,50 +264,9 @@ class TitleState extends MusicBeatState
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
-      FlxG.switchState(() -> new MainMenuState());
-    }
-
-    if (pressedEnter && skippedIntro)
-    {
-      var url = "https://raw.githubusercontent.com/Ethan-makes-music/Funkin/develop/gitVersion.txt";
-      var request = new haxe.Http(url);
-
-      request.onData = function(data:String) {
-        // Data is the content of the .txt file
-        var updateVersion = data.trim();
-        var ver = "v" + Application.current.meta.get('version');
-
-        // Print both versions for debugging
-        trace("Current Version: " + ver);
-        trace("Update Version: " + updateVersion);
-
-        // This makes it so if your in debug mode the Outdated screen will not appear
-        #if debug
-        FlxG.switchState(() -> new MainMenuState());
-        trace("Your in debug mode!");
-        #else
-        trace("Your NOT in debug mode!");
-        // Checks to see if the versions are not the same, if so go to the Outdated screen.
-        if (ver != updateVersion)
-        {
-          // Versions are different, switch to OutdatedState
-          FlxG.switchState(() -> new OutdatedState());
-        }
-        else if (ver == updateVersion)
-        {
-          // Versions are the same, switch to MainMenuState
-          FlxG.switchState(() -> new MainMenuState());
-        }
-        #end
-      };
-
-      // Set the callback for any errors
-      request.onError = function(msg:String) {
-        trace("Error: " + msg);
-      };
-
-      // Send the request
-      request.request(false);
+      var subState:OutdatedSubState = new OutdatedSubState();
+      subState.targetState = () -> new MainMenuState();
+      openSubState(subState);
     }
 
     if (pressedEnter && !transitioning && skippedIntro)
@@ -335,7 +294,9 @@ class TitleState extends MusicBeatState
         // Assets.cache.clear(Paths.image('logoBumpin'));
         // Assets.cache.clear(Paths.image('titleEnter'));
         // ngSpr??
-        FlxG.switchState(targetState);
+        var subState:OutdatedSubState = new OutdatedSubState();
+        subState.targetState = targetState;
+        openSubState(subState);
       });
       // FunkinSound.playOnce(Paths.music('titleShoot'), 0.7);
     }
