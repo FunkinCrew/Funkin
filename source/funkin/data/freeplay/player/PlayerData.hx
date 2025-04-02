@@ -32,6 +32,15 @@ class PlayerData
   public var showUnownedChars:Bool = false;
 
   /**
+   * The default sticker pack to use for songs featuring this playable character.
+   * Can be overridden by specific songs.
+   * @default `default`
+   */
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_STICKER_PACK)
+  public var stickerPack:String = Constants.DEFAULT_STICKER_PACK;
+
+  /**
    * Which freeplay style to use for this character.
    */
   @:optional

@@ -250,6 +250,7 @@ class InitState extends FlxState
         songId: "cum",
         characterId: "pico",
         difficultyId: "nightmare",
+        variationId: "erect",
         isNewHighscore: true,
         scoreData:
           {
