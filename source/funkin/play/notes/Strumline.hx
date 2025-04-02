@@ -419,7 +419,7 @@ class Strumline extends FlxSpriteGroup
             var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
             var lastLength = holdNote.sustainLength;
-            holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition - inputLatencyMs
+            holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition + inputLatencyMs
               + conductorInUse.inputOffset;
 
             // Don't reward hitting too early, don't penalize hitting too late
