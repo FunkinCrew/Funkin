@@ -2976,7 +2976,7 @@ class PlayState extends MusicBeatSubState
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
       #if FEATURE_NEWGROUNDS
-      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, data);
+      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, data.score);
       #end
 
       if (!isPracticeMode && !isBotPlayMode)
