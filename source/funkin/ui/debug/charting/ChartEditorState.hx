@@ -5158,6 +5158,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       difficultySelectDirty = false;
 
+      var variationMetadata:Null<SongMetadata> = songMetadata.get(selectedVariation);
+      if (variationMetadata != null)
+      variationMetadata.playData.difficulties.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
+
       var difficultyToolbox:ChartEditorDifficultyToolbox = cast this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return;
 
