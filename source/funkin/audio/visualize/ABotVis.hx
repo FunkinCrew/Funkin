@@ -9,14 +9,17 @@ import funkin.vis.dsp.SpectralAnalyzer;
 
 using Lambda;
 
+@:nullSafety
 class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 {
   // public var vis:VisShit;
-  var analyzer:SpectralAnalyzer;
+  var analyzer:Null<SpectralAnalyzer> = null;
 
   var volumes:Array<Float> = [];
 
-  public var snd:FlxSound;
+  public var snd:Null<FlxSound> = null;
+
+  static final BAR_COUNT:Int = 7;
 
   // TODO: Make the sprites easier to soft code.
   public function new(snd:FlxSound, pixel:Bool)
@@ -25,7 +28,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     this.snd = snd;
 
-    var visCount = pixel ? (7 + 1) : (7 + 1);
+    var visCount = pixel ? (BAR_COUNT + 1) : (BAR_COUNT + 1);
     var visScale = pixel ? 6 : 1;
 
     var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas(pixel ? 'characters/abotPixel/aBotVizPixel' : 'characters/abot/aBotViz');
@@ -58,8 +61,10 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   public function initAnalyzer():Void
   {
+    if (snd == null) return;
+
     @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__audioSource, 7, 0.1, 40);
+    analyzer = new SpectralAnalyzer(snd._channel.__audioSource, BAR_COUNT, 0.1, 40);
     // A-Bot tuning...
     analyzer.minDb = -65;
     analyzer.maxDb = -25;
@@ -77,16 +82,17 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     // analyzer.fftN = 2048;
   }
 
+  public function dumpSound():Void
+  {
+    snd = null;
+    analyzer = null;
+  }
+
   var visTimer:Float = -1;
   var visTimeMax:Float = 1 / 30;
 
   override function update(elapsed:Float)
   {
-    // updateViz();
-
-    // updateFFT(elapsed);
-
-    //
     super.update(elapsed);
   }
 
@@ -97,8 +103,8 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
   override function draw()
   {
-    if (analyzer != null) drawFFT();
     super.draw();
+    drawFFT();
   }
 
   /**
@@ -106,7 +112,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
    */
   function drawFFT():Void
   {
-    var levels = analyzer.getLevels();
+    var levels = (analyzer != null) ? analyzer.getLevels() : getDefaultLevels();
 
     for (i in 0...min(group.members.length, levels.length))
     {
@@ -118,12 +124,6 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
       // decrement our animFrame, so we can get a value from 0-5 for animation frames
       animFrame -= 1;
 
-      #if desktop
-      // Web version scales with the Flixel volume level.
-      // This line brings platform parity but looks worse.
-      // animFrame = Math.round(animFrame * FlxG.sound.volume);
-      #end
-
       animFrame = Math.floor(Math.min(5, animFrame));
       animFrame = Math.floor(Math.max(0, animFrame));
 
@@ -133,79 +133,19 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
-  // function updateFFT(elapsed:Float)
-  // {
-  //   if (vis.snd != null)
-  //   {
-  //     vis.checkAndSetBuffer();
-  //     if (vis.setBuffer)
-  //     {
-  //       var remappedShit:Int = 0;
-  //       if (vis.snd.playing) remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, vis.numSamples));
-  //       else
-  //         remappedShit = Std.int(FlxMath.remapToRange(Conductor.instance.songPosition, 0, vis.snd.length, 0, vis.numSamples));
-  //       var fftSamples:Array<Float> = [];
-  //       var swagBucks = remappedShit;
-  //       for (i in remappedShit...remappedShit + (Std.int((44100 * (1 / 144)))))
-  //       {
-  //         var left = vis.audioData[swagBucks] / 32767;
-  //         var right = vis.audioData[swagBucks + 1] / 32767;
-  //         var balanced = (left + right) / 2;
-  //         swagBucks += 2;
-  //         fftSamples.push(balanced);
-  //       }
-  //       var freqShit = vis.funnyFFT(fftSamples);
-  //       for (i in 0...group.members.length)
-  //       {
-  //         var getSliceShit = function(s:Int) {
-  //           var powShit = FlxMath.remapToRange(s, 0, group.members.length, 0, MathUtil.logBase(10, freqShit[0].length));
-  //           return Math.round(Math.pow(10, powShit));
-  //         };
-  //         // var powShit:Float = getSliceShit(i);
-  //         var hzSliced:Int = getSliceShit(i);
-  //         var sliceLength:Int = Std.int(freqShit[0].length / group.members.length);
-  //         var volSlice = freqShit[0].slice(hzSliced, getSliceShit(i + 1));
-  //         var avgVel:Float = 0;
-  //         for (slice in volSlice)
-  //         {
-  //           avgVel += slice;
-  //         }
-  //         avgVel /= volSlice.length;
-  //         avgVel *= 10000000;
-  //         volumes[i] += avgVel - (elapsed * (volumes[i] * 50));
-  //         var animFrame:Int = Std.int(volumes[i]);
-  //         animFrame = Math.floor(Math.min(5, animFrame));
-  //         animFrame = Math.floor(Math.max(0, animFrame));
-  //         animFrame = Std.int(Math.abs(animFrame - 5)); // shitty dumbass flip, cuz dave got da shit backwards lol!
-  //         group.members[i].animation.curAnim.curFrame = animFrame;
-  //         if (FlxG.keys.justPressed.U)
-  //         {
-  //           trace(avgVel);
-  //           trace(group.members[i].animation.curAnim.curFrame);
-  //         }
-  //       }
-  //       // group.members[0].animation.curAnim.curFrame =
-  //     }
-  //   }
-  // }
-  // public function updateViz()
-  // {
-  //   if (vis.snd != null)
-  //   {
-  //     var remappedShit:Int = 0;
-  //     vis.checkAndSetBuffer();
-  //     if (vis.setBuffer)
-  //     {
-  //       // var startingSample:Int = Std.int(FlxMath.remapToRange)
-  //       if (vis.snd.playing) remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, vis.numSamples));
-  //       for (i in 0...group.members.length)
-  //       {
-  //         var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, remappedShit, remappedShit + 500));
-  //         var left = vis.audioData[sampleApprox] / 32767;
-  //         var animFrame:Int = Std.int(FlxMath.remapToRange(left, -1, 1, 0, 6));
-  //         group.members[i].animation.curAnim.curFrame = animFrame;
-  //       }
-  //     }
-  //   }
-  // }
+  /**
+   * Explicitly define the default levels to draw when the analyzer is not available.
+   * @return Array<Bar>
+   */
+  static function getDefaultLevels():Array<Bar>
+  {
+    var result:Array<Bar> = [];
+
+    for (i in 0...BAR_COUNT)
+    {
+      result.push({value: 0, peak: 0.0});
+    }
+
+    return result;
+  }
 }
