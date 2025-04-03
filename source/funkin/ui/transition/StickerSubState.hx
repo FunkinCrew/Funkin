@@ -301,11 +301,6 @@ class StickerSubState extends MusicBeatSubState
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
-
-    // if (FlxG.keys.justPressed.ANY)
-    // {
-    //   regenStickers();
-    // }
   }
 
   var switchingState:Bool = false;

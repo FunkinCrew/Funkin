@@ -1300,16 +1300,6 @@ class FreeplayState extends MusicBeatSubState
           difficultyId: "hard"
         }, grpCapsules.members[curSelected]);
     }
-
-    // if (FlxG.keys.justPressed.H)
-    // {
-    //   rankDisplayNew(fromResultsParams);
-    // }
-
-    // if (FlxG.keys.justPressed.G)
-    // {
-    //   rankAnimSlam(fromResultsParams);
-    // }
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
     if (controls.FREEPLAY_CHAR_SELECT && !busy)

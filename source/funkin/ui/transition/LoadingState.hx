@@ -171,10 +171,6 @@ class LoadingState extends MusicBeatSubState
       }
       FlxG.watch.addQuick('percentage?', callbacks.numRemaining / callbacks.length);
     }
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.justPressed.SPACE) trace('fired: ' + callbacks.getFired() + ' unfired:' + callbacks.getUnfired());
-    #end
   }
 
   function onLoad():Void
