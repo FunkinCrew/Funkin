@@ -698,33 +698,6 @@ class ResultState extends MusicBeatSubState
 
   override function update(elapsed:Float):Void
   {
-    // if(FlxG.keys.justPressed.R){
-    //   FlxG.switchState(() -> new funkin.play.ResultState(
-    //   {
-    //     storyMode: false,
-    //     title: "Cum Song Erect by Kawai Sprite",
-    //     songId: "cum",
-    //     difficultyId: "nightmare",
-    //     isNewHighscore: true,
-    //     scoreData:
-    //       {
-    //         score: 1_234_567,
-    //         tallies:
-    //           {
-    //             sick: 200,
-    //             good: 0,
-    //             bad: 0,
-    //             shit: 0,
-    //             missed: 0,
-    //             combo: 0,
-    //             maxCombo: 69,
-    //             totalNotesHit: 200,
-    //             totalNotes: 200 // 0,
-    //           }
-    //       },
-    //   }));
-    // }
-
     // maskShaderSongName.swagSprX = songName.x;
     maskShaderDifficulty.swagSprX = difficulty.x;
 

@@ -183,36 +183,6 @@ class FreeplayDJ extends FlxAtlasSprite
       default:
         // I shit myself.
     }
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.pressed.CONTROL)
-    {
-      if (FlxG.keys.justPressed.LEFT)
-      {
-        this.offsetX -= FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.RIGHT)
-      {
-        this.offsetX += FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.UP)
-      {
-        this.offsetY -= FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.DOWN)
-      {
-        this.offsetY += FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.C)
-      {
-        currentState = (currentState == Idle ? Cartoon : Idle);
-      }
-    }
-    #end
   }
 
   function onFinishAnim(name:String):Void
