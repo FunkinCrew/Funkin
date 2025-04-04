@@ -1,28 +1,22 @@
 package funkin.ui.mainmenu;
 
-import funkin.graphics.FunkinSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.typeLimit.NextState;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
-import flixel.text.FlxText;
-import funkin.data.song.SongData.SongMusicData;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
-import funkin.ui.AtlasMenuList;
+import funkin.ui.AtlasMenuList.AtlasMenuItem;
 import funkin.ui.freeplay.FreeplayState;
-import funkin.ui.MenuList;
+import funkin.ui.MenuList.MenuTypedList;
+import funkin.ui.MenuList.MenuListItem;
 import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
@@ -30,8 +24,7 @@ import funkin.util.WindowUtil;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
-#if newgrounds
-import funkin.ui.NgPrompt;
+#if FEATURE_NEWGROUNDS
 import io.newgrounds.NG;
 #end
 
@@ -173,9 +166,13 @@ class MainMenuState extends MusicBeatState
 
     // This has to come AFTER!
     this.leftWatermarkText.text = Constants.VERSION;
-    // this.rightWatermarkText.text = "blablabla test";
 
-    // NG.core.calls.event.logEvent('swag').send();
+    #if FEATURE_NEWGROUNDS
+    if (NG.core?.loggedIn)
+    {
+      this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NG.core?.user?.name}';
+    }
+    #end
   }
 
   function playMenuMusic():Void
@@ -221,13 +218,6 @@ class MainMenuState extends MusicBeatState
   override function finishTransIn():Void
   {
     super.finishTransIn();
-
-    // menuItems.enabled = true;
-
-    // #if newgrounds
-    // if (NGio.savedSessionFailed)
-    // 	showSavedSessionFailed();
-    // #end
   }
 
   function onMenuItemChange(selected:MenuListItem)
@@ -243,50 +233,14 @@ class MainMenuState extends MusicBeatState
 
   function selectMerch()
   {
-    WindowUtil.openURL(Constants.URL_MERCH);
-  }
-  #end
-
-  #if newgrounds
-  function selectLogin()
-  {
-    openNgPrompt(NgPrompt.showLogin());
-  }
-
-  function selectLogout()
-  {
-    openNgPrompt(NgPrompt.showLogout());
-  }
-
-  function showSavedSessionFailed()
-  {
-    openNgPrompt(NgPrompt.showSavedSessionFailed());
-  }
-
-  /**
-   * Calls openPrompt and redraws the login/logout button
-   * @param prompt
-   * @param onClose
-   */
-  public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
-  {
-    var onPromptClose = checkLoginStatus;
-    if (onClose != null)
-    {
-      onPromptClose = function() {
-        checkLoginStatus();
-        onClose();
-      }
-    }
-
-    openPrompt(prompt, onPromptClose);
-  }
-
-  function checkLoginStatus()
-  {
-    var prevLoggedIn = menuItems.has("logout");
-    if (prevLoggedIn && !NGio.isLoggedIn) menuItems.resetItem("login", "logout", selectLogout);
-    else if (!prevLoggedIn && NGio.isLoggedIn) menuItems.resetItem("logout", "login", selectLogin);
+    NG.core?.calls.loader.loadReferral(false)
+      .addComponentParameter("referral_name", "merch_link")
+      .addResponseHandler(response -> {
+        if (response.success) WindowUtil.openURL(response.result.data.url)
+        else
+          WindowUtil.openURL(Constants.URL_MERCH_FALLBACK);
+      })
+      .send();
   }
   #end
 

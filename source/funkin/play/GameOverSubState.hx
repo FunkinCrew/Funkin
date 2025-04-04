@@ -1,5 +1,7 @@
 package funkin.play;
 
+import flixel.FlxState;
+import funkin.data.freeplay.player.PlayerRegistry;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -145,10 +147,13 @@ class GameOverSubState extends MusicBeatSubState
     else
     {
       boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
-      boyfriend.canPlayOtherAnims = true;
-      boyfriend.isDead = true;
-      add(boyfriend);
-      boyfriend.resetCharacter();
+      if (boyfriend != null)
+      {
+        boyfriend.canPlayOtherAnims = true;
+        boyfriend.isDead = true;
+        add(boyfriend);
+        boyfriend.resetCharacter();
+      }
     }
 
     setCameraTarget();
@@ -269,6 +274,14 @@ class GameOverSubState extends MusicBeatSubState
       // PlayState.seenCutscene = false; // old thing...
       if (gameOverMusic != null) gameOverMusic.stop();
 
+      // Stop death quotes immediately.
+      hasPlayedDeathQuote = true;
+      if (deathQuoteSound != null)
+      {
+        deathQuoteSound.stop();
+        deathQuoteSound = null;
+      }
+
       if (isChartingMode)
       {
         this.close();
@@ -276,13 +289,26 @@ class GameOverSubState extends MusicBeatSubState
         PlayState.instance.close(); // This only works because PlayState is a substate!
         return;
       }
-      else if (PlayStatePlaylist.isStoryMode)
-      {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
-      }
       else
       {
-        openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(sticker)));
+        var targetState:funkin.ui.transition.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
+          new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
+
+        if (PlayStatePlaylist.isStoryMode)
+        {
+          PlayStatePlaylist.reset();
+        }
+
+        var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+        var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
+        var stickerPack = switch (PlayState.instance.currentChart.song.id)
+        {
+          case "tutorial": "tutorial";
+          case "darnell" | "lit-up" | "2hot": "weekend";
+          default: "all";
+        };
+
+        openSubState(new funkin.ui.transition.StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
       }
     }
 
@@ -301,32 +327,56 @@ class GameOverSubState extends MusicBeatSubState
       else
       {
         // Music hasn't started yet.
-        switch (PlayStatePlaylist.campaignId)
+
+        if (boyfriend.getDeathQuote() != null)
         {
-          // TODO: Make the behavior for playing Jeff's voicelines generic or un-hardcoded.
-          // This will simplify the class and make it easier for mods to add death quotes.
-          case 'week7':
-            if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !playingJeffQuote)
-            {
-              playingJeffQuote = true;
-              playJeffQuote();
-              // Start music at lower volume
-              startDeathMusic(0.2, false);
-              boyfriend.playAnimation('deathLoop' + animationSuffix);
-            }
-          default:
-            // Start music at normal volume once the initial death animation finishes.
-            if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
-            {
-              startDeathMusic(1.0, false);
-              boyfriend.playAnimation('deathLoop' + animationSuffix);
-            }
+          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished() && !hasPlayedDeathQuote)
+          {
+            hasPlayedDeathQuote = true;
+            playDeathQuote();
+          }
+        }
+        else
+        {
+          // Start music at normal volume once the initial death animation finishes.
+          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && boyfriend.isAnimationFinished())
+          {
+            startDeathMusic(1.0, false);
+            boyfriend.playAnimation('deathLoop' + animationSuffix);
+          }
         }
       }
     }
 
     // Start death music before firstDeath gets replaced
     super.update(elapsed);
+  }
+
+  var deathQuoteSound:Null<FunkinSound> = null;
+
+  function playDeathQuote():Void
+  {
+    if (boyfriend == null) return;
+
+    var deathQuote = boyfriend.getDeathQuote();
+    if (deathQuote == null) return;
+
+    if (deathQuoteSound != null)
+    {
+      deathQuoteSound.stop();
+      deathQuoteSound = null;
+    }
+
+    // Start music at lower volume
+    startDeathMusic(0.2, false);
+    boyfriend.playAnimation('deathLoop' + animationSuffix);
+    deathQuoteSound = FunkinSound.playOnce(deathQuote, function() {
+      // Once the quote ends, fade in the game over music.
+      if (!isEnding && gameOverMusic != null)
+      {
+        gameOverMusic.fadeIn(4, 0.2, 1);
+      }
+    });
   }
 
   /**
@@ -338,6 +388,14 @@ class GameOverSubState extends MusicBeatSubState
     {
       isEnding = true;
       startDeathMusic(1.0, true); // isEnding changes this function's behavior.
+
+      // Stop death quotes immediately.
+      hasPlayedDeathQuote = true;
+      if (deathQuoteSound != null)
+      {
+        deathQuoteSound.stop();
+        deathQuoteSound = null;
+      }
 
       if (PlayState.instance.isMinimalMode || boyfriend == null) {}
       else
@@ -487,26 +545,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  var playingJeffQuote:Bool = false;
-
-  /**
-   * Week 7-specific hardcoded behavior, to play a custom death quote.
-   * TODO: Make this a module somehow.
-   */
-  function playJeffQuote():Void
-  {
-    var randomCensor:Array<Int> = [];
-
-    if (!Preferences.naughtyness) randomCensor = [1, 3, 8, 13, 17, 21];
-
-    FunkinSound.playOnce(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, randomCensor)), function() {
-      // Once the quote ends, fade in the game over music.
-      if (!isEnding && gameOverMusic != null)
-      {
-        gameOverMusic.fadeIn(4, 0.2, 1);
-      }
-    });
-  }
+  var hasPlayedDeathQuote:Bool = false;
 
   public override function destroy():Void
   {
