@@ -719,8 +719,16 @@ class ResultState extends MusicBeatSubState
     if (controls.PAUSE || controls.ACCEPT)
     {
       if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
+      {
+        if (introMusicAudio != null)
+        {
+          introMusicAudio.stop();
+          introMusicAudio.destroy();
+          introMusicAudio = null;
+        }
         close(); // IF we are a substate, we will close ourselves. This is used from ResultsDebugSubState
-      if (introMusicAudio != null)
+      }
+      else if (introMusicAudio != null)
       {
         @:nullSafety(Off)
         introMusicAudio.onComplete = null;
