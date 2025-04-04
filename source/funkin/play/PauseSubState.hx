@@ -82,8 +82,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
-    {text: 'Restart Dialogue', callback: restartConversation},
     {text: 'Skip Dialogue', callback: skipConversation},
+    {text: 'Restart Dialogue', callback: restartConversation},
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
