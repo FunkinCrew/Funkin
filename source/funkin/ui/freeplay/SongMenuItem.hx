@@ -39,6 +39,9 @@ class SongMenuItem extends FlxSpriteGroup
   public var freeplayData(default, null):Null<FreeplaySongData> = null;
 
   public var selected(default, set):Bool;
+  public var isLevelDisplay(default, set):Bool;
+
+  var weekNum:Int = 0;
 
   public var songText:CapsuleText;
   public var favIconBlurred:FlxSprite;
@@ -246,7 +249,6 @@ class SongMenuItem extends FlxSpriteGroup
   function checkWeek(name:String):Void
   {
     // trace(name);
-    var weekNum:Int = 0;
     switch (name)
     {
       case 'bopeebo' | 'fresh' | 'dadbattle':
@@ -271,7 +273,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     weekNumbers[0].digit = Std.int(Math.abs(weekNum));
 
-    if (weekNum == 0)
+    if (weekNum == 0 || isLevelDisplay)
     {
       weekType.visible = false;
       weekNumbers[0].visible = false;
@@ -422,8 +424,9 @@ class SongMenuItem extends FlxSpriteGroup
     return evilTrail.color;
   }
 
-  public function refreshDisplay():Void
+  public function refreshDisplay(isLevelDisplay:Bool = false):Void
   {
+    this.isLevelDisplay = isLevelDisplay;
     if (freeplayData == null)
     {
       songText.text = 'Random';
@@ -434,6 +437,14 @@ class SongMenuItem extends FlxSpriteGroup
       favIconBlurred.visible = false;
       newText.visible = false;
     }
+    else if (isLevelDisplay)
+    {
+      songText.text = freeplayData.levelName;
+      if (freeplayData.levelCharacter != null) pixelIcon.setCharacter(freeplayData.levelCharacter);
+      else if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.songCharacter);
+      pixelIcon.visible = true;
+      updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
+    }
     else
     {
       songText.text = freeplayData.fullSongName;
@@ -442,6 +453,7 @@ class SongMenuItem extends FlxSpriteGroup
       updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
       updateDifficultyRating(freeplayData.difficultyRating ?? 0);
       updateScoringRank(freeplayData.scoringRank);
+
       newText.visible = freeplayData.isNew;
       favIcon.visible = freeplayData.isFav;
       favIconBlurred.visible = freeplayData.isFav;
@@ -528,7 +540,7 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
+  public function init(?x:Float, ?y:Float, freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, isLevelDisplay:Bool = false):Void
   {
     if (x != null) this.x = x;
     if (y != null) this.y = y;
@@ -549,7 +561,7 @@ class SongMenuItem extends FlxSpriteGroup
     favIcon.animation.curAnim.curFrame = favIcon.animation.curAnim.numFrames - 1;
     favIconBlurred.animation.curAnim.curFrame = favIconBlurred.animation.curAnim.numFrames - 1;
 
-    refreshDisplay();
+    refreshDisplay(isLevelDisplay);
 
     checkWeek(freeplayData?.data.id);
   }
@@ -715,6 +727,36 @@ class SongMenuItem extends FlxSpriteGroup
     selected = value;
     updateSelected();
     return selected;
+  }
+
+  function set_isLevelDisplay(value:Bool):Bool
+  {
+    if (isLevelDisplay != value)
+    {
+      var visibility = !value;
+
+      ranking.visible = visibility;
+      blurredRanking.visible = visibility;
+      favIcon.visible = visibility;
+      favIconBlurred.visible = visibility;
+      newText.visible = visibility;
+
+      for (number in bigNumbers)
+        number.visible = visibility;
+      for (number in smallNumbers)
+        number.visible = visibility;
+
+      bpmText.visible = visibility;
+      difficultyText.visible = visibility;
+
+      if (weekNum != 0)
+      {
+        weekType.visible = visibility;
+        for (number in weekNumbers)
+          number.visible = visibility;
+      }
+    }
+    return isLevelDisplay = value;
   }
 
   function updateSelected():Void
