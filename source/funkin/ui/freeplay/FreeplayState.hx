@@ -720,9 +720,10 @@ class FreeplayState extends MusicBeatSubState
    *
    * @param filterStuff A filter to apply to the song list (regex, startswith, all, favorite)
    * @param force Whether the capsules should "jump" back in or not using their animation
+   * @param stayClose If the selection should stay close to your last selection when it disappears
    * @param onlyIfChanged Only apply the filter if the song list has changed
    */
-  public function generateSongList(filterStuff:Null<SongFilter>, force:Bool = false, refilter:Bool = false, onlyIfChanged:Bool = true):Void
+  public function generateSongList(filterStuff:Null<SongFilter>, force:Bool = false, stayClose:Bool = false, onlyIfChanged:Bool = true):Void
   {
     var tempSongs:Array<Null<FreeplaySongData>> = songs;
     if (filterStuff != null) tempSongs = sortSongs(tempSongs, filterStuff);
@@ -751,11 +752,33 @@ class FreeplayState extends MusicBeatSubState
     currentFilter = filterStuff;
 
     currentFilteredSongs = tempSongs;
-    curSelected = 0;
 
     // If curSelected is 0, the result will be null and fall back to the rememberedSongId.
     // We set this so if we change the filter, we'd remain on the same song if it's still in the list.
-    rememberedSongId = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? rememberedSongId;
+    var curData = grpCapsules.members[curSelected]?.freeplayData;
+
+    curSelected = 0;
+    rememberedSongId = curData?.data.id ?? rememberedSongId;
+
+    if (stayClose && curData != null)
+    {
+      trace("FREEPLAY | Staying close!");
+      var i:Int = songs.indexOf(curData);
+      while (i >= 0)
+      {
+        i--;
+        var index = tempSongs.indexOf(songs[i]);
+        trace('Checking index $i (data ${songs[i]?.data}), found at index $index');
+        if (index != -1)
+        {
+          if (index < tempSongs.length - 1) index++;
+          trace('Success! Staying close...');
+          curSelected = index;
+          rememberedSongId = tempSongs[index]?.data.id;
+          break;
+        }
+      }
+    }
 
     grpCapsules.killMembers();
     var hsvShader:HSVShader = new HSVShader();
@@ -1665,7 +1688,7 @@ class FreeplayState extends MusicBeatSubState
     if (controls.FREEPLAY_SWITCH_REMIX)
     {
       changeVariation(1);
-      generateSongList(currentFilter, true);
+      generateSongList(currentFilter, true, true);
     }
 
     if (controls.UI_LEFT_P)
