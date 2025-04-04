@@ -1,35 +1,9 @@
 package funkin.ui.debug.charting.handlers;
 
-import funkin.data.stage.StageData;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import haxe.ui.components.HorizontalSlider;
-import haxe.ui.containers.TreeView;
-import haxe.ui.containers.TreeViewNode;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventSchema;
-import funkin.data.song.SongData.SongTimeChange;
-import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.event.SongEvent;
-import funkin.play.song.SongSerializer;
-import funkin.data.stage.StageData;
 import haxe.ui.RuntimeComponentBuilder;
-import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.ui.haxeui.components.CharacterPlayer;
-import funkin.util.FileUtil;
-import haxe.ui.components.Button;
-import haxe.ui.data.ArrayDataSource;
 import haxe.ui.components.CheckBox;
-import haxe.ui.components.DropDown;
-import haxe.ui.components.HorizontalSlider;
-import haxe.ui.components.Label;
-import haxe.ui.components.NumberStepper;
-import haxe.ui.components.Slider;
-import haxe.ui.components.TextField;
-import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
@@ -40,12 +14,6 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorNoteDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
-import haxe.ui.containers.Frame;
-import haxe.ui.containers.Grid;
-import haxe.ui.containers.TreeView;
-import haxe.ui.containers.TreeViewNode;
-import haxe.ui.core.Component;
-import haxe.ui.events.UIEvent;
 
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.

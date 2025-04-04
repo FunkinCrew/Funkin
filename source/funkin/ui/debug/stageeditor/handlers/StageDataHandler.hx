@@ -1,10 +1,8 @@
 package funkin.ui.debug.stageeditor.handlers;
 
-import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import haxe.io.Bytes;
 import funkin.util.FileUtil;
 import openfl.display.BitmapData;
-import haxe.Json;
 import haxe.zip.Entry;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.BaseCharacter;

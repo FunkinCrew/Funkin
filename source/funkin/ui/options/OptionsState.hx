@@ -1,96 +1,64 @@
 package funkin.ui.options;
 
+import funkin.ui.Page.PageName;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.graphics.shaders.HSVShader;
-import funkin.util.WindowUtil;
-import funkin.audio.FunkinSound;
 import funkin.input.Controls;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.NewgroundsClient;
+#end
 
+/**
+ * The main options menu
+ * It mainly is controlled via the "optionsCodex" object,
+ * which handles paging and going to the different submenus
+ */
 class OptionsState extends MusicBeatState
 {
-  var pages = new Map<PageName, Page>();
-  var currentName:PageName = Options;
-  var currentPage(get, never):Page;
-
-  inline function get_currentPage():Page
-    return pages[currentName];
+  var optionsCodex:Codex<OptionsMenuPageName>;
 
   override function create():Void
   {
     persistentUpdate = true;
 
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
-    var hsv = new HSVShader();
-    hsv.hue = -0.6;
-    hsv.saturation = 0.9;
-    hsv.value = 3.6;
+    var hsv = new HSVShader(-0.6, 0.9, 3.6);
     menuBG.shader = hsv;
-    FlxG.debugger.track(hsv);
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
     add(menuBG);
 
-    var options = addPage(Options, new OptionsMenu());
-    var preferences = addPage(Preferences, new PreferencesMenu());
-    var controls = addPage(Controls, new ControlsMenu());
+    optionsCodex = new Codex<OptionsMenuPageName>(Options);
+    add(optionsCodex);
+
+    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
+    var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
+    var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
 
     if (options.hasMultipleOptions())
     {
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
-      preferences.onExit.add(switchPage.bind(Options));
+      preferences.onExit.add(optionsCodex.switchPage.bind(Options));
     }
     else
     {
       // No need to show Options page
       controls.onExit.add(exitToMainMenu);
-      setPage(Controls);
+      optionsCodex.setPage(Controls);
     }
 
     super.create();
-  }
-
-  function addPage<T:Page>(name:PageName, page:T)
-  {
-    page.onSwitch.add(switchPage);
-    pages[name] = page;
-    add(page);
-    page.exists = currentName == name;
-    return page;
-  }
-
-  function setPage(name:PageName)
-  {
-    if (pages.exists(currentName))
-    {
-      currentPage.exists = false;
-      currentPage.visible = false;
-    }
-
-    currentName = name;
-
-    if (pages.exists(currentName))
-    {
-      currentPage.exists = true;
-      currentPage.visible = true;
-    }
-  }
-
-  function switchPage(name:PageName)
-  {
-    // TODO: Animate this transition?
-    setPage(name);
   }
 
   function exitControls():Void
@@ -99,82 +67,21 @@ class OptionsState extends MusicBeatState
     PlayerSettings.reset();
     PlayerSettings.init();
 
-    switchPage(Options);
+    optionsCodex.switchPage(Options);
   }
 
   function exitToMainMenu()
   {
-    currentPage.enabled = false;
+    optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
     FlxG.switchState(() -> new MainMenuState());
   }
 }
 
-class Page extends FlxGroup
-{
-  public var onSwitch(default, null) = new FlxTypedSignal<PageName->Void>();
-  public var onExit(default, null) = new FlxSignal();
-
-  public var enabled(default, set) = true;
-  public var canExit = true;
-
-  var controls(get, never):Controls;
-
-  inline function get_controls()
-    return PlayerSettings.player1.controls;
-
-  var subState:FlxSubState;
-
-  inline function switchPage(name:PageName)
-  {
-    onSwitch.dispatch(name);
-  }
-
-  inline function exit()
-  {
-    onExit.dispatch();
-  }
-
-  override function update(elapsed:Float)
-  {
-    super.update(elapsed);
-
-    if (enabled) updateEnabled(elapsed);
-  }
-
-  function updateEnabled(elapsed:Float)
-  {
-    if (canExit && controls.BACK)
-    {
-      exit();
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-    }
-  }
-
-  function set_enabled(value:Bool)
-  {
-    return this.enabled = value;
-  }
-
-  function openPrompt(prompt:Prompt, onClose:Void->Void)
-  {
-    enabled = false;
-    prompt.closeCallback = function() {
-      enabled = true;
-      if (onClose != null) onClose();
-    }
-
-    FlxG.state.openSubState(prompt);
-  }
-
-  override function destroy()
-  {
-    super.destroy();
-    onSwitch.removeAll();
-  }
-}
-
-class OptionsMenu extends Page
+/**
+ * Our default Page when we enter the OptionsState, a bit of the root
+ */
+class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
 
@@ -183,8 +90,8 @@ class OptionsMenu extends Page
     super();
 
     add(items = new TextMenuList());
-    createItem("PREFERENCES", function() switchPage(Preferences));
-    createItem("CONTROLS", function() switchPage(Controls));
+    createItem("PREFERENCES", function() codex.switchPage(Preferences));
+    createItem("CONTROLS", function() codex.switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
       #if web
       LoadingState.transitionToState(() -> new LatencyState());
@@ -193,11 +100,40 @@ class OptionsMenu extends Page
       #end
     });
 
-    #if newgrounds
-    if (NGio.isLoggedIn) createItem("LOGOUT", selectLogout);
+    #if FEATURE_NEWGROUNDS
+    if (NewgroundsClient.instance.isLoggedIn())
+    {
+      createItem("LOGOUT OF NG", function() {
+        NewgroundsClient.instance.logout(function() {
+          // Reset the options menu when logout succeeds.
+          // This means the login option will be displayed.
+          FlxG.resetState();
+        }, function() {
+          FlxG.log.warn("Newgrounds logout failed!");
+        });
+      });
+    }
     else
-      createItem("LOGIN", selectLogin);
+    {
+      createItem("LOGIN TO NG", function() {
+        NewgroundsClient.instance.login(function() {
+          // Reset the options menu when login succeeds.
+          // This means the logout option will be displayed.
+
+          // NOTE: If the user presses login and opens the browser,
+          // then navigates the UI
+          FlxG.resetState();
+        }, function() {
+          FlxG.log.warn("Newgrounds login failed!");
+        });
+      });
+    }
     #end
+
+    createItem("CLEAR SAVE DATA", function() {
+      promptClearSaveData();
+    });
+
     createItem("EXIT", exit);
   }
 
@@ -224,47 +160,37 @@ class OptionsMenu extends Page
     return items.length > 2;
   }
 
-  #if newgrounds
-  function selectLogin()
-  {
-    openNgPrompt(NgPrompt.showLogin());
-  }
+  var prompt:Prompt;
 
-  function selectLogout()
+  function promptClearSaveData():Void
   {
-    openNgPrompt(NgPrompt.showLogout());
-  }
+    if (prompt != null) return;
 
-  /**
-   * Calls openPrompt and redraws the login/logout button
-   * @param prompt
-   * @param onClose
-   */
-  public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
-  {
-    var onPromptClose = checkLoginStatus;
-    if (onClose != null)
-    {
-      onPromptClose = function() {
-        checkLoginStatus();
-        onClose();
-      }
+    prompt = new Prompt("This will delete
+      \nALL your save data.
+      \nAre you sure?
+    ", Custom("Delete", "Cancel"));
+    prompt.create();
+    prompt.createBgFromMargin(100, 0xFFFAFD6D);
+    prompt.back.scrollFactor.set(0, 0);
+    add(prompt);
+
+    prompt.onYes = function() {
+      // Clear the save data.
+      funkin.save.Save.clearData();
+
+      FlxG.switchState(() -> new funkin.InitState());
     }
 
-    openPrompt(prompt, onPromptClose);
+    prompt.onNo = function() {
+      prompt.close();
+      prompt.destroy();
+      prompt = null;
+    }
   }
-
-  function checkLoginStatus()
-  {
-    // this shit don't work!! wtf!!!!
-    var prevLoggedIn = items.has("logout");
-    if (prevLoggedIn && !NGio.isLoggedIn) items.resetItem("logout", "login", selectLogin);
-    else if (!prevLoggedIn && NGio.isLoggedIn) items.resetItem("login", "logout", selectLogout);
-  }
-  #end
 }
 
-enum abstract PageName(String)
+enum abstract OptionsMenuPageName(String) to PageName
 {
   var Options = "options";
   var Controls = "controls";
