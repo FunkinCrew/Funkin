@@ -698,7 +698,7 @@ class FreeplayState extends MusicBeatSubState
       // Gets all available difficulties for our character, via our available variations
       var difficultiesAvailable:Array<String> = song.data.listDifficulties(null, characterVariations);
 
-      return difficultiesAvailable.contains(currentDifficulty);
+      return difficultiesAvailable.contains(rememberedDifficulty);
     });
 
     if (onlyIfChanged)
@@ -1122,6 +1122,9 @@ class FreeplayState extends MusicBeatSubState
 
     // Get this character's transition delay, with a reasonable default.
     var transitionDelay:Float = currentCharacter.getFreeplayDJData()?.getCharSelectTransitionDelay() ?? 0.25;
+
+    // Some characters don't have higher difficulties for their songs
+    rememberedDifficulty = Constants.DEFAULT_DIFFICULTY;
 
     new FlxTimer().start(transitionDelay, _ -> {
       transitionToCharSelect();
