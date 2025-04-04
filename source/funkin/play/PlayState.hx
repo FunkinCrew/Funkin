@@ -1788,8 +1788,8 @@ class PlayState extends MusicBeatSubState
         #end
       }
 
-      // Rearrange by z-indexes.
-      currentStage.refresh();
+      // Full stage creation.
+      currentStage.postConstruct();
     }
   }
 
