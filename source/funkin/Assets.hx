@@ -143,11 +143,29 @@ class Assets
   /**
    * Retrieve a list of all assets of the given type
    * @param type The asset type to check
+   * @param prefix Only return assets that start with this prefix
+   * @param suffix Only return assets that end with this suffix
    * @return A list of asset paths
    */
-  public static function list(?type:openfl.utils.AssetType):Array<String>
+  public static function list(?type:openfl.utils.AssetType, ?prefix:String, ?suffix:String):Array<String>
   {
-    return openfl.utils.Assets.list(type);
+    var assetList:Array<String> = openfl.utils.Assets.list(type);
+
+    if (prefix != null)
+    {
+      assetList = assetList.filter(function(asset:String):Bool {
+        return asset.startsWith(prefix);
+      });
+    }
+
+    if (suffix != null)
+    {
+      assetList = assetList.filter(function(asset:String):Bool {
+        return asset.endsWith(suffix);
+      });
+    }
+
+    return assetList;
   }
 
   /**
