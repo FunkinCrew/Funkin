@@ -104,8 +104,6 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
 
       // Extract prefix including the underscore (e.g., "NOTE_")
       var prefix = (underscoreIndex != -1) ? name.substr(0, underscoreIndex + 1) : "";
-      trace('Name: ' + name);
-      trace('Prefix: ' + prefix);
 
       if (currentHeader != prefix && name.indexOf(prefix) == 0)
       {
