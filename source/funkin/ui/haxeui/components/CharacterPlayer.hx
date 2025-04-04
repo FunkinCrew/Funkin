@@ -100,16 +100,12 @@ class CharacterPlayer extends Box
     if (flip) character.flipX = !character.flipX;
     if (targetScale != 1.0) character.setScale(targetScale);
 
-    character.animation.callback = function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
-      @:privateAccess
-      character.onAnimationFrame(name, frameNumber, frameIndex);
+    character.animation.onFrameChange.add(function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
       dispatch(new AnimationEvent(AnimationEvent.FRAME));
-    };
-    character.animation.finishCallback = function(name:String = '') {
-      @:privateAccess
-      character.onAnimationFinished(name);
+    });
+    character.animation.onFinish.add(function(name:String = '') {
       dispatch(new AnimationEvent(AnimationEvent.END));
-    };
+    });
     add(character);
 
     invalidateComponentLayout();

@@ -52,8 +52,8 @@ class StrumlineNote extends FunkinSprite
 
     setup(noteStyle);
 
-    this.animation.callback = onAnimationFrame;
-    this.animation.finishCallback = onAnimationFinished;
+    this.animation.onFrameChange.add(onAnimationFrame);
+    this.animation.onFinish.add(onAnimationFinished);
 
     // Must be true for animations to play.
     this.active = true;

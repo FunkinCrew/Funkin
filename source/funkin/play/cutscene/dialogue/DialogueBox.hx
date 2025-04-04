@@ -247,8 +247,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     var animNames:Array<String> = this.boxSprite?.animation?.getNameList() ?? [];
     trace('[DIALOGUE BOX] Successfully loaded ${animNames.length} animations for ${id}');
 
-    boxSprite.animation.callback = this.onAnimationFrame;
-    boxSprite.animation.finishCallback = this.onAnimationFinished;
+    boxSprite.animation.onFrameChange.add(this.onAnimationFrame);
+    boxSprite.animation.onFinish.add(this.onAnimationFinished);
   }
 
   /**
