@@ -10,6 +10,7 @@ import openfl.display.BitmapData;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
+import funkin.graphics.FunkinAnimationController;
 import flixel.FlxCamera;
 
 /**
@@ -32,12 +33,62 @@ class FunkinSprite extends FlxSprite
   static var previousCachedTextures:Map<String, FlxGraphic> = [];
 
   /**
+   * A map of offsets for each animation.
+   */
+  public var animationOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
+
+  /**
+   * The current animation offset being used.
+   */
+  public var currentAnimationOffsets(default, set):Array<Float> = [0, 0];
+
+  /**
+   * Sets the current animation offset.
+   * Override this in your class if you want to handle animation offsets differently.
+   */
+  function set_currentAnimationOffsets(value:Array<Float>):Array<Float>
+  {
+    if (currentAnimationOffsets == null) currentAnimationOffsets = [0, 0];
+    if (value == null) value = [0, 0];
+    if ((currentAnimationOffsets[0] == value[0]) && (currentAnimationOffsets[1] == value[1])) return value;
+
+    return currentAnimationOffsets = value;
+  }
+
+  /**
+   * The offset of the sprite overall.
+   */
+  public var globalOffsets(default, set):Array<Float> = [0, 0];
+
+  /**
+   * Sets the global offset.
+   * Override this in your class if you want to handle global offsets differently.
+   */
+  function set_globalOffsets(value:Array<Float>):Array<Float>
+  {
+    if (globalOffsets == null) globalOffsets = [0, 0];
+    if (globalOffsets == value) return value;
+
+    return globalOffsets = value;
+  }
+
+  /**
    * @param x Starting X position
    * @param y Starting Y position
    */
   public function new(?x:Float = 0, ?y:Float = 0)
   {
     super(x, y);
+    globalOffsets = [x, y];
+  }
+
+  override function initVars():Void
+  {
+    super.initVars();
+
+    // We replace `FlxSprite`'s default animation controller with our own to handle offsets.
+    animation.destroy();
+    animation = new FunkinAnimationController(this);
   }
 
   /**
@@ -237,17 +288,59 @@ class FunkinSprite extends FlxSprite
     }
   }
 
+  /**
+   * Ensures the sparrow atlas with the given key is cached.
+   * @param key The key of the sparrow atlas to cache.
+   */
   public static function cacheSparrow(key:String):Void
   {
     cacheTexture(Paths.image(key));
   }
 
+  /**
+   * Ensures the packer atlas with the given key is cached.
+   * @param key The key of the packer atlas to cache.
+   */
   public static function cachePacker(key:String):Void
   {
     cacheTexture(Paths.image(key));
   }
 
   /**
+   * Applies the offsets for a specific animation.
+   * @param animName The animation name.
+   */
+  public function applyAnimationOffsets(animName:String):Void
+  {
+    var offsets = animationOffsets.get(animName);
+    this.currentAnimationOffsets = offsets;
+  }
+
+  /**
+   * Define the animation offsets for a specific animation.
+   * @param name The animation name.
+   * @param xOffset The x offset.
+   * @param yOffset The y offset.
+   */
+  public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
+  {
+    animationOffsets.set(name, [xOffset, yOffset]);
+  }
+
+  /**
+   * Set the sprite scale to the appropriate value.
+   * @param scale
+   */
+  public function setScale(scale:Null<Float>):Void
+  {
+    if (scale == null) scale = 1.0;
+    this.scale.x = scale;
+    this.scale.y = scale;
+    this.updateHitbox();
+  }
+
+  /**
+   * Prepares the sprite cache for purging.
    * Call this, then `cacheTexture` to keep the textures we still need, then `purgeCache` to remove the textures that we won't be using anymore.
    */
   public static function preparePurgeCache():Void
@@ -256,6 +349,9 @@ class FunkinSprite extends FlxSprite
     currentCachedTextures = [];
   }
 
+  /**
+   * Purges the old sprite cache.
+   */
   public static function purgeCache():Void
   {
     // Everything that is in previousCachedTextures but not in currentCachedTextures should be destroyed.
@@ -269,6 +365,11 @@ class FunkinSprite extends FlxSprite
     }
   }
 
+  /**
+   * Whether or not the given graphic is cached.
+   * @param graphic The graphic to check.
+   * @return Bool
+   */
   static function isGraphicCached(graphic:FlxGraphic):Bool
   {
     if (graphic == null) return false;
@@ -283,6 +384,7 @@ class FunkinSprite extends FlxSprite
   }
 
   /**
+   * Whether or not the given animation is dynamic (has multiple frames).
    * @param id The animation ID to check.
    * @return Whether the animation is dynamic (has multiple frames). `false` for static, one-frame animations.
    */
@@ -292,6 +394,37 @@ class FunkinSprite extends FlxSprite
     var animData = this.animation.getByName(id);
     if (animData == null) return false;
     return animData.numFrames > 1;
+  }
+
+  /**
+   * Checks whether or not the given animation exists for this sprite.
+   * @param id The name of the animation to check for.
+   * @return Whether this sprite posesses the given animation.
+   * Only true if the animation was successfully loaded from the XML.
+   */
+  public function hasAnimation(id:String):Bool
+  {
+    if (this.animation == null) return false;
+
+    return this.animation.getByName(id) != null;
+  }
+
+  /**
+   * Returns the name of the animation that is currently playing.
+   * If no animation is playing (usually this means the sprite is BROKEN!),
+   * returns an empty string to prevent NPEs.
+   */
+  public function getCurrentAnimation():String
+  {
+    return this.animation?.curAnim?.name ?? "";
+  }
+
+  /**
+   * Whether the current animation has finished playing.
+   */
+  public function isAnimationFinished():Bool
+  {
+    return this.animation?.finished ?? false;
   }
 
   /**
@@ -367,6 +500,10 @@ class FunkinSprite extends FlxSprite
     if (camera == null) camera = FlxG.camera;
 
     result.set(x, y);
+
+    result.x -= currentAnimationOffsets[0];
+    result.y -= currentAnimationOffsets[1];
+
     if (pixelPerfectPosition)
     {
       _rect.width = _rect.width / this.scale.x;
