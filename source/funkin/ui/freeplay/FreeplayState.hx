@@ -117,14 +117,19 @@ class FreeplayState extends MusicBeatSubState
   var currentVariation:String = Constants.DEFAULT_VARIATION;
 
   /**
-   * Currently selected difficulty, in string form.
+   *  All the difficulties of every song, in string form.
    */
   var allDifficulties:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST_FULL.copy();
 
   /**
-   *  Current variation: default, erect, pico, bf, etc.
+   *  All the variations of every song: default, erect, pico, bf, etc.
    */
   var allVariations:Array<String> = [Constants.DEFAULT_VARIATION];
+
+  /**
+   *  All the difficulties of every song paired to their variations.
+   */
+  var diffsToVariations:Map<String, Array<String>> = [];
 
   public var fp:FreeplayScore;
 
@@ -648,17 +653,25 @@ class FreeplayState extends MusicBeatSubState
       onDJIntroDone();
     }
 
-    // Gets all the difficulties (including variations) of all the songs
+    // Gets all the difficulties (including variations) of all the songs.
     for (song in songs)
     {
       if (song != null)
       {
         var variations:Array<String> = song.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
-        allVariations.concat(variations);
-        allDifficulties.concat(song.data.listDifficulties(variations) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL);
+        var difficulties:Array<String> = song.data.listDifficulties(variations) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
 
-        allVariations.distinct();
-        allDifficulties.distinct();
+        for (variation in variations)
+        {
+          if (!allVariations.contains(variation)) allVariations.push(variation);
+          var difficulties:Array<String> = song.data.listDifficulties(variation) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
+          for (difficulty in difficulties)
+          {
+            if (!allDifficulties.contains(difficulty)) allDifficulties.push(difficulty);
+            if (!diffsToVariations.exists(difficulty)) diffsToVariations[difficulty] = [variation];
+            else if (diffsToVariations[difficulty]?.contains(variation) == false) diffsToVariations[difficulty]?.push(variation);
+          }
+        }
       }
     }
 
@@ -700,7 +713,6 @@ class FreeplayState extends MusicBeatSubState
   var currentFilter:Null<SongFilter> = null;
   var currentFilteredSongs:Array<Null<FreeplaySongData>> = [];
   var scrollByLevels:Bool = false;
-  var scrollAllDifficulties:Bool = false;
 
   /**
    * Given the current filter, rebuild the current song list and display it.
@@ -1513,11 +1525,7 @@ class FreeplayState extends MusicBeatSubState
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
-
-    var upP:Bool = controls.UI_UP_P;
-    var downP:Bool = controls.UI_DOWN_P;
     var accepted:Bool = controls.ACCEPT;
-    scrollAllDifficulties = controls.FREEPLAY_SCROLL_VARIATION;
 
     if (FlxG.onMobile)
     {
@@ -1654,6 +1662,12 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
+    if (controls.FREEPLAY_SWITCH_REMIX)
+    {
+      changeVariation(1);
+      generateSongList(currentFilter, true);
+    }
+
     if (controls.UI_LEFT_P)
     {
       if (dj != null) dj.resetAFKTimer();
@@ -1749,8 +1763,15 @@ class FreeplayState extends MusicBeatSubState
       // or the modifier key was released, stop scrolling by levels.
       if (accepted || !controls.FREEPLAY_SCROLL_LEVELS)
       {
-        scrollByLevels = false;
-        generateSongList(currentFilter, false);
+        if (accepted && grpCapsules.members[curSelected].freeplayData == null)
+        {
+          changeSelection(FlxG.random.int(1, grpCapsules.countLiving() - 1));
+        }
+        else
+        {
+          scrollByLevels = false;
+          generateSongList(currentFilter, false);
+        }
       }
     }
     else if (accepted)
@@ -1774,38 +1795,34 @@ class FreeplayState extends MusicBeatSubState
   }
 
   /**
-   * changeDiff is the root of both difficulty and variation changes/management.
-   * It will check the difficulty of the current variation, all available variations, and all available difficulties per variation.
+   * Changes the current difficulty selected.
+   * If `checkIfValid` is true, only existing difficulties of the current song can be selected.
    * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
    * @param change
    * @param force
    */
-  function changeDiff(change:Int = 0, force:Bool = false):Void
+  function changeDiff(change:Int = 0, checkIfValid:Bool = true, force:Bool = false):Void
   {
     touchTimer = 0;
-    var previousVariation:String = currentVariation;
+    var previousDifficulty = currentDifficulty;
 
-    // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
-    // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
+    // All available variations & difficulties for current character.
     var characterVariations:Array<String>;
-
-    // Gets all available difficulties for our character, via our available variations
     var difficultiesAvailable:Array<String>;
 
-    if (!scrollAllDifficulties)
+    if (checkIfValid)
     {
-      characterVariations = grpCapsules.members[curSelected].freeplayData?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
-      difficultiesAvailable = grpCapsules.members[curSelected].freeplayData?.data.listDifficulties(null,
-        characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
+      var curData = grpCapsules.members[curSelected].freeplayData;
+      characterVariations = curData?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
+      difficultiesAvailable = curData?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
     }
     else
     {
-      characterVariations = allVariations.copy();
-      difficultiesAvailable = allDifficulties.copy();
+      characterVariations = allVariations;
+      difficultiesAvailable = allDifficulties;
     }
 
     var currentDifficultyIndex:Int = difficultiesAvailable.indexOf(currentDifficulty);
-
     if (currentDifficultyIndex == -1) currentDifficultyIndex = difficultiesAvailable.indexOf(Constants.DEFAULT_DIFFICULTY);
 
     currentDifficultyIndex += change;
@@ -1815,7 +1832,102 @@ class FreeplayState extends MusicBeatSubState
 
     // Update the current difficulty
     currentDifficulty = difficultiesAvailable[currentDifficultyIndex];
-    for (variation in characterVariations)
+    var changed:Bool = currentDifficulty != previousDifficulty;
+
+    reloadDiff(characterVariations, changed, change != 0, force);
+  }
+
+  /**
+   * Changes the current variation selected. If `reload` is false, don't reload the difficulties (used in changeDiff).
+   * If `checkIfValid` is true, only existing variations of the current song can be selected.
+   * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
+   * @param change
+   * @param checkIfValid
+   * @param reload
+   * @param force
+   */
+  function changeVariation(change:Int = 0, checkIfValid:Bool = false, reload:Bool = true, force:Bool = false):Bool
+  {
+    touchTimer = 0;
+    var previousDifficulty = currentDifficulty;
+
+    // All available variations & difficulties for current character.
+    var characterVariations:Array<String>;
+    var difficultiesAvailable:Array<String>;
+
+    if (checkIfValid)
+    {
+      var curData = grpCapsules.members[curSelected].freeplayData;
+      characterVariations = curData?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
+      difficultiesAvailable = curData?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
+    }
+    else
+    {
+      characterVariations = allVariations;
+      difficultiesAvailable = allDifficulties;
+    }
+
+    if (change != 0)
+    {
+      var curChange = Math.abs(change);
+      var direction = (change > 0) ? 1 : -1;
+      var startDiff = difficultiesAvailable.indexOf(currentDifficulty);
+      var i = startDiff + 1;
+
+      // Iterate through until we've moved variations `change` amount of times.
+      // We do this instead of a similar approach from changeDiffs since while bf is usually `default` variation, and `pico` is `pico`
+      // sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell) but still be on the same screen.
+      while (curChange > 0)
+      {
+        i += direction;
+        if (i < 0) i = Std.int(difficultiesAvailable.length - 1);
+        if (i >= difficultiesAvailable.length) i = 0;
+
+        // Prevent infinite loops by breaking off if nothing happened.
+        if (i == startDiff && curChange == change) break;
+
+        var difficulty:String = difficultiesAvailable[i];
+        var notInVariation:Bool = true;
+
+        // Compare our current difficulty with the possible variations.
+        // If the variation does contain this difficulty, assume it belongs to the variation and do nothing.
+        // Else, the logic further below gets run, signifying a move in variations.
+        for (variation in diffsToVariations[difficulty] ?? [])
+        {
+          if (diffsToVariations[currentDifficulty]?.contains(variation) ?? false)
+          {
+            notInVariation = false;
+            break;
+          }
+        }
+
+        if (notInVariation)
+        {
+          curChange--;
+          currentDifficulty = difficulty;
+        }
+      }
+    }
+
+    var changed:Bool = currentDifficulty != previousDifficulty;
+
+    // Reset the song preview since we changed variations (normal -> erect etc)
+    if (changed) playCurSongPreview();
+    if (reload) reloadDiff(characterVariations, changed, change != 0, force);
+    return changed;
+  }
+
+  /**
+   * reloadDiff is the root of both difficulty and variation changes/management, including refreshing all the difficulty/variation sprites.
+   * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
+   * @param changed
+   * @param doDiffAnim
+   * @param force
+   */
+  function reloadDiff(variations:Array<String>, changed:Bool, doDiffAnim:Bool, force:Bool = false):Void
+  {
+    // Update the current difficulty.
+    for (variation in variations)
     {
       if (grpCapsules.members[curSelected].freeplayData?.data.hasDifficulty(currentDifficulty, variation) ?? false)
       {
@@ -1862,7 +1974,7 @@ class FreeplayState extends MusicBeatSubState
       {
         diffSprite.visible = true;
 
-        if (change != 0)
+        if (doDiffAnim)
         {
           diffSprite.visible = true;
           diffSprite.offset.y += 5;
@@ -1875,7 +1987,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    if (change != 0 || force)
+    if (changed || force)
     {
       // Update the song capsules to reflect the new difficulty info.
       for (songCapsule in grpCapsules.members)
@@ -1888,9 +2000,6 @@ class FreeplayState extends MusicBeatSubState
           songCapsule.checkClip();
         }
       }
-
-      // Reset the song preview in case we changed variations (normal->erect etc)
-      if (currentVariation != previousVariation) playCurSongPreview();
     }
 
     // Set the album graphic and play the animation if relevant.
