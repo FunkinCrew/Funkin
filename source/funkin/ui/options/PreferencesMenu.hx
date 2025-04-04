@@ -19,6 +19,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   var items:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
+  var headers:FlxTypedSpriteGroup<AtlasText>;
   var preferenceDesc:Array<String> = [];
   var itemDesc:FlxText;
   var itemDescBox:FunkinSprite;
@@ -43,6 +44,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
     add(items = new TextMenuList());
     add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
+    add(headers = new FlxTypedSpriteGroup<AtlasText>());
 
     add(itemDescBox = new FunkinSprite());
     itemDescBox.cameras = [hudCamera];
@@ -88,18 +90,25 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     itemDescBox.updateHitbox();
   }
 
+  function addCategory(name:String):Void
+  {
+    var labelY:Float = (120 * (preferenceItems.length + headers.length)) + 30;
+    headers.add(new AtlasText(0, labelY, name, AtlasFont.BOLD)).screenCenter(X);
+  }
+
   /**
    * Create the menu items for each of the preferences.
    */
   function createPrefItems():Void
   {
+    addCategory('Gameplay');
     createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
+    createPrefItemPercentage('Strumline Background', 'The strumline background\'s transparency level.', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
@@ -109,13 +118,15 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+
+    addCategory('Additional');
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
 
@@ -129,6 +140,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
 
+    addCategory('Screenshots');
     createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
@@ -187,9 +199,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length + headers.length), defaultValue);
 
-    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
+    items.createItem(0, (120 * (items.length + headers.length)) + 30, prefName, AtlasFont.BOLD, function() {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
@@ -212,7 +224,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
       step:Float = 0.1, precision:Int):Void
   {
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
+    var item = new NumberPreferenceItem(0, (120 * (items.length + headers.length)) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
@@ -233,7 +245,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     var formatter = function(value:Float) {
       return '${value}%';
     };
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0, newCallback, formatter);
+    var item = new NumberPreferenceItem(0, (120 * (items.length + headers.length)) + 30, prefName, defaultValue, min, max, 10, 0, newCallback, formatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
@@ -247,7 +259,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItemEnum(prefName:String, prefDesc:String, values:Map<String, String>, onChange:String->Void, defaultValue:String):Void
   {
-    var item = new EnumPreferenceItem(0, (120 * items.length) + 30, prefName, values, defaultValue, onChange);
+    var item = new EnumPreferenceItem(0, (120 * (items.length + headers.length)) + 30, prefName, values, defaultValue, onChange);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
