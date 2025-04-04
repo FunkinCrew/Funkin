@@ -53,7 +53,7 @@ class ChartEditorImportExportHandler
       if (chartData != null) songChartData.set(variation, chartData);
     }
 
-    loadSong(state, songMetadata, songChartData);
+    loadSong(state, songMetadata, songChartData, new ChartManifestData(songId));
 
     state.sortChartData();
 
@@ -113,10 +113,14 @@ class ChartEditorImportExportHandler
    * @param newSongMetadata The song metadata to load.
    * @param newSongChartData The song chart data to load.
    */
-  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>):Void
+  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>, ?newSongManifestData:ChartManifestData):Void
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
+    if (newSongManifestData != null)
+    {
+      state.songManifestData = newSongManifestData;
+    }
 
     Conductor.instance.forceBPM(null); // Disable the forced BPM.
     Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
@@ -388,8 +392,7 @@ class ChartEditorImportExportHandler
     if (state.audioInstTrackData != null) zipEntries = zipEntries.concat(state.makeZIPEntriesFromInstrumentals());
     if (state.audioVocalTrackData != null) zipEntries = zipEntries.concat(state.makeZIPEntriesFromVocals());
 
-    var manifest:ChartManifestData = new ChartManifestData(state.currentSongId);
-    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', manifest.serialize()));
+    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', state.songManifestData.serialize()));
 
     trace('Exporting ${zipEntries.length} files to ZIP...');
 
