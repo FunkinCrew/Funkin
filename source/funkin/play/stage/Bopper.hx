@@ -107,8 +107,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
     if (this.animation != null)
     {
-      this.animation.callback = this.onAnimationFrame;
-      this.animation.finishCallback = this.onAnimationFinished;
+      this.animation.onFrameChange.add(this.onAnimationFrame);
+      this.animation.onFinish.add(this.onAnimationFinished);
     }
   }
 
