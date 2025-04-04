@@ -1,6 +1,6 @@
 # Contributing
 Welcome to the Contributing Guide!
-You can contribute to the Funkin' repository by opening issues or pull requests. 
+You can contribute to the Funkin' repository by opening issues or pull requests.
 
 This guide will cover best practices for each type of contribution.
 
@@ -11,7 +11,7 @@ This guide will cover best practices for each type of contribution.
 [Part 1: Etiquette](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-1-etiquette)
 
 <details>
-<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-2-issues">Part 2: Issues</a></summary> 
+<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-2-issues">Part 2: Issues</a></summary>
 
 * [Requirements](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#requirements)
 
@@ -24,8 +24,8 @@ This guide will cover best practices for each type of contribution.
 </details>
 
 <details>
-  
-<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-3-pull-requests">Part 3: Pull Requests</a></summary> 
+
+<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-3-pull-requests">Part 3: Pull Requests</a></summary>
 
 * [Choosing a base branch](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#choosing-a-base-branch)
 
@@ -54,7 +54,7 @@ This guide will cover best practices for each type of contribution.
 
 # Part 2: Issues
 Issues serve many purposes, from reporting bugs to suggesting new features.
-This section provides guidelines to follow when [opening an issue](https://github.com/FunkinCrew/Funkin/issues). 
+This section provides guidelines to follow when [opening an issue](https://github.com/FunkinCrew/Funkin/issues).
 
 ## Requirements
 Make sure you're playing:
@@ -84,7 +84,7 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | "Philly Glow" Effect from Psych Engine | https://github.com/FunkinCrew/Funkin/issues/3788#issuecomment-2688966982 |
 | Importing Charts from Psych Engine (and other mod content) | https://github.com/FunkinCrew/Funkin/issues/2586#issuecomment-2125733327 |
 | Backwards Compatibility for Modding | https://github.com/FunkinCrew/Funkin/issues/3949#issuecomment-2608391329 |
-| Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 | 
+| Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 |
 
 
 ## Issue Types
@@ -243,7 +243,7 @@ Here are some guidelines for writing comments in your code:
 ```
 
 ## Documentation PRs
-Documentation-based PRs make changes such as **fixing typos** or **adding new information** in documentation files. 
+Documentation-based PRs make changes such as **fixing typos** or **adding new information** in documentation files.
 
 This involves modifying one or several of the repository’s `.md` files, found throughout the repository.
 
