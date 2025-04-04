@@ -762,17 +762,14 @@ class FreeplayState extends MusicBeatSubState
 
     if (stayClose && curData != null)
     {
-      trace("FREEPLAY | Staying close!");
       var i:Int = songs.indexOf(curData);
       while (i >= 0)
       {
         i--;
         var index = tempSongs.indexOf(songs[i]);
-        trace('Checking index $i (data ${songs[i]?.data}), found at index $index');
         if (index != -1)
         {
           if (index < tempSongs.length - 1) index++;
-          trace('Success! Staying close...');
           curSelected = index;
           rememberedSongId = tempSongs[index]?.data.id;
           break;
