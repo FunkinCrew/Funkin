@@ -1,15 +1,10 @@
 package funkin.ui.freeplay;
 
-import flixel.FlxSprite;
 import flixel.util.FlxSignal;
-import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.audio.FunkinSound;
-import flixel.util.FlxTimer;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
-import funkin.audio.FunkinSound;
-import funkin.audio.FlxStreamSound;
 
 class FreeplayDJ extends FlxAtlasSprite
 {
@@ -100,18 +95,6 @@ class FreeplayDJ extends FlxAtlasSprite
         {
           playFlashAnimation(animPrefix, true, false, true);
         }
-
-        if (getCurrentAnimation() == animPrefix && this.isLoopComplete())
-        {
-          if (timeIdling >= IDLE_EGG_PERIOD && !seenIdleEasterEgg)
-          {
-            currentState = IdleEasterEgg;
-          }
-          else if (timeIdling >= IDLE_CARTOON_PERIOD)
-          {
-            currentState = Cartoon;
-          }
-        }
         timeIdling += elapsed;
       case NewUnlock:
         var animPrefix = playableCharData.getAnimationPrefix('newUnlock');
@@ -141,7 +124,6 @@ class FreeplayDJ extends FlxAtlasSprite
         }
         else if (getCurrentAnimation() == animPrefixB)
         {
-          trace("Loss Intro");
           var endFrame = playableCharData.getFistPumpIntroBadEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
@@ -167,7 +149,6 @@ class FreeplayDJ extends FlxAtlasSprite
         }
         else if (getCurrentAnimation() == animPrefixB)
         {
-          trace("Loss GYATT");
           var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
@@ -253,6 +234,15 @@ class FreeplayDJ extends FlxAtlasSprite
     else if (name == playableCharData.getAnimationPrefix('idle'))
     {
       // trace('Finished idle');
+
+      if (timeIdling >= IDLE_EGG_PERIOD && !seenIdleEasterEgg)
+      {
+        currentState = IdleEasterEgg;
+      }
+      else if (timeIdling >= IDLE_CARTOON_PERIOD)
+      {
+        currentState = Cartoon;
+      }
     }
     else if (name == playableCharData.getAnimationPrefix('confirm'))
     {

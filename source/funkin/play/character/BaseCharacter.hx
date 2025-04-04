@@ -149,6 +149,7 @@ class BaseCharacter extends Bopper
   public function new(id:String, renderType:CharacterRenderType)
   {
     super(CharacterDataParser.DEFAULT_DANCEEVERY);
+
     this.characterId = id;
 
     ignoreExclusionPref = ["sing"];
@@ -642,6 +643,11 @@ class BaseCharacter extends Bopper
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
     super.playAnimation(name, restart, ignoreOther, reversed);
+  }
+
+  public function getDeathQuote():Null<String>
+  {
+    return null;
   }
 }
 

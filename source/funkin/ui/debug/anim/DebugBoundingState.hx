@@ -31,13 +31,6 @@ import openfl.net.FileReference;
 
 using flixel.util.FlxSpriteUtil;
 
-#if web
-import js.html.FileList;
-#end
-#if sys
-import sys.io.File;
-#end
-
 class DebugBoundingState extends FlxState
 {
   /*
@@ -401,6 +394,11 @@ class DebugBoundingState extends FlxState
     if (FlxG.keys.justPressed.F)
     {
       onionSkinChar.visible = !onionSkinChar.visible;
+    }
+
+    if (FlxG.keys.justPressed.G)
+    {
+      swagChar.flipX = !swagChar.flipX;
     }
 
     // Plays the idle animation

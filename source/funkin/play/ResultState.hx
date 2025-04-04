@@ -1,10 +1,8 @@
 package funkin.play;
 
-import funkin.util.MathUtil;
 import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.FlxSubState;
 import funkin.graphics.FunkinSprite;
 import flixel.effects.FlxFlicker;
@@ -14,10 +12,8 @@ import flixel.math.FlxPoint;
 import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
-import funkin.ui.freeplay.FreeplayScore;
-import flixel.text.FlxText;
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.data.freeplay.player.PlayerData;
+import funkin.data.freeplay.player.PlayerData.PlayerResultsAnimationData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
@@ -28,12 +24,14 @@ import flixel.addons.display.FlxBackdrop;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxGradient;
 import flixel.util.FlxTimer;
-import funkin.save.Save;
 import funkin.play.scoring.Scoring;
 import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
 import funkin.play.components.ClearPercentCounter;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+#end
 
 /**
  * The state for the results screen after a song or week is finished.
@@ -64,7 +62,9 @@ class ResultState extends MusicBeatSubState
     {
       sprite:FlxAtlasSprite,
       delay:Float,
-      forceLoop:Bool
+      forceLoop:Bool,
+      startFrameLabel:String,
+      sound:String
     }> = [];
   var characterSparrowAnimations:Array<
     {
@@ -181,6 +181,11 @@ class ResultState extends MusicBeatSubState
     {
       if (animData == null) continue;
 
+      if (animData.filter != "both")
+      {
+        if (Preferences.naughtyness && animData.filter != "naughty" || !Preferences.naughtyness && animData.filter != "safe") continue;
+      }
+
       var animPath:String = Paths.stripLibrary(animData.assetPath);
       var animLibrary:String = Paths.getLibrary(animData.assetPath);
       var offsets = animData.offsets ?? [0, 0];
@@ -196,7 +201,6 @@ class ResultState extends MusicBeatSubState
           {
             // Animation is not looped.
             animation.onAnimationComplete.add((_name:String) -> {
-              trace("AHAHAH 2");
               if (animation != null)
               {
                 animation.anim.pause();
@@ -206,7 +210,6 @@ class ResultState extends MusicBeatSubState
           else if (animData.loopFrameLabel != null)
           {
             animation.onAnimationComplete.add((_name:String) -> {
-              trace("AHAHAH 2");
               if (animation != null)
               {
                 animation.playAnimation(animData.loopFrameLabel ?? '', true, false, true); // unpauses this anim, since it's on PlayOnce!
@@ -224,7 +227,6 @@ class ResultState extends MusicBeatSubState
               }
             });
           }
-
           // Hide until ready to play.
           animation.visible = false;
           // Queue to play.
@@ -232,7 +234,9 @@ class ResultState extends MusicBeatSubState
             {
               sprite: animation,
               delay: animData.delay ?? 0.0,
-              forceLoop: (animData.loopFrame ?? -1) == 0
+              forceLoop: (animData.loopFrame ?? -1) == 0,
+              startFrameLabel: (animData.startFrameLabel ?? ""),
+              sound: (animData.sound ?? "")
             });
           // Add to the scene.
           add(animation);
@@ -278,8 +282,7 @@ class ResultState extends MusicBeatSubState
     songName.shader = maskShaderSongName;
     difficulty.shader = maskShaderDifficulty;
 
-    // maskShaderSongName.swagMaskX = difficulty.x - 15;
-    maskShaderDifficulty.swagMaskX = difficulty.x - 15;
+    maskShaderDifficulty.swagMaskX = difficulty.x - 30;
 
     var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
     blackTopBar.y = -blackTopBar.height;
@@ -365,6 +368,12 @@ class ResultState extends MusicBeatSubState
 
     var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.scoreData.tallies.maxCombo);
     ratingGrp.add(maxCombo);
+
+    if (params.scoreData.tallies.totalNotesHit >= 1000)
+    {
+      totalHit.x -= 30;
+      maxCombo.x -= 30;
+    }
 
     hStuf += 2;
     var extraYOffset:Float = 7;
@@ -492,6 +501,11 @@ class ResultState extends MusicBeatSubState
           // Just to be sure that the lerp didn't mess things up.
           clearPercentCounter.curNumber = clearPercentTarget;
 
+          #if FEATURE_NEWGROUNDS
+          // This is the easiest spot to do the medal calculation lol.
+          if (clearPercentTarget == 69) Medals.award(Nice);
+          #end
+
           clearPercentCounter.flash(true);
           new FlxTimer().start(0.4, _ -> {
             clearPercentCounter.flash(false);
@@ -591,7 +605,14 @@ class ResultState extends MusicBeatSubState
       new FlxTimer().start(atlas.delay, _ -> {
         if (atlas.sprite == null) return;
         atlas.sprite.visible = true;
-        atlas.sprite.playAnimation('');
+        atlas.sprite.playAnimation(atlas.startFrameLabel);
+        if (atlas.sound != "")
+        {
+          var sndPath:String = Paths.stripLibrary(atlas.sound);
+          var sndLibrary:String = Paths.getLibrary(atlas.sound);
+
+          FunkinSound.playOnce(Paths.sound(sndPath, sndLibrary), 1.0);
+        }
       });
     }
 
@@ -721,28 +742,26 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    if (FlxG.keys.justPressed.RIGHT) speedOfTween.x += 0.1;
-
-    if (FlxG.keys.justPressed.LEFT)
+    if (controls.PAUSE || controls.ACCEPT)
     {
-      speedOfTween.x -= 0.1;
-    }
-
-    if (controls.PAUSE)
-    {
-      if (introMusicAudio != null) {
+      if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
+        close(); // IF we are a substate, we will close ourselves. This is used from ResultsDebugSubState
+      if (introMusicAudio != null)
+      {
         @:nullSafety(Off)
         introMusicAudio.onComplete = null;
 
-        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8, {
-          onComplete: _ -> {
-            if (introMusicAudio != null) {
-              introMusicAudio.stop();
-              introMusicAudio.destroy();
-              introMusicAudio = null;
+        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8,
+          {
+            onComplete: _ -> {
+              if (introMusicAudio != null)
+              {
+                introMusicAudio.stop();
+                introMusicAudio.destroy();
+                introMusicAudio = null;
+              }
             }
-          }
-        });
+          });
         FlxTween.tween(introMusicAudio, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
@@ -752,12 +771,13 @@ class ResultState extends MusicBeatSubState
       }
       else if (FlxG.sound.music != null)
       {
-        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8, {
-          onComplete: _ -> {
-            FlxG.sound.music.stop();
-            FlxG.sound.music.destroy();
-          }
-        });
+        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8,
+          {
+            onComplete: _ -> {
+              FlxG.sound.music.stop();
+              FlxG.sound.music.destroy();
+            }
+          });
         FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
           {
             onComplete: _ -> {
@@ -771,6 +791,14 @@ class ResultState extends MusicBeatSubState
       var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
       var shouldTween = false;
       var shouldUseSubstate = false;
+
+      var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
+      var stickerPack = switch (PlayState.instance?.currentChart?.song?.id)
+      {
+        case "tutorial": "tutorial";
+        case "darnell" | "lit-up" | "2hot": "weekend";
+        default: "all";
+      };
 
       if (params.storyMode)
       {
@@ -793,12 +821,21 @@ class ResultState extends MusicBeatSubState
           // No new characters.
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker));
+          targetState = new funkin.ui.transition.StickerSubState(
+            {
+              targetState: (sticker) -> new StoryMenuState(sticker),
+              stickerSet: stickerSet,
+              stickerPack: stickerPack
+            });
         }
       }
       else
       {
-        if (rank > Scoring.calculateRank(params?.prevScoreData))
+        var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
+
+        var isPersonalBest = rank > Scoring.calculateRank(params?.prevScoreData);
+
+        if (isScoreValid && isPersonalBest)
         {
           trace('THE RANK IS Higher.....');
 
@@ -822,7 +859,12 @@ class ResultState extends MusicBeatSubState
         {
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker));
+          targetState = new funkin.ui.transition.StickerSubState(
+            {
+              targetState: (sticker) -> FreeplayState.build(null, sticker),
+              stickerSet: stickerSet,
+              stickerPack: stickerPack
+            });
         }
       }
 
@@ -888,6 +930,16 @@ typedef ResultsStateParams =
    * Whether the displayed score is a new highscore
    */
   var ?isNewHighscore:Bool;
+
+  /**
+   * Whether the displayed score is from a song played with Practice Mode enabled.
+   */
+  var ?isPracticeMode:Bool;
+
+  /**
+   * Whether the displayed score is from a song played with Bot Play Mode enabled.
+   */
+  var ?isBotPlayMode:Bool;
 
   /**
    * The difficulty ID of the song/week we just played.

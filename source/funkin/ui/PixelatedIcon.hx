@@ -1,6 +1,5 @@
 package funkin.ui;
 
-import flixel.FlxSprite;
 import funkin.graphics.FlxFilteredSprite;
 
 /**
@@ -41,7 +40,7 @@ class PixelatedIcon extends FlxFilteredSprite
         charPath += "senpaipixel";
       case "spooky-dark":
         charPath += "spookypixel";
-      case "tankman-atlas":
+      case "tankman-atlas" | "tankman-bloody":
         charPath += "tankmanpixel";
       default:
         charPath += '${char}pixel';

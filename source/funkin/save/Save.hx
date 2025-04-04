@@ -12,6 +12,10 @@ import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
 import thx.semver.Version;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+import funkin.api.newgrounds.Leaderboards;
+#end
 
 @:nullSafety
 class Save
@@ -25,6 +29,12 @@ class Save
 
   static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
   static final SAVE_NAME_LEGACY:String = 'funkin';
+
+  /**
+   * We always use this save slot.
+   * Alter this if you want to use a different save slot.
+   */
+  static final BASE_SAVE_SLOT:Int = 1;
 
   public static var instance(get, never):Save;
   static var _instance:Null<Save> = null;
@@ -45,7 +55,12 @@ class Save
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    return loadFromSlot(1);
+    return loadFromSlot(BASE_SAVE_SLOT);
+  }
+
+  public static function clearData():Void
+  {
+    _instance = clearSlot(BASE_SAVE_SLOT);
   }
 
   /**
@@ -97,9 +112,20 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          strumlineBackgroundOpacity: 0,
+          autoFullscreen: false,
           inputOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
+
+          screenshot:
+            {
+              shouldHideMouse: true,
+              fancyPreview: true,
+              previewOnSave: true,
+              saveFormat: 'PNG',
+              jpegQuality: 80,
+            },
 
           controls:
             {
@@ -623,7 +649,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          return false;
+          continue;
         }
       }
     }
@@ -641,7 +667,6 @@ class Save
   public function getSongScore(songId:String, difficultyId:String = 'normal', ?variation:String):Null<SaveScoreData>
   {
     var song = data.scores.songs.get(songId);
-    trace('Getting song score for $songId $difficultyId $variation');
     if (song == null)
     {
       trace('Could not find song data for $songId $difficultyId $variation');
@@ -704,6 +729,11 @@ class Save
     {
       // Directly set the highscore.
       setSongScore(songId, difficultyId, newScoreData);
+
+      #if FEATURE_NEWGROUNDS
+      Leaderboards.submitSongScore(songId, difficultyId, newScoreData.score);
+      #end
+
       return;
     }
 
@@ -818,7 +848,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          return false;
+          continue;
         }
       }
     }
@@ -954,7 +984,7 @@ class Save
   }
 
   /**
-   * If you set slot to `2`, it will load an independe
+   * If you set slot to `2`, it will load an independent save file from slot 2.
    * @param slot
    */
   static function loadFromSlot(slot:Int):Save
@@ -982,7 +1012,11 @@ class Save
           FlxG.save.mergeData(gameSave.data, true);
           return gameSave;
         }
-      case ERROR(_):
+      case ERROR(_): // DEPRECATED: Unused
+        return handleSaveDataError(slot);
+      case SAVE_ERROR(_):
+        return handleSaveDataError(slot);
+      case LOAD_ERROR(_):
         return handleSaveDataError(slot);
       case BOUND(_, _):
         trace('[SAVE] Loaded existing save data in slot ${slot}.');
@@ -990,6 +1024,26 @@ class Save
         FlxG.save.mergeData(gameSave.data, true);
 
         return gameSave;
+    }
+  }
+
+  static function clearSlot(slot:Int):Save
+  {
+    FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
+
+    if (FlxG.save.status != EMPTY)
+    {
+      // Archive the save data just in case.
+      // Not reliable but better than nothing.
+      var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+
+      FlxG.save.erase();
+
+      return new Save();
+    }
+    else
+    {
+      return new Save();
     }
   }
 
@@ -1082,7 +1136,11 @@ class Save
     {
       case EMPTY:
         return false;
-      case ERROR(_):
+      case ERROR(_): // DEPRECATED: Unused
+        return false;
+      case LOAD_ERROR(_):
+        return false;
+      case SAVE_ERROR(_):
         return false;
       case BOUND(_, _):
         return true;
@@ -1340,6 +1398,19 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
+   * If >0, the game will display a semi-opaque background under the notes.
+   * `0` for no background, `100` for solid black if you're freaky like that
+   * @default `0`
+   */
+  var strumlineBackgroundOpacity:Int;
+
+  /**
+   * If enabled, the game will automatically launch in fullscreen on startup.
+   * @default `true`
+   */
+  var autoFullscreen:Bool;
+
+  /**
    * Offset the user's inputs by this many ms.
    * @default `0`
    */
@@ -1356,6 +1427,23 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var unlockedFramerate:Bool;
+
+  /**
+   * Screenshot options
+   * @param shouldHideMouse Should the mouse be hidden when taking a screenshot? Default: `true`
+   * @param fancyPreview Show a fancy preview? Default: `true`
+   * @param previewOnSave Only show the fancy preview after a screenshot is saved? Default: `true`
+   * @param saveFormat The save format of the screenshot, PNG or JPEG. Default: `PNG`
+   * @param jpegQuality The JPEG Quality, if we're saving to the format. Default: `80`
+   */
+  var screenshot:
+    {
+      var shouldHideMouse:Bool;
+      var fancyPreview:Bool;
+      var previewOnSave:Bool;
+      var saveFormat:String;
+      var jpegQuality:Int;
+    };
 
   var controls:
     {

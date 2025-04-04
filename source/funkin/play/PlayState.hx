@@ -13,7 +13,6 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
-import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
@@ -29,6 +28,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
+import funkin.api.newgrounds.Events;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -57,6 +57,10 @@ import funkin.util.SerializerUtil;
 import haxe.Int64;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
+#end
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+import funkin.api.newgrounds.Leaderboards;
 #end
 
 /**
@@ -328,9 +332,15 @@ class PlayState extends MusicBeatSubState
   public var isInCutscene:Bool = false;
 
   /**
-   * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
+   * Whether the inputs should be disabled for whatever reason...
+   * Used after the song ends, and in the Stage Editor.
    */
   public var disableKeys:Bool = false;
+
+  /**
+   * The previous difficulty the player was playing on.
+   */
+  public var previousDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   public var isSubState(get, never):Bool;
 
@@ -353,13 +363,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Key press inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputPressQueue:Array<PreciseInputEvent> = [];
 
   /**
    * Key release inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
@@ -603,6 +613,7 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
+    previousDifficulty = currentDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
@@ -796,8 +807,6 @@ class PlayState extends MusicBeatSubState
 
   public override function update(elapsed:Float):Void
   {
-    // TOTAL: 9.42% CPU Time when profiled in VS 2019.
-
     if (criticalFailure) return;
 
     super.update(elapsed);
@@ -813,7 +822,11 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      dispatchEvent(new ScriptEvent(SONG_RETRY));
+      var retryEvent = new SongRetryEvent(currentDifficulty);
+
+      previousDifficulty = currentDifficulty;
+
+      dispatchEvent(retryEvent);
 
       resetCamera();
 
@@ -878,6 +891,10 @@ class PlayState extends MusicBeatSubState
       Highscore.tallies.combo = 0;
       Countdown.performCountdown();
 
+      // Reset the health icons.
+      currentStage.getBoyfriend().initHealthIcon(false);
+      currentStage.getDad().initHealthIcon(true);
+
       needsReset = false;
     }
 
@@ -906,7 +923,14 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.instance.update(); // Normal conductor update.
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
+
+      // If, after updating the conductor, the instrumental has finished, end the song immediately.
+      // This helps prevent a major bug where the level suddenly loops back to the start or middle.
+      if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
+      {
+        if (mayPauseGame) endSong(skipEndingTransition);
+      }
     }
 
     var androidPause:Bool = false;
@@ -1023,6 +1047,9 @@ class PlayState extends MusicBeatSubState
         if (FlxG.sound.music != null) FlxG.sound.music.pause();
 
         deathCounter += 1;
+        #if FEATURE_NEWGROUNDS
+        Events.logFailSong(currentSong.id, currentVariation);
+        #end
 
         dispatchEvent(new ScriptEvent(GAME_OVER));
 
@@ -1104,8 +1131,8 @@ class PlayState extends MusicBeatSubState
 
     if (!isMinimalMode)
     {
-      iconP1.updatePosition();
-      iconP2.updatePosition();
+      if (iconP1 != null) iconP1.updatePosition();
+      if (iconP1 != null) iconP2.updatePosition();
     }
 
     // Transition to the game over substate.
@@ -1184,7 +1211,7 @@ class PlayState extends MusicBeatSubState
   {
     // If there is a substate which requires the game to continue,
     // then make this a condition.
-    var shouldPause = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
+    var shouldPause:Bool = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
 
     if (shouldPause)
     {
@@ -1430,7 +1457,7 @@ class PlayState extends MusicBeatSubState
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
 
-      if (vocals != null)
+      if (vocals != null && vocals.playing)
       {
         @:privateAccess // todo: maybe make the groups public :thinking:
         {
@@ -1447,7 +1474,9 @@ class PlayState extends MusicBeatSubState
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(playerVoicesError) > 5 || Math.abs(opponentVoicesError) > 5))
+        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
+          || Math.abs(playerVoicesError) > 100
+          || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
@@ -2047,7 +2076,7 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = function() {
-      endSong(skipEndingTransition);
+      if (mayPauseGame) endSong(skipEndingTransition);
     };
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
@@ -2088,6 +2117,10 @@ class PlayState extends MusicBeatSubState
     }
 
     dispatchEvent(new ScriptEvent(SONG_START));
+
+    #if FEATURE_NEWGROUNDS
+    Events.logStartSong(currentSong.id, currentVariation);
+    #end
   }
 
   /**
@@ -2894,6 +2927,9 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
+    // Prevent ghost misses while the song is ending.
+    disableKeys = true;
+
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);
     dispatchEvent(event);
@@ -2941,6 +2977,10 @@ class PlayState extends MusicBeatSubState
 
       if (!isPracticeMode && !isBotPlayMode)
       {
+        #if FEATURE_NEWGROUNDS
+        Events.logCompleteSong(currentSong.id, currentVariation);
+        #end
+
         isNewHighscore = Save.instance.isSongHighScore(currentSong.id, suffixedDifficulty, data);
 
         // If no high score is present, save both score and rank.
@@ -2948,14 +2988,47 @@ class PlayState extends MusicBeatSubState
         // If neither are higher, nothing will change.
         Save.instance.applySongRank(currentSong.id, suffixedDifficulty, data);
 
-        if (isNewHighscore)
-        {
-          #if newgrounds
-          NGio.postScore(score, currentSong.id);
-          #end
-        }
+        if (isNewHighscore) {}
       }
     }
+
+    #if FEATURE_NEWGROUNDS
+    // Only award medals if we are LEGIT.
+    if (!isPracticeMode && !isBotPlayMode && !isChartingMode && currentSong.validScore)
+    {
+      // Award a medal for beating at least one song on any difficulty on a Friday.
+      if (Date.now().getDay() == 5) Medals.award(FridayNight);
+
+      // Determine the score rank for this song we just finished.
+      var scoreRank:ScoringRank = Scoring.calculateRank(
+        {
+          score: songScore,
+          tallies:
+            {
+              sick: Highscore.tallies.sick,
+              good: Highscore.tallies.good,
+              bad: Highscore.tallies.bad,
+              shit: Highscore.tallies.shit,
+              missed: Highscore.tallies.missed,
+              combo: Highscore.tallies.combo,
+              maxCombo: Highscore.tallies.maxCombo,
+              totalNotesHit: Highscore.tallies.totalNotesHit,
+              totalNotes: Highscore.tallies.totalNotes,
+            }
+        });
+
+      // Award various medals based on variation, difficulty, and scoring rank.
+      if (scoreRank == ScoringRank.SHIT) Medals.award(LossRating);
+      if (scoreRank >= ScoringRank.PERFECT && currentDifficulty == 'hard') Medals.award(PerfectRatingHard);
+      if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'hard') Medals.award(GoldPerfectRatingHard);
+      if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentDifficulty)) Medals.award(ErectDifficulty);
+      if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'nightmare') Medals.award(GoldPerfectRatingNightmare);
+      if (currentVariation == 'pico' && !PlayStatePlaylist.isStoryMode) Medals.award(FreeplayPicoMix);
+      if (currentVariation == 'pico' && currentSong.id == 'stress') Medals.award(FreeplayStressPico);
+
+      Events.logEarnRank(scoreRank.toString());
+    }
+    #end
 
     if (PlayStatePlaylist.isStoryMode)
     {
@@ -2971,8 +3044,6 @@ class PlayState extends MusicBeatSubState
       {
         if (currentSong.validScore)
         {
-          NGio.unlockMedal(60961);
-
           var data =
             {
               score: PlayStatePlaylist.campaignScore,
@@ -2991,12 +3062,20 @@ class PlayState extends MusicBeatSubState
                 },
             };
 
-          if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
+          if (currentSong.validScore
+            && Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
-            Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
-            #if newgrounds
-            NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
+            #if FEATURE_NEWGROUNDS
+            // Award a medal for beating a Story level.
+            Medals.awardStoryLevel(PlayStatePlaylist.campaignId);
+
+            // Submit the score for the Story level to Newgrounds.
+            Leaderboards.submitLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, PlayStatePlaylist.campaignScore);
+
+            Events.logCompleteLevel(PlayStatePlaylist.campaignId);
             #end
+
+            Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
             isNewHighscore = true;
           }
         }
@@ -3271,7 +3350,9 @@ class PlayState extends MusicBeatSubState
                 totalNotes: talliesToUse.totalNotes,
               },
           },
-        isNewHighscore: isNewHighscore
+        isNewHighscore: isNewHighscore,
+        isPracticeMode: isPracticeMode,
+        isBotPlayMode: isBotPlayMode,
       });
     this.persistentDraw = false;
     openSubState(res);
