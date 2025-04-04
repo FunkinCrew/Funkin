@@ -1660,8 +1660,9 @@ class FreeplayState extends MusicBeatSubState
    * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
    * @param change
    * @param force
+   * @param updateRank
    */
-  function changeDiff(change:Int = 0, force:Bool = false):Void
+  function changeDiff(change:Int = 0, force:Bool = false, updateRank:Bool = true):Void
   {
     touchTimer = 0;
     var previousVariation:String = currentVariation;
@@ -1709,7 +1710,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
-      grpCapsules.members[curSelected].refreshDisplay();
+      grpCapsules.members[curSelected].refreshDisplay(updateRank);
     }
     else
     {
@@ -2005,8 +2006,8 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
-      changeDiff();
-      daSongCapsule.refreshDisplay();
+      changeDiff(0, false, false);
+      daSongCapsule.refreshDisplay(false);
     }
     else
     {
