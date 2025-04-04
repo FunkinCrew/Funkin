@@ -5,8 +5,6 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
-import flixel.graphics.frames.FlxTileFrames;
-import flixel.math.FlxPoint;
 import funkin.data.animation.AnimationData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.notestyle.NoteStyleRegistry;

@@ -251,6 +251,7 @@ class StoryMenuState extends MusicBeatState
   function updateData():Void
   {
     currentLevel = LevelRegistry.instance.fetchEntry(currentLevelId);
+    if (currentLevel == null) throw 'Could not fetch data for level: ${currentLevelId}';
     isLevelUnlocked = currentLevel == null ? false : currentLevel.isUnlocked();
   }
 
