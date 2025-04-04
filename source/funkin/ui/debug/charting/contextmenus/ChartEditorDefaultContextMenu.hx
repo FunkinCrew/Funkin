@@ -1,8 +1,5 @@
 package funkin.ui.debug.charting.contextmenus;
 
-import haxe.ui.containers.menus.Menu;
-import haxe.ui.core.Screen;
-
 @:access(funkin.ui.debug.charting.ChartEditorState)
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/default.xml"))
 class ChartEditorDefaultContextMenu extends ChartEditorBaseContextMenu

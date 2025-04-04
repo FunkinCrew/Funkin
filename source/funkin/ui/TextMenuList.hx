@@ -10,9 +10,9 @@ class TextMenuList extends MenuTypedList<TextMenuItem>
     super(navControls, wrapMode);
   }
 
-  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false)
+  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false):TextMenuItem
   {
-    var item = new TextMenuItem(x, y, name, font, callback);
+    var item:TextMenuItem = new TextMenuItem(x, y, name, font, callback);
     item.fireInstantly = fireInstantly;
     return addItem(name, item);
   }
