@@ -66,6 +66,8 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
     }
 
+    onAnimationComplete.add(cleanupAnimation);
+
     // This defaults the sprite to play the first animation in the atlas,
     // then pauses it. This ensures symbols are intialized properly.
     this.anim.play('');
