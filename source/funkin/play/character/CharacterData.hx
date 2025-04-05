@@ -296,7 +296,7 @@ class CharacterDataParser
         charPath += "monsterpixel";
       case "mom" | "mom-car":
         charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
+      case "pico-blazin" | "pico-playable" | "pico-speaker" | "pico-pixel" | "pico-holding-nene":
         charPath += "picopixel";
       case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
         charPath += "gfpixel";
@@ -308,7 +308,7 @@ class CharacterDataParser
         charPath += "senpaipixel";
       case "spooky-dark":
         charPath += "spookypixel";
-      case "tankman-atlas":
+      case "tankman-atlas" | "tankman-bloody":
         charPath += "tankmanpixel";
       case "pico-christmas" | "pico-dark":
         charPath += "picopixel";

@@ -76,6 +76,14 @@ class Album implements IRegistryEntry<AlbumData>
     return _data.albumTitleAsset;
   }
 
+  /**
+   * Get the offsets for the album title.
+   */
+  public function getAlbumTitleOffsets():Null<Array<Float>>
+  {
+    return _data.albumTitleOffsets;
+  }
+
   public function hasAlbumTitleAnimations()
   {
     return _data.albumTitleAnimations.length > 0;

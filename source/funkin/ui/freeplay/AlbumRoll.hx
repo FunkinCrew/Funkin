@@ -1,14 +1,10 @@
 package funkin.ui.freeplay;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
 import funkin.data.freeplay.album.AlbumRegistry;
-import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
 
@@ -26,7 +22,7 @@ class AlbumRoll extends FlxSpriteGroup
 
   function set_albumId(value:Null<String>):Null<String>
   {
-    if (this.albumId != value)
+    if (this.albumId != value || value == null)
     {
       this.albumId = value;
       updateAlbum();
@@ -79,7 +75,11 @@ class AlbumRoll extends FlxSpriteGroup
     // Play the idle animation for the current album.
     if (animName != "idle")
     {
-      newAlbumArt.playAnimation('idle', true);
+      newAlbumArt.playAnimation('idle', true, false, true);
+    }
+    else
+    {
+      newAlbumArt.cleanupAnimation('idle');
     }
   }
 
@@ -112,7 +112,7 @@ class AlbumRoll extends FlxSpriteGroup
     var albumGraphic = Paths.image(albumData.getAlbumArtAssetKey());
     newAlbumArt.replaceFrameGraphic(0, albumGraphic);
 
-    buildAlbumTitle(albumData.getAlbumTitleAssetKey());
+    buildAlbumTitle(albumData.getAlbumTitleAssetKey(), albumData.getAlbumTitleOffsets());
 
     applyExitMovers();
 
@@ -198,12 +198,17 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.visible = true;
   }
 
-  public function buildAlbumTitle(assetKey:String):Void
+  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Null<Array<Float>>):Void
   {
     if (albumTitle != null)
     {
       remove(albumTitle);
       albumTitle = null;
+    }
+
+    if (titleOffsets == null)
+    {
+      titleOffsets = [0, 0];
     }
 
     albumTitle = FunkinSprite.createSparrow(925, 500, assetKey);
@@ -212,12 +217,15 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);
     add(albumTitle);
 
-    albumTitle.animation.finishCallback = (function(name) {
+    albumTitle.animation.onFinish.add(function(name) {
       if (name == 'switch') albumTitle.animation.play('idle');
     });
     albumTitle.animation.play('idle');
 
     albumTitle.zIndex = 1000;
+
+    albumTitle.x += titleOffsets[0];
+    albumTitle.y += titleOffsets[1];
 
     if (_exitMovers != null) _exitMovers.set([albumTitle],
       {
