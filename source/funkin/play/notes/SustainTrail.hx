@@ -1,11 +1,10 @@
 package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.tile.FlxDrawTrianglesItem;
+import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
 
 /**

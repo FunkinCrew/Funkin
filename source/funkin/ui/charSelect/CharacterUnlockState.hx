@@ -7,7 +7,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.ui.freeplay.charselect.PlayableCharacter;

@@ -2,13 +2,13 @@ package funkin.ui;
 
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
-import flixel.group.FlxGroup;
-import flixel.util.FlxSignal;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.FunkinSound;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
-  public var selectedIndex(default, null) = 0;
+  public var selectedIndex(default, null):Int = 0;
   public var selectedItem(get, never):T;
 
   /** Called when a new item is highlighted */
@@ -39,12 +39,14 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     if (wrapMode != null) this.wrapMode = wrapMode;
     else
+    {
       this.wrapMode = switch (navControls)
       {
         case Horizontal: Horizontal;
         case Vertical: Vertical;
         default: Both;
       }
+    }
     super();
   }
 
@@ -275,7 +277,7 @@ class MenuTypedItem<T:FlxSprite> extends MenuListItem
   /**
    * Use this when you only want to show the label
    */
-  function setEmptyBackground()
+  public function setEmptyBackground()
   {
     var oldWidth = width;
     var oldHeight = height;

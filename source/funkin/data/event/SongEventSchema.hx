@@ -1,7 +1,5 @@
 package funkin.data.event;
 
-import funkin.data.event.SongEventSchema;
-
 @:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
 abstract SongEventSchema(SongEventSchemaRaw)
 {

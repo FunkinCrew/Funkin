@@ -35,6 +35,11 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public var onAnimationComplete:FlxTypedSignal<String->Void> = new FlxTypedSignal();
 
+  /**
+   * Signal dispatched when a looping animation finishes playing.
+   */
+  public var onAnimationLoop:FlxTypedSignal<String->Void> = new FlxTypedSignal();
+
   var currentAnimation:String;
 
   var canPlayOtherAnims:Bool = true;
@@ -60,8 +65,6 @@ class FlxAtlasSprite extends FlxAnimate
     {
       throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
     }
-
-    onAnimationComplete.add(cleanupAnimation);
 
     // This defaults the sprite to play the first animation in the atlas,
     // then pauses it. This ensures symbols are intialized properly.
@@ -196,33 +199,44 @@ class FlxAtlasSprite extends FlxAnimate
       goToFrameLabel(id);
       fr = anim.getFrameLabel(id);
       anim.curFrame += startFrame;
+      // Resume animation if it's paused.
+      anim.resume();
     }
   }
 
-  override public function update(elapsed:Float)
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
   }
 
   /**
    * Returns true if the animation has finished playing.
-   * Never true if animation is configured to loop.
+   * @return Whether the animation has finished playing.
    */
   public function isAnimationFinished():Bool
   {
-    return this.anim.finished;
+    return isLoopComplete();
   }
 
   /**
    * Returns true if the animation has reached the last frame.
    * Can be true even if animation is configured to loop.
+   * @return Whether the animation has reached the last frame.
    */
   public function isLoopComplete():Bool
   {
     if (this.anim == null) return false;
     if (!this.anim.isPlaying) return false;
 
-    if (fr != null) return (anim.reversed && anim.curFrame < fr.index || !anim.reversed && anim.curFrame >= (fr.index + fr.duration));
+    if (fr != null)
+    {
+      var curFrame = anim.curFrame;
+
+      var startFrame = fr.index;
+      var endFrame = (fr.index + fr.duration);
+
+      return (anim.reversed) ? (curFrame < startFrame) : (curFrame >= endFrame);
+    }
 
     return (anim.reversed && anim.curFrame == 0 || !(anim.reversed) && (anim.curFrame) >= (anim.length - 1));
   }
@@ -250,7 +264,7 @@ class FlxAtlasSprite extends FlxAnimate
     this.anim.goToFrameLabel(label);
   }
 
-  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String> = null)
+  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String>):Array<String>
   {
     var labels = this.anim.getFrameLabels(layer);
     var array = [];
@@ -293,16 +307,18 @@ class FlxAtlasSprite extends FlxAnimate
       if (isLoopComplete())
       {
         anim.pause();
-        _onAnimationComplete();
 
         if (looping)
         {
           anim.curFrame = (fr != null) ? fr.index : 0;
           anim.resume();
+          _onAnimationLoop();
         }
         else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
+          cleanupAnimation(currentAnimation ?? "");
+          _onAnimationComplete();
         }
       }
     }
@@ -320,11 +336,32 @@ class FlxAtlasSprite extends FlxAnimate
     }
   }
 
+  function _onAnimationLoop():Void
+  {
+    if (currentAnimation != null)
+    {
+      onAnimationLoop.dispatch(currentAnimation);
+    }
+    else
+    {
+      onAnimationLoop.dispatch('');
+    }
+  }
+
   var prevFrames:Map<Int, FlxFrame> = [];
 
   public function replaceFrameGraphic(index:Int, ?graphic:FlxGraphicAsset):Void
   {
-    if (graphic == null || !Assets.exists(graphic))
+    var cond = false;
+
+    if (graphic == null) cond = true;
+    else
+    {
+      if ((graphic is String)) cond = !Assets.exists(graphic)
+      else
+        cond = false;
+    }
+    if (cond)
     {
       var prevFrame:Null<FlxFrame> = prevFrames.get(index);
       if (prevFrame == null) return;

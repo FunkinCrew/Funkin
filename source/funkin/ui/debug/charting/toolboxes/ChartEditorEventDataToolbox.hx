@@ -1,19 +1,11 @@
 package funkin.ui.debug.charting.toolboxes;
 
-import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.data.stage.StageData;
-import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
-import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
-import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
-import haxe.ui.components.HorizontalSlider;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
-import haxe.ui.components.Slider;
 import haxe.ui.core.Component;
 import funkin.data.event.SongEventRegistry;
 import haxe.ui.components.TextField;
@@ -23,8 +15,6 @@ import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.containers.Grid;
-import haxe.ui.components.DropDown;
-import haxe.ui.containers.Frame;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
@@ -59,9 +49,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   function initialize():Void
   {
     toolboxEventsEventKind.onChange = function(event:UIEvent) {
+      if (event.data == null)
+      {
+        trace('ChartEditorEventDataToolbox: Event data is null');
+      }
+
       var eventType:String = event.data.id;
 
-      trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event type changed: $eventType');
+      trace('ChartEditorEventDataToolbox - Event type changed: $eventType');
 
       // Edit the event data to place.
       chartEditorState.eventKindToPlace = eventType;
@@ -70,7 +65,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       if (schema == null)
       {
-        trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Unknown event kind: $eventType');
+        trace('ChartEditorEventDataToolbox - Unknown event kind: $eventType');
         return;
       }
 
@@ -90,7 +85,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       }
     }
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
-    trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Starting event kind: ${startingEventValue}');
+    trace('ChartEditorEventDataToolbox - Starting event kind: ${startingEventValue}');
     toolboxEventsEventKind.value = startingEventValue;
   }
 
@@ -102,7 +97,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     if (newDropdownElement == null)
     {
-      throw 'ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind not in dropdown: ${chartEditorState.eventKindToPlace}';
+      throw 'ChartEditorEventDataToolbox - Event kind not in dropdown: ${chartEditorState.eventKindToPlace}';
     }
     else if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)
     {
@@ -111,17 +106,17 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var schema:SongEventSchema = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
       if (schema == null)
       {
-        trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Unknown event kind: ${chartEditorState.eventKindToPlace}');
+        trace('ChartEditorEventDataToolbox - Unknown event kind: ${chartEditorState.eventKindToPlace}');
       }
       else
       {
-        trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind changed: ${toolboxEventsEventKind.value.id} != ${newDropdownElement.id} != ${lastEventKind}, rebuilding form');
+        trace('ChartEditorEventDataToolbox - Event kind changed: ${toolboxEventsEventKind.value.id} != ${newDropdownElement.id} != ${lastEventKind}, rebuilding form');
         buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
       }
     }
     else
     {
-      trace('ChartEditorToolboxHandler.buildToolboxEventDataLayout() - Event kind not changed: ${toolboxEventsEventKind.value} == ${newDropdownElement} == ${lastEventKind}');
+      trace('ChartEditorEventDataToolbox - Event kind not changed: ${toolboxEventsEventKind.value} == ${newDropdownElement} == ${lastEventKind}');
     }
 
     for (pair in chartEditorState.eventDataToPlace.keyValueIterator())
@@ -133,7 +128,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       if (field == null)
       {
-        throw 'ChartEditorToolboxHandler.refresh() - Field "${fieldId}" does not exist in the event data form for kind ${lastEventKind}.';
+        throw 'ChartEditorEventDataToolbox - Field "${fieldId}" does not exist in the event data form for kind ${lastEventKind}.';
       }
       else
       {
@@ -152,7 +147,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
             var textField:TextField = cast field;
             textField.text = value;
           default:
-            throw 'ChartEditorToolboxHandler.refresh() - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
+            throw 'ChartEditorEventDataToolbox - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
         }
       }
     }

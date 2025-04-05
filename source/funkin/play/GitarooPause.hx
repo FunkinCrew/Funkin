@@ -1,7 +1,7 @@
 package funkin.play;
 
 import flixel.FlxSprite;
-import funkin.play.PlayState;
+import funkin.play.PlayState.PlayStateParams;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import flixel.addons.transition.FlxTransitionableState;

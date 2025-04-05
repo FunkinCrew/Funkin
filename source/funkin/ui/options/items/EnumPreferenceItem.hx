@@ -1,6 +1,6 @@
 package funkin.ui.options.items;
 
-import funkin.ui.TextMenuList;
+import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
 

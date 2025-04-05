@@ -171,10 +171,6 @@ class LoadingState extends MusicBeatSubState
       }
       FlxG.watch.addQuick('percentage?', callbacks.numRemaining / callbacks.length);
     }
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.justPressed.SPACE) trace('fired: ' + callbacks.getFired() + ' unfired:' + callbacks.getUnfired());
-    #end
   }
 
   function onLoad():Void
@@ -214,10 +210,10 @@ class LoadingState extends MusicBeatSubState
    */
   public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false, asSubState = false, ?onConstruct:PlayState->Void):Void
   {
-    var daChart = params.targetSong.getDifficulty(params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
+    var daChart:Null<SongDifficulty> = params.targetSong.getDifficulty(params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
       params.targetVariation ?? Constants.DEFAULT_VARIATION);
 
-    var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart.stage);
+    var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
     stageDirectory = daStage?._data?.directory ?? "shared";
     Paths.setCurrentLevel(stageDirectory);
 

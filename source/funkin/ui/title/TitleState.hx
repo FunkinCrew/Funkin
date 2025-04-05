@@ -23,7 +23,14 @@ import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
-import funkin.api.newgrounds.NGio;
+import openfl.media.Video;
+import openfl.net.NetStream;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+#end
+import funkin.ui.freeplay.FreeplayState;
+import openfl.display.BlendMode;
+import funkin.save.Save;
 
 #if desktop
 #end
@@ -212,14 +219,11 @@ class TitleState extends MusicBeatState
   {
     FlxG.bitmapLog.add(FlxG.camera.buffer);
 
-    #if HAS_PITCH
-    if (FlxG.keys.pressed.UP) FlxG.sound.music.pitch += 0.5 * elapsed;
-
-    if (FlxG.keys.pressed.DOWN) FlxG.sound.music.pitch -= 0.5 * elapsed;
-    #end
-
     #if desktop
-    if (FlxG.keys.justPressed.ESCAPE)
+    // Pressing BACK on the title screen should close the game.
+    // This lets you exit without leaving fullscreen mode.
+    // Only applicable on desktop.
+    if (controls.BACK)
     {
       openfl.Lib.application.window.close();
     }
@@ -260,9 +264,6 @@ class TitleState extends MusicBeatState
     if (gamepad != null)
     {
       if (gamepad.justPressed.START) pressedEnter = true;
-      #if switch
-      if (gamepad.justPressed.B) pressedEnter = true;
-      #end
     }
 
     // If you spam Enter, we should skip the transition.
@@ -274,13 +275,17 @@ class TitleState extends MusicBeatState
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
-      NGio.unlockMedal(60960);
-      // If it's Friday according to da clock
-      if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
+      // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
+
+      #if FEATURE_NEWGROUNDS
+      // Award the "Start Game" medal.
+      Medals.award(Medal.StartGame);
+      funkin.api.newgrounds.Events.logStartGame();
+      #end
 
       var targetState:NextState = () -> new MainMenuState();
 
