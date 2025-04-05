@@ -213,7 +213,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       function(value:Float)
       {
         Preferences.framerate = Std.int(value);
-      }, null, Preferences.framerate, 30, 500, 5, 0);
+      }, null, Preferences.framerate, 30, 500, 5, 0, 1);
     #end
 
     #if FEATURE_SCREENSHOTS
@@ -315,10 +315,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
    */
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Float, min:Float,
-      max:Float, step:Float = 0.1, precision:Int):Void
+      max:Float, step:Float = 0.1, precision:Int, stepPrecise:Float = 0.1):Void
   {
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
-      precision, onChange, valueFormatter);
+      precision, stepPrecise, onChange, valueFormatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
@@ -342,7 +342,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       return '${value}%';
     };
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0,
-      newCallback, formatter);
+      1, newCallback, formatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
