@@ -2428,7 +2428,7 @@ class DifficultySprite extends FlxSprite
       {
         trace('Could not find difficulty asset: freeplay/freeplay${diffId} (from ${diffId})');
         return;
-      };
+      }
       assetDiffId = assetDiffIdParts.join('-');
     }
 
