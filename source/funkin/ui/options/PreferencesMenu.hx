@@ -60,7 +60,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     var margin = 160;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     // menuCamera.minScrollY = 0;
-    FlxG.console.registerObject('menuCamera', menuCamera);
 
     items.onChange.add(function(selected) {
       camFollow.y = Math.max(selected.y, 130);
