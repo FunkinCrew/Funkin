@@ -1,6 +1,5 @@
 package funkin.ui;
 
-import flixel.FlxSprite;
 import funkin.graphics.FlxFilteredSprite;
 import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
