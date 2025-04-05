@@ -29,3 +29,22 @@
   - You did not clone the repository correctly! Copy the path to your `funkin` folder and run `cd the\path\you\copied`. Then follow the compilation guide starting from **Step 4**.
 
 - Other compilation issues may be caused by installing bad library versions. Try deleting the `.haxelib` folder and following the guide starting from **Step 5**.
+
+## Lime Related Issues
+- Segmentation fault and/or crash after `Done mapping time changes: [SongTimeChange(0ms,102bpm)]`
+  - Caused by using official Lime instead of Funkin's fork. Reinstalling Lime should fix it.  
+    (NOTE: Make sure you do this via `hmm` (e.g `hmm reinstall -f lime`) to guarantee you get Funkin's version of Lime.)
+
+- `Uncaught exception - Could not find lime.ndll.` ... `Advanced users may run "lime rebuild cpp" instead.`
+  - Usually specific to Linux. Running the commands below should fix it.
+      ```
+      cd .haxelib/lime/git
+      git submodule init
+      git submodule sync
+      git submodule update
+      cd ../../..
+      # Note: The command and packages here might be different depending on your distro.
+      sudo apt install libgl1-mesa-dev libglu1-mesa-dev g++ g++-multilib gcc-multilib libasound2-dev libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev libpulse-dev
+      lime rebuild cpp -64 -release -clean
+      ```
+    For Windows or MacOS you can download pre-built binaries from [Funkin's Lime](https://github.com/FunkinCrew/lime/tree/dev-funkin/ndll).
