@@ -1727,7 +1727,7 @@ class FreeplayState extends MusicBeatSubState
       if (!scrollByLevels && controls.FREEPLAY_SCROLL_LEVELS_P)
       {
         scrollByLevels = true;
-        generateSongList(currentFilter, false);
+        generateSongList(currentFilter, false, false, false);
       }
 
       if (scrollByLevels)
@@ -1743,7 +1743,7 @@ class FreeplayState extends MusicBeatSubState
           else
           {
             scrollByLevels = false;
-            generateSongList(currentFilter, false);
+            generateSongList(currentFilter, false, false, false);
           }
         }
       }
