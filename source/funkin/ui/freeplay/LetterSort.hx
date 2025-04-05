@@ -204,6 +204,9 @@ class FreeplayLetter extends FlxAtlasSprite
       this.anim.play(animLetters[letterInd] + " move");
       this.anim.pause();
       curLetter = letterInd;
+      this.anim.onComplete.add(function() {
+        this.anim.play(animLetters[curLetter] + " move");
+      });
     }
   }
 
@@ -231,7 +234,7 @@ class FreeplayLetter extends FlxAtlasSprite
         animName = "T move";
     }
 
-    this.anim.play(animName);
+    this.anim.play(animName, true);
     if (curSelection != curLetter)
     {
       this.anim.pause();
