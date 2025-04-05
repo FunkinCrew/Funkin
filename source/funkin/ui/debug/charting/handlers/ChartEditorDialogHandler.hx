@@ -1043,7 +1043,14 @@ class ChartEditorDialogHandler
 
     var fileFilter = switch (format)
     {
-      case 'legacy': {label: 'JSON Data File (.json)', extension: 'json'};
+      case 'legacy':
+        // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
+        #if !mac
+        [
+          {label: 'JSON Data File (.json)', extension: 'json'}];
+        #else
+        [];
+        #end
       default: null;
     }
 
@@ -1073,7 +1080,7 @@ class ChartEditorDialogHandler
     var onDropFile:String->Void;
 
     importBox.onClick = function(_) {
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter != null ? [fileFilter] : [], function(selectedFile:SelectedFileInfo) {
+      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileInfo) {
         if (selectedFile != null && selectedFile.bytes != null)
         {
           trace('Selected file: ' + selectedFile.fullPath);
