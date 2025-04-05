@@ -7,7 +7,6 @@ import flixel.graphics.FlxGraphic;
 import funkin.graphics.shaders.HSVShader;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
-import funkin.ui.options.PreferencesMenu;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
