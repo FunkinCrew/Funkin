@@ -1709,6 +1709,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
+      generateSongList(currentFilter, true);
       grpCapsules.members[curSelected].refreshDisplay();
     }
     else
@@ -1716,6 +1717,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = 0;
       intendedCompletion = 0.0;
       rememberedDifficulty = currentDifficulty;
+      generateSongList(currentFilter, true);
     }
 
     if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
