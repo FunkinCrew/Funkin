@@ -2,8 +2,7 @@ package funkin.util.macro;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import haxe.macro.Type;
-import funkin.util.macro.MacroUtil;
+import haxe.macro.Type.ClassType;
 
 /**
  * Macros to generate lists of classes at compile time.
