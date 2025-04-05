@@ -1556,13 +1556,11 @@ class FreeplayState extends MusicBeatSubState
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(-1);
-      generateSongList(currentFilter, true);
     }
     if (controls.UI_RIGHT_P)
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(1);
-      generateSongList(currentFilter, true);
     }
 
     if (controls.BACK && !busy)
@@ -1657,7 +1655,6 @@ class FreeplayState extends MusicBeatSubState
   /**
    * changeDiff is the root of both difficulty and variation changes/management.
    * It will check the difficulty of the current variation, all available variations, and all available difficulties per variation.
-   * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
    * @param change
    * @param force
    */
