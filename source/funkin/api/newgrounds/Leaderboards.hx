@@ -278,7 +278,7 @@ enum abstract Leaderboard(Int)
         {
           case "darnell":
             return DarnellBFMix;
-          case "litup":
+          case "lit-up":
             return LitUpBFMix;
           default:
             return Unknown;
@@ -372,7 +372,7 @@ enum abstract Leaderboard(Int)
             return Stress;
           case "darnell":
             return Darnell;
-          case "litup":
+          case "lit-up":
             return LitUp;
           case "2hot":
             return TwoHot;
