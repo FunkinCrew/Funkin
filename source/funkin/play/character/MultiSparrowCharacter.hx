@@ -26,7 +26,10 @@ class MultiSparrowCharacter extends BaseCharacter
 
   override function onCreate(event:ScriptEvent):Void
   {
-    trace('Creating Multi-Sparrow character: ' + this.characterId);
+    // Display a custom scope for debugging purposes.
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('MultiSparrowCharacter.create(${this.characterId})');
+    #end
 
     buildSprites();
     super.onCreate(event);
@@ -41,8 +44,8 @@ class MultiSparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
-      pixelPerfectRender = true;
-      pixelPerfectPosition = true;
+      // pixelPerfectRender = true;
+      // pixelPerfectPosition = true;
     }
     else
     {
@@ -53,6 +56,8 @@ class MultiSparrowCharacter extends BaseCharacter
 
   function buildSpritesheet():Void
   {
+    trace('Loading assets for Multi-Sparrow character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
+
     var assetList = [];
     for (anim in _data.animations)
     {
@@ -123,10 +128,6 @@ class MultiSparrowCharacter extends BaseCharacter
 
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
   {
-    // Make sure we ignore other animations if we're currently playing a forced one,
-    // unless we're forcing a new animation.
-    if (!this.canPlayOtherAnims && !ignoreOther) return;
-
     super.playAnimation(name, restart, ignoreOther, reverse);
   }
 }

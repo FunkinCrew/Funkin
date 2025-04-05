@@ -14,13 +14,7 @@ import flixel.input.mouse.FlxMouseEvent;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.sound.FlxSound;
-import flixel.system.debug.log.LogStyle;
-import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.tweens.misc.VarTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
@@ -29,7 +23,6 @@ import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VoicesGroup;
 import funkin.audio.waveform.WaveformSprite;
 import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
@@ -43,17 +36,14 @@ import funkin.data.stage.StageData;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
-import funkin.input.TurboActionHandler;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
-import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.save.Save;
@@ -84,13 +74,10 @@ import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorPlaybarHead;
 import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
-import funkin.ui.debug.charting.handlers.ChartEditorShortcutHandler;
-import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
-import funkin.ui.haxeui.HaxeUIState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.Constants;
@@ -102,28 +89,16 @@ import funkin.util.WindowUtil;
 import haxe.DynamicAccess;
 import haxe.io.Bytes;
 import haxe.io.Path;
-import haxe.ui.backend.flixel.UIRuntimeState;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
-import haxe.ui.components.DropDown;
-import haxe.ui.components.Image;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
-import haxe.ui.components.TextField;
-import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
-import haxe.ui.containers.Frame;
-import haxe.ui.containers.Grid;
-import haxe.ui.containers.HBox;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
-import haxe.ui.containers.ScrollView;
-import haxe.ui.containers.TreeView;
-import haxe.ui.containers.TreeViewNode;
-import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
@@ -1676,6 +1651,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewViewportBoundsDirty = true;
 
     switchToCurrentInstrumental();
+    postLoadInstrumental();
 
     return selectedVariation;
   }
@@ -2922,7 +2898,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
 
     playbarBPM.onClick = _ -> {
-      if (FlxG.keys.pressed.CONTROL)
+      if (pressingControl())
       {
         this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, true);
       }
@@ -2939,7 +2915,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     playbarDifficulty.onClick = _ -> {
-      if (FlxG.keys.pressed.CONTROL)
+      if (pressingControl())
       {
         this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, true);
       }
@@ -3949,7 +3925,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Handle scroll anchor
     if (scrollAnchorScreenPos != null)
     {
-      var currentScreenPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewX);
+      var currentScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
       var distance = currentScreenPos - scrollAnchorScreenPos;
 
       var verticalDistance = distance.y;
@@ -3982,13 +3958,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // W = Scroll Up (doesn't work with Ctrl+Scroll)
-    if (wKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
+    if (wKeyHandler.activated && currentLiveInputStyle == None && !pressingControl())
     {
       scrollAmount = -GRID_SIZE * 4;
       shouldPause = true;
     }
     // S = Scroll Down (doesn't work with Ctrl+Scroll)
-    if (sKeyHandler.activated && currentLiveInputStyle == None && !FlxG.keys.pressed.CONTROL)
+    if (sKeyHandler.activated && currentLiveInputStyle == None && !pressingControl())
     {
       scrollAmount = GRID_SIZE * 4;
       shouldPause = true;
@@ -4107,7 +4083,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       scrollAmount *= 2;
     }
     // CONTROL + Scroll = Scroll Precise
-    if (FlxG.keys.pressed.CONTROL)
+    if (pressingControl())
     {
       scrollAmount /= 4;
     }
@@ -4166,13 +4142,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (currentLiveInputStyle == None)
     {
-      if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
+      if (FlxG.keys.justPressed.LEFT && !pressingControl())
       {
         noteSnapQuantIndex--;
         if (noteSnapQuantIndex < 0) noteSnapQuantIndex = SNAP_QUANTS.length - 1;
       }
 
-      if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
+      if (FlxG.keys.justPressed.RIGHT && !pressingControl())
       {
         noteSnapQuantIndex++;
         if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
@@ -4232,7 +4208,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (scrollAnchorScreenPos == null)
         {
-          scrollAnchorScreenPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+          scrollAnchorScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
           selectionBoxStartPos = null;
         }
         else
@@ -4368,7 +4344,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
               if (notesToSelect.length > 0 || eventsToSelect.length > 0)
               {
-                if (FlxG.keys.pressed.CONTROL)
+                if (pressingControl())
                 {
                   // Add to the selection.
                   performCommand(new SelectItemsCommand(notesToSelect, eventsToSelect));
@@ -4383,7 +4359,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 // We made a selection box, but it didn't select anything.
 
-                if (!FlxG.keys.pressed.CONTROL)
+                if (!pressingControl())
                 {
                   // Deselect all items.
                   var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
@@ -4421,12 +4397,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               currentScrollEase += (diff * 0.5); // Too fast!
             }
 
-            // Render the selection box.
+            // Render the selection box, and keep the rendered graphic clamped to the size of the screen
             var selectionRect:FlxRect = new FlxRect();
             selectionRect.x = Math.min(FlxG.mouse.viewX, selectionBoxStartPos.x);
-            selectionRect.y = Math.min(FlxG.mouse.viewY, selectionBoxStartPos.y);
+            selectionRect.y = Math.min(Math.max(0, selectionBoxStartPos.y), FlxG.mouse.viewY);
             selectionRect.width = Math.abs(FlxG.mouse.viewX - selectionBoxStartPos.x);
-            selectionRect.height = Math.abs(FlxG.mouse.viewY - selectionBoxStartPos.y);
+            selectionRect.height = Math.abs(FlxG.mouse.viewY - Math.max(Math.min(FlxG.height, selectionBoxStartPos.y), 0));
             setSelectionBoxBounds(selectionRect);
 
             targetCursorMode = Crosshair;
@@ -4462,7 +4438,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               });
             }
 
-            if (FlxG.keys.pressed.CONTROL)
+            if (pressingControl())
             {
               if (highlightedNote != null && highlightedNote.noteData != null)
               {
@@ -4537,7 +4513,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             // If we clicked and released outside the grid.
 
-            if (!FlxG.keys.pressed.CONTROL)
+            if (!pressingControl())
             {
               // Deselect all items.
               var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
@@ -4756,7 +4732,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               });
             }
 
-            if (FlxG.keys.pressed.CONTROL)
+            if (pressingControl())
             {
               // Control click to select/deselect an individual note.
               if (highlightedNote != null && highlightedNote.noteData != null)
@@ -4840,7 +4816,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                   // TODO: Figure out configuring event data.
                   var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
 
-                  performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
+                  performCommand(new AddEventsCommand([newEventData], pressingControl()));
                 }
                 else
                 {
@@ -4848,7 +4824,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
                   var newNoteData:SongNoteData = new SongNoteData(cursorSnappedMs, cursorColumn, 0, noteKindToPlace,
                     ChartEditorState.cloneNoteParams(noteParamsToPlace));
 
-                  performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+                  performCommand(new AddNotesCommand([newNoteData], pressingControl()));
 
                   currentPlaceNoteData = newNoteData;
                 }
@@ -5282,7 +5258,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       trace('Placing note. ${column}');
       var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace, ChartEditorState.cloneNoteParams(noteParamsToPlace));
-      performCommand(new AddNotesCommand([newNoteData], FlxG.keys.pressed.CONTROL));
+      performCommand(new AddNotesCommand([newNoteData], pressingControl()));
       currentLiveInputPlaceNoteData[column] = newNoteData;
     }
     else if (removeNoteInstead)
@@ -5318,7 +5294,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           char: isOpponent ? 1 : 0,
         });
-      performCommand(new AddEventsCommand([newEventData], FlxG.keys.pressed.CONTROL));
+      performCommand(new AddEventsCommand([newEventData], pressingControl()));
     }
     else if (removeEventInstead)
     {
@@ -5504,18 +5480,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleFileKeybinds():Void
   {
     // CTRL + N = New Chart
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.N && !isHaxeUIDialogOpen)
+    if (pressingControl() && FlxG.keys.justPressed.N && !isHaxeUIDialogOpen)
     {
       this.openWelcomeDialog(true);
     }
 
     // CTRL + O = Open Chart
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.O && !isHaxeUIDialogOpen)
+    if (pressingControl() && FlxG.keys.justPressed.O && !isHaxeUIDialogOpen)
     {
       this.openBrowseFNFC(true);
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.S && !isHaxeUIDialogOpen)
+    if (pressingControl() && FlxG.keys.justPressed.S && !isHaxeUIDialogOpen)
     {
       if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
       {
@@ -5536,7 +5512,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // CTRL + Q = Quit to Menu
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Q)
+    if (pressingControl() && FlxG.keys.justPressed.Q)
     {
       quitChartEditor();
     }
@@ -5574,20 +5550,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // CTRL + C = Copy
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
+    if (pressingControl() && FlxG.keys.justPressed.C)
     {
       performCommand(new CopyItemsCommand(currentNoteSelection, currentEventSelection));
     }
 
     // CTRL + X = Cut
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.X)
+    if (pressingControl() && FlxG.keys.justPressed.X)
     {
       // Cut selected notes.
       performCommand(new CutItemsCommand(currentNoteSelection, currentEventSelection));
     }
 
     // CTRL + V = Paste
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V)
+    if (pressingControl() && FlxG.keys.justPressed.V)
     {
       // CTRL + SHIFT + V = Paste Unsnapped.
       var targetMs:Float = if (FlxG.keys.pressed.SHIFT)
@@ -5650,14 +5626,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // CTRL + F = Flip Notes
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.F)
+    if (pressingControl() && FlxG.keys.justPressed.F)
     {
       // Flip selected notes.
       performCommand(new FlipNotesCommand(currentNoteSelection));
     }
 
     // CTRL + A = Select All Notes
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.A)
+    if (pressingControl() && FlxG.keys.justPressed.A)
     {
       // Select all items.
       if (FlxG.keys.pressed.ALT)
@@ -5689,14 +5665,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // CTRL + I = Select Inverse
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.I)
+    if (pressingControl() && FlxG.keys.justPressed.I)
     {
       // Select unselected items and deselect selected items.
       performCommand(new InvertSelectedItemsCommand());
     }
 
     // CTRL + D = Select None
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.D)
+    if (pressingControl() && FlxG.keys.justPressed.D)
     {
       // Deselect all items.
       performCommand(new DeselectAllItemsCommand());
@@ -5710,11 +5686,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (currentLiveInputStyle == None)
     {
-      if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
+      if (pressingControl() && FlxG.keys.justPressed.LEFT)
       {
         incrementDifficulty(-1);
       }
-      if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
+      if (pressingControl() && FlxG.keys.justPressed.RIGHT)
       {
         incrementDifficulty(1);
       }
@@ -5724,6 +5700,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
     }
+  }
+
+  /**
+   * Small helper for MacOS, "WINDOWS" is keycode 15, which maps to "COMMAND" on Mac, which is more often used than "CONTROL"
+   * Everywhere else, it just returns `FlxG.keys.pressed.CONTROL`
+   * @return Bool
+   */
+  function pressingControl():Bool
+  {
+    #if mac
+    return FlxG.keys.pressed.WINDOWS;
+    #else
+    return FlxG.keys.pressed.CONTROL;
+    #end
   }
 
   /**
@@ -6448,7 +6438,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       trace('ERROR: Instrumental track is null!');
     }
 
+    Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
+    updateTimeSignature();
+
     this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
+    Conductor.instance.currentTimeChange.bpm = currentSongMetadata.timeChanges[0].bpm;
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;

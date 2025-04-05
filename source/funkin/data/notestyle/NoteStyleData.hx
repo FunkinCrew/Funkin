@@ -187,6 +187,10 @@ typedef NoteStyleAssetData<T> =
   @:optional
   var isPixel:Bool;
 
+  @:default(1.0)
+  @:optional
+  var alpha:Float;
+
   /**
    * If true, animations will be played on the graphic.
    * @default `false` to save performance.
@@ -251,6 +255,30 @@ typedef NoteStyleData_NoteSplash =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  @:optional
+  @:default(24)
+  var framerateDefault:Int;
+
+  @:optional
+  @:default(2)
+  var framerateVariance:Int;
+
+  @:optional
+  @:default("normal")
+  var blendMode:String;
+
+  @:optional
+  var leftSplashes:Array<UnnamedAnimationData>;
+
+  @:optional
+  var downSplashes:Array<UnnamedAnimationData>;
+
+  @:optional
+  var upSplashes:Array<UnnamedAnimationData>;
+
+  @:optional
+  var rightSplashes:Array<UnnamedAnimationData>;
 };
 
 typedef NoteStyleData_HoldNoteCover =
@@ -262,4 +290,33 @@ typedef NoteStyleData_HoldNoteCover =
   @:optional
   @:default(true)
   var enabled:Bool;
+
+  @:optional
+  var left:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
+  var down:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
+  var up:NoteStyleData_HoldNoteCoverDirectionData;
+
+  @:optional
+  var right:NoteStyleData_HoldNoteCoverDirectionData;
 };
+
+typedef NoteStyleData_HoldNoteCoverDirectionData =
+{
+  /**
+   * Optionally specify an asset path to use for this specific animation.
+   * @:default The assetPath of the main holdNoteCover asset
+   */
+  @:optional
+  var assetPath:String;
+
+  @:optional
+  var start:UnnamedAnimationData;
+  @:optional
+  var hold:UnnamedAnimationData;
+  @:optional
+  var end:UnnamedAnimationData;
+}

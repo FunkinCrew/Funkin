@@ -1,7 +1,6 @@
 package funkin.ui.story;
 
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import funkin.util.MathUtil;

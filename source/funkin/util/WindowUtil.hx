@@ -34,6 +34,30 @@ class WindowUtil
     #end
   }
 
+  #if FEATURE_DEBUG_TRACY
+  /**
+   * Initialize Tracy.
+   * NOTE: Call this from the main thread ONLY!
+   */
+  public static function initTracy():Void
+  {
+    // Apply a marker to indicate frame end for the Tracy profiler.
+    // Do this only if Tracy is configured to prevent lag.
+    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
+      cpp.vm.tracy.TracyProfiler.frameMark();
+    });
+
+    var appInfoMessage = funkin.util.logging.CrashHandler.buildSystemInfo();
+
+    trace("Friday Night Funkin': Connection to Tracy profiler successful.");
+
+    // Post system info like Git hash
+    cpp.vm.tracy.TracyProfiler.messageAppInfo(appInfoMessage);
+
+    cpp.vm.tracy.TracyProfiler.setThreadName("main");
+  }
+  #end
+
   /**
    * Runs platform-specific code to open a path in the file explorer.
    * @param targetPath The path to open.
@@ -90,14 +114,6 @@ class WindowUtil
     openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int) {
       windowExit.dispatch(exitCode);
     });
-
-    #if FEATURE_DEBUG_TRACY
-    // Apply a marker to indicate frame end for the Tracy profiler.
-    // Do this only if Tracy is configured to prevent lag.
-    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
-      cpp.vm.tracy.TracyProfiler.frameMark();
-    });
-    #end
 
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))

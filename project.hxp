@@ -25,7 +25,7 @@ class Project extends HXProject {
 	 * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
 	 * You only have to change it here, the rest of the game will query this value.
 	 */
-	static final VERSION:String = "0.5.3";
+	static final VERSION:String = "0.6.2";
 
 	/**
 	 * The game's name. Used as the default window title.
@@ -179,6 +179,33 @@ class Project extends HXProject {
 	static final FEATURE_NEWGROUNDS:FeatureFlag = "FEATURE_NEWGROUNDS";
 
 	/**
+	 * `-DFEATURE_NEWGROUNDS_DEBUG`
+	 * If this flag is enabled, the game will enable Newgrounds.io's debug functions.
+	 * This provides additional information in requests, as well as "faking" medal and leaderboard submissions.
+	 */
+	static final FEATURE_NEWGROUNDS_DEBUG:FeatureFlag = "FEATURE_NEWGROUNDS_DEBUG";
+
+	/**
+	 * `-DFEATURE_NEWGROUNDS_AUTOLOGIN`
+	 * If this flag is enabled, the game will attempt to automatically login to Newgrounds on startup.
+	 */
+	static final FEATURE_NEWGROUNDS_AUTOLOGIN:FeatureFlag = "FEATURE_NEWGROUNDS_AUTOLOGIN";
+
+	/**
+	 * `-DFEATURE_NEWGROUNDS_TESTING_MEDALS`
+	 * If this flag is enabled, use the medal IDs from the debug test bench.
+	 * If disabled, use the actual medal IDs from the release project on Newgrounds.
+	 */
+	static final FEATURE_NEWGROUNDS_TESTING_MEDALS:FeatureFlag = "FEATURE_NEWGROUNDS_TESTING_MEDALS";
+
+	/**
+	 * `-DFEATURE_NEWGROUNDS_EVENTS`
+	 * If this flag is enabled, the game will attempt to send events to Newgrounds when the user does stuff.
+	 * This lets us see cool anonymized stats! It only works if the user is logged in.
+	 */
+	static final FEATURE_NEWGROUNDS_EVENTS:FeatureFlag = "FEATURE_NEWGROUNDS_EVENTS";
+
+	/**
 	 * `-DFEATURE_FUNKVIS`
 	 * If this flag is enabled, the game will enable the Funkin Visualizer library.
 	 * This is used to provide audio visualization like Nene's speaker.
@@ -197,7 +224,7 @@ class Project extends HXProject {
 	/**
 	 * `-DFEATURE_VIDEO_PLAYBACK`
 	 * If this flag is enabled, the game will enable support for video playback.
-	 * This requires the hxCodec library on desktop platforms.
+	 * This requires the hxvlc library on desktop platforms.
 	 */
 	static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
 
@@ -231,6 +258,12 @@ class Project extends HXProject {
    * If this flag is enabled, the Stage Editor will be accessible from the debug menu.
 	 */
   static final FEATURE_STAGE_EDITOR:FeatureFlag = "FEATURE_STAGE_EDITOR";
+
+	/**
+	 * `-DFEATURE_RESULTS_DEBUG
+	 * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+	 */
+	static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
 
 	/**
 	 * `-DFEATURE_POLYMOD_MODS`
@@ -330,6 +363,8 @@ class Project extends HXProject {
 
 		this.window.hardware = true;
 		this.window.vsync = false;
+		// force / allow high DPI
+		this.window.allowHighDPI = true;
 
 		if (isWeb()) {
 			this.window.resizable = true;
@@ -460,7 +495,6 @@ class Project extends HXProject {
 
 		// Should be false unless explicitly requested.
 		GITHUB_BUILD.apply(this, false);
-		FEATURE_NEWGROUNDS.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
 
 		// Should be true unless explicitly requested.
@@ -474,10 +508,17 @@ class Project extends HXProject {
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
 		FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+		FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
 		// Got a lot of complains about this being turned off by default on some builds.
 		// TODO: Look into ways to optimize logging (maybe by using a thread pool?)
 		FEATURE_LOG_TRACE.apply(this, true);
+
+		FEATURE_NEWGROUNDS.apply(this, true);
+		FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
+		FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+		FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
+		FEATURE_NEWGROUNDS_EVENTS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this));
 
 		// Should default to true on workspace builds and false on release builds.
 		REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
@@ -579,7 +620,7 @@ class Project extends HXProject {
 
 		// Ensure all Flixel classes are available at runtime.
 		// Explicitly ignore packages which require additional dependencies.
-		addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])");
+		addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
 	}
 
 	/**
@@ -593,7 +634,15 @@ class Project extends HXProject {
   function configureOutputDir() {
 		// Set the output directory. Depends on the target platform and build type.
 
-		var buildDir = 'export/${isDebug() ? 'debug' : 'release'}/';
+		var buildDir = 'export/${isDebug() ? 'debug' : 'release'}';
+
+		// we use a dedicated 'tracy' folder, since it generally needs a recompile when in use
+		if (FEATURE_DEBUG_TRACY.isEnabled(this))
+			buildDir += "-tracy";
+
+		// trailing slash might not be needed, works fine on macOS without it, but I haven't tested on Windows!
+		buildDir += "/";
+
 
 		info('Output directory: $buildDir');
 		// setenv('BUILD_DIR', buildDir);
@@ -650,9 +699,9 @@ class Project extends HXProject {
 		}
 
     if (isDesktop() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
-      // hxCodec doesn't function on HashLink or non-desktop platforms
+      // hxvlc doesn't function on HashLink or non-desktop platforms
 			// It's also unnecessary if video playback is disabled
-      addHaxelib('hxCodec'); // Video playback
+      addHaxelib('hxvlc'); // Video playback
     }
 
 		if (FEATURE_DISCORD_RPC.isEnabled(this)) {
@@ -1041,15 +1090,7 @@ class Project extends HXProject {
 	 * Display an info message. This should not interfere with the build process.
 	 */
 	public function info(message:String):Void {
-		// CURSED: We have to disable info() log calls because of a bug.
-		// https://github.com/haxelime/lime-vscode-extension/issues/88
-
-		// Log.info('[INFO] ${message}');
-
-		// trace(message);
-		// Sys.println(message);
-		// Sys.stdout().writeString(message);
-		// Sys.stderr().writeString(message);
+		if(command != "display") { Log.info('[INFO] ${message}'); }
 	}
 }
 
