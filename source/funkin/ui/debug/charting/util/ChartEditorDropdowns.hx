@@ -2,7 +2,6 @@ package funkin.ui.debug.charting.util;
 
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.data.stage.StageData;
 import funkin.play.event.SongEvent;
 import funkin.data.stage.StageRegistry;
 import funkin.play.character.CharacterData;

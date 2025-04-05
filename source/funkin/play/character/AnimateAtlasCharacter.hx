@@ -16,6 +16,7 @@ import flixel.util.FlxDestroyUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.CharacterData.CharacterRenderType;
+import flixel.util.FlxDirectionFlags;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 
@@ -74,10 +75,14 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   override function onCreate(event:ScriptEvent):Void
   {
-    trace('Creating Animate Atlas character: ' + this.characterId);
+    // Display a custom scope for debugging purposes.
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('AnimateAtlasCharacter.create(${this.characterId})');
+    #end
 
     try
     {
+      trace('Loading assets for Animate Atlas character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
       var atlasSprite:FlxAtlasSprite = loadAtlasSprite();
       setSprite(atlasSprite);
 
@@ -93,12 +98,10 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
   {
-    if ((!canPlayOtherAnims && !ignoreOther)) return;
-
     var correctName = correctAnimationName(name);
     if (correctName == null)
     {
-      trace('Could not find Atlas animation: ' + name);
+      trace('$characterName Could not find Atlas animation: ' + name);
       return;
     }
 
@@ -145,9 +148,16 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     super.onAnimationFinished(prefix);
 
+    if (!getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)
+      && hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX))
+    {
+      playAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX);
+    }
+
     if (getAnimationData() != null && getAnimationData().looped)
     {
-      playAnimation(currentAnimName, true, false);
+      if (StringTools.endsWith(prefix, "-hold")) trace(prefix);
+      playAnimation(prefix, true, false);
     }
     else
     {
@@ -380,7 +390,7 @@ class AnimateAtlasCharacter extends BaseCharacter
   inline function directAlphaTransform(sprite:FlxSprite, alpha:Float):Void
     sprite.alpha = alpha; // direct set
 
-  inline function facingTransform(sprite:FlxSprite, facing:Int):Void
+  inline function facingTransform(sprite:FlxSprite, facing:FlxDirectionFlags):Void
     sprite.facing = facing;
 
   inline function flipXTransform(sprite:FlxSprite, flipX:Bool):Void
@@ -447,6 +457,57 @@ class AnimateAtlasCharacter extends BaseCharacter
     {
       sprite.clipRect = FlxRect.get(clipRect.x - sprite.x + x, clipRect.y - sprite.y + y, clipRect.width, clipRect.height);
     }
+  }
+
+  var resS:FlxPoint = new FlxPoint();
+
+  /**
+   * Reset the character so it can be used at the start of the level.
+   * Call this when restarting the level.
+   */
+  override public function resetCharacter(resetCamera:Bool = true):Void
+  {
+    trace("RESETTING ATLAS " + characterName);
+
+    // Reset the animation offsets. This will modify x and y to be the absolute position of the character.
+    // this.animOffsets = [0, 0];
+
+    // Now we can set the x and y to be their original values without having to account for animOffsets.
+    this.resetPosition();
+    mainSprite.setPosition(originalPosition.x, originalPosition.y);
+
+    // Then reapply animOffsets...
+    // applyAnimationOffsets(getCurrentAnimation());
+
+    // Make sure we are playing the idle animation
+    // ...then update the hitbox so that this.width and this.height are correct.
+
+    mainSprite.scale.set(1, 1);
+    mainSprite.alpha = 0.0001;
+    mainSprite.width = 0;
+    mainSprite.height = 0;
+    this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
+
+    mainSprite.draw(); // refresh frame
+
+    if (resS.x == 0)
+    {
+      resS.x = mainSprite.width; // clunky bizz
+      resS.y = mainSprite.height;
+    }
+
+    mainSprite.alpha = alpha;
+
+    mainSprite.width = resS.x;
+    mainSprite.height = resS.y;
+    frameWidth = 0;
+    frameHeight = 0;
+
+    scaleCallback(scale);
+    this.updateHitbox();
+
+    // Reset the camera focus point while we're at it.
+    if (resetCamera) this.resetCameraFocusPoint();
   }
 
   inline function offsetCallback(offset:FlxPoint):Void
@@ -528,7 +589,7 @@ class AnimateAtlasCharacter extends BaseCharacter
     return alpha = value;
   }
 
-  override function set_facing(value:Int):Int
+  override function set_facing(value:FlxDirectionFlags):FlxDirectionFlags
   {
     if (exists && facing != value) transformChildren(facingTransform, value);
     return facing = value;

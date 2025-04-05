@@ -1,8 +1,6 @@
 package funkin.ui.charSelect;
 
-import flixel.FlxSprite;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flxanimate.animate.FlxKeyFrame;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
 

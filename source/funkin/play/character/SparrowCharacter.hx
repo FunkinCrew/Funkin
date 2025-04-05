@@ -21,7 +21,10 @@ class SparrowCharacter extends BaseCharacter
 
   override function onCreate(event:ScriptEvent):Void
   {
-    trace('Creating Sparrow character: ' + this.characterId);
+    // Display a custom scope for debugging purposes.
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('SparrowCharacter.create(${this.characterId})');
+    #end
 
     loadSpritesheet();
     loadAnimations();
@@ -31,7 +34,7 @@ class SparrowCharacter extends BaseCharacter
 
   function loadSpritesheet()
   {
-    trace('[SPARROWCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
+    trace('Loading assets for Sparrow character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
 
     var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
     if (tex == null)
@@ -46,8 +49,8 @@ class SparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
-      pixelPerfectRender = true;
-      pixelPerfectPosition = true;
+      // pixelPerfectRender = true;
+      // pixelPerfectPosition = true;
     }
     else
     {

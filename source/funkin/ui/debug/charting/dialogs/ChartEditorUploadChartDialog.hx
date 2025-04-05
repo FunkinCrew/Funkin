@@ -7,9 +7,7 @@ import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
-import haxe.ui.containers.dialogs.Dialogs;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.notifications.NotificationType;
+import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-chart.xml"))
