@@ -4,6 +4,7 @@ import funkin.ui.story.StoryMenuState;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
+import flixel.FlxState;
 import funkin.graphics.FunkinSprite;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxBitmapFont;
@@ -29,6 +30,7 @@ import funkin.save.Save.SaveScoreData;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.play.components.TallyCounter;
 import funkin.play.components.ClearPercentCounter;
+import funkin.ui.transition.StickerSubState;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -762,7 +764,7 @@ class ResultState extends MusicBeatSubState
 
       // Determining the target state(s) to go to.
       // Default to main menu because that's better than `null`.
-      var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var targetState:FlxState = new funkin.ui.mainmenu.MainMenuState();
       var shouldTween = false;
       var shouldUseSubstate = false;
 
@@ -795,7 +797,7 @@ class ResultState extends MusicBeatSubState
           // No new characters.
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(
+          targetState = new StickerSubState(
             {
               targetState: (sticker) -> new StoryMenuState(sticker),
               stickerSet: stickerSet,
@@ -833,7 +835,7 @@ class ResultState extends MusicBeatSubState
         {
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.StickerSubState(
+          targetState = new StickerSubState(
             {
               targetState: (sticker) -> FreeplayState.build(null, sticker),
               stickerSet: stickerSet,

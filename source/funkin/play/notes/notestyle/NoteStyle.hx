@@ -2,6 +2,7 @@ package funkin.play.notes.notestyle;
 
 import funkin.play.Countdown;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.animation.AnimationData;
 import funkin.data.IRegistryEntry;
 import funkin.graphics.FunkinSprite;

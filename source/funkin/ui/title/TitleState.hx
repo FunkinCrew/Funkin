@@ -18,19 +18,10 @@ import funkin.graphics.shaders.TitleOutline;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 import openfl.Assets;
-import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
-import openfl.events.MouseEvent;
-import openfl.events.NetStatusEvent;
-import openfl.media.Video;
-import openfl.net.NetStream;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
-import funkin.ui.freeplay.FreeplayState;
-import openfl.display.BlendMode;
-import funkin.save.Save;
 
 #if desktop
 #end
