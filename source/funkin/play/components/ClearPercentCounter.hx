@@ -3,13 +3,7 @@ package funkin.play.components;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.PureColor;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxMath;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.text.FlxText.FlxTextAlign;
-import funkin.util.MathUtil;
 import flixel.util.FlxColor;
 
 /**

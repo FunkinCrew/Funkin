@@ -18,7 +18,10 @@ class PackerCharacter extends BaseCharacter
 
   override function onCreate(event:ScriptEvent):Void
   {
-    trace('Creating Packer character: ' + this.characterId);
+    // Display a custom scope for debugging purposes.
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('PackerCharacter.create(${this.characterId})');
+    #end
 
     loadSpritesheet();
     loadAnimations();
@@ -28,7 +31,7 @@ class PackerCharacter extends BaseCharacter
 
   function loadSpritesheet():Void
   {
-    trace('[PACKERCHAR] Loading spritesheet ${_data.assetPath} for ${characterId}');
+    trace('Loading assets for Packer character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
 
     var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath);
     if (tex == null)
@@ -43,8 +46,8 @@ class PackerCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
-      pixelPerfectRender = true;
-      pixelPerfectPosition = true;
+      // pixelPerfectRender = true;
+      // pixelPerfectPosition = true;
     }
     else
     {
