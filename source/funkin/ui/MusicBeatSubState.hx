@@ -1,6 +1,5 @@
 package funkin.ui;
 
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
@@ -87,6 +86,20 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     Conductor.watchQuick(conductorInUse);
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
+  }
+
+  override function onFocus():Void
+  {
+    super.onFocus();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
+  }
+
+  override function onFocusLost():Void
+  {
+    super.onFocusLost();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
   }
 
   public function initConsoleHelpers():Void {}

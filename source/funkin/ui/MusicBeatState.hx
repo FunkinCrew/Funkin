@@ -2,7 +2,6 @@ package funkin.ui;
 
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.ui.mainmenu.MainMenuState;
-import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.text.FlxText;
@@ -85,6 +84,20 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     super.update(elapsed);
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
+  }
+
+  override function onFocus():Void
+  {
+    super.onFocus();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
+  }
+
+  override function onFocusLost():Void
+  {
+    super.onFocusLost();
+
+    dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
   }
 
   function createWatermarkText()

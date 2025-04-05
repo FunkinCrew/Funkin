@@ -5,10 +5,10 @@ import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxOutlineEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
-import funkin.ui.options.OptionsState.Page;
+import funkin.ui.Page;
 import funkin.play.notes.NoteSprite;
 
-class ColorsMenu extends Page
+class ColorsMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   var curSelected:Int = 0;
 

@@ -1,12 +1,10 @@
 package funkin.play.stage;
 
-import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.stage.StageProp;
 
 typedef AnimationFrameCallback = String->Int->Int->Void;
 typedef AnimationFinishedCallback = String->Void;
@@ -223,13 +221,11 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
 
-    FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
-
     // Attempt to strip a `-alt` suffix, if it exists.
     if (name.lastIndexOf('-') != -1)
     {
       var correctName = name.substring(0, name.lastIndexOf('-'));
-      FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
+      FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes ($correctName)...');
       return correctAnimationName(correctName);
     }
     else
@@ -389,5 +385,5 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public function onSongLoaded(event:SongLoadScriptEvent) {}
 
-  public function onSongRetry(event:ScriptEvent) {}
+  public function onSongRetry(event:SongRetryEvent) {}
 }

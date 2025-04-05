@@ -56,14 +56,20 @@ class Constants
   #end
 
   /**
+   * Whether or not the game is a debug build.
+   */
+  public static final DEBUG_BUILD:Bool = #if FEATURE_DEBUG_FUNCTIONS true #else false #end;
+
+  /**
    * URL DATA
    */
   // ==============================
 
   /**
    * Link to buy merch for the game.
+   * This is usually fetched from the Newgrounds API but we use this as a fallback.
    */
-  public static final URL_MERCH:String = 'https://www.makeship.com/shop/creator/friday-night-funkin';
+  public static final URL_MERCH_FALLBACK:String = 'https://needlejuicerecords.com/en-ca/pages/friday-night-funkin';
 
   /**
    * Preloader sitelock.
@@ -230,7 +236,7 @@ class Constants
   /**
    * Standardized variations for charts
    */
-  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
+  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico', 'bf'];
 
   /**
    * The default intensity multiplier for camera bops.

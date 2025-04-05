@@ -1,6 +1,5 @@
 package funkin.ui;
 
-import flixel.FlxSprite;
 import funkin.graphics.FlxFilteredSprite;
 
 /**
@@ -29,7 +28,7 @@ class PixelatedIcon extends FlxFilteredSprite
         charPath += "monsterpixel";
       case "mom" | "mom-car":
         charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
+      case "pico-blazin" | "pico-playable" | "pico-speaker" | "pico-pixel" | "pico-holding-nene":
         charPath += "picopixel";
       case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
         charPath += "gfpixel";
@@ -41,7 +40,7 @@ class PixelatedIcon extends FlxFilteredSprite
         charPath += "senpaipixel";
       case "spooky-dark":
         charPath += "spookypixel";
-      case "tankman-atlas":
+      case "tankman-atlas" | "tankman-bloody":
         charPath += "tankmanpixel";
       default:
         charPath += '${char}pixel';

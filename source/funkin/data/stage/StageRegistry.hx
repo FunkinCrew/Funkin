@@ -1,6 +1,5 @@
 package funkin.data.stage;
 
-import funkin.data.stage.StageData;
 import funkin.play.stage.Stage;
 import funkin.play.stage.ScriptedStage;
 
@@ -13,7 +12,7 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
    */
   public static final STAGE_DATA_VERSION:thx.semver.Version = "1.0.3";
 
-  public static final STAGE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=1.0.0 <=1.0.3";
+  public static final STAGE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=1.0.0 <1.1.0";
 
   public static var instance(get, never):StageRegistry;
   static var _instance:Null<StageRegistry> = null;
@@ -93,8 +92,22 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
   public function listBaseGameStageIds():Array<String>
   {
     return [
-      "mainStage", "mainStageErect", "spookyMansion", "phillyTrain", "phillyTrainErect", "limoRide", "limoRideErect", "mallXmas", "mallXmasErect", "mallEvil",
-      "school", "schoolEvil", "tankmanBattlefield", "phillyStreets", "phillyStreetsErect", "phillyBlazin",
+      "mainStage",
+      "mainStageErect",
+      "spookyMansion",
+      "phillyTrain",
+      "phillyTrainErect",
+      "limoRide",
+      "limoRideErect",
+      "mallXmas",
+      "mallXmasErect",
+      "mallEvil",
+      "school",
+      "schoolEvil",
+      "tankmanBattlefield",
+      "phillyStreets",
+      "phillyStreetsErect",
+      "phillyBlazin",
     ];
   }
 

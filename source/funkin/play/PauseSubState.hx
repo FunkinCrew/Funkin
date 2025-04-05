@@ -1,27 +1,23 @@
 package funkin.play;
 
+import flixel.FlxState;
+import funkin.ui.story.StoryMenuState;
+import funkin.data.freeplay.player.PlayerRegistry;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
-import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
-import funkin.play.PlayState;
 import funkin.ui.AtlasText;
-import funkin.ui.debug.latency.LatencyState;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.transition.StickerSubState;
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -126,7 +122,10 @@ class PauseSubState extends MusicBeatSubState
    * Disallow input until transitions are complete!
    * This prevents the pause menu from immediately closing when opened, among other things.
    */
-  public var allowInput:Bool = false;
+  public var allowInput:Bool = true;
+
+  // If this is true, it means we are frame 1 of our substate.
+  var justOpened:Bool = true;
 
   /**
    * The entries currently displayed in the pause menu.
@@ -395,10 +394,6 @@ class PauseSubState extends MusicBeatSubState
       FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
       delay += 0.1;
     }
-
-    new FlxTimer().start(0.2, (_) -> {
-      allowInput = true;
-    });
   }
 
   // ===============
@@ -421,14 +416,17 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT && !justOpened)
     {
       currentMenuEntries[currentEntry].callback(this);
     }
-    else if (controls.PAUSE)
+    else if (controls.PAUSE && !justOpened)
     {
       resume(this);
     }
+
+    // we only want justOpened to be true for 1 single frame, when we first get into the pause menu substate
+    justOpened = false;
 
     #if FEATURE_DEBUG_FUNCTIONS
     // to pause the game and get screenshots easy, press H on pause menu!
@@ -438,6 +436,7 @@ class PauseSubState extends MusicBeatSubState
 
       metadata.visible = visible;
       menuEntryText.visible = visible;
+      background.visible = visible;
       this.bgColor = visible ? 0x99000000 : 0x00000000; // 60% or fully transparent black
     }
     #end
@@ -649,6 +648,7 @@ class PauseSubState extends MusicBeatSubState
     // So if you switch difficulty on the last song of a week you get a really low overall score.
     PlayStatePlaylist.campaignScore = 0;
     PlayStatePlaylist.campaignDifficulty = difficulty;
+    PlayState.instance.previousDifficulty = PlayState.instance.currentDifficulty;
     PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
 
     FreeplayState.rememberedDifficulty = difficulty;
@@ -737,15 +737,25 @@ class PauseSubState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
 
+    var targetState:funkin.ui.transition.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(sticker) : (sticker) ->
+      FreeplayState.build(sticker);
+
+    // Do this AFTER because this resets the value of isStoryMode!
     if (PlayStatePlaylist.isStoryMode)
     {
       PlayStatePlaylist.reset();
-      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new funkin.ui.story.StoryMenuState(sticker)));
     }
-    else
+
+    var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+    var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
+    var stickerPack = switch (PlayState.instance.currentChart.song.id)
     {
-      state.openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
-    }
+      case "tutorial": "tutorial";
+      case "darnell" | "lit-up" | "2hot": "weekend";
+      default: "all";
+    };
+
+    state.openSubState(new funkin.ui.transition.StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
   }
 
   /**
