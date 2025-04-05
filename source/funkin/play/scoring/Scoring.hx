@@ -105,7 +105,7 @@ class Scoring
   /**
    * The score a note receives when it is missed.
    */
-  public static final PBOT1_MISS_SCORE:Int = -250;
+  public static final PBOT1_MISS_SCORE:Int = -100;
 
   /**
    * The threshold at which a note hit is considered perfect and always given the max score.
