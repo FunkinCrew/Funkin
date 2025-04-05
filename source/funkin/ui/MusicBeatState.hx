@@ -64,6 +64,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     Conductor.beatHit.add(this.beatHit);
     Conductor.stepHit.add(this.stepHit);
+    Conductor.bpmChange.add(this.bpmChange);
   }
 
   public override function destroy():Void
@@ -71,6 +72,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     super.destroy();
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
+    Conductor.bpmChange.remove(this.bpmChange);
   }
 
   function handleFunctionControls():Void
@@ -130,6 +132,15 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     // Create a new instance of the current state, so old data is cleared.
     FlxG.resetState();
+  }
+
+  public function bpmChange():Bool
+  {
+    var event = new SongTimeScriptEvent(SONG_BPM_CHANGE, conductorInUse.currentBeat, conductorInUse.currentStep);
+
+    dispatchEvent(event);
+
+    return true;
   }
 
   public function stepHit():Bool
