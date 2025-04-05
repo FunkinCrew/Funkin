@@ -61,7 +61,7 @@ The Pit Stop 2 update!
 - Added offsets support for album titles. ([69d8570](https://github.com/FunkinCrew/Funkin/commit/69d8570a9eb06011ed6dd95fcbef83d90f7f8684)) - by @AbnormalPoof in [#3618](https://github.com/FunkinCrew/Funkin/pull/3618)
 - Added three new properties to stage data: `angle`, `scroll`, and `alpha`. ([ff56b19](https://github.com/FunkinCrew/Funkin/commit/ff56b1948aef42bbb6bb4ede4f9b2012d49ab044)) - by @AbnormalPoof in [#3720](https://github.com/FunkinCrew/Funkin/pull/3720)
 - Added script events for losing/gaining focus. ([4b127b6](https://github.com/FunkinCrew/Funkin/commit/4b127b64130f6f753d0574ec66a1672322e4bd13)) - by @AbnormalPoof in [#3721](https://github.com/FunkinCrew/Funkin/pull/3721)
-- Added 10 new functions to `ReflectUtil`.([6216655](https://github.com/FunkinCrew/Funkin/commit/62166554e7a176245d1a63bd15122033044c4e40)) - by @AbnormalPoof in [#3622](https://github.com/FunkinCrew/Funkin/pull/3622), [#3809](https://github.com/FunkinCrew/Funkin/pull/3809), and [#4019](https://github.com/FunkinCrew/Funkin/pull/4019)
+- Added 10 new functions to `ReflectUtil`. ([6216655](https://github.com/FunkinCrew/Funkin/commit/62166554e7a176245d1a63bd15122033044c4e40)) - by @AbnormalPoof in [#3622](https://github.com/FunkinCrew/Funkin/pull/3622), [#3809](https://github.com/FunkinCrew/Funkin/pull/3809), and [#4019](https://github.com/FunkinCrew/Funkin/pull/4019)
 - Added `DEBUG_BUILD` value to `Constants` to indicate whether a build has debug functions enabled. ([ad45b72](https://github.com/FunkinCrew/Funkin/commit/ad45b72b1ae8eb73a12dc51bcb59f66cc55e7bbd)) - by @AbnormalPoof in [#3853](https://github.com/FunkinCrew/Funkin/pull/3853)
 
 ### Changed
