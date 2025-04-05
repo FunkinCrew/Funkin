@@ -3,18 +3,15 @@ package funkin.ui.charSelect;
 import openfl.filters.BitmapFilter;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.data.freeplay.player.PlayerData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import openfl.filters.DropShadowFilter;
@@ -30,12 +27,13 @@ import funkin.ui.PixelatedIcon;
 import funkin.util.MathUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
 import openfl.display.BlendMode;
-import funkin.save.Save;
 import openfl.filters.ShaderFilter;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
-import funkin.util.FramesJSFLParser.FramesJSFLFrame;
 import funkin.graphics.FunkinSprite;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+#end
 
 class CharSelectSubState extends MusicBeatSubState
 {
@@ -426,6 +424,11 @@ class CharSelectSubState extends MusicBeatSubState
     });
     else
     {
+      #if FEATURE_NEWGROUNDS
+      // Make the character unlock medal retroactive.
+      if (availableChars.size() > 1) Medals.award(CharSelect);
+      #end
+
       FunkinSound.playMusic('stayFunky',
         {
           startingVolume: 1,
@@ -566,6 +569,11 @@ class CharSelectSubState extends MusicBeatSubState
           playerChillOut.visible = false;
           playerChillOut.switchChar(char);
         });
+
+        #if FEATURE_NEWGROUNDS
+        // Grant the medal when the player unlocks a character.
+        Medals.award(CharSelect);
+        #end
 
         Save.instance.addCharacterSeen(char);
         if (nonLocks.length == 0)

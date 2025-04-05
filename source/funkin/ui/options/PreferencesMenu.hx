@@ -7,19 +7,17 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
-import funkin.ui.options.OptionsState.Page;
+import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.audio.FunkinSound;
-import funkin.ui.options.MenuItemEnums;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
 
-class PreferencesMenu extends Page
+class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
-  public static final DEFAULT_PREFERENCES:Array<PreferenceItemData> = [
+  public static final GAMEPLAY_PREFERENCES:Array<PreferenceItemData> = [
     {
       type: "checkbox",
       name: 'Naughtyness',
@@ -37,6 +35,15 @@ class PreferencesMenu extends Page
         Preferences.downscroll = cast value;
       },
       defaultValue: Preferences.downscroll
+    },
+    {
+      type: "checkbox",
+      name: 'Strumline Background',
+      desc: 'If enabled, the strumline will be given a semi-transparent background.',
+      onChange: function(value:Dynamic) {
+        Preferences.strumlineBackgroundOpacity = cast value;
+      },
+      defaultValue: Preferences.strumlineBackgroundOpacity
     },
     {
       type: "checkbox",
@@ -67,28 +74,37 @@ class PreferencesMenu extends Page
     },
     {
       type: "checkbox",
-      name: 'Auto Pause',
+      name: 'Pause on Unfocus',
       desc: 'If enabled, game automatically pauses when it loses focus.',
       onChange: function(value:Dynamic) {
         Preferences.autoPause = cast value;
       },
       defaultValue: Preferences.autoPause
     },
+    {
+      type: "checkbox",
+      name: 'Launch in Fullscreen',
+      desc: 'If enabled, the game will launch in fullscreen on startup.',
+      onChange: function(value:Dynamic) {
+        Preferences.autoFullscreen = cast value;
+      },
+      defaultValue: Preferences.autoFullscreen
+    },
     #if web
     {
       type: "checkbox",
       name: 'Unlocked Framerate',
-      desc: 'Enable to unlock the framerate',
+      desc: 'If enabled, the framerate will be unlocked.',
       onChange: function(value:Dynamic) {
         Preferences.unlockedFramerate = cast value;
       },
       defaultValue: Preferences.unlockedFramerate
-    },
+    }
     #else
     {
       type: "number",
       name: 'FPS',
-      desc: 'The maximum framerate that the game targets',
+      desc: 'The maximum framerate that the game targets.',
       onChange: function(value:Dynamic) {
         Preferences.framerate = Std.int(value);
       },
@@ -96,23 +112,70 @@ class PreferencesMenu extends Page
       min: 30,
       max: 300,
       step: 5
-    },
+    }
     #end
+  ];
+
+  public static final SCREENSHOT_PREFERENCES:Array<PreferenceItemData> = [
     {
       type: "checkbox",
-      name: 'Launch in Fullscreen',
-      desc: 'Automatically launch the game in fullscreen on startup',
+      name: 'Hide Mouse',
+      desc: 'If enabled, the mouse will be hidden when taking a screenshot.',
       onChange: function(value:Dynamic) {
-        Preferences.autoFullscreen = cast value;
+        Preferences.shouldHideMouse = cast value;
       },
-      defaultValue: Preferences.autoFullscreen
+      defaultValue: Preferences.shouldHideMouse
+    },
+    {
+      type: "checkbox",
+      name: 'Fancy Preview',
+      desc: 'If enabled, a preview will be shown after taking a screenshot.',
+      onChange: function(value:Dynamic) {
+        Preferences.fancyPreview = cast value;
+      },
+      defaultValue: Preferences.fancyPreview
+    },
+    {
+      type: "checkbox",
+      name: 'Preview on save',
+      desc: 'If enabled, the preview will be shown only after a screenshot is saved.',
+      onChange: function(value:Dynamic) {
+        Preferences.previewOnSave = cast value;
+      },
+      defaultValue: Preferences.previewOnSave
+    },
+    {
+      type: "number",
+      name: 'Save Format',
+      desc: 'Save screenshots to this format.',
+      onChange: function(value:Dynamic) {
+        Preferences.saveFormat = Std.string(value);
+      },
+      defaultValue: Preferences.saveFormat,
+      values: ['PNG' => 'PNG', 'JPEG' => 'JPEG']
+    },
+    {
+      type: "number",
+      name: 'JPEG Quality',
+      desc: 'The quality of JPEG screenshots.',
+      onChange: function(value:Dynamic) {
+        Preferences.jpegQuality = Std.int(value);
+      },
+      defaultValue: Preferences.jpegQuality,
+      min: 30,
+      max: 300,
+      step: 5
     }
   ];
 
   public var preferencePages:Array<PreferencePageData> = [
     {
-      name: "BASE GAME",
-      itemDatas: DEFAULT_PREFERENCES
+      name: "GAMEPLAY",
+      itemDatas: GAMEPLAY_PREFERENCES
+    },
+    {
+      name: "SCREENSHOTS",
+      itemDatas: SCREENSHOT_PREFERENCES
     }
   ];
 
