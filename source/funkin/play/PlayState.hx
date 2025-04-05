@@ -3023,7 +3023,7 @@ class PlayState extends MusicBeatSubState
       // Determine the score rank for this song we just finished.
       var scoreRank:ScoringRank = Scoring.calculateRank(
         {
-          score: songScore,
+          score: songScoreInt,
           tallies:
             {
               sick: Highscore.tallies.sick,
