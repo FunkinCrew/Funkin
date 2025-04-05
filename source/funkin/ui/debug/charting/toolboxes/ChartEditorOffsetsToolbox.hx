@@ -2,22 +2,16 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.audio.SoundGroup;
 import haxe.ui.components.Button;
-import haxe.ui.components.HorizontalSlider;
 import haxe.ui.components.Label;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.math.FlxMath;
 import haxe.ui.components.NumberStepper;
-import haxe.ui.components.Slider;
 import haxe.ui.backend.flixel.components.SpriteWrapper;
 import funkin.ui.debug.charting.commands.SetAudioOffsetCommand;
 import funkin.ui.haxeui.components.WaveformPlayer;
-import funkin.audio.waveform.WaveformDataParser;
-import haxe.ui.containers.VBox;
 import haxe.ui.containers.Absolute;
 import haxe.ui.containers.ScrollView;
-import haxe.ui.containers.Frame;
 import haxe.ui.core.Screen;
-import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
@@ -368,7 +362,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     // Determine the position of the mouse relative to the
     var mouseXPos = FlxG.mouse.x;
 
-    var relativeMouseXPos = mouseXPos - waveformScrollview.screenX;
+    var relativeMouseXPos = mouseXPos - waveformScrollview.cachedScreenX;
     var targetPlayheadPos = relativeMouseXPos + waveformScrollview.hscrollPos;
 
     // Move the playhead to the mouse position.

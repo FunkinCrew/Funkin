@@ -1,22 +1,12 @@
 package funkin.ui.transition.preload;
 
-import openfl.filters.GlowFilter;
-import openfl.display.SpreadMethod;
-import openfl.display.GradientType;
-import openfl.geom.Matrix;
-import openfl.filters.BlurFilter;
 import openfl.events.MouseEvent;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
-import flash.display.BlendMode;
 import flash.display.Sprite;
 import flash.Lib;
 import flixel.system.FlxBasePreloader;
-import funkin.modding.PolymodHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.util.MathUtil;
-import lime.app.Future;
-import lime.math.Rectangle;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;

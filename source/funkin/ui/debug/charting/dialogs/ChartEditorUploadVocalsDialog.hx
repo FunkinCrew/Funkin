@@ -13,8 +13,6 @@ import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.core.Component;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.notifications.NotificationType;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
