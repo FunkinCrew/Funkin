@@ -1,6 +1,6 @@
 package funkin.ui.options.items;
 
-import funkin.ui.TextMenuList;
+import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
 
@@ -65,55 +65,52 @@ class NumberPreferenceItem extends TextMenuItem
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    lefthandText.text = formatted(currentValue);
 
-    // var fancyTextFancyColor:Color;
-    if (selected)
+    if (!selected) return;
+
+    holdDelayTimer -= elapsed;
+    if (holdDelayTimer <= 0.0)
     {
-      holdDelayTimer -= elapsed;
-      if (holdDelayTimer <= 0.0)
-      {
-        changeRateTimer -= elapsed;
-      }
-
-      var jpLeft:Bool = controls().UI_LEFT_P;
-      var jpRight:Bool = controls().UI_RIGHT_P;
-
-      if (jpLeft || jpRight)
-      {
-        holdDelayTimer = HOLD_DELAY;
-        changeRateTimer = 0.0;
-      }
-
-      var shouldDecrease:Bool = jpLeft;
-      var shouldIncrease:Bool = jpRight;
-
-      if (controls().UI_LEFT && holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
-      {
-        shouldDecrease = true;
-        changeRateTimer = CHANGE_RATE;
-      }
-      else if (controls().UI_RIGHT && holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
-      {
-        shouldIncrease = true;
-        changeRateTimer = CHANGE_RATE;
-      }
-
-      // Actually increasing/decreasing the value
-      if (shouldDecrease)
-      {
-        var isBelowMin:Bool = currentValue - step < min;
-        currentValue = (currentValue - step).clamp(min, max);
-        if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
-      }
-      else if (shouldIncrease)
-      {
-        var isAboveMax:Bool = currentValue + step > max;
-        currentValue = (currentValue + step).clamp(min, max);
-        if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
-      }
+      changeRateTimer -= elapsed;
     }
 
-    lefthandText.text = formatted(currentValue);
+    var jpLeft:Bool = controls().UI_LEFT_P;
+    var jpRight:Bool = controls().UI_RIGHT_P;
+
+    if (jpLeft || jpRight)
+    {
+      holdDelayTimer = HOLD_DELAY;
+      changeRateTimer = 0.0;
+    }
+
+    var shouldDecrease:Bool = jpLeft;
+    var shouldIncrease:Bool = jpRight;
+
+    if (controls().UI_LEFT && holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
+    {
+      shouldDecrease = true;
+      changeRateTimer = CHANGE_RATE;
+    }
+    else if (controls().UI_RIGHT && holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
+    {
+      shouldIncrease = true;
+      changeRateTimer = CHANGE_RATE;
+    }
+
+    // Actually increasing/decreasing the value
+    if (shouldDecrease)
+    {
+      var isBelowMin:Bool = currentValue - step < min;
+      currentValue = (currentValue - step).clamp(min, max);
+      if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
+    }
+    else if (shouldIncrease)
+    {
+      var isAboveMax:Bool = currentValue + step > max;
+      currentValue = (currentValue + step).clamp(min, max);
+      if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
+    }
   }
 
   /** Turns the float into a string */

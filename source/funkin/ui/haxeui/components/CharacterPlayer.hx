@@ -5,7 +5,6 @@ import funkin.modding.events.ScriptEvent.NoteScriptEvent;
 import funkin.modding.events.ScriptEvent.HitNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
-import haxe.ui.core.IDataComponent;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import haxe.ui.containers.Box;
@@ -177,8 +176,8 @@ class CharacterPlayer extends Box
   override function repositionChildren():Void
   {
     super.repositionChildren();
-    character.x = this.screenX;
-    character.y = this.screenY;
+    character.x = this.cachedScreenX;
+    character.y = this.cachedScreenY;
 
     // Apply animation offsets, so the character is positioned correctly based on the animation.
     @:privateAccess var animOffsets:Array<Float> = character.animOffsets;
