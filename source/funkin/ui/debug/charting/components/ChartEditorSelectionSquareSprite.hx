@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.components;
 
 import flixel.addons.display.FlxSliceSprite;
-import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;

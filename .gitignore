@@ -8,6 +8,7 @@ RECOVER_*.fla
 shitAudio/
 .build_time
 .swp
+NewgroundsCredentials.hx
 
 # Exclude JS stuff
 node_modules/

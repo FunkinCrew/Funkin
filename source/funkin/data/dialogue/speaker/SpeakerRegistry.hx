@@ -1,7 +1,6 @@
 package funkin.data.dialogue.speaker;
 
 import funkin.play.cutscene.dialogue.Speaker;
-import funkin.data.dialogue.speaker.SpeakerData;
 import funkin.play.cutscene.dialogue.ScriptedSpeaker;
 
 class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData>

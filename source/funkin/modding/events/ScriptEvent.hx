@@ -8,7 +8,6 @@ import funkin.play.notes.NoteSprite;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
 import funkin.play.notes.NoteDirection;
-import openfl.events.EventType;
 import openfl.events.KeyboardEvent;
 
 /**

@@ -1,29 +1,13 @@
 package funkin.ui.freeplay.backcards;
 
 import funkin.ui.freeplay.FreeplayState;
-import flash.display.BitmapData;
-import flixel.FlxCamera;
 import flixel.math.FlxMath;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxAngle;
-import flixel.math.FlxPoint;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
-import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import funkin.graphics.FunkinSprite;
-import funkin.ui.freeplay.charselect.PlayableCharacter;
-import funkin.ui.MusicBeatSubState;
 import openfl.display.BlendMode;
-import flixel.group.FlxSpriteGroup;
-import funkin.graphics.shaders.AdjustColorShader;
-import flixel.addons.display.FlxTiledSprite;
 import flixel.addons.display.FlxBackdrop;
 
 class PicoCard extends BackingCard
@@ -167,65 +151,65 @@ class PicoCard extends BackingCard
     confirmAtlas.visible = true;
     confirmAtlas.anim.play("");
 
-    FlxTween.color(instance.bgDad, 10 / 24, 0xFFFFFFFF, 0xFF8A8A8A,
+    FlxTween.color(instance.backingImage, 10 / 24, 0xFFFFFFFF, 0xFF8A8A8A,
       {
         ease: FlxEase.expoOut,
         onUpdate: function(_) {
-          instance.angleMaskShader.extraColor = instance.bgDad.color;
+          instance.angleMaskShader.extraColor = instance.backingImage.color;
         }
       });
 
     new FlxTimer().start(10 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.bgDad, 3 / 24, 0xFF343036, 0xFF696366,
+      FlxTween.color(instance.backingImage, 3 / 24, 0xFF343036, 0xFF696366,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.bgDad.color;
+            instance.angleMaskShader.extraColor = instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(14 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.bgDad, 3 / 24, 0xFF27292D, 0xFF686A6F,
+      FlxTween.color(instance.backingImage, 3 / 24, 0xFF27292D, 0xFF686A6F,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.bgDad.color;
+            instance.angleMaskShader.extraColor = instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(18 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.bgDad, 3 / 24, 0xFF2D282D, 0xFF676164,
+      FlxTween.color(instance.backingImage, 3 / 24, 0xFF2D282D, 0xFF676164,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.bgDad.color;
+            instance.angleMaskShader.extraColor = instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(21 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.bgDad, 3 / 24, 0xFF29292F, 0xFF62626B,
+      FlxTween.color(instance.backingImage, 3 / 24, 0xFF29292F, 0xFF62626B,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.bgDad.color;
+            instance.angleMaskShader.extraColor = instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(24 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.bgDad, 3 / 24, 0xFF29232C, 0xFF808080,
+      FlxTween.color(instance.backingImage, 3 / 24, 0xFF29232C, 0xFF808080,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.bgDad.color;
+            instance.angleMaskShader.extraColor = instance.backingImage.color;
           }
         });
     });

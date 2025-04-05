@@ -31,13 +31,6 @@ import openfl.net.FileReference;
 
 using flixel.util.FlxSpriteUtil;
 
-#if web
-import js.html.FileList;
-#end
-#if sys
-import sys.io.File;
-#end
-
 class DebugBoundingState extends FlxState
 {
   /*

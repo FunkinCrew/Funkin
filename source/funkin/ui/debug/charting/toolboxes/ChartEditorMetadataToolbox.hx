@@ -2,20 +2,16 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
-import funkin.data.stage.StageData;
 import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
-import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
-import haxe.ui.components.HorizontalSlider;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import funkin.play.stage.Stage;
-import haxe.ui.containers.Box;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 

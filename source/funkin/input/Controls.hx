@@ -2,23 +2,17 @@ package funkin.input;
 
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxDirectionFlags;
-import flixel.FlxObject;
-import flixel.input.FlxInput;
+import flixel.input.FlxInput.FlxInputState;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputAnalog.FlxActionInputAnalogClickAndDragMouseMotion;
 import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
 import flixel.input.android.FlxAndroidKey;
-import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 import lime.ui.Haptic;
 
 /**
@@ -423,6 +417,7 @@ class Controls extends FlxActionSet
 
   public function getDialogueName(action:FlxActionDigital, ?ignoreSurrounding:Bool = false):String
   {
+    if (action.inputs.length == 0) return 'N/A';
     var input = action.inputs[0];
     if (ignoreSurrounding == false)
     {
@@ -731,7 +726,7 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, state) addKeys(action, keys, state));
   }
 
-  public function bindSwipe(control:Control, swipeDir:Int = FlxDirectionFlags.UP, ?swpLength:Float = 90)
+  public function bindSwipe(control:Control, swipeDir:FlxDirectionFlags = FlxDirectionFlags.UP, ?swpLength:Float = 90)
   {
     forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press, swpLength)));
   }
@@ -1483,9 +1478,9 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
   var activateLength:Float = 90;
   var hapticPressure:Int = 100;
 
-  public function new(swipeDir:Int = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
+  public function new(swipeDir:FlxDirectionFlags = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
   {
-    super(OTHER, swipeDir, Trigger);
+    super(OTHER, swipeDir.toInt(), Trigger);
 
     activateLength = swipeLength;
   }
@@ -1567,16 +1562,21 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
         case JUST_PRESSED:
           if (swp.touchLength >= activateLength)
           {
-            switch (inputID)
+            if (inputID == FlxDirectionFlags.UP.toInt())
             {
-              case FlxDirectionFlags.UP:
-                if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.DOWN:
-                if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.LEFT:
-                if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
-              case FlxDirectionFlags.RIGHT:
-                if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
+              if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.DOWN.toInt())
+            {
+              if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.LEFT.toInt())
+            {
+              if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.RIGHT.toInt())
+            {
+              if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
             }
           }
         default:
