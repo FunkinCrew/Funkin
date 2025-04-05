@@ -59,10 +59,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     menuCamera.follow(camFollow, null, 0.085);
     var margin = 160;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
-    menuCamera.minScrollY = 0;
+    // menuCamera.minScrollY = 0;
+    FlxG.console.registerObject('menuCamera', menuCamera);
 
     items.onChange.add(function(selected) {
-      camFollow.y = selected.y;
+      camFollow.y = Math.max(selected.y, 130);
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
   }
