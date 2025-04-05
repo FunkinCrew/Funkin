@@ -12,146 +12,238 @@ on:
         description: Save the build artifact to Github Actions (sends to itch otherwise)
         default: false
   push:
-    paths-ignore:
-    - '**/Dockerfile'
-    - '.github/workflows/build-docker-image.yml'
 
 jobs:
+
+  gather-changes:
+    runs-on: build-set
+    outputs:
+      trigger-build: ${{ steps.should-trigger.outputs.result }}
+    steps:
+      - name: Checkout repo
+        uses: funkincrew/ci-checkout@v6
+        with:
+          submodules: false
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            docker:
+              - '.github/workflows/build-game.yml'
+              - '**/Dockerfile'
+      - uses: actions/github-script@v7
+        id: should-trigger
+        with:
+          result-encoding: string
+          script: |
+            const { payload } = context
+            const changes = ${{ steps.filter.outputs.changes }}
+            const manual = payload.commits
+              .some(c => c.message.toLowerCase().replace(/\W/g, " ").includes("docker rebuild"))
+
+            console.log({ payload, changes, manual, commits: payload.commits })
+
+            return payload.created
+              || payload.forced
+              || changes.includes("docker")
+              || manual
+
+  gather-tags:
+    runs-on: build-set
+    outputs:
+      primary: ${{ steps.build-tags.outputs.primary }}
+      list: ${{ steps.build-tags.outputs.list }}
+    steps:
+      - name: Gather build tags
+        uses: actions/github-script@v7
+        id: build-tags
+        with:
+          script: |
+            const base = "ghcr.io/funkincrew/build-dependencies"
+            const default_branch = "rewrite/master"
+
+            const ref_path = context.ref.split("/").slice(2)
+            const ref = ref_path.join("/")
+            const ref_tag = ref_path.join("-")
+
+            const tags = [ref_tag, context.sha]
+
+            if (ref === default_branch) tags.push("latest")
+
+            console.log([
+              `ref: ${ref}`,
+              `default_branch: ${default_branch}`,
+              `tags: ${tags.join(", ")}`
+            ].join('\n'))
+
+            const tag_list = tags
+              .map(tag => `${base}:${tag}`)
+              .join("\n")
+
+            core.setOutput("primary", ref_tag)
+            core.setOutput("list", tag_list)
+
+  docker-image:
+    needs: [gather-changes, gather-tags]
+    if: needs.gather-changes.outputs.trigger-build == 'true'
+    runs-on: build-set
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repo
+        uses: funkincrew/ci-checkout@v6
+        with:
+          submodules: false
+      - name: Log into GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./build
+          push: true
+          tags: ${{ needs.gather-tags.outputs.list }}
+          labels: |
+            org.opencontainers.image.description=precooked haxe build dependencies
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.title=${{ github.repository_owner }}/build-dependencies
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ github.sha }}
 
   build-game-on-host:
     strategy:
       matrix:
         include:
-        - target: windows
-        - target: macos
+          - target: windows
+            runs-on: windows-latest
+          - target: macos
+            runs-on: macos
     runs-on:
-    - ${{ matrix.target }}
+      - ${{ matrix.runs-on }}
     defaults:
       run:
         shell: bash
-
+    env:
+      BUILD_DEFINES: ${{ github.event.inputs.build-defines || '-DGITHUB_BUILD' }}
     steps:
-    - name: Make git happy
-      run: |
-        git config --global --replace-all safe.directory $GITHUB_WORKSPACE
-
-    - name: Get checkout token
-      uses: actions/create-github-app-token@v1
-      id: app_token
-      with:
-        app-id: ${{ vars.APP_ID }}
-        private-key: ${{ secrets.APP_PEM }}
-        owner: ${{ github.repository_owner }}
-
-    - name: Checkout repo
-      uses: funkincrew/ci-checkout@v6
-      with:
-        submodules: 'recursive'
-        token: ${{ steps.app_token.outputs.token }}
-        persist-credentials: false
-
-    - name: Setup build environment
-      uses: ./.github/actions/setup-haxe
-      with:
-        gh-token: ${{ steps.app_token.outputs.token }}
-    - name: Setup HXCPP dev commit
-      run: |
-        cd .haxelib/hxcpp/git/tools/hxcpp
-        haxe compile.hxml
-        cd ../../../../..
-    - name: Build game
-      if: ${{ matrix.target == 'windows' }}
-      run: |
-        haxelib run lime build windows -v -release ${{ github.event.inputs.build-defines }}
-      timeout-minutes: 120
-    - name: Build game
-      if: ${{ matrix.target != 'windows' }}
-      run: |
-        haxelib run lime build ${{ matrix.target }} -v -release --times ${{ github.event.inputs.build-defines }}
-      timeout-minutes: 120
-    - name: Save build artifact to Github Actions
-      if: ${{ github.event.inputs.save-artifact }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-${{ matrix.target }}
-        path: export/release/${{matrix.target}}/bin/
-
-
-    - name: Upload build artifacts
-      uses: ./.github/actions/upload-itch
-      with:
-        butler-key: ${{ secrets.BUTLER_API_KEY}}
-        target: ${{ matrix.target }}
+      - name: Make git happy
+        run: |
+          git config --global --replace-all safe.directory $GITHUB_WORKSPACE
+      - name: Get checkout token
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: Checkout repo
+        uses: funkincrew/ci-checkout@v6
+        with:
+          submodules: 'recursive'
+          token: ${{ steps.app_token.outputs.token }}
+          persist-credentials: false
+      - name: Setup build environment
+        uses: ./.github/actions/setup-haxe
+        with:
+          gh-token: ${{ steps.app_token.outputs.token }}
+      - name: Setup HXCPP dev commit
+        run: |
+          cd .haxelib/hxcpp/git/tools/hxcpp
+          haxe compile.hxml
+          cd ../../../../..
+      - name: Build game (windows)
+        if: ${{ matrix.target == 'windows' }}
+        run: |
+          haxelib run lime build windows -v -release $BUILD_DEFINES
+        timeout-minutes: 120
+      - name: Build game (unix)
+        if: ${{ matrix.target != 'windows' }}
+        run: |
+          haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
+        timeout-minutes: 120
+      - name: Save build artifact to Github Actions
+        if: ${{ github.event.inputs.save-artifact }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.target }}
+          path: export/release/${{matrix.target}}/bin/
+      - name: Upload build artifacts
+        uses: ./.github/actions/upload-itch
+        with:
+          butler-key: ${{ secrets.BUTLER_API_KEY}}
+          target: ${{ matrix.target }}
 
   build-game-in-container:
+    needs: [gather-tags, docker-image]
+    if: ${{ ! cancelled() }}
     runs-on: build-set
-    container: ghcr.io/funkincrew/build-dependencies:latest
+    container: ghcr.io/funkincrew/build-dependencies:${{ needs.gather-tags.outputs.primary }}
     strategy:
       matrix:
         include:
-        - target: linux
-        - target: html5
+          - target: linux
+          - target: html5
     defaults:
       run:
         shell: bash
-
+    env:
+      BUILD_DEFINES: ${{ github.event.inputs.build-defines || '-DGITHUB_BUILD' }}
     steps:
-    - name: Get checkout token
-      uses: actions/create-github-app-token@v1
-      id: app_token
-      with:
-        app-id: ${{ vars.APP_ID }}
-        private-key: ${{ secrets.APP_PEM }}
-        owner: ${{ github.repository_owner }}
-
-    - name: Checkout repo
-      uses: funkincrew/ci-checkout@v6
-      with:
-        submodules: 'recursive'
-        token: ${{ steps.app_token.outputs.token }}
-        persist-credentials: false
-
-    - name: Config haxelib
-      run: |
-        haxelib --never newrepo
-        echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
-
-    - name: Restore cached dependencies
-      id: cache-hmm
-      uses: actions/cache@v4
-      with:
-        path: .haxelib
-        key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
-
-    - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
-      name: Install dependencies
-      run: |
-        git config --global 'url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf' https://github.com/
-        git config --global advice.detachedHead false
-        haxelib --global run hmm install -q
-        cd .haxelib/hxcpp/git/tools/hxcpp && haxe compile.hxml
-
-    - if: ${{ matrix.target != 'html5' }}
-      name: Restore hxcpp cache
-      uses: actions/cache@v4
-      with:
-        path: /usr/share/hxcpp
-        key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
-        restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
-
-    - name: Build game
-      run: |
-        haxelib run lime build ${{ matrix.target }} -v -release --times ${{ github.event.inputs.build-defines }}
-      timeout-minutes: 120
-
-    - name: Save build artifact to Github Actions
-      if: ${{ github.event.inputs.save-artifact }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-${{ matrix.target }}
-        path: export/release/${{matrix.target}}/bin/
-    - name: Upload build artifacts
-      uses: ./.github/actions/upload-itch
-      with:
-        butler-key: ${{ secrets.BUTLER_API_KEY}}
-        target: ${{ matrix.target }}
+      - name: Get checkout token
+        uses: actions/create-github-app-token@v1
+        id: app_token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PEM }}
+          owner: ${{ github.repository_owner }}
+      - name: Checkout repo
+        uses: funkincrew/ci-checkout@v6
+        with:
+          submodules: 'recursive'
+          token: ${{ steps.app_token.outputs.token }}
+          persist-credentials: false
+      - name: Config haxelib
+        run: |
+          haxelib --never newrepo
+          echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
+      - name: Restore cached dependencies
+        id: cache-hmm
+        uses: actions/cache@v4
+        with:
+          path: .haxelib
+          key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
+      - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: |
+          git config --global 'url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf' https://github.com/
+          git config --global advice.detachedHead false
+          haxelib --global run hmm install -q
+          cd .haxelib/hxcpp/git/tools/hxcpp && haxe compile.hxml
+      - if: ${{ matrix.target != 'html5' }}
+        name: Restore hxcpp cache
+        uses: actions/cache@v4
+        with:
+          path: /usr/share/hxcpp
+          key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
+      - name: Build game
+        run: |
+          haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
+        timeout-minutes: 120
+      - name: Save build artifact to Github Actions
+        if: ${{ github.event.inputs.save-artifact }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.target }}
+          path: export/release/${{matrix.target}}/bin/
+      - name: Upload build artifacts
+        uses: ./.github/actions/upload-itch
+        with:
+          butler-key: ${{ secrets.BUTLER_API_KEY}}
+          target: ${{ matrix.target }}

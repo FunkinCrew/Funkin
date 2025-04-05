@@ -618,4 +618,28 @@ enum abstract ScoringRank(String)
         return 'resultScreen/rankText/rankTextGOOD';
     }
   }
+
+  public function getRankingFreeplayColor()
+  {
+    return switch (abstract)
+    {
+      case SHIT:
+        0xFF6044FF;
+      case GOOD:
+        0xFFEF8764;
+      case GREAT:
+        0xFFEAF6FF;
+      case EXCELLENT:
+        0xFFFDCB42;
+      case PERFECT:
+        0xFFFF58B4;
+      case PERFECT_GOLD:
+        0xFFFFB619;
+    }
+  }
+
+  public function toString():String
+  {
+    return this;
+  }
 }

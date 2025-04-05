@@ -1,25 +1,12 @@
 package funkin.ui.freeplay.backcards;
 
 import funkin.ui.freeplay.FreeplayState;
-import flixel.FlxCamera;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxAngle;
-import flixel.math.FlxPoint;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
-import flixel.util.FlxTimer;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
-import funkin.ui.MusicBeatSubState;
 import openfl.display.BlendMode;
-import flixel.group.FlxSpriteGroup;
 
 class BoyfriendCard extends BackingCard
 {

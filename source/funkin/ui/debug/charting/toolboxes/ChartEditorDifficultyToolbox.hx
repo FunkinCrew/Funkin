@@ -1,30 +1,14 @@
 package funkin.ui.debug.charting.toolboxes;
 
-import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.data.stage.StageData;
-import funkin.data.stage.StageRegistry;
-import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
-import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
-import haxe.ui.components.CheckBox;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import funkin.data.song.SongData.SongMetadata;
-import haxe.ui.components.DropDown;
-import haxe.ui.components.HorizontalSlider;
 import funkin.util.FileUtil;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import funkin.play.song.SongSerializer;
-import haxe.ui.components.Label;
-import haxe.ui.components.NumberStepper;
-import haxe.ui.components.Slider;
-import haxe.ui.components.TextField;
-import funkin.play.stage.Stage;
-import haxe.ui.containers.Box;
 import haxe.ui.containers.TreeView;
 import haxe.ui.containers.TreeViewNode;
-import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 
 /**
