@@ -69,6 +69,8 @@ The Pit Stop 2 update!
 - Switched from hxCodec to hxvlc for video playback. This may break a mod or two.
   - Check the [Funkin Modding Docs](https://funkincrew.github.io/funkin-modding-docs/09-migration/09-02-0.5.0-to-0.6.0.html) for more info on how to update your mods.
 - Polymod should now ignore `.git` files when loading mods.
+- The pause menu can now be opened and closed rapidly.
+- Adjusted difficulty ratings and scroll speeds for many songs.
 - Lots of improvements to GitHub issue and pull request organization. - by @Hundrec and @AbnormalPoof
 - Overhauled the Changelog to improve readability and properly credit contributors. ([4383fcf](https://github.com/FunkinCrew/Funkin/commit/4383fcf32c280a1c0ee7b9c80d255611d497cabc)) - by @Hundrec in [#4296](https://github.com/FunkinCrew/Funkin/pull/4296) and [#4298](https://github.com/FunkinCrew/Funkin/pull/4298)
 - Made various improvements to the screenshot function. ([9ce7bbc](https://github.com/FunkinCrew/Funkin/commit/9ce7bbcfbb8f30ae120c876194f89bc4c787f585)) - by @Lasercar in [#4082](https://github.com/FunkinCrew/Funkin/pull/4082)
@@ -83,6 +85,11 @@ The Pit Stop 2 update!
 
 ### Fixed
 
+- Shaders no longer create thin seams within atlas sprites.
+- Completing a song in Practice Mode no longer plays a new rank animation in the Freeplay menu.
+- Fixed lots of charting issues across many songs.
+- The Chart Editor grid now properly adjusts to the new BPM after switching variations.
+- Fixed a few crashes in the Stage Editor.
 - Fixed a bug where the song would restart from the beginning instead of moving to the Results screen. ([3667c51](https://github.com/FunkinCrew/Funkin/commit/3667c51c1efe14cfe7c810e2f35991f08f50781a)) - by @KoloInDaCrib in [#4309](https://github.com/FunkinCrew/Funkin/pull/4309) and @Lasercar in [#4330](https://github.com/FunkinCrew/Funkin/pull/4330)
 - Reduced stuttering when resyncing instrumental and voices tracks. ([22d41d2](https://github.com/FunkinCrew/Funkin/commit/22d41d21b88acb7422a0afcda8414682710bd2ed)) - by @TechnikTil in [#3955](https://github.com/FunkinCrew/Funkin/pull/3955)
 - Songs with only instrumental tracks no longer stutter. ([dfe02ec](https://github.com/FunkinCrew/Funkin/commit/dfe02ec668b61d6308f459c978d12a7487f9dc28)) - by @KoloInDaCrib in [#3861](https://github.com/FunkinCrew/Funkin/pull/3861)
