@@ -59,6 +59,16 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
+  override public function destroy():Void
+  {
+    if (analyzer != null)
+    {
+      analyzer.cleanup();
+    }
+
+    super.destroy();
+  }
+
   public function initAnalyzer():Void
   {
     if (snd == null) return;
@@ -85,7 +95,12 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function dumpSound():Void
   {
     snd = null;
-    analyzer = null;
+
+    if (analyzer != null)
+    {
+      analyzer.cleanup();
+      analyzer = null;
+    }
   }
 
   var visTimer:Float = -1;
