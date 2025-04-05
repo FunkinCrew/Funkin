@@ -3,6 +3,18 @@ package funkin.util.logging;
 class AnsiTrace
 {
   /**
+   * These classes trace too much, so they're blacklisted from being in the crash logs if the flag `BLACKLIST_TRACE_CLASSES` is enabled.
+   */
+  public static final BLACKLISTED_CLASSES:Array<String> = [
+    "source/funkin/api/discord/DiscordClient.hx",
+    "source/funkin/save/Save.hx",
+    "source/funkin/data/BaseRegistry.hx",
+    "source/funkin/ui/transition/preload/FunkinPreloader.hx"
+  ];
+
+  public static var allTraces:Array<String> = [];
+
+  /**
    * Output a message to the log.
    * Called when using `trace()`, and modified from the default to support ANSI colors.
    * @param v The value to print.
@@ -13,6 +25,10 @@ class AnsiTrace
     return;
     #end
     var str = formatOutput(v, info);
+
+    #if BLACKLIST_TRACE_CLASSES if (!BLACKLISTED_CLASSES.contains(info.fileName)) #end
+    allTraces.push(str);
+
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.message(str, flixel.util.FlxColor.WHITE);
     #end
