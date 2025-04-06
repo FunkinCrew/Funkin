@@ -5,8 +5,9 @@ import flixel.FlxSprite.FlxSprite;
 class CheckboxPreferenceItem extends FlxSprite
 {
   public var currentValue(default, set):Bool;
+  public var onChange:Null<Bool->Void>;
 
-  public function new(x:Float, y:Float, defaultValue:Bool = false)
+  public function new(x:Float, y:Float, defaultValue:Bool = false, ?onChange:Bool->Void)
   {
     super(x, y);
 
@@ -29,7 +30,7 @@ class CheckboxPreferenceItem extends FlxSprite
       case 'static':
         offset.set();
       case 'checked':
-        offset.set(17, 70);
+        // offset.set(17, 60);
     }
   }
 
@@ -42,6 +43,11 @@ class CheckboxPreferenceItem extends FlxSprite
     else
     {
       animation.play('static');
+    }
+
+    if (onChange != null)
+    {
+      onChange(value);
     }
 
     return currentValue = value;

@@ -44,10 +44,10 @@ class NumberPreferenceItem extends TextMenuItem
   public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
       ?valueFormatter:Float->String):Void
   {
-    super(x, y, name, function() {
+    super(x, y, formatted(defaultValue), AtlasFont.DEFAULT, function() {
       callback(this.currentValue);
     });
-    lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
+    // lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
 
     updateHitbox();
 
@@ -65,9 +65,9 @@ class NumberPreferenceItem extends TextMenuItem
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    lefthandText.text = formatted(currentValue);
+    label.text = formatted(currentValue);
 
-    if (!selected) return;
+    // if (!selected) return;
 
     holdDelayTimer -= elapsed;
     if (holdDelayTimer <= 0.0)
