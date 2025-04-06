@@ -32,7 +32,7 @@ class BackupAvailableDialog extends Dialog
   {
     super();
 
-    if (!FileUtil.doesFileExist(filePath)) return;
+    if (!FileUtil.fileExists(filePath)) return;
 
     // time text
     var fileDate = Path.withoutExtension(Path.withoutDirectory(filePath));
@@ -62,7 +62,7 @@ class BackupAvailableDialog extends Dialog
     }
 
     buttonOpenBackup.onClick = function(_) {
-      if (FileUtil.doesFileExist(filePath) && state.welcomeDialog != null) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
+      if (FileUtil.fileExists(filePath) && state.welcomeDialog != null) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
       {
         state.welcomeDialog.loadFromFilePath(filePath);
       }
