@@ -216,7 +216,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * @param name The animation name to attempt to correct.
    * @param fallback Instead of failing to play, try to play this animation instead.
    */
-  function correctAnimationName(name:String, ?fallback:String = 'idle'):String
+  function correctAnimationName(name:String, fallback:String = 'idle'):Null<String>
   {
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
@@ -228,7 +228,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes...');
       return correctAnimationName(name.substr(0, idx), fallback);
     }
-    else if (fallback != null && fallback != name)
+    else if (fallback != name)
     {
       FlxG.log.warn('Bopper tried to play animation "$name" that does not exist, fallback to $fallback');
       return correctAnimationName(fallback);
