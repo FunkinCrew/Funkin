@@ -12,9 +12,6 @@ Most of this functionality is only available on debug builds of the game!
 
 - `CTRL-SHIFT-L`: ***FORCE CRASH***: Immediately crash the game with a detailed crash log and a stack trace.
 
-## Loading State
-- `SPACE`: Trace callbacks.
-
 ## **Play State**
 - `H`: ***HIDE UI***: Makes the user interface invisible. Works in Pause Menu, great for screenshots.
 - `1`: ***END SONG***: Immediately ends the song and moves to Results Screen on Freeplay, or next song on Story Mode.
@@ -31,8 +28,6 @@ Most of this functionality is only available on debug builds of the game!
 - `T`: ***TEST RANK ANIMATION***: Play the Gold Perfect rank animation on the currently selected song.
 - `SHIFT-ACCEPT`: ***BOTPLAY MODE***: Start a song with Botplay mode enabled.
 - `CTRL-Switch Song`: Play the first unlocked alternate instrumental as the song preview.
-- `CTRL-LEFT`/`RIGHT`/`UP`/`DOWN`: ***OFFSET BF DJ IN CARTOON STATE***: While BF DJ's TV animation is playing, offset the DJ by 1 pixel in the opposite direction. `SHIFT` to move 10 pixels, `ALT` to move 0.1 pixels.
-- `CTRL-C`: ***TRIGGER DJ CARTOON***: Play the Freeplay DJ's cartoon animation. Press again to return to its regular animation.
 
 ## **Title State**
 - `ESCAPE`: ***QUIT***: Quit the game.
