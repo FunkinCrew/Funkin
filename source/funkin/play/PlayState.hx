@@ -1226,19 +1226,15 @@ class PlayState extends MusicBeatSubState
     #end
   }
 
-  function pause(?mode:PauseMode = Standard):Void
+  function pause(?mode:PauseMode = Standard, ?onPause:Void->Void):Void
   {
     if (!mayPauseGame || justUnpaused || isGamePaused || isPlayerDying) return;
 
     switch (mode)
     {
-      case Conversation:
+      case Cutscene(entryName, pauseName, onResume, onSkip, onRestart):
         preparePauseUI();
-        openPauseSubState(Conversation, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> currentConversation.pauseMusic());
-
-      case Cutscene:
-        preparePauseUI();
-        openPauseSubState(Cutscene, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> VideoCutscene.pauseVideo());
+        openPauseSubState(mode, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, onPause);
 
       default: // also known as standard
         if (!isInCountdown || isInCutscene) return;
@@ -2817,8 +2813,7 @@ class PlayState extends MusicBeatSubState
 
     // Send the note hit event.
     var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, isComboBreak,
-      note.scoreable ? Highscore.tallies.combo + 1 : Highscore.tallies.combo, noteDiff,
-      daRating == 'sick');
+      note.scoreable ? Highscore.tallies.combo + 1 : Highscore.tallies.combo, noteDiff, daRating == 'sick');
     dispatchEvent(event);
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -3089,7 +3084,8 @@ class PlayState extends MusicBeatSubState
       }
       else if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
-        pause(Conversation);
+        pause(Cutscene('Conversation', 'Conversation', null, currentConversation?.skipConversation, currentConversation?.resetConversation),
+          currentConversation.pauseMusic);
       }
     }
     else if (VideoCutscene.isPlaying())
@@ -3097,7 +3093,8 @@ class PlayState extends MusicBeatSubState
       // This is a video cutscene.
       if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
-        pause(Cutscene);
+        pause(Cutscene('Cutscene', 'Video', VideoCutscene.resumeVideo, VideoCutscene.finishVideo.bind(null), VideoCutscene.restartVideo),
+          VideoCutscene.pauseVideo);
       }
     }
   }
