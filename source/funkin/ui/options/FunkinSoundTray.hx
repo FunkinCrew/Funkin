@@ -1,11 +1,7 @@
 package funkin.ui.options;
 
 import flixel.system.ui.FlxSoundTray;
-import flixel.tweens.FlxTween;
-import flixel.system.FlxAssets;
-import flixel.tweens.FlxEase;
 import openfl.display.Bitmap;
-import openfl.display.BitmapData;
 import funkin.util.MathUtil;
 
 /**
@@ -33,6 +29,7 @@ class FunkinSoundTray extends FlxSoundTray
     var bg:Bitmap = new Bitmap(Assets.getBitmapData(Paths.image("soundtray/volumebox")));
     bg.scaleX = graphicScale;
     bg.scaleY = graphicScale;
+    bg.smoothing = true;
     addChild(bg);
 
     y = -height;
@@ -44,6 +41,7 @@ class FunkinSoundTray extends FlxSoundTray
     backingBar.y = 5;
     backingBar.scaleX = graphicScale;
     backingBar.scaleY = graphicScale;
+    backingBar.smoothing = true;
     addChild(backingBar);
     backingBar.alpha = 0.4;
 
@@ -60,6 +58,7 @@ class FunkinSoundTray extends FlxSoundTray
       bar.y = 5;
       bar.scaleX = graphicScale;
       bar.scaleY = graphicScale;
+      bar.smoothing = true;
       addChild(bar);
       _bars.push(bar);
     }

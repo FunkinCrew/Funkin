@@ -1,23 +1,14 @@
 package funkin.ui.freeplay.backcards;
 
 import funkin.ui.freeplay.FreeplayState;
-import flixel.FlxCamera;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
-import flixel.util.FlxTimer;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
-import funkin.ui.MusicBeatSubState;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
@@ -197,10 +188,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass
     confirmGlow2.alpha = 0;
     confirmGlow.alpha = 0;
 
-    FlxTween.color(instance.bgDad, 0.5, 0xFFA8A8A8, 0xFF646464,
+    FlxTween.color(instance.backingImage, 0.5, 0xFFA8A8A8, 0xFF646464,
       {
         onUpdate: function(_) {
-          instance.angleMaskShader.extraColor = instance.bgDad.color;
+          instance.angleMaskShader.extraColor = instance.backingImage.color;
         }
       });
     FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
@@ -213,11 +204,11 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass
           confirmTextGlow.alpha = 1;
           FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
           FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
-          FlxTween.color(instance.bgDad, 2, 0xFFCDCDCD, 0xFF555555,
+          FlxTween.color(instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555,
             {
               ease: FlxEase.expoOut,
               onUpdate: function(_) {
-                instance.angleMaskShader.extraColor = instance.bgDad.color;
+                instance.angleMaskShader.extraColor = instance.backingImage.color;
               }
             });
         }

@@ -2,23 +2,17 @@ package funkin.input;
 
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxDirectionFlags;
-import flixel.FlxObject;
-import flixel.input.FlxInput;
+import flixel.input.FlxInput.FlxInputState;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputAnalog.FlxActionInputAnalogClickAndDragMouseMotion;
 import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
 import flixel.input.android.FlxAndroidKey;
-import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 import lime.ui.Haptic;
 
 /**
@@ -67,6 +61,8 @@ class Controls extends FlxActionSet
   var _freeplay_left = new FunkinAction(Action.FREEPLAY_LEFT);
   var _freeplay_right = new FunkinAction(Action.FREEPLAY_RIGHT);
   var _freeplay_char_select = new FunkinAction(Action.FREEPLAY_CHAR_SELECT);
+  var _freeplay_jump_to_top = new FunkinAction(Action.FREEPLAY_JUMP_TO_TOP);
+  var _freeplay_jump_to_bottom = new FunkinAction(Action.FREEPLAY_JUMP_TO_BOTTOM);
   var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
   var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
   #if FEATURE_CHART_EDITOR
@@ -276,6 +272,16 @@ class Controls extends FlxActionSet
   inline function get_FREEPLAY_CHAR_SELECT()
     return _freeplay_char_select.check();
 
+  public var FREEPLAY_JUMP_TO_TOP(get, never):Bool;
+
+  inline function get_FREEPLAY_JUMP_TO_TOP()
+    return _freeplay_jump_to_top.check();
+
+  public var FREEPLAY_JUMP_TO_BOTTOM(get, never):Bool;
+
+  inline function get_FREEPLAY_JUMP_TO_BOTTOM()
+    return _freeplay_jump_to_bottom.check();
+
   public var CUTSCENE_ADVANCE(get, never):Bool;
 
   inline function get_CUTSCENE_ADVANCE()
@@ -337,6 +343,8 @@ class Controls extends FlxActionSet
     add(_freeplay_left);
     add(_freeplay_right);
     add(_freeplay_char_select);
+    add(_freeplay_jump_to_top);
+    add(_freeplay_jump_to_bottom);
     add(_cutscene_advance);
     add(_debug_menu);
     #if FEATURE_CHART_EDITOR add(_debug_chart); #end
@@ -409,6 +417,7 @@ class Controls extends FlxActionSet
 
   public function getDialogueName(action:FlxActionDigital, ?ignoreSurrounding:Bool = false):String
   {
+    if (action.inputs.length == 0) return 'N/A';
     var input = action.inputs[0];
     if (ignoreSurrounding == false)
     {
@@ -462,6 +471,8 @@ class Controls extends FlxActionSet
       case FREEPLAY_LEFT: _freeplay_left;
       case FREEPLAY_RIGHT: _freeplay_right;
       case FREEPLAY_CHAR_SELECT: _freeplay_char_select;
+      case FREEPLAY_JUMP_TO_TOP: _freeplay_jump_to_top;
+      case FREEPLAY_JUMP_TO_BOTTOM: _freeplay_jump_to_bottom;
       case CUTSCENE_ADVANCE: _cutscene_advance;
       case DEBUG_MENU: _debug_menu;
       #if FEATURE_CHART_EDITOR case DEBUG_CHART: _debug_chart; #end
@@ -542,6 +553,10 @@ class Controls extends FlxActionSet
         func(_freeplay_right, JUST_PRESSED);
       case FREEPLAY_CHAR_SELECT:
         func(_freeplay_char_select, JUST_PRESSED);
+      case FREEPLAY_JUMP_TO_TOP:
+        func(_freeplay_jump_to_top, JUST_PRESSED);
+      case FREEPLAY_JUMP_TO_BOTTOM:
+        func(_freeplay_jump_to_bottom, JUST_PRESSED);
       case CUTSCENE_ADVANCE:
         func(_cutscene_advance, JUST_PRESSED);
       case DEBUG_MENU:
@@ -711,7 +726,7 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, state) addKeys(action, keys, state));
   }
 
-  public function bindSwipe(control:Control, swipeDir:Int = FlxDirectionFlags.UP, ?swpLength:Float = 90)
+  public function bindSwipe(control:Control, swipeDir:FlxDirectionFlags = FlxDirectionFlags.UP, ?swpLength:Float = 90)
   {
     forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press, swpLength)));
   }
@@ -770,6 +785,8 @@ class Controls extends FlxActionSet
     bindKeys(Control.FREEPLAY_LEFT, getDefaultKeybinds(scheme, Control.FREEPLAY_LEFT));
     bindKeys(Control.FREEPLAY_RIGHT, getDefaultKeybinds(scheme, Control.FREEPLAY_RIGHT));
     bindKeys(Control.FREEPLAY_CHAR_SELECT, getDefaultKeybinds(scheme, Control.FREEPLAY_CHAR_SELECT));
+    bindKeys(Control.FREEPLAY_JUMP_TO_TOP, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_TOP));
+    bindKeys(Control.FREEPLAY_JUMP_TO_BOTTOM, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_BOTTOM));
     bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
     bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
     #if FEATURE_CHART_EDITOR
@@ -810,6 +827,8 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
           case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
           case Control.FREEPLAY_CHAR_SELECT: return [TAB];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
           case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -839,6 +858,8 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
           case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
           case Control.FREEPLAY_CHAR_SELECT: return [TAB];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
           case Control.CUTSCENE_ADVANCE: return [G, Z];
           case Control.DEBUG_MENU: return [GRAVEACCENT];
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -868,6 +889,8 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_LEFT: return [];
           case Control.FREEPLAY_RIGHT: return [];
           case Control.FREEPLAY_CHAR_SELECT: return [];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [];
           case Control.CUTSCENE_ADVANCE: return [ENTER];
           case Control.DEBUG_MENU: return [];
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
@@ -983,6 +1006,9 @@ class Controls extends FlxActionSet
       Control.FREEPLAY_FAVORITE => getDefaultGamepadBinds(Control.FREEPLAY_FAVORITE),
       Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT),
       Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT),
+      Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT),
+      Control.FREEPLAY_JUMP_TO_TOP => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_TOP),
+      Control.FREEPLAY_JUMP_TO_BOTTOM => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_BOTTOM),
       Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
       Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
       Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
@@ -1033,11 +1059,17 @@ class Controls extends FlxActionSet
       case Control.CUTSCENE_ADVANCE:
         return [A];
       case Control.FREEPLAY_FAVORITE:
-        [FlxGamepadInputID.BACK]; // Back (i.e. Select)
+        return [Y]; // Back (i.e. Select)
       case Control.FREEPLAY_LEFT:
-        [LEFT_SHOULDER];
+        return [LEFT_SHOULDER];
       case Control.FREEPLAY_RIGHT:
-        [RIGHT_SHOULDER];
+        return [RIGHT_SHOULDER];
+      case Control.FREEPLAY_CHAR_SELECT:
+        return [X];
+      case Control.FREEPLAY_JUMP_TO_TOP:
+        return [];
+      case Control.FREEPLAY_JUMP_TO_BOTTOM:
+        return [];
       case Control.VOLUME_UP:
         [];
       case Control.VOLUME_DOWN:
@@ -1446,9 +1478,9 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
   var activateLength:Float = 90;
   var hapticPressure:Int = 100;
 
-  public function new(swipeDir:Int = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
+  public function new(swipeDir:FlxDirectionFlags = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
   {
-    super(OTHER, swipeDir, Trigger);
+    super(OTHER, swipeDir.toInt(), Trigger);
 
     activateLength = swipeLength;
   }
@@ -1530,16 +1562,21 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
         case JUST_PRESSED:
           if (swp.touchLength >= activateLength)
           {
-            switch (inputID)
+            if (inputID == FlxDirectionFlags.UP.toInt())
             {
-              case FlxDirectionFlags.UP:
-                if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.DOWN:
-                if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
-              case FlxDirectionFlags.LEFT:
-                if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
-              case FlxDirectionFlags.RIGHT:
-                if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
+              if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.DOWN.toInt())
+            {
+              if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.LEFT.toInt())
+            {
+              if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
+            }
+            else if (inputID == FlxDirectionFlags.RIGHT.toInt())
+            {
+              if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
             }
           }
         default:
@@ -1602,10 +1639,10 @@ enum Control
   NOTE_UP;
   NOTE_RIGHT;
   // UI
-  UI_UP;
   UI_LEFT;
-  UI_RIGHT;
   UI_DOWN;
+  UI_UP;
+  UI_RIGHT;
   RESET;
   ACCEPT;
   BACK;
@@ -1617,6 +1654,8 @@ enum Control
   FREEPLAY_LEFT;
   FREEPLAY_RIGHT;
   FREEPLAY_CHAR_SELECT;
+  FREEPLAY_JUMP_TO_TOP;
+  FREEPLAY_JUMP_TO_BOTTOM;
   // WINDOW
   #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT; #end
   WINDOW_FULLSCREEN;
@@ -1674,6 +1713,8 @@ enum abstract Action(String) to String from String
   var FREEPLAY_LEFT = "freeplay_left";
   var FREEPLAY_RIGHT = "freeplay_right";
   var FREEPLAY_CHAR_SELECT = "freeplay_char_select";
+  var FREEPLAY_JUMP_TO_TOP = "freeplay_jump_to_top";
+  var FREEPLAY_JUMP_TO_BOTTOM = "freeplay_jump_to_bottom";
   // VOLUME
   var VOLUME_UP = "volume_up";
   var VOLUME_DOWN = "volume_down";

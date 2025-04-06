@@ -20,6 +20,10 @@ class StageData
   @:optional
   public var cameraZoom:Null<Float>;
 
+  @:default("shared")
+  @:optional
+  public var directory:Null<String>;
+
   public function new()
   {
     this.version = StageRegistry.STAGE_DATA_VERSION;
@@ -167,12 +171,12 @@ typedef StageDataProp =
    * How much the prop scrolls relative to the camera. Used to create a parallax effect.
    * Represented as an [x, y] array of two floats.
    * [1, 1] means the prop moves 1:1 with the camera.
-   * [0.5, 0.5] means the prop half as much as the camera.
+   * [0.5, 0.5] means the prop moves half as much as the camera.
    * [0, 0] means the prop is not moved.
-   * @default [0, 0]
+   * @default [1, 1]
    */
   @:optional
-  @:default([0, 0])
+  @:default([1, 1])
   var scroll:Array<Float>;
 
   /**
@@ -198,6 +202,32 @@ typedef StageDataProp =
   @:default("sparrow")
   @:optional
   var animType:String;
+
+  /**
+   * The angle of the prop, as a float.
+   * @default 1.0
+   */
+  @:optional
+  @:default(0.0)
+  var angle:Float;
+
+  /**
+   * The blend mode of the prop, as a string.
+   * Just like in photoshop.
+   * @default Nothing.
+   */
+  @:default("")
+  @:optional
+  var blend:String;
+
+  /**
+   * The color of the prop overlay, as a hex string.
+   * White overlays, or the ones with the value #FFFFFF, do not appear.
+   * @default `#FFFFFF`
+   */
+  @:default("#FFFFFF")
+  @:optional
+  var color:String;
 };
 
 typedef StageDataCharacter =
@@ -231,4 +261,32 @@ typedef StageDataCharacter =
    */
   @:optional
   var cameraOffsets:Array<Float>;
+
+  /**
+   * How much the character scrolls relative to the camera. Used to create a parallax effect.
+   * Represented as an [x, y] array of two floats.
+   * [1, 1] means the character moves 1:1 with the camera.
+   * [0.5, 0.5] means the character moves half as much as the camera.
+   * [0, 0] means the character is not moved.
+   * @default [1, 1]
+   */
+  @:optional
+  @:default([1, 1])
+  var scroll:Array<Float>;
+
+  /**
+   * The alpha of the character, as a float.
+   * @default 1.0
+   */
+  @:optional
+  @:default(1.0)
+  var alpha:Float;
+
+  /**
+   * The angle of the character, as a float.
+   * @default 1.0
+   */
+  @:optional
+  @:default(0.0)
+  var angle:Float;
 };

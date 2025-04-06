@@ -7,7 +7,6 @@ import funkin.ui.MusicBeatSubState;
 import funkin.audio.FunkinSound;
 import funkin.ui.TextMenuList;
 import funkin.ui.debug.charting.ChartEditorState;
-import funkin.ui.MusicBeatSubState;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.util.FileUtil;
@@ -55,16 +54,22 @@ class DebugMenuSubState extends MusicBeatSubState
     // Create each menu item.
     // Call onMenuChange when the first item is created to move the camera .
     #if FEATURE_CHART_EDITOR
-    onMenuChange(createItem("CHART EDITOR", openChartEditor));
+    createItem("CHART EDITOR", openChartEditor);
+    #end
+    createItem("ANIMATION EDITOR", openAnimationEditor);
+    #if FEATURE_STAGE_EDITOR
+    createItem("STAGE EDITOR", openStageEditor);
+    #end
+    #if FEATURE_RESULTS_DEBUG
+    createItem("RESULTS SCREEN DEBUG", openTestResultsScreen);
     #end
     // createItem("Input Offset Testing", openInputOffsetTesting);
-    createItem("CHARACTER SELECT", openCharSelect, true);
-    createItem("ANIMATION EDITOR", openAnimationEditor);
-    // createItem("STAGE EDITOR", openStageEditor);
+    // createItem("CHARACTER SELECT", openCharSelect, true);
     // createItem("TEST STICKERS", testStickers);
     #if sys
     createItem("OPEN CRASH LOG FOLDER", openLogFolder);
     #end
+    onMenuChange(items.members[0]);
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
   }
 
@@ -73,7 +78,7 @@ class DebugMenuSubState extends MusicBeatSubState
     camFocusPoint.setPosition(selected.x + selected.width / 2, selected.y + selected.height / 2);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -84,7 +89,7 @@ class DebugMenuSubState extends MusicBeatSubState
     }
   }
 
-  function createItem(name:String, callback:Void->Void, fireInstantly = false)
+  function createItem(name:String, callback:Void->Void, fireInstantly = false):TextMenuItem
   {
     var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
     item.fireInstantly = fireInstantly;
@@ -118,13 +123,19 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function testStickers()
   {
-    openSubState(new funkin.ui.transition.StickerSubState());
+    openSubState(new funkin.ui.transition.StickerSubState({}));
     trace('opened stickers');
   }
 
   function openStageEditor()
   {
     trace('Stage Editor');
+    FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
+  }
+
+  function openTestResultsScreen():Void
+  {
+    FlxG.switchState(() -> new funkin.ui.debug.results.ResultsDebugSubState());
   }
 
   #if sys

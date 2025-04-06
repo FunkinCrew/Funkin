@@ -1,22 +1,12 @@
 package funkin.ui.transition.preload;
 
-import openfl.filters.GlowFilter;
-import openfl.display.SpreadMethod;
-import openfl.display.GradientType;
-import openfl.geom.Matrix;
-import openfl.filters.BlurFilter;
 import openfl.events.MouseEvent;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
-import flash.display.BlendMode;
 import flash.display.Sprite;
 import flash.Lib;
 import flixel.system.FlxBasePreloader;
-import funkin.modding.PolymodHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.util.MathUtil;
-import lime.app.Future;
-import lime.math.Rectangle;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
@@ -136,8 +126,6 @@ class FunkinPreloader extends FlxBasePreloader
     // We can't even call trace() yet, until Flixel loads.
     trace('Initializing custom preloader...');
 
-    funkin.util.CLIUtil.resetWorkingDir();
-
     this.siteLockTitleText = Constants.SITE_LOCK_TITLE;
     this.siteLockBodyText = Constants.SITE_LOCK_DESC;
   }
@@ -250,18 +238,18 @@ class FunkinPreloader extends FlxBasePreloader
     dspText.selectable = false;
     dspText.textColor = 0x000000;
     dspText.width = this._width;
-    dspText.height = 20;
+    dspText.height = 30;
     dspText.text = 'DSP';
     dspText.x = 10;
-    dspText.y = -5;
+    dspText.y = -7;
     box.addChild(dspText);
 
     fnfText.selectable = false;
     fnfText.textColor = 0x000000;
     fnfText.width = this._width;
-    fnfText.height = 20;
-    fnfText.x = 75;
-    fnfText.y = -5;
+    fnfText.height = 30;
+    fnfText.x = 78;
+    fnfText.y = -7;
     fnfText.text = 'FNF';
     box.addChild(fnfText);
 

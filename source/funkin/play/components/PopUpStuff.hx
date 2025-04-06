@@ -1,14 +1,9 @@
 package funkin.play.components;
 
-import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxDirection;
 import funkin.graphics.FunkinSprite;
-import funkin.play.PlayState;
-import funkin.util.TimerUtil;
 import funkin.util.EaseUtil;
-import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 
 @:nullSafety

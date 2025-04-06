@@ -242,13 +242,16 @@ class StoryMenuState extends MusicBeatState
     FunkinSound.playMusic('freakyMenu',
       {
         overrideExisting: true,
-        restartTrack: false
+        restartTrack: false,
+        // Continue playing this music between states, until a different music track gets played.
+        persist: true
       });
   }
 
   function updateData():Void
   {
     currentLevel = LevelRegistry.instance.fetchEntry(currentLevelId);
+    if (currentLevel == null) throw 'Could not fetch data for level: ${currentLevelId}';
     isLevelUnlocked = currentLevel == null ? false : currentLevel.isUnlocked();
   }
 

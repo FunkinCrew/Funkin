@@ -1,28 +1,22 @@
 package funkin.play;
 
-import flixel.addons.display.FlxPieDial;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
 import flixel.FlxCamera;
 import flixel.FlxObject;
-import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
-import funkin.api.newgrounds.NGio;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
-import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongEventData;
@@ -34,6 +28,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
+import funkin.api.newgrounds.Events;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -45,7 +40,6 @@ import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
-import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
@@ -58,17 +52,15 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.options.PreferencesMenu;
-import funkin.ui.story.StoryMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
-import lime.ui.Haptic;
-import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
-import openfl.Lib;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
+#end
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+import funkin.api.newgrounds.Leaderboards;
 #end
 
 /**
@@ -340,9 +332,15 @@ class PlayState extends MusicBeatSubState
   public var isInCutscene:Bool = false;
 
   /**
-   * Whether the inputs should be disabled for whatever reason... used for the stage edit lol!
+   * Whether the inputs should be disabled for whatever reason...
+   * Used after the song ends, and in the Stage Editor.
    */
   public var disableKeys:Bool = false;
+
+  /**
+   * The previous difficulty the player was playing on.
+   */
+  public var previousDifficulty:String = Constants.DEFAULT_DIFFICULTY;
 
   public var isSubState(get, never):Bool;
 
@@ -365,13 +363,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Key press inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputPressQueue:Array<PreciseInputEvent> = [];
 
   /**
    * Key release inputs which have been received but not yet processed.
-   * These are encoded with an OS timestamp, so they
+   * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
@@ -615,6 +613,7 @@ class PlayState extends MusicBeatSubState
     // Apply parameters.
     currentSong = params.targetSong;
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
+    previousDifficulty = currentDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
@@ -760,24 +759,6 @@ class PlayState extends MusicBeatSubState
     refresh();
   }
 
-  public override function draw():Void
-  {
-    // if (FlxG.renderBlit)
-    // {
-    //  camGame.fill(BACKGROUND_COLOR);
-    // }
-    // else if (FlxG.renderTile)
-    // {
-    //  FlxG.log.warn("PlayState background not displayed properly on tile renderer!");
-    // }
-    // else
-    // {
-    //  FlxG.log.warn("PlayState background not displayed properly, unknown renderer!");
-    // }
-
-    super.draw();
-  }
-
   function assertChartExists():Bool
   {
     // Returns null if the song failed to load or doesn't have the selected difficulty.
@@ -826,8 +807,6 @@ class PlayState extends MusicBeatSubState
 
   public override function update(elapsed:Float):Void
   {
-    // TOTAL: 9.42% CPU Time when profiled in VS 2019.
-
     if (criticalFailure) return;
 
     super.update(elapsed);
@@ -843,7 +822,11 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      dispatchEvent(new ScriptEvent(SONG_RETRY));
+      var retryEvent = new SongRetryEvent(currentDifficulty);
+
+      previousDifficulty = currentDifficulty;
+
+      dispatchEvent(retryEvent);
 
       resetCamera();
 
@@ -908,6 +891,10 @@ class PlayState extends MusicBeatSubState
       Highscore.tallies.combo = 0;
       Countdown.performCountdown();
 
+      // Reset the health icons.
+      currentStage.getBoyfriend().initHealthIcon(false);
+      currentStage.getDad().initHealthIcon(true);
+
       needsReset = false;
     }
 
@@ -936,7 +923,14 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.instance.update(); // Normal conductor update.
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
+
+      // If, after updating the conductor, the instrumental has finished, end the song immediately.
+      // This helps prevent a major bug where the level suddenly loops back to the start or middle.
+      if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
+      {
+        if (mayPauseGame) endSong(skipEndingTransition);
+      }
     }
 
     var androidPause:Bool = false;
@@ -1053,6 +1047,9 @@ class PlayState extends MusicBeatSubState
         if (FlxG.sound.music != null) FlxG.sound.music.pause();
 
         deathCounter += 1;
+        #if FEATURE_NEWGROUNDS
+        Events.logFailSong(currentSong.id, currentVariation);
+        #end
 
         dispatchEvent(new ScriptEvent(GAME_OVER));
 
@@ -1134,8 +1131,8 @@ class PlayState extends MusicBeatSubState
 
     if (!isMinimalMode)
     {
-      iconP1.updatePosition();
-      iconP2.updatePosition();
+      if (iconP1 != null) iconP1.updatePosition();
+      if (iconP1 != null) iconP2.updatePosition();
     }
 
     // Transition to the game over substate.
@@ -1214,7 +1211,7 @@ class PlayState extends MusicBeatSubState
   {
     // If there is a substate which requires the game to continue,
     // then make this a condition.
-    var shouldPause = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
+    var shouldPause:Bool = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
 
     if (shouldPause)
     {
@@ -1457,11 +1454,36 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+      var playerVoicesError:Float = 0;
+      var opponentVoicesError:Float = 0;
 
-      if (!startingSong && (Math.abs(FlxG.sound.music.time - correctSync) > 5 || Math.abs(vocals.checkSyncError(correctSync)) > 5))
+      if (vocals != null && vocals.playing)
+      {
+        @:privateAccess // todo: maybe make the groups public :thinking:
+        {
+          vocals.playerVoices.forEachAlive(function(voice:FunkinSound) {
+            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset;
+            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError)) playerVoicesError = currentRawVoiceTime - correctSync;
+          });
+
+          vocals.opponentVoices.forEachAlive(function(voice:FunkinSound) {
+            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset;
+            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError)) opponentVoicesError = currentRawVoiceTime - correctSync;
+          });
+        }
+      }
+
+      if (!startingSong
+        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
+          || Math.abs(playerVoicesError) > 100
+          || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
-        if (vocals != null) trace(vocals.checkSyncError(correctSync));
+        if (vocals != null)
+        {
+          trace(playerVoicesError);
+          trace(opponentVoicesError);
+        }
         trace(FlxG.sound.music.time);
         trace(correctSync);
         resyncVocals();
@@ -1837,6 +1859,17 @@ class PlayState extends MusicBeatSubState
         smallImageKey: discordRPCIcon
       });
     #end
+
+    #if FEATURE_DISCORD_RPC
+    // Updating Discord Rich Presence.
+    DiscordClient.instance.setPresence(
+      {
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
+    #end
   }
 
   function buildDiscordRPCDetails():String
@@ -2043,7 +2076,7 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = function() {
-      endSong(skipEndingTransition);
+      if (mayPauseGame) endSong(skipEndingTransition);
     };
     // A negative instrumental offset means the song skips the first few milliseconds of the track.
     // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
@@ -2084,6 +2117,10 @@ class PlayState extends MusicBeatSubState
     }
 
     dispatchEvent(new ScriptEvent(SONG_START));
+
+    #if FEATURE_NEWGROUNDS
+    Events.logStartSong(currentSong.id, currentVariation);
+    #end
   }
 
   /**
@@ -2528,8 +2565,8 @@ class PlayState extends MusicBeatSubState
         healthChange = Constants.HEALTH_BAD_BONUS;
         isComboBreak = Constants.JUDGEMENT_BAD_COMBO_BREAK;
       case 'shit':
-        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
         healthChange = Constants.HEALTH_SHIT_BONUS;
+        isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
 
     // Send the note hit event.
@@ -2542,7 +2579,7 @@ class PlayState extends MusicBeatSubState
 
     Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
-    playerStrumline.hitNote(note, !isComboBreak);
+    playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     vocals.playerVolume = 1;
@@ -2598,8 +2635,6 @@ class PlayState extends MusicBeatSubState
       }
     }
     vocals.playerVolume = 0;
-
-    if (Highscore.tallies.combo != 0) if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
 
     applyScore(-10, 'miss', healthChange, true);
 
@@ -2819,7 +2854,7 @@ class PlayState extends MusicBeatSubState
       }
     }
     comboPopUps.displayRating(daRating);
-    if (combo >= 10 || combo == 0) comboPopUps.displayCombo(combo);
+    if (combo >= 10) comboPopUps.displayCombo(combo);
 
     vocals.playerVolume = 1;
   }
@@ -2892,6 +2927,9 @@ class PlayState extends MusicBeatSubState
     vocals.volume = 0;
     mayPauseGame = false;
 
+    // Prevent ghost misses while the song is ending.
+    disableKeys = true;
+
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);
     dispatchEvent(event);
@@ -2937,8 +2975,16 @@ class PlayState extends MusicBeatSubState
       // adds current song data into the tallies for the level (story levels)
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
+      #if FEATURE_NEWGROUNDS
+      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, data.score);
+      #end
+
       if (!isPracticeMode && !isBotPlayMode)
       {
+        #if FEATURE_NEWGROUNDS
+        Events.logCompleteSong(currentSong.id, currentVariation);
+        #end
+
         isNewHighscore = Save.instance.isSongHighScore(currentSong.id, suffixedDifficulty, data);
 
         // If no high score is present, save both score and rank.
@@ -2946,14 +2992,47 @@ class PlayState extends MusicBeatSubState
         // If neither are higher, nothing will change.
         Save.instance.applySongRank(currentSong.id, suffixedDifficulty, data);
 
-        if (isNewHighscore)
-        {
-          #if newgrounds
-          NGio.postScore(score, currentSong.id);
-          #end
-        }
+        if (isNewHighscore) {}
       }
     }
+
+    #if FEATURE_NEWGROUNDS
+    // Only award medals if we are LEGIT.
+    if (!isPracticeMode && !isBotPlayMode && !isChartingMode && currentSong.validScore)
+    {
+      // Award a medal for beating at least one song on any difficulty on a Friday.
+      if (Date.now().getDay() == 5) Medals.award(FridayNight);
+
+      // Determine the score rank for this song we just finished.
+      var scoreRank:ScoringRank = Scoring.calculateRank(
+        {
+          score: songScore,
+          tallies:
+            {
+              sick: Highscore.tallies.sick,
+              good: Highscore.tallies.good,
+              bad: Highscore.tallies.bad,
+              shit: Highscore.tallies.shit,
+              missed: Highscore.tallies.missed,
+              combo: Highscore.tallies.combo,
+              maxCombo: Highscore.tallies.maxCombo,
+              totalNotesHit: Highscore.tallies.totalNotesHit,
+              totalNotes: Highscore.tallies.totalNotes,
+            }
+        });
+
+      // Award various medals based on variation, difficulty, song ID, and scoring rank.
+      if (scoreRank == ScoringRank.SHIT) Medals.award(LossRating);
+      if (scoreRank >= ScoringRank.PERFECT && currentDifficulty == 'hard') Medals.award(PerfectRatingHard);
+      if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'hard') Medals.award(GoldPerfectRatingHard);
+      if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentDifficulty)) Medals.award(ErectDifficulty);
+      if (scoreRank == ScoringRank.PERFECT_GOLD && currentDifficulty == 'nightmare') Medals.award(GoldPerfectRatingNightmare);
+      if (currentVariation == 'pico' && !PlayStatePlaylist.isStoryMode) Medals.award(FreeplayPicoMix);
+      if (currentVariation == 'pico' && currentSong.id == 'stress') Medals.award(FreeplayStressPico);
+
+      Events.logEarnRank(scoreRank.toString());
+    }
+    #end
 
     if (PlayStatePlaylist.isStoryMode)
     {
@@ -2969,8 +3048,6 @@ class PlayState extends MusicBeatSubState
       {
         if (currentSong.validScore)
         {
-          NGio.unlockMedal(60961);
-
           var data =
             {
               score: PlayStatePlaylist.campaignScore,
@@ -2989,12 +3066,19 @@ class PlayState extends MusicBeatSubState
                 },
             };
 
+          #if FEATURE_NEWGROUNDS
+          // Award a medal for beating a Story level.
+          Medals.awardStoryLevel(PlayStatePlaylist.campaignId);
+
+          // Submit the score for the Story level to Newgrounds.
+          Leaderboards.submitLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, PlayStatePlaylist.campaignScore);
+
+          Events.logCompleteLevel(PlayStatePlaylist.campaignId);
+          #end
+
           if (Save.instance.isLevelHighScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data))
           {
             Save.instance.setLevelScore(PlayStatePlaylist.campaignId, PlayStatePlaylist.campaignDifficulty, data);
-            #if newgrounds
-            NGio.postScore(score, 'Level ${PlayStatePlaylist.campaignId}');
-            #end
             isNewHighscore = true;
           }
         }
@@ -3269,7 +3353,9 @@ class PlayState extends MusicBeatSubState
                 totalNotes: talliesToUse.totalNotes,
               },
           },
-        isNewHighscore: isNewHighscore
+        isNewHighscore: isNewHighscore,
+        isPracticeMode: isPracticeMode,
+        isBotPlayMode: isBotPlayMode,
       });
     this.persistentDraw = false;
     openSubState(res);

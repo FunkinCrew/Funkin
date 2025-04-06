@@ -11,7 +11,6 @@ import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song.SongDifficulty;
-import funkin.ui.MusicBeatState;
 import haxe.io.Path;
 import lime.app.Future;
 import lime.app.Promise;
@@ -86,7 +85,7 @@ class LoadingState extends MusicBeatSubState
       }
 
       checkLibrary('shared');
-      checkLibrary(PlayStatePlaylist.campaignId);
+      checkLibrary(stageDirectory);
       checkLibrary('tutorial');
 
       var fadeTime:Float = 0.5;
@@ -172,10 +171,6 @@ class LoadingState extends MusicBeatSubState
       }
       FlxG.watch.addQuick('percentage?', callbacks.numRemaining / callbacks.length);
     }
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.justPressed.SPACE) trace('fired: ' + callbacks.getFired() + ' unfired:' + callbacks.getUnfired());
-    #end
   }
 
   function onLoad():Void
@@ -204,6 +199,8 @@ class LoadingState extends MusicBeatSubState
     return Paths.inst(PlayState.instance.currentSong.id);
   }
 
+  static var stageDirectory:String = "shared";
+
   /**
    * Starts the transition to a new `PlayState` to start a new song.
    * First switches to the `LoadingState` if assets need to be loaded.
@@ -213,7 +210,13 @@ class LoadingState extends MusicBeatSubState
    */
   public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false, asSubState = false, ?onConstruct:PlayState->Void):Void
   {
-    Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
+    var daChart:Null<SongDifficulty> = params.targetSong.getDifficulty(params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
+      params.targetVariation ?? Constants.DEFAULT_VARIATION);
+
+    var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
+    stageDirectory = daStage?._data?.directory ?? "shared";
+    Paths.setCurrentLevel(stageDirectory);
+
     var playStateCtor:() -> PlayState = function() {
       return new PlayState(params);
     };

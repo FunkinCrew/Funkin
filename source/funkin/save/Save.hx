@@ -1,24 +1,27 @@
 package funkin.save;
 
 import flixel.util.FlxSave;
-import funkin.util.FileUtil;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
-import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
+import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
+import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
 import thx.semver.Version;
-import thx.semver.Version;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+import funkin.api.newgrounds.Leaderboards;
+#end
 
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.0.4";
-  public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.0";
+  public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
   static final SAVE_PATH:String = 'FunkinCrew';
@@ -26,6 +29,12 @@ class Save
 
   static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
   static final SAVE_NAME_LEGACY:String = 'funkin';
+
+  /**
+   * We always use this save slot.
+   * Alter this if you want to use a different save slot.
+   */
+  static final BASE_SAVE_SLOT:Int = 1;
 
   public static var instance(get, never):Save;
   static var _instance:Null<Save> = null;
@@ -46,7 +55,12 @@ class Save
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    return loadFromSlot(1);
+    return loadFromSlot(BASE_SAVE_SLOT);
+  }
+
+  public static function clearData():Void
+  {
+    _instance = clearSlot(BASE_SAVE_SLOT);
   }
 
   /**
@@ -98,9 +112,20 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          strumlineBackgroundOpacity: 0,
+          autoFullscreen: false,
           inputOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
+
+          screenshot:
+            {
+              shouldHideMouse: true,
+              fancyPreview: true,
+              previewOnSave: true,
+              saveFormat: 'PNG',
+              jpegQuality: 80,
+            },
 
           controls:
             {
@@ -146,6 +171,14 @@ class Save
           hitsoundVolumeOpponent: 1.0,
           themeMusic: true
         },
+
+      optionsStageEditor:
+        {
+          previousFiles: [],
+          moveStep: "1px",
+          angleStep: 5,
+          theme: StageEditorTheme.Light
+        }
     };
   }
 
@@ -428,6 +461,91 @@ class Save
     return data.unlocks.oldChar;
   }
 
+  public var stageEditorPreviousFiles(get, set):Array<String>;
+
+  function get_stageEditorPreviousFiles():Array<String>
+  {
+    if (data.optionsStageEditor.previousFiles == null) data.optionsStageEditor.previousFiles = [];
+
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  function set_stageEditorPreviousFiles(value:Array<String>):Array<String>
+  {
+    // Set and apply.
+    data.optionsStageEditor.previousFiles = value;
+    flush();
+    return data.optionsStageEditor.previousFiles;
+  }
+
+  public var stageEditorHasBackup(get, set):Bool;
+
+  function get_stageEditorHasBackup():Bool
+  {
+    if (data.optionsStageEditor.hasBackup == null) data.optionsStageEditor.hasBackup = false;
+
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  function set_stageEditorHasBackup(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsStageEditor.hasBackup = value;
+    flush();
+    return data.optionsStageEditor.hasBackup;
+  }
+
+  public var stageEditorMoveStep(get, set):String;
+
+  function get_stageEditorMoveStep():String
+  {
+    if (data.optionsStageEditor.moveStep == null) data.optionsStageEditor.moveStep = "1px";
+
+    return data.optionsStageEditor.moveStep;
+  }
+
+  function set_stageEditorMoveStep(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.moveStep = value;
+    flush();
+    return data.optionsStageEditor.moveStep;
+  }
+
+  public var stageEditorAngleStep(get, set):Float;
+
+  function get_stageEditorAngleStep():Float
+  {
+    if (data.optionsStageEditor.angleStep == null) data.optionsStageEditor.angleStep = 5;
+
+    return data.optionsStageEditor.angleStep;
+  }
+
+  function set_stageEditorAngleStep(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsStageEditor.angleStep = value;
+    flush();
+    return data.optionsStageEditor.angleStep;
+  }
+
+  public var stageEditorTheme(get, set):StageEditorTheme;
+
+  function get_stageEditorTheme():StageEditorTheme
+  {
+    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = StageEditorTheme.Light;
+
+    return data.optionsStageEditor.theme;
+  }
+
+  function set_stageEditorTheme(value:StageEditorTheme):StageEditorTheme
+  {
+    // Set and apply.
+    data.optionsStageEditor.theme = value;
+    flush();
+    return data.optionsStageEditor.theme;
+  }
+
   /**
    * When we've seen a character unlock, add it to the list of characters seen.
    * @param character
@@ -531,7 +649,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          return false;
+          continue;
         }
       }
     }
@@ -543,22 +661,33 @@ class Save
    *
    * @param songId The ID of the song.
    * @param difficultyId The difficulty to check.
+   * @param variation The variation to check. Defaults to empty string. Appended to difficulty with `-`, e.g. `easy-pico`.
    * @return A data structure containing score, judgement counts, and accuracy. Returns `null` if no score is saved.
    */
-  public function getSongScore(songId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
+  public function getSongScore(songId:String, difficultyId:String = 'normal', ?variation:String):Null<SaveScoreData>
   {
     var song = data.scores.songs.get(songId);
     if (song == null)
     {
+      trace('Could not find song data for $songId $difficultyId $variation');
       song = [];
       data.scores.songs.set(songId, song);
     }
+
+    // 'default' variations are left with no suffix ('easy', 'normal', 'hard'),
+    // along with 'erect' variations ('erect', 'nightmare')
+    // otherwise, we want to add a suffix of our current variation to get the save data.
+    if (variation != null && variation != '' && variation != 'default' && variation != 'erect')
+    {
+      difficultyId = '${difficultyId}-${variation}';
+    }
+
     return song.get(difficultyId);
   }
 
-  public function getSongRank(songId:String, difficultyId:String = 'normal'):Null<ScoringRank>
+  public function getSongRank(songId:String, difficultyId:String = 'normal', ?variation:String):Null<ScoringRank>
   {
-    return Scoring.calculateRank(getSongScore(songId, difficultyId));
+    return Scoring.calculateRank(getSongScore(songId, difficultyId, variation));
   }
 
   /**
@@ -600,6 +729,7 @@ class Save
     {
       // Directly set the highscore.
       setSongScore(songId, difficultyId, newScoreData);
+
       return;
     }
 
@@ -678,18 +808,31 @@ class Save
 
   /**
    * Has the provided song been beaten on one of the listed difficulties?
+   * Note: This function can still take in the 'difficulty-variation' format for the difficultyList parameter
+   * as it is used in the old save data format. However inputting a variation will append it to the difficulty
+   * so you can do `hasBeatenSong('dadbattle', ['easy-pico'])` to check if you've beaten the Pico mix on easy.
+   * or you can do `hasBeatenSong('dadbattle', ['easy'], 'pico')` to check if you've beaten the Pico mix on easy.
+   * however you should not mix the two as it will append '-pico' to the 'easy-pico' if it's inputted into the array.
    * @param songId The song ID to check.
    * @param difficultyList The difficulties to check. Defaults to `easy`, `normal`, and `hard`.
+   * @param variation The variation to check. Defaults to empty string. Appended to difficulty list with `-`, e.g. `easy-pico`.
+   *                  This is our old format for getting difficulty/variation information, however we don't want to mess around with
+   *                  save migration just yet.
    * @return Whether the song has been beaten on any of the listed difficulties.
    */
-  public function hasBeatenSong(songId:String, ?difficultyList:Array<String>):Bool
+  public function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
   {
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
     }
+
+    if (variation == null) variation = '';
+
     for (difficulty in difficultyList)
     {
+      if (variation != '') difficulty = '${difficulty}-${variation}';
+
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {
@@ -701,7 +844,7 @@ class Save
         else
         {
           // Level has score data, but the score is 0.
-          return false;
+          continue;
         }
       }
     }
@@ -837,44 +980,91 @@ class Save
   }
 
   /**
-   * If you set slot to `2`, it will load an independe
+   * If you set slot to `2`, it will load an independent save file from slot 2.
    * @param slot
    */
+  @:haxe.warning("-WDeprecated")
   static function loadFromSlot(slot:Int):Save
   {
-    trace("[SAVE] Loading save from slot " + slot + "...");
-
-    // Prevent crashes if the save data is corrupted.
-    SerializerUtil.initSerializer();
+    trace('[SAVE] Loading save from slot $slot...');
 
     FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
 
-    if (FlxG.save.isEmpty())
+    switch (FlxG.save.status)
     {
-      trace('[SAVE] Save data is empty, checking for legacy save data...');
-      var legacySaveData = fetchLegacySaveData();
-      if (legacySaveData != null)
-      {
-        trace('[SAVE] Found legacy save data, converting...');
-        var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
+      case EMPTY:
+        trace('[SAVE] Save data in slot ${slot} is empty, checking for legacy save data...');
+        var legacySaveData = fetchLegacySaveData();
+        if (legacySaveData != null)
+        {
+          trace('[SAVE] Found legacy save data, converting...');
+          var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
+          FlxG.save.mergeData(gameSave.data, true);
+          return gameSave;
+        }
+        else
+        {
+          trace('[SAVE] No legacy save data found.');
+          var gameSave = new Save();
+          FlxG.save.mergeData(gameSave.data, true);
+          return gameSave;
+        }
+      case ERROR(_): // DEPRECATED: Unused
+        return handleSaveDataError(slot);
+      case SAVE_ERROR(_):
+        return handleSaveDataError(slot);
+      case LOAD_ERROR(_):
+        return handleSaveDataError(slot);
+      case BOUND(_, _):
+        trace('[SAVE] Loaded existing save data in slot ${slot}.');
+        var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
         FlxG.save.mergeData(gameSave.data, true);
+
         return gameSave;
-      }
-      else
-      {
-        trace('[SAVE] No legacy save data found.');
-        var gameSave = new Save();
-        FlxG.save.mergeData(gameSave.data, true);
-        return gameSave;
-      }
+    }
+  }
+
+  static function clearSlot(slot:Int):Save
+  {
+    FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
+
+    if (FlxG.save.status != EMPTY)
+    {
+      // Archive the save data just in case.
+      // Not reliable but better than nothing.
+      var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+
+      FlxG.save.erase();
+
+      return new Save();
     }
     else
     {
-      trace('[SAVE] Found existing save data.');
-      var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
-      FlxG.save.mergeData(gameSave.data, true);
+      return new Save();
+    }
+  }
 
-      return gameSave;
+  /**
+   * Call this when there is an error loading the save data in slot X.
+   */
+  static function handleSaveDataError(slot:Int):Save
+  {
+    var msg = 'There was an error loading your save data in slot ${slot}.';
+    msg += '\nPlease report this issue to the developers.';
+    lime.app.Application.current.window.alert(msg, "Save Data Failure");
+
+    // Don't touch that slot anymore.
+    // Instead, load the next available slot.
+
+    var nextSlot = slot + 1;
+
+    if (nextSlot < 1000)
+    {
+      return loadFromSlot(nextSlot);
+    }
+    else
+    {
+      throw "End of save data slots. Can't load any more.";
     }
   }
 
@@ -939,7 +1129,19 @@ class Save
   {
     var targetSaveData = new FlxSave();
     targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
-    return !targetSaveData.isEmpty();
+    switch (targetSaveData.status)
+    {
+      case EMPTY:
+        return false;
+      case ERROR(_): // DEPRECATED: Unused
+        return false;
+      case LOAD_ERROR(_):
+        return false;
+      case SAVE_ERROR(_):
+        return false;
+      case BOUND(_, _):
+        return true;
+    }
   }
 
   /**
@@ -1043,6 +1245,11 @@ typedef RawSaveData =
    * The user's preferences specific to the Chart Editor.
    */
   var optionsChartEditor:SaveDataChartEditorOptions;
+
+  /**
+   * The user's preferences specific to the Stage Editor.
+   */
+  var optionsStageEditor:SaveDataStageEditorOptions;
 };
 
 typedef SaveApiData =
@@ -1188,6 +1395,19 @@ typedef SaveDataOptions =
   var autoPause:Bool;
 
   /**
+   * If >0, the game will display a semi-opaque background under the notes.
+   * `0` for no background, `100` for solid black if you're freaky like that
+   * @default `0`
+   */
+  var strumlineBackgroundOpacity:Int;
+
+  /**
+   * If enabled, the game will automatically launch in fullscreen on startup.
+   * @default `true`
+   */
+  var autoFullscreen:Bool;
+
+  /**
    * Offset the user's inputs by this many ms.
    * @default `0`
    */
@@ -1204,6 +1424,23 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var unlockedFramerate:Bool;
+
+  /**
+   * Screenshot options
+   * @param shouldHideMouse Should the mouse be hidden when taking a screenshot? Default: `true`
+   * @param fancyPreview Show a fancy preview? Default: `true`
+   * @param previewOnSave Only show the fancy preview after a screenshot is saved? Default: `true`
+   * @param saveFormat The save format of the screenshot, PNG or JPEG. Default: `PNG`
+   * @param jpegQuality The JPEG Quality, if we're saving to the format. Default: `80`
+   */
+  var screenshot:
+    {
+      var shouldHideMouse:Bool;
+      var fancyPreview:Bool;
+      var previewOnSave:Bool;
+      var saveFormat:String;
+      var jpegQuality:Int;
+    };
 
   var controls:
     {
@@ -1415,4 +1652,40 @@ typedef SaveDataChartEditorOptions =
    * @default `1.0`
    */
   var ?playbackSpeed:Float;
+};
+
+typedef SaveDataStageEditorOptions =
+{
+  // a lot of these things were copied from savedatacharteditoroptions
+
+  /**
+   * Whether the Stage Editor created a backup the last time it closed.
+   * Prompt the user to load it, then set this back to `false`.
+   * @default `false`
+   */
+  var ?hasBackup:Bool;
+
+  /**
+   * Previous files opened in the Stage Editor.
+   * @default `[]`
+   */
+  var ?previousFiles:Array<String>;
+
+  /**
+   * The Step at which an Object or Character is moved.
+   * @default `1px`
+   */
+  var ?moveStep:String;
+
+  /**
+   * The Step at which an Object is rotated.
+   * @default `5`
+   */
+  var ?angleStep:Float;
+
+  /**
+   * Theme in the Stage Editor.
+   * @default `StageEditorTheme.Light`
+   */
+  var ?theme:StageEditorTheme;
 };
