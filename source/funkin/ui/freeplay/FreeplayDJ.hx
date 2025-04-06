@@ -96,18 +96,6 @@ class FreeplayDJ extends FlxAtlasSprite
         {
           playFlashAnimation(animPrefix, true, false, !playableCharData.shouldIdleOnBeat());
         }
-
-        if (getCurrentAnimation() == animPrefix && this.isLoopComplete())
-        {
-          if (timeIdling >= IDLE_EGG_PERIOD && !seenIdleEasterEgg)
-          {
-            currentState = IdleEasterEgg;
-          }
-          else if (timeIdling >= IDLE_CARTOON_PERIOD)
-          {
-            currentState = Cartoon;
-          }
-        }
         timeIdling += elapsed;
       case NewUnlock:
         var animPrefix = playableCharData.getAnimationPrefix('newUnlock');

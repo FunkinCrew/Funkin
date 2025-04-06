@@ -1274,8 +1274,6 @@ class FreeplayState extends MusicBeatSubState
 
     Conductor.instance.update();
 
-    Conductor.instance.update();
-
     if (charSelectHint != null)
     {
       hintTimer += elapsed * 2;
@@ -1647,7 +1645,6 @@ class FreeplayState extends MusicBeatSubState
 
   override function beatHit():Bool
   {
-    dj?.beatHit();
     dj?.beatHit();
     backingCard?.beatHit();
 
