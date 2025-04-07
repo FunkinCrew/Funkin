@@ -237,6 +237,9 @@ class PolymodHandler
 
   static function buildImports():Void
   {
+    // A list of classes from blacklisted packages that are allowed to be imported.
+    var allowedClasses:Array<String> = ['funkin.api.discord.DiscordClient'];
+
     // Add default imports for common classes.
     Polymod.addDefaultImport(funkin.Assets);
     Polymod.addDefaultImport(funkin.Paths);
@@ -300,30 +303,23 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
-    // `funkin.api.*`
-    // Contains functions which may allow for cheating and such.
-    for (cls in ClassMacro.listClassesInPackage('funkin.api'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
-
     // `polymod.*`
     // Contains functions which may allow for un-blacklisting other modules.
     for (cls in ClassMacro.listClassesInPackage('polymod'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
+      if (allowedClasses.contains(className)) continue;
       Polymod.blacklistImport(className);
     }
 
-    // `funkin.api.newgrounds.*`
-    // Contains functions which allow for cheating medals and leaderboards.
-    for (cls in ClassMacro.listClassesInPackage('funkin.api.newgrounds'))
+    // `funkin.api.*`
+    // Contains functions which allow for cheating and such.
+    for (cls in ClassMacro.listClassesInPackage('funkin.api'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
+      if (allowedClasses.contains(className)) continue;
       Polymod.blacklistImport(className);
     }
 
@@ -333,6 +329,7 @@ class PolymodHandler
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
+      if (allowedClasses.contains(className)) continue;
       Polymod.blacklistImport(className);
     }
 
@@ -342,6 +339,7 @@ class PolymodHandler
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
+      if (allowedClasses.contains(className)) continue;
       Polymod.blacklistImport(className);
     }
   }
