@@ -46,7 +46,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
   /** Only used in Options, basically acts the same as OptionsState's `currentName`, it's the current name of the current page in OptionsState.
    * Why is it needed? Because touch control's a bitch. Thats why. */
-  public var currentPage:PageName = Options;
+  public var currentPage:PageName;
 
   // Helper variable
   var _isMainMenuState:Bool = false;
