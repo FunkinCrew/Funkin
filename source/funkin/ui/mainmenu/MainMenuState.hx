@@ -252,6 +252,7 @@ class MainMenuState extends MusicBeatState
 
   function selectMerch()
   {
+    #if FEATURE_NEWGROUNDS
     NG.core?.calls.loader.loadReferral(false)
       .addComponentParameter("referral_name", "merch_link")
       .addResponseHandler(response -> {
@@ -260,6 +261,9 @@ class MainMenuState extends MusicBeatState
           WindowUtil.openURL(Constants.URL_MERCH_FALLBACK);
       })
       .send();
+    #else
+    WindowUtil.openURL(Constants.URL_MERCH_FALLBACK);
+    #end
   }
   #end
 
