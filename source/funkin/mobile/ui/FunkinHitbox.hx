@@ -482,7 +482,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     @:privateAccess
     @:nullSafety(Off)
     {
-      hint.frames = Paths.getSparrowAtlas(noteStyle.getStrumlineAssetPath() ?? '', noteStyle.getStrumlineAssetLibrary());
+      hint.frames = Paths.getSparrowAtlas(noteStyle.getStrumlineAssetPath() ?? '', noteStyle.getAssetLibrary(noteStyle.getStrumlineAssetPath(true)));
       FlxAnimationUtil.addAtlasAnimations(hint, noteStyle.getStrumlineAnimationData(noteDirection));
     }
 
