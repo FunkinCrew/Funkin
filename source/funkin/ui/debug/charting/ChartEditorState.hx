@@ -5117,7 +5117,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / 1000) / 60)).lpad('0', 2);
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
-    songPosString += ' | Beat: ${Conductor.instance.currentBeat} | Step: ${Conductor.instance.currentStep}';
+
+    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
+    var parts:Array<String> = Std.string(roundedBeat).split('.');
+    if (parts.length == 1) parts.push('00');
+    songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
 
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
