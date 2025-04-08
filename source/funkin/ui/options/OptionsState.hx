@@ -62,7 +62,7 @@ class OptionsState extends MusicBeatState
       // No need to show Options page
       #if mobile
       preferences.onExit.add(exitToMainMenu);
-      setPage(Preferences);
+      optionsCodex.setPage(Preferences);
       #else
       controls.onExit.add(exitToMainMenu);
       optionsCodex.setPage(Controls);
