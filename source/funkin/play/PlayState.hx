@@ -564,6 +564,17 @@ class PlayState extends MusicBeatSubState
 
   function get_currentStageId():String
   {
+    if (currentStage?.id == null) return Constants.DEFAULT_STAGE;
+    return currentStage.id;
+  }
+
+  /**
+   * The internal ID of the Stage defined by the chart.
+   */
+  public var chartStageId(get, never):String;
+
+  function get_chartStageId():String
+  {
     if (currentChart == null || currentChart.stage == null || currentChart.stage == '') return Constants.DEFAULT_STAGE;
     return currentChart.stage;
   }
@@ -861,7 +872,22 @@ class PlayState extends MusicBeatSubState
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
 
-      if (currentStage != null) currentStage.resetStage();
+      if (currentStage != null)
+      {
+        if (currentStageId != chartStageId)
+        {
+          swapStage(chartStageId, [
+            currentChart.characters.player,
+            currentChart.characters.girlfriend,
+            currentChart.characters.opponent
+          ]);
+
+          // Focus the camera on dad
+          cameraFollowPoint.setPosition(currentStage.getDad().cameraFocusPoint?.x ?? 0.0, currentStage.getDad().cameraFocusPoint?.y ?? 0.0);
+          FlxG.camera.snapToTarget();
+        }
+        currentStage.resetStage();
+      }
 
       if (!fromDeathState)
       {
@@ -1606,7 +1632,7 @@ class PlayState extends MusicBeatSubState
      */
   function initStage():Void
   {
-    loadStage(currentStageId);
+    loadStage(chartStageId);
   }
 
   function initMinimalMode():Void
@@ -1626,18 +1652,48 @@ class PlayState extends MusicBeatSubState
      * Loads stage data from cache, assembles the props,
      * and adds it to the state.
      * @param id
+     * @param swap
      */
-  function loadStage(id:String):Void
+  function loadStage(id:String, ?swap:Bool = false):Void
   {
+    if (swap)
+    {
+      remove(currentStage);
+      currentStage.kill();
+      for (sprite in currentStage.group)
+      {
+        if (sprite != null)
+        {
+          sprite.kill();
+          currentStage.group.remove(sprite);
+        }
+      }
+      currentStage = null;
+    }
+
     currentStage = StageRegistry.instance.fetchEntry(id);
 
     if (currentStage != null)
     {
+      if (swap)
+      {
+        var stageDirectory:String = currentStage._data?.directory ?? "shared";
+        Paths.setCurrentLevel(stageDirectory);
+      }
+
       currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
-      // Actually create and position the sprites.
-      var event:ScriptEvent = new ScriptEvent(CREATE, false);
-      ScriptEventDispatcher.callEvent(currentStage, event);
+      if (!swap)
+      {
+        // Actually create and position the sprites.
+        var event:ScriptEvent = new ScriptEvent(CREATE, false);
+        ScriptEventDispatcher.callEvent(currentStage, event);
+      }
+      else
+      {
+        currentStage.buildStage(true);
+        currentStage.resetStage();
+      }
 
       resetCameraZoom();
 
@@ -1653,6 +1709,49 @@ class PlayState extends MusicBeatSubState
       // lolol
       lime.app.Application.current.window.alert('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
     }
+  }
+
+  /**
+     * Returns the current stage to cache and loads a new one in its place.
+     * @param id The ID of the stage to load.
+     * @param characters Optional. An array of characters to load in the order of BF, GF, and Dad.
+     */
+  public function swapStage(id:String, ?characters:Null<Array<String>>):Void
+  {
+    characters = [
+      characters != null ? characters[0] : currentStage.getBoyfriend()?.characterId,
+      characters != null ? characters[1] : currentStage.getGirlfriend()?.characterId,
+      characters != null ? characters[2] : currentStage.getDad()?.characterId
+    ];
+
+    loadStage(id, true);
+
+    var bf:BaseCharacter = CharacterDataParser.fetchCharacter(characters[0]);
+    var gf:BaseCharacter = CharacterDataParser.fetchCharacter(characters[1]);
+    var dad:BaseCharacter = CharacterDataParser.fetchCharacter(characters[2]);
+
+    if (bf != null)
+    {
+      bf.initHealthIcon(true);
+      currentStage.getBoyfriend()?.destroy();
+      currentStage.addCharacter(bf, CharacterType.BF);
+    }
+
+    if (gf != null)
+    {
+      currentStage.getGirlfriend()?.destroy();
+      currentStage.addCharacter(gf, CharacterType.GF);
+    }
+
+    if (dad != null)
+    {
+      dad.initHealthIcon(true);
+      currentStage.getDad()?.destroy();
+      currentStage.addCharacter(dad, CharacterType.DAD);
+    }
+
+    currentStage.resetStage();
+    currentStage.refresh();
   }
 
   public function resetCameraZoom():Void
