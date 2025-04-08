@@ -33,6 +33,7 @@ class Events
     #end
   }
 
+  #if FEATURE_NEWGROUNDS_EVENTS
   static function onEventLogged(eventName:String, outcome:CallOutcome<LogEventData>)
   {
     switch (outcome)
@@ -57,6 +58,7 @@ class Events
         }
     }
   }
+  #end
 
   public static inline function logStartGame():Void
   {
