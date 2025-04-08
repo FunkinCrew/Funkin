@@ -101,6 +101,7 @@ class LetterSort extends FlxSpriteGroup
   {
     super.update(elapsed);
     #if TOUCH_CONTROLS
+    @:privateAccess
     if (TouchUtil.justPressed) inputEnabled = instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam);
     #end
 
@@ -110,7 +111,9 @@ class LetterSort extends FlxSpriteGroup
       {
         for (index => letter in letterHitboxes)
         {
+          @:privateAccess
           if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+
           if (index == 2 || index == 5) continue;
 
           var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
@@ -130,9 +133,12 @@ class LetterSort extends FlxSpriteGroup
         }
       }
 
-      if (controls.FREEPLAY_LEFT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft)) changeSelection(-1);
+      @:privateAccess
+      {
+        if (controls.FREEPLAY_LEFT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft)) changeSelection(-1);
 
-      if (controls.FREEPLAY_RIGHT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight)) changeSelection(1);
+        if (controls.FREEPLAY_RIGHT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight)) changeSelection(1);
+      }
     }
   }
 
@@ -219,6 +225,7 @@ class LetterSort extends FlxSpriteGroup
 
     if (value != null)
     {
+      @:privateAccess
       swipeBounds.cameras = [value.funnyCam];
     }
     else
