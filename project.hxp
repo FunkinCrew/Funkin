@@ -596,7 +596,7 @@ class Project extends HXProject {
     // TODO: Look into ways to optimize logging (maybe by using a thread pool?)
     FEATURE_LOG_TRACE.apply(this, isDebug() || isTest());
 
-		FEATURE_NEWGROUNDS.apply(this, true);
+		FEATURE_NEWGROUNDS.apply(this, !isMobile());
 		FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
 		FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 		FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
