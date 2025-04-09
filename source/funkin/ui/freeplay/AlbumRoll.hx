@@ -62,7 +62,7 @@ class AlbumRoll extends FlxSpriteGroup
 
     add(newAlbumArt);
 
-    difficultyStars = new DifficultyStars(FlxG.width - 1140, 39);
+    difficultyStars = new DifficultyStars((FlxG.width - 1140) - FullScreenScaleMode.gameNotchSize.x, 0);
     difficultyStars.visible = false;
     add(difficultyStars);
 
