@@ -1091,7 +1091,7 @@ class Project extends HXProject {
       asset.library = library ?? "default";
     }
 
-    if (padName != null)
+    if (padName != null && isBundle())
     {
       asset.deliveryPackName = padName;
     }
