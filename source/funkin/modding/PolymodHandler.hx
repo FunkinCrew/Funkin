@@ -296,9 +296,9 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
-    // `funkin.api.*`
+    // `funkin.api.newgrounds*`
     // Contains functions which may allow for cheating and such.
-    for (cls in ClassMacro.listClassesInPackage('funkin.api'))
+    for (cls in ClassMacro.listClassesInPackage('funkin.api.newgrounds'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
