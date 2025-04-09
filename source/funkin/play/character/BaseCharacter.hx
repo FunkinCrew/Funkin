@@ -58,7 +58,7 @@ class BaseCharacter extends Bopper
    */
   public var dropNoteCounts(default, null):Array<Int>;
 
-  @:allow(funkin.ui.debug.anim.DebugBoundingState)
+  @:allow(funkin.ui.debug.anim.AnimationEditorState)
   final _data:CharacterData;
   final singTimeSteps:Float;
 
