@@ -69,6 +69,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         return;
       }
 
+      chartEditorState.eventDataToPlace = {};
       buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
 
       if (!_initializing && chartEditorState.currentEventSelection.length > 0)
@@ -92,6 +93,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   public override function refresh():Void
   {
     super.refresh();
+
+    toolboxEventsEventKind.pauseEvent(UIEvent.CHANGE, true);
 
     var newDropdownElement = ChartEditorDropdowns.findDropdownElement(chartEditorState.eventKindToPlace, toolboxEventsEventKind);
 
@@ -151,6 +154,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         }
       }
     }
+
+    toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   var lastEventKind:String = 'unknown';
@@ -164,8 +169,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     // Clear the frame.
     target.removeAllComponents();
-
-    chartEditorState.eventDataToPlace = {};
 
     for (field in schema)
     {
@@ -259,7 +262,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         var value = event.target.value;
         if (field.type == ENUM)
         {
-          value = event.target.value.value;
+          value = event.target.value?.value;
         }
         else if (field.type == BOOL)
         {
