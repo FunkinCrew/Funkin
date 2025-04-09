@@ -2140,6 +2140,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           currentPlayerCharacterPlayer.onBeatHit(cast event);
         case SONG_STEP_HIT:
           currentPlayerCharacterPlayer.onStepHit(cast event);
+        case SONG_BPM_CHANGE:
+          currentPlayerCharacterPlayer.onBpmChange(cast event);
         case NOTE_HIT:
           currentPlayerCharacterPlayer.onNoteHit(cast event);
         default: // Continue
@@ -2156,6 +2158,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           currentOpponentCharacterPlayer.onBeatHit(cast event);
         case SONG_STEP_HIT:
           currentOpponentCharacterPlayer.onStepHit(cast event);
+        case SONG_BPM_CHANGE:
+          currentPlayerCharacterPlayer.onBpmChange(cast event);
         case NOTE_HIT:
           currentOpponentCharacterPlayer.onNoteHit(cast event);
         default: // Continue
