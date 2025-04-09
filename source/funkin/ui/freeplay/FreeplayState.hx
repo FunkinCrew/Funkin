@@ -1556,13 +1556,11 @@ class FreeplayState extends MusicBeatSubState
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(-1);
-      generateSongList(currentFilter, true);
     }
     if (controls.UI_RIGHT_P)
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(1);
-      generateSongList(currentFilter, true);
     }
 
     if (controls.BACK && !busy)
@@ -1657,7 +1655,6 @@ class FreeplayState extends MusicBeatSubState
   /**
    * changeDiff is the root of both difficulty and variation changes/management.
    * It will check the difficulty of the current variation, all available variations, and all available difficulties per variation.
-   * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
    * @param change
    * @param force
    */
@@ -1709,6 +1706,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
+      generateSongList(currentFilter, true);
       grpCapsules.members[curSelected].refreshDisplay();
     }
     else
@@ -1716,6 +1714,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = 0;
       intendedCompletion = 0.0;
       rememberedDifficulty = currentDifficulty;
+      generateSongList(currentFilter, true);
     }
 
     if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
