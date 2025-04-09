@@ -14,7 +14,6 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
-import funkin.ui.options.PreferenceItem;
 import funkin.ui.options.PreferenceItem.PreferenceItemData;
 import funkin.ui.options.PreferenceItem.PreferenceType;
 import funkin.ui.MenuList.MenuTypedList;
@@ -95,58 +94,58 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   function createPrefItems():Void
   {
     addCategory('Gameplay');
-    addOption(PreferenceType.Checkbox, 'Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
+    addOption(Checkbox, 'Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
-    addOption(PreferenceType.Checkbox, 'Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+    addOption(Checkbox, 'Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    addOption(PreferenceType.Percentage, 'Strumline Background', 'The strumline background\'s transparency percentage.', function(value:Int):Void {
+    addOption(Percentage, 'Strumline Background', 'The strumline background\'s transparency percentage.', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
-    addOption(PreferenceType.Checkbox, 'Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
+    addOption(Checkbox, 'Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);
 
     addCategory('Additional');
-    addOption(PreferenceType.Checkbox, 'Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+    addOption(Checkbox, 'Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    addOption(PreferenceType.Checkbox, 'Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
+    addOption(Checkbox, 'Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    addOption(PreferenceType.Checkbox, 'Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    addOption(Checkbox, 'Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    addOption(PreferenceType.Checkbox, 'Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+    addOption(Checkbox, 'Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
 
     #if web
-    addOption(PreferenceType.Checkbox, 'Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
+    addOption(Checkbox, 'Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
-    addOption(PreferenceType.Number, 'FPS', 'The maximum framerate that the game targets.', function(value:Int):Void {
+    addOption(Number, 'FPS', 'The maximum framerate that the game targets.', function(value:Int):Void {
       Preferences.framerate = value;
     }, Preferences.framerate, { min: 30, max: 300, step: 5, precision: 0 });
     #end
 
     addCategory('Screenshots');
-    addOption(PreferenceType.Checkbox, 'Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
+    addOption(Checkbox, 'Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
 
-    addOption(PreferenceType.Checkbox, 'Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
+    addOption(Checkbox, 'Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
       Preferences.fancyPreview = value;
     }, Preferences.fancyPreview);
-    addOption(PreferenceType.Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
+    addOption(Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
-    addOption(PreferenceType.Enum, 'Save Format', 'Save screenshots to this format.', function(value:String):Void {
+    addOption(Enum, 'Save Format', 'Save screenshots to this format.', function(value:String):Void {
       Preferences.saveFormat = value;
     }, Preferences.saveFormat, { values: ['PNG' => 'PNG', 'JPEG' => 'JPEG'] });
-    addOption(PreferenceType.Number, 'JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
+    addOption(Number, 'JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, Preferences.jpegQuality, { min: 0, max: 100, step: 5, precision: 0 });
   }

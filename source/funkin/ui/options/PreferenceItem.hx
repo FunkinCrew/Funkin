@@ -54,17 +54,17 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
 
     switch (type)
     {
-      case PreferenceType.Checkbox:
+      case Checkbox:
         preferenceGraphic = new CheckboxPreferenceItem(x, y, defaultValue, onChange);
-      case PreferenceType.Number:
+      case Number:
         preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, data?.min, data?.max, data?.step, data?.precision, onChange, data?.formatter);
-      case PreferenceType.Percentage:
+      case Percentage:
         preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, data?.min ?? 0, data?.max ?? 100, 10, 0, function(value:Float) {
           onChange(Std.int(value));
         }, function(value:Float):String {
           return '${value}%';
         });
-      case PreferenceType.Enum:
+      case Enum:
         preferenceGraphic = new EnumPreferenceItem(x, y, name, data?.values, defaultValue, onChange);
     }
 
@@ -78,7 +78,7 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
       {
         switch (type)
         {
-          case PreferenceType.Checkbox:
+          case Checkbox:
             var checkbox = cast(preferenceGraphic, CheckboxPreferenceItem);
             var value = !checkbox.currentValue;
             onChange(value);
@@ -95,7 +95,7 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
     this.description = description;
     this.onChange = onChange;
     this.defaultValue = defaultValue;
-    if (type != PreferenceType.Checkbox) this.fireInstantly = true;
+    if (type != Checkbox) this.fireInstantly = true;
   }
 
   override function update(elapsed:Float):Void
@@ -124,12 +124,12 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
  * - Percentage: A preference item that allows the user to have a percentage value.
  * - Enum: A list that allows the user to select a value from a list of options.
  */
-enum PreferenceType
+enum abstract PreferenceType(String) from String to String
 {
-  Checkbox;
-  Number;
-  Percentage;
-  Enum;
+  var Checkbox = 'checkbox';
+  var Number = 'number';
+  var Percentage = 'percentage';
+  var Enum = 'enum';
 }
 
 /**
