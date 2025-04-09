@@ -2033,7 +2033,7 @@ class FreeplayState extends MusicBeatSubState
       playCurSongPreview(daSongCapsule);
       grpCapsules.members[curSelected].selected = true;
 
-      // switchBackingImage(daSongCapsule.freeplayData);
+      switchBackingImage(daSongCapsule.freeplayData);
     }
   }
 
