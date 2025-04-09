@@ -44,11 +44,14 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   var deviceList:TextMenuList;
   var menuCamera:FlxCamera;
   var prompt:Prompt;
+  var popup:Prompt;
   var camFollow:FlxObject;
   var labels:FlxTypedGroup<AtlasText>;
 
   var currentDevice:Device = Keys;
   var deviceListSelected:Bool = false;
+
+  var actionPrevented:Bool = false;
 
   static final CONTROL_BASE_X = 50;
   static final CONTROL_MARGIN_X = 700;
@@ -181,6 +184,13 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     prompt.back.scrollFactor.set(0, 0);
     prompt.exists = false;
     add(prompt);
+
+    popup = new Prompt("\nYou cannot unbind\nthat key!\n\n\nEscape to exit", None);
+    popup.create();
+    popup.createBgFromMargin(100, 0xFFfafd6d);
+    popup.back.scrollFactor.set(0, 0);
+    popup.exists = false;
+    add(popup);
   }
 
   function createItem(x = 0.0, y = 0.0, control:Control, index:Int)
@@ -213,6 +223,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     prompt.exists = true;
   }
 
+  function createPopup():Void
+  {
+    canExit = false;
+    popup.exists = true;
+  }
+
   function goToDeviceList():Void
   {
     controlGrid.selectedItem.idle();
@@ -234,9 +250,16 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     var inputName = device == Keys ? "key" : "button";
     var cancel = device == Keys ? "Escape" : "Back";
     // todo: alignment
-    if (device == Keys) prompt.setText('\nPress any key to rebind\n\n\n\n    $cancel to cancel');
+    if (device == Keys)
+    {
+      prompt.setText('\nPress any key to rebind\n\n\n\n    $cancel to cancel');
+      popup.setText('\nYou cannot unbind\nthat key!\n\n\n$cancel to exit');
+    }
     else
+    {
       prompt.setText('\nPress any button\n   to rebind\n\n\n $cancel to cancel');
+      popup.setText('\nYou cannot unbind\nthat button!\n\n\n$cancel to exit');
+    }
 
     controlGrid.selectedItem.select();
     labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
@@ -313,6 +336,28 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       }
     }
 
+    if (actionPrevented && !popup.exists) createPopup();
+
+    if (popup.exists)
+    {
+      switch (currentDevice)
+      {
+        case Keys:
+          {
+            var key = FlxG.keys.firstJustReleased();
+            if (key == ESCAPE) closePopup();
+          }
+        case Gamepad(id):
+          {
+            var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
+            if (button == BACK) closePopup();
+
+            var key = FlxG.keys.firstJustReleased();
+            if (key == ESCAPE) closePopup();
+          }
+      }
+    }
+
     switch (currentDevice)
     {
       case Keys:
@@ -339,6 +384,19 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   function onInputSelect(input:Int):Void
   {
     var item = controlGrid.selectedItem;
+    var leftItem = controlGrid.members[controlGrid.selectedIndex - 1];
+    var rightItem = controlGrid.members[controlGrid.selectedIndex + 1];
+
+    // check if all keybinds are being removed and this is a UI control, prevent removing last keybind for this
+    if (input == FlxKey.NONE && controlGrid.selectedIndex != 1 && rightItem.input == FlxKey.NONE)
+    {
+      for (group in itemGroups)
+      {
+        if (group.toString() == itemGroups[1].toString() && group.contains(item)) actionPrevented = true;
+      }
+    }
+
+    if (actionPrevented) return;
 
     // check if that key is already set for this
     if (input != FlxKey.NONE)
@@ -379,7 +437,6 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     if (controlGrid.selectedIndex % 2 == 1)
     {
       trace('Modified item on right side of grid');
-      var leftItem = controlGrid.members[controlGrid.selectedIndex - 1];
       if (leftItem != null && input != FlxKey.NONE && leftItem.input == FlxKey.NONE)
       {
         trace('Left item is unbound and right item is not!');
@@ -395,7 +452,6 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     else
     {
       trace('Modified item on left side of grid');
-      var rightItem = controlGrid.members[controlGrid.selectedIndex + 1];
       if (rightItem != null && input == FlxKey.NONE && rightItem.input != FlxKey.NONE)
       {
         trace('Left item is unbound and right item is not!');
@@ -416,6 +472,13 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   {
     prompt.exists = false;
     controlGrid.enabled = true;
+    if (deviceList == null) canExit = true;
+  }
+
+  function closePopup()
+  {
+    popup.exists = false;
+    actionPrevented = false;
     if (deviceList == null) canExit = true;
   }
 
@@ -476,6 +539,7 @@ class InputItem extends TextMenuItem
   function getInput()
   {
     var list = PlayerSettings.player1.controls.getInputsFor(control, device);
+    list = list.distinct();
     if (list.length > index)
     {
       if (list[index] != FlxKey.ESCAPE || list[index] != FlxGamepadInputID.BACK) return list[index];
