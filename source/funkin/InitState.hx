@@ -97,6 +97,12 @@ class InitState extends FlxState
     FlxG.sound.volumeDownKeys = [];
     FlxG.sound.muteKeys = [];
 
+    // A small jumpstart to the soundtray, it usually sets itself to inactive (somewhere...)
+    // but that makes our soundtray not show up on init if we have the game muted.
+    // We set it to active so it at least calls it's update function once (see FlxGame.onEnterFrame(), it's called there)
+    // and also see FunkinSoundTray.update() to see what we do and how we check if we are muted or not
+    FlxG.game.soundTray.active = true;
+
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
 
