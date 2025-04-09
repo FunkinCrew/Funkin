@@ -11,6 +11,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.audio.FunkinSound;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import flixel.util.FlxColor;
+import funkin.ui.FullScreenScaleMode;
 import funkin.data.dialogue.dialoguebox.DialogueBoxData;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 
@@ -64,8 +65,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     var xDiff:Float = value[0] - globalOffsets[0];
     var yDiff:Float = value[1] - globalOffsets[1];
 
-    this.x += xDiff;
-    this.y += yDiff;
+    this.x += xDiff * FullScreenScaleMode.windowScale.x;
+    this.y += yDiff * FullScreenScaleMode.windowScale.y;
     return globalOffsets = value;
   }
 
@@ -193,8 +194,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   public function setScale(scale:Null<Float>):Void
   {
     if (scale == null) scale = 1.0;
-    this.boxSprite.scale.x = scale;
-    this.boxSprite.scale.y = scale;
+    this.boxSprite.scale.x = scale * FullScreenScaleMode.windowScale.x;
+    this.boxSprite.scale.y = scale * FullScreenScaleMode.windowScale.y;
     this.boxSprite.updateHitbox();
   }
 
@@ -278,7 +279,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   function loadText():Void
   {
     textDisplay = new FlxTypeText(0, 0, 300, '', 32);
-    textDisplay.fieldWidth = _data.text.width;
+    textDisplay.fieldWidth = _data.text.width * FullScreenScaleMode.windowScale.x;
     textDisplay.setFormat(_data.text.fontFamily, _data.text.size, FlxColor.fromString(_data.text.color), LEFT, SHADOW,
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
     textDisplay.borderSize = _data.text.shadowWidth ?? 2;
@@ -287,8 +288,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
     textDisplay.completeCallback = onTypingComplete;
 
-    textDisplay.x += _data.text.offsets[0];
-    textDisplay.y += _data.text.offsets[1];
+    textDisplay.x += _data.text.offsets[0] * FullScreenScaleMode.windowScale.x;
+    textDisplay.y += _data.text.offsets[1] * FullScreenScaleMode.windowScale.y;
 
     add(textDisplay);
   }
