@@ -211,6 +211,7 @@ class Strumline extends FlxSpriteGroup
       heldKeys.push(false);
     }
 
+    strumlineScale = FlxPoint.get(1, 1);
     strumlineScale.set(1, 1);
 
     // This MUST be true for children to update!
@@ -243,7 +244,14 @@ class Strumline extends FlxSpriteGroup
 
   override function get_width():Float
   {
-    return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale * strumlineScale.x;
+    if (strumlineScale != null)
+    {
+      return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale * strumlineScale.x;
+    }
+    strumlineScale = FlxPoint.get(1, 1);
+
+    strumlineScale.set(1, 1);
+    return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale * 1;
   }
 
   public override function update(elapsed:Float):Void
