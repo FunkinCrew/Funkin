@@ -422,7 +422,7 @@ class Conductor
     // If the song is playing, limit the song position to the length of the song or beginning of the song.
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
     {
-      this.songPosition = Math.min(currentLength, Math.max(0, songPos));
+      this.songPosition = FlxMath.bound(Math.min(this.combinedOffset, 0), songPos, currentLength);
     }
     else
     {
