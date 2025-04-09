@@ -103,6 +103,22 @@ class DebugTallies
       totalNotes: 190
     };
 
+  /**
+   * 190 total sicks and total notes = PERFECT GOLD
+   */
+  public static var PERFECT_GOLD:SaveScoreTallyData =
+    {
+      sick: 190,
+      good: 0,
+      bad: 69,
+      shit: 69,
+      missed: 69,
+      combo: 69,
+      maxCombo: 69,
+      totalNotesHit: 190,
+      totalNotes: 190
+    };
+
   public static function getTallyForRank(rank:DebugRank):SaveScoreTallyData
   {
     return switch (rank)
@@ -113,10 +129,19 @@ class DebugTallies
       case GREAT_RANK: GREAT;
       case EXCELLENT_RANK: EXCELLENT;
       case PERFECT_RANK: PERFECT;
+      case PERFECT_GOLD_RANK: PERFECT_GOLD;
     }
   }
 
-  public static var DEBUG_RANKS:Array<DebugRank> = [LOSS_RANK, NICE_RANK, GOOD_RANK, GREAT_RANK, EXCELLENT_RANK, PERFECT_RANK];
+  public static var DEBUG_RANKS:Array<DebugRank> = [
+    LOSS_RANK,
+    NICE_RANK,
+    GOOD_RANK,
+    GREAT_RANK,
+    EXCELLENT_RANK,
+    PERFECT_RANK,
+    PERFECT_GOLD_RANK
+  ];
 }
 
 enum abstract DebugRank(String) from String to String
@@ -127,4 +152,5 @@ enum abstract DebugRank(String) from String to String
   var GREAT_RANK = "Great";
   var EXCELLENT_RANK = "Excellent";
   var PERFECT_RANK = "Perfect";
+  var PERFECT_GOLD_RANK = "Perfect (Gold)";
 }
