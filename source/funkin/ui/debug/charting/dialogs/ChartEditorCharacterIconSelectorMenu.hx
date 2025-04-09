@@ -21,7 +21,6 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 {
   public var charSelectScroll:ScrollView;
   public var charIconName:Label;
-
   var currentCharButton:Button;
 
   public function new(chartEditorState2:ChartEditorState, charType:CharacterType, lockPosition:Bool = false)
