@@ -1,7 +1,7 @@
 package funkin.ui.options.items;
 
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.ui.AtlasText;
+import funkin.ui.AtlasText.AtlasFont;
 import funkin.input.Controls;
 
 /**
@@ -13,9 +13,6 @@ class NumberPreferenceItem extends TextMenuItem
   {
     return PlayerSettings.player1.controls;
   }
-
-  // Widgets
-  public var lefthandText:AtlasText;
 
   // Constants
   static final HOLD_DELAY:Float = 0.3; // seconds
@@ -47,7 +44,6 @@ class NumberPreferenceItem extends TextMenuItem
     super(x, y, formatted(defaultValue), AtlasFont.DEFAULT, function() {
       callback(this.currentValue);
     });
-    // lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
 
     updateHitbox();
 

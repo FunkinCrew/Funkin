@@ -28,9 +28,9 @@ class CheckboxPreferenceItem extends FlxSprite
     switch (animation.curAnim.name)
     {
       case 'static':
-        offset.set();
+        offset.set(10, 25);
       case 'checked':
-        // offset.set(17, 60);
+        offset.set(27, 93);
     }
   }
 

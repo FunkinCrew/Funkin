@@ -22,12 +22,10 @@ import funkin.ui.MenuList.MenuTypedList;
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   var options:MenuTypedList<PreferenceItem>;
-  // var items:TextMenuList;
-  // var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
-  // var preferenceDesc:Array<String> = [];
-  // var itemDesc:FlxText;
-  // var itemDescBox:FunkinSprite;
+  var categories:FlxTypedSpriteGroup<AtlasText>;
 
+  var itemDesc:FlxText;
+  var itemDescBox:FunkinSprite;
   var menuCamera:FlxCamera;
   var hudCamera:FlxCamera;
   var camFollow:FlxObject;
@@ -46,20 +44,17 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
     camera = menuCamera;
 
-    // add(items = new TextMenuList());
-    // add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
+    add(itemDescBox = new FunkinSprite());
+    itemDescBox.cameras = [hudCamera];
 
-    // add(itemDescBox = new FunkinSprite());
-    // itemDescBox.cameras = [hudCamera];
+    add(itemDesc = new FlxText(0, 0, 1180, null, 32));
+    itemDesc.cameras = [hudCamera];
 
-    // add(itemDesc = new FlxText(0, 0, 1180, null, 32));
-    // itemDesc.cameras = [hudCamera];
-
-    options = new MenuTypedList<PreferenceItem>();
-    add(options);
+    add(options = new MenuTypedList<PreferenceItem>());
+    add(categories = new FlxTypedSpriteGroup<AtlasText>());
 
     createPrefItems();
-    // createPrefDescription();
+    createPrefDescription();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
     if (options != null) camFollow.y = options.selectedItem.y;
@@ -70,37 +65,36 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     menuCamera.minScrollY = 0;
 
     options.onChange.add(function(selected) {
-      camFollow.y = selected.y;
-      // itemDesc.text = preferenceDesc[items.selectedIndex];
+      camFollow.y = selected.text.y;
+      itemDesc.text = selected.description;
     });
   }
 
   /**
    * Create the description for preferences.
    */
-  // function createPrefDescription():Void
-  // {
-  //   itemDescBox.makeSolidColor(1, 1, FlxColor.BLACK);
-  //   itemDescBox.alpha = 0.6;
-  //   itemDesc.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-  //   itemDesc.borderSize = 3;
-
-  //   // Update the text.
-  //   itemDesc.text = preferenceDesc[items.selectedIndex];
-  //   itemDesc.screenCenter();
-  //   itemDesc.y += 270;
-
-  //   // Create the box around the text.
-  //   itemDescBox.setPosition(itemDesc.x - 10, itemDesc.y - 10);
-  //   itemDescBox.setGraphicSize(Std.int(itemDesc.width + 20), Std.int(itemDesc.height + 25));
-  //   itemDescBox.updateHitbox();
-  // }
+  function createPrefDescription():Void
+  {
+    itemDescBox.makeSolidColor(1, 1, FlxColor.BLACK);
+    itemDescBox.alpha = 0.6;
+    itemDesc.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    itemDesc.borderSize = 3;
+    // Update the text.
+    itemDesc.text = options.selectedItem.description;
+    itemDesc.screenCenter();
+    itemDesc.y += 270;
+    // Create the box around the text.
+    itemDescBox.setPosition(itemDesc.x - 10, itemDesc.y - 10);
+    itemDescBox.setGraphicSize(Std.int(itemDesc.width + 20), Std.int(itemDesc.height + 25));
+    itemDescBox.updateHitbox();
+  }
 
   /**
    * Create the menu items for each of the preferences.
    */
   function createPrefItems():Void
   {
+    addCategory('Gameplay');
     addOption(PreferenceType.Checkbox, 'Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
@@ -113,6 +107,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     addOption(PreferenceType.Checkbox, 'Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
       Preferences.flashingLights = value;
     }, Preferences.flashingLights);
+
+    addCategory('Additional');
     addOption(PreferenceType.Checkbox, 'Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
@@ -136,6 +132,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.framerate, { min: 30, max: 300, step: 5, precision: 0 });
     #end
 
+    addCategory('Screenshots');
     addOption(PreferenceType.Checkbox, 'Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
@@ -146,9 +143,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     addOption(PreferenceType.Checkbox, 'Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
       Preferences.fancyPreview = value;
     }, Preferences.fancyPreview);
-    addOption(PreferenceType.Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
-      Preferences.previewOnSave = value;
-    }, Preferences.previewOnSave);
+    addOption(PreferenceType.Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.',
+      function(value:Bool):Void {
+        Preferences.previewOnSave = value;
+      }, Preferences.previewOnSave);
     // addOption(PreferenceType.Enum, 'Save Format', 'Save screenshots to this format.', function(value:String):Void {
     //   Preferences.saveFormat = value;
     // }, Preferences.saveFormat, {values: ['PNG' => 'PNG', 'JPEG' => 'JPEG']});
@@ -157,10 +155,17 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.jpegQuality, { min: 0, max: 100, step: 5, precision: 0 });
   }
 
-  function addOption(type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic,?extraData:PreferenceItemData):Void
+  function addOption(type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic,
+      ?extraData:PreferenceItemData):Void
   {
-    var item = new PreferenceItem(0, (60 * options.length) + 30, type, name, description, onChange, defaultValue, extraData);
+    var item = new PreferenceItem(0, 60 * (options.length + categories.length) + 15, type, name, description, onChange, defaultValue, extraData);
     options.addItem(name, item);
+  }
+
+  function addCategory(name:String):Void
+  {
+    var labelY:Float = 120 * (options.length + categories.length) + 30;
+    categories.add(new AtlasText(0, labelY, name, AtlasFont.BOLD)).screenCenter(X);
   }
 
   override function update(elapsed:Float):Void
@@ -172,31 +177,29 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       var thyOffset:Int = 0;
       // Initializing thy text width (if thou text present)
       var thyTextWidth:Int = 0;
-      if (Std.isOfType(daItem, EnumPreferenceItem)) thyTextWidth = cast(daItem, EnumPreferenceItem).lefthandText.getWidth();
-      else if (Std.isOfType(daItem, NumberPreferenceItem)) thyTextWidth = cast(daItem, NumberPreferenceItem).lefthandText.getWidth();
 
-      if (thyTextWidth != 0)
+      switch (daItem.type)
       {
-        // Magic number because of the weird offset thats being added by default
-        thyOffset += thyTextWidth - 75;
+        // oh my days I'm going feral
+        case PreferenceType.Enum, PreferenceType.Number, PreferenceType.Percentage:
+          trace(Type.typeof(daItem.preferenceGraphic));
+          trace(Type.typeof(daItem));
+          if (Std.is(daItem.preferenceGraphic, AtlasText)) {
+            thyTextWidth = cast(daItem.preferenceGraphic, AtlasText).getWidth();
+          }
+        case PreferenceType.Checkbox:
+          thyTextWidth = Std.int(daItem.preferenceGraphic.width);
       }
 
-      if (options.selectedItem == daItem)
-      {
-        thyOffset += 30;
-      }
-      else
-      {
-        thyOffset += 0;
-      }
+      // setting the thy offset
+      thyOffset = thyTextWidth + PreferenceItem.SPACING_X;
 
-      daItem.x = thyOffset;
+      daItem.text.x = thyOffset;
     });
   }
 
   // - Preference item creation methods -
   // Should be moved into a separate PreferenceItems class but you can't access PreferencesMenu.items and PreferencesMenu.preferenceItems from outside.
-
   /**
    * Creates a pref item that works with booleans
    * @param onChange Gets called every time the player changes the value; use this to apply the value
@@ -205,17 +208,14 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   // function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
   // {
   //   var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
-
   //   items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
   //     var value = !checkbox.currentValue;
   //     onChange(value);
   //     checkbox.currentValue = value;
   //   });
-
   //   preferenceItems.add(checkbox);
   //   preferenceDesc.push(prefDesc);
   // }
-
   /**
    * Creates a pref item that works with general numbers
    * @param onChange Gets called every time the player changes the value; use this to apply the value
@@ -234,7 +234,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   //   preferenceItems.add(item.lefthandText);
   //   preferenceDesc.push(prefDesc);
   // }
-
   /**
    * Creates a pref item that works with number percentages
    * @param onChange Gets called every time the player changes the value; use this to apply the value
@@ -255,7 +254,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   //   preferenceItems.add(item.lefthandText);
   //   preferenceDesc.push(prefDesc);
   // }
-
   /**
    * Creates a pref item that works with enums
    * @param values Maps enum values to display strings _(ex: `NoteHitSoundType.PingPong => "Ping pong"`)_

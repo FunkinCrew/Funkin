@@ -1,7 +1,7 @@
 package funkin.ui.options.items;
 
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.ui.AtlasText;
+import funkin.ui.AtlasText.AtlasFont;
 import funkin.input.Controls;
 
 /**
@@ -13,8 +13,6 @@ class EnumPreferenceItem extends TextMenuItem
   {
     return PlayerSettings.player1.controls;
   }
-
-  public var lefthandText:AtlasText;
 
   public var currentValue:String;
   public var onChangeCallback:Null<String->Void>;
@@ -42,8 +40,6 @@ class EnumPreferenceItem extends TextMenuItem
       if (this.currentValue == key) index = i;
       i += 1;
     }
-
-    // lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
 
     this.fireInstantly = true;
   }

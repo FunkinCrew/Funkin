@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
-import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.MenuList.MenuTypedItem;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
@@ -39,13 +38,13 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
 
   public var text:AtlasText;
   public var preferenceGraphic:FlxSprite;
+  private var group:FlxTypedSpriteGroup<FlxSprite>;
 
-  static final SPACING_X:Float = 100;
+  public static final SPACING_X:Int = 10;
 
-  public function new(x:Float, y:Float, type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic,
-      ?extraData:PreferenceItemData)
+  public function new(x:Float, y:Float, type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic, ?extraData:PreferenceItemData)
   {
-    var group = new FlxTypedSpriteGroup<FlxSprite>();
+    group = new FlxTypedSpriteGroup<FlxSprite>();
 
     switch (type)
     {
@@ -62,15 +61,12 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
         });
       case PreferenceType.Enum:
         preferenceGraphic = new EnumPreferenceItem(x, y, name, extraData.values, defaultValue, onChange);
-      default:
-        trace('Unsupported PreferenceType: $type');
-        preferenceGraphic = null; // Explicitly set to null to avoid uninitialized variable issues
     }
 
-    text = new AtlasText(x + (preferenceGraphic != null ? preferenceGraphic.frameWidth : 0), y, name, BOLD);
-    group.add(text);
-
     if (preferenceGraphic != null) group.add(preferenceGraphic);
+
+    text = new AtlasText(x, y, name, BOLD);
+    if (text != null) group.add(text);
 
     super(x, y, group, name, function() {
       if (onChange != null)
@@ -87,6 +83,7 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
         }
       }
     });
+    setEmptyBackground();
 
     this.type = type;
     this.description = description;
@@ -97,10 +94,6 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
 
   override function update(elapsed:Float):Void
   {
-    // if (Std.isOfType(this, EnumPreferenceItem)) cast(this, EnumPreferenceItem).update(elapsed);
-    // else if (Std.isOfType(this, NumberPreferenceItem)) cast(this, NumberPreferenceItem).update(elapsed);
-    // else if (Std.isOfType(this, CheckboxPreferenceItem)) cast(this, CheckboxPreferenceItem).update(elapsed);
-
     super.update(elapsed);
   }
 }
@@ -114,11 +107,6 @@ enum PreferenceType
 }
 
 /**
- * @param type The type of the preference item.
- * @param name The name of the preference item.
- * @param description The description of the preference item.
- * @param onChange The function to call when the preference item changes.
- * @param defaultValue The default value of the preference item.
  * @param min The minimum value of the number preference item.
  * @param max The maximum value of the number preference item.
  * @param step The step value of the number preference item.
