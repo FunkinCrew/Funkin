@@ -158,6 +158,24 @@ class Preferences
   }
 
   /**
+   * If enabled, the game will enter freeplay with the last character you had selected after exiting freeplay. (Look, it might as well be an option ok?)
+   * @default `true`
+   */
+  public static var saveFreeplayChar(get, set):Bool;
+
+  static function get_saveFreeplayChar():Bool
+  {
+    return Save?.instance?.options?.saveFreeplayChar ?? true;
+  }
+
+  static function set_saveFreeplayChar(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.saveFreeplayChar = value;
+    save.flush();
+    return value;
+  }
+  /**
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
    */
