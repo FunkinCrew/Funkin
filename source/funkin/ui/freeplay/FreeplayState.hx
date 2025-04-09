@@ -407,7 +407,7 @@ class FreeplayState extends MusicBeatSubState
         speed: 0.8,
         wait: 0.1
       });
-
+    add(grpDifficulties);
     add(backingImage);
     // backingCard.pinkBack.width * 0.74
 
