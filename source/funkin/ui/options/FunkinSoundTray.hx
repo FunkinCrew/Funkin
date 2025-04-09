@@ -96,16 +96,6 @@ class FunkinSoundTray extends FlxSoundTray
     {
       visible = false;
       active = false;
-
-      #if FLX_SAVE
-      // Save sound preferences
-      if (FlxG.save.isBound)
-      {
-        FlxG.save.data.mute = FlxG.sound.muted;
-        FlxG.save.data.volume = FlxG.sound.volume;
-        FlxG.save.flush();
-      }
-      #end
     }
   }
 
@@ -147,5 +137,21 @@ class FunkinSoundTray extends FlxSoundTray
         _bars[i].visible = false;
       }
     }
+
+    saveVolumePreferences();
+  }
+
+  function saveVolumePreferences():Void
+  {
+    // Actually save when the volume is changed / modified
+    #if FLX_SAVE
+    // Save sound preferences
+    if (FlxG.save.isBound)
+    {
+      FlxG.save.data.mute = FlxG.sound.muted;
+      FlxG.save.data.volume = FlxG.sound.volume;
+      FlxG.save.flush();
+    }
+    #end
   }
 }
