@@ -154,6 +154,7 @@ class Save
         {
           // Default to having seen the default character.
           charactersSeen: ["bf"],
+          charactersUnlocked: ["bf"],
           oldChar: false
         },
 
@@ -444,6 +445,13 @@ class Save
     return data.unlocks.charactersSeen;
   }
 
+  public var charactersUnlocked(get, never):Array<String>;
+
+  function get_charactersUnlocked():Array<String>
+  {
+    return data.unlocks.charactersUnlocked;
+  }
+
   /**
    * Marks whether the player has seen the spotlight animation, which should only display once per save file ever.
    */
@@ -547,7 +555,7 @@ class Save
   }
 
   /**
-   * When we've seen a character unlock, add it to the list of characters seen.
+   * When we've seen a character unlock animation, add it to the list of characters seen.
    * @param character
    */
   public function addCharacterSeen(character:String):Void
@@ -557,6 +565,21 @@ class Save
       trace('Character seen: ' + character);
       data.unlocks.charactersSeen.push(character);
       trace('New characters seen list: ' + data.unlocks.charactersSeen);
+      flush();
+    }
+  }
+
+  /**
+   * When we've seen a character unlock notification, add it to the list of characters unlocked.
+   * @param character
+   */
+  public function addCharacterUnlocked(character:String):Void
+  {
+    if (!data.unlocks.charactersUnlocked.contains(character))
+    {
+      trace('Character unlocked: ' + character);
+      data.unlocks.charactersUnlocked.push(character);
+      trace('New characters unlocked list: ' + data.unlocks.charactersUnlocked);
       flush();
     }
   }
@@ -1269,6 +1292,12 @@ typedef SaveDataUnlocks =
    * add it to this list so that we don't show it again.
    */
   var charactersSeen:Array<String>;
+
+  /**
+   * Every time we see the unlock prompt for a character,
+   * add it to this list so that we don't show it again.
+   */
+  var charactersUnlocked:Array<String>;
 
   /**
    * This is a conditional when the player enters the character state
