@@ -17,7 +17,7 @@ typedef LevelData =
   var version:String;
 
   /**
-   * The title of the level, as seen in the top corner.
+   * The title of the level, as seen in the top corner of the story menu.
    */
   var name:String;
 
@@ -47,6 +47,22 @@ typedef LevelData =
    */
   @:default(['bopeebo'])
   var songs:Array<String>;
+
+  /**
+   * The title of the level, as seen in the freeplay menu.
+   * Used when scrolling by week. `null` if unspecified.
+   */
+  @:default(null)
+  @:optional
+  var freeplayTitle:Null<String>;
+
+  /**
+   * The pixel icon of the level, as seen in the top corner.
+   * Used when scrolling by week. `null` if unspecified.
+   */
+  @:default(null)
+  @:optional
+  var freeplayIcon:Null<String>;
 
   /**
    * The background for the level behind the props.

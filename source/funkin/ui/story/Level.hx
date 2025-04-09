@@ -50,13 +50,33 @@ class Level implements IRegistryEntry<LevelData>
   }
 
   /**
-   * Retrieve the title of the level for display on the menu.
+   * Retrieve the title of the level for display on the story menu.
    * @return Title of the level as a string
    */
   public function getTitle():String
   {
     // TODO: Maybe add localization support?
     return _data.name;
+  }
+
+  /**
+   * Retrieve the freeplay title of the level for display when scrolling by level.
+   * @return Title of the level as a string
+   */
+  public function getFreeplayTitle():String
+  {
+    // TODO: Maybe add localization support?
+    return _data.freeplayTitle ?? getTitle();
+  }
+
+  /**
+   * Retrieve the freeplay icon of the level for display when scrolling by level.
+   * @return The ID of the icon's character.
+   */
+  public function getFreeplayIcon():Null<String>
+  {
+    // TODO: Maybe add localization support?
+    return _data.freeplayIcon;
   }
 
   /**
