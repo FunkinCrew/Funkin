@@ -23,6 +23,7 @@ class ScreenUtil
     #if android
     final rectDimensions:Array<Array<Float>> = [[], [], [], []];
 
+    // Push all the dimensions of the cutouts into an array
     for (rect in Tools.getCutoutDimensions())
     {
       rectDimensions[0].push(rect.x);
@@ -31,6 +32,7 @@ class ScreenUtil
       rectDimensions[3].push(rect.height);
     }
 
+    // Put all the dimensions into the rectangle
     for (i => dimensions in rectDimensions)
     {
       for (dimension in dimensions)
@@ -54,13 +56,15 @@ class ScreenUtil
     var right:Float = -1;
     var bottom:Float = -1;
 
-    ScreenUtils.getSafeAreaInsets(cpp.Pointer.addressOf(top).raw, cpp.Pointer.addressOf(bottom).raw, cpp.Pointer.addressOf(left).raw,
-      cpp.Pointer.addressOf(right).raw);
+    ScreenUtils.getSafeAreaInsets(cpp.RawPointer.addressOf(top), cpp.RawPointer.addressOf(bottom), cpp.RawPointer.addressOf(left),
+      cpp.RawPointer.addressOf(right));
 
-    rectangle.top = top;
-    rectangle.left = left;
-    rectangle.right = right;
-    rectangle.bottom = bottom;
+    // Calculate the rectangle dimensions for the notch
+    rectangle.width = flixel.FlxG.stage.stageWidth - left - right;
+    rectangle.height = top;
+    rectangle.x = left;
+    // notchs are always at the top of the screen so they have 0 y position
+    rectangle.y = 0.0;
     #end
 
     return rectangle;
