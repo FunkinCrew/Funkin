@@ -36,8 +36,6 @@ class EnumPreferenceItem extends TextMenuItem
     this.currentValue = defaultValue;
     this.onChangeCallback = callback;
 
-    trace(this.map);
-
     var i:Int = 0;
     for (key in map.keys())
     {
@@ -54,7 +52,7 @@ class EnumPreferenceItem extends TextMenuItem
     super.update(elapsed);
 
     // var fancyTextFancyColor:Color;
-    if(!selected) return;
+    if (!selected) return;
 
     var shouldDecrease:Bool = controls().UI_LEFT_P;
     var shouldIncrease:Bool = controls().UI_RIGHT_P;

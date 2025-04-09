@@ -5,6 +5,7 @@ import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
 import funkin.ui.MenuList.MenuTypedItem;
+import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
@@ -45,7 +46,6 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
    * @param description The description of the preference item.
    * @param onChange The function to call when the preference item changes.
    * @param defaultValue The default value of the preference item.
-   * // make data refer to PreferenceItemData
    * @param data
    */
   public function new(x:Float, y:Float, type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic, ?data:PreferenceItemData)
@@ -57,8 +57,7 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
       case PreferenceType.Checkbox:
         preferenceGraphic = new CheckboxPreferenceItem(x, y, defaultValue, onChange);
       case PreferenceType.Number:
-        preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, data?.min, data?.max, data?.step, data?.precision,
-          onChange, data?.formatter);
+        preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, data?.min, data?.max, data?.step, data?.precision, onChange, data?.formatter);
       case PreferenceType.Percentage:
         preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, data?.min ?? 0, data?.max ?? 100, 10, 0, function(value:Float) {
           onChange(Std.int(value));
@@ -66,7 +65,6 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
           return '${value}%';
         });
       case PreferenceType.Enum:
-        trace(data?.values);
         preferenceGraphic = new EnumPreferenceItem(x, y, name, data?.values, defaultValue, onChange);
     }
 
@@ -90,6 +88,7 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
         }
       }
     });
+
     setEmptyBackground();
 
     this.type = type;
@@ -103,8 +102,28 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
   {
     super.update(elapsed);
   }
+
+  override public function idle()
+  {
+    if (text != null) text.alpha = 0.6;
+    if (preferenceGraphic != null) preferenceGraphic.alpha = 0.6;
+  }
+
+  override public function select()
+  {
+    if (text != null) text.alpha = 1.0;
+    if (preferenceGraphic != null) preferenceGraphic.alpha = 1.0;
+  }
 }
 
+/**
+ * The type of the preference item.
+ * This is used to determine how the preference item should be displayed and how it should behave.
+ * - Checkbox: A checkbox that can be checked or unchecked.
+ * - Number: A preference item that allows the user to have a number value.
+ * - Percentage: A preference item that allows the user to have a percentage value.
+ * - Enum: A list that allows the user to select a value from a list of options.
+ */
 enum PreferenceType
 {
   Checkbox;

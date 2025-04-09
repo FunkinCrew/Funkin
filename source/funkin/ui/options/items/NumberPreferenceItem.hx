@@ -63,7 +63,7 @@ class NumberPreferenceItem extends TextMenuItem
     super.update(elapsed);
     label.text = formatted(currentValue);
 
-    // if (!selected) return;
+    if (!selected) return;
 
     holdDelayTimer -= elapsed;
     if (holdDelayTimer <= 0.0)
