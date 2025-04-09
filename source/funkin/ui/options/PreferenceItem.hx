@@ -11,10 +11,6 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
 {
   /**
    * The type of the preference item.
-   * - Checkbox: A checkbox that can be checked or unchecked.
-   * - Number: A number input that can be adjusted with a slider.
-   * - Percentage: A percentage input that can be adjusted with a slider.
-   * - Enum: A dropdown list that allows the user to select from a list of options.
    */
   public var type:PreferenceType;
 
@@ -42,7 +38,17 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
 
   public static final SPACING_X:Int = 10;
 
-  public function new(x:Float, y:Float, type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic, ?extraData:PreferenceItemData)
+  /**
+   * Creates a new preference item.
+   * @param type The type of the preference item (checkbox, number, percentage, enum).
+   * @param name The name of the preference item.
+   * @param description The description of the preference item.
+   * @param onChange The function to call when the preference item changes.
+   * @param defaultValue The default value of the preference item.
+   * // make data refer to PreferenceItemData
+   * @param data
+   */
+  public function new(x:Float, y:Float, type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic, ?data:PreferenceItemData)
   {
     group = new FlxTypedSpriteGroup<FlxSprite>();
 
@@ -51,16 +57,17 @@ class PreferenceItem extends MenuTypedItem<FlxTypedSpriteGroup<FlxSprite>>
       case PreferenceType.Checkbox:
         preferenceGraphic = new CheckboxPreferenceItem(x, y, defaultValue, onChange);
       case PreferenceType.Number:
-        preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, extraData?.min, extraData?.max, extraData?.step, extraData?.precision,
-          onChange, extraData?.formatter);
+        preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, data?.min, data?.max, data?.step, data?.precision,
+          onChange, data?.formatter);
       case PreferenceType.Percentage:
-        preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, extraData?.min ?? 0, extraData?.max ?? 100, 10, 0, function(value:Float) {
+        preferenceGraphic = new NumberPreferenceItem(x, y, name, defaultValue, data?.min ?? 0, data?.max ?? 100, 10, 0, function(value:Float) {
           onChange(Std.int(value));
         }, function(value:Float):String {
           return '${value}%';
         });
       case PreferenceType.Enum:
-        preferenceGraphic = new EnumPreferenceItem(x, y, name, extraData.values, defaultValue, onChange);
+        trace(data?.values);
+        preferenceGraphic = new EnumPreferenceItem(x, y, name, data?.values, defaultValue, onChange);
     }
 
     if (preferenceGraphic != null) group.add(preferenceGraphic);
@@ -107,12 +114,12 @@ enum PreferenceType
 }
 
 /**
- * @param min The minimum value of the number preference item.
- * @param max The maximum value of the number preference item.
- * @param step The step value of the number preference item.
- * @param formatter The function to call to format the value of the number preference item.
- * @param precision The precision of the value of the number preference item.
- * @param values The values of the enumpreference item.
+ * @param min Minimum value (example: 0, for a percentage the default value is 0).
+ * @param max Maximum value (example: 10, for a percentage the default value is 100).
+ * @param step The value to increment/decrement by (default = 0.1)
+ * @param formatter Will get called every time the game needs to display the float value; use this to change how the displayed value looks.
+ * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
+ * @param values Maps enum values to display strings _(ex: `NoteHitSoundType.PingPong => "Ping pong"`)_
  */
 typedef PreferenceItemData =
 {

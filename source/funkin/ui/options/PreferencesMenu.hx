@@ -143,22 +143,22 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     addOption(PreferenceType.Checkbox, 'Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
       Preferences.fancyPreview = value;
     }, Preferences.fancyPreview);
-    addOption(PreferenceType.Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.',
-      function(value:Bool):Void {
+    addOption(PreferenceType.Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
         Preferences.previewOnSave = value;
-      }, Preferences.previewOnSave);
-    // addOption(PreferenceType.Enum, 'Save Format', 'Save screenshots to this format.', function(value:String):Void {
-    //   Preferences.saveFormat = value;
-    // }, Preferences.saveFormat, {values: ['PNG' => 'PNG', 'JPEG' => 'JPEG']});
+    }, Preferences.previewOnSave);
+    addOption(PreferenceType.Enum, 'Save Format', 'Save screenshots to this format.', function(value:String):Void {
+      Preferences.saveFormat = value;
+    }, Preferences.saveFormat, {
+      values: ['PNG' => 'PNG', 'JPEG' => 'JPEG']
+    });
     addOption(PreferenceType.Number, 'JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, Preferences.jpegQuality, { min: 0, max: 100, step: 5, precision: 0 });
   }
 
-  function addOption(type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic,
-      ?extraData:PreferenceItemData):Void
+  function addOption(type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic, ?data:PreferenceItemData):Void
   {
-    var item = new PreferenceItem(0, 60 * (options.length + categories.length) + 15, type, name, description, onChange, defaultValue, extraData);
+    var item = new PreferenceItem(0, 60 * (options.length + categories.length) + 15, type, name, description, onChange, defaultValue, data);
     options.addItem(name, item);
   }
 
@@ -180,13 +180,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
       switch (daItem.type)
       {
-        // oh my days I'm going feral
-        case PreferenceType.Enum, PreferenceType.Number, PreferenceType.Percentage:
-          trace(Type.typeof(daItem.preferenceGraphic));
-          trace(Type.typeof(daItem));
-          if (Std.is(daItem.preferenceGraphic, AtlasText)) {
-            thyTextWidth = cast(daItem.preferenceGraphic, AtlasText).getWidth();
-          }
+        case PreferenceType.Number, PreferenceType.Percentage:
+          thyTextWidth = cast(daItem.preferenceGraphic, NumberPreferenceItem).label.getWidth();
+        case PreferenceType.Enum:
+          thyTextWidth = cast(daItem.preferenceGraphic, EnumPreferenceItem).label.getWidth();
         case PreferenceType.Checkbox:
           thyTextWidth = Std.int(daItem.preferenceGraphic.width);
       }

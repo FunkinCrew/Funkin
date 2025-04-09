@@ -23,15 +23,20 @@ class EnumPreferenceItem extends TextMenuItem
 
   public function new(x:Float, y:Float, name:String, map:Map<String, String>, defaultValue:String, ?callback:String->Void)
   {
+    this.map = map;
+
     super(x, y, formatted(defaultValue), AtlasFont.DEFAULT, function() {
-      callback(this.currentValue);
+      if (callback != null) {
+        callback(this.currentValue);
+      }
     });
 
     updateHitbox();
 
-    this.map = map;
     this.currentValue = defaultValue;
     this.onChangeCallback = callback;
+
+    trace(this.map);
 
     var i:Int = 0;
     for (key in map.keys())
