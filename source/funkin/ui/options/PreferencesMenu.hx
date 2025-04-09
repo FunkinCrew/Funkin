@@ -101,7 +101,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     addOption(PreferenceType.Checkbox, 'Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    addOption(PreferenceType.Percentage, 'Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
+    addOption(PreferenceType.Percentage, 'Strumline Background', 'The strumline background\'s transparency percentage.', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
     addOption(PreferenceType.Checkbox, 'Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
@@ -141,13 +141,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.fancyPreview = value;
     }, Preferences.fancyPreview);
     addOption(PreferenceType.Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
-        Preferences.previewOnSave = value;
+      Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
     addOption(PreferenceType.Enum, 'Save Format', 'Save screenshots to this format.', function(value:String):Void {
       Preferences.saveFormat = value;
-    }, Preferences.saveFormat, {
-      values: ['PNG' => 'PNG', 'JPEG' => 'JPEG']
-    });
+    }, Preferences.saveFormat, { values: ['PNG' => 'PNG', 'JPEG' => 'JPEG'] });
     addOption(PreferenceType.Number, 'JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, Preferences.jpegQuality, { min: 0, max: 100, step: 5, precision: 0 });
