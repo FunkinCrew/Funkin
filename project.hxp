@@ -360,6 +360,11 @@ class Project extends HXProject {
           config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
         else
           config.get('android.manifest').xmlChildren = permissionsConfig;
+
+        if (isBundle())
+        {
+          config.set("android.gradle-build-directory", "bin-bundle");
+	{
       }
     }
   }
