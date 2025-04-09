@@ -4,13 +4,13 @@ import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
+import funkin.play.notes.notesound.NoteSoundType;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
-import funkin.util.SerializerUtil;
 import thx.semver.Version;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
@@ -105,6 +105,10 @@ class Save
       options:
         {
           // Reasonable defaults.
+          noteHighlights: true,
+          noteSplashes: true,
+          noteSoundType: NoteSoundType.None,
+          noteSoundVolume: 100,
           framerate: 60,
           naughtyness: true,
           downscroll: false,
@@ -1352,6 +1356,30 @@ typedef SaveScoreTallyData =
  */
 typedef SaveDataOptions =
 {
+  /**
+   * The type of sound to play when hitting a note
+   * @default `NoteSoundType.None`
+   */
+  var noteSoundType:NoteSoundType;
+
+  /**
+   * A value ranging from 0 to 100 representing the volume for note hit sounds
+   * @default `100`
+   */
+  var noteSoundVolume:Int;
+
+  /**
+   * If enabled, plays a highlight animation when notes are hit.
+   * @default `true`
+   */
+  var noteHighlights:Bool;
+
+  /**
+   * If enabled, plays a splash particle effect when sick notes are hit.
+   * @default `true`
+   */
+  var noteSplashes:Bool;
+
   /**
    * FPS
    * @default `60`
