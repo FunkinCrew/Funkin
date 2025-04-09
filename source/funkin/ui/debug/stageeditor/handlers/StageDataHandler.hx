@@ -47,12 +47,14 @@ class StageDataHandler
           animations: data.animations,
           startingAnimation: data.startingAnimation,
           animType: data.animType,
+          flipX: data.flipX,
+          flipY: data.flipY,
           angle: data.angle,
           blend: data.blend,
           color: data.assetPath.startsWith("#") ? "#FFFFFF" : data.color
         });
 
-      if (!xmlMap.exists(data.assetPath) && data.xmlData != "") xmlMap.set(data.assetPath, data.xmlData);
+      if (!xmlMap.exists(data.assetPath) && data.animData != "") xmlMap.set(data.assetPath, data.animData);
     }
 
     // step 1 phase 2: character data
@@ -208,8 +210,10 @@ class StageDataHandler
           scroll: objData.scroll.copy(),
           color: objData.color,
           blend: objData.blend,
+          flipX: objData.flipX,
+          flipY: objData.flipY,
           startingAnimation: objData.startingAnimation,
-          xmlData: xmls[objData.assetPath] ?? ""
+          animData: xmls[objData.assetPath] ?? ""
         });
 
       state.add(spr);
@@ -292,6 +296,10 @@ class StageDataHandler
       var spr = new StageEditorObject();
       if (!objData.assetPath.startsWith("#")) state.bitmaps.set(objData.assetPath, Assets.getBitmapData(Paths.image(objData.assetPath)));
 
+      var useSparrow:Bool = Assets.exists(Paths.file("images/" + objData.assetPath + ".xml"));
+      var usePacker:Bool = Assets.exists(Paths.file("images/" + objData.assetPath + ".txt"));
+      var animText:String = (!usePacker && !useSparrow) ? "" : Assets.getText(Paths.file("images/" + objData.assetPath + (usePacker ? ".txt" : ".xml")));
+
       spr.fromData(
         {
           name: objData.name ?? "Unnamed",
@@ -307,8 +315,10 @@ class StageDataHandler
           scroll: objData.scroll.copy(),
           color: objData.color,
           blend: objData.blend,
+          flipX: objData.flipX,
+          flipY: objData.flipY,
           startingAnimation: objData.startingAnimation,
-          xmlData: Assets.exists(Paths.file("images/" + objData.assetPath + ".xml")) ? Assets.getText(Paths.file("images/" + objData.assetPath + ".xml")) : ""
+          animData: animText
         });
 
       state.add(spr);
