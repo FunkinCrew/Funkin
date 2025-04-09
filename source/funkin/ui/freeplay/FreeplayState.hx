@@ -1494,6 +1494,8 @@ class FreeplayState extends MusicBeatSubState
     @:nullSafety(Off)
     if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.touch.ticksDeltaSincePress < 200)
     {
+      curSelected = Math.round(curSelectedFloat);
+
       for (i in 0...grpCapsules.members.length)
       {
         final capsuleHit:FlxObject = grpCapsules.members[i].theActualHitbox;
@@ -1615,9 +1617,19 @@ class FreeplayState extends MusicBeatSubState
       }
 
       // Clamp selection to valid range
-
       curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
       curSelected = Std.int(curSelectedFloat);
+      for (i in 0...grpCapsules.members.length)
+      {
+        if (i == curSelected)
+        {
+          grpCapsules.members[i].selected = true;
+          continue;
+        }
+
+        grpCapsules.members[i].selected = false;
+      }
+
       if (!TouchUtil.pressed)
       {
         // Reset flick state if clamped
