@@ -9,36 +9,51 @@ import flixel.addons.text.FlxTypeText;
  */
 class FunkinTypeText extends FlxTypeText
 {
+  public var preWrapping:Bool = true;
+
+  public function new(X:Float, Y:Float, Width:Int, Text:String, Size:Int = 8, EmbeddedFont:Bool = true, CheckWrapping:Bool = true)
+  {
+    super(X, Y, Width, "", Size, EmbeddedFont);
+    _finalText = Text;
+    preWrapping = CheckWrapping;
+  }
+
   override public function resetText(Text:String):Void
   {
-    text = prefix + Text;
-    var prefixLength:Null<Int> = prefix.length;
-    var split:String = '';
+    _finalText = Text;
 
-    // trace('Breaking apart text lines...');
-
-    for (i in 0...textField.numLines)
+    if (preWrapping)
     {
-      var curLine = textField.getLineText(i);
-      // trace('now at line $i, curLine: $curLine');
-      if (prefixLength >= curLine.length)
+      text = prefix + Text;
+      var prefixLength:Null<Int> = prefix.length;
+      var split:String = '';
+
+      // trace('Breaking apart text lines...');
+
+      for (i in 0...textField.numLines)
       {
-        prefixLength -= curLine.length;
+        var curLine = textField.getLineText(i);
+        // trace('now at line $i, curLine: $curLine');
+        if (prefixLength >= curLine.length)
+        {
+          prefixLength -= curLine.length;
+        }
+        else if (prefixLength != null)
+        {
+          split += curLine.substr(prefixLength);
+          prefixLength = null;
+        }
+        else
+        {
+          split += '\n' + curLine;
+        }
+        // trace('now at line $i, split: $split');
       }
-      else if (prefixLength != null)
-      {
-        split += curLine.substr(prefixLength);
-        prefixLength = null;
-      }
-      else
-      {
-        split += '\n' + curLine;
-      }
-      // trace('now at line $i, split: $split');
+
+      _finalText = split;
     }
 
     text = prefix;
-    _finalText = split;
     _typing = false;
     _erasing = false;
     paused = false;
