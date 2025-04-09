@@ -375,6 +375,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         music.future.onComplete(function(partialMusic:Null<FunkinSound>) {
           FlxG.sound.music = partialMusic;
           FlxG.sound.list.remove(FlxG.sound.music);
+          pool.remove(cast FlxG.sound.music);
 
           if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
         });
@@ -395,6 +396,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
         // Prevent repeat update() and onFocus() calls.
         FlxG.sound.list.remove(FlxG.sound.music);
+        pool.remove(cast FlxG.sound.music);
 
         if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
 
