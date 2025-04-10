@@ -38,7 +38,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  static final API_VERSION_RULE:String = ">=0.5.0 <0.6.0";
+  static final API_VERSION_RULE:String = ">=0.6.3 <0.7.0";
 
   /**
    * Where relative to the executable that mods are located.
