@@ -183,11 +183,21 @@ class Strumline extends FlxSpriteGroup
     this.noteSplashes.zIndex = 50;
     this.add(this.noteSplashes);
 
-    this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2), FlxG.height, 0xFF000000);
+    var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
+    #if mobile
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && isPlayer)
+    {
+      backgroundWidth = backgroundWidth * 1.84;
+    }
+    #end
+    this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(backgroundWidth), FlxG.height, 0xFF000000);
     // Convert the percent to a number between 0 and 1.
     this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
+    #if mobile
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && isPlayer) this.background.x -= 100;
+    #end
     this.add(this.background);
     strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
 
