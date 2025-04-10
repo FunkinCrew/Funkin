@@ -142,6 +142,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
 
+    #if FEATURE_SCREENSHOTS
     createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
@@ -157,6 +158,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, null, Preferences.jpegQuality, 0, 100, 5, 0);
+    #end
+
     createPrefItemCheckbox('Vibration', 'If enabled, Haptic Feedback vibration effects will be active.', function(value:Bool):Void {
       Preferences.vibration = value;
     }, Preferences.vibration);
