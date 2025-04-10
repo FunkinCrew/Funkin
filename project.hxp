@@ -364,7 +364,7 @@ class Project extends HXProject {
         if (isBundle())
         {
           config.set("android.gradle-build-directory", "bin-bundle");
-	{
+        }
       }
     }
   }
