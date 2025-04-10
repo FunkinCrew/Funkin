@@ -14,6 +14,7 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.save.Save;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
@@ -93,6 +94,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
+    createPrefItemPercentage('Master volume', 'The general volume of the game', function(value:Int):Void {
+      Save.instance.set_volume(cast(value, Float));
+    }, cast(Save.instance.get_volume(), Int));
     createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);

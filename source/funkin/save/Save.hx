@@ -1205,7 +1205,7 @@ class Save
 }
 
 /**
- * An anonymous structure containingg all the user's save data.
+ * An anonymous structure containing all the user's save data.
  * Isn't stored with JSON, stored with some sort of Haxe built-in serialization?
  */
 typedef RawSaveData =
