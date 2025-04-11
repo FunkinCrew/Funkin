@@ -1489,7 +1489,14 @@ class FreeplayState extends MusicBeatSubState
     if (!pressedOnFreeplay)
     {
       handleDirectionalInput(elapsed);
-      handleMouseWheelInput();
+
+      final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+
+      if (wheelAmount != 0)
+      {
+        dj?.resetAFKTimer();
+        changeSelection(-Math.round(wheelAmount));
+      }
     }
 
     handleDifficultySwitch();
@@ -1511,7 +1518,7 @@ class FreeplayState extends MusicBeatSubState
   var _flickEnded:Bool = true;
   var draggingDifficulty:Bool = false;
 
-  private function handleDirectionalInput(elapsed:Float):Void
+  function handleDirectionalInput(elapsed:Float):Void
   {
     final upP:Bool = controls.UI_UP_P;
     final downP:Bool = controls.UI_DOWN_P;
@@ -1545,22 +1552,12 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  function handleMouseWheelInput()
+  function handleDifficultySwitch():Void
   {
-    final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+    final leftPressed:Bool = controls.UI_LEFT_P
+      || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased);
 
-    if (wheelAmount != 0)
-    {
-      dj?.resetAFKTimer();
-      changeSelection(-Math.round(wheelAmount));
-    }
-  }
-
-  function handleDifficultySwitch()
-  {
-    final leftPressed = controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased);
-
-    final rightPressed = controls.UI_RIGHT_P
+    final rightPressed:Bool = controls.UI_RIGHT_P
       || (diffSelRight != null && TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justReleased);
 
     if (leftPressed)
@@ -1581,10 +1578,8 @@ class FreeplayState extends MusicBeatSubState
   #if TOUCH_CONTROLS
   private function handleTouchCapsuleClick():Void
   {
-    if (TouchUtil.justReleased
-      && diffSelRight != null
-      && !TouchUtil.overlaps(diffSelRight, funnyCam)
-      && TouchUtil.touch.ticksDeltaSincePress < 200)
+    if (diffSelRight == null) return;
+    if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.touch.ticksDeltaSincePress < 200)
     {
       curSelected = Math.round(curSelectedFloat);
 
@@ -1694,6 +1689,7 @@ class FreeplayState extends MusicBeatSubState
       if (_pressedOn && TouchUtil.touch != null)
       {
         draggingDifficulty = true;
+        // Have to turn off null safety in-order to compile this!! -Zack
         @:nullSafety(Off)
         if (SwipeUtil.swipeLeft)
         {
@@ -1702,8 +1698,8 @@ class FreeplayState extends MusicBeatSubState
           draggingDifficulty = false;
           busy = true;
           grpCapsules.members[curSelected].doLerp = false;
-          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + 15}, 0.1, {ease: FlxEase.expoOut});
 
+          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + 15}, 0.1, {ease: FlxEase.expoOut});
           FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - 15}, 0.1,
             {
               ease: FlxEase.expoIn,
@@ -1720,10 +1716,9 @@ class FreeplayState extends MusicBeatSubState
           _pressedOn = false;
           draggingDifficulty = false;
           busy = true;
-
           grpCapsules.members[curSelected].doLerp = false;
-          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - 15}, 0.1, {ease: FlxEase.expoOut});
 
+          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - 15}, 0.1, {ease: FlxEase.expoOut});
           FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + 15}, 0.1,
             {
               ease: FlxEase.expoIn,
@@ -1776,31 +1771,30 @@ class FreeplayState extends MusicBeatSubState
 
   function handleTouchFreeplayDrag()
   {
-    if (fnfFreeplay != null && freeplayTxtBg != null && freeplayArrow != null)
+    if (fnfFreeplay == null || freeplayTxtBg == null || freeplayArrow == null) return;
+
+    if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
     {
-      if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
-      {
-        _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
-        pressedOnFreeplay = true;
-      }
+      _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
+      pressedOnFreeplay = true;
+    }
 
-      if (pressedOnFreeplay && TouchUtil.pressed)
-      {
-        fnfFreeplay.x = TouchUtil.touch.x + _dragOffset;
-        freeplayTxtBg.x = TouchUtil.touch.x + _dragOffset - 8;
+    if (pressedOnFreeplay && TouchUtil.pressed)
+    {
+      fnfFreeplay.x = TouchUtil.touch.x + _dragOffset;
+      freeplayTxtBg.x = TouchUtil.touch.x + _dragOffset - 8;
 
-        if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
-        {
-          pressedOnFreeplay = false;
-          goBack();
-        }
-      }
-      else
+      if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
       {
-        fnfFreeplay.x = FullScreenScaleMode.gameNotchSize.x + 8;
-        freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
         pressedOnFreeplay = false;
+        goBack();
       }
+    }
+    else
+    {
+      fnfFreeplay.x = FullScreenScaleMode.gameNotchSize.x + 8;
+      freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
+      pressedOnFreeplay = false;
     }
   }
   #end
