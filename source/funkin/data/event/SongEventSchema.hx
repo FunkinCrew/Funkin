@@ -16,7 +16,10 @@ abstract SongEventSchema(SongEventSchemaRaw)
   @:arrayAccess
   public function getByName(name:String):SongEventSchemaField
   {
-    for (field in this)
+    var allFields = [];
+    listAllFields(this, allFields);
+
+    for (field in allFields)
     {
       if (field.name == name) return field;
     }
@@ -81,6 +84,16 @@ abstract SongEventSchema(SongEventSchemaRaw)
 
     return value + (NO_SPACE_UNITS.contains(unit) ? '' : ' ') + '${unit}';
   }
+
+  function listAllFields(schema:SongEventSchemaRaw, array:Array<SongEventSchemaField>)
+  {
+    for (field in schema)
+    {
+      if (field.children == null) array.push(field);
+      else
+        listAllFields(field.children, array);
+    }
+  }
 }
 
 typedef SongEventSchemaRaw = Array<SongEventSchemaField>;
@@ -136,6 +149,12 @@ typedef SongEventSchemaField =
   ?units:String,
 
   /**
+   * Used for FRAME values.
+   * The child components that this frame contains.
+   */
+  ?children:SongEventSchemaRaw,
+
+  /**
    * An optional default value for the field.
    */
   ?defaultValue:Dynamic,
@@ -168,4 +187,10 @@ enum abstract SongEventFieldType(String) from String to String
    * Make sure to specify the `keys` field in the schema.
    */
   var ENUM = "enum";
+
+  /**
+   * The FRAME type will display a frame with child components.
+   * Make sure to specify the `children` field in the schema.
+   */
+  var FRAME = "frame";
 }
