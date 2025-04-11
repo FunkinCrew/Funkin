@@ -54,7 +54,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         trace('ChartEditorEventDataToolbox: Event data is null');
       }
 
-      var eventType:String = event.data.id;
+      var eventType:String = event.data?.id;
 
       trace('ChartEditorEventDataToolbox - Event type changed: $eventType');
 
