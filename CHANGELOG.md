@@ -51,7 +51,8 @@ The Pit Stop 2 update!
   - Added new stickers which appear when exiting Pico songs!
   - The new sticker system isn't fully available to mods yet, but we're working on it!
 - New option in the Preferences menu: Strumline Backgrounds!
-- Options in the Preferences menu now display an on-screen description when selected.
+- New song event type in the Chart Editor: Set Health Icon!
+  - This event is now used in Stress (Pico Mix).
 - The HOME and END keys now jump to the top and bottom of the Freeplay song list, respectively. ([bb974c2](https://github.com/FunkinCrew/Funkin/commit/bb974c264270d10ff503784063e5d77bb352b3f7)) - by @AbnormalPoof in [#4103](https://github.com/FunkinCrew/Funkin/pull/4103)
 - Added an option to launch the game in fullscreen. ([ee53ccd](https://github.com/FunkinCrew/Funkin/commit/ee53ccd32721e0790adfe82c60d4aca419db0a7f)) - by @AbnormalPoof in [#3738](https://github.com/FunkinCrew/Funkin/pull/3738)
 - Added on-screen descriptions for each item in the Preferences menu. ([a17b0e8](https://github.com/FunkinCrew/Funkin/commit/a17b0e8b3cc1d56fcdc0b51eaca9fd57cdb5bce0)) - by @anysad in [#3872](https://github.com/FunkinCrew/Funkin/pull/3872)
@@ -71,6 +72,8 @@ The Pit Stop 2 update!
 - Polymod should now ignore `.git` files when loading mods.
 - The pause menu can now be opened and closed rapidly.
 - Adjusted difficulty ratings and scroll speeds for many songs.
+- Chart Editor event fields now allow for values to be as specific as desired.
+  - For example, the Zoom Camera event can now be set to 0.9857.
 - Lots of improvements to GitHub issue and pull request organization. - by @Hundrec and @AbnormalPoof
 - Overhauled the Changelog to improve readability and properly credit contributors. ([4383fcf](https://github.com/FunkinCrew/Funkin/commit/4383fcf32c280a1c0ee7b9c80d255611d497cabc)) - by @Hundrec in [#4296](https://github.com/FunkinCrew/Funkin/pull/4296) and [#4298](https://github.com/FunkinCrew/Funkin/pull/4298)
 - Made various improvements to the screenshot plugin. ([868932c](https://github.com/FunkinCrew/Funkin/commit/868932cd138fad4be5b541cbea3110e30479057b)) - by @Lasercar in [#4082](https://github.com/FunkinCrew/Funkin/pull/4082)
