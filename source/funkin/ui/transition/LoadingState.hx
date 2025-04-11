@@ -316,10 +316,15 @@ class LoadingState extends MusicBeatSubState
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num7'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num8'));
     FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num9'));
-    FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
+
+    FunkinSprite.cacheTexture(Paths.image('notestyles/funkin/notes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('notestyles/funkin/noteSplashes', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('notestyles/funkin/noteStrumline', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('notestyles/funkin/NOTE_hold_assets', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('notestyles/pixel/arrows-pixels', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('notestyles/pixel/arrowEndsNew', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('notestyles/pixel/pixelNoteSplash', 'shared'));
+    FunkinSprite.cacheTexture(Paths.image('notestyles/pixel/pixelNoteHoldCover', 'shared'));
 
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/ready', 'shared'));
     FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/set', 'shared'));
