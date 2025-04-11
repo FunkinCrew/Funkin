@@ -1691,10 +1691,56 @@ class FreeplayState extends MusicBeatSubState
       final selected = grpCapsules.members[curSelected].theActualHitbox;
       _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected, funnyCam);
 
-      if (_pressedOn && TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 500)
+      if (_pressedOn && TouchUtil.touch != null)
       {
-        _pressedOn = false;
-        favoriteSong();
+        draggingDifficulty = true;
+        @:nullSafety(Off)
+        if (SwipeUtil.swipeLeft)
+        {
+          changeDiff(1);
+          _pressedOn = false;
+          draggingDifficulty = false;
+          busy = true;
+          grpCapsules.members[curSelected].doLerp = false;
+          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + 15}, 0.1, {ease: FlxEase.expoOut});
+
+          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - 15}, 0.1,
+            {
+              ease: FlxEase.expoIn,
+              startDelay: 0.1,
+              onComplete: function(_) {
+                grpCapsules.members[curSelected].doLerp = true;
+                busy = false;
+              }
+            });
+        }
+        else if (SwipeUtil.swipeRight)
+        {
+          changeDiff(-1);
+          _pressedOn = false;
+          draggingDifficulty = false;
+          busy = true;
+
+          grpCapsules.members[curSelected].doLerp = false;
+          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - 15}, 0.1, {ease: FlxEase.expoOut});
+
+          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + 15}, 0.1,
+            {
+              ease: FlxEase.expoIn,
+              startDelay: 0.1,
+              onComplete: function(_) {
+                grpCapsules.members[curSelected].doLerp = true;
+                busy = false;
+              }
+            });
+        }
+
+        if (TouchUtil.touch.ticksDeltaSincePress >= 500)
+        {
+          _pressedOn = false;
+          draggingDifficulty = false;
+          favoriteSong();
+        }
       }
 
       for (diff in grpDifficulties.group.members)
