@@ -1363,7 +1363,6 @@ class FreeplayState extends MusicBeatSubState
 
   var spamTimer:Float = 0;
   var spamming:Bool = false;
-  var pressedOnFreeplay:Bool = false;
 
   /**
    * If true, disable interaction with the interface.
@@ -1470,40 +1469,133 @@ class FreeplayState extends MusicBeatSubState
     if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
   }
 
-  var _dragOffset:Float = 0;
-  var _pressedOn:Bool = false;
-  var _moveLength:Float = 0;
-  var _flickEnded:Bool = true;
+  var pressedOnFreeplay:Bool = false;
 
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
 
-    final upP:Bool = controls.UI_UP_P /* || SwipeUtil.swipeUp */;
-    final downP:Bool = controls.UI_DOWN_P /* || SwipeUtil.swipeDown */;
+    final upP:Bool = controls.UI_UP_P;
+    final downP:Bool = controls.UI_DOWN_P;
     final accepted:Bool = controls.ACCEPT;
 
     #if TOUCH_CONTROLS
-    #if mobile
-    var touches = FlxG.touches;
-    #else
-    var touches = FlxG.mouse;
+    handleTouchCapsuleClick();
+    handleTouchSelectionScroll(elapsed);
+    handleTouchFavoritesAndDifficulties();
+    handleTouchFreeplayDrag();
     #end
 
-    // Nested as fuck
-    @:nullSafety(Off)
-    if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.touch.ticksDeltaSincePress < 200)
+    if (!pressedOnFreeplay)
+    {
+      handleDirectionalInput(elapsed);
+      handleMouseWheelInput();
+    }
+
+    handleDifficultySwitch();
+
+    if (controls.BACK)
+    {
+      goBack();
+    }
+
+    if (accepted && !busy)
+    {
+      grpCapsules.members[curSelected].onConfirm();
+    }
+  }
+
+  var _dragOffset:Float = 0;
+  var _pressedOn:Bool = false;
+  var _moveLength:Float = 0;
+  var _flickEnded:Bool = true;
+  var draggingDifficulty:Bool = false;
+
+  private function handleDirectionalInput(elapsed:Float):Void
+  {
+    final upP:Bool = controls.UI_UP_P;
+    final downP:Bool = controls.UI_DOWN_P;
+
+    if (upP || downP)
+    {
+      if (spamming)
+      {
+        if (spamTimer >= 0.07)
+        {
+          spamTimer = 0;
+          changeSelection(upP ? -1 : 1);
+        }
+      }
+      else if (spamTimer >= 0.9)
+      {
+        spamming = true;
+      }
+      else if (spamTimer <= 0)
+      {
+        changeSelection(upP ? -1 : 1);
+      }
+
+      spamTimer += elapsed;
+      dj?.resetAFKTimer();
+    }
+    else
+    {
+      spamming = false;
+      spamTimer = 0;
+    }
+  }
+
+  function handleMouseWheelInput()
+  {
+    final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+
+    if (wheelAmount != 0)
+    {
+      dj?.resetAFKTimer();
+      changeSelection(-Math.round(wheelAmount));
+    }
+  }
+
+  function handleDifficultySwitch()
+  {
+    final leftPressed = controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased);
+
+    final rightPressed = controls.UI_RIGHT_P
+      || (diffSelRight != null && TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justReleased);
+
+    if (leftPressed)
+    {
+      dj?.resetAFKTimer();
+      changeDiff(-1);
+      generateSongList(currentFilter, true);
+    }
+
+    if (rightPressed)
+    {
+      dj?.resetAFKTimer();
+      changeDiff(1);
+      generateSongList(currentFilter, true);
+    }
+  }
+
+  #if TOUCH_CONTROLS
+  private function handleTouchCapsuleClick():Void
+  {
+    if (TouchUtil.justReleased
+      && diffSelRight != null
+      && !TouchUtil.overlaps(diffSelRight, funnyCam)
+      && TouchUtil.touch.ticksDeltaSincePress < 200)
     {
       curSelected = Math.round(curSelectedFloat);
 
       for (i in 0...grpCapsules.members.length)
       {
-        final capsuleHit:FlxObject = grpCapsules.members[i].theActualHitbox;
-        if (!TouchUtil.overlaps(capsuleHit, funnyCam)) continue;
+        final capsule = grpCapsules.members[i];
+        if (!TouchUtil.overlaps(capsule.theActualHitbox, funnyCam)) continue;
 
-        if (grpCapsules.members[i].selected)
+        if (capsule.selected)
         {
-          grpCapsules.members[i].onConfirm();
+          capsule.onConfirm();
         }
         else
         {
@@ -1512,162 +1604,91 @@ class FreeplayState extends MusicBeatSubState
           FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
           HapticUtil.vibrate(0, 0.01, 0.2);
         }
-
         break;
       }
     }
-    #end
 
     if (TouchUtil.justPressed)
     {
-      final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
-      _pressedOn = (selected != null) && TouchUtil.overlaps(selected, funnyCam);
+      final selected = grpCapsules.members[curSelected].theActualHitbox;
+      _pressedOn = selected != null && TouchUtil.overlaps(selected, funnyCam);
     }
+  }
 
-    if (!pressedOnFreeplay)
+  function handleTouchSelectionScroll(elapsed:Float):Void
+  {
+    if (draggingDifficulty) return;
+
+    if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
     {
-      if (upP || downP)
+      for (touch in FlxG.touches.list)
       {
-        if (spamming)
+        if (touch.pressed)
         {
-          if (spamTimer >= 0.07)
+          final delta = touch.deltaViewY;
+          if (Math.abs(delta) >= 2)
           {
-            spamTimer = 0;
-            changeSelection(upP ? -1 : 1);
-          }
-        }
-        else if (spamTimer >= 0.9)
-        {
-          spamming = true;
-        }
-        else if (spamTimer <= 0)
-        {
-          changeSelection(upP ? -1 : 1);
-        }
-
-        spamTimer += elapsed;
-        dj?.resetAFKTimer();
-      }
-      else
-      {
-        spamming = false;
-        spamTimer = 0;
-      }
-
-      final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
-      if (wheelAmount != 0)
-      {
-        dj?.resetAFKTimer();
-        changeSelection(-Math.round(wheelAmount));
-      }
-
-      if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
-      {
-        for (touch in FlxG.touches.list)
-        {
-          if (touch.pressed)
-          {
-            final delta:Float = touch.deltaViewY;
-
-            if (Math.abs(delta) >= 2)
-            {
-              var moveLength:Float = delta / FlxG.updateFramerate * 1.2;
-
-              _moveLength += Math.abs(moveLength);
-              curSelectedFloat -= moveLength;
-
-              updateSongsScroll();
-            }
-            continue;
-          }
-
-          if (_moveLength > 0)
-          {
-            _moveLength = 0.0;
-            changeSelection(0);
-          }
-        }
-
-        // Apply flick velocity movement only if a flick has been detected
-        if (FlxG.touches.flickManager.initialized)
-        {
-          var flickVelocity = FlxG.touches.flickManager.velocity.y;
-
-          if (Math.isFinite(flickVelocity))
-          {
-            _flickEnded = false;
-
-            var velocityMove:Float = flickVelocity / FlxG.updateFramerate * 0.03;
-
-            _moveLength += Math.abs(velocityMove);
-            curSelectedFloat -= velocityMove;
-
+            var moveLength = delta / FlxG.updateFramerate * 1.2;
+            _moveLength += Math.abs(moveLength);
+            curSelectedFloat -= moveLength;
             updateSongsScroll();
           }
         }
-        else if (!_flickEnded)
+        else if (_moveLength > 0)
         {
-          _flickEnded = true;
-          if (_moveLength > 0)
-          {
-            _moveLength = 0.0;
-            changeSelection(0);
-          }
+          _moveLength = 0.0;
+          changeSelection(0);
         }
       }
 
-      // Clamp selection to valid range
+      if (FlxG.touches.flickManager.initialized)
+      {
+        var flickVelocity = FlxG.touches.flickManager.velocity.y;
+        if (Math.isFinite(flickVelocity))
+        {
+          _flickEnded = false;
+          var velocityMove = flickVelocity / FlxG.updateFramerate * 0.03;
+          _moveLength += Math.abs(velocityMove);
+          curSelectedFloat -= velocityMove;
+          updateSongsScroll();
+        }
+      }
+      else if (!_flickEnded)
+      {
+        _flickEnded = true;
+        if (_moveLength > 0)
+        {
+          _moveLength = 0.0;
+          changeSelection(0);
+        }
+      }
+
       curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
       curSelected = Std.int(curSelectedFloat);
+
       for (i in 0...grpCapsules.members.length)
       {
-        if (i == curSelected)
-        {
-          grpCapsules.members[i].selected = true;
-          continue;
-        }
-
-        grpCapsules.members[i].selected = false;
+        grpCapsules.members[i].selected = (i == curSelected);
       }
 
-      if (!TouchUtil.pressed)
+      if (!TouchUtil.pressed && (curSelected == 0 || curSelected == grpCapsules.countLiving() - 1))
       {
-        // Reset flick state if clamped
-        if (curSelected == 0 || curSelected == grpCapsules.countLiving() - 1)
+        FlxG.touches.flickManager.destroy();
+        _flickEnded = true;
+        if (_moveLength > 0)
         {
-          FlxG.touches.flickManager.destroy();
-          _flickEnded = true;
-          if (_moveLength > 0)
-          {
-            _moveLength = 0.0;
-            changeSelection(0);
-          }
+          _moveLength = 0.0;
+          changeSelection(0);
         }
       }
     }
+  }
 
-    // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
-    if (controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased))
-    {
-      dj?.resetAFKTimer();
-      changeDiff(-1);
-      generateSongList(currentFilter, true);
-    }
-
-    if (controls.UI_RIGHT_P || (diffSelRight != null && TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justReleased))
-    {
-      dj?.resetAFKTimer();
-      changeDiff(1);
-      generateSongList(currentFilter, true);
-    }
-    #if TOUCH_CONTROLS
-    if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam));
-    if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam));
-
+  function handleTouchFavoritesAndDifficulties()
+  {
     if ((TouchUtil.pressed || TouchUtil.justReleased) && !pressedOnFreeplay)
     {
-      // Favorite
-      final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
+      final selected = grpCapsules.members[curSelected].theActualHitbox;
       _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected, funnyCam);
 
       if (_pressedOn && TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 500)
@@ -1679,33 +1700,36 @@ class FreeplayState extends MusicBeatSubState
       for (diff in grpDifficulties.group.members)
       {
         if (diff == null || diff.difficultyId != currentDifficulty) continue;
-
         if (!TouchUtil.overlaps(diff, funnyCam))
         {
           diff.x = 90;
           break;
         }
+        draggingDifficulty = true;
 
         if (TouchUtil.justPressed) _dragOffset = diff.x - TouchUtil.touch.x;
         diff.x = TouchUtil.touch.x + _dragOffset;
 
         if (TouchUtil.justReleased)
         {
-          handleDragRelease(diff);
+          handleDiffDragRelease(diff);
+          draggingDifficulty = false;
           break;
         }
 
-        // Handle drag logic for left
-        if (diffSelLeft != null && diffSelLeft.x - 60 > diff.x) handleBoundaryChange(-1);
+        if (diffSelLeft != null && diffSelLeft.x - 60 > diff.x) handleDiffBoundaryChange(-1);
+        if (diffSelRight != null && diffSelRight.x - 40 < diff.x) handleDiffBoundaryChange(1);
 
-        // Handle drag logic for right
-        if (diffSelRight != null && diffSelRight.x - 40 < diff.x) handleBoundaryChange(1);
-
-        // Stop
         break;
       }
     }
 
+    if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam));
+    if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam));
+  }
+
+  function handleTouchFreeplayDrag()
+  {
     if (fnfFreeplay != null && freeplayTxtBg != null && freeplayArrow != null)
     {
       if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
@@ -1718,6 +1742,7 @@ class FreeplayState extends MusicBeatSubState
       {
         fnfFreeplay.x = TouchUtil.touch.x + _dragOffset;
         freeplayTxtBg.x = TouchUtil.touch.x + _dragOffset - 8;
+
         if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
         {
           pressedOnFreeplay = false;
@@ -1731,18 +1756,8 @@ class FreeplayState extends MusicBeatSubState
         pressedOnFreeplay = false;
       }
     }
-    #end
-
-    if (controls.BACK)
-    {
-      goBack();
-    }
-
-    if (accepted && !busy)
-    {
-      grpCapsules.members[curSelected].onConfirm();
-    }
   }
+  #end
 
   override function beatHit():Bool
   {
@@ -1979,15 +1994,15 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
   }
 
-  function handleDragRelease(diff:FlxSprite):Void
+  function handleDiffDragRelease(diff:FlxSprite):Void
   {
     if (diffSelLeft != null && diffSelLeft.x > diff.x)
     {
-      handleBoundaryChange(-1);
+      handleDiffBoundaryChange(-1);
     }
     else if (diffSelRight != null && diffSelRight.x - 140 < diff.x)
     {
-      handleBoundaryChange(1);
+      handleDiffBoundaryChange(1);
     }
     else
     {
@@ -1997,12 +2012,13 @@ class FreeplayState extends MusicBeatSubState
     _dragOffset = 0;
   }
 
-  function handleBoundaryChange(change:Int):Void
+  function handleDiffBoundaryChange(change:Int):Void
   {
     dj?.resetAFKTimer();
     changeDiff(change);
     generateSongList(currentFilter, true);
     _dragOffset = 0;
+    draggingDifficulty = false;
   }
 
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
