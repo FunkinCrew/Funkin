@@ -663,7 +663,7 @@ class ScreenshotPlugin extends FlxBasic
 
     @:privateAccess
     for (parent in [flashSprite, previewSprite])
-      for (child in parent.__children)
+      for (child in (parent?.__children ?? []))
         parent.removeChild(child);
 
     flashSprite = null;
