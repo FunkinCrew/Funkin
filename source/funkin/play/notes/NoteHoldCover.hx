@@ -1,8 +1,6 @@
 package funkin.play.notes;
 
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.graphics.frames.FlxFramesCollection;
-import funkin.util.assets.FlxAnimationUtil;
 import flixel.FlxSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 

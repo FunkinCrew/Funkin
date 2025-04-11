@@ -235,9 +235,9 @@ class SongEventScriptEvent extends ScriptEvent
    * The note associated with this event.
    * You cannot replace it, but you can edit it.
    */
-  public var eventData(default, null):funkin.data.song.SongData.SongEventData;
+  public var eventData(default, null):SongEventData;
 
-  public function new(eventData:funkin.data.song.SongData.SongEventData):Void
+  public function new(eventData:SongEventData):Void
   {
     super(SONG_EVENT, true);
     this.eventData = eventData;
