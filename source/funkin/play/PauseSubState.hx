@@ -664,6 +664,7 @@ class PauseSubState extends MusicBeatSubState
    */
   static function restartPlayState(state:PauseSubState):Void
   {
+    PlayState.instance.deathCounter += 1;
     PlayState.instance.needsReset = true;
     state.close();
   }
