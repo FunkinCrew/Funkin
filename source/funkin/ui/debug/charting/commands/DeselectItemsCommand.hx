@@ -27,6 +27,7 @@ class DeselectItemsCommand implements ChartEditorCommand
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -43,6 +44,7 @@ class DeselectItemsCommand implements ChartEditorCommand
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
