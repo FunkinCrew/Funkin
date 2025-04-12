@@ -23,6 +23,8 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
     return _instance;
   }
 
+  static final baseGameStageIds:Array<String> = funkin.util.macro.DataMacro.listBaseGameStageIds();
+
   public function new()
   {
     super('STAGE', 'stages', STAGE_DATA_VERSION_RULE);
@@ -87,28 +89,10 @@ class StageRegistry extends BaseRegistry<Stage, StageData>
 
   /**
    * A list of all the stages from the base game, in order.
-   * TODO: Should this be hardcoded?
    */
   public function listBaseGameStageIds():Array<String>
   {
-    return [
-      "mainStage",
-      "mainStageErect",
-      "spookyMansion",
-      "phillyTrain",
-      "phillyTrainErect",
-      "limoRide",
-      "limoRideErect",
-      "mallXmas",
-      "mallXmasErect",
-      "mallEvil",
-      "school",
-      "schoolEvil",
-      "tankmanBattlefield",
-      "phillyStreets",
-      "phillyStreetsErect",
-      "phillyBlazin",
-    ];
+    return baseGameStageIds;
   }
 
   /**
