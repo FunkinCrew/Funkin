@@ -29,20 +29,9 @@ import funkin.util.EaseUtil;
 class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
   /**
-   * The ID of the conversation.
-   */
-  public final id:String;
-
-  /**
    * The current state of the conversation.
    */
   var state:ConversationState = ConversationState.Start;
-
-  /**
-   * Conversation data as parsed from the JSON file.
-   * `null` if the data could not be parsed or loaded.
-   */
-  public final _data:Null<ConversationData>;
 
   /**
    * The current entry in the dialogue.
@@ -658,16 +647,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       outroTween.cancel();
       outroTween = null;
     }
-  }
-
-  public override function toString():String
-  {
-    return 'Conversation($id)';
-  }
-
-  static function _fetchData(id:String):Null<ConversationData>
-  {
-    return ConversationRegistry.instance.parseEntryDataWithMigration(id, ConversationRegistry.instance.fetchEntryVersion(id));
   }
 }
 
