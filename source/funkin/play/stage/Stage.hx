@@ -318,6 +318,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   /**
+   * The stage construction routine. Called when the characters are loaded in stage.
+   */
+  public function postConstruct():Void
+  {
+    this.refresh();
+  }
+
+  /**
    * Add a sprite to the stage.
    * @param prop The sprite to add.
    * @param name (Optional) A unique name for the sprite.
