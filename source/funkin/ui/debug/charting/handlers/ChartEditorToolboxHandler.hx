@@ -44,7 +44,7 @@ class ChartEditorToolboxHandler
     {
       toolbox.showDialog(false);
 
-      state.playSound(Paths.sound('chartingSounds/openWindow'));
+      state.playSound(Paths.sound('chartingSounds/openWindow'), 1.0, 1.0, 0.1);
 
       switch (id)
       {
@@ -88,7 +88,7 @@ class ChartEditorToolboxHandler
     {
       toolbox.hideDialog(DialogButton.CANCEL);
 
-      state.playSound(Paths.sound('chartingSounds/exitWindow'));
+      state.playSound(Paths.sound('chartingSounds/exitWindow'), 1.0, 1.0, 0.1);
 
       switch (id)
       {
