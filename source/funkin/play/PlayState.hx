@@ -702,8 +702,8 @@ class PlayState extends MusicBeatSubState
     {
       initMinimalMode();
     }
-    initStrumlines();
-    initPopups();
+    initStrumlines(currentChart.noteStyle);
+    initPopups(currentChart.noteStyle);
 
     #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
@@ -877,6 +877,10 @@ class PlayState extends MusicBeatSubState
 
       playerStrumline.clean();
       opponentStrumline.clean();
+
+      playerStrumline.noteStyleId = currentChart.noteStyle;
+      opponentStrumline.noteStyleId = currentChart.noteStyle;
+      initPopups(currentChart.noteStyle);
 
       // Delete all notes and reset the arrays.
       regenNoteData();
@@ -1795,16 +1799,14 @@ class PlayState extends MusicBeatSubState
 
   /**
      * Constructs the strumlines for each player.
+     * @param noteStyleId The ID of the note style to use.
+     * @param fadeIn Whether to fade in the arrows.
      */
-  function initStrumlines():Void
+  function initStrumlines(noteStyleId:String, ?fadeIn:Bool = true):Void
   {
-    var noteStyleId:String = currentChart.noteStyle;
-    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
-    if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
-
-    playerStrumline = new Strumline(noteStyle, !isBotPlayMode);
+    playerStrumline = new Strumline(noteStyleId, !isBotPlayMode);
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
-    opponentStrumline = new Strumline(noteStyle, false);
+    opponentStrumline = new Strumline(noteStyleId, false);
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     add(playerStrumline);
     add(opponentStrumline);
@@ -1822,18 +1824,22 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
 
-    playerStrumline.fadeInArrows();
-    opponentStrumline.fadeInArrows();
+    if (fadeIn)
+    {
+      playerStrumline.fadeInArrows();
+      opponentStrumline.fadeInArrows();
+    }
   }
 
   /**
      * Configures the judgement and combo popups.
      */
-  function initPopups():Void
+  public function initPopups(noteStyleId:String):Void
   {
-    var noteStyleId:String = currentChart.noteStyle;
     var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+    if (comboPopUps != null) remove(comboPopUps);
+
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff(noteStyle);
     comboPopUps.zIndex = 900;
