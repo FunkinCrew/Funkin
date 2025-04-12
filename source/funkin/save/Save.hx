@@ -43,7 +43,7 @@ class Save
   {
     if (_instance == null)
     {
-      return _instance = load();
+      return load();
     }
     return _instance;
   }
@@ -55,7 +55,10 @@ class Save
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    return loadFromSlot(BASE_SAVE_SLOT);
+    var loadedSave:Save = loadFromSlot(BASE_SAVE_SLOT);
+    if (_instance == null) _instance = loadedSave;
+
+    return loadedSave;
   }
 
   public static function clearData():Void
