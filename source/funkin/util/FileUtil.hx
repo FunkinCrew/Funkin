@@ -391,17 +391,20 @@ class FileUtil
   /**
    * Prompts the user to save a file to their computer.
    */
-  public static function writeFileReference(path:String, data:String)
+  public static function writeFileReference(path:String, data:String, callback:String->Void)
   {
     var file = new FileReference();
     file.addEventListener(Event.COMPLETE, function(e:Event) {
       trace('Successfully wrote file.');
+      callback("success");
     });
     file.addEventListener(Event.CANCEL, function(e:Event) {
       trace('Cancelled writing file.');
+      callback("info");
     });
     file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
       trace('IO error writing file.');
+      callback("error");
     });
     file.save(data, path);
   }

@@ -1168,7 +1168,8 @@ class ChartEditorDialogHandler
 
     var dialogNoteStyle:Null<DropDown> = dialog.findComponent('dialogNoteStyle', DropDown);
     if (dialogNoteStyle == null) throw 'Could not locate dialogNoteStyle DropDown in Add Variation dialog';
-    dialogNoteStyle.value = state.currentSongMetadata.playData.noteStyle;
+    var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(dialogNoteStyle, state.currentSongMetadata.playData.noteStyle);
+    dialogNoteStyle.value = startingValueNoteStyle;
 
     var dialogCharacterPlayer:Null<DropDown> = dialog.findComponent('dialogCharacterPlayer', DropDown);
     if (dialogCharacterPlayer == null) throw 'Could not locate dialogCharacterPlayer DropDown in Add Variation dialog';
@@ -1203,7 +1204,7 @@ class ChartEditorDialogHandler
       var pendingVariation:SongMetadata = new SongMetadata(dialogSongName.text, dialogSongArtist.text, dialogVariationName.text.toLowerCase());
 
       pendingVariation.playData.stage = dialogStage.value.id;
-      pendingVariation.playData.noteStyle = dialogNoteStyle.value;
+      pendingVariation.playData.noteStyle = dialogNoteStyle.value.id;
       pendingVariation.timeChanges[0].bpm = dialogBPM.value;
 
       state.songMetadata.set(pendingVariation.variation, pendingVariation);
