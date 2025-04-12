@@ -114,7 +114,7 @@ class MultiSparrowCharacter extends BaseCharacter
 
       if (anim.offsets == null)
       {
-        setAnimationOffsets(anim.name, 0, 0);
+        setAnimationOffsets(anim.name, 0.0, 0.0);
       }
       else
       {
