@@ -1347,6 +1347,7 @@ class FreeplayState extends MusicBeatSubState
             grpCapsules.members[realShit].favIcon.visible = false;
             grpCapsules.members[realShit].favIconBlurred.visible = false;
             grpCapsules.members[realShit].checkClip();
+            grpCapsules.members[realShit].selected = grpCapsules.members[realShit].selected; // set selected again, so it can run it's getter function to initialize movement
           });
 
           busy = true;
@@ -1773,6 +1774,8 @@ class FreeplayState extends MusicBeatSubState
 
     // Set difficulty star count.
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
+
+    grpCapsules.members[curSelected].selected = grpCapsules.members[curSelected].selected; // set selected again, so it can run it's getter function to initialize movement
   }
 
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
