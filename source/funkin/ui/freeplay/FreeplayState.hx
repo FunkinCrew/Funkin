@@ -1695,7 +1695,6 @@ class FreeplayState extends MusicBeatSubState
         {
           changeDiff(1);
           _pressedOn = false;
-          draggingDifficulty = false;
           busy = true;
           grpCapsules.members[curSelected].doLerp = false;
 
@@ -1706,6 +1705,7 @@ class FreeplayState extends MusicBeatSubState
               startDelay: 0.1,
               onComplete: function(_) {
                 grpCapsules.members[curSelected].doLerp = true;
+                draggingDifficulty = false;
                 busy = false;
               }
             });
@@ -1714,7 +1714,6 @@ class FreeplayState extends MusicBeatSubState
         {
           changeDiff(-1);
           _pressedOn = false;
-          draggingDifficulty = false;
           busy = true;
           grpCapsules.members[curSelected].doLerp = false;
 
@@ -1726,6 +1725,7 @@ class FreeplayState extends MusicBeatSubState
               onComplete: function(_) {
                 grpCapsules.members[curSelected].doLerp = true;
                 busy = false;
+                draggingDifficulty = false;
               }
             });
         }
@@ -1736,6 +1736,11 @@ class FreeplayState extends MusicBeatSubState
           draggingDifficulty = false;
           favoriteSong();
         }
+      }
+      else
+      {
+        draggingDifficulty = false;
+        grpCapsules.members[curSelected].doLerp = true;
       }
 
       for (diff in grpDifficulties.group.members)
