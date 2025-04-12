@@ -3,8 +3,10 @@ package funkin.data.story.level;
 import funkin.util.SortUtil;
 import funkin.ui.story.Level;
 import funkin.ui.story.ScriptedLevel;
+import funkin.util.tools.ISingleton;
+import funkin.data.DefaultRegistryImpl;
 
-class LevelRegistry extends BaseRegistry<Level, LevelData>
+class LevelRegistry extends BaseRegistry<Level, LevelData> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the level data format.
@@ -15,77 +17,13 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
 
   public static final LEVEL_DATA_VERSION_RULE:thx.semver.VersionRule = ">=1.0.0 <1.1.0";
 
-  public static var instance(get, never):LevelRegistry;
-  static var _instance:Null<LevelRegistry> = null;
-
-  static function get_instance():LevelRegistry
-  {
-    if (_instance == null) _instance = new LevelRegistry();
-    return _instance;
-  }
+  static final baseGameLevelIds:Array<String> = funkin.util.macro.DataMacro.listBaseGameLevelIds();
 
   static final baseGameLevelIds:Array<String> = funkin.util.macro.DataMacro.listBaseGameLevelIds();
 
   public function new()
   {
     super('LEVEL', 'levels', LEVEL_DATA_VERSION_RULE);
-  }
-
-  /**
-   * Read, parse, and validate the JSON data and produce the corresponding data object.
-   */
-  public function parseEntryData(id:String):Null<LevelData>
-  {
-    // JsonParser does not take type parameters,
-    // otherwise this function would be in BaseRegistry.
-    var parser = new json2object.JsonParser<LevelData>();
-    parser.ignoreUnknownVariables = false;
-
-    switch (loadEntryFile(id))
-    {
-      case {fileName: fileName, contents: contents}:
-        parser.fromJson(contents, fileName);
-      default:
-        return null;
-    }
-
-    if (parser.errors.length > 0)
-    {
-      printErrors(parser.errors, id);
-      return null;
-    }
-    return parser.value;
-  }
-
-  /**
-   * Parse and validate the JSON data and produce the corresponding data object.
-   *
-   * NOTE: Must be implemented on the implementation class.
-   * @param contents The JSON as a string.
-   * @param fileName An optional file name for error reporting.
-   */
-  public function parseEntryDataRaw(contents:String, ?fileName:String):Null<LevelData>
-  {
-    var parser = new json2object.JsonParser<LevelData>();
-    parser.ignoreUnknownVariables = false;
-    parser.fromJson(contents, fileName);
-
-    if (parser.errors.length > 0)
-    {
-      printErrors(parser.errors, fileName);
-      return null;
-    }
-    return parser.value;
-  }
-
-  function createScriptedEntry(clsName:String):Level
-  {
-    return ScriptedLevel.init(clsName, "unknown");
-  }
-
-  function getScriptedClassNames():Array<String>
-  {
-    return ScriptedLevel.listScriptClasses();
   }
 
   /**
