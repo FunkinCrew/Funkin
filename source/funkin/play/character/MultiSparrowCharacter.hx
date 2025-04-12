@@ -1,7 +1,6 @@
 package funkin.play.character;
 
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.play.character.CharacterData.CharacterRenderType;

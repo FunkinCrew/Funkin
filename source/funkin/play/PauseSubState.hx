@@ -18,6 +18,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.transition.StickerSubState;
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -737,7 +738,7 @@ class PauseSubState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
 
-    var targetState:funkin.ui.transition.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(sticker) : (sticker) ->
+    var targetState:StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(sticker) : (sticker) ->
       FreeplayState.build(sticker);
 
     // Do this AFTER because this resets the value of isStoryMode!
@@ -755,7 +756,7 @@ class PauseSubState extends MusicBeatSubState
       default: "all";
     };
 
-    state.openSubState(new funkin.ui.transition.StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
+    state.openSubState(new StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
   }
 
   /**
