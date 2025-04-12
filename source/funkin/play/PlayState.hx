@@ -332,6 +332,11 @@ class PlayState extends MusicBeatSubState
   public var isInCutscene:Bool = false;
 
   /**
+   * Whether the game is currently in a gameplay cutscene.
+   */
+  public var isInGameplayCutscene:Bool = false;
+
+  /**
    * Whether the inputs should be disabled for whatever reason...
    * Used after the song ends, and in the Stage Editor.
    */
@@ -1506,27 +1511,24 @@ class PlayState extends MusicBeatSubState
     // That combo milestones that got spoiled that one time.
     // Comes with NEAT visual and audio effects.
 
-    // bruh this var is bonkers i thot it was a function lmfaooo
-
-    // Break up into individual lines to aid debugging.
-
     var shouldShowComboText:Bool = false;
-    // TODO: Re-enable combo text (how to do this without sections?).
-    // if (currentSong != null)
-    // {
-    //  shouldShowComboText = (Conductor.instance.currentBeat % 8 == 7);
-    //  var daSection = .getSong()[Std.int(Conductor.instance.currentBeat / 16)];
-    //  shouldShowComboText = shouldShowComboText && (daSection != null && daSection.mustHitSection);
-    //  shouldShowComboText = shouldShowComboText && (Highscore.tallies.combo > 5);
-    //
-    //  var daNextSection = .getSong()[Std.int(Conductor.instance.currentBeat / 16) + 1];
-    //  var isEndOfSong = .getSong().length < Std.int(Conductor.instance.currentBeat / 16);
-    //  shouldShowComboText = shouldShowComboText && (isEndOfSong || (daNextSection != null && !daNextSection.mustHitSection));
-    // }
+
+    if (currentSong != null) {
+      shouldShowComboText = (Conductor.instance.currentBeat % 8 == 6);
+      shouldShowComboText = shouldShowComboText && (playerStrumline.getNotesOnScreen().length <= 0);
+      shouldShowComboText = shouldShowComboText && !isInGameplayCutscene;
+      shouldShowComboText = shouldShowComboText && ((playerStrumline.getNotesMayHit().length + playerStrumline.getHoldNotesHitOrMissed().length) <= 0);
+      shouldShowComboText = shouldShowComboText && (Highscore.tallies.combo > 5);
+
+      var songLength:Float = FlxG.sound?.music?.length;
+      var currentPosition:Float = Conductor.instance.songPosition;
+      shouldShowComboText = shouldShowComboText && !(currentPosition >= songLength - songLength * 0.03);
+    }
 
     if (shouldShowComboText)
     {
-      var animShit:ComboMilestone = new ComboMilestone(-100, 300, Highscore.tallies.combo);
+      trace('Displaying combo thingy!!!');
+      var animShit:ComboMilestone = new ComboMilestone(-100, FlxG.height * .375, Highscore.tallies.combo);
       animShit.scrollFactor.set(0.6, 0.6);
       animShit.zIndex = 1100;
       animShit.cameras = [camHUD];

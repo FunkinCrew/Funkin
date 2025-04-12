@@ -24,7 +24,7 @@ class ComboMilestone extends FlxTypedSpriteGroup<FlxSprite>
     this.daCombo = daCombo;
 
     effectStuff = new FlxSprite(0, 0);
-    effectStuff.frames = Paths.getSparrowAtlas('comboMilestone');
+    effectStuff.frames = Paths.getSparrowAtlas('ui/combo-milestone/funkin/comboMilestone');
     effectStuff.animation.addByPrefix('funny', 'NOTE COMBO animation', 24, false);
     effectStuff.animation.play('funny');
     effectStuff.animation.finishCallback = function(nameThing) {
@@ -82,32 +82,27 @@ class ComboMilestone extends FlxTypedSpriteGroup<FlxSprite>
     FunkinSound.playOnce(Paths.sound('comboSound'));
 
     wasComboSetup = true;
-    var loopNum:Int = 0;
+    var stringNum:String = Std.string(daCombo);
 
-    while (daCombo > 0)
+    for (i in 0...stringNum.length)
     {
-      var comboNumber:ComboMilestoneNumber = new ComboMilestoneNumber(450 - (100 * loopNum), 20 + 14 * loopNum, daCombo % 10);
-      comboNumber.setGraphicSize(Std.int(comboNumber.width * 0.7));
-      grpNumbers.add(comboNumber);
-      add(comboNumber);
-
-      loopNum += 1;
-
-      daCombo = Math.floor(daCombo / 10);
+      var coolnumber:ComboMilestoneNumber = new ComboMilestoneNumber(450 - (100 * i), 20 + 14 * i, stringNum.charAt(stringNum.length - 1 - i));
+      coolnumber.setGraphicSize(Std.int(coolnumber.width * 0.7));
+      grpNumbers.add(coolnumber);
+      add(coolnumber);
     }
   }
 }
 
 class ComboMilestoneNumber extends FlxSprite
 {
-  public function new(x:Float, y:Float, digit:Int)
+  public function new(x:Float, y:Float, digit:String)
   {
     super(x - 20, y);
 
-    var stringNum:String = Std.string(digit);
-    frames = Paths.getSparrowAtlas('comboMilestoneNumbers');
-    animation.addByPrefix(stringNum, stringNum, 24, false);
-    animation.play(stringNum);
+    frames = Paths.getSparrowAtlas('ui/combo-milestone/funkin/comboMilestoneNumbers');
+    animation.addByPrefix(digit, digit, 24, false);
+    animation.play(digit);
     updateHitbox();
   }
 
