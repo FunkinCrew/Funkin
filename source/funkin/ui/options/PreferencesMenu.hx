@@ -14,15 +14,17 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.ui.options.PreferenceItem.PreferenceItemData;
+import funkin.ui.options.PreferenceItem.PreferenceType;
+import funkin.ui.MenuList.MenuTypedList;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
-  var items:TextMenuList;
-  var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
-  var preferenceDesc:Array<String> = [];
+  var options:MenuTypedList<PreferenceItem>;
+  var categories:FlxTypedSpriteGroup<AtlasText>;
+
   var itemDesc:FlxText;
   var itemDescBox:FunkinSprite;
-
   var menuCamera:FlxCamera;
   var hudCamera:FlxCamera;
   var camFollow:FlxObject;
@@ -41,29 +43,29 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
     camera = menuCamera;
 
-    add(items = new TextMenuList());
-    add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
-
     add(itemDescBox = new FunkinSprite());
     itemDescBox.cameras = [hudCamera];
 
     add(itemDesc = new FlxText(0, 0, 1180, null, 32));
     itemDesc.cameras = [hudCamera];
 
+    add(options = new MenuTypedList<PreferenceItem>());
+    add(categories = new FlxTypedSpriteGroup<AtlasText>());
+
     createPrefItems();
     createPrefDescription();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
-    if (items != null) camFollow.y = items.selectedItem.y;
+    if (options != null) camFollow.y = options.selectedItem.y;
 
     menuCamera.follow(camFollow, null, 0.085);
     var margin = 160;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     menuCamera.minScrollY = 0;
 
-    items.onChange.add(function(selected) {
-      camFollow.y = selected.y;
-      itemDesc.text = preferenceDesc[items.selectedIndex];
+    options.onChange.add(function(selected) {
+      camFollow.y = selected.text.y;
+      itemDesc.text = selected.description;
     });
   }
 
@@ -76,12 +78,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     itemDescBox.alpha = 0.6;
     itemDesc.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     itemDesc.borderSize = 3;
-
     // Update the text.
-    itemDesc.text = preferenceDesc[items.selectedIndex];
+    itemDesc.text = options.selectedItem.description;
     itemDesc.screenCenter();
     itemDesc.y += 270;
-
     // Create the box around the text.
     itemDescBox.setPosition(itemDesc.x - 10, itemDesc.y - 10);
     itemDescBox.setGraphicSize(Std.int(itemDesc.width + 20), Std.int(itemDesc.height + 25));
@@ -93,57 +93,73 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
+    addCategory('Gameplay');
+    addOption(Checkbox, 'Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
-    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+    addOption(Checkbox, 'Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
-    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
+    addOption(Percentage, 'Strumline Background', 'The strumline background\'s transparency percentage.', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
-    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
-      function(value:Bool):Void {
-        Preferences.flashingLights = value;
-      }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+    addOption(Checkbox, 'Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.', function(value:Bool):Void {
+      Preferences.flashingLights = value;
+    }, Preferences.flashingLights);
+
+    addCategory('Additional');
+    addOption(Checkbox, 'Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
+    addOption(Checkbox, 'Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    addOption(Checkbox, 'Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+    addOption(Checkbox, 'Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
+    addOption(Checkbox, 'Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
-      Preferences.framerate = Std.int(value);
-    }, null, Preferences.framerate, 30, 300, 5, 0);
+    addOption(Number, 'FPS', 'The maximum framerate that the game targets.', function(value:Int):Void {
+      Preferences.framerate = value;
+    }, Preferences.framerate, { min: 30, max: 300, step: 5, precision: 0 });
     #end
 
-    createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
+    addCategory('Screenshots');
+    addOption(Checkbox, 'Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
-    createPrefItemCheckbox('Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
+
+    addOption(Checkbox, 'Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
       Preferences.fancyPreview = value;
     }, Preferences.fancyPreview);
-    createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
+    addOption(Checkbox, 'Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
-    createPrefItemEnum('Save Format', 'Save screenshots to this format.', ['PNG' => 'PNG', 'JPEG' => 'JPEG'], function(value:String):Void {
+    addOption(Enum, 'Save Format', 'Save screenshots to this format.', function(value:String):Void {
       Preferences.saveFormat = value;
-    }, Preferences.saveFormat);
-    createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
+    }, Preferences.saveFormat, { values: ['PNG' => 'PNG', 'JPEG' => 'JPEG'] });
+    addOption(Number, 'JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
-    }, null, Preferences.jpegQuality, 0, 100, 5, 0);
+    }, Preferences.jpegQuality, { min: 0, max: 100, step: 5, precision: 0 });
+  }
+
+  function addOption(type:PreferenceType, name:String, description:String, onChange:Null<Dynamic->Void>, defaultValue:Dynamic, ?data:PreferenceItemData):Void
+  {
+    var item = new PreferenceItem(0, 60 * (options.length + categories.length) + 15, type, name, description, onChange, defaultValue, data);
+    options.addItem(name, item);
+  }
+
+  function addCategory(name:String):Void
+  {
+    var labelY:Float = 120 * (options.length + categories.length) + 30;
+    categories.add(new AtlasText(0, labelY, name, AtlasFont.BOLD)).screenCenter(X);
   }
 
   override function update(elapsed:Float):Void
@@ -151,105 +167,25 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     super.update(elapsed);
 
     // Indent the selected item.
-    items.forEach(function(daItem:TextMenuItem) {
+    options.forEach(function(daItem:PreferenceItem) {
       var thyOffset:Int = 0;
       // Initializing thy text width (if thou text present)
       var thyTextWidth:Int = 0;
-      if (Std.isOfType(daItem, EnumPreferenceItem)) thyTextWidth = cast(daItem, EnumPreferenceItem).lefthandText.getWidth();
-      else if (Std.isOfType(daItem, NumberPreferenceItem)) thyTextWidth = cast(daItem, NumberPreferenceItem).lefthandText.getWidth();
 
-      if (thyTextWidth != 0)
+      switch (daItem.type)
       {
-        // Magic number because of the weird offset thats being added by default
-        thyOffset += thyTextWidth - 75;
+        case PreferenceType.Number, PreferenceType.Percentage:
+          thyTextWidth = cast(daItem.preferenceGraphic, NumberPreferenceItem).label.getWidth();
+        case PreferenceType.Enum:
+          thyTextWidth = cast(daItem.preferenceGraphic, EnumPreferenceItem).label.getWidth();
+        case PreferenceType.Checkbox:
+          thyTextWidth = Std.int(daItem.preferenceGraphic.width);
       }
 
-      if (items.selectedItem == daItem)
-      {
-        thyOffset += 150;
-      }
-      else
-      {
-        thyOffset += 120;
-      }
+      // setting the thy offset
+      thyOffset = thyTextWidth + PreferenceItem.SPACING_X;
 
-      daItem.x = thyOffset;
+      daItem.text.x = thyOffset;
     });
-  }
-
-  // - Preference item creation methods -
-  // Should be moved into a separate PreferenceItems class but you can't access PreferencesMenu.items and PreferencesMenu.preferenceItems from outside.
-
-  /**
-   * Creates a pref item that works with booleans
-   * @param onChange Gets called every time the player changes the value; use this to apply the value
-   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
-   */
-  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
-  {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
-
-    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
-      var value = !checkbox.currentValue;
-      onChange(value);
-      checkbox.currentValue = value;
-    });
-
-    preferenceItems.add(checkbox);
-    preferenceDesc.push(prefDesc);
-  }
-
-  /**
-   * Creates a pref item that works with general numbers
-   * @param onChange Gets called every time the player changes the value; use this to apply the value
-   * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed value looks
-   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
-   * @param min Minimum value (example: 0)
-   * @param max Maximum value (example: 10)
-   * @param step The value to increment/decrement by (default = 0.1)
-   * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
-   */
-  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
-      step:Float = 0.1, precision:Int):Void
-  {
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
-    items.addItem(prefName, item);
-    preferenceItems.add(item.lefthandText);
-    preferenceDesc.push(prefDesc);
-  }
-
-  /**
-   * Creates a pref item that works with number percentages
-   * @param onChange Gets called every time the player changes the value; use this to apply the value
-   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
-   * @param min Minimum value (default = 0)
-   * @param max Maximum value (default = 100)
-   */
-  function createPrefItemPercentage(prefName:String, prefDesc:String, onChange:Int->Void, defaultValue:Int, min:Int = 0, max:Int = 100):Void
-  {
-    var newCallback = function(value:Float) {
-      onChange(Std.int(value));
-    };
-    var formatter = function(value:Float) {
-      return '${value}%';
-    };
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0, newCallback, formatter);
-    items.addItem(prefName, item);
-    preferenceItems.add(item.lefthandText);
-    preferenceDesc.push(prefDesc);
-  }
-
-  /**
-   * Creates a pref item that works with enums
-   * @param values Maps enum values to display strings _(ex: `NoteHitSoundType.PingPong => "Ping pong"`)_
-   * @param onChange Gets called every time the player changes the value; use this to apply the value
-   * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
-   */
-  function createPrefItemEnum(prefName:String, prefDesc:String, values:Map<String, String>, onChange:String->Void, defaultValue:String):Void
-  {
-    var item = new EnumPreferenceItem(0, (120 * items.length) + 30, prefName, values, defaultValue, onChange);
-    items.addItem(prefName, item);
-    preferenceItems.add(item.lefthandText);
-    preferenceDesc.push(prefDesc);
   }
 }
