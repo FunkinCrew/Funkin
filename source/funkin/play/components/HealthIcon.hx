@@ -57,6 +57,18 @@ class HealthIcon extends FunkinSprite
   public var bopEvery:Int = Constants.STEPS_PER_BEAT;
 
   /**
+   * Defaults to 150 or 32, if icon pixel.
+   * Used to determine Height/Width of one icon frame (if it's legacy/non-animated).
+   */
+  public var iconDivisor:Int = 150;
+
+  /**
+   * Value to attach offset.
+   * @default 0, 0
+   */
+  public var customOffset:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
    * The amount, in degrees, to rotate the icon by when boping.
    * ERIC NOTE: I experimented with this a bit but ended up turning it off,
    * but why not leave it in for the script kiddies?
@@ -176,24 +188,25 @@ class HealthIcon extends FunkinSprite
     {
       this.characterId = Constants.DEFAULT_HEALTH_ICON;
       this.isPixel = false;
+      this.iconDivisor = isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE;
 
       loadCharacter(characterId);
 
       this.size.set(1.0, 1.0);
-      this.offset.x = 0.0;
-      this.offset.y = 0.0;
+      this.offset.set(0.0, 0.0);
+      this.customOffset.set(0.0, 0.0);
       this.flipX = false;
     }
     else
     {
       this.characterId = data.id;
       this.isPixel = data.isPixel ?? false;
+      this.iconDivisor = data.iconDivisor ?? (isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
 
       loadCharacter(characterId);
 
       this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
-      this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;
+      data.offsets != null ? this.customOffset.set(-data.offsets[0], -data.offsets[1]) : this.customOffset.set(0.0, 0.0); // Reverse, as they are added
       this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
     }
   }
@@ -216,12 +229,19 @@ class HealthIcon extends FunkinSprite
     this.updatePosition();
   }
 
+  override function updateHitbox()
+  {
+    super.updateHitbox();
+    if (customOffset.x != 0) this.offset.x += this.customOffset.x;
+    if (customOffset.y != 0) this.offset.y += this.customOffset.y;
+  }
+
   /**
    * Does the calculation to lerp the icon size. Usually called every frame, but can be forced to the target size.
    * Mainly forced when changing to old icon to not have a weird lerp related to changing from pixel icon to non-pixel old icon
    * @param force Force the icon immedialtely to be the target size. Defaults to false.
    */
-  function lerpIconSize(force:Bool = false):Void
+  public dynamic function lerpIconSize(force:Bool = false):Void
   {
     // Lerp the health icon back to its normal size,
     // while maintaining aspect ratio.
@@ -265,7 +285,7 @@ class HealthIcon extends FunkinSprite
   /**
    * Update the position (and status) of the health icon.
    */
-  public function updatePosition():Void
+  public dynamic function updatePosition():Void
   {
     // Make sure autoUpdate is false if the health icon is not being used in the PlayState.
     if (autoUpdate && PlayState.instance != null)
@@ -298,6 +318,11 @@ class HealthIcon extends FunkinSprite
    */
   public function onStepHit(curStep:Int):Void
   {
+    setBopScale(curStep);
+  }
+
+  public dynamic function setBopScale(curStep:Int)
+  {
     // Make the icons bop.
     if (bopEvery != 0 && curStep % bopEvery == 0 && isLegacyStyle)
     {
@@ -320,7 +345,7 @@ class HealthIcon extends FunkinSprite
     }
   }
 
-  function updateHealthIcon(health:Float):Void
+  public dynamic function updateHealthIcon(health:Float):Void
   {
     // We want to efficiently handle animation playback
 
@@ -442,7 +467,7 @@ class HealthIcon extends FunkinSprite
     }
     else
     {
-      loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
+      loadGraphic(Paths.image('icons/icon-$charId'), true, iconDivisor, iconDivisor);
 
       loadAnimationOld();
     }
