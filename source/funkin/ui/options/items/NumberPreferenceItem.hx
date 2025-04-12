@@ -27,6 +27,7 @@ class NumberPreferenceItem extends TextMenuItem
   public var max:Float;
   public var step:Float;
   public var precision:Int;
+  public var stepPrecise:Float;
   public var onChangeCallback:Null<Float->Void>;
   public var valueFormatter:Null<Float->String>;
 
@@ -41,7 +42,8 @@ class NumberPreferenceItem extends TextMenuItem
    * @param callback Will get called every time the user changes the setting; use this to apply/save the setting.
    * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed string looks
    */
-  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
+  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, stepPrecise:Float,
+      ?callback:Float->Void,
       ?valueFormatter:Float->String):Void
   {
     super(x, y, name, function() {
@@ -56,6 +58,7 @@ class NumberPreferenceItem extends TextMenuItem
     this.max = max;
     this.step = step;
     this.precision = precision;
+    this.stepPrecise = stepPrecise;
     this.onChangeCallback = callback;
     this.valueFormatter = valueFormatter;
 
@@ -102,13 +105,13 @@ class NumberPreferenceItem extends TextMenuItem
     if (shouldDecrease)
     {
       var isBelowMin:Bool = currentValue - step < min;
-      currentValue = (currentValue - step).clamp(min, max);
+      currentValue = (currentValue - (pressingControl() ? stepPrecise : step)).clamp(min, max);
       if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
     }
     else if (shouldIncrease)
     {
       var isAboveMax:Bool = currentValue + step > max;
-      currentValue = (currentValue + step).clamp(min, max);
+      currentValue = (currentValue + (pressingControl() ? stepPrecise : step)).clamp(min, max);
       if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
     }
   }
@@ -131,5 +134,14 @@ class NumberPreferenceItem extends TextMenuItem
   {
     var multiplier:Float = Math.pow(10, precision);
     return Math.floor(value * multiplier) / multiplier;
+  }
+  // Replace this with control key later
+  function pressingControl():Bool
+  {
+    #if mac
+    return FlxG.keys.pressed.WINDOWS;
+    #else
+    return FlxG.keys.pressed.CONTROL;
+    #end
   }
 }
