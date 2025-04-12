@@ -65,19 +65,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 
-  /**
-   * The internal ID of the song.
-   */
-  public final id:String;
-
-  /**
-   * Song metadata as parsed from the JSON file.
-   * This is the data for the `default` variation specifically,
-   * and is needed for the IRegistryEntry interface.
-   * Will only be null if the song data could not be loaded.
-   */
-  public final _data:Null<SongMetadata>;
-
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
 
@@ -633,56 +620,49 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
   }
 
-  public function toString():String
-  {
-    return 'Song($id)';
-  }
+  public function onPause(event:PauseScriptEvent):Void {};
 
-  public function destroy():Void {}
+  public function onResume(event:ScriptEvent):Void {};
 
-  public function onPause(event:PauseScriptEvent):Void {}
+  public function onSongLoaded(event:SongLoadScriptEvent):Void {};
 
-  public function onResume(event:ScriptEvent):Void {}
+  public function onSongStart(event:ScriptEvent):Void {};
 
-  public function onSongLoaded(event:SongLoadScriptEvent):Void {}
+  public function onSongEnd(event:ScriptEvent):Void {};
 
-  public function onSongStart(event:ScriptEvent):Void {}
+  public function onGameOver(event:ScriptEvent):Void {};
 
-  public function onSongEnd(event:ScriptEvent):Void {}
+  public function onSongRetry(event:SongRetryEvent):Void {};
 
-  public function onGameOver(event:ScriptEvent):Void {}
+  public function onNoteIncoming(event:NoteScriptEvent) {};
 
-  public function onSongRetry(event:SongRetryEvent):Void {}
+  public function onNoteHit(event:HitNoteScriptEvent) {};
 
-  public function onNoteIncoming(event:NoteScriptEvent) {}
-
-  public function onNoteHit(event:HitNoteScriptEvent) {}
-
-  public function onNoteMiss(event:NoteScriptEvent):Void {}
+  public function onNoteMiss(event:NoteScriptEvent):Void {};
 
   public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {}
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {};
 
-  public function onSongEvent(event:SongEventScriptEvent):Void {}
+  public function onSongEvent(event:SongEventScriptEvent):Void {};
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {}
+  public function onStepHit(event:SongTimeScriptEvent):Void {};
 
-  public function onBeatHit(event:SongTimeScriptEvent):Void {}
+  public function onBeatHit(event:SongTimeScriptEvent):Void {};
 
-  public function onCountdownStart(event:CountdownScriptEvent):Void {}
+  public function onCountdownStart(event:CountdownScriptEvent):Void {};
 
-  public function onCountdownStep(event:CountdownScriptEvent):Void {}
+  public function onCountdownStep(event:CountdownScriptEvent):Void {};
 
-  public function onCountdownEnd(event:CountdownScriptEvent):Void {}
+  public function onCountdownEnd(event:CountdownScriptEvent):Void {};
 
-  public function onScriptEvent(event:ScriptEvent):Void {}
+  public function onScriptEvent(event:ScriptEvent):Void {};
 
-  public function onCreate(event:ScriptEvent):Void {}
+  public function onCreate(event:ScriptEvent):Void {};
 
-  public function onDestroy(event:ScriptEvent):Void {}
+  public function onDestroy(event:ScriptEvent):Void {};
 
-  public function onUpdate(event:UpdateScriptEvent):Void {}
+  public function onUpdate(event:UpdateScriptEvent):Void {};
 
   static function _fetchData(id:String):Null<SongMetadata>
   {
