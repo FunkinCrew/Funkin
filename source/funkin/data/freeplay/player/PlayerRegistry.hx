@@ -69,6 +69,46 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
     return count;
   }
 
+  public function hasNewCharacterUnlock():Bool
+  {
+    var charactersUnlocked = Save.instance.charactersUnlocked.clone();
+
+    for (charId in listEntryIds())
+    {
+      var player = fetchEntry(charId);
+      if (player == null) continue;
+
+      if (!player.isUnlocked()) continue;
+      if (charactersUnlocked.contains(charId)) continue;
+
+      // This character is unlocked but we haven't seen their unlock notification yet.
+      return true;
+    }
+
+    // Fallthrough case.
+    return false;
+  }
+
+  public function listNewCharacterUnlocks():Array<String>
+  {
+    var charactersUnlocked = Save.instance.charactersUnlocked.clone();
+    var result = [];
+
+    for (charId in listEntryIds())
+    {
+      var player = fetchEntry(charId);
+      if (player == null) continue;
+
+      if (!player.isUnlocked()) continue;
+      if (charactersUnlocked.contains(charId)) continue;
+
+      // This character is unlocked but we haven't seen their unlock notification yet.
+      result.push(charId);
+    }
+
+    return result;
+  }
+
   public function hasNewCharacter():Bool
   {
     var charactersSeen = Save.instance.charactersSeen.clone();
