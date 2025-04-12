@@ -27,7 +27,7 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
       state.saved = false;
     }
 
-    final EXCLUDE_LIBS = ["art", "default", "vlc", "videos", "songs"];
+    final EXCLUDE_LIBS = ["art", "default", "vlc", "videos", "songs", "libvlc"];
     var allLibs = [];
 
     @:privateAccess
