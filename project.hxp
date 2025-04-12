@@ -367,6 +367,10 @@ class Project extends HXProject {
         }
       }
     }
+
+    if (isIOS()) {
+      config.set("ios.non-exempt-encryption", "false");
+    }
   }
 
 				if (BUNDLE_APP.isEnabled(this))
