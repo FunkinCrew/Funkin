@@ -14,6 +14,10 @@ import funkin.util.tools.ICloneable;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.Paths.PathsFunction;
 import lime.app.Promise;
+import lime.media.AudioSource;
+import openfl.events.Event;
+import openfl.media.Sound;
+import openfl.media.SoundChannel;
 import openfl.media.SoundMixer;
 
 #if (openfl >= "8.0.0")
@@ -109,6 +113,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   }
 
   /**
+   * If true, the game will forcefully add this sound's channel to the list of playing sounds.
+   */
+  public var important:Bool = false;
+
+  /**
    * Are we in a state where the song should play but time is negative?
    */
   var _shouldPlay:Bool = false;
@@ -145,6 +154,14 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     else
     {
       super.update(elapsedSec);
+
+      @:privateAccess
+      {
+        if (important && _channel != null && !SoundMixer.__soundChannels.contains(_channel))
+        {
+          SoundMixer.__soundChannels.push(_channel);
+        }
+      }
     }
   }
 
@@ -431,13 +448,14 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param persist         Whether to keep this `FunkinSound` between states, or destroy it.
    * @param onComplete      Called when the sound finished playing.
    * @param onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
+   * @param important       If `true`, the sound channel will forcefully be added onto the channel array, even if full. Use sparingly!
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
   public static function load(embeddedSound:FlxSoundAsset, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = false,
-      persist:Bool = false, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
+      persist:Bool = false, ?onComplete:Void->Void, ?onLoad:Void->Void, important:Bool = false):Null<FunkinSound>
   {
     @:privateAccess
-    if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+    if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS && !important)
     {
       FlxG.log.error('FunkinSound could not play sound, channels exhausted! Found ${SoundMixer.__soundChannels.length} active sound channels.');
       return null;
@@ -462,6 +480,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     sound.volume = volume;
     sound.group = FlxG.sound.defaultSoundGroup;
     sound.persist = persist;
+    sound.important = important;
 
     // Make sure to add the sound to the list.
     // If it's already in, it won't get re-added.
@@ -534,15 +553,50 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     this._label = 'unknown';
   }
 
+  @:access(openfl.media.Sound)
+  @:access(openfl.media.SoundChannel)
+  @:access(openfl.media.SoundMixer)
+  override function startSound(startTime:Float)
+  {
+    if (!important)
+    {
+      super.startSound(startTime);
+      return;
+    }
+
+    _time = startTime;
+    _paused = false;
+
+    if (_sound == null) return;
+
+    // Create a channel manually if the sound is considered important.
+    var pan:Float = FlxMath.bound(SoundMixer.__soundTransform.pan + _transform.pan, -1, 1);
+    var volume:Float = FlxMath.bound(SoundMixer.__soundTransform.volume * _transform.volume, 0, MAX_VOLUME);
+
+    var audioSource:AudioSource = new AudioSource(_sound.__buffer);
+    audioSource.offset = Std.int(startTime);
+    audioSource.gain = volume;
+
+    var position:lime.math.Vector4 = audioSource.position;
+    position.x = pan;
+    position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
+    audioSource.position = position;
+
+    _channel = new SoundChannel(_sound, audioSource, _transform);
+    _channel.addEventListener(Event.SOUND_COMPLETE, stopped);
+    pitch = _pitch;
+    active = true;
+  }
+
   /**
    * Play a sound effect once, then destroy it.
    * @param key
    * @param volume
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
-  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
+  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void, important:Bool = false):Null<FunkinSound>
   {
-    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, false, onComplete, onLoad);
+    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, false, onComplete, onLoad, important);
     return result;
   }
 
