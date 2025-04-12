@@ -4,8 +4,10 @@ import funkin.data.freeplay.player.PlayerData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
 import funkin.save.Save;
+import funkin.util.tools.ISingleton;
+import funkin.data.DefaultRegistryImpl;
 
-class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
+class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
@@ -16,14 +18,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
 
   public static final PLAYER_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  public static var instance(get, never):PlayerRegistry;
-  static var _instance:Null<PlayerRegistry> = null;
-
-  static function get_instance():PlayerRegistry
-  {
-    if (_instance == null) _instance = new PlayerRegistry();
-    return _instance;
-  }
+  static final baseGamePlayerIds:Array<String> = funkin.util.macro.DataMacro.listBaseGamePlayerIds();
 
   /**
    * A mapping between stage character IDs and Freeplay playable character IDs.
@@ -132,68 +127,11 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
   }
 
   /**
-   * Read, parse, and validate the JSON data and produce the corresponding data object.
-   */
-  public function parseEntryData(id:String):Null<PlayerData>
-  {
-    // JsonParser does not take type parameters,
-    // otherwise this function would be in BaseRegistry.
-    var parser = new json2object.JsonParser<PlayerData>();
-    parser.ignoreUnknownVariables = false;
-
-    switch (loadEntryFile(id))
-    {
-      case {fileName: fileName, contents: contents}:
-        parser.fromJson(contents, fileName);
-      default:
-        return null;
-    }
-
-    if (parser.errors.length > 0)
-    {
-      printErrors(parser.errors, id);
-      return null;
-    }
-    return parser.value;
-  }
-
-  /**
-   * Parse and validate the JSON data and produce the corresponding data object.
-   *
-   * NOTE: Must be implemented on the implementation class.
-   * @param contents The JSON as a string.
-   * @param fileName An optional file name for error reporting.
-   */
-  public function parseEntryDataRaw(contents:String, ?fileName:String):Null<PlayerData>
-  {
-    var parser = new json2object.JsonParser<PlayerData>();
-    parser.ignoreUnknownVariables = false;
-    parser.fromJson(contents, fileName);
-
-    if (parser.errors.length > 0)
-    {
-      printErrors(parser.errors, fileName);
-      return null;
-    }
-    return parser.value;
-  }
-
-  function createScriptedEntry(clsName:String):PlayableCharacter
-  {
-    return ScriptedPlayableCharacter.init(clsName, "unknown");
-  }
-
-  function getScriptedClassNames():Array<String>
-  {
-    return ScriptedPlayableCharacter.listScriptClasses();
-  }
-
-  /**
    * A list of all the playable characters from the base game, in order.
    */
   public function listBaseGamePlayerIds():Array<String>
   {
-    return ["bf", "pico"];
+    return baseGamePlayerIds;
   }
 
   /**

@@ -20,11 +20,6 @@ using funkin.data.animation.AnimationData.AnimationDataUtil;
 class NoteStyle implements IRegistryEntry<NoteStyleData>
 {
   /**
-   * The ID of the note style.
-   */
-  public final id:String;
-
-  /**
    * Note style data as parsed from the JSON file.
    */
   public final _data:NoteStyleData;
