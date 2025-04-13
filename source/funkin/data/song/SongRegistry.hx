@@ -42,8 +42,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
     return '${Constants.TITLE} - ${Constants.VERSION}';
   }
 
-  static final baseGameSongIds:Array<String> = funkin.util.macro.DataMacro.listBaseGameSongIds();
-
   public function new()
   {
     super('SONG', 'songs', SONG_METADATA_VERSION_RULE);
@@ -482,24 +480,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
     chartData.variation = variation;
 
     return chartData;
-  }
-
-  /**
-   * A list of all the story weeks from the base game, in order.
-   */
-  public function listBaseGameSongIds():Array<String>
-  {
-    return baseGameSongIds;
-  }
-
-  /**
-   * A list of all installed story weeks that are not from the base game.
-   */
-  public function listModdedSongIds():Array<String>
-  {
-    return listEntryIds().filter(function(id:String):Bool {
-      return listBaseGameSongIds().indexOf(id) == -1;
-    });
   }
 
   /**
