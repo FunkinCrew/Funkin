@@ -18,8 +18,6 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
 
   public static final PLAYER_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-  static final baseGamePlayerIds:Array<String> = funkin.util.macro.DataMacro.listBaseGamePlayerIds();
-
   /**
    * A mapping between stage character IDs and Freeplay playable character IDs.
    */
@@ -124,23 +122,5 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
   public function isCharacterOwned(characterId:String):Bool
   {
     return ownedCharacterIds.exists(characterId);
-  }
-
-  /**
-   * A list of all the playable characters from the base game, in order.
-   */
-  public function listBaseGamePlayerIds():Array<String>
-  {
-    return baseGamePlayerIds;
-  }
-
-  /**
-   * A list of all installed playable characters that are not from the base game.
-   */
-  public function listModdedPlayerIds():Array<String>
-  {
-    return listEntryIds().filter(function(id:String):Bool {
-      return listBaseGamePlayerIds().indexOf(id) == -1;
-    });
   }
 }
