@@ -8,6 +8,7 @@ import haxe.macro.Expr.TypeDefKind;
 import haxe.macro.Expr.MetadataEntry;
 import haxe.macro.Type;
 import haxe.macro.Type.ClassType;
+import sys.FileSystem;
 
 using Lambda;
 using haxe.macro.ExprTools;
@@ -38,6 +39,8 @@ typedef RegistryTypeParams =
  */
 class RegistryMacro
 {
+  static final DATA_FILE_BASE_PATH:String = 'assets/preload/data';
+
   /**
    * Builds the registry class.
    *
@@ -139,8 +142,24 @@ class RegistryMacro
     var createScriptedEntry:String = '${scriptedEntryClsName}.init(clsName, "unknown")';
 
     var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>()';
+
+    var dataFilePath:String = getRegistryDataFilePath(cls, fields);
+    var baseGameEntryIds:Array<Expr> = listBaseGameEntryIds('${DATA_FILE_BASE_PATH}/${dataFilePath}/');
+
     return (macro class TempClass
       {
+        public function listBaseGameEntryIds():Array<String>
+        {
+          return $a{baseGameEntryIds};
+        }
+
+        public function listModdedEntryIds():Array<String>
+        {
+          return listEntryIds().filter(function(id:String):Bool {
+            return listBaseGameEntryIds().indexOf(id) == -1;
+          });
+        }
+
         function getScriptedClassNames()
         {
           return ${Context.parse(getScriptedClassName, Context.currentPos())}.listScriptClasses();
@@ -298,6 +317,59 @@ class RegistryMacro
             public static inline function destroy(me:$clsType) {}
           }).fields
       });
+  }
+
+  static function getRegistryDataFilePath(cls:ClassType, fields:Array<Field>):String
+  {
+    for (field in fields)
+    {
+      if (field.name == 'new')
+      {
+        // We found a field called `new`, it's probably the constructor.
+        switch (field.kind)
+        {
+          case FFun(f):
+            // Inside the function.
+            switch (f.expr.expr)
+            {
+              // Inside the block.
+              case EBlock(exprs):
+                var superCall:Expr = exprs[0];
+                switch (superCall.expr)
+                {
+                  // Inside the super() call.
+                  case ECall(_, args):
+                    // var registryId:String = args[0].toString();
+                    var dataPath:String = args[1].toString().replace('"', '').replace("'", '');
+                    // var versionRule = args[2].toString();
+
+                    return dataPath;
+                  default:
+                    Context.error('${cls.name}.new: RegistryMacro expected super call', field.pos);
+                }
+              default:
+                Context.error('${cls.name}.new: RegistryMacro expected super call', field.pos);
+            }
+          default:
+            // Continue looking for the actual constructor.
+        }
+      }
+    }
+
+    return '';
+  }
+
+  static function listBaseGameEntryIds(dataFilePath:String):Array<Expr>
+  {
+    var result:Array<Expr> = [];
+    var files:Array<String> = FileSystem.readDirectory(dataFilePath);
+
+    for (file in files)
+    {
+      result.push(macro $v{file.replace('.json', '')});
+    }
+
+    return result;
   }
 
   /**
