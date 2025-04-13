@@ -53,6 +53,8 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     return _instance;
   }
 
+  static final baseGameSongIds:Array<String> = funkin.util.macro.DataMacro.listBaseGameSongIds();
+
   public function new()
   {
     super('SONG', 'songs', SONG_METADATA_VERSION_RULE);
@@ -505,38 +507,10 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
   /**
    * A list of all the story weeks from the base game, in order.
-   * TODO: Should this be hardcoded?
    */
   public function listBaseGameSongIds():Array<String>
   {
-    return [
-      "tutorial",
-      "bopeebo",
-      "fresh",
-      "dadbattle",
-      "spookeez",
-      "south",
-      "monster",
-      "pico",
-      "philly-nice",
-      "blammed",
-      "satin-panties",
-      "high",
-      "milf",
-      "cocoa",
-      "eggnog",
-      "winter-horrorland",
-      "senpai",
-      "roses",
-      "thorns",
-      "ugh",
-      "guns",
-      "stress",
-      "darnell",
-      "lit-up",
-      "2hot",
-      "blazin"
-    ];
+    return baseGameSongIds;
   }
 
   /**

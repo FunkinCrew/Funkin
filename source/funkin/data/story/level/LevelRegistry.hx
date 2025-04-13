@@ -24,6 +24,8 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
     return _instance;
   }
 
+  static final baseGameLevelIds:Array<String> = funkin.util.macro.DataMacro.listBaseGameLevelIds();
+
   public function new()
   {
     super('LEVEL', 'levels', LEVEL_DATA_VERSION_RULE);
@@ -88,21 +90,10 @@ class LevelRegistry extends BaseRegistry<Level, LevelData>
 
   /**
    * A list of all the story weeks from the base game, in order.
-   * TODO: Should this be hardcoded?
    */
   public function listBaseGameLevelIds():Array<String>
   {
-    return [
-      "tutorial",
-      "week1",
-      "week2",
-      "week3",
-      "week4",
-      "week5",
-      "week6",
-      "week7",
-      "weekend1"
-    ];
+    return baseGameLevelIds;
   }
 
   public function listSortedLevelIds():Array<String>

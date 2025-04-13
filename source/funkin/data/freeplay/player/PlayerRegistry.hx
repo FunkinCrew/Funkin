@@ -25,6 +25,8 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
     return _instance;
   }
 
+  static final baseGamePlayerIds:Array<String> = funkin.util.macro.DataMacro.listBaseGamePlayerIds();
+
   /**
    * A mapping between stage character IDs and Freeplay playable character IDs.
    */
@@ -193,7 +195,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData>
    */
   public function listBaseGamePlayerIds():Array<String>
   {
-    return ["bf", "pico"];
+    return baseGamePlayerIds;
   }
 
   /**
