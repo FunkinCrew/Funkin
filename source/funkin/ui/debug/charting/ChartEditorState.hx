@@ -355,6 +355,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       value = 0;
     }
 
+    // Make sure playhead doesn't scroll outside the song.
+    if (value + playheadPositionInPixels < 0) playheadPositionInPixels = -value;
+    if (value + playheadPositionInPixels > songLengthInPixels) playheadPositionInPixels = songLengthInPixels - value;
+    
     if (value > songLengthInPixels) value = songLengthInPixels;
 
     if (value == scrollPositionInPixels) return value;
