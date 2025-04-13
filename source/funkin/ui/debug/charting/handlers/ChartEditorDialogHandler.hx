@@ -839,7 +839,7 @@ class ChartEditorDialogHandler
       var path:Path = new Path(pathStr);
       trace('Dropped JSON file (${path})');
 
-      var songMetadataTxt:String = FileUtil.readStringFromPath(path.toString());
+      var songMetadataTxt:String = FileUtil.readStringFromPath(path.toString()) ?? '';
 
       var songMetadataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songMetadataTxt);
       if (songMetadataVersion == null)
@@ -921,7 +921,7 @@ class ChartEditorDialogHandler
       var path:Path = new Path(pathStr);
       trace('Dropped JSON file (${path})');
 
-      var songChartDataTxt:String = FileUtil.readStringFromPath(path.toString());
+      var songChartDataTxt:String = FileUtil.readStringFromPath(path.toString()) ?? '';
 
       var songChartDataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songChartDataTxt);
       if (songChartDataVersion == null)
@@ -1099,7 +1099,7 @@ class ChartEditorDialogHandler
 
     onDropFile = function(pathStr:String) {
       var path:Path = new Path(pathStr);
-      var selectedFileText:String = FileUtil.readStringFromPath(path.toString());
+      var selectedFileText:String = FileUtil.readStringFromPath(path.toString()) ?? '';
       var selectedFileData:FNFLegacyData = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
       var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(selectedFileData);
       var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(selectedFileData);
