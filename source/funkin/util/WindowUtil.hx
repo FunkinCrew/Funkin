@@ -160,8 +160,14 @@ class WindowUtil
 
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
   {
-    FlxG.stage.application.window.setVSyncMode(value);
+    var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
 
-    // TODO: Add an error check here, simply doing !result (as 0 is success), doesn't work for the check.
+    // SDL_GL_SetSwapInterval returns the value we assigned on success, https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval#return-value.
+    // In lime, we can compare this to the original value to get a boolean.
+    if (!res)
+    {
+      trace('Failed to set VSync mode to ' + value);
+      FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+    }
   }
 }
