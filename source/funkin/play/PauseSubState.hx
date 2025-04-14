@@ -1026,9 +1026,9 @@ class PauseSubState extends MusicBeatSubState
     #if FEATURE_MOBILE_ADVERTISEMENTS
     AdMobUtil.removeBanner();
     #end
-    state.close();
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
     PlayState.instance.close(); // This only works because PlayState is a substate!
+    state.close();
   }
 }
 

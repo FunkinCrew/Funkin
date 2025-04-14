@@ -8,6 +8,7 @@ import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -448,6 +449,11 @@ class PlayState extends MusicBeatSubState
    * Track any camera tweens we've paused for a Pause substate, so we can unpause them when we return.
    */
   var cameraTweensPausedBySubState:List<FlxTween> = new List<FlxTween>();
+
+  /**
+   * Track any sounds we've paused for a Pause substate, so we can unpause them when we return.
+   */
+  var soundsPausedBySubState:List<FlxSound> = new List<FlxSound>();
 
   /**
    * False until `create()` has completed.
@@ -891,7 +897,6 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    var list = FlxG.sound.list;
     updateHealthBar();
     updateScoreText();
 
@@ -1361,9 +1366,25 @@ class PlayState extends MusicBeatSubState
           musicPausedBySubState = true;
         }
 
-        // Pause vocals.
-        // Not tracking that we've done this via a bool because vocal re-syncing involves pausing the vocals anyway.
-        if (vocals != null) vocals.pause();
+        // Pause any sounds that are playing and keep track of them.
+        // Vocals are also paused here but are not included as they are handled separately.
+        if (Std.isOfType(subState, PauseSubState))
+        {
+          FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
+            // The need to check for time is obligatory because of scheduled sounds
+            if (!sound.active || sound == FlxG.sound.music || (!sound.playing && sound.time >= 0)) return;
+            sound.pause();
+            soundsPausedBySubState.add(sound);
+          });
+
+          vocals?.forEach(function(voice:FunkinSound) {
+            soundsPausedBySubState.remove(voice);
+          });
+        }
+        else
+        {
+          vocals?.pause();
+        }
       }
 
       // Pause camera tweening, and keep track of which tweens we pause.
@@ -1418,6 +1439,8 @@ class PlayState extends MusicBeatSubState
         FlxG.sound.music.play();
         musicPausedBySubState = false;
       }
+
+      forEachPausedSound((s) -> needsReset ? s.destroy() : s.resume());
 
       // Resume camera tweens if we paused any.
       for (camTween in cameraTweensPausedBySubState)
@@ -3423,6 +3446,8 @@ class PlayState extends MusicBeatSubState
       }
     }
 
+    forEachPausedSound((s) -> s.destroy());
+
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
     {
@@ -3729,6 +3754,15 @@ class PlayState extends MusicBeatSubState
       }
     }
     scrollSpeedTweens = [];
+  }
+
+  function forEachPausedSound(f:FlxSound->Void):Void
+  {
+    for (sound in soundsPausedBySubState)
+    {
+      f(sound);
+    }
+    soundsPausedBySubState.clear();
   }
 
   #if FEATURE_DEBUG_FUNCTIONS
