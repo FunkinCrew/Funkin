@@ -280,11 +280,23 @@ class Project extends HXProject {
 	 */
 	static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
-		/**
+	/**
 	 * `-DEXCLUDE_ARMV7`
 	 * If this flag is enabled, armv7 won't be compiled when building android.
 	 */
 	static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
+
+	/**
+	 * `-DDISABLE_ADMOB_ADS`
+	 * If this flag is enabled, ADs from AdMob will be disabled.
+	 */
+	static final DISABLE_ADMOB_ADS:FeatureFlag = "DISABLE_ADMOB_ADS";
+
+	/**
+	 * `-DTESTING_ADS`
+	 * If this flag is enabled, ADs will use testing mode.
+	 */
+	static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
 
 	//
 	// CONFIGURATION FUNCTIONS
@@ -306,6 +318,11 @@ class Project extends HXProject {
     configureHaxelibs();
     configureAssets();
     configureIcons();
+
+		if (DISABLE_ADMOB_ADS.isDisabled(this))
+		{
+			configureAdMobKeys();
+		}
 	}
 
 	/**
@@ -510,6 +527,8 @@ class Project extends HXProject {
 		// TODO: Thanks to new changes to FlxTouch and such, this became useless. Find a way to make it work again -Zack.
 		MOUSE_TO_TOUCH.apply(this, false);
 		EXCLUDE_ARMV7.apply(this, false);
+		DISABLE_ADMOB_ADS.apply(this, !isMobile());
+		TESTING_ADS.apply(this, isDebug());
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
@@ -741,6 +760,10 @@ class Project extends HXProject {
 		if (FEATURE_PARTIAL_SOUNDS.isEnabled(this)) {
 			addHaxelib('FlxPartialSound'); // Partial sound
 		}
+
+		if (DISABLE_ADMOB_ADS.isDisabled(this)) {
+			addHaxelib('extension-admob'); // Ads Extension
+		}
   }
 
   function configureAssets() {
@@ -812,6 +835,22 @@ class Project extends HXProject {
 		addIcon("art/icon64.png", 64);
 		addIcon("art/iconOG.png");
   }
+
+	/**
+	 * Configure the platforms' Ad Mob application keys.
+	 */
+	function configureAdMobKeys() {
+		if (isAndroid())
+		{
+			setEnv("ADMOB_APPID", "");
+		}
+
+		if (isIOS())
+		{
+			// This ID is not from us, it's a test ID provided by AdMob. not really sure if it works.
+			setEnv("ADMOB_APPID", "");
+		}
+	}
 
 	//
 	// HELPER FUNCTIONS
@@ -914,6 +953,12 @@ class Project extends HXProject {
 
 	public function hasDefine(name:String):Bool {
 		return this.defines.exists(name);
+	}
+
+	public function setEnv(name:String, value:String = '') {
+		this.defines.set(name, value);
+		this.environment.set(name, value);
+		this.setenv(name, value);
 	}
 
 	/**

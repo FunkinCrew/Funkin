@@ -208,6 +208,13 @@
       "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
+    },
+    {
+      "name": "extension-admob",
+      "type": "git",
+      "dir": null,
+      "ref": null,
+      "url": "https://github.com/mcagabe19-stuff/extension-admob"
     }
   ]
 }
