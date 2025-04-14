@@ -160,13 +160,8 @@ class WindowUtil
 
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
   {
-    // Apply the new value.
-    var success = FlxG.stage.application.window.setVSyncMode(value);
+    FlxG.stage.application.window.setVSyncMode(value);
 
-    if (!success)
-    {
-      // Maybe throw an error?
-      FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
-    }
+    // TODO: Add an error check here, simply doing !result (as 0 is success), doesn't work for the check.
   }
 }
