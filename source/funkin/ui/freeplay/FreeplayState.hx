@@ -1840,12 +1840,25 @@ class FreeplayState extends MusicBeatSubState
     trace('target variation: ${targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION}');
 
     var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+    var hasBeenBeaten:Bool = Save.instance.hasBeatenSong(targetSongId, null, baseInstrumentalId);
+    trace('Has ${targetSongId}'
+      + ((baseInstrumentalId.length > 0) ? '-${baseInstrumentalId}' : '')
+      + " been beaten"
+      + hasBeenBeaten);
     var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
       targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
-
-    if (altInstrumentalIds.length > 0)
+    var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
+    for (altInstrumentalId in instrumentalIds)
     {
-      var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
+      var altIsUnlocked = targetSong.isAltInstUnlocked(targetDifficultyId, altInstrumentalId) ?? true;
+      if (!altIsUnlocked)
+      {
+        instrumentalIds.remove(altInstrumentalId);
+      }
+    }
+
+    if (instrumentalIds.length > 1 && hasBeenBeaten)
+    {
       openInstrumentalList(cap, instrumentalIds);
     }
     else

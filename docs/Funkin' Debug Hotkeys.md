@@ -36,3 +36,5 @@ Most of this functionality is only available on debug builds of the game!
 - `CTRL-ALT-SHIFT-P`: ***CHARACTER UNLOCK SCREEN***: Forces the Character Select screen to play Pico's unlocking animation. Only available on debug builds.
 - `CTRL-ALT-SHIFT-N`: ***CHARACTER NOT SEEN***: Marks all characters as not seen and enables BF's new character unlocked animation in Freeplay. Only available on debug builds.
 - `CTRL-ALT-SHIFT-E`: ***DUMP SAVE DATA***: Prompts the user to save their save data as a JSON file, so its contents can be viewed. Only available on debug builds.
+- `CTRL-ALT-SHIFT-O`: ***ALT INST***: Unlocks Bopeebo (Pico Mix) alt inst in Freeplay. Only available on debug builds.
+- `CTRL-ALT-SHIFT-I`:***NO ALT INST***:  Locks back Bopeebo (Pico Mix) alt inst in Freeplay. Only available on debug builds.
