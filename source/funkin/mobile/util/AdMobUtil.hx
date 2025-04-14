@@ -1,7 +1,9 @@
 package funkin.mobile.util;
 
 import admob.Admob;
-import admob.util.AdmobEvent;
+import admob.AdmobBannerAlign;
+import admob.AdmobBannerSize;
+import admob.AdmobEvent;
 
 /**
  * Utility class for managing AdMob advertisements in a mobile application.
@@ -53,8 +55,22 @@ class AdMobUtil
    */
   public static inline function init():Void
   {
-    Admob.status.addEventListener(AdmobEvent.INTERSTITIAL_LOADED, (ae:AdmobEvent) -> Admob.showInterstitial());
-    Admob.status.addEventListener(AdmobEvent.REWARDED_LOADED, (ar:AdmobEvent) -> Admob.showRewarded());
+    Admob.onStatus.add(function(event:String, message:String):Void {
+      switch (event)
+      {
+        case AdmobEvent.INTERSTITIAL_LOADED:
+          Admob.showInterstitial();
+        case AdmobEvent.REWARDED_LOADED:
+          Admob.showRewarded();
+      }
+
+      #if android
+      android.widget.Toast.makeText(message.length > 0 ? '$event:$message' : event, android.widget.Toast.LENGTH_SHORT);
+      #else
+      lime.utils.Log.info(message.length > 0 ? '$event:$message' : event);
+      #end
+    });
+
     Admob.init(#if TESTING_ADS true #else false #end);
   }
 
@@ -73,7 +89,7 @@ class AdMobUtil
    * @param size The size of the banner ad, defaulting to the standard banner size.
    * @param align The alignment of the banner ad, defaulting to the bottom of the screen.
    */
-  public static inline function addBanner(size:Int = Admob.BANNER_SIZE_BANNER, align:Int = Admob.BANNER_ALIGN_BOTTOM):Void
+  public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM):Void
   {
     Admob.showBanner(AdMobUtil.BANNER_AD_UNIT_ID, size, align);
   }
@@ -145,7 +161,7 @@ class AdMobUtil
    */
   public static inline function isPrivacyOptionsRequired():Bool
   {
-    return Admob.isPrivacyOptionsRequired() == 1;
+    return Admob.isPrivacyOptionsRequired();
   }
 
   /**

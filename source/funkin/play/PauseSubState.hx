@@ -199,7 +199,7 @@ class PauseSubState extends MusicBeatSubState
 
     // Add banner ad when game is paused.
     #if NO_DISABLE_ADMOB_ADS
-    AdMobUtil.addBanner(admob.Admob.BANNER_SIZE_BANNER, admob.Admob.BANNER_ALIGN_TOP);
+    AdMobUtil.addBanner(admob.AdmobBannerSize.BANNER, admob.AdmobBannerAlign.TOP);
     #end
   }
 

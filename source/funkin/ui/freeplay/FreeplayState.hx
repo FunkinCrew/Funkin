@@ -1613,7 +1613,6 @@ class FreeplayState extends MusicBeatSubState
       diffSelRight?.setPress(true);
       #end
     }
-
     #if TOUCH_CONTROLS
     if (diffSelLeft != null && diffSelLeft.pressed && !TouchUtil.pressed)
     {
@@ -1650,6 +1649,8 @@ class FreeplayState extends MusicBeatSubState
           break;
         }
 
+        letterSort.inputEnabled = false;
+
         if (TouchUtil.justPressed || _sub == 0) _sub = diff.x - TouchUtil.touch.x;
 
         // Update position
@@ -1677,6 +1678,9 @@ class FreeplayState extends MusicBeatSubState
             diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
           }
           _sub = 0;
+
+          letterSort.inputEnabled = true;
+
           break;
         }
 
@@ -2389,6 +2393,10 @@ class DifficultySelector extends FlxSprite
 
   var parent:FreeplayState;
 
+  #if TOUCH_CONTROLS
+  public var pressed:Bool = false;
+  #end
+
   public function new(parent:FreeplayState, x:Float, y:Float, flipped:Bool, controls:Controls, ?styleData:FreeplayStyle = null)
   {
     super(x, y);
@@ -2430,6 +2438,8 @@ class DifficultySelector extends FlxSprite
       whiteShader.colorSet = true;
       scale.x = scale.y = 0.5;
     }
+
+    pressed = press;
   }
   #end
 

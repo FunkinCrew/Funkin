@@ -310,6 +310,12 @@ class Project extends HXProject {
 	 */
 	static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
 
+	/**
+	 * `-DLITE_VERSION`
+	 * If this flag is enabled, lite mobile version will be enabled.
+	 */
+	static final LITE_VERSION:FeatureFlag = "LITE_VERSION";
+
 	//
 	// CONFIGURATION FUNCTIONS
 	//
@@ -330,6 +336,11 @@ class Project extends HXProject {
     configureHaxelibs();
     configureAssets();
     configureIcons();
+
+		if (LITE_VERSION.isEnabled(this)){
+			this.meta.title += " Lite";
+			this.meta.packageName += "lite";
+		}
 
 		if (DISABLE_ADMOB_ADS.isDisabled(this))
 		{
@@ -537,6 +548,7 @@ class Project extends HXProject {
 		GITHUB_BUILD.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
 		EXCLUDE_ARMV7.apply(this, false);
+		LITE_VERSION.apply(this, false);
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
@@ -597,7 +609,7 @@ class Project extends HXProject {
 
 		// Should be true only on non-mobile builds.
 		// Only mobile builds support ads.
-		DISABLE_ADMOB_ADS.apply(this, !isMobile());
+		DISABLE_ADMOB_ADS.apply(this, !isMobile() || LITE_VERSION.isDisabled(this));
 
 		// Should be true only on debug mobile builds.
 		TESTING_ADS.apply(this, isDebug() && isMobile());

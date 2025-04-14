@@ -206,9 +206,6 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
    */
   function onHitboxDemoBack()
   {
-    // Works but i dont know why did it happen :/
-    currentIndex++;
-
     isInDemo = false;
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
