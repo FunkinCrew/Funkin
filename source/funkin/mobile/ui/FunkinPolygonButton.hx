@@ -2,9 +2,9 @@ package funkin.mobile.ui;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.input.touch.FlxTouch;
 import flixel.math.FlxPoint;
-import flixel.ui.FlxButton;
-import flixel.util.FlxDirectionFlags;
+import flixel.input.touch.FlxTouch;
 import openfl.display.Graphics;
 
 /**
@@ -74,13 +74,14 @@ class FunkinPolygonButton extends FunkinButton
   }
 
   @:noCompletion
-  private override function checkTouchOverlap():Bool
+  private override function checkTouchOverlap(?touch:FlxTouch):Bool
   {
-    if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)
+    var touches = touch == null ? FlxG.touches.list : [touch];
+    for (touch in touches)
     {
-      for (camera in cameras)
+      if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)
       {
-        for (touch in FlxG.touches.list)
+        for (camera in cameras)
         {
           final worldPos:FlxPoint = touch.getWorldPosition(camera, _point);
 
@@ -96,11 +97,10 @@ class FunkinPolygonButton extends FunkinButton
           }
         }
       }
-
       return false;
     }
 
-    return super.checkTouchOverlap();
+    return super.checkTouchOverlap(touch);
   }
 
   #if FLX_DEBUG

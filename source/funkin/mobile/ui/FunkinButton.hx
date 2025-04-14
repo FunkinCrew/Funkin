@@ -12,6 +12,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import funkin.mobile.util.SwipeUtil;
+import haxe.ds.Map;
 
 /**
  * Enum representing the status of the button.
@@ -28,8 +29,15 @@ enum abstract FunkinButtonStatus(Int) from Int to Int
 #if !display
 @:generic
 #end
+@:allow(funkin.mobile.ui.FunkinHitbox)
+@:allow(funkin.mobile.ui.FunkinButton)
 class FunkinButton extends FunkinSprite implements IFlxInput
 {
+  /**
+   * A map that's storing every active touch's ID that's pressing a button.
+   */
+  public static var buttonsTouchID:Map<Int, FunkinButton> = new Map();
+
   /**
    * The current state of the button, either `FunkinButtonStatus.NORMAL` or `FunkinButtonStatus.PRESSED`.
    */
@@ -71,9 +79,19 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var justPressed(get, never):Bool;
 
   /**
+   * The touch instance that pressed this button.
+   */
+  public var currentTouch(get, never):Null<FlxTouch>;
+
+  /**
    * An array of objects that blocks your input.
    */
   public var deadZones:Array<FunkinSprite> = [];
+
+  /**
+   * Wether the button should be released if you swiped over somwhere else.
+   */
+  public var limitToBounds:Bool = true;
 
   /**
    * The input associated with the button, using `Int` as the type.
@@ -85,6 +103,11 @@ class FunkinButton extends FunkinSprite implements IFlxInput
    * Needed to check for its release.
    */
   var currentInput:IFlxInput;
+
+  /**
+   * The ID of the touch object that pressed this button.
+   */
+  var touchID:Int = -1;
 
   /**
    * Creates a new `FunkinButton` object.
@@ -103,6 +126,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     ignoreDrawDebug = true;
     #end
     scrollFactor.set();
+
     input = new FlxInput(0);
   }
 
@@ -114,6 +138,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     deadZones = FlxDestroyUtil.destroyArray(deadZones);
     currentInput = null;
     input = null;
+
+    buttonsTouchID.remove(touchID);
+
+    touchID = -1;
 
     super.destroy();
   }
@@ -131,14 +159,14 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     {
       final overlapFound:Bool = checkTouchOverlap();
 
-      if (currentInput != null && currentInput.justReleased)
+      if (currentInput != null && currentInput.justReleased && overlapFound)
       {
         onUpHandler();
       }
 
-      if (status != FunkinButtonStatus.NORMAL && !SwipeUtil.swipeAny && (currentInput != null && !currentInput.pressed))
+      if (!isPressed(overlapFound))
       {
-        onOutHandler();
+        if (limitToBounds || (!limitToBounds && (currentTouch != null && currentTouch.justReleased))) onOutHandler();
       }
     }
     #end
@@ -146,24 +174,30 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     input.update();
   }
 
-  private function checkTouchOverlap():Bool
+  private function checkTouchOverlap(?touch:FlxTouch):Bool
   {
+    var touches = touch == null ? FlxG.touches.list : [touch];
     for (camera in cameras)
     {
-      for (touch in FlxG.touches.list)
+      for (touch in touches)
       {
         final worldPos:FlxPoint = touch.getWorldPosition(camera, _point);
 
         for (zone in deadZones)
         {
-          if (zone != null)
-          {
-            if (zone.overlapsPoint(worldPos, true, camera)) return false;
-          }
+          if (zone != null && zone.overlapsPoint(worldPos, true, camera)) return false;
         }
 
         if (overlapsPoint(worldPos, true, camera))
         {
+          touchID = touch.touchPointID;
+          var prevButton = buttonsTouchID.get(touchID);
+          if (prevButton != null && prevButton != this && !prevButton.limitToBounds)
+          {
+            prevButton.onOutHandler();
+          }
+          buttonsTouchID.set(touchID, this);
+
           updateStatus(touch);
 
           return true;
@@ -172,6 +206,11 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     }
 
     return false;
+  }
+
+  private function isPressed(check:Bool):Bool
+  {
+    return !(status != FunkinButtonStatus.NORMAL && (!check || (currentInput != null && currentInput.justReleased)));
   }
 
   private function updateStatus(input:IFlxInput):Void
@@ -197,6 +236,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
     input.release();
 
+    buttonsTouchID.remove(touchID);
+
+    touchID = -1;
+
     currentInput = null;
 
     onUp.dispatch();
@@ -216,6 +259,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
     status = FunkinButtonStatus.NORMAL;
 
     input.release();
+
+    buttonsTouchID.remove(touchID);
+
+    touchID = -1;
 
     onOut.dispatch();
   }
@@ -238,5 +285,10 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   private inline function get_justPressed():Bool
   {
     return input.justPressed;
+  }
+
+  private inline function get_currentTouch():Null<FlxTouch>
+  {
+    return FlxG.touches.getByID(touchID);
   }
 }
