@@ -118,7 +118,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
     if (isDemoScreen)
     {
-      currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.13, 'BACK', onHitboxDemoBack);
+      currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.03, 'BACK', onHitboxDemoBack);
     }
     else
     {
