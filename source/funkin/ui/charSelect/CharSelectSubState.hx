@@ -11,6 +11,7 @@ import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
@@ -34,9 +35,16 @@ import funkin.graphics.FunkinSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
+#if mobile
+import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
+#end
 
 class CharSelectSubState extends MusicBeatSubState
 {
+  // what the actual hell
+  // having a hard time trying to make my changes work so i chose to be less stubborn and just remove them for now. - Zack
+  // Left this here so somebody can remind me
   var cursor:FlxSprite;
 
   var cursorBlue:FlxSprite;
@@ -86,6 +94,10 @@ class CharSelectSubState extends MusicBeatSubState
 
   var bopInfo:FramesJSFLInfo;
   var blackScreen:FunkinSprite;
+
+  #if mobile
+  var touchBuddy:Null<FlxSprite>;
+  #end
 
   public function new()
   {
@@ -415,6 +427,15 @@ class CharSelectSubState extends MusicBeatSubState
 
       Save.instance.oldChar = true;
     });
+
+    #if mobile
+    touchBuddy = new FlxSprite().makeGraphic(10, 10, FlxColor.GREEN);
+    touchBuddy.cameras = [charSelectCam]; // this is stupid but it works.
+
+    // addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+
+    // FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
+    #end
   }
 
   function checkNewChar():Void
@@ -439,8 +460,8 @@ class CharSelectSubState extends MusicBeatSubState
 
             @:privateAccess
             gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-            #if desktop
-            // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+            #if !web
+            // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
             // So we want to manually change it!
             @:privateAccess
             gfChill.analyzer.fftN = 512;
@@ -451,6 +472,9 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var grpIcons:FlxSpriteGroup;
+  #if mobile
+  var grpHitboxes:FlxSpriteGroup;
+  #end
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
   var nonLocks = [];
@@ -459,6 +483,10 @@ class CharSelectSubState extends MusicBeatSubState
   {
     grpIcons = new FlxSpriteGroup();
     add(grpIcons);
+    #if mobile
+    grpHitboxes = new FlxSpriteGroup();
+    add(grpHitboxes);
+    #end
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSpriteGroup, ["x", "y"]));
     // FlxG.debugger.track(grpIcons, "iconGrp");
@@ -491,6 +519,11 @@ class CharSelectSubState extends MusicBeatSubState
 
         grpIcons.add(temp);
       }
+      #if mobile
+      var hitTemp:FlxSprite = new FlxSprite(grpIcons.members[i].x, grpIcons.members[i].y).makeGraphic(64, 64, FlxColor.TRANSPARENT);
+      hitTemp.active = false;
+      grpHitboxes.add(hitTemp);
+      #end
     }
 
     updateIconPositions();
@@ -516,6 +549,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     var xThing = (copy - index - 2) * -1;
     // Look, I'd write better code but I had better aneurysms, my bad - Cheems
+    // felt - Zack
     cursorY = yThing;
     cursorX = xThing;
 
@@ -593,8 +627,8 @@ class CharSelectSubState extends MusicBeatSubState
 
                 @:privateAccess
                 gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-                #if desktop
-                // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+                #if !web
+                // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
                 // So we want to manually change it!
                 @:privateAccess
                 gfChill.analyzer.fftN = 512;
@@ -615,8 +649,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   function updateIconPositions()
   {
-    grpIcons.x = 450;
-    grpIcons.y = 120;
+    #if mobile grpHitboxes.x = #end grpIcons.x = 450;
+    #if mobile grpHitboxes.y = #end grpIcons.y = 120;
     for (index => member in grpIcons.members)
     {
       var posX:Float = (index % 3);
@@ -628,6 +662,20 @@ class CharSelectSubState extends MusicBeatSubState
       member.x += grpIcons.x;
       member.y += grpIcons.y;
     }
+
+    #if mobile
+    for (index => member in grpHitboxes.members)
+    {
+      var posX:Float = (index % 3);
+      var posY:Float = Math.floor(index / 3);
+
+      member.x = posX * grpXSpread;
+      member.y = posY * grpYSpread;
+
+      member.x += grpIcons.x + 40;
+      member.y += grpIcons.y + 40;
+    }
+    #end
   }
 
   var sync:Bool = false;
@@ -704,18 +752,59 @@ class CharSelectSubState extends MusicBeatSubState
   var spamLeft:Bool = false;
   var spamRight:Bool = false;
 
+  #if mobile
+  var mobileDeny:Bool = false;
+  #end
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
     Conductor.instance.update();
 
-    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R) selectSound.pitch = 1;
+    #if mobile
+    var mobileAccept:Bool = false;
+    if (TouchUtil.pressed) touchBuddy.setPosition(TouchUtil.touch.screenX, TouchUtil.touch.screenY);
+    #end
+
+    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || TouchUtil.justReleased #end) selectSound.pitch = 1;
 
     syncAudio(elapsed);
 
     if (allowInput && !pressedSelect)
     {
+      //
+      #if mobile
+      if (TouchUtil.pressed)
+      {
+        for (i in 0...grpHitboxes.members.length)
+        {
+          final tempBox:FlxSprite = grpHitboxes.members[i];
+          if (!TouchUtil.overlaps(tempBox)) continue;
+
+          final indexCY:Int = Std.int(i / 3) - 1;
+          final indexCX:Int = (i % 3) - 1;
+          if (indexCY == cursorY && indexCX == cursorX)
+          {
+            // yeah this being separated is necessary
+            // yeah i know it sucks
+            if (TouchUtil.justPressed) mobileAccept = true;
+          }
+          else
+          {
+            cursorX = indexCX;
+            cursorY = indexCY;
+            cursorDenied.visible = false;
+            selectSound.play(true);
+          }
+
+          trace("Index: " + i + ", Row: " + cursorY + ", Column: " + cursorX);
+          break;
+        }
+      }
+      #end
+
+      //
       if (controls.UI_UP) holdTmrUp += elapsed;
       if (controls.UI_UP_R)
       {
@@ -805,8 +894,38 @@ class CharSelectSubState extends MusicBeatSubState
     {
       curChar = availableChars.get(getCurrentSelected());
 
-      if (allowInput && !pressedSelect && controls.ACCEPT)
+      if (allowInput && pressedSelect && (controls.BACK #if mobile || (mobileDeny && TouchUtil.justPressed) #end))
       {
+        #if mobile
+        mobileDeny = false;
+        #end
+        cursorConfirmed.visible = false;
+        grpCursors.visible = true;
+
+        FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
+        FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
+        playerChill.playAnimation("deselect");
+        gfChill.playAnimation("deselect");
+        pressedSelect = false;
+        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1,
+          {
+            ease: FlxEase.quartInOut,
+            onComplete: (_) -> {
+              if (playerChill.getCurrentAnimation() == "deselect loop start" || playerChill.getCurrentAnimation() == "deselect")
+              {
+                playerChill.playAnimation("idle", true, false, true);
+                gfChill.playAnimation("idle", true, false, true);
+              }
+            }
+          });
+        selectTimer.cancel();
+      }
+
+      if (allowInput && !pressedSelect && (controls.ACCEPT #if mobile || mobileAccept #end))
+      {
+        #if mobile
+        mobileDeny = false;
+        #end
         spamUp = false;
         spamDown = false;
         spamLeft = false;
@@ -835,30 +954,11 @@ class CharSelectSubState extends MusicBeatSubState
           goToFreeplay();
         });
       }
+      #if mobile
+      else if (pressedSelect && TouchUtil.justPressed) mobileDeny = true;
 
-      if (allowInput && pressedSelect && controls.BACK)
-      {
-        cursorConfirmed.visible = false;
-        grpCursors.visible = true;
-
-        FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
-        playerChill.playAnimation("deselect");
-        gfChill.playAnimation("deselect");
-        pressedSelect = false;
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1,
-          {
-            ease: FlxEase.quartInOut,
-            onComplete: (_) -> {
-              if (playerChill.getCurrentAnimation() == "deselect loop start" || playerChill.getCurrentAnimation() == "deselect")
-              {
-                playerChill.playAnimation("idle", true, false, true);
-                gfChill.playAnimation("idle", true, false, true);
-              }
-            }
-          });
-        selectTimer.cancel();
-      }
+      mobileAccept = false;
+      #end
     }
     else
     {
@@ -866,7 +966,8 @@ class CharSelectSubState extends MusicBeatSubState
 
       gfChill.visible = false;
 
-      if (allowInput && controls.ACCEPT)
+      // what does this do -zack
+      if (allowInput && controls.ACCEPT #if mobile || TouchUtil.overlapsComplex(cursor) && TouchUtil.justPressed #end)
       {
         cursorDenied.visible = true;
 

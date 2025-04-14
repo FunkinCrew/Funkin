@@ -55,6 +55,10 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import haxe.Int64;
+#if mobile
+import funkin.mobile.util.TouchUtil;
+import funkin.mobile.ui.FunkinHitbox;
+#end
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -515,6 +519,13 @@ class PlayState extends MusicBeatSubState
    */
   public var comboPopUps:PopUpStuff;
 
+  #if mobile
+  /**
+   * The pause button for the game, only appears in Mobile targets.
+   */
+  var pauseButton:FunkinSprite;
+  #end
+
   /**
    * PROPERTIES
    */
@@ -657,6 +668,11 @@ class PlayState extends MusicBeatSubState
       cameraFollowPoint = new FlxObject(0, 0);
     }
 
+    #if mobile
+    // Force allowScreenTimeout to be disabled
+    lime.system.System.allowScreenTimeout = false;
+    #end
+
     // Reduce physics accuracy (who cares!!!) to improve animation quality.
     FlxG.fixedTimestep = false;
 
@@ -705,6 +721,11 @@ class PlayState extends MusicBeatSubState
     initStrumlines();
     initPopups();
 
+    #if mobile
+    // Initialize the hitbox for mobile controls
+    addHitbox(false);
+    #end
+
     #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
     initDiscord();
@@ -737,6 +758,25 @@ class PlayState extends MusicBeatSubState
       // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
       startCountdown();
     }
+
+    // Create the pause button.
+    #if mobile
+    pauseButton = FunkinSprite.createSparrow(0, 0, "fonts/bold");
+    pauseButton.animation.addByPrefix("idle", "(", 24, true);
+    pauseButton.animation.play("idle");
+    pauseButton.color = FlxColor.WHITE;
+    pauseButton.alpha = 0.65;
+    pauseButton.updateHitbox();
+    pauseButton.setPosition((FlxG.width - pauseButton.width) - 40, 3);
+    pauseButton.cameras = [camControls];
+    pauseButton.width *= 2;
+    pauseButton.height *= 2;
+    pauseButton.offset.set(-(pauseButton.width / 4), -(pauseButton.height / 4));
+    add(pauseButton);
+    hitbox.forEachAlive(function(hint:FunkinHint) {
+      hint.deadZones.push(pauseButton);
+    });
+    #end
 
     // Do this last to prevent beatHit from being called before create() is done.
     super.create();
@@ -933,15 +973,23 @@ class PlayState extends MusicBeatSubState
       }
     }
 
+    var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
+    // So the player wouldn't miss when pressing the pause utton
+    #if mobile
+    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justPressed;
+    #end
 
     #if android
-    androidPause = FlxG.android.justPressed.BACK;
+    androidPause = FlxG.android.justReleased.BACK;
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
+    if ((controls.PAUSE || androidPause || pauseButtonCheck) && isInCountdown && mayPauseGame && !justUnpaused)
     {
+      #if mobile
+      pauseButton.alpha = 0;
+      #end
       var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
 
       dispatchEvent(event);
@@ -998,6 +1046,10 @@ class PlayState extends MusicBeatSubState
         #end
       }
     }
+
+    #if mobile
+    if (justUnpaused) pauseButton.alpha = 0.65;
+    #end
 
     // Cap health.
     if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
@@ -1111,6 +1163,10 @@ class PlayState extends MusicBeatSubState
 
     // Moving notes into position is now done by Strumline.update().
     if (!isInCutscene) processNotes(elapsed);
+
+    #if mobile
+    if ((VideoCutscene.isPlaying() || isInCutscene) && !pauseButton.visible) pauseButton.visible = true;
+    #end
 
     justUnpaused = false;
   }
@@ -2064,6 +2120,10 @@ class PlayState extends MusicBeatSubState
   {
     startingSong = false;
 
+    #if mobile
+    hitbox.visible = true;
+    #end
+
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
       currentChart.playInst(1.0, currentInstrumental, false);
@@ -2868,16 +2928,30 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused) return;
 
+    var pauseButtonCheck:Bool = false;
+    var androidPause:Bool = false;
+
+    #if android
+    androidPause = FlxG.android.justPressed.BACK;
+    #end
+
+    #if mobile
+    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justPressed;
+    #end
+
     if (currentConversation != null)
     {
       // Pause/unpause may conflict with advancing the conversation!
-      if (controls.CUTSCENE_ADVANCE && !justUnpaused)
+      if ((controls.CUTSCENE_ADVANCE #if mobile || (!pauseButtonCheck && TouchUtil.justPressed) #end) && !justUnpaused)
       {
         currentConversation.advanceConversation();
       }
-      else if (controls.PAUSE && !justUnpaused)
+      else if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
         currentConversation.pauseMusic();
+        #if mobile
+        pauseButton.alpha = 0;
+        #end
 
         var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
 
@@ -2891,9 +2965,12 @@ class PlayState extends MusicBeatSubState
     else if (VideoCutscene.isPlaying())
     {
       // This is a video cutscene.
-      if (controls.PAUSE && !justUnpaused)
+      if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
         VideoCutscene.pauseVideo();
+        #if mobile
+        pauseButton.alpha = 0;
+        #end
 
         var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
 
@@ -2929,6 +3006,11 @@ class PlayState extends MusicBeatSubState
 
     // Prevent ghost misses while the song is ending.
     disableKeys = true;
+
+    #if mobile
+    // Hide the buttons while the song is ending.
+    hitbox.visible = pauseButton.visible = false;
+    #end
 
     // Check if any events want to prevent the song from ending.
     var event = new ScriptEvent(SONG_END, true);
@@ -3183,6 +3265,11 @@ class PlayState extends MusicBeatSubState
     criticalFailure = true; // Stop game updates.
     performCleanup();
     super.close();
+
+    #if mobile
+    // Syncing allowScreenTimeout with Preferences option.
+    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    #end
   }
 
   /**

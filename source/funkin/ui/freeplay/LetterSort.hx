@@ -4,6 +4,10 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxTimer;
 import funkin.input.Controls;
+#if mobile
+import funkin.mobile.util.SwipeUtil;
+import funkin.mobile.util.TouchUtil;
+#end
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
@@ -20,6 +24,10 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
   var grpSeperators:Array<FlxSprite> = [];
 
   public var inputEnabled:Bool = true;
+
+  #if mobile
+  var swipeBounds:FlxSprite;
+  #end
 
   public function new(x, y)
   {
@@ -60,7 +68,12 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
 
     // rightArrow.animation.play("arrow");
-    add(rightArrow);
+
+    #if mobile
+    swipeBounds = new FlxSprite(-20, -20).makeGraphic(420, 95, FlxColor.TRANSPARENT);
+    swipeBounds.active = false;
+    add(swipeBounds);
+    #end
 
     changeSelection(0);
   }
@@ -76,8 +89,8 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
 
     if (inputEnabled)
     {
-      if (controls.FREEPLAY_LEFT) changeSelection(-1);
-      if (controls.FREEPLAY_RIGHT) changeSelection(1);
+      if (controls.FREEPLAY_LEFT #if mobile || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.justSwipedRight) #end) changeSelection(-1);
+      if (controls.FREEPLAY_RIGHT #if mobile || (TouchUtil.overlaps(swipeBounds) && SwipeUtil.justSwipedLeft) #end) changeSelection(1);
     }
   }
 

@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.Preferences;
@@ -30,6 +31,16 @@ class Main extends Sprite
 
   public static function main():Void
   {
+    // Set the current working directory for Android and iOS devices
+    #if android
+    // For Android we determine the appropriate directory based on Android version
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
+      android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
+    ));
+    #elseif ios
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory)); // For iOS we use documents directory and this is only way we can do.
+    #end
+
     // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
     CrashHandler.initialize();
     CrashHandler.queryStatus();
@@ -104,6 +115,11 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
+
+    #if mobile
+    FlxG.signals.gameResized.add(resizeGame);
+    #end
+
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
@@ -116,6 +132,12 @@ class Main extends Sprite
 
     #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+    #end
+
+    #if mobile
+    flixel.FlxG.game.addChild(fpsCounter);
+    #else
+    addChild(fpsCounter);
     #end
 
     #if hxcpp_debug_server
@@ -138,5 +160,20 @@ class Main extends Sprite
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
     funkin.input.Cursor.registerHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
+  }
+
+  function resizeGame(width:Int, height:Int):Void
+  {
+    // Calling this so it gets scaled based on the resolution of the game and device's resolution.
+    final scale:Float = Math.min(flixel.FlxG.stage.stageWidth / flixel.FlxG.width, flixel.FlxG.stage.stageHeight / flixel.FlxG.height);
+
+    if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+
+    if (memoryCounter != null)
+    {
+      memoryCounter.scaleX = memoryCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+
+      memoryCounter.y = 13 * #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+    }
   }
 }

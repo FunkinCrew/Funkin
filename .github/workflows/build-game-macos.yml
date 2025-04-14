@@ -1,0 +1,30 @@
+name: Build Game for macOS
+on: workflow_dispatch
+jobs:
+  macOS:
+    runs-on: macos-${{matrix.version}}
+    strategy:
+      matrix:
+        version: [11, 12, 13]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          submodules: true
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.4
+      - name: Install Libraries
+        run: |
+          haxelib install hmm --quiet
+          haxelib run hmm install --quiet
+          haxelib run lime rebuild hxcpp
+      - name: Compile
+        run: haxelib run lime build mac
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: macOSBuild-${{matrix.version}}
+          path: export/release/macos/bin/*
+          if-no-files-found: error

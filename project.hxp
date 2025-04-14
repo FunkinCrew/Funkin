@@ -94,6 +94,7 @@ class Project extends HXProject {
 	// FEATURE FLAGS
 	// Inverse feature flags are automatically populated.
 	//
+	static final MOUSE_TO_TOUCH:FeatureFlag = "MOUSE_TO_TOUCH";
 
 	/**
 	 * `-DGITHUB_BUILD`
@@ -279,6 +280,12 @@ class Project extends HXProject {
 	 */
 	static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
+		/**
+	 * `-DEXCLUDE_ARMV7`
+	 * If this flag is enabled, armv7 won't be compiled when building android.
+	 */
+	static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
+
 	//
 	// CONFIGURATION FUNCTIONS
 	//
@@ -379,10 +386,14 @@ class Project extends HXProject {
 
 		if (isMobile()) {
 			this.window.orientation = Orientation.LANDSCAPE;
-			this.window.fullscreen = false;
+			this.window.fullscreen = true;
 			this.window.resizable = false;
 			this.window.width = 0;
 			this.window.height = 0;
+		}
+
+		if (isAndroid() && EXCLUDE_ARMV7.isEnabled(this)) {
+			this.excludeArchitectures.push(Architecture.ARMV7);
 		}
 	}
 
@@ -496,6 +507,9 @@ class Project extends HXProject {
 		// Should be false unless explicitly requested.
 		GITHUB_BUILD.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
+		// TODO: Thanks to new changes to FlxTouch and such, this became useless. Find a way to make it work again -Zack.
+		MOUSE_TO_TOUCH.apply(this, false);
+		EXCLUDE_ARMV7.apply(this, false);
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
@@ -529,20 +543,20 @@ class Project extends HXProject {
 
 		// Should be true only on web builds.
 		// Audio context issues only exist there.
-		TOUCH_HERE_TO_PLAY.apply(this, isWeb());
+		TOUCH_HERE_TO_PLAY.apply(this, isWeb() || isMobile());
 
 		// Should be true only on web builds.
 		// Enabling embedding and preloading is required to preload assets properly.
 		EMBED_ASSETS.apply(this, isWeb());
 		PRELOAD_ALL.apply(this, !isWeb());
 
-		// Should be true except on MacOS.
+		// Should be true except on MacOS and Mobile.
 		// File drop doesn't work there.
-		FEATURE_FILE_DROP.apply(this, !isMac());
+		FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
 
-		// Should be true except on web builds.
+		// Should be true except on web and mobile builds.
 		// Chart editor doesn't work there.
-		FEATURE_CHART_EDITOR.apply(this, !isWeb());
+		FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
 
 		// Should be true except on web builds.
 		// Screenshots doesn't work there.
@@ -607,7 +621,11 @@ class Project extends HXProject {
 
 		// Forcibly include all Funkin' classes in builds.
 		// This prevents classes that are unused by the base game from being unavailable to HScript.
-		addHaxeMacro("include('funkin')");
+		addHaxeMacro("include('funkin', true, ['funkin.mobile.*'])");
+
+		if (isMobile()) {
+			addHaxeMacro("include('funkin.mobile')");
+		}
 
 		// Ensure all HaxeUI components are available at runtime.
 		addHaxeMacro("include('haxe.ui.backend.flixel.components')");
@@ -673,8 +691,8 @@ class Project extends HXProject {
 
   function configureHaxelibs() {
 		// Don't enforce
-    addHaxelib('lime'); // Game engine backend
-    addHaxelib('openfl'); // Game engine backend
+    // addHaxelib('lime'); // Game engine backend
+    // addHaxelib('openfl'); // Game engine backend
 
     addHaxelib('flixel'); // Game engine
 
@@ -698,11 +716,14 @@ class Project extends HXProject {
 			addHaxelib('hxcpp-debug-server'); // VSCode debug support
 		}
 
-    if (isDesktop() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
+    if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
       // hxvlc doesn't function on HashLink or non-desktop platforms
 			// It's also unnecessary if video playback is disabled
       addHaxelib('hxvlc'); // Video playback
     }
+
+    if (isAndroid())
+       addHaxelib('extension-androidtools'); // Android Functions
 
 		if (FEATURE_DISCORD_RPC.isEnabled(this)) {
 			addHaxelib('hxdiscord_rpc'); // Discord API

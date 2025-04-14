@@ -6,6 +6,7 @@ import funkin.audio.FunkinSound;
 import flixel.FlxSprite;
 import funkin.ui.mainmenu.MainMenuState;
 import flixel.group.FlxSpriteGroup;
+import funkin.mobile.util.TouchUtil;
 
 /**
  * The state used to display the credits scroll.
@@ -117,6 +118,10 @@ class CreditsState extends MusicBeatState
         loop: true
       });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
+
+    #if mobile
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, exit);
+    #end
   }
 
   function buildCreditsGroup():Void
@@ -177,7 +182,7 @@ class CreditsState extends MusicBeatState
     if (!scrollPaused)
     {
       // TODO: Replace with whatever the special note button is.
-      if (controls.ACCEPT || FlxG.keys.pressed.SPACE)
+      if (controls.ACCEPT || FlxG.keys.pressed.SPACE #if mobile || TouchUtil.pressed && !TouchUtil.overlaps(backButton) #end)
       {
         // Move the whole group.
         creditsGroup.y -= CREDITS_SCROLL_FAST_SPEED * elapsed;

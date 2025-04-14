@@ -1,0 +1,49 @@
+name: Build Game for HTML5
+on: workflow_dispatch
+jobs:
+  HTML5:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          submodules: true
+          persist-credentials: false
+      # - name: Configure git
+        # run: |
+          # git config --global url."https://${TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          # git config --global user.name "mcagabe19"
+          # git config --global user.email "egzozu.be.bas@gmail.com"
+        # env:
+          # TOKEN: ${{ secrets.GITHUB_TOKEN }} # ${{ secrets.LILY_GH_TOKEN }}
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.4
+      - name: Install Libraries
+        run: |
+          haxelib install hmm --quiet
+          haxelib run hmm install --quiet
+      - name: Compile
+        run: haxelib run lime build html5
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: html5Build
+          path: export/release/html5/bin/*
+          if-no-files-found: error
+      - name: Upload Artifact (Only JavaScript Files)
+        uses: actions/upload-artifact@main
+        with:
+          name: html5Build-onlyJS
+          path: export/release/html5/bin/*.js
+      # - name: Upload To Website
+        # run: |
+          # cd ..
+          # git clone https://github.com/FunkinDroidTeam/funkin-0.3-html5
+          # cd funkin-0.3-html5
+          # rm -rf *
+          # mv ${{ github.workspace }}/export/release/html5/bin/* .
+          # git add .
+          # git commit -m "Uploaded via actions."
+          # git push -u origin main

@@ -26,6 +26,9 @@ body:
         - Itch.io (Downloadable Build) - Windows
         - Itch.io (Downloadable Build) - MacOS
         - Itch.io (Downloadable Build) - Linux
+        - Unofficial - Android
+        - Unofficial - iOS
+        - Unofficial - Web
         - Compiled from GitHub Source Code
     validations:
       required: true

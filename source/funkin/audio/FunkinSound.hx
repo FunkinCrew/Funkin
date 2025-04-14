@@ -16,9 +16,6 @@ import funkin.Paths.PathsFunction;
 import lime.app.Promise;
 import openfl.media.SoundMixer;
 
-#if (openfl >= "8.0.0")
-#end
-
 /**
  * A FlxSound which adds additional functionality:
  * - Delayed playback via negative song position.

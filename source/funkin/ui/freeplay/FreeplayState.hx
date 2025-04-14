@@ -6,7 +6,6 @@ import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -47,6 +46,10 @@ import openfl.display.BlendMode;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
+#end
+#if mobile
+import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
 #end
 
 /**
@@ -132,6 +135,9 @@ class FreeplayState extends MusicBeatSubState
   var curPlaying:Bool = false;
 
   var dj:Null<FreeplayDJ> = null;
+  #if mobile
+  var djHitbox:FlxSprite = new FlxSprite(58, 358);
+  #end
 
   var ostName:FlxText;
   var albumRoll:AlbumRoll;
@@ -140,6 +146,9 @@ class FreeplayState extends MusicBeatSubState
 
   var letterSort:LetterSort;
   var exitMovers:ExitMoverData = new Map();
+
+  var diffSelLeft:Null<DifficultySelector> = null;
+  var diffSelRight:Null<DifficultySelector> = null;
 
   var exitMoversCharSel:ExitMoverData = new Map();
 
@@ -343,6 +352,13 @@ class FreeplayState extends MusicBeatSubState
     backingImage.shader = angleMaskShader;
     backingImage.visible = false;
 
+    #if mobile
+    djHitbox = djHitbox.makeGraphic(400, 400, FlxColor.TRANSPARENT);
+    if (dj != null) djHitbox.cameras = dj.cameras;
+    djHitbox.active = false;
+    add(djHitbox);
+    #end
+
     var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(backingImage.width), Std.int(backingImage.height), FlxColor.BLACK);
     add(blackOverlayBullshitLOLXD); // used to mask the text lol!
 
@@ -431,7 +447,11 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.alignment = CENTER;
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
+    #if mobile
+    charSelectHint.text = 'Press on the DJ to change characters';
+    #else
     charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
+    #end
     charSelectHint.y -= 100;
     FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
 
@@ -537,12 +557,20 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
 
-    var diffSelLeft:DifficultySelector = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls, styleData);
-    var diffSelRight:DifficultySelector = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls, styleData);
-    diffSelLeft.visible = false;
-    diffSelRight.visible = false;
-    add(diffSelLeft);
-    add(diffSelRight);
+    diffSelLeft = new DifficultySelector(this, 20, grpDifficulties.y - 10, false, controls, styleData);
+    diffSelRight = new DifficultySelector(this, 325, grpDifficulties.y - 10, true, controls, styleData);
+
+    if (diffSelLeft != null)
+    {
+      diffSelLeft.visible = false;
+      add(diffSelLeft);
+    }
+
+    if (diffSelRight != null)
+    {
+      diffSelRight.visible = false;
+      add(diffSelRight);
+    }
 
     // putting these here to fix the layering
     add(overhangStuff);
@@ -581,22 +609,25 @@ class FreeplayState extends MusicBeatSubState
 
       FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
-      diffSelLeft.visible = true;
-      diffSelRight.visible = true;
+      if (diffSelLeft != null) diffSelLeft.visible = true;
+      if (diffSelRight != null) diffSelRight.visible = true;
       letterSort.visible = true;
 
-      exitMovers.set([diffSelLeft, diffSelRight],
-        {
-          x: -diffSelLeft.width * 2,
-          speed: 0.26
-        });
+      if (diffSelLeft != null && diffSelRight != null)
+      {
+        exitMovers.set([diffSelLeft, diffSelRight],
+          {
+            x: -diffSelLeft.width * 2,
+            speed: 0.26
+          });
 
-      exitMoversCharSel.set([diffSelLeft, diffSelRight],
-        {
-          y: -270,
-          speed: 0.8,
-          wait: 0.1
-        });
+        exitMoversCharSel.set([diffSelLeft, diffSelRight],
+          {
+            y: -270,
+            speed: 0.8,
+            wait: 0.1
+          });
+      }
 
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
@@ -658,6 +689,12 @@ class FreeplayState extends MusicBeatSubState
     FlxG.cameras.add(rankCamera, false);
     rankBg.cameras = [rankCamera];
     rankBg.alpha = 0;
+
+    #if mobile
+    addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+
+    FlxTween.tween(backButton, {x: 824}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
+    #end
 
     if (prepForNewRank)
     {
@@ -761,6 +798,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.forcePosition();
 
       grpCapsules.add(funnyMenu);
+      // add(funnyMenu.theActualHitbox);
     }
 
     FlxG.console.registerFunction('changeSelection', changeSelection);
@@ -1155,6 +1193,11 @@ class FreeplayState extends MusicBeatSubState
           });
       }
     }
+
+    #if mobile
+    FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, FlxG.random.float(0.2, 0.85), {ease: FlxEase.backIn});
+    #end
+
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
@@ -1252,8 +1295,6 @@ class FreeplayState extends MusicBeatSubState
   var dyTouch:Float = 0;
   var velTouch:Float = 0;
 
-  var touchTimer:Float = 0;
-
   var initTouchPos:FlxPoint = new FlxPoint();
 
   var spamTimer:Float = 0;
@@ -1302,7 +1343,8 @@ class FreeplayState extends MusicBeatSubState
     }
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
-    if (controls.FREEPLAY_CHAR_SELECT && !busy)
+    if ((controls.FREEPLAY_CHAR_SELECT #if mobile || (TouchUtil.overlaps(djHitbox) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
+      && !busy)
     {
       tryOpenCharSelect();
     }
@@ -1414,83 +1456,27 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
 
-    var upP:Bool = controls.UI_UP_P;
-    var downP:Bool = controls.UI_DOWN_P;
-    var accepted:Bool = controls.ACCEPT;
-
-    if (FlxG.onMobile)
-    {
-      for (touch in FlxG.touches.list)
-      {
-        if (touch.justPressed)
-        {
-          initTouchPos.set(touch.screenX, touch.screenY);
-        }
-        if (touch.pressed)
-        {
-          var dx:Float = initTouchPos.x - touch.screenX;
-          var dy:Float = initTouchPos.y - touch.screenY;
-
-          var angle:Float = Math.atan2(dy, dx);
-          var length:Float = Math.sqrt(dx * dx + dy * dy);
-
-          FlxG.watch.addQuick('LENGTH', length);
-          FlxG.watch.addQuick('ANGLE', Math.round(FlxAngle.asDegrees(angle)));
-        }
-      }
-
-      if (FlxG.touches.getFirst() != null)
-      {
-        if (touchTimer >= 1.5) accepted = true;
-
-        touchTimer += elapsed;
-        var touch:FlxTouch = FlxG.touches.getFirst();
-
-        velTouch = Math.abs((touch.screenY - dyTouch)) / 50;
-
-        dyTouch = touch.screenY - touchY;
-        dxTouch = touch.screenX - touchX;
-
-        if (touch.justPressed)
-        {
-          touchY = touch.screenY;
-          dyTouch = 0;
-          velTouch = 0;
-
-          touchX = touch.screenX;
-          dxTouch = 0;
-        }
-
-        if (Math.abs(dxTouch) >= 100)
-        {
-          touchX = touch.screenX;
-          if (dxTouch != 0) dxTouch < 0 ? changeDiff(1) : changeDiff(-1);
-        }
-
-        if (Math.abs(dyTouch) >= 100)
-        {
-          touchY = touch.screenY;
-
-          if (dyTouch != 0) dyTouch < 0 ? changeSelection(1) : changeSelection(-1);
-        }
-      }
-      else
-      {
-        touchTimer = 0;
-      }
-    }
+    final upP:Bool = (controls.UI_UP_P #if mobile || SwipeUtil.swipeUp #end);
+    final downP:Bool = (controls.UI_DOWN_P #if mobile || SwipeUtil.swipeDown #end);
+    final accepted:Bool = controls.ACCEPT;
 
     #if mobile
-    for (touch in FlxG.touches.list)
+    // Nested as fuck
+    @:nullSafety(Off)
+    if (TouchUtil.justReleased && !SwipeUtil.swipeAny && !TouchUtil.overlapsComplex(diffSelRight))
     {
-      if (touch.justPressed)
+      for (i in 0...grpCapsules.members.length)
       {
-        // accepted = true;
+        final capsuleHit:FlxSprite = grpCapsules.members[i].theActualHitbox;
+        if (!TouchUtil.overlaps(capsuleHit)) continue;
+
+        (i == curSelected) ? grpCapsules.members[i].onConfirm() : changeSelection(i - curSelected);
+        break;
       }
     }
     #end
 
-    if ((controls.UI_UP || controls.UI_DOWN))
+    if (upP || downP)
     {
       if (spamming)
       {
@@ -1498,7 +1484,7 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
 
-          if (controls.UI_UP)
+          if (upP)
           {
             changeSelection(-1);
           }
@@ -1514,7 +1500,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else if (spamTimer <= 0)
       {
-        if (controls.UI_UP)
+        if (upP)
         {
           changeSelection(-1);
         }
@@ -1533,106 +1519,49 @@ class FreeplayState extends MusicBeatSubState
       spamTimer = 0;
     }
 
-    #if !html5
-    if (FlxG.mouse.wheel != 0)
-    {
-      if (dj != null) dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel));
-    }
-    #else
-    if (FlxG.mouse.wheel < 0)
-    {
-      if (dj != null) dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
-    }
-    else if (FlxG.mouse.wheel > 0)
-    {
-      if (dj != null) dj.resetAFKTimer();
-      changeSelection(-Math.round(FlxG.mouse.wheel / 8));
-    }
+    #if desktop
+    final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+    #elseif mobile
+    final wheelAmount:Float = FlxG.touches.horizontalWheel / 2;
     #end
 
-    if (controls.UI_LEFT_P)
+    if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
+    {
+      if (dj != null) dj.resetAFKTimer();
+      changeSelection(-Math.round(wheelAmount));
+    }
+
+    // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
+    if (controls.UI_LEFT_P #if mobile || (diffSelLeft != null && TouchUtil.overlapsComplex(diffSelLeft) && TouchUtil.justPressed) #end)
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
+      #if mobile
+      if (diffSelLeft != null) diffSelLeft.setPress(true);
+      #end
     }
-    if (controls.UI_RIGHT_P)
+    if (controls.UI_RIGHT_P #if mobile || (diffSelRight != null && TouchUtil.overlapsComplex(diffSelRight) && TouchUtil.justPressed) #end)
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(1);
       generateSongList(currentFilter, true);
+      #if mobile
+      if (diffSelRight != null) diffSelRight.setPress(true);
+      #end
     }
+
+    #if mobile
+    if (diffSelLeft != null && diffSelRight != null && TouchUtil.justReleased)
+    {
+      diffSelRight.setPress(false);
+      diffSelLeft.setPress(false);
+    }
+    #end
 
     if (controls.BACK && !busy)
     {
-      busy = true;
-      FlxTween.globalManager.clear();
-      FlxTimer.globalManager.clear();
-      if (dj != null) dj.onIntroDone.removeAll();
-
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-
-      var longestTimer:Float = 0;
-
-      backingCard?.disappear();
-
-      for (grpSpr in exitMovers.keys())
-      {
-        var moveData:Null<MoveData> = exitMovers.get(grpSpr);
-        if (moveData == null) continue;
-
-        for (spr in grpSpr)
-        {
-          if (spr == null) continue;
-
-          var funnyMoveShit:MoveData = moveData;
-
-          var moveDataX = funnyMoveShit.x ?? spr.x;
-          var moveDataY = funnyMoveShit.y ?? spr.y;
-          var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
-          var moveDataWait = funnyMoveShit.wait ?? 0.0;
-
-          FlxTween.tween(spr, {x: moveDataX, y: moveDataY}, moveDataSpeed, {ease: FlxEase.expoIn});
-
-          longestTimer = Math.max(longestTimer, moveDataSpeed + moveDataWait);
-        }
-      }
-
-      for (caps in grpCapsules.members)
-      {
-        caps.doJumpIn = false;
-        caps.doLerp = false;
-        caps.doJumpOut = true;
-      }
-
-      if (Type.getClass(_parentState) == MainMenuState)
-      {
-        _parentState.persistentUpdate = false;
-        _parentState.persistentDraw = true;
-      }
-
-      new FlxTimer().start(longestTimer, (_) -> {
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-        if (Type.getClass(_parentState) == MainMenuState)
-        {
-          FunkinSound.playMusic('freakyMenu',
-            {
-              overrideExisting: true,
-              restartTrack: false,
-              // Continue playing this music between states, until a different music track gets played.
-              persist: true
-            });
-          FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
-          close();
-        }
-        else
-        {
-          FlxG.switchState(() -> new MainMenuState());
-        }
-      });
+      goBack();
     }
 
     if (accepted && !busy)
@@ -1651,7 +1580,78 @@ class FreeplayState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
+    // remove and destroy freeplay camera
     FlxG.cameras.remove(funnyCam);
+  }
+
+  function goBack():Void
+  {
+    busy = true;
+    FlxTween.globalManager.clear();
+    FlxTimer.globalManager.clear();
+    if (dj != null) dj.onIntroDone.removeAll();
+
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+
+    var longestTimer:Float = 0;
+
+    backingCard?.disappear();
+
+    for (grpSpr in exitMovers.keys())
+    {
+      var moveData:Null<MoveData> = exitMovers.get(grpSpr);
+      if (moveData == null) continue;
+
+      for (spr in grpSpr)
+      {
+        if (spr == null) continue;
+
+        var funnyMoveShit:MoveData = moveData;
+
+        var moveDataX = funnyMoveShit.x ?? spr.x;
+        var moveDataY = funnyMoveShit.y ?? spr.y;
+        var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
+        var moveDataWait = funnyMoveShit.wait ?? 0.0;
+
+        FlxTween.tween(spr, {x: moveDataX, y: moveDataY}, moveDataSpeed, {ease: FlxEase.expoIn});
+
+        longestTimer = Math.max(longestTimer, moveDataSpeed + moveDataWait);
+      }
+    }
+
+    for (caps in grpCapsules.members)
+    {
+      caps.doJumpIn = false;
+      caps.doLerp = false;
+      caps.doJumpOut = true;
+    }
+
+    if (Type.getClass(_parentState) == MainMenuState)
+    {
+      _parentState.persistentUpdate = false;
+      _parentState.persistentDraw = true;
+    }
+
+    new FlxTimer().start(longestTimer, (_) -> {
+      FlxTransitionableState.skipNextTransIn = true;
+      FlxTransitionableState.skipNextTransOut = true;
+      if (Type.getClass(_parentState) == MainMenuState)
+      {
+        FunkinSound.playMusic('freakyMenu',
+          {
+            overrideExisting: true,
+            restartTrack: false,
+            // Continue playing this music between states, until a different music track gets played.
+            persist: true
+          });
+        FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+        close();
+      }
+      else
+      {
+        FlxG.switchState(() -> new MainMenuState());
+      }
+    });
   }
 
   /**
@@ -1663,7 +1663,6 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false):Void
   {
-    touchTimer = 0;
     var previousVariation:String = currentVariation;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
@@ -2153,6 +2152,24 @@ class DifficultySelector extends FlxSprite
 
     super.update(elapsed);
   }
+
+  #if mobile
+  public function setPress(press:Bool):Void
+  {
+    if (!press)
+    {
+      scale.x = scale.y = 1;
+      whiteShader.colorSet = false;
+      updateHitbox();
+    }
+    else
+    {
+      offset.y -= 5;
+      whiteShader.colorSet = true;
+      scale.x = scale.y = 0.5;
+    }
+  }
+  #end
 
   function moveShitDown():Void
   {

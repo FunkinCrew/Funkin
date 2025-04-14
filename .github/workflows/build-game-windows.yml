@@ -1,0 +1,33 @@
+name: Build Game for Windows
+on: workflow_dispatch
+jobs:
+  Windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          submodules: true
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.4
+
+      - name: Install Libraries
+        run: |
+          haxelib install hmm --quiet
+          haxelib run hmm install --quiet
+          haxelib run lime rebuild hxcpp
+
+      - name: Compile
+        run: haxelib run lime build windows
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: windowsBuild
+          path: export/release/windows/bin
+          if-no-files-found: error

@@ -2,6 +2,9 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
+#if mobile
+import funkin.mobile.ui.FunkinHitbox;
+#end
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -78,6 +81,12 @@ class Save
 
   public static function getDefault():RawSaveData
   {
+    #if mobile
+    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+
+    if (refreshRate < 60) refreshRate = 60;
+    #end
+
     return {
       // Version number is an abstract(Array) internally.
       // This means it copies by reference, so merging save data overides the version number lol.
@@ -105,7 +114,7 @@ class Save
       options:
         {
           // Reasonable defaults.
-          framerate: 60,
+          framerate: #if mobile refreshRate #else 60 #end,
           naughtyness: true,
           downscroll: false,
           flashingLights: true,
@@ -142,6 +151,16 @@ class Save
                 },
             },
         },
+
+      #if mobile
+      mobileOptions:
+        {
+          // Reasonable defaults.
+          screenTimeout: false,
+          vibration: true,
+          controlsScheme: FunkinHitboxControlSchemes.FourLanes
+        },
+      #end
 
       mods:
         {
@@ -191,6 +210,18 @@ class Save
   {
     return data.options;
   }
+
+  #if mobile
+  /**
+   * NOTE: Modifications will not be saved without calling `Save.flush()`!
+   */
+  public var mobileOptions(get, never):SaveDataMobileOptions;
+
+  function get_mobileOptions():SaveDataMobileOptions
+  {
+    return data.mobileOptions;
+  }
+  #end
 
   /**
    * NOTE: Modifications will not be saved without calling `Save.flush()`!
@@ -1233,6 +1264,13 @@ typedef RawSaveData =
 
   var unlocks:SaveDataUnlocks;
 
+  #if mobile
+  /**
+   * The user's preferences for mobile.
+   */
+  var mobileOptions:SaveDataMobileOptions;
+  #end
+
   /**
    * The user's favorited songs in the Freeplay menu,
    * as a list of song IDs.
@@ -1456,6 +1494,30 @@ typedef SaveDataOptions =
         };
     };
 };
+
+#if mobile
+typedef SaveDataMobileOptions =
+{
+  /**
+   * If enabled, device will be able to sleep on its own.
+   * @default `false`
+   */
+  var screenTimeout:Bool;
+
+  /**
+   * If enabled, vibration will be enabled.
+   * @default `true`
+   */
+  var vibration:Bool;
+
+  /**
+   * Controls scheme for the hitbox.
+   * @default `fourLanes`
+   */
+  var controlsScheme:String;
+};
+
+#end
 
 /**
  * An anonymous structure containing a specific player's bound keys.

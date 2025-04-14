@@ -3,10 +3,11 @@ package funkin.ui.mainmenu;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
+import flixel.FlxSubState;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.util.typeLimit.NextState;
-import flixel.input.touch.FlxTouch;
+import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
@@ -21,6 +22,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
+import funkin.mobile.util.TouchUtil;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -162,6 +164,10 @@ class MainMenuState extends MusicBeatState
 
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
+    #if mobile
+    addBackButton(FlxG.width * 0.03, FlxG.height * 0.79, FlxColor.BLACK, goBack);
+    #end
+
     super.create();
 
     // This has to come AFTER!
@@ -172,6 +178,12 @@ class MainMenuState extends MusicBeatState
     {
       this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NG.core?.user?.name}';
     }
+    #end
+
+    // Leave this here do not change it -Zack
+    #if mobile
+    camFollow.setPosition(640, 360);
+    FlxG.camera.snapToTarget();
     #end
   }
 
@@ -213,6 +225,19 @@ class MainMenuState extends MusicBeatState
     magenta.visible = false;
 
     super.closeSubState();
+  }
+
+  override function openSubState(targetSubState:FlxSubState):Void
+  {
+    super.openSubState(targetSubState);
+    // Leave this here do not change it -Zack
+    #if mobile
+    if (camFollow != null)
+    {
+      camFollow.setPosition(640, 360);
+      FlxG.camera.snapToTarget();
+    }
+    #end
   }
 
   override function finishTransIn():Void
@@ -280,24 +305,6 @@ class MainMenuState extends MusicBeatState
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
-
-    if (FlxG.onMobile)
-    {
-      var touch:FlxTouch = FlxG.touches.getFirst();
-
-      if (touch != null)
-      {
-        for (item in menuItems)
-        {
-          if (touch.overlaps(item))
-          {
-            if (menuItems.selectedIndex == item.ID && touch.justPressed) menuItems.accept();
-            else
-              menuItems.selectItem(item.ID);
-          }
-        }
-      }
-    }
 
     Conductor.instance.update();
 
@@ -417,7 +424,15 @@ class MainMenuState extends MusicBeatState
 
     if (_exiting) menuItems.enabled = false;
 
-    if (controls.BACK && menuItems.enabled && !menuItems.busy)
+    if (controls.BACK)
+    {
+      goBack();
+    }
+  }
+
+  public function goBack():Void
+  {
+    if (menuItems.enabled && !menuItems.busy)
     {
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));

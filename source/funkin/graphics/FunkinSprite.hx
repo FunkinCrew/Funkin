@@ -11,6 +11,7 @@ import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
+import openfl.system.System;
 
 /**
  * An FlxSprite with additional functionality.
@@ -267,6 +268,8 @@ class FunkinSprite extends FlxSprite
       graphic.destroy();
       previousCachedTextures.remove(graphicKey);
     }
+
+    System.gc();
   }
 
   static function isGraphicCached(graphic:FlxGraphic):Bool

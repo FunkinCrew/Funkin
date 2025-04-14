@@ -5,7 +5,9 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
@@ -14,6 +16,12 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.mobile.ui.FunkinBackspace;
+#if mobile
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
+#end
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
@@ -65,6 +73,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       camFollow.y = selected.y;
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
+
+    #if mobile
+    backButton = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK);
+    add(backButton);
+    #end
   }
 
   /**
@@ -144,6 +157,14 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, null, Preferences.jpegQuality, 0, 100, 5, 0);
+    #if mobile
+    createPrefItemCheckbox('Allow Screen Timeout', 'Toggle screen timeout', function(value:Bool):Void {
+      Preferences.screenTimeout = value;
+    }, Preferences.screenTimeout);
+    createPrefItemCheckbox('Vibration', 'Toggle vibration', function(value:Bool):Void {
+      Preferences.vibration = value;
+    }, Preferences.vibration);
+    #end
   }
 
   override function update(elapsed:Float):Void
@@ -175,6 +196,19 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
       daItem.x = thyOffset;
     });
+
+    #if mobile
+    if (items.enabled
+      && !items.busy
+      && TouchUtil.justReleased
+      && !SwipeUtil.swipeAny
+      && (TouchUtil.touch != null
+        && TouchUtil.overlapsComplexPoint(items.selectedItem,
+          FlxPoint.weak(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130)), false, menuCamera)))
+    {
+      items.accept();
+    }
+    #end
   }
 
   // - Preference item creation methods -

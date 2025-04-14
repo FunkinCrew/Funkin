@@ -18,6 +18,11 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.transition.StickerSubState;
+#if mobile
+import funkin.mobile.util.SwipeUtil;
+import funkin.mobile.util.TouchUtil;
+#end
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -407,16 +412,22 @@ class PauseSubState extends MusicBeatSubState
   {
     if (!allowInput) return;
 
-    if (controls.UI_UP_P)
+    // Doing this just so it'd look better i guess.
+    final upP:Bool = controls.UI_UP_P #if mobile || SwipeUtil.swipeUp #end;
+    final downP:Bool = controls.UI_DOWN_P #if mobile || SwipeUtil.swipeDown #end;
+    final accept:Bool = controls.ACCEPT #if mobile
+    || (TouchUtil.overlapsComplex(menuEntryText.members[currentEntry], camera) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end;
+
+    if (upP)
     {
       changeSelection(-1);
     }
-    if (controls.UI_DOWN_P)
+    if (downP)
     {
       changeSelection(1);
     }
 
-    if (controls.ACCEPT && !justOpened)
+    if (accept && !justOpened)
     {
       currentMenuEntries[currentEntry].callback(this);
     }

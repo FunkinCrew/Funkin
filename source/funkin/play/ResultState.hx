@@ -32,6 +32,9 @@ import funkin.play.components.ClearPercentCounter;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
+#if mobile
+import funkin.mobile.util.TouchUtil;
+#end
 
 /**
  * The state for the results screen after a song or week is finished.
@@ -716,7 +719,7 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    if (controls.PAUSE || controls.ACCEPT)
+    if (controls.PAUSE || controls.ACCEPT #if mobile || TouchUtil.justPressed #end)
     {
       if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
       {

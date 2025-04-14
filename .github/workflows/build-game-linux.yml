@@ -1,0 +1,36 @@
+name: Build Game for Linux
+on: workflow_dispatch
+jobs:
+  Linux:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          submodules: true
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.4
+
+      - name: Installing Dependencies
+        run: sudo apt-get install libvlc-dev libvlccore-dev vlc-bin vlc
+
+      - name: Install Libraries
+        run: |
+          haxelib install hmm --quiet
+          haxelib run hmm install --quiet
+          haxelib run lime rebuild hxcpp
+
+      - name: Compile
+        run: haxelib run lime build linux
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: linuxBuild
+          path: export/release/linux/bin
+          if-no-files-found: error

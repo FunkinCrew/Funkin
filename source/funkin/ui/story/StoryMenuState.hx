@@ -23,6 +23,8 @@ import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
+import funkin.mobile.util.SwipeUtil;
+import funkin.mobile.util.TouchUtil;
 import openfl.utils.Assets;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -223,6 +225,10 @@ class StoryMenuState extends MusicBeatState
     // Updating Discord Rich Presence
     DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
     #end
+
+    #if mobile
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
+    #end
   }
 
   function rememberSelection():Void
@@ -330,13 +336,13 @@ class StoryMenuState extends MusicBeatState
     {
       if (!selectedLevel)
       {
-        if (controls.UI_UP_P)
+        if (controls.UI_UP_P || (SwipeUtil.justSwipedUp))
         {
           changeLevel(-1);
           changeDifficulty(0);
         }
 
-        if (controls.UI_DOWN_P)
+        if (controls.UI_DOWN_P || (SwipeUtil.justSwipedDown))
         {
           changeLevel(1);
           changeDifficulty(0);
@@ -359,17 +365,17 @@ class StoryMenuState extends MusicBeatState
         #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P)
+        if (controls.UI_RIGHT_P || (TouchUtil.overlaps(rightDifficultyArrow) && TouchUtil.justPressed))
         {
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P)
+        if (controls.UI_LEFT_P || (TouchUtil.overlaps(leftDifficultyArrow) && TouchUtil.justPressed))
         {
           changeDifficulty(-1);
         }
 
-        if (controls.UI_RIGHT)
+        if (controls.UI_RIGHT || TouchUtil.overlaps(rightDifficultyArrow))
         {
           rightDifficultyArrow.animation.play('press');
         }
@@ -378,7 +384,7 @@ class StoryMenuState extends MusicBeatState
           rightDifficultyArrow.animation.play('idle');
         }
 
-        if (controls.UI_LEFT)
+        if (controls.UI_LEFT || TouchUtil.overlaps(leftDifficultyArrow))
         {
           leftDifficultyArrow.animation.play('press');
         }
@@ -388,13 +394,18 @@ class StoryMenuState extends MusicBeatState
         }
       }
 
-      if (controls.ACCEPT)
+      if (controls.ACCEPT
+        || (TouchUtil.overlaps(levelTitles.members[levelList.indexOf(currentLevelId)])
+          && TouchUtil.justPressed
+          && !TouchUtil.overlaps(leftDifficultyArrow)))
       {
         selectLevel();
       }
     }
 
-    if (controls.BACK && !exitingMenu && !selectedLevel)
+    if (((controls.BACK) #if mobile || (TouchUtil.overlaps(backButton) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
+      && !exitingMenu
+      && !selectedLevel)
     {
       exitingMenu = true;
       FlxG.switchState(() -> new MainMenuState());

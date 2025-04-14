@@ -1,0 +1,84 @@
+name: Build Game for Mobile
+on: workflow_dispatch
+jobs:
+  Android:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          submodules: true
+          token: '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'
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.6
+
+      # https://github.com/actions/runner-images/issues/10814
+      - name: Workaround build-tools issue
+        run: |
+          curl https://dl.google.com/android/repository/build-tools_r35_macosx.zip > $ANDROID_HOME/build-tools_r35_macosx.zip
+          cd $ANDROID_HOME
+          mkdir build-tools
+          unzip build-tools_r35_macosx.zip
+          mv android-15 build-tools/35.0.0
+
+      - name: Install Libraries
+        run: |
+          haxelib git hmm https://github.com/FunkinCrew/hmm.git skip-deps --quiet --skip-dependencies
+          haxelib run hmm install --quiet
+          haxelib run lime rebuild hxcpp
+
+      - name: Configure Android
+        run: |
+          haxelib run lime config ANDROID_SDK $ANDROID_HOME
+          haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_LATEST_HOME
+          haxelib run lime config JAVA_HOME $JAVA_HOME_17_arm64
+          haxelib run lime config ANDROID_SETUP true
+
+      - name: Compile
+        run: haxelib run lime build android
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: androidBuild
+          path: export/release/android/bin/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+  iOS:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          submodules: true
+          token: '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'
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.6
+
+      - name: Install Libraries
+        run: |
+          haxelib git hmm https://github.com/FunkinCrew/hmm.git skip-deps --quiet --skip-dependencies
+          haxelib run hmm install --quiet
+          haxelib run lime rebuild hxcpp
+
+      - name: Compile
+        run: haxelib run lime build ios -nosign
+
+      - name: Make .ipa
+        run: |
+          cd export/*/ios/build/*-iphoneos
+          mkdir Payload
+          mv *.app Payload
+          zip -r Funkin.ipa Payload
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: iOSBuild
+          path: export/release/ios/build/Release-iphoneos/*.ipa
+          if-no-files-found: error

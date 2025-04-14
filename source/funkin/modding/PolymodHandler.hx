@@ -280,6 +280,12 @@ class PolymodHandler
     // Can load and execute compiled binaries.
     Polymod.blacklistImport('lime.system.JNI');
 
+    #if ("extension-androidtools")
+    // `android.jni.JNICache`
+    // Same as `lime.system.JNI`
+    Polymod.blacklistImport('android.jni.JNICache');
+    #end
+
     // `lime.system.System`
     // System.load() can load malicious DLLs
     Polymod.blacklistImport('lime.system.System');

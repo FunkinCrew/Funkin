@@ -13,6 +13,12 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
+#if mobile
+import funkin.graphics.FunkinCamera;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.input.PreciseInputHandler;
+import funkin.mobile.ui.FunkinBackspace;
+#end
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -56,6 +62,52 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     subStateClosed.add(onCloseSubStateComplete);
   }
 
+  #if mobile
+  public var hitbox:FunkinHitbox;
+  public var backButton:FunkinBackspace;
+  public var camControls:FunkinCamera;
+
+  public function addHitbox(?visible:Bool = true, ?initInput:Bool = true, ?schemeOverride:String = null):Void
+  {
+    if (hitbox != null)
+    {
+      hitbox.kill();
+      remove(hitbox);
+      hitbox.destroy();
+    }
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    hitbox = new FunkinHitbox(schemeOverride);
+    hitbox.cameras = [camControls];
+    hitbox.visible = visible;
+    add(hitbox);
+
+    if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
+  }
+
+  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?onClick:Void->Void = null):Void
+  {
+    if (backButton != null) remove(backButton);
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    backButton = new FunkinBackspace(xPos, yPos, color, onClick);
+    backButton.cameras = [camControls];
+    add(backButton);
+  }
+  #end
+
   override function create()
   {
     super.create();
@@ -69,6 +121,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public override function destroy():Void
   {
     super.destroy();
+
+    #if mobile
+    if (camControls != null) FlxG.cameras.remove(camControls);
+    #end
+
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
   }

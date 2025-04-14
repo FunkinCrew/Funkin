@@ -18,6 +18,12 @@ import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
 import funkin.ui.PixelatedIcon;
+#if mobile
+import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.SwipeUtil;
+#end
+
+using StringTools;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -73,6 +79,10 @@ class SongMenuItem extends FlxSpriteGroup
   public var sparkle:FlxSprite;
 
   var sparkleTimer:FlxTimer;
+
+  #if mobile
+  public var theActualHitbox:FlxSprite;
+  #end
 
   public function new(x:Float, y:Float)
   {
@@ -214,6 +224,13 @@ class SongMenuItem extends FlxSpriteGroup
     weekNumbers.push(weekNumber);
 
     setVisibleGrp(false);
+
+    #if mobile
+    theActualHitbox = new FlxSprite(capsule.x + 140,
+      capsule.y - 40).makeGraphic(Std.int(capsule.width / 1.4), Std.int(capsule.height / 1.4), FlxColor.TRANSPARENT);
+    theActualHitbox.cameras = cameras;
+    theActualHitbox.active = false;
+    #end
   }
 
   function sparkleEffect(timer:FlxTimer):Void
@@ -634,6 +651,11 @@ class SongMenuItem extends FlxSpriteGroup
       x = MathUtil.coolLerp(x, targetPos.x, 0.3);
       y = MathUtil.coolLerp(y, targetPos.y, 0.4);
     }
+
+    #if mobile
+    theActualHitbox.x = x;
+    theActualHitbox.y = y;
+    #end
 
     super.update(elapsed);
   }

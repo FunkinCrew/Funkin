@@ -3,6 +3,9 @@ package funkin.ui.options.items;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
+#if mobile
+import funkin.mobile.util.SwipeUtil;
+#end
 
 /**
  * Preference item that allows the player to pick a value between min and max
@@ -75,8 +78,8 @@ class NumberPreferenceItem extends TextMenuItem
       changeRateTimer -= elapsed;
     }
 
-    var jpLeft:Bool = controls().UI_LEFT_P;
-    var jpRight:Bool = controls().UI_RIGHT_P;
+    var jpLeft:Bool = controls().UI_LEFT_P #if mobile || SwipeUtil.justSwipedLeft #end;
+    var jpRight:Bool = controls().UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end;
 
     if (jpLeft || jpRight)
     {
