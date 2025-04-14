@@ -57,6 +57,7 @@ import funkin.util.SerializerUtil;
 import haxe.Int64;
 #if mobile
 import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.HapticUtil;
 import funkin.mobile.ui.FunkinHitbox;
 #if NO_DISABLE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
@@ -2638,6 +2639,11 @@ class PlayState extends MusicBeatSubState
         healthChange = Constants.HEALTH_SHIT_BONUS;
         isComboBreak = Constants.JUDGEMENT_SHIT_COMBO_BREAK;
     }
+
+    #if HAPTIC_VIBRATIONS
+    // Vibration each note hit.
+    HapticUtil.vibrate(0, 10);
+    #end
 
     // Send the note hit event.
     var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, isComboBreak, Highscore.tallies.combo + 1, noteDiff,

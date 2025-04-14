@@ -286,7 +286,13 @@ class Project extends HXProject {
 	 */
 	static final TOUCH_CONTROLS:FeatureFlag = "TOUCH_CONTROLS";
 
-		/**
+	/**
+	 * `-DHAPTIC_VIBRATIONS
+	 * If this flag is enabled, the vibrations for the game is also enabled.
+	 */
+	static final HAPTIC_VIBRATIONS:FeatureFlag = "HAPTIC_VIBRATIONS";
+
+	/**
 	 * `-DEXCLUDE_ARMV7`
 	 * If this flag is enabled, armv7 won't be compiled when building android.
 	 */
@@ -585,6 +591,9 @@ class Project extends HXProject {
 
 		// Should be true only on mobile builds.
 		TOUCH_CONTROLS.apply(this, isMobile());
+
+		// Should be true only on mobile builds.
+		HAPTIC_VIBRATIONS.apply(this, isMobile());
 
 		// Should be true only on non-mobile builds.
 		// Only mobile builds support ads.

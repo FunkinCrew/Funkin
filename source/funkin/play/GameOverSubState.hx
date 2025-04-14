@@ -19,10 +19,8 @@ import funkin.util.MathUtil;
 import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
 import funkin.mobile.util.TouchUtil;
-import openfl.utils.Assets;
-#if mobile
 import funkin.mobile.util.HapticUtil;
-#end
+import openfl.utils.Assets;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -517,8 +515,8 @@ class GameOverSubState extends MusicBeatSubState
   {
     blueballed = true;
 
-    #if mobile
-    HapticUtil.vibrate(500, 1000);
+    #if HAPTIC_VIBRATIONS
+    HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD * 5, Constants.DEFAULT_VIBRATION_DURATION * 10);
     #end
 
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))

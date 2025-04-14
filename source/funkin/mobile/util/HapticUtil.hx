@@ -20,11 +20,15 @@ class HapticUtil
    * @param duration The time taken for a complete cycle.
    * @param amplitude The distance of movement of the wave from its original position.
    */
-  public static function vibrate(period:Int, duration:Int, amplitude:Int = 0):Void
+  public static function vibrate(period:Int = Constants.DEFAULT_VIBRATION_PERIOD, duration:Int = Constants.DEFAULT_VIBRATION_DURATION, amplitude:Int = 0):Void
   {
+    #if HAPTIC_VIBRATIONS
     if (!Preferences.vibration) return;
 
     Haptic.vibrate(period, duration, amplitude);
+    #end
+
+    return;
   }
 
   /**
@@ -34,8 +38,9 @@ class HapticUtil
    * @param toValue End amplitude value.
    * @param duration Duration of the tween.
    */
-  public static function increasingVibrate(fromValue:Float, toValue:Float, duration:Float = 1)
+  public static function increasingVibrate(fromValue:Float, toValue:Float, duration:Float = 1):Void
   {
+    #if HAPTIC_VIBRATIONS
     if (!Preferences.vibration) return;
 
     amplitudeTween = FlxTween.num(fromValue, toValue, duration,
@@ -46,5 +51,8 @@ class HapticUtil
       }, function(num) {
         vibrate(0, Std.int(Constants.DEFAULT_VIBRATION_DURATION / 10), Std.int(num));
       });
+    #end
+
+    return;
   }
 }

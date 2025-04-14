@@ -663,6 +663,9 @@ class Save
 
   public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
   {
+    // need it for testing (REMOVE IT ON RELEASE)
+    return true;
+
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];

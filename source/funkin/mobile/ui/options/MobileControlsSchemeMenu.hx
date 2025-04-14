@@ -9,7 +9,6 @@ import funkin.mobile.ui.options.objects.HitboxShowcase;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
-import funkin.util.MathUtil;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.AtlasText;
 import funkin.graphics.shaders.HSVShader;
@@ -306,7 +305,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     }
   }
 
-  override function update(elapsed:Float)
+  public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
