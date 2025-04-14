@@ -8,29 +8,13 @@ import haxe.macro.Expr.TypeDefKind;
 import haxe.macro.Expr.MetadataEntry;
 import haxe.macro.Type;
 import haxe.macro.Type.ClassType;
+#if macro
 import sys.FileSystem;
+#end
 
+using haxe.macro.Tools;
 using Lambda;
-using haxe.macro.ExprTools;
-using haxe.macro.TypeTools;
 using StringTools;
-
-/**
- * The type parameters for a class extending `BaseRegistry`.
- */
-typedef RegistryTypeParams =
-{
-  /**
-   * The class type of the entry. Must implement `IRegistryEntry`.
-   */
-  var entryType:ClassType;
-
-  /**
-   * The type for the data of an entry. This is usually a typedef of a struct.
-   */
-  var dataType:Any; // DefType or ClassType
-
-}
 
 /**
  * A set of build macros to be applied to `Registry` classes in the `funkin.data` package.
@@ -46,26 +30,56 @@ class RegistryMacro
    *
    * @return The modified list of fields for the target class.
    */
-  public static macro function buildRegistry():Array<Field>
+  public static macro function buildRegistry():ComplexType
   {
+    var dataFilePath:String = switch (Context.getLocalType())
+    {
+      case TInst(_, [_, _, TInst(_.get() => {kind: KExpr(macro $v{(s : String)})}, _)]): s;
+      default: throw 'Should not happen';
+    }
+
+    var params:Array<Type> = switch (Context.getLocalType())
+    {
+      case TInst(_, [p1, p2, _]): [p1, p2];
+      default: throw 'Should not happen';
+    }
+
+    var complexParams:Array<ComplexType> = [for (p in params) p.toComplexType()];
+
+    var entryType:ClassType = switch (params[0])
+    {
+      case TInst(t, _):
+        t.get();
+      default:
+        throw 'Not a class';
+    }
+
+    var dataType:Any = switch (params[1])
+    {
+      case TInst(t, _):
+        t.get();
+      case TType(t, _):
+        t.get();
+      default:
+        throw 'Not a class';
+    }
+
+    var fields:Array<Field> = Context.getBuildFields().filter((f) -> return !f.access.contains(AAbstract) && f.name != 'dataFilePath');
+
+    fields = fields.concat(buildRegistryVariables(dataFilePath));
+
+    fields = fields.concat(buildRegistryMethods(entryType, dataType, dataFilePath));
+
+    fields = deparameterizeFields(fields, complexParams);
+
     var cls:ClassType = Context.getLocalClass().get();
-    var fields:Array<Field> = Context.getBuildFields();
-
-    // Classes with the `@:funkinBase` meta or `@:funkinProcessed` meta should be ignored.
-    var baseMeta:Null<MetadataEntry> = cls.meta.get().find(function(m) return m.name == ':funkinBase');
-    if (baseMeta != null || alreadyProcessed(cls)) return fields;
-
-    var typeParams:RegistryTypeParams = getTypeParams(cls);
+    var registry:ComplexType = buildRegistryImpl(cls, fields, params);
 
     // Build an internal class with static functions that allow the Entry class to call functions on the Registry class.
-    buildEntryImpl(typeParams.entryType, cls);
+    var localModule:String = Context.getLocalModule();
+    buildEntryImpl(entryType, '${localModule}');
 
-    fields = fields.concat(buildRegistryMethods(cls, fields, typeParams.entryType, typeParams.dataType));
-
-    // Indicate that the class has been processed so we don't process twice.
-    cls.meta.add(":funkinProcessed", [], cls.pos);
-
-    return fields;
+    return registry;
   }
 
   /**
@@ -96,54 +110,83 @@ class RegistryMacro
 
   #if macro
   /**
-   * Retrieve the type parameters for a class extending `BaseRegistry<T, J>`.
-   * @param cls The class to retrieve the type parameters for.
-   * @return The type parameters for the class.
+   * Defines the registry implementation class.
+   * @param cls The `BaseRegistry` class
+   * @param fields The fields that the registry class should have.
+   * @param params The parameters of the registry class.
+   * @return The `ComplexType` of the registry class.
    */
-  static function getTypeParams(cls:ClassType):RegistryTypeParams
+  static function buildRegistryImpl(cls:ClassType, fields:Array<Field>, params:Array<Type>):ComplexType
   {
-    switch (cls.superClass.t.get().kind)
-    {
-      case KGenericInstance(_, params):
-        var typeParams:Array<Any> = [];
-        for (param in params)
-        {
-          switch (param)
-          {
-            case TInst(t, _):
-              typeParams.push(t.get());
-            case TType(t, _):
-              typeParams.push(t.get());
-            default:
-              throw 'Not a class';
-          }
-        }
-        return {entryType: typeParams[0], dataType: typeParams[1]};
-      default:
-        throw '${cls.name}: Could not interpret type parameters of Registry class.';
-    }
+    var module:String = cls.module;
+    var pack:Array<String> = cls.pack;
+    var name:String = cls.name;
+    for (p in params)
+      name += '_${genericTypePath(p)}';
+
+    var imports = [
+      generateImport('funkin.util.assets.DataAssets'),
+      generateImport('funkin.util.VersionUtil'),
+      generateImport('flixel.FlxG')
+    ];
+
+    var usings = [
+      generateUsing('StringTools'),
+      generateUsing('funkin.util.tools.IteratorTools'),
+      generateUsing('funkin.util.tools.MapTools')
+    ];
+
+    Context.defineModule(module, [
+      {
+        pos: Context.currentPos(),
+        pack: pack,
+        name: name,
+        kind: TypeDefKind.TDClass(null, [], false, false, false),
+        fields: fields
+      }
+    ], imports, usings);
+
+    return TPath(
+      {
+        pack: pack,
+        name: module.split('.')[pack.length],
+        sub: name
+      });
+  }
+
+  /**
+   * Returns the fields for the registry class.
+   * @param dataFilePath The path to the files for the registry.
+   * @return The variables for the registry class.
+   */
+  static function buildRegistryVariables(dataFilePath:String):Array<Field>
+  {
+    return (macro class TempClass
+      {
+        final dataFilePath:String = $v{dataFilePath};
+      }).fields;
   }
 
   /**
    * Builds new static and instance methods for a registry class.
    *
-   * @param cls The registry class to build the methods for.
-   * @param fields The fields of the registry class.
    * @param entryType The class type of entries in the registry.
    * @param dataType The type of the data for entries in the registry.
+   * @param dataFilePath The path to the files for the registry.
    * @return The modified list of fields for the target class.
    */
-  static function buildRegistryMethods(cls:ClassType, fields:Array<Field>, entryType:ClassType, dataType:Dynamic):Array<Field>
+  static function buildRegistryMethods(entryType:ClassType, dataType:Dynamic, dataFilePath:String):Array<Field>
   {
-    var scriptedEntryClsName:String = entryType.pack.join('.') + '.Scripted' + entryType.name;
+    var scriptedEntryClsName:String = '${entryType.pack.join('.')}.Scripted${entryType.name}';
 
     var getScriptedClassName:String = '${scriptedEntryClsName}';
+
+    var createEntry:String = 'new ${entryType.module}.${entryType.name}(id)';
 
     var createScriptedEntry:String = '${scriptedEntryClsName}.init(clsName, "unknown")';
 
     var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>()';
 
-    var dataFilePath:String = getRegistryDataFilePath(cls, fields);
     var baseGameEntryIds:Array<Expr> = listBaseGameEntryIds('${DATA_FILE_BASE_PATH}/${dataFilePath}/');
 
     return (macro class TempClass
@@ -163,6 +206,11 @@ class RegistryMacro
         function getScriptedClassNames()
         {
           return ${Context.parse(getScriptedClassName, Context.currentPos())}.listScriptClasses();
+        }
+
+        function createEntry(id:String)
+        {
+          return ${Context.parse(createEntry, Context.currentPos())};
         }
 
         function createScriptedEntry(clsName:String)
@@ -207,7 +255,73 @@ class RegistryMacro
           }
           return parser.value;
         }
-      }).fields.filter((field) -> return !MacroUtil.fieldAlreadyExists(field.name));
+      }).fields;
+  }
+
+  /**
+   * Apply the generic parameters to the fields of the registry class.
+   * @param fields The fields to apply the generic parameters to.
+   * @param complexParams The generic parameters to apply.
+   * @return The modified list of fields for the target class.
+   */
+  static function deparameterizeFields(fields:Array<Field>, complexParams:Array<ComplexType>):Array<Field>
+  {
+    function deparameterizeType(t:ComplexType):ComplexType
+    {
+      switch (t)
+      {
+        case TPath(tp):
+          if (tp.name == 'T') return complexParams[0];
+          else if (tp.name == 'J') return complexParams[1];
+
+          for (i in 0...tp.params.length)
+          {
+            switch (tp.params[i])
+            {
+              case TPType(t):
+                tp.params[i] = TPType(deparameterizeType(t));
+              default:
+                throw 'Should not happen';
+            }
+          }
+        default:
+          throw 'Not yet handled';
+      }
+
+      return t;
+    }
+
+    function deparameterizeExpr(e:Expr):Expr
+    {
+      final regexT = ~/(\bT\b)(?=[^a-zA-Z0-9_]|$)/g;
+      final regexJ = ~/(\bJ\b)(?=[^a-zA-Z0-9_]|$)/g;
+
+      var exprString = e.toString();
+      exprString = regexT.replace(exprString, complexParams[0].toString());
+      exprString = regexJ.replace(exprString, complexParams[1].toString());
+
+      return Context.parse(exprString, Context.currentPos());
+    }
+
+    for (f in fields)
+    {
+      switch (f.kind)
+      {
+        case FVar(t, e):
+          t = deparameterizeType(t);
+          if (e != null) e = deparameterizeExpr(e);
+        case FFun(f):
+          for (i in 0...f.args.length)
+            if (f.args[i].type != null) f.args[i].type = deparameterizeType(f.args[i].type);
+          if (f.ret != null) f.ret = deparameterizeType(f.ret);
+          if (f.expr != null) f.expr = deparameterizeExpr(f.expr);
+        case FProp(_, _, t, e):
+          t = deparameterizeType(t);
+          if (e != null) e = deparameterizeExpr(e);
+      }
+    }
+
+    return fields;
   }
 
   /**
@@ -261,8 +375,7 @@ class RegistryMacro
   static function buildEntryMethods(cls:ClassType):Array<Field>
   {
     // The internal class built by `buildEntryImpl`.
-    var impl:String = 'funkin.macro.impl._${cls.name}_Impl';
-
+    var impl:String = '${cls.pack.join('.')}.${cls.name}_DefaultImpl_';
     return (macro class TempClass
       {
         public function _fetchData(id:String)
@@ -285,19 +398,17 @@ class RegistryMacro
   /**
    * Build an internal class that calls functions for an associated registry class.
    * @param cls The entry class to build the internal class for.
-   * @param registryCls The registry class that the entry class is associated with.
+   * @param registryPath The registry class that the entry class is associated with.
    */
-  static function buildEntryImpl(cls:ClassType, registryCls:ClassType):Void
+  static function buildEntryImpl(cls:ClassType, registryPath:String):Void
   {
     var clsType:ComplexType = Context.getType('${cls.module}.${cls.name}').toComplexType();
-
-    var registry:String = '${registryCls.module}.${registryCls.name}';
 
     Context.defineType(
       {
         pos: Context.currentPos(),
-        pack: ['funkin', 'macro', 'impl'],
-        name: '_${cls.name}_Impl',
+        pack: cls.pack,
+        name: '${cls.name}_DefaultImpl_',
         kind: TypeDefKind.TDClass(null, [], false, false, false),
         fields: (macro class TempClass
           {
@@ -305,8 +416,8 @@ class RegistryMacro
             {
               return $
               {
-                Context.parse(registry, Context.currentPos())
-              }.instance.parseEntryDataWithMigration(id, ${Context.parse(registry, Context.currentPos())}.instance.fetchEntryVersion(id));
+                Context.parse(registryPath, Context.currentPos())
+              }.instance.parseEntryDataWithMigration(id, ${Context.parse(registryPath, Context.currentPos())}.instance.fetchEntryVersion(id));
             }
 
             public static inline function toString(me:$clsType)
@@ -317,46 +428,6 @@ class RegistryMacro
             public static inline function destroy(me:$clsType) {}
           }).fields
       });
-  }
-
-  static function getRegistryDataFilePath(cls:ClassType, fields:Array<Field>):String
-  {
-    for (field in fields)
-    {
-      if (field.name == 'new')
-      {
-        // We found a field called `new`, it's probably the constructor.
-        switch (field.kind)
-        {
-          case FFun(f):
-            // Inside the function.
-            switch (f.expr.expr)
-            {
-              // Inside the block.
-              case EBlock(exprs):
-                var superCall:Expr = exprs[0];
-                switch (superCall.expr)
-                {
-                  // Inside the super() call.
-                  case ECall(_, args):
-                    // var registryId:String = args[0].toString();
-                    var dataPath:String = args[1].toString().replace('"', '').replace("'", '');
-                    // var versionRule = args[2].toString();
-
-                    return dataPath;
-                  default:
-                    Context.error('${cls.name}.new: RegistryMacro expected super call', field.pos);
-                }
-              default:
-                Context.error('${cls.name}.new: RegistryMacro expected super call', field.pos);
-            }
-          default:
-            // Continue looking for the actual constructor.
-        }
-      }
-    }
-
-    return '';
   }
 
   static function listBaseGameEntryIds(dataFilePath:String):Array<Expr>
@@ -387,6 +458,59 @@ class RegistryMacro
     // If it's not found, check the superclass.
     if (cls.superClass != null) return alreadyProcessed(cls.superClass.t.get());
     return false;
+  }
+
+  /**
+   * Generate a path for a generic type.
+   * @param t The type to generate the path for.
+   * @return The path of the type.
+   */
+  static function genericTypePath(t:Type):String
+  {
+    return switch (t)
+    {
+      case TInst(t, _): t.toString().replace('.', '_');
+      case TType(t, _): t.toString().replace('.', '_');
+      default: throw 'Type should be Class or Typedef';
+    }
+  }
+
+  /**
+   * Generate an `ImportExpr` from a path.
+   * @param path The path to the class
+   * @return The `ImportExpr` of the class.
+   */
+  static function generateImport(path:String):ImportExpr
+  {
+    var parts = [];
+    for (part in path.split('.'))
+      parts.push(
+        {
+          pos: Context.currentPos(),
+          name: part
+        });
+
+    return {
+      path: parts,
+      mode: INormal
+    }
+  }
+
+  /**
+   * Generate a `TypePath` from a path.
+   * @param path The path to the class
+   * @return The `TypePath` of the class.
+   */
+  static function generateUsing(path:String):TypePath
+  {
+    var parts = path.split('.');
+    var pack = parts.slice(0, parts.length - 1);
+    var name = parts[parts.length - 1];
+
+    return {
+      pack: pack,
+      name: name
+    };
   }
   #end
 }

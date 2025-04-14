@@ -4,9 +4,8 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notestyle.ScriptedNoteStyle;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
-class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData> implements ISingleton implements DefaultRegistryImpl
+class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, 'notestyles'> implements ISingleton
 {
   /**
    * The current version string for the note style data format.
@@ -19,7 +18,7 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData> implement
 
   public function new()
   {
-    super('NOTESTYLE', 'notestyles', NOTE_STYLE_DATA_VERSION_RULE);
+    super('NOTESTYLE', NOTE_STYLE_DATA_VERSION_RULE);
   }
 
   public function fetchDefault():NoteStyle
