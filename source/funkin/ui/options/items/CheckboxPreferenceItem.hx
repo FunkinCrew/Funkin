@@ -20,7 +20,7 @@ class CheckboxPreferenceItem extends FlxSprite
     this.currentValue = defaultValue;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
