@@ -8,6 +8,7 @@ import funkin.graphics.FunkinSprite;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.system.scaleModes.FullScreenScaleMode;
 import flixel.math.FlxPoint;
 import funkin.ui.MusicBeatSubState;
 import flixel.math.FlxRect;
@@ -88,6 +89,8 @@ class ResultState extends MusicBeatSubState
   final cameraScroll:FunkinCamera;
   final cameraEverything:FunkinCamera;
 
+  var blackTopBar:FlxSprite = new FlxSprite();
+
   public function new(params:ResultsStateParams)
   {
     super();
@@ -119,15 +122,15 @@ class ResultState extends MusicBeatSubState
 
     bgFlash = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFF1A6, 0xFFFFF1BE], 90);
 
-    resultsAnim = FunkinSprite.createSparrow(-200, -10, "resultScreen/results");
+    resultsAnim = FunkinSprite.createSparrow(FlxG.width - (1480 + (FullScreenScaleMode.gameCutoutSize.x / 2)), -10, "resultScreen/results");
 
-    ratingsPopin = FunkinSprite.createSparrow(-135, 135, "resultScreen/ratingsPopin");
+    ratingsPopin = FunkinSprite.createSparrow(-135 + FullScreenScaleMode.gameNotchSize.x, 135, "resultScreen/ratingsPopin");
 
-    scorePopin = FunkinSprite.createSparrow(-180, 515, "resultScreen/scorePopin");
+    scorePopin = FunkinSprite.createSparrow(-180 + FullScreenScaleMode.gameNotchSize.x, 515, "resultScreen/scorePopin");
 
-    highscoreNew = new FlxSprite(44, 557);
+    highscoreNew = new FlxSprite(44 + FullScreenScaleMode.gameNotchSize.x, 557);
 
-    score = new ResultScore(35, 305, 10, params.scoreData.score);
+    score = new ResultScore(35 + FullScreenScaleMode.gameNotchSize.x, 305, 10, params.scoreData.score);
 
     rankBg = new FunkinSprite(0, 0);
   }
@@ -166,7 +169,7 @@ class ResultState extends MusicBeatSubState
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
-    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15, -180, 'resultScreen/soundSystem');
+    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15 + FullScreenScaleMode.gameNotchSize.x, -180, 'resultScreen/soundSystem');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
     new FlxTimer().start(8 / 24, _ -> {
@@ -199,7 +202,8 @@ class ResultState extends MusicBeatSubState
       switch (animData.renderType)
       {
         case 'animateatlas':
-          var animation:FlxAtlasSprite = new FlxAtlasSprite(offsets[0], offsets[1], Paths.animateAtlas(animPath, animLibrary));
+          var animation:FlxAtlasSprite = new FlxAtlasSprite(offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2), offsets[1],
+            Paths.animateAtlas(animPath, animLibrary));
           animation.zIndex = animData.zIndex ?? 500;
 
           animation.scale.set(animData.scale ?? 1.0, animData.scale ?? 1.0);
@@ -248,7 +252,7 @@ class ResultState extends MusicBeatSubState
           // Add to the scene.
           add(animation);
         case 'sparrow':
-          var animation:FunkinSprite = FunkinSprite.createSparrow(offsets[0], offsets[1], animPath);
+          var animation:FunkinSprite = FunkinSprite.createSparrow(offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2), offsets[1], animPath);
           animation.animation.addByPrefix('idle', '', 24, false, false, false);
 
           if (animData.loopFrame != null)
@@ -280,6 +284,16 @@ class ResultState extends MusicBeatSubState
 
     add(songName);
 
+    blackTopBar.loadGraphic(funkin.util.BitmapUtil.createResultsBar());
+    blackTopBar.y = -blackTopBar.height;
+    FlxTween.tween(blackTopBar, {y: 0}, 7 / 24, {ease: FlxEase.quartOut, startDelay: 3 / 24});
+    blackTopBar.zIndex = 1010;
+    add(blackTopBar);
+
+    difficulty.y += (blackTopBar.height - 148);
+    clearPercentSmall.y += (blackTopBar.height - 148);
+    songName.y += (blackTopBar.height - 148);
+
     var angleRad = songName.angle * Math.PI / 180;
     speedOfTween.x = -1.0 * Math.cos(angleRad);
     speedOfTween.y = -1.0 * Math.sin(angleRad);
@@ -290,12 +304,6 @@ class ResultState extends MusicBeatSubState
     difficulty.shader = maskShaderDifficulty;
 
     maskShaderDifficulty.swagMaskX = difficulty.x - 30;
-
-    var blackTopBar:FlxSprite = new FlxSprite().loadGraphic(Paths.image("resultScreen/topBarBlack"));
-    blackTopBar.y = -blackTopBar.height;
-    FlxTween.tween(blackTopBar, {y: 0}, 7 / 24, {ease: FlxEase.quartOut, startDelay: 3 / 24});
-    blackTopBar.zIndex = 1010;
-    add(blackTopBar);
 
     resultsAnim.animation.addByPrefix("result", "results instance 1", 24, false);
     resultsAnim.visible = false;
@@ -370,10 +378,10 @@ class ResultState extends MusicBeatSubState
      * NOTE: We display how many notes were HIT, not how many notes there were in total.
      *
      */
-    var totalHit:TallyCounter = new TallyCounter(375, hStuf * 3, params.scoreData.tallies.totalNotesHit);
+    var totalHit:TallyCounter = new TallyCounter(375 + FullScreenScaleMode.gameNotchSize.x, hStuf * 3, params.scoreData.tallies.totalNotesHit);
     ratingGrp.add(totalHit);
 
-    var maxCombo:TallyCounter = new TallyCounter(375, hStuf * 4, params.scoreData.tallies.maxCombo);
+    var maxCombo:TallyCounter = new TallyCounter(375 + FullScreenScaleMode.gameNotchSize.x, hStuf * 4, params.scoreData.tallies.maxCombo);
     ratingGrp.add(maxCombo);
 
     if (params.scoreData.tallies.totalNotesHit >= 1000)
@@ -387,19 +395,24 @@ class ResultState extends MusicBeatSubState
 
     hStuf += 2;
 
-    var tallySick:TallyCounter = new TallyCounter(230, (hStuf * 5) + extraYOffset, params.scoreData.tallies.sick, 0xFF89E59E);
+    var tallySick:TallyCounter = new TallyCounter(230 + FullScreenScaleMode.gameNotchSize.x, (hStuf * 5) + extraYOffset, params.scoreData.tallies.sick,
+      0xFF89E59E);
     ratingGrp.add(tallySick);
 
-    var tallyGood:TallyCounter = new TallyCounter(210, (hStuf * 6) + extraYOffset, params.scoreData.tallies.good, 0xFF89C9E5);
+    var tallyGood:TallyCounter = new TallyCounter(210 + FullScreenScaleMode.gameNotchSize.x, (hStuf * 6) + extraYOffset, params.scoreData.tallies.good,
+      0xFF89C9E5);
     ratingGrp.add(tallyGood);
 
-    var tallyBad:TallyCounter = new TallyCounter(190, (hStuf * 7) + extraYOffset, params.scoreData.tallies.bad, 0xFFE6CF8A);
+    var tallyBad:TallyCounter = new TallyCounter(190 + FullScreenScaleMode.gameNotchSize.x, (hStuf * 7) + extraYOffset, params.scoreData.tallies.bad,
+      0xFFE6CF8A);
     ratingGrp.add(tallyBad);
 
-    var tallyShit:TallyCounter = new TallyCounter(220, (hStuf * 8) + extraYOffset, params.scoreData.tallies.shit, 0xFFE68C8A);
+    var tallyShit:TallyCounter = new TallyCounter(220 + FullScreenScaleMode.gameNotchSize.x, (hStuf * 8) + extraYOffset, params.scoreData.tallies.shit,
+      0xFFE68C8A);
     ratingGrp.add(tallyShit);
 
-    var tallyMissed:TallyCounter = new TallyCounter(260, (hStuf * 9) + extraYOffset, params.scoreData.tallies.missed, 0xFFC68AE6);
+    var tallyMissed:TallyCounter = new TallyCounter(260 + FullScreenScaleMode.gameNotchSize.x, (hStuf * 9) + extraYOffset, params.scoreData.tallies.missed,
+      0xFFC68AE6);
     ratingGrp.add(tallyMissed);
 
     score.visible = false;
@@ -486,7 +499,8 @@ class ResultState extends MusicBeatSubState
 
     trace('Clear percent target: ' + clearPercentFloat + ', round: ' + clearPercentTarget);
 
-    var clearPercentCounter:ClearPercentCounter = new ClearPercentCounter(FlxG.width / 2 + 190, FlxG.height / 2 - 70, clearPercentLerp);
+    var clearPercentCounter:ClearPercentCounter = new ClearPercentCounter((FlxG.width / 2 + 190) + (FullScreenScaleMode.gameCutoutSize.x / 2),
+      FlxG.height / 2 - 70, clearPercentLerp);
     FlxTween.tween(clearPercentCounter, {curNumber: clearPercentTarget}, 58 / 24,
       {
         ease: FlxEase.quartOut,
@@ -651,18 +665,18 @@ class ResultState extends MusicBeatSubState
     var diffYTween:Float = 122;
 
     difficulty.y = -difficulty.height;
-    FlxTween.tween(difficulty, {y: diffYTween}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.8});
+    FlxTween.tween(difficulty, {y: diffYTween + (blackTopBar.height - 148)}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.8});
 
     if (clearPercentSmall != null)
     {
       clearPercentSmall.x = (difficulty.x + difficulty.width) + 60;
       clearPercentSmall.y = -clearPercentSmall.height;
-      FlxTween.tween(clearPercentSmall, {y: 122 - 5}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.85});
+      FlxTween.tween(clearPercentSmall, {y: (122 - 5) + (blackTopBar.height - 148)}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.85});
     }
 
     songName.y = -songName.height;
     var fuckedupnumber = (10) * (songName.text.length / 15);
-    FlxTween.tween(songName, {y: diffYTween - 25 - fuckedupnumber}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
+    FlxTween.tween(songName, {y: (diffYTween - 25 - fuckedupnumber) + ((blackTopBar.height - 148) / 1)}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
     songName.x = clearPercentSmall.x + 94;
 
     new FlxTimer().start(timerLength, _ -> {

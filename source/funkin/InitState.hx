@@ -127,6 +127,13 @@ class InitState extends FlxState
     // Don't play transition in when entering the title state.
     FlxTransitionableState.skipNextTransIn = true;
 
+    FlxG.signals.gameResized.add(function(width:Int, height:Int) {
+      FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
+        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+      FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
+        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+    });
+
     //
     // NEWGROUNDS API SETUP
     //

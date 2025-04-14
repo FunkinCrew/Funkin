@@ -90,6 +90,11 @@ class IntroSubState extends MusicBeatSubState
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(onLightsEnd);
+      vid.bitmap.onFormatSetup.add(() -> {
+        vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid.updateHitbox();
+        vid.screenCenter();
+      });
 
       add(vid);
       if (vid.load(filePath)) vid.play();

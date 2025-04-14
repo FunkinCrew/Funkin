@@ -100,7 +100,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * For scaling some sprites on wide displays.
    */
-  public static var CUTOUT_WIDTH:Float = FullScreenScaleMode.cutoutSize.x / 1.5;
+  public static var CUTOUT_WIDTH:Float = FullScreenScaleMode.gameCutoutSize.x / 1.5;
 
   /**
    * For positioning the DJ on wide displays.
@@ -152,7 +152,7 @@ class FreeplayState extends MusicBeatSubState
 
   var dj:Null<FreeplayDJ> = null;
   #if mobile
-  var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.cutoutSize.x * DJ_POS_MULTI) + 58, 358);
+  var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358);
   #end
 
   var ostName:FlxText;
@@ -217,7 +217,7 @@ class FreeplayState extends MusicBeatSubState
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
     // shit needs re-calculating.,.,.,.
-    CUTOUT_WIDTH = FullScreenScaleMode.cutoutSize.x / 1.5;
+    CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
     currentCharacterId = params?.character ?? rememberedCharacterId;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
 
@@ -623,7 +623,7 @@ class FreeplayState extends MusicBeatSubState
           });
       }
 
-      FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
+      FlxTween.tween(grpDifficulties, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.6, {ease: FlxEase.quartOut});
 
       if (diffSelLeft != null) diffSelLeft.visible = true;
       if (diffSelRight != null) diffSelRight.visible = true;
@@ -690,7 +690,7 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
-    rankVignette.scale.set(2, 2);
+    rankVignette.scale.set(2 * FullScreenScaleMode.windowScale.x, 2 * FullScreenScaleMode.windowScale.y);
     rankVignette.updateHitbox();
     rankVignette.blend = BlendMode.ADD;
     // rankVignette.cameras = [rankCamera];
@@ -1665,7 +1665,7 @@ class FreeplayState extends MusicBeatSubState
           // Reset position if no significant drag
           else
           {
-            diff.x = 90;
+            diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
           }
           _sub = 0;
           break;
@@ -1693,7 +1693,15 @@ class FreeplayState extends MusicBeatSubState
         break;
       }
     }
-    // FlxG.mouse.visible = true;
+    else
+    {
+      for (diff in grpDifficulties.group.members)
+      {
+        if (diff == null || diff.difficultyId != currentDifficulty) continue;
+
+        if (diff.x != 90) diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
+      }
+    }
     #end
 
     if (controls.BACK)
@@ -1812,12 +1820,12 @@ class FreeplayState extends MusicBeatSubState
       final newX = (change > 0) ? 500 : -320;
 
       busy = true;
-      FlxTween.tween(diff, {x: newX}, 0.1,
+      FlxTween.tween(diff, {x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.05,
         {
           ease: FlxEase.circInOut,
           onComplete: function(_) {
             busy = false;
-            diff.x = 90;
+            diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
             diff.visible = false;
           }
         });
@@ -1891,8 +1899,8 @@ class FreeplayState extends MusicBeatSubState
       final isCurrentDiff:Bool = diffSprite.difficultyId == currentDifficulty;
 
       if (change == 0) diffSprite.visible = isCurrentDiff;
-
       if (!isCurrentDiff || change == 0) continue;
+        FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.02, {ease: FlxEase.circInOut});
 
       diffSprite.x = (change > 0) ? -320 : 500;
 
@@ -2587,9 +2595,7 @@ class FreeplaySongData
 typedef FreeplayStateParams =
 {
   ?character:String,
-
   ?fromCharSelect:Bool,
-
   ?fromResults:FromResultsParams,
 };
 

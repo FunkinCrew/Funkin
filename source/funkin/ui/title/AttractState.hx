@@ -79,9 +79,19 @@ class AttractState extends MusicBeatState
     {
       vid.zIndex = 0;
       vid.bitmap.onEndReached.add(onAttractEnd);
+      vid.bitmap.onFormatSetup.add(() -> {
+        vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid.updateHitbox();
+        vid.screenCenter();
+      });
 
       add(vid);
-      if (vid.load(filePath)) vid.play();
+      if (vid.load(filePath))
+      {
+        vid.play();
+        vid.updateHitbox();
+        vid.screenCenter();
+      }
     }
     else
     {
@@ -95,7 +105,8 @@ class AttractState extends MusicBeatState
     super.update(elapsed);
 
     // If the user presses any button, skip the video.
-    if (FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN)
+    if ((FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN) #if mobile
+      || funkin.mobile.util.TouchUtil.justPressed #end)
     {
       onAttractEnd();
     }

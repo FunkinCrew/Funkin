@@ -8,14 +8,25 @@ import flixel.FlxG;
 import android.os.Build;
 import android.Tools;
 #end
+#if mobile
+import funkin.mobile.util.ScreenUtil;
+#end
 
 class FullScreenScaleMode extends BaseScaleMode
 {
-  public static var windowScale:FlxPoint = FlxPoint.get(1, 1);
-  public static var cutoutSize:FlxPoint = FlxPoint.get(0, 0);
-  // x is game ratio, y is window ratio.
-  public static var ratio:FlxPoint = FlxPoint.get(-1, -1);
+  public static final cutoutSize:FlxPoint = FlxPoint.get(0, 0);
+  public static final notchPosition:FlxPoint = FlxPoint.get(0, 0);
+  public static final notchSize:FlxPoint = FlxPoint.get(0, 0);
+
+  public static final gameCutoutSize:FlxPoint = FlxPoint.get(0, 0);
+  public static final gameNotchPosition:FlxPoint = FlxPoint.get(0, 0);
+  public static final gameNotchSize:FlxPoint = FlxPoint.get(0, 0);
+
+  public static final windowScale:FlxPoint = FlxPoint.get(1, 1);
+  public static var gameRatio:Float = -1;
+  public static var windowRatio:Float = -1;
   public static var ratioAxis:FlxAxes = X;
+
   public static var enabled(default, set):Bool;
   public static var instance:FullScreenScaleMode = null;
 
@@ -36,63 +47,112 @@ class FullScreenScaleMode extends BaseScaleMode
     updateCutoutSize(Width, Height);
     updateScaleOffset();
     updateGamePosition();
+    #if mobile
+    updateNotch();
+    #end
     if ((cutoutSize.x > 0 || cutoutSize.y > 0) && enabled)
     {
-      // trace('\nresized the game!\nDevice Size: ${deviceSize}\nGame Size: ${gameSize}\nCutout Size: ${cutoutSize}');
       fillScreen();
     }
   }
 
   override function updateGameSize(Width:Int, Height:Int):Void
   {
-    ratio.x = FlxG.width / FlxG.height;
-    ratio.y = Width / Height;
+    gameRatio = FlxG.width / FlxG.height;
+    windowRatio = Width / Height;
 
-    ratioAxis = ratio.y < ratio.x ? Y : X;
+    ratioAxis = windowRatio < gameRatio ? Y : X;
 
     // trace('ratio axis: ' + ratioAxis);
 
     if (ratioAxis == Y)
     {
       gameSize.x = Width;
-      gameSize.y = Math.floor(gameSize.x / ratio.x);
+      gameSize.y = Math.floor(gameSize.x / gameRatio);
+      enabled = false;
     }
     else
     {
       gameSize.y = Height;
-      gameSize.x = Math.floor(gameSize.y * ratio.x);
+      gameSize.x = Math.floor(gameSize.y * gameRatio);
     }
   }
 
   public function updateCutoutSize(Width:Float, Height:Float)
   {
     cutoutSize.set(0, 0);
+    gameCutoutSize.set(0, 0);
 
-    if (ratioAxis == Y)
+    if (enabled)
     {
-      cutoutSize.y = Height - gameSize.y;
-    }
-    else
-    {
-      cutoutSize.x = Width - gameSize.x;
+      if (ratioAxis == Y)
+      {
+        cutoutSize.y = Height - gameSize.y;
+        #if android
+        gameCutoutSize.y = cutoutSize.y / 2;
+        // #elseif ios
+        // gameCutoutSize.y = cutoutSize.y * 2;
+        #else
+        gameCutoutSize.y = cutoutSize.y;
+        #end
+      }
+      else
+      {
+        cutoutSize.x = Width - gameSize.x;
+        #if android
+        gameCutoutSize.x = cutoutSize.x / 2;
+        // #elseif ios
+        // gameCutoutSize.x = cutoutSize.x * 2;
+        #else
+        gameCutoutSize.x = cutoutSize.x;
+        #end
+      }
     }
   }
 
+  #if mobile
+  public function updateNotch()
+  {
+    if (enabled)
+    {
+      var notch:lime.math.Rectangle = ScreenUtil.getNotchRect();
+      notchPosition.set(notch.x, notch.y);
+      notchSize.set(notch.width, notch.height);
+      #if android
+      gameNotchPosition.set(notchPosition.x / 2, notchPosition.y / 2);
+      gameNotchSize.set(notchSize.x / 2, notchSize.y / 2);
+      // #elseif ios
+      // gameNotchPosition.set(notchPosition.x * 2, notchPosition.y * 2);
+      // gameNotchSize.set(notchSize.x * 2, notchSize.y * 2);
+      #else
+      gameNotchPosition.set(notchPosition.x, notchPosition.y);
+      gameNotchSize.set(notchSize.x, notchSize.y);
+      #end
+    }
+    else
+    {
+      notchPosition.set(0, 0);
+      gameNotchPosition.set(0, 0);
+      notchSize.set(0, 0);
+      gameNotchSize.set(0, 0);
+    }
+  }
+  #end
+
   public function fillScreen()
   {
-    // this scale thing needs to be looked into cuz it seems incorrect..
     windowScale.set(1, 1);
     if (ratioAxis == Y)
     {
       gameSize.y += cutoutSize.y;
       FlxG.height = Math.floor(gameSize.y / scale.y);
-      windowScale.x = (FlxG.height / FlxG.initialHeight) / scale.y;
+      windowScale.y = (FlxG.height / FlxG.initialHeight);
     }
     else
     {
       gameSize.x += cutoutSize.x;
       FlxG.width = Math.floor(gameSize.x / scale.x);
-      windowScale.x = (FlxG.width / FlxG.initialWidth) / scale.x;
+      windowScale.x = (FlxG.width / FlxG.initialWidth);
     }
 
     // trace('resized game with size $gameSize and scale ${scale}');
@@ -103,13 +163,12 @@ class FullScreenScaleMode extends BaseScaleMode
   @:noCompletion
   private static function set_enabled(Value:Bool):Bool
   {
-    // No idea what to do about this for iOS
-    #if android
-    if (!(VERSION.SDK_INT >= VERSION_CODES.P || Tools.isTablet()))
+    // TODO (??): Make the game work properly on screens that are wide vertically
+    // TODO: Figure out a way to configure this for iOS Platforms.
+    if (ratioAxis == Y #if andorid || !(VERSION.SDK_INT >= VERSION_CODES.P || Tools.isTablet()) #end)
     {
       Value = false;
     }
-    #end
 
     enabled = Value;
 
@@ -129,6 +188,7 @@ class FullScreenScaleMode extends BaseScaleMode
       if (FlxG.stage != null)
       {
         instance.onMeasure(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
+        FlxG.signals.gameResized.dispatch(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
       }
     }
 

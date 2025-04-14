@@ -82,7 +82,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     hsv.saturation = 0.9;
     hsv.value = 3.6;
     menuBG.shader = hsv;
-    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);

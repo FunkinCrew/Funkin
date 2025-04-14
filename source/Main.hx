@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
+import flixel.system.scaleModes.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.MemoryCounter;
@@ -139,16 +140,13 @@ class Main extends Sprite
     #end
 
     #if mobile
-    flixel.FlxG.game.addChild(fpsCounter);
-    FlxG.scaleMode = new flixel.system.scaleModes.FullScreenScaleMode();
-    #else
-    addChild(fpsCounter);
+    FlxG.scaleMode = new FullScreenScaleMode();
+    FlxG.game.addChild(fpsCounter);
     #end
 
-    // #if desktop
-    // FlxG.stage.window.width = 1280;
-    // FlxG.stage.window.height = 540;
-    // #end
+    #if !mobile
+    addChild(fpsCounter);
+    #end
 
     #if hxcpp_debug_server
     trace('hxcpp_debug_server is enabled! You can now connect to the game with a debugger.');
@@ -182,13 +180,22 @@ class Main extends Sprite
     scale = scale < 1 ? scale : 1;
     #end
 
-    if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = scale;
+    if (fpsCounter != null)
+    {
+      fpsCounter.scaleX = fpsCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+      #if mobile
+      fpsCounter.x = 10 + FullScreenScaleMode.notchSize.x;
+      #end
+    }
 
     if (memoryCounter != null)
     {
       memoryCounter.scaleX = memoryCounter.scaleY = scale;
 
-      memoryCounter.y = 13 * scale;
+      memoryCounter.y = 13 * #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+      #if mobile
+      memoryCounter.x = 10 + FullScreenScaleMode.notchSize.x;
+      #end
     }
   }
 }

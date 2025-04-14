@@ -3,6 +3,7 @@ package funkin.ui.title;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.system.scaleModes.FullScreenScaleMode;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -91,7 +92,7 @@ class TitleState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    logoBl = new FlxSprite(-150, -100);
+    logoBl = new FlxSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2), -100);
     logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
     logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
@@ -100,7 +101,7 @@ class TitleState extends MusicBeatState
 
     outlineShaderShit = new TitleOutline();
 
-    gfDance = new FlxSpriteOverlay(FlxG.width * 0.4, FlxG.height * 0.07);
+    gfDance = new FlxSpriteOverlay((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2, FlxG.height * 0.07);
     gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
     gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
     gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
@@ -118,7 +119,7 @@ class TitleState extends MusicBeatState
 
     add(gfDance);
 
-    titleText = new FlxSprite(100, FlxG.height * 0.8);
+    titleText = new FlxSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter');
     titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
     titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);

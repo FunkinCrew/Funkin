@@ -26,6 +26,7 @@ import funkin.util.MathUtil;
 import funkin.mobile.util.SwipeUtil;
 import funkin.mobile.util.TouchUtil;
 import openfl.utils.Assets;
+import flixel.system.scaleModes.FullScreenScaleMode;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -197,7 +198,7 @@ class StoryMenuState extends MusicBeatState
 
     buildLevelTitles();
 
-    leftDifficultyArrow = new FlxSprite(870, 480);
+    leftDifficultyArrow = new FlxSprite(FlxG.width - 410, 480);
     leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
     leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
     leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
@@ -207,7 +208,7 @@ class StoryMenuState extends MusicBeatState
     buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
-    rightDifficultyArrow = new FlxSprite(1245, leftDifficultyArrow.y);
+    rightDifficultyArrow = new FlxSprite(FlxG.width - 35, leftDifficultyArrow.y);
     rightDifficultyArrow.frames = leftDifficultyArrow.frames;
     rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
     rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
@@ -658,6 +659,7 @@ class StoryMenuState extends MusicBeatState
   {
     for (ind => prop in currentLevel.buildProps(levelProps.members))
     {
+      prop.x += (FullScreenScaleMode.gameCutoutSize.x / 2);
       prop.zIndex = 1000;
       if (levelProps.members[ind] != prop) levelProps.replace(levelProps.members[ind], prop) ?? levelProps.add(prop);
     }
