@@ -94,7 +94,6 @@ class Project extends HXProject {
 	// FEATURE FLAGS
 	// Inverse feature flags are automatically populated.
 	//
-	static final MOUSE_TO_TOUCH:FeatureFlag = "MOUSE_TO_TOUCH";
 
 	/**
 	 * `-DGITHUB_BUILD`
@@ -281,6 +280,13 @@ class Project extends HXProject {
 	static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
 	/**
+	 * `-DTOUCH_CONTROLS
+	 * If this flag is enabled, the touch controls for the game is also enabled.
+	 * Works with desktop builds.
+	 */
+	static final TOUCH_CONTROLS:FeatureFlag = "TOUCH_CONTROLS";
+
+		/**
 	 * `-DEXCLUDE_ARMV7`
 	 * If this flag is enabled, armv7 won't be compiled when building android.
 	 */
@@ -524,11 +530,7 @@ class Project extends HXProject {
 		// Should be false unless explicitly requested.
 		GITHUB_BUILD.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
-		// TODO: Thanks to new changes to FlxTouch and such, this became useless. Find a way to make it work again -Zack.
-		MOUSE_TO_TOUCH.apply(this, false);
 		EXCLUDE_ARMV7.apply(this, false);
-		DISABLE_ADMOB_ADS.apply(this, !isMobile());
-		TESTING_ADS.apply(this, isDebug());
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
@@ -580,6 +582,16 @@ class Project extends HXProject {
 		// Should be true except on web builds.
 		// Screenshots doesn't work there.
 		FEATURE_SCREENSHOTS.apply(this, !isWeb());
+
+		// Should be true only on mobile builds.
+		TOUCH_CONTROLS.apply(this, isMobile());
+
+		// Should be true only on non-mobile builds.
+		// Only mobile builds support ads.
+		DISABLE_ADMOB_ADS.apply(this, !isMobile());
+
+		// Should be true only on debug mobile builds.
+		TESTING_ADS.apply(this, isDebug() && isMobile());
 	}
 
   /**

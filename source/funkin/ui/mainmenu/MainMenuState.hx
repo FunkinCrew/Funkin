@@ -181,10 +181,12 @@ class MainMenuState extends MusicBeatState
     #end
 
     // Leave this here do not change it -Zack
-    #if mobile
+    #if TOUCH_CONTROLS
     camFollow.setPosition(640, 360);
     FlxG.camera.snapToTarget();
     #end
+
+    funkin.mobile.ui.TouchPointer.TouchPointerGrp.load();
   }
 
   function playMenuMusic():Void
@@ -231,7 +233,7 @@ class MainMenuState extends MusicBeatState
   {
     super.openSubState(targetSubState);
     // Leave this here do not change it -Zack
-    #if mobile
+    #if TOUCH_CONTROLS
     if (camFollow != null)
     {
       camFollow.setPosition(640, 360);

@@ -175,15 +175,20 @@ class Main extends Sprite
   function resizeGame(width:Int, height:Int):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
-    final scale:Float = Math.min(flixel.FlxG.stage.stageWidth / flixel.FlxG.width, flixel.FlxG.stage.stageHeight / flixel.FlxG.height);
+    var scale:Float = Math.min(flixel.FlxG.stage.stageWidth / flixel.FlxG.width, flixel.FlxG.stage.stageHeight / flixel.FlxG.height);
+    #if android
+    scale = scale > 1 ? scale : 1;
+    #else
+    scale = scale < 1 ? scale : 1;
+    #end
 
-    if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+    if (fpsCounter != null) fpsCounter.scaleX = fpsCounter.scaleY = scale;
 
     if (memoryCounter != null)
     {
-      memoryCounter.scaleX = memoryCounter.scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+      memoryCounter.scaleX = memoryCounter.scaleY = scale;
 
-      memoryCounter.y = 13 * #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+      memoryCounter.y = 13 * scale;
     }
   }
 }

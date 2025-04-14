@@ -227,8 +227,9 @@ class StoryMenuState extends MusicBeatState
     #end
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85);
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, goBack);
     #end
+    // funkin.mobile.ui.TouchPointer.TouchPointerGrp.load();
   }
 
   function rememberSelection():Void
@@ -336,13 +337,13 @@ class StoryMenuState extends MusicBeatState
     {
       if (!selectedLevel)
       {
-        if (controls.UI_UP_P || (SwipeUtil.justSwipedUp))
+        if (controls.UI_UP_P || SwipeUtil.justSwipedUp)
         {
           changeLevel(-1);
           changeDifficulty(0);
         }
 
-        if (controls.UI_DOWN_P || (SwipeUtil.justSwipedDown))
+        if (controls.UI_DOWN_P || SwipeUtil.justSwipedDown)
         {
           changeLevel(1);
           changeDifficulty(0);
@@ -394,23 +395,26 @@ class StoryMenuState extends MusicBeatState
         }
       }
 
-      if (controls.ACCEPT
-        || (TouchUtil.overlaps(levelTitles.members[levelList.indexOf(currentLevelId)])
-          && TouchUtil.justPressed
-          && !TouchUtil.overlaps(leftDifficultyArrow)))
+      if (controls.ACCEPT)
       {
         selectLevel();
       }
+
+      if (TouchUtil.justPressed && !TouchUtil.overlaps(leftDifficultyArrow))
+      {
+        for (i in 0...levelTitles.members.length)
+        {
+          final item = levelTitles.members[i];
+          final selectedItem = levelTitles.members[levelList.indexOf(currentLevelId)];
+
+          if (!TouchUtil.overlaps(item)) continue;
+
+          (item == selectedItem) ? selectLevel() : changeLevel(i - levelList.indexOf(currentLevelId));
+        }
+      }
     }
 
-    if (((controls.BACK) #if mobile || (TouchUtil.overlaps(backButton) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
-      && !exitingMenu
-      && !selectedLevel)
-    {
-      exitingMenu = true;
-      FlxG.switchState(() -> new MainMenuState());
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-    }
+    if (controls.BACK) goBack();
   }
 
   /**
@@ -672,5 +676,14 @@ class StoryMenuState extends MusicBeatState
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;
     // levelScore.accuracy
+  }
+
+  function goBack():Void
+  {
+    if (exitingMenu || selectedLevel) return;
+
+    exitingMenu = true;
+    FlxG.switchState(() -> new MainMenuState());
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
   }
 }

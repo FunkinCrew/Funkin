@@ -7,6 +7,7 @@
 // - Zack
 package funkin.mobile.util;
 
+import funkin.mobile.ui.TouchPointer;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -56,6 +57,10 @@ class TouchUtil
   public static var touch(get, never):FlxMouse;
   #end
 
+  public static var touchBuddy:TouchPointer;
+
+  // static var _touchTween:FlxTween;
+
   /**
    * Checks if the specified object overlaps with any active touch.
    *
@@ -66,12 +71,13 @@ class TouchUtil
    */
   public static function overlaps(object:FlxBasic, ?camera:FlxCamera):Bool
   {
-    #if !mobile
-    return false;
-    #end
+    #if TOUCH_CONTROLS
     if (object == null || touch == null) return false;
 
     return touch.overlaps(object, camera ?? object.camera);
+    #end
+
+    return false;
   }
 
   /**
@@ -84,15 +90,16 @@ class TouchUtil
    */
   public static function overlapsComplex(object:FlxObject, ?camera:FlxCamera):Bool
   {
-    #if !mobile
-    return false;
-    #end
+    #if TOUCH_CONTROLS
     if (object == null || touch == null) return false;
 
     if (camera == null) camera = object.cameras[0];
 
     @:privateAccess
     return object.overlapsPoint(touch.getWorldPosition(camera, object._point), true, camera);
+    #end
+
+    return false;
   }
 
   /**
@@ -107,9 +114,7 @@ class TouchUtil
    */
   public static function overlapsComplexPoint(object:FlxObject, point:FlxPoint, ?inScreenSpace:Bool = false, ?camera:FlxCamera):Bool
   {
-    #if !mobile
-    return false;
-    #end
+    #if TOUCH_CONTROLS
     if (object == null || point == null) return false;
 
     if (camera == null) camera = object.cameras[0];
@@ -121,6 +126,8 @@ class TouchUtil
     }
 
     point.putWeak();
+    #end
+
     return false;
   }
 
@@ -160,6 +167,12 @@ class TouchUtil
   #else
   @:noCompletion
   inline static function get_touch():FlxMouse
+  {
+    #if TOUCH_CONTROLS
+    FlxG.mouse.visible = true;
     return FlxG.mouse;
+    #end
+    return null;
+  }
   #end
 }

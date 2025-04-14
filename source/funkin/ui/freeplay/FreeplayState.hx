@@ -47,7 +47,6 @@ import funkin.data.freeplay.style.FreeplayStyleRegistry;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
-#if mobile
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
 #end
@@ -411,8 +410,6 @@ class FreeplayState extends MusicBeatSubState
 
     add(grpCapsules);
 
-    add(grpDifficulties);
-
     exitMovers.set([grpDifficulties],
       {
         x: -300,
@@ -724,6 +721,12 @@ class FreeplayState extends MusicBeatSubState
       enterFromCharSel();
       onDJIntroDone();
     }
+
+    #if TOUCH_CONTROLS
+    var pointer = new funkin.mobile.ui.TouchPointer.TouchPointerGrp(0, 0);
+    pointer.cameras = [funnyCam];
+    add(pointer);
+    #end
   }
 
   var currentFilter:Null<SongFilter> = null;
@@ -1471,21 +1474,26 @@ class FreeplayState extends MusicBeatSubState
     if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
   }
 
+  var _sub:Float = 0;
+  var _pressedOn:Bool = false;
+  var _toggled:Bool = false;
+
   function handleInputs(elapsed:Float):Void
   {
     if (busy) return;
 
-    final upP:Bool = (controls.UI_UP_P #if mobile || SwipeUtil.swipeUp #end);
-    final downP:Bool = (controls.UI_DOWN_P #if mobile || SwipeUtil.swipeDown #end);
+    final upP:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
+    final downP:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
     final accepted:Bool = controls.ACCEPT;
 
-    #if mobile
     // Nested as fuck
     @:nullSafety(Off)
     if (TouchUtil.justReleased && !SwipeUtil.swipeAny && !TouchUtil.overlapsComplex(diffSelRight))
     {
       for (i in 0...grpCapsules.members.length)
       {
+        if (_toggled) break;
+
         final capsuleHit:FlxSprite = grpCapsules.members[i].theActualHitbox;
         if (!TouchUtil.overlaps(capsuleHit)) continue;
 
@@ -1493,7 +1501,12 @@ class FreeplayState extends MusicBeatSubState
         break;
       }
     }
-    #end
+
+    if (TouchUtil.justPressed)
+    {
+      final selected:Null<FlxSprite> = grpCapsules.members[curSelected].theActualHitbox;
+      _pressedOn = (selected != null) && TouchUtil.overlaps(selected);
+    }
 
     if (upP || downP)
     {
@@ -1530,7 +1543,7 @@ class FreeplayState extends MusicBeatSubState
       }
 
       spamTimer += elapsed;
-      if (dj != null) dj.resetAFKTimer();
+      dj?.resetAFKTimer();
     }
     else
     {
@@ -1538,47 +1551,139 @@ class FreeplayState extends MusicBeatSubState
       spamTimer = 0;
     }
 
-    #if desktop
     final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
-    #elseif mobile
-    final wheelAmount:Float = FlxG.touches.horizontalWheel / 2;
-    #end
-
-    if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
+    if (wheelAmount != 0)
     {
-      if (dj != null) dj.resetAFKTimer();
+      dj?.resetAFKTimer();
       changeSelection(-Math.round(wheelAmount));
     }
 
-    // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
-    if (controls.UI_LEFT_P #if mobile || (diffSelLeft != null && TouchUtil.overlapsComplex(diffSelLeft) && TouchUtil.justPressed) #end)
+    // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
+    if (SwipeUtil.flickUp)
     {
-      if (dj != null) dj.resetAFKTimer();
+      dj?.resetAFKTimer();
+      changeSelection(-1);
+    }
+    else if (SwipeUtil.flickDown)
+    {
+      dj?.resetAFKTimer();
+      changeSelection(1);
+    }
+
+    // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
+    if (controls.UI_LEFT_P #if TOUCH_CONTROLS
+      || (diffSelLeft != null && TouchUtil.overlapsComplex(diffSelLeft) && TouchUtil.justPressed) #end)
+    {
+      dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true);
-      #if mobile
-      if (diffSelLeft != null) diffSelLeft.setPress(true);
+      #if TOUCH_CONTROLS
+      diffSelLeft?.setPress(true);
       #end
     }
-    if (controls.UI_RIGHT_P #if mobile || (diffSelRight != null && TouchUtil.overlapsComplex(diffSelRight) && TouchUtil.justPressed) #end)
+    if (controls.UI_RIGHT_P #if TOUCH_CONTROLS
+      || (diffSelRight != null && TouchUtil.overlapsComplex(diffSelRight) && TouchUtil.justPressed) #end)
     {
-      if (dj != null) dj.resetAFKTimer();
+      dj?.resetAFKTimer();
       changeDiff(1);
       generateSongList(currentFilter, true);
-      #if mobile
-      if (diffSelRight != null) diffSelRight.setPress(true);
+      #if TOUCH_CONTROLS
+      diffSelRight?.setPress(true);
       #end
     }
 
-    #if mobile
-    if (diffSelLeft != null && diffSelRight != null && TouchUtil.justReleased)
+    #if TOUCH_CONTROLS
+    if (diffSelLeft != null && diffSelLeft.pressed && !TouchUtil.pressed)
     {
-      diffSelRight.setPress(false);
       diffSelLeft.setPress(false);
     }
+    if (diffSelRight != null && diffSelRight.pressed && !TouchUtil.pressed)
+    {
+      diffSelRight.setPress(false);
+    }
+
+    if (TouchUtil.pressed || TouchUtil.justReleased)
+    {
+      // Favorite
+      final selected:Null<FlxSprite> = grpCapsules.members[curSelected].theActualHitbox;
+      _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected);
+
+      if (_pressedOn)
+      {
+        if (TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 1000)
+        {
+          _toggled = true;
+          _pressedOn = false;
+          favoriteSong();
+        }
+      }
+
+      for (diff in grpDifficulties.group.members)
+      {
+        if (diff == null || diff.difficultyId != currentDifficulty) continue;
+
+        if (!TouchUtil.overlaps(diff))
+        {
+          diff.x = 90;
+          break;
+        }
+
+        if (TouchUtil.justPressed || _sub == 0) _sub = diff.x - TouchUtil.touch.x;
+
+        // Update position
+        diff.x = TouchUtil.touch.x + _sub;
+
+        if (TouchUtil.justReleased)
+        {
+          // Check left
+          if (diffSelLeft != null && diffSelLeft.x > diff.x)
+          {
+            dj?.resetAFKTimer();
+            changeDiff(-1);
+            generateSongList(currentFilter, true);
+          }
+          // Check right
+          else if (diffSelRight != null && diffSelRight.x - 140 < diff.x)
+          {
+            dj?.resetAFKTimer();
+            changeDiff(1);
+            generateSongList(currentFilter, true);
+          }
+          // Reset position if no significant drag
+          else
+          {
+            diff.x = 90;
+          }
+          _sub = 0;
+          break;
+        }
+
+        // Handle drag logic for left
+        if (diffSelLeft != null && diffSelLeft.x - 60 > diff.x)
+        {
+          dj?.resetAFKTimer();
+          changeDiff(-1);
+          generateSongList(currentFilter, true);
+          _sub = 0;
+        }
+
+        // Handle drag logic for right
+        if (diffSelRight != null && diffSelRight.x - 40 < diff.x)
+        {
+          dj?.resetAFKTimer();
+          changeDiff(1);
+          generateSongList(currentFilter, true);
+          _sub = 0;
+        }
+
+        // Stop
+        break;
+      }
+    }
+    // FlxG.mouse.visible = true;
     #end
 
-    if (controls.BACK && !busy)
+    if (controls.BACK)
     {
       goBack();
     }
@@ -1605,6 +1710,7 @@ class FreeplayState extends MusicBeatSubState
 
   function goBack():Void
   {
+    if (busy) return;
     busy = true;
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
@@ -1682,6 +1788,30 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false):Void
   {
+    if (busy) return;
+
+    for (diff in grpDifficulties.group.members)
+    {
+      if (diff == null || diff.difficultyId != currentDifficulty) continue;
+      if (change == 0) break;
+
+      diff.visible = true;
+      final newX = (change > 0) ? 500 : -320;
+
+      busy = true;
+      FlxTween.tween(diff, {x: newX}, 0.1,
+        {
+          ease: FlxEase.circInOut,
+          onComplete: function(_) {
+            busy = false;
+            diff.x = 90;
+            diff.visible = false;
+          }
+        });
+      break;
+    }
+    if (change != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+
     var previousVariation:String = currentVariation;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
@@ -1744,23 +1874,24 @@ class FreeplayState extends MusicBeatSubState
     for (diffSprite in grpDifficulties.group.members)
     {
       if (diffSprite == null) continue;
-      diffSprite.visible = false;
 
-      if (diffSprite.difficultyId == currentDifficulty)
-      {
+      final isCurrentDiff:Bool = diffSprite.difficultyId == currentDifficulty;
+
+      if (change == 0) diffSprite.visible = isCurrentDiff;
+
+      if (!isCurrentDiff || change == 0) continue;
+
+      diffSprite.x = (change > 0) ? -320 : 500;
+
+      FlxTween.tween(diffSprite, {x: 90}, 0.1, {ease: FlxEase.circInOut});
+
+      diffSprite.offset.y += 5;
+      diffSprite.alpha = 0.5;
+      new FlxTimer().start(1 / 24, function(swag) {
+        diffSprite.alpha = 1;
+        diffSprite.updateHitbox();
         diffSprite.visible = true;
-
-        if (change != 0)
-        {
-          diffSprite.visible = true;
-          diffSprite.offset.y += 5;
-          diffSprite.alpha = 0.5;
-          new FlxTimer().start(1 / 24, function(swag) {
-            diffSprite.alpha = 1;
-            diffSprite.updateHitbox();
-          });
-        }
-      }
+      });
     }
 
     if (change != 0 || force)
@@ -2011,10 +2142,10 @@ class FreeplayState extends MusicBeatSubState
 
     curSelected += change;
 
-    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (curSelected < 0) curSelected = (SwipeUtil.flickUp) ? 0 : grpCapsules.countLiving() - 1;
+    if (curSelected >= grpCapsules.countLiving()) curSelected = (SwipeUtil.flickDown) ? grpCapsules.countLiving() - 1 : 0;
 
-    if (curSelected < 0) curSelected = grpCapsules.countLiving() - 1;
-    if (curSelected >= grpCapsules.countLiving()) curSelected = 0;
+    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
     if (daSongCapsule.freeplayData != null)
@@ -2134,6 +2265,64 @@ class FreeplayState extends MusicBeatSubState
     result.persistentDraw = true;
     return result;
   }
+
+  function favoriteSong():Void
+  {
+    var targetSong = grpCapsules.members[curSelected]?.freeplayData;
+    if (targetSong != null)
+    {
+      var realShit:Int = curSelected;
+      var isFav = targetSong.toggleFavorite();
+      if (isFav)
+      {
+        grpCapsules.members[realShit].favIcon.visible = true;
+        grpCapsules.members[realShit].favIconBlurred.visible = true;
+        grpCapsules.members[realShit].favIcon.animation.play('fav');
+        grpCapsules.members[realShit].favIconBlurred.animation.play('fav');
+        FunkinSound.playOnce(Paths.sound('fav'), 1);
+        grpCapsules.members[realShit].checkClip();
+        grpCapsules.members[realShit].selected = grpCapsules.members[realShit].selected; // set selected again, so it can run it's getter function to initialize movement
+        busy = true;
+
+        grpCapsules.members[realShit].doLerp = false;
+        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1, {ease: FlxEase.expoOut});
+
+        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1,
+          {
+            ease: FlxEase.expoIn,
+            startDelay: 0.1,
+            onComplete: function(_) {
+              grpCapsules.members[realShit].doLerp = true;
+              busy = false;
+            }
+          });
+      }
+      else
+      {
+        grpCapsules.members[realShit].favIcon.animation.play('fav', true, true, 9);
+        grpCapsules.members[realShit].favIconBlurred.animation.play('fav', true, true, 9);
+        FunkinSound.playOnce(Paths.sound('unfav'), 1);
+        new FlxTimer().start(0.2, _ -> {
+          grpCapsules.members[realShit].favIcon.visible = false;
+          grpCapsules.members[realShit].favIconBlurred.visible = false;
+          grpCapsules.members[realShit].checkClip();
+        });
+
+        busy = true;
+        grpCapsules.members[realShit].doLerp = false;
+        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1, {ease: FlxEase.expoOut});
+        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1,
+          {
+            ease: FlxEase.expoIn,
+            startDelay: 0.1,
+            onComplete: function(_) {
+              grpCapsules.members[realShit].doLerp = true;
+              busy = false;
+            }
+          });
+      }
+    }
+  }
 }
 
 /**
@@ -2172,7 +2361,7 @@ class DifficultySelector extends FlxSprite
     super.update(elapsed);
   }
 
-  #if mobile
+  #if TOUCH_CONTROLS
   public function setPress(press:Bool):Void
   {
     if (!press)

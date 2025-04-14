@@ -75,7 +75,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     });
 
     #if mobile
-    backButton = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK);
+    backButton = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK, exit);
     add(backButton);
     #end
   }
@@ -196,19 +196,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
       daItem.x = thyOffset;
     });
-
-    #if mobile
-    if (items.enabled
-      && !items.busy
-      && TouchUtil.justReleased
-      && !SwipeUtil.swipeAny
-      && (TouchUtil.touch != null
-        && TouchUtil.overlapsComplexPoint(items.selectedItem,
-          FlxPoint.weak(TouchUtil.touch.x, TouchUtil.touch.y + camFollow.y - ((items.selectedIndex == 0) ? 20 : 130)), false, menuCamera)))
-    {
-      items.accept();
-    }
-    #end
   }
 
   // - Preference item creation methods -
@@ -285,5 +272,12 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+  }
+
+  override function exit():Void
+  {
+    camFollow.setPosition(640, 30);
+    menuCamera.snapToTarget();
+    super.exit();
   }
 }

@@ -295,8 +295,8 @@ class GameOverSubState extends MusicBeatSubState
             boyfriend.playAnimation('deathLoop' + animationSuffix);
           }
         }
-        canInput = true;
       }
+      canInput = true;
     }
 
     // Start death music before firstDeath gets replaced
@@ -481,6 +481,8 @@ class GameOverSubState extends MusicBeatSubState
 
   public function goBack()
   {
+    if (mustNotExit || isEnding) return;
+
     isEnding = true;
     blueballed = false;
     PlayState.instance.deathCounter = 0;

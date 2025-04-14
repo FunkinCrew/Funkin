@@ -6,10 +6,8 @@ import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.FunkinSound;
-#if mobile
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
-#end
 import funkin.ui.options.OptionsState.PageName;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
@@ -38,16 +36,20 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   public var busy(default, null):Bool = false;
 
   // bit awkward because BACK is also a menu control and this doesn't affect that
+  // #if mobile
 
-  #if mobile
   /** touchBuddy over here helps with the touch input! Because overlap for touch does not account for the graphic, only the hitbox.
    * And, `FlxG.pixelPerfectOverlap` uses two FlxSprites, so we can't use the `FlxTouch` object */
   public var touchBuddy:FlxSprite;
-  #end
+
+  // #end
 
   /** Only used in Options, basically acts the same as OptionsState's `currentName`, it's the current name of the current page in OptionsState.
    * Why is it needed? Because touch control's a bitch. Thats why. */
   public var currentPage:PageName = Options;
+
+  // Helper variable
+  var _isMainMenuState:Bool = false;
 
   public function new(navControls:NavControls = Vertical, ?wrapMode:WrapMode)
   {
@@ -64,10 +66,9 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       }
     }
 
-    #if mobile
-    // Make touchBuddy! No need to add them.
     touchBuddy = new FlxSprite().makeGraphic(10, 10);
-    #end
+    _isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
+
     super();
   }
 
@@ -108,10 +109,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var newIndex = 0;
 
     // Define unified input handlers
-    final inputUp:Bool = controls.UI_UP_P #if mobile || SwipeUtil.swipeUp #end;
-    final inputDown:Bool = controls.UI_DOWN_P #if mobile || SwipeUtil.swipeDown #end;
-    final inputLeft:Bool = controls.UI_LEFT_P #if mobile || SwipeUtil.swipeLeft #end;
-    final inputRight:Bool = controls.UI_RIGHT_P #if mobile || SwipeUtil.swipeRight #end;
+    final inputUp:Bool = controls.UI_UP_P || (currentPage == Preferences && SwipeUtil.swipeUp);
+    final inputDown:Bool = controls.UI_DOWN_P || (currentPage == Preferences && SwipeUtil.swipeDown);
+    final inputLeft:Bool = controls.UI_LEFT_P || (currentPage == Preferences && SwipeUtil.swipeLeft);
+    final inputRight:Bool = controls.UI_RIGHT_P || (currentPage == Preferences && SwipeUtil.swipeRight);
 
     // Keepin' these for keyboard/controller support on mobile platforms
     newIndex = switch (navControls)
@@ -124,67 +125,46 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
     };
 
-    if (newIndex != selectedIndex)
-    {
-      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-      selectItem(newIndex);
-    }
-
-    #if mobile
+    #if TOUCH_CONTROLS
     // Update touch position
     if (TouchUtil.pressed)
     {
       touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
     }
 
-    // TODO: Clean this? Does it need to be cleaned? isMainMenuState could be moved to new() instead perhaps.
-
-    final isMainMenuState:Bool = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
-
-    // Overlap checks for touch
-    final isPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, members[selectedIndex], 0)
-      && TouchUtil.justReleased
-      && !SwipeUtil.swipeAny;
-
-    final isRegularOverlap:Bool = TouchUtil.overlaps(members[selectedIndex]) && TouchUtil.justReleased && !SwipeUtil.swipeAny;
-
-    // making sure currentPage is valid and it doesnt fuck up somehow.
-    final pageCheck:Bool = currentPage != null || currentPage != Preferences;
-
-    // The main touch input overlap check
-    final isInputOverlap:Bool = (isMainMenuState && isPixelOverlap) || (!isMainMenuState && isRegularOverlap && pageCheck);
-
     // refactor da loop
     if (TouchUtil.pressed)
     {
-      //
-      final selectedItem = members[selectedIndex];
-
       for (i in 0...members.length)
       {
         final item = members[i];
 
-        // Streamline the checks just alil "memory friendly"
-        final itemOverlaps:Bool = TouchUtil.overlaps(item) && !isMainMenuState;
-        final itemPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, selectedItem, 0) && isMainMenuState;
+        final offset:Int = (currentPage == Preferences && selectedIndex != 0) ? 130 : 20;
+        final menuCamera = FlxG.cameras.list[1];
 
-        if ((itemOverlaps || itemPixelOverlap) && TouchUtil.justReleased && !SwipeUtil.swipeAny)
+        final itemOverlaps:Bool = !_isMainMenuState
+          && TouchUtil.overlapsComplexPoint(item, FlxPoint.weak(TouchUtil.touch.x, TouchUtil.touch.y + menuCamera.target.y - offset), false, menuCamera);
+        final itemPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, item, 0) && _isMainMenuState;
+
+        if ((itemOverlaps && TouchUtil.justPressed) || itemPixelOverlap)
         {
-          newIndex = i;
+          if (selectedIndex == i && TouchUtil.justPressed) accept();
+          else
+            newIndex = i;
           break;
         }
       }
     }
-
-    /** The reason why we're using pixelOverlap for MainMenuState is due to the offsets,
-     * overlaps checks for the sprite's hitbox, not the graphic itself.
-     * pixelOverlap however, does that. */
-
-    // Future zack here I have quite literally ZERO ideas other than making invisible objects on each menu item but the issue here is I do not know HOW to do that, its hard traversing this.
     #end
 
+    if (newIndex != selectedIndex)
+    {
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      selectItem(newIndex);
+    }
+
     // Todo: bypass popup blocker on firefox
-    if (controls.ACCEPT #if mobile || isInputOverlap #end) accept();
+    if (controls.ACCEPT) accept();
   }
 
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int
