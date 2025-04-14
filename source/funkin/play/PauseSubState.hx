@@ -21,6 +21,9 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.StickerSubState;
 import funkin.mobile.util.SwipeUtil;
 import funkin.mobile.util.TouchUtil;
+#if NO_DISABLE_ADMOB_ADS
+import funkin.mobile.util.AdMobUtil;
+#end
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -193,6 +196,11 @@ class PauseSubState extends MusicBeatSubState
   {
     super();
     this.currentMode = params?.mode ?? Standard;
+
+    // Add banner ad when game is paused.
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.addBanner(admob.Admob.BANNER_SIZE_BANNER, admob.Admob.BANNER_ALIGN_TOP);
+    #end
   }
 
   // ===============
@@ -427,6 +435,13 @@ class PauseSubState extends MusicBeatSubState
 
     if (accept && !justOpened)
     {
+      // Remove banner ad when game is unpaused.
+      #if NO_DISABLE_ADMOB_ADS
+      if (currentMenuEntries[currentEntry].text != "Change Difficulty"
+        && currentMenuEntries[currentEntry].text != "Enable Practice Mode"
+        && currentMenuEntries[currentEntry].text != "Back") AdMobUtil.removeBanner();
+      #end
+
       currentMenuEntries[currentEntry].callback(this);
     }
     else if (controls.PAUSE && !justOpened)

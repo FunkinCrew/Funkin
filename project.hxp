@@ -859,7 +859,6 @@ class Project extends HXProject {
 
 		if (isIOS())
 		{
-			// This ID is not from us, it's a test ID provided by AdMob. not really sure if it works.
 			setEnv("ADMOB_APPID", "");
 		}
 	}

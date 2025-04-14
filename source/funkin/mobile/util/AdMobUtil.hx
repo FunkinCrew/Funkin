@@ -1,7 +1,7 @@
 package funkin.mobile.util;
 
-import extension.admob.Admob;
-import extension.admob.AdmobEvent;
+import admob.Admob;
+import admob.util.AdmobEvent;
 
 /**
  * Utility class for managing AdMob advertisements in a mobile application.
@@ -15,12 +15,17 @@ class AdMobUtil
    * Production ad unit IDs (to be set for actual ad campaigns).
    */
   #if !TESTING_ADS
-  private static final BANNER_AD_UNIT_ID:String = "";
-  private static final INTERSTITIAL_AD_UNIT_ID:String = "";
+  private static final BANNER_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
+  private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
   private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
   private static final REWARDED_AD_UNIT_ID:String = "";
-  #else
 
+  #else
+  /**
+   * Test ad unit IDs for development and testing purposes.
+   * These IDs are provided by Google AdMob for testing ads without incurring costs.
+   * They should not be used in production applications.
+   */
   /**
    * Test ad unit ID for banner ads, used during development.
    */
@@ -58,9 +63,9 @@ class AdMobUtil
    * it loads either a video or a standard interstitial ad.
    * @param forceVideo If true, forces loading an interstitial video ad. Otherwise, it uses a 50% chance.
    */
-  public static inline function loadInterstitial(forceVideo:Bool = false):Void
+  public static inline function loadInterstitial():Void
   {
-    Admob.loadInterstitial((forceVideo || FlxG.random.bool(50)) ? AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID : AdMobUtil.INTERSTITIAL_AD_UNIT_ID);
+    Admob.loadInterstitial(#if TESTING_ADS FlxG.random.bool(50) ? AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID : #end AdMobUtil.INTERSTITIAL_AD_UNIT_ID);
   }
 
   /**

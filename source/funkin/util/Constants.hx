@@ -591,13 +591,13 @@ class Constants
   #if NO_DISABLE_ADMOB_ADS
   /**
    * A Counter that is increased by 1 each blueball.
-   * Only used for video ads each 3 blueballs on mobile.
+   * Only used for interstital ads each 3 blueballs on mobile.
    */
   public static var GLOBAL_BLUEBALL_COUNTER:Int = 0;
 
   /**
    * A Counter that is increased by 1 each victory only in freep;ay songs.
-   * Only used for video ads each 3 victories on mobile.
+   * Only used for interstital ads each 3 victories on mobile.
    */
   public static var GLOBAL_FREEPLAY_VICTORY_COUNTER:Int = 0;
   #end

@@ -990,11 +990,6 @@ class PlayState extends MusicBeatSubState
     // Attempt to pause the game.
     if ((controls.PAUSE || androidPause || pauseButtonCheck) && isInCountdown && mayPauseGame && !justUnpaused)
     {
-      // Add banner ad when game is paused.
-      #if NO_DISABLE_ADMOB_ADS
-      AdMobUtil.addBanner(extension.admob.Admob.BANNER_SIZE_BANNER, extension.admob.Admob.BANNER_ALIGN_TOP);
-      #end
-
       #if mobile
       pauseButton.alpha = 0;
       #end
@@ -1181,10 +1176,10 @@ class PlayState extends MusicBeatSubState
 
   function moveToGameOver():Void
   {
-    // Shows a video ad on mobile devices each 3 blueballs
+    // Shows an interstital ad on mobile devices each 3 blueballs
     #if NO_DISABLE_ADMOB_ADS
     Constants.GLOBAL_BLUEBALL_COUNTER++;
-    if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0) AdMobUtil.loadInterstitial(true);
+    if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0) AdMobUtil.loadInterstitial();
     #end
 
     // Reset and update a bunch of values in advance for the transition back from the game over substate.
@@ -1337,11 +1332,6 @@ class PlayState extends MusicBeatSubState
      */
   public override function closeSubState():Void
   {
-    // Remove banner ad when game is unpaused.
-    #if NO_DISABLE_ADMOB_ADS
-    AdMobUtil.removeBanner();
-    #end
-
     if (Std.isOfType(subState, PauseSubState))
     {
       var event:ScriptEvent = new ScriptEvent(RESUME, true);
@@ -1623,11 +1613,6 @@ class PlayState extends MusicBeatSubState
   public override function destroy():Void
   {
     performCleanup();
-
-    // Remove banner ad when playstate is destroyed.
-    #if NO_DISABLE_ADMOB_ADS
-    AdMobUtil.removeBanner();
-    #end
 
     super.destroy();
   }
