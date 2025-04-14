@@ -3,6 +3,7 @@ package funkin.mobile.ui;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
