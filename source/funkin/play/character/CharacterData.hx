@@ -13,6 +13,7 @@ import funkin.util.VersionUtil;
 import haxe.Json;
 import flixel.graphics.frames.FlxFrame;
 
+@:nullSafety
 class CharacterDataParser
 {
   /**
@@ -57,7 +58,7 @@ class CharacterDataParser
     {
       try
       {
-        var charData:CharacterData = parseCharacterData(charId);
+        var charData:Null<CharacterData> = parseCharacterData(charId);
         if (charData != null)
         {
           trace('    Loaded character data: ${charId}');
@@ -203,14 +204,14 @@ class CharacterDataParser
       return null;
     }
 
-    var charData:CharacterData = characterCache.get(charId);
-    var charScriptClass:String = characterScriptedClass.get(charId);
+    var charData:Null<CharacterData> = characterCache.get(charId);
+    var charScriptClass:Null<String> = characterScriptedClass.get(charId);
 
-    var char:BaseCharacter;
+    var char:Null<BaseCharacter> = null;
 
     if (charScriptClass != null)
     {
-      switch (charData.renderType)
+      if (charData != null) switch (charData.renderType)
       {
         case CharacterRenderType.AnimateAtlas:
           char = ScriptedAnimateAtlasCharacter.init(charScriptClass, charId);
@@ -227,7 +228,7 @@ class CharacterDataParser
     }
     else
     {
-      switch (charData.renderType)
+      if (charData != null) switch (charData.renderType)
       {
         case CharacterRenderType.AnimateAtlas:
           char = new AnimateAtlasCharacter(charId);
@@ -283,7 +284,7 @@ class CharacterDataParser
   /**
    * Returns the idle frame of a character.
    */
-  public static function getCharPixelIconAsset(char:String):FlxFrame
+  public static function getCharPixelIconAsset(char:String):Null<FlxFrame>
   {
     var charPath:String = "freeplay/icons/";
 
@@ -323,13 +324,13 @@ class CharacterDataParser
     }
 
     var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
-    var frame:FlxFrame = null;
+    var frame:Null<FlxFrame> = null;
 
     if (isAnimated)
     {
       var frames = Paths.getSparrowAtlas(charPath);
 
-      var idleFrame:FlxFrame = frames.frames.find(function(frame:FlxFrame):Bool {
+      var idleFrame:Null<FlxFrame> = frames.frames.find(function(frame:FlxFrame):Bool {
         return frame.name.startsWith('idle');
       });
 
@@ -380,7 +381,7 @@ class CharacterDataParser
   {
     var rawJson:String = loadCharacterFile(charId);
 
-    var charData:CharacterData = migrateCharacterData(rawJson, charId);
+    var charData:Null<CharacterData> = migrateCharacterData(rawJson, charId);
 
     return validateCharacterData(charId, charData);
   }
@@ -445,7 +446,7 @@ class CharacterDataParser
    * @param input
    * @return The validated character data
    */
-  static function validateCharacterData(id:String, input:CharacterData):Null<CharacterData>
+  static function validateCharacterData(id:String, input:Null<CharacterData>):Null<CharacterData>
   {
     if (input == null)
     {
