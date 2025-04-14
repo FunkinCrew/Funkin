@@ -7,8 +7,6 @@ import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.SwipeUtil;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
@@ -68,6 +66,7 @@ class HitboxShowcase extends FlxSpriteGroup
    * @param index An integer used as object's index.
    * @param selectionIndex Menu's current selection index.
    * @param controlsScheme Hitbox's controls scheme.
+   * @param onClick An optional callback function that will be triggered when the object is clicked.
    */
   public function new(x:Int = 0, y:Int = 0, index:Int, selectionIndex:Int = 0, controlsScheme:String, ?onClick:Void->Void = null)
   {
@@ -112,15 +111,12 @@ class HitboxShowcase extends FlxSpriteGroup
     this.cameras = [camHitbox];
   }
 
-  public override function update(elapsed:Float)
+  /**
+   * Called when the object is both selected and pressed.
+   */
+  public function onPress()
   {
-    super.update(elapsed);
-
-    alpha = MathUtil.smoothLerp(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.5);
-
-    x = MathUtil.smoothLerp(x, absoluteX + 1500 * -selectionIndex, elapsed, 0.5);
-
-    if (!busy && (TouchUtil.justPressed && TouchUtil.overlapsComplex(this) && !SwipeUtil.swipeAny))
+    if (!busy)
     {
       busy = true;
 
@@ -131,6 +127,15 @@ class HitboxShowcase extends FlxSpriteGroup
         onSelect.dispatch();
       });
     }
+  }
+
+  public override function update(elapsed:Float)
+  {
+    super.update(elapsed);
+
+    alpha = MathUtil.smoothLerp(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.5);
+
+    x = MathUtil.smoothLerp(x, absoluteX + 1500 * -selectionIndex, elapsed, 0.5);
   }
 
   function get_selected()

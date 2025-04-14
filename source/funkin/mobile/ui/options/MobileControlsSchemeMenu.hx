@@ -1,5 +1,6 @@
 package funkin.mobile.ui.options;
 
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -8,15 +9,17 @@ import funkin.ui.AtlasText;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.FunkinCamera;
-import funkin.graphics.shaders.AdjustColorShader;
 import funkin.audio.FunkinSound;
 import funkin.mobile.ui.options.objects.SchemeMenuButton;
 import funkin.mobile.ui.options.objects.HitboxShowcase;
 import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
+import funkin.graphics.shaders.HSVShader;
 import funkin.util.MathUtil;
 import flixel.math.FlxMath;
 
+// TODO: Clean-Up this madness.
 class MobileControlsSchemeMenu extends MusicBeatSubState
 {
   var schemeNameText:AtlasText;
@@ -27,6 +30,10 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
   var hitboxShowcases:FlxTypedGroup<HitboxShowcase>;
 
+  var theCenterHitbox:FunkinSprite;
+
+  var isInDemo:Bool;
+
   final availableSchemes:Array<String> = [
     FunkinHitboxControlSchemes.FourLanes,
     FunkinHitboxControlSchemes.DoubleThumbTriangle,
@@ -36,8 +43,6 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
   var currentIndex:Int = 0;
 
-  var currentHitboxBusy(get, never):Bool;
-
   override function create()
   {
     super.create();
@@ -45,11 +50,12 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     FlxG.state.persistentDraw = false;
     FlxG.state.persistentUpdate = false;
 
-    var colorShader = new AdjustColorShader();
-    colorShader.brightness = -200;
-
-    final menuBG:FunkinSprite = FunkinSprite.create('menuDesat');
-    menuBG.shader = colorShader;
+    final menuBG:FunkinSprite = FunkinSprite.create('menuBG');
+    var hsv = new HSVShader();
+    hsv.hue = -0.6;
+    hsv.saturation = 0.9;
+    hsv.value = 3.6;
+    menuBG.shader = hsv;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
@@ -97,6 +103,13 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
       hitboxShowcases.add(hitboxShowcase);
     }
     add(hitboxShowcases);
+
+    theCenterHitbox = new FunkinSprite(FlxG.width * 0.295).makeSolidColor(Std.int(FlxG.width * 0.25), Std.int(FlxG.height * 0.25), FlxColor.GREEN);
+    theCenterHitbox.cameras = [camButtons];
+    theCenterHitbox.updateHitbox();
+    theCenterHitbox.screenCenter(Y);
+    theCenterHitbox.visible = false;
+    add(theCenterHitbox);
   }
 
   function createButton(isDemoScreen:Bool)
@@ -105,7 +118,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
     if (isDemoScreen)
     {
-      currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.83, 'BACK', onHitboxDemoBack);
+      currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.13, 'BACK', onHitboxDemoBack);
     }
     else
     {
@@ -123,9 +136,14 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
   function onHitboxDemo()
   {
+    isInDemo = true;
+
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.exists = false;
+      hitboxShowcase.busy = false;
     });
+
+    schemeNameText.exists = false;
 
     createButton(true);
 
@@ -138,9 +156,14 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
 
   function onHitboxDemoBack()
   {
+    isInDemo = false;
+
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
       hitboxShowcase.exists = true;
+      hitboxShowcase.busy = false;
     });
+
+    schemeNameText.exists = true;
 
     createButton(false);
 
@@ -192,36 +215,54 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     return wordsSeperated.join(" ");
   }
 
-  var currentHitboxExists:Bool;
+  /**
+   * Checks if either hitbox showcases or button are busy.
+   * @return Bool
+   */
+  function anythingBusy():Bool
+  {
+    var busy:Bool = false;
+
+    hitboxShowcases.forEachAlive(function(hitboxShowcase:HitboxShowcase) {
+      if (hitboxShowcase.busy) busy = true;
+    });
+
+    if (currentButton.busy) busy = true;
+
+    return busy;
+  }
+
+  function handleInputs()
+  {
+    if (anythingBusy()) return;
+
+    if (isInDemo) return;
+
+    if (SwipeUtil.swipeRight)
+    {
+      changeSelection(1);
+    }
+    else if (SwipeUtil.swipeLeft)
+    {
+      changeSelection(-1);
+    }
+
+    if (TouchUtil.justPressed && TouchUtil.overlapsComplex(theCenterHitbox) && !SwipeUtil.swipeAny)
+    {
+      hitboxShowcases.members[currentIndex].onPress();
+      FlxTransitionableState.skipNextTransIn = true;
+      FlxTransitionableState.skipNextTransOut = true;
+    }
+  }
 
   override function update(elapsed:Float)
   {
     super.update(elapsed);
 
-    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
-      if (hitboxShowcase.selected) currentHitboxExists = hitboxShowcase.exists;
-    });
+    if (hitboxShowcases.members[currentIndex].busy) currentButton.busy = true;
 
-    if (!currentHitboxBusy && currentHitboxExists && !currentButton.busy)
-    {
-      if (SwipeUtil.swipeRight)
-      {
-        changeSelection(1);
-      }
-      else if (SwipeUtil.swipeLeft)
-      {
-        changeSelection(-1);
-      }
-    }
-  }
+    if (currentButton.busy) hitboxShowcases.members[currentIndex].busy = true;
 
-  function get_currentHitboxBusy()
-  {
-    var busy:Bool = false;
-    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
-      if (hitboxShowcase.selected) busy = hitboxShowcase.busy;
-    });
-
-    return busy;
+    handleInputs();
   }
 }
