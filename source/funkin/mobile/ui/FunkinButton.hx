@@ -191,10 +191,13 @@ class FunkinButton extends FunkinSprite implements IFlxInput
         if (overlapsPoint(worldPos, true, camera))
         {
           touchID = touch.touchPointID;
-          var prevButton = buttonsTouchID.get(touchID);
-          if (prevButton != null && prevButton != this && !prevButton.limitToBounds)
+          if (buttonsTouchID.exists(touchID) && buttonsTouchID.get(touchID) != this)
           {
-            prevButton.onOutHandler();
+            var prevButton = buttonsTouchID.get(touchID);
+            if (prevButton.status == FunkinButtonStatus.PRESSED && prevButton != null && !prevButton.limitToBounds)
+            {
+              prevButton.onOutHandler();
+            }
           }
           buttonsTouchID.set(touchID, this);
 

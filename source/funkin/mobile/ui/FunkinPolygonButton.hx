@@ -76,10 +76,10 @@ class FunkinPolygonButton extends FunkinButton
   @:noCompletion
   private override function checkTouchOverlap(?touch:FlxTouch):Bool
   {
-    var touches = touch == null ? FlxG.touches.list : [touch];
-    for (touch in touches)
+    if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)
     {
-      if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)
+      var touches = touch == null ? FlxG.touches.list : [touch];
+      for (touch in touches)
       {
         for (camera in cameras)
         {
