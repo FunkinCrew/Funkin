@@ -601,4 +601,27 @@ class Constants
    */
   public static var GLOBAL_FREEPLAY_VICTORY_COUNTER:Int = 0;
   #end
+
+  #if mobile
+  /**
+   * Default period value for vibration.
+   */
+  public static final DEFAULT_VIBRATION_PERIOD:Int = 100;
+
+  /**
+   * Default duration value for vibration.
+   */
+  public static final DEFAULT_VIBRATION_DURATION:Int = 100;
+
+  /**
+   * Min vibration amplitude.
+   * If vibration's amplitude is less than 1 it will do nothing.
+   */
+  public static final MIN_VIBRATION_AMPLITUDE:Int = 1;
+
+  /**
+   * Max vibration amplitude.
+   */
+  public static final MAX_VIBRATION_AMPLITUDE:Int = 255;
+  #end
 }

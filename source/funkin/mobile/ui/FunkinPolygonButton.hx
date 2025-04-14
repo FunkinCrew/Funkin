@@ -4,7 +4,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxPoint;
-import flixel.input.touch.FlxTouch;
+import flixel.util.FlxColor;
 import openfl.display.Graphics;
 
 /**
@@ -104,6 +104,7 @@ class FunkinPolygonButton extends FunkinButton
   }
 
   #if FLX_DEBUG
+  @:nullSafety(Off)
   public override function drawDebugOnCamera(camera:FlxCamera):Void
   {
     if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)

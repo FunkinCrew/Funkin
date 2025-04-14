@@ -34,6 +34,7 @@ import funkin.api.newgrounds.Medals;
 #end
 #if mobile
 import funkin.mobile.util.TouchUtil;
+import funkin.mobile.util.HapticUtil;
 #if NO_DISABLE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
 #end
@@ -498,9 +499,17 @@ class ResultState extends MusicBeatSubState
             trace('$clearPercentLerp and ${clearPercentCounter.curNumber}');
             clearPercentLerp = clearPercentCounter.curNumber;
             FunkinSound.playOnce(Paths.sound('scrollMenu'));
+
+            #if mobile
+            HapticUtil.vibrate(0, 10);
+            #end
           }
         },
         onComplete: _ -> {
+          #if mobile
+          HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
+          #end
+
           // Play confirm sound.
           FunkinSound.playOnce(Paths.sound('confirmMenu'));
 

@@ -34,6 +34,7 @@ import funkin.save.Save;
 #if mobile
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
+import funkin.mobile.util.HapticUtil;
 #end
 
 #if desktop
@@ -373,7 +374,7 @@ class TitleState extends MusicBeatState
     if (credGroup == null || textGroup == null) return;
 
     #if mobile
-    if (Preferences.vibration) lime.ui.Haptic.vibrate(100, 100);
+    HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION);
     #end
 
     var coolText:AtlasText = new AtlasText(0, 0, text.trim(), AtlasFont.BOLD);

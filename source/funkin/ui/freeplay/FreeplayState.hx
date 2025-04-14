@@ -49,6 +49,7 @@ import funkin.api.discord.DiscordClient;
 #end
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
+import funkin.mobile.util.HapticUtil;
 #end
 import flixel.system.scaleModes.FullScreenScaleMode;
 
@@ -947,6 +948,10 @@ class FreeplayState extends MusicBeatSubState
     capsuleToRank.ranking.visible = false;
     capsuleToRank.fakeRanking.visible = false;
 
+    #if mobile
+    HapticUtil.increasingVibrate(Constants.MIN_VIBRATION_AMPLITUDE, Constants.MAX_VIBRATION_AMPLITUDE, 0.6);
+    #end
+
     rankCamera.zoom = 1.85;
     FlxTween.tween(rankCamera, {"zoom": 1.8}, 0.6, {ease: FlxEase.sineIn});
 
@@ -1059,6 +1064,10 @@ class FreeplayState extends MusicBeatSubState
 
     FlxTween.tween(capsuleToRank, {"targetPos.x": originalPos.x, "targetPos.y": originalPos.y}, 0.5, {ease: FlxEase.expoOut});
     new FlxTimer().start(0.5, _ -> {
+      #if mobile
+      HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
+      #end
+
       funnyCam.shake(0.0045, 0.35);
 
       if (fromResultsParams?.newRank == SHIT)
@@ -1552,7 +1561,11 @@ class FreeplayState extends MusicBeatSubState
     }
 
     final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
-    if (wheelAmount != 0)
+    #elseif mobile
+    final wheelAmount:Float = 0 / 2;
+    #end
+
+    if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
     {
       dj?.resetAFKTimer();
       changeSelection(-Math.round(wheelAmount));
