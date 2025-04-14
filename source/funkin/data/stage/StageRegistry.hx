@@ -3,9 +3,8 @@ package funkin.data.stage;
 import funkin.play.stage.Stage;
 import funkin.play.stage.ScriptedStage;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
-class StageRegistry extends BaseRegistry<Stage, StageData> implements ISingleton implements DefaultRegistryImpl
+class StageRegistry extends BaseRegistry<Stage, StageData, 'stages'> implements ISingleton
 {
   /**
    * The current version string for the stage data format.
@@ -18,6 +17,6 @@ class StageRegistry extends BaseRegistry<Stage, StageData> implements ISingleton
 
   public function new()
   {
-    super('STAGE', 'stages', STAGE_DATA_VERSION_RULE);
+    super('STAGE', STAGE_DATA_VERSION_RULE);
   }
 }
