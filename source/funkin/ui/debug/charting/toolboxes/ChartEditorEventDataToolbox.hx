@@ -55,6 +55,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       }
 
       var eventType:String = event.data.id;
+      var sameEvent:Bool = (eventType == chartEditorState.eventKindToPlace);
 
       trace('ChartEditorEventDataToolbox - Event type changed: $eventType');
 
@@ -69,7 +70,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         return;
       }
 
-      chartEditorState.eventDataToPlace = {};
+      if (!sameEvent) chartEditorState.eventDataToPlace = {};
       buildEventDataFormFromSchema(toolboxEventsDataGrid, schema, chartEditorState.eventKindToPlace);
 
       if (!_initializing && chartEditorState.currentEventSelection.length > 0)
@@ -85,9 +86,13 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     }
+    toolboxEventsEventKind.pauseEvent(UIEvent.CHANGE, true);
+
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
     trace('ChartEditorEventDataToolbox - Starting event kind: ${startingEventValue}');
     toolboxEventsEventKind.value = startingEventValue;
+
+    toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   public override function refresh():Void
@@ -262,7 +267,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         var value = event.target.value;
         if (field.type == ENUM)
         {
-          value = event.target.value?.value;
+          var drp:DropDown = cast event.target;
+          value = drp.selectedItem?.value ?? field.defaultValue;
         }
         else if (field.type == BOOL)
         {
