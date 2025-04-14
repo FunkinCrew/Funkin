@@ -1334,7 +1334,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       result = [];
       trace('Initializing blank chart for difficulty ' + selectedDifficulty);
       currentSongChartData.notes.set(selectedDifficulty, result);
-      currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
       return result;
     }
     return result;
@@ -1343,7 +1342,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_currentSongChartNoteData(value:Array<SongNoteData>):Array<SongNoteData>
   {
     currentSongChartData.notes.set(selectedDifficulty, value);
-    currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
     return value;
   }
 
@@ -1635,9 +1633,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
-
-    // Make sure the difficulty we selected is in the list of difficulties.
-    currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
 
     return selectedDifficulty;
   }
