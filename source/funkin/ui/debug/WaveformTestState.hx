@@ -5,7 +5,6 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.audio.waveform.WaveformData;
-import funkin.audio.waveform.WaveformSprite;
 import funkin.audio.waveform.WaveformDataParser;
 import funkin.graphics.rendering.MeshRender;
 

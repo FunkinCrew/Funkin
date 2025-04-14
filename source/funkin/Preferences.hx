@@ -157,6 +157,25 @@ class Preferences
     return value;
   }
 
+  /**
+   * If enabled, the game will automatically launch in fullscreen on startup.
+   * @default `true`
+   */
+  public static var autoFullscreen(get, set):Bool;
+
+  static function get_autoFullscreen():Bool
+  {
+    return Save?.instance?.options?.autoFullscreen ?? true;
+  }
+
+  static function set_autoFullscreen(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.autoFullscreen = value;
+    save.flush();
+    return value;
+  }
+
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
@@ -200,6 +219,121 @@ class Preferences
   #end
 
   /**
+   * If >0, the game will display a semi-opaque background under the notes.
+   * `0` for no background, `100` for solid black if you're freaky like that
+   * @default `0`
+   */
+  public static var strumlineBackgroundOpacity(get, set):Int;
+
+  static function get_strumlineBackgroundOpacity():Int
+  {
+    return (Save?.instance?.options?.strumlineBackgroundOpacity ?? 0);
+  }
+
+  static function set_strumlineBackgroundOpacity(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.strumlineBackgroundOpacity = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will hide the mouse when taking a screenshot.
+   * @default `true`
+   */
+  public static var shouldHideMouse(get, set):Bool;
+
+  static function get_shouldHideMouse():Bool
+  {
+    return Save?.instance?.options?.screenshot?.shouldHideMouse ?? true;
+  }
+
+  static function set_shouldHideMouse(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.shouldHideMouse = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will show a preview after taking a screenshot.
+   * @default `true`
+   */
+  public static var fancyPreview(get, set):Bool;
+
+  static function get_fancyPreview():Bool
+  {
+    return Save?.instance?.options?.screenshot?.fancyPreview ?? true;
+  }
+
+  static function set_fancyPreview(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.fancyPreview = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will show the preview only after a screenshot is saved.
+   * @default `true`
+   */
+  public static var previewOnSave(get, set):Bool;
+
+  static function get_previewOnSave():Bool
+  {
+    return Save?.instance?.options?.screenshot?.previewOnSave ?? true;
+  }
+
+  static function set_previewOnSave(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.previewOnSave = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * The game will save any screenshots taken to this format.
+   * @default `PNG`
+   */
+  public static var saveFormat(get, set):Any;
+
+  static function get_saveFormat():Any
+  {
+    return Save?.instance?.options?.screenshot?.saveFormat ?? 'PNG';
+  }
+
+  static function set_saveFormat(value):Any
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.saveFormat = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * The game will save JPEG screenshots with this quality percentage.
+   * @default `80`
+   */
+  public static var jpegQuality(get, set):Int;
+
+  static function get_jpegQuality():Int
+  {
+    return Save?.instance?.options?.screenshot?.jpegQuality ?? 80;
+  }
+
+  static function set_jpegQuality(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.jpegQuality = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * Loads the user's preferences from the save data and apply them.
    */
   public static function init():Void
@@ -211,6 +345,8 @@ class Preferences
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end
+    // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
+    FlxG.fullscreen = Preferences.autoFullscreen;
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void
