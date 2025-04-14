@@ -11,7 +11,7 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
   var contextmenuEdit:MenuItem;
   var contextmenuDelete:MenuItem;
 
-  var data:SongEventData;
+  public var data:SongEventData;
 
   public function new(chartEditorState2:ChartEditorState, xPos2:Float = 0, yPos2:Float = 0, data:SongEventData)
   {
@@ -21,7 +21,7 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
     initialize();
   }
 
-  function initialize()
+  public function initialize()
   {
     contextmenuEdit.onClick = function(_) {
       chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
