@@ -5,6 +5,7 @@ import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
+import funkin.play.PlayState;
 import funkin.save.Save;
 import haxe.Timer;
 import flixel.sound.FlxSound;
@@ -105,6 +106,16 @@ class Conductor
     if (bpmOverride != null) return bpmOverride;
 
     if (currentTimeChange == null) return Constants.DEFAULT_BPM;
+
+    if (PlayState.instance != null && PlayState.instance.isInCountdown)
+    {
+      for (i in 0...timeChanges.length)
+      {
+        if (PlayState.instance.startTimestamp >= timeChanges[i].timeStamp) currentTimeChange = timeChanges[i];
+
+        if (PlayState.instance.startTimestamp < timeChanges[i].timeStamp) break;
+      }
+    }
 
     return currentTimeChange.bpm;
   }
