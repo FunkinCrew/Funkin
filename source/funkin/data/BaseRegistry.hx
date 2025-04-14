@@ -15,16 +15,18 @@ typedef EntryConstructorFunction = String->Void;
  * @param T The type to construct. Must implement `IRegistryEntry`.
  * @param J The type of the JSON data used when constructing.
  */
-@:generic
-@:autoBuild(funkin.util.macro.DataRegistryMacro.buildRegistry())
-abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J>
+@:genericBuild(funkin.util.macro.RegistryMacro.buildRegistry())
+abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J, Const>
 {
   /**
    * The ID of the registry. Used when logging.
    */
   public final registryId:String;
 
-  final dataFilePath:String;
+  /**
+   * Set by `Const`
+   */
+  final dataFilePath:String = '';
 
   /**
    * A map of entry IDs to entries.
@@ -48,10 +50,9 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param registryId A readable ID for this registry, used when logging.
    * @param dataFilePath The path (relative to `assets/data`) to search for JSON files.
    */
-  public function new(registryId:String, dataFilePath:String, ?versionRule:thx.semver.VersionRule)
+  public function new(registryId:String, ?versionRule:thx.semver.VersionRule)
   {
     this.registryId = registryId;
-    this.dataFilePath = dataFilePath;
     this.versionRule = versionRule == null ? '1.0.x' : versionRule;
 
     this.entries = new Map<String, T>();
@@ -317,11 +318,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * Create an entry from the given ID.
    * @param id
    */
-  function createEntry(id:String):Null<T>
-  {
-    // We enforce that T is Constructible to ensure this is valid.
-    return new T(id);
-  }
+  abstract function createEntry(id:String):Null<T>;
 
   /**
    * Create a entry, attached to a scripted class, from the given class name.
