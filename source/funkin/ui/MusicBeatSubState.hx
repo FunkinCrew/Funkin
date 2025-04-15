@@ -187,6 +187,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     this._parentState.openSubState(substate);
   }
 
+  @:nullSafety(Off)
   override function startOutro(onComplete:() -> Void):Void
   {
     var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
