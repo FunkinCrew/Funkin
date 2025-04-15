@@ -421,8 +421,6 @@ class PauseSubState extends MusicBeatSubState
     // Doing this just so it'd look better i guess.
     final upP:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
     final downP:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
-    final accept:Bool = controls.ACCEPT
-      || (TouchUtil.overlapsComplex(menuEntryText.members[currentEntry], camera) && TouchUtil.justReleased && !SwipeUtil.swipeAny);
 
     if (upP)
     {
@@ -433,15 +431,26 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
-    if (accept && !justOpened)
+    if (TouchUtil.justReleased && !SwipeUtil.swipeAny && !justOpened)
     {
-      // Remove banner ad when game is unpaused.
-      #if NO_DISABLE_ADMOB_ADS
-      if (currentMenuEntries[currentEntry].text != "Change Difficulty"
-        && currentMenuEntries[currentEntry].text != "Enable Practice Mode"
-        && currentMenuEntries[currentEntry].text != "Back") AdMobUtil.removeBanner();
-      #end
+      for (i in 0...menuEntryText.members.length)
+      {
+        if (!TouchUtil.overlaps(menuEntryText.members[i], camera)) continue;
 
+        if (i == currentEntry)
+        {
+          currentMenuEntries[currentEntry].callback(this);
+          break;
+        }
+
+        changeSelection(i - currentEntry);
+
+        break;
+      }
+    }
+
+    if (controls.ACCEPT)
+    {
       currentMenuEntries[currentEntry].callback(this);
     }
     else if (controls.PAUSE && !justOpened)
@@ -644,7 +653,9 @@ class PauseSubState extends MusicBeatSubState
   {
     // Resume a paused video if it exists.
     VideoCutscene.resumeVideo();
-
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
   }
 
@@ -679,6 +690,9 @@ class PauseSubState extends MusicBeatSubState
 
     PlayState.instance.needsReset = true;
 
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
   }
 
@@ -689,6 +703,9 @@ class PauseSubState extends MusicBeatSubState
   static function restartPlayState(state:PauseSubState):Void
   {
     PlayState.instance.needsReset = true;
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
   }
 
@@ -711,6 +728,9 @@ class PauseSubState extends MusicBeatSubState
   static function restartVideoCutscene(state:PauseSubState):Void
   {
     VideoCutscene.restartVideo();
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
   }
 
@@ -721,6 +741,9 @@ class PauseSubState extends MusicBeatSubState
   static function skipVideoCutscene(state:PauseSubState):Void
   {
     VideoCutscene.finishVideo();
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
   }
 
@@ -733,6 +756,9 @@ class PauseSubState extends MusicBeatSubState
     if (PlayState.instance?.currentConversation == null) return;
 
     PlayState.instance.currentConversation.resetConversation();
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
   }
 
@@ -745,6 +771,9 @@ class PauseSubState extends MusicBeatSubState
     if (PlayState.instance?.currentConversation == null) return;
 
     PlayState.instance.currentConversation.skipConversation();
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
   }
 
@@ -765,6 +794,10 @@ class PauseSubState extends MusicBeatSubState
       FreeplayState.build(sticker);
 
     // Do this AFTER because this resets the value of isStoryMode!
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
+
     if (PlayStatePlaylist.isStoryMode)
     {
       PlayStatePlaylist.reset();
@@ -788,6 +821,9 @@ class PauseSubState extends MusicBeatSubState
    */
   static function quitToChartEditor(state:PauseSubState):Void
   {
+    #if NO_DISABLE_ADMOB_ADS
+    AdMobUtil.removeBanner();
+    #end
     state.close();
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
     PlayState.instance.close(); // This only works because PlayState is a substate!

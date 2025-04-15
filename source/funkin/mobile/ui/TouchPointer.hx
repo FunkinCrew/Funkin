@@ -4,6 +4,7 @@ package funkin.mobile.ui;
 // Also this adds pixelOverlap to TouchUtil so, hell yeah !!
 // W.I.P DONT TOUCH.
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
+// Thnk u agua and toffee <3
 import openfl.display.Bitmap;
 import flixel.util.FlxDestroyUtil;
 import flixel.FlxG;
@@ -73,12 +74,13 @@ class TouchPointer extends FlxSprite
   var _pointTime:Int = -1;
   var _calcAngle:Float = 0;
   var _pointId:Int;
-  var offsetX:Int = 0;
-  var offsetY:Int = 0;
+
+  public var offsetX:Int = -50;
+  public var offsetY:Int = -50;
 
   public function new(xPos:Float, yPos:Float, touch:Int, pId:Int)
   {
-    super(xPos, yPos, "assets/images/cursor/michael.png");
+    super(xPos + offsetX, yPos + offsetY, "assets/images/cursor/michael.png");
     touchId = touch;
     _pointId = pId;
     scrollFactor.set(0, 0);

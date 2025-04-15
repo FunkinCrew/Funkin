@@ -380,6 +380,7 @@ class SwipeUtil
 
   // Calling a function for each check might be eh, but I think its clean enough.
   // TODO: Add mouse support to this somehow? for now just keep it.
+  // TODO: Rework handleFlick.
 
   /**
    * Handles flick checks depending on the direction given.
@@ -393,26 +394,39 @@ class SwipeUtil
   static function handleFlick(direction:SwipingDirection):Bool
   {
     #if TOUCH_CONTROLS
+    #if mobile
+    var touches = FlxG.touches;
+    #else
+    var touches = FlxG.mouse;
+    #end
+    if (TouchUtil.pressed)
+    {
+      _velocityX = 0;
+      _velocityY = 0;
+      return false;
+    }
+
     // Update velocities based on touch input if no touch is pressed
     final vertical:Bool = direction == Up || direction == Down;
     final horizontal:Bool = direction == Left || direction == Right;
-    if (TouchUtil.pressed) return false;
 
-    if (vertical && FlxG.touches.velocityY == 0)
+    if (vertical && touches.velocityY == 0)
     {
       _velocityY = 0;
       return false;
     }
 
-    if (horizontal && FlxG.touches.velocityX == 0)
+    if (horizontal && touches.velocityX == 0)
     {
       _velocityX = 0;
       return false;
     }
 
-    if (vertical) _velocityY += FlxG.touches.velocityY;
+    final framerateRatio:Float = (1 / FlxG.elapsed) / FlxG.updateFramerate;
 
-    if (horizontal) _velocityX += FlxG.touches.velocityX;
+    // Apply frame-rate scaling using the ratio
+    if (vertical) _velocityY += touches.velocityY / framerateRatio;
+    if (horizontal) _velocityX += touches.velocityX / framerateRatio;
 
     // Check if a swipe matches the specified direction
     final swiped:Bool = switch (direction)
@@ -435,6 +449,22 @@ class SwipeUtil
     #else
     return false;
     #end
+  }
+
+  public static inline function resetSwipeVelocity():Void
+  {
+    #if mobile
+    var touches = FlxG.touches;
+    #else
+    var touches = FlxG.mouse;
+    #end
+
+    @:privateAccess
+    touches.velocityY = 0;
+    @:privateAccess
+    touches.velocityX = 0;
+    _velocityY = 0;
+    _velocityX = 0;
   }
 
   /**

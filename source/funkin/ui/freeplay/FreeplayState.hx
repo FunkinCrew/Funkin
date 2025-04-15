@@ -1504,9 +1504,16 @@ class FreeplayState extends MusicBeatSubState
     final downP:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
     final accepted:Bool = controls.ACCEPT;
 
+    #if TOUCH_CONTROLS
+    #if mobile
+    var touches = FlxG.touches;
+    #else
+    var touches = FlxG.mouse;
+    #end
+
     // Nested as fuck
     @:nullSafety(Off)
-    if (TouchUtil.justReleased && !SwipeUtil.swipeAny && !TouchUtil.overlapsComplex(diffSelRight))
+    if (TouchUtil.justReleased && !SwipeUtil.swipeAny && !TouchUtil.overlapsComplex(diffSelRight) && touches.velocityY == 0)
     {
       for (i in 0...grpCapsules.members.length)
       {
@@ -1519,6 +1526,7 @@ class FreeplayState extends MusicBeatSubState
         break;
       }
     }
+    #end
 
     if (TouchUtil.justPressed)
     {
@@ -1571,7 +1579,7 @@ class FreeplayState extends MusicBeatSubState
 
     final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
     #elseif mobile
-    final wheelAmount:Float = 0 / 2;
+    final wheelAmount:Float = FlxG.touches.horizontalWheel / 2;
     #end
 
     if (wheelAmount != 0 #if mobile && !TouchUtil.pressed #end)
@@ -1583,13 +1591,28 @@ class FreeplayState extends MusicBeatSubState
     // TODO: This is a tad too heavy on phones. Find a way to keep it changing selections without all the redundant loading.
     if (SwipeUtil.flickUp)
     {
-      dj?.resetAFKTimer();
-      changeSelection(-1);
+      if (curSelected - 1 >= 0)
+      {
+        dj?.resetAFKTimer();
+        changeSelection(-1);
+      }
+      else
+      {
+        SwipeUtil.resetSwipeVelocity();
+      }
     }
-    else if (SwipeUtil.flickDown)
+
+    if (SwipeUtil.flickDown)
     {
-      dj?.resetAFKTimer();
-      changeSelection(1);
+      if (curSelected + 1 < grpCapsules.countLiving())
+      {
+        dj?.resetAFKTimer();
+        changeSelection(1);
+      }
+      else
+      {
+        SwipeUtil.resetSwipeVelocity();
+      }
     }
 
     // FORGIVE ME FOR NOT PLACING THESE IN DifficultySelector BUT IT JUST DIDN'T WORK RIGHT
@@ -1631,7 +1654,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (_pressedOn)
       {
-        if (TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 1000)
+        if (TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 700)
         {
           _toggled = true;
           _pressedOn = false;
@@ -1706,15 +1729,7 @@ class FreeplayState extends MusicBeatSubState
         break;
       }
     }
-    else
-    {
-      for (diff in grpDifficulties.group.members)
-      {
-        if (diff == null || diff.difficultyId != currentDifficulty) continue;
-
-        if (diff.x != 90) diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
-      }
-    }
+    FlxG.mouse.visible = true;
     #end
 
     if (controls.BACK)
@@ -2195,8 +2210,17 @@ class FreeplayState extends MusicBeatSubState
 
     curSelected += change;
 
-    if (curSelected < 0) curSelected = (SwipeUtil.flickUp) ? 0 : grpCapsules.countLiving() - 1;
-    if (curSelected >= grpCapsules.countLiving()) curSelected = (SwipeUtil.flickDown) ? grpCapsules.countLiving() - 1 : 0;
+    // Doesn't go beyond the last/first capsule if there's a flick, and resets the swipe velocity to be extra safe.
+    if (curSelected < 0)
+    {
+      curSelected = (SwipeUtil.flickUp) ? 0 : grpCapsules.countLiving() - 1;
+      SwipeUtil.resetSwipeVelocity();
+    }
+    if (curSelected >= grpCapsules.countLiving())
+    {
+      curSelected = (SwipeUtil.flickDown) ? grpCapsules.countLiving() - 1 : 0;
+      SwipeUtil.resetSwipeVelocity();
+    }
 
     if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
