@@ -54,10 +54,10 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
+import funkin.util.HapticUtil;
 import haxe.Int64;
 #if mobile
 import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.HapticUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #if NO_DISABLE_ADMOB_ADS

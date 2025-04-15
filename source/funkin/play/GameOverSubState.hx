@@ -7,6 +7,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.util.HapticUtil;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
@@ -19,7 +20,6 @@ import funkin.util.MathUtil;
 import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
 import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.HapticUtil;
 import openfl.utils.Assets;
 
 /**

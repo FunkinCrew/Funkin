@@ -24,6 +24,7 @@ import flixel.tweens.FlxTween;
 import flixel.addons.display.FlxBackdrop;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxGradient;
+import funkin.util.HapticUtil;
 import flixel.util.FlxTimer;
 import funkin.play.scoring.Scoring;
 import funkin.save.Save.SaveScoreData;
@@ -35,7 +36,6 @@ import funkin.api.newgrounds.Medals;
 #end
 #if mobile
 import funkin.mobile.util.TouchUtil;
-import funkin.mobile.util.HapticUtil;
 #if NO_DISABLE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
 #end
@@ -515,12 +515,14 @@ class ResultState extends MusicBeatSubState
             FunkinSound.playOnce(Paths.sound('scrollMenu'));
 
             #if HAPTIC_VIBRATIONS
+            // Weak vibration each number increase.
             HapticUtil.vibrate(0, 10);
             #end
           }
         },
         onComplete: _ -> {
           #if HAPTIC_VIBRATIONS
+          // Strong vibration when rank number tween ends.
           HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
           #end
 
@@ -728,83 +730,100 @@ class ResultState extends MusicBeatSubState
   #if HAPTIC_VIBRATIONS
   private function handleAnimationVibrations()
   {
-    switch (rank)
+    for (atlas in characterAtlasAnimations)
     {
-      case ScoringRank.PERFECT | ScoringRank.PERFECT_GOLD:
-        for (atlas in characterAtlasAnimations)
-        {
-          @:nullSafety(Off)
+      if (atlas == null || atlas.sprite == null) continue;
+
+      switch (rank)
+      {
+        case ScoringRank.PERFECT | ScoringRank.PERFECT_GOLD:
           switch (playerCharacterId)
           {
             // Feel the bed fun :freaky:
             case "bf":
-              if (atlas.sprite.anim.curFrame > 87 && atlas.sprite.anim.curFrame % 5 == 0) HapticUtil.vibrate(0, 10, Constants.MAX_VIBRATION_AMPLITUDE);
+              if (atlas.sprite.anim.curFrame > 87 && atlas.sprite.anim.curFrame % 5 == 0)
+              {
+                HapticUtil.vibrate(0, 10, Constants.MAX_VIBRATION_AMPLITUDE);
+                break;
+              }
 
               // GF slams into the wall.
-              if (atlas.sprite.anim.curFrame == 51) HapticUtil.vibrate(0, 10, Std.int(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+              if (atlas.sprite.anim.curFrame == 51)
+              {
+                HapticUtil.vibrate(0, 10, Math.floor(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+                break;
+              }
 
             // Pico drop-kicking Nene.
             case "pico":
-              if (atlas.sprite.anim.curFrame == 52) HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5,
-                Constants.MAX_VIBRATION_AMPLITUDE);
+              if (atlas.sprite.anim.curFrame == 52)
+              {
+                HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE);
+                break;
+              }
 
             default:
-              // nothing.
+              break;
           }
-        }
 
-      case ScoringRank.GREAT | ScoringRank.EXCELLENT:
-        for (atlas in characterAtlasAnimations)
-        {
+        case ScoringRank.GREAT | ScoringRank.EXCELLENT:
           switch (playerCharacterId)
           {
             // Pico explodes the targets with a rocket launcher.
             case "pico":
-              if (atlas.sprite.anim.curFrame == 45) HapticUtil.vibrate(0, 10, Std.int(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+              // Pico shoots.
+              if (atlas.sprite.anim.curFrame == 45)
+              {
+                HapticUtil.vibrate(0, 10, Math.floor(Constants.MAX_VIBRATION_AMPLITUDE / 3));
+                break;
+              }
 
-              if (atlas.sprite.anim.curFrame == 50) HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION,
-                Constants.MAX_VIBRATION_AMPLITUDE);
+              // The targets explode.
+              if (atlas.sprite.anim.curFrame == 50)
+              {
+                HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
+                break;
+              }
 
             default:
-              // nothing.
+              break;
           }
-        }
 
-      case ScoringRank.GOOD:
-        for (atlas in characterAtlasAnimations)
-        {
+        case ScoringRank.GOOD:
           switch (playerCharacterId)
           {
             // Pico shooting the targets.
             case "pico":
-              final frames:Null<Array<Array<Int>>> = [[40, 50], [80, 90], [140, 157]];
+              if (atlas.sprite.anim.curFrame % 2 != 0) continue;
 
+              final frames:Array<Array<Int>> = [[40, 50], [80, 90], [140, 157]];
               for (i in 0...frames.length)
               {
-                if (atlas.sprite.anim.curFrame >= frames[i][0]
-                  && atlas.sprite.anim.curFrame <= frames[i][1]
-                  && atlas.sprite.anim.curFrame % 2 == 0) HapticUtil.vibrate(0, 10, Constants.MAX_VIBRATION_AMPLITUDE);
+                if (atlas.sprite.anim.curFrame < frames[i][0] || atlas.sprite.anim.curFrame > frames[i][1]) continue;
+
+                HapticUtil.vibrate(0, 10, Constants.MAX_VIBRATION_AMPLITUDE);
+                break;
               }
 
             default:
-              // nothing.
+              break;
           }
-        }
 
-      case ScoringRank.SHIT:
-        for (atlas in characterAtlasAnimations)
-        {
+        case ScoringRank.SHIT:
           switch (playerCharacterId)
           {
             // BF falling and GF slams on BF with her ass.
             case "bf":
-              if (atlas.sprite.anim.curFrame == 5 || atlas.sprite.anim.curFrame == 90) HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD * 2,
-                Constants.DEFAULT_VIBRATION_DURATION * 2, Constants.MAX_VIBRATION_AMPLITUDE);
+              if (atlas.sprite.anim.curFrame == 5 || atlas.sprite.anim.curFrame == 90)
+              {
+                HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD * 2, Constants.DEFAULT_VIBRATION_DURATION * 2, Constants.MAX_VIBRATION_AMPLITUDE);
+                break;
+              }
 
             default:
-              // nothing.
+              break;
           }
-        }
+      }
     }
   }
   #end

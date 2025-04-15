@@ -9,6 +9,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
+import funkin.util.HapticUtil;
 import flixel.util.typeLimit.NextState;
 import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
@@ -35,7 +36,6 @@ import funkin.save.Save;
 #if mobile
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
-import funkin.mobile.util.HapticUtil;
 #end
 
 #if desktop

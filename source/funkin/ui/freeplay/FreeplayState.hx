@@ -42,14 +42,15 @@ import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
+import funkin.util.HapticUtil;
 import openfl.display.BlendMode;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
+#if TOUCH_CONTROLS
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.SwipeUtil;
-import funkin.mobile.util.HapticUtil;
 #end
 import flixel.system.scaleModes.FullScreenScaleMode;
 
