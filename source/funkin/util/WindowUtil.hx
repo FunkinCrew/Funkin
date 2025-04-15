@@ -160,6 +160,8 @@ class WindowUtil
 
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
   {
+    // vsync crap dont worky on mac rn derp
+    #if !mac
     var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
 
     // SDL_GL_SetSwapInterval returns the value we assigned on success, https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval#return-value.
@@ -169,5 +171,6 @@ class WindowUtil
       trace('Failed to set VSync mode to ' + value);
       FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
     }
+    #end
   }
 }
