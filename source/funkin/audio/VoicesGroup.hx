@@ -3,10 +3,11 @@ package funkin.audio;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import funkin.audio.waveform.WaveformData;
 
+@:nullSafety
 class VoicesGroup extends SoundGroup
 {
-  var playerVoices:FlxTypedGroup<FunkinSound>;
-  var opponentVoices:FlxTypedGroup<FunkinSound>;
+  var playerVoices:Null<FlxTypedGroup<FunkinSound>>;
+  var opponentVoices:Null<FlxTypedGroup<FunkinSound>>;
 
   /**
    * Control the volume of only the sounds in the player group.
@@ -41,12 +42,12 @@ class VoicesGroup extends SoundGroup
   public function addPlayerVoice(sound:FunkinSound):Void
   {
     super.add(sound);
-    playerVoices.add(sound);
+    playerVoices?.add(sound);
   }
 
   function set_playerVolume(volume:Float):Float
   {
-    playerVoices.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive(function(voice:FunkinSound) {
       voice.volume = volume;
     });
     return playerVolume = volume;
@@ -59,10 +60,10 @@ class VoicesGroup extends SoundGroup
       snd.time = time;
     });
 
-    playerVoices.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive(function(voice:FunkinSound) {
       voice.time -= playerVoicesOffset;
     });
-    opponentVoices.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
       voice.time -= opponentVoicesOffset;
     });
 
@@ -71,7 +72,7 @@ class VoicesGroup extends SoundGroup
 
   function set_playerVoicesOffset(offset:Float):Float
   {
-    playerVoices.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive(function(voice:FunkinSound) {
       voice.time += playerVoicesOffset;
       voice.time -= offset;
     });
@@ -80,7 +81,7 @@ class VoicesGroup extends SoundGroup
 
   function set_opponentVoicesOffset(offset:Float):Float
   {
-    opponentVoices.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
       voice.time += opponentVoicesOffset;
       voice.time -= offset;
     });
@@ -93,12 +94,12 @@ class VoicesGroup extends SoundGroup
   public function addOpponentVoice(sound:FunkinSound):Void
   {
     super.add(sound);
-    opponentVoices.add(sound);
+    opponentVoices?.add(sound);
   }
 
   function set_opponentVolume(volume:Float):Float
   {
-    opponentVoices.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
       voice.volume = volume;
     });
     return opponentVolume = volume;
@@ -106,26 +107,26 @@ class VoicesGroup extends SoundGroup
 
   public function getPlayerVoice(index:Int = 0):Null<FunkinSound>
   {
-    return playerVoices.members[index];
+    return playerVoices?.members[index];
   }
 
   public function getOpponentVoice(index:Int = 0):Null<FunkinSound>
   {
-    return opponentVoices.members[index];
+    return opponentVoices?.members[index];
   }
 
   public function getPlayerVoiceWaveform():Null<WaveformData>
   {
-    if (playerVoices.members.length == 0) return null;
+    if (playerVoices?.members.length == 0) return null;
 
-    return playerVoices.members[0].waveformData;
+    return playerVoices?.members[0].waveformData;
   }
 
   public function getOpponentVoiceWaveform():Null<WaveformData>
   {
-    if (opponentVoices.members.length == 0) return null;
+    if (opponentVoices?.members.length == 0) return null;
 
-    return opponentVoices.members[0].waveformData;
+    return opponentVoices?.members[0].waveformData;
   }
 
   /**
@@ -133,9 +134,9 @@ class VoicesGroup extends SoundGroup
    */
   public function getPlayerVoiceLength():Float
   {
-    if (playerVoices.members.length == 0) return 0.0;
+    if (playerVoices?.members.length == 0) return 0.0;
 
-    return playerVoices.members[0].length;
+    return playerVoices?.members[0]?.length ?? 0.0;
   }
 
   /**
@@ -143,15 +144,15 @@ class VoicesGroup extends SoundGroup
    */
   public function getOpponentVoiceLength():Float
   {
-    if (opponentVoices.members.length == 0) return 0.0;
+    if (opponentVoices?.members.length == 0) return 0.0;
 
-    return opponentVoices.members[0].length;
+    return opponentVoices?.members[0]?.length ?? 0.0;
   }
 
   public override function clear():Void
   {
-    playerVoices.clear();
-    opponentVoices.clear();
+    playerVoices?.clear();
+    opponentVoices?.clear();
     super.clear();
   }
 
@@ -159,13 +160,13 @@ class VoicesGroup extends SoundGroup
   {
     if (playerVoices != null)
     {
-      playerVoices.destroy();
+      playerVoices?.destroy();
       playerVoices = null;
     }
 
     if (opponentVoices != null)
     {
-      opponentVoices.destroy();
+      opponentVoices?.destroy();
       opponentVoices = null;
     }
 
