@@ -16,10 +16,11 @@ import funkin.input.Controls;
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
+@:nullSafety
 class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
-  public var leftWatermarkText:FlxText = null;
-  public var rightWatermarkText:FlxText = null;
+  public var leftWatermarkText:Null<FlxText> = null;
+  public var rightWatermarkText:Null<FlxText> = null;
 
   public var conductorInUse(get, set):Conductor;
 
