@@ -135,6 +135,11 @@ class Project extends HXProject {
 	static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
 
   /**
+	 * `-DBUNDLE_APP`
+   */
+	static final BUNDLE_APP:FeatureFlag = "BUNDLE_APP";
+
+  /**
    * `-DHARDCODED_CREDITS`
    * If this flag is enabled, the credits will be parsed and encoded in the game at compile time,
    * rather than read from JSON data at runtime.
@@ -346,6 +351,33 @@ class Project extends HXProject {
 		{
 			configureAdMobKeys();
 		}
+
+    if (isAndroid())
+    {
+      // TODO: okay so like im really fucking tired just regenerate this and make it use a proper secure password and alias :sob:
+      if (isRelease())
+      {
+        keystore = new Keystore();
+        keystore.path = './alias_name.keystore';
+        keystore.password = "";
+
+        if (BUNDLE_APP.isEnabled(this)) setenv('ANDROID_GRADLE_TASK', 'bundleRelease');
+      }
+      else if (BUNDLE_APP.isEnabled(this))
+      {
+        info("WARNING: Bundle Builds aren't available for debug, this build will export an APK instead.");
+      }
+    }
+  }
+
+				if (BUNDLE_APP.isEnabled(this))
+					setenv('ANDROID_GRADLE_TASK', 'bundleRelease');
+			}
+			else if (BUNDLE_APP.isEnabled(this))
+			{
+				info("WARNING: Bundle Builds aren't available for debug, this build will export an APK instead.");
+			}
+		}
 	}
 
 	/**
@@ -549,6 +581,7 @@ class Project extends HXProject {
 		FEATURE_GHOST_TAPPING.apply(this, false);
 		EXCLUDE_ARMV7.apply(this, false);
 		LITE_VERSION.apply(this, false);
+		BUNDLE_APP.apply(this, false);
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
@@ -875,12 +908,12 @@ class Project extends HXProject {
 	function configureAdMobKeys() {
 		if (isAndroid())
 		{
-			setEnv("ADMOB_APPID", "");
+			setenv("ADMOB_APPID", "");
 		}
 
 		if (isIOS())
 		{
-			setEnv("ADMOB_APPID", "");
+			setenv("ADMOB_APPID", "");
 		}
 	}
 
@@ -985,12 +1018,6 @@ class Project extends HXProject {
 
 	public function hasDefine(name:String):Bool {
 		return this.defines.exists(name);
-	}
-
-	public function setEnv(name:String, value:String = '') {
-		this.defines.set(name, value);
-		this.environment.set(name, value);
-		this.setenv(name, value);
 	}
 
 	/**
