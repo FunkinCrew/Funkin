@@ -654,7 +654,7 @@ class BaseCharacter extends Bopper
 /**
  * The type of a given character sprite. Defines its default behaviors.
  */
-enum CharacterType
+enum abstract CharacterType(String) from String to String
 {
   /**
    * The BF character has the following behaviors.
@@ -663,7 +663,7 @@ enum CharacterType
    * - If there is a `singDIR-end` animation, the `singDIR` animation will play once before looping the `singDIR-end` animation until BF is done singing.
    * - If the player misses or hits a ghost note, plays the appropriate `singDIR-miss` animation until BF is done singing.
    */
-  BF;
+  var BF = 'bf';
 
   /**
    * The DAD character has the following behaviors.
@@ -673,7 +673,7 @@ enum CharacterType
    * - When the CPU misses a note (NOTE: This only happens via script, not by default),
    *     plays the appropriate `singDIR-miss` animation until DAD is done singing.
    */
-  DAD;
+  var DAD = 'dad';
 
   /**
    * The GF character has the following behaviors.
@@ -686,11 +686,11 @@ enum CharacterType
    *   - Multiple drop animations can be provided for different thresholds (i.e. dropping larger combos).
    *   - No drop animation will play if one isn't applicable (i.e. if the combo count is too low).
    */
-  GF;
+  var GF = 'gf';
 
   /**
    * The OTHER character will only perform the `danceLeft`/`danceRight` or `idle` animation by default, depending on what's available.
    * Additional behaviors can be performed via scripts.
    */
-  OTHER;
+  var OTHER = 'other';
 }
