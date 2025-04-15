@@ -7,7 +7,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxSpriteUtil;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
-import flixel.system.scaleModes.FullScreenScaleMode;
 
 class BoyfriendCard extends BackingCard
 {

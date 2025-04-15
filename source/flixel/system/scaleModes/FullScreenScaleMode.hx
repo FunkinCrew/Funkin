@@ -1,84 +1,108 @@
 package flixel.system.scaleModes;
 
-import flixel.system.scaleModes.BaseScaleMode;
 import flixel.math.FlxPoint;
 import flixel.util.FlxAxes;
 import flixel.FlxG;
-#if android
-import android.os.Build;
-import android.Tools;
-#end
-#if mobile
-import funkin.mobile.util.ScreenUtil;
-#end
 
-class FullScreenScaleMode extends BaseScaleMode
+class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 {
-  public static final cutoutSize:FlxPoint = FlxPoint.get(0, 0);
-  public static final notchPosition:FlxPoint = FlxPoint.get(0, 0);
-  public static final notchSize:FlxPoint = FlxPoint.get(0, 0);
+  /**
+   * The size of the screen cutout (e.g., for notches or camera cutouts).
+   */
+  public static var cutoutSize:FlxPoint = FlxPoint.get(0, 0);
 
-  public static final gameCutoutSize:FlxPoint = FlxPoint.get(0, 0);
-  public static final gameNotchPosition:FlxPoint = FlxPoint.get(0, 0);
-  public static final gameNotchSize:FlxPoint = FlxPoint.get(0, 0);
+  /**
+   * The position of the notch on the screen.
+   */
+  public static var notchPosition:FlxPoint = FlxPoint.get(0, 0);
 
-  public static final windowScale:FlxPoint = FlxPoint.get(1, 1);
+  /**
+   * The size of the notch on the screen.
+   */
+  public static var notchSize:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
+   * The aspect ratio of the game screen.
+   */
   public static var gameRatio:Float = -1;
+
+  /**
+   * The size of the game cutout.
+   */
+  public static var gameCutoutSize:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
+   * The position of the notch in game coordinates.
+   */
+  public static var gameNotchPosition:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
+   * The size of the notch in game coordinates.
+   */
+  public static var gameNotchSize:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
+   * The aspect ratio of the window.
+   */
   public static var windowRatio:Float = -1;
+
+  /**
+   * The scale factor for the window.
+   */
+  public static var windowScale:FlxPoint = FlxPoint.get(1, 1);
+
+  /**
+   * Axis used to determine the ratio (X or Y).
+   */
   public static var ratioAxis:FlxAxes = X;
 
-  public static var enabled(default, set):Bool;
+  /**
+   * Singleton instance of the `FullScreenScaleMode`.
+   */
   public static var instance:FullScreenScaleMode = null;
 
-  public function new(enable:Bool = true)
+  /**
+   * Whether fullscreen scaling is enabled.
+   */
+  public static var enabled(default, set):Bool;
+
+  /**
+   * Constructor for `FullScreenScaleMode`.
+   *
+   * @param enable Whether fullscreen scaling should be enabled by default.
+   */
+  public function new(enable:Bool = true):Void
   {
     super();
+
     instance = this;
+
     enabled = enable;
   }
 
-  override public function onMeasure(Width:Int, Height:Int):Void
+  /**
+   * Measures and adjusts the game layout based on the provided screen width and height.
+   * @param Width The width of the screen.
+   * @param Height The height of the screen.
+   */
+  public override function onMeasure(Width:Int, Height:Int):Void
   {
     FlxG.width = FlxG.initialWidth;
     FlxG.height = FlxG.initialHeight;
 
     updateGameSize(Width, Height);
     updateDeviceSize(Width, Height);
-    updateCutoutSize(Width, Height);
+    updateDeviceCutout(Width, Height);
+    #if mobile
+    updateDeviceNotch(funkin.mobile.util.ScreenUtil.getNotchRect());
+    #end
     updateScaleOffset();
     updateGamePosition();
-    #if mobile
-    updateNotch();
-    #end
-    if ((cutoutSize.x > 0 || cutoutSize.y > 0) && enabled)
-    {
-      fillScreen();
-    }
+
+    adjustWindowScale();
   }
 
-  override function updateGameSize(Width:Int, Height:Int):Void
-  {
-    gameRatio = FlxG.width / FlxG.height;
-    windowRatio = Width / Height;
-
-    ratioAxis = windowRatio < gameRatio ? Y : X;
-
-    // trace('ratio axis: ' + ratioAxis);
-
-    if (ratioAxis == Y)
-    {
-      gameSize.x = Width;
-      gameSize.y = Math.floor(gameSize.x / gameRatio);
-      enabled = false;
-    }
-    else
-    {
-      gameSize.y = Height;
-      gameSize.x = Math.floor(gameSize.y * gameRatio);
-    }
-  }
-
-  public function updateCutoutSize(Width:Float, Height:Float)
+  private function updateDeviceCutout(Width:Int, Height:Int):Void
   {
     cutoutSize.set(0, 0);
     gameCutoutSize.set(0, 0);
@@ -88,108 +112,95 @@ class FullScreenScaleMode extends BaseScaleMode
       if (ratioAxis == Y)
       {
         cutoutSize.y = Height - gameSize.y;
-        #if android
-        gameCutoutSize.y = cutoutSize.y / 2;
-        // #elseif ios
-        // gameCutoutSize.y = cutoutSize.y * 2;
-        #else
-        gameCutoutSize.y = cutoutSize.y;
-        #end
+        gameCutoutSize.y = #if android cutoutSize.y / 2 #else cutoutSize.y #end;
       }
       else
       {
         cutoutSize.x = Width - gameSize.x;
-        #if android
-        gameCutoutSize.x = cutoutSize.x / 2;
-        // #elseif ios
-        // gameCutoutSize.x = cutoutSize.x * 2;
-        #else
-        gameCutoutSize.x = cutoutSize.x;
-        #end
+        gameCutoutSize.x = #if android cutoutSize.x / 2 #else cutoutSize.x #end;
       }
     }
   }
 
   #if mobile
-  public function updateNotch()
+  private function updateDeviceNotch(notch:lime.math.Rectangle):Void
   {
-    if (enabled)
-    {
-      var notch:lime.math.Rectangle = ScreenUtil.getNotchRect();
-      notchPosition.set(notch.x, notch.y);
-      notchSize.set(notch.width, notch.height);
-      #if android
-      gameNotchPosition.set(notchPosition.x / 2, notchPosition.y / 2);
-      gameNotchSize.set(notchSize.x / 2, notchSize.y / 2);
-      // #elseif ios
-      // gameNotchPosition.set(notchPosition.x * 2, notchPosition.y * 2);
-      // gameNotchSize.set(notchSize.x * 2, notchSize.y * 2);
-      #else
-      gameNotchPosition.set(notchPosition.x, notchPosition.y);
-      gameNotchSize.set(notchSize.x, notchSize.y);
-      #end
-    }
-    else
-    {
-      notchPosition.set(0, 0);
-      gameNotchPosition.set(0, 0);
-      notchSize.set(0, 0);
-      gameNotchSize.set(0, 0);
-    }
+    notchPosition.set(enabled ? notch.x : 0, enabled ? notch.y : 0);
+    notchSize.set(enabled ? notch.width : 0, enabled ? notch.height : 0);
+    #if android
+    gameNotchPosition.set(notchPosition.x / 2, notchPosition.y / 2);
+    gameNotchSize.set(notchSize.x / 2, notchSize.y / 2);
+    #else
+    gameNotchPosition.copyFrom(notchPosition);
+    gameNotchSize.copyFrom(notchSize);
+    #end
   }
   #end
 
-  public function fillScreen()
+  private function adjustWindowScale():Void
   {
-    windowScale.set(1, 1);
-    if (ratioAxis == Y)
+    if ((cutoutSize.x > 0 || cutoutSize.y > 0) && enabled)
     {
-      gameSize.y += cutoutSize.y;
-      FlxG.height = Math.floor(gameSize.y / scale.y);
-      windowScale.y = (FlxG.height / FlxG.initialHeight);
+      windowScale.set(1, 1);
+
+      if (ratioAxis == Y)
+      {
+        gameSize.y += cutoutSize.y;
+        FlxG.height = Math.floor(gameSize.y / scale.y);
+        windowScale.y = FlxG.height / FlxG.initialHeight;
+      }
+      else
+      {
+        gameSize.x += cutoutSize.x;
+        FlxG.width = Math.floor(gameSize.x / scale.x);
+        windowScale.x = FlxG.width / FlxG.initialWidth;
+      }
+    }
+  }
+
+  /**
+   * Updates the game size based on the provided width and height.
+   * @param Width The width of the screen.
+   * @param Height The height of the screen.
+   */
+  public override function updateGameSize(Width:Int, Height:Int):Void
+  {
+    gameRatio = FlxG.width / FlxG.height;
+    windowRatio = Width / Height;
+    ratioAxis = windowRatio < gameRatio ? FlxAxes.Y : FlxAxes.X;
+
+    if (ratioAxis == FlxAxes.Y)
+    {
+      gameSize.x = Width;
+      gameSize.y = Math.floor(gameSize.x / gameRatio);
     }
     else
     {
-      gameSize.x += cutoutSize.x;
-      FlxG.width = Math.floor(gameSize.x / scale.x);
-      windowScale.x = (FlxG.width / FlxG.initialWidth);
+      gameSize.y = Height;
+      gameSize.x = Math.floor(gameSize.y * gameRatio);
     }
-
-    // trace('resized game with size $gameSize and scale ${scale}');
-    // trace('flixel width: ${FlxG.width} - flixel height: ${FlxG.height}');
-    // trace('current window scale is $windowScale');
   }
 
   @:noCompletion
   private static function set_enabled(Value:Bool):Bool
   {
-    // TODO (??): Make the game work properly on screens that are wide vertically
-    // TODO: Figure out a way to configure this for iOS Platforms.
-    if (ratioAxis == Y #if andorid || !(VERSION.SDK_INT >= VERSION_CODES.P || Tools.isTablet()) #end)
+    if (ratioAxis == FlxAxes.X #if android
+      && (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P || android.Tools.isTablet()) #end)
     {
-      Value = false;
+      enabled = Value;
     }
-
-    enabled = Value;
+    else
+    {
+      enabled = false;
+    }
 
     if (instance != null)
     {
-      if (enabled == true)
-      {
-        instance.horizontalAlign = LEFT;
-        instance.verticalAlign = TOP;
-      }
-      else
-      {
-        instance.horizontalAlign = CENTER;
-        instance.verticalAlign = CENTER;
-      }
+      instance.horizontalAlign = enabled ? LEFT : CENTER;
+      instance.verticalAlign = enabled ? TOP : CENTER;
+      instance.onMeasure(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
 
-      if (FlxG.stage != null)
-      {
-        instance.onMeasure(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
-        FlxG.signals.gameResized.dispatch(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
-      }
+      FlxG.signals.gameResized.dispatch(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
     }
 
     return enabled;

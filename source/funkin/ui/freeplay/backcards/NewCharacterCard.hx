@@ -8,7 +8,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import openfl.display.BlendMode;
-import flixel.system.scaleModes.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
 import openfl.utils.Assets;
 

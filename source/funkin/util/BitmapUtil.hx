@@ -1,6 +1,5 @@
 package funkin.util;
 
-import flixel.system.scaleModes.FullScreenScaleMode;
 import flixel.FlxG;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
