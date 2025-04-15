@@ -46,10 +46,15 @@ class SongEventDataArrayTools
         // Search the lower half of the range.
         highIndex = midIndex - 1;
       }
+      // Found it? Make a more thorough check.
+      else if (midNote == note)
+      {
+        return midIndex;
+      }
       else
       {
-        // Found it!
-        return midIndex;
+        // We may be close, so constrain the range (but only a little) and try again.
+        highIndex -= 1;
       }
     }
     return -1;
