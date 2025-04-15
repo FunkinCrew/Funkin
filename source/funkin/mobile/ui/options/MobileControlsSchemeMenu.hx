@@ -49,6 +49,11 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
   private var theCenterHitbox:FunkinSprite;
 
   /**
+   * An object used for selecting the current hitbox scheme's option.
+   */
+  private var theBottomHitbox:FunkinSprite;
+
+  /**
    * Returns true, if player is currently in hitbox demonstration.
    */
   private var isInDemo:Bool;
@@ -57,6 +62,7 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
    * An array of every single scheme.
    */
   final availableSchemes:Array<String> = [
+    FunkinHitboxControlSchemes.NoteDPad,
     FunkinHitboxControlSchemes.FourLanes,
     FunkinHitboxControlSchemes.DoubleThumbTriangle,
     FunkinHitboxControlSchemes.DoubleThumbSquare,
@@ -132,6 +138,13 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     {
       var hitboxShowcase:HitboxShowcase = new HitboxShowcase(Std.int(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
       hitboxShowcases.add(hitboxShowcase);
+
+      if (availableSchemes[i] == FunkinHitboxControlSchemes.NoteDPad)
+      {
+        hitboxShowcases.members[i].createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
+          Preferences.downscroll = value;
+        });
+      }
     }
     add(hitboxShowcases);
 
@@ -141,6 +154,13 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     theCenterHitbox.screenCenter(Y);
     theCenterHitbox.visible = false;
     add(theCenterHitbox);
+
+    theBottomHitbox = new FunkinSprite(FlxG.width * 0.312,
+      FlxG.height * 0.815).makeSolidColor(Std.int(FlxG.width * 0.2), Std.int(FlxG.height * 0.05), FlxColor.GREEN);
+    theBottomHitbox.cameras = [camButtons];
+    theBottomHitbox.updateHitbox();
+    theBottomHitbox.visible = false;
+    add(theBottomHitbox);
   }
 
   /**
@@ -195,6 +215,15 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     createButton(true);
 
     addHitbox(true, false, availableSchemes[currentIndex]);
+
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.NoteDPad)
+    {
+      hitbox.forEachAlive(function(hint:FunkinHint):Void {
+        hint.alpha = 1;
+        @:privateAccess
+        if (hint.label != null) hint.label.alpha = 0.3;
+      });
+    }
 
     hitbox.forEachAlive(function(hint:FunkinHint) {
       if (!hint.deadZones.contains(cast(currentButton.body, FunkinSprite))) hint.deadZones.push(cast(currentButton.body, FunkinSprite));
@@ -298,6 +327,15 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     {
       hitboxShowcases.members[currentIndex].onPress();
       currentButton.busy = true;
+      return;
+    }
+
+    if (TouchUtil.justPressed
+      && TouchUtil.overlapsComplex(theBottomHitbox)
+      && !SwipeUtil.swipeAny
+      && hitboxShowcases.members[currentIndex].checkbox != null)
+    {
+      hitboxShowcases.members[currentIndex].checkbox.text.callback();
       return;
     }
   }

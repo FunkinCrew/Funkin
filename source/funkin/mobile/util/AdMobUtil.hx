@@ -75,16 +75,6 @@ class AdMobUtil
   }
 
   /**
-   * Loads an interstitial ad. Depending on the forceVideo parameter or random selection,
-   * it loads either a video or a standard interstitial ad.
-   * @param forceVideo If true, forces loading an interstitial video ad. Otherwise, it uses a 50% chance.
-   */
-  public static inline function loadInterstitial():Void
-  {
-    Admob.loadInterstitial(#if TESTING_ADS FlxG.random.bool(50) ? AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID : #end AdMobUtil.INTERSTITIAL_AD_UNIT_ID);
-  }
-
-  /**
    * Adds a banner ad at the specified size and alignment.
    * @param size The size of the banner ad, defaulting to the standard banner size.
    * @param align The alignment of the banner ad, defaulting to the bottom of the screen.
@@ -100,6 +90,16 @@ class AdMobUtil
   public static inline function removeBanner():Void
   {
     Admob.hideBanner();
+  }
+
+  /**
+   * Loads an interstitial ad. Depending on the forceVideo parameter or random selection,
+   * it loads either a video or a standard interstitial ad.
+   * @param forceVideo If true, forces loading an interstitial video ad. Otherwise, it uses a 50% chance.
+   */
+  public static inline function loadInterstitial():Void
+  {
+    Admob.loadInterstitial(#if TESTING_ADS FlxG.random.bool(50) ? AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID : #end AdMobUtil.INTERSTITIAL_AD_UNIT_ID);
   }
 
   /**

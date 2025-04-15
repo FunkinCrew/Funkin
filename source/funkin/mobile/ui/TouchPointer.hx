@@ -26,6 +26,7 @@ class TouchPointerGrp extends FlxTypedSpriteGroup<TouchPointer>
   public function new(xPos:Float, yPos:Float)
   {
     super(xPos, yPos);
+    scrollFactor.set(0, 0);
   }
 
   var _calcAngle:Float = 0;
@@ -72,14 +73,16 @@ class TouchPointer extends FlxSprite
   var _pointTime:Int = -1;
   var _calcAngle:Float = 0;
   var _pointId:Int;
+  var offsetX:Int = 0;
+  var offsetY:Int = 0;
 
   public function new(xPos:Float, yPos:Float, touch:Int, pId:Int)
   {
-    super(xPos - 50, yPos - 50, "assets/images/cursor/michael.png");
+    super(xPos, yPos, "assets/images/cursor/michael.png");
     touchId = touch;
     _pointId = pId;
     scrollFactor.set(0, 0);
-    scale.set(0.5, 0.5);
+    // scale.set(0.5, 0.5);
   }
 
   override function update(elapsed:Float)
@@ -102,8 +105,8 @@ class TouchPointer extends FlxSprite
 
         if (pointing)
         {
-          final dx:Float = (touch.viewX - 50) - x;
-          final dy:Float = (touch.viewY - 50) - y;
+          final dx:Float = (touch.viewX) - x;
+          final dy:Float = (touch.viewY) - y;
 
           _calcAngle = (Math.abs(dx) > 1 || Math.abs(dy) > 1) ? FlxAngle.wrapAngle(Math.atan2(dy, dx) * 180 / Math.PI) : _calcAngle;
 
@@ -121,8 +124,8 @@ class TouchPointer extends FlxSprite
           angle = MathUtil.smoothLerp(angle, 0, elapsed, 0.08);
         }
 
-        x = MathUtil.smoothLerp(x, touch.viewX - 50, elapsed, 0.05);
-        y = MathUtil.smoothLerp(y, touch.viewY - 50, elapsed, 0.05);
+        x = MathUtil.smoothLerp(x, touch.viewX, elapsed, 0.05);
+        y = MathUtil.smoothLerp(y, touch.viewY, elapsed, 0.05);
       }
     }
     else

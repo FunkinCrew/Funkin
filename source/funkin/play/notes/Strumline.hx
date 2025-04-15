@@ -116,6 +116,8 @@ class Strumline extends FlxSpriteGroup
 
   final noteStyle:NoteStyle;
 
+  var noteSpacingScale:Float = 1;
+
   #if FEATURE_GHOST_TAPPING
   var ghostTapTimer:Float = 0.0;
   #end
@@ -225,7 +227,7 @@ class Strumline extends FlxSpriteGroup
 
   override function get_width():Float
   {
-    return KEY_COUNT * Strumline.NOTE_SPACING;
+    return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale;
   }
 
   public override function update(elapsed:Float):Void
@@ -361,6 +363,42 @@ class Strumline extends FlxSpriteGroup
             holdNote.destroy();
           }
         });
+    }
+  }
+
+  /**
+   * Enter mini mode, which displays only small strumline notes
+   * @param scale scale of strumline
+   */
+  public function enterMiniMode(scale:Float = 1)
+  {
+    forEach(function(obj:flixel.FlxObject):Void {
+      if (obj != strumlineNotes) obj.visible = false;
+    });
+
+    strumlineNotes.forEach(function(obj:flixel.FlxSprite):Void {
+      obj.scale.scale(scale);
+    });
+
+    setNoteSpacing(scale);
+  }
+
+  /**
+   * Set note spacing scale
+   * @param multiplier multiply x position
+   */
+  public function setNoteSpacing(multiplier:Float = 1):Void
+  {
+    noteSpacingScale = multiplier;
+
+    for (i in 0...KEY_COUNT)
+    {
+      var direction = Strumline.DIRECTIONS[i];
+      var note = getByDirection(direction);
+      note.x = getXPos(DIRECTIONS[i]) + this.strumlineNotes.x;
+      note.x += INITIAL_OFFSET;
+      note.y = this.strumlineNotes.y;
+      noteStyle.applyStrumlineOffsets(note);
     }
   }
 
@@ -998,9 +1036,9 @@ class Strumline extends FlxSpriteGroup
     return switch (direction)
     {
       case NoteDirection.LEFT: 0;
-      case NoteDirection.DOWN: 0 + (1 * Strumline.NOTE_SPACING);
-      case NoteDirection.UP: 0 + (2 * Strumline.NOTE_SPACING);
-      case NoteDirection.RIGHT: 0 + (3 * Strumline.NOTE_SPACING);
+      case NoteDirection.DOWN: 0 + (1 * Strumline.NOTE_SPACING) * noteSpacingScale;
+      case NoteDirection.UP: 0 + (2 * Strumline.NOTE_SPACING) * noteSpacingScale;
+      case NoteDirection.RIGHT: 0 + (3 * Strumline.NOTE_SPACING) * noteSpacingScale;
       default: 0;
     }
   }

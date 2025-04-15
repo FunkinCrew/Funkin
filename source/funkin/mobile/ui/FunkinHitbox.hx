@@ -20,6 +20,10 @@ import openfl.display.Shape;
 import openfl.geom.Matrix;
 import openfl.Vector;
 import flixel.math.FlxMath;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.data.animation.AnimationData;
+import funkin.util.assets.FlxAnimationUtil;
 
 enum FunkinHintAlphaStyle
 {
@@ -200,6 +204,26 @@ class FunkinHint extends FunkinPolygonButton
     }
   }
 
+  var followTarget:Null<FunkinSprite>;
+  var followTargetSize:Bool = false;
+
+  public function follow(sprite:FunkinSprite, followTargetSize:Bool = true)
+  {
+    this.followTargetSize = followTargetSize;
+    followTarget = sprite;
+  }
+
+  override function update(elapsed:Float)
+  {
+    super.update(elapsed);
+
+    if (followTarget != null)
+    {
+      setPosition(followTarget.x, followTarget.y);
+      if (followTargetSize) setSize(followTarget.width, followTarget.height);
+    }
+  }
+
   /**
    * Desaturates the button, setting its saturation to 0.2.
    */
@@ -277,6 +301,7 @@ enum abstract FunkinHitboxControlSchemes(String) from String to String
   final DoubleThumbTriangle = 'doubleThumbTriangle';
   final DoubleThumbSquare = 'doubleThumbSquare';
   final DoubleThumbDPad = 'doubleThumbDPad';
+  final NoteDPad = 'noteDPad';
 }
 
 /**
@@ -371,6 +396,17 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
             add(createHintCircle(x, y, hintsNoteDirections[j % hintsNoteDirections.length], hintSize, hintsColors[j % hintsColors.length]));
           }
         }
+      case FunkinHitboxControlSchemes.NoteDPad:
+        final hintWidth:Int = 146;
+        final hintHeight:Int = 149;
+        final noteSpacing:Int = 80;
+
+        final xPos:Int = Math.floor((FlxG.width - (hintWidth + noteSpacing) * hintsNoteDirections.length) / 2);
+        final yPos:Int = Math.floor(FlxG.height - hintHeight * 2 - 24);
+
+        for (i in 0...hintsNoteDirections.length)
+          add(createHintTransparentNote(xPos + i * hintWidth + noteSpacing * i, yPos, hintsNoteDirections[i % hintsNoteDirections.length], hintWidth,
+            hintHeight));
     }
 
     scrollFactor.set();
@@ -400,6 +436,57 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     hint.onUp.add(() -> onHintUp.dispatch(hint));
     hint.onOut.add(() -> onHintUp.dispatch(hint));
     hint.initTween(INVISIBLE_TILL_PRESS);
+    return hint;
+  }
+
+  /**
+   * Creates a new `FunkinHint`representing a transparent note corresponding to the note from the scene.
+   * @param x The x position of the button.
+   * @param y The y position of the button.
+   * @param noteDirection The direction of the note the button represents (e.g. left, right).
+   * @param width The width of the button.
+   * @param height The height of the button.
+   * @return A new `FunkinHint` object.
+   */
+  @:noCompletion
+  private function createHintTransparentNote(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int):FunkinHint
+  {
+    final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
+    hint.alpha = 0;
+    hint.setSize(width, height);
+    hint.onDown.add(() -> onHintDown.dispatch(hint));
+    hint.onUp.add(() -> onHintUp.dispatch(hint));
+    hint.onOut.add(() -> onHintUp.dispatch(hint));
+
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchDefault();
+    @:privateAccess
+    @:nullSafety(Off)
+    {
+      hint.frames = Paths.getSparrowAtlas(noteStyle.getStrumlineAssetPath() ?? '', noteStyle.getStrumlineAssetLibrary());
+      FlxAnimationUtil.addAtlasAnimations(hint, noteStyle.getStrumlineAnimationData(noteDirection));
+    }
+
+    hint.animation.play('static', true);
+
+    hint.onDown.add(() -> {
+      hint.animation.play('press', true);
+      hint.centerOrigin();
+      hint.centerOffsets();
+    });
+    hint.onUp.add(() -> {
+      hint.animation.play('static', true);
+      hint.centerOrigin();
+      hint.centerOffsets();
+    });
+    hint.onOut.add(() -> {
+      hint.animation.play('static', true);
+      hint.centerOrigin();
+      hint.centerOffsets();
+    });
+
+    hint.centerOffsets();
+    hint.centerOrigin();
+
     return hint;
   }
 
@@ -576,6 +663,17 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
       case LEFT: [0, 0, width, height / 2, 0, height];
       case RIGHT: [width, 0, 0, height / 2, width, height];
     }
+  }
+
+  public function getFirstHintByDirection(direction:NoteDirection):Null<FunkinHint>
+  {
+    var result:Null<FunkinHint> = null;
+    forEachOfType(FunkinHint, function(hint:FunkinHint):Void {
+      @:privateAccess
+      if (hint.noteDirection == direction) result = hint;
+    });
+
+    return result;
   }
 
   /**

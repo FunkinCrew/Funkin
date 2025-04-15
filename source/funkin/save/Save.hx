@@ -158,7 +158,7 @@ class Save
           // Reasonable defaults.
           screenTimeout: false,
           vibration: true,
-          controlsScheme: FunkinHitboxControlSchemes.FourLanes
+          controlsScheme: FunkinHitboxControlSchemes.NoteDPad
         },
       #end
 

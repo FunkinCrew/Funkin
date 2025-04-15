@@ -72,7 +72,7 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll;
+    return Save?.instance?.options?.downscroll #if mobile ?? true #end;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -461,7 +461,7 @@ class Preferences
 
   static function get_controlsScheme():String
   {
-    return Save?.instance?.mobileOptions?.controlsScheme ?? FunkinHitboxControlSchemes.FourLanes;
+    return Save?.instance?.mobileOptions?.controlsScheme ?? FunkinHitboxControlSchemes.NoteDPad;
   }
 
   static function set_controlsScheme(value:String):String

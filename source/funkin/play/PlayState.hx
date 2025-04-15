@@ -59,6 +59,7 @@ import haxe.Int64;
 import funkin.mobile.util.TouchUtil;
 import funkin.mobile.util.HapticUtil;
 import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #if NO_DISABLE_ADMOB_ADS
 import funkin.mobile.util.AdMobUtil;
 #end
@@ -728,6 +729,14 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Initialize the hitbox for mobile controls
     addHitbox(false);
+
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.NoteDPad)
+    {
+      for (direction in Strumline.DIRECTIONS)
+      {
+        hitbox.getFirstHintByDirection(direction).follow(playerStrumline.getByDirection(direction));
+      }
+    }
     #end
 
     #if FEATURE_DISCORD_RPC
@@ -1881,23 +1890,47 @@ class PlayState extends MusicBeatSubState
     add(playerStrumline);
     add(opponentStrumline);
 
-    var cutoutSize = flixel.system.scaleModes.FullScreenScaleMode.gameCutoutSize.x / 2.0;
+    final cutoutSize = flixel.system.scaleModes.FullScreenScaleMode.gameCutoutSize.x / 2.0;
     // Position the player strumline on the right half of the screen
     playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
     playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+
     playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
-    opponentStrumline.x = (Constants.STRUMLINE_X_OFFSET) + cutoutSize;
+    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
     opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
+
+    #if mobile
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.NoteDPad)
+    {
+      initNoteHitbox();
+    }
+    #end
 
     playerStrumline.fadeInArrows();
     opponentStrumline.fadeInArrows();
   }
+
+  /**
+     * Configures the position of strumline for note hitbox scheme
+     */
+  #if mobile
+  function initNoteHitbox()
+  {
+    playerStrumline.setNoteSpacing(1.5);
+    opponentStrumline.enterMiniMode(0.4);
+
+    playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
+    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height * 1.3 - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    opponentStrumline.y = Preferences.downscroll ? Constants.STRUMLINE_Y_OFFSET * 0.3 : FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET;
+  }
+  #end
 
   /**
      * Configures the judgement and combo popups.

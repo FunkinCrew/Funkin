@@ -29,6 +29,11 @@ class HitboxShowcase extends FlxSpriteGroup
   public var camHitbox:Null<FunkinCamera>;
 
   /**
+   * Hitbox showcase's checkbox option.
+   */
+  public var checkbox:Null<HitboxOptionButton>;
+
+  /**
    * An array of values for lerping object's alpha.
    */
   private static final HITBOX_SHOWCASE_ALPHA:Array<Float> = [0.3, 1];
@@ -109,6 +114,14 @@ class HitboxShowcase extends FlxSpriteGroup
     add(hitbox);
 
     this.cameras = [camHitbox];
+  }
+
+  public function createOption(name:String = "", defaultValue:Bool = false, callback:Bool->Void)
+  {
+    if (checkbox != null) return;
+
+    checkbox = new HitboxOptionButton(width / 2 - width / 4, height + 50, defaultValue, callback);
+    add(checkbox);
   }
 
   /**
