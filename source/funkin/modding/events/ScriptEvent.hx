@@ -486,9 +486,9 @@ class StateChangeScriptEvent extends ScriptEvent
   /**
    * The state the game is moving into.
    */
-  public var targetState(default, null):FlxState;
+  public var targetState(default, null):Null<FlxState>;
 
-  public function new(type:ScriptEventType, targetState:FlxState, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, targetState:Null<FlxState>, cancelable:Bool = false):Void
   {
     super(type, cancelable);
     this.targetState = targetState;

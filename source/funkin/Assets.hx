@@ -6,6 +6,7 @@ import openfl.utils.Future;
  * A wrapper around `openfl.utils.Assets` which disallows access to the harmful functions.
  * Later we'll add Funkin-specific caching to this.
  */
+@:nullSafety
 class Assets
 {
   /**
