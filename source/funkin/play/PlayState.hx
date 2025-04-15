@@ -569,6 +569,27 @@ class PlayState extends MusicBeatSubState
     return currentChart.stage;
   }
 
+  public var stageCharacters(get, never):Map<String, BaseCharacter>;
+
+  function get_stageCharacters():Map<String, BaseCharacter>
+  {
+    if (currentStage == null) return null;
+    @:privateAccess
+    return currentStage.characters;
+  }
+
+  public var chartCharacters(get, never):Map<String, String>;
+
+  function get_chartCharacters():Map<String, String>
+  {
+    if (currentChart == null) return null;
+    var characterMap:Map<String, String> = new Map<String, String>();
+    characterMap.set("bf", currentChart.characters.player);
+    characterMap.set("gf", currentChart.characters.girlfriend);
+    characterMap.set("dad", currentChart.characters.opponent);
+    return characterMap;
+  }
+
   /**
    * The length of the current song, in milliseconds.
    */
@@ -867,7 +888,24 @@ class PlayState extends MusicBeatSubState
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
 
-      if (currentStage != null) currentStage.resetStage();
+      if (currentStage != null) {
+        // forgive me for this awful code
+        for (character in chartCharacters.keys())
+        {
+          // if null, skip
+          if (character == null || character == '') continue;
+          var stageCharacter = stageCharacters.get(character);
+          if (stageCharacter == null || stageCharacter.characterId == '') continue;
+          var chartCharacterId = chartCharacters.get(character);
+
+          if (chartCharacterId != null && (stageCharacter == null || stageCharacter.characterId != chartCharacterId))
+          {
+            loadCharacter(chartCharacterId, character, true);
+          }
+        }
+
+        currentStage.resetStage();
+      }
 
       if (!fromDeathState)
       {
@@ -1681,6 +1719,90 @@ class PlayState extends MusicBeatSubState
     cameraBopMultiplier = 1.0;
   }
 
+  // please forgive me for this code, but I fear I can't do any better
+  public function loadCharacter(charId:String, charType:CharacterType, ?swap:Bool = false):Void
+  {
+    if (charId == null || charId == '') return;
+
+    var character:BaseCharacter = CharacterDataParser.fetchCharacter(charId);
+    var prevCharacter:Null<BaseCharacter> = null;
+    var prevIcon:Null<HealthIcon> = null;
+
+    if (character == null)
+    {
+      trace('WARNING: Could not load character with ID ${charId}, skipping...');
+      return; // Skip further processing for invalid character.
+    }
+
+    if (swap && currentStage != null)
+    {
+      // Remove the existing character of the same type from the stage
+      switch (charType)
+      {
+        case CharacterType.BF:
+          prevCharacter = currentStage.getBoyfriend();
+          prevIcon = iconP1;
+          iconP1 = null;
+        case CharacterType.GF:
+          prevCharacter = currentStage.getGirlfriend();
+        case CharacterType.DAD:
+          prevCharacter = currentStage.getDad();
+          prevIcon = iconP2;
+          iconP2 = null;
+        default:
+          // Do nothing
+      }
+
+      if (prevCharacter != null) prevCharacter?.destroy();
+      if (prevCharacter != null) prevIcon?.destroy();
+    }
+
+    if (character != null && charType != CharacterType.GF) {
+      var icon:Null<HealthIcon> = null;
+
+      if (charType == CharacterType.BF) icon = new HealthIcon('bf', 0);
+      else if (charType == CharacterType.DAD) {
+        icon = new HealthIcon('dad', 1);
+
+        #if FEATURE_DISCORD_RPC
+        discordRPCAlbum = 'album-${currentChart.album}';
+        discordRPCIcon = 'icon-${charId}';
+        #end
+      }
+
+      if (icon != null)
+      {
+        icon.y = healthBar.y - (icon.height / 2);
+        character.initHealthIcon((charType == CharacterType.DAD) ? true : false);
+        icon.zIndex = 850;
+        add(icon);
+        icon.cameras = [camHUD];
+      }
+
+      if (charType == CharacterType.BF) iconP1 = icon;
+      else if (charType == CharacterType.DAD) iconP2 = icon;
+    }
+
+    if (currentStage != null)
+    {
+      // Characters get added to the stage, not the main scene.
+      if (character != null)
+      {
+        currentStage.addCharacter(character, charType);
+        if (swap && prevCharacter != null) character.zIndex = prevCharacter.zIndex;
+
+        if (charType == CharacterType.DAD) cameraFollowPoint.setPosition(character.cameraFocusPoint.x, character.cameraFocusPoint.y);
+
+        #if FEATURE_DEBUG_FUNCTIONS
+        FlxG.console.registerObject('${charType}', character);
+        #end
+      }
+
+      // Rearrange by z-indexes.
+      currentStage.refresh();
+    }
+  }
+
   /**
      * Generates the character sprites and adds them to the stage.
      */
@@ -1693,104 +1815,9 @@ class PlayState extends MusicBeatSubState
 
     var currentCharacterData:SongCharacterData = currentChart.characters; // Switch the variation we are playing on by manipulating targetVariation.
 
-    //
-    // GIRLFRIEND
-    //
-    var girlfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.girlfriend);
-
-    if (girlfriend != null)
-    {
-      // Don't need to do anything.
-    }
-    else if (currentCharacterData.girlfriend != '')
-    {
-      trace('WARNING: Could not load girlfriend character with ID ${currentCharacterData.girlfriend}, skipping...');
-    }
-    else
-    {
-      // Chosen GF was '' so we don't load one.
-    }
-
-    //
-    // DAD
-    //
-    var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
-
-    if (dad != null)
-    {
-      //
-      // OPPONENT HEALTH ICON
-      //
-      iconP2 = new HealthIcon('dad', 1);
-      iconP2.y = healthBar.y - (iconP2.height / 2);
-      dad.initHealthIcon(true); // Apply the character ID here
-      iconP2.zIndex = 850;
-      add(iconP2);
-      iconP2.cameras = [camHUD];
-
-      #if FEATURE_DISCORD_RPC
-      discordRPCAlbum = 'album-${currentChart.album}';
-      discordRPCIcon = 'icon-${currentCharacterData.opponent}';
-      #end
-    }
-
-    //
-    // BOYFRIEND
-    //
-    var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.player);
-
-    if (boyfriend != null)
-    {
-      //
-      // PLAYER HEALTH ICON
-      //
-      iconP1 = new HealthIcon('bf', 0);
-      iconP1.y = healthBar.y - (iconP1.height / 2);
-      boyfriend.initHealthIcon(false); // Apply the character ID here
-      iconP1.zIndex = 850;
-      add(iconP1);
-      iconP1.cameras = [camHUD];
-    }
-
-    //
-    // ADD CHARACTERS TO SCENE
-    //
-
-    if (currentStage != null)
-    {
-      // Characters get added to the stage, not the main scene.
-      if (girlfriend != null)
-      {
-        currentStage.addCharacter(girlfriend, GF);
-
-        #if FEATURE_DEBUG_FUNCTIONS
-        FlxG.console.registerObject('gf', girlfriend);
-        #end
-      }
-
-      if (boyfriend != null)
-      {
-        currentStage.addCharacter(boyfriend, BF);
-
-        #if FEATURE_DEBUG_FUNCTIONS
-        FlxG.console.registerObject('bf', boyfriend);
-        #end
-      }
-
-      if (dad != null)
-      {
-        currentStage.addCharacter(dad, DAD);
-        // Camera starts at dad.
-        cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
-
-        #if FEATURE_DEBUG_FUNCTIONS
-        FlxG.console.registerObject('dad', dad);
-        #end
-      }
-
-      // Rearrange by z-indexes.
-      currentStage.refresh();
-    }
+    loadCharacter(currentCharacterData.girlfriend, CharacterType.GF);
+    loadCharacter(currentCharacterData.player, CharacterType.BF);
+    loadCharacter(currentCharacterData.opponent, CharacterType.DAD);
   }
 
   /**
