@@ -13,6 +13,8 @@ import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
 import openfl.system.System;
 
+using StringTools;
+
 /**
  * An FlxSprite with additional functionality.
  * - A more efficient method for creating solid color sprites.
@@ -31,6 +33,8 @@ class FunkinSprite extends FlxSprite
    * We don't know whether we want to keep them cached or not.
    */
   static var previousCachedTextures:Map<String, FlxGraphic> = [];
+
+  static var permanentCachedTextures:Map<String, FlxGraphic> = [];
 
   /**
    * @param x Starting X position
@@ -238,6 +242,27 @@ class FunkinSprite extends FlxSprite
     }
   }
 
+  public static function permanentCacheTexture(key:String):Void
+  {
+    // We don't want to cache the same texture twice.
+    if (permanentCachedTextures.exists(key)) return;
+
+    // Else, texture is currently uncached.
+    var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key, false, null, true);
+    if (graphic == null)
+    {
+      FlxG.log.warn('Failed to cache graphic: $key');
+    }
+    else
+    {
+      trace('Successfully cached graphic: $key');
+      graphic.persist = true;
+      permanentCachedTextures.set(key, graphic);
+    }
+
+    currentCachedTextures = permanentCachedTextures;
+  }
+
   public static function cacheSparrow(key:String):Void
   {
     cacheTexture(Paths.image(key));
@@ -254,7 +279,14 @@ class FunkinSprite extends FlxSprite
   public static function preparePurgeCache():Void
   {
     previousCachedTextures = currentCachedTextures;
-    currentCachedTextures = [];
+
+    for (graphicKey in previousCachedTextures.keys())
+    {
+      if (!permanentCachedTextures.exists(graphicKey)) continue;
+      previousCachedTextures.remove(graphicKey);
+    }
+
+    currentCachedTextures = permanentCachedTextures;
   }
 
   public static function purgeCache():Void
@@ -268,6 +300,30 @@ class FunkinSprite extends FlxSprite
       graphic.destroy();
       previousCachedTextures.remove(graphicKey);
     }
+    @:privateAccess
+    if (FlxG.bitmap._cache == null)
+    {
+      @:privateAccess
+      FlxG.bitmap._cache = new Map();
+      System.gc();
+      return;
+    }
+
+    @:privateAccess
+    for (key in FlxG.bitmap._cache.keys())
+    {
+      var obj = FlxG.bitmap.get(key);
+      if (obj == null) continue;
+      if (obj.persist) continue;
+      if (permanentCachedTextures.exists(key)) continue;
+      if (!(obj.useCount <= 0 || key.contains("characters") || key.contains("charSelect") || key.contains("results"))) continue;
+
+      FlxG.bitmap.removeKey(key);
+      obj.destroy();
+    }
+    openfl.Assets.cache.clear("songs");
+    openfl.Assets.cache.clear("sounds");
+    openfl.Assets.cache.clear("music");
 
     System.gc();
   }

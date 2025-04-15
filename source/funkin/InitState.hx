@@ -10,6 +10,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
+import funkin.graphics.FunkinSprite;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
@@ -210,6 +211,8 @@ class InitState extends FlxState
 
     funkin.input.Cursor.hide();
 
+    funkin.FunkinMemory.initialCache();
+
     trace('Parsing game data took: ${TimerUtil.ms(perfStart)}');
   }
 
@@ -307,7 +310,7 @@ class InitState extends FlxState
     }
     else
     {
-      FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       FlxG.switchState(() -> new TitleState());
     }
   }

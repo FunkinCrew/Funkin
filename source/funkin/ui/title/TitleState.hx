@@ -62,8 +62,7 @@ class TitleState extends MusicBeatState
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
-    FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-    FlxG.sound.cache(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
+    funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
 
     // DEBUG BULLSHIT
 
@@ -266,6 +265,7 @@ class TitleState extends MusicBeatState
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
+      funkin.FunkinMemory.purgeCache();
       FlxG.switchState(() -> new MainMenuState());
     }
 

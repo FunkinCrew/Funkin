@@ -277,8 +277,8 @@ class StickerSubState extends MusicBeatSubState
               // TODO: Rework this asset caching stuff
               // NOTE: This has to come AFTER the state switch,
               // otherwise the game tries to render destroyed sprites!
-              FunkinSprite.preparePurgeCache();
-              FunkinSprite.purgeCache();
+              // FunkinSprite.preparePurgeCache();
+              funkin.FunkinMemory.purgeCache(true);
 
               return targetState(this);
             });
