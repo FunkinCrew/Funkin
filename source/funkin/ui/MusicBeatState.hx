@@ -164,6 +164,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
+  @:nullSafety(Off)
   override function startOutro(onComplete:() -> Void):Void
   {
     var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
