@@ -107,6 +107,9 @@ class InitState extends FlxState
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
 
+    // Makes Flixel use frame times instead of locked movements per frame for things like tweens
+    FlxG.fixedTimestep = false; 
+
     setupFlixelDebug();
 
     //
