@@ -657,9 +657,6 @@ class PlayState extends MusicBeatSubState
       cameraFollowPoint = new FlxObject(0, 0);
     }
 
-    // Reduce physics accuracy (who cares!!!) to improve animation quality.
-    FlxG.fixedTimestep = false;
-
     // This state receives update() even when a substate is active.
     this.persistentUpdate = true;
     // This state receives draw calls even when a substate is active.
