@@ -3,6 +3,7 @@ package funkin.util;
 /**
  * Utility functions related to specific platforms.
  */
+@:nullSafety
 class PlatformUtil
 {
   /**
