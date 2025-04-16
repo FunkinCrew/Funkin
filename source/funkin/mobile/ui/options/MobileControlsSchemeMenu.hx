@@ -140,7 +140,8 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     hitboxShowcases = new FlxTypedGroup<HitboxShowcase>();
     for (i in 0...availableSchemes.length)
     {
-      var hitboxShowcase:HitboxShowcase = new HitboxShowcase(Std.int(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
+      final hitboxShowcase:HitboxShowcase = new HitboxShowcase(Math.floor(FlxG.width * -0.16 + (1500 * i)), 0, i, currentIndex, availableSchemes[i],
+        onSelectHitbox);
       hitboxShowcases.add(hitboxShowcase);
 
       if (availableSchemes[i] != FunkinHitboxControlSchemes.Arrows) continue;
@@ -220,6 +221,8 @@ class MobileControlsSchemeMenu extends MusicBeatSubState
     addHitbox(true, false, availableSchemes[currentIndex]);
 
     hitbox.forEachAlive(function(hint:FunkinHint) {
+      if (availableSchemes[currentIndex] == FunkinHitboxControlSchemes.Arrows) hint.alpha = 1;
+
       if (!hint.deadZones.contains(cast(currentButton.body, FunkinSprite))) hint.deadZones.push(cast(currentButton.body, FunkinSprite));
     });
 

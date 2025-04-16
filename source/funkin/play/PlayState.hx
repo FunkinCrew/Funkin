@@ -1918,7 +1918,7 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Configures the position of strumline for note hitbox scheme
+     * Configures the position of strumline for the default control scheme
      */
   #if mobile
   function initNoteHitbox()
