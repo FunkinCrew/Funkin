@@ -50,7 +50,7 @@ class CompiledClassList
     }
   }
 
-  public static function get(request:String):List<Class<Dynamic>>
+  public static function get(request:String):Null<List<Class<Dynamic>>>
   {
     if (!initialized) init();
 
