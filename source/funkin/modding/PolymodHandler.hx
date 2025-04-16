@@ -284,6 +284,11 @@ class PolymodHandler
     // System.load() can load malicious DLLs
     Polymod.blacklistImport('lime.system.System');
 
+    // `funkin.util.FileUtil`
+    // FileUtil can access the file system most likely OUTSIDE of mods, which is a big nono!
+    // Thanks to @Burgerballs for finding this one.
+    Polymod.blacklistImport('funkin.util.FileUtil');
+
     // `lime.utils.Assets`
     // Literally just has a private `resolveClass` function for some reason?
     Polymod.blacklistImport('lime.utils.Assets');
