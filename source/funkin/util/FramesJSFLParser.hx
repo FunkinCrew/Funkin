@@ -7,13 +7,17 @@ import openfl.Assets;
  * Homemade dipshit proprietary format to get simple animation info out of flash!
  * Pure convienience!
  */
+@:nullSafety
 class FramesJSFLParser
 {
-  public static function parse(path:String):FramesJSFLInfo
+  public static function parse(path:String):Null<FramesJSFLInfo>
   {
     var text:String = Assets.getText(path);
-
-    // TODO: error handle if text is null
+    if (text == null)
+    {
+      trace('[ERROR] Could not load FramesJSFL data asset from path $path');
+      return null;
+    }
 
     var output:FramesJSFLInfo = {frames: []};
 

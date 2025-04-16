@@ -7,12 +7,13 @@ package funkin.util.tools;
  *
  * @see https://haxe.org/manual/lf-static-extension.html
  */
+@:nullSafety
 class MapTools
 {
   /**
    * Return the quantity of keys in the map.
    */
-  public static function size<K, T>(map:Map<K, T>):Int
+  public static function size<K, T>(map:Null<Map<K, T>>):Int
   {
     if (map == null) return 0;
     return map.keys().array().length;
@@ -21,7 +22,7 @@ class MapTools
   /**
    * Return a list of values from the map, as an array.
    */
-  public static function values<K, T>(map:Map<K, T>):Array<T>
+  public static function values<K, T>(map:Null<Map<K, T>>):Array<T>
   {
     if (map == null) return [];
     return [for (i in map.iterator()) i];
@@ -30,7 +31,7 @@ class MapTools
   /**
    * Create a new array with all elements of the given array, to prevent modifying the original.
    */
-  public static function clone<K, T>(map:Map<K, T>):Map<K, T>
+  public static function clone<K, T>(map:Null<Map<K, T>>):Null<Map<K, T>>
   {
     if (map == null) return null;
     return map.copy();
@@ -77,7 +78,7 @@ class MapTools
    * Return a list of keys from the map (as an array, rather than an iterator).
    * TODO: Rename this?
    */
-  public static function keyValues<K, T>(map:Map<K, T>):Array<K>
+  public static function keyValues<K, T>(map:Null<Map<K, T>>):Array<K>
   {
     if (map == null) return [];
     return map.keys().array();

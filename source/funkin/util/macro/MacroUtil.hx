@@ -4,6 +4,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+@:nullSafety
 class MacroUtil
 {
   /**
@@ -13,7 +14,7 @@ class MacroUtil
    * @param defaultValue The value to return if the define is not set.
    * @return An expression containing the value of the define.
    */
-  public static macro function getDefine(key:String, defaultValue:String = null):haxe.macro.Expr
+  public static macro function getDefine(key:String, ?defaultValue:String):haxe.macro.Expr
   {
     var value = haxe.macro.Context.definedValue(key);
     if (value == null) value = defaultValue;

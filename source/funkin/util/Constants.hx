@@ -8,6 +8,7 @@ import lime.app.Application;
 /**
  * A store of unchanging, globally relevant values.
  */
+@:nullSafety
 class Constants
 {
   /**
