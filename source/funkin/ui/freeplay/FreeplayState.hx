@@ -773,7 +773,7 @@ class FreeplayState extends MusicBeatSubState
     randomCapsule.favIconBlurred.visible = false;
     randomCapsule.ranking.visible = false;
     randomCapsule.onConfirm = function() {
-      capsuleOnConfirmRandom(randomCapsule);
+      capsuleOnOpenRandom(randomCapsule);
     };
 
     if (fromCharSelect || noJumpIn) randomCapsule.forcePosition();
@@ -1912,7 +1912,10 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules.members[curSelected].selected = true; // set selected again, so it can run it's getter function to initialize movement
   }
 
-  function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
+  /**
+   * Called when hitting ENTER to open the instrumental choice for random capsule
+   */
+  function capsuleOnOpenRandom(randomCapsule:SongMenuItem):Void
   {
     trace('RANDOM SELECTED');
 
@@ -1937,6 +1940,26 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
+    var instrumentalChoices:Array<String> = ['default', 'random'];
+
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.x + 175, randomCapsule.y + 115, instrumentalChoices);
+    capsuleOptionsMenu.cameras = [funnyCam];
+    capsuleOptionsMenu.zIndex = 10000;
+    add(capsuleOptionsMenu);
+
+    capsuleOptionsMenu.onConfirm = function(instChoice:String) {
+      capsuleOnConfirmRandom(availableSongCapsules, instChoice);
+    }
+  }
+
+  /**
+   * Called when hitting ENTER on an instrumental choice for random capsule
+   */
+    function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
+  {
+    cleanupCapsuleOptionsMenu();
+    busy = true;
+
     var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
     var targetSongId:String = targetSongCap?.freeplayData?.data.id ?? 'unknown';
     var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
@@ -1948,7 +1971,6 @@ class FreeplayState extends MusicBeatSubState
     var targetSong:Song = targetSongNullable;
     var targetDifficultyId:String = currentDifficulty;
     var targetVariation:Null<String> = currentVariation;
-    trace('target song: ${targetSongId} (${targetVariation})');
 
     var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(targetDifficultyId, targetVariation);
     if (targetDifficulty == null)
@@ -1969,8 +1991,16 @@ class FreeplayState extends MusicBeatSubState
     curSelected = grpCapsules.members.indexOf(targetSongCap);
     changeSelection(0); // Trigger an update.
 
-    // Act like we hit Confirm on that song.
-    capsuleOnConfirmDefault(targetSongCap, targetInstrumentalId);
+    if (instChoice == 'random')
+    {
+      // Hit Confirm on that song with random instrumental
+      capsuleOnConfirmDefault(targetSongCap, targetInstrumentalId);
+    }
+    else
+    {
+      // Hit Confirm on that song with default instrumental
+      capsuleOnConfirmDefault(targetSongCap);
+    }
   }
 
   /**
