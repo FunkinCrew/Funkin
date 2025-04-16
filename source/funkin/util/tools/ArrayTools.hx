@@ -3,6 +3,7 @@ package funkin.util.tools;
 /**
  * A static extension which provides utility functions for Arrays.
  */
+@:nullSafety
 class ArrayTools
 {
   /*
