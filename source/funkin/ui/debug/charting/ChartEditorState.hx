@@ -3324,7 +3324,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handlePostUpdate();
   }
 
-
   /**
    * Function called when the game window loses focus.
   **/
