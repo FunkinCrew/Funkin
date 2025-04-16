@@ -1,6 +1,7 @@
 package funkin.util.macro;
 
 #if !display
+@:nullSafety
 class GitCommit
 {
   /**

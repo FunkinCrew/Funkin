@@ -10,6 +10,7 @@ import haxe.macro.Type.ClassType;
  * This code is a bitch glad Jason figured it out.
  * Based on code from CompileTime: https://github.com/jasononeil/compiletime
  */
+@:nullSafety
 class ClassMacro
 {
   /**

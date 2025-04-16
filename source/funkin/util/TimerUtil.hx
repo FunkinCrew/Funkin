@@ -3,6 +3,7 @@ package funkin.util;
 import funkin.util.tools.FloatTools;
 import haxe.Timer;
 
+@:nullSafety
 class TimerUtil
 {
   /**
@@ -29,7 +30,7 @@ class TimerUtil
    * @param precision The number of decimal places to round to.
    * @return The elapsed time in seconds as a string.
    */
-  public static function seconds(start:Float, ?end:Float, ?precision = 2):String
+  public static function seconds(start:Float, ?end:Float, precision:Int = 2):String
   {
     var seconds:Float = FloatTools.round(took(start, end), precision);
     return '${seconds} seconds';
