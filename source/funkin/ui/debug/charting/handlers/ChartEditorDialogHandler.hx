@@ -9,11 +9,7 @@ import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongRegistry;
 import funkin.input.Cursor;
-import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.song.Song;
-import funkin.data.stage.StageData;
+import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorCharacterIconSelectorMenu;
@@ -24,15 +20,11 @@ import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.util.Constants;
 import funkin.util.DateUtil;
 import funkin.util.FileUtil;
-import funkin.util.SerializerUtil;
-import funkin.util.SortUtil;
 import funkin.util.VersionUtil;
-import funkin.util.WindowUtil;
 import haxe.io.Path;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
-import haxe.ui.components.Link;
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
@@ -42,11 +34,8 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.Form;
 import haxe.ui.containers.menus.Menu;
-import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.notifications.NotificationType;
 import haxe.ui.RuntimeComponentBuilder;
 import thx.semver.Version;
 
@@ -633,7 +622,7 @@ class ChartEditorDialogHandler
     var inputStage:Null<DropDown> = dialog.findComponent('inputStage', DropDown);
     if (inputStage == null) throw 'Could not locate inputStage DropDown in Song Metadata dialog';
     inputStage.onChange = function(event:UIEvent) {
-      if (event.data == null && event.data.id == null) return;
+      if (event.data == null || event.data?.id == null) return;
       newSongMetadata.playData.stage = event.data.id;
     };
     var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(inputStage, newSongMetadata.playData.stage);
@@ -642,7 +631,7 @@ class ChartEditorDialogHandler
     var inputNoteStyle:Null<DropDown> = dialog.findComponent('inputNoteStyle', DropDown);
     if (inputNoteStyle == null) throw 'Could not locate inputNoteStyle DropDown in Song Metadata dialog';
     inputNoteStyle.onChange = function(event:UIEvent) {
-      if (event.data.id == null) return;
+      if (event.data?.id == null) return;
       newSongMetadata.playData.noteStyle = event.data.id;
     };
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, newSongMetadata.playData.noteStyle);
