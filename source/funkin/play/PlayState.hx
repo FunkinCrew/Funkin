@@ -1923,11 +1923,15 @@ class PlayState extends MusicBeatSubState
   #if mobile
   function initNoteHitbox()
   {
-    playerStrumline.setNoteSpacing(1.5);
+    final playerStrumlineScale:Float = (FlxG.height / FlxG.width) * 2.15;
+    final playerNoteSpacing:Float = (FlxG.height / FlxG.width) * 2.75;
+
+    playerStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
+    playerStrumline.setNoteSpacing(playerNoteSpacing);
     opponentStrumline.enterMiniMode(0.4);
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
-    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height * 1.3 - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    playerStrumline.y = Preferences.downscroll ? (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.y = Preferences.downscroll ? Constants.STRUMLINE_Y_OFFSET * 0.3 : FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET;
   }
   #end

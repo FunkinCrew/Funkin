@@ -12,6 +12,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
 import funkin.play.notes.notekind.NoteKindManager;
+import flixel.math.FlxPoint;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -118,6 +119,8 @@ class Strumline extends FlxSpriteGroup
 
   var noteSpacingScale:Float = 1;
 
+  public var strumlineScale(default, null):FlxPoint;
+
   #if FEATURE_GHOST_TAPPING
   var ghostTapTimer:Float = 0.0;
   #end
@@ -176,6 +179,7 @@ class Strumline extends FlxSpriteGroup
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
     this.add(this.background);
+    strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
 
     this.refresh();
 
@@ -196,6 +200,8 @@ class Strumline extends FlxSpriteGroup
     {
       heldKeys.push(false);
     }
+
+    strumlineScale.set(1, 1);
 
     // This MUST be true for children to update!
     this.active = true;
@@ -227,7 +233,7 @@ class Strumline extends FlxSpriteGroup
 
   override function get_width():Float
   {
-    return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale;
+    return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale * strumlineScale.x;
   }
 
   public override function update(elapsed:Float):Void
@@ -376,11 +382,16 @@ class Strumline extends FlxSpriteGroup
       if (obj != strumlineNotes) obj.visible = false;
     });
 
-    strumlineNotes.forEach(function(obj:flixel.FlxSprite):Void {
-      obj.scale.scale(scale);
-    });
+    this.strumlineScale.set(scale, scale);
+  }
 
-    setNoteSpacing(scale);
+  public function strumlineScaleCallback(Scale:FlxPoint)
+  {
+    strumlineNotes.forEach(function(note:StrumlineNote):Void {
+      var styleScale = noteStyle.getStrumlineScale();
+      note.scale.set(styleScale * Scale.x, styleScale * Scale.y);
+    });
+    setNoteSpacing(noteSpacingScale);
   }
 
   /**
@@ -863,6 +874,8 @@ class Strumline extends FlxSpriteGroup
     {
       var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
       noteSprite.setupNoteGraphic(noteKindStyle);
+      noteSprite.scale.scale(strumlineScale.x, strumlineScale.y);
+      noteSprite.updateHitbox();
 
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
@@ -1036,9 +1049,9 @@ class Strumline extends FlxSpriteGroup
     return switch (direction)
     {
       case NoteDirection.LEFT: 0;
-      case NoteDirection.DOWN: 0 + (1 * Strumline.NOTE_SPACING) * noteSpacingScale;
-      case NoteDirection.UP: 0 + (2 * Strumline.NOTE_SPACING) * noteSpacingScale;
-      case NoteDirection.RIGHT: 0 + (3 * Strumline.NOTE_SPACING) * noteSpacingScale;
+      case NoteDirection.DOWN: 0 + (1 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
+      case NoteDirection.UP: 0 + (2 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
+      case NoteDirection.RIGHT: 0 + (3 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
       default: 0;
     }
   }
