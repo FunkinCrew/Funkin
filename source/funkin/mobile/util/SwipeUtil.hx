@@ -7,6 +7,7 @@ import flixel.input.FlxSwipe;
 import funkin.mobile.util.TouchUtil;
 
 // Turning this into a library or something would be nice -Zack
+// NOTE DO NOT TOUCH THIS, I have a draft of a rework, and touching this would be a pain in the ass. -Zack
 
 /**
  * Utility class for handling swipe gestures in HaxeFlixel and dispatching signals for different swipe directions.
@@ -422,6 +423,7 @@ class SwipeUtil
       return false;
     }
 
+    // I think this is okay....
     final framerateRatio:Float = (1 / FlxG.elapsed) / FlxG.updateFramerate;
 
     // Apply frame-rate scaling using the ratio

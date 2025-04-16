@@ -109,10 +109,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var newIndex = 0;
 
     // Define unified input handlers
-    final inputUp:Bool = controls.UI_UP_P || (currentPage == Preferences && SwipeUtil.swipeUp);
-    final inputDown:Bool = controls.UI_DOWN_P || (currentPage == Preferences && SwipeUtil.swipeDown);
-    final inputLeft:Bool = controls.UI_LEFT_P || (currentPage == Preferences && SwipeUtil.swipeLeft);
-    final inputRight:Bool = controls.UI_RIGHT_P || (currentPage == Preferences && SwipeUtil.swipeRight);
+    final inputUp:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
+    final inputDown:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
+    final inputLeft:Bool = controls.UI_LEFT_P || SwipeUtil.swipeLeft;
+    final inputRight:Bool = controls.UI_RIGHT_P || SwipeUtil.swipeRight;
 
     // Keepin' these for keyboard/controller support on mobile platforms
     newIndex = switch (navControls)

@@ -11,6 +11,7 @@ import flixel.util.FlxTimer;
 import funkin.util.MathUtil;
 import funkin.graphics.shaders.Grayscale;
 import openfl.display.BlendMode;
+import flixel.FlxObject;
 import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -78,7 +79,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   var sparkleTimer:FlxTimer;
 
-  public var theActualHitbox:FlxSprite;
+  public var theActualHitbox:FlxObject;
 
   public function new(x:Float, y:Float)
   {
@@ -221,8 +222,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     setVisibleGrp(false);
 
-    theActualHitbox = new FlxSprite(capsule.x + 140,
-      capsule.y - 40).makeGraphic(Std.int(capsule.width / 1.4), Std.int(capsule.height / 1.4), FlxColor.TRANSPARENT);
+    theActualHitbox = new FlxObject(capsule.x + 160, capsule.y - 20, Math.round(capsule.width / 1.4), Math.round(capsule.height / 1.4));
     theActualHitbox.cameras = cameras;
     theActualHitbox.active = false;
   }
@@ -646,8 +646,8 @@ class SongMenuItem extends FlxSpriteGroup
       y = MathUtil.coolLerp(y, targetPos.y, 0.4);
     }
 
-    theActualHitbox.x = x;
-    theActualHitbox.y = y;
+    theActualHitbox.x = x + 100;
+    theActualHitbox.y = y + 20;
 
     super.update(elapsed);
   }

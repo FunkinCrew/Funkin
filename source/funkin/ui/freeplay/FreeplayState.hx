@@ -2,6 +2,7 @@ package funkin.ui.freeplay;
 
 import funkin.ui.freeplay.backcards.*;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxObject;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -152,7 +153,7 @@ class FreeplayState extends MusicBeatSubState
   var curPlaying:Bool = false;
 
   var dj:Null<FreeplayDJ> = null;
-  #if mobile
+  #if TOUCH_CONTROLS
   var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358);
   #end
 
@@ -217,7 +218,6 @@ class FreeplayState extends MusicBeatSubState
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
-    // shit needs re-calculating.,.,.,.
     CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
     currentCharacterId = params?.character ?? rememberedCharacterId;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
@@ -624,7 +624,7 @@ class FreeplayState extends MusicBeatSubState
           });
       }
 
-      FlxTween.tween(grpDifficulties, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.6, {ease: FlxEase.quartOut});
+      FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
 
       if (diffSelLeft != null) diffSelLeft.visible = true;
       if (diffSelRight != null) diffSelRight.visible = true;
@@ -708,7 +708,7 @@ class FreeplayState extends MusicBeatSubState
     rankBg.alpha = 0;
 
     #if mobile
-    addBackButton(FlxG.width, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
 
     FlxTween.tween(backButton, {x: FlxG.width - 456}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
     #end
@@ -728,6 +728,8 @@ class FreeplayState extends MusicBeatSubState
     var pointer = new funkin.mobile.ui.TouchPointer.TouchPointerGrp(0, 0);
     pointer.cameras = [funnyCam];
     add(pointer);
+
+    SwipeUtil.swipeThreshold = Math.round(grpCapsules.members[0].height / 1.4);
     #end
   }
 
@@ -1518,9 +1520,13 @@ class FreeplayState extends MusicBeatSubState
     {
       for (i in 0...grpCapsules.members.length)
       {
-        if (_toggled) break;
+        if (_toggled)
+        {
+          _toggled = false;
+          break;
+        }
 
-        final capsuleHit:FlxSprite = grpCapsules.members[i].theActualHitbox;
+        final capsuleHit:FlxObject = grpCapsules.members[i].theActualHitbox;
         if (!TouchUtil.overlaps(capsuleHit)) continue;
 
         (i == curSelected) ? grpCapsules.members[i].onConfirm() : changeSelection(i - curSelected);
@@ -1531,7 +1537,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (TouchUtil.justPressed)
     {
-      final selected:Null<FlxSprite> = grpCapsules.members[curSelected].theActualHitbox;
+      final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
       _pressedOn = (selected != null) && TouchUtil.overlaps(selected);
     }
 
@@ -1638,29 +1644,31 @@ class FreeplayState extends MusicBeatSubState
       #end
     }
     #if TOUCH_CONTROLS
-    if (diffSelLeft != null && diffSelLeft.pressed && !TouchUtil.pressed)
+    if (TouchUtil.justReleased)
     {
-      diffSelLeft.setPress(false);
+      diffSelRight?.setPress(false);
+      diffSelLeft?.setPress(false);
     }
-    if (diffSelRight != null && diffSelRight.pressed && !TouchUtil.pressed)
+    if (diffSelLeft?.pressed && !TouchUtil.pressed)
     {
-      diffSelRight.setPress(false);
+      diffSelLeft?.setPress(false);
+    }
+    if (diffSelRight?.pressed && !TouchUtil.pressed)
+    {
+      diffSelRight?.setPress(false);
     }
 
     if (TouchUtil.pressed || TouchUtil.justReleased)
     {
       // Favorite
-      final selected:Null<FlxSprite> = grpCapsules.members[curSelected].theActualHitbox;
+      final selected:Null<FlxObject> = grpCapsules.members[curSelected].theActualHitbox;
       _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected);
 
-      if (_pressedOn)
+      if (_pressedOn && TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 700)
       {
-        if (TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress >= 700)
-        {
-          _toggled = true;
-          _pressedOn = false;
-          favoriteSong();
-        }
+        _toggled = true;
+        _pressedOn = false;
+        favoriteSong();
       }
 
       for (diff in grpDifficulties.group.members)
@@ -1730,7 +1738,7 @@ class FreeplayState extends MusicBeatSubState
         break;
       }
     }
-    FlxG.mouse.visible = true;
+    // FlxG.mouse.visible = true;
     #end
 
     if (controls.BACK)
@@ -1849,7 +1857,7 @@ class FreeplayState extends MusicBeatSubState
       final newX = (change > 0) ? 500 : -320;
 
       busy = true;
-      FlxTween.tween(diff, {x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.05,
+      FlxTween.tween(diff, {x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.1,
         {
           ease: FlxEase.circInOut,
           onComplete: function(_) {
@@ -1928,12 +1936,13 @@ class FreeplayState extends MusicBeatSubState
       final isCurrentDiff:Bool = diffSprite.difficultyId == currentDifficulty;
 
       if (change == 0) diffSprite.visible = isCurrentDiff;
+
       if (!isCurrentDiff || change == 0) continue;
-        FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.02, {ease: FlxEase.circInOut});
 
       diffSprite.x = (change > 0) ? -320 : 500;
+      diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
 
-      FlxTween.tween(diffSprite, {x: 90}, 0.1, {ease: FlxEase.circInOut});
+      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.1, {ease: FlxEase.circInOut});
 
       diffSprite.offset.y += 5;
       diffSprite.alpha = 0.5;
@@ -2250,8 +2259,7 @@ class FreeplayState extends MusicBeatSubState
       capsule.selected = index == curSelected + 1;
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = (CUTOUT_WIDTH * SONGS_POS_MULTI) + (270 + (60 * (Math.sin(index - curSelected))));
-
+      capsule.targetPos.x = (270 + (60 * (Math.sin(index - curSelected)))) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
@@ -2663,7 +2671,9 @@ class FreeplaySongData
 typedef FreeplayStateParams =
 {
   ?character:String,
+
   ?fromCharSelect:Bool,
+
   ?fromResults:FromResultsParams,
 };
 

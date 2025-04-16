@@ -11,6 +11,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
+import funkin.mobile.util.SwipeUtil;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
@@ -184,6 +185,7 @@ class MainMenuState extends MusicBeatState
     #if TOUCH_CONTROLS
     camFollow.setPosition(640, 360);
     FlxG.camera.snapToTarget();
+    SwipeUtil.swipeThreshold = menuItems.members[0].height;
     #end
 
     funkin.mobile.ui.TouchPointer.TouchPointerGrp.load();
@@ -225,6 +227,7 @@ class MainMenuState extends MusicBeatState
   override function closeSubState():Void
   {
     magenta.visible = false;
+    SwipeUtil.swipeThreshold = menuItems.members[0].height;
 
     super.closeSubState();
   }

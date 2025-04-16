@@ -528,6 +528,26 @@ class PauseSubState extends MusicBeatSubState
     clearAndAddMenuEntries();
     updateMetadataText();
     changeSelection();
+    updateSwipeThreshold();
+  }
+
+  function updateSwipeThreshold():Void
+  {
+    final items = menuEntryText.members;
+    final count:Int = items.length - 1;
+
+    if (count <= 0)
+    {
+      SwipeUtil.swipeThreshold = 80;
+      return;
+    }
+
+    var totalDistance:Float = 0;
+
+    for (i in 0...items.length - 1)
+      totalDistance += Math.abs(items[i + 1].y - items[i].y);
+
+    SwipeUtil.swipeThreshold = Math.ceil((totalDistance / count) * 0.9); // safety measure
   }
 
   /**
@@ -604,6 +624,11 @@ class PauseSubState extends MusicBeatSubState
         var text:AtlasText = new AtlasText(0, yPos, entry.text, AtlasFont.BOLD);
         text.scrollFactor.set(0, 0);
         text.alpha = 0;
+        for (letter in text)
+        {
+          letter.width *= 2;
+          letter.height *= 2;
+        }
         menuEntryText.add(text);
 
         entry.sprite = text;
