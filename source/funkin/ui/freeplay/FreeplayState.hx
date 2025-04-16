@@ -1937,14 +1937,40 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+    var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+    var targetSongId:String = targetSongCap?.freeplayData?.data.id ?? 'unknown';
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    if (targetSongNullable == null)
+    {
+      FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      return;
+    }
+    var targetSong:Song = targetSongNullable;
+    var targetDifficultyId:String = currentDifficulty;
+    var targetVariation:Null<String> = currentVariation;
+    trace('target song: ${targetSongId} (${targetVariation})');
+
+    var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(targetDifficultyId, targetVariation);
+    if (targetDifficulty == null)
+    {
+      FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      return;
+    }
+
+    var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+    var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
+      targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+
+    // Choose a random instrumental
+    var instrumentalIds:Array<String> = [baseInstrumentalId].concat(altInstrumentalIds);
+    var targetInstrumentalId:String = FlxG.random.getObject(instrumentalIds);
 
     // Seeing if I can do an animation...
-    curSelected = grpCapsules.members.indexOf(targetSong);
+    curSelected = grpCapsules.members.indexOf(targetSongCap);
     changeSelection(0); // Trigger an update.
 
     // Act like we hit Confirm on that song.
-    capsuleOnConfirmDefault(targetSong);
+    capsuleOnConfirmDefault(targetSongCap, targetInstrumentalId);
   }
 
   /**
