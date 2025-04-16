@@ -549,7 +549,7 @@ class FreeplayState extends MusicBeatSubState
     add(fnfFreeplay);
     add(ostName);
 
-    if (PlayerRegistry.instance.hasNewCharacter())
+    if (PlayerRegistry.instance.countUnlockedCharacters() > 1)
     {
       add(charSelectHint);
     }
