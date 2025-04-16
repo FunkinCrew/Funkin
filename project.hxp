@@ -320,12 +320,6 @@ class Project extends HXProject {
 	 */
 	static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
 
-	/**
-	 * `-DLITE_VERSION`
-	 * If this flag is enabled, lite mobile version will be enabled.
-	 */
-	static final LITE_VERSION:FeatureFlag = "LITE_VERSION";
-
 	//
 	// CONFIGURATION FUNCTIONS
 	//
