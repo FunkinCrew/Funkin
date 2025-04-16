@@ -54,11 +54,16 @@ class Project extends HXProject {
 	 */
 	static final PACKAGE_NAME:String = "me.funkin.fnf";
 
-	/**
-	 * The fully qualified class path for the entry point class to execute when launching the game.
-	 * It's where `public static function main():Void` goes.
-	 */
-	static final MAIN_CLASS:String = "Main";
+  /**
+   * The build's number and version code.
+   */
+  static final BUILD_NUMBER:Int = 1;
+
+  /**
+   * The fully qualified class path for the entry point class to execute when launching the game.
+   * It's where `public static function main():Void` goes.
+   */
+  static final MAIN_CLASS:String = "Main";
 
 	/**
 	 * The company name for the game.
@@ -90,11 +95,6 @@ class Project extends HXProject {
 	 */
 	static final EXCLUDE_ASSETS_NATIVE:Array<String> = ["*.mp3"];
 
-	//
-	// FEATURE FLAGS
-	// Inverse feature flags are automatically populated.
-	//
-
 	/**
 	 * `-DGITHUB_BUILD`
 	 * If this flag is enabled, the game will use the configuration used by GitHub Actions
@@ -104,6 +104,16 @@ class Project extends HXProject {
 	 * even when the game is built in release mode for performance reasons.
 	 */
 	static final GITHUB_BUILD:FeatureFlag = "GITHUB_BUILD";
+
+  /**
+   * The app's localization languages.
+   */
+  static final LANGUAGES:Array<String> = ["en"];
+
+  //
+  // FEATURE FLAGS
+  // Inverse feature flags are automatically populated.
+  //
 
 	/**
 	 * `-DREDIRECT_ASSETS_FOLDER`
@@ -133,11 +143,6 @@ class Project extends HXProject {
 	 * Whether to embed all asset libraries into the executable.
 	 */
 	static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
-
-  /**
-	 * `-DBUNDLE_APP`
-   */
-	static final BUNDLE_APP:FeatureFlag = "BUNDLE_APP";
 
   /**
    * `-DHARDCODED_CREDITS`
@@ -358,14 +363,20 @@ class Project extends HXProject {
       if (isRelease())
       {
         keystore = new Keystore();
-        keystore.path = './alias_name.keystore';
+        keystore.path = "";
+        keystore.alias = "";
         keystore.password = "";
 
-        if (BUNDLE_APP.isEnabled(this)) setenv('ANDROID_GRADLE_TASK', 'bundleRelease');
-      }
-      else if (BUNDLE_APP.isEnabled(this))
-      {
-        info("WARNING: Bundle Builds aren't available for debug, this build will export an APK instead.");
+        Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
+
+        final permissionsConfig:Array<String> = ['<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />', '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'];
+
+        final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
+
+        if (xmlChildren != null)
+          config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
+        else
+          config.get('android.manifest').xmlChildren = permissionsConfig;
       }
     }
   }
@@ -417,8 +428,11 @@ class Project extends HXProject {
     this.preBuildCallbacks.push(buildHaxeCLICommand(PREBUILD_HX));
     this.postBuildCallbacks.push(buildHaxeCLICommand(POSTBUILD_HX));
 
-		// TODO: Should we provide this?
-		// this.meta.buildNumber = 0;
+		// set the app' local languages.
+    this.languages = LANGUAGES;
+
+    // Set the build number, required for publishing the game to mobile stores.
+    this.meta.buildNumber = Std.string(BUILD_NUMBER);
 
 		// These values are only used by the SWF target I think.
 		// this.app.path
@@ -576,12 +590,12 @@ class Project extends HXProject {
 		// You can explicitly override any of these.
 		// For example, `-DGITHUB_BUILD` or `-DNO_HARDCODED_CREDITS`
 
-		// Should be false unless explicitly requested.
-		GITHUB_BUILD.apply(this, false);
-		FEATURE_GHOST_TAPPING.apply(this, false);
-		EXCLUDE_ARMV7.apply(this, false);
-		LITE_VERSION.apply(this, false);
-		BUNDLE_APP.apply(this, false);
+    // Should be false unless explicitly requested.
+    GITHUB_BUILD.apply(this, false);
+    FEATURE_NEWGROUNDS.apply(this, false);
+    FEATURE_GHOST_TAPPING.apply(this, false);
+    EXCLUDE_ARMV7.apply(this, false);
+    LITE_VERSION.apply(this, false);
 
 		// Should be true unless explicitly requested.
 		HARDCODED_CREDITS.apply(this, true);
@@ -843,45 +857,46 @@ class Project extends HXProject {
 			info('Including assets alongside executable...');
 		}
 
-		// Default asset library
-		var shouldPreloadDefault = true;
-		addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
-		addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed);
+    // Default asset library
+    var shouldPreloadDefault = true;
+    addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
+    addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
 
-		// Font assets
-		var shouldEmbedFonts = true;
-		addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts);
+    // Font assets
+    var shouldEmbedFonts = true;
+    addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts, "assets");
 
-		// Shared asset libraries
-		addAssetLibrary("songs", shouldEmbed, shouldPreload);
-		addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("shared", shouldEmbed, shouldPreload);
-		addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed);
-		if (FEATURE_VIDEO_PLAYBACK.isEnabled(this)) {
-			var shouldEmbedVideos = false;
-			addAssetLibrary("videos", shouldEmbedVideos, shouldPreload);
-			addAssetPath("assets/videos", "assets/videos", "videos", ["*"], exclude, shouldEmbedVideos);
-		}
+    // Shared asset libraries
+    addAssetLibrary("songs", shouldEmbed, shouldPreload);
+    addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("shared", shouldEmbed, shouldPreload);
+    addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed, "assets");
+    if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    {
+      var shouldEmbedVideos = false;
+      addAssetLibrary("videos", shouldEmbedVideos, shouldPreload);
+      addAssetPath("assets/videos", "assets/videos", "videos", ["*"], exclude, shouldEmbedVideos, "assets");
+    }
 
-		// Level asset libraries
-		addAssetLibrary("tutorial", shouldEmbed, shouldPreload);
-		addAssetPath("assets/tutorial", "assets/tutorial", "tutorial", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("week1", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("week2", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week2", "assets/week2", "week2", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("week3", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week3", "assets/week3", "week3", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("week4", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week4", "assets/week4", "week4", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("week5", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week5", "assets/week5", "week5", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("week6", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week6", "assets/week6", "week6", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("week7", shouldEmbed, shouldPreload);
-		addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed);
-		addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
-		addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed);
+    // Level asset libraries
+    addAssetLibrary("tutorial", shouldEmbed, shouldPreload);
+    addAssetPath("assets/tutorial", "assets/tutorial", "tutorial", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("week1", shouldEmbed, shouldPreload);
+    addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("week2", shouldEmbed, shouldPreload);
+    addAssetPath("assets/week2", "assets/week2", "week2", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("week3", shouldEmbed, shouldPreload);
+    addAssetPath("assets/week3", "assets/week3", "week3", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("week4", shouldEmbed, shouldPreload);
+    addAssetPath("assets/week4", "assets/week4", "week4", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("week5", shouldEmbed, shouldPreload);
+    addAssetPath("assets/week5", "assets/week5", "week5", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("week6", shouldEmbed, shouldPreload);
+    addAssetPath("assets/week6", "assets/week6", "week6", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("week7", shouldEmbed, shouldPreload);
+    addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
+    addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
 
 		// Art asset library (where README and CHANGELOG pull from)
 		var shouldEmbedArt = false;
@@ -998,7 +1013,13 @@ class Project extends HXProject {
 		return !isDebug();
 	}
 
-  public function getHaxedef(name:String):Null<Dynamic> {
+  public function isBundle():Bool
+  {
+    return this.targetFlags.exists("bundle") && isAndroid();
+  }
+
+  public function getHaxedef(name:String):Null<Dynamic>
+  {
     return this.haxedefs.get(name);
   }
 
@@ -1052,35 +1073,45 @@ class Project extends HXProject {
 		this.icons.push(new Icon(icon, size));
 	}
 
-	/**
-	 * Add an asset to the game build.
-	 * @param path The path the asset is located at.
-	 * @param rename The path the asset should be placed.
-	 * @param library The asset library to add the asset to. `null` = "default"
-	 * @param embed Whether to embed the asset in the executable.
-	 */
-	public function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false):Void {
-		// path, rename, type, embed, setDefaults
-		var asset = new Asset(path, rename, null, embed, true);
-		@:nullSafety(Off)
-		{
-			asset.library = library ?? "default";
-		}
-		this.assets.push(asset);
-	}
+  /**
+   * Add an asset to the game build.
+   * @param path The path the asset is located at.
+   * @param rename The path the asset should be placed.
+   * @param library The asset library to add the asset to. `null` = "default"
+   * @param embed Whether to embed the asset in the executable.
+   * @param padName The name of the Play Assets Delivery that this asset will be added to. (Android only)
+   */
+  public function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false, ?padName:String):Void
+  {
+    // path, rename, type, embed, setDefaults
+    var asset = new Asset(path, rename, null, embed, true);
+    @:nullSafety(Off)
+    {
+      asset.library = library ?? "default";
+    }
 
-	/**
-	 * Add an entire path of assets to the game build.
-	 * @param path The path the assets are located at.
-	 * @param rename The path the assets should be placed.
-	 * @param library The asset library to add the assets to. `null` = "default"
-	 * @param include An optional array to include specific asset names.
-	 * @param exclude An optional array to exclude specific asset names.
-	 * @param embed Whether to embed the assets in the executable.
-	 */
-	public function addAssetPath(path:String, ?rename:String, library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false):Void {
-		// Argument parsing.
-		if (path == "") return;
+    if (padName != null && isBundle())
+    {
+      asset.deliveryPackName = padName;
+    }
+
+    this.assets.push(asset);
+  }
+
+  /**
+   * Add an entire path of assets to the game build.
+   * @param path The path the assets are located at.
+   * @param rename The path the assets should be placed.
+   * @param library The asset library to add the assets to. `null` = "default"
+   * @param include An optional array to include specific asset names.
+   * @param exclude An optional array to exclude specific asset names.
+   * @param embed Whether to embed the assets in the executable.
+   * @param padName The name of the Play Assets Delivery that this asset path will be added to. (Android only)
+   */
+  public function addAssetPath(path:String, ?rename:String, library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false, ?padName:String):Void
+  {
+    // Argument parsing.
+    if (path == "") return;
 
 		if (include == null) include = [];
 
@@ -1102,11 +1133,11 @@ class Project extends HXProject {
 			if (sys.FileSystem.isDirectory('${path}/${file}')) {
 				// Attempt to recursively add all assets in the directory.
 				if (this.filter(file, ["*"], exclude)) {
-					addAssetPath('${path}/${file}', '${targetPath}${file}', library, include, exclude, embed);
+					addAssetPath('${path}/${file}', '${targetPath}${file}', library, include, exclude, embed, padName);
 				}
 			} else {
 				if (this.filter(file, include, exclude)) {
-					addAsset('${path}/${file}', '${targetPath}${file}', library, embed);
+					addAsset('${path}/${file}', '${targetPath}${file}', library, embed, padName);
 				}
 			}
 		}
