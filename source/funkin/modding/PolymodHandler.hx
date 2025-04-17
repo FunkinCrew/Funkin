@@ -250,6 +250,9 @@ class PolymodHandler
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
 
+    // `funkin.util.FileUtil` has unrestricted access to the file system.
+    Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`

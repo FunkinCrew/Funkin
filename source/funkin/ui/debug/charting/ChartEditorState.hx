@@ -2361,7 +2361,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
-      if (!FileUtil.doesFileExist(chartPath))
+      if (!FileUtil.fileExists(chartPath))
       {
         trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
         menuItemRecentChart.disabled = true;
@@ -3230,7 +3230,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?
     var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
-    WindowUtil.openFolder(absoluteBackupsPath);
+    FileUtil.openFolder(absoluteBackupsPath);
     return true;
     #else
     trace('No file system access, cannot open backups folder.');

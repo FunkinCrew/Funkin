@@ -35,7 +35,7 @@ class WelcomeDialog extends Dialog
     {
       trace(file);
 
-      if (!FileUtil.doesFileExist(file)) continue; // whats the point of loading something that doesnt exist
+      if (!FileUtil.fileExists(file)) continue; // whats the point of loading something that doesnt exist
 
       var patj = new haxe.io.Path(file);
 
