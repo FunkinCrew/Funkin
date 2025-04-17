@@ -135,6 +135,8 @@ class Strumline extends FlxSpriteGroup
 
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
+  final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) || #end Preferences.downscroll;
+
   /**
    * The note data for the song. Should NOT be altered after the song starts,
    * so we can easily rewind.
@@ -362,7 +364,7 @@ class Strumline extends FlxSpriteGroup
       notesVwoosh.add(note);
 
       var targetY:Float = FlxG.height + note.y;
-      if (Preferences.downscroll) targetY = 0 - note.height;
+      if (isDownscroll) targetY = 0 - note.height;
       FlxTween.tween(note, {y: targetY}, 0.5,
         {
           ease: FlxEase.expoIn,
@@ -383,7 +385,7 @@ class Strumline extends FlxSpriteGroup
       holdNotesVwoosh.add(holdNote);
 
       var targetY:Float = FlxG.height + holdNote.y;
-      if (Preferences.downscroll) targetY = 0 - holdNote.height;
+      if (isDownscroll) targetY = 0 - holdNote.height;
       FlxTween.tween(holdNote, {y: targetY}, 0.5,
         {
           ease: FlxEase.expoIn,
@@ -451,7 +453,7 @@ class Strumline extends FlxSpriteGroup
     var vwoosh:Float = 1.0;
 
     return
-      Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (Preferences.downscroll ? 1 : -1);
+      Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * vwoosh * (isDownscroll ? 1 : -1);
   }
 
   function updateNotes():Void
@@ -502,7 +504,7 @@ class Strumline extends FlxSpriteGroup
       if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime, vwoosh);
 
       // If the note is miss
-      var isOffscreen = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
+      var isOffscreen = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
       if (note.handledMiss && isOffscreen)
       {
         killNote(note);
@@ -580,7 +582,7 @@ class Strumline extends FlxSpriteGroup
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (isDownscroll)
           {
             holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
           }
@@ -615,7 +617,7 @@ class Strumline extends FlxSpriteGroup
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (isDownscroll)
           {
             holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
           }
@@ -633,7 +635,7 @@ class Strumline extends FlxSpriteGroup
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (isDownscroll)
           {
             holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime, vwoosh) - holdNote.height + STRUMLINE_SIZE / 2;
           }

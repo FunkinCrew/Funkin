@@ -1693,6 +1693,10 @@ class PlayState extends MusicBeatSubState
   function initHealthBar():Void
   {
     var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
+    #if mobile
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) healthBarYPos = FlxG.height * 0.1;
+    #end
+
     healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
@@ -1958,7 +1962,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.enterMiniMode(0.4 * amplification);
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
-    playerStrumline.y = Preferences.downscroll ? (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    playerStrumline.y = (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
     if (currentChart.noteStyle != "pixel")
     {
       #if android playerStrumline.y += 10; #end
@@ -1967,7 +1971,7 @@ class PlayState extends MusicBeatSubState
     {
       playerStrumline.y -= 10;
     }
-    opponentStrumline.y = Preferences.downscroll ? Constants.STRUMLINE_Y_OFFSET * 0.3 : FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET;
+    opponentStrumline.y = Constants.STRUMLINE_Y_OFFSET * 0.3;
     opponentStrumline.x -= 30;
   }
   #end
