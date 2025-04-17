@@ -160,9 +160,6 @@ class StoryMenuState extends MusicBeatState
 
     updateData();
 
-    // Explicitly define the background color.
-    this.bgColor = FlxColor.BLACK;
-
     levelTitles = new FlxTypedGroup<LevelTitle>();
     levelTitles.zIndex = 15;
     add(levelTitles);
