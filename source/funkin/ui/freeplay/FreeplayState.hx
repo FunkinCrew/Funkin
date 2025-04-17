@@ -703,8 +703,20 @@ class FreeplayState extends MusicBeatSubState
 
     if (onlyIfChanged)
     {
-      // == performs equality by reference
-      if (tempSongs.isEqualUnordered(currentFilteredSongs)) return;
+      if (tempSongs.isEqualUnordered(currentFilteredSongs))
+      {
+        // If the song list is the same, we don't need to generate a new list.
+
+        // Instead, we just apply the jump-in animation to the existing capsules.
+        for (capsule in grpCapsules.members)
+        {
+          capsule.initPosition(FlxG.width, 0);
+          capsule.initJumpIn(0, force);
+        }
+
+        // Stop processing.
+        return;
+      }
     }
 
     // Only now do we know that the filter is actually changing.
@@ -721,7 +733,8 @@ class FreeplayState extends MusicBeatSubState
 
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
-    randomCapsule.init(FlxG.width, 0, null, styleData);
+    randomCapsule.initPosition(FlxG.width, 0);
+    randomCapsule.initData(null, styleData);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
     randomCapsule.alpha = 0;
@@ -736,7 +749,8 @@ class FreeplayState extends MusicBeatSubState
     if (fromCharSelect) randomCapsule.forcePosition();
     else
     {
-      randomCapsule.initJumpIn(0, force);
+      // randomCapsule.initJumpIn(0, force);
+      randomCapsule.forcePosition();
     }
 
     var hsvShader:HSVShader = new HSVShader();
@@ -750,7 +764,8 @@ class FreeplayState extends MusicBeatSubState
 
       var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
 
-      funnyMenu.init(FlxG.width, 0, tempSong, styleData);
+      funnyMenu.initPosition(FlxG.width, 0);
+      funnyMenu.initData(tempSong, styleData);
       funnyMenu.onConfirm = function() {
         capsuleOnOpenDefault(funnyMenu);
       };
@@ -760,7 +775,11 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.capsule.alpha = 0.5;
       funnyMenu.hsvShader = hsvShader;
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
+
+      // This stops the bounce-in animation.
       funnyMenu.forcePosition();
+
+      // funnyMenu.initJumpIn(0, force);
 
       grpCapsules.add(funnyMenu);
     }
@@ -770,7 +789,6 @@ class FreeplayState extends MusicBeatSubState
     rememberSelection();
     changeSelection();
     refreshCapsuleDisplays();
-
   }
 
   /**
@@ -1566,7 +1584,6 @@ class FreeplayState extends MusicBeatSubState
       if (dj != null) dj.resetAFKTimer();
       changeDiff(1);
       generateSongList(currentFilter, true, false);
-
     }
 
     if (controls.BACK && !busy)
@@ -1795,7 +1812,7 @@ class FreeplayState extends MusicBeatSubState
 
         if (songCapsule.freeplayData != null)
         {
-          songCapsule.init(null, null, songCapsule.freeplayData);
+          songCapsule.initData(songCapsule.freeplayData);
           songCapsule.checkClip();
         }
       }
