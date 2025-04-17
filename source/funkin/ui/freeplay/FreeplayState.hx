@@ -735,7 +735,9 @@ class FreeplayState extends MusicBeatSubState
 
     if (fromCharSelect) randomCapsule.forcePosition();
     else
+    {
       randomCapsule.initJumpIn(0, force);
+    }
 
     var hsvShader:HSVShader = new HSVShader();
     randomCapsule.hsvShader = hsvShader;
@@ -1557,13 +1559,14 @@ class FreeplayState extends MusicBeatSubState
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(-1);
-      generateSongList(currentFilter, true);
+      generateSongList(currentFilter, true, false);
     }
     if (controls.UI_RIGHT_P)
     {
       if (dj != null) dj.resetAFKTimer();
       changeDiff(1);
-      generateSongList(currentFilter, true);
+      generateSongList(currentFilter, true, false);
+
     }
 
     if (controls.BACK && !busy)
