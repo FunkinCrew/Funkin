@@ -57,11 +57,6 @@ class ControlsSchemeMenu extends MusicBeatSubState
   var itemNavHitbox:FunkinSprite;
 
   /**
-   * An object used for selecting the current hitbox scheme's option.
-   */
-  var optionNavHitbox:FunkinSprite;
-
-  /**
    * Returns true, if player is currently in hitbox demonstration.
    */
   var isInDemo:Bool;
@@ -172,15 +167,6 @@ class ControlsSchemeMenu extends MusicBeatSubState
     {
       final hitboxShowcase:HitboxShowcase = new HitboxShowcase(0, 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
       hitboxShowcase.x = Math.floor(FlxG.width * -0.16 + (1500 * (i * FullScreenScaleMode.windowScale.x)));
-
-      switch (availableSchemes[i])
-      {
-        case FunkinHitbox.FunkinHitboxControlSchemes.Arrows:
-          hitboxShowcase.createOption("Downscroll", Preferences.downscroll, function(value:Bool) {
-            Preferences.downscroll = value;
-          });
-      }
-
       hitboxShowcases.add(hitboxShowcase);
     }
 
@@ -193,13 +179,6 @@ class ControlsSchemeMenu extends MusicBeatSubState
     itemNavHitbox.screenCenter(Y);
     itemNavHitbox.visible = false;
     add(itemNavHitbox);
-
-    optionNavHitbox = new FunkinSprite(FlxG.width * 0.312,
-      FlxG.height * 0.815).makeSolidColor(Std.int(FlxG.width * 0.2), Std.int(FlxG.height * 0.05), FlxColor.GREEN);
-    optionNavHitbox.cameras = [camButtons];
-    optionNavHitbox.updateHitbox();
-    optionNavHitbox.visible = false;
-    add(optionNavHitbox);
   }
 
   /**
@@ -345,10 +324,6 @@ class ControlsSchemeMenu extends MusicBeatSubState
       hitboxShowcases.members[currentIndex].onPress();
 
       currentButton.busy = true;
-    }
-    else if (TouchUtil.justPressed && TouchUtil.overlapsComplex(optionNavHitbox) && hitboxShowcases.members[currentIndex].checkbox != null)
-    {
-      hitboxShowcases.members[currentIndex].checkbox.text.callback();
     }
   }
 

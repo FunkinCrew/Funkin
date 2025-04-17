@@ -16,11 +16,6 @@ import funkin.util.MathUtil;
 class HitboxShowcase extends FlxSpriteGroup
 {
   /**
-   * Hitbox showcase's checkbox option.
-   */
-  public var checkbox:Null<HitboxOptionButton>;
-
-  /**
    * An array of values for lerping object's alpha.
    */
   static final HITBOX_SHOWCASE_ALPHA:Array<Float> = [0.3, 1];
@@ -91,20 +86,6 @@ class HitboxShowcase extends FlxSpriteGroup
     });
     hitbox.active = false;
     add(hitbox);
-  }
-
-  /**
-   * Creates a HitboxOptionButton object.
-   * @param name Option's name.
-   * @param defaultValue Option's default value.
-   * @param callback A callback function that will be triggered when the HitboxOptionButton object is clicked.
-   */
-  public function createOption(name:String = "", defaultValue:Bool = false, callback:Bool->Void):Void
-  {
-    if (checkbox != null) return;
-
-    checkbox = new HitboxOptionButton(name, width / 2 - width / 4, height + 50, defaultValue, callback);
-    add(checkbox);
   }
 
   /**
