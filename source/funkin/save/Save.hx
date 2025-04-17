@@ -660,6 +660,10 @@ class Save
 
   public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
   {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #end
+
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
@@ -850,6 +854,10 @@ class Save
    */
   public function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
   {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #end
+
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];

@@ -323,6 +323,12 @@ class Project extends HXProject {
 	 */
 	static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
 
+	/**
+	 * `-DUNLOCK_EVERYTHING`
+	 * If this flag is enabled, all the unlockable features will be unlocked.
+	 */
+	static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
+
 
 	static var envConfig:Null<Map<String, Dynamic>> = null;
 
@@ -656,6 +662,9 @@ class Project extends HXProject {
 
     // Should be true only on debug mobile builds.
     TESTING_ADS.apply(this, (isTest() || isDebug()) && FEATURE_ADMOB_ADS.isEnabled(this));
+
+    // For now needed only on mobile for testing.
+    UNLOCK_EVERYTHING.apply(this, isMobile());
   }
 
   /**
