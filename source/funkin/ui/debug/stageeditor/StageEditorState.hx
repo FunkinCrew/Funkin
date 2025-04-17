@@ -45,6 +45,7 @@ import funkin.audio.FunkinSound;
 import haxe.ui.notifications.NotificationType;
 import haxe.ui.notifications.NotificationManager;
 import funkin.util.logging.CrashHandler;
+import funkin.graphics.shaders.Grayscale;
 
 /**
  * Da Stage Editor woo!!
@@ -110,7 +111,9 @@ class StageEditorState extends UIState
   var menubarItemViewCamBounds:MenuCheckBox; // view cam bounds check
 
   var menubarMenuWindow:Menu;
-  var menubarItemWindowObject:MenuCheckBox;
+  var menubarItemWindowObjectGraphic:MenuCheckBox;
+  var menubarItemWindowObjectAnims:MenuCheckBox;
+  var menubarItemWindowObjectProps:MenuCheckBox;
   var menubarItemWindowCharacter:MenuCheckBox;
   var menubarItemWindowStage:MenuCheckBox;
 
@@ -133,8 +136,11 @@ class StageEditorState extends UIState
 
   function set_selectedSprite(value:StageEditorObject)
   {
+    selectedSprite?.selectedShader.setAmount(0);
     this.selectedSprite = value;
-    updateDialog(StageEditorDialogType.OBJECT);
+    updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+    updateDialog(StageEditorDialogType.OBJECT_ANIMS);
+    updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
 
     if (selectedSprite != null)
     {
@@ -251,6 +257,7 @@ class StageEditorState extends UIState
 
   public var bitmaps:Map<String, BitmapData> = []; // used for optimizing the file size!!!
 
+  var charDeselectShader:Grayscale = new Grayscale();
   var floorLines:Array<FlxSprite> = [];
   var posCircles:Array<FlxShapeCircle> = [];
   var camFields:FlxTypedGroup<FlxSprite>;
@@ -304,8 +311,6 @@ class StageEditorState extends UIState
 
     persistentUpdate = false;
 
-    // FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-
     bg = FlxGridOverlay.create(10, 10);
     bg.scrollFactor.set();
     add(bg);
@@ -322,7 +327,7 @@ class StageEditorState extends UIState
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
 
-    // group shit + assets
+    // Characters setup.
     var gf = CharacterDataParser.fetchCharacter("gf", true);
     gf.characterType = CharacterType.GF;
     var dad = CharacterDataParser.fetchCharacter("dad", true);
@@ -338,16 +343,12 @@ class StageEditorState extends UIState
     dad.updateHitbox();
     bf.updateHitbox();
 
-    // only one char !!!
+    // Only one character per group allowed.
     charGroups = [
       CharacterType.BF => new FlxTypedGroup<BaseCharacter>(1),
       CharacterType.GF => new FlxTypedGroup<BaseCharacter>(1),
       CharacterType.DAD => new FlxTypedGroup<BaseCharacter>(1)
     ];
-
-    // this is the part where the stage generate function comes up
-    // apparently no, said the future me
-    // back to the regular program
 
     gf.x = charPos[CharacterType.GF][0] - gf.characterOrigin.x + gf.globalOffsets[0];
     gf.y = charPos[CharacterType.GF][1] - gf.characterOrigin.y + gf.globalOffsets[1];
@@ -366,12 +367,7 @@ class StageEditorState extends UIState
     add(charGroups[CharacterType.DAD]);
     add(charGroups[CharacterType.BF]);
 
-    // ui
-    // spriteMarker = new FlxSprite().makeGraphic(1, 1, FlxColor.CYAN);
-    // spriteMarker.alpha = 0.3;
-    // spriteMarker.zIndex = MAX_Z_INDEX + CHARACTER_COLORS.length + 3; // PLEASE
-    // add(spriteMarker);
-
+    // UI Sprites setup.
     camFields = new FlxTypedGroup<FlxSprite>();
     camFields.visible = false;
     camFields.zIndex = MAX_Z_INDEX + CHARACTER_COLORS.length + 1;
@@ -422,6 +418,7 @@ class StageEditorState extends UIState
 
     addUI();
 
+    // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? "" : selectedSprite.name);
 
     FlxG.stage.window.onDropFile.add(function(path:String):Void {
@@ -517,7 +514,7 @@ class StageEditorState extends UIState
     if (testingMode)
     {
       for (char in getCharacters())
-        char.alpha = 1;
+        char.shader = null;
 
       // spriteMarker.visible = camMarker.visible = false;
       findObjDialog.hideDialog(DialogButton.CANCEL);
@@ -612,19 +609,20 @@ class StageEditorState extends UIState
 
     if (moveMode == "assets")
     {
+      if (selectedSprite != null && !FlxG.mouse.overlaps(selectedSprite) && FlxG.mouse.justPressed && !isCursorOverHaxeUI)
+      {
+        selectedSprite = null;
+      }
+
       for (spr in spriteArray)
       {
-        spr.active = spr.isOnScreen();
-
-        if (spr.pixelsOverlapPoint(FlxG.mouse.getWorldPosition()))
+        if (FlxG.mouse.overlaps(spr))
         {
           if (spr.visible && !FlxG.keys.pressed.SHIFT) nameTxt.text = spr.name;
 
           if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
           {
-            selectedSprite.selectedShader.setAmount(0);
             selectedSprite = spr;
-            updateDialog(StageEditorDialogType.OBJECT);
           }
         }
 
@@ -639,7 +637,7 @@ class StageEditorState extends UIState
       if (FlxG.mouse.pressed && allowInput && selectedSprite != null && FlxG.mouse.overlaps(selectedSprite) && FlxG.mouse.justMoved && !isCursorOverHaxeUI)
       {
         saved = false;
-        updateDialog(StageEditorDialogType.OBJECT);
+        updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
 
         if (moveOffset.length == 0)
         {
@@ -671,15 +669,15 @@ class StageEditorState extends UIState
       arrowMovement(selectedSprite);
 
       for (char in getCharacters())
-        char.alpha = 1;
+        char.shader = null;
     }
     else
     {
-      selectedChar.alpha = 1;
+      selectedChar.shader = null;
 
       for (char in getCharacters())
       {
-        if (char != selectedChar) char.alpha = 0.3;
+        if (char != selectedChar) char.shader = charDeselectShader;
 
         if (char != null && checkCharOverlaps(char)) // flxg.mouse.overlaps crashes the game
         {
@@ -732,12 +730,10 @@ class StageEditorState extends UIState
     nameTxt.x = FlxG.mouse.getScreenPosition(camHUD).x;
     nameTxt.y = FlxG.mouse.getScreenPosition(camHUD).y - nameTxt.height;
 
-    // spriteMarker.visible = (moveMode == "assets" && selectedSprite != null);
     camMarker.visible = moveMode == "chars";
-    // if (selectedSprite != null) spriteMarker.setPosition(selectedSprite.x, selectedSprite.y);
 
-    // for (item in sprDependant)
-    // item.disabled = !spriteMarker.visible;
+    for (item in sprDependant)
+      item.disabled = (moveMode != "assets" || selectedSprite == null);
 
     menubarItemPaste.disabled = copiedSprite == null;
     menubarItemFindObj.disabled = !(moveMode == "assets");
@@ -755,22 +751,22 @@ class StageEditorState extends UIState
 
   function autosavePerCrash(message:String)
   {
-    trace("fuuuucckkkkk we crashed, reason: " + message);
+    trace("Crashed the game for the reason: " + message);
 
     if (!saved)
     {
-      trace("dw we're making a backup!!!");
+      trace("You haven't saved recently, so a backup will be made.");
       autoSaveTimer.onComplete(autoSaveTimer);
     }
   }
 
   function windowClose(exitCode:Int)
   {
-    trace("closing da window ye");
+    trace("Closing the game window.");
 
     if (!saved)
     {
-      trace("dum dum why no save >:[");
+      trace("You haven't saved recently, so a backup will be made.");
       autoSaveTimer.onComplete(autoSaveTimer);
     }
   }
@@ -873,6 +869,7 @@ class StageEditorState extends UIState
 
   public function updateArray()
   {
+    sortAssets();
     spriteArray = [];
 
     for (thing in members)
@@ -881,7 +878,6 @@ class StageEditorState extends UIState
     }
 
     findObjDialog.updateIndicator();
-    updateDialog(StageEditorDialogType.OBJECT);
   }
 
   public function sortAssets()
@@ -993,7 +989,7 @@ class StageEditorState extends UIState
       var shit = Std.parseInt(StringTools.replace(bottomBarMoveStepText.text, "px", ""));
       moveStep = shit;
 
-      updateDialog(StageEditorDialogType.OBJECT);
+      updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
       updateDialog(StageEditorDialogType.CHARACTER);
       updateDialog(StageEditorDialogType.STAGE);
     }
@@ -1016,7 +1012,7 @@ class StageEditorState extends UIState
       Save.instance.stageEditorAngleStep = angleOptions[id];
       bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep) ? Save.instance.stageEditorAngleStep : 5) + "°";
 
-      updateDialog(StageEditorDialogType.OBJECT);
+      updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
     }
 
     bottomBarAngleStepText.onClick = function(_) changeAngle(1);
@@ -1024,11 +1020,15 @@ class StageEditorState extends UIState
 
     changeAngle(); // update
 
-    dialogs.set(StageEditorDialogType.OBJECT, new StageEditorObjectToolbox(this));
+    dialogs.set(StageEditorDialogType.OBJECT_GRAPHIC, new StageEditorObjectGraphicToolbox(this));
+    dialogs.set(StageEditorDialogType.OBJECT_ANIMS, new StageEditorObjectAnimsToolbox(this));
+    dialogs.set(StageEditorDialogType.OBJECT_PROPERTIES, new StageEditorObjectPropertiesToolbox(this));
     dialogs.set(StageEditorDialogType.CHARACTER, new StageEditorCharacterToolbox(this));
     dialogs.set(StageEditorDialogType.STAGE, new StageEditorStageToolbox(this));
 
-    menubarItemWindowObject.onChange = function(_) toggleDialog(StageEditorDialogType.OBJECT, menubarItemWindowObject.selected);
+    menubarItemWindowObjectGraphic.onChange = function(_) toggleDialog(StageEditorDialogType.OBJECT_GRAPHIC, menubarItemWindowObjectGraphic.selected);
+    menubarItemWindowObjectAnims.onChange = function(_) toggleDialog(StageEditorDialogType.OBJECT_ANIMS, menubarItemWindowObjectAnims.selected);
+    menubarItemWindowObjectProps.onChange = function(_) toggleDialog(StageEditorDialogType.OBJECT_PROPERTIES, menubarItemWindowObjectProps.selected);
     menubarItemWindowCharacter.onChange = function(_) toggleDialog(StageEditorDialogType.CHARACTER, menubarItemWindowCharacter.selected);
     menubarItemWindowStage.onChange = function(_) toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
 
@@ -1133,8 +1133,6 @@ class StageEditorState extends UIState
           currentFile = path;
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
 
-        bitmaps.clear();
-
       case "save stage":
         if (currentFile == "")
         {
@@ -1154,8 +1152,7 @@ class StageEditorState extends UIState
 
         saved = true;
 
-        updateRecentFiles();
-        bitmaps.clear();
+        reloadRecentFiles();
 
       case "open stage":
         if (!saved)
@@ -1172,14 +1169,18 @@ class StageEditorState extends UIState
           return;
         }
 
-        FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], function(path:String) {
+        FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS], function(_) {
+          if (_?.fullPath == null) return;
+
           clearAssets();
 
-          currentFile = path;
-          this.unpackShitFromZip(FileUtil.readBytesFromPath(path));
+          currentFile = _.fullPath;
+          this.unpackShitFromZip(FileUtil.readBytesFromPath(currentFile));
 
           reloadRecentFiles();
-        }, null, null, "Open Stage Data");
+        }, function() {
+          // This function does nothing, it's there for crash prevention.
+        });
 
       case "exit":
         if (!saved)
@@ -1207,7 +1208,10 @@ class StageEditorState extends UIState
         FlxG.sound.music.stop();
 
       case "switch mode":
-        if (!testingMode) moveMode = (moveMode == "assets" ? "chars" : "assets");
+        if (testingMode) return;
+        moveMode = (moveMode == "assets" ? "chars" : "assets");
+
+        selectedSprite?.selectedShader.setAmount((moveMode == "assets" ? 1 : 0));
 
       case "switch focus":
         if (testingMode)
@@ -1281,19 +1285,25 @@ class StageEditorState extends UIState
           a.isDebugged = testingMode;
         }
 
-        if (!testingMode) menubarItemWindowObject.selected = menubarItemWindowCharacter.selected = menubarItemWindowStage.selected = false;
+        if (!testingMode)
+        {
+          menubarItemWindowObjectGraphic.selected = menubarItemWindowObjectAnims.selected = menubarItemWindowObjectProps.selected = menubarItemWindowCharacter.selected = menubarItemWindowStage.selected = false;
+        }
 
+        selectedSprite?.selectedShader.setAmount((testingMode ? (moveMode == "assets" ? 1 : 0) : 0));
         testingMode = !testingMode;
 
       case "clear assets":
-        Dialogs.messageBox("This will destroy all the Objects in this Stage.\n\nAre you sure? This cannot be undone.", "Clear Assets",
-          MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
+        Dialogs.messageBox("This will destroy all Objects in this Stage.\n\nAre you sure? This cannot be undone.", "Clear Assets", MessageBoxType.TYPE_YESNO,
+          true, function(btn:DialogButton) {
             if (btn == DialogButton.YES)
             {
               clearAssets();
               saved = false;
 
-              updateDialog(StageEditorDialogType.OBJECT);
+              updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+              updateDialog(StageEditorDialogType.OBJECT_ANIMS);
+              updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
             }
         });
 
@@ -1301,7 +1311,7 @@ class StageEditorState extends UIState
         if (selectedSprite != null && moveMode == "assets")
         {
           selectedSprite.screenCenter();
-          updateDialog(StageEditorDialogType.OBJECT);
+          updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
           saved = false;
         }
 
@@ -1323,7 +1333,6 @@ class StageEditorState extends UIState
         selectedSprite = null;
 
         updateArray();
-        sortAssets();
 
       case "copy object":
         if (selectedSprite == null) return;
@@ -1347,6 +1356,7 @@ class StageEditorState extends UIState
           spr.name += " (" + i + ")";
         }
 
+        add(spr);
         selectedSprite = spr;
         updateArray();
 
@@ -1355,7 +1365,9 @@ class StageEditorState extends UIState
         onMenuItemClick("delete object"); // already changes the saved var
 
       case "new stage":
-        if (menubarItemWindowObject.selected) menubarItemWindowObject.selected = false;
+        if (menubarItemWindowObjectGraphic.selected) menubarItemWindowObjectGraphic.selected = false;
+        if (menubarItemWindowObjectAnims.selected) menubarItemWindowObjectAnims.selected = false;
+        if (menubarItemWindowObjectProps.selected) menubarItemWindowObjectProps.selected = false;
         if (menubarItemWindowCharacter.selected) menubarItemWindowCharacter.selected = false;
         if (menubarItemWindowStage.selected) menubarItemWindowStage.selected = false;
 
@@ -1366,7 +1378,9 @@ class StageEditorState extends UIState
           updateWindowTitle();
           welcomeDialog = null;
 
-          updateDialog(StageEditorDialogType.OBJECT);
+          updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+          updateDialog(StageEditorDialogType.OBJECT_ANIMS);
+          updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
           updateDialog(StageEditorDialogType.CHARACTER);
           updateDialog(StageEditorDialogType.STAGE);
         }
@@ -1388,9 +1402,7 @@ class StageEditorState extends UIState
 
     undoArray = [];
     redoArray = [];
-
     updateArray();
-    sortAssets();
     removeUnusedBitmaps();
   }
 
@@ -1479,7 +1491,17 @@ enum StageEditorDialogType
   CHARACTER;
 
   /**
-   * The Object Options Dialog.
+   * The Object Graphic Options Dialog.
    */
-  OBJECT;
+  OBJECT_GRAPHIC;
+
+  /**
+   * The Object Animations Options Dialog.
+   */
+  OBJECT_ANIMS;
+
+  /**
+   * The Object Properties Options Dialog.
+   */
+  OBJECT_PROPERTIES;
 }
