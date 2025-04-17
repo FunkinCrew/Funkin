@@ -9,6 +9,7 @@ import io.newgrounds.objects.User;
 import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.utils.ScoreBoardList;
 
+@:nullSafety
 class Leaderboards
 {
   public static function listLeaderboardData():Map<Leaderboard, LeaderboardData>
@@ -19,21 +20,8 @@ class Leaderboards
       trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
       return [];
     }
-    else
-    {
-      var result:Map<Leaderboard, LeaderboardData> = [];
 
-      for (leaderboardId in leaderboardList.keys())
-      {
-        var leaderboardData = leaderboardList.get(leaderboardId);
-        if (leaderboardData == null) continue;
-
-        // A little hacky, but it works.
-        result.set(cast leaderboardId, leaderboardData);
-      }
-
-      return result;
-    }
+    return @:privateAccess leaderboardList._map?.copy() ?? [];
   }
 
   /**
@@ -74,7 +62,7 @@ class Leaderboards
    * @param leaderboard The leaderboard to fetch scores from.
    * @param params Additional parameters for fetching the score.
    */
-  public static function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
+  public static function requestScores(leaderboard:Leaderboard, ?params:RequestScoresParams)
   {
     // Silently reject retrieving scores from unknown leaderboards.
     if (leaderboard == Leaderboard.Unknown) return;
@@ -94,12 +82,12 @@ class Leaderboards
         {
           case SUCCESS:
             trace('[NEWGROUNDS] Fetched scores!');
-            if (params?.onComplete != null) params.onComplete(leaderboardData.scores);
+            if (params != null && params.onComplete != null) params.onComplete(leaderboardData.scores);
 
           case FAIL(error):
             trace('[NEWGROUNDS] Failed to fetch scores!');
             trace(error);
-            if (params?.onFail != null) params.onFail();
+            if (params != null && params.onFail != null) params.onFail();
         }
       });
   }
@@ -192,7 +180,7 @@ typedef RequestScoresParams =
 }
 #end
 
-enum abstract Leaderboard(Int)
+enum abstract Leaderboard(Int) from Int to Int
 {
   /**
    * Represents an undefined or invalid leaderboard.
