@@ -5,9 +5,10 @@ import flixel.addons.display.FlxRuntimeShader;
 /**
  * Create a little dotting effect.
  */
+@:nullSafety
 class InverseDotsShader extends FlxRuntimeShader
 {
-  public var amount:Float;
+  public var amount:Float = 0;
 
   public function new(amount:Float = 1.0)
   {
