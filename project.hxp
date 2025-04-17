@@ -939,12 +939,12 @@ class Project extends HXProject {
 
 		if (isAndroid())
 		{
-			setenv("ADMOB_APPID", Std.string(envConfig.get('ANDROID_ADMOB_APPID')));
+			setenv("ADMOB_APPID", Std.string(envConfig.get('ANDROID_ADMOB_APP_ID')););
 		}
 
 		if (isIOS())
 		{
-			setenv("ADMOB_APPID", Std.string(envConfig.get('IOS_ADMOB_APPID')));
+			setenv("ADMOB_APPID", Std.string(envConfig.get('IOS_ADMOB_APP_ID')));
 		}
 	}
 
