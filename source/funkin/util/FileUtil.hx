@@ -50,20 +50,10 @@ class FileUtil
     };
 
   /**
-    * Paths which should not be deleted or modified by scripts.
+   * Paths which should not be deleted or modified by scripts.
    */
   private static final PROTECTED_PATHS:Array<String> = [
-    '',
-    'assets',
-    'manifest',
-    'manifest/*',
-    'plugins',
-    'plugins/*',
-    'Funkin.exe',
-    'Funkin',
-    'libvlc.dll',
-    'libvlccore.dll',
-    'lime.ndll'
+    '', 'assets', 'manifest', 'manifest/*', 'plugins', 'plugins/*', 'Funkin.exe', 'Funkin', 'libvlc.dll', 'libvlccore.dll', 'lime.ndll'
   ];
 
   /**
@@ -95,8 +85,8 @@ class FileUtil
    * @param onSelect A callback that provides a `SelectedFileInfo` object when a file is selected.
    * @param onCancel A callback that is called when the user closes the dialog without selecting a file.
    */
-  public static function browseForBinaryFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo)->Void,
-      ?onCancel:()->Void)
+  public static function browseForBinaryFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo) -> Void,
+      ?onCancel:() -> Void)
   {
     var onComplete = function(button, selectedFiles) {
       if (button == DialogButton.OK && selectedFiles.length > 0)
@@ -128,8 +118,8 @@ class FileUtil
    * @param onSelect A callback that provides a `SelectedFileInfo` object when a file is selected.
    * @param onCancel A callback that is called when the user closes the dialog without selecting a file.
    */
-  public static function browseForTextFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo)->Void,
-      ?onCancel:()->Void):Void
+  public static function browseForTextFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo) -> Void,
+      ?onCancel:() -> Void):Void
   {
     var onComplete = function(button, selectedFiles) {
       if (button == DialogButton.OK && selectedFiles.length > 0)
@@ -159,7 +149,7 @@ class FileUtil
    * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
-  public static function browseForDirectory(?typeFilter:Array<FileFilter>, onSelect:(String)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function browseForDirectory(?typeFilter:Array<FileFilter>, onSelect:(String) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       ?dialogTitle:String):Bool
   {
     #if desktop
@@ -192,7 +182,7 @@ class FileUtil
    *
    * @return Whether the file dialog was opened successfully.
    */
-  public static function browseForMultipleFiles(?typeFilter:Array<FileFilter>, onSelect:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function browseForMultipleFiles(?typeFilter:Array<FileFilter>, onSelect:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       ?dialogTitle:String):Bool
   {
     #if desktop
@@ -226,7 +216,7 @@ class FileUtil
    * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
-  public static function browseForSaveFile(?typeFilter:Array<FileFilter>, onSelect:(String)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function browseForSaveFile(?typeFilter:Array<FileFilter>, onSelect:(String) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       ?dialogTitle:String):Bool
   {
     #if desktop
@@ -259,7 +249,7 @@ class FileUtil
    *
    * @return Whether the file dialog was opened successfully.
    */
-  public static function saveFile(data:Bytes, ?typeFilter:Array<FileFilter>, ?onSave:(String)->Void, ?onCancel:()->Void, ?defaultFileName:String,
+  public static function saveFile(data:Bytes, ?typeFilter:Array<FileFilter>, ?onSave:(String) -> Void, ?onCancel:() -> Void, ?defaultFileName:String,
       ?dialogTitle:String):Bool
   {
     #if desktop
@@ -314,34 +304,34 @@ class FileUtil
    * @param typeFilter TODO What does this do?
    * @return Whether the file dialog was opened successfully.
    */
-  public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       force:Bool = false):Bool
   {
     #if desktop
     // Prompt the user for a directory, then write all of the files to there.
-    var onSelectDir:(String)->Void = function(targetPath:String):Void {
+    var onSelectDir:(String) -> Void = function(targetPath:String):Void {
       var paths:Array<String> = new Array<String>();
       for (resource in resources)
       {
         /*
-        var filePath:String = Path.join([targetPath, resource.fileName]);
-        try
-        {
-          if (resource.data == null)
+          var filePath:String = Path.join([targetPath, resource.fileName]);
+          try
           {
-            trace('WARNING: File $filePath has no data or content. Skipping.');
-            continue;
+            if (resource.data == null)
+            {
+              trace('WARNING: File $filePath has no data or content. Skipping.');
+              continue;
+            }
+            else
+            {
+              writeBytesToPath(filePath, resource.data, force ? Force : Skip);
+            }
           }
-          else
+          catch (e:Dynamic)
           {
-            writeBytesToPath(filePath, resource.data, force ? Force : Skip);
+            throw 'Failed to write file (probably already exists): $filePath';
           }
-        }
-        catch (e:Dynamic)
-        {
-          throw 'Failed to write file (probably already exists): $filePath';
-        }
-        */
+         */
         if (resource.data == null)
         {
           trace('WARNING: File ${resource.fileName} has no data or content. Skipping.');
@@ -349,7 +339,6 @@ class FileUtil
         }
 
         var filePath:String = Path.join([targetPath, resource.fileName]);
-
 
         paths.push(filePath);
       }
@@ -388,11 +377,12 @@ class FileUtil
   /**
    * Takes an array of file entries and prompts the user to save them as a ZIP file.
    */
-  public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String, force:Bool = false):Bool
+  public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
+      force:Bool = false):Bool
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
-    var onSave:(String)->Void = function(path:String) {
+    var onSave:(String) -> Void = function(path:String) {
       trace('Saved ${resources.length} files to ZIP at "$path"');
 
       if (onSave != null)
@@ -409,12 +399,12 @@ class FileUtil
   /**
    * Takes an array of file entries and prompts the user to save them as a FNFC file.
    */
-  public static function saveChartAsFNFC(resources:Array<Entry>, ?onSave:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function saveChartAsFNFC(resources:Array<Entry>, ?onSave:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       force:Bool = false):Bool
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
-    var onSave:(String)->Void = function(path:String) {
+    var onSave:(String) -> Void = function(path:String) {
       trace('Saved FNFC file to "$path"');
 
       if (onSave != null)
@@ -478,15 +468,13 @@ class FileUtil
     #end
   }
 
-
-
   /**
    * Browse for a file to read and execute a callback once we have a file reference.
    * Works great on HTML5 or desktop.
    *
    * @param	callback The function to call when the file is loaded.
    */
-  public static function browseFileReference(callback:(FileReference)->Void):Void
+  public static function browseFileReference(callback:(FileReference) -> Void):Void
   {
     var file = new FileReference();
     file.addEventListener(Event.SELECT, function(e) {
@@ -1123,29 +1111,8 @@ class FileUtil
     };
   }
 
-  /**
-   * Open a folder in the file explorer.
-   *
-   * @param pathFolder The path to the folder.
-   */
-  public static function openFolder(pathFolder:String):Void
-  {
-    #if windows
-    Sys.command('explorer', [pathFolder]);
-    #elseif mac
-    // mac could be fuckie with where the log folder is relative to the game file...
-    // if this comment is still here... it means it has NOT been verified on mac yet!
-    //
-    // FileUtil.hx note: this was originally used to open the logs specifically!
-    // thats why the above comment is there!
-    Sys.command('open', [pathFolder]);
-    #elseif linux
-    // TODO: implement linux
-    // some shit with xdg-open :thinking: emoji...
-    #else
-    throw 'External folder open is not supported on this platform.');
-    #end
-  }
+  public static function openFolder(pathFolder:String) // what is this for??
+    WindowUtil.openFolder(pathFolder);
 
   private static function convertTypeFilter(?typeFilter:Array<FileFilter>):Null<String>
   {
@@ -1211,9 +1178,12 @@ class FileUtilSandboxed
     {
       switch (part)
       {
-        case '.' | '': continue;
-        case '..': sanitized.pop();
-        default: sanitized.push(part);
+        case '.' | '':
+          continue;
+        case '..':
+          sanitized.pop();
+        default:
+          sanitized.push(part);
       }
     }
 
@@ -1262,54 +1232,55 @@ class FileUtilSandboxed
   public static final FILE_EXTENSION_INFO_ZIP:FileDialogExtensionInfo = FileUtil.FILE_EXTENSION_INFO_ZIP;
   public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo = FileUtil.FILE_EXTENSION_INFO_PNG;
 
-  public static function browseForBinaryFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo)->Void,
-      ?onCancel:()->Void)
+  public static function browseForBinaryFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo) -> Void,
+      ?onCancel:() -> Void)
   {
     FileUtil.browseForBinaryFile(dialogTitle, typeFilter, onSelect, onCancel);
   }
 
-  public static function browseForTextFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo)->Void,
-      ?onCancel:()->Void):Void
+  public static function browseForTextFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo) -> Void,
+      ?onCancel:() -> Void):Void
   {
     FileUtil.browseForTextFile(dialogTitle, typeFilter, onSelect, onCancel);
   }
 
-  public static function browseForDirectory(?typeFilter:Array<FileFilter>, onSelect:(String)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function browseForDirectory(?typeFilter:Array<FileFilter>, onSelect:(String) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       ?dialogTitle:String):Bool
   {
     return FileUtil.browseForDirectory(typeFilter, onSelect, onCancel, defaultPath, dialogTitle);
   }
 
-  public static function browseForMultipleFiles(?typeFilter:Array<FileFilter>, onSelect:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function browseForMultipleFiles(?typeFilter:Array<FileFilter>, onSelect:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       ?dialogTitle:String):Bool
   {
     return FileUtil.browseForMultipleFiles(typeFilter, onSelect, onCancel, defaultPath, dialogTitle);
   }
 
-  public static function browseForSaveFile(?typeFilter:Array<FileFilter>, onSelect:(String)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function browseForSaveFile(?typeFilter:Array<FileFilter>, onSelect:(String) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       ?dialogTitle:String):Bool
   {
     return FileUtil.browseForSaveFile(typeFilter, onSelect, onCancel, defaultPath, dialogTitle);
   }
 
-  public static function saveFile(data:Bytes, ?typeFilter:Array<FileFilter>, ?onSave:(String)->Void, ?onCancel:()->Void, ?defaultFileName:String,
+  public static function saveFile(data:Bytes, ?typeFilter:Array<FileFilter>, ?onSave:(String) -> Void, ?onCancel:() -> Void, ?defaultFileName:String,
       ?dialogTitle:String):Bool
   {
     return FileUtil.saveFile(data, typeFilter, onSave, onCancel, defaultFileName, dialogTitle);
   }
 
-  public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function saveMultipleFiles(resources:Array<Entry>, ?onSaveAll:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       force:Bool = false):Bool
   {
     return FileUtil.saveMultipleFiles(resources, onSaveAll, onCancel, defaultPath, force);
   }
 
-  public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String, force:Bool = false):Bool
+  public static function saveFilesAsZIP(resources:Array<Entry>, ?onSave:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
+      force:Bool = false):Bool
   {
     return FileUtil.saveFilesAsZIP(resources, onSave, onCancel, defaultPath, force);
   }
 
-  public static function saveChartAsFNFC(resources:Array<Entry>, ?onSave:(Array<String>)->Void, ?onCancel:()->Void, ?defaultPath:String,
+  public static function saveChartAsFNFC(resources:Array<Entry>, ?onSave:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       force:Bool = false):Bool
   {
     return FileUtil.saveChartAsFNFC(resources, onSave, onCancel, defaultPath, force);
@@ -1331,7 +1302,7 @@ class FileUtilSandboxed
     return FileUtil.readBytesFromPath(sanitizePath(path));
   }
 
-  public static function browseFileReference(callback:(FileReference)->Void):Void
+  public static function browseFileReference(callback:(FileReference) -> Void):Void
   {
     FileUtil.browseFileReference(callback);
   }
