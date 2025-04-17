@@ -22,6 +22,11 @@ class WindowUtil
    */
   public static function openURL(targetUrl:String):Void
   {
+    // Ensure you can't open protocols such as steam://, file://, etc
+    var protocol:Array<String> = targetUrl.split("://");
+    if (protocol.length == 1) targetUrl = 'https://${targetUrl}';
+    else if (protocol[0] != 'http' && protocol[0] != 'https') throw "openURL can only open http and https links.";
+
     #if FEATURE_OPEN_URL
     #if linux
     Sys.command('/usr/bin/xdg-open $targetUrl &');
@@ -64,6 +69,7 @@ class WindowUtil
    */
   public static function openFolder(targetPath:String):Void
   {
+    if (!sys.FileSystem.exists(targetPath) || !sys.FileSystem.isDirectory(targetPath)) throw 'openFolder should only be used to open existing folders.';
     #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', [targetPath.replace('/', '\\')]);
