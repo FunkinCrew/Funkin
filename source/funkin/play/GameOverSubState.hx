@@ -505,6 +505,14 @@ class GameOverSubState extends MusicBeatSubState
     // PlayState.seenCutscene = false; // old thing...
     if (gameOverMusic != null) gameOverMusic.stop();
 
+    // Stop death quotes immediately.
+    hasPlayedDeathQuote = true;
+    if (deathQuoteSound != null)
+    {
+      deathQuoteSound.stop();
+      deathQuoteSound = null;
+    }
+
     if (isChartingMode)
     {
       this.close();
@@ -512,13 +520,26 @@ class GameOverSubState extends MusicBeatSubState
       PlayState.instance.close(); // This only works because PlayState is a substate!
       return;
     }
-    else if (PlayStatePlaylist.isStoryMode)
-    {
-      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
-    }
     else
     {
-      openSubState(new funkin.ui.transition.StickerSubState(null, (sticker) -> FreeplayState.build(sticker)));
+      var targetState:funkin.ui.transition.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
+        new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
+
+      if (PlayStatePlaylist.isStoryMode)
+      {
+        PlayStatePlaylist.reset();
+      }
+
+      var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+      var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
+      var stickerPack = switch (PlayState.instance.currentChart.song.id)
+      {
+        case "tutorial": "tutorial";
+        case "darnell" | "lit-up" | "2hot": "weekend";
+        default: "all";
+      };
+
+      openSubState(new funkin.ui.transition.StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
     }
   }
 

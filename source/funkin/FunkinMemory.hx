@@ -327,7 +327,7 @@ class FunkinMemory
       trace('Queued $key to clean up');
 
       new Future<String>(function() {
-        new FlxTimer().start(1 / 24, function(_) {
+        new flixel.util.FlxTimer().start(1 / 24, function(_) {
           FlxG.bitmap.removeKey(key);
           if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
           obj.destroy();

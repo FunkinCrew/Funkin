@@ -1,6 +1,5 @@
 package funkin.util.macro;
 
-import haxe.ds.Map;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
@@ -9,11 +8,14 @@ import sys.FileSystem;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
+import haxe.ds.Map;
+
+using StringTools;
 
 /**
  * A macro that reads an environment file during the build process for you to access in runtime without exposing the value.
  */
-#if (!macro)
+#if !macro
 @:build(funkin.util.macro.EnvironmentConfigMacro.setupEnvConfig(".env"))
 #end
 class EnvironmentConfigMacro
@@ -34,7 +36,7 @@ class EnvironmentConfigMacro
     var fields = Context.getBuildFields();
     var pos = Context.currentPos();
 
-    var envFile = File.getConsent(file);
+    var envFile:String = File.getContent(file);
 
     if (envFile == null)
     {
@@ -64,7 +66,7 @@ class EnvironmentConfigMacro
         var typePath:TypePath =
           {
             name: 'EnvironmentConfigMacro',
-            pack: ['funkin', 'utl', 'macro'],
+            pack: ['funkin', 'util', 'macro'],
             sub: 'EnvironmentConfig'
           };
 

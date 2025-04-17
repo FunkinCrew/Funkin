@@ -1,10 +1,10 @@
 package funkin.mobile.util;
 
 #if FEATURE_ADMOB_ADS
-import admob.Admob;
-import admob.AdmobBannerAlign;
-import admob.AdmobBannerSize;
-import admob.AdmobEvent;
+import extension.admob.Admob;
+import extension.admob.AdmobBannerAlign;
+import extension.admob.AdmobBannerSize;
+import extension.admob.AdmobEvent;
 import funkin.util.macro.EnvironmentConfigMacro;
 
 /**

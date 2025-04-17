@@ -53,7 +53,6 @@ import funkin.api.discord.DiscordClient;
 #end
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
-import flixel.system.scaleModes.FullScreenScaleMode;
 
 /**
  * The state for the freeplay menu, allowing the player to select any song to play.
@@ -448,7 +447,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (fromCharSelect)
     {
-      blackOverlayBullshitLOLXD.x = bgDad.x;
+      blackOverlayBullshitLOLXD.x = backingImage.x;
       overhangStuff.y = -100;
       backingCard?.skipIntroTween();
     }
@@ -456,7 +455,7 @@ class FreeplayState extends MusicBeatSubState
     {
       albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
       FlxTween.tween(overhangStuff, {y: -100}, 0.3, {ease: FlxEase.quartOut});
-      FlxTween.tween(blackOverlayBullshitLOLXD, {x: bgDad.x}, 0.7, {ease: FlxEase.quintOut});
+      FlxTween.tween(blackOverlayBullshitLOLXD, {x: backingImage.x}, 0.7, {ease: FlxEase.quintOut});
     }
 
     fnfFreeplay = new FlxText(FullScreenScaleMode.gameNotchSize.x + 8, 8, 0, 'FREEPLAY', 48);

@@ -292,6 +292,13 @@ class Project extends HXProject {
 	static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
 	/**
+	 * `-DFEATURE_HAPTIC_FEEDBACK`
+	 * If this flag is enabled, The game provide rich haptic feedback vibrations.
+	 * Works for mobile targets (Android and iOS).
+	 */
+	static final FEATURE_HAPTIC_FEEDBACK:FeatureFlag = "FEATURE_HAPTIC_FEEDBACK";
+
+	/**
 	 * `-DTOUCH_CONTROLS`
 	 * If this flag is enabled, the touch controls for the game is also enabled.
 	 * Works with desktop builds.
@@ -353,10 +360,10 @@ class Project extends HXProject {
       {
 				if (envConfig != null)
 				{
-        	keystore = new Keystore();
-        	keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
-        	keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
-        	keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
+					keystore = new Keystore();
+					keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
+					keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
+					keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
 				}
 
         Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
@@ -639,6 +646,9 @@ class Project extends HXProject {
     FEATURE_SCREENSHOTS.apply(this, !(isWeb() || isMobile()));
 
 		// Should be true only on mobile builds.
+		FEATURE_HAPTIC_FEEDBACK.apply(this, isMobile());
+
+		// Should be true only on mobile builds.
 		TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true only on mobile builds.
@@ -825,21 +835,21 @@ class Project extends HXProject {
       addHaxelib('grig.audio'); // Audio data utilities
 		}
 
-    addHaxelib('funkin.haptic'); // Haptic feedback
-
-    addHaxelib('extension-haptics'); // Haptic feedback
-
-    if (FEATURE_PARTIAL_SOUNDS.isEnabled(this))
-    {
+    if (FEATURE_PARTIAL_SOUNDS.isEnabled(this)) {
       addHaxelib('FlxPartialSound'); // Partial sound
     }
 
-    if (FEATURE_ADMOB_ADS.isEnabled(this))
-    {
+    if (FEATURE_ADMOB_ADS.isEnabled(this)) {
       addHaxelib('extension-admob'); // Ads Extension
     }
 
-    addHaxelib('extension-iap'); // In-app purchases Extension
+		if (FEATURE_HAPTIC_FEEDBACK.isEnabled(this)) {
+			addHaxelib('extension-haptics'); // Haptic feedback
+		}
+
+		if (isMobile()) {
+    	addHaxelib('extension-iap'); // In-app purchases Extension
+		}
   }
 
   function configureAssets() {

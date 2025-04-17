@@ -11,6 +11,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
+import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;

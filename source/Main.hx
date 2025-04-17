@@ -122,10 +122,6 @@ class Main extends Sprite
     // George recommends binding the save before FlxGame is created.
     Save.load();
 
-    #if mobile
-    FlxG.signals.gameResized.add(resizeGame);
-    #end
-
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
@@ -220,4 +216,5 @@ class Main extends Sprite
       }
     }
   }
-  }
+  #end
+}
