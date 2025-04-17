@@ -4,6 +4,8 @@ package;
 import hxp.*;
 import lime.tools.*;
 import sys.FileSystem;
+import sys.io.File;
+import haxe.ds.Map;
 
 using StringTools;
 
@@ -314,6 +316,9 @@ class Project extends HXProject {
 	 */
 	static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
 
+
+	static var envConfig:Null<Map<String, Dynamic>> = null;
+
 	//
 	// CONFIGURATION FUNCTIONS
 	//
@@ -321,6 +326,7 @@ class Project extends HXProject {
 	public function new() {
 		super();
 
+		envConfig = readEnvironmentFile("./.env");
 		flair();
 		configureApp();
 
@@ -345,10 +351,13 @@ class Project extends HXProject {
     {
       if (isRelease())
       {
-        keystore = new Keystore();
-        keystore.path = "";
-        keystore.alias = "";
-        keystore.password = "";
+				if (envConfig != null)
+				{
+        	keystore = new Keystore();
+        	keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
+        	keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
+        	keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
+				}
 
         Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
 
@@ -371,16 +380,6 @@ class Project extends HXProject {
     if (isIOS()) {
       config.set("ios.non-exempt-encryption", "false");
     }
-  }
-
-				if (BUNDLE_APP.isEnabled(this))
-					setenv('ANDROID_GRADLE_TASK', 'bundleRelease');
-			}
-			else if (BUNDLE_APP.isEnabled(this))
-			{
-				info("WARNING: Bundle Builds aren't available for debug, this build will export an APK instead.");
-			}
-		}
 	}
 
 	/**
@@ -926,14 +925,16 @@ class Project extends HXProject {
 	 * Configure the platforms' Ad Mob application keys.
 	 */
 	function configureAdMobKeys() {
+		if (envConfig == null) return;
+
 		if (isAndroid())
 		{
-			setenv("ADMOB_APPID", "");
+			setenv("ADMOB_APPID", Std.string(envConfig.get('ANDROID_ADMOB_APPID')));
 		}
 
 		if (isIOS())
 		{
-			setenv("ADMOB_APPID", "");
+			setenv("ADMOB_APPID", Std.string(envConfig.get('IOS_ADMOB_APPID')));
 		}
 	}
 
@@ -1257,6 +1258,27 @@ class Project extends HXProject {
 	 */
 	public function info(message:String):Void {
 		if(command != "display") { Log.info('[INFO] ${message}'); }
+	}
+
+	public function readEnvironmentFile(file:String):Null<Map<String, Dynamic>> {
+		var envFile = File.getContent(file);
+
+		if (envFile == null) {
+			info('Failed to parse environment file: ${file}');
+			return null;
+		}
+
+		var env = new Map<String, Dynamic>();
+		for (line in envFile.split('\n')) {
+			if (line == "" || line.startsWith("#")) continue;
+
+			var parts = line.split('=');
+			if (parts.length != 2) continue;
+
+			env.set(parts[0], parts[1]);
+		}
+
+		return env;
 	}
 }
 

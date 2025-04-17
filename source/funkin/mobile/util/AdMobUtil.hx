@@ -5,6 +5,7 @@ import admob.Admob;
 import admob.AdmobBannerAlign;
 import admob.AdmobBannerSize;
 import admob.AdmobEvent;
+import funkin.util.macro.EnvironmentConfigMacro;
 
 /**
  * Utility class for managing AdMob advertisements in a mobile application.
@@ -18,7 +19,7 @@ class AdMobUtil
   /**
    * AdMob publisher ID used for the application.
    */
-  private static final ADMOB_PUBLISHER:String = "";
+  private static final ADMOB_PUBLISHER:String = EnvironmentConfigMacro.environmentConfig.get("GLOBAL_ADMOB_PUBLISHER");
 
   /**
    * Test ad unit IDs for development and testing purposes.
@@ -28,12 +29,12 @@ class AdMobUtil
   /**
    * Ad unit ID for displaying banner ads.
    */
-  private static final BANNER_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
+  private static final BANNER_AD_UNIT_ID:String = #if mobile EnvironmentConfigMacro.environmentConfig.get(#if android "ANDROID_ADMOB_BANNER_ID" #else "IOS_ADMOB_BANNER_ID" #end) #else "" #end;
 
   /**
    * Ad unit ID for displaying interstitial ads.
    */
-  private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "" #elseif ios "" #else "" #end;
+  private static final INTERSTITIAL_AD_UNIT_ID:String = #if mobile EnvironmentConfigMacro.environmentConfig.get(#if android "ANDROID_ADMOB_INTERSTITIAL_ID" #else "IOS_ADMOB_INTERSTITIAL_ID" #end) #else "" #end;
 
   /**
    * Ad unit ID for displaying interstitial video ads.
@@ -192,3 +193,4 @@ class AdMobUtil
     Admob.showPrivacyOptionsForm();
   }
 }
+#end

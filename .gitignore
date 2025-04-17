@@ -10,6 +10,11 @@ shitAudio/
 .swp
 NewgroundsCredentials.hx
 
+# Mobile signing stuff
+.apple/
+.env
+key.keystore
+
 # Exclude JS stuff
 node_modules/
 package.json
