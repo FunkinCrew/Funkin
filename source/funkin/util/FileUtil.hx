@@ -653,22 +653,8 @@ class FileUtil
     };
   }
 
-  public static function openFolder(pathFolder:String)
-  {
-    #if windows
-    Sys.command('explorer', [pathFolder]);
-    #elseif mac
-    // mac could be fuckie with where the log folder is relative to the game file...
-    // if this comment is still here... it means it has NOT been verified on mac yet!
-    //
-    // FileUtil.hx note: this was originally used to open the logs specifically!
-    // thats why the above comment is there!
-    Sys.command('open', [pathFolder]);
-    #end
-
-    // TODO: implement linux
-    // some shit with xdg-open :thinking: emoji...
-  }
+  public static function openFolder(pathFolder:String) // what is this for??
+    WindowUtil.openFolder(pathFolder);
 
   static function convertTypeFilter(typeFilter:Array<FileFilter>):String
   {
