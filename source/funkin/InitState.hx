@@ -90,8 +90,10 @@ class InitState extends FlxState
     funkin.util.WindowUtil.initTracy();
     #end
 
+    #if FEATURE_HAPTICS
     // Setup Haptic feedback
     extension.haptics.Haptic.initialize();
+    #end
 
     #if FEATURE_ADMOB_ADS
     // Setup Admob
@@ -115,7 +117,7 @@ class InitState extends FlxState
     // but that makes our soundtray not show up on init if we have the game muted.
     // We set it to active so it at least calls it's update function once (see FlxGame.onEnterFrame(), it's called there)
     // and also see FunkinSoundTray.update() to see what we do and how we check if we are muted or not
-    // FlxG.game.soundTray.active = true;
+    if (FlxG.game.soundTray != null) FlxG.game.soundTray.active = true;
 
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
