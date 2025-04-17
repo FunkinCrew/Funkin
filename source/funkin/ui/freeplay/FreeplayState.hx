@@ -1747,7 +1747,7 @@ class FreeplayState extends MusicBeatSubState
         if (diff == null || diff.difficultyId != currentDifficulty) continue;
         if (!TouchUtil.overlaps(diff, funnyCam))
         {
-          diff.x = 90;
+          diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
           break;
         }
         draggingDifficulty = true;
