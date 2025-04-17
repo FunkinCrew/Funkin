@@ -292,11 +292,11 @@ class Project extends HXProject {
 	static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
 	/**
-	 * `-DFEATURE_HAPTIC_FEEDBACK`
-	 * If this flag is enabled, The game provide rich haptic feedback vibrations.
+	 * `-DFEATURE_HAPTICS`
+	 * If this flag is enabled, the game provide haptic feedback vibrations.
 	 * Works for mobile targets (Android and iOS).
 	 */
-	static final FEATURE_HAPTIC_FEEDBACK:FeatureFlag = "FEATURE_HAPTIC_FEEDBACK";
+	static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
 	/**
 	 * `-DTOUCH_CONTROLS`
@@ -646,7 +646,7 @@ class Project extends HXProject {
     FEATURE_SCREENSHOTS.apply(this, !(isWeb() || isMobile()));
 
 		// Should be true only on mobile builds.
-		FEATURE_HAPTIC_FEEDBACK.apply(this, isMobile());
+		FEATURE_HAPTICS.apply(this, isMobile());
 
 		// Should be true only on mobile builds.
 		TOUCH_CONTROLS.apply(this, isMobile());
@@ -843,7 +843,7 @@ class Project extends HXProject {
       addHaxelib('extension-admob'); // Ads Extension
     }
 
-		if (FEATURE_HAPTIC_FEEDBACK.isEnabled(this)) {
+		if (FEATURE_HAPTICS.isEnabled(this)) {
 			addHaxelib('extension-haptics'); // Haptic feedback
 		}
 

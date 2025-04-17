@@ -47,7 +47,7 @@ class NoteVibrationsHandler
    */
   public function tryNoteVibration():Void
   {
-    if (!Preferences.vibration) return;
+    if (!HapticUtil.hapticsAvailable) return;
 
     var stackingAmplitude:Float = 0;
 
@@ -71,7 +71,7 @@ class NoteVibrationsHandler
    */
   public function tryHoldNoteVibration():Void
   {
-    if (!Preferences.vibration) return;
+    if (!HapticUtil.hapticsAvailable) return;
 
     var stackingAmplitude:Float = 0;
 

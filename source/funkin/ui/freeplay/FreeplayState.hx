@@ -2228,7 +2228,7 @@ class FreeplayState extends MusicBeatSubState
     backingCard?.confirm();
 
     // Start vibration after half of second.
-    if (Preferences.vibration)
+    if (HapticUtil.hapticsAvailable)
     {
       new FlxTimer().start(0.5, function(tmr) {
         switch (currentCharacterId)

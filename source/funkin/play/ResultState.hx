@@ -1023,7 +1023,7 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    if (Preferences.vibration) handleAnimationVibrations();
+    if (HapticUtil.hapticsAvailable) handleAnimationVibrations();
 
     super.update(elapsed);
   }

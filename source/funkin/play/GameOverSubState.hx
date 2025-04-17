@@ -313,7 +313,7 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     // Handle vibrations on update.
-    if (Preferences.vibration) handleAnimationVibrations();
+    if (HapticUtil.hapticsAvailable) handleAnimationVibrations();
 
     // Start death music before firstDeath gets replaced
     super.update(elapsed);

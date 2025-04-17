@@ -160,9 +160,12 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, null, Preferences.jpegQuality, 0, 100, 5, 0);
     #end
 
+    #if FEATURE_HAPTICS
     createPrefItemCheckbox('Vibration', 'If enabled, Haptic Feedback vibration effects will be active.', function(value:Bool):Void {
       Preferences.vibration = value;
     }, Preferences.vibration);
+    #end
+
     #if mobile
     createPrefItemCheckbox('Allow Screen Timeout',
       'If enabled, The phone screen will timeout (sleep) after few seconds of inactivity.\nDoesn\'t apply when playing a song.', function(value:Bool):Void {

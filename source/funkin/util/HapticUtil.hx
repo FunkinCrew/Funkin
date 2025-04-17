@@ -2,7 +2,9 @@ package funkin.util;
 
 import flixel.tweens.FlxTween;
 import flixel.math.FlxMath;
+#if FEATURE_HAPTICS
 import extension.haptics.Haptic;
+#end
 
 /**
  * Utility class for extra vibration functions.
@@ -20,6 +22,11 @@ class HapticUtil
   public static var defaultVibrationPreset(get, never):VibrationPreset;
 
   /**
+   * Indicates if haptics are available.
+   */
+  public static var hapticsAvailable(get, never):Bool;
+
+  /**
    * Triggers vibration.
    *
    * @param period The time for one complete vibration in seconds.
@@ -29,7 +36,8 @@ class HapticUtil
   public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD, duration:Float = Constants.DEFAULT_VIBRATION_DURATION,
       amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE):Void
   {
-    if (!Preferences.vibration) return;
+    #if FEATURE_HAPTICS
+    if (!HapticUtil.hapticsAvailable) return;
 
     #if ios
     final amplitudeValue = FlxMath.bound(amplitude * 2.5, 0, Constants.MAX_VIBRATION_AMPLITUDE);
@@ -59,6 +67,7 @@ class HapticUtil
       final sharpness:Float = (duration < 0.1) ? 1 : 0;
       Haptic.vibrateOneShot(duration, amplitudeValue, sharpness);
     }
+    #end
   }
 
   /**
@@ -68,7 +77,7 @@ class HapticUtil
    */
   public static function vibrateByPreset(vibrationPreset:VibrationPreset = null):Void
   {
-    if (!Preferences.vibration) return;
+    if (!HapticUtil.hapticsAvailable) return;
 
     final preset:VibrationPreset = (vibrationPreset != null) ? vibrationPreset : defaultVibrationPreset;
 
@@ -84,7 +93,7 @@ class HapticUtil
    */
   public static function increasingVibrate(startAmplitude:Float, targetAmplitude:Float, tweenDuration:Float = 1):Void
   {
-    if (!Preferences.vibration) return;
+    if (!HapticUtil.hapticsAvailable) return;
 
     if (amplitudeTween != null) amplitudeTween.cancel();
 
@@ -103,6 +112,15 @@ class HapticUtil
   static function get_defaultVibrationPreset():VibrationPreset
   {
     return {period: Constants.DEFAULT_VIBRATION_PERIOD, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: Constants.DEFAULT_VIBRATION_AMPLITUDE};
+  }
+
+  static function get_hapticsAvailable():Bool
+  {
+    #if FEATURE_HAPTICS
+    if (Preferences.vibration) return true;
+    #end
+
+    return false;
   }
 }
 
