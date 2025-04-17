@@ -8,6 +8,7 @@ import openfl.display.BitmapData;
 import io.newgrounds.utils.MedalList;
 import haxe.Json;
 
+@:nullSafety
 class Medals
 {
   public static var medalJSON:Array<MedalJSON> = [];
@@ -21,22 +22,8 @@ class Medals
       trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
       return [];
     }
-    else
-    {
-      // TODO: Why do I have to do this, @:nullSafety is fucked up
-      var result:Map<Medal, MedalData> = [];
 
-      for (medalId in medalList.keys())
-      {
-        var medalData = medalList.get(medalId);
-        if (medalData == null) continue;
-
-        // A little hacky, but it works.
-        result.set(cast medalId, medalData);
-      }
-
-      return result;
-    }
+    return @:privateAccess medalList._map?.copy() ?? [];
   }
 
   public static function award(medal:Medal):Void
