@@ -2,12 +2,13 @@ package funkin.graphics.shaders;
 
 import flixel.addons.display.FlxRuntimeShader;
 
+@:nullSafety
 class AdjustColorShader extends FlxRuntimeShader
 {
-  public var hue(default, set):Float;
-  public var saturation(default, set):Float;
-  public var brightness(default, set):Float;
-  public var contrast(default, set):Float;
+  public var hue(default, set):Float = 0;
+  public var saturation(default, set):Float = 0;
+  public var brightness(default, set):Float = 0;
+  public var contrast(default, set):Float = 0;
 
   public function new()
   {

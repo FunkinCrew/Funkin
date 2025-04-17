@@ -32,6 +32,7 @@ import openfl.display._internal.CairoGraphics as GfxRenderer;
  * A modified `FlxSprite` that supports filters.
  * The name's pretty much self-explanatory.
  */
+@:nullSafety
 @:access(openfl.geom.Rectangle)
 @:access(openfl.filters.BitmapFilter)
 @:access(flixel.graphics.frames.FlxFrame)
@@ -39,12 +40,12 @@ class FlxFilteredSprite extends FlxSprite
 {
   @:noCompletion var _renderer:FlxAnimateFilterRenderer = new FlxAnimateFilterRenderer();
 
-  @:noCompletion var _filterMatrix:FlxMatrix;
+  @:noCompletion var _filterMatrix:FlxMatrix = new FlxMatrix();
 
   /**
    * An `Array` of shader filters (aka `BitmapFilter`).
    */
-  public var filters(default, set):Array<BitmapFilter>;
+  public var filters(default, set):Null<Array<BitmapFilter>>;
 
   /**
    * a flag to update the image with the filters.
@@ -52,11 +53,15 @@ class FlxFilteredSprite extends FlxSprite
    */
   public var filterDirty:Bool = false;
 
-  @:noCompletion var filtered:Bool;
+  @:noCompletion var filtered:Bool = false;
 
+  // These appear to be a little troublesome to null safe.
+  @:nullSafety(Off)
   @:noCompletion var _blankFrame:FlxFrame;
 
+  @:nullSafety(Off)
   var _filterBmp1:BitmapData;
+  @:nullSafety(Off)
   var _filterBmp2:BitmapData;
 
   override public function update(elapsed:Float)
@@ -162,6 +167,7 @@ class FlxFilteredSprite extends FlxSprite
       }
       _flashRect.width += frameWidth;
       _flashRect.height += frameHeight;
+      @:nullSafety(Off)
       if (_blankFrame == null) _blankFrame = new FlxFrame(null);
 
       if (_blankFrame.parent == null || _flashRect.width > _blankFrame.parent.width || _flashRect.height > _blankFrame.parent.height)
@@ -178,6 +184,7 @@ class FlxFilteredSprite extends FlxSprite
         _filterBmp2 = new BitmapData(_blankFrame.parent.width, _blankFrame.parent.height, 0);
       }
       _blankFrame.offset.copyFrom(_frame.offset);
+      @:nullSafety(Off)
       _blankFrame.parent.bitmap = _renderer.applyFilter(_blankFrame.parent.bitmap, _filterBmp1, _filterBmp2, frame.parent.bitmap, filters, _flashRect,
         frame.frame.copyToFlash());
       _blankFrame.frame = FlxRect.get(0, 0, _blankFrame.parent.bitmap.width, _blankFrame.parent.bitmap.height);
@@ -193,7 +200,7 @@ class FlxFilteredSprite extends FlxSprite
   }
 
   @:noCompletion
-  function set_filters(value:Array<BitmapFilter>)
+  function set_filters(value:Null<Array<BitmapFilter>>)
   {
     if (filters != value) filterDirty = true;
 
