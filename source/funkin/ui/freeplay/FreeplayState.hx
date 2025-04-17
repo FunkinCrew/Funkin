@@ -768,6 +768,7 @@ class FreeplayState extends MusicBeatSubState
     rememberSelection();
     changeSelection();
     refreshCapsuleDisplays();
+
   }
 
   /**
@@ -1669,7 +1670,8 @@ class FreeplayState extends MusicBeatSubState
     {
       var song:Null<FreeplaySongData> = grpCapsules.members[index].freeplayData;
       if (song == null) continue;
-      var songDiff:Null<String> = song.data.getDifficulty(diff, null, characterVariations)?.difficulty;
+      var characterVar = song.data.getVariationsByCharacter(currentCharacter);
+      var songDiff:Null<String> = song.data.getDifficulty(diff, null, characterVar)?.difficulty;
       // if the difference between the current index and this index is the smallest so far,
       // take this one as the closest index. (By comparing with the closest variable)
       var c:Int = curSelected - index;
@@ -1717,10 +1719,8 @@ class FreeplayState extends MusicBeatSubState
     // For when we change the difficulty, but the song doesn't have that difficulty!
     if (!songDifficulties.contains(difficultiesAvailable[currentDifficultyIndex]))
     {
-      // If the current difficulty is not available, find the closest one that is.
-      characterVariations.push("erect");
       curSelected = findClosestDiff(characterVariations, difficultiesAvailable[currentDifficultyIndex]);
-      rememberedSongId = grpCapsules.members[curSelected].freeplayData?.data.id ?? rememberedSongId;
+      rememberedSongId = grpCapsules.members[curSelected].freeplayData?.data.id;
     }
 
     for (variation in characterVariations)
@@ -2107,7 +2107,7 @@ class FreeplayState extends MusicBeatSubState
       }
       #end
       instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
-      trace('Attempting to play partial preview: ${previewSong.id}:${instSuffix}');
+      // trace('Attempting to play partial preview: ${previewSong.id}:${instSuffix}');
       FunkinSound.playMusic(previewSong.id,
         {
           startingVolume: 0.0,
