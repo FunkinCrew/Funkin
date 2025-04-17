@@ -104,11 +104,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
     FlxG.state.persistentDraw = false;
     FlxG.state.persistentUpdate = false;
 
-    final menuBG:FunkinSprite = FunkinSprite.create('menuBG');
-    var hsv = new HSVShader();
     hsv.hue = -0.6;
     hsv.saturation = 0.9;
     hsv.value = 3.6;
+
+    final menuBG:FunkinSprite = FunkinSprite.create('menuBG');
     menuBG.shader = hsv;
     menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
     menuBG.updateHitbox();
@@ -170,8 +170,8 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     for (i in 0...availableSchemes.length)
     {
-      final hitboxShowcase:HitboxShowcase = new HitboxShowcase(Math.floor(FlxG.width * -0.16 + (1500 * (i * FullScreenScaleMode.windowScale.x))), 0, i,
-        currentIndex, availableSchemes[i], onSelectHitbox);
+      final hitboxShowcase:HitboxShowcase = new HitboxShowcase(0, 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
+      hitboxShowcase.x = Math.floor(FlxG.width * -0.16 + (1500 * (i * FullScreenScaleMode.windowScale.x)));
 
       switch (availableSchemes[i])
       {
@@ -220,6 +220,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
       currentButton = new SchemeMenuButton(FlxG.width * 0.83, FlxG.height * 0.83, 'DEMO', onHitboxDemo);
       currentButton.text.x -= 10;
     }
+
     add(currentButton);
   }
 
@@ -261,14 +262,6 @@ class ControlsSchemeMenu extends MusicBeatSubState
       if (availableSchemes[currentIndex] == FunkinHitboxControlSchemes.Arrows) hint.alpha = 1;
 
       if (!hint.deadZones.contains(cast(currentButton.body, FunkinSprite))) hint.deadZones.push(cast(currentButton.body, FunkinSprite));
-    });
-
-    if (Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows) return;
-
-    hitbox.forEachAlive(function(hint:FunkinHint):Void {
-      hint.alpha = 1;
-      @:privateAccess
-      if (hint.label != null) hint.label.alpha = 0.3;
     });
   }
 
@@ -375,8 +368,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     if (TouchUtil.pressed && dragDistance != 0)
     {
-      hitboxShowcases.x = FlxMath.bound(MathUtil.smoothLerp(hitboxShowcases.x, originX + dragDistance * 10, elapsed, 0.5), -1500 * availableSchemes.length,
-        400);
+      final showcasesTargetX:Float = originX + dragDistance * 10;
+      hitboxShowcases.x = MathUtil.smoothLerp(hitboxShowcases.x, showcasesTargetX, elapsed, 0.5);
+
+      final minShowcasesX:Float = -1500 * availableSchemes.length;
+      hitboxShowcases.x = FlxMath.bound(hitboxShowcases.x, minShowcasesX, 400);
 
       final targetIndex:Int = Math.round(hitboxShowcases.x / -1500);
 

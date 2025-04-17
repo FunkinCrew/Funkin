@@ -22,7 +22,7 @@ class HitboxOptionButton extends FlxSpriteGroup
   public var text:TextMenuItem;
 
   /**
-   * Creates a new HitboxShowcase instance.
+   * Creates a new HitboxOptionButton instance.
    *
    * @param name Option's name.
    * @param xPos The x position of the object.
@@ -35,14 +35,15 @@ class HitboxOptionButton extends FlxSpriteGroup
     super(xPos, yPos);
 
     checkbox = new CheckboxPreferenceItem(0, 0, defaultValue);
-    add(checkbox);
 
     text = new TextMenuItem(checkbox.x + checkbox.width, checkbox.y + 30, name, AtlasFont.BOLD, function() {
       final value:Bool = !checkbox.currentValue;
       onClick(value);
       checkbox.currentValue = value;
     });
+
     add(text);
+    add(checkbox);
 
     setSize(500, 500);
   }
