@@ -5,7 +5,7 @@ import flixel.tweens.FlxTween;
 
 class BlueFade extends FlxShader
 {
-  public var fadeVal(default, set):Float;
+  public var fadeVal(default, set):Float = 1;
 
   function set_fadeVal(val:Float):Float
   {
