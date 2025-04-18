@@ -48,13 +48,6 @@
       "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
-      "name": "funkin.haptic",
-      "type": "git",
-      "dir": null,
-      "ref": "4d60a26a43ea4d0fb8c133b408575bda7f00db57",
-      "url": "https://github.com/FunkinDroidTeam/funkHaptic"
-    },
-    {
       "name": "grig.audio",
       "type": "git",
       "dir": "src",
@@ -220,8 +213,22 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": null,
-      "url": "https://github.com/mcagabe19-stuff/extension-admob"
+      "ref": "2a44162b6d13679d3e8f5b5e5cb4f014f43a6fee",
+      "url": "https://github.com/FunkinCrew/extension-admob"
+    },
+    {
+      "name": "extension-haptics",
+      "type": "git",
+      "dir": null,
+      "ref": "5bb424caac2ce03ae68c41ff2f624968ca6346ef",
+      "url": "https://github.com/MAJigsaw77/extension-haptics"
+    },
+    {
+      "name": "extension-androidtools",
+      "type": "git",
+      "dir": null,
+      "ref": "a79bafad9bc125572b19d17d5d9eff3d528fc8a0",
+      "url": "https://github.com/MAJigsaw77/extension-androidtools"
     }
   ]
 }
