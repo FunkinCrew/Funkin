@@ -217,18 +217,23 @@
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
-      "name": "extension-haptics",
-      "type": "git",
-      "dir": null,
-      "ref": "5bb424caac2ce03ae68c41ff2f624968ca6346ef",
-      "url": "https://github.com/MAJigsaw77/extension-haptics"
-    },
-    {
       "name": "extension-androidtools",
       "type": "git",
       "dir": null,
-      "ref": "a79bafad9bc125572b19d17d5d9eff3d528fc8a0",
+      "ref": "d6203857ff5c4193e3dac9ab337e8c016f7ad47e",
       "url": "https://github.com/MAJigsaw77/extension-androidtools"
+    },
+    {
+      "name": "extension-iapcore",
+      "type": "git",
+      "dir": null,
+      "ref": "46a8b945fb6fbfbf3cff313e8110f62413ad286f",
+      "url": "https://github.com/MAJigsaw77/extension-iapcore"
+    },
+    {
+      "name": "extension-haptics",
+      "type": "haxelib",
+      "version": "1.0.0"
     }
   ]
 }
