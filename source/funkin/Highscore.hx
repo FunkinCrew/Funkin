@@ -3,6 +3,7 @@ package funkin;
 /**
  * A core class which handles tracking score and combo for the current song.
  */
+@:nullSafety
 class Highscore
 {
   /**
