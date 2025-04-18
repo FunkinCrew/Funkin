@@ -18,16 +18,6 @@ import funkin.ui.FullScreenScaleMode;
 class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRegistryEntry<SpeakerData>
 {
   /**
-   * The internal ID for this speaker.
-   */
-  public final id:String;
-
-  /**
-   * The full data for a speaker.
-   */
-  public final _data:SpeakerData;
-
-  /**
    * A readable name for this speaker.
    */
   public var speakerName(get, never):String;
@@ -299,14 +289,4 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {}
-
-  public override function toString():String
-  {
-    return 'Speaker($id)';
-  }
-
-  static function _fetchData(id:String):Null<SpeakerData>
-  {
-    return SpeakerRegistry.instance.parseEntryDataWithMigration(id, SpeakerRegistry.instance.fetchEntryVersion(id));
-  }
 }

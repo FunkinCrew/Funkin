@@ -142,7 +142,7 @@ class FunkinSoundTray extends FlxSoundTray
       var sound:String = up ? volumeUpSound : volumeDownSound;
 
       if (globalVolume == 10) sound = volumeMaxSound;
-      if (sound != null) FlxG.sound.load(sound).play();
+      if (sound != null) FlxG.sound.load(sound).play().volume = 0.3;
     }
 
     return globalVolume;

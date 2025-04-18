@@ -15,6 +15,7 @@ import openfl.events.Event;
 import openfl.Lib;
 import openfl.media.Video;
 import openfl.net.NetStream;
+import funkin.util.WindowUtil;
 
 /**
  * The main class which initializes HaxeFlixel and starts the game in its initial state.
@@ -78,6 +79,8 @@ class Main extends Sprite
     // The framerate cap will more thoroughly initialize via Preferences in InitState.hx
     funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
     #end
+
+    WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
     if (hasEventListener(Event.ADDED_TO_STAGE))
     {

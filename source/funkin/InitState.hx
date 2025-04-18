@@ -19,6 +19,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.stickers.StickerRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.story.level.LevelRegistry;
@@ -220,6 +221,7 @@ class InitState extends FlxState
     FreeplayStyleRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+    StickerRegistry.instance.loadEntries();
 
     // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.
@@ -280,6 +282,7 @@ class InitState extends FlxState
         songId: "cum",
         characterId: "pico",
         difficultyId: "nightmare",
+        variationId: "erect",
         isNewHighscore: true,
         scoreData:
           {

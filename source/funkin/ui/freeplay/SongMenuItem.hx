@@ -506,10 +506,14 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
+  public function initPosition(x:Float, y:Float):Void
   {
-    if (x != null) this.x = x;
-    if (y != null) this.y = y;
+    this.x = x;
+    this.y = y;
+  }
+
+  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
+  {
     this.freeplayData = freeplayData;
 
     // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
@@ -701,6 +705,17 @@ class SongMenuItem extends FlxSpriteGroup
     if (songText.tooLong) songText.resetText();
 
     if (selected && songText.tooLong) songText.initMove();
+  }
+
+  public override function kill():Void
+  {
+    super.kill();
+
+    visible = true;
+    capsule.alpha = 1;
+    doLerp = false;
+    doJumpIn = false;
+    doJumpOut = false;
   }
 }
 

@@ -4,6 +4,7 @@ package funkin;
 import funkin.mobile.ui.FunkinHitbox;
 #end
 import funkin.save.Save;
+import funkin.util.WindowUtil;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -204,6 +205,27 @@ class Preferences
     return value;
   }
 
+  /**
+   * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
+   * @default `OFF`
+   */
+  public static var vsyncMode(get, set):lime.ui.WindowVSyncMode;
+
+  static function get_vsyncMode():lime.ui.WindowVSyncMode
+  {
+    return Save?.instance?.options?.vsyncMode ?? lime.ui.WindowVSyncMode.OFF;
+  }
+
+  static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
+  {
+    WindowUtil.setVSyncMode(value);
+
+    var save:Save = Save.instance;
+    save.options.vsyncMode = value;
+    save.flush();
+    return value;
+  }
+
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
@@ -368,6 +390,7 @@ class Preferences
   {
     // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
+    // WindowUtil.setVSyncMode(Preferences.vsyncMode);
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
     #if web
