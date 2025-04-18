@@ -136,7 +136,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     #end
 
     // disabled on macos due to "error: Late swap tearing currently unsupported"
-    #if !mac
+    // disable on mobile since it barely has any effect
+    #if !(mac || mobile)
     createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
       "Off" => WindowVSyncMode.OFF,
       "On" => WindowVSyncMode.ON,
