@@ -101,7 +101,7 @@ class InitState extends FlxState
     funkin.mobile.util.AdMobUtil.init();
     #end
 
-    #if android
+    #if FEATURE_IAP
     // Setup In-App purchases
     funkin.mobile.util.InAppPurchasesUtil.init();
     #end

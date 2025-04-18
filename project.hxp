@@ -313,9 +313,15 @@ class Project extends HXProject {
 
   /**
    * `-DFEATURE_ADMOB_ADS`
-   * If this flag is enabled, ADs from AdMob will be disabled.
+   * If this flag is disabled, ADs from AdMob will be disabled.
    */
   static final FEATURE_ADMOB_ADS:FeatureFlag = "FEATURE_ADMOB_ADS";
+
+	  /**
+   * `-DFEATURE_IAP`
+   * If this flag is enabled, ADs from AdMob will be disabled.
+   */
+  static final FEATURE_IAP:FeatureFlag = "FEATURE_IAP";
 
 	/**
 	 * `-DTESTING_ADS`
@@ -660,6 +666,9 @@ class Project extends HXProject {
     // Should be true only on mobile builds.
     FEATURE_ADMOB_ADS.apply(this, isMobile());
 
+		// Should be true only on android builds for now.
+		FEATURE_IAP.apply(this, isAndroid());
+
     // Should be true only on debug mobile builds.
     TESTING_ADS.apply(this, (isTest() || isDebug()) && FEATURE_ADMOB_ADS.isEnabled(this));
 
@@ -828,8 +837,9 @@ class Project extends HXProject {
       addHaxelib('hxvlc'); // Video playback
     }
 
-    if (isAndroid())
-       addHaxelib('extension-androidtools'); // Android Functions
+    if (isAndroid()) {
+      addHaxelib('extension-androidtools'); // Android Functions
+		}
 
 		if (FEATURE_DISCORD_RPC.isEnabled(this)) {
 			addHaxelib('hxdiscord_rpc'); // Discord API
@@ -856,8 +866,8 @@ class Project extends HXProject {
 			addHaxelib('extension-haptics'); // Haptic feedback
 		}
 
-		if (isMobile()) {
-    	addHaxelib('extension-iap'); // In-app purchases Extension
+		if (FEATURE_IAP.isEnabled(this)) {
+    	addHaxelib('extension-iapcore'); // In-app purchases Extension
 		}
   }
 
