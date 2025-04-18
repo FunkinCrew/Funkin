@@ -2,11 +2,12 @@ package funkin.graphics.shaders;
 
 import flixel.addons.display.FlxRuntimeShader;
 
+@:nullSafety
 class HSVShader extends FlxRuntimeShader
 {
-  public var hue(default, set):Float;
-  public var saturation(default, set):Float;
-  public var value(default, set):Float;
+  public var hue(default, set):Float = 1;
+  public var saturation(default, set):Float = 1;
+  public var value(default, set):Float = 1;
 
   public function new(h:Float = 1, s:Float = 1, v:Float = 1)
   {
