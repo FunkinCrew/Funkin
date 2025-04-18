@@ -5,6 +5,7 @@ import funkin.save.Save;
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
  */
+@:nullSafety
 class Preferences
 {
   /**
@@ -44,7 +45,7 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
-    return Save?.instance?.options?.naughtyness;
+    return Save?.instance?.options?.naughtyness ?? true;
   }
 
   static function set_naughtyness(value:Bool):Bool
@@ -63,7 +64,7 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll;
+    return Save?.instance?.options?.downscroll ?? false;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -101,7 +102,7 @@ class Preferences
 
   static function get_zoomCamera():Bool
   {
-    return Save?.instance?.options?.zoomCamera;
+    return Save?.instance?.options?.zoomCamera ?? true;
   }
 
   static function set_zoomCamera(value:Bool):Bool
@@ -120,7 +121,7 @@ class Preferences
 
   static function get_debugDisplay():Bool
   {
-    return Save?.instance?.options?.debugDisplay;
+    return Save?.instance?.options?.debugDisplay ?? false;
   }
 
   static function set_debugDisplay(value:Bool):Bool
@@ -180,7 +181,7 @@ class Preferences
 
   static function get_unlockedFramerate():Bool
   {
-    return Save?.instance?.options?.unlockedFramerate;
+    return Save?.instance?.options?.unlockedFramerate ?? false;
   }
 
   static function set_unlockedFramerate(value:Bool):Bool
