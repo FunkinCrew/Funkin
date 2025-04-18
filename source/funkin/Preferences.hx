@@ -10,6 +10,7 @@ import funkin.util.HapticUtil.HapticsMode;
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
  */
+@:nullSafety
 class Preferences
 {
   /**
@@ -59,7 +60,7 @@ class Preferences
     #if NO_FEATURE_NAUGHTYNESS
     return false;
     #else
-    return Save?.instance?.options?.naughtyness;
+    return Save?.instance?.options?.naughtyness ?? true;
     #end
   }
 
@@ -83,7 +84,7 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll #if mobile ?? true #end;
+    return Save?.instance?.options?.downscroll #if mobile ?? true #else ?? false #end;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -121,7 +122,7 @@ class Preferences
 
   static function get_zoomCamera():Bool
   {
-    return Save?.instance?.options?.zoomCamera;
+    return Save?.instance?.options?.zoomCamera ?? true;
   }
 
   static function set_zoomCamera(value:Bool):Bool
@@ -144,7 +145,7 @@ class Preferences
     #if mobile
     return false;
     #end
-    return Save?.instance?.options?.debugDisplay;
+    return Save?.instance?.options?.debugDisplay ?? false;
   }
 
   static function set_debugDisplay(value:Bool):Bool
@@ -296,7 +297,7 @@ class Preferences
 
   static function get_unlockedFramerate():Bool
   {
-    return Save?.instance?.options?.unlockedFramerate;
+    return Save?.instance?.options?.unlockedFramerate ?? false;
   }
 
   static function set_unlockedFramerate(value:Bool):Bool
