@@ -2,6 +2,7 @@ package funkin.util.macro;
 
 #if !display
 #if macro
+@:nullSafety
 class FlxMacro
 {
   /**

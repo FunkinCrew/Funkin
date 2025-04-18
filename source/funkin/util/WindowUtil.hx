@@ -14,6 +14,7 @@ using StringTools;
 #include <psapi.h>
 ')
 #end
+@:nullSafety
 class WindowUtil
 {
   /**
