@@ -52,6 +52,7 @@ import funkin.api.newgrounds.NewgroundsClient;
  *
  * It should not contain any sprites or rendering.
  */
+@:nullSafety
 class InitState extends FlxState
 {
   /**
@@ -328,7 +329,7 @@ class InitState extends FlxState
    */
   function startSong(songId:String, difficultyId:String = 'normal'):Void
   {
-    var songData:funkin.play.song.Song = funkin.data.song.SongRegistry.instance.fetchEntry(songId);
+    var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId);
 
     if (songData == null)
     {
@@ -365,6 +366,7 @@ class InitState extends FlxState
         PlayStatePlaylist.campaignId = 'weekend1';
     }
 
+    @:nullSafety(Off) // Cannot unify?
     LoadingState.loadPlayState(
       {
         targetSong: songData,
@@ -379,7 +381,7 @@ class InitState extends FlxState
    */
   function startLevel(levelId:String, difficultyId:String = 'normal'):Void
   {
-    var currentLevel:funkin.ui.story.Level = funkin.data.story.level.LevelRegistry.instance.fetchEntry(levelId);
+    var currentLevel:Null<funkin.ui.story.Level> = funkin.data.story.level.LevelRegistry.instance.fetchEntry(levelId);
 
     if (currentLevel == null)
     {
@@ -395,10 +397,19 @@ class InitState extends FlxState
     PlayStatePlaylist.isStoryMode = true;
     PlayStatePlaylist.campaignScore = 0;
 
-    var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
+    var targetSongId:Null<String> = PlayStatePlaylist.playlistSongIds.shift();
 
-    var targetSong:funkin.play.song.Song = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSong:Null<funkin.play.song.Song> = null;
 
+    if (targetSongId != null) targetSong = SongRegistry.instance.fetchEntry(targetSongId);
+
+    if (targetSongId == null)
+    {
+      startGameNormally();
+      return;
+    }
+
+    @:nullSafety(Off)
     LoadingState.loadPlayState(
       {
         targetSong: targetSong,
@@ -406,6 +417,7 @@ class InitState extends FlxState
       });
   }
 
+  @:nullSafety(Off) // Meh, remove when flixel.system.debug.log.LogStyle is null safe
   function setupFlixelDebug():Void
   {
     //
@@ -485,17 +497,17 @@ class InitState extends FlxState
     #end
   }
 
-  function defineSong():String
+  function defineSong():Null<String>
   {
     return MacroUtil.getDefine('SONG');
   }
 
-  function defineLevel():String
+  function defineLevel():Null<String>
   {
     return MacroUtil.getDefine('LEVEL');
   }
 
-  function defineDifficulty():String
+  function defineDifficulty():Null<String>
   {
     return MacroUtil.getDefine('DIFFICULTY');
   }
