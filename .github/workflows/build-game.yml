@@ -122,7 +122,7 @@ jobs:
       matrix:
         include:
           - target: windows
-            runs-on: windows-latest
+            runs-on: windows
           - target: macos
             runs-on: macos
     runs-on:
