@@ -118,6 +118,7 @@ jobs:
 
   build-game-on-host:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: windows
