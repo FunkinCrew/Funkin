@@ -18,20 +18,32 @@ import flixel.sound.FlxSound;
 @:nullSafety
 class Conductor
 {
-  // onBeatHit is called every quarter note
-  // onStepHit is called every sixteenth note
+  // onBeatHit is called on every note determined by the denominator (4 = quarter, 8 = eighth, etc.)
+  // onStepHit is called on every note which is a quarter of a beat (4 = sixteenth, 8 = thirty-second, etc.)
   // 4/4 = 4 beats per measure = 16 steps per measure
   //   120 BPM = 120 quarter notes per minute = 2 onBeatHit per second
   //   120 BPM = 480 sixteenth notes per minute = 8 onStepHit per second
   //   60 BPM = 60 quarter notes per minute = 1 onBeatHit per second
   //   60 BPM = 240 sixteenth notes per minute = 4 onStepHit per second
   // 3/4 = 3 beats per measure = 12 steps per measure
-  //   (IDENTICAL TO 4/4 but shorter measure length)
+  //   (Identical to 4/4 but has a shorter measure length)
   //   120 BPM = 120 quarter notes per minute = 2 onBeatHit per second
   //   120 BPM = 480 sixteenth notes per minute = 8 onStepHit per second
   //   60 BPM = 60 quarter notes per minute = 1 onBeatHit per second
   //   60 BPM = 240 sixteenth notes per minute = 4 onStepHit per second
-  // 7/8 = 3.5 beats per measure = 14 steps per measure
+  // 7/8 = 7 beats per measure = 28 steps per measure
+  //   Beats are EIGHTH NOTES!!
+  //   (Identical to 7/4 but beats happen twice as fast)
+  //   120 BPM = 240 eighth notes per minute = 4 onBeatHit per second
+  //   120 BPM = 960 twenty-second notes per minute = 16 onStepHit per second
+  // 15/16 = 15 beats per measure = 60 steps per measure
+  //   Beats are SIXTEENTH NOTES!!
+  //   120 BPM = 480 sixteenth notes per minute = 8 onBeatHit per second
+  //   120 BPM = 1920 sixty-fourth notes per minute = 32 onStepHit per second
+  // 3/2 = 3 beats per measure = 12 steps per measure
+  //   Beats are HALF NOTES!!
+  //   120 BPM = 60 half notes per minute = 1 onBeatHit per second
+  //   120 BPM = 240 eighth notes per minute = 4 onStepHit per second
 
   /**
    * The current instance of the Conductor.
@@ -160,24 +172,24 @@ class Conductor
   }
 
   /**
-   * Duration of a beat (quarter note) in milliseconds. Calculated based on bpm.
+   * Duration of a beat in milliseconds. Calculated based on bpm.
    */
   public var beatLengthMs(get, never):Float;
 
   function get_beatLengthMs():Float
   {
     // Tied directly to BPM.
-    return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC);
+    return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC) * (4 / timeSignatureDenominator);
   }
 
   /**
-   * Duration of a step (sixtennth note) in milliseconds. Calculated based on bpm.
+   * Duration of a step in milliseconds. Calculated based on bpm.
    */
   public var stepLengthMs(get, never):Float;
 
   function get_stepLengthMs():Float
   {
-    return beatLengthMs / timeSignatureNumerator;
+    return beatLengthMs / Constants.STEPS_PER_BEAT;
   }
 
   /**
@@ -246,7 +258,7 @@ class Conductor
 
   function get_instrumentalOffsetSteps():Float
   {
-    var startingStepLengthMs:Float = ((Constants.SECS_PER_MIN / startingBPM) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+    var startingStepLengthMs:Float = (((Constants.SECS_PER_MIN / startingBPM) * Constants.MS_PER_SEC) * (4 / timeSignatureDenominator)) / Constants.STEPS_PER_BEAT;
 
     return instrumentalOffset / startingStepLengthMs;
   }
@@ -288,26 +300,23 @@ class Conductor
   }
 
   /**
-   * The number of beats in a measure. May be fractional depending on the time signature.
+   * The number of beats in a measure.
    */
   public var beatsPerMeasure(get, never):Float;
 
   function get_beatsPerMeasure():Float
   {
-    // NOTE: Not always an integer, for example 7/8 is 3.5 beats per measure
-    return stepsPerMeasure / Constants.STEPS_PER_BEAT;
+    return timeSignatureNumerator;
   }
 
   /**
    * The number of steps in a measure.
-   * TODO: I don't think this can be fractional?
    */
   public var stepsPerMeasure(get, never):Int;
 
   function get_stepsPerMeasure():Int
   {
-    // TODO: Is this always an integer?
-    return Std.int(timeSignatureNumerator / timeSignatureDenominator * Constants.STEPS_PER_BEAT * Constants.STEPS_PER_BEAT);
+    return Std.int(timeSignatureNumerator * Constants.STEPS_PER_BEAT);
   }
 
   /**
@@ -614,7 +623,7 @@ class Conductor
         }
       }
 
-      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / timeSignatureDenominator)) / Constants.STEPS_PER_BEAT;
       var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / lastStepLengthMs;
       resultStep += resultFractionalStep;
 
@@ -653,7 +662,7 @@ class Conductor
         }
       }
 
-      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / timeSignatureDenominator)) / Constants.STEPS_PER_BEAT;
       resultMs += (stepTime - lastTimeChange.beatTime * Constants.STEPS_PER_BEAT) * lastStepLengthMs;
 
       return resultMs;
@@ -691,7 +700,7 @@ class Conductor
         }
       }
 
-      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / timeSignatureDenominator)) / Constants.STEPS_PER_BEAT;
       resultMs += (beatTime - lastTimeChange.beatTime) * lastStepLengthMs * Constants.STEPS_PER_BEAT;
 
       return resultMs;
