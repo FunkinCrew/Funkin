@@ -150,9 +150,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     createItem("CLEAR SAVE DATA", function() {
       promptClearSaveData();
     });
+    #if android
     createItem("Launch purchase flow", function() {
       funkin.mobile.util.InAppPurchasesUtil.purchase('test_product_0');
     });
+    #end
     createItem("EXIT", exit);
   }
 
