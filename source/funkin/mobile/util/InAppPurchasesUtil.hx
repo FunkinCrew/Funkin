@@ -4,13 +4,12 @@ package funkin.mobile.util;
 import extension.iapcore.android.IAPAndroid;
 import extension.iapcore.android.IAPProductDetails;
 import extension.iapcore.android.IAPPurchase;
+import extension.iapcore.android.IAPPurchaseState;
 import extension.iapcore.android.IAPResponseCode;
+import extension.iapcore.android.IAPResult;
 
 /**
- * Utility class for managing in-app purchases in a mobile application.
- * This class provides functions to initialize the in-app purchase system,
- * handle purchase events, and manage the purchase flow for different types
- * of in-app products, including consumables and non-consumables.
+ * Utility class for managing in-app purchases.
  */
 class InAppPurchasesUtil
 {
@@ -20,9 +19,24 @@ class InAppPurchasesUtil
   static final FETCH_PRODUCT_DETAILS_IDS:Array<String> = ['test_product_0'];
 
   /**
+   * The maximum number of attempts to reconnect in case of a failure.
+   */
+  static final MAX_RECONNECT_ATTEMPTS:Int = 3;
+
+  /**
    * A static variable that holds an array of currently loaded product details for in-app purchases.
    */
-  public static var currentLoadedProductDetails:Array<IAPProductDetails> = [];
+  public static var currentProductDetails:Array<IAPProductDetails> = [];
+
+  /**
+   * A static variable that holds an array of currently purchased for in-app purchases.
+   */
+  public static var currentPurchased:Array<IAPPurchase> = [];
+
+  /**
+   * A static variable to track the number of attempts made to reconnect.
+   */
+  static var reconnectAttempts:Int = 0;
 
   /**
    * Initializes the in-app purchases utility.
@@ -33,42 +47,67 @@ class InAppPurchasesUtil
       logMessage(message);
     });
 
-    IAPAndroid.onBillingSetupFinished.add(function(code:IAPResponseCode, message:String):Void {
-      if (message != null && message.length > 0) logMessage('IAP Setup finished with code "$code" "$message"!');
-      else
+    IAPAndroid.onBillingSetupFinished.add(function(result:IAPResult):Void {
+      if (result.getResponseCode() != IAPResponseCode.OK)
       {
-        logMessage('IAP Setup finished with code "$code"!');
+        logMessage('Billing setup failed "$result"!');
+        return;
       }
 
-      if (code == IAPResponseCode.OK)
-      {
-        IAPAndroid.queryPurchases();
+      reconnectAttempts = 0;
 
-        IAPAndroid.queryProductDetails(FETCH_PRODUCT_DETAILS_IDS);
-      }
+      IAPAndroid.queryPurchases();
+
+      IAPAndroid.queryProductDetails(FETCH_PRODUCT_DETAILS_IDS);
     });
 
     IAPAndroid.onBillingServiceDisconnected.add(function():Void {
-      logMessage("IAP Billing service disconnected!");
-    });
+      logMessage("Billing service disconnected!");
 
-    IAPAndroid.onProductDetailsResponse.add(function(code:IAPResponseCode, productDetails:Array<IAPProductDetails>):Void {
-      logMessage('IAP Product details responded with code "$code", $productDetails');
-
-      currentLoadedProductDetails = productDetails;
-
-      for (productDetails in currentLoadedProductDetails)
+      if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS)
       {
-        logMessage('IAP Product details with title: ${productDetails.getTitle()}');
+        reconnectAttempts++;
+
+        logMessage('Attempting to reconnect... ($reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)');
+
+        IAPAndroid.startConnection();
+      }
+      else
+      {
+        logMessage('Max reconnect attempts reached.');
       }
     });
 
-    IAPAndroid.onQueryPurchasesResponse.add(function(code:IAPResponseCode, purchases:Array<IAPPurchase>):Void {
-      logMessage('IAP Query purchases responded with code "$code", $purchases');
+    IAPAndroid.onProductDetailsResponse.add(function(result:IAPResult, productDetails:Array<IAPProductDetails>):Void {
+      if (result.getResponseCode() == IAPResponseCode.OK) currentProductDetails = productDetails;
+      else
+      {
+        logMessage('Failed to fetch product details: "$result"');
+      }
     });
 
-    IAPAndroid.onPurchasesUpdated.add(function(code:IAPResponseCode, purchases:Array<IAPPurchase>):Void {
-      logMessage('IAP Purchases updated response with code "$code", $purchases');
+    IAPAndroid.onQueryPurchasesResponse.add(function(result:IAPResult, purchases:Array<IAPPurchase>):Void {
+      if (result.getResponseCode() == IAPResponseCode.OK) handlePurchases(purchases);
+      else
+      {
+        logMessage('Failed to query purchases: "$result"');
+      }
+    });
+
+    IAPAndroid.onPurchasesUpdated.add(function(result:IAPResult, purchases:Array<IAPPurchase>):Void {
+      if (result.getResponseCode() == IAPResponseCode.OK) handlePurchases(purchases);
+      else
+      {
+        logMessage('Failed to update purchases: "$result"');
+      }
+    });
+
+    IAPAndroid.onAcknowledgePurchaseResponse.add(function(result:IAPResult):Void {
+      if (result.getResponseCode() == IAPResponseCode.OK) logMessage('Purchase acknowledged successfully!');
+      else
+      {
+        logMessage('Failed to acknowledge purchase: $result');
+      }
     });
 
     IAPAndroid.init();
@@ -83,23 +122,36 @@ class InAppPurchasesUtil
    */
   public static function purchase(id:String):Void
   {
-    for (product in currentLoadedProductDetails)
+    for (product in currentProductDetails)
     {
       if (product.getProductId() == id)
       {
-        logMessage('Lunching purchase flow for ${product.getTitle()}');
-
         IAPAndroid.launchPurchaseFlow(product);
-
         return;
-      }
-      else
-      {
-        logMessage('Current ${product.getProductId()} doesnt match ${id}');
       }
     }
 
-    logMessage("Didn\'t Found Product Details for ID: " + id);
+    logMessage("Didn't find product details for ID: " + id);
+  }
+
+  /**
+   * Checks if the specified product ID is already purchased.
+   *
+   * @param id The product ID to check.
+   *
+   * @return `true` if the product is already purchased and acknowledged, false otherwise.
+   */
+  public static function isPurchased(id:String):Bool
+  {
+    for (purchase in currentPurchased)
+    {
+      if (purchase.getProducts().contains(id))
+      {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @:noCompletion
@@ -109,7 +161,36 @@ class InAppPurchasesUtil
     android.widget.Toast.makeText(message, android.widget.Toast.LENGTH_SHORT);
     #end
 
-    trace(message);
+    Sys.println(message);
+  }
+
+  @:noCompletion
+  private static function handlePurchases(purchases:Array<IAPPurchase>):Void
+  {
+    for (purchase in purchases)
+    {
+      if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
+      {
+        if (!purchase.isAcknowledged()) IAPAndroid.acknowledgePurchase(purchase.getPurchaseToken());
+
+        var alreadyTracked:Bool = false;
+
+        for (existing in currentPurchased)
+        {
+          if (existing.getPurchaseToken() == purchase.getPurchaseToken())
+          {
+            alreadyTracked = true;
+            break;
+          }
+        }
+
+        if (!alreadyTracked) currentPurchased.push(purchase);
+      }
+      else
+      {
+        logMessage('Purchase not completed: ${purchase.getPurchaseState()}');
+      }
+    }
   }
 }
 #end
