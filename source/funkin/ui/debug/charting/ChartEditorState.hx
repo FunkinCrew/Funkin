@@ -567,7 +567,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_noteSnapRatio():Float
   {
-    return BASE_QUANT / noteSnapQuant;
+    return BASE_QUANT / (noteSnapQuant * 4 / Conductor.instance.timeSignatureDenominator);
   }
 
   /**
@@ -3569,8 +3569,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       // Let's try testing only notes within a certain range of the view area.
       // TODO: I don't think this messes up really long sustains, does it?
-      var viewAreaTopMs:Float = scrollPositionInMs - (Conductor.instance.measureLengthMs * 2); // Is 2 measures enough?
-      var viewAreaBottomMs:Float = scrollPositionInMs + (Conductor.instance.measureLengthMs * 2); // Is 2 measures enough?
+      // Only at Numerator of 1 do we need to extend the view area. Though, who makes songs with 1 beat in a measure?
+      var viewAreaTopMs:Float = scrollPositionInMs - (Conductor.instance.measureLengthMs * (Conductor.instance.timeSignatureNumerator == 1 ? 4 : 2));
+      var viewAreaBottomMs:Float = scrollPositionInMs + (Conductor.instance.measureLengthMs * (Conductor.instance.timeSignatureNumerator == 1 ? 4 : 2));
 
       // Add notes that are now visible.
       for (noteData in currentSongChartNoteData)
@@ -5130,7 +5131,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
-    playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}';
+    playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)} in ${Conductor.instance.timeSignatureNumerator}/${Conductor.instance.timeSignatureDenominator}';
   }
 
   function handlePlayhead():Void
