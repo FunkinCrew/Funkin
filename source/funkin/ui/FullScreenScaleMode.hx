@@ -239,13 +239,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   {
     notchPosition.set(enabled ? notch.x : 0, enabled ? notch.y : 0);
     notchSize.set(enabled ? notch.width : 0, enabled ? notch.height : 0);
-    #if android
-    gameNotchPosition.set(notchPosition.x / 2, notchPosition.y / 2);
-    gameNotchSize.set(notchSize.x / 2, notchSize.y / 2);
-    #else
-    gameNotchPosition.copyFrom(notchPosition);
-    gameNotchSize.copyFrom(notchSize);
-    #end
+    gameNotchPosition.set(notchPosition.x * scale.x, notchPosition.y * scale.y);
+    gameNotchSize.set(notchSize.x * scale.x, notchSize.y * scale.y);
   }
   #end
 

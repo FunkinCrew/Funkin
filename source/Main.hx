@@ -143,8 +143,6 @@ class Main extends Sprite
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     #end
 
-    addChild(fpsCounter);
-
     #if mobile
     FlxG.scaleMode = new FullScreenScaleMode();
     #end

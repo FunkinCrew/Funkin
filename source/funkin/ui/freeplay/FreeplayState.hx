@@ -1574,11 +1574,16 @@ class FreeplayState extends MusicBeatSubState
 
   function handleDifficultySwitch():Void
   {
+    #if TOUCH_CONTROLS
     final leftPressed:Bool = controls.UI_LEFT_P
       || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased);
 
     final rightPressed:Bool = controls.UI_RIGHT_P
       || (diffSelRight != null && TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justReleased);
+    #else
+    final leftPressed:Bool = controls.UI_LEFT_P;
+    final rightPressed:Bool = controls.UI_RIGHT_P;
+    #end
 
     if (leftPressed)
     {
