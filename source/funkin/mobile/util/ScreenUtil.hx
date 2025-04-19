@@ -55,12 +55,17 @@ class ScreenUtil
     var left:Float = -1;
     var right:Float = -1;
     var bottom:Float = -1;
+    var width:Float = -1;
+    var height:Float = -1;
 
     ScreenUtils.getSafeAreaInsets(cpp.RawPointer.addressOf(top), cpp.RawPointer.addressOf(bottom), cpp.RawPointer.addressOf(left),
       cpp.RawPointer.addressOf(right));
 
+    ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(width), cpp.RawPointer.addressOf(height));
+
     // Calculate the rectangle dimensions for the notch
-    rectangle.width = flixel.FlxG.stage.stageWidth - left - right;
+    rectangle.width = -(width - left - right);
+    rectangle.width += width;
     rectangle.height = top;
     rectangle.x = left;
     // notchs are always at the top of the screen so they have 0 y position

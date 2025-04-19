@@ -25,3 +25,12 @@ void getSafeAreaInsets(double* top, double* bottom, double* left, double* right)
         (*left) = 0.0;
         (*right) = 0.0;
 }
+
+void getScreenSize(double* width, double* height)
+{
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        float scale = [UIScreen mainScreen].scale;
+
+        (*width) =  (double)screenRect.size.width * scale;
+        (*height) =  (double)screenRect.size.height * scale;
+}
