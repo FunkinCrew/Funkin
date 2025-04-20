@@ -151,7 +151,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     };
 
     inputTSNum.onChange = function(event:UIEvent) {
-      var numerator:Int = Std.parseInt(event.data.text);
+      var numerator:Null<Int> = Std.parseInt(event?.data?.text);
+      if (numerator == null) return;
       var prevNumerator:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum;
       if (numerator == prevNumerator) return;
 
@@ -160,7 +161,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     }
 
     inputTSDen.onChange = function(event:UIEvent) {
-      var denominator:Int = Std.parseInt(event.data.text);
+      var denominator:Null<Int> = Std.parseInt(event?.data?.text);
+      if (denominator == null) return;
       var prevDenominator:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen;
       if (denominator == prevDenominator) return;
 
