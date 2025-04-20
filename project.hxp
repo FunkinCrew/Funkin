@@ -398,6 +398,9 @@ class Project extends HXProject {
 
     if (isIOS()) {
       config.set("ios.non-exempt-encryption", "false");
+
+			launchStoryboard = new LaunchStoryboard();
+			launchStoryboard.path = "./LaunchScreen.storyboard";
     }
 	}
 
@@ -484,6 +487,7 @@ class Project extends HXProject {
 			this.window.orientation = Orientation.LANDSCAPE;
 			this.window.fullscreen = true;
 			this.window.resizable = false;
+			this.window.borderless = true;
 			this.window.width = 0;
 			this.window.height = 0;
 		}
