@@ -713,6 +713,8 @@ class Project extends HXProject {
 		// Cleaner looking compiler errors.
 		setHaxedef("message.reporting", "pretty");
 
+    setHaxedef("openfl_dpi_aware");
+
 		if (FEATURE_DEBUG_TRACY.isEnabled(this)) {
 			setHaxedef("HXCPP_TELEMETRY"); // Enable telemetry
 			setHaxedef("HXCPP_TRACY"); // Enable Tracy telemetry
@@ -721,8 +723,6 @@ class Project extends HXProject {
 			// setHaxedef("HXCPP_TRACY_INCLUDE_CALLSTACKS"); // Inspect callstacks per zone, inflating telemetry data
 
       setHaxedef("absolute-paths"); // Fix source locations so Tracy can see them
-
-      setHaxedef("openfl_dpi_aware");
     }
   }
 

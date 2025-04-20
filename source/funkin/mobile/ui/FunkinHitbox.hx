@@ -493,11 +493,13 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
       hint.centerOrigin();
       hint.centerOffsets();
     });
+
     hint.onUp.add(() -> {
       hint.animation.play('static', true);
       hint.centerOrigin();
       hint.centerOffsets();
     });
+
     hint.onOut.add(() -> {
       hint.animation.play('static', true);
       hint.centerOrigin();
@@ -526,7 +528,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     {
       final matrix:Matrix = new Matrix();
       matrix.createGradientBox(width, height, 0, 0, 0);
-      shape.graphics.beginGradientFill(RADIAL, [baseColor.to24Bit(), baseColor.to24Bit()], [0, 1], [60, 255], matrix, PAD, RGB, 0);
+      shape.graphics.beginGradientFill(RADIAL, [baseColor.to24Bit(), baseColor.to24Bit()], [0, baseColor.alphaFloat], [60, 255], matrix, PAD, RGB, 0);
     }
     else
     {
@@ -544,16 +546,19 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   function createHintLaneLabelGraphic(width:Int, height:Int, labelHeight:Int, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
   {
     final shape:Shape = new Shape();
-
     shape.graphics.beginFill(0, 0);
     shape.graphics.drawRect(0, 0, width, height);
     shape.graphics.endFill();
 
-    shape.graphics.beginFill(baseColor.to24Bit(), baseColor.alphaFloat);
+    final matrix:Matrix = new Matrix();
+    matrix.createGradientBox(width, labelHeight, Math.PI / 2, 0, 0);
+    shape.graphics.beginGradientFill(LINEAR, [baseColor.to24Bit(), baseColor.to24Bit()], [baseColor.alphaFloat, 0], [0, 255], matrix);
     shape.graphics.drawRect(0, 0, width, labelHeight);
     shape.graphics.endFill();
 
-    shape.graphics.beginFill(baseColor.to24Bit(), baseColor.alphaFloat);
+    final matrix:Matrix = new Matrix();
+    matrix.createGradientBox(width, labelHeight, Math.PI / 2, 0, height - labelHeight);
+    shape.graphics.beginGradientFill(LINEAR, [baseColor.to24Bit(), baseColor.to24Bit()], [0, baseColor.alphaFloat], [0, 255], matrix);
     shape.graphics.drawRect(0, height - labelHeight, width, labelHeight);
     shape.graphics.endFill();
 
@@ -578,7 +583,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     {
       final matrix:Matrix = new Matrix();
       matrix.createGradientBox(width, height, 0, 0, 0);
-      shape.graphics.beginGradientFill(RADIAL, [baseColor.to24Bit(), baseColor.to24Bit()], [0, 1], [60, 255], matrix, PAD, RGB, 0);
+      shape.graphics.beginGradientFill(RADIAL, [baseColor.to24Bit(), baseColor.to24Bit()], [0, baseColor.alphaFloat], [60, 255], matrix, PAD, RGB, 0);
     }
     else
     {

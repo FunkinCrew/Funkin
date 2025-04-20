@@ -16,7 +16,11 @@ using StringTools;
  * A macro that reads an environment file during the build process for you to access in runtime without exposing the value.
  */
 #if !macro
+#if ios
+@:build(funkin.util.macro.EnvironmentConfigMacro.setupEnvConfig("../../../../../.env"))
+#else
 @:build(funkin.util.macro.EnvironmentConfigMacro.setupEnvConfig(".env"))
+#end
 #end
 class EnvironmentConfigMacro
 {

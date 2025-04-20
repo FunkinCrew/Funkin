@@ -239,8 +239,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   {
     notchPosition.set(enabled ? notch.x : 0, enabled ? notch.y : 0);
     notchSize.set(enabled ? notch.width : 0, enabled ? notch.height : 0);
-    gameNotchPosition.set(notchPosition.x * scale.x, notchPosition.y * scale.y);
-    gameNotchSize.set(notchSize.x * scale.x, notchSize.y * scale.y);
+    gameNotchPosition.set((notchPosition.x * scale.x) / 2, (notchPosition.y * scale.y) / 2);
+    gameNotchSize.set((notchSize.x * scale.x) / 2, (notchSize.y * scale.y) / 2);
   }
   #end
 
