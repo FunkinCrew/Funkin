@@ -171,7 +171,10 @@ class InAppPurchasesUtil
     {
       if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
       {
-        if (!purchase.isAcknowledged()) IAPAndroid.acknowledgePurchase(purchase.getPurchaseToken());
+        if (!purchase.isAcknowledged())
+        {
+          IAPAndroid.acknowledgePurchase(purchase.getPurchaseToken());
+        }
 
         var alreadyTracked:Bool = false;
 
@@ -184,7 +187,10 @@ class InAppPurchasesUtil
           }
         }
 
-        if (!alreadyTracked) currentPurchased.push(purchase);
+        if (!alreadyTracked)
+        {
+          currentPurchased.push(purchase);
+        }
       }
       else
       {
