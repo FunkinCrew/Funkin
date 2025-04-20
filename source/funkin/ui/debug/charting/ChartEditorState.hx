@@ -3525,7 +3525,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         var oldStepTime:Float = Conductor.instance.currentStepTime;
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
-        Conductor.instance.update(audioInstTrack.time, false);
+        updateSongTime();
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
@@ -3543,7 +3543,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Else, move the entire view.
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
-        Conductor.instance.update(audioInstTrack.time, false);
+        updateSongTime();
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
@@ -5853,6 +5853,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function handleQuickWatch():Void
   {
+    FlxG.watch.addQuick('songLengthInMs', audioInstTrack?.length ?? 0.0);
+    FlxG.watch.addQuick('songLengthInSteps', Conductor.instance.getTimeInSteps(audioInstTrack?.length ?? 0.0));
+    FlxG.watch.addQuick('gridHeight', gridTiledSprite?.height ?? 0.0);
+
     FlxG.watch.addQuick('musicTime', audioInstTrack?.time ?? 0.0);
 
     FlxG.watch.addQuick('noteKindToPlace', noteKindToPlace);
@@ -6313,7 +6317,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       audioInstTrack.time = scrollPositionInMs + playheadPositionInMs - Conductor.instance.instrumentalOffset;
       // Update the songPosition in the Conductor.
-      Conductor.instance.update(audioInstTrack.time, false);
+      updateSongTime();
       audioVocalTrackGroup.time = audioInstTrack.time;
     }
 
@@ -6384,7 +6388,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function updateTimeSignature():Void
   {
-    // Redo the grid bitmap to be 4/4.
     this.updateTheme();
     gridTiledSprite.loadGraphic(gridBitmap);
     measureTicks.reloadTickBitmap();
@@ -6500,6 +6503,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         case 1: // Opponent
           if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
       }
+    }
+  }
+
+  function updateSongTime():Void
+  {
+    var oldTimeSignatureNum:Int = Conductor.instance.timeSignatureNumerator;
+    var oldTimeSignatureDen:Int = Conductor.instance.timeSignatureDenominator;
+    Conductor.instance.update(audioInstTrack.time);
+    if (Conductor.instance.timeSignatureNumerator != oldTimeSignatureNum
+      || Conductor.instance.timeSignatureDenominator != oldTimeSignatureDen)
+    {
+      updateTimeSignature();
     }
   }
 
