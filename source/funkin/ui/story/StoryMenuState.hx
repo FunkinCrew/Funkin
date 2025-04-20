@@ -176,19 +176,18 @@ class StoryMenuState extends MusicBeatState
 
     updateProps();
 
-    tracklistText = new FlxText(funkin.ui.FullScreenScaleMode.gameNotchSize.x + (FlxG.width * 0.05), levelBackground.x + levelBackground.height + 100, 0,
-      "Tracks", 32);
+    tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
     tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFE55777;
     add(tracklistText);
 
-    scoreText = new FlxText(funkin.ui.FullScreenScaleMode.gameNotchSize.x + 10, 10, 0, 'HIGH SCORE: 42069420');
+    scoreText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 10), 10, 0, 'HIGH SCORE: 42069420');
     scoreText.setFormat('VCR OSD Mono', 32);
     scoreText.zIndex = 1000;
     add(scoreText);
 
-    levelTitleText = new FlxText((FlxG.width * 0.7) - funkin.ui.FullScreenScaleMode.gameNotchSize.x, 10, 0, 'LEVEL 1');
+    levelTitleText = new FlxText(Math.max((FlxG.width * 0.7), FlxG.width - FullScreenScaleMode.gameNotchSize.x), 10, 0, 'LEVEL 1');
     levelTitleText.setFormat('VCR OSD Mono', 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
     levelTitleText.zIndex = 1000;
@@ -196,7 +195,8 @@ class StoryMenuState extends MusicBeatState
 
     buildLevelTitles();
 
-    leftDifficultyArrow = new FlxSprite((FlxG.width - 410) - funkin.ui.FullScreenScaleMode.gameNotchSize.x, 480);
+    final useNotch:Bool = Math.max(35, FullScreenScaleMode.gameNotchSize.x) != 35;
+    leftDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? (FullScreenScaleMode.gameNotchSize.x / 2) + 410 : 410), 480);
     leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
     leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
     leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
@@ -206,7 +206,7 @@ class StoryMenuState extends MusicBeatState
     buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
-    rightDifficultyArrow = new FlxSprite((FlxG.width - 35) - funkin.ui.FullScreenScaleMode.gameNotchSize.x, leftDifficultyArrow.y);
+    rightDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? FullScreenScaleMode.gameNotchSize.x : 35), leftDifficultyArrow.y);
     rightDifficultyArrow.frames = leftDifficultyArrow.frames;
     rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
     rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
@@ -327,7 +327,7 @@ class StoryMenuState extends MusicBeatState
 
     levelTitleText.text = currentLevel.getTitle();
 
-    levelTitleText.x = FlxG.width - (levelTitleText.width + 10) - funkin.ui.FullScreenScaleMode.gameNotchSize.x; // Right align.
+    levelTitleText.x = FlxG.width - (levelTitleText.width + Math.max(10, FullScreenScaleMode.gameNotchSize.x)); // Right align.
 
     handleKeyPresses();
 
@@ -681,8 +681,7 @@ class StoryMenuState extends MusicBeatState
     tracklistText.text += currentLevel.getSongDisplayNames(currentDifficultyId).join('\n');
 
     tracklistText.screenCenter(X);
-    tracklistText.x -= FlxG.width * 0.35;
-    tracklistText.x += funkin.ui.FullScreenScaleMode.gameNotchSize.x;
+    tracklistText.x -= (FlxG.width * 0.35);
 
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;

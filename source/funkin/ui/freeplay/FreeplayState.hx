@@ -260,7 +260,7 @@ class FreeplayState extends MusicBeatSubState
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
     albumRoll = new AlbumRoll();
-    fp = new FreeplayScore(FlxG.width - 353, 60, 7, 100, styleData);
+    fp = new FreeplayScore(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 353), 60, 7, 100, styleData);
     rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
@@ -270,9 +270,9 @@ class FreeplayState extends MusicBeatSubState
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
     sparks = new FlxSprite(0, 0);
     sparksADD = new FlxSprite(0, 0);
-    txtCompletion = new AtlasText(FlxG.width - 95, 87, '69', AtlasFont.FREEPLAY_CLEAR);
+    txtCompletion = new AtlasText(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 95), 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
-    ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
+    ostName = new FlxText(8 - FullScreenScaleMode.gameNotchSize.x, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
     backingImage = FunkinSprite.create(backingCard.pinkBack.width * 0.74, 0, styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey());
@@ -458,7 +458,7 @@ class FreeplayState extends MusicBeatSubState
       FlxTween.tween(blackOverlayBullshitLOLXD, {x: backingImage.x}, 0.7, {ease: FlxEase.quintOut});
     }
 
-    fnfFreeplay = new FlxText(FullScreenScaleMode.gameNotchSize.x + 8, 8, 0, 'FREEPLAY', 48);
+    fnfFreeplay = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY', 48);
     fnfFreeplay.font = 'VCR OSD Mono';
     fnfFreeplay.visible = false;
 
@@ -466,7 +466,7 @@ class FreeplayState extends MusicBeatSubState
     freeplayTxtBg.x = fnfFreeplay.x - 8;
     freeplayTxtBg.visible = false;
 
-    freeplayArrow = new FlxText(FullScreenScaleMode.gameNotchSize.x + 8, 8, 0, '<---', 48);
+    freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---', 48);
     freeplayArrow.font = 'VCR OSD Mono';
     freeplayArrow.visible = false;
 
@@ -519,7 +519,7 @@ class FreeplayState extends MusicBeatSubState
     freeplayArrow.shader = sillyStroke;
     ostName.shader = sillyStroke;
 
-    var fnfHighscoreSpr:FlxSprite = new FlxSprite(FlxG.width - 420, 70);
+    var fnfHighscoreSpr:FlxSprite = new FlxSprite(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 420), 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('freeplay/highscore');
     fnfHighscoreSpr.animation.addByPrefix('highscore', 'highscore small instance 1', 24, false);
     fnfHighscoreSpr.visible = false;
@@ -535,7 +535,7 @@ class FreeplayState extends MusicBeatSubState
     fp.visible = false;
     add(fp);
 
-    var clearBoxSprite:FlxSprite = new FlxSprite(FlxG.width - 115, 65).loadGraphic(Paths.image('freeplay/clearBox'));
+    var clearBoxSprite:FlxSprite = new FlxSprite(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 115), 65).loadGraphic(Paths.image('freeplay/clearBox'));
     clearBoxSprite.visible = false;
     add(clearBoxSprite);
 
@@ -1822,7 +1822,7 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      fnfFreeplay.x = FullScreenScaleMode.gameNotchSize.x + 8;
+      fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
       freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
       pressedOnFreeplay = false;
     }

@@ -178,20 +178,24 @@ class Main extends Sprite
   function repositionCounters(lerp:Bool):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
-    var scale:Float = Math.min(flixel.FlxG.stage.stageWidth / flixel.FlxG.width, flixel.FlxG.stage.stageHeight / flixel.FlxG.height);
-    #if android
-    scale = scale > 1 ? scale : 1;
-    #else
-    scale = scale < 1 ? scale : 1;
-    #end
+    var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
 
+    #if android
+    scale = Math.max(scale, 1);
+    #else
+    scale = Math.min(scale, 1);
+    #end
+    final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
     if (fpsCounter != null)
     {
       fpsCounter.scaleX = fpsCounter.scaleY = scale;
 
       if (FlxG.game != null)
       {
-        if (lerp) fpsCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + FullScreenScaleMode.notchSize.x + 10, FlxG.elapsed * 3);
+        if (lerp)
+        {
+          fpsCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+        }
         else
         {
           fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
@@ -207,8 +211,10 @@ class Main extends Sprite
 
       if (FlxG.game != null)
       {
-        if (lerp) memoryCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + FullScreenScaleMode.notchSize.x + 10, FlxG.elapsed * 3);
-        else
+        if (lerp)
+        {
+          memoryCounter.x = flixel.math.FlxMath.lerp(memoryCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+        }
         {
           memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
         }

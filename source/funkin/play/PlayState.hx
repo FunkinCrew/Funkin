@@ -789,7 +789,7 @@ class PlayState extends MusicBeatSubState
     pauseButton.color = FlxColor.WHITE;
     pauseButton.alpha = 0.65;
     pauseButton.updateHitbox();
-    pauseButton.setPosition((FlxG.width - pauseButton.width) - (40 + FullScreenScaleMode.gameNotchSize.x), 3);
+    pauseButton.setPosition((FlxG.width - pauseButton.width) - Math.max(40, FullScreenScaleMode.gameNotchSize.x), 3);
     pauseButton.cameras = [camControls];
     pauseButton.width *= 2;
     pauseButton.height *= 2;
