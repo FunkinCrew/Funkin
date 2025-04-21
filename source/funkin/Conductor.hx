@@ -444,9 +444,6 @@ class Conductor
     var oldMeasure:Float = this.currentMeasure;
     var oldBeat:Float = this.currentBeat;
     var oldStep:Float = this.currentStep;
-    var oldNumerator:Int = this.timeSignatureNumerator;
-    var oldDenominator:Int = this.timeSignatureDenominator;
-    var oldMeasureTime:Float = this.currentMeasureTime;
 
     // If the song is playing, limit the song position to the length of the song or beginning of the song.
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
@@ -472,14 +469,6 @@ class Conductor
       }
     }
 
-    if (oldNumerator != timeSignatureNumerator || oldDenominator != timeSignatureDenominator)
-    {
-      // storedPrevTimeChangeMeasureEnd = oldMeasureTime;
-      storedPrevTimeChangeMeasureEnd = getTimeInSteps(currentTimeChange.timeStamp, true) / (oldNumerator * Constants.STEPS_PER_BEAT);
-      trace('[CONDUCTOR] Time signature changed from ${oldNumerator}/${oldDenominator} to ${timeSignatureNumerator}/${timeSignatureDenominator}.');
-      trace('[CONDUCTOR] Stored previous measure time end: ${storedPrevTimeChangeMeasureEnd}');
-    }
-
     if (currentTimeChange == null && bpmOverride == null && FlxG.sound.music != null)
     {
       trace('WARNING: Conductor is broken, timeChanges is empty.');
@@ -490,12 +479,7 @@ class Conductor
       this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)
         + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
-      if (oldNumerator != timeSignatureNumerator || oldDenominator != timeSignatureDenominator)
-      {
-        storedCurTimeChangeMeasureStart = getTimeInSteps(currentTimeChange.timeStamp) / stepsPerMeasure;
-        trace('[CONDUCTOR] Stored new measure time start: ${storedCurTimeChangeMeasureStart}');
-      }
-      this.currentMeasureTime = storedPrevTimeChangeMeasureEnd + (currentStepTime / stepsPerMeasure - storedCurTimeChangeMeasureStart);
+      this.currentMeasureTime = getMeasureTime(songPos);
       this.currentStep = Math.floor(currentStepTime);
       this.currentBeat = Math.floor(currentBeatTime);
       this.currentMeasure = Math.floor(currentMeasureTime);
@@ -601,7 +585,8 @@ class Conductor
         {
           var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
           songTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
-            + ((songTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC),
+            +
+            ((songTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC * (prevTimeChange.timeSignatureDen / 4)),
             4);
         }
       }
@@ -619,11 +604,57 @@ class Conductor
   }
 
   /**
+   * Calculates the measure time for a given time in milliseconds.
+   * @param ms The time in milliseconds.
+   * @return The time in measures.
+   */
+  public function getMeasureTime(ms:Float):Float
+  {
+    if (timeChanges.length == 0)
+    {
+      // Assume a constant BPM equal to the forced value.
+      return ms / stepLengthMs / stepsPerMeasure;
+    }
+    else
+    {
+      var resultMeasureTime:Float = 0;
+
+      var lastTimeChange:SongTimeChange = timeChanges[0];
+      var i:Int = -1;
+      for (timeChange in timeChanges)
+      {
+        if (ms >= timeChange.timeStamp)
+        {
+          // We do NOT want to add the current time change's MEASURE LENGTH to the result, same for if we're inside the song's last time change.
+          if (ms < timeChange.timeStamp || i == timeChanges.length - 1)
+          {
+            // However, we still want this for the ending calculation.
+            lastTimeChange = timeChange;
+            break;
+          }
+          var currentStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
+          var currentStepsPerMeasure:Int = lastTimeChange.timeSignatureNum * Constants.STEPS_PER_BEAT;
+          resultMeasureTime += (timeChange.timeStamp - lastTimeChange.timeStamp) / currentStepLengthMs / currentStepsPerMeasure;
+          lastTimeChange = timeChange;
+        }
+        i++;
+      }
+
+      var remainingStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
+      var remainingStepsPerMeasure:Int = lastTimeChange.timeSignatureNum * Constants.STEPS_PER_BEAT;
+      var remainingFractionalMeasure:Float = (ms - lastTimeChange.timeStamp) / remainingStepLengthMs / remainingStepsPerMeasure;
+      resultMeasureTime += remainingFractionalMeasure;
+
+      return resultMeasureTime;
+    }
+  }
+
+  /**
    * Given a time in milliseconds, return a time in steps.
    * @param ms The time in milliseconds.
    * @return The time in steps.
    */
-  public function getTimeInSteps(ms:Float, usePreviousOne:Bool = false):Float
+  public function getTimeInSteps(ms:Float):Float
   {
     if (timeChanges.length == 0)
     {
@@ -640,29 +671,24 @@ class Conductor
       {
         if (ms >= timeChange.timeStamp)
         {
+          // We do NOT want to add the current time change's STEP LENGTH to the result, same for if we're inside the song's last time change.
+          if (ms < timeChange.timeStamp || i == timeChanges.length - 1)
+          {
+            // However, we still want this for the ending calculation.
+            lastTimeChange = timeChange;
+            break;
+          }
+          resultStep += (timeChange.beatTime - lastTimeChange.beatTime) * Constants.STEPS_PER_BEAT;
           lastTimeChange = timeChange;
-          resultStep = lastTimeChange.beatTime * Constants.STEPS_PER_BEAT;
-          i++;
         }
-        else
-        {
-          // This time change is after the requested time.
-          break;
-        }
-      }
-
-      // Go back a single time change if we're not using the last one.
-      if (usePreviousOne)
-      {
-        lastTimeChange = timeChanges[i - 1 < 0 ? 0 : i - 1];
-        resultStep = lastTimeChange.beatTime * Constants.STEPS_PER_BEAT;
+        i++;
       }
 
       var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
       var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / lastStepLengthMs;
       resultStep += resultFractionalStep;
 
-      return resultStep;
+      return resultStep; // FIX THIS SHIT
     }
   }
 
@@ -683,24 +709,28 @@ class Conductor
       var resultMs:Float = 0;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
+      var i:Int = -1;
       for (timeChange in timeChanges)
       {
         if (stepTime >= timeChange.beatTime * Constants.STEPS_PER_BEAT)
         {
+          // We do NOT want to add the current time change's TIME LENGTH to the result, same for if we're inside the song's last time change.
+          if (stepTime < (timeChange.beatTime * Constants.STEPS_PER_BEAT) || i == timeChanges.length - 1)
+          {
+            // However, we still want this for the ending calculation.
+            lastTimeChange = timeChange;
+            break;
+          }
+          resultMs += timeChange.timeStamp - lastTimeChange.timeStamp;
           lastTimeChange = timeChange;
-          resultMs = lastTimeChange.timeStamp;
         }
-        else
-        {
-          // This time change is after the requested time.
-          break;
-        }
+        i++;
       }
 
       var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
       resultMs += (stepTime - lastTimeChange.beatTime * Constants.STEPS_PER_BEAT) * lastStepLengthMs;
 
-      return resultMs;
+      return resultMs; // FIX THIS SHIT
     }
   }
 
