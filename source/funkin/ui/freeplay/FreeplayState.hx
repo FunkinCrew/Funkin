@@ -2437,6 +2437,8 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
+    busy = true;
+    letterSort.inputEnabled = false;
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
     capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.x + 175, randomCapsule.y + 115, instrumentalChoices);
@@ -2456,6 +2458,7 @@ class FreeplayState extends MusicBeatSubState
   {
     cleanupCapsuleOptionsMenu();
     busy = true;
+    letterSort.inputEnabled = false;
 
     var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
     var targetSongId:String = targetSongCap?.freeplayData?.data.id ?? 'unknown';
