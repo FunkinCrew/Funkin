@@ -1421,9 +1421,10 @@ class PlayState extends MusicBeatSubState
      */
   override function reloadAssets():Void
   {
+    performCleanup();
+
     funkin.modding.PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
-    this.remove(currentStage);
     LoadingState.loadPlayState(lastParams);
   }
 
