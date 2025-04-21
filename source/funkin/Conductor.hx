@@ -247,16 +247,6 @@ class Conductor
   public var currentStepTime(default, null):Float = 0;
 
   /**
-   * The measure time at before the latest time signature change.
-   */
-  public var storedPrevTimeChangeMeasureEnd(default, null):Float = 0;
-
-  /**
-   * The measure time at the start the latest time signature change.
-   */
-  public var storedCurTimeChangeMeasureStart(default, null):Float = 0;
-
-  /**
    * An offset tied to the current chart file to compensate for a delay in the instrumental.
    */
   public var instrumentalOffset:Float = 0;
