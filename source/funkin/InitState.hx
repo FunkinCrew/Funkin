@@ -18,6 +18,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.stickers.StickerRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.story.level.LevelRegistry;
@@ -96,6 +97,12 @@ class InitState extends FlxState
     FlxG.sound.volumeUpKeys = [];
     FlxG.sound.volumeDownKeys = [];
     FlxG.sound.muteKeys = [];
+
+    // A small jumpstart to the soundtray, it usually sets itself to inactive (somewhere...)
+    // but that makes our soundtray not show up on init if we have the game muted.
+    // We set it to active so it at least calls it's update function once (see FlxGame.onEnterFrame(), it's called there)
+    // and also see FunkinSoundTray.update() to see what we do and how we check if we are muted or not
+    FlxG.game.soundTray.active = true;
 
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
@@ -184,6 +191,7 @@ class InitState extends FlxState
     FreeplayStyleRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+    StickerRegistry.instance.loadEntries();
 
     // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.
@@ -242,6 +250,7 @@ class InitState extends FlxState
         songId: "cum",
         characterId: "pico",
         difficultyId: "nightmare",
+        variationId: "erect",
         isNewHighscore: true,
         scoreData:
           {
