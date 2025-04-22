@@ -899,7 +899,7 @@ class PlayState extends MusicBeatSubState
 
       // Reset the health icons.
       if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().initHealthIcon(false);
-      if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getDad().initHealthIcon(true);
+      if (currentStage != null && currentStage.getDad() != null) currentStage.getDad().initHealthIcon(true);
 
       needsReset = false;
     }
