@@ -16,6 +16,7 @@ typedef EntryConstructorFunction = String->Void;
  * @param J The type of the JSON data used when constructing.
  */
 @:generic
+@:autoBuild(funkin.util.macro.DataRegistryMacro.buildRegistry())
 abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J>
 {
   /**
@@ -188,6 +189,19 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   {
     return entries.get(id);
   }
+
+  /**
+   * A list of all entries included in the base game.
+   * The actual function exists and is auto-generated on each registry at build time.
+   * @return Array<String>
+   */
+  // public function listBaseGameEntryIds():Array<String> {}
+
+  /**
+   * A list of all entries that are not included in the base game.
+   * @return Array<String>
+   */
+  // public function listModdedEntryIds():Array<String> {}
 
   public function toString():String
   {

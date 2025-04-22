@@ -16,16 +16,12 @@ import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 
 class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<DialogueBoxData>
 {
-  public final id:String;
-
   public var dialogueBoxName(get, never):String;
 
   function get_dialogueBoxName():String
   {
     return _data.name ?? 'UNKNOWN';
   }
-
-  public final _data:DialogueBoxData;
 
   /**
    * Offset the speaker's sprite by this much when playing each animation.
@@ -247,8 +243,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     var animNames:Array<String> = this.boxSprite?.animation?.getNameList() ?? [];
     trace('[DIALOGUE BOX] Successfully loaded ${animNames.length} animations for ${id}');
 
-    boxSprite.animation.callback = this.onAnimationFrame;
-    boxSprite.animation.finishCallback = this.onAnimationFinished;
+    boxSprite.animation.onFrameChange.add(this.onAnimationFrame);
+    boxSprite.animation.onFinish.add(this.onAnimationFinished);
   }
 
   /**
@@ -419,14 +415,4 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {}
-
-  public override function toString():String
-  {
-    return 'DialogueBox($id)';
-  }
-
-  static function _fetchData(id:String):Null<DialogueBoxData>
-  {
-    return DialogueBoxRegistry.instance.parseEntryDataWithMigration(id, DialogueBoxRegistry.instance.fetchEntryVersion(id));
-  }
 }

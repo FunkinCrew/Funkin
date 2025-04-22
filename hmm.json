@@ -63,14 +63,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "74ba53387eab0c4c2d3825e103fe70df8e46d9b1",
+      "ref": "07fc7aa8098deaea633b0726d01f83eb4ef8a832",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "34fe148e45292439a9c3caf00890c93bcc6f9453",
+      "ref": "b899a4c7d7318c5ff2b1bb645fbc73728fad1ac9",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -116,7 +116,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.0.1"
+      "version": "2.1.2"
     },
     {
       "name": "json2object",
@@ -143,7 +143,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "d1322e60f97b5c6e977f9e3e8a04f22b5190e7d9",
+      "ref": "1e79c20a6ee13fa168535f9f76a368e3284ddc3a",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
