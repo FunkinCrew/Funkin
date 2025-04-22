@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import flixel.math.FlxPoint;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
@@ -356,6 +357,8 @@ class Strumline extends FlxSpriteGroup
    */
   public function vwooshNotes():Void
   {
+    var vwooshTime:Float = 0.5;
+
     for (note in notes.members)
     {
       if (note == null) continue;
@@ -366,7 +369,7 @@ class Strumline extends FlxSpriteGroup
 
       var targetY:Float = FlxG.height + note.y;
       if (Preferences.downscroll) targetY = 0 - note.height;
-      FlxTween.tween(note, {y: targetY}, 0.5,
+      FlxTween.tween(note, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,
           onComplete: function(twn) {
@@ -387,7 +390,7 @@ class Strumline extends FlxSpriteGroup
 
       var targetY:Float = FlxG.height + holdNote.y;
       if (Preferences.downscroll) targetY = 0 - holdNote.height;
-      FlxTween.tween(holdNote, {y: targetY}, 0.5,
+      FlxTween.tween(holdNote, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,
           onComplete: function(twn) {
@@ -398,6 +401,53 @@ class Strumline extends FlxSpriteGroup
         });
     }
   }
+
+  /**
+   * Reverse of vwooshNotes, we bring the notes IN (by their offsets)
+   */
+  public function vwooshInNotes():Void
+  {
+    var vwooshTime:Float = 0.5;
+
+    for (note in notes.members)
+    {
+      if (note == null) continue;
+      if (!note.alive) continue;
+
+      note.yOffset = 200;
+      if (Preferences.downscroll)
+      {
+        note.yOffset = -200;
+      }
+      FlxTween.tween(note, {yOffset: 0}, vwooshTime,
+        {
+          ease: FlxEase.expoOut,
+          onComplete: function(twn) {
+            note.yOffset = 0;
+          }
+        });
+    }
+
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null) continue;
+      if (!holdNote.alive) continue;
+
+      holdNote.yOffset = 200;
+      if (Preferences.downscroll)
+      {
+        holdNote.yOffset = -200;
+      }
+      FlxTween.tween(holdNote, {yOffset: 0}, vwooshTime,
+        {
+          ease: FlxEase.expoOut,
+          onComplete: function(twn) {
+            holdNote.yOffset = 0;
+          }
+        });
+    }
+  }
+
 
   /**
    * For a note's strumTime, calculate its Y position relative to the strumline.
@@ -411,7 +461,7 @@ class Strumline extends FlxSpriteGroup
       Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * (Preferences.downscroll ? 1 : -1);
   }
 
-  function updateNotes():Void
+  public function updateNotes():Void
   {
     if (noteData.length == 0) return;
 
@@ -455,7 +505,7 @@ class Strumline extends FlxSpriteGroup
       if (note == null || !note.alive) continue;
 
       // Set the note's position.
-      if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime);
+      if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime) + note.yOffset;
 
       // If the note is miss
       var isOffscreen:Bool = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
@@ -528,11 +578,16 @@ class Strumline extends FlxSpriteGroup
         {
           if (Preferences.downscroll)
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2;
+            holdNote.y = this.y
+              - INITIAL_OFFSET
+              + calculateNoteYPos(holdNote.strumTime)
+              - holdNote.height
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2;
+            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
         }
 
@@ -577,11 +632,16 @@ class Strumline extends FlxSpriteGroup
         {
           if (Preferences.downscroll)
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) - holdNote.height + STRUMLINE_SIZE / 2;
+            holdNote.y = this.y
+              - INITIAL_OFFSET
+              + calculateNoteYPos(holdNote.strumTime)
+              - holdNote.height
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + STRUMLINE_SIZE / 2;
+            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + STRUMLINE_SIZE / 2 + holdNote.yOffset;
           }
         }
       }
