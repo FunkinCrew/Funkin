@@ -149,6 +149,9 @@ class NewgroundsClient
     Save.instance.ngSessionId = null;
   }
 
+  /**
+   * @return `true` if the user is logged in to Newgrounds.
+   */
   public function isLoggedIn():Bool
   {
     #if FEATURE_NEWGROUNDS
