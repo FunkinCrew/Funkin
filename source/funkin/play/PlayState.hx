@@ -878,7 +878,6 @@ class PlayState extends MusicBeatSubState
       // so the song doesn't start too early :D
       Conductor.instance.update(-5000, false);
 
-
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -898,16 +897,9 @@ class PlayState extends MusicBeatSubState
         Countdown.performCountdown();
       });
 
-
       // Reset the health icons.
-      if (currentStage.getBoyfriend() != null)
-      {
-      currentStage.getBoyfriend().initHealthIcon(false);
-      }
-      if (currentStage.getDad() != null)
-      {
-      currentStage.getDad().initHealthIcon(true);
-      }
+      if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().initHealthIcon(false);
+      if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getDad().initHealthIcon(true);
 
       needsReset = false;
     }
