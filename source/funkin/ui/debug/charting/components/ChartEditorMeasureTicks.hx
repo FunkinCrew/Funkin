@@ -49,33 +49,32 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   }
 
   /**
-   * At time of writing, we only have to manipulate one measure number because we can only see one measure at a time.
+   * Update all 5 measure numbers, since that's the most we can really see at a time, even if barely.
+   * Please excuse the horror you're about to witness.
    */
   function updateMeasureNumber()
   {
-    var viewTopPosition = 0 - this.y;
-    var viewHeight = FlxG.height - ChartEditorState.MENU_BAR_HEIGHT - ChartEditorState.PLAYBAR_HEIGHT;
-    var viewBottomPosition = viewTopPosition + viewHeight;
+    var currentPixelScrollPositionInMs = Conductor.instance?.getStepTimeInMs((this.chartEditorState?.scrollPositionInPixels + 1) / ChartEditorState.GRID_SIZE);
+    var measureNumberInViewport = Math.floor(Conductor.instance?.getTimeInMeasures(currentPixelScrollPositionInMs));
 
     for (i in 0...measureNumbers.length)
     {
       var measureNumber:FlxText = measureNumbers[i];
       if (measureNumber == null) continue;
 
-      var measureNumberInViewport = Math.floor(viewTopPosition / ChartEditorState.GRID_SIZE / Conductor.instance.stepsPerMeasure) + 1 + i;
-      var measureNumberPosition = measureNumberInViewport * ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure;
+      var measureNumberPosition = Math.floor(Conductor.instance?.getTimeInSteps(Conductor.instance?.getMeasureTimeInMs(measureNumberInViewport +
+        i)) * ChartEditorState.GRID_SIZE);
 
       measureNumber.y = measureNumberPosition + this.y;
 
       // Show the measure number only if it isn't beneath the end of the note grid.
       // Using measureNumber + 1 because the cut-off bar at the bottom is technically a bar, but it looks bad if a measure number shows up there.
-      if ((measureNumberInViewport + 1) < chartEditorState.songLengthInSteps / Conductor.instance.stepsPerMeasure)
-        measureNumber.text = '${measureNumberInViewport + 1}';
+      var fixedMeasureNumberValue = measureNumberInViewport + i + 1;
+      if (fixedMeasureNumberValue < Math.ceil(Conductor.instance?.getTimeInMeasures(chartEditorState.songLengthInMs)))
+        measureNumber.text = '${fixedMeasureNumberValue}';
       else
         measureNumber.text = '';
     }
-
-    // trace(measureNumber.text + ' at ' + measureNumber.y);
   }
 
   public function setHeight(songLengthInPixels:Float):Void
