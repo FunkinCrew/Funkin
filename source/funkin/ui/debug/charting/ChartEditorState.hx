@@ -869,7 +869,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (currentNoteSelection.length > 0 && isSuperset)
       {
-        notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
+        notePreview.addSelectedNotes(currentNoteSelection, songLengthInPixels);
       }
       else
       {
@@ -6600,10 +6600,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       // TODO: Only update the notes that have changed.
       notePreview.erase();
-      notePreview.addNotes(currentSongChartNoteData, Std.int(songLengthInMs));
-      notePreview.addOverlappingNotes(currentOverlappingNotes, Std.int(songLengthInMs));
-      notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
-      notePreview.addEvents(currentSongChartEventData, Std.int(songLengthInMs));
+      notePreview.addNotes(currentSongChartNoteData, songLengthInPixels);
+      notePreview.addOverlappingNotes(currentOverlappingNotes, songLengthInPixels);
+      notePreview.addSelectedNotes(currentNoteSelection, songLengthInPixels);
+      notePreview.addEvents(currentSongChartEventData, songLengthInPixels);
     }
 
     if (notePreviewViewportBoundsDirty)
