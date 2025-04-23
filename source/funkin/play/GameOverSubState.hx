@@ -162,7 +162,7 @@ class GameOverSubState extends MusicBeatSubState
     if ((parentPlayState?.isMinimalMode ?? true)) {}
     else
     {
-      boyfriend = parentPlayState?.currentStage.getBoyfriend(true);
+      boyfriend = parentPlayState?.currentStage?.getBoyfriend(true);
       if (boyfriend != null)
       {
         boyfriend.canPlayOtherAnims = true;
@@ -193,10 +193,9 @@ class GameOverSubState extends MusicBeatSubState
     });
   }
 
-  @:nullSafety(Off)
   function setCameraTarget():Void
   {
-    if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null) return;
+    if (parentPlayState == null || parentPlayState.isMinimalMode || boyfriend == null) return;
 
     // Assign a camera follow point to the boyfriend's position.
     cameraFollowPoint = new FlxObject(parentPlayState.cameraFollowPoint.x, parentPlayState.cameraFollowPoint.y, 1, 1);
@@ -207,6 +206,7 @@ class GameOverSubState extends MusicBeatSubState
     cameraFollowPoint.y += offsets[1];
     add(cameraFollowPoint);
 
+    @:nullSafety(Off)
     FlxG.camera.target = null;
     FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE / 2);
     targetCameraZoom = (parentPlayState?.currentStage?.camZoom ?? 1.0) * boyfriend.getDeathCameraZoom();
@@ -394,7 +394,7 @@ class GameOverSubState extends MusicBeatSubState
             // Readd Boyfriend to the stage.
             boyfriend.isDead = false;
             remove(boyfriend);
-            parentPlayState?.currentStage.addCharacter(boyfriend, BF);
+            parentPlayState?.currentStage?.addCharacter(boyfriend, BF);
           }
 
           // Snap reset the camera which may have changed because of the player character data.
@@ -564,11 +564,11 @@ class GameOverSubState extends MusicBeatSubState
         PlayStatePlaylist.reset();
       }
 
-      var stickerPackId:Null<String> = parentPlayState?.currentChart.stickerPack;
+      var stickerPackId:Null<String> = parentPlayState?.currentChart?.stickerPack;
 
       if (stickerPackId == null)
       {
-        var playerCharacterId:Null<String> = PlayerRegistry.instance.getCharacterOwnerId(parentPlayState?.currentChart.characters.player);
+        var playerCharacterId:Null<String> = PlayerRegistry.instance.getCharacterOwnerId(parentPlayState?.currentChart?.characters.player);
         var playerCharacter:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
 
         if (playerCharacter != null)
