@@ -3,7 +3,9 @@ package funkin.ui.debug.stageeditor.toolboxes;
 import haxe.ui.components.NumberStepper;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.play.character.CharacterData;
 import funkin.util.SortUtil;
+import funkin.save.Save;
 import haxe.ui.components.Button;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.menus.Menu;
@@ -11,7 +13,6 @@ import haxe.ui.core.Screen;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import haxe.ui.containers.Grid;
-import funkin.play.character.CharacterData;
 
 using StringTools;
 
@@ -149,7 +150,7 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
     {
       var charData:CharacterData = CharacterDataParser.fetchCharacterData(charId);
 
-      var charButton = new haxe.ui.components.Button();
+      var charButton = new Button();
       charButton.width = 70;
       charButton.height = 70;
       charButton.padding = 8;
@@ -186,6 +187,12 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
         // anyways new character!!!!
 
         var newChar = CharacterDataParser.fetchCharacter(charId, true);
+        if (newChar == null)
+        {
+          state.notifyChange("Switch Character", "Couldn't find character " + charId + ". Switching to default.", true);
+          newChar = CharacterDataParser.fetchCharacter(Constants.DEFAULT_CHARACTER, true);
+        }
+
         newChar.characterType = type;
 
         newChar.resetCharacter(true);
@@ -200,6 +207,19 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
 
         parent.repositionCharacter();
         group.zIndex = Std.int(parent.charZIdx.pos ?? 0);
+
+        // Save the selection.
+        switch (type)
+        {
+          case BF:
+            Save.instance.stageBoyfriendChar = charId;
+          case GF:
+            Save.instance.stageGirlfriendChar = charId;
+          case DAD:
+            Save.instance.stageDadChar = charId;
+          default:
+            // Do nothing.
+        }
       };
 
       charButton.onMouseOver = _ -> {

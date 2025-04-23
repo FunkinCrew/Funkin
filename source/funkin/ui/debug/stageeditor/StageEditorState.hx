@@ -340,11 +340,11 @@ class StageEditorState extends UIState
     Screen.instance.addComponent(root);
 
     // Characters setup.
-    var gf = CharacterDataParser.fetchCharacter("gf", true);
+    var gf = CharacterDataParser.fetchCharacter(Save.instance.stageGirlfriendChar, true);
     gf.characterType = CharacterType.GF;
-    var dad = CharacterDataParser.fetchCharacter("dad", true);
+    var dad = CharacterDataParser.fetchCharacter(Save.instance.stageDadChar, true);
     dad.characterType = CharacterType.DAD;
-    var bf = CharacterDataParser.fetchCharacter("bf", true);
+    var bf = CharacterDataParser.fetchCharacter(Save.instance.stageBoyfriendChar, true);
     bf.characterType = CharacterType.BF;
 
     bf.flipX = !bf.getDataFlipX();
@@ -1388,6 +1388,8 @@ class StageEditorState extends UIState
         }
 
       case "delete object":
+        if (selectedSprite == null) return;
+
         this.createAndPushAction(OBJECT_DELETED);
 
         spriteArray.remove(selectedSprite);
