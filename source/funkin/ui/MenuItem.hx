@@ -7,6 +7,7 @@ import flixel.math.FlxMath;
 import funkin.util.MathUtil;
 import flixel.util.FlxColor;
 
+@:nullSafety
 class MenuItem extends FlxSpriteGroup
 {
   public var targetY:Float = 0;

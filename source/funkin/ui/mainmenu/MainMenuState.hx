@@ -39,6 +39,7 @@ import funkin.api.newgrounds.NewgroundsClient;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
 
+@:nullSafety
 class MainMenuState extends MusicBeatState
 {
   var menuItems:MenuTypedList<AtlasMenuItem>;
@@ -66,6 +67,10 @@ class MainMenuState extends MusicBeatState
   {
     super();
     overrideMusic = _overrideMusic;
+
+    menuItems = new MenuTypedList<AtlasMenuItem>();
+    magenta = new FlxSprite(Paths.image('menuBGMagenta'));
+    camFollow = new FlxObject(0, 0, 1, 1);
   }
 
   override function create():Void
@@ -100,10 +105,8 @@ class MainMenuState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    camFollow = new FlxObject(0, 0, 1, 1);
     add(camFollow);
 
-    magenta = new FlxSprite(Paths.image('menuBGMagenta'));
     magenta.scrollFactor.x = bg.scrollFactor.x;
     magenta.scrollFactor.y = bg.scrollFactor.y;
     magenta.setGraphicSize(Std.int(bg.width));
@@ -116,7 +119,6 @@ class MainMenuState extends MusicBeatState
 
     if (Preferences.flashingLights) add(magenta);
 
-    menuItems = new MenuTypedList<AtlasMenuItem>();
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
@@ -285,14 +287,17 @@ class MainMenuState extends MusicBeatState
     super.create();
 
     // This has to come AFTER!
-    this.leftWatermarkText.text = Constants.VERSION;
-
-    #if FEATURE_NEWGROUNDS
-    if (NewgroundsClient.instance.isLoggedIn())
+    if (this.leftWatermarkText != null)
     {
-      this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NewgroundsClient.instance.user?.name}';
+      this.leftWatermarkText.text = Constants.VERSION;
+
+      #if FEATURE_NEWGROUNDS
+      if (NewgroundsClient.instance.isLoggedIn())
+      {
+        this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NewgroundsClient.instance.user?.name}';
+      }
+      #end
     }
-    #end
   }
 
   function playMenuMusic():Void
