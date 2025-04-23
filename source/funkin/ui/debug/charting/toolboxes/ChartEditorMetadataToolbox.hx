@@ -6,7 +6,9 @@ import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
+import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
+import funkin.ui.debug.charting.commands.ModifyCurrentTimeChangeCommand;
+import funkin.ui.debug.charting.commands.RemoveCurrentTimeChangeCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -36,6 +38,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
   var inputBPM:NumberStepper;
+  var labelTimeStamp:Label;
+  var inputTimeStamp:NumberStepper;
   var labelScrollSpeed:Label;
   var inputScrollSpeed:Slider;
   var frameVariation:Frame;
@@ -140,34 +144,103 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
+    inputTimeChange.onChange = function(event:UIEvent) {
+      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
+      inputBPM.value = currentTimeChange.bpm;
+      inputTSNum.value = currentTimeChange.timeSignatureNum;
+      inputTSDen.value = currentTimeChange.timeSignatureDen;
+      inputTimeStamp.value = currentTimeChange.timeStamp;
+      // Set the min max values of the input timestamp to previous and next time change timestamps to in the array, to prevent the conductor from breaking due to wack time change timestamps
+      inputTimeStamp.min = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1]?.timeStamp) ?? 0;
+      if (inputTimeStamp.min != 0) inputTimeStamp.min += 1;
+      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp) ?? chartEditorState.songLengthInMs;
+
+      trace(inputTimeStamp.min);
+      trace(inputTimeStamp.max);
+
+      // Prevent the inital time change timestamp from being modified (it should always be 0) or removed
+      if (inputTimeChange.selectedIndex == 0)
+      {
+        labelTimeStamp.hidden = true;
+        inputTimeStamp.hidden = true;
+        removeTimeChange.disabled = true;
+      }
+      else
+      {
+        labelTimeStamp.hidden = false;
+        inputTimeStamp.hidden = false;
+        removeTimeChange.disabled = false;
+      }
+    };
+    var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges, 0);
+    inputTimeChange.value = startingTimeChange;
+
     inputBPM.onChange = function(event:UIEvent) {
       if (event.value == null || event.value <= 0) return;
 
       // Use a command so we can undo/redo this action.
-      if (event.value != Conductor.instance.bpm)
+      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
+      var currentBPM = currentTimeChange.bpm;
+      if (event.value != currentBPM)
       {
-        chartEditorState.performCommand(new ChangeStartingBPMCommand(event.value));
+        chartEditorState.performCommand(new ModifyCurrentTimeChangeCommand(inputTimeChange.selectedIndex, event.value, currentTimeChange.timeStamp));
+        // TODO: Figure out why the text of the time change dropdown itself isn't updating and fix it
+        inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${event.value} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+      }
+    };
+
+    inputTimeStamp.onChange = function(event:UIEvent) {
+      if (event.value == null || event.value <= 0) return;
+
+      // Use a command so we can undo/redo this action.
+      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
+      var currentTimeStamp = currentTimeChange.timeStamp;
+      if (inputTimeChange.selectedIndex != 0 && event.value != currentTimeStamp)
+      {
+        chartEditorState.performCommand(new ModifyCurrentTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.bpm, event.value));
+        inputTimeChange.value.text = '${event.value} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+        trace(inputTimeChange.dataSource.get(inputTimeChange.selectedIndex));
+        trace(inputTimeChange.selectedItem);
+        chartEditorState.updateTimeSignature();
       }
     };
 
     inputTSNum.onChange = function(event:UIEvent) {
       var numerator:Null<Int> = Std.parseInt(event?.data?.text);
       if (numerator == null) return;
-      var prevNumerator:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum;
+      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
+      var prevNumerator:Int = currentTimeChange.timeSignatureNum;
       if (numerator == prevNumerator) return;
 
-      chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum = numerator;
+      chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex].timeSignatureNum = numerator;
+      inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${numerator}/${currentTimeChange.timeSignatureDen}';
       chartEditorState.updateTimeSignature();
     }
 
     inputTSDen.onChange = function(event:UIEvent) {
       var denominator:Null<Int> = Std.parseInt(event?.data?.text);
       if (denominator == null) return;
-      var prevDenominator:Int = chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen;
+      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
+      var prevDenominator:Int = currentTimeChange.timeSignatureDen;
       if (denominator == prevDenominator) return;
 
-      chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen = denominator;
+      chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex].timeSignatureDen = denominator;
+      inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${denominator}';
       chartEditorState.updateTimeSignature();
+    }
+
+    addTimeChange.onClick = function(_:UIEvent) {
+      chartEditorState.performCommand(new AddNewTimeChangeCommand(inputTimeChange.selectedIndex));
+      var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges,
+        inputTimeChange.selectedIndex + 1);
+      inputTimeChange.value = startingTimeChange;
+    }
+
+    removeTimeChange.onClick = function(_:UIEvent) {
+      chartEditorState.performCommand(new RemoveCurrentTimeChangeCommand(inputTimeChange.selectedIndex));
+      var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges,
+        inputTimeChange.selectedIndex - 1);
+      inputTimeChange.value = startingTimeChange;
     }
 
     inputScrollSpeed.onChange = function(event:UIEvent) {
@@ -213,16 +286,16 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
-    inputNoteStyle.value = chartEditorState.currentSongNoteStyle;
-    inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
+    inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputDifficultyRating.value = chartEditorState.currentSongChartDifficultyRating;
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
     frameDifficulty.text = 'Difficulty: ${chartEditorState.selectedDifficulty.toTitleCase()}';
 
-    inputTSNum.value = '${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum}';
-    inputTSDen.value = '${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen}';
+    // Reset time change dropdown and the associated inputs
+    var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges, 0);
+    inputTimeChange.value = startingTimeChange;
     trace('Setting time signature to ${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum}/${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen}');
 
     var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
