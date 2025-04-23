@@ -334,7 +334,11 @@ typedef PlayerResultsAnimationData =
    */
   var renderType:String;
 
-  var assetPath:String;
+  @:optional
+  var assetPath:Null<String>;
+
+  @:optional
+  var scriptClass:Null<String>;
 
   @:optional
   @:default([0, 0])

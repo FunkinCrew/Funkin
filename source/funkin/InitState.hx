@@ -252,8 +252,7 @@ class InitState extends FlxState
         title: "Cum Song Erect by Kawai Sprite",
         songId: "cum",
         characterId: "pico",
-        difficultyId: "nightmare",
-        variationId: "erect",
+        difficultyId: "hard",
         isNewHighscore: true,
         scoreData:
           {
