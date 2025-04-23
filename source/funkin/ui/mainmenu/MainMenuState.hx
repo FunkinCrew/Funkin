@@ -138,7 +138,6 @@ class MainMenuState extends MusicBeatState
 
     if (Preferences.flashingLights) add(magenta);
 
-    menuItems = new MenuTypedList<AtlasMenuItem>();
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
@@ -429,7 +428,7 @@ class MainMenuState extends MusicBeatState
   }
   #end
 
-  public function openPrompt(prompt:Prompt, onClose:Void->Void):Void
+  public function openPrompt(prompt:Prompt, ?onClose:Void->Void):Void
   {
     if (menuItems != null) menuItems.enabled = false;
     persistentUpdate = false;
