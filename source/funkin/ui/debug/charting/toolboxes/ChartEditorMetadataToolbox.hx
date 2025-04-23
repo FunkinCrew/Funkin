@@ -155,9 +155,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (inputTimeStamp.min != 0) inputTimeStamp.min += 1;
       inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp) ?? chartEditorState.songLengthInMs;
 
-      trace(inputTimeStamp.min);
-      trace(inputTimeStamp.max);
-
       // Prevent the inital time change timestamp from being modified (it should always be 0) or removed
       if (inputTimeChange.selectedIndex == 0)
       {
@@ -199,8 +196,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       {
         chartEditorState.performCommand(new ModifyCurrentTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.bpm, event.value));
         inputTimeChange.value.text = '${event.value} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
-        trace(inputTimeChange.dataSource.get(inputTimeChange.selectedIndex));
-        trace(inputTimeChange.selectedItem);
         chartEditorState.updateTimeSignature();
       }
     };
