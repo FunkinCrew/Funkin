@@ -144,18 +144,30 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
+    var tcDropdownItemRenderer = inputTimeChange.findComponent(haxe.ui.core.ItemRenderer);
+
     inputTimeChange.onChange = function(event:UIEvent) {
+
       var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
+      if (currentTimeChange == null)
+      {
+        trace("No time change in timeChanges at inputTimeChange's selectedIndex!");
+        return;
+      }
+      var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
       inputBPM.value = currentTimeChange.bpm;
       inputTSNum.value = currentTimeChange.timeSignatureNum;
       inputTSDen.value = currentTimeChange.timeSignatureDen;
       inputTimeStamp.value = currentTimeChange.timeStamp;
-      // Set the min max values of the input timestamp to previous and next time change timestamps to in the array, to prevent the conductor from breaking due to wack time change timestamps
-      inputTimeStamp.min = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1]?.timeStamp) ?? 0;
-      if (inputTimeStamp.min != 0) inputTimeStamp.min += 1;
-      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp) ?? chartEditorState.songLengthInMs;
+      // Set the step of the timestamp to the step.
+      inputTimeStamp.step = ((Constants.SECS_PER_MIN / (previousTimeChange?.bpm ?? currentTimeChange?.bpm ?? 100)) * Constants.MS_PER_SEC) * (4 / (previousTimeChange?.timeSignatureDen ?? currentTimeChange?.timeSignatureDen ?? 4)) / Constants.STEPS_PER_BEAT;
+      // Set the min max values of the input timestamp to previous and next time change timestamps to in the array,
+      // to prevent the conductor from breaking due to time change timestamps not being in ascending order.
+      inputTimeStamp.min = (previousTimeChange?.timeStamp ?? 0);
+      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp ?? chartEditorState.songLengthInMs);
+      inputTimeStamp.max -= 1;
 
-      // Prevent the inital time change timestamp from being modified (it should always be 0) or removed
+      // Prevent the inital time change timestamp from being modified (it should always be 0) or removed.
       if (inputTimeChange.selectedIndex == 0)
       {
         labelTimeStamp.hidden = true;
@@ -164,12 +176,14 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
       else
       {
+        inputTimeStamp.min += 1; // This here so it can't accidentally change the first/0 timechange timestamp to 1.
         labelTimeStamp.hidden = false;
         inputTimeStamp.hidden = false;
         removeTimeChange.disabled = false;
       }
     };
     var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges, 0);
+    inputTimeChange.selectedIndex = Std.parseInt(startingTimeChange.id);
     inputTimeChange.value = startingTimeChange;
 
     inputBPM.onChange = function(event:UIEvent) {
@@ -181,8 +195,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (event.value != currentBPM)
       {
         chartEditorState.performCommand(new ModifyCurrentTimeChangeCommand(inputTimeChange.selectedIndex, event.value, currentTimeChange.timeStamp));
-        // TODO: Figure out why the text of the time change dropdown itself isn't updating and fix it
         inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${event.value} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+        tcDropdownItemRenderer.data = inputTimeChange.value;
       }
     };
 
@@ -196,6 +210,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       {
         chartEditorState.performCommand(new ModifyCurrentTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.bpm, event.value));
         inputTimeChange.value.text = '${event.value} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+        tcDropdownItemRenderer.data = inputTimeChange.value;
         chartEditorState.updateTimeSignature();
       }
     };
@@ -209,6 +224,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
       chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex].timeSignatureNum = numerator;
       inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${numerator}/${currentTimeChange.timeSignatureDen}';
+      tcDropdownItemRenderer.data = inputTimeChange.value;
       chartEditorState.updateTimeSignature();
     }
 
@@ -221,11 +237,12 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
       chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex].timeSignatureDen = denominator;
       inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${denominator}';
+      tcDropdownItemRenderer.data = inputTimeChange.value;
       chartEditorState.updateTimeSignature();
     }
 
     addTimeChange.onClick = function(_:UIEvent) {
-      chartEditorState.performCommand(new AddNewTimeChangeCommand(inputTimeChange.selectedIndex));
+      chartEditorState.performCommand(new AddNewTimeChangeCommand(inputTimeChange.selectedIndex, inputTimeStamp.step));
       var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges,
         inputTimeChange.selectedIndex + 1);
       inputTimeChange.value = startingTimeChange;
@@ -290,6 +307,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
     // Reset time change dropdown and the associated inputs
     var startingTimeChange = ChartEditorDropdowns.populateDropdownWithTimeChanges(inputTimeChange, chartEditorState.currentSongMetadata.timeChanges, 0);
+    inputTimeChange.selectedIndex = Std.parseInt(startingTimeChange.id);
     inputTimeChange.value = startingTimeChange;
     trace('Setting time signature to ${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum}/${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen}');
 
