@@ -13,9 +13,12 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
 
   var previousTimeChanges:Null<Array<SongTimeChange>>;
 
-  public function new(currentTimeChange:Int)
+  var currentStep:Float;
+
+  public function new(currentTimeChange:Int, currentStep:Float)
   {
     this.currentTimeChange = currentTimeChange;
+    this.currentStep = currentStep;
   }
 
   public function execute(state:ChartEditorState):Void
@@ -29,7 +32,8 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     else
     {
       timeChanges.insert(currentTimeChange + 1,
-        new SongTimeChange(timeChanges[currentTimeChange].timeStamp + 1, timeChanges[currentTimeChange].bpm, timeChanges[currentTimeChange].timeSignatureNum,
+        new SongTimeChange(timeChanges[currentTimeChange].timeStamp + currentStep, timeChanges[currentTimeChange].bpm,
+          timeChanges[currentTimeChange].timeSignatureNum,
           timeChanges[currentTimeChange].timeSignatureDen));
     }
 
