@@ -3,36 +3,43 @@ package funkin.ui.debug.charting.commands;
 import funkin.data.song.SongData.SongTimeChange;
 
 /**
- * A command which modifies the current time change's bpm and/or timestamp in the song.
- * Note that this does not have any protection to prevent time changes from being set to invalid or troublesome values.
+ * A command which modifies the give time change in the current song's time changes.
+ * Annoyingly, due to the way haxe works, every value of the time change has to be passed into this.
+ * Will clamp the target timestamp to a valid value.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
-class ModifyCurrentTimeChangeCommand implements ChartEditorCommand
+class ModifyTimeChangeCommand implements ChartEditorCommand
 {
-  var currentTimeChange:Int;
+  var timeChangeIndex:Int;
 
   var targetBPM:Float;
-
   var previousBPM:Float = 100;
 
   var targetTimeStamp:Float;
-
   var previousTimeStamp:Float = 0;
+
+  var targetNumerator:Int;
+  var previousNumerator:Int = 4;
+
+  var targetDenominator:Int;
+  var previousDenominator:Int = 4;
 
   var previousTimeChanges:Null<Array<SongTimeChange>>;
 
-  public function new(currentTimeChange:Int, targetBPM:Float, targetTimeStamp:Float)
+  public function new(timeChangeIndex:Int, targetTimeStamp:Float, targetBPM:Float, targetNumerator:Int, targetDenominator:Int)
   {
-    this.currentTimeChange = currentTimeChange;
-    this.targetBPM = targetBPM;
-    this.targetTimeStamp = targetTimeStamp;
+    this.timeChangeIndex = timeChangeIndex;
+    this.targetTimeStamp = thx.Floats.ceilTo(targetTimeStamp, 4);
+    this.targetBPM = thx.Floats.ceilTo(targetBPM, 3);
+    this.targetNumerator = targetNumerator;
+    this.targetDenominator = targetDenominator;
   }
 
   public function execute(state:ChartEditorState):Void
   {
     var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
-    previousTimeChanges = timeChanges;
+    previousTimeChanges = timeChanges.copy();
     if (timeChanges == null || timeChanges.length == 0)
     {
       previousBPM = 100;
@@ -41,10 +48,16 @@ class ModifyCurrentTimeChangeCommand implements ChartEditorCommand
     }
     else
     {
-      previousBPM = timeChanges[currentTimeChange].bpm;
-      previousTimeStamp = timeChanges[currentTimeChange].timeStamp;
-      timeChanges[currentTimeChange].bpm = targetBPM;
-      timeChanges[currentTimeChange].timeStamp = targetTimeStamp;
+      previousBPM = timeChanges[timeChangeIndex].bpm;
+      previousTimeStamp = timeChanges[timeChangeIndex].timeStamp;
+      previousNumerator = timeChanges[timeChangeIndex].timeSignatureNum;
+      previousDenominator = timeChanges[timeChangeIndex].timeSignatureDen;
+      timeChanges[timeChangeIndex].bpm = targetBPM;
+      // Clamp the target timestamp to a valid value.
+      targetTimeStamp.clamp((timeChanges[timeChangeIndex - 1]?.timeStamp ?? 0) + 1, (timeChanges[timeChangeIndex + 1]?.timeStamp ?? state.songLengthInMs) - 1);
+      timeChanges[timeChangeIndex].timeStamp = targetTimeStamp;
+      timeChanges[timeChangeIndex].timeSignatureNum = targetNumerator;
+      timeChanges[timeChangeIndex].timeSignatureDen = targetDenominator;
     }
 
     state.currentSongMetadata.timeChanges = timeChanges;
@@ -56,6 +69,7 @@ class ModifyCurrentTimeChangeCommand implements ChartEditorCommand
 
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
+    state.updateSongTime();
     state.updateGridHeight();
   }
 
@@ -75,6 +89,7 @@ class ModifyCurrentTimeChangeCommand implements ChartEditorCommand
 
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
+    state.updateSongTime();
     state.updateGridHeight();
   }
 
@@ -86,9 +101,7 @@ class ModifyCurrentTimeChangeCommand implements ChartEditorCommand
 
   public function toString():String
   {
-    if (targetBPM == previousBPM && targetTimeStamp != previousTimeStamp) return 'Changed TimeChange ${currentTimeChange} BPM to ${targetBPM}';
-    else if (targetBPM != previousBPM && targetTimeStamp == previousTimeStamp) return 'Changed TimeChange ${currentTimeChange} timestamp to ${targetTimeStamp}';
-    else
-      return 'Changed TimeChange ${currentTimeChange} BPM to ${targetBPM} & timestamp to ${targetTimeStamp}';
+      return
+      'TimeChange ${timeChangeIndex}: ${targetTimeStamp} : BPM: ${targetBPM} in ${targetNumerator}/${targetDenominator}';
   }
 }
