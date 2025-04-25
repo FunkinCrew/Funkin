@@ -8,7 +8,6 @@ import haxe.macro.Expr.TypeDefKind;
 import haxe.macro.Expr.MetadataEntry;
 import haxe.macro.Type;
 import haxe.macro.Type.ClassType;
-import sys.FileSystem;
 
 using Lambda;
 using haxe.macro.ExprTools;
@@ -362,7 +361,7 @@ class RegistryMacro
   static function listBaseGameEntryIds(dataFilePath:String):Array<Expr>
   {
     var result:Array<Expr> = [];
-    var files:Array<String> = FileSystem.readDirectory(dataFilePath);
+    var files:Array<String> = sys.FileSystem.readDirectory(dataFilePath);
 
     for (file in files)
     {

@@ -69,6 +69,9 @@ class WindowUtil
    */
   public static function openFolder(targetPath:String):Void
   {
+    #if html5
+    throw 'Cannot open URLs on this platform.';
+    #else
     if (!sys.FileSystem.exists(targetPath) || !sys.FileSystem.isDirectory(targetPath)) throw 'openFolder should only be used to open existing folders.';
     #if FEATURE_OPEN_URL
     #if windows
@@ -81,6 +84,7 @@ class WindowUtil
     #else
     throw 'Cannot open URLs on this platform.';
     #end
+    #end
   }
 
   /**
@@ -89,6 +93,9 @@ class WindowUtil
    */
   public static function openSelectFile(targetPath:String):Void
   {
+    #if html5
+    throw 'Cannot open URLs on this platform.';
+    #else
     #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', ['/select,' + targetPath.replace('/', '\\')]);
@@ -100,6 +107,7 @@ class WindowUtil
     #end
     #else
     throw 'Cannot open URLs on this platform.';
+    #end
     #end
   }
 

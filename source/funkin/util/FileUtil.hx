@@ -53,7 +53,17 @@ class FileUtil
    * Paths which should not be deleted or modified by scripts.
    */
   private static final PROTECTED_PATHS:Array<String> = [
-    '', 'assets', 'manifest', 'manifest/*', 'plugins', 'plugins/*', 'Funkin.exe', 'Funkin', 'libvlc.dll', 'libvlccore.dll', 'lime.ndll'
+    '',
+    'assets',
+    'manifest',
+    'manifest/*',
+    'plugins',
+    'plugins/*',
+    'Funkin.exe',
+    'Funkin',
+    'libvlc.dll',
+    'libvlccore.dll',
+    'lime.ndll'
   ];
 
   /**
@@ -269,7 +279,7 @@ class FileUtil
 
     return true;
     #elseif html5
-    var filter:String = defaultFileName != null ? Path.extension(defaultFileName) : null;
+    var filter:Null<String> = defaultFileName != null ? Path.extension(defaultFileName) : null;
     var fileDialog:FileDialog = new FileDialog();
     if (onSave != null)
     {
