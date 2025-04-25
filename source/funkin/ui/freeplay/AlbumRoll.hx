@@ -91,20 +91,16 @@ class AlbumRoll extends FlxSpriteGroup
     if (albumId == null)
     {
       this.visible = false;
-      difficultyStars.stars.visible = false;
       return;
     }
     else
-    {
       this.visible = true;
-    }
 
     albumData = AlbumRegistry.instance.fetchEntry(albumId);
 
     if (albumData == null)
     {
       FlxG.log.warn('Could not find album data for album ID: ${albumId}');
-
       return;
     };
 
@@ -113,9 +109,7 @@ class AlbumRoll extends FlxSpriteGroup
     newAlbumArt.replaceFrameGraphic(0, albumGraphic);
 
     buildAlbumTitle(albumData.getAlbumTitleAssetKey(), albumData.getAlbumTitleOffsets());
-
     applyExitMovers();
-
     refresh();
   }
 
