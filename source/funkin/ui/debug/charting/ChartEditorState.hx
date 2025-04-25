@@ -49,6 +49,7 @@ import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
+import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.CopyItemsCommand;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
@@ -4359,6 +4360,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else
         {
           scrollAnchorScreenPos = null;
+        }
+      }
+
+      if (FlxG.mouse.justPressedRight)
+      {
+        if (gridPlayhead != null && FlxG.mouse.overlaps(gridPlayhead) && !isCursorOverHaxeUI)
+        {
+          var currentTimeChangeIndex = currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
+          // Add a new time change at the grid playhead's position.
+          performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex, scrollPositionInMs + playheadPositionInMs));
         }
       }
 
