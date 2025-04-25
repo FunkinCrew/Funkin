@@ -1,40 +1,43 @@
 package funkin.ui.debug.charting.commands;
 
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 
 /**
- * A command which adds a new timechange to the current song's timechanges, after the currently selected timechange.
+ * A command which adds a new timechange to the current song's timechanges, after the index value given, at the given timestamp.
+ * Will clamp the target timestamp to a valid value.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class AddNewTimeChangeCommand implements ChartEditorCommand
 {
-  var currentTimeChange:Int;
+  var timeChangeIndex:Int;
 
   var previousTimeChanges:Null<Array<SongTimeChange>>;
 
-  var currentStep:Float;
+  var targetTimeStamp:Float;
 
-  public function new(currentTimeChange:Int, currentStep:Float)
+  public function new(timeChangeIndex:Int, targetTimeStamp:Float)
   {
-    this.currentTimeChange = currentTimeChange;
-    this.currentStep = currentStep;
+    this.timeChangeIndex = timeChangeIndex;
+    this.targetTimeStamp = thx.Floats.ceilTo(targetTimeStamp, 4);
   }
 
   public function execute(state:ChartEditorState):Void
   {
     var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
-    previousTimeChanges = timeChanges;
+    previousTimeChanges = timeChanges.copy();
     if (timeChanges == null || timeChanges.length == 0)
     {
       timeChanges = [new SongTimeChange(0, 100)];
     }
     else
     {
-      timeChanges.insert(currentTimeChange + 1,
-        new SongTimeChange(timeChanges[currentTimeChange].timeStamp + currentStep, timeChanges[currentTimeChange].bpm,
-          timeChanges[currentTimeChange].timeSignatureNum,
-          timeChanges[currentTimeChange].timeSignatureDen));
+      // Clamp the target timestamp to a valid value.
+      targetTimeStamp.clamp((timeChanges[timeChangeIndex - 1]?.timeStamp ?? 0) + 1, (timeChanges[timeChangeIndex + 1]?.timeStamp ?? state.songLengthInMs) - 1);
+      timeChanges.insert(timeChangeIndex + 1,
+        new SongTimeChange(targetTimeStamp, timeChanges[timeChangeIndex].bpm, timeChanges[timeChangeIndex].timeSignatureNum,
+          timeChanges[timeChangeIndex].timeSignatureDen));
     }
 
     state.currentSongMetadata.timeChanges = timeChanges;
@@ -44,8 +47,13 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
+    var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
+    if (metadataToolbox != null) metadataToolbox.refreshTimeChanges(timeChangeIndex + 1);
+
+    state.updateSongTime(); // basically will update the time signature for the editor if necessary.
     state.updateGridHeight();
   }
 
@@ -63,8 +71,13 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
+    var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
 
+    if (metadataToolbox != null) metadataToolbox.refreshTimeChanges(timeChangeIndex);
+
+    state.updateSongTime();
     state.updateGridHeight();
   }
 
@@ -75,6 +88,6 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
 
   public function toString():String
   {
-    return 'Added new TimeChange after TimeChange ${currentTimeChange}';
+    return 'Added new TimeChange ${timeChangeIndex + 1} at ${targetTimeStamp}';
   }
 }
