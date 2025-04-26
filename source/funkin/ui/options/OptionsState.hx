@@ -100,6 +100,12 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       #end
     });
 
+    #if !web
+    createItem("MODS", function() {
+      FlxG.state.openSubState(new funkin.ui.debug.mods.ModsSelectState());
+    });
+    #end
+
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
