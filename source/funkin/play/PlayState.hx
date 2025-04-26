@@ -186,6 +186,11 @@ class PlayState extends MusicBeatSubState
   public var needsReset:Bool = false;
 
   /**
+   * A timer that gets active once resetting happens. Used to vwoosh in notes.
+   */
+  public var vwooshTimer:FlxTimer = new FlxTimer();
+
+  /**
    * The current 'Blueball Counter' to display in the pause menu.
    * Resets when you beat a song or go back to the main menu.
    */
@@ -803,7 +808,7 @@ class PlayState extends MusicBeatSubState
 
   public override function update(elapsed:Float):Void
   {
-    if (criticalFailure) return;
+    if (criticalFailure || vwooshTimer.active) return;
 
     super.update(elapsed);
 
@@ -887,7 +892,6 @@ class PlayState extends MusicBeatSubState
       songScore = 0;
       Highscore.tallies.combo = 0;
       // timer for vwoosh
-      var vwooshTimer = new FlxTimer();
       vwooshTimer.start(0.5, function(t:FlxTimer) {
         Conductor.instance.update(startTimestamp - Conductor.instance.combinedOffset, false);
         if (playerStrumline.notes.length == 0) playerStrumline.updateNotes();
@@ -900,6 +904,9 @@ class PlayState extends MusicBeatSubState
       // Reset the health icons.
       currentStage?.getBoyfriend()?.initHealthIcon(false);
       currentStage?.getDad()?.initHealthIcon(true);
+
+      // Stops any existing countdown.
+      Countdown.stopCountdown();
 
       needsReset = false;
     }
