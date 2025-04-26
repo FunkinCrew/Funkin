@@ -6,6 +6,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.6.3] - 2025-04-25
+
+### Added
+
+- New option in the Preferences menu: VSync!
+  - Set it to Off, On, or Adaptive
+  - Adaptive turns VSync off during FPS drops, which is better if supported by your graphics card.
+  - Doesn't work on Mac, sorry!
+- Otis now has muzzle flashes when shooting.
+- Added a little easter egg to one of Pico's Results Screen animations.
+- Overhauled the sticker system to allow modders to easily add custom sticker sets. ([f44e9db](https://github.com/FunkinCrew/Funkin/commit/f44e9db9c5153c1d5cb5d228c41555208988a00f)) - by @AbnormalPoof in [#4003](https://github.com/FunkinCrew/Funkin/pull/4003)
+- Implemented a macro to optimize registries and entries. ([b862467](https://github.com/FunkinCrew/Funkin/commit/b862467756b03902ab22036a41f8803ffcf519fb)) - by @lemz1 in [#3694](https://github.com/FunkinCrew/Funkin/pull/3694)
+- The macro is now used to retrieve base game assets. ([160559a](https://github.com/FunkinCrew/Funkin/commit/160559a0bac75c4da3be75492757c321b9d02432)) - by @lemz1 in [#4707](https://github.com/FunkinCrew/Funkin/pull/4707)
+- The Chart Editor now displays the current beat and step of the playhead. ([d4eee38](https://github.com/FunkinCrew/Funkin/commit/d4eee38fd2c8f1ca59dbdd801957eb0b067e5542)) - by @NotHyper-474 in [#4649](https://github.com/FunkinCrew/Funkin/pull/4649)
+
+### Changed
+
+- The mod API version is now 0.6.3. 
+  - Be sure to update the version in your mods' metadata, then ensure they are still working!
+- Eric's scoring rebalance update!
+  - Misses (not ghost misses) are now worth -100 points, up from -10.
+  - Misses now reduce your final clear percentage, which impacts your rank.
+  - Hold note trails now grant 20% less health.
+  - Dropping a hold note early now plays the miss animation and deducts health and score.
+- Made a LOT of charting changes!
+  - Many missing, extra, and mistimed notes have been corrected.
+  - Stacked notes that were preventing full combos have been removed.
+  - Camera events have been adjusted to stay within the boundaries of the stage.
+  - Some songs have been recharted.
+- The Freeplay menu can now always switch between variations.
+  - The nearest song with an Erect variation will be selected when switching.
+- Switching difficulties now always plays the capsule jump-in animation.
+- The "Random" capsule now plays animations consistent with other capsules.
+- Swapped the positions of “skip” and “restart” items in the dialogue pause menu for consistency. ([da9f17c](https://github.com/FunkinCrew/Funkin/commit/da9f17cf8776c9293c51b55d0e78e8eafebfadf1)) - by @VioletSnowLeopard in [#4553](https://github.com/FunkinCrew/Funkin/pull/4553)
+- The Controls menu now prevents unbinding essential UI controls to safeguard against softlocking save files. ([0c538bf](https://github.com/FunkinCrew/Funkin/commit/0c538bfffba174cf532d439ea9f27a2278adb387)) - by @VioletSnowLeopard in [#4382](https://github.com/FunkinCrew/Funkin/pull/4382)
+- Renamed “Auto Pause” preference to “Pause on Unfocus” for clarity. ([49a21c1](https://github.com/FunkinCrew/Funkin/commit/49a21c198236fbecbe5902bb106f78939cc6442a)) - by @JackXson-Real in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
+- Overhauled `FileUtil`, introducing various fixes, new functions, and sandboxing. ([95ade2a](https://github.com/FunkinCrew/Funkin/commit/95ade2a08b7709e8208ec1b3e123bf5b4308ba10)) - by @cyn0x8 in [#3032](https://github.com/FunkinCrew/Funkin/pull/3032)
+
+### Fixed
+
+- Story mode medals are now awarded even without scoring a new personal best.
+- Highscores are now submitted to Newgrounds even without scoring a new personal best.
+- Fixed Freeplay DJ animations for Boyfriend and Pico when idling (properly this time).
+- Alternate instrumentals for Cocoa, Senpai, Roses, and Stress are now locked until their Pico Mix is beaten.
+- Restarting Stress or Stress (Pico Mix) no longer spawns too many Tankmen in the background.
+- Pico's game over animation now displays properly on Ugh (Pico Mix) and Guns (Pico Mix).
+- Tankman's death lines now play for Boyfriend in Ugh, Guns, and Ugh Erect.  
+- A-Bot's visualizer is now blank before the song starts.
+- Adding custom parameters to note kinds no longer crashes the Chart Editor.
+- Debug editor tooltips no longer display behind windows.
+- Improved performance in the Freeplay menu before entering a song. ([1bac60b](https://github.com/FunkinCrew/Funkin/commit/1bac60b877cebec40d1d7e234f11528a2285bb65)) - by @superpowers04 in [#4729](https://github.com/FunkinCrew/Funkin/pull/4729)
+- Prevented a crash by capping Freeplay and Results screen score displays at their largest possible values (actual scores are not capped). ([b954d1c](https://github.com/FunkinCrew/Funkin/commit/b954d1c03474a77ddaae3ef070c83ac69c5dacec)) - by @KoloInDaCrib in [#3634](https://github.com/FunkinCrew/Funkin/pull/3634)
+- The Animation Editor no longer crashes when opened. ([6500b80](https://github.com/FunkinCrew/Funkin/commit/6500b80a7a78935c44da57a6b55b4829f6adaa26)) - by @sector-a in [#4582](https://github.com/FunkinCrew/Funkin/pull/4582)
+- Disabled navigation in the Options menu while the Clear Save Data prompt is open. ([6c123b9](https://github.com/FunkinCrew/Funkin/commit/6c123b959e94190ba6a0e61d953a9e6a54762351)) - by @KoloInDaCrib in [#4703](https://github.com/FunkinCrew/Funkin/pull/4703)
+- Save data is no longer wiped after failing to load the current save. ([48310d7](https://github.com/FunkinCrew/Funkin/commit/48310d72ca583110a8aa67ea3492b8216a9d760c)) - by @KoloInDaCrib in [#4574](https://github.com/FunkinCrew/Funkin/pull/4574)
+- Selecting a different type of event in the Chart Editor no longer crashes or resets the event to its default values. ([71ed154](https://github.com/FunkinCrew/Funkin/commit/71ed154b81abbd002d78c09c2dada8a2ad3fa73e)) - by @KoloInDaCrib in [#3913](https://github.com/FunkinCrew/Funkin/pull/3913)
+- Deleting a stacked event in the Chart Editor now properly removes the deleted event’s sprite. ([51605a7](https://github.com/FunkinCrew/Funkin/commit/51605a7bfc6cf75379e9ceeb673045afc8646773)) - by @NotHyper-474 in [#4724](https://github.com/FunkinCrew/Funkin/pull/4724)
+- Patched a security vulnerability. ([291e2f3](https://github.com/FunkinCrew/Funkin/commit/291e2f31bf8c7fab14fa5471666bc3c3be3976af)) - by @nebulazorua in [#4740](https://github.com/FunkinCrew/Funkin/pull/4740)
+- Added null safety to a bunch of classes.
+- Even more tiny bug fixes.
+
+## New Contributors for 0.6.3
+
+* @JackXson-Real made their first contribution in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
+* @VioletSnowLeopard made their first contribution in [#4382](https://github.com/FunkinCrew/Funkin/pull/4382)
+* @superpowers04 made their first contribution in [#4729](https://github.com/FunkinCrew/Funkin/pull/4729)
+
+
+
 ## [0.6.2] - 2025-03-31
 
 ### Added
@@ -396,7 +465,7 @@ The Playable Pico Update!
 - Botplay mode now handles the player's animations properly during hold notes. ([thanks Hundrec!](https://github.com/FunkinCrew/Funkin/pull/2683))
 - Camera movement now pauses when the game is paused. ([thanks Matriculaso!](https://github.com/FunkinCrew/Funkin/pull/2684))
 - Pico's gameplay sprite no longer appears on the gameover screen when dying from an explosion in 2hot.
-- Freeplay previews now properly fade in volume during the BF idle animation.
+- Freeplay previews now properly fade in volume during the DJ's idle animation.
 - DadBattle no longer incorrectly appears as DadBattle Erect when returning to Freeplay on Hard.
 - 2hot now appears under the "#" category in Freeplay menu.
 - The Chart Editor no longer crashes when selecting an event with the Event toolbox open.
