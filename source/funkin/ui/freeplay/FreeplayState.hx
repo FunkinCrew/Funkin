@@ -2061,7 +2061,8 @@ class FreeplayState extends MusicBeatSubState
     {
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.freeplayData.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
+      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick +
+        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
       changeDiff();
       daSongCapsule.refreshDisplay();
