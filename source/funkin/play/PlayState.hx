@@ -2425,7 +2425,7 @@ class PlayState extends MusicBeatSubState
             dispatchEvent(event);
 
             trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
-            applyScore(event.score, 'miss', event.healthChange, event.isComboBreak);
+            applyScore(event.score, '', event.healthChange, event.isComboBreak);
 
             // Play the miss sound.
             vocals.playerVolume = 0;
@@ -2765,6 +2765,8 @@ class PlayState extends MusicBeatSubState
         Highscore.tallies.shit += 1;
       case 'miss':
         Highscore.tallies.missed += 1;
+      default:
+        // Nothing!
     }
     health += healthChange;
     if (isComboBreak)
