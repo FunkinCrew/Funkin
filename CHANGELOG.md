@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - The mod API version is now 0.6.3. 
-  - Be sure to check that your mods are still working, then update their metadata!
+  - Be sure to update the version in your mods' metadata, then ensure they are still working!
 - Eric's scoring rebalance update!
   - Misses (not ghost misses) are now worth -100 points, up from -10.
   - Misses now reduce your final clear percentage, which impacts your rank.
