@@ -4,9 +4,8 @@ import funkin.ui.freeplay.Album;
 import funkin.data.freeplay.album.AlbumData;
 import funkin.ui.freeplay.ScriptedAlbum;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
-class AlbumRegistry extends BaseRegistry<Album, AlbumData> implements ISingleton implements DefaultRegistryImpl
+class AlbumRegistry extends BaseRegistry<Album, AlbumData, 'ui/freeplay/albums'> implements ISingleton
 {
   /**
    * The current version string for the album data format.
@@ -19,6 +18,6 @@ class AlbumRegistry extends BaseRegistry<Album, AlbumData> implements ISingleton
 
   public function new()
   {
-    super('ALBUM', 'ui/freeplay/albums', ALBUM_DATA_VERSION_RULE);
+    super('ALBUM', ALBUM_DATA_VERSION_RULE);
   }
 }

@@ -11,12 +11,11 @@ import funkin.play.song.Song;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
 @:nullSafety
-class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleton implements DefaultRegistryImpl
+class SongRegistry extends BaseRegistry<Song, SongMetadata, 'songs'> implements ISingleton
 {
   /**
    * The current version string for the stage data format.
@@ -44,7 +43,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
 
   public function new()
   {
-    super('SONG', 'songs', SONG_METADATA_VERSION_RULE);
+    super('SONG', SONG_METADATA_VERSION_RULE);
   }
 
   public override function loadEntries():Void
@@ -107,7 +106,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
   /**
    * Read, parse, and validate the JSON data and produce the corresponding data object.
    */
-  public function parseEntryData(id:String):Null<SongMetadata>
+  public override function parseEntryData(id:String):Null<SongMetadata>
   {
     return parseEntryMetadata(id);
   }
@@ -115,7 +114,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
   /**
    * Parse, and validate the JSON data and produce the corresponding data object.
    */
-  public function parseEntryDataRaw(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
+  public override function parseEntryDataRaw(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
     return parseEntryMetadataRaw(contents);
   }

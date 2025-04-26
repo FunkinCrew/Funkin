@@ -3,9 +3,8 @@ package funkin.data.dialogue.speaker;
 import funkin.play.cutscene.dialogue.Speaker;
 import funkin.play.cutscene.dialogue.ScriptedSpeaker;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
-class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData> implements ISingleton implements DefaultRegistryImpl
+class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, 'dialogue/speakers'> implements ISingleton
 {
   /**
    * The current version string for the speaker data format.
@@ -18,6 +17,6 @@ class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData> implements ISin
 
   public function new()
   {
-    super('SPEAKER', 'dialogue/speakers', SPEAKER_DATA_VERSION_RULE);
+    super('SPEAKER', SPEAKER_DATA_VERSION_RULE);
   }
 }
