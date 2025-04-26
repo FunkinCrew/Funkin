@@ -14,9 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Set it to Off, On, or Adaptive
   - Adaptive turns VSync off during FPS drops, which is better if supported by your graphics card.
   - Doesn't work on Mac, sorry!
-- Added Freeplay DJ animations for Boyfriend and Pico when idling (properly this time).
 - Otis now has muzzle flashes when shooting.
-- Added a little easter egg (and a Cassandra cutout) to Pico's Good Results Screen animation.
+- Added a little easter egg to one of Pico's Results Screen animations.
 - Overhauled the sticker system to allow modders to easily add custom sticker sets. ([f44e9db](https://github.com/FunkinCrew/Funkin/commit/f44e9db9c5153c1d5cb5d228c41555208988a00f)) - by @AbnormalPoof in [#4003](https://github.com/FunkinCrew/Funkin/pull/4003)
 - Implemented a macro to optimize registries and entries. ([b862467](https://github.com/FunkinCrew/Funkin/commit/b862467756b03902ab22036a41f8803ffcf519fb)) - by @lemz1 in [#3694](https://github.com/FunkinCrew/Funkin/pull/3694)
 - The macro is now used to retrieve base game assets. ([160559a](https://github.com/FunkinCrew/Funkin/commit/160559a0bac75c4da3be75492757c321b9d02432)) - by @lemz1 in [#4707](https://github.com/FunkinCrew/Funkin/pull/4707)
@@ -49,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Story mode medals are now awarded even without scoring a new personal best.
 - Highscores are now submitted to Newgrounds even without scoring a new personal best.
+- Fixed Freeplay DJ animations for Boyfriend and Pico when idling (properly this time).
 - Alternate instrumentals for Cocoa, Senpai, Roses, and Stress are now locked until their Pico Mix is beaten.
 - Restarting Stress or Stress (Pico Mix) no longer spawns too many Tankmen in the background.
 - Pico's game over animation now displays properly on Ugh (Pico Mix) and Guns (Pico Mix).
