@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented a macro to optimize registries and entries. ([b862467](https://github.com/FunkinCrew/Funkin/commit/b862467756b03902ab22036a41f8803ffcf519fb)) - by @lemz1 in [#3694](https://github.com/FunkinCrew/Funkin/pull/3694)
 - The macro is now used to retrieve base game assets. ([160559a](https://github.com/FunkinCrew/Funkin/commit/160559a0bac75c4da3be75492757c321b9d02432)) - by @lemz1 in [#4707](https://github.com/FunkinCrew/Funkin/pull/4707)
 - The Chart Editor now displays the current beat and step of the playhead. ([d4eee38](https://github.com/FunkinCrew/Funkin/commit/d4eee38fd2c8f1ca59dbdd801957eb0b067e5542)) - by @NotHyper-474 in [#4649](https://github.com/FunkinCrew/Funkin/pull/4649)
-- The Erect Eggnog cutscene can now be Skipped. ([0303a03](https://github.com/FunkinCrew/funkin.assets/commit/1202651db8ea938fe11b6b734fbf7884d101e6ad)) - by @ShadzXD in [#62](https://github.com/FunkinCrew/funkin.assets/pull/62)
+- The Eggnog Erect cutscene can now be skipped. ([0303a03](https://github.com/FunkinCrew/funkin.assets/commit/1202651db8ea938fe11b6b734fbf7884d101e6ad)) - by @ShadzXD in [#62](https://github.com/FunkinCrew/funkin.assets/pull/62)
 
 ### Changed
 
