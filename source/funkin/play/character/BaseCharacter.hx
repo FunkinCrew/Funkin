@@ -49,7 +49,7 @@ class BaseCharacter extends Bopper
   public var debug:Bool = false;
 
   /**
-   * so this is for note hit notekind detection
+   * The current note kind.
    */
   public var curNoteKind:NoteKind;
 
