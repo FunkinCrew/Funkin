@@ -9,6 +9,7 @@ shitAudio/
 .build_time
 .swp
 NewgroundsCredentials.hx
+CHANGELOG.md
 
 # Exclude JS stuff
 node_modules/
