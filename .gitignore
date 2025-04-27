@@ -4,6 +4,7 @@
 APIStuff.hx
 dump/
 export/
+astc-textures/
 RECOVER_*.fla
 shitAudio/
 .build_time

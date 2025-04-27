@@ -5,6 +5,7 @@ import hxp.*;
 import lime.tools.*;
 import sys.FileSystem;
 import sys.io.File;
+import haxe.io.Path;
 import haxe.ds.Map;
 
 using StringTools;
@@ -298,6 +299,21 @@ class Project extends HXProject {
 	 */
 	static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
+		/**
+	 * `-DFEATURE_COMPRESSED_TEXTURES`
+	 * If this flag is enabled, ASTC compressed textures will be used over uncompressed PNGs.
+	 * Compressed ASTC textures provide lower memory usage but at the cost of a higher files size.
+	 * ASTC textures are GPU Rendered so they have a few cons:
+	 * - Pixel Data cannot be read directly.
+	 * - Some filters specifically the ones in openfl.filters package won't work proprely because they directly modify the bitmap pixels.
+	 * - ASync loading for GPU Textures seem bugged and results in a black texture (This is meant to be fixed soon because it's not supposed to happen.).
+	 * One thing to note is that ASTC textures aren't available on all platforms:
+	 * - For iOS it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
+	 * - For Android it's sorta mixed, but mostly any mid range phone from around 2018 does support ASTC.
+	 * - For desktop it really all just depends on the GPU, but Windows with DirectX 12 should have supported.
+	 */
+	static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
+
 	/**
 	 * `-DTOUCH_CONTROLS`
 	 * If this flag is enabled, the touch controls for the game is also enabled.
@@ -336,6 +352,8 @@ class Project extends HXProject {
 	static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
 
 
+	static var astcExcludes:Array<String> = [];
+
 	static var envConfig:Null<Map<String, Dynamic>> = null;
 
 	//
@@ -346,6 +364,8 @@ class Project extends HXProject {
 		super();
 
 		envConfig = readEnvironmentFile("./.env");
+		readASTCExcludsion();
+
 		flair();
 		configureApp();
 
@@ -664,6 +684,9 @@ class Project extends HXProject {
 		// Should be true only on mobile builds.
 		FEATURE_HAPTICS.apply(this, isMobile());
 
+		// Should be false by default unless explicitly defined.
+		FEATURE_COMPRESSED_TEXTURES.apply(this, false);
+
 		// Should be true only on mobile builds.
 		TOUCH_CONTROLS.apply(this, isMobile());
 
@@ -909,7 +932,7 @@ class Project extends HXProject {
     addAssetLibrary("tutorial", shouldEmbed, shouldPreload);
     addAssetPath("assets/tutorial", "assets/tutorial", "tutorial", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week1", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed, "assets");
+		addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week2", shouldEmbed, shouldPreload);
     addAssetPath("assets/week2", "assets/week2", "week2", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week3", shouldEmbed, shouldPreload);
@@ -1126,6 +1149,17 @@ class Project extends HXProject {
   public function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false, ?padName:String):Void
   {
     // path, rename, type, embed, setDefaults
+		if (Path.extension(path) == 'png' && FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+		{
+			if (!isASTCExcluded(path))
+			{
+				path = "astc-textures/" + path.substr(0, path.length - 3) + "astc";
+
+				if (rename != null)
+					rename = rename.substr(0, rename.length - 3) + "astc";
+				}
+		}
+
     var asset = new Asset(path, rename, null, embed, true);
     @:nullSafety(Off)
     {
@@ -1310,6 +1344,38 @@ class Project extends HXProject {
 		}
 
 		return env;
+	}
+
+	public function readASTCExcludsion():Void {
+    astcExcludes = File.getContent('./compression-excludes.txt').trim().split('\n');
+
+		for (i in 0...astcExcludes.length)
+			astcExcludes[i] = astcExcludes[i].trim();
+	}
+
+	public function isASTCExcluded(filePath:String):Bool {
+		for (exclusion in astcExcludes) {
+      if (exclusion.endsWith("/*")) {
+        var normalizedFilePath = Path.normalize(filePath);
+        var normalizedExclusion = Path.normalize(exclusion.substr(0, exclusion.length - 2));
+
+        if (normalizedFilePath.startsWith(normalizedExclusion))
+          return true;
+      }
+      else if (exclusion.endsWith("/")) {
+        var normalizedExclusion = Path.normalize(exclusion);
+        var fileDirectory = Path.directory(Path.normalize(filePath));
+
+        if (fileDirectory == normalizedExclusion)
+          return true;
+      }
+      else {
+        if (filePath == exclusion)
+          return true;
+      }
+    }
+
+		return false;
 	}
 }
 

@@ -29,11 +29,13 @@ class FunkinMemory
    */
   public static inline function initialCache():Void
   {
-    var allImages:Array<String> = Assets.list(AssetType.IMAGE);
+    var allImages:Array<String> = Assets.list();
 
     for (file in allImages)
     {
-      if (!file.endsWith(".png") || file.contains("chart-editor") || !file.contains("ui/"))
+      if (!(file.endsWith(".png") #if FEATURE_COMPRESSED_TEXTURES || file.endsWith(".astc") #end)
+        || file.contains("chart-editor")
+        || !file.contains("ui/"))
       {
         continue;
       }

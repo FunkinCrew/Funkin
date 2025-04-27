@@ -296,18 +296,18 @@ class LoadingState extends MusicBeatSubState
         for (sprite in spritesToCache)
         {
           trace('Queueing $sprite to preload.');
-          new Future<String>(function() {
-            var path = Paths.image(sprite, "weekend1");
-            funkin.FunkinMemory.cacheTexture(path);
-            // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
-            // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
-            if (path.endsWith('spritemap1.png'))
-            {
-              trace('Preloading FlxAnimate asset: ${path}');
-              openfl.Assets.getBitmapData(path, true);
-            }
-            return '${path} successfuly loaded.';
-          }, true);
+          // new Future<String>(function() {
+          var path = Paths.image(sprite, "weekend1");
+          funkin.FunkinMemory.cacheTexture(path);
+          // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
+          // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
+          if (path.endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || path.endsWith('spritemap1.astc') #end)
+          {
+            trace('Preloading FlxAnimate asset: ${path}');
+            openfl.Assets.getBitmapData(path, true);
+          }
+          // return '${path} successfuly loaded.';
+          // }, true);
         }
 
         for (sound in soundsToCache)
