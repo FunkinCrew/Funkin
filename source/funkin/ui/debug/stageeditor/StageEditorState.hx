@@ -1073,7 +1073,7 @@ class StageEditorState extends UIState
       var filePath = new haxe.io.Path(file);
       var item = new MenuItem();
       item.text = filePath.file + "." + filePath.ext;
-      item.disabled = !FileUtil.doesFileExist(file);
+      item.disabled = !FileUtil.fileExists(file);
 
       var load = function(file:String) {
         currentFile = file;
@@ -1267,7 +1267,7 @@ class StageEditorState extends UIState
       case "open folder":
         #if sys
         var absoluteBackupsPath:String = haxe.io.Path.join([Sys.getCwd(), BACKUPS_PATH]);
-        WindowUtil.openFolder(absoluteBackupsPath);
+        FileUtil.openFolder(absoluteBackupsPath);
         #end
 
       case "test stage":

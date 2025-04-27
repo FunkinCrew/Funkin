@@ -79,8 +79,10 @@ class PolymodHandler
    */
   public static function loadAllMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
+    #end
     trace('Initializing Polymod (using all mods)...');
     loadModsById(getAllModIds());
   }
@@ -90,9 +92,10 @@ class PolymodHandler
    */
   public static function loadEnabledMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     trace('Initializing Polymod (using configured mods)...');
     loadModsById(Save.instance.enabledModIds);
   }
@@ -102,9 +105,10 @@ class PolymodHandler
    */
   public static function loadNoMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     // We still need to configure the debug print calls etc.
     trace('Initializing Polymod (using no mods)...');
     loadModsById([]);
@@ -249,6 +253,9 @@ class PolymodHandler
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
+
+    // `funkin.util.FileUtil` has unrestricted access to the file system.
+    Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
 
     // Add blacklisting for prohibited classes and packages.
 
