@@ -10,7 +10,7 @@ import funkin.play.notes.notekind.NoteKind.NoteKindParam;
 
 class NoteKindManager
 {
-  public static var noteKinds:Map<String, NoteKind> = [];
+  static var noteKinds:Map<String, NoteKind> = [];
 
   public static function loadScripts():Void
   {
@@ -23,7 +23,6 @@ class NoteKindManager
         try
         {
           var script:NoteKind = ScriptedNoteKind.init(scriptedClass, "unknown");
-          trace(script.noanim);
           trace(' Initialized scripted note kind: ${script.noteKind}');
           noteKinds.set(script.noteKind, script);
           ChartEditorDropdowns.NOTE_KINDS.set(script.noteKind, script.description);
@@ -119,30 +118,6 @@ class NoteKindManager
     else
     {
       return noteKinds.get(noteKind);
-    }
-  }
-
-  public static function getNoteKindanimtype(noteKind:Null<String>):Null<Bool>
-  {
-    if (noteKind == null)
-    {
-      return null;
-    }
-    else
-    {
-      return noteKinds.get(noteKind)?.noanim ?? false;
-    }
-  }
-
-  public static function getNoteKindsuffix(noteKind:Null<String>):Null<String>
-  {
-    if (noteKind == null)
-    {
-      return null;
-    }
-    else
-    {
-      return noteKinds.get(noteKind)?.suffix ?? '';
     }
   }
 
