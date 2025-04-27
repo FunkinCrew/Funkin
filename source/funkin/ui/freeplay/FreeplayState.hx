@@ -93,6 +93,11 @@ class FreeplayState extends MusicBeatSubState
    */
   public static final FADE_OUT_END_VOLUME:Float = 0.0;
 
+  /**
+   * For the audio preview, the time to wait before attempting to load a song preview.
+   */
+  public static final FADE_IN_DELAY:Float = 0.25;
+
   var songs:Array<Null<FreeplaySongData>> = [];
 
   var curSelected:Int = 0;
@@ -2030,7 +2035,8 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank)
     {
-      playCurSongPreview(daSongCapsule);
+      FlxG.sound.music?.pause();
+      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(daSongCapsule));
       grpCapsules.members[curSelected].selected = true;
 
       // switchBackingImage(daSongCapsule.freeplayData);
@@ -2052,6 +2058,8 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
+      // Make sure the player is still hovering over the song we want to load preview for
+      if (!daSongCapsule.selected) return;
       var previewSong:Null<Song> = daSongCapsule?.freeplayData?.data;
       if (previewSong == null) return;
 
