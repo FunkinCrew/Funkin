@@ -79,8 +79,10 @@ class PolymodHandler
    */
   public static function loadAllMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
+    #end
     trace('Initializing Polymod (using all mods)...');
     loadModsById(getAllModIds());
   }
@@ -90,9 +92,10 @@ class PolymodHandler
    */
   public static function loadEnabledMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     trace('Initializing Polymod (using configured mods)...');
     loadModsById(Save.instance.enabledModIds);
   }
@@ -102,9 +105,10 @@ class PolymodHandler
    */
   public static function loadNoMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     // We still need to configure the debug print calls etc.
     trace('Initializing Polymod (using no mods)...');
     loadModsById([]);
