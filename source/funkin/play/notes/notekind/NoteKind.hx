@@ -46,7 +46,6 @@ class NoteKind implements INoteScriptedClass
     this.noteStyleId = noteStyleId;
     this.params = params ?? [];
     this.noanim = anim ?? false;
-    trace(this.noanim);
     this.suffix = suffix ?? '';
   }
 
