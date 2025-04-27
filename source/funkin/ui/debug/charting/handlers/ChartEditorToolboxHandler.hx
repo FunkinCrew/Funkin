@@ -14,6 +14,13 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorEventDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorNoteDataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
+import funkin.ui.debug.charting.handlers.ChartEditorCheckboxesHandler;
+import haxe.ui.containers.Frame;
+import haxe.ui.containers.Grid;
+import haxe.ui.containers.TreeView;
+import haxe.ui.containers.TreeViewNode;
+import haxe.ui.core.Component;
+import haxe.ui.events.UIEvent;
 
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
@@ -24,7 +31,7 @@ class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void
   {
-    FlxG.log.add("setToolbox called, value: " + shown);
+    ChartEditorCheckboxesHandler.setCheckboxState(state, id, shown);
     if (shown)
     {
       showToolbox(state, id);
@@ -37,34 +44,13 @@ class ChartEditorToolboxHandler
 
   public static function switchToolboxState(state:ChartEditorState, id:String):Void
   {
-    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
-
-    if (toolbox == null) toolbox = initToolbox(state, id);
-
-    if (toolbox != null) {
-      var show:Bool = !toolbox.visible;
-      switch (id){
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
-          state.menubarItemToggleToolboxDifficulty.selected = show;
-        case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
-          state.menubarItemToggleToolboxMetadata.selected = show;
-          case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:
-            state.menubarItemToggleToolboxNoteData.selected = show;
-          case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
-            state.menubarItemToggleToolboxOffsets.selected = show;
-        default:
-          trace("ChartEditorToolboxHandler.switchToolboxState() - Unknown toolbox ID: $id");
-          return;
-      }
-      setToolboxState(state, id, show);
-    }
+    var toolbox:Null<CollapsibleDialog> = getToolbox(state, id);
+    if (toolbox != null) setToolboxState(state, id, !toolbox.visible);
   }
 
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
-    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
-
-    if (toolbox == null) toolbox = initToolbox(state, id);
+    var toolbox:Null<CollapsibleDialog> = getToolbox(state, id);
 
     if (toolbox != null && !toolbox.visible)
     {
@@ -107,9 +93,7 @@ class ChartEditorToolboxHandler
 
   public static function hideToolbox(state:ChartEditorState, id:String):Void
   {
-    var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
-
-    if (toolbox == null) toolbox = initToolbox(state, id);
+    var toolbox:Null<CollapsibleDialog> = getToolbox(state, id);
 
     if (toolbox != null && toolbox.visible)
     {
@@ -126,6 +110,14 @@ class ChartEditorToolboxHandler
           onHideToolboxPlayerPreview(state, toolbox);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:
           onHideToolboxOpponentPreview(state, toolbox);
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:
+          // have no particular value
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
+          //
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:
+          //
+        case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
+          //
         default:
           // This happens if you try to load an unknown layout.
           trace('ChartEditorToolboxHandler.hideToolbox() - Unknown toolbox ID: $id');
