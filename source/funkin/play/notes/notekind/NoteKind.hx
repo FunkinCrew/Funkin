@@ -25,12 +25,12 @@ class NoteKind implements INoteScriptedClass
   public var noteStyleId:Null<String>;
 
   /**
-   * should this have anims
+   * Whether or not the sing animation should play.
    */
   public var noanim:Bool;
 
   /**
-   * the anim suffix
+   * The animation suffix to use.
    */
   public var suffix:String;
 
