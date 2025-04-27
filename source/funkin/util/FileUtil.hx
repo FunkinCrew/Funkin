@@ -621,8 +621,6 @@ class FileUtil
       throw 'Target path is a directory, not a file: "$path"';
     }
 
-    createDirIfNotExists(Path.directory(path));
-
     var shouldWrite:Bool = true;
     switch (mode)
     {
@@ -811,14 +809,14 @@ class FileUtil
    */
   public static function createDirIfNotExists(dir:String):Void
   {
-    #if sys
     if (!directoryExists(dir))
     {
+      #if sys
       sys.FileSystem.createDirectory(dir);
+      #else
+      throw 'Directory creation is not supported on this platform.';
+      #end
     }
-    #else
-    throw 'Directory creation is not supported on this platform.';
-    #end
   }
 
   /**
