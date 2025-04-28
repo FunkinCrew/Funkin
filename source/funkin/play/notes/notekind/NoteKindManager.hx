@@ -105,7 +105,7 @@ class NoteKindManager
   }
 
   /**
-   * Retrive custom params of the given note kind
+   * Retrieve custom params of the given note kind
    * @param noteKind Name of the note kind
    * @return Array<NoteKindParam>
    */
