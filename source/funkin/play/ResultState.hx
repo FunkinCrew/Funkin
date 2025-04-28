@@ -28,8 +28,10 @@ import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.data.song.SongRegistry;
 import funkin.save.Save.SaveScoreData;
+import funkin.ui.debug.results.ResultsDebugSubState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.charSelect.CharacterUnlockState;
 import funkin.ui.story.StoryMenuState;
@@ -737,7 +739,7 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE || controls.ACCEPT)
     {
-      if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
+      if (_parentState is ResultsDebugSubState)
       {
         if (introMusicAudio != null)
         {
@@ -789,7 +791,7 @@ class ResultState extends MusicBeatSubState
 
       // Determining the target state(s) to go to.
       // Default to main menu because that's better than `null`.
-      var targetState:FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var targetState:FlxState = new MainMenuState();
       var shouldTween = false;
       var shouldUseSubstate = false;
 

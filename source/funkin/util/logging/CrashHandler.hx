@@ -1,5 +1,6 @@
 package funkin.util.logging;
 
+import funkin.modding.PolymodHandler;
 import openfl.Lib;
 import openfl.events.UncaughtErrorEvent;
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -168,13 +169,13 @@ class CrashHandler
 
     fullContents += 'Loaded mods: \n';
 
-    if (funkin.modding.PolymodHandler.loadedModIds.length == 0)
+    if (PolymodHandler.loadedModIds.length == 0)
     {
       fullContents += 'No mods loaded.\n';
     }
     else
     {
-      for (mod in funkin.modding.PolymodHandler.loadedModIds)
+      for (mod in PolymodHandler.loadedModIds)
       {
         fullContents += '- ${mod}\n';
       }

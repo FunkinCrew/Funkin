@@ -45,6 +45,8 @@ import funkin.audio.FunkinSound;
 import haxe.ui.notifications.NotificationType;
 import haxe.ui.notifications.NotificationManager;
 import funkin.util.logging.CrashHandler;
+import funkin.util.DateUtil;
+import funkin.util.SortUtil;
 
 /**
  * Da Stage Editor woo!!
@@ -197,7 +199,7 @@ class StageEditorState extends UIState
         var data = this.packShitToZip();
         var path = haxe.io.Path.join([
           BACKUPS_PATH,
-          'stage-editor-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
+          'stage-editor-${DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
         ]);
 
         FileUtil.writeBytesToPath(path, data);
@@ -455,7 +457,7 @@ class StageEditorState extends UIState
       if (files.length > 0)
       {
         // ensures that the top most file is a backup
-        files.sort(funkin.util.SortUtil.alphabetically);
+        files.sort(SortUtil.alphabetically);
 
         while (!files[files.length - 1].endsWith(FileUtil.FILE_EXTENSION_INFO_FNFS.extension)
           || !files[files.length - 1].startsWith("stage-editor-"))
@@ -886,7 +888,7 @@ class StageEditorState extends UIState
 
   public function sortAssets()
   {
-    sort(funkin.util.SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
+    sort(SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
   }
 
   public function updateDialog(type:StageEditorDialogType)

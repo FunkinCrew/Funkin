@@ -35,6 +35,7 @@ import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
+import funkin.ui.charSelect.CharSelectSubState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
@@ -1179,7 +1180,7 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
-      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+      FlxG.switchState(new CharSelectSubState());
     });
     for (grpSpr in exitMoversCharSel.keys())
     {

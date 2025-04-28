@@ -1,6 +1,7 @@
 package funkin.util.plugins;
 
 import flixel.FlxBasic;
+import funkin.ui.mainmenu.MainMenuState;
 
 /**
  * A plugin which adds functionality to press `F4` to immediately transition to the main menu.
@@ -24,7 +25,7 @@ class EvacuateDebugPlugin extends FlxBasic
 
     if (FlxG.keys.justPressed.F4)
     {
-      FlxG.switchState(() -> new funkin.ui.mainmenu.MainMenuState());
+      FlxG.switchState(() -> new MainMenuState());
     }
   }
 

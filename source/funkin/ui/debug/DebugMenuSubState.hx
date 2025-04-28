@@ -6,7 +6,13 @@ import flixel.FlxSprite;
 import funkin.ui.MusicBeatSubState;
 import funkin.audio.FunkinSound;
 import funkin.ui.TextMenuList;
+import funkin.ui.charSelect.CharSelectSubState;
+import funkin.ui.debug.anim.DebugBoundingState;
 import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.debug.latency.LatencyState;
+import funkin.ui.debug.results.ResultsDebugSubState;
+import funkin.ui.debug.stageeditor.StageEditorState;
+import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.logging.CrashHandler;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.util.FileUtil;
@@ -106,36 +112,36 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openInputOffsetTesting()
   {
-    openSubState(new funkin.ui.debug.latency.LatencyState());
+    openSubState(new LatencyState());
     trace('Input Offset Testing');
   }
 
   function openCharSelect()
   {
-    FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+    FlxG.switchState(new CharSelectSubState());
   }
 
   function openAnimationEditor()
   {
-    FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
+    FlxG.switchState(() -> new DebugBoundingState());
     trace('Animation Editor');
   }
 
   function testStickers()
   {
-    openSubState(new funkin.ui.transition.stickers.StickerSubState({}));
+    openSubState(new StickerSubState({}));
     trace('opened stickers');
   }
 
   function openStageEditor()
   {
     trace('Stage Editor');
-    FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
+    FlxG.switchState(() -> new StageEditorState());
   }
 
   function openTestResultsScreen():Void
   {
-    FlxG.switchState(() -> new funkin.ui.debug.results.ResultsDebugSubState());
+    FlxG.switchState(() -> new ResultsDebugSubState());
   }
 
   #if sys

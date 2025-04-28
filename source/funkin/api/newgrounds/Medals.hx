@@ -2,11 +2,11 @@ package funkin.api.newgrounds;
 
 #if FEATURE_NEWGROUNDS
 import io.newgrounds.objects.Medal as MedalData;
+import funkin.data.DataError;
 import funkin.util.plugins.NewgroundsMedalPlugin;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
-import io.newgrounds.utils.MedalList;
-import haxe.Json;
+import json2object.JsonParser;
 
 class Medals
 {
@@ -112,7 +112,7 @@ class Medals
 
     var jsonString = Assets.getText(jsonPath);
 
-    var parser = new json2object.JsonParser<Array<MedalJSON>>();
+    var parser = new JsonParser<Array<MedalJSON>>();
     parser.ignoreUnknownVariables = false;
     trace('[NEWGROUNDS] Parsing local medal data...');
     parser.fromJson(jsonString, jsonPath);
@@ -121,7 +121,7 @@ class Medals
     {
       trace('[NEWGROUNDS] Failed to parse local medal data!');
       for (error in parser.errors)
-        funkin.data.DataError.printError(error);
+        DataError.printError(error);
       medalJSON = [];
     }
     else

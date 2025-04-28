@@ -1,11 +1,11 @@
 package funkin.ui.debug.results;
 
+import funkin.play.ResultState;
 import funkin.play.ResultState.ResultsStateParams;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.MenuList.MenuTypedItem;
 import flixel.text.FlxText;
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.ui.options.items.CheckboxPreferenceItem;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 
@@ -41,7 +41,7 @@ class ResultsDebugSubState extends MusicBeatSubState
       new FlxTimer().start(0.5, function(_) {
         if (returnToDebugScreen)
         {
-          var resultState:funkin.play.ResultState = new funkin.play.ResultState(resultsParams);
+          var resultState:ResultState = new ResultState(resultsParams);
           resultState.closeCallback = function() {
             FlxTimer.globalManager.clear();
             FlxTween.globalManager.clear();
@@ -51,7 +51,7 @@ class ResultsDebugSubState extends MusicBeatSubState
           openSubState(resultState);
         }
         else
-          FlxG.switchState(() -> new funkin.play.ResultState(resultsParams));
+          FlxG.switchState(() -> new ResultState(resultsParams));
       });
     });
     createToggleListItem("Character", PlayerRegistry.instance.listBaseGameEntryIds(), function(result:String) {

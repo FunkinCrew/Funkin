@@ -1,5 +1,6 @@
 package funkin.ui.options;
 
+import funkin.InitState;
 import funkin.ui.Page.PageName;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
@@ -8,6 +9,7 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.graphics.shaders.HSVShader;
 import funkin.input.Controls;
+import funkin.save.Save;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
@@ -179,9 +181,9 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
     prompt.onYes = function() {
       // Clear the save data.
-      funkin.save.Save.clearData();
+      Save.clearData();
 
-      FlxG.switchState(() -> new funkin.InitState());
+      FlxG.switchState(() -> new InitState());
     }
 
     prompt.onNo = function() {

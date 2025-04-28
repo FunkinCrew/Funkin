@@ -2,6 +2,7 @@ package funkin.util.plugins;
 
 import flixel.FlxG;
 import flixel.FlxBasic;
+import funkin.modding.PolymodHandler;
 import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
 
@@ -35,7 +36,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       if (state is MusicBeatState || state is MusicBeatSubState) state.reloadAssets();
       else
       {
-        funkin.modding.PolymodHandler.forceReloadAssets();
+        PolymodHandler.forceReloadAssets();
 
         // Create a new instance of the current state, so old data is cleared.
         FlxG.resetState();

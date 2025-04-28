@@ -10,6 +10,7 @@ import flixel.FlxG;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorDialogType;
+import funkin.util.SortUtil;
 
 using funkin.util.tools.FloatTools;
 
@@ -57,7 +58,7 @@ class WelcomeDialog extends Dialog
     boxDrag.onClick = function(_) FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], loadFromFilePath, null, null, "Open Stage Data");
 
     var defaultStages:Array<String> = StageRegistry.instance.listBaseGameEntryIds();
-    defaultStages.sort(funkin.util.SortUtil.alphabetically);
+    defaultStages.sort(SortUtil.alphabetically);
 
     for (stage in defaultStages)
     {
