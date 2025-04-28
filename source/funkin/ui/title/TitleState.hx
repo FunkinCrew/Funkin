@@ -31,6 +31,8 @@ import funkin.api.newgrounds.Medals;
 import funkin.ui.freeplay.FreeplayState;
 import openfl.display.BlendMode;
 import funkin.save.Save;
+import funkin.ui.title.OutdatedSubState;
+import lime.app.Application;
 
 #if desktop
 #end
@@ -50,9 +52,12 @@ class TitleState extends MusicBeatState
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
 
+  var leftState:Bool = false;
+
   override public function create():Void
   {
     super.create();
+
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -230,16 +235,6 @@ class TitleState extends MusicBeatState
     #end
 
     Conductor.instance.update();
-
-    /* if (FlxG.onMobile)
-          {
-      if (gfDance != null)
-      {
-        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
-        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
-      }
-          }
-     */
     if (FlxG.keys.justPressed.I)
     {
       FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
@@ -269,7 +264,9 @@ class TitleState extends MusicBeatState
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
-      FlxG.switchState(() -> new MainMenuState());
+      var subState:OutdatedSubState = new OutdatedSubState();
+      subState.targetState = () -> new MainMenuState();
+      openSubState(subState);
     }
 
     if (pressedEnter && !transitioning && skippedIntro)
@@ -297,7 +294,9 @@ class TitleState extends MusicBeatState
         // Assets.cache.clear(Paths.image('logoBumpin'));
         // Assets.cache.clear(Paths.image('titleEnter'));
         // ngSpr??
-        FlxG.switchState(targetState);
+        var subState:OutdatedSubState = new OutdatedSubState();
+        subState.targetState = targetState;
+        openSubState(subState);
       });
       // FunkinSound.playOnce(Paths.music('titleShoot'), 0.7);
     }
