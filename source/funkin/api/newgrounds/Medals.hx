@@ -44,7 +44,8 @@ class Medals
     if (NewgroundsClient.instance.isLoggedIn())
     {
       var medalList = NewgroundsClient.instance.medals;
-      if (medalList == null) return;
+      @:privateAccess
+      if (medalList == null || medalList._map == null) return;
 
       var medalData:Null<MedalData> = medalList.get(medal.getId());
       @:privateAccess
