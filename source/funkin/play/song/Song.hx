@@ -16,6 +16,7 @@ import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.save.Save;
 import funkin.util.SortUtil;
 
 /**
@@ -586,6 +587,25 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     var variation = _metadata.get(variationId);
     if (variation == null) return false;
     return variation.playData.difficulties.contains(diffId);
+  }
+
+  /**
+   * Return if the inst alt as been unlocked, default to true.
+   * @param variationId
+   * @param difficultyId
+   */
+  public function isAltInstUnlocked(difficultyId:String, variationId:String):Bool
+  {
+    var targetDifficulty:Null<SongDifficulty> = getDifficulty(difficultyId, variationId);
+    if (targetDifficulty == null) return true;
+
+    var unlocked:Bool = (targetDifficulty?.characters?.unlockedInstByDefault) || Save.instance.hasBeatenSong(this.id, null, variationId);
+
+    trace('Is ${this.id}-${variationId} alt inst unlocked: '
+      + unlocked
+      + ((targetDifficulty?.characters?.unlockedInstByDefault ?? true) ? ' (by default)' : ''));
+
+    return unlocked;
   }
 
   /**
