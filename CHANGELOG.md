@@ -47,7 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Story mode medals are now awarded even without scoring a new personal best.
 - Highscores are now submitted to Newgrounds even without scoring a new personal best.
-- The game no longer crashes when reaching the main menu before authenticating with Newgrounds. 
 - The Freeplay menu no longer displays songs without Erect variations when returning from an Erect variation song.
 - Fixed Freeplay DJ animations for Boyfriend and Pico when idling (properly this time).
 - Alternate instrumentals for Cocoa, Senpai, Roses, and Stress are now locked until their Pico Mix is beaten.
@@ -56,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restarting Stress or Stress (Pico Mix) no longer spawns too many Tankmen in the background.
 - Pico's game over animation now displays properly on Ugh (Pico Mix) and Guns (Pico Mix).
 - Tankman's death lines now play for Boyfriend in Ugh, Guns, and Ugh Erect.
-- Week 6 dialogue no longer plays for all non-default variations when entered through Freeplay. 
+- Week 6 dialogue no longer plays for all non-default variations when entered through Freeplay.
 - Nene (Pixel) now plays her knife raising animation when the player has low health.
 - A-Bot's visualizer is now blank before the song starts.
 - Adding custom parameters to note kinds no longer crashes the Chart Editor.
