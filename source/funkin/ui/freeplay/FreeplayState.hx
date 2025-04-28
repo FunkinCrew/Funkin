@@ -236,6 +236,7 @@ class FreeplayState extends MusicBeatSubState
 
     currentCharacter = fetchPlayableCharacter();
     currentVariation = rememberedVariation;
+    currentDifficulty = rememberedDifficulty;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacter.getFreeplayStyleID());
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
     fromCharSelect = params?.fromCharSelect ?? false;
@@ -798,7 +799,6 @@ class FreeplayState extends MusicBeatSubState
 
       // Gets all available difficulties for our character, via our available variations
       var difficultiesAvailable:Array<String> = song.data.listDifficulties(null, characterVariations);
-
       return difficultiesAvailable.contains(currentDifficulty);
     });
 

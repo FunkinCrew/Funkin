@@ -51,6 +51,7 @@ The Pit Stop 2 update!
   - Added new stickers which appear when exiting Pico songs!
   - The new sticker system isn't fully available to mods yet, but we're working on it!
 - New option in the Preferences menu: Strumline Backgrounds!
+- Options in the Preferences menu now display an on-screen description when selected.
 - New song event type in the Chart Editor: Set Health Icon!
   - This event is now used in Stress (Pico Mix).
 - The HOME and END keys now jump to the top and bottom of the Freeplay song list, respectively. ([bb974c2](https://github.com/FunkinCrew/Funkin/commit/bb974c264270d10ff503784063e5d77bb352b3f7)) - by @AbnormalPoof in [#4103](https://github.com/FunkinCrew/Funkin/pull/4103)

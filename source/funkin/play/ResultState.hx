@@ -33,6 +33,7 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
+import funkin.modding.base.ScriptedFlxAtlasSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -199,14 +200,30 @@ class ResultState extends MusicBeatSubState
         if (Preferences.naughtyness && animData.filter != "naughty" || !Preferences.naughtyness && animData.filter != "safe") continue;
       }
 
-      var animPath:String = Paths.stripLibrary(animData.assetPath);
-      var animLibrary:String = Paths.getLibrary(animData.assetPath);
+      var animPath:String = "";
+      var animLibrary:String = "";
+
+      if (animData.assetPath != null)
+      {
+        animPath = Paths.stripLibrary(animData.assetPath);
+        animLibrary = Paths.getLibrary(animData.assetPath);
+      }
       var offsets = animData.offsets ?? [0, 0];
       switch (animData.renderType)
       {
         case 'animateatlas':
-          var animation:FlxAtlasSprite = new FlxAtlasSprite(offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2), offsets[1],
-            Paths.animateAtlas(animPath, animLibrary));
+          @:nullSafety(Off)
+          var animation:FlxAtlasSprite = null;
+
+          var xPos = offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2);
+          var yPos = offsets[1];
+
+          if (animData.scriptClass != null) animation = ScriptedFlxAtlasSprite.init(animData.scriptClass, xPos, yPos);
+          else
+            animation = new FlxAtlasSprite(xPos, yPos, Paths.animateAtlas(animPath, animLibrary));
+
+          if (animation == null) continue;
+
           animation.zIndex = animData.zIndex ?? 500;
 
           animation.scale.set(animData.scale ?? 1.0, animData.scale ?? 1.0);
@@ -235,7 +252,6 @@ class ResultState extends MusicBeatSubState
             animation.onAnimationComplete.add((_name:String) -> {
               if (animation != null)
               {
-                trace("AHAHAH");
                 animation.anim.curFrame = animData.loopFrame ?? 0;
                 animation.anim.play(); // unpauses this anim, since it's on PlayOnce!
               }
@@ -513,7 +529,7 @@ class ResultState extends MusicBeatSubState
           // Only play the tick sound if the number increased.
           if (clearPercentLerp != clearPercentCounter.curNumber)
           {
-            trace('$clearPercentLerp and ${clearPercentCounter.curNumber}');
+            // trace('$clearPercentLerp and ${clearPercentCounter.curNumber}');
             clearPercentLerp = clearPercentCounter.curNumber;
             FunkinSound.playOnce(Paths.sound('scrollMenu'));
 

@@ -27,6 +27,11 @@ class StrumlineNote extends FunkinSprite
   }
 
   /**
+   * The Y Offset of the note.
+   */
+  public var yOffset:Float = 0.0;
+
+  /**
    * Set this flag to `true` to disable performance optimizations that cause
    * the Strumline note sprite to ignore `velocity` and `acceleration`.
    */

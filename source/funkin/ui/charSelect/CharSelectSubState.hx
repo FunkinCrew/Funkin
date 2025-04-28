@@ -518,7 +518,7 @@ class CharSelectSubState extends MusicBeatSubState
     grpIcons.scrollFactor.set();
   }
 
-  function unLock()
+  function unLock():Void
   {
     var index = nonLocks[0];
 

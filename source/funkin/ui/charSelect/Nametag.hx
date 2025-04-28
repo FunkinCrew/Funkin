@@ -18,9 +18,6 @@ class Nametag extends FlxSprite
     shader = mosaicShader;
 
     switchChar("bf");
-
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(Nametag, ["midpointX", "midpointY"]));
-    FlxG.debugger.track(this, "Nametag");
   }
 
   public function updatePosition():Void
@@ -71,16 +68,12 @@ class Nametag extends FlxSprite
     }
   }
 
-  function setBlockTimer(frame:Int, ?forceX:Float, ?forceY:Float)
+  function setBlockTimer(frame:Int, ?forceX:Float, ?forceY:Float):Void
   {
-    var daX:Float = 10 * FlxG.random.int(1, 4);
-    var daY:Float = 10 * FlxG.random.int(1, 4);
+    var daX:Float = forceX ?? 10 * FlxG.random.int(1, 4);
+    var daY:Float = forceY ?? 10 * FlxG.random.int(1, 4);
 
-    if (forceX != null) daX = forceX;
-
-    if (forceY != null) daY = forceY;
-
-    new FlxTimer().start(frame / 30, _ -> {
+    FlxTimer.wait(frame / 30, () -> {
       mosaicShader.setBlockSize(daX, daY);
     });
   }

@@ -2361,7 +2361,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
-      if (!FileUtil.doesFileExist(chartPath))
+      if (!FileUtil.fileExists(chartPath))
       {
         trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
         menuItemRecentChart.disabled = true;
@@ -5117,6 +5117,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / 1000) / 60)).lpad('0', 2);
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
+
+    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
+    var parts:Array<String> = Std.string(roundedBeat).split('.');
+    if (parts.length == 1) parts.push('00');
+    else if (parts[1].length < 2) parts[1] += '0';
+    songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
 
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
