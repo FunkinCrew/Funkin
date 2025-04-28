@@ -155,11 +155,23 @@ Choose the `develop` branch if you modify:
 Choosing the right base branch helps keep your commit history clean and avoid merge conflicts.
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
-## Merge conflicts and rebasing
+## Maintaining your pull request
+Keeping your pull request clean and easy to review increases the chance that it will be accepted! 
+
+Our maintenance policy is as follows:
+- If we require changes to your PR, we will label your PR `status: needs revision`.
+- We may also leave a comment under your PR specifying what changes you should make.
+- If you receive a comment, you have 90 days to implement the requested changes.
+- After this period, your PR will be closed due to inactivity and labeled `status: stale`.
+- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!   
+
+This policy ensures that PRs awaiting review are up to date and ready to merge.
+
+### Merge conflicts and rebasing
 Some game updates introduce significant breaking changes that may create merge conflicts in your PR. To resolve them, you will need to update or rebase your PR.
 
 Most merge conflicts are small and will only require you to modify a few files to resolve them.
-However, some changes are so big that your commit history will look like a mess!
+However, some changes are so big that your commit history will be a total mess!
 In this case, you will have to perform a [**rebase**](https://docs.github.com/en/get-started/using-git/about-git-rebase).
 This process reapplies your changes on top of the updated branch and cleanly resolves the merge conflicts.
 
