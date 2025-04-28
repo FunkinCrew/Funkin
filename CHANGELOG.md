@@ -83,10 +83,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-||||||| 68e9daff
-- Additional shader fix for Stress Pico crashing at the end (was the same issue as Senpai Pico shader error, just in a different shaderfile)
-=======
->>>>>>> public/develop
 - Additional shader fix for Stress (Pico Mix) crashing at the end (was the same issue as Senpai Pico shader error, just in a different shaderfile)
 
 
