@@ -18,7 +18,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.transition.StickerSubState;
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -83,8 +82,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
-    {text: 'Restart Dialogue', callback: restartConversation},
     {text: 'Skip Dialogue', callback: skipConversation},
+    {text: 'Restart Dialogue', callback: restartConversation},
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
@@ -738,8 +737,8 @@ class PauseSubState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
 
-    var targetState:StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(sticker) : (sticker) ->
-      FreeplayState.build(sticker);
+    var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
+      new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
 
     // Do this AFTER because this resets the value of isStoryMode!
     if (PlayStatePlaylist.isStoryMode)
@@ -747,16 +746,20 @@ class PauseSubState extends MusicBeatSubState
       PlayStatePlaylist.reset();
     }
 
-    var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
-    var stickerSet = (playerCharacterId == "pico") ? "stickers-set-2" : "stickers-set-1";
-    var stickerPack = switch (PlayState.instance.currentChart.song.id)
-    {
-      case "tutorial": "tutorial";
-      case "darnell" | "lit-up" | "2hot": "weekend";
-      default: "all";
-    };
+    var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
 
-    state.openSubState(new StickerSubState({targetState: targetState, stickerSet: stickerSet, stickerPack: stickerPack}));
+    if (stickerPackId == null)
+    {
+      var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+      var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
+
+      if (playerCharacter != null)
+      {
+        stickerPackId = playerCharacter.getStickerPackID();
+      }
+    }
+
+    state.openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
   }
 
   /**

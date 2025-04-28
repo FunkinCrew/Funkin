@@ -18,6 +18,7 @@ import funkin.input.Controls;
  * MusicBeatState actually represents the core utility FlxState of the game.
  * It includes functionality for event handling, as well as maintaining BPM-based update events.
  */
+@:nullSafety
 class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
   var controls(get, never):Controls;
@@ -25,8 +26,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   inline function get_controls():Controls
     return PlayerSettings.player1.controls;
 
-  public var leftWatermarkText:FlxText = null;
-  public var rightWatermarkText:FlxText = null;
+  public var leftWatermarkText:Null<FlxText> = null;
+  public var rightWatermarkText:Null<FlxText> = null;
 
   public var conductorInUse(get, set):Conductor;
 
@@ -163,6 +164,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
+  @:nullSafety(Off)
   override function startOutro(onComplete:() -> Void):Void
   {
     var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);

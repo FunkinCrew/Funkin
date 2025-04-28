@@ -16,16 +16,6 @@ import funkin.data.story.level.LevelData;
 class Level implements IRegistryEntry<LevelData>
 {
   /**
-   * The ID of the story mode level.
-   */
-  public final id:String;
-
-  /**
-   * Level data as parsed from the JSON file.
-   */
-  public final _data:LevelData;
-
-  /**
    * @param id The ID of the JSON file to parse.
    */
   public function new(id:String)
@@ -248,26 +238,5 @@ class Level implements IRegistryEntry<LevelData>
     }
 
     return props;
-  }
-
-  /**
-   * Called when the level is destroyed.
-   * TODO: Document when this gets called
-   */
-  public function destroy():Void {}
-
-  public function toString():String
-  {
-    return 'Level($id)';
-  }
-
-  /**
-   * Retrieve and parse the JSON data for a level by ID.
-   * @param id The ID of the level
-   * @return The parsed level data, or null if not found or invalid
-   */
-  static function _fetchData(id:String):Null<LevelData>
-  {
-    return LevelRegistry.instance.parseEntryDataWithMigration(id, LevelRegistry.instance.fetchEntryVersion(id));
   }
 }
