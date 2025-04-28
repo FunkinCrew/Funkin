@@ -4,6 +4,7 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.effects.FlxFlicker;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
+import flixel.FlxState;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
@@ -30,7 +31,9 @@ import funkin.save.Save.SaveScoreData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.charSelect.CharacterUnlockState;
 import funkin.ui.story.StoryMenuState;
+import funkin.ui.transition.stickers.StickerSubState;
 import funkin.modding.base.ScriptedFlxAtlasSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
@@ -786,7 +789,7 @@ class ResultState extends MusicBeatSubState
 
       // Determining the target state(s) to go to.
       // Default to main menu because that's better than `null`.
-      var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var targetState:FlxState = new funkin.ui.mainmenu.MainMenuState();
       var shouldTween = false;
       var shouldUseSubstate = false;
 
@@ -816,7 +819,7 @@ class ResultState extends MusicBeatSubState
           {
             shouldTween = true;
             // This works recursively, ehe!
-            targetState = new funkin.ui.charSelect.CharacterUnlockState(charId, targetState);
+            targetState = new CharacterUnlockState(charId, targetState);
           }
         }
         else
@@ -824,7 +827,7 @@ class ResultState extends MusicBeatSubState
           // No new characters.
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.stickers.StickerSubState(
+          targetState = new StickerSubState(
             {
               targetState: (sticker) -> new StoryMenuState(sticker),
               stickerPack: stickerPackId
@@ -861,7 +864,7 @@ class ResultState extends MusicBeatSubState
         {
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.stickers.StickerSubState(
+          targetState = new StickerSubState(
             {
               targetState: (sticker) -> FreeplayState.build(null, sticker),
               stickerPack: stickerPackId
