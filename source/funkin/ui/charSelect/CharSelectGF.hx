@@ -54,20 +54,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
         doFade(animInInfo);
       default:
     }
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.justPressed.J)
-    {
-      alpha = 1;
-      x = y = 0;
-      fadingStatus = FADE_OUT;
-    }
-    if (FlxG.keys.justPressed.K)
-    {
-      alpha = 0;
-      fadingStatus = FADE_IN;
-    }
-    #end
   }
 
   public function onStepHit(event:SongTimeScriptEvent):Void {}
