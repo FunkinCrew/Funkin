@@ -223,7 +223,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       var prevNumerator:Int = currentTimeChange.timeSignatureNum;
       if (numerator == prevNumerator) return;
 
-      chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, event.value, currentTimeChange.bpm, numerator,
+      chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.timeStamp, currentTimeChange.bpm,
+        numerator,
         currentTimeChange.timeSignatureDen));
       inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${numerator}/${currentTimeChange.timeSignatureDen}';
       tcDropdownItemRenderer.data = inputTimeChange.value;
@@ -236,7 +237,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       var prevDenominator:Int = currentTimeChange.timeSignatureDen;
       if (denominator == prevDenominator) return;
 
-      chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, event.value, currentTimeChange.bpm,
+      chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.timeStamp, currentTimeChange.bpm,
         currentTimeChange.timeSignatureNum, denominator));
       inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${denominator}';
       tcDropdownItemRenderer.data = inputTimeChange.value;
