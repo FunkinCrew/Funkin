@@ -74,6 +74,7 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Toggleable Ghost Tapping | https://github.com/FunkinCrew/Funkin/pull/2564#issuecomment-2119701802 |
 | Perfectly Centered Strumlines | _same as above^_ |
 | MultiKey, 9k, More than 4 keys, etc. | https://github.com/FunkinCrew/Funkin/issues/4243#issuecomment-2692371969 |
+| Flashy Combo Milestones | https://github.com/FunkinCrew/Funkin/pull/4700#issuecomment-2798916579 |
 | Losing Icons for DD and Parents | https://github.com/FunkinCrew/Funkin/issues/3048#issuecomment-2243491536 |
 | Playable GF / Speaker BF / Speaker Pico | https://github.com/FunkinCrew/Funkin/issues/2953#issuecomment-2216985230 |
 | Fresh (Chill Mix) as Title Screen Music | https://github.com/FunkinCrew/Funkin/pull/4282#issuecomment-2709334718 |
@@ -154,11 +155,23 @@ Choose the `develop` branch if you modify:
 Choosing the right base branch helps keep your commit history clean and avoid merge conflicts.
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
-## Merge conflicts and rebasing
+## Maintaining your pull request
+Keeping your pull request clean and easy to review increases the chance that it will be accepted! 
+
+Our maintenance policy is as follows:
+- If we require changes to your PR, we will label your PR `status: needs revision`.
+- We may also leave a comment under your PR specifying what changes you should make.
+- If you receive a comment, you have 90 days to implement the requested changes.
+- After this period, your PR will be closed due to inactivity and labeled `status: stale`.
+- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!   
+
+This policy ensures that PRs awaiting review are up to date and ready to merge.
+
+### Merge conflicts and rebasing
 Some game updates introduce significant breaking changes that may create merge conflicts in your PR. To resolve them, you will need to update or rebase your PR.
 
 Most merge conflicts are small and will only require you to modify a few files to resolve them.
-However, some changes are so big that your commit history will look like a mess!
+However, some changes are so big that your commit history will be a total mess!
 In this case, you will have to perform a [**rebase**](https://docs.github.com/en/get-started/using-git/about-git-rebase).
 This process reapplies your changes on top of the updated branch and cleanly resolves the merge conflicts.
 
