@@ -1,7 +1,7 @@
 package funkin.ui.options.items;
 
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.ui.AtlasText;
+import funkin.ui.AtlasText.AtlasFont;
 import funkin.input.Controls;
 
 /**
@@ -14,8 +14,6 @@ class EnumPreferenceItem extends TextMenuItem
     return PlayerSettings.player1.controls;
   }
 
-  public var lefthandText:AtlasText;
-
   public var currentValue:String;
   public var onChangeCallback:Null<String->Void>;
   public var map:Map<String, String>;
@@ -25,13 +23,16 @@ class EnumPreferenceItem extends TextMenuItem
 
   public function new(x:Float, y:Float, name:String, map:Map<String, String>, defaultValue:String, ?callback:String->Void)
   {
-    super(x, y, name, function() {
-      callback(this.currentValue);
+    this.map = map;
+
+    super(x, y, formatted(defaultValue), AtlasFont.DEFAULT, function() {
+      if (callback != null) {
+        callback(this.currentValue);
+      }
     });
 
     updateHitbox();
 
-    this.map = map;
     this.currentValue = defaultValue;
     this.onChangeCallback = callback;
 
@@ -43,8 +44,6 @@ class EnumPreferenceItem extends TextMenuItem
       i += 1;
     }
 
-    lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
-
     this.fireInstantly = true;
   }
 
@@ -53,25 +52,24 @@ class EnumPreferenceItem extends TextMenuItem
     super.update(elapsed);
 
     // var fancyTextFancyColor:Color;
-    if (selected)
+    if (!selected) return;
+
+    var shouldDecrease:Bool = controls().UI_LEFT_P;
+    var shouldIncrease:Bool = controls().UI_RIGHT_P;
+
+    if (shouldDecrease) index -= 1;
+    if (shouldIncrease) index += 1;
+
+    if (index > keys.length - 1) index = 0;
+    if (index < 0) index = keys.length - 1;
+
+    currentValue = keys[index];
+    if (onChangeCallback != null && (shouldIncrease || shouldDecrease))
     {
-      var shouldDecrease:Bool = controls().UI_LEFT_P;
-      var shouldIncrease:Bool = controls().UI_RIGHT_P;
-
-      if (shouldDecrease) index -= 1;
-      if (shouldIncrease) index += 1;
-
-      if (index > keys.length - 1) index = 0;
-      if (index < 0) index = keys.length - 1;
-
-      currentValue = keys[index];
-      if (onChangeCallback != null && (shouldIncrease || shouldDecrease))
-      {
-        onChangeCallback(currentValue);
-      }
+      onChangeCallback(currentValue);
     }
 
-    lefthandText.text = formatted(currentValue);
+    label.text = formatted(currentValue);
   }
 
   function formatted(value:String):String
