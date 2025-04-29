@@ -113,6 +113,11 @@ class Project extends HXProject {
    */
   static final LANGUAGES:Array<String> = ["en"];
 
+  /**
+   * The app's minimal android SDK version.
+   */
+  static final ANDROID_MINIMUM_SDK_VERSION:Int = 24;
+
   //
   // FEATURE FLAGS
   // Inverse feature flags are automatically populated.
@@ -512,8 +517,13 @@ class Project extends HXProject {
 			this.window.height = 0;
 		}
 
-		if (isAndroid() && EXCLUDE_ARMV7.isEnabled(this)) {
-			this.excludeArchitectures.push(Architecture.ARMV7);
+		if (isAndroid())
+		{
+			if (EXCLUDE_ARMV7.isEnabled(this)) {
+				this.excludeArchitectures.push(Architecture.ARMV7);
+			}
+
+			config.set("android.minimum-sdk-version", ANDROID_MINIMUM_SDK_VERSION);
 		}
 	}
 
