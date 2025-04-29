@@ -35,7 +35,6 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
@@ -720,19 +719,10 @@ class PlayState extends MusicBeatSubState
     // This gets set back to false when the chart actually starts.
     startingSong = true;
 
-    // TODO: We hardcoded the transition into Winter Horrorland. Do this with a ScriptedSong instead.
-    if ((currentSong?.id ?? '').toLowerCase() == 'winter-horrorland')
-    {
-      // VanillaCutscenes will call startCountdown later.
-      VanillaCutscenes.playHorrorStartCutscene();
-    }
-    else
-    {
-      // Call a script event to start the countdown.
-      // Songs with cutscenes should call event.cancel().
-      // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
-      startCountdown();
-    }
+    // Call a script event to start the countdown.
+    // Songs with cutscenes should call event.cancel().
+    // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
+    startCountdown();
 
     // Do this last to prevent beatHit from being called before create() is done.
     super.create();
@@ -878,7 +868,6 @@ class PlayState extends MusicBeatSubState
       // so the song doesn't start too early :D
       Conductor.instance.update(-5000, false);
 
-
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -898,15 +887,14 @@ class PlayState extends MusicBeatSubState
         Countdown.performCountdown();
       });
 
-
       // Reset the health icons.
       if (currentStage.getBoyfriend() != null)
       {
-      currentStage.getBoyfriend().initHealthIcon(false);
+        currentStage.getBoyfriend().initHealthIcon(false);
       }
       if (currentStage.getDad() != null)
       {
-      currentStage.getDad().initHealthIcon(true);
+        currentStage.getDad().initHealthIcon(true);
       }
 
       needsReset = false;
