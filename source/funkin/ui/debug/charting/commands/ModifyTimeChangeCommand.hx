@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.commands;
 
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 
 /**
  * A command which modifies the give time change in the current song's time changes.
@@ -64,7 +65,11 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
+    var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+    if (metadataToolbox != null) metadataToolbox.refreshTimeChangeInputs();
 
     state.updateSongTime();
     state.updateGridHeight();
@@ -92,7 +97,11 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
+    var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
+
+    if (metadataToolbox != null) metadataToolbox.refreshTimeChangeInputs(true);
 
     state.updateSongTime();
     state.updateGridHeight();
