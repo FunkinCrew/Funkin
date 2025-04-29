@@ -44,10 +44,13 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputScrollSpeed:Slider;
   var frameVariation:Frame;
   var frameDifficulty:Frame;
+  var tcDropdownItemRenderer:haxe.ui.core.ItemRenderer;
 
   public function new(chartEditorState2:ChartEditorState)
   {
     super(chartEditorState2);
+
+    tcDropdownItemRenderer = inputTimeChange.findComponent(haxe.ui.core.ItemRenderer);
 
     initialize();
 
@@ -144,21 +147,9 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
-    var tcDropdownItemRenderer = inputTimeChange.findComponent(haxe.ui.core.ItemRenderer);
-
     inputTimeChange.onChange = function(event:UIEvent) {
-
-      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
-      if (currentTimeChange == null)
-      {
-        trace("No time change in timeChanges at inputTimeChange's selectedIndex!");
-        return;
-      }
+      var currentTimeChange = refreshTimeChangeInputs();
       var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
-      inputBPM.value = currentTimeChange.bpm;
-      inputTSNum.value = currentTimeChange.timeSignatureNum;
-      inputTSDen.value = currentTimeChange.timeSignatureDen;
-      inputTimeStamp.value = currentTimeChange.timeStamp;
       // Set the step of the timestamp to the step.
       inputTimeStamp.step = ((Constants.SECS_PER_MIN / (previousTimeChange?.bpm ?? currentTimeChange?.bpm ?? 100)) * Constants.MS_PER_SEC) * (4 / (previousTimeChange?.timeSignatureDen ?? currentTimeChange?.timeSignatureDen ?? 4)) / Constants.STEPS_PER_BEAT;
       // Set the min max values of the input timestamp to previous and next time change timestamps to in the array,
@@ -295,6 +286,26 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputTimeChange.selectedIndex = Std.parseInt(startingTimeChange.id);
     inputTimeChange.value = startingTimeChange;
     chartEditorState.updateSongTime();
+  }
+
+  public function refreshTimeChangeInputs(updateDropdownText:Bool = false):Null<funkin.data.song.SongData.SongTimeChange>
+  {
+    var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
+    if (currentTimeChange == null)
+    {
+      trace("No time change in timeChanges at inputTimeChange's selectedIndex!");
+      return null;
+    }
+    inputBPM.value = currentTimeChange.bpm;
+    inputTSNum.value = currentTimeChange.timeSignatureNum;
+    inputTSDen.value = currentTimeChange.timeSignatureDen;
+    inputTimeStamp.value = currentTimeChange.timeStamp;
+    if (updateDropdownText)
+    {
+      inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+      tcDropdownItemRenderer.data = inputTimeChange.value;
+    }
+    return currentTimeChange;
   }
 
   public override function refresh():Void
