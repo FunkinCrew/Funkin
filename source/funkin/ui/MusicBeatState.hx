@@ -25,7 +25,8 @@ import funkin.play.notes.NoteDirection;
  * MusicBeatState actually represents the core utility FlxState of the game.
  * It includes functionality for event handling, as well as maintaining BPM-based update events.
  */
-@:nullSafety
+// TODO: Add nullSafety back here.
+// @:nullSafety
 class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
   var controls(get, never):Controls;

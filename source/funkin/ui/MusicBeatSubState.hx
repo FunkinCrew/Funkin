@@ -23,7 +23,8 @@ import funkin.play.notes.NoteDirection;
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
-@:nullSafety
+// TODO: Add nullSafety back here.
+// @:nullSafety
 class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
   public var leftWatermarkText:Null<FlxText> = null;
