@@ -215,6 +215,7 @@ class Main extends Sprite
         {
           memoryCounter.x = flixel.math.FlxMath.lerp(memoryCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
         }
+        else
         {
           memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
         }
