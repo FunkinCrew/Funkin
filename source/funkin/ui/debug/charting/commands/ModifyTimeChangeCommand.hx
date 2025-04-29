@@ -25,8 +25,6 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
   var targetDenominator:Int;
   var previousDenominator:Int = 4;
 
-  var previousTimeChanges:Null<Array<SongTimeChange>>;
-
   public function new(timeChangeIndex:Int, targetTimeStamp:Float, targetBPM:Float, targetNumerator:Int, targetDenominator:Int)
   {
     this.timeChangeIndex = timeChangeIndex;
@@ -39,7 +37,6 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
   public function execute(state:ChartEditorState):Void
   {
     var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
-    previousTimeChanges = timeChanges.copy();
     if (timeChanges == null || timeChanges.length == 0)
     {
       previousBPM = 100;
@@ -75,12 +72,20 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
-    if (previousTimeChanges == null)
+    var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
+    if (timeChanges == null || timeChanges.length == 0)
     {
-      previousTimeChanges = [new SongTimeChange(previousTimeStamp, previousBPM)];
+      timeChanges = [new SongTimeChange(previousTimeStamp, targetBPM)];
+    }
+    else
+    {
+      timeChanges[timeChangeIndex].bpm = previousBPM;
+      timeChanges[timeChangeIndex].timeStamp = previousTimeStamp;
+      timeChanges[timeChangeIndex].timeSignatureNum = previousNumerator;
+      timeChanges[timeChangeIndex].timeSignatureDen = previousDenominator;
     }
 
-    state.currentSongMetadata.timeChanges = previousTimeChanges;
+    state.currentSongMetadata.timeChanges = timeChanges;
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
