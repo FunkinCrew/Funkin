@@ -1717,14 +1717,14 @@ class FreeplayState extends MusicBeatSubState
   {
     touchTimer = 0;
     var previousVariation:String = currentVariation;
+    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
-    var characterVariations:Array<String> = grpCapsules.members[curSelected].freeplayData?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
+    var characterVariations:Array<String> = daSong?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
     var difficultiesAvailable:Array<String> = allDifficulties;
     // Gets all available difficulties for our character, via our available variations
-    var songDifficulties:Array<String> = grpCapsules.members[curSelected].freeplayData?.data.listDifficulties(null,
-      characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
+    var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
     var currentDifficultyIndex:Int = difficultiesAvailable.indexOf(currentDifficulty);
 
@@ -1737,15 +1737,16 @@ class FreeplayState extends MusicBeatSubState
     // Update the current difficulty
     currentDifficulty = difficultiesAvailable[currentDifficultyIndex];
     // For when we change the difficulty, but the song doesn't have that difficulty!
-    if (!songDifficulties.contains(difficultiesAvailable[currentDifficultyIndex]))
+    if (daSong != null && !songDifficulties.contains(difficultiesAvailable[currentDifficultyIndex]))
     {
       curSelected = findClosestDiff(characterVariations, difficultiesAvailable[currentDifficultyIndex]);
-      rememberedSongId = grpCapsules.members[curSelected].freeplayData?.data.id;
+      daSong = grpCapsules.members[curSelected].freeplayData;
+      rememberedSongId = daSong?.data.id;
     }
 
     for (variation in characterVariations)
     {
-      if (grpCapsules.members[curSelected].freeplayData?.data.hasDifficulty(currentDifficulty, variation) ?? false)
+      if (daSong?.data.hasDifficulty(currentDifficulty, variation) ?? false)
       {
         currentVariation = variation;
         rememberedVariation = variation;
@@ -1753,7 +1754,6 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
     if (daSong != null)
     {
       var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id);
@@ -2073,6 +2073,8 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0.0;
       rememberedSongId = null;
       albumRoll.albumId = null;
+      changeDiff();
+      daSongCapsule.refreshDisplay();
     }
 
     for (index => capsule in grpCapsules.members)
