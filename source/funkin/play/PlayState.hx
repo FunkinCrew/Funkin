@@ -898,8 +898,14 @@ class PlayState extends MusicBeatSubState
       });
 
       // Reset the health icons.
-      currentStage?.getBoyfriend()?.initHealthIcon(false);
-      currentStage?.getDad()?.initHealthIcon(true);
+      if (currentStage.getBoyfriend() != null)
+      {
+        currentStage.getBoyfriend().initHealthIcon(false);
+      }
+      if (currentStage.getDad() != null)
+      {
+        currentStage.getDad().initHealthIcon(true);
+      }
 
       needsReset = false;
     }
@@ -2526,7 +2532,7 @@ class PlayState extends MusicBeatSubState
       notesInDirection.remove(targetNote);
 
       // Play the strumline animation.
-      playerStrumline.playConfirm(targetNote.direction, targetNote.length > 0);
+      playerStrumline.playConfirm(input.noteDirection, targetNote.length > 0);
     }
     }
 
