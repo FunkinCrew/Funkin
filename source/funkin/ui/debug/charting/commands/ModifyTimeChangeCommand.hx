@@ -96,7 +96,10 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
     // This command is undoable. Add to the history if we actually performed an action.
-    return (targetBPM != previousBPM || targetTimeStamp != previousTimeStamp);
+    return (targetBPM != previousBPM
+      || targetTimeStamp != previousTimeStamp
+      || previousNumerator != targetNumerator
+      || previousDenominator != targetDenominator);
   }
 
   public function toString():String
