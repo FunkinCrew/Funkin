@@ -1161,9 +1161,10 @@ class Project extends HXProject {
     // path, rename, type, embed, setDefaults
 		if (Path.extension(path) == 'png' && FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
 		{
-			if (!isASTCExcluded(path))
+			final astcPath:String = "astc-textures/" + path.substr(0, path.length - 3) + "astc";
+			if (!isASTCExcluded(path) && FileSystem.exists(astcPath))
 			{
-				path = "astc-textures/" + path.substr(0, path.length - 3) + "astc";
+				path = astcPath;
 
 				if (rename != null)
 					rename = rename.substr(0, rename.length - 3) + "astc";
