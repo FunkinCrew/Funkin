@@ -22,6 +22,11 @@ class WindowUtil
    */
   public static function openURL(targetUrl:String):Void
   {
+    // Ensure you can't open protocols such as steam://, file://, etc
+    var protocol:Array<String> = targetUrl.split("://");
+    if (protocol.length == 1) targetUrl = 'https://${targetUrl}';
+    else if (protocol[0] != 'http' && protocol[0] != 'https') throw "openURL can only open http and https links.";
+
     #if FEATURE_OPEN_URL
     #if linux
     Sys.command('/usr/bin/xdg-open $targetUrl &');
@@ -64,6 +69,10 @@ class WindowUtil
    */
   public static function openFolder(targetPath:String):Void
   {
+    #if html5
+    throw 'Cannot open URLs on this platform.';
+    #else
+    if (!sys.FileSystem.exists(targetPath) || !sys.FileSystem.isDirectory(targetPath)) throw 'openFolder should only be used to open existing folders.';
     #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', [targetPath.replace('/', '\\')]);
@@ -75,6 +84,7 @@ class WindowUtil
     #else
     throw 'Cannot open URLs on this platform.';
     #end
+    #end
   }
 
   /**
@@ -83,6 +93,9 @@ class WindowUtil
    */
   public static function openSelectFile(targetPath:String):Void
   {
+    #if html5
+    throw 'Cannot open URLs on this platform.';
+    #else
     #if FEATURE_OPEN_URL
     #if windows
     Sys.command('explorer', ['/select,' + targetPath.replace('/', '\\')]);
@@ -94,6 +107,7 @@ class WindowUtil
     #end
     #else
     throw 'Cannot open URLs on this platform.';
+    #end
     #end
   }
 
@@ -156,5 +170,21 @@ class WindowUtil
   public static function setWindowTitle(value:String):Void
   {
     lime.app.Application.current.window.title = value;
+  }
+
+  public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
+  {
+    // vsync crap dont worky on mac rn derp
+    #if !mac
+    var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
+
+    // SDL_GL_SetSwapInterval returns the value we assigned on success, https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval#return-value.
+    // In lime, we can compare this to the original value to get a boolean.
+    if (!res)
+    {
+      trace('Failed to set VSync mode to ' + value);
+      FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+    }
+    #end
   }
 }
