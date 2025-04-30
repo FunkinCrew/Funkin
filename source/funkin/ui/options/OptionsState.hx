@@ -75,6 +75,7 @@ class OptionsState extends MusicBeatState
     #if FEATURE_LAG_ADJUSTMENT
     var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
     #end
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
 
     if (options.hasMultipleOptions())
     {
@@ -84,6 +85,7 @@ class OptionsState extends MusicBeatState
       #if FEATURE_LAG_ADJUSTMENT
       offsets.onExit.add(exitOffsets);
       #end
+      saveData.onExit.add(optionsCodex.switchPage.bind(Options));
     }
     else
     {
@@ -227,8 +229,9 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       });
     }
     #end
-    createItem("CLEAR SAVE DATA", function() {
-      promptClearSaveData();
+
+    createItem("SAVE DATA OPTIONS", function() {
+      codex.switchPage(SaveData);
     });
     #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
@@ -277,7 +280,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   override function update(elapsed:Float):Void
   {
-    enabled = (prompt == null);
     #if FEATURE_TOUCH_CONTROLS
     backButton.active = (!goingBack) ? !items.busy : true;
     #end
@@ -298,31 +300,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   {
     return items.length > 2;
   }
-
-  var prompt:Prompt;
-
-  function promptClearSaveData():Void
-  {
-    if (prompt != null) return;
-    prompt = new Prompt("This will delete
-      \nALL your save data.
-      \nAre you sure?
-    ", Custom("Delete", "Cancel"));
-    prompt.create();
-    prompt.createBgFromMargin(100, 0xFFFAFD6D);
-    prompt.back.scrollFactor.set(0, 0);
-    add(prompt);
-    prompt.onYes = function() {
-      // Clear the save data.
-      funkin.save.Save.clearData();
-      FlxG.switchState(() -> new funkin.InitState());
-    };
-    prompt.onNo = function() {
-      prompt.close();
-      prompt.destroy();
-      prompt = null;
-    };
-  }
 }
 
 enum abstract OptionsMenuPageName(String) to PageName
@@ -333,4 +310,5 @@ enum abstract OptionsMenuPageName(String) to PageName
   var Mods = "mods";
   var Preferences = "preferences";
   var Offsets = "offsets";
+  var SaveData = "saveData";
 }
