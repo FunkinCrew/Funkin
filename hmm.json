@@ -4,15 +4,15 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "41f35ddb1eb9d10bc742e6f8b5bcc62f9ef8ad84",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+      "ref": "3c9f63e3501c20c0b60442089dc05306f5a87968",
+      "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
     },
     {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "fffb1a74cf08f63dacc2ab09976340563f5b6e6d",
-      "url": "https://github.com/FunkinCrew/flixel"
+      "ref": "3e3a7be79a40a3423cdf88b29b5a85a8442fcc61",
+      "url": "https://github.com/FunkinCrew/flixel-mobile"
     },
     {
       "name": "flixel-addons",
@@ -143,8 +143,8 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "be81ad7e4e1a92c3482bcc009648a4ac892cfa35",
-      "url": "https://github.com/FunkinCrew/lime"
+      "ref": "8849a49f07cff83d36896a03294b5fc6bcb1c9f6",
+      "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {
       "name": "mconsole",
@@ -185,8 +185,8 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "d061c936b462f040304ec2bd42d9f59d2e59e285",
-      "url": "https://github.com/FunkinCrew/openfl"
+      "ref": "5237781d5930a7db11f7f717a40926d8b63758e5",
+      "url": "https://github.com/FunkinCrew/openfl-mobile"
     },
     {
       "name": "polymod",
