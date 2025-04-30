@@ -1356,6 +1356,7 @@ class Save
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
   }
+
   #if FEATURE_NEWGROUNDS
   public static function saveToNewgrounds():Void
   {
@@ -1367,22 +1368,27 @@ class Save
   public static function loadFromNewgrounds():Void
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
-    var data = funkin.api.newgrounds.NGSaveSlot.instance.load();
+    funkin.api.newgrounds.NGSaveSlot.instance.load(function(data:Dynamic) {
+      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH);
 
-    if (data == null) return;
+      if (FlxG.save.status != EMPTY)
+      {
+        // best i can do in case the NG file is corrupted or something along those lines
+        var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
 
-    FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH);
+        FlxG.save.erase();
+      }
 
-    if (FlxG.save.status != EMPTY)
-    {
-      // best i can do in case NG decides to not play nice
-      var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+      var gameSave = SaveDataMigrator.migrate(data);
+      FlxG.save.mergeData(gameSave.data, true);
+    }, function(error:io.newgrounds.Call.CallError) {
+      var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
 
-      FlxG.save.erase();
-    }
-
-    var gameSave = SaveDataMigrator.migrate(data);
-    FlxG.save.mergeData(gameSave.data, true);
+      var msg = 'There was an error loading your save data from Newgrounds.';
+      msg += '\n${errorMsg}';
+      msg += '\nAre you sure you are connected to the internet?';
+      lime.app.Application.current.window.alert(msg, "Newgrounds Save Slot Failure");
+    });
   }
   #end
 }
