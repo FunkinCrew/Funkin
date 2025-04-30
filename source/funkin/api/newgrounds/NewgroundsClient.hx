@@ -10,6 +10,7 @@ import io.newgrounds.NGLite.LoginOutcome;
 import io.newgrounds.NGLite.LoginFail;
 import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.utils.MedalList;
+import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.utils.ScoreBoardList;
 import io.newgrounds.objects.User;
 
@@ -29,6 +30,7 @@ class NewgroundsClient
   public var user(get, never):Null<User>;
   public var medals(get, never):Null<MedalList>;
   public var leaderboards(get, never):Null<ScoreBoardList>;
+  public var saveSlots(get, never):Null<SaveSlotList>;
 
   private function new()
   {
@@ -236,6 +238,8 @@ class NewgroundsClient
 
     trace('[NEWGROUNDS] Submitting leaderboard request...');
     NG.core.scoreBoards.loadList(onFetchedLeaderboards);
+    trace('[NEWGROUNDS] Submitting save slot request...');
+    NG.core.saveSlots.loadList(onFetchedSaveSlots);
   }
 
   function onLoginFailed(result:LoginFail):Void
@@ -301,6 +305,13 @@ class NewgroundsClient
     // trace(funkin.api.newgrounds.Leaderboards.listLeaderboardData());
   }
 
+  function onFetchedSaveSlots(outcome:Outcome<CallError>):Void
+  {
+    trace('[NEWGROUNDS] Fetched save slots!');
+
+    NGSaveSlot.instance.load();
+  }
+
   function get_user():Null<User>
   {
     if (NG.core == null || !this.isLoggedIn()) return null;
@@ -317,6 +328,12 @@ class NewgroundsClient
   {
     if (NG.core == null || !this.isLoggedIn()) return null;
     return NG.core.scoreBoards;
+  }
+
+  function get_saveSlots():Null<SaveSlotList>
+  {
+    if (NG.core == null || !this.isLoggedIn()) return null;
+    return NG.core.saveSlots;
   }
 
   static function getSessionId():Null<String>

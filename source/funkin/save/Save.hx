@@ -1356,6 +1356,23 @@ class Save
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
   }
+  public function saveToNewgrounds():Void
+  {
+    trace('[SAVE] Saving Save Data to Newgrounds...');
+    funkin.api.newgrounds.NGSaveSlot.instance.save(data);
+  }
+
+  public function loadFromNewgrounds():Void
+  {
+    trace('[SAVE] Loading Save Data from Newgrounds...');
+    var data = funkin.api.newgrounds.NGSaveSlot.instance.load();
+
+    if (data == null) return;
+
+    var gameSave = SaveDataMigrator.migrate(data);
+    FlxG.save.erase();
+    FlxG.save.mergeData(gameSave.data, true);
+  }
 }
 
 /**
