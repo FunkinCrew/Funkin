@@ -2461,6 +2461,10 @@ class FreeplayState extends MusicBeatSubState
     letterSort.inputEnabled = false;
 
     var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+    // Seeing if I can do an animation...
+    curSelected = grpCapsules.members.indexOf(targetSongCap);
+    changeSelection(); // Trigger an update. This will also fix the target variation.
+
     var targetSongId:String = targetSongCap?.freeplayData?.data.id ?? 'unknown';
     var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
     if (targetSongNullable == null)
@@ -2483,14 +2487,6 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
-    var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
-      targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
-
-    // Choose a random instrumental
-    var instrumentalIds:Array<String> = [baseInstrumentalId].concat(altInstrumentalIds);
-    var targetInstrumentalId:String = FlxG.random.getObject(instrumentalIds);
-
     // Seeing if I can do an animation...
     curSelected = grpCapsules.members.indexOf(targetSongCap);
     changeSelection(0); // Trigger an update.
@@ -2501,6 +2497,13 @@ class FreeplayState extends MusicBeatSubState
 
     if (instChoice == 'random')
     {
+      var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+      var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
+        targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+
+      // Choose a random instrumental
+      var instrumentalIds:Array<String> = [baseInstrumentalId].concat(altInstrumentalIds);
+      var targetInstrumentalId:String = FlxG.random.getObject(instrumentalIds);
       // Hit Confirm on that song with random instrumental
       capsuleOnConfirmDefault(targetSongCap, targetInstrumentalId);
     }
