@@ -309,7 +309,7 @@ class NewgroundsClient
   {
     trace('[NEWGROUNDS] Fetched save slots!');
 
-    NGSaveSlot.instance.load();
+    NGSaveSlot.instance.checkSlot();
   }
 
   function get_user():Null<User>
