@@ -1100,7 +1100,14 @@ class ChartEditorDialogHandler
     onDropFile = function(pathStr:String) {
       var path:Path = new Path(pathStr);
       var selectedFileText:String = FileUtil.readStringFromPath(path.toString());
-      var selectedFileData:FNFLegacyData = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
+      var selectedFileData:Null<FNFLegacyData> = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
+
+      if (selectedFileData == null)
+      {
+        state.error('Failure', 'Failed to parse FNF chart file (${path.file}.${path.ext})');
+        return;
+      }
+
       var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(selectedFileData);
       var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(selectedFileData);
 
