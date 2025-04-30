@@ -516,4 +516,59 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
 
     return allDifficulties;
   }
+
+  /**
+   * List all difficulties grouped by their shared variations.
+   */
+  public function listAllDiffsByVariation(characterId:String):Array<Array<String>>
+  {
+    var groups:Array<Array<String>> = [];
+    var variationToDiffs:Map<String, Array<String>> = [];
+    var character = PlayerRegistry.instance.fetchEntry(characterId);
+
+    if (character == null)
+    {
+      trace('  [WARN] Could not locate character $characterId');
+      return [Constants.DEFAULT_VARIATION_LIST.copy()];
+    }
+
+    for (songId in listEntryIds())
+    {
+      var song = fetchEntry(songId);
+      if (song == null) continue;
+
+      for (variation in song.getVariationsByCharacter(character))
+      {
+        if (!variationToDiffs.exists(variation)) variationToDiffs[variation] = [];
+        var curDiffs:Array<String> = variationToDiffs[variation] ?? [];
+
+        for (diff in song.listDifficulties(variation))
+          if (!curDiffs.contains(diff)) curDiffs.push(diff);
+      }
+    }
+
+    for (variation => diffs in variationToDiffs)
+    {
+      var foundGroup = false;
+      for (group in groups)
+      {
+        for (diff in diffs)
+        {
+          if (group.contains(diff))
+          {
+            foundGroup = true;
+          }
+          else if (foundGroup)
+          {
+            group.push(diff);
+          }
+        }
+        if (foundGroup) break;
+      }
+
+      if (!foundGroup && diffs.length > 0) groups.push(diffs);
+    }
+
+    return groups;
+  }
 }

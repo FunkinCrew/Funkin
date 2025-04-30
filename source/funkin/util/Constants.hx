@@ -234,9 +234,21 @@ class Constants
   public static final DEFAULT_VARIATION:String = 'default';
 
   /**
-   * Standardized variations for charts
+   * Standardized variations for charts.
+   * Assumes no Erect mode, etc.
    */
-  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico', 'bf'];
+  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'pico', 'bf'];
+
+  /**
+   * Standardized variations for Erect mode.
+   */
+  public static final DEFAULT_VARIATION_LIST_ERECT:Array<String> = ['erect'];
+
+  /**
+   * List of all standardized variations used by the base game.
+   * Includes Erect.
+   */
+  public static final DEFAULT_VARIATION_LIST_FULL:Array<String> = ['default', 'erect', 'pico', 'bf'];
 
   /**
    * Default sticker pack for transitions
