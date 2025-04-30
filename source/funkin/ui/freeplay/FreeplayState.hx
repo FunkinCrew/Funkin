@@ -1964,6 +1964,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
     var targetSong:Song = targetSongNullable;
@@ -1974,6 +1976,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetDifficulty == null)
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
 
