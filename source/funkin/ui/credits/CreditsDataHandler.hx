@@ -1,5 +1,6 @@
 package funkin.ui.credits;
 
+import funkin.data.DataError;
 import funkin.data.JsonFile;
 
 using StringTools;
@@ -93,7 +94,7 @@ class CreditsDataHandler
     return CREDITS_DATA;
   }
 
-  static function fetchCreditsData():funkin.data.JsonFile
+  static function fetchCreditsData():JsonFile
   {
     #if !macro
     var rawJson:String = openfl.Assets.getText(CREDITS_DATA_PATH).trim();
@@ -136,7 +137,7 @@ class CreditsDataHandler
     trace('[CREDITS] Failed to parse credits data: ${id}');
 
     for (error in errors)
-      funkin.data.DataError.printError(error);
+      DataError.printError(error);
   }
   #end
 }

@@ -27,6 +27,7 @@ import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
+import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.api.newgrounds.Events;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -52,7 +53,6 @@ import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
-import funkin.util.SerializerUtil;
 import haxe.Int64;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -1171,7 +1171,7 @@ class PlayState extends MusicBeatSubState
           {
             event.activated = true;
             continue;
-          };
+          }
 
           var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
           dispatchEvent(eventEvent);
@@ -1421,7 +1421,7 @@ class PlayState extends MusicBeatSubState
      */
   override function reloadAssets():Void
   {
-    funkin.modding.PolymodHandler.forceReloadAssets();
+    PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
     this.remove(currentStage);
     LoadingState.loadPlayState(lastParams);
@@ -1534,7 +1534,7 @@ class PlayState extends MusicBeatSubState
     FlxG.console.registerFunction("debugUnbindCameraZoom", () -> {
       debugUnbindCameraZoom = !debugUnbindCameraZoom;
     });
-  };
+  }
 
   /**
      * Initializes the game and HUD cameras.
@@ -2707,7 +2707,7 @@ class PlayState extends MusicBeatSubState
         this.remove(currentStage);
         FlxG.switchState(() -> new ChartEditorState(
           {
-            targetSongId: currentSong.id,
+            targetSongId: currentSong.id
           }));
       }
     }

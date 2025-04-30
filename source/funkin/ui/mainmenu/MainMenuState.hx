@@ -14,11 +14,13 @@ import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
 import funkin.ui.AtlasMenuList.AtlasMenuItem;
+import funkin.ui.credits.CreditsState;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.MenuList.MenuListItem;
 import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
+import funkin.ui.options.OptionsState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
 import funkin.api.newgrounds.Referral;
@@ -125,11 +127,11 @@ class MainMenuState extends MusicBeatState
     #end
 
     createMenuItem('options', 'mainmenu/options', function() {
-      startExitState(() -> new funkin.ui.options.OptionsState());
+      startExitState(() -> new OptionsState());
     });
 
     createMenuItem('credits', 'mainmenu/credits', function() {
-      startExitState(() -> new funkin.ui.credits.CreditsState());
+      startExitState(() -> new CreditsState());
     });
 
     // Reset position of menu items.

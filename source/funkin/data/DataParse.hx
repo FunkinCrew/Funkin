@@ -1,5 +1,6 @@
 package funkin.data;
 
+import funkin.data.dialogue.conversation.ConversationData;
 import funkin.data.song.importer.FNFLegacyData.LegacyNote;
 import funkin.data.song.importer.FNFLegacyData.LegacyNoteData;
 import funkin.data.song.importer.FNFLegacyData.LegacyNoteSection;
@@ -120,7 +121,7 @@ class DataParse
     }
   }
 
-  public static function backdropData(json:Json, name:String):funkin.data.dialogue.conversation.ConversationData.BackdropData
+  public static function backdropData(json:Json, name:String):ConversationData.BackdropData
   {
     switch (json.value)
     {
@@ -152,7 +153,7 @@ class DataParse
     }
   }
 
-  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.conversation.ConversationData.OutroData>
+  public static function outroData(json:Json, name:String):Null<ConversationData.OutroData>
   {
     switch (json.value)
     {

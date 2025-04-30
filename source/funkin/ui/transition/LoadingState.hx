@@ -6,6 +6,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
+import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
@@ -213,7 +214,7 @@ class LoadingState extends MusicBeatSubState
     var daChart:Null<SongDifficulty> = params.targetSong.getDifficulty(params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
       params.targetVariation ?? Constants.DEFAULT_VARIATION);
 
-    var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
+    var daStage = StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
     stageDirectory = daStage?._data?.directory ?? "shared";
     Paths.setCurrentLevel(stageDirectory);
 

@@ -22,6 +22,7 @@ import haxe.ui.util.Color;
 import flixel.graphics.frames.FlxFrame;
 import funkin.util.FileUtil;
 import openfl.display.BitmapData;
+import funkin.save.Save;
 
 using StringTools;
 
@@ -498,7 +499,7 @@ class StageEditorObjectToolbox extends StageEditorDefaultToolbox
 
     objectPosXStepper.step = stageEditorState.moveStep;
     objectPosYStepper.step = stageEditorState.moveStep;
-    objectAngleSlider.step = funkin.save.Save.instance.stageEditorAngleStep;
+    objectAngleSlider.step = Save.instance.stageEditorAngleStep;
 
     if (linkedObject == null)
     {

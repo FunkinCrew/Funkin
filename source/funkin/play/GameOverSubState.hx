@@ -16,6 +16,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
+import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
@@ -291,7 +292,7 @@ class GameOverSubState extends MusicBeatSubState
       }
       else
       {
-        var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
+        var targetState:StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
           new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
 
         if (PlayStatePlaylist.isStoryMode)
@@ -312,7 +313,7 @@ class GameOverSubState extends MusicBeatSubState
           }
         }
 
-        openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
+        openSubState(new StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
       }
     }
 
