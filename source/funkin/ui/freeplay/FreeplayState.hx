@@ -18,6 +18,7 @@ import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.PixelIconData;
 import funkin.data.story.level.LevelRegistry;
 import funkin.effects.IntervalShake;
 import funkin.graphics.FunkinCamera;
@@ -2327,6 +2328,11 @@ class FreeplaySongData
 
   public var scoringRank(get, never):Null<ScoringRank>;
 
+  /**
+   * The pixel icon for the song.
+   */
+  public var pixelIconData(get, never):Null<PixelIconData>;
+
   public function new(data:Song, levelData:Level)
   {
     this.data = data;
@@ -2401,6 +2407,12 @@ class FreeplaySongData
     var variation:String = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
 
     return Save.instance.getSongRank(data.id, FreeplayState.rememberedDifficulty, variation);
+  }
+
+  function get_pixelIconData():Null<PixelIconData>
+  {
+    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
+    return data.getDifficulty(FreeplayState.rememberedDifficulty, null, variations)?.freeplayIcon;
   }
 }
 
