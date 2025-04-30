@@ -44,12 +44,14 @@ class OptionsState extends MusicBeatState
     var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
 
     if (options.hasMultipleOptions())
     {
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(optionsCodex.switchPage.bind(Options));
+      saveData.onExit.add(optionsCodex.switchPage.bind(Options));
     }
     else
     {
@@ -130,8 +132,8 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     }
     #end
 
-    createItem("CLEAR SAVE DATA", function() {
-      promptClearSaveData();
+    createItem("SAVE DATA OPTIONS", function() {
+      codex.switchPage(SaveData);
     });
 
     createItem("EXIT", exit);
@@ -147,7 +149,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   override function update(elapsed:Float)
   {
-    enabled = (prompt == null);
     super.update(elapsed);
   }
 
@@ -165,35 +166,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   {
     return items.length > 2;
   }
-
-  var prompt:Prompt;
-
-  function promptClearSaveData():Void
-  {
-    if (prompt != null) return;
-
-    prompt = new Prompt("This will delete
-      \nALL your save data.
-      \nAre you sure?
-    ", Custom("Delete", "Cancel"));
-    prompt.create();
-    prompt.createBgFromMargin(100, 0xFFFAFD6D);
-    prompt.back.scrollFactor.set(0, 0);
-    add(prompt);
-
-    prompt.onYes = function() {
-      // Clear the save data.
-      funkin.save.Save.clearData();
-
-      FlxG.switchState(() -> new funkin.InitState());
-    }
-
-    prompt.onNo = function() {
-      prompt.close();
-      prompt.destroy();
-      prompt = null;
-    }
-  }
 }
 
 enum abstract OptionsMenuPageName(String) to PageName
@@ -203,4 +175,5 @@ enum abstract OptionsMenuPageName(String) to PageName
   var Colors = "colors";
   var Mods = "mods";
   var Preferences = "preferences";
+  var SaveData = "saveData";
 }
