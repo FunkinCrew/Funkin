@@ -28,7 +28,7 @@ class Project extends HXProject {
 	 * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
 	 * You only have to change it here, the rest of the game will query this value.
 	 */
-	static final VERSION:String = "0.6.3";
+	static final VERSION:String = "0.7.0";
 
 	/**
 	 * The game's name. Used as the default window title.
@@ -118,6 +118,17 @@ class Project extends HXProject {
    */
   static final ANDROID_MINIMUM_SDK_VERSION:Int = 24;
 
+	/**
+	 * The contents of the user's environment config.
+	 * Read from the `.env` file.
+	 */
+	static var envConfig:Null<Map<String, Dynamic>> = null;
+
+	/**
+	 * A list of asset file globs to exclude from ASTC compression.
+	 */
+	static var astcExcludes:Array<String> = [];
+
   //
   // FEATURE FLAGS
   // Inverse feature flags are automatically populated.
@@ -153,11 +164,29 @@ class Project extends HXProject {
 	static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
 
   /**
+   * `-DEXCLUDE_ARMV7`
+   * If this flag is enabled, armv7 won't be compiled when building android.
+   */
+  static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
+
+  /**
    * `-DHARDCODED_CREDITS`
    * If this flag is enabled, the credits will be parsed and encoded in the game at compile time,
    * rather than read from JSON data at runtime.
    */
   static final HARDCODED_CREDITS:FeatureFlag = "HARDCODED_CREDITS";
+
+	/**
+	 * `-DTESTING_ADS`
+	 * If this flag is enabled, mobile advertisements will use testing mode.
+	 */
+	static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
+
+	/**
+	 * `-DUNLOCK_EVERYTHING`
+	 * If this flag is enabled, the game will assume all songs have been beaten and all content is available.
+	 */
+	static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
 
 	/**
 	 * `-DFEATURE_DEBUG_FUNCTIONS`
@@ -304,13 +333,20 @@ class Project extends HXProject {
 	 */
 	static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
-		/**
+	/**
+	 * `-DFEATURE_TOUCH_CONTROLS`
+	 * If this flag is enabled, the touch controls for the game is also enabled.
+	 * Works with desktop builds.
+	 */
+	static final FEATURE_TOUCH_CONTROLS:FeatureFlag = "FEATURE_TOUCH_CONTROLS";
+
+	/**
 	 * `-DFEATURE_COMPRESSED_TEXTURES`
 	 * If this flag is enabled, ASTC compressed textures will be used over uncompressed PNGs.
 	 * Compressed ASTC textures provide lower memory usage but at the cost of a higher files size.
 	 * ASTC textures are GPU Rendered so they have a few cons:
 	 * - Pixel Data cannot be read directly.
-	 * - Some filters specifically the ones in openfl.filters package won't work proprely because they directly modify the bitmap pixels.
+	 * - Some filters specifically the ones in openfl.filters package won't work properly because they directly modify the bitmap pixels.
 	 * - ASync loading for GPU Textures seem bugged and results in a black texture (This is meant to be fixed soon because it's not supposed to happen.).
 	 * One thing to note is that ASTC textures aren't available on all platforms:
 	 * - For iOS it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
@@ -319,47 +355,17 @@ class Project extends HXProject {
 	 */
 	static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
 
-	/**
-	 * `-DTOUCH_CONTROLS`
-	 * If this flag is enabled, the touch controls for the game is also enabled.
-	 * Works with desktop builds.
-	 */
-	static final TOUCH_CONTROLS:FeatureFlag = "TOUCH_CONTROLS";
-
   /**
-   * `-DEXCLUDE_ARMV7`
-   * If this flag is enabled, armv7 won't be compiled when building android.
+   * `-DFEATURE_MOBILE_ADVERTISEMENTS`
+   * If this flag is enabled, Google AdMob will be enabled. Banner and interstitial ads will some
    */
-  static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
-
-  /**
-   * `-DFEATURE_ADMOB_ADS`
-   * If this flag is disabled, ADs from AdMob will be disabled.
-   */
-  static final FEATURE_ADMOB_ADS:FeatureFlag = "FEATURE_ADMOB_ADS";
+  static final FEATURE_MOBILE_ADVERTISEMENTS:FeatureFlag = "FEATURE_MOBILE_ADVERTISEMENTS";
 
 	  /**
-   * `-DFEATURE_IAP`
+   * `-DFEATURE_MOBILE_IAP`
    * If this flag is enabled, ADs from AdMob will be disabled.
    */
-  static final FEATURE_IAP:FeatureFlag = "FEATURE_IAP";
-
-	/**
-	 * `-DTESTING_ADS`
-	 * If this flag is enabled, ADs will use testing mode.
-	 */
-	static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
-
-	/**
-	 * `-DUNLOCK_EVERYTHING`
-	 * If this flag is enabled, all the unlockable features will be unlocked.
-	 */
-	static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
-
-
-	static var astcExcludes:Array<String> = [];
-
-	static var envConfig:Null<Map<String, Dynamic>> = null;
+  static final FEATURE_MOBILE_IAP:FeatureFlag = "FEATURE_MOBILE_IAP";
 
 	//
 	// CONFIGURATION FUNCTIONS
@@ -369,7 +375,7 @@ class Project extends HXProject {
 		super();
 
 		envConfig = readEnvironmentFile("./.env");
-		readASTCExcludsion();
+		readASTCExclusion();
 
 		flair();
 		configureApp();
@@ -385,7 +391,7 @@ class Project extends HXProject {
     configureAssets();
     configureIcons();
 
-    if (FEATURE_ADMOB_ADS.isEnabled(this))
+    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
     {
       configureAdMobKeys();
     }
@@ -395,29 +401,7 @@ class Project extends HXProject {
     {
       if (isRelease())
       {
-				if (envConfig != null)
-				{
-					keystore = new Keystore();
-					keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
-					keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
-					keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
-				}
-
-        Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
-
-        final permissionsConfig:Array<String> = ['<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />', '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'];
-
-        final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
-
-        if (xmlChildren != null)
-          config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
-        else
-          config.get('android.manifest').xmlChildren = permissionsConfig;
-
-        if (isBundle())
-        {
-          config.set("android.gradle-build-directory", "bin-bundle");
-        }
+				configureAndroidRelease();
       }
     }
 
@@ -427,6 +411,8 @@ class Project extends HXProject {
 			launchStoryboard = new LaunchStoryboard();
 			launchStoryboard.path = "./LaunchScreen.storyboard";
     }
+
+		info("Done configuring project.");
 	}
 
 	/**
@@ -698,16 +684,16 @@ class Project extends HXProject {
 		FEATURE_COMPRESSED_TEXTURES.apply(this, false);
 
 		// Should be true only on mobile builds.
-		TOUCH_CONTROLS.apply(this, isMobile());
+		FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true only on mobile builds.
-    FEATURE_ADMOB_ADS.apply(this, isMobile());
+    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, isMobile());
 
 		// Should be true only on android builds for now.
-		FEATURE_IAP.apply(this, isAndroid());
+		FEATURE_MOBILE_IAP.apply(this, isAndroid());
 
     // Should be true only on debug mobile builds.
-    TESTING_ADS.apply(this, (isTest() || isDebug()) && FEATURE_ADMOB_ADS.isEnabled(this));
+    TESTING_ADS.apply(this, (isTest() || isDebug()) && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
 
     // For now needed only on mobile for testing.
     UNLOCK_EVERYTHING.apply(this, isMobile());
@@ -817,6 +803,31 @@ class Project extends HXProject {
 		app.path = buildDir;
   }
 
+	function configureAndroidRelease() {
+		if (envConfig != null) {
+			keystore = new Keystore();
+			keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
+			keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
+			keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
+		}
+
+    Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
+
+    final permissionsConfig:Array<String> = ['<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />', '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'];
+
+    final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
+
+    if (xmlChildren != null) {
+			config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
+		} else {
+			config.get('android.manifest').xmlChildren = permissionsConfig;
+		}
+
+    if (isBundle()) {
+      config.set("android.gradle-build-directory", "bin-bundle");
+    }
+	}
+
   function configurePolymod() {
 		// The file extension to use for script files.
 		setHaxedef("POLYMOD_SCRIPT_EXT", ".hscript");
@@ -893,7 +904,7 @@ class Project extends HXProject {
       addHaxelib('FlxPartialSound'); // Partial sound
     }
 
-    if (FEATURE_ADMOB_ADS.isEnabled(this)) {
+    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this)) {
       addHaxelib('extension-admob'); // Ads Extension
     }
 
@@ -901,7 +912,7 @@ class Project extends HXProject {
 			addHaxelib('extension-haptics'); // Haptic feedback
 		}
 
-		if (FEATURE_IAP.isEnabled(this)) {
+		if (FEATURE_MOBILE_IAP.isEnabled(this)) {
     	addHaxelib('extension-iapcore'); // In-app purchases Extension
 		}
   }
@@ -965,6 +976,8 @@ class Project extends HXProject {
 		addAsset("art/readme.txt", "do NOT readme.txt", "art", shouldEmbedArt);
 		addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
 		addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
+
+		info('Done configuring assets.');
 	}
 
   /**
@@ -972,6 +985,7 @@ class Project extends HXProject {
    */
   function configureIcons()
   {
+		info('Configuring application icons...');
     if (!isIOS()) {
       addIcon("art/icon16.png", 16);
       addIcon("art/icon32.png", 32);
@@ -983,6 +997,7 @@ class Project extends HXProject {
       addIcon("art/icon64_noalpha.png", 64);
       addIcon("art/iconOG_noalpha.png");
     }
+		info('Done configuring icons.');
   }
 
 	/**
@@ -1336,7 +1351,16 @@ class Project extends HXProject {
 		if(command != "display") { Log.info('[INFO] ${message}'); }
 	}
 
+	/**
+	 * Read the contents of the `.env` file into a map.
+	 * This is used to store secret keys as environment variables.
+	 */
 	public function readEnvironmentFile(file:String):Null<Map<String, Dynamic>> {
+		if (!FileSystem.exists(file)) {
+			info('Environment file does not exist: ${file}');
+			return null;
+		}
+
 		var envFile = File.getContent(file);
 
 		if (envFile == null) {
@@ -1357,7 +1381,7 @@ class Project extends HXProject {
 		return env;
 	}
 
-	public function readASTCExcludsion():Void {
+	public function readASTCExclusion():Void {
     astcExcludes = File.getContent('./compression-excludes.txt').trim().split('\n');
 
 		for (i in 0...astcExcludes.length)

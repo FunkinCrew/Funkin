@@ -68,7 +68,7 @@ class TouchUtil
    */
   public static function overlaps(object:FlxBasic, ?camera:FlxCamera):Bool
   {
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     if (object == null || touch == null) return false;
 
     return touch.overlaps(object, camera ?? object.camera);
@@ -87,7 +87,7 @@ class TouchUtil
    */
   public static function overlapsComplex(object:FlxObject, ?camera:FlxCamera):Bool
   {
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     if (object == null || touch == null) return false;
 
     if (camera == null) camera = object.cameras[0];
@@ -111,7 +111,7 @@ class TouchUtil
    */
   public static function overlapsComplexPoint(object:FlxObject, point:FlxPoint, ?inScreenSpace:Bool = false, ?camera:FlxCamera):Bool
   {
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     if (object == null || point == null) return false;
 
     if (camera == null) camera = object.cameras[0];
@@ -165,7 +165,7 @@ class TouchUtil
   @:noCompletion
   inline static function get_touch():FlxMouse
   {
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     FlxG.mouse.visible = true;
     return FlxG.mouse;
     #end

@@ -6,7 +6,7 @@ import funkin.graphics.video.FlxVideo;
 #if hxvlc
 import funkin.graphics.video.FunkinVideoSprite;
 #end
-#if TOUCH_CONTROLS
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 #end
 import funkin.ui.MusicBeatState;
@@ -105,7 +105,7 @@ class AttractState extends MusicBeatState
     super.update(elapsed);
 
     // If the user presses any button or hold their screen for 1.5 seconds, skip the video.
-    if ((FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN) #if TOUCH_CONTROLS
+    if ((FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN) #if FEATURE_TOUCH_CONTROLS
       || TouchUtil.touch != null
       && TouchUtil.touch.ticksDeltaSincePress >= 1500 #end)
     {

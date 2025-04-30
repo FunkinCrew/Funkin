@@ -1,6 +1,6 @@
 package funkin.mobile.util;
 
-#if FEATURE_IAP
+#if FEATURE_MOBILE_IAP
 import extension.iapcore.android.IAPAndroid;
 import extension.iapcore.android.IAPProductDetails;
 import extension.iapcore.android.IAPPurchase;

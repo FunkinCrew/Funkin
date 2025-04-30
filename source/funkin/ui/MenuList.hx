@@ -125,7 +125,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
     };
 
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     // Update touch position
     if (TouchUtil.pressed)
     {

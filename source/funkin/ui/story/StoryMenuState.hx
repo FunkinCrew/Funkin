@@ -229,7 +229,7 @@ class StoryMenuState extends MusicBeatState
     addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, goBack);
     #end
 
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     FlxG.touches.swipeThreshold.y = 100;
     #end
   }
@@ -431,7 +431,7 @@ class StoryMenuState extends MusicBeatState
 
     currentIndex += change;
 
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     // Dont wrap around w/ touch.
     if (currentIndex < 0) currentIndex = 0;
     if (currentIndex >= levelList.length) currentIndex = levelList.length - 1;

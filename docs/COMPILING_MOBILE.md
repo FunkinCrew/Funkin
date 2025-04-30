@@ -5,8 +5,6 @@ Check [COMPILING.md](./COMPILING.md) if you haven’t done that yet.
 
 ## Android
 
-### Windows
-
 0. **Create a new folder** – this will store Android tools (remember where you put it!).
 1. **Open a terminal as Administrator.**
 2. Run this in the terminal (replace the path with your actual folder):
@@ -18,8 +16,9 @@ Check [COMPILING.md](./COMPILING.md) if you haven’t done that yet.
 5. (Optional) Close and reopen the terminal if needed.
 6. Run:
    ```
-   sdkmanager --install "build-tools;32.0.0" "build-tools;32.1.0-rc1" "ndk;28.0.13004108" "platforms;android-29"
+   sdkmanager --install "build-tools;32.0.0" "build-tools;32.1.0-rc1" "ndk;21.4.7075529" "platforms;android-29"
    ```
+   - The latest NDK is not compatible with Lime you have to use the old one.
 7. Download and install [JDK 17 (MSI)](https://adoptium.net/temurin/releases/?version=17&os=windows).
 8. Run:
    ```

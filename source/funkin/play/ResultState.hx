@@ -39,7 +39,7 @@ import funkin.api.newgrounds.Medals;
 #end
 #if mobile
 import funkin.util.TouchUtil;
-#if FEATURE_ADMOB_ADS
+#if FEATURE_MOBILE_ADVERTISEMENTS
 import funkin.mobile.util.AdMobUtil;
 #end
 #end
@@ -1003,7 +1003,7 @@ class ResultState extends MusicBeatSubState
             ease: FlxEase.expoOut,
             onComplete: function(_) {
               // Shows a interstital ad on mobile devices each week victory.
-              #if FEATURE_ADMOB_ADS
+              #if FEATURE_MOBILE_ADVERTISEMENTS
               if (PlayStatePlaylist.isStoryMode
                 || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
               {
@@ -1025,7 +1025,7 @@ class ResultState extends MusicBeatSubState
       else
       {
         // Shows a interstital ad on mobile devices each week victory.
-        #if FEATURE_ADMOB_ADS
+        #if FEATURE_MOBILE_ADVERTISEMENTS
         if (PlayStatePlaylist.isStoryMode
           || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
         {

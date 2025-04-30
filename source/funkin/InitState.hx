@@ -96,12 +96,12 @@ class InitState extends FlxState
     extension.haptics.Haptic.initialize();
     #end
 
-    #if FEATURE_ADMOB_ADS
+    #if FEATURE_MOBILE_ADVERTISEMENTS
     // Setup Admob
     funkin.mobile.util.AdMobUtil.init();
     #end
 
-    #if FEATURE_IAP
+    #if FEATURE_MOBILE_IAP
     // Setup In-App purchases
     funkin.mobile.util.InAppPurchasesUtil.init();
     #end
@@ -126,7 +126,7 @@ class InitState extends FlxState
     FlxG.game.focusLostFramerate = 30;
 
     // Makes Flixel use frame times instead of locked movements per frame for things like tweens
-    FlxG.fixedTimestep = false; 
+    FlxG.fixedTimestep = false;
 
     setupFlixelDebug();
 

@@ -133,7 +133,7 @@ class Main extends Sprite
     @:privateAccess
     game._customSoundTray = funkin.ui.options.FunkinSoundTray;
 
-    #if FEATURE_ADMOB_ADS
+    #if FEATURE_MOBILE_ADVERTISEMENTS
     funkin.mobile.util.AdMobUtil.init();
     #end
 

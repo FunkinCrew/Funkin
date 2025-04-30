@@ -1,6 +1,6 @@
-package funkin.mobile.util;
+package funkin.api.mobile;
 
-#if FEATURE_ADMOB_ADS
+#if FEATURE_MOBILE_ADVERTISEMENTS
 import extension.admob.Admob;
 import extension.admob.AdmobBannerAlign;
 import extension.admob.AdmobBannerSize;

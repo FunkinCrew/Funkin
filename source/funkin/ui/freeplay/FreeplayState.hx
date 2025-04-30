@@ -153,7 +153,7 @@ class FreeplayState extends MusicBeatSubState
   var curPlaying:Bool = false;
 
   var dj:Null<FreeplayDJ> = null;
-  #if TOUCH_CONTROLS
+  #if FEATURE_TOUCH_CONTROLS
   var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358);
   #end
 
@@ -715,7 +715,7 @@ class FreeplayState extends MusicBeatSubState
         rankAnimStart(fromResultsParams, grpCapsules.members[curSelected]);
       }
 
-      #if TOUCH_CONTROLS
+      #if FEATURE_TOUCH_CONTROLS
       SwipeUtil.calculateSwipeThreshold(grpCapsules.members, Y);
       FlxG.touches.swipeThreshold.x = 60;
       #end
@@ -1429,7 +1429,7 @@ class FreeplayState extends MusicBeatSubState
     }
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
-    if ((controls.FREEPLAY_CHAR_SELECT #if TOUCH_CONTROLS
+    if ((controls.FREEPLAY_CHAR_SELECT #if FEATURE_TOUCH_CONTROLS
       || (TouchUtil.overlaps(djHitbox, funnyCam) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
       && !busy)
     {
@@ -1499,7 +1499,7 @@ class FreeplayState extends MusicBeatSubState
     final downP:Bool = controls.UI_DOWN_P;
     final accepted:Bool = controls.ACCEPT;
 
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     handleTouchCapsuleClick();
     handleTouchSelectionScroll(elapsed);
     handleTouchFavoritesAndDifficulties();
@@ -1574,7 +1574,7 @@ class FreeplayState extends MusicBeatSubState
 
   function handleDifficultySwitch():Void
   {
-    #if TOUCH_CONTROLS
+    #if FEATURE_TOUCH_CONTROLS
     final leftPressed:Bool = controls.UI_LEFT_P
       || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased);
 
@@ -1600,7 +1600,7 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  #if TOUCH_CONTROLS
+  #if FEATURE_TOUCH_CONTROLS
   private function handleTouchCapsuleClick():Void
   {
     if (diffSelRight == null) return;
@@ -2600,7 +2600,7 @@ class DifficultySelector extends FlxSprite
 
   var parent:FreeplayState;
 
-  #if TOUCH_CONTROLS
+  #if FEATURE_TOUCH_CONTROLS
   public var pressed:Bool = false;
   #end
 
@@ -2630,7 +2630,7 @@ class DifficultySelector extends FlxSprite
     super.update(elapsed);
   }
 
-  #if TOUCH_CONTROLS
+  #if FEATURE_TOUCH_CONTROLS
   public function setPress(press:Bool):Void
   {
     if (!press)

@@ -3,6 +3,8 @@
 .vs/
 APIStuff.hx
 dump/
+temp/
+docs/temp/
 export/
 astc-textures/
 RECOVER_*.fla
