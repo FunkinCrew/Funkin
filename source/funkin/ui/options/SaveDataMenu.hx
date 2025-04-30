@@ -3,7 +3,7 @@ package funkin.ui.options;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
-import funkin.ui.Page.PageName;
+import funkin.save.Save;
 
 /**
  * Our default Page when we enter the OptionsState, a bit of the root
@@ -26,7 +26,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
         \nALL your save data.
         \nAre you sure?
       ", "Overwrite", function() {
-          funkin.save.Save.instance.loadFromNewgrounds();
+          Save.loadFromNewgrounds();
 
           FlxG.switchState(() -> new funkin.InitState());
         });
@@ -38,7 +38,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
         \non Newgrounds.
         \nAre you sure?
       ", "Overwrite", function() {
-          funkin.save.Save.instance.saveToNewgrounds();
+          Save.saveToNewgrounds();
         });
       });
     }
@@ -50,7 +50,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
         \nAre you sure?
       ", "Delete", function() {
         // Clear the save data.
-        funkin.save.Save.clearData();
+        Save.clearData();
 
         FlxG.switchState(() -> new funkin.InitState());
       });
