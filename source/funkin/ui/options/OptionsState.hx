@@ -76,6 +76,7 @@ class OptionsState extends MusicBeatState
     #if FEATURE_LAG_ADJUSTMENT
     var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
     #end
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
 
     if (options.hasMultipleOptions())
     {
@@ -230,18 +231,9 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     }
     #end
 
-    // no need to show an entire new menu for just one option
-    if (saveDataMenu.hasMultipleOptions())
-    {
-      createItem("SAVE DATA OPTIONS", function() {
-        codex.switchPage(SaveData);
-      });
-    }
-    else
-    {
-      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
-    }
-
+    createItem("SAVE DATA OPTIONS", function() {
+      codex.switchPage(SaveData);
+    });
     #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
     #else

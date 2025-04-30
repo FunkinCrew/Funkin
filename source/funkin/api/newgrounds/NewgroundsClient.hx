@@ -317,7 +317,7 @@ class NewgroundsClient
   {
     trace('[NEWGROUNDS] Fetched save slots!');
 
-    NGSaveSlot.instance.checkSlot();
+    NGSaveSlot.instance.load();
   }
 
   function get_user():Null<User>

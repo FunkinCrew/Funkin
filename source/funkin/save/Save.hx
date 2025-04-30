@@ -1372,45 +1372,23 @@ class Save
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
   }
-
-  #if FEATURE_NEWGROUNDS
-  public static function saveToNewgrounds():Void
+  public function saveToNewgrounds():Void
   {
-    if (_instance == null) return;
     trace('[SAVE] Saving Save Data to Newgrounds...');
-    funkin.api.newgrounds.NGSaveSlot.instance.save(_instance.data);
+    funkin.api.newgrounds.NGSaveSlot.instance.save(data);
   }
 
-  public static function loadFromNewgrounds(onFinish:Void->Void):Void
+  public function loadFromNewgrounds():Void
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
-    funkin.api.newgrounds.NGSaveSlot.instance.load(function(data:Dynamic) {
-      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH);
+    var data = funkin.api.newgrounds.NGSaveSlot.instance.load();
 
-      if (FlxG.save.status != EMPTY)
-      {
-        // best i can do in case the NG file is corrupted or something along those lines
-        var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
-        trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
-      }
+    if (data == null) return;
 
-      FlxG.save.erase();
-      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH); // forces regeneration of the file as erase deletes it
-
-      var gameSave = SaveDataMigrator.migrate(data);
-      FlxG.save.mergeData(gameSave.data, true);
-      _instance = gameSave;
-      onFinish();
-    }, function(error:io.newgrounds.Call.CallError) {
-      var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
-
-      var msg = 'There was an error loading your save data from Newgrounds.';
-      msg += '\n${errorMsg}';
-      msg += '\nAre you sure you are connected to the internet?';
-      funkin.util.WindowUtil.showError("Newgrounds Save Slot Failure", msg);
-    });
+    var gameSave = SaveDataMigrator.migrate(data);
+    FlxG.save.erase();
+    FlxG.save.mergeData(gameSave.data, true);
   }
-  #end
 }
 
 /**

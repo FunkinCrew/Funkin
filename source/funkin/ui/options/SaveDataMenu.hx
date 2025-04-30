@@ -3,8 +3,11 @@ package funkin.ui.options;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
-import funkin.save.Save;
+import funkin.ui.Page.PageName;
 
+/**
+ * Our default Page when we enter the OptionsState, a bit of the root
+ */
 class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   var items:TextMenuList;
@@ -15,39 +18,43 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 
     add(items = new TextMenuList());
 
-    createItem("CLEAR SAVE DATA", openSaveDataPrompt);
-
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      createItem("LOAD FROM NG", function() {
+      createItem("LOAD FROM NEWGROUNDS", function() {
         openConfirmPrompt("This will overwrite
         \nALL your save data.
         \nAre you sure?
       ", "Overwrite", function() {
-          Save.loadFromNewgrounds(function() {
-            FlxG.switchState(() -> new funkin.InitState());
-          });
+          funkin.save.Save.instance.loadFromNewgrounds();
+
+          FlxG.switchState(() -> new funkin.InitState());
         });
       });
 
-      createItem("SAVE TO NG", function() {
+      createItem("SAVE TO NEWGROUNDS", function() {
         openConfirmPrompt("This will overwrite
         \nALL save data saved
-        \non NG. Are you sure?", "Overwrite", function() {
-          Save.saveToNewgrounds();
-        });
-      });
-
-      createItem("CLEAR NG SAVE DATA", function() {
-        openConfirmPrompt("This will delete
-        \nALL save data saved
-        \non NG. Are you sure?", "Delete", function() {
-          funkin.api.newgrounds.NGSaveSlot.instance.clear();
+        \non Newgrounds.
+        \nAre you sure?
+      ", "Overwrite", function() {
+          funkin.save.Save.instance.saveToNewgrounds();
         });
       });
     }
     #end
+
+    createItem("CLEAR SAVE DATA", function() {
+      openConfirmPrompt("This will delete
+        \nALL your save data.
+        \nAre you sure?
+      ", "Delete", function() {
+        // Clear the save data.
+        funkin.save.Save.clearData();
+
+        FlxG.switchState(() -> new funkin.InitState());
+      });
+    });
 
     createItem("EXIT", exit);
   }
@@ -74,7 +81,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 
   var prompt:Prompt;
 
-  function openConfirmPrompt(text:String, yesText:String, onYes:Void->Void, ?groupToOpenOn:Null<flixel.group.FlxGroup>):Void
+  function openConfirmPrompt(text:String, yesText:String, onYes:Void->Void):Void
   {
     if (prompt != null) return;
 
@@ -82,7 +89,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
     prompt.create();
     prompt.createBgFromMargin(100, 0xFFFAFD6D);
     prompt.back.scrollFactor.set(0, 0);
-    FlxG.state.add(prompt);
+    add(prompt);
 
     prompt.onYes = function() {
       onYes();
@@ -100,26 +107,5 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
       prompt.destroy();
       prompt = null;
     }
-  }
-  public function openSaveDataPrompt()
-  {
-    openConfirmPrompt("This will delete
-        \nALL your save data.
-        \nAre you sure?
-      ", "Delete", function() {
-      // Clear the save data.
-      Save.clearData();
-
-      FlxG.switchState(() -> new funkin.InitState());
-    });
-  }
-
-  /**
-   * True if this page has multiple options, excluding the exit option.
-   * If false, there's no reason to ever show this page.
-   */
-  public function hasMultipleOptions():Bool
-  {
-    return items.length > 2;
   }
 }
