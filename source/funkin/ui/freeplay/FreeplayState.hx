@@ -1382,7 +1382,7 @@ class FreeplayState extends MusicBeatSubState
       tryOpenCharSelect();
     }
 
-    if (controls.FREEPLAY_FAVORITE && !busy)
+    if (controls.FREEPLAY_FAVORITE && !controls.FREEPLAY_SCROLL_LEVELS && !busy)
     {
       var targetSong = grpCapsules.members[curSelected]?.freeplayData;
       if (targetSong != null)
@@ -1738,7 +1738,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
-        if (grpCapsules.members[curSelected].freeplayData == null) changeSelection(FlxG.random.int(1, grpCapsules.length - 2));
+        if (grpCapsules.members[curSelected].freeplayData == null) selectRandomCapsule();
         FunkinSound.playOnce(Paths.sound('cancelMenu'));
       }
     }
@@ -1940,13 +1940,12 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
   }
 
-  function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
+  /**
+   * Selects a random capsule.
+   * Returns the selected capsule afterwards, and `null` if there aren't any.
+   */
+  function selectRandomCapsule():Null<SongMenuItem>
   {
-    trace('RANDOM SELECTED');
-
-    busy = true;
-    letterSort.inputEnabled = false;
-
     var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
       // Dead capsules are ones which were removed from the list when changing filters.
       return cap.alive && cap.freeplayData != null;
@@ -1959,10 +1958,7 @@ class FreeplayState extends MusicBeatSubState
     if (availableSongCapsules.length == 0)
     {
       trace('No songs available!');
-      busy = false;
-      letterSort.inputEnabled = true;
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-      return;
+      return null;
     }
 
     var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
@@ -1970,6 +1966,24 @@ class FreeplayState extends MusicBeatSubState
     // Seeing if I can do an animation...
     curSelected = grpCapsules.members.indexOf(targetSong);
     changeSelection(0); // Trigger an update.
+    return targetSong;
+  }
+
+  function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
+  {
+    trace('RANDOM SELECTED');
+
+    busy = true;
+    letterSort.inputEnabled = false;
+
+    var targetSong:Null<SongMenuItem> = selectRandomCapsule();
+    if (targetSong == null)
+    {
+      busy = false;
+      letterSort.inputEnabled = true;
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      return;
+    }
 
     // Act like we hit Confirm on that song.
     capsuleOnConfirmDefault(targetSong);
