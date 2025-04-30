@@ -420,16 +420,16 @@ class SongMenuItem extends FlxSpriteGroup
     }
     else
     {
+      if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.songCharacter);
       if (isLevelDisplay)
       {
         songText.text = freeplayData.levelName;
-        if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.levelCharacter);
+        if (freeplayData.levelCharacter != null) pixelIcon.setCharacter(freeplayData.levelCharacter);
         toggleSongInfo(false);
       }
       else
       {
         songText.text = freeplayData.fullSongName;
-        if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.songCharacter);
         updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
         updateDifficultyRating(freeplayData.difficultyRating ?? 0);
         updateScoringRank(freeplayData.scoringRank);
