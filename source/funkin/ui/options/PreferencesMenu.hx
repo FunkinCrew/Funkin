@@ -155,13 +155,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
-    // TODO: having oValue is weird, probably change this later? was done to accomodate VSync changes.
-    createPrefItemEnum('Save Format', 'Save screenshots to this format.', ['PNG' => 'PNG', 'JPEG' => 'JPEG'], function(value:String, oValue:String):Void {
-      Preferences.saveFormat = value;
-    }, Preferences.saveFormat);
-    createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
-      Preferences.jpegQuality = Std.int(value);
-    }, null, Preferences.jpegQuality, 0, 100, 5, 0);
   }
 
   override function update(elapsed:Float):Void
