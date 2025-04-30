@@ -24,8 +24,6 @@ class NGSaveSlot
 
   public static function loadInstance():NGSaveSlot
   {
-    trace("[NEWGROUNDS] Loading save slot...");
-
     var loadedSave:NGSaveSlot = loadSlot(Save.BASE_SAVE_SLOT);
     if (_instance == null) _instance = loadedSave;
 
@@ -34,28 +32,9 @@ class NGSaveSlot
 
   static function loadSlot(slot:Int):NGSaveSlot
   {
-    trace('[NEWGROUNDS] Loading save slot from ID $slot');
+    trace('[NEWGROUNDS] Getting save slot from ID $slot');
 
     var saveSlot:Null<SaveSlot> = NewgroundsClient.instance.saveSlots?.getById(slot);
-
-    if (saveSlot != null && !saveSlot.isEmpty())
-    {
-      // Precache Slots
-      saveSlot.load(function(outcome:SaveSlotOutcome):Void {
-        switch (outcome)
-        {
-          case SUCCESS(value):
-            trace('[NEWGROUNDS] Loaded save slot with the ID of ${saveSlot.id}!');
-            #if FEATURE_DEBUG_FUNCTIONS
-            trace('Save Slot Data:');
-            trace(value);
-            #end
-          case FAIL(error):
-            trace('[NEWGROUNDS] Failed to load save slot with the ID of ${saveSlot.id}!');
-            trace(error);
-        }
-      });
-    }
 
     var saveSlotObj:NGSaveSlot = new NGSaveSlot(saveSlot);
     return saveSlotObj;
@@ -81,24 +60,73 @@ class NGSaveSlot
   {
     var encodedData:String = haxe.Serializer.run(data);
 
-    ngSaveSlot?.save(encodedData, function(outcome:Outcome<CallError>) {
-      switch (outcome)
-      {
-        case SUCCESS:
-          trace('[NEWGROUNDS] Successfully saved save data to save slot!');
-        case FAIL(error):
-          trace('[NEWGROUNDS] Failed to save data to save slot!');
-          trace(error);
-      }
-    });
+    try
+    {
+      ngSaveSlot?.save(encodedData, function(outcome:Outcome<CallError>) {
+        switch (outcome)
+        {
+          case SUCCESS:
+            trace('[NEWGROUNDS] Successfully saved save data to save slot!');
+          case FAIL(error):
+            trace('[NEWGROUNDS] Failed to save data to save slot!');
+            trace(error);
+        }
+      });
+    }
+    catch (error:String)
+    {
+      trace('[NEWGROUNDS] Failed to save data to save slot!');
+      trace(error);
+    }
   }
 
-  public function load():Dynamic
+  public function load(?onComplete:Null<Dynamic->Void>, ?onError:Null<CallError->Void>):Void
   {
-    var encodedData:Null<String> = ngSaveSlot?.contents;
+    try
+    {
+      ngSaveSlot?.load(function(outcome:SaveSlotOutcome):Void {
+        switch (outcome)
+        {
+          case SUCCESS(value):
+            trace('[NEWGROUNDS] Loaded save slot with the ID of ${ngSaveSlot?.id}!');
+            #if FEATURE_DEBUG_FUNCTIONS
+            trace('Save Slot Data:');
+            trace(value);
+            #end
 
-    if (encodedData == null) return null;
+            if (onComplete != null && value != null)
+            {
+              var decodedData:Dynamic = haxe.Unserializer.run(value);
+              onComplete(decodedData);
+            }
+          case FAIL(error):
+            trace('[NEWGROUNDS] Failed to load save slot with the ID of ${ngSaveSlot?.id}!');
+            trace(error);
 
-    return haxe.Unserializer.run(encodedData);
+            if (onError != null)
+            {
+              onError(error);
+            }
+        }
+      });
+    }
+    catch (error:String)
+    {
+      trace('[NEWGROUNDS] Failed to load save slot with the ID of ${ngSaveSlot?.id}!');
+      trace(error);
+
+      if (onError != null)
+      {
+        onError(RESPONSE({message: error, code: 500}));
+      }
+    }
+  }
+
+  public function checkSlot():Void
+  {
+    trace('[NEWGROUNDS] Checking save slot with the ID of ${ngSaveSlot?.id}...');
+
+    trace('  Is null? ${ngSaveSlot != null}');
+    trace('  Is empty? ${ngSaveSlot?.isEmpty() ?? false}');
   }
 }
