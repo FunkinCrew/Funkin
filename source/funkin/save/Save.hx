@@ -1356,23 +1356,35 @@ class Save
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
   }
-  public function saveToNewgrounds():Void
+  #if FEATURE_NEWGROUNDS
+  public static function saveToNewgrounds():Void
   {
+    if (_instance == null) return;
     trace('[SAVE] Saving Save Data to Newgrounds...');
-    funkin.api.newgrounds.NGSaveSlot.instance.save(data);
+    funkin.api.newgrounds.NGSaveSlot.instance.save(_instance.data);
   }
 
-  public function loadFromNewgrounds():Void
+  public static function loadFromNewgrounds():Void
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
     var data = funkin.api.newgrounds.NGSaveSlot.instance.load();
 
     if (data == null) return;
 
+    FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH);
+
+    if (FlxG.save.status != EMPTY)
+    {
+      // best i can do in case NG decides to not play nice
+      var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+
+      FlxG.save.erase();
+    }
+
     var gameSave = SaveDataMigrator.migrate(data);
-    FlxG.save.erase();
     FlxG.save.mergeData(gameSave.data, true);
   }
+  #end
 }
 
 /**
