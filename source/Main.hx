@@ -118,7 +118,7 @@ class Main extends Sprite
     #end
 
     #if mobile
-    // Add this signal so we can repososition and resize the memory and fps counter.
+    // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
     #end
 
@@ -143,12 +143,12 @@ class Main extends Sprite
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     #end
 
-    #if mobile
+    #if !html5
     FlxG.scaleMode = new FullScreenScaleMode();
     #end
 
     #if mobile
-    // Repososition and resize the memory and fps counter without lerping.
+    // Reposition and resize the memory and fps counter without lerping.
     repositionCounters(false);
     #end
 
