@@ -2540,7 +2540,7 @@ class PlayState extends MusicBeatSubState
       // Play the strumline animation.
       playerStrumline.playStatic(input.noteDirection);
 
-      playerStrumline.releaseKey(input.noteDirection);
+      playerStrumline.releaseKey(input.noteDirection, input.timestamp);
     }
   }
 
@@ -2970,7 +2970,7 @@ class PlayState extends MusicBeatSubState
       // Determine the score rank for this song we just finished.
       var scoreRank:ScoringRank = Scoring.calculateRank(
         {
-          score: songScore,
+          score: songScoreInt,
           tallies:
             {
               sick: Highscore.tallies.sick,
