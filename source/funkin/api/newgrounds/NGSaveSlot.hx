@@ -122,6 +122,28 @@ class NGSaveSlot
     }
   }
 
+  public function clear():Void
+  {
+    try
+    {
+      ngSaveSlot?.clear(function(outcome:Outcome<CallError>) {
+        switch (outcome)
+        {
+          case SUCCESS:
+            trace('[NEWGROUNDS] Successfully cleared save slot!');
+          case FAIL(error):
+            trace('[NEWGROUNDS] Failed to clear save slot!');
+            trace(error);
+        }
+      });
+    }
+    catch (error:String)
+    {
+      trace('[NEWGROUNDS] Failed to clear save slot!');
+      trace(error);
+    }
+  }
+
   public function checkSlot():Void
   {
     trace('[NEWGROUNDS] Checking save slot with the ID of ${ngSaveSlot?.id}...');
