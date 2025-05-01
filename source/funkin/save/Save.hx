@@ -1381,6 +1381,7 @@ class Save
 
       var gameSave = SaveDataMigrator.migrate(data);
       FlxG.save.mergeData(gameSave.data, true);
+      FlxG.save.flush();
     }, function(error:io.newgrounds.Call.CallError) {
       var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
 
