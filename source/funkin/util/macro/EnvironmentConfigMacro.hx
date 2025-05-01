@@ -40,6 +40,12 @@ class EnvironmentConfigMacro
     var fields = Context.getBuildFields();
     var pos = Context.currentPos();
 
+    if (!sys.FileSystem.exists(file))
+    {
+      trace('Failed to parse environment file: ${file}');
+      return fields;
+    }
+
     var envFile:String = File.getContent(file);
 
     if (envFile == null)

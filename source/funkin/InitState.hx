@@ -98,12 +98,12 @@ class InitState extends FlxState
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
     // Setup Admob
-    funkin.api.mobile.AdMobUtil.init();
+    funkin.mobile.util.AdMobUtil.init();
     #end
 
     #if FEATURE_MOBILE_IAP
     // Setup In-App purchases
-    funkin.api.mobile.InAppPurchasesUtil.init();
+    funkin.mobile.util.InAppPurchasesUtil.init();
     #end
 
     // This ain't a pixel art game! (most of the time)

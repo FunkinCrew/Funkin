@@ -134,7 +134,7 @@ class Main extends Sprite
     game._customSoundTray = funkin.ui.options.FunkinSoundTray;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.api.mobile.AdMobUtil.init();
+    funkin.mobile.util.AdMobUtil.init();
     #end
 
     addChild(game);

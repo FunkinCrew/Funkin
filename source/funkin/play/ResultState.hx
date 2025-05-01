@@ -40,7 +40,7 @@ import funkin.api.newgrounds.Medals;
 #if mobile
 import funkin.util.TouchUtil;
 #if FEATURE_MOBILE_ADVERTISEMENTS
-import funkin.api.mobile.AdMobUtil;
+import funkin.mobile.util.AdMobUtil;
 #end
 #end
 

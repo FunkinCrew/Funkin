@@ -62,7 +62,7 @@ import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #if FEATURE_MOBILE_ADVERTISEMENTS
-import funkin.api.mobile.AdMobUtil;
+import funkin.mobile.util.AdMobUtil;
 #end
 #end
 #if FEATURE_DISCORD_RPC

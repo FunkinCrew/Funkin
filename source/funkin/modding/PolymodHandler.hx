@@ -289,7 +289,7 @@ class PolymodHandler
     Polymod.blacklistImport('android.jni.JNICache');
 
     // Disable access to in-app purchases
-    Polymod.blacklistImport('funkin.api.mobile.InAppPurchasesUtil');
+    Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');
     for (cls in ClassMacro.listClassesInPackage('extension.iapcore'))
     {
       if (cls == null) continue;
@@ -298,7 +298,7 @@ class PolymodHandler
     }
 
     // Disable access to Google AdMob
-    Polymod.blacklistImport('funkin.api.mobile.AdMobUtil');
+    Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
     for (cls in ClassMacro.listClassesInPackage('extension.admob'))
     {
       if (cls == null) continue;

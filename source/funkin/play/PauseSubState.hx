@@ -22,7 +22,7 @@ import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 #if FEATURE_MOBILE_ADVERTISEMENTS
-import funkin.api.mobile.AdMobUtil;
+import funkin.mobile.util.AdMobUtil;
 #end
 
 /**

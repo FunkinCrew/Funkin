@@ -115,8 +115,10 @@
     },
     {
       "name": "hxvlc",
-      "type": "haxelib",
-      "version": "2.1.2"
+      "type": "git",
+      "dir": null,
+      "ref": "d71ee67870308ef821179bd7d7796064f695c645",
+      "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
       "name": "json2object",
@@ -143,7 +145,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "8849a49f07cff83d36896a03294b5fc6bcb1c9f6",
+      "ref": "b79ac7bc76714bff64eaa01b5fb9349dd47c88b8",
       "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {

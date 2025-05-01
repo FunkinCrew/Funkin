@@ -1,4 +1,4 @@
-package funkin.api.mobile;
+package funkin.mobile.util;
 
 #if FEATURE_MOBILE_IAP
 import extension.iapcore.android.IAPAndroid;
