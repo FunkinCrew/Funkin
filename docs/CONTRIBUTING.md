@@ -411,7 +411,7 @@ This involves modifying one or several of the `funkin.assets` repository's `*-me
 
 > [!CAUTION]
 > We **do not** accept changes to the chart `.json` file itself.
-> If you find an error in the game's charts, please open an issue in the `Funkin` repo!
+> If you find an error in the game's charts, please open an issue in the `Funkin` repo, and the Funkin' Crew will review it and make tweaks themselves as necessary.
 
 These PRs should only be opened in the `funkin.assets` repository.
 
