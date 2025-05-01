@@ -5,9 +5,6 @@ import funkin.api.newgrounds.NewgroundsClient;
 #end
 import funkin.save.Save;
 
-/**
- * Our default Page when we enter the OptionsState, a bit of the root
- */
 class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   var items:TextMenuList;
@@ -17,32 +14,6 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
     super();
 
     add(items = new TextMenuList());
-
-    #if FEATURE_NEWGROUNDS
-    if (NewgroundsClient.instance.isLoggedIn())
-    {
-      createItem("LOAD FROM NEWGROUNDS", function() {
-        openConfirmPrompt("This will overwrite
-        \nALL your save data.
-        \nAre you sure?
-      ", "Overwrite", function() {
-          Save.loadFromNewgrounds();
-
-          FlxG.switchState(() -> new funkin.InitState());
-        });
-      });
-
-      createItem("SAVE TO NEWGROUNDS", function() {
-        openConfirmPrompt("This will overwrite
-        \nALL save data saved
-        \non Newgrounds.
-        \nAre you sure?
-      ", "Overwrite", function() {
-          Save.saveToNewgrounds();
-        });
-      });
-    }
-    #end
 
     createItem("CLEAR SAVE DATA", function() {
       openConfirmPrompt("This will delete
@@ -55,6 +26,38 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
         FlxG.switchState(() -> new funkin.InitState());
       });
     });
+
+    #if FEATURE_NEWGROUNDS
+    if (NewgroundsClient.instance.isLoggedIn())
+    {
+      createItem("LOAD FROM NG", function() {
+        openConfirmPrompt("This will overwrite
+        \nALL your save data.
+        \nAre you sure?
+      ", "Overwrite", function() {
+          Save.loadFromNewgrounds();
+
+          FlxG.switchState(() -> new funkin.InitState());
+        });
+      });
+
+      createItem("SAVE TO NG", function() {
+        openConfirmPrompt("This will overwrite
+        \nALL save data saved
+        \non NG. Are you sure?", "Overwrite", function() {
+          Save.saveToNewgrounds();
+        });
+      });
+
+      createItem("CLEAR NG SAVE DATA", function() {
+        openConfirmPrompt("This will delete
+        \nALL save data saved
+        \non NG. Are you sure?", "Delete", function() {
+          funkin.api.newgrounds.NGSaveSlot.instance.clear();
+        });
+      });
+    }
+    #end
 
     createItem("EXIT", exit);
   }
