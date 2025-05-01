@@ -1,6 +1,7 @@
 package funkin.play.cutscene.dialogue;
 
 import flixel.addons.text.FlxTypeText;
+import flixel.input.keyboard.FlxKey;
 
 /**
  * An FlxTypeText that accounts for text-wrapping in advance,
@@ -59,5 +60,13 @@ class FunkinTypeText extends FlxTypeText
     paused = false;
     _waiting = false;
     _length = 0;
+  }
+
+  override public function start(?Delay:Float, ForceRestart:Bool = false, AutoErase:Bool = false, ?SkipKeys:Array<FlxKey>, ?Callback:Void->Void):Void
+  {
+    super.start(Delay, ForceRestart, AutoErase, SkipKeys, Callback);
+
+    // Autocomplete if the text is empty anyway.
+    if (_finalText.length == 0) onComplete();
   }
 }
