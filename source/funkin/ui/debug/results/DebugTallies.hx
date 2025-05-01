@@ -12,8 +12,8 @@ class DebugTallies
    */
   public static var LOSS:SaveScoreTallyData =
     {
-      sick: 130,
-      good: 60,
+      sick: 190,
+      good: 69,
       bad: 69,
       shit: 69,
       missed: 69,
@@ -28,8 +28,8 @@ class DebugTallies
    */
   public static var NICE:SaveScoreTallyData =
     {
-      sick: 130,
-      good: 60,
+      sick: 190,
+      good: 69,
       bad: 69,
       shit: 69,
       missed: 69,
@@ -44,8 +44,8 @@ class DebugTallies
    */
   public static var GOOD:SaveScoreTallyData =
     {
-      sick: 130,
-      good: 60,
+      sick: 190,
+      good: 69,
       bad: 69,
       shit: 69,
       missed: 69,
@@ -60,8 +60,8 @@ class DebugTallies
    */
   public static var GREAT:SaveScoreTallyData =
     {
-      sick: 130,
-      good: 60,
+      sick: 190,
+      good: 69,
       bad: 69,
       shit: 69,
       missed: 69,
@@ -76,8 +76,8 @@ class DebugTallies
    */
   public static var EXCELLENT:SaveScoreTallyData =
     {
-      sick: 130,
-      good: 60,
+      sick: 190,
+      good: 69,
       bad: 69,
       shit: 69,
       missed: 69,
@@ -92,8 +92,8 @@ class DebugTallies
    */
   public static var PERFECT:SaveScoreTallyData =
     {
-      sick: 130,
-      good: 60,
+      sick: 190,
+      good: 69,
       bad: 69,
       shit: 69,
       missed: 69,
