@@ -345,6 +345,11 @@ class Constants
   public static final HIT_WINDOW_MS:Float = 160.0;
 
   /**
+   * The maximum interval within which a hold note can be regrabbed, in milliseconds.
+   */
+  public static final REGRAB_WINDOW_MS:Float = 80.0;
+
+  /**
    * Constant for the number of seconds in a minute.
    *
    * sex per min

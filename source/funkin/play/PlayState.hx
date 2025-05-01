@@ -2474,9 +2474,13 @@ class PlayState extends MusicBeatSubState
     var holdNotesInRange:Array<SustainTrail> = playerStrumline.getHoldNotesHitOrMissed();
 
     var notesByDirection:Array<Array<NoteSprite>> = [[], [], [], []];
+    var holdsByDirection:Array<Array<SustainTrail>> = [[], [], [], []]; // For regrabbing released hold notes.
 
     for (note in notesInRange)
       notesByDirection[note.direction].push(note);
+
+    for (holdNote in holdNotesInRange)
+      if (holdNote.regrabTimer > 0) holdsByDirection[holdNote.noteDirection].push(holdNote);
 
     while (inputPressQueue.length > 0)
     {
@@ -2488,11 +2492,22 @@ class PlayState extends MusicBeatSubState
       if (isBotPlayMode) continue;
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
+      var holdsInDirection:Array<SustainTrail> = holdsByDirection[input.noteDirection];
+
+      // Regrab hold notes!!
+      // If there's none to regrab, this just won't run.
+      for (holdNote in holdsInDirection)
+      {
+        // TODO: Replay animations, maybe add a new HitNote event for helds exclusively
+        holdNote.regrabTimer = 0;
+        playerStrumline.hitHoldNote(holdNote);
+        playerStrumline.playNoteHoldCover(holdNote);
+      }
 
       #if FEATURE_GHOST_TAPPING
-      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
+      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0 && holdsInDirection.length == 0)
       #else
-      if (notesInDirection.length == 0)
+      if (notesInDirection.length == 0 && holdsInDirection.length == 0)
       #end
       {
         // Pressed a wrong key with no notes nearby.
@@ -2503,14 +2518,16 @@ class PlayState extends MusicBeatSubState
         playerStrumline.playPress(input.noteDirection);
         trace('PENALTY Score: ${songScore}');
       }
-    else if (notesInDirection.length == 0)
-    {
-      // Press a key with no penalty.
+      #if FEATURE_GHOST_TAPPING
+      else if (notesInDirection.length == 0)
+      {
+        // Press a key with no penalty.
 
-      // Play the strumline animation.
-      playerStrumline.playPress(input.noteDirection);
-      trace('NO PENALTY Score: ${songScore}');
-    }
+        // Play the strumline animation.
+        playerStrumline.playPress(input.noteDirection);
+        trace('NO PENALTY Score: ${songScore}');
+      }
+      #end
     else
     {
       // Choose the first note, deprioritizing low priority notes.
