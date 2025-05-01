@@ -152,7 +152,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     });
     #if android
     createItem("Launch purchase flow", function() {
-      funkin.mobile.util.InAppPurchasesUtil.purchase('test_product_0');
+      funkin.api.mobile.InAppPurchasesUtil.purchase('test_product_0');
     });
     #end
     createItem("EXIT", exit);
