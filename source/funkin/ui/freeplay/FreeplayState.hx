@@ -2441,7 +2441,7 @@ class FreeplayState extends MusicBeatSubState
     letterSort.inputEnabled = false;
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
-    capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.x + 175, randomCapsule.y + 115, instrumentalChoices);
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.targetPos.x + 175, randomCapsule.targetPos.y + 115, instrumentalChoices);
     capsuleOptionsMenu.cameras = [funnyCam];
     capsuleOptionsMenu.zIndex = 10000;
     add(capsuleOptionsMenu);
