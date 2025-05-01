@@ -1793,8 +1793,10 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode);
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
+    playerStrumline.onSustainHit = sustainHit;
     opponentStrumline = new Strumline(noteStyle, false);
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
+    opponentStrumline.onSustainHit = sustainHit;
     add(playerStrumline);
     add(opponentStrumline);
 
@@ -2940,7 +2942,7 @@ class PlayState extends MusicBeatSubState
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
       #if FEATURE_NEWGROUNDS
-      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, songScore);
+      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, songScoreInt);
       #end
 
       if (!isPracticeMode && !isBotPlayMode)
