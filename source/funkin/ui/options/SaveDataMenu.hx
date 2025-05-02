@@ -35,9 +35,9 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
         \nALL your save data.
         \nAre you sure?
       ", "Overwrite", function() {
-          Save.loadFromNewgrounds();
-
-          FlxG.switchState(() -> new funkin.InitState());
+          Save.loadFromNewgrounds(function() {
+            FlxG.switchState(() -> new funkin.InitState());
+          });
         });
       });
 
