@@ -878,7 +878,6 @@ class PlayState extends MusicBeatSubState
       // so the song doesn't start too early :D
       Conductor.instance.update(-5000, false);
 
-
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -898,16 +897,9 @@ class PlayState extends MusicBeatSubState
         Countdown.performCountdown();
       });
 
-
       // Reset the health icons.
-      if (currentStage.getBoyfriend() != null)
-      {
-      currentStage.getBoyfriend().initHealthIcon(false);
-      }
-      if (currentStage.getDad() != null)
-      {
-      currentStage.getDad().initHealthIcon(true);
-      }
+      currentStage?.getBoyfriend()?.initHealthIcon(false);
+      currentStage?.getDad()?.initHealthIcon(true);
 
       needsReset = false;
     }
@@ -956,7 +948,7 @@ class PlayState extends MusicBeatSubState
     // Attempt to pause the game.
     if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
     {
-      var event = new PauseScriptEvent(FlxG.random.bool(1 / 1000));
+      var event = new PauseScriptEvent(FlxG.random.bool((1 / 1000) * 100));
 
       dispatchEvent(event);
 
@@ -1429,9 +1421,10 @@ class PlayState extends MusicBeatSubState
      */
   override function reloadAssets():Void
   {
+    performCleanup();
+
     funkin.modding.PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
-    this.remove(currentStage);
     LoadingState.loadPlayState(lastParams);
   }
 
