@@ -576,10 +576,10 @@ class FreeplayState extends MusicBeatSubState
           generateSongList({filterType: REGEXP, filterData: str}, true);
       }
 
-      // If the current song is still in the list (aka not null?), we'll land on it
+      // If the current song is still in the list, or if it was random, we'll land on it
       // Otherwise we want to land on the first song of the group, rather than random song when changing letter sorts
       // that is, only if there's more than one song in the group!
-      if (curSong != null && currentFilteredSongs.length > 1)
+      if (curSong == null || currentFilteredSongs.contains(curSong))
       {
         changeSelection();
       }
@@ -733,7 +733,8 @@ class FreeplayState extends MusicBeatSubState
     allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId);
 
     // Generates song list with the starter params (who our current character is, last remembered difficulty, etc.)
-    generateSongList(null, false);
+    // Set this to false if you prefer the 50% transparency on the capsules when they first appear.
+    generateSongList(null, true);
 
     // dedicated camera for the state so we don't need to fuk around with camera scrolls from the mainmenu / elsewhere
     funnyCam.bgColor = FlxColor.TRANSPARENT;
@@ -835,10 +836,10 @@ class FreeplayState extends MusicBeatSubState
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
     randomCapsule.initPosition(FlxG.width, 0);
-    randomCapsule.initData(null, styleData);
+    randomCapsule.initData(null, styleData, 1);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
-    randomCapsule.alpha = 0;
+    randomCapsule.alpha = 0.5;
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
     randomCapsule.favIconBlurred.visible = false;
@@ -850,8 +851,7 @@ class FreeplayState extends MusicBeatSubState
     if (fromCharSelect) randomCapsule.forcePosition();
     else
     {
-      // randomCapsule.initJumpIn(0, force);
-      randomCapsule.forcePosition();
+      randomCapsule.initJumpIn(0, force);
     }
 
     var hsvShader:HSVShader = new HSVShader();
@@ -866,7 +866,7 @@ class FreeplayState extends MusicBeatSubState
       var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
 
       funnyMenu.initPosition(FlxG.width, 0);
-      funnyMenu.initData(tempSong, styleData);
+      funnyMenu.initData(tempSong, styleData, i + 1);
       funnyMenu.onConfirm = function() {
         capsuleOnOpenDefault(funnyMenu);
       };
@@ -877,10 +877,10 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.hsvShader = hsvShader;
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
 
-      // This stops the bounce-in animation.
-      funnyMenu.forcePosition();
-
-      // funnyMenu.initJumpIn(0, force);
+      // Stop the bounce-in animation when returning to freeplay from the character selection screen.
+      if (fromCharSelect) funnyMenu.forcePosition();
+      else
+        funnyMenu.initJumpIn(0, force);
 
       grpCapsules.add(funnyMenu);
       // add(funnyMenu.theActualHitbox);
@@ -1983,14 +1983,14 @@ class FreeplayState extends MusicBeatSubState
     if (change != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     var previousVariation:String = currentVariation;
+    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
-    var characterVariations:Array<String> = grpCapsules.members[curSelected].freeplayData?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
+    var characterVariations:Array<String> = daSong?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
     var difficultiesAvailable:Array<String> = allDifficulties;
     // Gets all available difficulties for our character, via our available variations
-    var songDifficulties:Array<String> = grpCapsules.members[curSelected].freeplayData?.data.listDifficulties(null,
-      characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
+    var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
     var currentDifficultyIndex:Int = difficultiesAvailable.indexOf(currentDifficulty);
 
@@ -2003,15 +2003,16 @@ class FreeplayState extends MusicBeatSubState
     // Update the current difficulty
     currentDifficulty = difficultiesAvailable[currentDifficultyIndex];
     // For when we change the difficulty, but the song doesn't have that difficulty!
-    if (!songDifficulties.contains(difficultiesAvailable[currentDifficultyIndex]))
+    if (daSong != null && !songDifficulties.contains(difficultiesAvailable[currentDifficultyIndex]))
     {
       curSelected = findClosestDiff(characterVariations, difficultiesAvailable[currentDifficultyIndex]);
-      rememberedSongId = grpCapsules.members[curSelected].freeplayData?.data.id;
+      daSong = grpCapsules.members[curSelected].freeplayData;
+      rememberedSongId = daSong?.data.id;
     }
 
     for (variation in characterVariations)
     {
-      if (grpCapsules.members[curSelected].freeplayData?.data.hasDifficulty(currentDifficulty, variation) ?? false)
+      if (daSong?.data.hasDifficulty(currentDifficulty, variation) ?? false)
       {
         currentVariation = variation;
         rememberedVariation = variation;
@@ -2019,7 +2020,6 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
     if (daSong != null)
     {
       var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id);
@@ -2033,7 +2033,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = songScore?.score ?? 0;
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
       rememberedDifficulty = currentDifficulty;
-      grpCapsules.members[curSelected].refreshDisplay();
+      grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
@@ -2172,11 +2172,15 @@ class FreeplayState extends MusicBeatSubState
    */
   function capsuleOnOpenDefault(cap:SongMenuItem):Void
   {
+    busy = true;
+    letterSort.inputEnabled = false;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
     var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
     var targetSong:Song = targetSongNullable;
@@ -2190,6 +2194,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetDifficulty == null)
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
 
@@ -2219,9 +2225,7 @@ class FreeplayState extends MusicBeatSubState
 
   function openInstrumentalList(cap:SongMenuItem, instrumentalIds:Array<String>):Void
   {
-    busy = true;
-
-    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.x + 175, cap.y + 115, instrumentalIds);
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.targetPos.x + 175, cap.targetPos.y + 115, instrumentalIds);
     capsuleOptionsMenu.cameras = [funnyCam];
     capsuleOptionsMenu.zIndex = 10000;
     add(capsuleOptionsMenu);
@@ -2236,6 +2240,7 @@ class FreeplayState extends MusicBeatSubState
   public function cleanupCapsuleOptionsMenu():Void
   {
     this.busy = false;
+    letterSort.inputEnabled = true;
 
     if (capsuleOptionsMenu != null)
     {
@@ -2261,6 +2266,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
     var targetSong:Song = targetSongNullable;
@@ -2272,6 +2279,8 @@ class FreeplayState extends MusicBeatSubState
     if (targetDifficulty == null)
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${currentDifficulty})');
+      busy = false;
+      letterSort.inputEnabled = true;
       return;
     }
 
@@ -2414,10 +2423,11 @@ class FreeplayState extends MusicBeatSubState
     {
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.freeplayData.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
+      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick +
+        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
       changeDiff();
-      daSongCapsule.refreshDisplay();
+      daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
@@ -2425,6 +2435,8 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0.0;
       rememberedSongId = null;
       albumRoll.albumId = null;
+      changeDiff();
+      daSongCapsule.refreshDisplay();
     }
 
     for (index => capsule in grpCapsules.members)
@@ -2434,8 +2446,10 @@ class FreeplayState extends MusicBeatSubState
       capsule.forceHighlight = false;
       capsule.selected = index == curSelected + 1;
 
+      capsule.curSelected = curSelected;
+
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = (270 + (60 * (Math.sin(index - curSelected)))) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
+      capsule.targetPos.x = capsule.intendedX(index - curSelected) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 

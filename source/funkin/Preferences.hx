@@ -213,15 +213,41 @@ class Preferences
 
   static function get_vsyncMode():lime.ui.WindowVSyncMode
   {
-    return Save?.instance?.options?.vsyncMode ?? lime.ui.WindowVSyncMode.OFF;
+    var value = Save?.instance?.options?.vsyncMode ?? "Off";
+
+    return switch (value)
+    {
+      case "Off":
+        lime.ui.WindowVSyncMode.OFF;
+      case "On":
+        lime.ui.WindowVSyncMode.ON;
+      case "Adaptive":
+        lime.ui.WindowVSyncMode.ADAPTIVE;
+      default:
+        lime.ui.WindowVSyncMode.OFF;
+    };
   }
 
   static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
   {
+    var string;
+
+    switch (value)
+    {
+      case lime.ui.WindowVSyncMode.OFF:
+        string = "Off";
+      case lime.ui.WindowVSyncMode.ON:
+        string = "On";
+      case lime.ui.WindowVSyncMode.ADAPTIVE:
+        string = "Adaptive";
+      default:
+        string = "Off";
+    };
+
     WindowUtil.setVSyncMode(value);
 
     var save:Save = Save.instance;
-    save.options.vsyncMode = value;
+    save.options.vsyncMode = string;
     save.flush();
     return value;
   }

@@ -961,14 +961,8 @@ class PlayState extends MusicBeatSubState
       });
 
       // Reset the health icons.
-      if (currentStage.getBoyfriend() != null)
-      {
-        currentStage.getBoyfriend().initHealthIcon(false);
-      }
-      if (currentStage.getDad() != null)
-      {
-        currentStage.getDad().initHealthIcon(true);
-      }
+      currentStage?.getBoyfriend()?.initHealthIcon(false);
+      currentStage?.getDad()?.initHealthIcon(true);
 
       needsReset = false;
     }
@@ -1518,9 +1512,10 @@ class PlayState extends MusicBeatSubState
      */
   override function reloadAssets():Void
   {
+    performCleanup();
+
     funkin.modding.PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
-    this.remove(currentStage);
     LoadingState.loadPlayState(lastParams);
   }
 
@@ -2577,7 +2572,7 @@ class PlayState extends MusicBeatSubState
             dispatchEvent(event);
 
             trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
-            applyScore(event.score, 'miss', event.healthChange, event.isComboBreak);
+            applyScore(event.score, '', event.healthChange, event.isComboBreak);
 
             // Play the miss sound.
             vocals.playerVolume = 0;
@@ -2923,6 +2918,8 @@ class PlayState extends MusicBeatSubState
         Highscore.tallies.shit += 1;
       case 'miss':
         Highscore.tallies.missed += 1;
+      default:
+        // Nothing!
     }
     health += healthChange;
     if (isComboBreak)

@@ -969,13 +969,12 @@ class Project extends HXProject {
     addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
     addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
 
-		// Art asset library (where README and CHANGELOG pull from)
+		// Art asset library (where README pulls from)
 		var shouldEmbedArt = false;
 		var shouldPreloadArt = false;
 		addAssetLibrary("art", shouldEmbedArt, shouldPreloadArt);
 		addAsset("art/readme.txt", "do NOT readme.txt", "art", shouldEmbedArt);
 		addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
-		addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
 
 		info('Done configuring assets.');
 	}

@@ -74,14 +74,6 @@ class Main extends Sprite
 
   function init(?event:Event):Void
   {
-    #if web
-    // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
-    // The framerate cap will more thoroughly initialize via Preferences in InitState.hx
-    funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
-    #end
-
-    WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
-
     if (hasEventListener(Event.ADDED_TO_STAGE))
     {
       removeEventListener(Event.ADDED_TO_STAGE, init);
@@ -124,6 +116,15 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
+
+    // Don't call anything from the preferences until the save is loaded!
+    #if web
+    // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
+    // The framerate cap will more thoroughly initialize via Preferences in InitState.hx
+    funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
+    #end
+
+    WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
 
