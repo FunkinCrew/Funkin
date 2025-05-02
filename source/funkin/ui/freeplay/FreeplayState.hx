@@ -818,8 +818,9 @@ class FreeplayState extends MusicBeatSubState
    * @param filterStuff A filter to apply to the song list (regex, startswith, all, favorite)
    * @param force Whether the capsules should "jump" back in or not using their animation
    * @param onlyIfChanged Only apply the filter if the song list has changed
+   * @param noJumpIn Will not call the jump-in function, used when changing difficulties to update the song list correctly without this happening twice
    */
-  public function generateSongList(filterStuff:Null<SongFilter>, force:Bool = false, onlyIfChanged:Bool = true):Void
+  public function generateSongList(filterStuff:Null<SongFilter>, force:Bool = false, onlyIfChanged:Bool = true, noJumpIn:Bool = false):Void
   {
     var tempSongs:Array<Null<FreeplaySongData>> = songs;
 
@@ -846,8 +847,11 @@ class FreeplayState extends MusicBeatSubState
         // Instead, we just apply the jump-in animation to the existing capsules.
         for (capsule in grpCapsules.members)
         {
-          capsule.initPosition(FlxG.width, 0);
-          capsule.initJumpIn(0, force);
+          if (!noJumpIn)
+          {
+            capsule.initPosition(FlxG.width, 0);
+            capsule.initJumpIn(0, force);
+          }
         }
 
         // Stop processing.
@@ -878,7 +882,7 @@ class FreeplayState extends MusicBeatSubState
       capsuleOnConfirmRandom(randomCapsule);
     };
 
-    if (fromCharSelect) randomCapsule.forcePosition();
+    if (fromCharSelect || noJumpIn) randomCapsule.forcePosition();
     else
     {
       randomCapsule.initJumpIn(0, force);
@@ -907,8 +911,8 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.hsvShader = hsvShader;
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
 
-      // Stop the bounce-in animation when returning to freeplay from the character selection screen.
-      if (fromCharSelect) funnyMenu.forcePosition();
+      // Stop the bounce-in animation when returning to freeplay from the character selection screen, or if noJumpIn is set to true
+      if (fromCharSelect || noJumpIn) funnyMenu.forcePosition();
       else
         funnyMenu.initJumpIn(0, force);
 
@@ -2087,7 +2091,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * changeDiff is the root of both difficulty and variation changes/management.
    * It will check the difficulty of the current variation, all available variations, and all available difficulties per variation.
-   * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
+   * Call generateSongList after this with the right parameters if you want the capsules to do their jump-in animation after changing difficulties.
    * @param change
    * @param force
    * @param capsuleAnim
@@ -2184,6 +2188,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = songScore == null ? 0.0 : Math.max(0,
         ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
+      generateSongList(currentFilter, false, true, true);
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
@@ -2191,6 +2196,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = 0;
       intendedCompletion = 0.0;
       rememberedDifficulty = currentDifficulty;
+      generateSongList(currentFilter, false, true, true);
     }
 
     if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
