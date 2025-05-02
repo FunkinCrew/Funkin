@@ -5,7 +5,6 @@ import funkin.data.IRegistryEntry;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.graphics.FunkinSprite;
-import flixel.addons.text.FlxTypeText;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.events.ScriptEvent;
 import funkin.audio.FunkinSound;
@@ -66,7 +65,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   }
 
   var boxSprite:FlxSprite;
-  var textDisplay:FlxTypeText;
+  var textDisplay:FunkinTypeText;
 
   var text(default, set):String;
 
@@ -273,7 +272,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
   function loadText():Void
   {
-    textDisplay = new FlxTypeText(0, 0, 300, '', 32);
+    textDisplay = new FunkinTypeText(0, 0, 300, '', 32);
     textDisplay.fieldWidth = _data.text.width;
     textDisplay.setFormat(_data.text.fontFamily, _data.text.size, FlxColor.fromString(_data.text.color), LEFT, SHADOW,
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
