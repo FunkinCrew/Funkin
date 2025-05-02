@@ -538,6 +538,11 @@ class Constants
   public static final EXT_CHART = "fnfc";
 
   /**
+   * The file extension used when exporting stage files.
+   */
+  public static final EXT_STAGE = "fnfs";
+
+  /**
    * The file extension used when loading audio files.
    */
   public static final EXT_SOUND = #if web "mp3" #else "ogg" #end;
