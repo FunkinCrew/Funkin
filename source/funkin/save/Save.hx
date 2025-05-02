@@ -1365,7 +1365,7 @@ class Save
     funkin.api.newgrounds.NGSaveSlot.instance.save(_instance.data);
   }
 
-  public static function loadFromNewgrounds():Void
+  public static function loadFromNewgrounds(onFinish:Void->Void):Void
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
     funkin.api.newgrounds.NGSaveSlot.instance.load(function(data:Dynamic) {
@@ -1375,13 +1375,14 @@ class Save
       {
         // best i can do in case the NG file is corrupted or something along those lines
         var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
-
-        FlxG.save.erase();
+        trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
       }
 
       var gameSave = SaveDataMigrator.migrate(data);
-      FlxG.save.mergeData(gameSave.data, true);
+      @:privateAccess
+      FlxG.save.data = gameSave.data;
       FlxG.save.flush();
+      onFinish();
     }, function(error:io.newgrounds.Call.CallError) {
       var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
 
