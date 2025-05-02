@@ -405,15 +405,22 @@ If you simultaneously modify files from both repositories, then open two separat
 Be sure to choose `main` as the base branch for `funkin.assets` PRs, as no `develop` branch exists for that repository.
 
 ### Charting PRs
-Charting PRs make changes such as **adjusting chart metadata**.
+Charting PRs make changes such as **adding/removing notes** or **adjusting the placement of song events**.
 
-This involves modifying one or several of the `funkin.assets` repository's `*-metadata.json` files, found in the `preload/data/songs/` directory.
-
-> [!CAUTION]
-> We **do not** accept changes to the chart `.json` file itself.
-> If you find an error in the game's charts, please open an issue in the `Funkin` repo, and the Funkin' Crew will review it and make tweaks themselves as necessary.
+This involves modifying one or several of the `funkin.assets` repository's `.json` chart files, found in the `preload/data/songs/` directory.
 
 These PRs should only be opened in the `funkin.assets` repository.
+
+> [!CAUTION]
+> **No Major Recharts!** Any PR that makes major chart modifications will be rejected.
+> Keep your PRs to small tweaks and fixes.
+
+Here are some guidelines for opening a Charting PR:
+- **Explain the issue.** Which song, variation, difficulty, and section/timestamp is the problem in? Help us understand with screenshots and videos.
+- **Show your changes.** How does the chart look with your changes? Provide screenshots and videos here as well.
+- **Minimize the diff.** If your changes are very small (e.g. a few notes), do not re-export the chart using the Chart Editor. Instead, manually edit the `.json` chart files to help GitHub display your changes cleanly.
+
+If your PR is accepted, you will be credited as a GitHub contributor (but not as a charter in the Pause Menu).
 
 # Closing
 Thank you for reading the Contributing Guide.

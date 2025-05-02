@@ -67,7 +67,7 @@ class Medals
           NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
         });
         #else
-        if ((medalJSON?.length ?? 0) == 0) loadMedalJSON();
+        if (medalJSON == null) loadMedalJSON();
         // We have to use a medal image from the game files. We use a Base64 encoded image that NG spits out.
         // TODO: Wait, don't they give us the medal icon?
 
