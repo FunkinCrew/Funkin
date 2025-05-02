@@ -494,7 +494,7 @@ class Strumline extends FlxSpriteGroup
       if (!note.alive) continue;
 
       note.yOffset = 200;
-      if (Preferences.downscroll)
+      if (isDownscroll)
       {
         note.yOffset = -200;
       }
@@ -513,7 +513,7 @@ class Strumline extends FlxSpriteGroup
       if (!holdNote.alive) continue;
 
       holdNote.yOffset = 200;
-      if (Preferences.downscroll)
+      if (isDownscroll)
       {
         holdNote.yOffset = -200;
       }
@@ -536,7 +536,7 @@ class Strumline extends FlxSpriteGroup
   public function calculateNoteYPos(strumTime:Float):Float
   {
     return
-      Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * (Preferences.downscroll ? 1 : -1);
+      Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * (isDownscroll ? 1 : -1);
   }
 
   public function updateNotes():Void
