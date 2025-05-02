@@ -28,7 +28,7 @@ class PixelatedIcon extends FlxFilteredSprite
         charPath += "monsterpixel";
       case "mom" | "mom-car":
         charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker":
+      case "pico-blazin" | "pico-playable" | "pico-speaker" | "pico-pixel" | "pico-holding-nene":
         charPath += "picopixel";
       case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
         charPath += "gfpixel";
