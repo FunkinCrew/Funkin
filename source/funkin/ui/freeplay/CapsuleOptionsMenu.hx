@@ -29,10 +29,6 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
   var leftArrow:InstrumentalSelector;
   var rightArrow:InstrumentalSelector;
 
-  var leftArrow:InstrumentalSelector;
-
-  var rightArrow:InstrumentalSelector;
-
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
   {
     super(x, y);
