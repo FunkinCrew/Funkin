@@ -501,13 +501,13 @@ class FreeplayState extends MusicBeatSubState
       switch (str)
       {
         case 'fav':
-          generateSongList({filterType: FAVORITE}, true);
+          generateSongList({filterType: FAVORITE}, true, false);
         case 'ALL':
-          generateSongList(null, true);
+          generateSongList(null, true, false);
         case '#':
-          generateSongList({filterType: REGEXP, filterData: '0-9'}, true);
+          generateSongList({filterType: REGEXP, filterData: '0-9'}, true, false);
         default:
-          generateSongList({filterType: REGEXP, filterData: str}, true);
+          generateSongList({filterType: REGEXP, filterData: str}, true, false);
       }
 
       // If the current song is still in the list (aka not null?), we'll land on it
