@@ -680,7 +680,7 @@ class PlayState extends MusicBeatSubState
     }
 
     Conductor.instance.mapTimeChanges(currentChart.timeChanges);
-    var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp + Conductor.instance.combinedOffset;
+    var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
 
     trace('Attempting to start at ' + pre);
 
@@ -2114,7 +2114,8 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length,
+      Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
     trace('Resyncing vocals to ${timeToPlayAt}');
 
     FlxG.sound.music.pause();
