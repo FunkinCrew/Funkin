@@ -119,6 +119,11 @@ class Project extends HXProject {
   static final ANDROID_MINIMUM_SDK_VERSION:Int = 24;
 
 	/**
+   * The app's target android SDK version.
+   */
+  static final ANDROID_TARGET_SDK_VERSION:Int = 35;
+
+	/**
 	 * The contents of the user's environment config.
 	 * Read from the `.env` file.
 	 */
@@ -511,6 +516,7 @@ class Project extends HXProject {
 			}
 
 			config.set("android.minimum-sdk-version", ANDROID_MINIMUM_SDK_VERSION);
+			config.set("android.target-sdk-version", ANDROID_TARGET_SDK_VERSION);
 		}
 	}
 
