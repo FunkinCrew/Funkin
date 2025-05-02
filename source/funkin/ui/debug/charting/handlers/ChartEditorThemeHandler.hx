@@ -82,6 +82,39 @@ class ChartEditorThemeHandler
     updateNotePreview(state);
   }
 
+  static function getColor(name:String, fallback:FlxColor):FlxColor
+  {
+    if (theme == null) return fallback;
+    var data:Dynamic = theme.getChartData();
+    if (data == null) return fallback;
+
+    var regex = ~/^([a-zA-Z0-9_]+)\[(\d+)\]$/;
+    if (regex.match(name))
+    {
+      var fieldName = regex.matched(1);
+      var index = Std.parseInt(regex.matched(2));
+      if (fieldName == null || index == null) return fallback;
+
+      var arr:Null<Array<String>> = Reflect.field(data, fieldName);
+      if (arr != null && index >= 0 && index < arr.length)
+      {
+        var colorStr = arr[index];
+        var targetColor:Null<FlxColor> = FlxColor.fromString(colorStr);
+        return targetColor != null ? targetColor : fallback;
+      }
+
+      return fallback;
+    }
+
+    var fieldValue = Reflect.field(theme.getChartData(), name);
+    if (fieldValue == null) return fallback;
+
+    var targetColor:Null<FlxColor> = FlxColor.fromString(fieldValue);
+    if (targetColor != null) return targetColor;
+
+    return fallback;
+  }
+
   /**
    * Updates the tint of the background sprite to match the current theme.
    * @param state The ChartEditorState to update.

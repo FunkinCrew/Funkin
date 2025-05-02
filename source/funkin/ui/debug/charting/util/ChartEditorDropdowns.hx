@@ -195,6 +195,29 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  public static function populateDropdownWithThemes(dropDown:DropDown, startingTheme:String):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var themeIds:Array<String> = ThemeRegistry.instance.listEntryIds();
+
+    var returnValue:DropDownEntry = {id: "light", text: "Light"};
+
+    for (themeId in themeIds)
+    {
+      var theme:Null<EditorTheme> = ThemeRegistry.instance.fetchEntry(themeId);
+      if (theme == null) continue;
+
+      var value = {id: themeId, text: theme.getThemeName()};
+      if (startingTheme == themeId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('text', ASCENDING);
+    return returnValue;
+  }
+
   public static final NOTE_KINDS:Map<String, String> = [
     // Base
     "" => "Default",

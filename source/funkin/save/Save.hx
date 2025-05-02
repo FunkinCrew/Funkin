@@ -197,7 +197,9 @@ class Save
           playerVoiceVolume: 1.0,
           opponentVoiceVolume: 1.0,
           playbackSpeed: 0.5,
-          themeMusic: true
+          themeMusic: true,
+          autoSaveExit: true,
+          autoSaveTimer: 5.0
         },
 
       optionsStageEditor:

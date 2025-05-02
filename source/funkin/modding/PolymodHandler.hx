@@ -584,6 +584,7 @@ class PolymodHandler
     StageRegistry.instance.loadEntries();
     StickerRegistry.instance.loadEntries();
     FreeplayStyleRegistry.instance.loadEntries();
+    ThemeRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();
