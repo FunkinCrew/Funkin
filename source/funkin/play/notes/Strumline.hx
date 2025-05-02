@@ -448,7 +448,6 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
-
   /**
    * For a note's strumTime, calculate its Y position relative to the strumline.
    * NOTE: Assumes Conductor and PlayState are both initialized.
@@ -533,7 +532,8 @@ class Strumline extends FlxSpriteGroup
       }
 
       final magicNumberIGuess:Float = 8;
-      var renderWindowEnd:Float = holdNote.strumTime + holdNote.fullSustainLength + Constants.HIT_WINDOW_MS + (renderDistanceMs / magicNumberIGuess);
+      var renderWindowEnd:Float = holdNote.strumTime - conductorInUse.inputOffset + holdNote.fullSustainLength + Constants.HIT_WINDOW_MS
+        + (renderDistanceMs / magicNumberIGuess);
 
       if (holdNote.missedNote && conductorInUse.songPosition >= renderWindowEnd)
       {
@@ -604,7 +604,7 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
-        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
+        holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition + conductorInUse.inputOffset;
 
         if (holdNote.sustainLength <= 10)
         {
@@ -817,7 +817,8 @@ class Strumline extends FlxSpriteGroup
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
 
-      note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
+      note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength)
+        - (conductorInUse.songPosition - conductorInUse.inputOffset);
     }
 
     #if FEATURE_GHOST_TAPPING
