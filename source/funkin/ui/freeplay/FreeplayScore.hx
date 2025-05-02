@@ -46,7 +46,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
   public function new(x:Float, y:Float, digitCount:Int, scoreShit:Int = 100, ?styleData:FreeplayStyle)
   {
-    super(x, y);
+    super(0, y);
 
     for (i in 0...digitCount)
     {

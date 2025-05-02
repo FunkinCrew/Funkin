@@ -10,6 +10,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
+import funkin.graphics.FunkinSprite;
 import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
@@ -90,6 +91,21 @@ class InitState extends FlxState
     funkin.util.WindowUtil.initTracy();
     #end
 
+    #if FEATURE_HAPTICS
+    // Setup Haptic feedback
+    extension.haptics.Haptic.initialize();
+    #end
+
+    #if FEATURE_MOBILE_ADVERTISEMENTS
+    // Setup Admob
+    funkin.mobile.util.AdMobUtil.init();
+    #end
+
+    #if FEATURE_MOBILE_IAP
+    // Setup In-App purchases
+    funkin.mobile.util.InAppPurchasesUtil.init();
+    #end
+
     // This ain't a pixel art game! (most of the time)
     FlxSprite.defaultAntialiasing = true;
 
@@ -102,13 +118,15 @@ class InitState extends FlxState
     // but that makes our soundtray not show up on init if we have the game muted.
     // We set it to active so it at least calls it's update function once (see FlxGame.onEnterFrame(), it's called there)
     // and also see FunkinSoundTray.update() to see what we do and how we check if we are muted or not
+    #if !mobile
     FlxG.game.soundTray.active = true;
+    #end
 
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
 
     // Makes Flixel use frame times instead of locked movements per frame for things like tweens
-    FlxG.fixedTimestep = false; 
+    FlxG.fixedTimestep = false;
 
     setupFlixelDebug();
 
@@ -130,6 +148,13 @@ class InitState extends FlxState
       new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
     // Don't play transition in when entering the title state.
     FlxTransitionableState.skipNextTransIn = true;
+
+    FlxG.signals.gameResized.add(function(width:Int, height:Int) {
+      FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
+        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+      FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
+        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+    });
 
     //
     // NEWGROUNDS API SETUP
@@ -168,12 +193,17 @@ class InitState extends FlxState
     #if FEATURE_SCREENSHOTS
     funkin.util.plugins.ScreenshotPlugin.initialize();
     #end
+    #if FEATURE_NEWGROUNDS
     funkin.util.plugins.NewgroundsMedalPlugin.initialize();
+    #end
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
     funkin.util.plugins.VolumePlugin.initialize();
     funkin.util.plugins.WatchPlugin.initialize();
+    #if mobile
+    funkin.util.plugins.TouchPointerPlugin.initialize();
+    #end
 
     //
     // GAME DATA PARSING
@@ -207,6 +237,8 @@ class InitState extends FlxState
     ModuleHandler.callOnCreate();
 
     funkin.input.Cursor.hide();
+
+    funkin.FunkinMemory.initialCache();
 
     trace('Parsing game data took: ${TimerUtil.ms(perfStart)}');
   }
@@ -305,7 +337,7 @@ class InitState extends FlxState
     }
     else
     {
-      FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       FlxG.switchState(() -> new TitleState());
     }
   }

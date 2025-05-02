@@ -8,6 +8,9 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
 import flixel.text.FlxText.FlxTextAlign;
+#if mobile
+import funkin.util.TouchUtil;
+#end
 
 @:nullSafety
 class CapsuleOptionsMenu extends FlxSpriteGroup
@@ -23,9 +26,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
   var currentInstrumental:FlxText;
 
   var busy:Bool = false;
-
   var leftArrow:InstrumentalSelector;
-
   var rightArrow:InstrumentalSelector;
 
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
@@ -77,23 +78,26 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     if (!busy)
     {
       @:privateAccess
-      if (parent.controls.BACK)
+      if (parent.controls.BACK #if mobile || TouchUtil.overlapsComplex(parent.backButton) && TouchUtil.justPressed #end)
       {
         close();
         return;
       }
 
-      if (parent.getControls().UI_LEFT_P)
+      if (parent.getControls().UI_LEFT_P #if mobile || TouchUtil.overlapsComplex(leftArrow) && TouchUtil.justPressed #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls().UI_RIGHT_P)
+      if (parent.getControls().UI_RIGHT_P #if mobile || TouchUtil.overlapsComplex(rightArrow) && TouchUtil.justPressed #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls().ACCEPT)
+      if (parent.getControls()
+        .ACCEPT #if mobile
+        || ((TouchUtil.overlapsComplex(currentInstrumental) && TouchUtil.justPressed)
+          && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
       {
         busy = true;
         onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
@@ -106,6 +110,15 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     {
       currentInstrumental.text = instrumentalIds[currentInstrumentalIndex].toTitleCase() ?? '';
       if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
+    }
+
+    if (parent.getControls().ACCEPT #if mobile
+      || TouchUtil.overlapsComplex(currentInstrumental)
+      && TouchUtil.justPressed
+      && !TouchUtil.overlapsComplex(leftArrow)
+      && !TouchUtil.overlapsComplex(rightArrow) #end)
+    {
+      onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
     }
   }
 

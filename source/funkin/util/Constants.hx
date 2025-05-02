@@ -607,4 +607,43 @@ class Constants
    * 0.04 = 4% of distance per frame.
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
+
+  #if FEATURE_MOBILE_ADVERTISEMENTS
+  /**
+   * A Counter that is increased by 1 each blueball.
+   * Only used for interstital ads each 3 blueballs on mobile.
+   */
+  public static var GLOBAL_BLUEBALL_COUNTER:Int = 0;
+
+  /**
+   * A Counter that is increased by 1 each victory only in freep;ay songs.
+   * Only used for interstital ads each 3 victories on mobile.
+   */
+  public static var GLOBAL_FREEPLAY_VICTORY_COUNTER:Int = 0;
+  #end
+
+  /**
+   * Default period value for vibration.
+   */
+  public inline static final DEFAULT_VIBRATION_PERIOD:Float = 0.1;
+
+  /**
+   * Default duration value for vibration.
+   */
+  public inline static final DEFAULT_VIBRATION_DURATION:Float = 0.1;
+
+  /**
+   * Min vibration amplitude.
+   */
+  public inline static final MIN_VIBRATION_AMPLITUDE:Float = 0.1;
+
+  /**
+   * Default vibration amplitude.
+   */
+  public inline static final DEFAULT_VIBRATION_AMPLITUDE:Float = 0.5;
+
+  /**
+   * Max vibration amplitude.
+   */
+  public inline static final MAX_VIBRATION_AMPLITUDE:Float = 1;
 }

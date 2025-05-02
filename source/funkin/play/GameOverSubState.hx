@@ -5,11 +5,12 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.input.touch.FlxTouch;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import funkin.util.HapticUtil;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
@@ -19,6 +20,8 @@ import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
 import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
+import funkin.util.TouchUtil;
+import openfl.utils.Assets;
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -94,6 +97,14 @@ class GameOverSubState extends MusicBeatSubState
 
   var targetCameraZoom:Float = 1.0;
 
+  var canInput:Bool = false;
+
+  var justDied:Bool = true;
+
+  var isSpecialAnimation:Bool = false;
+
+  var gameOverVibrationPreset:VibrationPreset = {period: 0, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: Constants.MIN_VIBRATION_AMPLITUDE};
+
   public function new(params:GameOverParams)
   {
     super();
@@ -164,6 +175,15 @@ class GameOverSubState extends MusicBeatSubState
 
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
+
+    #if mobile
+    addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+    #end
+
+    // Allow input a second later to prevent accidental gameover skips.
+    new FlxTimer().start(1, function(tmr:FlxTimer) {
+      canInput = true;
+    });
   }
 
   @:nullSafety(Off)
@@ -245,76 +265,16 @@ class GameOverSubState extends MusicBeatSubState
     // Handle user inputs.
     //
 
-    // MOBILE ONLY: Restart the level when tapping Boyfriend.
-    if (FlxG.onMobile)
-    {
-      var touch:FlxTouch = FlxG.touches.getFirst();
-      if (touch != null)
-      {
-        if (boyfriend == null || touch.overlaps(boyfriend))
-        {
-          confirmDeath();
-        }
-      }
-    }
-
-    // KEYBOARD ONLY: Restart the level when pressing the assigned key.
-    if (controls.ACCEPT && blueballed && !mustNotExit)
+    // Restart the level when pressing the assigned key.
+    if ((controls.ACCEPT #if mobile || (TouchUtil.justPressed && !TouchUtil.overlaps(backButton) && canInput) #end)
+      && blueballed
+      && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();
     }
 
-    // KEYBOARD ONLY: Return to the menu when pressing the assigned key.
-    if (controls.BACK && !mustNotExit && !isEnding)
-    {
-      isEnding = true;
-      blueballed = false;
-      PlayState.instance.deathCounter = 0;
-      // PlayState.seenCutscene = false; // old thing...
-      if (gameOverMusic != null) gameOverMusic.stop();
-
-      // Stop death quotes immediately.
-      hasPlayedDeathQuote = true;
-      if (deathQuoteSound != null)
-      {
-        deathQuoteSound.stop();
-        deathQuoteSound = null;
-      }
-
-      if (isChartingMode)
-      {
-        this.close();
-        if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
-        PlayState.instance.close(); // This only works because PlayState is a substate!
-        return;
-      }
-      else
-      {
-        var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
-          new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
-
-        if (PlayStatePlaylist.isStoryMode)
-        {
-          PlayStatePlaylist.reset();
-        }
-
-        var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
-
-        if (stickerPackId == null)
-        {
-          var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
-          var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
-
-          if (playerCharacter != null)
-          {
-            stickerPackId = playerCharacter.getStickerPackID();
-          }
-        }
-
-        openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
-      }
-    }
+    if (controls.BACK && !mustNotExit && !isEnding) goBack();
 
     if (gameOverMusic != null && gameOverMusic.playing)
     {
@@ -351,6 +311,9 @@ class GameOverSubState extends MusicBeatSubState
         }
       }
     }
+
+    // Handle vibrations on update.
+    if (HapticUtil.hapticsAvailable) handleAnimationVibrations();
 
     // Start death music before firstDeath gets replaced
     super.update(elapsed);
@@ -532,6 +495,56 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
+  public function goBack()
+  {
+    isEnding = true;
+    blueballed = false;
+    PlayState.instance.deathCounter = 0;
+    // PlayState.seenCutscene = false; // old thing...
+    if (gameOverMusic != null) gameOverMusic.stop();
+
+    // Stop death quotes immediately.
+    hasPlayedDeathQuote = true;
+    if (deathQuoteSound != null)
+    {
+      deathQuoteSound.stop();
+      deathQuoteSound = null;
+    }
+
+    if (isChartingMode)
+    {
+      this.close();
+      if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+      PlayState.instance.close(); // This only works because PlayState is a substate!
+      return;
+    }
+    else
+    {
+      var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
+        new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
+
+      if (PlayStatePlaylist.isStoryMode)
+      {
+        PlayStatePlaylist.reset();
+      }
+
+      var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
+
+      if (stickerPackId == null)
+      {
+        var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+        var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
+
+        if (playerCharacter != null)
+        {
+          stickerPackId = playerCharacter.getStickerPackID();
+        }
+      }
+
+      openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
+    }
+  }
+
   /**
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
@@ -539,6 +552,7 @@ class GameOverSubState extends MusicBeatSubState
   public static function playBlueBalledSFX():Void
   {
     blueballed = true;
+
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
     {
       FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
@@ -550,6 +564,100 @@ class GameOverSubState extends MusicBeatSubState
   }
 
   var hasPlayedDeathQuote:Bool = false;
+
+  /**
+   * Used for death haptics.
+   */
+  private var startedTimerHaptics:Bool = false;
+
+  /**
+   * Unique vibrations for each death animation.
+   */
+  private function handleAnimationVibrations():Void
+  {
+    if (PlayState.instance.isMinimalMode || boyfriend == null) return;
+
+    if (justDied)
+    {
+      if (isSpecialAnimation)
+      {
+        HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION * 5);
+        trace("It's a special game over animation.");
+      }
+      else
+      {
+        HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION);
+      }
+      justDied = false;
+    }
+
+    if (boyfriend.animation == null) return;
+
+    final curFrame:Int = (boyfriend.animation.curAnim != null) ? boyfriend.animation.curAnim.curFrame : -1;
+    switch (boyfriend.characterId)
+    {
+      case "bf" | "bf-pixel":
+        // BF's mic drops.
+        if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 27)
+        {
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+        }
+
+        // BF's balls pulsating.
+        if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && (curFrame == 0 || curFrame == 18))
+        {
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+        }
+
+      case "pico-playable" | "pico-dark" | "pico-christmas":
+        if (isSpecialAnimation)
+        {
+          if (startedTimerHaptics) return;
+
+          startedTimerHaptics = true;
+
+          // Death by Darnell's can.
+          new FlxTimer().start(1.85, function(tmr:FlxTimer) {
+            // Pico falls on his knees.
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          });
+        }
+        else
+        {
+          // Pico falls on his back.
+          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 20)
+          {
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          }
+
+          // Blood firework woohoo!!!!
+          if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && curFrame % 2 == 0)
+          {
+            final randomAmplitude:Float = FlxG.random.float(Constants.MIN_VIBRATION_AMPLITUDE / 100, Constants.MIN_VIBRATION_AMPLITUDE);
+            final randomDuration:Float = FlxG.random.float(Constants.DEFAULT_VIBRATION_DURATION / 10, Constants.DEFAULT_VIBRATION_DURATION);
+
+            HapticUtil.vibrate(0, randomDuration, randomAmplitude);
+          }
+        }
+
+      case "pico-blazin":
+        // Pico dies because of Darnell beating him up.
+        if (!startedTimerHaptics)
+        {
+          startedTimerHaptics = true;
+
+          new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+            // Pico falls on his knees.
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+
+            new FlxTimer().start(0.6, function(tmr:FlxTimer) {
+              // Pico falls "asleep". :)
+              HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+            });
+          });
+        }
+    }
+  }
 
   public override function destroy():Void
   {

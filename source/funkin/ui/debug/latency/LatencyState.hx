@@ -12,13 +12,30 @@ import funkin.input.PreciseInputManager;
 import funkin.play.notes.Strumline;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.data.song.SongData.SongNoteData;
+#if mobile
+import funkin.util.TouchUtil;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.play.notes.NoteDirection;
+import funkin.graphics.FunkinSprite;
+#end
 import haxe.Timer;
 import flixel.FlxCamera;
 
 class LatencyState extends MusicBeatSubState
 {
   var visualOffsetText:FlxText;
+  #if mobile
+  var visualOffsetLeftArrow:FlxText;
+  var visualOffsetRightArrow:FlxText;
+  #end
+
   var offsetText:FlxText;
+  #if mobile
+  var offsetLeftArrow:FlxText;
+  var offsetRightArrow:FlxText;
+  #end
+
+  var helpText:FlxText;
   var noteGrp:Array<SongNoteData> = [];
   var strumLine:Strumline;
 
@@ -149,6 +166,22 @@ class LatencyState extends MusicBeatSubState
     visualOffsetText.fieldWidth = strumLine.x - visualOffsetText.x - 10;
     add(visualOffsetText);
 
+    #if mobile
+    visualOffsetLeftArrow = new FlxText();
+    visualOffsetLeftArrow.setFormat(Paths.font("vcr.ttf"), 60);
+    visualOffsetLeftArrow.text = "<";
+    visualOffsetLeftArrow.x = visualOffsetText.x;
+    visualOffsetLeftArrow.y = visualOffsetText.y * 4;
+    add(visualOffsetLeftArrow);
+
+    visualOffsetRightArrow = new FlxText();
+    visualOffsetRightArrow.setFormat(Paths.font("vcr.ttf"), 60);
+    visualOffsetRightArrow.text = ">";
+    visualOffsetRightArrow.x = visualOffsetLeftArrow.x * 2;
+    visualOffsetRightArrow.y = visualOffsetLeftArrow.y;
+    add(visualOffsetRightArrow);
+    #end
+
     offsetText = new FlxText();
     offsetText.setFormat(Paths.font("vcr.ttf"), 20);
     offsetText.x = strumLine.x + strumLine.width + 10;
@@ -156,12 +189,46 @@ class LatencyState extends MusicBeatSubState
     offsetText.fieldWidth = FlxG.width - offsetText.x - 10;
     add(offsetText);
 
-    var helpText:FlxText = new FlxText();
-    helpText.setFormat(Paths.font("vcr.ttf"), 20);
-    helpText.text = "Press BACK to return to main menu";
-    helpText.x = FlxG.width - helpText.width;
+    #if mobile
+    offsetLeftArrow = new FlxText();
+    offsetLeftArrow.setFormat(Paths.font("vcr.ttf"), 60);
+    offsetLeftArrow.text = "<";
+    offsetLeftArrow.x = offsetText.x;
+    offsetLeftArrow.y = offsetText.y * 9;
+    add(offsetLeftArrow);
+
+    offsetRightArrow = new FlxText();
+    offsetRightArrow.setFormat(Paths.font("vcr.ttf"), 60);
+    offsetRightArrow.text = ">";
+    offsetRightArrow.x = offsetLeftArrow.x * 1.2;
+    offsetRightArrow.y = offsetLeftArrow.y;
+    add(offsetRightArrow);
+    #end
+
+    helpText = new FlxText();
+    helpText.setFormat(Paths.font("vcr.ttf"), 20 #if mobile * 3 #end);
+    helpText.text = #if mobile "Back" #else "Press BACK to return to main menu" #end;
+    helpText.x = FlxG.width - helpText.width #if mobile * 1.5 #end;
     helpText.y = FlxG.height - (helpText.height * 2) - 2;
     add(helpText);
+
+    #if mobile
+    addHitbox(true, true, FunkinHitboxControlSchemes.FourLanes, [NoteDirection.DOWN], [0xFF00FFFF]);
+
+    hitbox.forEachAlive(function(hint:FunkinHint) {
+      @:privateAccess
+      if (hint.label != null) hint.label.visible = false;
+
+      for (text in [
+        helpText,
+        visualOffsetLeftArrow,
+        visualOffsetRightArrow,
+        offsetLeftArrow,
+        offsetRightArrow
+      ])
+        hint.deadZones.push(cast(text, FunkinSprite));
+    });
+    #end
 
     regenNoteData();
   }
@@ -253,11 +320,17 @@ class LatencyState extends MusicBeatSubState
     songVisFollowVideo.x = songPosToX(localConductor.songPosition - localConductor.inputOffset);
 
     visualOffsetText.text = "Visual Offset: " + localConductor.audioVisualOffset + "ms";
+    #if !mobile
     visualOffsetText.text += "\n\nYou can press SPACE+Left/Right to change this value.";
     visualOffsetText.text += "\n\nYou can hold SHIFT to step 1ms at a time";
+    #end
 
+    #if mobile
+    offsetText.text = "INPUT Offset: " + localConductor.inputOffset + "ms";
+    #else
     offsetText.text = "INPUT Offset (Left/Right to change): " + localConductor.inputOffset + "ms";
     offsetText.text += "\n\nYou can hold SHIFT to step 1ms at a time";
+    #end
 
     var avgOffsetInput:Float = 0;
 
@@ -275,8 +348,26 @@ class LatencyState extends MusicBeatSubState
 
     var multiply:Int = 10;
 
-    if (FlxG.keys.pressed.SHIFT) multiply = 1;
+    if (FlxG.keys.pressed.SHIFT || FlxG.onMobile) multiply = 1;
 
+    #if mobile
+    handleSelectionInputMobile(multiply);
+    #else
+    handleSelectionInput(multiply);
+    #end
+
+    if (controls.BACK #if mobile || (TouchUtil.overlapsComplex(helpText) && TouchUtil.justPressed) #end)
+    {
+      // close();
+      cleanup();
+      FlxG.switchState(() -> new MainMenuState());
+    }
+
+    super.update(elapsed);
+  }
+
+  function handleSelectionInput(multiply:Int)
+  {
     if (FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.SPACE)
     {
       if (FlxG.keys.justPressed.RIGHT)
@@ -309,16 +400,45 @@ class LatencyState extends MusicBeatSubState
         diffGrp.forEach(memb -> memb.text = "");
       }
     }
+  }
 
-    if (controls.BACK)
+  #if mobile
+  function handleSelectionInputMobile(multiply:Int)
+  {
+    final touchPressCheck:Bool = TouchUtil.justPressed
+      || TouchUtil.pressed
+      && TouchUtil.touch != null
+      && TouchUtil.touch.ticksDeltaSincePress >= 200;
+
+    if (TouchUtil.overlapsComplex(visualOffsetRightArrow) && touchPressCheck)
     {
-      // close();
-      cleanup();
-      FlxG.switchState(() -> new MainMenuState());
+      localConductor.audioVisualOffset += 1 * multiply;
     }
 
-    super.update(elapsed);
+    if (TouchUtil.overlapsComplex(visualOffsetLeftArrow) && touchPressCheck)
+    {
+      localConductor.audioVisualOffset -= 1 * multiply;
+    }
+
+    if ((TouchUtil.overlapsComplex(offsetRightArrow) || TouchUtil.overlapsComplex(offsetLeftArrow)) && touchPressCheck)
+    {
+      if (TouchUtil.overlapsComplex(offsetRightArrow) && touchPressCheck)
+      {
+        localConductor.inputOffset += 1 * multiply;
+      }
+
+      if (TouchUtil.overlapsComplex(offsetLeftArrow) && touchPressCheck)
+      {
+        localConductor.inputOffset -= 1 * multiply;
+      }
+
+      // reset the average, so you don't need to wait a full loop to start getting averages
+      // also reset each text member
+      offsetsPerBeat = [];
+      diffGrp.forEach(memb -> memb.text = "");
+    }
   }
+  #end
 
   function generateBeatStuff(event:PreciseInputEvent)
   {

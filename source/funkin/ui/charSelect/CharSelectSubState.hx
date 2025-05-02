@@ -11,6 +11,7 @@ import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
@@ -34,9 +35,15 @@ import funkin.graphics.FunkinSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.HapticUtil;
 
 class CharSelectSubState extends MusicBeatSubState
 {
+  // what the actual hell
+  // having a hard time trying to make my changes work so i chose to be less stubborn and just remove them for now. - Zack
+  // Left this here so somebody can remind me
   var cursor:FlxSprite;
 
   var cursorBlue:FlxSprite;
@@ -86,6 +93,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   var bopInfo:FramesJSFLInfo;
   var blackScreen:FunkinSprite;
+
+  var charHitbox:FlxObject;
 
   public function new()
   {
@@ -285,6 +294,10 @@ class CharSelectSubState extends MusicBeatSubState
     grpCursors.add(cursorBlue);
     grpCursors.add(cursor);
 
+    charHitbox = new FlxObject(FlxG.width * 0.65, FlxG.height * 0.2, 300, 500);
+    charHitbox.active = false;
+    charHitbox.scrollFactor.set();
+
     selectSound = new FunkinSound();
     selectSound.loadEmbedded(Paths.sound('CS_select'));
     selectSound.pitch = 1;
@@ -439,8 +452,8 @@ class CharSelectSubState extends MusicBeatSubState
 
             @:privateAccess
             gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-            #if desktop
-            // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+            #if !web
+            // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
             // So we want to manually change it!
             @:privateAccess
             gfChill.analyzer.fftN = 512;
@@ -451,6 +464,7 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var grpIcons:FlxSpriteGroup;
+  var grpHitboxes:FlxTypedGroup<FlxObject>;
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
   var nonLocks = [];
@@ -459,6 +473,7 @@ class CharSelectSubState extends MusicBeatSubState
   {
     grpIcons = new FlxSpriteGroup();
     add(grpIcons);
+    grpHitboxes = new FlxTypedGroup<FlxObject>();
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSpriteGroup, ["x", "y"]));
     // FlxG.debugger.track(grpIcons, "iconGrp");
@@ -491,6 +506,11 @@ class CharSelectSubState extends MusicBeatSubState
 
         grpIcons.add(temp);
       }
+
+      var hitTemp:FlxObject = new FlxObject(grpIcons.members[i].x, grpIcons.members[i].y, 86, 86);
+      hitTemp.active = false;
+      hitTemp.scrollFactor.set();
+      grpHitboxes.add(hitTemp);
     }
 
     updateIconPositions();
@@ -516,6 +536,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     var xThing = (copy - index - 2) * -1;
     // Look, I'd write better code but I had better aneurysms, my bad - Cheems
+    // felt - Zack
     cursorY = yThing;
     cursorX = xThing;
 
@@ -593,8 +614,8 @@ class CharSelectSubState extends MusicBeatSubState
 
                 @:privateAccess
                 gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-                #if desktop
-                // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+                #if !web
+                // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
                 // So we want to manually change it!
                 @:privateAccess
                 gfChill.analyzer.fftN = 512;
@@ -627,6 +648,18 @@ class CharSelectSubState extends MusicBeatSubState
 
       member.x += grpIcons.x;
       member.y += grpIcons.y;
+    }
+
+    for (index => member in grpHitboxes.members)
+    {
+      var posX:Float = (index % 3);
+      var posY:Float = Math.floor(index / 3);
+
+      member.x = posX * grpXSpread;
+      member.y = posY * grpYSpread;
+
+      member.x += grpIcons.x + 20;
+      member.y += grpIcons.y + 20;
     }
   }
 
@@ -684,6 +717,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         ease: FlxEase.backIn,
         onComplete: function(_) {
+          funkin.ui.FullScreenScaleMode.enabled = true;
           FlxG.switchState(FreeplayState.build(
             {
               {
@@ -704,18 +738,55 @@ class CharSelectSubState extends MusicBeatSubState
   var spamLeft:Bool = false;
   var spamRight:Bool = false;
 
+  var mobileDeny:Bool = false;
+  var mobileAccept:Bool = false;
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
     Conductor.instance.update();
 
-    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R) selectSound.pitch = 1;
+    mobileAccept = false;
+
+    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R || TouchUtil.justReleased) selectSound.pitch = 1;
 
     syncAudio(elapsed);
 
     if (allowInput && !pressedSelect)
     {
+      if (TouchUtil.pressed || TouchUtil.justReleased)
+      {
+        for (i => hitbox in grpHitboxes.members)
+        {
+          if (hitbox == null || !TouchUtil.overlaps(hitbox)) continue;
+
+          final indexCX:Int = (i % 3) - 1;
+          final indexCY:Int = Math.floor(i / 3) - 1;
+
+          if (indexCY != cursorY || indexCX != cursorX)
+          {
+            cursorX = indexCX;
+            cursorY = indexCY;
+            cursorDenied.visible = false;
+            selectSound.play(true);
+          }
+          else if (TouchUtil.justPressed)
+          {
+            mobileAccept = true;
+          }
+
+          trace("Index: " + i + ", Row: " + cursorY + ", Column: " + cursorX);
+          break;
+        }
+      }
+
+      if (TouchUtil.justReleased && TouchUtil.overlaps(charHitbox))
+      {
+        mobileAccept = true;
+      }
+
+      //
       if (controls.UI_UP) holdTmrUp += elapsed;
       if (controls.UI_UP_R)
       {
@@ -805,8 +876,34 @@ class CharSelectSubState extends MusicBeatSubState
     {
       curChar = availableChars.get(getCurrentSelected());
 
-      if (allowInput && !pressedSelect && controls.ACCEPT)
+      if (allowInput && pressedSelect && (controls.BACK || (mobileDeny && TouchUtil.justReleased)))
       {
+        mobileDeny = false;
+        cursorConfirmed.visible = false;
+        grpCursors.visible = true;
+
+        FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
+        FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
+        playerChill.playAnimation("deselect");
+        gfChill.playAnimation("deselect");
+        pressedSelect = false;
+        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1,
+          {
+            ease: FlxEase.quartInOut,
+            onComplete: (_) -> {
+              if (playerChill.getCurrentAnimation() == "deselect loop start" || playerChill.getCurrentAnimation() == "deselect")
+              {
+                playerChill.playAnimation("idle", true, false, true);
+                gfChill.playAnimation("idle", true, false, true);
+              }
+            }
+          });
+        selectTimer.cancel();
+      }
+
+      if (allowInput && !pressedSelect && (controls.ACCEPT || mobileAccept))
+      {
+        mobileDeny = false;
         spamUp = false;
         spamDown = false;
         spamLeft = false;
@@ -835,30 +932,9 @@ class CharSelectSubState extends MusicBeatSubState
           goToFreeplay();
         });
       }
+      else if (pressedSelect && TouchUtil.justReleased) mobileDeny = true;
 
-      if (allowInput && pressedSelect && controls.BACK)
-      {
-        cursorConfirmed.visible = false;
-        grpCursors.visible = true;
-
-        FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
-        playerChill.playAnimation("deselect");
-        gfChill.playAnimation("deselect");
-        pressedSelect = false;
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1,
-          {
-            ease: FlxEase.quartInOut,
-            onComplete: (_) -> {
-              if (playerChill.getCurrentAnimation() == "deselect loop start" || playerChill.getCurrentAnimation() == "deselect")
-              {
-                playerChill.playAnimation("idle", true, false, true);
-                gfChill.playAnimation("idle", true, false, true);
-              }
-            }
-          });
-        selectTimer.cancel();
-      }
+      mobileAccept = false;
     }
     else
     {
@@ -866,13 +942,15 @@ class CharSelectSubState extends MusicBeatSubState
 
       gfChill.visible = false;
 
-      if (allowInput && controls.ACCEPT)
+      if (allowInput && (controls.ACCEPT || mobileAccept))
       {
         cursorDenied.visible = true;
 
         playerChill.playAnimation("cannot select Label", true);
 
         lockedSound.play(true);
+
+        HapticUtil.vibrate(0, 0.2);
 
         cursorDenied.animation.play("idle", true);
         cursorDenied.animation.finishCallback = (_) -> {

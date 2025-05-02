@@ -690,7 +690,7 @@ The Weekend 1 update!
 - Improvements to video cutscenes and dialogue, allowing them to be easily skipped or restarted.
 - Updated Polymod by several major versions, allowing for fully dynamic asset replacement and support for scripted classes.
 - Completely refactored almost every part of the game's code for performance, stability, and extensibility.
-  - This is not the Ludum Dare game held together with sticks and glue you played three years ago.
+  - This is not the Ludem Dare game held together with sticks and glue you played three years ago.
 - Characters, stages, songs, story levels, and dialogue are now built from JSON data registries rather than being hardcoded.
   - All of these also support attaching scripts for custom behavior, more documentation on this soon.
   - You can forcibly reload the game's JSON data and scripts by pressing F5.

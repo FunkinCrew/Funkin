@@ -10,9 +10,18 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
 import funkin.graphics.FunkinSprite;
+import flixel.util.FlxColor;
+import funkin.play.notes.NoteHoldCover;
+import funkin.play.notes.NoteSplash;
+import funkin.play.notes.NoteSprite;
+import funkin.play.notes.SustainTrail;
+import funkin.play.notes.NoteVibrationsHandler;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import flixel.math.FlxPoint;
+import flixel.FlxSprite;
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.
@@ -139,9 +148,17 @@ class Strumline extends FlxSpriteGroup
 
   final noteStyle:NoteStyle;
 
+  var noteSpacingScale:Float = 1;
+
+  public var strumlineScale(default, null):FlxPoint;
+
   #if FEATURE_GHOST_TAPPING
   var ghostTapTimer:Float = 0.0;
   #end
+
+  public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
+
+  final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) || #end Preferences.downscroll;
 
   /**
    * The note data for the song. Should NOT be altered after the song starts,
@@ -191,12 +208,25 @@ class Strumline extends FlxSpriteGroup
     this.noteSplashes.zIndex = 50;
     this.add(this.noteSplashes);
 
-    this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(this.width + BACKGROUND_PAD * 2), FlxG.height, 0xFF000000);
+    var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
+    #if mobile
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && isPlayer)
+    {
+      backgroundWidth = backgroundWidth * 1.84;
+    }
+    #end
+    this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(backgroundWidth), FlxG.height, 0xFF000000);
     // Convert the percent to a number between 0 and 1.
     this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
+    #if mobile
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && isPlayer) this.background.x -= 100;
+    #end
     this.add(this.background);
+    strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
+
+    strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
 
     this.refresh();
 
@@ -217,6 +247,8 @@ class Strumline extends FlxSpriteGroup
     {
       heldKeys.push(false);
     }
+
+    strumlineScale.set(1, 1);
 
     // This MUST be true for children to update!
     this.active = true;
@@ -251,7 +283,9 @@ class Strumline extends FlxSpriteGroup
 
   override function get_width():Float
   {
-    return KEY_COUNT * Strumline.NOTE_SPACING;
+    if (strumlineScale == null) strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
+
+    return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale * strumlineScale.x;
   }
 
   public override function update(elapsed:Float):Void
@@ -368,7 +402,7 @@ class Strumline extends FlxSpriteGroup
       notesVwoosh.add(note);
 
       var targetY:Float = FlxG.height + note.y;
-      if (Preferences.downscroll) targetY = 0 - note.height;
+      if (isDownscroll) targetY = 0 - note.height;
       FlxTween.tween(note, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,
@@ -389,7 +423,7 @@ class Strumline extends FlxSpriteGroup
       holdNotesVwoosh.add(holdNote);
 
       var targetY:Float = FlxG.height + holdNote.y;
-      if (Preferences.downscroll) targetY = 0 - holdNote.height;
+      if (isDownscroll) targetY = 0 - holdNote.height;
       FlxTween.tween(holdNote, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,
@@ -403,6 +437,51 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Enter mini mode, which displays only small strumline notes
+   * @param scale scale of strumline
+   */
+  public function enterMiniMode(scale:Float = 1)
+  {
+    forEach(function(obj:flixel.FlxObject):Void {
+      if (obj != strumlineNotes) obj.visible = false;
+    });
+
+    this.strumlineScale.set(scale, scale);
+  }
+
+  public function strumlineScaleCallback(Scale:FlxPoint)
+  {
+    strumlineNotes.forEach(function(note:StrumlineNote):Void {
+      var styleScale = noteStyle.getStrumlineScale();
+      note.scale.set(styleScale * Scale.x, styleScale * Scale.y);
+    });
+    setNoteSpacing(noteSpacingScale);
+  }
+
+  /**
+   * Set note spacing scale
+   * @param multiplier multiply x position
+   */
+  public function setNoteSpacing(multiplier:Float = 1):Void
+  {
+    noteSpacingScale = multiplier;
+
+    for (i in 0...KEY_COUNT)
+    {
+      var direction = Strumline.DIRECTIONS[i];
+      var note = getByDirection(direction);
+      note.x = getXPos(DIRECTIONS[i]) + this.strumlineNotes.x;
+      note.x += INITIAL_OFFSET;
+      note.y = this.strumlineNotes.y;
+      noteStyle.applyStrumlineOffsets(note);
+    }
+  }
+
+  /**
+   * For a note's strumTime, calculate its Y position relative to the strumline.
+   * NOTE: Assumes Conductor and PlayState are both initialized.
+   * @param strumTime
+   * @return Float
    * Reverse of vwooshNotes, we bring the notes IN (by their offsets)
    */
   public function vwooshInNotes():Void
@@ -447,7 +526,6 @@ class Strumline extends FlxSpriteGroup
         });
     }
   }
-
 
   /**
    * For a note's strumTime, calculate its Y position relative to the strumline.
@@ -508,7 +586,7 @@ class Strumline extends FlxSpriteGroup
       if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime) + note.yOffset;
 
       // If the note is miss
-      var isOffscreen:Bool = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
+      var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
       if (note.handledMiss && isOffscreen)
       {
         killNote(note);
@@ -556,12 +634,21 @@ class Strumline extends FlxSpriteGroup
         if (holdNote.cover != null && isPlayer)
         {
           holdNote.cover.playEnd();
+
+          trace("Sustain Note Splash Vibration");
         }
         else if (holdNote.cover != null)
         {
           // *lightning* *zap* *crackle*
           holdNote.cover.visible = false;
           holdNote.cover.kill();
+        }
+
+        if (isPlayer)
+        {
+          // Hold note's final vibration.
+          noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isJustPressed;
+          noteVibrations.tryNoteVibration();
         }
 
         holdNote.visible = false;
@@ -576,7 +663,7 @@ class Strumline extends FlxSpriteGroup
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (isDownscroll)
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
@@ -604,6 +691,9 @@ class Strumline extends FlxSpriteGroup
         holdConfirm(holdNote.noteDirection);
         holdNote.visible = true;
 
+        // Set current note's status to isHoldNotePressed.
+        if (isPlayer) noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.isHoldNotePressed;
+
         holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
 
         if (holdNote.sustainLength <= 10)
@@ -613,7 +703,7 @@ class Strumline extends FlxSpriteGroup
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (isDownscroll)
           {
             holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
           }
@@ -630,7 +720,7 @@ class Strumline extends FlxSpriteGroup
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (isDownscroll)
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
@@ -645,15 +735,17 @@ class Strumline extends FlxSpriteGroup
           }
         }
       }
-    }
+    } // Update rendering of pressed keys.
 
-    // Update rendering of pressed keys.
     for (dir in DIRECTIONS)
     {
       if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
       {
         playPress(dir);
       }
+
+      // Added this to prevent sustained vibrations not ending issue.
+      if (!isKeyHeld(dir) && isPlayer) noteVibrations.noteStatuses[dir] = NoteStatus.isReleased;
     }
   }
 
@@ -870,6 +962,9 @@ class Strumline extends FlxSpriteGroup
   public function playStatic(direction:NoteDirection):Void
   {
     getByDirection(direction).playStatic();
+
+    // Set current note's status to isReleased.
+    if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.isReleased;
   }
 
   /**
@@ -982,6 +1077,19 @@ class Strumline extends FlxSpriteGroup
     {
       var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
       noteSprite.setupNoteGraphic(noteKindStyle);
+
+      var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
+      #if mobile
+      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
+      {
+        final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+        trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
+          strumlineScale.y - ((FlxG.height / FlxG.width) * 0.2) * amplification);
+      }
+      #end
+
+      noteSprite.scale.scale(trueScale.x, trueScale.y);
+      noteSprite.updateHitbox();
 
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
@@ -1156,13 +1264,21 @@ class Strumline extends FlxSpriteGroup
 
   function getXPos(direction:NoteDirection):Float
   {
+    var pos:Float = 0;
+    #if mobile
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+    #end
     return switch (direction)
     {
-      case NoteDirection.LEFT: 0;
-      case NoteDirection.DOWN: 0 + (1 * Strumline.NOTE_SPACING);
-      case NoteDirection.UP: 0 + (2 * Strumline.NOTE_SPACING);
-      case NoteDirection.RIGHT: 0 + (3 * Strumline.NOTE_SPACING);
-      default: 0;
+      case NoteDirection.LEFT: -pos * 2;
+      case NoteDirection.DOWN:
+        -(pos * 2) + (1 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
+      case NoteDirection.UP:
+        pos + (2 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
+      case NoteDirection.RIGHT:
+        pos + (3 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
+      default: -pos * 2;
     }
   }
 

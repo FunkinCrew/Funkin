@@ -6,6 +6,10 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.mainmenu.MainMenuState;
+#if mobile
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+#end
 
 class GitarooPause extends MusicBeatState
 {
@@ -57,11 +61,19 @@ class GitarooPause extends MusicBeatState
     super.create();
   }
 
+  #if mobile
+  function checkSelectionPress():Bool
+  {
+    var buttonOverlapCheck:Bool = replaySelect ? TouchUtil.overlapsComplex(replayButton) : TouchUtil.overlapsComplex(cancelButton);
+    return buttonOverlapCheck && TouchUtil.justPressed && !SwipeUtil.swipeAny;
+  }
+  #end
+
   override function update(elapsed:Float):Void
   {
-    if (controls.UI_LEFT_P || controls.UI_RIGHT_P) changeThing();
+    if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || SwipeUtil.justSwipedLeft || SwipeUtil.justSwipedRight #end) changeThing();
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT #if mobile || checkSelectionPress() #end)
     {
       if (replaySelect)
       {

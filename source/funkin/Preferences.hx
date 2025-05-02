@@ -1,5 +1,8 @@
 package funkin;
 
+#if mobile
+import funkin.mobile.ui.FunkinHitbox;
+#end
 import funkin.save.Save;
 import funkin.util.WindowUtil;
 
@@ -18,6 +21,12 @@ class Preferences
   {
     #if web
     return 60;
+    #elseif mobile
+    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+
+    if (refreshRate < 60) refreshRate = 60;
+
+    return Save?.instance?.options?.framerate ?? refreshRate;
     #else
     return Save?.instance?.options?.framerate ?? 60;
     #end
@@ -64,7 +73,7 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll;
+    return Save?.instance?.options?.downscroll #if mobile ?? true #end;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -133,6 +142,25 @@ class Preferences
 
     var save = Save.instance;
     save.options.debugDisplay = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, vibration will be enabled.
+   * @default `true`
+   */
+  public static var vibration(get, set):Bool;
+
+  static function get_vibration():Bool
+  {
+    return Save?.instance?.options?.vibration ?? true;
+  }
+
+  static function set_vibration(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.vibration = value;
     save.flush();
     return value;
   }
@@ -394,8 +422,16 @@ class Preferences
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end
+
+    #if desktop
     // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
     FlxG.fullscreen = Preferences.autoFullscreen;
+    #end
+
+    #if mobile
+    // Apply the allowScreenTimeout setting.
+    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    #end
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void
@@ -411,18 +447,62 @@ class Preferences
     if (show)
     {
       // Enable the debug display.
-      FlxG.stage.addChild(Main.fpsCounter);
+      FlxG.game.parent.addChild(Main.fpsCounter);
+
       #if !html5
-      FlxG.stage.addChild(Main.memoryCounter);
+      FlxG.game.parent.addChild(Main.memoryCounter);
       #end
     }
     else
     {
       // Disable the debug display.
-      FlxG.stage.removeChild(Main.fpsCounter);
+      FlxG.game.parent.removeChild(Main.fpsCounter);
+
       #if !html5
-      FlxG.stage.removeChild(Main.memoryCounter);
+      FlxG.game.parent.removeChild(Main.memoryCounter);
       #end
     }
   }
+
+  #if mobile
+  /**
+   * If enabled, device will be able to sleep on its own.
+   * @default `false`
+   */
+  public static var screenTimeout(get, set):Bool;
+
+  static function get_screenTimeout():Bool
+  {
+    return Save?.instance?.mobileOptions?.screenTimeout ?? false;
+  }
+
+  static function set_screenTimeout(value:Bool):Bool
+  {
+    if (value != Save.instance.mobileOptions.screenTimeout) lime.system.System.allowScreenTimeout = value;
+
+    var save:Save = Save.instance;
+    save.mobileOptions.screenTimeout = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * Controls Scheme for the hitbox.
+   * @default `4 Lanes`
+   */
+  public static var controlsScheme(get, set):String;
+
+  static function get_controlsScheme():String
+  {
+    return Save?.instance?.mobileOptions?.controlsScheme ?? FunkinHitboxControlSchemes.Arrows;
+  }
+
+  static function set_controlsScheme(value:String):String
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.controlsScheme = value;
+    save.flush();
+    return value;
+  }
+  #end
 }

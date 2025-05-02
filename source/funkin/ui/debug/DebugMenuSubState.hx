@@ -130,7 +130,6 @@ class DebugMenuSubState extends MusicBeatSubState
   function openStageEditor()
   {
     trace('Stage Editor');
-    FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
   }
 
   function openTestResultsScreen():Void

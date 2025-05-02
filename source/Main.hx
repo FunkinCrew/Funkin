@@ -1,7 +1,9 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
+import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.MemoryCounter;
@@ -31,6 +33,16 @@ class Main extends Sprite
 
   public static function main():Void
   {
+    // Set the current working directory for Android and iOS devices
+    #if android
+    // For Android we determine the appropriate directory based on Android version
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
+      android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
+    ));
+    #elseif ios
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory)); // For iOS we use documents directory and this is only way we can do.
+    #end
+
     // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
     CrashHandler.initialize();
     CrashHandler.queryStatus();
@@ -97,9 +109,14 @@ class Main extends Sprite
     memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
     #end
 
+    #if mobile
+    // Add this signal so we can reposition and resize the memory and fps counter.
+    FlxG.signals.preUpdate.add(repositionCounters.bind(true));
+    #end
+
     // George recommends binding the save before FlxGame is created.
     Save.load();
-    
+
     // Don't call anything from the preferences until the save is loaded!
     #if web
     // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
@@ -109,7 +126,6 @@ class Main extends Sprite
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
-
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
@@ -118,10 +134,23 @@ class Main extends Sprite
     @:privateAccess
     game._customSoundTray = funkin.ui.options.FunkinSoundTray;
 
+    #if FEATURE_MOBILE_ADVERTISEMENTS
+    funkin.mobile.util.AdMobUtil.init();
+    #end
+
     addChild(game);
 
     #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+    #end
+
+    #if !html5
+    FlxG.scaleMode = new FullScreenScaleMode();
+    #end
+
+    #if mobile
+    // Reposition and resize the memory and fps counter without lerping.
+    repositionCounters(false);
     #end
 
     #if hxcpp_debug_server
@@ -145,4 +174,56 @@ class Main extends Sprite
     funkin.input.Cursor.registerHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
   }
+
+  #if mobile
+  function repositionCounters(lerp:Bool):Void
+  {
+    // Calling this so it gets scaled based on the resolution of the game and device's resolution.
+    var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
+
+    #if android
+    scale = Math.max(scale, 1);
+    #else
+    scale = Math.min(scale, 1);
+    #end
+    final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
+    if (fpsCounter != null)
+    {
+      fpsCounter.scaleX = fpsCounter.scaleY = scale;
+
+      if (FlxG.game != null)
+      {
+        if (lerp)
+        {
+          fpsCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+        }
+        else
+        {
+          fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+        }
+
+        fpsCounter.y = FlxG.game.y + (3 * scale);
+      }
+    }
+
+    if (memoryCounter != null)
+    {
+      memoryCounter.scaleX = memoryCounter.scaleY = scale;
+
+      if (FlxG.game != null)
+      {
+        if (lerp)
+        {
+          memoryCounter.x = flixel.math.FlxMath.lerp(memoryCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+        }
+        else
+        {
+          memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+        }
+
+        memoryCounter.y = FlxG.game.y + (13 * scale);
+      }
+    }
+  }
+  #end
 }

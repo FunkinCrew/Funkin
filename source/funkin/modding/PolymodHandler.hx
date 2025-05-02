@@ -284,6 +284,28 @@ class PolymodHandler
     // Can load and execute compiled binaries.
     Polymod.blacklistImport('lime.system.JNI');
 
+    // `android.jni.JNICache`
+    // Same as `lime.system.JNI`
+    Polymod.blacklistImport('android.jni.JNICache');
+
+    // Disable access to in-app purchases
+    Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');
+    for (cls in ClassMacro.listClassesInPackage('extension.iapcore'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // Disable access to Google AdMob
+    Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
+    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
     // `lime.system.System`
     // System.load() can load malicious DLLs
     Polymod.blacklistImport('lime.system.System');
@@ -299,6 +321,9 @@ class PolymodHandler
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
+
+    // Contains critical private environment variables.
+    Polymod.blacklistImport('funkin.util.macro.EnvironmentConfigMacro');
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.

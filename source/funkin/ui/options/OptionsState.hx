@@ -15,6 +15,12 @@ import funkin.input.Controls;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
+#if mobile
+import funkin.mobile.ui.FunkinBackspace;
+import funkin.util.TouchUtil;
+import funkin.mobile.ui.options.ControlsSchemeMenu;
+#end
+import flixel.util.FlxColor;
 
 /**
  * The main options menu
@@ -32,7 +38,7 @@ class OptionsState extends MusicBeatState
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
     menuBG.shader = hsv;
-    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
@@ -54,8 +60,13 @@ class OptionsState extends MusicBeatState
     else
     {
       // No need to show Options page
+      #if mobile
+      preferences.onExit.add(exitToMainMenu);
+      optionsCodex.setPage(Preferences);
+      #else
       controls.onExit.add(exitToMainMenu);
       optionsCodex.setPage(Controls);
+      #end
     }
 
     super.create();
@@ -88,10 +99,19 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   public function new()
   {
     super();
-
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
+    #if mobile
+    if (FlxG.gamepads.numActiveGamepads > 0)
+    {
+      createItem("CONTROLS", function() codex.switchPage(Controls));
+    }
+    createItem("CONTROL SCHEMES", function() {
+      FlxG.state.openSubState(new ControlsSchemeMenu());
+    });
+    #else
     createItem("CONTROLS", function() codex.switchPage(Controls));
+    #end
     createItem("INPUT OFFSETS", function() {
       #if web
       LoadingState.transitionToState(() -> new LatencyState());
@@ -99,7 +119,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       FlxG.state.openSubState(new LatencyState());
       #end
     });
-
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
@@ -119,7 +138,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
         NewgroundsClient.instance.login(function() {
           // Reset the options menu when login succeeds.
           // This means the logout option will be displayed.
-
           // NOTE: If the user presses login and opens the browser,
           // then navigates the UI
           FlxG.resetState();
@@ -129,11 +147,14 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       });
     }
     #end
-
     createItem("CLEAR SAVE DATA", function() {
       promptClearSaveData();
     });
-
+    #if FEATURE_MOBILE_IAP
+    createItem("Launch purchase flow", function() {
+      funkin.mobile.util.InAppPurchasesUtil.purchase('test_product_0');
+    });
+    #end
     createItem("EXIT", exit);
   }
 
@@ -171,7 +192,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   function promptClearSaveData():Void
   {
     if (prompt != null) return;
-
     prompt = new Prompt("This will delete
       \nALL your save data.
       \nAre you sure?
@@ -180,19 +200,16 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     prompt.createBgFromMargin(100, 0xFFFAFD6D);
     prompt.back.scrollFactor.set(0, 0);
     add(prompt);
-
     prompt.onYes = function() {
       // Clear the save data.
       funkin.save.Save.clearData();
-
       FlxG.switchState(() -> new funkin.InitState());
-    }
-
+    };
     prompt.onNo = function() {
       prompt.close();
       prompt.destroy();
       prompt = null;
-    }
+    };
   }
 }
 

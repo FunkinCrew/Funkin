@@ -11,6 +11,7 @@ import flixel.util.FlxTimer;
 import funkin.util.MathUtil;
 import funkin.graphics.shaders.Grayscale;
 import openfl.display.BlendMode;
+import flixel.FlxObject;
 import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -18,6 +19,10 @@ import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
 import funkin.ui.PixelatedIcon;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+
+using StringTools;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -32,6 +37,7 @@ class SongMenuItem extends FlxSpriteGroup
   public var freeplayData(default, null):Null<FreeplaySongData> = null;
 
   public var selected(default, set):Bool;
+  public var forceHighlight(default, set):Bool;
 
   public var songText:CapsuleText;
   public var favIconBlurred:FlxSprite;
@@ -74,7 +80,10 @@ class SongMenuItem extends FlxSpriteGroup
 
   var sparkleTimer:FlxTimer;
 
+  public var theActualHitbox:FlxObject;
+
   var index:Int;
+
   public var curSelected:Int;
 
   public function new(x:Float, y:Float)
@@ -217,6 +226,10 @@ class SongMenuItem extends FlxSpriteGroup
     weekNumbers.push(weekNumber);
 
     setVisibleGrp(false);
+
+    theActualHitbox = new FlxObject(capsule.x + 160, capsule.y - 20, Math.round(capsule.width / 1.4), Math.round(capsule.height / 1.4));
+    theActualHitbox.cameras = cameras;
+    theActualHitbox.active = false;
   }
 
   function sparkleEffect(timer:FlxTimer):Void
@@ -652,6 +665,9 @@ class SongMenuItem extends FlxSpriteGroup
       y = MathUtil.coolLerp(y, targetPos.y, 0.4);
     }
 
+    theActualHitbox.x = x + 100;
+    theActualHitbox.y = y + 20;
+
     super.update(elapsed);
   }
 
@@ -685,17 +701,25 @@ class SongMenuItem extends FlxSpriteGroup
     return selected;
   }
 
+  function set_forceHighlight(value:Bool):Bool
+  {
+    // cute one liners, lol!
+    forceHighlight = value;
+    updateSelected();
+    return forceHighlight;
+  }
+
   function updateSelected():Void
   {
-    grayscaleShader.setAmount(this.selected ? 0 : 0.8);
-    songText.alpha = this.selected ? 1 : 0.6;
-    songText.blurredText.visible = this.selected ? true : false;
-    capsule.offset.x = this.selected ? 0 : -5;
-    capsule.animation.play(this.selected ? "selected" : "unselected");
-    ranking.alpha = this.selected ? 1 : 0.7;
-    favIcon.alpha = this.selected ? 1 : 0.6;
-    favIconBlurred.alpha = this.selected ? 1 : 0;
-    ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
+    grayscaleShader.setAmount((this.selected || this.forceHighlight) ? 0 : 0.8);
+    songText.alpha = (this.selected || this.forceHighlight) ? 1 : 0.6;
+    songText.blurredText.visible = (this.selected || this.forceHighlight) ? true : false;
+    capsule.offset.x = (this.selected || this.forceHighlight) ? 0 : -5;
+    capsule.animation.play((this.selected || this.forceHighlight) ? "selected" : "unselected");
+    ranking.alpha = (this.selected || this.forceHighlight) ? 1 : 0.7;
+    favIcon.alpha = (this.selected || this.forceHighlight) ? 1 : 0.6;
+    favIconBlurred.alpha = (this.selected || this.forceHighlight) ? 1 : 0;
+    ranking.color = (this.selected || this.forceHighlight) ? 0xFFFFFFFF : 0xFFAAAAAA;
 
     if (songText.tooLong) songText.resetText();
 

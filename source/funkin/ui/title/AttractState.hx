@@ -6,6 +6,9 @@ import funkin.graphics.video.FlxVideo;
 #if hxvlc
 import funkin.graphics.video.FunkinVideoSprite;
 #end
+#if FEATURE_TOUCH_CONTROLS
+import funkin.util.TouchUtil;
+#end
 import funkin.ui.MusicBeatState;
 
 /**
@@ -78,9 +81,16 @@ class AttractState extends MusicBeatState
     if (vid != null)
     {
       vid.zIndex = 0;
+      vid.active = false;
       vid.bitmap.onEndReached.add(onAttractEnd);
+      vid.bitmap.onFormatSetup.add(() -> {
+        vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid.updateHitbox();
+        vid.screenCenter();
+      });
 
       add(vid);
+
       if (vid.load(filePath)) vid.play();
     }
     else
@@ -94,8 +104,10 @@ class AttractState extends MusicBeatState
   {
     super.update(elapsed);
 
-    // If the user presses any button, skip the video.
-    if (FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN)
+    // If the user presses any button or hold their screen for 1.5 seconds, skip the video.
+    if ((FlxG.keys.justPressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN) #if FEATURE_TOUCH_CONTROLS
+      || TouchUtil.touch != null
+      && TouchUtil.touch.ticksDeltaSincePress >= 1500 #end)
     {
       onAttractEnd();
     }

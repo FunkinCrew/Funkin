@@ -13,12 +13,20 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
+#if mobile
+import funkin.graphics.FunkinCamera;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.input.PreciseInputHandler;
+import funkin.mobile.ui.FunkinBackspace;
+import funkin.play.notes.NoteDirection;
+#end
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
  * It includes functionality for event handling, as well as maintaining BPM-based update events.
  */
-@:nullSafety
+// TODO: Add nullSafety back here.
+// @:nullSafety
 class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
   var controls(get, never):Controls;
@@ -57,6 +65,53 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     subStateClosed.add(onCloseSubStateComplete);
   }
 
+  #if mobile
+  public var hitbox:FunkinHitbox;
+  public var backButton:FunkinBackspace;
+  public var camControls:FunkinCamera;
+
+  public function addHitbox(?visible:Bool = true, ?initInput:Bool = true, ?schemeOverride:String = null, ?directionsOverride:Array<NoteDirection> = null,
+      ?colorsOverride:Array<FlxColor> = null):Void
+  {
+    if (hitbox != null)
+    {
+      hitbox.kill();
+      remove(hitbox);
+      hitbox.destroy();
+    }
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    hitbox = new FunkinHitbox(schemeOverride, directionsOverride, colorsOverride);
+    hitbox.cameras = [camControls];
+    hitbox.visible = visible;
+    add(hitbox);
+
+    if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
+  }
+
+  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?onClick:Void->Void = null):Void
+  {
+    if (backButton != null) remove(backButton);
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    backButton = new FunkinBackspace(xPos, yPos, color, onClick);
+    backButton.cameras = [camControls];
+    add(backButton);
+  }
+  #end
+
   override function create()
   {
     super.create();
@@ -70,6 +125,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public override function destroy():Void
   {
     super.destroy();
+
+    #if mobile
+    if (camControls != null) FlxG.cameras.remove(camControls);
+    #end
+
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
   }
@@ -105,8 +165,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     // Both have an xPos of 0, but a width equal to the full screen.
     // The rightWatermarkText is right aligned, which puts the text in the correct spot.
-    leftWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
-    rightWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
+    // Their xPos is only changed when there's a notch on the device so it doesn't get covered byt it.
+    leftWatermarkText = new FlxText(funkin.ui.FullScreenScaleMode.gameNotchSize.x, FlxG.height - 18, FlxG.width, '', 12);
+    rightWatermarkText = new FlxText(-(funkin.ui.FullScreenScaleMode.gameNotchSize.x), FlxG.height - 18, FlxG.width, '', 12);
 
     // 100,000 should be good enough.
     leftWatermarkText.zIndex = 100000;

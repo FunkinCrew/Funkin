@@ -6,12 +6,16 @@ import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import funkin.graphics.FunkinSprite;
 import flixel.util.FlxColor;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.mainmenu.MainMenuState;
+#if mobile
+import funkin.util.TouchUtil;
+#end
 
 using flixel.util.FlxSpriteUtil;
 
@@ -109,7 +113,7 @@ class CharacterUnlockState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (controls.ACCEPT || controls.BACK && !busy)
+    if (controls.ACCEPT || controls.BACK #if mobile || TouchUtil.justPressed #end && !busy)
     {
       busy = true;
       startClose();
@@ -120,6 +124,7 @@ class CharacterUnlockState extends MusicBeatState
   {
     // Fade to black, then switch state.
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () -> {
+      funkin.FunkinMemory.purgeCache();
       FlxG.switchState(nextState);
     });
   }

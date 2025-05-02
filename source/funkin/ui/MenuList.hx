@@ -1,10 +1,14 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.FunkinSound;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.ui.Page.PageName;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
@@ -32,6 +36,20 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   public var busy(default, null):Bool = false;
 
   // bit awkward because BACK is also a menu control and this doesn't affect that
+  // #if mobile
+
+  /** touchBuddy over here helps with the touch input! Because overlap for touch does not account for the graphic, only the hitbox.
+   * And, `FlxG.pixelPerfectOverlap` uses two FlxSprites, so we can't use the `FlxTouch` object */
+  public var touchBuddy:FlxSprite;
+
+  // #end
+
+  /** Only used in Options, basically acts the same as OptionsState's `currentName`, it's the current name of the current page in OptionsState.
+   * Why is it needed? Because touch control's a bitch. Thats why. */
+  public var currentPage:PageName;
+
+  // Helper variable
+  var _isMainMenuState:Bool = false;
 
   public function new(navControls:NavControls = Vertical, ?wrapMode:WrapMode)
   {
@@ -47,6 +65,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
         default: Both;
       }
     }
+
+    touchBuddy = new FlxSprite().makeGraphic(10, 10);
+    _isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
+
     super();
   }
 
@@ -77,21 +99,60 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     if (enabled && !busy) updateControls();
   }
 
-  inline function updateControls()
+  inline function updateControls():Void
   {
     var controls = PlayerSettings.player1.controls;
 
     var wrapX = wrapMode.match(Horizontal | Both);
     var wrapY = wrapMode.match(Vertical | Both);
-    var newIndex = switch (navControls)
-    {
-      case Vertical: navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Horizontal: navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-      case Both: navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
 
-      case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Rows(num): navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
+    var newIndex = 0;
+
+    // Define unified input handlers
+    final inputUp:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
+    final inputDown:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
+    final inputLeft:Bool = controls.UI_LEFT_P || SwipeUtil.swipeLeft;
+    final inputRight:Bool = controls.UI_RIGHT_P || SwipeUtil.swipeRight;
+
+    // Keepin' these for keyboard/controller support on mobile platforms
+    newIndex = switch (navControls)
+    {
+      case Vertical: navList(inputUp, inputDown, wrapY);
+      case Horizontal: navList(inputLeft, inputRight, wrapX);
+      case Both: navList(inputLeft || inputUp, inputRight || inputDown, !wrapMode.match(None));
+
+      case Columns(num): navGrid(num, inputLeft, inputRight, wrapX, inputUp, inputDown, wrapY);
+      case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
+    };
+
+    #if FEATURE_TOUCH_CONTROLS
+    // Update touch position
+    if (TouchUtil.pressed)
+    {
+      touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
     }
+
+    if (TouchUtil.pressed)
+    {
+      for (i in 0...members.length)
+      {
+        final item = members[i];
+
+        final menuCamera = FlxG.cameras.list[1];
+
+        final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
+        final itemPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, item, 0) && _isMainMenuState;
+
+        if ((itemOverlaps && TouchUtil.justPressed) || itemPixelOverlap)
+        {
+          if (selectedIndex == i && TouchUtil.justPressed) accept();
+          else
+            newIndex = i;
+          break;
+        }
+      }
+    }
+    #end
 
     if (newIndex != selectedIndex)
     {
@@ -101,6 +162,8 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     // Todo: bypass popup blocker on firefox
     if (controls.ACCEPT) accept();
+
+    return;
   }
 
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int

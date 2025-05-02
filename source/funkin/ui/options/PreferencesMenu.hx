@@ -5,7 +5,9 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
@@ -14,6 +16,12 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+#if mobile
+import funkin.mobile.ui.FunkinBackspace;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+#end
 import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
@@ -66,6 +74,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       camFollow.y = selected.y;
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
+
+    #if mobile
+    var backButton:FunkinBackspace = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK, exit);
+    add(backButton);
+    #end
   }
 
   /**
@@ -116,12 +129,15 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
+    #if !mobile
     createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
+    #end
 
     // disabled on macos due to "error: Late swap tearing currently unsupported"
-    #if !mac
+    // disable on mobile since it barely has any effect
+    #if !(mac || mobile)
     createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
       "Off" => WindowVSyncMode.OFF,
       "On" => WindowVSyncMode.ON,
@@ -146,6 +162,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, null, Preferences.framerate, 30, 300, 5, 0);
     #end
 
+    #if FEATURE_SCREENSHOTS
     createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
@@ -162,6 +179,20 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
       Preferences.jpegQuality = Std.int(value);
     }, null, Preferences.jpegQuality, 0, 100, 5, 0);
+    #end
+
+    #if FEATURE_HAPTICS
+    createPrefItemCheckbox('Vibration', 'If enabled, Haptic Feedback vibration effects will be active.', function(value:Bool):Void {
+      Preferences.vibration = value;
+    }, Preferences.vibration);
+    #end
+
+    #if mobile
+    createPrefItemCheckbox('Allow Screen Timeout',
+      'If enabled, The phone screen will timeout (sleep) after few seconds of inactivity.\nDoesn\'t apply when playing a song.', function(value:Bool):Void {
+        Preferences.screenTimeout = value;
+    }, Preferences.screenTimeout);
+    #end
   }
 
   override function update(elapsed:Float):Void
@@ -197,7 +228,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         thyOffset += 120;
       }
 
-      daItem.x = thyOffset;
+      daItem.x = thyOffset + funkin.ui.FullScreenScaleMode.gameNotchSize.x;
     });
   }
 
@@ -211,7 +242,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1), defaultValue);
 
     items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
       var value = !checkbox.currentValue;
@@ -236,7 +267,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
       step:Float = 0.1, precision:Int):Void
   {
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
+    var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
+      precision, onChange, valueFormatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
@@ -257,7 +289,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     var formatter = function(value:Float) {
       return '${value}%';
     };
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0, newCallback, formatter);
+    var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0,
+      newCallback, formatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
@@ -271,9 +304,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItemEnum<T>(prefName:String, prefDesc:String, values:Map<String, T>, onChange:String->T->Void, defaultKey:String):Void
   {
-    var item = new EnumPreferenceItem<T>(0, (120 * items.length) + 30, prefName, values, defaultKey, onChange);
+    var item = new EnumPreferenceItem<T>(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, values, defaultKey, onChange);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+  }
+
+  override function exit():Void
+  {
+    camFollow.setPosition(640, 30);
+    menuCamera.snapToTarget();
+    super.exit();
   }
 }

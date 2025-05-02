@@ -1,5 +1,6 @@
 package funkin.util.plugins;
 
+#if FEATURE_NEWGROUNDS
 import flixel.FlxBasic;
 import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.text.FlxText;
@@ -142,3 +143,4 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
       instance.funcs.push(func);
   }
 }
+#end

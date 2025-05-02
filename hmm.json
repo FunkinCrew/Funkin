@@ -4,15 +4,15 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "41f35ddb1eb9d10bc742e6f8b5bcc62f9ef8ad84",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+      "ref": "3c9f63e3501c20c0b60442089dc05306f5a87968",
+      "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
     },
     {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "fffb1a74cf08f63dacc2ab09976340563f5b6e6d",
-      "url": "https://github.com/FunkinCrew/flixel"
+      "ref": "3e3a7be79a40a3423cdf88b29b5a85a8442fcc61",
+      "url": "https://github.com/FunkinCrew/flixel-mobile"
     },
     {
       "name": "flixel-addons",
@@ -115,8 +115,10 @@
     },
     {
       "name": "hxvlc",
-      "type": "haxelib",
-      "version": "2.1.2"
+      "type": "git",
+      "dir": null,
+      "ref": "d71ee67870308ef821179bd7d7796064f695c645",
+      "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
       "name": "json2object",
@@ -143,8 +145,8 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "be81ad7e4e1a92c3482bcc009648a4ac892cfa35",
-      "url": "https://github.com/FunkinCrew/lime"
+      "ref": "b79ac7bc76714bff64eaa01b5fb9349dd47c88b8",
+      "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {
       "name": "mconsole",
@@ -185,8 +187,8 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "d061c936b462f040304ec2bd42d9f59d2e59e285",
-      "url": "https://github.com/FunkinCrew/openfl"
+      "ref": "5237781d5930a7db11f7f717a40926d8b63758e5",
+      "url": "https://github.com/FunkinCrew/openfl-mobile"
     },
     {
       "name": "polymod",
@@ -208,6 +210,32 @@
       "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
+    },
+    {
+      "name": "extension-admob",
+      "type": "git",
+      "dir": null,
+      "ref": "2a44162b6d13679d3e8f5b5e5cb4f014f43a6fee",
+      "url": "https://github.com/FunkinCrew/extension-admob"
+    },
+    {
+      "name": "extension-androidtools",
+      "type": "git",
+      "dir": null,
+      "ref": "d6203857ff5c4193e3dac9ab337e8c016f7ad47e",
+      "url": "https://github.com/MAJigsaw77/extension-androidtools"
+    },
+    {
+      "name": "extension-iapcore",
+      "type": "git",
+      "dir": null,
+      "ref": "cb0195ff33903a28f483d2092a7420854ecdfdf5",
+      "url": "https://github.com/MAJigsaw77/extension-iapcore"
+    },
+    {
+      "name": "extension-haptics",
+      "type": "haxelib",
+      "version": "1.0.0"
     }
   ]
 }

@@ -2,6 +2,7 @@ package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
@@ -209,7 +210,7 @@ class SustainTrail extends FlxSprite
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
-    flipY = Preferences.downscroll;
+    flipY = Preferences.downscroll #if mobile || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) #end;
 
     // alpha = 0.6;
     alpha = 1.0;

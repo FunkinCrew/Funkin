@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.util.HapticUtil;
 import funkin.data.stickers.StickerRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.FreeplayState;
@@ -151,6 +152,9 @@ class StickerSubState extends MusicBeatSubState
         var daSound:String = FlxG.random.getObject(sounds);
         FunkinSound.playOnce(Paths.sound(daSound));
 
+        // Do the small vibration each time sticker disappears.
+        HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
+
         if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
           switchingState = false;
@@ -217,6 +221,9 @@ class StickerSubState extends MusicBeatSubState
         var daSound:String = FlxG.random.getObject(sounds);
         FunkinSound.playOnce(Paths.sound(daSound));
 
+        // Do the small vibration each time sticker appears.
+        HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
+
         var frameTimer:Int = FlxG.random.int(0, 2);
 
         // always make the last one POP
@@ -252,8 +259,8 @@ class StickerSubState extends MusicBeatSubState
               // TODO: Rework this asset caching stuff
               // NOTE: This has to come AFTER the state switch,
               // otherwise the game tries to render destroyed sprites!
-              FunkinSprite.preparePurgeCache();
-              FunkinSprite.purgeCache();
+              // FunkinSprite.preparePurgeCache();
+              funkin.FunkinMemory.purgeCache(true);
 
               return targetState(this);
             });

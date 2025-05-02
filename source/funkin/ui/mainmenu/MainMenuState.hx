@@ -3,13 +3,15 @@ package funkin.ui.mainmenu;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.debug.DebugMenuSubState;
 import flixel.FlxObject;
+import flixel.FlxSubState;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.util.typeLimit.NextState;
-import flixel.input.touch.FlxTouch;
+import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
+import funkin.util.SwipeUtil;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
@@ -21,6 +23,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
+import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -66,7 +69,7 @@ class MainMenuState extends MusicBeatState
     var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
     bg.scrollFactor.x = 0;
     bg.scrollFactor.y = 0.17;
-    bg.setGraphicSize(Std.int(bg.width * 1.2));
+    bg.setGraphicSize(Std.int(FlxG.width * 1.2));
     bg.updateHitbox();
     bg.screenCenter();
     add(bg);
@@ -95,7 +98,13 @@ class MainMenuState extends MusicBeatState
     });
 
     menuItems.enabled = true; // can move on intro
-    createMenuItem('storymode', 'mainmenu/storymode', function() startExitState(() -> new StoryMenuState()));
+    createMenuItem('storymode', 'mainmenu/storymode', function() {
+      FlxG.signals.preStateSwitch.addOnce(function() {
+        funkin.FunkinMemory.clearFreeplay();
+        funkin.FunkinMemory.purgeCache();
+      });
+      startExitState(() -> new StoryMenuState());
+    });
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
@@ -163,6 +172,10 @@ class MainMenuState extends MusicBeatState
 
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
+    #if mobile
+    addBackButton(FlxG.width * 0.03, FlxG.height * 0.79, FlxColor.BLACK, goBack);
+    #end
+
     super.create();
 
     // This has to come AFTER!
@@ -173,6 +186,10 @@ class MainMenuState extends MusicBeatState
     {
       this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NewgroundsClient.instance.user?.name}';
     }
+    #end
+
+    #if FEATURE_TOUCH_CONTROLS
+    SwipeUtil.calculateSwipeThreshold(menuItems.members, Y);
     #end
   }
 
@@ -212,7 +229,9 @@ class MainMenuState extends MusicBeatState
   override function closeSubState():Void
   {
     magenta.visible = false;
-
+    #if FEATURE_TOUCH_CONTROLS
+    SwipeUtil.calculateSwipeThreshold(menuItems.members, Y);
+    #end
     super.closeSubState();
   }
 
@@ -274,24 +293,6 @@ class MainMenuState extends MusicBeatState
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
-
-    if (FlxG.onMobile)
-    {
-      var touch:FlxTouch = FlxG.touches.getFirst();
-
-      if (touch != null)
-      {
-        for (item in menuItems)
-        {
-          if (touch.overlaps(item))
-          {
-            if (menuItems.selectedIndex == item.ID && touch.justPressed) menuItems.accept();
-            else
-              menuItems.selectItem(item.ID);
-          }
-        }
-      }
-    }
 
     Conductor.instance.update();
 
@@ -411,7 +412,15 @@ class MainMenuState extends MusicBeatState
 
     if (_exiting) menuItems.enabled = false;
 
-    if (controls.BACK && menuItems.enabled && !menuItems.busy)
+    if (controls.BACK)
+    {
+      goBack();
+    }
+  }
+
+  public function goBack():Void
+  {
+    if (menuItems.enabled && !menuItems.busy)
     {
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
