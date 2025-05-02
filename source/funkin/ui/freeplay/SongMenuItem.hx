@@ -32,6 +32,7 @@ class SongMenuItem extends FlxSpriteGroup
   public var freeplayData(default, null):Null<FreeplaySongData> = null;
 
   public var selected(default, set):Bool;
+  public var isLevelDisplay:Bool = false;
 
   public var songText:CapsuleText;
   public var favIconBlurred:FlxSprite;
@@ -390,28 +391,54 @@ class SongMenuItem extends FlxSpriteGroup
     return evilTrail.color;
   }
 
+  public function toggleSongInfo(show:Bool):Void
+  {
+    ranking.visible = show;
+    favIcon.visible = show;
+    favIconBlurred.visible = show;
+    toggleNumberInfo(show);
+  }
+
+  public function toggleNumberInfo(show:Bool):Void
+  {
+    bpmText.visible = show;
+    for (number in smallNumbers)
+      number.visible = show;
+    difficultyText.visible = show;
+    for (number in bigNumbers)
+      number.visible = show;
+  }
+
   public function refreshDisplay():Void
   {
     if (freeplayData == null)
     {
       songText.text = 'Random';
       pixelIcon.visible = false;
-      ranking.visible = false;
-      favIcon.visible = false;
-      favIconBlurred.visible = false;
       newText.visible = false;
+      toggleSongInfo(false);
     }
     else
     {
-      songText.text = freeplayData.fullSongName;
       if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.songCharacter);
+      if (isLevelDisplay)
+      {
+        songText.text = freeplayData.levelName;
+        if (freeplayData.levelCharacter != null) pixelIcon.setCharacter(freeplayData.levelCharacter);
+        toggleSongInfo(false);
+      }
+      else
+      {
+        songText.text = freeplayData.fullSongName;
+        updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
+        updateDifficultyRating(freeplayData.difficultyRating ?? 0);
+        updateScoringRank(freeplayData.scoringRank);
+        newText.visible = freeplayData.isNew;
+        favIcon.visible = freeplayData.isFav;
+        favIconBlurred.visible = freeplayData.isFav;
+        toggleNumberInfo(true);
+      }
       pixelIcon.visible = true;
-      updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
-      updateDifficultyRating(freeplayData.difficultyRating ?? 0);
-      updateScoringRank(freeplayData.scoringRank);
-      newText.visible = freeplayData.isNew;
-      favIcon.visible = freeplayData.isFav;
-      favIconBlurred.visible = freeplayData.isFav;
       checkClip();
     }
     updateSelected();

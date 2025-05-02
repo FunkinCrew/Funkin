@@ -689,7 +689,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   static function validateVariationId(variation:String):Bool
   {
-    if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
+    if (Constants.DEFAULT_VARIATION_LIST_FULL.contains(variation)) return true;
 
     return VARIATION_REGEX.match(variation);
   }
