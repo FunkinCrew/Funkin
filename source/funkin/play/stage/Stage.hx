@@ -3,26 +3,21 @@ package funkin.play.stage;
 import openfl.display.BlendMode;
 import funkin.graphics.framebuffer.FrameBufferManager;
 import flixel.util.FlxColor;
-import funkin.graphics.framebuffer.SpriteCopy;
 import funkin.graphics.FunkinCamera;
-import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSort;
 import openfl.display.BitmapData;
-import flixel.util.FlxColor;
-import funkin.modding.IScriptedClass;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEventType;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.data.IRegistryEntry;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageData.StageDataCharacter;
 import funkin.data.stage.StageRegistry;
-import funkin.play.stage.StageProp;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
 
@@ -35,10 +30,6 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
-  public final id:String;
-
-  public final _data:StageData;
-
   public var stageName(get, never):String;
 
   function get_stageName():String
@@ -250,8 +241,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       propSprite.antialiasing = !dataProp.isPixel;
 
       // If pixel, we render it pixel perfect so there's less "mixels"
-      propSprite.pixelPerfectRender = dataProp.isPixel;
-      propSprite.pixelPerfectPosition = dataProp.isPixel;
+      // propSprite.pixelPerfectRender = dataProp.isPixel;
+      // propSprite.pixelPerfectPosition = dataProp.isPixel;
 
       propSprite.scrollFactor.x = dataProp.scroll[0];
       propSprite.scrollFactor.y = dataProp.scroll[1];
@@ -328,7 +319,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param name (Optional) A unique name for the sprite.
    *   You can call `getNamedProp(name)` to retrieve it later.
    */
-  public function addProp(prop:StageProp, ?name:String = null)
+  public function addProp(prop:StageProp, ?name:String = null):Void
   {
     if (name != null)
     {
@@ -341,7 +332,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   /**
    * Add a sprite to the stage which animates to the beat of the song.
    */
-  public function addBopper(bopper:Bopper, ?name:String = null)
+  public function addBopper(bopper:Bopper, ?name:String = null):Void
   {
     boppers.push(bopper);
     this.addProp(bopper, name);
@@ -352,12 +343,16 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * Refreshes the stage, by redoing the render order of all props.
    * It does this based on the `zIndex` of each prop.
    */
-  public function refresh()
+  public function refresh():Void
   {
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
-  public function setShader(shader:FlxShader)
+  /**
+   * Sets a shader for each prop in the stage
+   * @param shader The shader to apply to each prop
+   */
+  public function setShader(shader:FlxShader):Void
   {
     forEachAlive(function(prop:FlxSprite) {
       prop.shader = shader;
@@ -802,6 +797,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public override function remove(Sprite:FlxSprite, Splice:Bool = false):FlxSprite
   {
+    if (Sprite == null) return Sprite;
     var sprite:FlxSprite = cast Sprite;
     sprite.x -= x;
     sprite.y -= y;
@@ -857,16 +853,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
       return null;
     }
-  }
-
-  public override function toString():String
-  {
-    return 'Stage($id)';
-  }
-
-  static function _fetchData(id:String):Null<StageData>
-  {
-    return StageRegistry.instance.parseEntryDataWithMigration(id, StageRegistry.instance.fetchEntryVersion(id));
   }
 
   public function onScriptEvent(event:ScriptEvent)

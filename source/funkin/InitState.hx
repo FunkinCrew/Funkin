@@ -39,6 +39,9 @@ import openfl.display.BitmapData;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.NewgroundsClient;
+#end
 
 /**
  * A core class which performs initialization of the game.
@@ -83,6 +86,10 @@ class InitState extends FlxState
     // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
     WindowUtil.disableCrashHandler();
 
+    #if FEATURE_DEBUG_TRACY
+    funkin.util.WindowUtil.initTracy();
+    #end
+
     // This ain't a pixel art game! (most of the time)
     FlxSprite.defaultAntialiasing = true;
 
@@ -93,6 +100,9 @@ class InitState extends FlxState
 
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
+
+    // Makes Flixel use frame times instead of locked movements per frame for things like tweens
+    FlxG.fixedTimestep = false; 
 
     setupFlixelDebug();
 
@@ -118,8 +128,8 @@ class InitState extends FlxState
     //
     // NEWGROUNDS API SETUP
     //
-    #if newgrounds
-    NGio.init();
+    #if FEATURE_NEWGROUNDS
+    NewgroundsClient.instance.init();
     #end
 
     //
@@ -152,6 +162,7 @@ class InitState extends FlxState
     #if FEATURE_SCREENSHOTS
     funkin.util.plugins.ScreenshotPlugin.initialize();
     #end
+    funkin.util.plugins.NewgroundsMedalPlugin.initialize();
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
@@ -234,7 +245,7 @@ class InitState extends FlxState
         storyMode: true,
         title: "Cum Song Erect by Kawai Sprite",
         songId: "cum",
-        characterId: "pico-playable",
+        characterId: "pico",
         difficultyId: "nightmare",
         isNewHighscore: true,
         scoreData:
@@ -250,9 +261,10 @@ class InitState extends FlxState
                 combo: 69,
                 maxCombo: 69,
                 totalNotesHit: 140,
-                totalNotes: 190
+                totalNotes: 240
               }
             // 2400 total notes = 7% = LOSS
+            // 275 total notes = 69% = NICE
             // 240 total notes = 79% = GOOD
             // 230 total notes = 82% = GREAT
             // 210 total notes = 91% = EXCELLENT
