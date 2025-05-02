@@ -683,12 +683,12 @@ class SongMenuItem extends FlxSpriteGroup
     }
   }
 
-  public function intendedX(index:Int):Float
+  public function intendedX(index:Float):Float
   {
     return 270 + (60 * (Math.sin(index)));
   }
 
-  public function intendedY(index:Int):Float
+  public function intendedY(index:Float):Float
   {
     return (index * ((height * realScaled) + 10)) + 120;
   }
