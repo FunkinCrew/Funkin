@@ -7,13 +7,13 @@ import funkin.graphics.shaders.HSVShader;
 class DifficultyStars extends FlxSpriteGroup
 {
   /**
-   * Internal handler var for difficulty... ranges from 0... to 15
-   * 0 is 1 star... 15 is 0 stars!
+   * Internal handler var for difficulty... ranges from 0... to 20
+   * 0 is 1 star... 20 is 0 stars!
    */
   var curDifficulty(default, set):Int = 0;
 
   /**
-   * Range between 0 and 15
+   * Range between 0 and 20
    */
   public var difficulty(default, set):Int = 1;
 
@@ -26,6 +26,8 @@ class DifficultyStars extends FlxSpriteGroup
   public function new(x:Float, y:Float)
   {
     super(x, y);
+
+    this.screenCenter();
 
     hsvShader = new HSVShader();
 
@@ -54,7 +56,7 @@ class DifficultyStars extends FlxSpriteGroup
     // ......
     // 1300-1499: 15 stars
     // 1500 : 0 stars
-    if (curDifficulty < 15 && stars.anim.curFrame >= (curDifficulty + 1) * 100)
+    if (curDifficulty < 20 && stars.anim.curFrame >= (curDifficulty + 1) * 100)
     {
       stars.anim.play("diff stars", true, false, curDifficulty * 100);
     }
@@ -67,16 +69,16 @@ class DifficultyStars extends FlxSpriteGroup
     if (difficulty <= 0)
     {
       difficulty = 0;
-      curDifficulty = 15;
+      curDifficulty = 20;
     }
-    else if (difficulty <= 15)
+    else if (difficulty <= 20)
     {
       difficulty = value;
       curDifficulty = difficulty - 1;
     }
     else
     {
-      difficulty = 15;
+      difficulty = 20;
       curDifficulty = difficulty - 1;
     }
 
@@ -95,9 +97,9 @@ class DifficultyStars extends FlxSpriteGroup
   function set_curDifficulty(value:Int):Int
   {
     curDifficulty = value;
-    if (curDifficulty == 15)
+    if (curDifficulty == 20)
     {
-      stars.anim.play("diff stars", true, false, 1500);
+      stars.anim.play("diff stars", true, false, 2000);
       stars.anim.pause();
     }
     else

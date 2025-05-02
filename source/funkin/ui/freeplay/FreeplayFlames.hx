@@ -19,7 +19,7 @@ class FreeplayFlames extends FlxSpriteGroup
   {
     super(x, y);
 
-    for (i in 0...5)
+    for (i in 0...10)
     {
       var flame:FlxSprite = new FlxSprite(flameX + (flameSpreadX * i), flameY + (flameSpreadY * i));
       flame.frames = Paths.getSparrowAtlas("freeplay/freeplayFlame");
@@ -65,7 +65,7 @@ class FreeplayFlames extends FlxSpriteGroup
 
     this.flameCount = value;
     var visibleCount:Int = 0;
-    for (i in 0...5)
+    for (i in 0...10)
     {
       if (members[i] == null) continue;
       var flame:FlxSprite = members[i];
@@ -98,7 +98,7 @@ class FreeplayFlames extends FlxSpriteGroup
 
   function setFlamePositions()
   {
-    for (i in 0...5)
+    for (i in 0...10)
     {
       var flame:FlxSprite = members[i];
       flame.x = flameX + (flameSpreadX * i);
