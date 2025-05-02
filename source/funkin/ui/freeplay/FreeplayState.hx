@@ -738,7 +738,7 @@ class FreeplayState extends MusicBeatSubState
     randomCapsule.initData(null, styleData, 1);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
-    randomCapsule.alpha = 0.5;
+    randomCapsule.alpha = 1; // Why doesn't this get set to one as the other capsules do anyway?
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
     randomCapsule.favIconBlurred.visible = false;
@@ -1666,6 +1666,8 @@ class FreeplayState extends MusicBeatSubState
   {
     backingCard?.beatHit();
 
+    grpCapsules?.members[0]?.randomiseDisplay();
+
     return super.beatHit();
   }
 
@@ -2220,6 +2222,8 @@ class DifficultySelector extends FlxSprite
   {
     if (flipX && controls.UI_RIGHT_P && !parent.busy) moveShitDown();
     if (!flipX && controls.UI_LEFT_P && !parent.busy) moveShitDown();
+
+    Conductor.instance.update();
 
     super.update(elapsed);
   }
