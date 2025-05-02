@@ -159,7 +159,9 @@ class Save implements ConsoleClass
         previousFiles: [],
         noteQuant: 3,
         chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
-        theme: ChartEditorTheme.Light,
+        theme: Constants.DEFAULT_EDITOR_THEME,
+        startingDifficulty: Constants.DEFAULT_DIFFICULTY,
+        startingVariation: Constants.DEFAULT_VARIATION,
         playtestStartTime: false,
         playtestAudioSettings: false,
         playtestResultsSettings: false,
@@ -172,13 +174,16 @@ class Save implements ConsoleClass
         playerVoiceVolume: 1.0,
         opponentVoiceVolume: 1.0,
         playbackSpeed: 0.5,
-        themeMusic: true
+        themeMusic: true,
+        confirmationExit: true,
+        autoSaveTimer: 5.0
       },
       optionsStageEditor: {
         previousFiles: [],
         moveStep: "1px",
         angleStep: 5,
-        theme: StageEditorTheme.Light,
+        themeMusic: true,
+        theme: Constants.DEFAULT_EDITOR_THEME,
         bfChar: "bf",
         gfChar: "gf",
         dadChar: "dad"
@@ -268,8 +273,12 @@ class Save implements ConsoleClass
   public var chartEditorPlaytestAudioSettings:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.playtestResultsSettings, false)
   public var chartEditorPlaytestResultsSettings:SaveProperty<Bool>;
-  @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
-  public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
+  @:saveProperty(data.optionsChartEditor.theme, Constants.DEFAULT_EDITOR_THEME)
+  public var chartEditorTheme:SaveProperty<String>;
+  @:saveProperty(data.optionsChartEditor.startingDifficulty, Constants.DEFAULT_DIFFICULTY)
+  public var chartEditorStartingDifficulty:SaveProperty<String>;
+  @:saveProperty(data.optionsChartEditor.startingVariation, Constants.DEFAULT_VARIATION)
+  public var chartEditorStartingVariation:SaveProperty<String>;
   @:saveProperty(data.optionsChartEditor.metronomeVolume, 1.0)
   public var chartEditorMetronomeVolume:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.hitsoundVolumePlayer, 1.0)
@@ -284,6 +293,12 @@ class Save implements ConsoleClass
   public var chartEditorOpponentVoiceVolume:SaveProperty<Float>;
   @:saveProperty(data.optionsChartEditor.themeMusic, true)
   public var chartEditorThemeMusic:SaveProperty<Bool>;
+  @:saveProperty(data.optionsChartEditor.confirmationExit, true)
+  public var chartEditorConfirmationExit:SaveProperty<Bool>;
+
+  @:saveProperty(data.optionsChartEditor.autoSaveTimer, 5.0)
+  public var chartEditorAutoSaveTimer:SaveProperty<Float>;
+
   @:saveProperty(data.optionsChartEditor.playbackSpeed, 0.5)
   public var chartEditorPlaybackSpeed:SaveProperty<Float>;
 
@@ -310,8 +325,11 @@ class Save implements ConsoleClass
   public var stageEditorMoveStep:SaveProperty<String>;
   @:saveProperty(data.optionsStageEditor.angleStep, 5.0)
   public var stageEditorAngleStep:SaveProperty<Float>;
-  @:saveProperty(data.optionsStageEditor.theme, StageEditorTheme.Light)
-  public var stageEditorTheme:SaveProperty<StageEditorTheme>;
+  @:saveProperty(data.optionsStageEditor.theme, Constants.DEFAULT_EDITOR_THEME)
+  public var stageEditorTheme:SaveProperty<String>;
+  @:saveProperty(data.optionsStageEditor.themeMusic, true)
+  public var stageEditorThemeMusic:SaveProperty<Bool>;
+
   public var stageBoyfriendChar(get, set):String;
 
   function get_stageBoyfriendChar():String
@@ -1400,9 +1418,21 @@ typedef SaveDataChartEditorOptions =
 
   /**
    * Theme in the Chart Editor.
-   * @default `ChartEditorTheme.Light`
+   * @default `Constants.DEFAULT_EDITOR_THEME`
    */
-  var ?theme:ChartEditorTheme;
+  var ?theme:String;
+
+  /**
+   * Starting difficulty in the Chart Editor.
+   * @default `Constants.DEFAULT_DIFFICULTY`
+   */
+  var ?startingDifficulty:String;
+
+  /**
+   * Starting variation in the Chart Editor.
+   * @default `Constants.DEFAULT_VARIATION`
+   */
+  var ?startingVariation:String;
 
   /**
    * Downscroll in the Chart Editor.
@@ -1465,6 +1495,18 @@ typedef SaveDataChartEditorOptions =
   var ?themeMusic:Bool;
 
   /**
+   * Show confirmation dialog on exit in the Chart Editor.
+   * @default `true`
+   */
+  var ?confirmationExit:Bool;
+
+  /**
+   * Auto-save timer in the Chart Editor.
+   * @default `5.0`
+   */
+  var ?autoSaveTimer:Float;
+
+  /**
    * Instrumental volume in the Chart Editor.
    * @default `1.0`
    */
@@ -1519,10 +1561,16 @@ typedef SaveDataStageEditorOptions =
   var ?angleStep:Float;
 
   /**
-   * Theme in the Stage Editor.
-   * @default `StageEditorTheme.Light`
+   * Theme music in the Stage Editor.
+   * @default `true`
    */
-  var ?theme:StageEditorTheme;
+  var ?themeMusic:Bool;
+
+  /**
+   * Theme in the Stage Editor.
+   * @default `Constants.DEFAULT_EDITOR_THEME`
+   */
+  var ?theme:String;
 
   /**
    * The BF character ID used in testing stages.

@@ -18,6 +18,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorCharacterIconSelectorMenu;
+import funkin.ui.debug.charting.dialogs.ChartEditorPreferencesDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadChartDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
@@ -33,6 +34,8 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
+import haxe.ui.components.CheckBox;
+import haxe.ui.components.OptionStepper;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
@@ -43,6 +46,7 @@ import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import thx.semver.Version;
+import funkin.save.Save;
 
 using Lambda;
 
@@ -145,6 +149,134 @@ class ChartEditorDialogHandler
     menu.zIndex = 1000;
 
     return menu;
+  }
+
+  /**
+   * Builds and opens a dialog where the user can change the chart editor preferences.
+   */
+  public static function openPreferencesDialog(state:ChartEditorState, closable:Bool):Null<Dialog>
+  {
+    var dialog = ChartEditorPreferencesDialog.build(state, closable);
+    var save:Save = Save.instance;
+
+    var showNoteKindIndicators:Null<CheckBox> = dialog.findComponent('optionsViewIndicators', CheckBox);
+    if (showNoteKindIndicators == null) throw 'Could not locate showNoteKindIndicators CheckBox in Preferences dialog';
+    showNoteKindIndicators.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      state.showNoteKindIndicators = event.value;
+    };
+    showNoteKindIndicators.selected = state.showNoteKindIndicators;
+
+    var showSubtitles:Null<CheckBox> = dialog.findComponent('optionsViewSubtitles', CheckBox);
+    if (showSubtitles == null) throw 'Could not locate showSubtitles CheckBox in Preferences dialog';
+    showSubtitles.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      state.showSubtitles = event.value;
+    };
+    showSubtitles.selected = state.showSubtitles;
+
+    var showWaveforms:Null<CheckBox> = dialog.findComponent('optionsViewWaveforms', CheckBox);
+    if (showWaveforms == null) throw 'Could not locate showWaveforms CheckBox in Preferences dialog';
+    showWaveforms.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      state.audioWaveforms.visible = event.value;
+    };
+    showWaveforms.selected = state.audioWaveforms.visible;
+
+    var themeMusic:Null<CheckBox> = dialog.findComponent('optionsThemeMusic', CheckBox);
+    if (themeMusic == null) throw 'Could not locate themeMusic CheckBox in Preferences dialog';
+    themeMusic.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      state.shouldPlayWelcomeMusic = event.value;
+      // Don't restart the music when the menu is opened for the first time
+      if (!state.welcomeMusic.active || !state.shouldPlayWelcomeMusic)
+      {
+        state.fadeInWelcomeMusic(ChartEditorState.WELCOME_MUSIC_FADE_IN_DELAY, ChartEditorState.WELCOME_MUSIC_FADE_IN_DURATION);
+      }
+    };
+    themeMusic.selected = state.shouldPlayWelcomeMusic;
+
+    var inputTheme:Null<DropDown> = dialog.findComponent('optionsThemeGroup', DropDown);
+    if (inputTheme == null) throw 'Could not locate inputTheme DropDown in Preferences dialog';
+    inputTheme.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      state.themeId = event.data.id;
+    };
+    var startingValueTheme = ChartEditorDropdowns.populateDropdownWithThemes(inputTheme, state.themeId);
+    inputTheme.value = startingValueTheme;
+
+    var startingDifficulty:Null<DropDown> = dialog.findComponent('optionsStartingDifficulty', DropDown);
+    if (startingDifficulty == null) throw 'Could not locate startingDifficulty DropDown in Preferences dialog';
+    startingDifficulty.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      save.chartEditorStartingDifficulty.value = event.data.id;
+    };
+    var startingValue = ChartEditorDropdowns.populateDropdownWithDifficulties(startingDifficulty, save.chartEditorStartingDifficulty.value);
+    startingDifficulty.value = startingValue;
+
+    var startingVariation:Null<DropDown> = dialog.findComponent('optionsStartingVariation', DropDown);
+    if (startingVariation == null) throw 'Could not locate startingVariation DropDown in Preferences dialog';
+    startingVariation.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      save.chartEditorStartingVariation.value = event.data.id;
+    };
+    var startingValueVariation = ChartEditorDropdowns.populateDropdownWithVariations(startingVariation, state, save.chartEditorStartingVariation.value, true, false);
+    startingVariation.value = startingValueVariation;
+
+    var confirmationExit:Null<CheckBox> = dialog.findComponent('optionsConfirmationExit', CheckBox);
+    if (confirmationExit == null) throw 'Could not locate confirmationExit CheckBox in Preferences dialog';
+    confirmationExit.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      save.chartEditorConfirmationExit.value = event.value;
+    };
+    confirmationExit.selected = save.chartEditorConfirmationExit.value;
+
+    var autoSaveTimer:Null<NumberStepper> = dialog.findComponent('optionsAutoSaveTimer', NumberStepper);
+    if (autoSaveTimer == null) throw 'Could not locate autoSaveTimer NumberStepper in Preferences dialog';
+    autoSaveTimer.onChange = function(event:UIEvent) {
+      if (event.value == null || event.value <= 0) return;
+      save.chartEditorAutoSaveTimer.value = event.value;
+    };
+    autoSaveTimer.value = save.chartEditorAutoSaveTimer.value;
+
+    var inputMode:Null<OptionStepper> = dialog.findComponent('optionsLiveInputMode', OptionStepper);
+    if (inputMode == null) throw 'Could not locate inputMode OptionStepper in Preferences dialog';
+    inputMode.onChange = function(event:UIEvent) {
+      if (event.value == null || event.value < 0) return;
+      state.currentLiveInputStyle = inputMode.dataSource.get(event.value).id;
+    };
+    // It is a really hacky way of doing this, if someone finds a better way, please change it.
+    var currentLiveInputStyleId:Int = -1;
+    for (i in 0...inputMode.dataSource.size)
+    {
+      if (inputMode.dataSource.get(i).id == state.currentLiveInputStyle)
+      {
+        currentLiveInputStyleId = i;
+        break;
+      }
+    }
+    inputMode.value = currentLiveInputStyleId;
+
+    var stackedNoteThreshold:Null<DropDown> = dialog.findComponent('optionsStackedNoteThreshold', DropDown);
+    if (stackedNoteThreshold == null) throw 'Could not locate stackedNoteThreshold DropDown in Preferences dialog';
+    final REVERSE_SNAPS = ChartEditorState.SNAP_QUANTS.reversed();
+    for (snap in REVERSE_SNAPS)
+    {
+      stackedNoteThreshold.dataSource.add({text: '1/$snap'});
+    }
+    stackedNoteThreshold.onChange = function(event:UIEvent) {
+      // NOTE: It needs to be offset by 1 because of the 'Exact' option
+      // -1 value means that it is the one selected
+      var selectedIdx:Int = stackedNoteThreshold.selectedIndex - 1;
+      ChartEditorState.stackedNoteThreshold = selectedIdx == -1 ? 0 : ChartEditorState.BASE_QUANT / REVERSE_SNAPS[selectedIdx];
+      state.noteDisplayDirty = true;
+      state.notePreviewDirty = true;
+    };
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
   }
 
   /**
@@ -1462,7 +1594,7 @@ class ChartEditorDialogHandler
 
     var dialogVariation:Null<DropDown> = dialog.findComponent('dialogVariation', DropDown);
     if (dialogVariation == null) throw 'Could not locate dialogVariation DropDown in Add Variation dialog';
-    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, true);
+    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, Constants.DEFAULT_VARIATION, false, true);
 
     var labelScrollSpeed:Null<Label> = dialog.findComponent('labelScrollSpeed', Label);
     if (labelScrollSpeed == null) throw 'Could not find labelScrollSpeed component.';
@@ -1527,7 +1659,7 @@ class ChartEditorDialogHandler
 
     var dialogVariation:Null<DropDown> = dialog.findComponent('dialogVariation', DropDown);
     if (dialogVariation == null) throw 'Could not locate dialogVariation DropDown in Clone Variation dialog';
-    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, true);
+    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, state.selectedVariation, false, true);
 
     var labelScrollSpeed:Null<Label> = dialog.findComponent('labelScrollSpeed', Label);
     if (labelScrollSpeed == null) throw 'Could not find labelScrollSpeed component.';

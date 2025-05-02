@@ -85,24 +85,9 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
   function buildMeasureTicksSprite():Void
   {
-    var backingColor:FlxColor = switch (chartEditorState.currentTheme)
-    {
-      case Light:
-        ChartEditorThemeHandler.MEASTURE_TICKS_BACKING_COLOR_LIGHT;
-      case Dark:
-        ChartEditorThemeHandler.MEASTURE_TICKS_BACKING_COLOR_DARK;
-      default:
-        ChartEditorThemeHandler.MEASTURE_TICKS_BACKING_COLOR_LIGHT;
-    };
-    var dividerColor:FlxColor = switch (chartEditorState.currentTheme)
-    {
-      case Light:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-      case Dark:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_DARK;
-      default:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-    };
+    if (ChartEditorThemeHandler.theme == null) return;
+    var dividerColor:FlxColor = ChartEditorThemeHandler.theme.getColor("gridMeasureDivider", ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    var backingColor:FlxColor = ChartEditorThemeHandler.theme.getColor("measureTickBacking", ChartEditorThemeHandler.MEASURE_TICKS_BACKING_COLOR_LIGHT);
 
     // TODO: This does NOT account for time signature, and always assumes 4/4!
     // Better to have the little lines not line up than be required to redraw the image every frame,
@@ -246,15 +231,9 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
   function makeMeasureDivider():FlxSprite
   {
-    var dividerColor:FlxColor = switch (chartEditorState.currentTheme)
-    {
-      case Light:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-      case Dark:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_DARK;
-      default:
-        ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-    };
+    var dividerColor:FlxColor = ChartEditorThemeHandler.theme == null
+    ? ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT
+    : ChartEditorThemeHandler.theme.getColor("gridMeasureDivider", ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT);
 
     var measureDivider = new FunkinSprite().makeSolidColor(ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT,
       ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH, dividerColor);

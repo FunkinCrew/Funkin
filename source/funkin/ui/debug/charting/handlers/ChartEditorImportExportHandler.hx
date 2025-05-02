@@ -15,6 +15,7 @@ import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import thx.semver.Version as SemverVersion;
+import funkin.save.Save;
 
 /**
  * Contains functions for importing, loading, saving, and exporting charts.
@@ -139,6 +140,8 @@ class ChartEditorImportExportHandler
   public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>,
       ?newSongManifestData:ChartManifestData):Void
   {
+    state.selectedVariation = Save.instance.chartEditorStartingVariation.value;
+    state.selectedDifficulty = Save.instance.chartEditorStartingDifficulty.value;
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
     if (newSongManifestData != null)
@@ -281,6 +284,7 @@ class ChartEditorImportExportHandler
     var songChartDatas:Map<String, SongChartData> = [];
     songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
 
+    trace(baseMetadata.playData.songVariations);
     var variationList:Array<String> = baseMetadata.playData.songVariations;
 
     for (variation in variationList)

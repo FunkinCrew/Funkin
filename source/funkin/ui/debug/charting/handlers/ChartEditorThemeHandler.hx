@@ -8,6 +8,8 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
+import funkin.ui.debug.theme.EditorTheme;
+import funkin.data.theme.EditorThemeRegistry;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 
@@ -17,30 +19,22 @@ import openfl.geom.Rectangle;
 @:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorThemeHandler
 {
-  // TODO: There's probably a better system of organization for these colors.
-  // An enum of typedefs or something?
-  // ================================
+  public static var theme:Null<EditorTheme>;
+
   static final BACKGROUND_COLOR_LIGHT:FlxColor = 0xFF673AB7;
-  static final BACKGROUND_COLOR_DARK:FlxColor = 0xFF361E60;
   // Color 1 of the grid pattern. Alternates with Color 2.
-  public static final GRID_COLOR_1_LIGHT:FlxColor = 0xFFE7E6E6;
-  public static final GRID_COLOR_1_DARK:FlxColor = 0xFF181919;
+  static final GRID_COLOR_1_LIGHT:FlxColor = 0xFFE7E6E6;
   // Color 2 of the grid pattern. Alternates with Color 1.
-  public static final GRID_COLOR_2_LIGHT:FlxColor = 0xFFF8F8F8;
-  public static final GRID_COLOR_2_DARK:FlxColor = 0xFF202020;
+  static final GRID_COLOR_2_LIGHT:FlxColor = 0xFFF8F8F8;
   // Color 3 of the grid pattern. Borders the other colors.
-  public static final GRID_COLOR_3_LIGHT:FlxColor = 0xFFD9D5D5;
-  public static final GRID_COLOR_3_DARK:FlxColor = 0xFF262A2A;
+  static final GRID_COLOR_3_LIGHT:FlxColor = 0xFFD9D5D5;
   // Vertical divider between characters.
-  public static final GRID_STRUMLINE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
-  public static final GRID_STRUMLINE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
+  static final GRID_STRUMLINE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
   static final GRID_STRUMLINE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
   // Horizontal divider between measures.
   public static final GRID_MEASURE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
-  public static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
-  public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
-  public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF484848;
+  public static final MEASURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
   static final SELECTION_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFF339933;
@@ -51,7 +45,6 @@ class ChartEditorThemeHandler
   public static final SELECTION_SQUARE_BORDER_WIDTH:Int = 1;
 
   // Fill on the square highlighting selected notes.
-  // Make sure this is transparent so you can see the notes underneath.
   static final SELECTION_SQUARE_FILL_COLOR_LIGHT:FlxColor = 0x4033FF33;
   static final SELECTION_SQUARE_FILL_COLOR_DARK:FlxColor = 0x4033FF33;
   static final PLAYHEAD_BLOCK_BORDER_WIDTH:Int = 2;
@@ -63,10 +56,8 @@ class ChartEditorThemeHandler
   public static final MEASURE_TICKS_STEP_WIDTH:Int = 2;
   // Border on the square over the note preview.
   static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT = 0xFFF8A657;
-  static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK = 0xFFF8A657;
   // Fill on the square over the note preview.
   static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT = 0x80F8A657;
-  static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK = 0x80F8A657;
   public static final TOTAL_COLUMN_COUNT:Int = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
 
   /**
@@ -75,6 +66,9 @@ class ChartEditorThemeHandler
    */
   public static function updateTheme(state:ChartEditorState):Void
   {
+    theme = EditorThemeRegistry.instance.fetchEntry(state.themeId);
+    if (theme == null) theme = EditorThemeRegistry.instance.fetchDefault();
+
     updateBackground(state);
     updateGridBitmap(state);
     updateOffsetTicks(state);
@@ -89,16 +83,8 @@ class ChartEditorThemeHandler
    */
   static function updateBackground(state:ChartEditorState):Void
   {
-    if (state.menuBG == null) return;
-    state.menuBG.color = switch (state.currentTheme)
-    {
-      case ChartEditorTheme.Light:
-        BACKGROUND_COLOR_LIGHT;
-      case ChartEditorTheme.Dark:
-        BACKGROUND_COLOR_DARK;
-      default:
-        BACKGROUND_COLOR_LIGHT;
-    }
+    if (theme == null || state.menuBG == null) return;
+    state.menuBG.color = theme.getColor("background", BACKGROUND_COLOR_LIGHT);
   }
 
   /**
@@ -107,35 +93,10 @@ class ChartEditorThemeHandler
    */
   static function updateGridBitmap(state:ChartEditorState):Void
   {
-    var gridColor1:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        GRID_COLOR_1_LIGHT;
-      case Dark:
-        GRID_COLOR_1_DARK;
-      default:
-        GRID_COLOR_1_LIGHT;
-    };
-
-    var gridColor2:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        GRID_COLOR_2_LIGHT;
-      case Dark:
-        GRID_COLOR_2_DARK;
-      default:
-        GRID_COLOR_2_LIGHT;
-    };
-
-    var dividerColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-      case Dark:
-        GRID_STRUMLINE_DIVIDER_COLOR_DARK;
-      default:
-        GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-    }
+    if (theme == null) return;
+    var gridColor1:FlxColor = theme.getColor("gridColors[0]", GRID_COLOR_1_LIGHT);
+    var gridColor2:FlxColor = theme.getColor("gridColors[1]", GRID_COLOR_2_LIGHT);
+    var dividerColor:FlxColor = theme.getColor("gridStrumlineDivider", GRID_STRUMLINE_DIVIDER_COLOR_LIGHT);
 
     // Draw the base grid.
 
@@ -146,15 +107,7 @@ class ChartEditorThemeHandler
     state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
 
     // Selection borders
-    var selectionBorderColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        GRID_COLOR_3_LIGHT;
-      case Dark:
-        GRID_COLOR_3_DARK;
-      default:
-        GRID_COLOR_3_LIGHT;
-    };
+    var selectionBorderColor:FlxColor = theme.getColor("gridColors[2]", GRID_COLOR_3_LIGHT);
 
     // Selection border at top.
     state.gridBitmap.fillRect(new Rectangle(0, -(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), state.gridBitmap.width,
@@ -249,25 +202,10 @@ class ChartEditorThemeHandler
 
   static function updateSelectionSquare(state:ChartEditorState):Void
   {
-    var selectionSquareBorderColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        SELECTION_SQUARE_BORDER_COLOR_LIGHT;
-      case Dark:
-        SELECTION_SQUARE_BORDER_COLOR_DARK;
-      default:
-        SELECTION_SQUARE_BORDER_COLOR_LIGHT;
-    };
+    if (theme == null) return;
+    var selectionSquareBorderColor:FlxColor = theme.getColor("selectionSquareBorder", SELECTION_SQUARE_BORDER_COLOR_LIGHT);
 
-    var selectionSquareFillColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        SELECTION_SQUARE_FILL_COLOR_LIGHT;
-      case Dark:
-        SELECTION_SQUARE_FILL_COLOR_DARK;
-      default:
-        SELECTION_SQUARE_FILL_COLOR_LIGHT;
-    };
+    var selectionSquareFillColor:FlxColor = theme.getColor("selectionSquareFill", SELECTION_SQUARE_FILL_COLOR_LIGHT);
 
     state.selectionSquareBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
 
@@ -294,25 +232,10 @@ class ChartEditorThemeHandler
 
   static function updateNotePreview(state:ChartEditorState):Void
   {
-    var viewportBorderColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
-      case Dark:
-        NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK;
-      default:
-        NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
-    };
+    if (theme == null) return;
+    var viewportBorderColor:FlxColor = theme.getColor("notePreviewViewportBorder", NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT);
 
-    var viewportFillColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light:
-        NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
-      case Dark:
-        NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK;
-      default:
-        NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
-    };
+    var viewportFillColor:FlxColor = theme.getColor("notePreviewViewportFill", NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT);
 
     state.notePreviewViewportBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
 

@@ -682,17 +682,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
-   * Currently hardcoded to just Light and Dark.
    */
-  var currentTheme(default, set):ChartEditorTheme = ChartEditorTheme.Light;
+  public var themeId(default, set):String;
 
-  function set_currentTheme(value:ChartEditorTheme):ChartEditorTheme
+  function set_themeId(value:String):String
   {
-    if (value == null || value == currentTheme) return currentTheme;
+    if (value == null || value == themeId) return themeId;
 
-    currentTheme = value;
+    themeId = value;
     this.updateTheme();
     return value;
+  }
+
+  function get_themeId():String
+  {
+    return themeId ?? Constants.DEFAULT_EDITOR_THEME;
   }
 
   /**
@@ -758,7 +762,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Play the welcome music or not.
    */
-  var shouldPlayWelcomeMusic:Bool = false;
+  public var shouldPlayWelcomeMusic:Bool = false;
 
   /**
    * The duration before the welcome music starts to fade back in after the user stops playing music in the chart editor.
@@ -1041,7 +1045,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (value)
     {
       // Start the auto-save timer.
-      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
+      autoSaveTimer = new FlxTimer().start(Save.instance.chartEditorAutoSaveTimer.value * Constants.SECS_PER_MIN, (_) -> autoSave());
     }
     else
     {
@@ -2062,11 +2066,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menuBarItemNoteSnapIncrease:MenuItem;
 
   /**
-   * The `Edit -> Stacked Note Threshold` menu dropdown
-   */
-  var menuBarStackedNoteThreshold:DropDown;
-
-  /**
    * The `View -> Downscroll` menu item.
    */
   var menubarItemDownscroll:MenuCheckBox;
@@ -2120,11 +2119,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The `Audio -> Metronome Volume` slider.
    */
   var menubarItemVolumeMetronome:Slider;
-
-  /**
-   * The `Audio -> Play Theme Music` menu checkbox.
-   */
-  var menubarItemThemeMusic:MenuCheckBox;
 
   /**
    * The `Audio -> Player Hitsound Volume` label.
@@ -2618,7 +2612,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playtestStartTime = save.chartEditorPlaytestStartTime.value;
     playtestAudioSettings = save.chartEditorPlaytestAudioSettings.value;
     playtestShowResults = save.chartEditorPlaytestResultsSettings.value;
-    currentTheme = save.chartEditorTheme.value;
+    themeId = save.chartEditorTheme.value;
     metronomeVolume = save.chartEditorMetronomeVolume.value;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
     hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
@@ -2649,7 +2643,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorPlaytestStartTime.value = playtestStartTime;
     save.chartEditorPlaytestAudioSettings.value = playtestAudioSettings;
     save.chartEditorPlaytestResultsSettings.value = playtestShowResults;
-    save.chartEditorTheme.value = currentTheme;
+    save.chartEditorTheme.value = themeId;
     save.chartEditorMetronomeVolume.value = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent.value = hitsoundVolumeOpponent;
@@ -3308,6 +3302,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // CTRL + SHIFT + S Cancelled
     });
+    menubarItemPreferences.onClick = _ -> this.openPreferencesDialog(true);
     menubarItemExit.onClick = _ -> quitChartEditor(true);
 
     // Edit
@@ -3405,38 +3400,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
 
-    final REVERSE_SNAPS = SNAP_QUANTS.reversed();
-    for (snap in REVERSE_SNAPS)
-    {
-      menuBarStackedNoteThreshold.dataSource.add({text: '1/$snap'});
-    }
-
-    menuBarStackedNoteThreshold.onChange = event ->
-    {
-      // NOTE: It needs to be offset by 1 because of the 'Exact' option
-      // -1 value means that it is the one selected
-      var selectedIdx:Int = menuBarStackedNoteThreshold.selectedIndex - 1;
-      stackedNoteThreshold = selectedIdx == -1 ? 0 : BASE_QUANT / REVERSE_SNAPS[selectedIdx];
-      noteDisplayDirty = true;
-      notePreviewDirty = true;
-    }
-
-    menuBarItemInputStyleNone.onClick = function(event:UIEvent)
-    {
-      currentLiveInputStyle = None;
-    };
-    menuBarItemInputStyleNone.selected = currentLiveInputStyle == None;
-    menuBarItemInputStyleNumberKeys.onClick = function(event:UIEvent)
-    {
-      currentLiveInputStyle = NumberKeys;
-    };
-    menuBarItemInputStyleNumberKeys.selected = currentLiveInputStyle == NumberKeys;
-    menuBarItemInputStyleWASD.onClick = function(event:UIEvent)
-    {
-      currentLiveInputStyle = WASDKeys;
-    };
-    menuBarItemInputStyleWASD.selected = currentLiveInputStyle == WASDKeys;
-
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
 
@@ -3452,29 +3415,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemDownscroll.onClick = event -> isViewDownscroll = event.value;
     menubarItemDownscroll.selected = isViewDownscroll;
 
-    menubarItemViewIndicators.onClick = event -> showNoteKindIndicators = menubarItemViewIndicators.selected;
-    menubarItemViewIndicators.selected = showNoteKindIndicators;
-
-    menubarItemViewSubtitles.onClick = event -> showSubtitles = menubarItemViewSubtitles.selected;
-    menubarItemViewSubtitles.selected = showSubtitles;
-
-    menubarItemViewWaveforms.onClick = event -> audioWaveforms.visible = menubarItemViewWaveforms.selected;
-    menubarItemViewWaveforms.selected = audioWaveforms.visible;
-
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
-
-    menuBarItemThemeLight.onChange = function(event:UIEvent)
-    {
-      if (event.target.value) currentTheme = ChartEditorTheme.Light;
-    };
-    menuBarItemThemeLight.selected = currentTheme == ChartEditorTheme.Light;
-
-    menuBarItemThemeDark.onChange = function(event:UIEvent)
-    {
-      if (event.target.value) currentTheme = ChartEditorTheme.Dark;
-    };
-    menuBarItemThemeDark.selected = currentTheme == ChartEditorTheme.Dark;
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
@@ -3510,17 +3452,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
     previousAudioVolumes[0] = Std.int(metronomeVolume * 100);
-
-    menubarItemThemeMusic.onChange = event ->
-    {
-      shouldPlayWelcomeMusic = event.value;
-      // Don't restart the music when the menu is opened for the first time
-      if (!welcomeMusic.active || !shouldPlayWelcomeMusic)
-      {
-        fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
-      }
-    };
-    menubarItemThemeMusic.selected = shouldPlayWelcomeMusic;
 
     menubarItemVolumeHitsoundPlayer.onChange = event ->
     {
@@ -6145,7 +6076,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   @:nullSafety(Off)
   function quitChartEditor(exitPrompt:Bool = false):Void
   {
-    if (saveDataDirty && exitPrompt)
+    if (saveDataDirty && exitPrompt && Save.instance.chartEditorConfirmationExit.value)
     {
       this.openLeaveConfirmationDialog();
       return;

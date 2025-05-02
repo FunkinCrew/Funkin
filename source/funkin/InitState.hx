@@ -14,6 +14,7 @@ import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.theme.EditorThemeRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -293,6 +294,7 @@ class InitState extends FlxState
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
     StickerRegistry.instance.loadEntries();
+    EditorThemeRegistry.instance.loadEntries();
 
     // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.
