@@ -319,7 +319,6 @@ class FlxAtlasSprite extends FlxAnimate
         else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
-          cleanupAnimation(currentAnimation ?? "");
           _onAnimationComplete();
         }
       }
