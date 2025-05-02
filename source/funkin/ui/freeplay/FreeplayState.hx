@@ -2284,6 +2284,9 @@ class FreeplayState extends MusicBeatSubState
       if (targetSong == null)
       {
         FlxG.log.warn('WARN: could not find song with id (${daSong.data.id})');
+        intendedScore = 0;
+        intendedCompletion = 0.0;
+        rememberedDifficulty = currentDifficulty;
         return;
       }
 
