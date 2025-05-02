@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed “Auto Pause” preference to “Pause on Unfocus” for clarity. ([52be941](https://github.com/FunkinCrew/Funkin/commit/52be941b4503da0ac76918e2482ab1804866f2cf)) - by @JackXson-Real in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
 - Overhauled `FileUtil`, introducing various fixes, new functions, and sandboxing. ([95ade2a](https://github.com/FunkinCrew/Funkin/commit/95ade2a08b7709e8208ec1b3e123bf5b4308ba10)) - by @cyn0x8 in [#3032](https://github.com/FunkinCrew/Funkin/pull/3032)
 
+### Fixed
+
 - The Freeplay menu no longer displays songs without Erect variations when returning from an Erect variation song.
 - Fixed Freeplay DJ animations for Boyfriend and Pico when idling (properly this time).
 - Alternate instrumentals for Cocoa, Senpai, Roses, and Stress are now locked until their Pico Mix is beaten.
@@ -182,16 +184,6 @@ The Pit Stop 2 update!
 - Blacklisted an additional class for security. ([3492d41](https://github.com/FunkinCrew/Funkin/commit/3492d412c65c7f3fd61e6fc6c9410d8467122ab0)) - by @AbnormalPoof in [#4074](https://github.com/FunkinCrew/Funkin/pull/4074)
 - Removed an unused class from Polymod blacklist. ([06c12e3](https://github.com/FunkinCrew/Funkin/commit/06c12e36c6bd6df4e2be32a3bec540172e79e162)) - by @AbnormalPoof in [#3729](https://github.com/FunkinCrew/Funkin/pull/3729)
 - Many additional small bug fixes.
-
-### Fixed
-
-* @PatoFlamejanteTV made their first contribution in [#3843](https://github.com/FunkinCrew/Funkin/pull/3843)
-* @sphis-Sinco made their first contribution in [#3881](https://github.com/FunkinCrew/Funkin/pull/3881)
-* @MrMadera made their first contribution in [#3934](https://github.com/FunkinCrew/Funkin/pull/3934)
-* @MidyGamy made their first contribution in [#4068](https://github.com/FunkinCrew/Funkin/pull/4068)
-* @Lasercar made their first contribution in [#4082](https://github.com/FunkinCrew/Funkin/pull/4082)
-* @MrScottyPieey made their first contribution in [#4085](https://github.com/FunkinCrew/Funkin/pull/4085)
-
 
 ## New Contributors for 0.6.0
 
