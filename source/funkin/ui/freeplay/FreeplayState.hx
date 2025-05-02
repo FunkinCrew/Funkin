@@ -510,10 +510,10 @@ class FreeplayState extends MusicBeatSubState
           generateSongList({filterType: REGEXP, filterData: str}, true);
       }
 
-      // If the current song is still in the list (aka not null?), we'll land on it
+      // If the current song is still in the list, or if it was random, we'll land on it
       // Otherwise we want to land on the first song of the group, rather than random song when changing letter sorts
       // that is, only if there's more than one song in the group!
-      if (curSong != null && currentFilteredSongs.length > 1)
+      if (curSong == null || currentFilteredSongs.contains(curSong))
       {
         changeSelection();
       }
