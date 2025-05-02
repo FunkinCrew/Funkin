@@ -66,7 +66,7 @@ class TouchUtil
    *
    * @return `true` if there is an overlap with any touch; `false` otherwise.
    */
-  public static function overlaps(object:FlxBasic, ?camera:FlxCamera):Bool
+  public static function overlaps(?object:FlxBasic, ?camera:FlxCamera):Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     if (object == null || touch == null) return false;
@@ -85,7 +85,7 @@ class TouchUtil
    *
    * @return `true` if there is a precise overlap with any touch; `false` otherwise.
    */
-  public static function overlapsComplex(object:FlxObject, ?camera:FlxCamera):Bool
+  public static function overlapsComplex(?object:FlxObject, ?camera:FlxCamera):Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     if (object == null || touch == null) return false;
@@ -109,7 +109,7 @@ class TouchUtil
    *
    * @return `true` if there is a precise overlap with the specified point; `false` otherwise.
    */
-  public static function overlapsComplexPoint(object:FlxObject, point:FlxPoint, ?inScreenSpace:Bool = false, ?camera:FlxCamera):Bool
+  public static function overlapsComplexPoint(?object:FlxObject, point:FlxPoint, ?inScreenSpace:Bool = false, ?camera:FlxCamera):Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     if (object == null || point == null) return false;

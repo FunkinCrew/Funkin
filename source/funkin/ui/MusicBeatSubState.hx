@@ -23,8 +23,7 @@ import funkin.play.notes.NoteDirection;
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
-// TODO: Add nullSafety back here.
-// @:nullSafety
+@:nullSafety
 class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
   public var leftWatermarkText:Null<FlxText> = null;
@@ -51,12 +50,12 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     return PlayerSettings.player1.controls;
 
   #if mobile
-  public var hitbox:FunkinHitbox;
-  public var backButton:FunkinBackspace;
-  public var camControls:FunkinCamera;
+  public var hitbox:Null<FunkinHitbox>;
+  public var backButton:Null<FunkinBackspace>;
+  public var camControls:Null<FunkinCamera>;
 
-  public function addHitbox(?visible:Bool = true, ?initInput:Bool = true, ?schemeOverride:String = null, ?directionsOverride:Array<NoteDirection> = null,
-      ?colorsOverride:Array<FlxColor> = null):Void
+  public function addHitbox(visible:Bool = true, initInput:Bool = true, ?schemeOverride:String, ?directionsOverride:Array<NoteDirection>,
+      ?colorsOverride:Array<FlxColor>):Void
   {
     if (hitbox != null)
     {
