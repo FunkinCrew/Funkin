@@ -430,6 +430,53 @@ class SongMenuItem extends FlxSpriteGroup
     updateSelected();
   }
 
+  /**
+   * Used for the random capsule.
+   * Randomises the BPM and difficulty value until they're different, then updates the display.
+   */
+  public function randomiseDisplay():Void
+  {
+    var randomDifficulty:Int = FlxG.random.int(0, 20);
+    var currentDifficulty:Int = 0;
+    var randomBPM:Int = FlxG.random.int(0, 999);
+    var currentBPM:Int = 0;
+
+    // Get the current value so we can keep randomising until we get a different one.
+    for (i in 0...bigNumbers.length)
+    {
+      switch (i)
+      {
+        case 0:
+          currentDifficulty += bigNumbers[i].digit * 10;
+        case 1:
+          currentDifficulty += bigNumbers[i].digit;
+      }
+    }
+
+    // Hopefully this never takes so long that it causes a bit of lag...
+    while (currentDifficulty == randomDifficulty)
+      randomDifficulty = FlxG.random.int(0, 20);
+
+    for (i in 0...smallNumbers.length)
+    {
+      switch (i)
+      {
+        case 0:
+          randomBPM += smallNumbers[i].digit * 100;
+        case 1:
+          randomBPM += smallNumbers[i].digit * 10;
+        case 2:
+          randomBPM += smallNumbers[i].digit;
+      }
+    }
+
+    while (currentBPM == randomBPM)
+      currentBPM = FlxG.random.int(0, 999);
+
+    updateBPM(randomBPM);
+    updateDifficultyRating(randomDifficulty);
+  }
+
   function updateDifficultyRating(newRating:Int):Void
   {
     var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
@@ -543,7 +590,7 @@ class SongMenuItem extends FlxSpriteGroup
     initData(null, styleData, 1);
     y = intendedY(0) + 10;
     targetPos.x = x;
-    alpha = 0.5;
+    alpha = 1;
     songText.visible = false;
     favIcon.visible = false;
     favIconBlurred.visible = false;
@@ -858,13 +905,21 @@ class FreeplayRank extends FlxSpriteGroup
 
 class CapsuleNumber extends FlxSprite
 {
-  public var digit(default, set):Int = 0;
+  @:isVar
+  public var digit(get, set):Int = 0;
+
+  function get_digit():Int
+  {
+    return this.digit;
+  }
 
   function set_digit(val):Int
   {
     animation.play(numToString[val], true, false, 0);
 
     centerOffsets(false);
+
+    this.digit = val;
 
     switch (val)
     {
