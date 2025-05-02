@@ -184,7 +184,7 @@ class Save
           previousFiles: [],
           noteQuant: 3,
           chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
-          theme: ChartEditorTheme.Light,
+          theme: Constants.DEFAULT_EDITOR_THEME,
           playtestStartTime: false,
           downscroll: false,
           showNoteKinds: true,
@@ -393,16 +393,16 @@ class Save
     return data.optionsChartEditor.playtestStartTime;
   }
 
-  public var chartEditorTheme(get, set):ChartEditorTheme;
+  public var chartEditorTheme(get, set):String;
 
-  function get_chartEditorTheme():ChartEditorTheme
+  function get_chartEditorTheme():String
   {
-    if (data.optionsChartEditor.theme == null) data.optionsChartEditor.theme = ChartEditorTheme.Light;
+    if (data.optionsChartEditor.theme == null) data.optionsChartEditor.theme = Constants.DEFAULT_EDITOR_THEME;
 
     return data.optionsChartEditor.theme;
   }
 
-  function set_chartEditorTheme(value:ChartEditorTheme):ChartEditorTheme
+  function set_chartEditorTheme(value:String):String
   {
     // Set and apply.
     data.optionsChartEditor.theme = value;
@@ -527,6 +527,40 @@ class Save
     data.optionsChartEditor.themeMusic = value;
     flush();
     return data.optionsChartEditor.themeMusic;
+  }
+
+  public var chartEditorAutoSaveExit(get, set):Bool;
+
+  function get_chartEditorAutoSaveExit():Bool
+  {
+    if (data.optionsChartEditor.autoSaveExit == null) data.optionsChartEditor.autoSaveExit = true;
+
+    return data.optionsChartEditor.autoSaveExit;
+  }
+
+  function set_chartEditorAutoSaveExit(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.autoSaveExit = value;
+    flush();
+    return data.optionsChartEditor.autoSaveExit;
+  }
+
+  public var chartEditorAutoSaveTimer(get, set):Float;
+
+  function get_chartEditorAutoSaveTimer():Float
+  {
+    if (data.optionsChartEditor.autoSaveTimer == null) data.optionsChartEditor.autoSaveTimer = 5.0;
+
+    return data.optionsChartEditor.autoSaveTimer;
+  }
+
+  function set_chartEditorAutoSaveTimer(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.autoSaveTimer = value;
+    flush();
+    return data.optionsChartEditor.autoSaveTimer;
   }
 
   public var chartEditorPlaybackSpeed(get, set):Float;
@@ -1850,9 +1884,9 @@ typedef SaveDataChartEditorOptions =
 
   /**
    * Theme in the Chart Editor.
-   * @default `ChartEditorTheme.Light`
+   * @default `Constants.DEFAULT_EDITOR_THEME`
    */
-  var ?theme:ChartEditorTheme;
+  var ?theme:String;
 
   /**
    * Downscroll in the Chart Editor.
@@ -1895,6 +1929,18 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?themeMusic:Bool;
+
+  /**
+   * Auto-save on exit in the Chart Editor.
+   * @default `true`
+   */
+  var ?autoSaveExit:Bool;
+
+  /**
+   * Auto-save timer in the Chart Editor.
+   * @default `5.0`
+   */
+  var ?autoSaveTimer:Float;
 
   /**
    * Instrumental volume in the Chart Editor.

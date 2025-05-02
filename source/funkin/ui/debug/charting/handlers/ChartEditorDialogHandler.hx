@@ -13,6 +13,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorCharacterIconSelectorMenu;
+import funkin.ui.debug.charting.dialogs.ChartEditorPreferencesDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadChartDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
@@ -29,6 +30,7 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
+import haxe.ui.components.CheckBox;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
@@ -38,6 +40,7 @@ import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import thx.semver.Version;
+import funkin.save.Save;
 
 using Lambda;
 
@@ -140,6 +143,70 @@ class ChartEditorDialogHandler
     menu.zIndex = 1000;
 
     return menu;
+  }
+
+  /**
+   * Builds and opens a dialog where the user can change the chart editor preferences.
+   */
+  public static function openPreferencesDialog(state:ChartEditorState, closable:Bool):Null<Dialog>
+  {
+    var dialog = ChartEditorPreferencesDialog.build(state, closable);
+    var save:Save = Save.instance;
+
+    var themeMusic:Null<CheckBox> = dialog.findComponent('optionsThemeMusic', CheckBox);
+    if (themeMusic == null) throw 'Could not locate themeMusic CheckBox in Preferences dialog';
+    themeMusic.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      state.welcomeMusic.active = event.value;
+      state.fadeInWelcomeMusic(ChartEditorState.WELCOME_MUSIC_FADE_IN_DELAY, ChartEditorState.WELCOME_MUSIC_FADE_IN_DURATION);
+    };
+    themeMusic.selected = state.welcomeMusic.active;
+
+    var autoSaveExit:Null<CheckBox> = dialog.findComponent('optionsAutoSaveExit', CheckBox);
+    if (autoSaveExit == null) throw 'Could not locate autoSaveExit CheckBox in Preferences dialog';
+    autoSaveExit.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      save.chartEditorAutoSaveExit = event.value;
+    };
+    autoSaveExit.selected = save.chartEditorAutoSaveExit;
+
+    var autoSaveTimer:Null<NumberStepper> = dialog.findComponent('optionsAutoSaveTimer', NumberStepper);
+    if (autoSaveTimer == null) throw 'Could not locate autoSaveTimer NumberStepper in Preferences dialog';
+    autoSaveTimer.onChange = function(event:UIEvent) {
+      if (event.value == null || event.value <= 0) return;
+      save.chartEditorAutoSaveTimer = event.value;
+    };
+    autoSaveTimer.value = save.chartEditorAutoSaveTimer;
+
+    // var pitchNoteDirection:Null<CheckBox> = dialog.findComponent('optionsHitsoundPitchNoteDirection', CheckBox);
+    // if (pitchNoteDirection == null) throw 'Could not locate pitchNoteDirection CheckBox in Preferences dialog';
+    // pitchNoteDirection.onChange = function(event:UIEvent) {
+    //   if (event.value == null) return;
+    //   save.chartEditorHitsoundPitchNoteDirection = event.value;
+    // };
+    // pitchNoteDirection.selected = save.chartEditorHitsoundPitchNoteDirection;
+
+    // var randomPitch:Null<CheckBox> = dialog.findComponent('optionsRandomPitch', CheckBox);
+    // if (randomPitch == null) throw 'Could not locate randomPitch CheckBox in Preferences dialog';
+    // randomPitch.onChange = function(event:UIEvent) {
+    //   if (event.value == null) return;
+    //   save.chartEditorRandomPitch = event.value;
+    // };
+    // randomPitch.selected = save.chartEditorRandomPitch;
+
+    var inputTheme:Null<DropDown> = dialog.findComponent('optionsThemeGroup', DropDown);
+    if (inputTheme == null) throw 'Could not locate inputTheme DropDown in Preferences dialog';
+    inputTheme.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      state.themeId = event.data.id;
+    };
+    var startingValueTheme = ChartEditorDropdowns.populateDropdownWithThemes(inputTheme, state.themeId);
+    inputTheme.value = startingValueTheme;
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
   }
 
   /**
