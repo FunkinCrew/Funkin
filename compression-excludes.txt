@@ -1,3 +1,2 @@
-assets/preload/images/freeplay
-assets/preload/images/freeplay/backingCards/pico
+assets/preload/images/freeplay/*
 assets/preload/images/cursor/*
