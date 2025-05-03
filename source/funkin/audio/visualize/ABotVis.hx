@@ -72,8 +72,8 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     // we use a very low minFreq since some songs use low low subbass like a boss
     analyzer.minFreq = 10;
 
-    #if !web
-    // On non web it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+    #if sys
+    // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
     // So we want to manually change it!
     analyzer.fftN = 256;
     #end

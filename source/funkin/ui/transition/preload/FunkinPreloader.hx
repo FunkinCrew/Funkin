@@ -970,7 +970,7 @@ enum abstract FunkinPreloaderState(Int) to Int
   /**
    * Downloading assets.
    * On HTML5, Lime will do this for us, before calling `onLoaded`.
-   * On Desktop, this step will be completed immediately, and we'll go straight to `CachingGraphics`.
+   * On Native, this step will be completed immediately, and we'll go straight to `CachingGraphics`.
    */
   var DownloadingAssets;
 

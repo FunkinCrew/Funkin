@@ -38,8 +38,6 @@ import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
 
-#if desktop
-#end
 class TitleState extends MusicBeatState
 {
   /**
