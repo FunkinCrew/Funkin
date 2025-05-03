@@ -205,7 +205,7 @@ class StoryMenuState extends MusicBeatState
     buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
-    rightDifficultyArrow = new FlxSprite(1245, leftDifficultyArrow.y);
+    rightDifficultyArrow = new FlxSprite(1231, leftDifficultyArrow.y);
     rightDifficultyArrow.frames = leftDifficultyArrow.frames;
     rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
     rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
@@ -262,7 +262,7 @@ class StoryMenuState extends MusicBeatState
     difficultySprite = difficultySprites.get(diff);
     if (difficultySprite == null)
     {
-      difficultySprite = new FlxSprite(leftDifficultyArrow.x + leftDifficultyArrow.width + 10, leftDifficultyArrow.y);
+      difficultySprite = new FlxSprite(leftDifficultyArrow.x + leftDifficultyArrow.width + 10 - 8, leftDifficultyArrow.y);
 
       if (Assets.exists(Paths.file('images/storymenu/difficulties/${diff}.xml')))
       {
