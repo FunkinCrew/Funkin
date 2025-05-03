@@ -41,10 +41,10 @@ class OptionsState extends MusicBeatState
     optionsCodex = new Codex<OptionsMenuPageName>(Options);
     add(optionsCodex);
 
-    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
+    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(saveData));
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
-    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
 
     if (options.hasMultipleOptions())
     {
@@ -87,7 +87,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
 
-  public function new()
+  public function new(saveDataMenu:SaveDataMenu)
   {
     super();
 
@@ -132,9 +132,17 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     }
     #end
 
-    createItem("SAVE DATA OPTIONS", function() {
-      codex.switchPage(SaveData);
-    });
+    // no need to show an entire new menu for just one option
+    if (saveDataMenu.hasMultipleOptions())
+    {
+      createItem("SAVE DATA OPTIONS", function() {
+        codex.switchPage(SaveData);
+      });
+    }
+    else
+    {
+      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
+    }
 
     createItem("EXIT", exit);
   }
