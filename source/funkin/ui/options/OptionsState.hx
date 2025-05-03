@@ -69,13 +69,13 @@ class OptionsState extends MusicBeatState
     optionsCodex = new Codex<OptionsMenuPageName>(Options);
     add(optionsCodex);
 
-    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
+    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(saveData));
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
     #if FEATURE_LAG_ADJUSTMENT
     var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
     #end
-    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
 
     if (options.hasMultipleOptions())
     {
@@ -161,7 +161,19 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   final CAMERA_MARGIN:Int = 150;
 
-  public function new()
+  #if FEATURE_TOUCH_CONTROLS
+  var backButton:FunkinBackButton;
+  var goingBack:Bool = false;
+  #end
+
+  /**
+   * Camera focus point
+   */
+  var camFocusPoint:FlxObject;
+
+  final CAMERA_MARGIN:Int = 150;
+
+  public function new(saveDataMenu:SaveDataMenu)
   {
     super();
     add(items = new TextMenuList());
@@ -230,10 +242,18 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     }
     #end
 
-    createItem("SAVE DATA OPTIONS", function() {
-      codex.switchPage(SaveData);
-    });
-    #if NO_FEATURE_TOUCH_CONTROLS
+    // no need to show an entire new menu for just one option
+    if (saveDataMenu.hasMultipleOptions())
+    {
+      createItem("SAVE DATA OPTIONS", function() {
+        codex.switchPage(SaveData);
+      });
+    }
+    else
+    {
+      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
+    }
+
     createItem("EXIT", exit);
     #else
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
