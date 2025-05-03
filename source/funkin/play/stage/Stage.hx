@@ -152,8 +152,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   /**
    * The default stage construction routine. Called when the stage is going to be played in.
    * Instantiates each prop and adds it to the stage, while setting its parameters.
+   * @param fromSwap If true, this was called from the "Set Stage" song event.
    */
-  function buildStage():Void
+  public function buildStage(fromSwap:Bool = false):Void
   {
     trace('Building stage for display: ${this.id}');
 
