@@ -84,7 +84,7 @@ class CharSelectSubState extends MusicBeatSubState
     new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)
   ];
 
-  var bopInfo:FramesJSFLInfo;
+  var bopInfo:Null<FramesJSFLInfo>;
   var blackScreen:FunkinSprite;
 
   public function new()
@@ -122,6 +122,10 @@ class CharSelectSubState extends MusicBeatSubState
     super.create();
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
+    if (bopInfo == null)
+    {
+      trace("[ERROR] Failed to load data for bopInfo, is the path provided correct?");
+    }
 
     var bg:FlxSprite = new FlxSprite(-153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
@@ -921,6 +925,7 @@ class CharSelectSubState extends MusicBeatSubState
 
   function doBop(icon:PixelatedIcon, elapsed:Float):Void
   {
+    if (bopInfo == null) return;
     if (bopFr >= bopInfo.frames.length)
     {
       bopRefX = 0;

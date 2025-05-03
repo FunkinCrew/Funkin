@@ -1,5 +1,6 @@
 package funkin.util.logging;
 
+@:nullSafety
 class AnsiTrace
 {
   /**
@@ -41,7 +42,7 @@ class AnsiTrace
    * Format the output to use ANSI colors.
    * Edited from the standard `trace()` implementation.
    */
-  public static function formatOutput(v:Dynamic, infos:haxe.PosInfos):String
+  public static function formatOutput(v:Dynamic, ?infos:haxe.PosInfos):String
   {
     var str = Std.string(v);
     if (infos == null) return str;

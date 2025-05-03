@@ -5,9 +5,11 @@ import haxe.rtti.Meta;
 /**
  * A complement to `ClassMacro`. See `ClassMacro` for more information.
  */
+@:nullSafety
 class CompiledClassList
 {
-  static var classLists:Map<String, List<Class<Dynamic>>>;
+  static var classLists:Map<String, List<Class<Dynamic>>> = [];
+  static var initialized:Bool = false;
 
   /**
    * Class lists are injected into this class's metadata during the typing phase.
@@ -15,7 +17,7 @@ class CompiledClassList
    */
   static function init():Void
   {
-    classLists = [];
+    initialized = true;
 
     // Meta.getType returns Dynamic<Array<Dynamic>>.
     var metaData = Meta.getType(CompiledClassList);
@@ -48,9 +50,9 @@ class CompiledClassList
     }
   }
 
-  public static function get(request:String):List<Class<Dynamic>>
+  public static function get(request:String):Null<List<Class<Dynamic>>>
   {
-    if (classLists == null) init();
+    if (!initialized) init();
 
     if (!classLists.exists(request))
     {

@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.animation.AnimationData;
 
+@:nullSafety
 class FlxAnimationUtil
 {
   /**
@@ -11,6 +12,7 @@ class FlxAnimationUtil
    */
   public static function addAtlasAnimation(target:FlxSprite, anim:AnimationData):Void
   {
+    if (anim.prefix == null) return;
     var frameRate = anim.frameRate == null ? 24 : anim.frameRate;
     var looped = anim.looped == null ? false : anim.looped;
     var flipX = anim.flipX == null ? false : anim.flipX;
@@ -49,6 +51,7 @@ class FlxAnimationUtil
    */
   public static function combineFramesCollections(a:FlxFramesCollection, b:FlxFramesCollection):FlxFramesCollection
   {
+    @:nullSafety(Off)
     var result:FlxFramesCollection = new FlxFramesCollection(null, ATLAS, null);
 
     for (frame in a.frames)

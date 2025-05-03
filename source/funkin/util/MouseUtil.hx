@@ -5,6 +5,7 @@ import flixel.math.FlxPoint;
 /**
  * Utility functions related to the mouse.
  */
+@:nullSafety
 class MouseUtil
 {
   static var oldCamPos:FlxPoint = new FlxPoint();
