@@ -116,7 +116,7 @@ class Project extends HXProject {
   /**
    * The app's minimal android SDK version.
    */
-  static final ANDROID_MINIMUM_SDK_VERSION:Int = 24;
+  static final ANDROID_MINIMUM_SDK_VERSION:Int = 28;
 
 	/**
    * The app's target android SDK version.
