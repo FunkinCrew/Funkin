@@ -157,7 +157,7 @@ class InitState extends FlxState
     });
 
     // SDL for some reason enables VSync on focus lost/gained in mobile
-    // Since we don't really need VSync on mobile we'ere gonna forcefully disable it on these signals for now
+    // Since we don't really need VSync on mobile we're gonna forcefully disable it on these signals for now
     // This is fixed on SDL3 from what I've heared but that doodoo isn't working poperly for mobile
     #if mobile
     FlxG.signals.focusLost.add(function() {

@@ -124,15 +124,30 @@ class Project extends HXProject {
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
 	/**
-	 * The contents of the user's environment config.
-	 * Read from the `.env` file.
+	 * The block size of the ASTC compressed textures.
+   * Higher block size means lower quality and lighter file size for the generated compressed textures.
+   * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
 	 */
-	static var envConfig:Null<Map<String, Dynamic>> = null;
+  static var ASTC_BLOCKSIZE:String = "4x4";
+
+  /**
+	 * The quality of the compression process.
+   * This doesn't exactly reduce the quality of the outputted texture..
+   * But it changes how hard the CPU gotta work to maintin the quality and details of the image while compressing.
+   * possible values: fastest, fast, medium, thorough, exhaustive.
+	 */
+  static var ASTC_QUALITY:String = "medium";
 
 	/**
 	 * A list of asset file globs to exclude from ASTC compression.
 	 */
 	static var astcExcludes:Array<String> = [];
+
+  /**
+	 * The contents of the user's environment config.
+	 * Read from the `.env` file.
+	 */
+	static var envConfig:Null<Map<String, Dynamic>> = null;
 
   //
   // FEATURE FLAGS
@@ -380,7 +395,6 @@ class Project extends HXProject {
     super();
 
     envConfig = readEnvironmentFile("./.env");
-    readASTCExclusion();
 
     flair();
     configureApp();
@@ -395,6 +409,13 @@ class Project extends HXProject {
     configureHaxelibs();
     configureAssets();
     configureIcons();
+
+    readASTCExclusion();
+
+    if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+    {
+      runASTCCompressor();
+    }
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
     {
@@ -1416,6 +1437,22 @@ class Project extends HXProject {
 
     return false;
 	}
+
+  public function runASTCCompressor():Void
+  {
+    info('Compressing ASTC textures...');
+
+    var args:Array<String> = ['run', 'astc-compressor'];
+    args = args.concat(['-i', './assets']);
+    args = args.concat(['-o', './astc-textures/assets/']);
+    args = args.concat(['-blocksize', ASTC_BLOCKSIZE]);
+    args = args.concat(['-quality', ASTC_QUALITY]);
+    args = args.concat(['-excludes', './compression-excludes.txt']);
+
+    Sys.command('haxelib', args);
+
+    info('Finished compressing ASTC textures!');
+  }
 }
 
 /**

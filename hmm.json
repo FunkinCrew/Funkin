@@ -236,6 +236,13 @@
       "name": "extension-haptics",
       "type": "haxelib",
       "version": "1.0.0"
+    },
+    {
+      "name": "astc-compressor",
+      "type": "git",
+      "dir": null,
+      "ref": "9204077f468e85d67d63974e99d70348eebf99ba",
+      "url": "https://github.com/KarimAkra/astc-compressor"
     }
   ]
 }
