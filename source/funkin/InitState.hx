@@ -156,6 +156,18 @@ class InitState extends FlxState
         new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
     });
 
+    // SDL for some reason enables VSync on focus lost/gained in mobile
+    // Since we don't really need VSync on mobile we'ere gonna forcefully disable it on these signals for now
+    // This is fixed on SDL3 from what I've heared but that doodoo isn't working poperly for mobile
+    #if mobile
+    FlxG.signals.focusLost.add(function() {
+      WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+    });
+    FlxG.signals.focusGained.add(function() {
+      WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+    });
+    #end
+
     //
     // NEWGROUNDS API SETUP
     //
