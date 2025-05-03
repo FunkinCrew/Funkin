@@ -219,8 +219,7 @@ class ChartEditorImportExportHandler
       var variChartDataString:String = mappedFileEntries.get(variChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data ($variation).';
       var variChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variChartDataString) ?? throw 'Could not read chart data version ($variation).';
       var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
-        variChartDataVersion) ?? throw 'Could not read chart data ($variation).';
-
+        variChartDataVersion, variation) ?? throw 'Could not read chart data ($variation).';
       songChartDatas.set(variation, variChartData);
     }
     loadSong(state, songMetadatas, songChartDatas);
