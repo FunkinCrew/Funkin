@@ -73,6 +73,7 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.updateTimeSignature();
   }
 
   public function undo(state:ChartEditorState):Void
@@ -105,6 +106,7 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.updateTimeSignature();
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -118,7 +120,6 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
   public function toString():String
   {
-      return
-      'TimeChange ${timeChangeIndex}: ${targetTimeStamp} : BPM: ${targetBPM} in ${targetNumerator}/${targetDenominator}';
+    return 'TimeChange ${timeChangeIndex}: ${targetTimeStamp} : BPM: ${targetBPM} in ${targetNumerator}/${targetDenominator}';
   }
 }
