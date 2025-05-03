@@ -15,6 +15,7 @@ typedef EntryConstructorFunction = String->Void;
  * @param T The type to construct. Must implement `IRegistryEntry`.
  * @param J The type of the JSON data used when constructing.
  */
+@:nullSafety
 @:generic
 @:autoBuild(funkin.util.macro.DataRegistryMacro.buildRegistry())
 abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J>
@@ -115,7 +116,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     {
       try
       {
-        var entry:T = createEntry(entryId);
+        var entry:Null<T> = createEntry(entryId);
         if (entry != null)
         {
           trace('  Loaded entry data: ${entry}');
@@ -165,7 +166,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry.
    * @return The class name, or `null` if it does not exist.
    */
-  public function getScriptedEntryClassName(id:String):String
+  public function getScriptedEntryClassName(id:String):Null<String>
   {
     return scriptedEntryIds.get(id);
   }
@@ -216,7 +217,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   public function fetchEntryVersion(id:String):Null<thx.semver.Version>
   {
     var entryStr:String = loadEntryFile(id).contents;
-    var entryVersion:thx.semver.Version = VersionUtil.getVersionFromJSON(entryStr);
+    var entryVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(entryStr);
     return entryVersion;
   }
 
