@@ -34,6 +34,11 @@ class SustainTrail extends FlxSprite
   public var cover:NoteHoldCover = null;
 
   /**
+   * The Y Offset of the note.
+   */
+  public var yOffset:Float = 0.0;
+
+  /**
    * Set to `true` if the user hit the note and is currently holding the sustain.
    * Should display associated effects.
    */

@@ -60,7 +60,7 @@ This section provides guidelines to follow when [opening an issue](https://githu
 
 ## Requirements
 Make sure you're playing:
-- the latest version of the game (currently v0.6.2)
+- the latest version of the game (currently v0.6.4)
 - without any mods
 - on [Newgrounds](https://www.newgrounds.com/portal/view/770371) or downloaded from [itch.io](https://ninja-muffin24.itch.io/funkin)
 
@@ -74,7 +74,7 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Toggleable Ghost Tapping | https://github.com/FunkinCrew/Funkin/pull/2564#issuecomment-2119701802 |
 | Perfectly Centered Strumlines | _same as above^_ |
 | MultiKey, 9k, More than 4 keys, etc. | https://github.com/FunkinCrew/Funkin/issues/4243#issuecomment-2692371969 |
-| Flashy Combo Milestones | https://github.com/FunkinCrew/Funkin/pull/4700#issuecomment-2798916579 | 
+| Flashy Combo Milestones | https://github.com/FunkinCrew/Funkin/pull/4700#issuecomment-2798916579 |
 | Losing Icons for DD and Parents | https://github.com/FunkinCrew/Funkin/issues/3048#issuecomment-2243491536 |
 | Reducing Saturation for the Week 5 Erect Background | https://github.com/FunkinCrew/Funkin/issues/4471#issuecomment-2819760848 |
 | Playable GF / Speaker BF / Speaker Pico | https://github.com/FunkinCrew/Funkin/issues/2953#issuecomment-2216985230 |
@@ -156,11 +156,23 @@ Choose the `develop` branch if you modify:
 Choosing the right base branch helps keep your commit history clean and avoid merge conflicts.
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
-## Merge conflicts and rebasing
+## Maintaining your pull request
+Keeping your pull request clean and easy to review increases the chance that it will be accepted! 
+
+Our maintenance policy is as follows:
+- If we require changes to your PR, we will label your PR `status: needs revision`.
+- We may also leave a comment under your PR specifying what changes you should make.
+- If you receive a comment, you have 90 days to implement the requested changes.
+- After this period, your PR will be closed due to inactivity and labeled `status: stale`.
+- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!   
+
+This policy ensures that PRs awaiting review are up to date and ready to merge.
+
+### Merge conflicts and rebasing
 Some game updates introduce significant breaking changes that may create merge conflicts in your PR. To resolve them, you will need to update or rebase your PR.
 
 Most merge conflicts are small and will only require you to modify a few files to resolve them.
-However, some changes are so big that your commit history will look like a mess!
+However, some changes are so big that your commit history will be a total mess!
 In this case, you will have to perform a [**rebase**](https://docs.github.com/en/get-started/using-git/about-git-rebase).
 This process reapplies your changes on top of the updated branch and cleanly resolves the merge conflicts.
 
@@ -394,22 +406,15 @@ If you simultaneously modify files from both repositories, then open two separat
 Be sure to choose `main` as the base branch for `funkin.assets` PRs, as no `develop` branch exists for that repository.
 
 ### Charting PRs
-Charting PRs make changes such as **adding/removing notes** or **adjusting the placement of song events**.
+Charting PRs make changes such as **adjusting chart metadata**.
 
-This involves modifying one or several of the `funkin.assets` repository's `.json` chart files, found in the `preload/data/songs/` directory.
-
-These PRs should only be opened in the `funkin.assets` repository.
+This involves modifying one or several of the `funkin.assets` repository's `*-metadata.json` files, found in the `preload/data/songs/` directory.
 
 > [!CAUTION]
-> **No Major Recharts!** Any PR that makes major chart modifications will be rejected.
-> Keep your PRs to small tweaks and fixes.
+> We **do not** accept changes to the chart `.json` file itself.
+> If you find an error in the game's charts, please open an issue in the `Funkin` repo, and the Funkin' Crew will review it and make tweaks themselves as necessary.
 
-Here are some guidelines for opening a Charting PR:
-- **Explain the issue.** Which song, variation, difficulty, and section/timestamp is the problem in? Help us understand with screenshots and videos.
-- **Show your changes.** How does the chart look with your changes? Provide screenshots and videos here as well.
-- **Minimize the diff.** If your changes are very small (e.g. a few notes), do not re-export the chart using the Chart Editor. Instead, manually edit the `.json` chart files to help GitHub display your changes cleanly.
-
-If your PR is accepted, you will be credited as a GitHub contributor (but not as a charter in the Pause Menu).
+These PRs should only be opened in the `funkin.assets` repository.
 
 # Closing
 Thank you for reading the Contributing Guide.

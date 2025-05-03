@@ -8,6 +8,7 @@ import io.newgrounds.objects.events.Result;
 /**
  * Use Newgrounds to perform basic telemetry. Ignore if not logged in to Newgrounds.
  */
+@:nullSafety
 class Events
 {
   // Only allow letters, numbers, spaces, dashes, and underscores.

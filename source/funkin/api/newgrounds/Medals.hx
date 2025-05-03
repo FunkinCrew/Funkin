@@ -5,54 +5,56 @@ import io.newgrounds.objects.Medal as MedalData;
 import funkin.util.plugins.NewgroundsMedalPlugin;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
+import io.newgrounds.utils.MedalList;
 import haxe.Json;
 
 class Medals
 {
-  public static var medalJSON:Array<MedalJSON>;
+  public static var medalJSON:Array<MedalJSON> = [];
 
   public static function listMedalData():Map<Medal, MedalData>
   {
-    if (NewgroundsClient.instance.medals == null)
+    var medalList = NewgroundsClient.instance.medals;
+
+    if (medalList == null)
     {
       trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
       return [];
     }
-
-    var result:Map<Medal, MedalData> = [];
-
-    for (medalId in NewgroundsClient.instance.medals.keys())
+    else
     {
-      var medalData = NewgroundsClient.instance.medals.get(medalId);
-      if (medalData == null) continue;
+      // TODO: Why do I have to do this, @:nullSafety is fucked up
+      var result:Map<Medal, MedalData> = [];
 
-      // A little hacky, but it works.
-      result.set(cast medalId, medalData);
+      for (medalId in medalList.keys())
+      {
+        var medalData = medalList.get(medalId);
+        if (medalData == null) continue;
+
+        // A little hacky, but it works.
+        result.set(cast medalId, medalData);
+      }
+
+      return result;
     }
-
-    return result;
-  }
-
-  static function isValid(medalData:MedalData):Bool
-  {
-    // IDK why medalData can exist but _data can be null...
-    // TODO: Move checks to the NG library.
-    @:privateAccess
-    return (medalData != null && medalData._data != null);
   }
 
   public static function award(medal:Medal):Void
   {
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      var medalData = NewgroundsClient.instance.medals.get(medal.getId());
-      if (!isValid(medalData))
+      var medalList = NewgroundsClient.instance.medals;
+      @:privateAccess
+      if (medalList == null || medalList._map == null) return;
+
+      var medalData:Null<MedalData> = medalList.get(medal.getId());
+      @:privateAccess
+      if (medalData == null || medalData._data == null)
       {
         trace('[NEWGROUNDS] Could not retrieve data for medal: ${medal}');
         return;
       }
-
-      if (!medalData.unlocked)
+      else if (!medalData.unlocked)
       {
         trace('[NEWGROUNDS] Awarding medal (${medal}).');
         medalData.sendUnlock();
@@ -66,11 +68,9 @@ class Medals
           NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
         });
         #else
-        if (medalJSON == null) loadMedalJSON();
+        if ((medalJSON?.length ?? 0) == 0) loadMedalJSON();
         // We have to use a medal image from the game files. We use a Base64 encoded image that NG spits out.
         // TODO: Wait, don't they give us the medal icon?
-
-        var g:FlxGraphic = null;
 
         var localMedalData:Null<MedalJSON> = medalJSON.filter(function(jsonMedal) {
           #if FEATURE_NEWGROUNDS_TESTING_MEDALS
@@ -86,10 +86,14 @@ class Medals
         // Lime/OpenFL parses it without the included prefix stuff, so we remove it.
         str = str.replace("data:image/png;base64,", "").trim();
         var bitmapData = BitmapData.fromBase64(str, "image/png");
-        if (str != null) g = FlxGraphic.fromBitmapData(bitmapData);
-        g.persist = true;
+        var medalGraphic:Null<FlxGraphic> = null;
+        if (str != null)
+        {
+          medalGraphic = FlxGraphic.fromBitmapData(bitmapData);
+          medalGraphic.persist = true;
+        }
 
-        NewgroundsMedalPlugin.play(medalData.value, medalData.name, g);
+        NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
         #end
       }
       else
@@ -119,7 +123,7 @@ class Medals
       trace('[NEWGROUNDS] Failed to parse local medal data!');
       for (error in parser.errors)
         funkin.data.DataError.printError(error);
-      medalJSON = null;
+      medalJSON = [];
     }
     else
     {

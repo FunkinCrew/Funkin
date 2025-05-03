@@ -145,6 +145,12 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     return item;
   }
 
+  override function update(elapsed:Float)
+  {
+    enabled = (prompt == null);
+    super.update(elapsed);
+  }
+
   override function set_enabled(value:Bool)
   {
     items.enabled = value;
