@@ -607,4 +607,10 @@ class Constants
    * 0.04 = 4% of distance per frame.
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
+
+  /**
+   * The music used for the menus.
+   * Can be edited by mods.
+   */
+  public static var MENU_MUSIC:String = 'freakyMenu';
 }
