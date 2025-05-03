@@ -1,5 +1,6 @@
 package funkin.ui.freeplay;
 
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.GaussianBlurShader;
@@ -620,15 +621,16 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
-
+        targetPos.x = FlxG.initialWidth * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))] * FullScreenScaleMode.windowScale.x;
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
+        final shiftx:Float = FullScreenScaleMode.windowScale.x * 320;
+        final widescreenMult:Float = (FullScreenScaleMode.gameCutoutSize.x / 1.5) * 0.75;
         // Move the targetPos set to the if statement below if you want them to shift to their target positions after jumping in instead
         // I have no idea why this if instead of frameInTypeBeat == xFrames.length works even though they're the same thing
-        if (targetPos.x <= 320) targetPos.x = intendedX(index - curSelected);
+        if (targetPos.x <= shiftx) targetPos.x = intendedX(index - curSelected) + widescreenMult;
       }
       else if (frameInTypeBeat == xFrames.length)
       {
