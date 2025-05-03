@@ -2,6 +2,7 @@ package funkin.audio.waveform;
 
 import funkin.util.TimerUtil;
 
+@:nullSafety
 class WaveformDataParser
 {
   static final INT16_MAX:Int = 32767;
@@ -10,7 +11,7 @@ class WaveformDataParser
   static final INT8_MAX:Int = 127;
   static final INT8_MIN:Int = -128;
 
-  public static function interpretFlxSound(sound:flixel.sound.FlxSound):Null<WaveformData>
+  public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>):Null<WaveformData>
   {
     if (sound == null) return null;
 
