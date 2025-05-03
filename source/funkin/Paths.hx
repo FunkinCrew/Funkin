@@ -6,6 +6,7 @@ import openfl.utils.AssetType;
 /**
  * A core class which handles determining asset paths.
  */
+@:nullSafety
 class Paths
 {
   static var currentLevel:Null<String> = null;
@@ -136,7 +137,7 @@ class Paths
    * @param withExtension if it should return with the audio file extension `.mp3` or `.ogg`.
    * @return String
    */
-  public static function inst(song:String, ?suffix:String = '', ?withExtension:Bool = true):String
+  public static function inst(song:String, ?suffix:String = '', withExtension:Bool = true):String
   {
     var ext:String = withExtension ? '.${Constants.EXT_SOUND}' : '';
     return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix$ext';
