@@ -1660,6 +1660,7 @@ class FreeplayState extends MusicBeatSubState
     {
       grpCapsules.members[curSelected].onConfirm();
     }
+
   }
 
   override function beatHit():Bool
