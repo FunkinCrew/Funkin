@@ -217,7 +217,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
           {
             final prevButton:Null<FunkinButton> = buttonsTouchID.get(touchID);
 
-            if (input != null && prevButton != null && !prevButton.limitToBounds) prevButton.onOutHandler();
+            if (input != null && prevButton != null && prevButton.input != null && !prevButton.limitToBounds) prevButton.onOutHandler();
           }
           buttonsTouchID.set(touchID, this);
 
@@ -393,8 +393,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       final boundingBoxColor:Null<FlxColor> = getDebugBoundingBoxColor(allowCollisions);
 
-      if (boundingBoxColor != null)
-        drawDebugPolygonColor(gfx, polygon, boundingBoxColor);
+      if (boundingBoxColor != null) drawDebugPolygonColor(gfx, polygon, boundingBoxColor);
 
       endDrawDebug(camera);
     }
@@ -408,8 +407,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       final boundingBoxColor:Null<FlxColor> = getDebugBoundingBoxColor(allowCollisions);
 
-      if (boundingBoxColor != null)
-        drawDebugCircleColor(gfx, boundingBoxColor);
+      if (boundingBoxColor != null) drawDebugCircleColor(gfx, boundingBoxColor);
 
       endDrawDebug(camera);
     }

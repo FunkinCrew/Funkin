@@ -305,7 +305,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
       dragDistance = 0;
     }
 
-    trace(dragDistance);
+    // trace(dragDistance);
   }
 
   /**

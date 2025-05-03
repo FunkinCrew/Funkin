@@ -21,6 +21,7 @@ import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.animation.AnimationData;
 import funkin.util.assets.FlxAnimationUtil;
+import funkin.ui.FullScreenScaleMode;
 
 enum FunkinHintAlphaStyle
 {
@@ -40,8 +41,12 @@ class FunkinHint extends FunkinButton
    * Each style is represented as a key with an associated array of two alpha values:
    * - The first value corresponds to the alpha when the hint is pressed.
    * - The second value corresponds to the alpha when the hint is not pressed.
+   * - The third value corresponds to the duratuon it'll take to tween between the two values.
    */
-  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [INVISIBLE_TILL_PRESS => [0.3, 0.00001], VISIBLE_TILL_PRESS => [0.35, 0.5]];
+  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [
+    INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01],
+    VISIBLE_TILL_PRESS => [0.4, 0.2, 0.05]
+  ];
 
   /**
    * Indicates whether the hint is pixel.
@@ -112,6 +117,7 @@ class FunkinHint extends FunkinButton
   public function initTween(style:FunkinHintAlphaStyle):Void
   {
     final hintAlpha:Null<Array<Float>> = HINT_ALPHA_STYLE.get(style);
+    final swapValues:Bool = style == VISIBLE_TILL_PRESS;
 
     if (hintAlpha == null || hintAlpha.length < 2) return;
 
@@ -127,11 +133,11 @@ class FunkinHint extends FunkinButton
       }
     }
 
-    onDown.add(createTween.bind(hintAlpha[0], hintAlpha[1], true));
-    onUp.add(createTween.bind(hintAlpha[1], hintAlpha[0], false));
-    onOut.add(createTween.bind(hintAlpha[1], hintAlpha[0], false));
+    onDown.add(createTween.bind(hintAlpha[swapValues ? 1 : 0], hintAlpha[2], true));
+    onUp.add(createTween.bind(hintAlpha[swapValues ? 0 : 1], hintAlpha[2], false));
+    onOut.add(createTween.bind(hintAlpha[swapValues ? 0 : 1], hintAlpha[2], false));
 
-    alpha = hintAlpha[1];
+    alpha = hintAlpha[swapValues ? 0 : 1];
 
     if (label != null && hintAlpha != null) label.alpha = hintAlpha[0];
   }
@@ -353,7 +359,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
             final x:Float = ((i == 1) ? FlxG.width - (hintSize * 4) : hintSize * 2) + Math.cos(hintsAngles[j]) * hintsZoneRadius;
             final y:Float = (FlxG.height - (hintSize * 3.75)) + Math.sin(hintsAngles[j]) * hintsZoneRadius;
 
-            add(createHintCircle(x, y, hintsNoteDirections[j % hintsNoteDirections.length], hintSize, hintsColors[j % hintsColors.length]));
+            add(createHintCircle(i == 0 ? x + FullScreenScaleMode.gameNotchSize.x : x - FullScreenScaleMode.gameNotchSize.x, y,
+              hintsNoteDirections[j % hintsNoteDirections.length], hintSize, hintsColors[j % hintsColors.length]));
           }
         }
       case FunkinHitboxControlSchemes.Arrows:
