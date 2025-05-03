@@ -519,13 +519,13 @@ class BaseCharacter extends Bopper
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
       // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
+      if (event.note.playSingAnimation) this.playSingAnimation(event.note.noteData.getDirection(), false);
       holdTimer = 0;
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
       // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
+      if (event.note.playSingAnimation) this.playSingAnimation(event.note.noteData.getDirection(), false);
       holdTimer = 0;
     }
     else if (characterType == GF && event.note.noteData.getMustHitNote())
@@ -554,12 +554,12 @@ class BaseCharacter extends Bopper
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
       // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), true);
+      if (event.note.playSingAnimation) this.playSingAnimation(event.note.noteData.getDirection(), true);
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
       // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), true);
+      if (event.note.playSingAnimation) this.playSingAnimation(event.note.noteData.getDirection(), true);
     }
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
