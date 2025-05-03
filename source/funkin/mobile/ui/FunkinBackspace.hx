@@ -26,7 +26,7 @@ class FunkinBackspace extends FunkinButton
     if (onClick != null) onDown.add(onClick);
   }
 
-  public function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
 

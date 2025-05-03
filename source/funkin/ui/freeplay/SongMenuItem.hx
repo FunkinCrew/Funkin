@@ -621,7 +621,7 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        targetPos.x = FlxG.initialWidth * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))] * FullScreenScaleMode.windowScale.x;
+        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 

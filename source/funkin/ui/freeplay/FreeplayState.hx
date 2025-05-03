@@ -2452,7 +2452,9 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = capsule.intendedX(index - curSelected) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
+      #if NO_FEATURE_TOUCH_CONTROLS
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
+      #end
     }
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank)
