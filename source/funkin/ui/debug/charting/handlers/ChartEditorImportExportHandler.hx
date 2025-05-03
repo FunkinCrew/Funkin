@@ -117,12 +117,13 @@ class ChartEditorImportExportHandler
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
-    state.selectedDifficulty = state.availableDifficulties[0];
 
-    if (!newSongMetadata.exists(state.selectedVariation))
+    if (!state.songMetadata.exists(state.selectedVariation))
     {
       state.selectedVariation = Constants.DEFAULT_VARIATION;
     }
+    // Use the first available difficulty as a fallback if the currently selected one cannot be found.
+    if (state.availableDifficulties.indexOf(state.selectedDifficulty) < 0) state.selectedDifficulty = state.availableDifficulties[0];
 
     Conductor.instance.forceBPM(null); // Disable the forced BPM.
     Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
