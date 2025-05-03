@@ -1146,12 +1146,17 @@ class FileUtil
    * Runs platform-specific code to open a path in the file explorer.
    *
    * @param pathFolder The path of the folder to open.
+   * @param createIfNotExists If `true`, creates the folder if missing; otherwise, throws an error.
    */
-  public static function openFolder(pathFolder:String):Void
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
   {
     #if sys
     pathFolder = pathFolder.trim();
-    if (!directoryExists(pathFolder))
+    if (createIfNotExists)
+    {
+      createDirIfNotExists(pathFolder);
+    }
+    else if (!directoryExists(pathFolder))
     {
       throw 'Path is not a directory: "$pathFolder"';
     }
@@ -1521,9 +1526,9 @@ class FileUtilSandboxed
     return FileUtil.makeZIPEntryFromBytes(name, data);
   }
 
-  public static function openFolder(pathFolder:String):Void
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
   {
-    FileUtil.openFolder(sanitizePath(pathFolder));
+    FileUtil.openFolder(sanitizePath(pathFolder), createIfNotExists);
   }
 
   public static function openSelectFile(path:String):Void
