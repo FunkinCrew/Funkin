@@ -148,7 +148,7 @@ class NGSaveSlot
   {
     trace('[NEWGROUNDS] Checking save slot with the ID of ${ngSaveSlot?.id}...');
 
-    trace('  Is null? ${ngSaveSlot != null}');
+    trace('  Is null? ${ngSaveSlot == null}');
     trace('  Is empty? ${ngSaveSlot?.isEmpty() ?? false}');
   }
 }
