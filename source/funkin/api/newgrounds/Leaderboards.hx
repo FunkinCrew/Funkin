@@ -6,6 +6,7 @@ import io.newgrounds.objects.ScoreBoard as LeaderboardData;
 import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.utils.ScoreBoardList;
 
+@:nullSafety
 class Leaderboards
 {
   public static function listLeaderboardData():Map<Leaderboard, LeaderboardData>
@@ -16,21 +17,8 @@ class Leaderboards
       trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
       return [];
     }
-    else
-    {
-      var result:Map<Leaderboard, LeaderboardData> = [];
 
-      for (leaderboardId in leaderboardList.keys())
-      {
-        var leaderboardData = leaderboardList.get(leaderboardId);
-        if (leaderboardData == null) continue;
-
-        // A little hacky, but it works.
-        result.set(cast leaderboardId, leaderboardData);
-      }
-
-      return result;
-    }
+    return @:privateAccess leaderboardList._map.copy();
   }
 
   /**
@@ -86,7 +74,7 @@ class Leaderboards
 }
 #end
 
-enum abstract Leaderboard(Int)
+enum abstract Leaderboard(Int) from Int to Int
 {
   /**
    * Represents an undefined or invalid leaderboard.
