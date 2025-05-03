@@ -1732,6 +1732,7 @@ class FreeplayState extends MusicBeatSubState
                 grpCapsules.members[curSelected].doLerp = true;
                 draggingDifficulty = false;
                 busy = false;
+                generateSongList(currentFilter, true, false);
               }
             });
         }
@@ -1751,6 +1752,7 @@ class FreeplayState extends MusicBeatSubState
                 grpCapsules.members[curSelected].doLerp = true;
                 busy = false;
                 draggingDifficulty = false;
+                generateSongList(currentFilter, true, false);
               }
             });
         }
