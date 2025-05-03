@@ -91,6 +91,8 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     #end
 
     linkRecentChart.onClick = function(_event) {
+      linkRecentChart.hide();
+
       this.hideDialog(DialogButton.CANCEL);
 
       // Load chart from file
