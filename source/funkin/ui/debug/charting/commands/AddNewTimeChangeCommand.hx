@@ -55,6 +55,7 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime(); // basically will update the time signature for the editor if necessary.
     state.updateGridHeight();
+    state.updateTimeSignature();
   }
 
   public function undo(state:ChartEditorState):Void
@@ -79,6 +80,7 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.updateTimeSignature();
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
