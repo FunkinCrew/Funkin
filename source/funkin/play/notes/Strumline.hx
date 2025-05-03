@@ -86,9 +86,9 @@ class Strumline extends FlxSpriteGroup
   /**
    * Reset the scroll speed to the current chart's scroll speed.
    */
-  public function resetScrollSpeed():Void
+  public function resetScrollSpeed(?newScrollSpeed:Float):Void
   {
-    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+    scrollSpeed = newScrollSpeed ?? PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
   }
 
   var _conductorInUse:Null<Conductor>;
@@ -155,7 +155,7 @@ class Strumline extends FlxSpriteGroup
 
   static final BACKGROUND_PAD:Int = 16;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool)
+  public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float)
   {
     super();
 
@@ -201,7 +201,7 @@ class Strumline extends FlxSpriteGroup
     this.refresh();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
-    resetScrollSpeed();
+    resetScrollSpeed(scrollSpeed);
 
     for (i in 0...KEY_COUNT)
     {
@@ -447,7 +447,6 @@ class Strumline extends FlxSpriteGroup
         });
     }
   }
-
 
   /**
    * For a note's strumTime, calculate its Y position relative to the strumline.
