@@ -6,6 +6,7 @@ import funkin.ui.freeplay.ScriptedFreeplayStyle;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
+@:nullSafety
 class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleData> implements ISingleton implements DefaultRegistryImpl
 {
   /**
