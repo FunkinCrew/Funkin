@@ -1378,10 +1378,12 @@ class Save
         trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
       }
 
+      FlxG.save.erase();
+      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH); // forces regeneration of the file as erase deletes it
+
       var gameSave = SaveDataMigrator.migrate(data);
-      @:privateAccess
-      FlxG.save.data = gameSave.data;
-      FlxG.save.flush();
+      FlxG.save.mergeData(gameSave.data, true);
+      _instance = gameSave;
       onFinish();
     }, function(error:io.newgrounds.Call.CallError) {
       var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
