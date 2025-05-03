@@ -141,6 +141,18 @@ class WindowUtil
   }
 
   /**
+   * Turns off that annoying "Report to Microsoft" dialog that pops up when the game crashes.
+   */
+  public static function disableCrashHandler():Void
+  {
+    #if (cpp && windows)
+    untyped __cpp__('SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);');
+    #else
+    // Do nothing.
+    #end
+  }
+
+  /**
    * Sets the title of the application window.
    * @param value The title to use.
    */

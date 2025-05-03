@@ -18,43 +18,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 
     add(items = new TextMenuList());
 
-    #if FEATURE_NEWGROUNDS
-    if (NewgroundsClient.instance.isLoggedIn())
-    {
-      createItem("LOAD FROM NEWGROUNDS", function() {
-        openConfirmPrompt("This will overwrite
-        \nALL your save data.
-        \nAre you sure?
-      ", "Overwrite", function() {
-          funkin.save.Save.instance.loadFromNewgrounds();
-
-          FlxG.switchState(() -> new funkin.InitState());
-        });
-      });
-
-      createItem("SAVE TO NEWGROUNDS", function() {
-        openConfirmPrompt("This will overwrite
-        \nALL save data saved
-        \non Newgrounds.
-        \nAre you sure?
-      ", "Overwrite", function() {
-          funkin.save.Save.instance.saveToNewgrounds();
-        });
-      });
-    }
-    #end
-
-    createItem("CLEAR SAVE DATA", function() {
-      openConfirmPrompt("This will delete
-        \nALL your save data.
-        \nAre you sure?
-      ", "Delete", function() {
-        // Clear the save data.
-        funkin.save.Save.clearData();
-
-        FlxG.switchState(() -> new funkin.InitState());
-      });
-    });
+    createItem("CLEAR SAVE DATA", openSaveDataPrompt);
 
     createItem("EXIT", exit);
   }
@@ -81,7 +45,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
 
   var prompt:Prompt;
 
-  function openConfirmPrompt(text:String, yesText:String, onYes:Void->Void):Void
+  function openConfirmPrompt(text:String, yesText:String, onYes:Void->Void, ?groupToOpenOn:Null<flixel.group.FlxGroup>):Void
   {
     if (prompt != null) return;
 
@@ -89,7 +53,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
     prompt.create();
     prompt.createBgFromMargin(100, 0xFFFAFD6D);
     prompt.back.scrollFactor.set(0, 0);
-    add(prompt);
+    FlxG.state.add(prompt);
 
     prompt.onYes = function() {
       onYes();
@@ -107,5 +71,26 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
       prompt.destroy();
       prompt = null;
     }
+  }
+  public function openSaveDataPrompt()
+  {
+    openConfirmPrompt("This will delete
+        \nALL your save data.
+        \nAre you sure?
+      ", "Delete", function() {
+      // Clear the save data.
+      Save.clearData();
+
+      FlxG.switchState(() -> new funkin.InitState());
+    });
+  }
+
+  /**
+   * True if this page has multiple options, excluding the exit option.
+   * If false, there's no reason to ever show this page.
+   */
+  public function hasMultipleOptions():Bool
+  {
+    return items.length > 2;
   }
 }

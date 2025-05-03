@@ -231,9 +231,18 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     }
     #end
 
-    createItem("SAVE DATA OPTIONS", function() {
-      codex.switchPage(SaveData);
-    });
+    // no need to show an entire new menu for just one option
+    if (saveDataMenu.hasMultipleOptions())
+    {
+      createItem("SAVE DATA OPTIONS", function() {
+        codex.switchPage(SaveData);
+      });
+    }
+    else
+    {
+      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
+    }
+
     #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
     #else
