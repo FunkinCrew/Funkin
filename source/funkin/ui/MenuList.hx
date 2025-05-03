@@ -6,6 +6,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.FunkinSound;
 
+@:nullSafety
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
   public var selectedIndex(default, null):Int = 0;
@@ -58,11 +59,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     return add(item);
   }
 
-  public function resetItem(oldName:String, newName:String, ?callback:Void->Void):T
+  public function resetItem(oldName:String, newName:String, ?callback:Void->Void):Null<T>
   {
-    if (!byName.exists(oldName)) throw "No item named:" + oldName;
-
     var item = byName[oldName];
+    if (item == null) throw 'No item named: $oldName';
     byName.remove(oldName);
     byName[newName] = item;
     item.setItem(newName, callback);
@@ -208,6 +208,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   }
 }
 
+@:nullSafety
 class MenuListItem extends FlxSprite
 {
   public var callback:Void->Void;
@@ -227,6 +228,10 @@ class MenuListItem extends FlxSprite
   {
     super(x, y);
 
+    // This is just here to satisfy the null-safety checker
+    // setData still needs to be called since other classes may override it
+    this.name = name;
+    this.callback = callback;
     setData(name, callback);
     idle();
   }
@@ -263,9 +268,10 @@ class MenuListItem extends FlxSprite
   }
 }
 
+@:nullSafety
 class MenuTypedItem<T:FlxSprite> extends MenuListItem
 {
-  public var label(default, set):T;
+  public var label(default, set):Null<T>;
 
   public function new(x = 0.0, y = 0.0, label:T, name:String, callback)
   {
@@ -286,7 +292,7 @@ class MenuTypedItem<T:FlxSprite> extends MenuListItem
     height = oldHeight;
   }
 
-  function set_label(value:T)
+  function set_label(value:Null<T>):Null<T>
   {
     if (value != null)
     {
