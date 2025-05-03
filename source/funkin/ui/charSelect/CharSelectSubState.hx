@@ -1038,10 +1038,16 @@ class CharSelectSubState extends MusicBeatSubState
             if (pressedSelect && memb.animation.curAnim.name == "idle") memb.animation.play("confirm");
             if (autoFollow && !pressedSelect && memb.animation.curAnim.name != "idle")
             {
+              // Play the confirm animation in reverse
               memb.animation.play("confirm", false, true);
-              member.animation.finishCallback = (_) -> {
+              member.animation.finishCallback = function(name:String):Void {
+                trace('Finish pixel animation: ${name}');
                 member.animation.play("idle");
-                member.animation.finishCallback = null;
+                // Reset the finish callback to what it was before
+                member.animation.finishCallback = function(name:String):Void {
+                  trace('Finish pixel animation: ${name}');
+                  if (name == 'confirm') member.animation.play('confirm-hold');
+                };
               };
             }
           }
@@ -1084,8 +1090,8 @@ class CharSelectSubState extends MusicBeatSubState
       if (frame >= index + 1)
       {
         playerChill.visible = true;
-        playerChill.switchChar(value);
-        gfChill.switchGF(value);
+        playerChill.switchChar(value, pressedSelect);
+        gfChill.switchGF(value, pressedSelect);
         gfChill.visible = true;
       }
       if (frame >= index + 2)
