@@ -605,6 +605,7 @@ class Conductor
     else
     {
       var resultMeasureTime:Float = 0;
+      ms = ms < 0 ? 0 : ms;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -651,6 +652,7 @@ class Conductor
     else
     {
       var resultMs:Float = 0;
+      measureTime = measureTime < 0 ? 0 : measureTime;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -698,6 +700,7 @@ class Conductor
     else
     {
       var resultStep:Float = 0;
+      ms = ms < 0 ? 0 : ms;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -741,6 +744,7 @@ class Conductor
     else
     {
       var resultMs:Float = 0;
+      stepTime = stepTime < 0 ? 0 : stepTime;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
       var i:Int = -1;
@@ -804,6 +808,30 @@ class Conductor
 
       return resultMs;
     }
+  }
+
+  /**
+   * Given a time in milliseconds, return the time change that time is inside of.
+   * @param ms The time in milliseconds.
+   * @return The resulting time change.
+   */
+  public function getTimeChange(ms:Float):SongTimeChange
+  {
+    if (timeChanges.length == 0)
+    {
+      return new SongTimeChange(0, 100);
+    }
+    var i:Int = 0;
+    ms = ms < 0 ? 0 : ms;
+    for (timeChange in timeChanges)
+    {
+      i++;
+      if ((i == timeChanges.length && ms >= timeChange.timeStamp) || (ms >= timeChange.timeStamp && ms < timeChanges[i].timeStamp))
+      {
+        return timeChange;
+      }
+    }
+    return new SongTimeChange(0, 100);
   }
 
   /**
