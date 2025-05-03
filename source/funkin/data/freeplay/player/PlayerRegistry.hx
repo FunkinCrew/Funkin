@@ -7,6 +7,7 @@ import funkin.save.Save;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
+@:nullSafety
 class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> implements ISingleton implements DefaultRegistryImpl
 {
   /**
