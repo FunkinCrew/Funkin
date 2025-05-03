@@ -25,4 +25,13 @@ class FunkinBackspace extends FunkinButton
 
     if (onClick != null) onDown.add(onClick);
   }
+
+  public function update(elapsed:Float)
+  {
+    super.update(elapsed);
+
+    #if android
+    if (FlxG.FlxG.android.justReleased.BACK) onDown.dispatch();
+    #end
+  }
 }
