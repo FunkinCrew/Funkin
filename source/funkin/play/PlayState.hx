@@ -965,12 +965,7 @@ class PlayState extends MusicBeatSubState
         if (!isSubState && event.gitaroo)
         {
           this.remove(currentStage);
-          FlxG.switchState(() -> new GitarooPause(
-            {
-              targetSong: currentSong,
-              targetDifficulty: currentDifficulty,
-              targetVariation: currentVariation,
-            }));
+          FlxG.switchState(() -> new GitarooPause(lastParams));
         }
         else
         {
