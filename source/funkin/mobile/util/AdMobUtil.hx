@@ -15,7 +15,7 @@ import funkin.util.macro.EnvironmentConfigMacro;
  */
 class AdMobUtil
 {
-  #if !TESTING_ADS
+  #if NO_TESTING_ADS
   /**
    * AdMob publisher ID used for the application.
    */
