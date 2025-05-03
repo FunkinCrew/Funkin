@@ -31,7 +31,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
     }
     else
     {
-      removedTimeChange = timeChanges.splice(timeChangeIndex , 1);
+      removedTimeChange = timeChanges.splice(timeChangeIndex, 1);
     }
 
     state.currentSongMetadata.timeChanges = timeChanges;
@@ -49,6 +49,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.updateTimeSignature();
   }
 
   public function undo(state:ChartEditorState):Void
@@ -73,6 +74,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.updateSongTime();
     state.updateGridHeight();
+    state.updateTimeSignature();
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -83,7 +85,8 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
   public function toString():String
   {
     if (removedTimeChange != null && removedTimeChange.length > 0) return
-    'TimeChange ${timeChangeIndex} : ${removedTimeChange[0].timeStamp} : BPM: ${removedTimeChange[0].bpm} in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed'
-      else return 'huh?';
+      'TimeChange ${timeChangeIndex} : ${removedTimeChange[0].timeStamp} : BPM: ${removedTimeChange[0].bpm} in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed'
+    else
+      return 'huh?';
   }
 }
