@@ -539,6 +539,7 @@ class Strumline extends FlxSpriteGroup
       {
         // Hold note is offscreen, kill it.
         holdNote.visible = false;
+        holdNotes.remove(holdNote);
         holdNote.kill(); // Do not destroy! Recycling is faster.
       }
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
@@ -565,6 +566,7 @@ class Strumline extends FlxSpriteGroup
         }
 
         holdNote.visible = false;
+        holdNotes.remove(holdNote);
         holdNote.kill();
       }
       else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
@@ -748,6 +750,7 @@ class Strumline extends FlxSpriteGroup
     for (holdNote in holdNotes.members)
     {
       if (holdNote == null) continue;
+      holdNotes.remove(holdNote);
       holdNote.kill();
     }
 
