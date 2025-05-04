@@ -60,7 +60,7 @@ This section provides guidelines to follow when [opening an issue](https://githu
 
 ## Requirements
 Make sure you're playing:
-- the latest version of the game (currently v0.6.4)
+- the latest version of the game (currently v0.7.0)
 - without any mods
 - on [Newgrounds](https://www.newgrounds.com/portal/view/770371) or downloaded from [itch.io](https://ninja-muffin24.itch.io/funkin)
 
@@ -156,14 +156,14 @@ Choosing the right base branch helps keep your commit history clean and avoid me
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
 ## Maintaining your pull request
-Keeping your pull request clean and easy to review increases the chance that it will be accepted! 
+Keeping your pull request clean and easy to review increases the chance that it will be accepted!
 
 Our maintenance policy is as follows:
 - If we require changes to your PR, we will label your PR `status: needs revision`.
 - We may also leave a comment under your PR specifying what changes you should make.
 - If you receive a comment, you have 90 days to implement the requested changes.
 - After this period, your PR will be closed due to inactivity and labeled `status: stale`.
-- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!   
+- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!
 
 This policy ensures that PRs awaiting review are up to date and ready to merge.
 

@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: "# PLEASE READ THE [CONTRIBUTING GUIDE](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!"
-      
+
   - type: checkboxes
     attributes:
       label: Issue Checklist
@@ -45,11 +45,11 @@ body:
   - type: input
     attributes:
       label: Version
-      description: Which version are you playing on? The game version is in the bottom left corner of the main menu. 
-      placeholder: ex. 0.6.4
+      description: Which version are you playing on? The game version is in the bottom left corner of the main menu.
+      placeholder: ex. 0.7.0
     validations:
       required: true
-  
+
   - type: markdown
     attributes:
       value: "## Describe the charting issue(s)."
