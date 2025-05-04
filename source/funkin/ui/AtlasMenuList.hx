@@ -44,19 +44,19 @@ class AtlasMenuItem extends MenuListItem
 
   public var centered:Bool = false;
 
-  public function new(x = 0.0, y = 0.0, name:String, atlas, callback)
+  public function new(x = 0.0, y = 0.0, name:String, atlas, callback, available:Bool = true)
   {
     this.atlas = atlas;
-    super(x, y, name, callback);
+    super(x, y, name, callback, available);
   }
 
-  override function setData(name:String, ?callback:Void->Void)
+  override function setData(name:String, ?callback:Void->Void, available:Bool)
   {
     frames = atlas;
     animation.addByPrefix('idle', '$name idle', 24);
     animation.addByPrefix('selected', '$name selected', 24);
 
-    super.setData(name, callback);
+    super.setData(name, callback, available);
   }
 
   public function changeAnim(animName:String)

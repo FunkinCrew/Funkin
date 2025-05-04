@@ -143,7 +143,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
         final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
         final itemPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, item, 0) && _isMainMenuState;
 
-        if ((itemOverlaps && TouchUtil.justPressed) || itemPixelOverlap)
+        if (item.available && ((itemOverlaps && TouchUtil.justPressed) || itemPixelOverlap))
         {
           if (selectedIndex == i && TouchUtil.justPressed) accept();
           else
@@ -222,6 +222,9 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   public function accept()
   {
     var selected = members[selectedIndex];
+
+    if (!selected.available) return;
+
     onAcceptPress.dispatch(selected);
 
     if (selected.fireInstantly) selected.callback();
@@ -239,6 +242,22 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   public function selectItem(index:Int)
   {
     members[selectedIndex].idle();
+
+    if (!members[index].available)
+    {
+      if (index < selectedIndex)
+      {
+        final newIndex:Int = (index - 1 < 0) ? index + 1 : index - 1;
+        selectItem(newIndex);
+        return;
+      }
+      else if (index > selectedIndex)
+      {
+        final newIndex:Int = (index + 1 > members.length) ? index - 1 : index + 1;
+        selectItem(newIndex);
+        return;
+      }
+    }
 
     selectedIndex = index;
 
@@ -275,6 +294,7 @@ class MenuListItem extends FlxSprite
 {
   public var callback:Void->Void;
   public var name:String;
+  public var available:Bool;
 
   /**
    * Set to true for things like opening URLs otherwise, it may it get blocked.
@@ -286,19 +306,21 @@ class MenuListItem extends FlxSprite
   function get_selected()
     return alpha == 1.0;
 
-  public function new(x = 0.0, y = 0.0, name:String, callback)
+  public function new(x = 0.0, y = 0.0, name:String, callback, available:Bool = true)
   {
     super(x, y);
 
-    setData(name, callback);
+    setData(name, callback, available);
     idle();
   }
 
-  function setData(name:String, ?callback:Void->Void)
+  function setData(name:String, ?callback:Void->Void, available:Bool)
   {
     this.name = name;
 
     if (callback != null) this.callback = callback;
+
+    this.available = available;
   }
 
   /**
@@ -308,7 +330,7 @@ class MenuListItem extends FlxSprite
    */
   public function setItem(name:String, ?callback:Void->Void)
   {
-    setData(name, callback);
+    setData(name, callback, available);
 
     if (selected) select();
     else
@@ -330,9 +352,9 @@ class MenuTypedItem<T:FlxSprite> extends MenuListItem
 {
   public var label(default, set):T;
 
-  public function new(x = 0.0, y = 0.0, label:T, name:String, callback)
+  public function new(x = 0.0, y = 0.0, label:T, name:String, callback, available:Bool = true)
   {
-    super(x, y, name, callback);
+    super(x, y, name, callback, available);
     // set label after super otherwise setters fuck up
     this.label = label;
   }

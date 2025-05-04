@@ -18,7 +18,7 @@ import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
 #if mobile
 import funkin.mobile.ui.FunkinBackspace;
-import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
@@ -240,15 +240,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param onChange Gets called every time the player changes the value; use this to apply the value
    * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
    */
-  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
+  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool, available:Bool = true):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1), defaultValue);
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1),
+      defaultValue, available);
 
     items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
-    });
+    }, false, available);
 
     preferenceItems.add(checkbox);
     preferenceDesc.push(prefDesc);
