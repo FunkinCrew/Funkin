@@ -275,8 +275,15 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         if (gameHeight / FlxG.width > maxAspectRatio.y / maxAspectRatio.x && maxRatioAxis.y)
         {
+          final oldGameHeight = gameHeight;
           gameHeight = ((gameSize.x / scale.x) / maxAspectRatio.x) * maxAspectRatio.y;
-          offset.y = Math.ceil((deviceSize.y - gameHeight) * 0.5);
+          cutoutSize.set(0, cutoutSize.y - (oldGameHeight - gameHeight));
+          #if android
+          gameCutoutSize.set(0, cutoutSize.y / 2);
+          #else
+          gameCutoutSize.copyFrom(cutoutSize);
+          #end
+          offset.y = Math.ceil((deviceSize.y - (gameHeight * scale.y)) * 0.5);
           updateGamePosition();
         }
 
@@ -309,8 +316,15 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         if (gameWidth / FlxG.height > maxAspectRatio.x / maxAspectRatio.y && maxRatioAxis.x)
         {
+          final oldGameWidth = gameWidth;
           gameWidth = ((gameSize.y / scale.y) / maxAspectRatio.y) * maxAspectRatio.x;
-          offset.x = Math.ceil((deviceSize.x - gameWidth) * 0.5);
+          cutoutSize.set(cutoutSize.x - (oldGameWidth - gameWidth), 0);
+          #if android
+          gameCutoutSize.set(cutoutSize.x / 2, 0);
+          #else
+          gameCutoutSize.copyFrom(cutoutSize);
+          #end
+          offset.x = Math.ceil((deviceSize.x - (gameWidth * scale.x)) * 0.5);
           updateGamePosition();
         }
 
