@@ -33,6 +33,7 @@ class MainMenuState extends MusicBeatState
 {
   var menuItems:MenuTypedList<AtlasMenuItem>;
 
+  var bg:FlxSprite;
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
@@ -63,7 +64,7 @@ class MainMenuState extends MusicBeatState
     persistentUpdate = true;
     persistentDraw = true;
 
-    var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
+    bg = new FlxSprite(Paths.image('menuBG'));
     bg.scrollFactor.x = 0;
     bg.scrollFactor.y = 0.17;
     bg.setGraphicSize(Std.int(bg.width * 1.2));
@@ -179,7 +180,7 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu',
+    FunkinSound.playMusic(Constants.MENU_MUSIC,
       {
         overrideExisting: true,
         restartTrack: false,

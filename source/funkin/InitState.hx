@@ -108,7 +108,7 @@ class InitState extends FlxState
     FlxG.game.focusLostFramerate = 30;
 
     // Makes Flixel use frame times instead of locked movements per frame for things like tweens
-    FlxG.fixedTimestep = false; 
+    FlxG.fixedTimestep = false;
 
     setupFlixelDebug();
 
@@ -305,7 +305,7 @@ class InitState extends FlxState
     }
     else
     {
-      FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      FlxG.sound.cache(Paths.music('${Constants.MENU_MUSIC}/${Constants.MENU_MUSIC}'));
       FlxG.switchState(() -> new TitleState());
     }
   }
