@@ -112,7 +112,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.naughtyness);
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
-    }, Preferences.downscroll);
+    }, Preferences.downscroll,
+      #if mobile (Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows) #end);
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
