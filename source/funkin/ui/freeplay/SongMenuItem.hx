@@ -286,7 +286,7 @@ class SongMenuItem extends FlxSpriteGroup
     var clipSize:Int = 290;
     var clipType:Int = 0;
 
-    if (ranking.visible)
+    if (ranking.visible || fakeRanking.visible)
     {
       favIconBlurred.x = this.x + 370;
       favIcon.x = favIconBlurred.x;
