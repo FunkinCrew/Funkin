@@ -1898,6 +1898,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playbarSongPos:Label;
 
   /**
+   * The label by the playbar telling the current beat rounded to 2
+   */
+  var playbarBeatNum:Label;
+
+  /**
+   * The label by the playbar telling the current step
+   */
+  var playbarStepNum:Label;
+
+  /**
    * The label by the playbar telling the song time remaining.
    */
   var playbarSongRemaining:Label;
@@ -5113,12 +5123,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
 
-    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
-    var parts:Array<String> = Std.string(roundedBeat).split('.');
-    if (parts.length == 1) parts.push('00');
-    else if (parts[1].length < 2) parts[1] += '0';
-    songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
-
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
     var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
@@ -5127,6 +5131,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
 
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
+
+    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
+    var beatParts:Array<String> = Std.string(roundedBeat).split('.');
+    if (beatParts.length == 1) beatParts.push('00');
+    else if (beatParts[1].length < 2) beatParts[1] += '0';
+
+    playbarBeatNum.text = 'Beat: ${beatParts.join('.')}';
+    playbarStepNum.text = 'Step: ${Conductor.instance.currentStep}';
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
