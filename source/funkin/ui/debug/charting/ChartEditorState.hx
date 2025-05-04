@@ -17,6 +17,7 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.visualize.PolygonSpectogram;
@@ -1958,6 +1959,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The label by the playbar telling the song position.
    */
   var playbarSongPos:Label;
+
+  /**
+   * The label by the playbar telling the current beat rounded to 2
+   */
+  var playbarBeatNum:Label;
+
+  /**
+   * The label by the playbar telling the current step
+   */
+  var playbarStepNum:Label;
 
   /**
    * The label by the playbar telling the song time remaining.
@@ -5276,12 +5287,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
 
-    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
-    var parts:Array<String> = Std.string(roundedBeat).split('.');
-    if (parts.length == 1) parts.push('00');
-    else if (parts[1].length < 2) parts[1] += '0';
-    songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
-
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
     var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
@@ -5290,6 +5295,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}';
 
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
+
+    playbarBeatNum.text = 'Beat: ${FlxStringUtil.formatMoney(Conductor.instance.currentBeatTime)}';
+    playbarStepNum.text = 'Step: ${Conductor.instance.currentStep}';
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
     playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}${selectedVariation == Constants.DEFAULT_VARIATION ? '' : ' (${selectedVariation.toTitleCase()})'}';
