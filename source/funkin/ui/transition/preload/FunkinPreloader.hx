@@ -16,22 +16,18 @@ using StringTools;
 
 // Annotation embeds the asset in the executable for faster loading.
 // Polymod can't override this, so we can't use this technique elsewhere.
-
-@:bitmap("art/preloaderArt.png")
-class LogoImage extends BitmapData {}
-
 #if TOUCH_HERE_TO_PLAY
 @:bitmap('art/touchHereToPlay.png')
 class TouchHereToPlayImage extends BitmapData {}
 #end
 
 /**
- * This preloader displays a logo while the game downloads assets.
+ * This preloader displays a VFD-esque display while the game downloads assets.
  */
 class FunkinPreloader extends FlxBasePreloader
 {
   /**
-   * The logo image width at the base resolution.
+   * The width at the base resolution.
    * Scaled up/down appropriately as needed.
    */
   static final BASE_WIDTH:Float = 1280;
@@ -44,9 +40,9 @@ class FunkinPreloader extends FlxBasePreloader
   static final BAR_HEIGHT:Int = 12;
 
   /**
-   * Logo takes this long (in seconds) to fade in.
+   * Display takes this long (in seconds) to fade in.
    */
-  static final LOGO_FADE_TIME:Float = 2.5;
+  static final FADE_TIME:Float = 2.5;
 
   // Ratio between window size and BASE_WIDTH
   var ratio:Float = 0;
@@ -99,7 +95,6 @@ class FunkinPreloader extends FlxBasePreloader
   private var completeTime:Float = -1;
 
   // Graphics
-  var logo:Bitmap;
   #if TOUCH_HERE_TO_PLAY
   var touchHereToPlay:Bitmap;
   var touchHereSprite:Sprite;
@@ -144,16 +139,6 @@ class FunkinPreloader extends FlxBasePreloader
 
     // Scale assets to the screen size.
     ratio = this._width / BASE_WIDTH / 2.0;
-
-    // Create the logo.
-    logo = createBitmap(LogoImage, function(bmp:Bitmap) {
-      // Scale and center the logo.
-      // We have to do this inside the async call, after the image size is known.
-      bmp.scaleX = bmp.scaleY = ratio;
-      bmp.x = (this._width - bmp.width) / 2;
-      bmp.y = (this._height - bmp.height) / 2;
-    });
-    // addChild(logo);
 
     var amountOfPieces:Int = 16;
     progressBarPieces = [];
@@ -869,15 +854,14 @@ class FunkinPreloader extends FlxBasePreloader
 
   function updateGraphics(percent:Float, elapsed:Float):Void
   {
-    // Render logo (including transitions)
+    // Render display (including transition out)
     if (completeTime > 0.0)
     {
-      var elapsedFinished:Float = renderLogoFadeOut(elapsed);
-      // trace('Fading out logo... (' + elapsedFinished + 's)');
-      if (elapsedFinished > LOGO_FADE_TIME)
+      var elapsedFinished:Float = renderDisplayFadeOut(elapsed);
+      if (elapsedFinished > FADE_TIME)
       {
         #if TOUCH_HERE_TO_PLAY
-        // The logo has faded out, but we're not quite done yet.
+        // The display has faded out, but we're not quite done yet.
         // In order to prevent autoplay issues, we need the user to click after the loading finishes.
         currentState = FunkinPreloaderState.TouchHereToPlay;
         #else
@@ -887,8 +871,6 @@ class FunkinPreloader extends FlxBasePreloader
     }
     else
     {
-      renderLogoFadeIn(elapsed);
-
       // Render progress bar
       var maxWidth = this._width - BAR_PADDING * 2;
       var barWidth = maxWidth * percent;
@@ -1002,46 +984,30 @@ class FunkinPreloader extends FlxBasePreloader
   }
 
   /**
-   * Fade out the logo.
+   * Fade out the VFD display pieces.
    * @param	elapsed Elapsed time since the preloader started.
-   * @return	Elapsed time since the logo started fading out.
+   * @return	Elapsed time since the preloader pieces started fading out.
    */
-  function renderLogoFadeOut(elapsed:Float):Float
+  function renderDisplayFadeOut(elapsed:Float):Float
   {
-    // Fade-out takes LOGO_FADE_TIME seconds.
-    var elapsedFinished = elapsed - completeTime;
-
-    logo.alpha = 1.0 - MathUtil.easeInOutCirc(elapsedFinished / LOGO_FADE_TIME);
-    logo.scaleX = (1.0 - MathUtil.easeInBack(elapsedFinished / LOGO_FADE_TIME)) * ratio;
-    logo.scaleY = (1.0 - MathUtil.easeInBack(elapsedFinished / LOGO_FADE_TIME)) * ratio;
-    logo.x = (this._width - logo.width) / 2;
-    logo.y = (this._height - logo.height) / 2;
+    // Fade-out takes FADE_TIME seconds.
+    var elapsedFinished:Float = elapsed - completeTime;
+    var alphaToFade:Float = 1.0 - MathUtil.easeInOutCirc(elapsedFinished / FADE_TIME);
 
     // Fade out progress bar too.
-    // progressBar.alpha = logo.alpha;
-    progressLeftText.alpha = logo.alpha;
-    progressRightText.alpha = logo.alpha;
-    box.alpha = logo.alpha;
-    dspText.alpha = logo.alpha;
-    fnfText.alpha = logo.alpha;
-    enhancedText.alpha = logo.alpha;
-    stereoText.alpha = logo.alpha;
-    progressLines.alpha = logo.alpha;
+    progressLeftText.alpha = alphaToFade;
+    progressRightText.alpha = alphaToFade;
+    box.alpha = alphaToFade;
+    dspText.alpha = alphaToFade;
+    fnfText.alpha = alphaToFade;
+    enhancedText.alpha = alphaToFade;
+    stereoText.alpha = alphaToFade;
+    progressLines.alpha = alphaToFade;
 
     for (piece in progressBarPieces)
-      piece.alpha = logo.alpha;
+      piece.alpha = alphaToFade;
 
     return elapsedFinished;
-  }
-
-  function renderLogoFadeIn(elapsed:Float):Void
-  {
-    // Fade-in takes LOGO_FADE_TIME seconds.
-    logo.alpha = MathUtil.easeInOutCirc(elapsed / LOGO_FADE_TIME);
-    logo.scaleX = MathUtil.easeOutBack(elapsed / LOGO_FADE_TIME) * ratio;
-    logo.scaleY = MathUtil.easeOutBack(elapsed / LOGO_FADE_TIME) * ratio;
-    logo.x = (this._width - logo.width) / 2;
-    logo.y = (this._height - logo.height) / 2;
   }
 
   #if html5
@@ -1082,9 +1048,7 @@ class FunkinPreloader extends FlxBasePreloader
   override function destroy():Void
   {
     // Ensure the graphics are properly destroyed and GC'd.
-    removeChild(logo);
     // removeChild(progressBar);
-    logo = null;
     super.destroy();
   }
 
@@ -1093,7 +1057,7 @@ class FunkinPreloader extends FlxBasePreloader
     super.onLoaded();
     // We're not ACTUALLY finished.
     // This function gets called when the DownloadingAssets step is done.
-    // We need to wait for the other steps, then the logo to fade out.
+    // We need to wait for the other steps, then the display to fade out.
     _loaded = false;
     downloadingAssetsComplete = true;
   }
