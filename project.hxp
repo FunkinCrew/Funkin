@@ -716,7 +716,7 @@ class Project extends HXProject {
     FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && envConfig != null));
 
     // Should be true only on android release builds for now. Remember you can add the flag manually for testing.
-    FEATURE_MOBILE_IAP.apply(this, (isAndroid() && isRelease() && envConfig != null));
+    FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && envConfig != null));
 
     // Should be true only on debug mobile builds.
     TESTING_ADS.apply(this, (isTest() || isDebug()) && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));

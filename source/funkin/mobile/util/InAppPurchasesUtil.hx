@@ -1,22 +1,30 @@
 package funkin.mobile.util;
 
 #if FEATURE_MOBILE_IAP
+#if android
 import extension.iapcore.android.IAPAndroid;
 import extension.iapcore.android.IAPProductDetails;
 import extension.iapcore.android.IAPPurchase;
 import extension.iapcore.android.IAPPurchaseState;
 import extension.iapcore.android.IAPResponseCode;
 import extension.iapcore.android.IAPResult;
+#elseif (ios || tvos)
+import extension.iapcore.apple.IAPApple;
+import extension.iapcore.apple.IAPProductDetails;
+import extension.iapcore.apple.IAPPurchase;
+import extension.iapcore.apple.IAPPurchaseState;
+#end
 
 /**
  * Utility class for managing in-app purchases.
  */
 class InAppPurchasesUtil
 {
-  /**
-   * A static final array containing the product IDs for fetching product details.
-   */
+  #if android
   static final FETCH_PRODUCT_DETAILS_IDS:Array<String> = ['test_product_0'];
+  #elseif (ios || tvos)
+  static final FETCH_PRODUCT_DETAILS_IDS:Array<String> = ['adfree'];
+  #end
 
   /**
    * The maximum number of attempts to reconnect in case of a failure.
@@ -43,6 +51,7 @@ class InAppPurchasesUtil
    */
   public static function init():Void
   {
+    #if android
     IAPAndroid.onLog.add(function(message:String):Void {
       logMessage(message);
     });
@@ -113,6 +122,21 @@ class InAppPurchasesUtil
     IAPAndroid.init();
 
     IAPAndroid.startConnection();
+    #else
+    IAPApple.onProductDetailsReceived.add(function(productDetails:Array<IAPProductDetails>):Void {
+      if (productDetails != null) currentProductDetails = productDetails;
+    });
+
+    IAPApple.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void {
+      handlePurchases(purchases);
+    });
+
+    IAPApple.init();
+
+    IAPApple.restorePurchases();
+
+    IAPApple.requestProducts(FETCH_PRODUCT_DETAILS_IDS);
+    #end
   }
 
   /**
@@ -124,11 +148,19 @@ class InAppPurchasesUtil
   {
     for (product in currentProductDetails)
     {
+      #if android
       if (product.getProductId() == id)
       {
         IAPAndroid.launchPurchaseFlow(product);
         return;
       }
+      #elseif (ios || tvos)
+      if (product.getProductIdentifier() == id)
+      {
+        IAPApple.purchaseProduct(product);
+        return;
+      }
+      #end
     }
 
     logMessage("Didn't find product details for ID: " + id);
@@ -145,10 +177,17 @@ class InAppPurchasesUtil
   {
     for (purchase in currentPurchased)
     {
+      #if android
       if (purchase.getProducts().contains(id))
       {
         return true;
       }
+      #elseif (ios || tvos)
+      if (purchase.getPaymentProductIdentifier() == id)
+      {
+        return true;
+      }
+      #end
     }
 
     return false;
@@ -169,6 +208,7 @@ class InAppPurchasesUtil
   {
     for (purchase in purchases)
     {
+      #if android
       if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
       {
         if (!purchase.isAcknowledged())
@@ -190,12 +230,56 @@ class InAppPurchasesUtil
         if (!alreadyTracked)
         {
           currentPurchased.push(purchase);
+          logMessage('Android purchase tracked: ${purchase.getPurchaseToken()}');
+        }
+        else
+        {
+          logMessage('Android purchase already tracked: ${purchase.getPurchaseToken()}');
         }
       }
       else
       {
-        logMessage('Purchase not completed: ${purchase.getPurchaseState()}');
+        logMessage('Android purchase not completed: ${purchase.getPurchaseState()}');
       }
+      #elseif (ios || tvos)
+      logMessage('Transaction ID: ${purchase.getTransactionIdentifier()}');
+      logMessage('Transaction Date: ${purchase.getTransactionDate()}');
+      logMessage('Transaction Payment Product ID: ${purchase.getPaymentProductIdentifier()}');
+      var alreadyTracked:Bool = false;
+      for (existing in currentPurchased)
+      {
+        if (existing.getTransactionIdentifier() == purchase.getTransactionIdentifier())
+        {
+          alreadyTracked = true;
+          break;
+        }
+      }
+      switch (purchase.getTransactionState())
+      {
+        case IAPPurchaseState.PURCHASING:
+          logMessage('iOS purchase is in progress.');
+
+        case IAPPurchaseState.DEFERRED:
+          logMessage('iOS purchase is deferred.');
+
+        case IAPPurchaseState.FAILED:
+          logMessage('iOS purchase failed.');
+          IAPApple.finishPurchase(purchase);
+
+        case IAPPurchaseState.PURCHASED | IAPPurchaseState.RESTORED:
+          logMessage('iOS purchase successful or restored.');
+          if (!alreadyTracked)
+          {
+            currentPurchased.push(purchase);
+            logMessage('iOS purchase tracked: ${purchase.getTransactionIdentifier()}');
+            IAPApple.finishPurchase(purchase);
+          }
+          else
+          {
+            logMessage('iOS purchase already tracked: ${purchase.getTransactionIdentifier()}');
+          }
+      }
+      #end
     }
   }
 }
