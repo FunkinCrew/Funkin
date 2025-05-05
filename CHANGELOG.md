@@ -54,8 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * @thesuperpig56 made their first contribution in [#4778](https://github.com/FunkinCrew/Funkin/pull/4778)
 * @CrusherNotDrip made their first contribution in [#4936](https://github.com/FunkinCrew/Funkin/pull/4936)
-* @ThatRozebudDude made their first contribution in [funkin.assets#73](https://github.com/FunkinCrew/funkin.assets/pull/73)
 * @ChillyBeanBAM made their first contribution in [funkin.assets#66](https://github.com/FunkinCrew/funkin.assets/pull/66)
+* @ThatRozebudDude made their first contribution in [funkin.assets#73](https://github.com/FunkinCrew/funkin.assets/pull/73)
 
 
 
