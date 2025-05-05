@@ -2489,28 +2489,28 @@ class PlayState extends MusicBeatSubState
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
+
       #if FEATURE_GHOST_TAPPING
       if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
       #else
       if (notesInDirection.length == 0)
       #end
       {
-        // Pressed a wrong key with no notes nearby.
-        // Perform a ghost miss (anti-spam).
-        ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
-
-        // Play the strumline animation.
-        playerStrumline.playPress(input.noteDirection);
-        trace('PENALTY Score: ${songScore}');
+         // Pressed a wrong key with no notes nearby.
+         #if FEATURE_GHOST_TAPPING
+            // Perform a ghost miss (anti-spam).
+            // nope
+            // Play the strumline animation.
+            playerStrumline.playPress(input.noteDirection);
+            trace('Score: ${songScore}');
+         #else
+            // Perform a ghost miss (anti-spam).
+            ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
+            // Play the strumline animation.
+            playerStrumline.playPress(input.noteDirection);
+            trace('PENALTY Score: ${songScore}');
+         #end
       }
-    else if (notesInDirection.length == 0)
-    {
-      // Press a key with no penalty.
-
-      // Play the strumline animation.
-      playerStrumline.playPress(input.noteDirection);
-      trace('NO PENALTY Score: ${songScore}');
-    }
     else
     {
       // Choose the first note, deprioritizing low priority notes.
