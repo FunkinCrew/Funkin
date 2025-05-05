@@ -904,35 +904,31 @@ class FunkinPreloader extends FlxBasePreloader
 
   function updateProgressLeftText(text:Null<String>):Void
   {
-    if (progressLeftText != null)
+    if (progressLeftText == null) return;
+
+    if (text == null) progressLeftText.alpha = 0.0;
+    else if (progressLeftText.text != text)
     {
-      if (text == null)
-      {
-        progressLeftText.alpha = 0.0;
-      }
-      else if (progressLeftText.text != text)
-      {
-        // We have to keep updating the text format, because the font can take a frame or two to load.
-        var progressLeftTextFormat = new TextFormat("DS-Digital", 32, Constants.COLOR_PRELOADER_BAR, true);
-        progressLeftTextFormat.align = TextFormatAlign.LEFT;
-        progressLeftText.defaultTextFormat = progressLeftTextFormat;
-        progressLeftText.text = text;
+      // We have to keep updating the text format, because the font can take a frame or two to load.
+      var progressLeftTextFormat:TextFormat = new TextFormat("DS-Digital", 32, Constants.COLOR_PRELOADER_BAR, true);
+      progressLeftTextFormat.align = TextFormatAlign.LEFT;
+      progressLeftText.defaultTextFormat = progressLeftTextFormat;
+      progressLeftText.text = text;
 
-        dspText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
-        dspText.text = 'DSP'; // fukin dum....
-        dspText.textColor = 0x000000;
+      dspText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
+      dspText.text = 'DSP'; // fukin dum....
+      dspText.textColor = 0x000000;
 
-        fnfText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
-        fnfText.text = 'FNF';
-        fnfText.textColor = 0x000000;
+      fnfText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
+      fnfText.text = 'FNF';
+      fnfText.textColor = 0x000000;
 
-        enhancedText.defaultTextFormat = new TextFormat("Inconsolata Black", 16, Constants.COLOR_PRELOADER_BAR, false);
-        enhancedText.text = 'ENHANCED';
-        enhancedText.textColor = Constants.COLOR_PRELOADER_BAR;
+      enhancedText.defaultTextFormat = new TextFormat("Inconsolata Black", 16, Constants.COLOR_PRELOADER_BAR, false);
+      enhancedText.text = 'ENHANCED';
+      enhancedText.textColor = Constants.COLOR_PRELOADER_BAR;
 
-        stereoText.defaultTextFormat = new TextFormat("Inconsolata Bold", 36, Constants.COLOR_PRELOADER_BAR, false);
-        stereoText.text = 'NATURAL STEREO';
-      }
+      stereoText.defaultTextFormat = new TextFormat("Inconsolata Bold", 36, Constants.COLOR_PRELOADER_BAR, false);
+      stereoText.text = 'NATURAL STEREO';
     }
   }
 
