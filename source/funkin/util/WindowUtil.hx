@@ -85,12 +85,6 @@ class WindowUtil
    */
   public static function initTracy():Void
   {
-    // Apply a marker to indicate frame end for the Tracy profiler.
-    // Do this only if Tracy is configured to prevent lag.
-    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
-      cpp.vm.tracy.TracyProfiler.frameMark();
-    });
-
     var appInfoMessage = funkin.util.logging.CrashHandler.buildSystemInfo();
 
     trace("Friday Night Funkin': Connection to Tracy profiler successful.");
