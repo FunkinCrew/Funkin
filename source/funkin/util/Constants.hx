@@ -72,16 +72,6 @@ class Constants
   public static final URL_MERCH_FALLBACK:String = 'https://needlejuicerecords.com/en-ca/pages/friday-night-funkin';
 
   /**
-   * Preloader sitelock.
-   * Matching is done by `FlxStringUtil.getDomain`, so any URL on the domain will work.
-   * The first link in this list is the one users will be redirected to if they try to access the game from a different URL.
-   */
-  public static final SITE_LOCK:Array<String> = [
-    "https://www.newgrounds.com/portal/view/770371", // Newgrounds, baybee!
-    FlxBasePreloader.LOCAL // localhost for dev stuff
-  ];
-
-  /**
    * Link to download the game on Itch.io.
    */
   public static final URL_ITCH:String = 'https://ninja-muffin24.itch.io/funkin';
@@ -172,14 +162,6 @@ class Constants
    * Color for the preloader site lock link
    */
   public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = 0xEEB211;
-
-  /**
-   * LANGUAGE
-   */
-  // ==============================
-  public static final SITE_LOCK_TITLE:String = "You Loser!";
-
-  public static final SITE_LOCK_DESC:String = "This isn't Newgrounds!\nGo play Friday Night Funkin' on Newgrounds:";
 
   /**
    * GAME DEFAULTS

@@ -120,9 +120,6 @@ class FunkinPreloader extends FlxBasePreloader
 
     // We can't even call trace() yet, until Flixel loads.
     trace('Initializing custom preloader...');
-
-    this.siteLockTitleText = Constants.SITE_LOCK_TITLE;
-    this.siteLockBodyText = Constants.SITE_LOCK_DESC;
   }
 
   override function create():Void
@@ -887,7 +884,7 @@ class FunkinPreloader extends FlxBasePreloader
     // Cycle ellipsis count to show loading
     var ellipsisCount:Int = Std.int(elapsed / ELLIPSIS_TIME) % 3 + 1;
     var ellipsis:String = '';
-    for (i in 0...ellipsisCount)
+    for (_ in 0...ellipsisCount)
       ellipsis += '.';
 
     // Render status text
@@ -963,41 +960,6 @@ class FunkinPreloader extends FlxBasePreloader
 
     return elapsedFinished;
   }
-
-  #if html5
-  // These fields only exist on Web builds.
-
-  /**
-   * Format the layout of the site lock screen.
-   */
-  override function createSiteLockFailureScreen():Void
-  {
-    // addChild(createSiteLockFailureBackground(Constants.COLOR_PRELOADER_LOCK_BG, Constants.COLOR_PRELOADER_LOCK_BG));
-    // addChild(createSiteLockFailureIcon(Constants.COLOR_PRELOADER_LOCK_FG, 0.9));
-    // addChild(createSiteLockFailureText(30));
-  }
-
-  /**
-   * Format the text of the site lock screen.
-   */
-  override function adjustSiteLockTextFields(titleText:TextField, bodyText:TextField, hyperlinkText:TextField):Void
-  {
-    var titleFormat = titleText.defaultTextFormat;
-    titleFormat.align = TextFormatAlign.CENTER;
-    titleFormat.color = Constants.COLOR_PRELOADER_LOCK_FONT;
-    titleText.setTextFormat(titleFormat);
-
-    var bodyFormat = bodyText.defaultTextFormat;
-    bodyFormat.align = TextFormatAlign.CENTER;
-    bodyFormat.color = Constants.COLOR_PRELOADER_LOCK_FONT;
-    bodyText.setTextFormat(bodyFormat);
-
-    var hyperlinkFormat = hyperlinkText.defaultTextFormat;
-    hyperlinkFormat.align = TextFormatAlign.CENTER;
-    hyperlinkFormat.color = Constants.COLOR_PRELOADER_LOCK_LINK;
-    hyperlinkText.setTextFormat(hyperlinkFormat);
-  }
-  #end
 
   override function destroy():Void
   {
