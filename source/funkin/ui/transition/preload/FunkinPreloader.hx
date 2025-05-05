@@ -100,7 +100,6 @@ class FunkinPreloader extends FlxBasePreloader
   var touchHereSprite:Sprite;
   #end
   var progressBarPieces:Array<Sprite>;
-  var progressBar:Bitmap;
   var progressLeftText:TextField;
   var progressRightText:TextField;
 
@@ -139,8 +138,8 @@ class FunkinPreloader extends FlxBasePreloader
 
     var amountOfPieces:Int = 16;
     progressBarPieces = [];
-    var maxBarWidth = this._width - BAR_PADDING * 2;
-    var pieceWidth = maxBarWidth / amountOfPieces;
+    var maxBarWidth:Float = this._width - BAR_PADDING * 2;
+    var pieceWidth:Float = maxBarWidth / amountOfPieces;
     var pieceGap:Int = 8;
 
     progressLines = new openfl.display.Sprite();
@@ -148,14 +147,14 @@ class FunkinPreloader extends FlxBasePreloader
     progressLines.graphics.drawRect(-2, this._height - BAR_PADDING - BAR_HEIGHT - 208, this._width + 4, 30);
     addChild(progressLines);
 
-    var progressBarPiece = new Sprite();
+    var progressBarPiece:Sprite = new Sprite();
     progressBarPiece.graphics.beginFill(Constants.COLOR_PRELOADER_BAR);
     progressBarPiece.graphics.drawRoundRect(0, 0, pieceWidth - pieceGap, BAR_HEIGHT, 4, 4);
     progressBarPiece.graphics.endFill();
 
     for (i in 0...amountOfPieces)
     {
-      var piece = new Sprite();
+      var piece:Sprite = new Sprite();
       piece.graphics.beginFill(Constants.COLOR_PRELOADER_BAR);
       piece.graphics.drawRoundRect(0, 0, pieceWidth - pieceGap, BAR_HEIGHT, 4, 4);
       piece.graphics.endFill();
@@ -165,12 +164,6 @@ class FunkinPreloader extends FlxBasePreloader
       addChild(piece);
       progressBarPieces.push(piece);
     }
-
-    // Create the progress bar.
-    // progressBar = new Bitmap(new BitmapData(1, BAR_HEIGHT, true, Constants.COLOR_PRELOADER_BAR));
-    // progressBar.x = BAR_PADDING;
-    // progressBar.y = this._height - BAR_PADDING - BAR_HEIGHT;
-    // addChild(progressBar);
 
     // Create the progress message.
     progressLeftText = new TextField();
@@ -253,15 +246,6 @@ class FunkinPreloader extends FlxBasePreloader
     stereoText.y = -40;
     box.addChild(stereoText);
 
-    // var dummyMatrix:openfl.geom.Matrix = new Matrix();
-    // dummyMatrix.createGradientBox(this._width, this._height * 0.1, 90 * Math.PI / 180);
-
-    // var gradient:Sprite = new Sprite();
-    // gradient.graphics.beginGradientFill(GradientType.LINEAR, [0xFFFFFF, 0x000000], [1, 1], [0, 255], dummyMatrix, SpreadMethod.REFLECT);
-    // gradient.graphics.drawRect(0, 0, this._width, this._height);
-    // gradient.graphics.endFill();
-    // addChild(gradient);
-
     vfdBitmap = new Bitmap(new BitmapData(this._width, this._height, true, 0xFFFFFFFF));
     addChild(vfdBitmap);
 
@@ -292,7 +276,6 @@ class FunkinPreloader extends FlxBasePreloader
     var elapsed:Float = (Date.now().getTime() - this._startTime) / 1000.0;
 
     vfdShader.update(elapsed * 100);
-    // trace('Time since last frame: ' + (lastElapsed - elapsed));
 
     downloadingAssetsPercent = percent;
     var loadPercent:Float = updateState(percent, elapsed);
@@ -879,8 +862,6 @@ class FunkinPreloader extends FlxBasePreloader
       }
     }
 
-    // progressBar.width = barWidth;
-
     // Cycle ellipsis count to show loading
     var ellipsisCount:Int = Std.int(elapsed / ELLIPSIS_TIME) % 3 + 1;
     var ellipsis:String = '';
@@ -964,7 +945,6 @@ class FunkinPreloader extends FlxBasePreloader
   override function destroy():Void
   {
     // Ensure the graphics are properly destroyed and GC'd.
-    // removeChild(progressBar);
     super.destroy();
   }
 
