@@ -131,17 +131,17 @@ class NoteSprite extends FunkinSprite
   public var hasBeenHit:Bool = false;
 
   /**
-   * Register this note as hit only after any other notes
-   */
-  public var lowPriority:Bool = false;
-
-  /**
    * This is true if the note is later than 10 frames within the strumline,
    * and thus can't be hit by the player.
    * It will be destroyed after it moves offscreen.
    * Managed by PlayState.
    */
-  public var hasMissed:Bool;
+  public var hasBeenMissed:Bool;
+
+  /**
+   * Register this note as hit only after any other notes
+   */
+  public var lowPriority:Bool = false;
 
   /**
    * This is true if the note is earlier than 10 frames within the strumline.
@@ -228,7 +228,7 @@ class NoteSprite extends FunkinSprite
     this.tooEarly = false;
     this.hasBeenHit = false;
     this.mayHit = false;
-    this.hasMissed = false;
+    this.hasBeenMissed = false;
 
     this.hsvShader.hue = 1.0;
     this.hsvShader.saturation = 1.0;

@@ -153,7 +153,7 @@ class SustainTrail extends FlxSprite
     }
 
     zoom = 1.0;
-    zoom *= noteStyle.fetchHoldNoteScale();
+    zoom *= noteStyle.getHoldNoteScale();
 
     // CALCULATE SIZE
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2

@@ -425,9 +425,9 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data?.assets?.holdNote?.isPixel ?? fallback?.isHoldNotePixel() ?? false;
   }
 
-  public function fetchHoldNoteScale():Float
+  public function getHoldNoteScale():Float
   {
-    return _data?.assets?.holdNote?.scale ?? fallback?.fetchHoldNoteScale() ?? 1.0;
+    return _data?.assets?.holdNote?.scale ?? fallback?.getHoldNoteScale() ?? 1.0;
   }
 
   public function getHoldNoteOffsets():Array<Float>

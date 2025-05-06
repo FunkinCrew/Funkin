@@ -2199,11 +2199,11 @@ class PlayState extends MusicBeatSubState
 
       if (Conductor.instance.songPosition > hitWindowEnd)
       {
-        if (note.hasMissed || note.hasBeenHit) continue;
+        if (note.hasBeenMissed || note.hasBeenHit) continue;
 
         note.tooEarly = false;
         note.mayHit = false;
-        note.hasMissed = true;
+        note.hasBeenMissed = true;
 
         if (note.holdNoteSprite != null)
         {
@@ -2234,18 +2234,18 @@ class PlayState extends MusicBeatSubState
       }
       else if (Conductor.instance.songPosition > hitWindowStart)
       {
-        if (note.hasBeenHit || note.hasMissed) continue;
+        if (note.hasBeenHit || note.hasBeenMissed) continue;
 
         note.tooEarly = false;
         note.mayHit = true;
-        note.hasMissed = false;
+        note.hasBeenMissed = false;
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
       else
       {
         note.tooEarly = true;
         note.mayHit = false;
-        note.hasMissed = false;
+        note.hasBeenMissed = false;
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
     }
@@ -2285,7 +2285,7 @@ class PlayState extends MusicBeatSubState
       {
         note.tooEarly = false;
         note.mayHit = false;
-        note.hasMissed = false;
+        note.hasBeenMissed = false;
         continue;
       }
 
@@ -2295,10 +2295,10 @@ class PlayState extends MusicBeatSubState
 
       if (Conductor.instance.songPosition > hitWindowEnd)
       {
-        if (note.hasMissed || note.hasBeenHit) continue;
+        if (note.hasBeenMissed || note.hasBeenHit) continue;
         note.tooEarly = false;
         note.mayHit = false;
-        note.hasMissed = true;
+        note.hasBeenMissed = true;
         if (note.holdNoteSprite != null)
         {
           note.holdNoteSprite.missedNote = true;
@@ -2323,29 +2323,26 @@ class PlayState extends MusicBeatSubState
         // NOTE: This is what handles the strumline and cleaning up the note itself!
         playerStrumline.hitNote(note);
 
-        if (note.holdNoteSprite != null)
-        {
-          playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-        }
+        if (note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
       }
       else if (Conductor.instance.songPosition > hitWindowStart)
       {
         note.tooEarly = false;
         note.mayHit = true;
-        note.hasMissed = false;
+        note.hasBeenMissed = false;
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
       else
       {
         note.tooEarly = true;
         note.mayHit = false;
-        note.hasMissed = false;
+        note.hasBeenMissed = false;
         if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
 
       // This becomes true when the note leaves the hit window.
       // It might still be on screen.
-      if (note.hasMissed && !note.handledMiss)
+      if (note.hasBeenMissed && !note.handledMiss)
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
@@ -2385,10 +2382,8 @@ class PlayState extends MusicBeatSubState
         }
 
         // Make sure the player keeps singing while the note is held by the bot.
-        if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
-        {
-          currentStage.getBoyfriend().holdTimer = 0;
-        }
+        if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend()
+          .isSinging()) currentStage.getBoyfriend().holdTimer = 0;
       }
 
       if (holdNote.missedNote && !holdNote.handledMiss)
