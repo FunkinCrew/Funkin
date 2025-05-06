@@ -426,6 +426,9 @@ class SongMenuItem extends FlxSpriteGroup
    */
   public function randomiseDisplay():Void
   {
+    // No need to do any of this if the capsule won't actually be visible.
+    if (targetPos.y < -200 || targetPos.y > FlxG.height + 200) return;
+
     var randomDifficulty:Int = FlxG.random.int(0, 20);
     var currentDifficulty:Int = 0;
     var randomBPM:Int = FlxG.random.int(0, 999);
