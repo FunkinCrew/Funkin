@@ -511,7 +511,7 @@ class BaseCharacter extends Bopper
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.targerCharacter == this)
+    if (event.targetCharacter == this)
     {
       playSingAnimation(event.note.noteData.getDirection(), false);
       hitHoldTimer(event.note.length);
@@ -565,7 +565,7 @@ class BaseCharacter extends Bopper
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.targerCharacter == this) playSingAnimation(event.note.noteData.getDirection(), true);
+    if (event.targetCharacter == this) playSingAnimation(event.note.noteData.getDirection(), true);
     if (event.note.noteData.getMustHitNote() /*&& characterType == GF*/) playComboDropAnimation(event.comboCount);
   }
 
@@ -576,7 +576,7 @@ class BaseCharacter extends Bopper
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.targerCharacter == this) playSingAnimation(event.holdNote.noteData.getDirection(), true);
+    if (event.targetCharacter == this) playSingAnimation(event.holdNote.noteData.getDirection(), true);
 
     if (event.holdNote.noteData.getMustHitNote()
       && event.isComboBreak /*&& characterType == GF*/) playComboDropAnimation(event.comboCount);

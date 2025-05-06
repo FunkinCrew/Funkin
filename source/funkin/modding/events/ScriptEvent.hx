@@ -100,7 +100,7 @@ class NoteScriptEvent extends ScriptEvent
   /**
    * The character, parent strumline attached to.
    */
-  public var targerCharacter(default, default):BaseCharacter;
+  public var targetCharacter(default, default):BaseCharacter;
 
   /**
    * The combo count as it is with this event.
@@ -123,7 +123,7 @@ class NoteScriptEvent extends ScriptEvent
   {
     super(type, cancelable);
     this.note = note;
-    targerCharacter = character;
+    targetCharacter = character;
     this.comboCount = comboCount;
     playSound = true;
     this.healthChange = healthChange;
@@ -134,7 +134,7 @@ class NoteScriptEvent extends ScriptEvent
     return 'NoteScriptEvent(type='
       + type
       + ', char='
-      + targerCharacter
+      + targetCharacter
       + ', cancelable='
       + cancelable
       + ', note='
@@ -186,24 +186,8 @@ class HitNoteScriptEvent extends NoteScriptEvent
 
   public override function toString():String
   {
-    return 'HitNoteScriptEvent(note='
-      + note
-      + ', char='
-      + targerCharacter
-      + ', comboCount='
-      + comboCount
-      + ', judgement='
-      + judgement
-      + ', score='
-      + score
-      + ', isComboBreak='
-      + isComboBreak
-      + ', hitDiff='
-      + hitDiff
-      + ',
-    doesNotesplash='
-      + doesNotesplash
-      + ')';
+    return 'HitNoteScriptEvent(note=' + note + ', char=' + targetCharacter + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score
+      + ', isComboBreak=' + isComboBreak + ', hitDiff=' + hitDiff + ', doesNotesplash=' + doesNotesplash + ')';
   }
 }
 
@@ -300,7 +284,7 @@ class HoldNoteScriptEvent extends NoteScriptEvent
   public override function toString():String
   {
     return
-      'HoldNoteScriptEvent(type=$type, char=$targerCharacter, holdNote=$holdNote, healthChange=$healthChange, score=$score, isComboBreak=$isComboBreak, cancelable=$cancelable)';
+      'HoldNoteScriptEvent(type=$type, char=$targetCharacter, holdNote=$holdNote, healthChange=$healthChange, score=$score, isComboBreak=$isComboBreak, cancelable=$cancelable)';
   }
 }
 
