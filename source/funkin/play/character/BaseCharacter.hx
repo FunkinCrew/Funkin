@@ -514,9 +514,7 @@ class BaseCharacter extends Bopper
     if (event.targerCharacter == this)
     {
       playSingAnimation(event.note.noteData.getDirection(), false);
-      if (characterType != BF) holdTimer = -(event.note.length / 1000); // ms to s
-      else
-        holdTimer = 0;
+      hitHoldTimer(event.note.length);
     }
 
     if (/*characterType == GF &&*/ event.note.noteData.getMustHitNote())
@@ -531,6 +529,8 @@ class BaseCharacter extends Bopper
     }
   }
 
+  // HELPERS
+
   /**
    * Writing `this` in Polymod scritped class returns `PolymodScriptedClass`, not modified(extended) class!?
    * @return BaseCharacter
@@ -539,6 +539,10 @@ class BaseCharacter extends Bopper
   {
     return this; // Stuff for polymod?
   }
+
+  // Sets holdTimer and checks, if character BF type or not.
+  public inline function hitHoldTimer(noteLength:Float):Float
+    return holdTimer = ((characterType == BF) ? 0 : -(noteLength / 1000));
 
   // Also can be overriden for more comples characters, like Nene. (ABot)
   public function setShader(shader:flixel.system.FlxAssets.FlxShader):Void
