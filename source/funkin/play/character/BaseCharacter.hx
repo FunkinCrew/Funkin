@@ -544,6 +544,10 @@ class BaseCharacter extends Bopper
   public inline function hitHoldTimer(noteLength:Float):Float
     return holdTimer = ((characterType == BF) ? 0 : -(noteLength / 1000));
 
+  /**
+   * Created for AnimateAtlasCharacter, but also can be used for complex (like Nene) characters.
+   * @param shader
+   */
   // Also can be overriden for more comples characters, like Nene. (ABot)
   public function setShader(shader:flixel.system.FlxAssets.FlxShader):Void
   {
