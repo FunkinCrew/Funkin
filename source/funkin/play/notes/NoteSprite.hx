@@ -19,7 +19,7 @@ class NoteSprite extends FunkinSprite
 
   function get_strumTime():Float
   {
-    return noteData?.time ?? 0.0; // If somethin happens with time noteData, note will be on 0 milisecond of song.
+    return noteData?.time ?? 0.0;
   }
 
   function set_strumTime(value:Float):Float
@@ -101,12 +101,14 @@ class NoteSprite extends FunkinSprite
   /**
    * The direction of the note.
    * Redirects to `noteData` variable.
+   * Used in CharacterStrumLine on note creation.
    */
-  public var direction(default, set):NoteDirection; // Used in CharacterStrumLine on note creation.
+  public var direction(default, set):NoteDirection;
 
   function set_direction(value:Int):Int
   {
-    if (frames == null) return value; // If there no loaded frames, we cant continue direction set.
+    // If there are no loaded frames, we cant continue direction set.
+    if (frames == null) return value;
 
     playNoteAnimation(value);
 
@@ -190,6 +192,7 @@ class NoteSprite extends FunkinSprite
 
   /**
    * Creates frames and animations
+   * @param noteStyle The `NoteStyle` instance.
    */
   public function setupNoteGraphic(noteStyle:NoteStyle):Void
   {
