@@ -6,6 +6,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [0.6.4] - 2025-05-02
+
+### Changed
+
+- Misses now actually reduce your clear percentage and rank, as Eric intended. ([5fdbd23](https://github.com/FunkinCrew/Funkin/commit/5fdbd23a17b8eaf21582283400be2c6444e8b198)) - by @Lasercar in [#4880](https://github.com/FunkinCrew/Funkin/pull/4880)
+- The miss rebalance is now reflected on the Freeplay clear percent display. ([f6ac4ca](https://github.com/FunkinCrew/Funkin/commit/f6ac4cad43f4834a86a3fc156d6d39eca2c47c7e)) - by @Lasercar, @Hundrec, and @NotHyper-474 in [#4898](https://github.com/FunkinCrew/Funkin/pull/4898) and [#4923](https://github.com/FunkinCrew/Funkin/pull/4923)
+
+### Fixed
+
+- HTML5 builds are no longer literally unplayable. ([6f43438](https://github.com/FunkinCrew/Funkin/commit/6f43438cdbfecf26d4bcf62a0d9ff71e40333ac2)) - by @cyn0x8 in [#4398](https://github.com/FunkinCrew/Funkin/pull/4398)
+- Medals no longer crash the game when obtained. ([808698a](https://github.com/FunkinCrew/Funkin/commit/808698ace7457bc76a8a52d415d63fa4ee5b9400)) - by @KoloInDaCrib in [#4815](https://github.com/FunkinCrew/Funkin/pull/4815)
+- The game no longer crashes when reaching the main menu before authenticating with Newgrounds. ([a83a4a5](https://github.com/FunkinCrew/Funkin/commit/a83a4a599c2e407832ef9bbe47bb8b8c07ce712a)) - by @NotHyper-474 in [#4871](https://github.com/FunkinCrew/Funkin/pull/4871)
+- User preferences and other settings are now properly saved after restarting the game. ([23a9e7f](https://github.com/FunkinCrew/Funkin/commit/23a9e7f944fb703160c2ed7b0bef38c70c5370db)) - by @Lasercar in [#4881](https://github.com/FunkinCrew/Funkin/pull/4881)
+- Texture atlas sprites no longer loop infinitely, fixing issues with multiple cutscenes. ([f385cf9](https://github.com/FunkinCrew/Funkin/commit/f385cf9fd33e5358427f40dad3fecfed233c1706)) - by @AbnormalPoof in [#4564](https://github.com/FunkinCrew/Funkin/pull/4564)
+- The Week 3 Pico Mix cutscene no longer breaks with Naughtyness turned off. ([e3aba5c](https://github.com/FunkinCrew/funkin.assets/commit/e3aba5c4faa8e8c705c3e0daf04e30db7ac5a136)) - by @Lasercar in [funkin.assets#169](https://github.com/FunkinCrew/funkin.assets/pull/169)
+- Adjusted the pixel strumline’s position when Downscroll is enabled to match the regular notestyle. ([ea93ec9](https://github.com/FunkinCrew/Funkin/commit/ea93ec90cb5c5dbd4a5bea64114af58c70cb43f4)) - by @Lasercar in [#4318](https://github.com/FunkinCrew/Funkin/pull/4318)
+- The Main Menu now correctly remembers your most recently selected menu item. ([05b9d68](https://github.com/FunkinCrew/Funkin/commit/05b9d68645b71c9cc36a5cb0c0e93af6acb36132)) - by @Lasercar and @Hundrec in [#4227](https://github.com/FunkinCrew/Funkin/pull/4227)
+- Fixed an occasional softlock when returning to the Freeplay menu from a song. ([b15e809](https://github.com/FunkinCrew/Funkin/commit/b15e809c63664e039781592dcbdee4383e73800e)) - by @TechnikTil in [#4665](https://github.com/FunkinCrew/Funkin/pull/4665)
+- Switching to and from the Freeplay Random capsule now behaves more consistently. ([832bc5b](https://github.com/FunkinCrew/Funkin/commit/832bc5bd83d49a646b9c8cb2b767602c848be908)) - by @VioletSnowLeopard in [#4885](https://github.com/FunkinCrew/Funkin/pull/4885)
+- Changing Freeplay filters with the Random capsule selected now behaves more consistently. ([edf6889](https://github.com/FunkinCrew/Funkin/commit/edf6889af9e7f68caead9b8139178a36b4b5b2d6)) - by @VioletSnowLeopard in [#4913](https://github.com/FunkinCrew/Funkin/pull/4913)
+- Switching between identical Freeplay filters no longer makes the songlist invisible. ([8b9775d](https://github.com/FunkinCrew/Funkin/commit/8b9775d91f4f2b5896a637a014b4be770319968e)) - by @VioletSnowLeopard in [#4919](https://github.com/FunkinCrew/Funkin/pull/4919)
+- The millions place digit of the Freeplay score display now updates properly. ([d9fcaf0](https://github.com/FunkinCrew/Funkin/commit/d9fcaf0e6382b121f7773d23f4864364a1e6a577)) - by @Lasercar in [#4065](https://github.com/FunkinCrew/Funkin/pull/4065)
+- The Freeplay clear percent display is now more consistently aligned. ([329182e](https://github.com/FunkinCrew/funkin.assets/commit/329182ea1b6839187a1d800b2d009a4c1874479d)) - by @Hundrec in [funkin.assets#37](https://github.com/FunkinCrew/funkin.assets/pull/37)
+- The debris in Pico’s Great Results animation no longer grows in size. ([c108a7f](https://github.com/FunkinCrew/funkin.assets/commit/c108a7ff0d11bf328e7b232160b8f68c71e21bca)) - by @ThatRozebudDude in [funkin.assets#73](https://github.com/FunkinCrew/funkin.assets/pull/73)
+- Fixed the song not starting if more than 32 sounds are playing at once. ([31d3718](https://github.com/FunkinCrew/Funkin/commit/31d3718e5c33371cacd495219f9cc3908244bf71)) - by @KoloInDaCrib in [#4352](https://github.com/FunkinCrew/Funkin/pull/4352)
+- Hot reloading (pressing F5) during dialogue no longer crashes the game. ([3e0dbe2](https://github.com/FunkinCrew/Funkin/commit/3e0dbe2758d68ccf4ded1d08bec247ab05d70829)) - by @KoloInDaCrib in [#4769](https://github.com/FunkinCrew/Funkin/pull/4769)
+- Restarting a song without either a player or an opponent no longer crashes the game, fixing minimal playtest mode. ([bbc0546](https://github.com/FunkinCrew/Funkin/commit/bbc0546c7450b929dc78ad9271171ea899478e9d)) - by @thesuperpig56 in [#4778](https://github.com/FunkinCrew/Funkin/pull/4778)
+- The sound tray no longer behaves incorrectly after wiping save data. ([afbb335](https://github.com/FunkinCrew/Funkin/commit/afbb3359938f020707efd92a17419e3658528ea5)) - by @Lasercar in [#4617](https://github.com/FunkinCrew/Funkin/pull/4617)
+- Opening a chart from the “Open Recent” section no longer crashes the Chart Editor. ([def1b74](https://github.com/FunkinCrew/Funkin/commit/def1b74eb6987272bc360cbf586ddcd1c26c6381)) - by @CrusherNotDrip in [#4936](https://github.com/FunkinCrew/Funkin/pull/4936)
+- Loading an invalid variation in the Chart Editor no longer crashes the game. ([c5f2a74](https://github.com/FunkinCrew/Funkin/commit/c5f2a744940dbc685b25373fa2dabb548f0b26fa)) - by @NotHyper-474 in [#4391](https://github.com/FunkinCrew/Funkin/pull/4391)
+- Default difficulties are no longer re-added when saving and loading a .FNFC chart. ([8074d57](https://github.com/FunkinCrew/Funkin/commit/8074d571860aba2c2f6f1c642d8d0e671ff5355e)) - by @Lasercar in [#4216](https://github.com/FunkinCrew/Funkin/pull/4216)
+- The Chart Editor now resizes properly after entering Fullscreen during a playtest. ([142ea6d](https://github.com/FunkinCrew/Funkin/commit/142ea6db0c53f6f9288109604702c2e7e5bc6f18)) - by @NotHyper-474 in [#4266](https://github.com/FunkinCrew/Funkin/pull/4266)
+- Added three missing hotkeys to the Chart Editor user guide. ([73ccb9a](https://github.com/FunkinCrew/funkin.assets/commit/73ccb9a80d08f3311f51cf88950692d7c1ea5d60)) - by @NotHyper-474 and @Hundrec in [funkin.assets#83](https://github.com/FunkinCrew/funkin.assets/pull/83)
+- The “Skip Forward” button is no longer named “Skip Back” in the Chart Editor. ([78f9fb7](https://github.com/FunkinCrew/funkin.assets/commit/78f9fb7cb6eaf7466826f144a0142c008fbff2f8)) - by @Hundrec in [funkin.assets#22](https://github.com/FunkinCrew/funkin.assets/pull/22)
+- Exporting a character .JSON from the Animation Editor now fills in the file name. ([a8262a8](https://github.com/FunkinCrew/Funkin/commit/a8262a8d3b4d2169327131e21c98f803da4a5ee4)) - by @anysad in [#3090](https://github.com/FunkinCrew/Funkin/pull/3090)
+- Properly credited MtH as a Charter in Monster’s metadata. ([6a10799](https://github.com/FunkinCrew/funkin.assets/commit/6a10799a40eb2b2deb364bcd3cc4387abe8e8bc4)) - by @ChillyBeanBAM in [funkin.assets#66](https://github.com/FunkinCrew/funkin.assets/pull/66)
+- Corrected the chances of a Pause Menu easter egg appearing. ([0101bae](https://github.com/FunkinCrew/Funkin/commit/0101bae7ecc800e26efd9590fdfa1305039b4461)) - by @VioletSnowLeopard in [#4358](https://github.com/FunkinCrew/Funkin/pull/4358)
+- Removed spammy traces for Playable Pico’s animations. ([f87255d](https://github.com/FunkinCrew/funkin.assets/commit/f87255d4bcb7a7ce0dc920aefc36b98a96115c75)) - by @VioletSnowLeopard in [funkin.assets#179](https://github.com/FunkinCrew/funkin.assets/pull/179)
+- Fixed memory overflowing in crash logs. ([189e028](https://github.com/FunkinCrew/Funkin/commit/189e028442c7fb892ce4dab62a5d08db658f3b2b)) - by @ACrazyTown in [#4589](https://github.com/FunkinCrew/Funkin/pull/4589)
+
+### Removed
+
+- The CHANGELOG.md file will no longer be included in builds. Visit the [Funkin' GitHub](https://github.com/FunkinCrew/Funkin/blob/main/CHANGELOG.md) to view the latest changes! ([a7da71c](https://github.com/FunkinCrew/Funkin/commit/a7da71c8a87baa440a0bc6e23d7e9b36c7574e14)) - by @Hundrec and @NotHyper-474 in [#4868](https://github.com/FunkinCrew/Funkin/pull/4868)
+
+## New Contributors for 0.6.4
+
+* @thesuperpig56 made their first contribution in [#4778](https://github.com/FunkinCrew/Funkin/pull/4778)
+* @ThatRozebudDude made their first contribution in [funkin.assets#73](https://github.com/FunkinCrew/funkin.assets/pull/73)
+
+
+
 ## [0.6.3] - 2025-04-25
 
 ### Added
@@ -15,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Adaptive turns VSync off during FPS drops, which is better if supported by your graphics card.
   - Doesn't work on Mac, sorry!
 - Otis now has muzzle flashes when shooting.
+- Added a little easter egg to one of Pico's Results Screen animations.
 - Overhauled the sticker system to allow modders to easily add custom sticker sets. ([cdc468b](https://github.com/FunkinCrew/Funkin/commit/cdc468ba15683b3c0f54015e337673c77ddd7962)) - by @AbnormalPoof in [#4003](https://github.com/FunkinCrew/Funkin/pull/4003)
 - Implemented a macro to optimize registries and entries. ([1497521](https://github.com/FunkinCrew/Funkin/commit/14975212a918adb1a5d96a349ec9e8e63c9fc64b)) - by @lemz1 in [#3694](https://github.com/FunkinCrew/Funkin/pull/3694)
 - The macro is now used to retrieve base game assets. ([963e2ec](https://github.com/FunkinCrew/Funkin/commit/963e2ecd630fae24dae4206d315618cf4c4be6db)) - by @lemz1 in [#4707](https://github.com/FunkinCrew/Funkin/pull/4707)
@@ -37,6 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The nearest song with an Erect variation will be selected when switching.
 - Switching difficulties now always plays the capsule jump-in animation.
 - The "Random" capsule now plays animations consistent with other capsules.
+- The Eggnog Erect cutscene can now be skipped. ([0303a03](https://github.com/FunkinCrew/funkin.assets/commit/1202651db8ea938fe11b6b734fbf7884d101e6ad)) - by @ShadzXD in [#62](https://github.com/FunkinCrew/funkin.assets/pull/62)
 - Swapped the positions of “skip” and “restart” items in the dialogue pause menu for consistency. ([1f88a3b](https://github.com/FunkinCrew/Funkin/commit/1f88a3b6e13e9283ad680805deab5e27ba141d96)) - by @VioletSnowLeopard in [#4553](https://github.com/FunkinCrew/Funkin/pull/4553)
 - The Controls menu now prevents unbinding essential UI controls to safeguard against softlocking save files. ([7eebce4](https://github.com/FunkinCrew/Funkin/commit/7eebce432d7627a1cf0bbd43f22a6f9bcb63ff65)) - by @VioletSnowLeopard in [#4382](https://github.com/FunkinCrew/Funkin/pull/4382)
 - Renamed “Auto Pause” preference to “Pause on Unfocus” for clarity. ([52be941](https://github.com/FunkinCrew/Funkin/commit/52be941b4503da0ac76918e2482ab1804866f2cf)) - by @JackXson-Real in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
@@ -44,6 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Story mode medals are now awarded even without scoring a new personal best.
+- Highscores are now submitted to Newgrounds even without scoring a new personal best.
 - The Freeplay menu no longer displays songs without Erect variations when returning from an Erect variation song.
 - Fixed Freeplay DJ animations for Boyfriend and Pico when idling (properly this time).
 - Alternate instrumentals for Cocoa, Senpai, Roses, and Stress are now locked until their Pico Mix is beaten.
@@ -55,9 +110,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Week 6 dialogue no longer plays for all non-default variations when entered through Freeplay.
 - Nene (Pixel) now plays her knife raising animation when the player has low health.
 - A-Bot's visualizer is now blank before the song starts.
-- Adding custom parameters to note kinds no longer crashes the Chart Editor.
 - Debug editor tooltips no longer display behind windows.
 - Clearing save data no longer crashes the game.
+- Adding custom parameters to note kinds no longer crashes the Chart Editor. ([0a7bd31](https://github.com/FunkinCrew/Funkin/commit/0a7bd3111f59efbecfe097f8bbcfdefa5ace299d)) - by @Lasercar in [#136](https://github.com/FunkinCrew/funkin.assets/pull/136)
 - Improved performance in the Freeplay menu before entering a song. ([2b7254f](https://github.com/FunkinCrew/Funkin/commit/2b7254fbd2356e9da91e216f178a88f17874a6eb)) - by @superpowers04 in [#4729](https://github.com/FunkinCrew/Funkin/pull/4729)
 - Prevented a crash by capping Freeplay and Results screen score displays at their largest possible values (actual scores are not capped). ([51324e9](https://github.com/FunkinCrew/Funkin/commit/51324e9c283c43ca861d3369ba9b3e1db9c89765)) - by @KoloInDaCrib in [#3634](https://github.com/FunkinCrew/Funkin/pull/3634)
 - The Animation Editor no longer crashes when opened. ([b40b4b0](https://github.com/FunkinCrew/Funkin/commit/b40b4b03692910afceff361cf6ca3298fd787e3c)) - by @sector-a in [#4582](https://github.com/FunkinCrew/Funkin/pull/4582)
@@ -74,6 +129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * @JackXson-Real made their first contribution in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
 * @VioletSnowLeopard made their first contribution in [#4382](https://github.com/FunkinCrew/Funkin/pull/4382)
 * @superpowers04 made their first contribution in [#4729](https://github.com/FunkinCrew/Funkin/pull/4729)
+* @ShadzXD made their first contribution in [#62](https://github.com/FunkinCrew/Funkin/pull/4729)
 
 
 

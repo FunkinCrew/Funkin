@@ -99,6 +99,7 @@ class MainMenuState extends MusicBeatState
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
+      rememberedSelectedIndex = menuItems.selectedIndex;
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
@@ -413,6 +414,7 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
+      rememberedSelectedIndex = menuItems.selectedIndex;
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
