@@ -41,6 +41,8 @@ class Strumline extends FlxSpriteGroup
   static final KEY_COUNT:Int = 4;
   static final NOTE_SPLASH_CAP:Int = 6;
 
+  static final BACKGROUND_PAD:Int = 16;
+
   var renderDistanceMs(get, never):Float;
 
   /**
@@ -62,34 +64,10 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
-   * Whether to play note splashes or not
-   * TODO: Make this a setting!
-   * IE: Settings.noSplash
-   */
-  public var showNotesplash:Bool = true;
-
-  /**
-   * Whether this strumline is controlled by the player's inputs.
-   * False means it's controlled by the opponent or Bot Play.
-   */
-  public var isPlayer:Bool;
-
-  /**
    * Usually you want to keep this as is, but if you are using a Strumline and
    * playing a sound that has it's own conductor, set this (LatencyState for example)
    */
   public var conductorInUse(get, set):Conductor;
-
-  // Used in-game to control the scroll speed within a song
-  public var scrollSpeed:Float = 1.0;
-
-  /**
-   * Reset the scroll speed to the current chart's scroll speed.
-   */
-  public function resetScrollSpeed():Void
-  {
-    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
-  }
 
   var _conductorInUse:Null<Conductor>;
 
@@ -104,29 +82,29 @@ class Strumline extends FlxSpriteGroup
     return _conductorInUse = value;
   }
 
+  // Used in-game to control the scroll speed within a song
+  public var scrollSpeed:Float = 1.0;
+
+  /**
+   * Reset the scroll speed to the current chart's scroll speed.
+   */
+  public function resetScrollSpeed():Void
+  {
+    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+  }
+
   /**
    * Whether the game should auto position notes.
    */
   public var customPositionData:Bool = false;
 
   /**
-   * The notes currently being rendered on the strumline.
-   * This group iterates over this every frame to update note positions.
-   * The PlayState also iterates over this to calculate user inputs.
-   */
-  public var notes:FlxTypedSpriteGroup<NoteSprite>;
-
-  /**
-   * The hold notes currently being rendered on the strumline.
-   * This group iterates over this every frame to update hold note positions.
-   * The PlayState also iterates over this to calculate user inputs.
-   */
-  public var holdNotes:FlxTypedSpriteGroup<SustainTrail>;
-
-  /**
    * A signal that is dispatched when a note is spawned and heading towards the strumline.
    */
   public var onNoteIncoming:FlxTypedSignal<NoteSprite->Void>;
+
+  public var notes:FlxTypedSpriteGroup<NoteSprite>;
+  public var holdNotes:FlxTypedSpriteGroup<SustainTrail>;
 
   var background:FunkinSprite;
 
@@ -137,11 +115,31 @@ class Strumline extends FlxSpriteGroup
   var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
 
-  final noteStyle:NoteStyle;
-
   #if FEATURE_GHOST_TAPPING
   var ghostTapTimer:Float = 0.0;
   #end
+
+  /**
+   * Whether to play note splashes or not
+   * TODO: Make this a setting!
+   * IE: Settings.noSplash
+   */
+  public var showNotesplash:Bool = true;
+
+  /**
+   * Whether to play hold covers or not
+   * TODO: Make this a setting!
+   * IE: Settings.noCover
+   */
+  public var showHoldCover:Bool = true;
+
+  /**
+   * Whether this strumline is controlled by the player's inputs.
+   * False means it's controlled by the opponent or Bot Play.
+   */
+  public var isPlayer:Bool;
+
+  public var targetCharacter:funkin.play.character.BaseCharacter;
 
   /**
    * The note data for the song. Should NOT be altered after the song starts,
@@ -153,71 +151,61 @@ class Strumline extends FlxSpriteGroup
 
   var heldKeys:Array<Bool> = [];
 
-  static final BACKGROUND_PAD:Int = 16;
+  public final noteStyle:NoteStyle;
+  public var downScroll:Bool = false;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool)
+  public function new(noteStyle:NoteStyle, isPlayer:Bool, ?forceDownscroll:Bool)
   {
     super();
-
     this.isPlayer = isPlayer;
     this.noteStyle = noteStyle;
+    this.downScroll = forceDownscroll ?? Preferences.downscroll;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
     this.strumlineNotes.zIndex = 10;
     this.add(this.strumlineNotes);
-
     // Hold notes are added first so they render behind regular notes.
     this.holdNotes = new FlxTypedSpriteGroup<SustainTrail>();
     this.holdNotes.zIndex = 20;
     this.add(this.holdNotes);
-
     this.holdNotesVwoosh = new FlxTypedSpriteGroup<SustainTrail>();
     this.holdNotesVwoosh.zIndex = 21;
     this.add(this.holdNotesVwoosh);
-
     this.notes = new FlxTypedSpriteGroup<NoteSprite>();
     this.notes.zIndex = 30;
     this.add(this.notes);
-
     this.notesVwoosh = new FlxTypedSpriteGroup<NoteSprite>();
     this.notesVwoosh.zIndex = 31;
     this.add(this.notesVwoosh);
-
     this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>(0, 0, 4);
     this.noteHoldCovers.zIndex = 40;
     this.add(this.noteHoldCovers);
-
     this.noteSplashes = new FlxTypedSpriteGroup<NoteSplash>(0, 0, NOTE_SPLASH_CAP);
     this.noteSplashes.zIndex = 50;
     this.add(this.noteSplashes);
-
     this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(this.width + BACKGROUND_PAD * 2), FlxG.height, 0xFF000000);
-    // Convert the percent to a number between 0 and 1.
-    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
-    this.background.scrollFactor.set(0, 0);
-    this.background.x = -BACKGROUND_PAD;
-    this.add(this.background);
-
+    if (Preferences.strumlineBackgroundOpacity > 0)
+    {
+      // Convert the percent to a number between 0 and 1.
+      this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
+      this.background.scrollFactor.set(0, 0);
+      this.background.x = -BACKGROUND_PAD;
+      this.add(this.background);
+    }
     this.refresh();
-
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
     resetScrollSpeed();
-
     for (i in 0...KEY_COUNT)
     {
-      var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
-      child.x = getXPos(DIRECTIONS[i]);
+      var child:StrumlineNote = new StrumlineNote(noteStyle, DIRECTIONS[i]);
+      child.x = getXPosOfNote(DIRECTIONS[i]);
       child.x += INITIAL_OFFSET;
       child.y = 0;
       noteStyle.applyStrumlineOffsets(child);
       this.strumlineNotes.add(child);
     }
-
     for (i in 0...KEY_COUNT)
-    {
       heldKeys.push(false);
-    }
-
     // This MUST be true for children to update!
     this.active = true;
   }
@@ -241,17 +229,48 @@ class Strumline extends FlxSpriteGroup
     return value;
   }
 
-  /**
-   * Refresh the strumline, sorting its children by z-index.
-   */
-  public function refresh():Void
-  {
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-  }
-
   override function get_width():Float
   {
     return KEY_COUNT * Strumline.NOTE_SPACING;
+  }
+
+  /**
+   * Apply a small animation which moves the arrow down and fades it in.
+   * Only plays at the start of Free Play songs.
+   *
+   * Note that modifying the offset of the whole strumline won't have the
+   * @param arrow The arrow to animate.
+   * @param index The index of the arrow in the strumline.
+   */
+  function fadeInArrow(index:Int, arrow:StrumlineNote):Void
+  {
+    arrow.y -= 10;
+    arrow.alpha = 0.0;
+    FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
+  }
+
+  /**
+   * Play a fade in animation on all arrows in the strumline.
+   * Used when starting a song in Freeplay mode.
+   */
+  public function fadeInArrows():Void
+  {
+    for (index => arrow in this.strumlineNotes.members.keyValueIterator())
+    {
+      fadeInArrow(index, arrow);
+    }
+  }
+
+  function getXPosOfNote(direction:NoteDirection):Float
+  {
+    return switch (direction)
+    {
+      case NoteDirection.LEFT: 0;
+      case NoteDirection.DOWN: 0 + (1 * Strumline.NOTE_SPACING);
+      case NoteDirection.UP: 0 + (2 * Strumline.NOTE_SPACING);
+      case NoteDirection.RIGHT: 0 + (3 * Strumline.NOTE_SPACING);
+      default: 0;
+    }
   }
 
   public override function update(elapsed:Float):Void
@@ -263,202 +282,6 @@ class Strumline extends FlxSpriteGroup
     #if FEATURE_GHOST_TAPPING
     updateGhostTapTimer(elapsed);
     #end
-  }
-
-  #if FEATURE_GHOST_TAPPING
-  /**
-   * @return `true` if no notes are in range of the strumline and the player can spam without penalty.
-   */
-  public function mayGhostTap():Bool
-  {
-    // Any notes in range of the strumline.
-    if (getNotesMayHit().length > 0)
-    {
-      return false;
-    }
-    // Any hold notes in range of the strumline.
-    if (getHoldNotesHitOrMissed().length > 0)
-    {
-      return false;
-    }
-
-    // Note has been hit recently.
-    if (ghostTapTimer > 0.0) return false;
-
-    // **yippee**
-    return true;
-  }
-  #end
-
-  /**
-   * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
-   * @return An array of `NoteSprite` objects.
-   */
-  public function getNotesMayHit():Array<NoteSprite>
-  {
-    return notes.members.filter(function(note:NoteSprite) {
-      return note != null && note.alive && !note.hasBeenHit && note.mayHit;
-    });
-  }
-
-  /**
-   * Return hold notes that are within `Constants.HIT_WINDOW` ms of the strumline.
-   * @return An array of `SustainTrail` objects.
-   */
-  public function getHoldNotesHitOrMissed():Array<SustainTrail>
-  {
-    return holdNotes.members.filter(function(holdNote:SustainTrail) {
-      return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
-    });
-  }
-
-  /**
-   * Get a note sprite corresponding to the given note data.
-   * @param target The note data for the note sprite.
-   * @return The note sprite.
-   */
-  public function getNoteSprite(target:SongNoteData):NoteSprite
-  {
-    if (target == null) return null;
-
-    for (note in notes.members)
-    {
-      if (note == null) continue;
-      if (note.alive) continue;
-
-      if (note.noteData == target) return note;
-    }
-
-    return null;
-  }
-
-  /**
-   * Get a hold note sprite corresponding to the given note data.
-   * @param target The note data for the hold note.
-   * @return The hold note sprite.
-   */
-  public function getHoldNoteSprite(target:SongNoteData):SustainTrail
-  {
-    if (target == null || ((target.length ?? 0.0) <= 0.0)) return null;
-
-    for (holdNote in holdNotes.members)
-    {
-      if (holdNote == null) continue;
-      if (holdNote.alive) continue;
-
-      if (holdNote.noteData == target) return holdNote;
-    }
-
-    return null;
-  }
-
-  /**
-   * Call this when resetting the playstate.
-   */
-  public function vwooshNotes():Void
-  {
-    var vwooshTime:Float = 0.5;
-
-    for (note in notes.members)
-    {
-      if (note == null) continue;
-      if (!note.alive) continue;
-
-      notes.remove(note);
-      notesVwoosh.add(note);
-
-      var targetY:Float = FlxG.height + note.y;
-      if (Preferences.downscroll) targetY = 0 - note.height;
-      FlxTween.tween(note, {y: targetY}, vwooshTime,
-        {
-          ease: FlxEase.expoIn,
-          onComplete: function(twn) {
-            note.kill();
-            notesVwoosh.remove(note, true);
-            note.destroy();
-          }
-        });
-    }
-
-    for (holdNote in holdNotes.members)
-    {
-      if (holdNote == null) continue;
-      if (!holdNote.alive) continue;
-
-      holdNotes.remove(holdNote);
-      holdNotesVwoosh.add(holdNote);
-
-      var targetY:Float = FlxG.height + holdNote.y;
-      if (Preferences.downscroll) targetY = 0 - holdNote.height;
-      FlxTween.tween(holdNote, {y: targetY}, vwooshTime,
-        {
-          ease: FlxEase.expoIn,
-          onComplete: function(twn) {
-            holdNote.kill();
-            holdNotesVwoosh.remove(holdNote, true);
-            holdNote.destroy();
-          }
-        });
-    }
-  }
-
-  /**
-   * Reverse of vwooshNotes, we bring the notes IN (by their offsets)
-   */
-  public function vwooshInNotes():Void
-  {
-    var vwooshTime:Float = 0.5;
-
-    for (note in notes.members)
-    {
-      if (note == null) continue;
-      if (!note.alive) continue;
-
-      note.yOffset = 200;
-      if (Preferences.downscroll)
-      {
-        note.yOffset = -200;
-      }
-      FlxTween.tween(note, {yOffset: 0}, vwooshTime,
-        {
-          ease: FlxEase.expoOut,
-          onComplete: function(twn) {
-            note.yOffset = 0;
-          }
-        });
-    }
-
-    for (holdNote in holdNotes.members)
-    {
-      if (holdNote == null) continue;
-      if (!holdNote.alive) continue;
-
-      holdNote.yOffset = 200;
-      if (Preferences.downscroll)
-      {
-        holdNote.yOffset = -200;
-      }
-      FlxTween.tween(holdNote, {yOffset: 0}, vwooshTime,
-        {
-          ease: FlxEase.expoOut,
-          onComplete: function(twn) {
-            holdNote.yOffset = 0;
-          }
-        });
-    }
-  }
-
-
-  /**
-   * For a note's strumTime, calculate its Y position relative to the strumline.
-   * NOTE: Assumes Conductor and PlayState are both initialized.
-   * @param strumTime The strumtime of the note.
-   * @return The Y position of the note.
-   */
-  public function calculateNoteYPos(strumTime:Float):Float
-  {
-    return
-      Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * (Preferences.downscroll ? 1 : -1);
   }
 
   public function updateNotes():Void
@@ -508,7 +331,7 @@ class Strumline extends FlxSpriteGroup
       if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime) + note.yOffset;
 
       // If the note is miss
-      var isOffscreen:Bool = Preferences.downscroll ? note.y > FlxG.height : note.y < -note.height;
+      var isOffscreen:Bool = downScroll ? note.y > FlxG.height : note.y < -note.height;
       if (note.handledMiss && isOffscreen)
       {
         killNote(note);
@@ -576,7 +399,7 @@ class Strumline extends FlxSpriteGroup
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (downScroll)
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
@@ -606,14 +429,11 @@ class Strumline extends FlxSpriteGroup
 
         holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
 
-        if (holdNote.sustainLength <= 10)
-        {
-          holdNote.visible = false;
-        }
+        if (holdNote.sustainLength <= 10) holdNote.visible = false;
 
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (downScroll)
           {
             holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
           }
@@ -627,10 +447,9 @@ class Strumline extends FlxSpriteGroup
       {
         // Hold note is new, render it normally.
         holdNote.visible = true;
-
         if (!customPositionData)
         {
-          if (Preferences.downscroll)
+          if (downScroll)
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
@@ -649,49 +468,93 @@ class Strumline extends FlxSpriteGroup
 
     // Update rendering of pressed keys.
     for (dir in DIRECTIONS)
-    {
-      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
-      {
-        playPress(dir);
-      }
-    }
+      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static") playPress(dir);
   }
 
   /**
-   * Return notes that are within, or way after, `Constants.HIT_WINDOW` ms of the strumline.
-   * @return An array of `NoteSprite` objects.
+   * Custom recycling behavior for note splashes.
    */
-  public function getNotesOnScreen():Array<NoteSprite>
+  function constructNoteSplash():NoteSplash
   {
-    return notes.members.filter(function(note:NoteSprite) {
-      return note != null && note.alive && !note.hasBeenHit;
-    });
-  }
-
-  #if FEATURE_GHOST_TAPPING
-  function updateGhostTapTimer(elapsed:Float):Void
-  {
-    // If it's still our turn, don't update the ghost tap timer.
-    if (getNotesOnScreen().length > 0) return;
-
-    ghostTapTimer -= elapsed;
-
-    if (ghostTapTimer <= 0)
+    var result:NoteSplash = null;
+    if (noteSplashes.length < noteSplashes.maxSize)
     {
-      ghostTapTimer = 0;
+      // Create a new note splash.
+      result = new NoteSplash(noteStyle);
+      this.noteSplashes.add(result);
     }
+    else
+    {
+      // Recycle
+      result = this.noteSplashes.getFirstAvailable();
+      (result != null) ? result.revive() : result = FlxG.random.getObject(this.noteSplashes.members);
+    }
+
+    return result;
   }
-  #end
 
   /**
-   * Called when the PlayState skips a large amount of time forward or backward.
+   * Custom recycling behavior for note hold covers.
    */
-  public function handleSkippedNotes():Void
+  function constructNoteHoldCover():NoteHoldCover
   {
-    // By calling clean(), we remove all existing notes so they can be re-added.
-    clean();
-    // By setting noteIndex to 0, the next update will skip past all the notes that are in the past.
-    nextNoteIndex = 0;
+    var result:NoteHoldCover = null;
+    if (noteHoldCovers.length < noteHoldCovers.maxSize)
+    {
+      result = new NoteHoldCover(noteStyle);
+      this.noteHoldCovers.add(result);
+    }
+    else
+    {
+      result = this.noteHoldCovers.getFirstAvailable();
+      (result != null) ? result.revive() : result = FlxG.random.getObject(this.noteHoldCovers.members);
+    }
+    return result;
+  }
+
+  /**
+   * Custom recycling behavior for note sprites.
+   */
+  function constructNoteSprite():NoteSprite
+  {
+    var result:NoteSprite = null;
+    result = this.notes.getFirstAvailable();
+    if (result != null) result.revive();
+    else
+    {
+      // The note sprite pool is full and all note splashes are active.
+      // We have to create a new note.
+      result = new NoteSprite(noteStyle, this);
+      this.notes.add(result);
+    }
+    return result;
+  }
+
+  /**
+   * Custom recycling behavior for hold note sprites.
+   */
+  function constructHoldNoteSprite():SustainTrail
+  {
+    var result:SustainTrail = null;
+    result = this.holdNotes.getFirstAvailable();
+    if (result != null) result.revive();
+    else
+    {
+      result = new SustainTrail(0, 0, noteStyle, this);
+      this.holdNotes.add(result);
+    }
+    return result;
+  }
+
+  /**
+   * For a note's strumTime, calculate its Y position relative to the strumline.
+   * NOTE: Assumes Conductor and PlayState are both initialized.
+   * @param strumTime The strumtime of the note.
+   * @return The Y position of the note.
+   */
+  public function calculateNoteYPos(strumTime:Float):Float
+  {
+    return Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime - Conductor.instance.inputOffset) * scrollSpeed * (downScroll ? 1 : -1);
   }
 
   /**
@@ -730,117 +593,6 @@ class Strumline extends FlxSpriteGroup
   public function isKeyHeld(dir:NoteDirection):Bool
   {
     return heldKeys[dir];
-  }
-
-  /**
-   * Called when the song is reset.
-   * Removes any special animations and the like.
-   * Doesn't reset the notes from the chart, that's handled by the PlayState.
-   */
-  public function clean():Void
-  {
-    for (note in notes.members)
-    {
-      if (note == null) continue;
-      killNote(note);
-    }
-
-    for (holdNote in holdNotes.members)
-    {
-      if (holdNote == null) continue;
-      holdNote.kill();
-    }
-
-    for (splash in noteSplashes)
-    {
-      if (splash == null) continue;
-      splash.kill();
-    }
-
-    for (cover in noteHoldCovers)
-    {
-      if (cover == null) continue;
-      cover.kill();
-    }
-
-    heldKeys = [false, false, false, false];
-
-    for (dir in DIRECTIONS)
-    {
-      playStatic(dir);
-    }
-    resetScrollSpeed();
-
-    #if FEATURE_GHOST_TAPPING
-    ghostTapTimer = 0;
-    #end
-  }
-
-  /**
-   * Apply note data from a chart to this strumline.
-   * Note data should be valid and apply only to this strumline.
-   * @param data The note data to apply.
-   */
-  public function applyNoteData(data:Array<SongNoteData>):Void
-  {
-    this.notes.clear();
-
-    this.noteData = data.copy();
-    this.nextNoteIndex = 0;
-
-    // Sort the notes by strumtime.
-    this.noteData.insertionSort(compareNoteData.bind(FlxSort.ASCENDING));
-  }
-
-  /**
-   * Hit a note.
-   * @param note The note to hit.
-   * @param removeNote True to remove the note immediately, false to make it transparent and let it move offscreen.
-   */
-  public function hitNote(note:NoteSprite, removeNote:Bool = true):Void
-  {
-    playConfirm(note.direction);
-    note.hasBeenHit = true;
-
-    if (removeNote)
-    {
-      killNote(note);
-    }
-    else
-    {
-      note.alpha = 0.5;
-      note.desaturate();
-    }
-
-    if (note.holdNoteSprite != null)
-    {
-      note.holdNoteSprite.hitNote = true;
-      note.holdNoteSprite.missedNote = false;
-
-      note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
-    }
-
-    #if FEATURE_GHOST_TAPPING
-    ghostTapTimer = Constants.GHOST_TAP_DELAY;
-    #end
-  }
-
-  /**
-   * Kill a note heading towards the strumline.
-   * @param note The note to kill. Gets recycled and reused for performance.
-   */
-  public function killNote(note:NoteSprite):Void
-  {
-    if (note == null) return;
-    note.visible = false;
-    notes.remove(note, false);
-    note.kill();
-
-    if (note.holdNoteSprite != null)
-    {
-      note.holdNoteSprite.missedNote = true;
-      note.holdNoteSprite.visible = false;
-    }
   }
 
   /**
@@ -910,6 +662,151 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Apply note data from a chart to this strumline.
+   * Note data should be valid and apply only to this strumline.
+   * @param data The note data to apply.
+   */
+  public function applyNoteData(data:Array<SongNoteData>):Void
+  {
+    this.notes.clear();
+
+    this.noteData = data.copy();
+    this.nextNoteIndex = 0;
+
+    // Sort the notes by strumtime.
+    this.noteData.insertionSort(compareNoteData.bind(FlxSort.ASCENDING));
+  }
+
+  #if FEATURE_GHOST_TAPPING
+  /**
+   * @return `true` if no notes are in range of the strumline and the player can spam without penalty.
+   */
+  public function mayGhostTap():Bool
+  {
+    // Any notes in range of the strumline.
+    if (getNotesMayHit().length > 0)
+    {
+      return false;
+    }
+    // Any hold notes in range of the strumline.
+    if (getHoldNotesHitOrMissed().length > 0)
+    {
+      return false;
+    }
+
+    // Note has been hit recently.
+    if (ghostTapTimer > 0.0) return false;
+
+    // **yippee**
+    return true;
+  }
+
+  function updateGhostTapTimer(elapsed:Float):Void
+  {
+    // If it's still our turn, don't update the ghost tap timer.
+    if (getNotesOnScreen().length > 0) return;
+
+    ghostTapTimer -= elapsed;
+
+    if (ghostTapTimer <= 0)
+    {
+      ghostTapTimer = 0;
+    }
+  }
+  #end
+
+  /**
+   * Hit a note.
+   * @param note The note to hit.
+   * @param removeNote True to remove the note immediately, false to make it transparent and let it move offscreen.
+   */
+  public function hitNote(note:NoteSprite, removeNote:Bool = true):Void
+  {
+    playConfirm(note.direction);
+    note.hasBeenHit = true;
+
+    if (removeNote) killNote(note);
+    else
+    {
+      note.alpha = 0.5;
+      note.desaturate();
+    }
+
+    if (note.holdNoteSprite != null)
+    {
+      note.holdNoteSprite.hitNote = true;
+      note.holdNoteSprite.missedNote = false;
+      note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
+    }
+
+    #if FEATURE_GHOST_TAPPING
+    ghostTapTimer = Constants.GHOST_TAP_DELAY;
+    #end
+  }
+
+  /**
+   * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `NoteSprite` objects.
+   */
+  public function getNotesMayHit():Array<NoteSprite>
+  {
+    return notes.members.filter(function(note:NoteSprite) {
+      return note != null && note.alive && !note.hasBeenHit && note.mayHit;
+    });
+  }
+
+  /**
+   * Return hold notes that are within `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `SustainTrail` objects.
+   */
+  public function getHoldNotesHitOrMissed():Array<SustainTrail>
+  {
+    return holdNotes.members.filter(function(holdNote:SustainTrail) {
+      return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
+    });
+  }
+
+  /**
+   * Get a note sprite corresponding to the given note data.
+   * @param target The note data for the note sprite.
+   * @return The note sprite.
+   */
+  public function getNoteSprite(target:SongNoteData):NoteSprite
+  {
+    if (target == null) return null;
+
+    for (note in notes.members)
+    {
+      if (note == null) continue;
+      if (note.alive) continue;
+
+      if (note.noteData == target) return note;
+    }
+
+    return null;
+  }
+
+  /**
+   * Get a hold note sprite corresponding to the given note data.
+   * @param target The note data for the hold note.
+   * @return The hold note sprite.
+   */
+  public function getHoldNoteSprite(target:SongNoteData):SustainTrail
+  {
+    if (target == null || ((target.length ?? 0.0) <= 0.0)) return null;
+
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null) continue;
+      if (holdNote.alive) continue;
+
+      if (holdNote.noteData == target) return holdNote;
+    }
+
+    return null;
+  }
+
+  /**
    * Play a note splash for a given direction.
    * @param direction The direction of the note to play the splash animation for.
    */
@@ -925,7 +822,7 @@ class Strumline extends FlxSpriteGroup
       splash.play(direction);
 
       splash.x = this.x;
-      splash.x += getXPos(direction);
+      splash.x += getXPosOfNote(direction);
       splash.x += INITIAL_OFFSET;
       splash.x += noteStyle.getSplashOffsets()[0] * splash.scale.x;
 
@@ -941,7 +838,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
-    if (!showNotesplash) return;
+    if (!showHoldCover) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();
@@ -955,7 +852,7 @@ class Strumline extends FlxSpriteGroup
       cover.playStart();
 
       cover.x = this.x;
-      cover.x += getXPos(holdNote.noteDirection);
+      cover.x += getXPosOfNote(holdNote.noteDirection);
       cover.x += STRUMLINE_SIZE / 2;
       cover.x -= cover.width / 2;
       cover.x += noteStyle.getHoldCoverOffsets()[0] * cover.scale.x;
@@ -987,7 +884,7 @@ class Strumline extends FlxSpriteGroup
       noteSprite.noteData = note;
 
       noteSprite.x = this.x;
-      noteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
+      noteSprite.x += getXPosOfNote(DIRECTIONS[note.getDirection() % KEY_COUNT]);
       noteSprite.x -= (noteSprite.width - Strumline.STRUMLINE_SIZE) / 2; // Center it
       noteSprite.x -= NUDGE;
       noteSprite.y = -9999;
@@ -1013,7 +910,7 @@ class Strumline extends FlxSpriteGroup
 
       holdNoteSprite.setupHoldNoteGraphic(noteKindStyle);
 
-      holdNoteSprite.parentStrumline = this;
+      holdNoteSprite._parentStrum = this;
       holdNoteSprite.noteData = note;
       holdNoteSprite.strumTime = note.time;
       holdNoteSprite.noteDirection = note.getDirection();
@@ -1025,7 +922,7 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.alpha = 1.0;
 
       holdNoteSprite.x = this.x;
-      holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
+      holdNoteSprite.x += getXPosOfNote(DIRECTIONS[note.getDirection() % KEY_COUNT]);
       holdNoteSprite.x += STRUMLINE_SIZE / 2;
       holdNoteSprite.x -= holdNoteSprite.width / 2;
       holdNoteSprite.y = -9999;
@@ -1035,162 +932,141 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
-   * Custom recycling behavior for note splashes.
+   * Called when the PlayState skips a large amount of time forward or backward.
    */
-  function constructNoteSplash():NoteSplash
+  public function handleSkippedNotes():Void
   {
-    var result:NoteSplash = null;
+    // By calling clean(), we remove all existing notes so they can be re-added.
+    clean();
+    // By setting noteIndex to 0, the next update will skip past all the notes that are in the past.
+    nextNoteIndex = 0;
+  }
 
-    // If we haven't filled the pool yet...
-    if (noteSplashes.length < noteSplashes.maxSize)
+  /**
+   * Refresh the strumline, sorting its children by z-index.
+   */
+  public function refresh():Void
+  {
+    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+  }
+
+  /**
+   * Called when the song is reset.
+   * Removes any special animations and the like.
+   * Doesn't reset the notes from the chart, that's handled by the PlayState.
+   */
+  public function clean():Void
+  {
+    for (note in notes.members)
     {
-      // Create a new note splash.
-      result = new NoteSplash(noteStyle);
-      this.noteSplashes.add(result);
+      if (note == null) continue;
+      killNote(note);
     }
-    else
-    {
-      // Else, find a note splash which is inactive so we can revive it.
-      result = this.noteSplashes.getFirstAvailable();
 
-      if (result != null)
-      {
-        result.revive();
-      }
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null) continue;
+      holdNote.kill();
+    }
+
+    for (splash in noteSplashes)
+    {
+      if (splash == null) continue;
+      splash.kill();
+    }
+
+    for (cover in noteHoldCovers)
+    {
+      if (cover == null) continue;
+      cover.kill();
+    }
+
+    heldKeys = [false, false, false, false];
+
+    for (dir in DIRECTIONS)
+      playStatic(dir);
+
+    resetScrollSpeed();
+
+    #if FEATURE_GHOST_TAPPING
+    ghostTapTimer = 0;
+    #end
+  }
+
+  /**
+   * Kill a note heading towards the strumline.
+   * @param note The note to kill. Gets recycled and reused for performance.
+   */
+  public function killNote(note:NoteSprite):Void
+  {
+    if (note == null) return;
+    note.visible = false;
+    notes.remove(note, false);
+    note.kill();
+    if (note.holdNoteSprite != null)
+    {
+      note.holdNoteSprite.missedNote = true;
+      note.holdNoteSprite.visible = false;
+    }
+  }
+
+  /**
+   * Return notes that are within, or way after, `Constants.HIT_WINDOW` ms of the strumline.
+   * @return An array of `NoteSprite` objects.
+   */
+  public function getNotesOnScreen():Array<NoteSprite>
+  {
+    return notes.members.filter(function(note:NoteSprite) {
+      return note != null && note.alive && !note.hasBeenHit;
+    });
+  }
+
+  /**
+   * Find the maximum Y position of the strumline.
+   * Ignores the background to ensure the strumline is positioned correctly.
+   * @return The maximum Y position of the strumline.
+   */
+  override function findMaxYHelper():Float
+  {
+    var value:Float = Math.NEGATIVE_INFINITY;
+    for (member in group.members)
+    {
+      if (member == null) continue;
+      // SKIP THE BACKGROUND
+      if (member == this.background) continue;
+
+      var maxY:Float;
+      if (member.flixelType == SPRITEGROUP) maxY = (cast member : FlxSpriteGroup).findMaxY();
       else
-      {
-        // The note splash pool is full and all note splashes are active,
-        // so we just pick one at random to destroy and restart.
-        result = FlxG.random.getObject(this.noteSplashes.members);
-      }
-    }
+        maxY = member.y + member.height;
 
-    return result;
+      if (maxY > value) value = maxY;
+    }
+    return value;
   }
 
   /**
-   * Custom recycling behavior for note hold covers.
+   * Find the minimum Y position of the strumline.
+   * Ignores the background to ensure the strumline is positioned correctly.
+   * @return The minimum Y position of the strumline.
    */
-  function constructNoteHoldCover():NoteHoldCover
+  override function findMinYHelper():Float
   {
-    var result:NoteHoldCover = null;
-
-    // If we haven't filled the pool yet...
-    if (noteHoldCovers.length < noteHoldCovers.maxSize)
+    var value:Float = Math.POSITIVE_INFINITY;
+    for (member in group.members)
     {
-      // Create a new note hold cover.
-      result = new NoteHoldCover(noteStyle);
-      this.noteHoldCovers.add(result);
-    }
-    else
-    {
-      // Else, find a note splash which is inactive so we can revive it.
-      result = this.noteHoldCovers.getFirstAvailable();
+      if (member == null) continue;
+      // SKIP THE BACKGROUND
+      if (member == this.background) continue;
 
-      if (result != null)
-      {
-        result.revive();
-      }
+      var minY:Float;
+      if (member.flixelType == SPRITEGROUP) minY = (cast member : FlxSpriteGroup).findMinY();
       else
-      {
-        // The note hold cover pool is full and all note hold covers are active,
-        // so we just pick one at random to destroy and restart.
-        result = FlxG.random.getObject(this.noteHoldCovers.members);
-      }
+        minY = member.y;
+
+      if (minY < value) value = minY;
     }
-
-    return result;
-  }
-
-  /**
-   * Custom recycling behavior for note sprites.
-   */
-  function constructNoteSprite():NoteSprite
-  {
-    var result:NoteSprite = null;
-
-    // Else, find a note which is inactive so we can revive it.
-    result = this.notes.getFirstAvailable();
-
-    if (result != null)
-    {
-      // Revive and reuse the note.
-      result.revive();
-    }
-    else
-    {
-      // The note sprite pool is full and all note splashes are active.
-      // We have to create a new note.
-      result = new NoteSprite(noteStyle);
-      this.notes.add(result);
-    }
-
-    return result;
-  }
-
-  /**
-   * Custom recycling behavior for hold note sprites.
-   */
-  function constructHoldNoteSprite():SustainTrail
-  {
-    var result:SustainTrail = null;
-
-    // Else, find a note which is inactive so we can revive it.
-    result = this.holdNotes.getFirstAvailable();
-
-    if (result != null)
-    {
-      // Revive and reuse the note.
-      result.revive();
-    }
-    else
-    {
-      // The note sprite pool is full and all note splashes are active.
-      // We have to create a new note.
-      result = new SustainTrail(0, 0, noteStyle);
-      this.holdNotes.add(result);
-    }
-
-    return result;
-  }
-
-  function getXPos(direction:NoteDirection):Float
-  {
-    return switch (direction)
-    {
-      case NoteDirection.LEFT: 0;
-      case NoteDirection.DOWN: 0 + (1 * Strumline.NOTE_SPACING);
-      case NoteDirection.UP: 0 + (2 * Strumline.NOTE_SPACING);
-      case NoteDirection.RIGHT: 0 + (3 * Strumline.NOTE_SPACING);
-      default: 0;
-    }
-  }
-
-  /**
-   * Apply a small animation which moves the arrow down and fades it in.
-   * Only plays at the start of Free Play songs.
-   *
-   * Note that modifying the offset of the whole strumline won't have the
-   * @param arrow The arrow to animate.
-   * @param index The index of the arrow in the strumline.
-   */
-  function fadeInArrow(index:Int, arrow:StrumlineNote):Void
-  {
-    arrow.y -= 10;
-    arrow.alpha = 0.0;
-    FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
-  }
-
-  /**
-   * Play a fade in animation on all arrows in the strumline.
-   * Used when starting a song in Freeplay mode.
-   */
-  public function fadeInArrows():Void
-  {
-    for (index => arrow in this.strumlineNotes.members.keyValueIterator())
-    {
-      fadeInArrow(index, arrow);
-    }
+    return value;
   }
 
   /**
@@ -1230,60 +1106,91 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
-   * Find the minimum Y position of the strumline.
-   * Ignores the background to ensure the strumline is positioned correctly.
-   * @return The minimum Y position of the strumline.
+   * Call this when resetting the playstate.
    */
-  override function findMinYHelper():Float
+  public function vwooshNotes():Void
   {
-    var value:Float = Math.POSITIVE_INFINITY;
-    for (member in group.members)
+    var vwooshTime:Float = 0.5;
+
+    for (note in notes.members)
     {
-      if (member == null) continue;
-      // SKIP THE BACKGROUND
-      if (member == this.background) continue;
+      if (note == null) continue;
+      if (!note.alive) continue;
 
-      var minY:Float;
-      if (member.flixelType == SPRITEGROUP)
-      {
-        minY = (cast member : FlxSpriteGroup).findMinY();
-      }
-      else
-      {
-        minY = member.y;
-      }
+      notes.remove(note);
+      notesVwoosh.add(note);
 
-      if (minY < value) value = minY;
+      var targetY:Float = FlxG.height + note.y;
+      if (downScroll) targetY = 0 - note.height;
+      FlxTween.tween(note, {y: targetY}, vwooshTime,
+        {
+          ease: FlxEase.expoIn,
+          onComplete: function(twn) {
+            note.kill();
+            notesVwoosh.remove(note, true);
+            note.destroy();
+          }
+        });
     }
-    return value;
+
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null) continue;
+      if (!holdNote.alive) continue;
+
+      holdNotes.remove(holdNote);
+      holdNotesVwoosh.add(holdNote);
+
+      var targetY:Float = FlxG.height + holdNote.y;
+      if (downScroll) targetY = 0 - holdNote.height;
+      FlxTween.tween(holdNote, {y: targetY}, vwooshTime,
+        {
+          ease: FlxEase.expoIn,
+          onComplete: function(twn) {
+            holdNote.kill();
+            holdNotesVwoosh.remove(holdNote, true);
+            holdNote.destroy();
+          }
+        });
+    }
   }
 
   /**
-   * Find the maximum Y position of the strumline.
-   * Ignores the background to ensure the strumline is positioned correctly.
-   * @return The maximum Y position of the strumline.
+   * Reverse of vwooshNotes, we bring the notes IN (by their offsets)
    */
-  override function findMaxYHelper():Float
+  public function vwooshInNotes():Void
   {
-    var value:Float = Math.NEGATIVE_INFINITY;
-    for (member in group.members)
+    var vwooshTime:Float = 0.5;
+
+    for (note in notes.members)
     {
-      if (member == null) continue;
-      // SKIP THE BACKGROUND
-      if (member == this.background) continue;
+      if (note == null) continue;
+      if (!note.alive) continue;
 
-      var maxY:Float;
-      if (member.flixelType == SPRITEGROUP)
-      {
-        maxY = (cast member : FlxSpriteGroup).findMaxY();
-      }
-      else
-      {
-        maxY = member.y + member.height;
-      }
+      note.yOffset = 200 * (downScroll ? -1 : 1);
 
-      if (maxY > value) value = maxY;
+      FlxTween.tween(note, {yOffset: 0}, vwooshTime,
+        {
+          ease: FlxEase.expoOut,
+          onComplete: function(twn) {
+            note.yOffset = 0;
+          }
+        });
     }
-    return value;
+
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null) continue;
+      if (!holdNote.alive) continue;
+
+      holdNote.yOffset = 200 * (downScroll ? -1 : 1);
+      FlxTween.tween(holdNote, {yOffset: 0}, vwooshTime,
+        {
+          ease: FlxEase.expoOut,
+          onComplete: function(twn) {
+            holdNote.yOffset = 0;
+          }
+        });
+    }
   }
 }

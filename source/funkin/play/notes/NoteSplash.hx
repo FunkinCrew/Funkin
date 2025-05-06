@@ -7,18 +7,16 @@ import flixel.FlxSprite;
 
 class NoteSplash extends FlxSprite
 {
+  // static var frameCollection:FlxFramesCollection;
+  // GOT SET FROM NOTESTYLE
   public var splashFramerate:Int = 24;
   public var splashFramerateVariance:Int = 2;
-
-  static var frameCollection:FlxFramesCollection;
 
   public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
-
     setupSplashGraphic(noteStyle);
-
-    this.animation.onFinish.add(this.onAnimationFinished);
+    animation.onFinish.add(this.onAnimationFinished);
   }
 
   /**
@@ -27,24 +25,14 @@ class NoteSplash extends FlxSprite
   function setupSplashGraphic(noteStyle:NoteStyle):Void
   {
     if (frames == null) noteStyle.buildSplashSprite(this);
-
-    if (this.animation.getAnimationList().length < 8)
-    {
-      trace('WARNING: NoteSplash failed to initialize all animations.');
-    }
-  }
-
-  public function playAnimation(name:String, force:Bool = false, reversed:Bool = false, startFrame:Int = 0):Void
-  {
-    this.animation.play(name, force, reversed, startFrame);
+    if (animation.getAnimationList().length < 8) trace('WARNING: NoteSplash failed to initialize all animations.');
   }
 
   public function play(direction:NoteDirection, variant:Int = null):Void
   {
     if (variant == null)
     {
-      var animationAmount:Int = this.animation.getAnimationList().filter(function(anim) return anim.name.startsWith('splash${direction.nameUpper}')).length
-        - 1;
+      var animationAmount:Int = animation.getAnimationList().filter(function(anim) return anim.name.startsWith('splash${direction.nameUpper}')).length - 1;
       variant = FlxG.random.int(0, animationAmount);
     }
 
@@ -59,6 +47,11 @@ class NoteSplash extends FlxSprite
 
     // Center the animation on the note splash.
     offset.set(width * 0.3, height * 0.3);
+  }
+
+  public function playAnimation(name:String, force:Bool = false, reversed:Bool = false, startFrame:Int = 0):Void
+  {
+    this.animation.play(name, force, reversed, startFrame);
   }
 
   public function onAnimationFinished(animationName:String):Void

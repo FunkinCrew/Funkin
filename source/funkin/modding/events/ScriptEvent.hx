@@ -10,6 +10,7 @@ import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
 import funkin.play.notes.NoteDirection;
 import openfl.events.KeyboardEvent;
+import funkin.play.character.BaseCharacter;
 
 /**
  * This is a base class for all events that are issued to scripted classes.
@@ -97,6 +98,11 @@ class NoteScriptEvent extends ScriptEvent
   public var note(default, null):NoteSprite;
 
   /**
+   * The character, parent strumline attached to.
+   */
+  public var targerCharacter(default, default):BaseCharacter;
+
+  /**
    * The combo count as it is with this event.
    * Will be (combo) on miss events and (combo + 1) on hit events (the stored combo count won't update if the event is cancelled).
    */
@@ -113,18 +119,29 @@ class NoteScriptEvent extends ScriptEvent
    */
   public var healthChange:Float;
 
-  public function new(type:ScriptEventType, note:NoteSprite, healthChange:Float, comboCount:Int = 0, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, note:NoteSprite, character:BaseCharacter, healthChange:Float, comboCount:Int = 0, cancelable:Bool = false):Void
   {
     super(type, cancelable);
     this.note = note;
+    targerCharacter = character;
     this.comboCount = comboCount;
-    this.playSound = true;
+    playSound = true;
     this.healthChange = healthChange;
   }
 
   public override function toString():String
   {
-    return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ', comboCount=' + comboCount + ')';
+    return 'NoteScriptEvent(type='
+      + type
+      + ', char='
+      + targerCharacter
+      + ', cancelable='
+      + cancelable
+      + ', note='
+      + note
+      + ', comboCount='
+      + comboCount
+      + ')';
   }
 }
 
@@ -156,10 +173,10 @@ class HitNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0,
-      doesNotesplash:Bool = false):Void
+  public function new(note:NoteSprite, char:BaseCharacter, healthChange:Float, score:Int, judgement:String, isComboBreak:Bool, comboCount:Int = 0,
+      hitDiff:Float = 0, doesNotesplash:Bool = false):Void
   {
-    super(NOTE_HIT, note, healthChange, comboCount, true);
+    super(NOTE_HIT, note, char, healthChange, comboCount, true);
     this.score = score;
     this.judgement = judgement;
     this.isComboBreak = isComboBreak;
@@ -169,8 +186,24 @@ class HitNoteScriptEvent extends NoteScriptEvent
 
   public override function toString():String
   {
-    return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ', isComboBreak='
-      + isComboBreak + ', hitDiff=' + hitDiff + ', doesNotesplash=' + doesNotesplash + ')';
+    return 'HitNoteScriptEvent(note='
+      + note
+      + ', char='
+      + targerCharacter
+      + ', comboCount='
+      + comboCount
+      + ', judgement='
+      + judgement
+      + ', score='
+      + score
+      + ', isComboBreak='
+      + isComboBreak
+      + ', hitDiff='
+      + hitDiff
+      + ',
+    doesNotesplash='
+      + doesNotesplash
+      + ')';
   }
 }
 
@@ -255,9 +288,10 @@ class HoldNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Int, isComboBreak:Bool, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, char:BaseCharacter, holdNote:SustainTrail, healthChange:Float, score:Int, isComboBreak:Bool,
+      cancelable:Bool = false):Void
   {
-    super(type, null, healthChange, comboCount, true);
+    super(type, null, char, healthChange, comboCount, true);
     this.holdNote = holdNote;
     this.score = score;
     this.isComboBreak = isComboBreak;
@@ -265,7 +299,8 @@ class HoldNoteScriptEvent extends NoteScriptEvent
 
   public override function toString():String
   {
-    return 'HoldNoteScriptEvent(type=$type, holdNote=$holdNote, healthChange=$healthChange, score=$score, isComboBreak=$isComboBreak, cancelable=$cancelable)';
+    return
+      'HoldNoteScriptEvent(type=$type, char=$targerCharacter, holdNote=$holdNote, healthChange=$healthChange, score=$score, isComboBreak=$isComboBreak, cancelable=$cancelable)';
   }
 }
 

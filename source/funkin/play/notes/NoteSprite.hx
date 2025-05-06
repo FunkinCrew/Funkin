@@ -5,89 +5,108 @@ import funkin.data.song.SongData.NoteParamData;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
+import funkin.play.character.BaseCharacter;
 
 class NoteSprite extends FunkinSprite
 {
-  static final DIRECTION_COLORS:Array<String> = ['purple', 'blue', 'green', 'red'];
-
-  public var holdNoteSprite:SustainTrail;
-
-  var hsvShader:HSVShader;
+  public static final DIRECTION_COLORS:Array<String> = ['purple', 'blue', 'green', 'red'];
 
   /**
    * The strum time at which the note should be hit, in milliseconds.
+   * Redirects to `noteData` variable.
    */
   public var strumTime(get, set):Float;
 
   function get_strumTime():Float
   {
-    return this.noteData?.time ?? 0.0;
+    return noteData?.time ?? 0.0; // If somethin happens with time noteData, note will be on 0 milisecond of song.
   }
 
   function set_strumTime(value:Float):Float
   {
-    if (this.noteData == null) return value;
-    return this.noteData.time = value;
+    if (noteData == null) return value;
+    return noteData.time = value;
   }
 
   /**
    * The length for which the note should be held, in milliseconds.
    * Defaults to 0 for single notes.
+   * Redirects to `noteData` variable.
    */
   public var length(get, set):Float;
 
   function get_length():Float
   {
-    return this.noteData?.length ?? 0.0;
+    return noteData?.length ?? 0.0;
   }
 
   function set_length(value:Float):Float
   {
-    if (this.noteData == null) return value;
-    return this.noteData.length = value;
+    if (noteData == null) return value;
+    return noteData.length = value;
   }
 
   /**
    * An extra attribute for the note.
    * For example, whether the note is an "alt" note, or whether it has custom behavior on hit.
+   * Redirects to `noteData` variable.
    */
   public var kind(get, set):Null<String>;
 
   function get_kind():Null<String>
   {
-    return this.noteData?.kind;
+    return noteData?.kind;
   }
 
   function set_kind(value:String):String
   {
-    if (this.noteData == null) return value;
-    return this.noteData.kind = value;
+    if (noteData == null) return value;
+    return noteData.kind = value;
   }
 
   /**
-   * An array of custom parameters for this note
+   * An array of custom parameters for this note.
+   * Works in pair with `kind` variable, to determine custom behaviour.
+   * Redirects to `noteData` variable.
    */
   public var params(get, set):Array<NoteParamData>;
 
   function get_params():Array<NoteParamData>
   {
-    return this.noteData?.params ?? [];
+    return noteData?.params ?? [];
   }
 
   function set_params(value:Array<NoteParamData>):Array<NoteParamData>
   {
-    if (this.noteData == null) return value;
-    return this.noteData.params = value;
+    if (noteData == null) return value;
+    return noteData.params = value;
+  }
+
+  /** Retrieve the value of the param with the given name
+   * @param name Name of the param
+   * @return Null<Dynamic>
+   */
+  public function getParam(name:String):Null<Dynamic>
+  {
+    for (param in params)
+    {
+      if (param.name == name)
+      {
+        return param.value;
+      }
+    }
+    return null;
   }
 
   /**
-   * The data of the note (i.e. the direction.)
+   * The direction of the note.
+   * Redirects to `noteData` variable.
    */
-  public var direction(default, set):NoteDirection;
+  public var direction(default, set):NoteDirection; // Used in CharacterStrumLine on note creation.
 
   function set_direction(value:Int):Int
   {
-    if (frames == null) return value;
+    if (frames == null) return value; // If there no loaded frames, we cant continue direction set.
 
     playNoteAnimation(value);
 
@@ -97,20 +116,17 @@ class NoteSprite extends FunkinSprite
 
   public var noteData:SongNoteData;
 
+  /**
+   * Helper variable to determine is it a single note, oh note with hold.
+   * Redirects to `noteData` variable.
+   */
   public var isHoldNote(get, never):Bool;
 
-  function get_isHoldNote():Bool
-  {
+  inline function get_isHoldNote():Bool
     return noteData.length > 0;
-  }
 
   /**
-   * The Y Offset of the note.
-   */
-  public var yOffset:Float = 0.0;
-
-  /**
-   * Set this flag to true when hitting the note to avoid scoring it multiple times.
+   * Set this Boolean to true when hitting the note to avoid scoring it multiple times.
    */
   public var hasBeenHit:Bool = false;
 
@@ -147,69 +163,46 @@ class NoteSprite extends FunkinSprite
    */
   public var handledMiss:Bool;
 
-  public function new(noteStyle:NoteStyle, direction:Int = 0)
+  public var hsvShader:HSVShader;
+
+  public var holdNoteSprite:SustainTrail; // If length > 0, there'll spawn a cool sustain HoldSprite;
+
+  public var targetCharacter:Null<BaseCharacter>;
+
+  // Used for getting target char for events and etc
+  @:isVar public var targetChar(get, never):BaseCharacter;
+
+  inline function get_targetChar():BaseCharacter
+    return targetCharacter ?? _parentStrum.targetCharacter;
+
+  public var _parentStrum:Strumline;
+
+  public function new(noteStyle:NoteStyle, ?parentStrum:Strumline, ?direction:Int = 0)
   {
     super(0, -9999);
-    this.direction = direction;
-
+    _parentStrum = parentStrum;
     this.hsvShader = new HSVShader();
 
-    setupNoteGraphic(noteStyle);
+    var firstNoteStyle:NoteStyle = noteStyle;
+    if (_parentStrum != null) firstNoteStyle = _parentStrum.noteStyle;
+    setupNoteGraphic(firstNoteStyle);
   }
 
   /**
    * Creates frames and animations
-   * @param noteStyle The `NoteStyle` instance
    */
   public function setupNoteGraphic(noteStyle:NoteStyle):Void
   {
     noteStyle.buildNoteSprite(this);
+    this.active = noteStyle.isNoteAnimated();
 
     this.shader = hsvShader;
-
-    // `false` disables the update() function for performance.
-    this.active = noteStyle.isNoteAnimated();
   }
 
   /**
-   * Retrieve the value of the param with the given name
-   * @param name Name of the param
-   * @return Null<Dynamic>
+   * The Y Offset of the note.
    */
-  public function getParam(name:String):Null<Dynamic>
-  {
-    for (param in params)
-    {
-      if (param.name == name)
-      {
-        return param.value;
-      }
-    }
-    return null;
-  }
-
-  #if FLX_DEBUG
-  /**
-   * Call this to override how debug bounding boxes are drawn for this sprite.
-   */
-  public override function drawDebugOnCamera(camera:flixel.FlxCamera):Void
-  {
-    if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
-
-    var gfx = beginDrawDebug(camera);
-
-    var rect = getBoundingBox(camera);
-    trace('note sprite bounding box: ' + rect.x + ', ' + rect.y + ', ' + rect.width + ', ' + rect.height);
-
-    gfx.lineStyle(2, 0xFFFF66FF, 0.5); // thickness, color, alpha
-    gfx.drawRect(rect.x, rect.y, rect.width, rect.height);
-
-    gfx.lineStyle(2, 0xFFFFFF66, 0.5); // thickness, color, alpha
-    gfx.drawRect(rect.x, rect.y + rect.height / 2, rect.width, 1);
-
-    endDrawDebug(camera);
-  }
-  #end
+  public var yOffset:Float = 0.0;
 
   function playNoteAnimation(value:Int):Void
   {
@@ -253,4 +246,27 @@ class NoteSprite extends FunkinSprite
     // Otherwise, we want the game to keep reusing note sprites to save memory.
     super.destroy();
   }
+
+  #if FLX_DEBUG
+  /**
+   * Call this to override how debug bounding boxes are drawn for this sprite.
+   */
+  public override function drawDebugOnCamera(camera:flixel.FlxCamera):Void
+  {
+    if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
+
+    var gfx = beginDrawDebug(camera);
+
+    var rect = getBoundingBox(camera);
+    trace('note sprite bounding box: ' + rect.x + ', ' + rect.y + ', ' + rect.width + ', ' + rect.height);
+
+    gfx.lineStyle(2, 0xFFFF66FF, 0.5); // thickness, color, alpha
+    gfx.drawRect(rect.x, rect.y, rect.width, rect.height);
+
+    gfx.lineStyle(2, 0xFFFFFF66, 0.5); // thickness, color, alpha
+    gfx.drawRect(rect.x, rect.y + rect.height / 2, rect.width, 1);
+
+    endDrawDebug(camera);
+  }
+  #end
 }

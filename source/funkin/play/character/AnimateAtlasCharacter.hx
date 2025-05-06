@@ -197,6 +197,13 @@ class AnimateAtlasCharacter extends BaseCharacter
     if (clipRect != null) clipRectTransform(sprite, clipRect);
   }
 
+  // Also can be overriden for more comples characters, like Nene.
+  override public function setShader(newShader:flixel.system.FlxAssets.FlxShader):Void
+  {
+    super.setShader(newShader);
+    if (mainSprite != null) mainSprite.shader = newShader;
+  }
+
   function loadAnimations():Void
   {
     trace('[ATLASCHAR] Attempting to load ${_data.animations.length} animations for ${characterId}');

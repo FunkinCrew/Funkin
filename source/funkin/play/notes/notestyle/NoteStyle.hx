@@ -24,6 +24,29 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
    */
   public final _data:NoteStyleData;
 
+  static function _fetchData(id:String):NoteStyleData
+  {
+    var result = NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
+
+    if (result == null)
+    {
+      throw 'Could not parse note style data for id: $id';
+    }
+    else
+    {
+      return result;
+    }
+  }
+
+  /**
+   * @param id The ID of the JSON file to parse.
+   */
+  public function new(id:String)
+  {
+    this.id = id;
+    _data = _fetchData(id);
+  }
+
   /**
    * The note style to use if this one doesn't have a certain asset.
    * This can be recursive, ehe.
@@ -37,12 +60,12 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   }
 
   /**
-   * @param id The ID of the JSON file to parse.
+   * Get the note style ID of the parent note style.
+   * @return The string ID, or `null` if there is no parent.
    */
-  public function new(id:String)
+  public function getFallbackID():Null<String>
   {
-    this.id = id;
-    _data = _fetchData(id);
+    return _data.fallback;
   }
 
   /**
@@ -63,166 +86,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data.author;
   }
 
-  /**
-   * Get the note style ID of the parent note style.
-   * @return The string ID, or `null` if there is no parent.
-   */
-  public function getFallbackID():Null<String>
-  {
-    return _data.fallback;
-  }
-
-  public function buildNoteSprite(target:NoteSprite):Void
-  {
-    // Apply the note sprite frames.
-    var atlas:Null<FlxAtlasFrames> = buildNoteFrames(false);
-
-    if (atlas == null)
-    {
-      throw 'Could not load spritesheet for note style: $id';
-    }
-
-    target.frames = atlas;
-
-    target.antialiasing = !(_data.assets?.note?.isPixel ?? false);
-
-    // Apply the animations.
-    buildNoteAnimations(target);
-
-    // Set the scale.
-    var scale = getNoteScale();
-    target.scale.set(scale, scale);
-    target.updateHitbox();
-  }
-
-  function getNoteAssetLibrary():Null<String>
-  {
-    // library:path
-    var parts = getNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return null;
-    return parts[0];
-  }
-
-  var noteFrames:Null<FlxAtlasFrames> = null;
-
-  function buildNoteFrames(force:Bool = false):Null<FlxAtlasFrames>
-  {
-    var noteAssetPath = getNoteAssetPath();
-    if (noteAssetPath == null)
-    {
-      FlxG.log.warn('Note asset path not found: ${id}');
-      return null;
-    }
-
-    if (!FunkinSprite.isTextureCached(Paths.image(noteAssetPath)))
-    {
-      FlxG.log.warn('Note texture is not cached: ${noteAssetPath}');
-    }
-
-    // Purge the note frames if the cached atlas is invalid.
-    @:nullSafety(Off)
-    {
-      if (noteFrames?.parent?.isDestroyed ?? true) noteFrames = null;
-    }
-
-    if (noteFrames != null && !force) return noteFrames;
-
-    noteFrames = Paths.getSparrowAtlas(noteAssetPath, getAssetLibrary(getNoteAssetPath(true)));
-
-    if (noteFrames == null)
-    {
-      throw 'Could not load note frames for note style: $id';
-    }
-
-    return noteFrames;
-  }
-
-  function getNoteAssetPath(raw:Bool = false):Null<String>
-  {
-    if (raw)
-    {
-      var rawPath:Null<String> = _data?.assets?.note?.assetPath;
-      if (rawPath == null) return fallback?.getNoteAssetPath(true);
-      return rawPath;
-    }
-
-    // library:path
-    var parts = getNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return getNoteAssetPath(true);
-    return parts[1];
-  }
-
-  function buildNoteAnimations(target:NoteSprite):Void
-  {
-    var leftData:Null<AnimationData> = fetchNoteAnimationData(LEFT);
-    if (leftData != null) target.animation.addByPrefix('purpleScroll', leftData.prefix ?? '', leftData.frameRate ?? 24, leftData.looped ?? false,
-      leftData.flipX, leftData.flipY);
-    var downData:Null<AnimationData> = fetchNoteAnimationData(DOWN);
-    if (downData != null) target.animation.addByPrefix('blueScroll', downData.prefix ?? '', downData.frameRate ?? 24, downData.looped ?? false,
-      downData.flipX, downData.flipY);
-    var upData:Null<AnimationData> = fetchNoteAnimationData(UP);
-    if (upData != null) target.animation.addByPrefix('greenScroll', upData.prefix ?? '', upData.frameRate ?? 24, upData.looped ?? false, upData.flipX,
-      upData.flipY);
-    var rightData:Null<AnimationData> = fetchNoteAnimationData(RIGHT);
-    if (rightData != null) target.animation.addByPrefix('redScroll', rightData.prefix ?? '', rightData.frameRate ?? 24, rightData.looped ?? false,
-      rightData.flipX, rightData.flipY);
-  }
-
-  public function isNoteAnimated():Bool
-  {
-    return _data.assets?.note?.animated ?? fallback?.isNoteAnimated() ?? false;
-  }
-
-  public function getNoteScale():Float
-  {
-    return _data.assets?.note?.scale ?? fallback?.getNoteScale() ?? 1.0;
-  }
-
-  function fetchNoteAnimationData(dir:NoteDirection):Null<AnimationData>
-  {
-    var result:Null<AnimationData> = switch (dir)
-    {
-      case LEFT: _data.assets?.note?.data?.left?.toNamed();
-      case DOWN: _data.assets?.note?.data?.down?.toNamed();
-      case UP: _data.assets?.note?.data?.up?.toNamed();
-      case RIGHT: _data.assets?.note?.data?.right?.toNamed();
-    };
-
-    return result ?? fallback?.fetchNoteAnimationData(dir);
-  }
-
-  public function getHoldNoteAssetPath(raw:Bool = false):Null<String>
-  {
-    if (raw)
-    {
-      var rawPath:Null<String> = _data?.assets?.holdNote?.assetPath;
-      return rawPath ?? fallback?.getHoldNoteAssetPath(true);
-    }
-
-    // library:path
-    var parts = getHoldNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return Paths.image(parts[0]);
-    return Paths.image(parts[1], parts[0]);
-  }
-
-  public function isHoldNotePixel():Bool
-  {
-    return _data?.assets?.holdNote?.isPixel ?? fallback?.isHoldNotePixel() ?? false;
-  }
-
-  public function fetchHoldNoteScale():Float
-  {
-    return _data?.assets?.holdNote?.scale ?? fallback?.fetchHoldNoteScale() ?? 1.0;
-  }
-
-  public function getHoldNoteOffsets():Array<Float>
-  {
-    return _data?.assets?.holdNote?.offsets ?? fallback?.getHoldNoteOffsets() ?? [0.0, 0.0];
-  }
-
+  /* STRUMS */
   public function applyStrumlineFrames(target:StrumlineNote):Void
   {
     // TODO: Add support for multi-Sparrow.
@@ -323,9 +187,232 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data?.assets?.noteStrumline?.scale ?? fallback?.getStrumlineScale() ?? 1.0;
   }
 
+  /* STUMS - NOTES */
+  /**
+   * Loads frames and other parameters into specific note.
+   * Uses `noteStyle` from note obj.
+   */
+  public function buildNoteSprite(target:NoteSprite):Void
+  {
+    // Apply the note sprite frames.
+    var atlas:Null<FlxAtlasFrames> = buildNoteFrames(false);
+    if (atlas == null) throw 'Could not load spritesheet for note style: $id';
+
+    target.frames = atlas;
+    target.antialiasing = !(_data.assets?.note?.isPixel ?? false);
+
+    // Apply the animations.
+    buildNoteAnimations(target);
+
+    target.scale.x = target.scale.y = getNoteScale();
+    target.updateHitbox();
+  }
+
+  /**
+   * Used for caching note sprites frames.
+   * Performance team up!
+   */
+  var noteFrames:Null<FlxAtlasFrames> = null;
+
+  /**
+   * Builds frames for note.
+   */
+  function buildNoteFrames(force:Bool = false):Null<FlxAtlasFrames>
+  {
+    var noteAssetPath = getNoteAssetPath();
+    if (noteAssetPath == null)
+    {
+      FlxG.log.warn('Note Asset was not found on path for style: ${id}');
+      return null;
+    }
+
+    if (!FunkinSprite.isTextureCached(Paths.image(noteAssetPath))) FlxG.log.warn('Textures for notes "$noteAssetPath" are not cached!');
+
+    // Purge the note frames if the cached atlas is invalid.
+    @:nullSafety(Off)
+    if (noteFrames?.parent?.isDestroyed ?? true) noteFrames = null;
+
+    if (noteFrames != null && !force) return noteFrames;
+
+    noteFrames = Paths.getSparrowAtlas(noteAssetPath, getAssetLibrary(getNoteAssetPath(true)));
+
+    if (noteFrames == null) throw 'Could not load note frames for note style: $id';
+
+    return noteFrames;
+  }
+
+  /**
+   * Adds all needed animations into note.
+   */
+  function buildNoteAnimations(target:NoteSprite):Void
+  {
+    var leftData:Null<AnimationData> = fetchNoteAnimationData(LEFT);
+    if (leftData != null) target.animation.addByPrefix('purpleScroll', leftData.prefix ?? '', leftData.frameRate ?? 24, leftData.looped ?? false,
+      leftData.flipX, leftData.flipY);
+    var downData:Null<AnimationData> = fetchNoteAnimationData(DOWN);
+    if (downData != null) target.animation.addByPrefix('blueScroll', downData.prefix ?? '', downData.frameRate ?? 24, downData.looped ?? false,
+      downData.flipX, downData.flipY);
+    var upData:Null<AnimationData> = fetchNoteAnimationData(UP);
+    if (upData != null) target.animation.addByPrefix('greenScroll', upData.prefix ?? '', upData.frameRate ?? 24, upData.looped ?? false, upData.flipX,
+      upData.flipY);
+    var rightData:Null<AnimationData> = fetchNoteAnimationData(RIGHT);
+    if (rightData != null) target.animation.addByPrefix('redScroll', rightData.prefix ?? '', rightData.frameRate ?? 24, rightData.looped ?? false,
+      rightData.flipX, rightData.flipY);
+  }
+
+  function fetchNoteAnimationData(dir:NoteDirection):Null<AnimationData>
+  {
+    var result:Null<AnimationData> = switch (dir)
+    {
+      case LEFT: _data.assets?.note?.data?.left?.toNamed();
+      case DOWN: _data.assets?.note?.data?.down?.toNamed();
+      case UP: _data.assets?.note?.data?.up?.toNamed();
+      case RIGHT: _data.assets?.note?.data?.right?.toNamed();
+    };
+
+    return result ?? fallback?.fetchNoteAnimationData(dir);
+  }
+
+  public function isNoteAnimated():Bool
+  {
+    return _data.assets?.note?.animated ?? fallback?.isNoteAnimated() ?? false;
+  }
+
+  public function getNoteScale():Float
+  {
+    return _data.assets?.note?.scale ?? fallback?.getNoteScale() ?? 1.0;
+  }
+
+  /* NOTES - NOTESPLASHES */
+  var splashFrames:Null<FlxAtlasFrames> = null;
+
+  public function buildSplashSprite(target:NoteSplash):Void
+  {
+    var atlas:Null<FlxAtlasFrames> = buildSplashFrames(false);
+
+    if (atlas == null) throw 'Could not load spritesheet for note style: $id';
+
+    target.frames = atlas;
+    target.antialiasing = !(_data.assets.noteSplash?.isPixel ?? false);
+
+    buildSplashAnimations(target);
+
+    target.splashFramerate = getSplashFramerate();
+    target.splashFramerateVariance = getSplashFramerateVariance();
+    target.alpha = _data.assets.noteSplash?.alpha ?? 1.0;
+    target.blend = _data.assets.noteSplash?.data?.blendMode ?? "normal";
+
+    target.scale.x = target.scale.y = getSplashScale();
+    target.updateHitbox();
+  }
+
   public function isNoteSplashEnabled():Bool
   {
     return _data?.assets?.noteSplash?.data?.enabled ?? fallback?.isNoteSplashEnabled() ?? false;
+  }
+
+  function buildSplashFrames(force:Bool = false):Null<FlxAtlasFrames>
+  {
+    var splashAssetPath:Null<String> = getSplashAssetPath();
+    if (splashAssetPath == null)
+    {
+      FlxG.log.warn('Note Splash asset path not found: ${id}');
+      return null;
+    }
+
+    if (!FunkinSprite.isTextureCached(Paths.image(splashAssetPath))) FlxG.log.warn('Note Splash texture not cached: ${splashAssetPath}');
+    @:nullSafety(Off)
+    if (splashFrames?.parent?.isDestroyed ?? true) splashFrames = null;
+
+    if (splashFrames != null && !force) return splashFrames;
+
+    splashFrames = Paths.getSparrowAtlas(splashAssetPath, getAssetLibrary(getSplashAssetPath(true)));
+    splashFrames.parent.persist = true;
+    if (splashFrames == null) throw 'Could not load notesplash frames for note style: $id';
+
+    return splashFrames;
+  }
+
+  function getSplashAssetPath(raw:Bool = false):Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data?.assets?.noteSplash?.assetPath;
+      if (rawPath == null) return fallback?.getSplashAssetPath(true);
+      return rawPath;
+    }
+
+    var parts = getSplashAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getSplashAssetPath(true);
+    return parts[1];
+  }
+
+  function buildSplashAnimations(target:NoteSplash):Void
+  {
+    final addSplashAnim:NoteDirection->Void = function(dir:NoteDirection) {
+      var animData:Null<Array<AnimationData>> = fetchSplashAnimationData(dir);
+      if (animData != null) for (anim in animData)
+        FlxAnimationUtil.addAtlasAnimation(target, anim);
+    };
+
+    addSplashAnim(LEFT);
+    addSplashAnim(RIGHT);
+    addSplashAnim(UP);
+    addSplashAnim(DOWN);
+  }
+
+  function fetchSplashAnimationData(dir:NoteDirection):Null<Array<AnimationData>>
+  {
+    var result:Null<Array<AnimationData>> = switch (dir)
+    {
+      case LEFT: _data.assets?.noteSplash?.data?.leftSplashes?.toNamedArray("splashLEFT");
+      case DOWN: _data.assets?.noteSplash?.data?.downSplashes?.toNamedArray("splashDOWN");
+      case UP: _data.assets?.noteSplash?.data?.upSplashes?.toNamedArray("splashUP");
+      case RIGHT: _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRIGHT");
+    };
+    return result ?? fallback?.fetchSplashAnimationData(dir);
+  }
+
+  public function isSplashAnimated():Bool
+  {
+    return _data?.assets?.noteSplash?.animated ?? fallback?.isSplashAnimated() ?? false;
+  }
+
+  public function getSplashScale():Float
+  {
+    return _data?.assets?.noteSplash?.scale ?? fallback?.getSplashScale() ?? 1.0;
+  }
+
+  public function getSplashOffsets():Array<Float>
+  {
+    return _data?.assets?.noteSplash?.offsets ?? fallback?.getSplashOffsets() ?? [0.0, 0.0];
+  }
+
+  public function getSplashFramerate():Int
+  {
+    return _data?.assets?.noteSplash?.data?.framerateDefault ?? fallback?.getSplashFramerate() ?? 24;
+  }
+
+  public function getSplashFramerateVariance():Int
+  {
+    return _data?.assets?.noteSplash?.data?.framerateVariance ?? fallback?.getSplashFramerateVariance() ?? 2;
+  }
+
+  /* NOTESPLASHES - HOLDS*/
+  public function getHoldNoteAssetPath(raw:Bool = false):Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data?.assets?.holdNote?.assetPath;
+      return rawPath ?? fallback?.getHoldNoteAssetPath(true);
+    }
+
+    // library:path
+    var parts = getHoldNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return Paths.image(parts[0]);
+    return Paths.image(parts[1], parts[0]);
   }
 
   public function isHoldNoteCoverEnabled():Bool
@@ -333,6 +420,189 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data?.assets?.holdNoteCover?.data?.enabled ?? fallback?.isHoldNoteCoverEnabled() ?? false;
   }
 
+  public function isHoldNotePixel():Bool
+  {
+    return _data?.assets?.holdNote?.isPixel ?? fallback?.isHoldNotePixel() ?? false;
+  }
+
+  public function fetchHoldNoteScale():Float
+  {
+    return _data?.assets?.holdNote?.scale ?? fallback?.fetchHoldNoteScale() ?? 1.0;
+  }
+
+  public function getHoldNoteOffsets():Array<Float>
+  {
+    return _data?.assets?.holdNote?.offsets ?? fallback?.getHoldNoteOffsets() ?? [0.0, 0.0];
+  }
+
+  /* HOLDS - COVERS */
+  // Using FlxFramesCollection here, we can combine them into one atlas later.
+  var holdCoverFrames:Null<FlxFramesCollection> = null;
+
+  public function buildHoldCoverSprite(target:NoteHoldCover):Void
+  {
+    // NoteHoldCover has "glow" and "sparks". Right now it only implements "glow"
+    // but "sparks" I believe is meant to be used for the ending of the hold note
+    var glowAtlas:Null<FlxFramesCollection> = buildHoldCoverFrames(false);
+    if (glowAtlas == null) throw 'Could not load spritesheet for note style: $id';
+
+    target.glow.frames = glowAtlas;
+
+    target.antialiasing = target.glow.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
+    target.scale.set(_data.assets.holdNoteCover?.scale ?? 1.0, _data.assets.holdNoteCover?.scale ?? 1.0);
+    target.updateHitbox();
+    target.glow.updateHitbox();
+
+    buildHoldCoverAnimations(target);
+  }
+
+  function buildHoldCoverFrames(force:Bool = false):Null<FlxFramesCollection>
+  {
+    // If the hold cover frames got unloaded, ensure they get reloaded.
+    if (holdCoverFrames?.parent?.isDestroyed ?? true) holdCoverFrames = null;
+
+    // If the hold cover frames are already loaded, just use those.
+    if (holdCoverFrames != null && !force) return holdCoverFrames;
+
+    for (direction in Strumline.DIRECTIONS)
+    {
+      // We make a FlxFramesCollection here so we can combine em into one atlas later
+      var atlas:Null<FlxFramesCollection> = buildHoldCoverFrameForDirection(direction);
+      if (holdCoverFrames == null) holdCoverFrames = atlas;
+      else if (atlas != null) holdCoverFrames = FlxAnimationUtil.combineFramesCollections(holdCoverFrames, atlas);
+    }
+    return holdCoverFrames;
+  }
+
+  function buildHoldCoverFrameForDirection(direction:NoteDirection):Null<FlxFramesCollection>
+  {
+    var directionData = switch (direction)
+    {
+      case LEFT: _data.assets?.holdNoteCover?.data?.left;
+      case DOWN: _data.assets?.holdNoteCover?.data?.down;
+      case UP: _data.assets?.holdNoteCover?.data?.up;
+      case RIGHT: _data.assets?.holdNoteCover?.data?.right;
+    };
+
+    if (directionData == null) return null;
+
+    var holdCoverAssetPath:Null<String> = getHoldCoverDirectionAssetPath(direction) ?? fallback?.getHoldCoverDirectionAssetPath(direction);
+    if (holdCoverAssetPath == null)
+    {
+      FlxG.log.warn('Hold Note Cover asset path not found: ${id}');
+      return null;
+    }
+
+    if (!FunkinSprite.isTextureCached(Paths.image(holdCoverAssetPath))) FlxG.log.warn('Hold Note Cover texture not cached: ${holdCoverAssetPath}');
+
+    var atlas:FlxFramesCollection = Paths.getSparrowAtlas(holdCoverAssetPath, getAssetLibrary(getHoldCoverDirectionAssetPath(direction, true)));
+    if (atlas == null) return null;
+
+    // So the graphics wotn be erased.
+    atlas.parent.persist = true;
+
+    return atlas;
+  }
+
+  function buildHoldCoverAnimations(target:NoteHoldCover):Void
+  {
+    for (direction in Strumline.DIRECTIONS)
+    {
+      var animData:Null<Array<AnimationData>> = fetchHoldCoverAnimationData(direction);
+      if (animData != null)
+      {
+        // this entry is the base animation that plays ("holdCover$noteColor" animation), which we want to loop
+        animData[1].looped = true;
+        FlxAnimationUtil.addAtlasAnimations(target.glow, animData);
+      }
+    }
+  }
+
+  function fetchHoldCoverAnimationData(dir:NoteDirection):Null<Array<AnimationData>>
+  {
+    var noteColor:String = dir.colorName.toTitleCase();
+    var result:Array<Null<AnimationData>> = switch (dir)
+    {
+      case LEFT: [
+          _data.assets?.holdNoteCover?.data?.left?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.left?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.left?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case DOWN: [
+          _data.assets?.holdNoteCover?.data?.down?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.down?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.down?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case UP: [
+          _data.assets?.holdNoteCover?.data?.up?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.up?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.up?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case RIGHT: [
+          _data.assets?.holdNoteCover?.data?.right?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.right?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.right?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      default: [];
+    };
+
+    // New variable so we can change the type.
+    var filteredResult:Array<AnimationData> = thx.Arrays.filterNull(result);
+
+    if (filteredResult.length == 0) return fallback?.fetchHoldCoverAnimationData(dir) ?? [];
+
+    return filteredResult;
+  }
+
+  // fallbacks:
+  // assetPath for a direction -> root assetpath -> fallback assetpath for direction -> fallback root assetpath
+  // `direction` here is required, however it only is used for fallback purposes
+  function getHoldCoverRootAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data?.assets?.holdNoteCover?.assetPath;
+      // remember, if we need a fallback for our *root* asset path,
+      // we fallback and look for the *direction* asset path first
+      if (rawPath == null) return fallback?.getHoldCoverDirectionAssetPath(direction, true);
+      return rawPath;
+    }
+
+    var parts:Array<String> = getHoldCoverRootAssetPath(direction, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getHoldCoverRootAssetPath(direction, true);
+    return parts[1];
+  }
+
+  function getHoldCoverDirectionAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = switch (direction)
+      {
+        case LEFT: _data?.assets?.holdNoteCover?.data?.left?.assetPath;
+        case DOWN: _data?.assets?.holdNoteCover?.data?.down?.assetPath;
+        case UP: _data?.assets?.holdNoteCover?.data?.up?.assetPath;
+        case RIGHT: _data?.assets?.holdNoteCover?.data?.right?.assetPath;
+      };
+
+      // we don't want to fallback directly just yet, we want to check our root assetpath first
+      if (rawPath == null) return getHoldCoverRootAssetPath(direction, true);
+      return rawPath;
+    }
+
+    var parts:Array<String> = getHoldCoverDirectionAssetPath(direction, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getHoldCoverDirectionAssetPath(direction, true);
+    return parts[1];
+  }
+
+  public function getHoldCoverOffsets():Array<Float>
+  {
+    return _data?.assets?.holdNoteCover?.offsets ?? fallback?.getHoldCoverOffsets() ?? [0.0, 0.0];
+  }
+
+  /* COVERS - COUNTDOWN*/
   /**
    * Build a sprite for the given step of the countdown.
    * @param step
@@ -341,7 +611,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function buildCountdownSprite(step:Countdown.CountdownStep):Null<FunkinSprite>
   {
     var result = new FunkinSprite();
-
     switch (step)
     {
       case THREE:
@@ -349,29 +618,25 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         var assetPath = buildCountdownSpritePath(step);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.countdownThree?.scale ?? 1.0;
-        result.scale.y = _data.assets.countdownThree?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.countdownThree?.scale ?? 1.0;
       case TWO:
         if (_data.assets.countdownTwo == null) return fallback?.buildCountdownSprite(step);
         var assetPath = buildCountdownSpritePath(step);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.countdownTwo?.scale ?? 1.0;
-        result.scale.y = _data.assets.countdownTwo?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.countdownTwo?.scale ?? 1.0;
       case ONE:
         if (_data.assets.countdownOne == null) return fallback?.buildCountdownSprite(step);
         var assetPath = buildCountdownSpritePath(step);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.countdownOne?.scale ?? 1.0;
-        result.scale.y = _data.assets.countdownOne?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.countdownOne?.scale ?? 1.0;
       case GO:
         if (_data.assets.countdownGo == null) return fallback?.buildCountdownSprite(step);
         var assetPath = buildCountdownSpritePath(step);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.countdownGo?.scale ?? 1.0;
-        result.scale.y = _data.assets.countdownGo?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.countdownGo?.scale ?? 1.0;
       default:
         // TODO: Do something here?
         return null;
@@ -514,6 +779,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return Paths.sound(parts[1], parts[0]);
   }
 
+  /* COUNTDOWN - JUDGEMENT*/
   public function buildJudgementSprite(rating:String):Null<FunkinSprite>
   {
     var result = new FunkinSprite();
@@ -525,29 +791,25 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         var assetPath = buildJudgementSpritePath(rating);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.judgementSick?.scale ?? 1.0;
-        result.scale.y = _data.assets.judgementSick?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.judgementSick?.scale ?? 1.0;
       case "good":
         if (_data.assets.judgementGood == null) return fallback?.buildJudgementSprite(rating);
         var assetPath = buildJudgementSpritePath(rating);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.judgementGood?.scale ?? 1.0;
-        result.scale.y = _data.assets.judgementGood?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.judgementGood?.scale ?? 1.0;
       case "bad":
         if (_data.assets.judgementBad == null) return fallback?.buildJudgementSprite(rating);
         var assetPath = buildJudgementSpritePath(rating);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.judgementBad?.scale ?? 1.0;
-        result.scale.y = _data.assets.judgementBad?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.judgementBad?.scale ?? 1.0;
       case "shit":
         if (_data.assets.judgementShit == null) return fallback?.buildJudgementSprite(rating);
         var assetPath = buildJudgementSpritePath(rating);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.judgementShit?.scale ?? 1.0;
-        result.scale.y = _data.assets.judgementShit?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.judgementShit?.scale ?? 1.0;
       default:
         return null;
     }
@@ -555,8 +817,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     result.scrollFactor.set(0.2, 0.2);
     var isPixel = isJudgementSpritePixel(rating);
     result.antialiasing = !isPixel;
-    result.pixelPerfectRender = isPixel;
-    result.pixelPerfectPosition = isPixel;
+    result.pixelPerfectRender = result.pixelPerfectPosition = isPixel;
     result.updateHitbox();
 
     return result;
@@ -649,79 +910,68 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber0?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber0?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber0?.scale ?? 1.0;
       case 1:
         if (_data.assets.comboNumber1 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber1?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber1?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber1?.scale ?? 1.0;
       case 2:
         if (_data.assets.comboNumber2 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber2?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber2?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber2?.scale ?? 1.0;
       case 3:
         if (_data.assets.comboNumber3 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber3?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber3?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber3?.scale ?? 1.0;
       case 4:
         if (_data.assets.comboNumber4 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber4?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber4?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber4?.scale ?? 1.0;
       case 5:
         if (_data.assets.comboNumber5 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber5?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber5?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber5?.scale ?? 1.0;
       case 6:
         if (_data.assets.comboNumber6 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber6?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber6?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber6?.scale ?? 1.0;
       case 7:
         if (_data.assets.comboNumber7 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber7?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber7?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber7?.scale ?? 1.0;
       case 8:
         if (_data.assets.comboNumber8 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber8?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber8?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber8?.scale ?? 1.0;
       case 9:
         if (_data.assets.comboNumber9 == null) return fallback?.buildComboNumSprite(digit);
         var assetPath = buildComboNumSpritePath(digit);
         if (assetPath == null) return null;
         result.loadTexture(assetPath);
-        result.scale.x = _data.assets.comboNumber9?.scale ?? 1.0;
-        result.scale.y = _data.assets.comboNumber9?.scale ?? 1.0;
+        result.scale.x = result.scale.y = _data.assets.comboNumber9?.scale ?? 1.0;
       default:
         return null;
     }
 
     var isPixel = isComboNumSpritePixel(digit);
     result.antialiasing = !isPixel;
-    result.pixelPerfectRender = isPixel;
-    result.pixelPerfectPosition = isPixel;
+    result.pixelPerfectRender = result.pixelPerfectPosition = isPixel;
     result.updateHitbox();
 
     return result;
@@ -863,302 +1113,18 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
   }
 
-  public function buildSplashSprite(target:NoteSplash):Void
+  /* JUDGEMENT - HELPERS AND UTC */
+  /**
+   * Helper for getting library/path of file.
+   * @return Null<String> (Nor a library or path, could be Null)
+   */
+  function getNoteAssetLibrary():Null<String>
   {
-    var atlas:Null<FlxAtlasFrames> = buildSplashFrames(false);
-
-    if (atlas == null)
-    {
-      throw 'Could not load spritesheet for note style: $id';
-    }
-    target.frames = atlas;
-    target.antialiasing = !(_data.assets.noteSplash?.isPixel ?? false);
-
-    buildSplashAnimations(target);
-
-    target.splashFramerate = getSplashFramerate();
-    target.splashFramerateVariance = getSplashFramerateVariance();
-    target.alpha = _data.assets.noteSplash?.alpha ?? 1.0;
-    target.blend = _data.assets.noteSplash?.data?.blendMode ?? "normal";
-
-    var scale = getSplashScale();
-    target.scale.set(scale, scale);
-    target.updateHitbox();
+    // library:path
+    var parts = getNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0 || parts.length == 1) return null;
+    return parts[0];
   }
-
-  var splashFrames:Null<FlxAtlasFrames> = null;
-
-  function buildSplashFrames(force:Bool = false):Null<FlxAtlasFrames>
-  {
-    var splashAssetPath:Null<String> = getSplashAssetPath();
-    if (splashAssetPath == null)
-    {
-      FlxG.log.warn('Note Splash asset path not found: ${id}');
-      return null;
-    }
-
-    if (!FunkinSprite.isTextureCached(Paths.image(splashAssetPath)))
-    {
-      FlxG.log.warn('Note Splash texture not cached: ${splashAssetPath}');
-    }
-
-    @:nullSafety(Off)
-    {
-      if (splashFrames?.parent?.isDestroyed ?? true) splashFrames = null;
-    }
-
-    if (splashFrames != null && !force) return splashFrames;
-
-    splashFrames = Paths.getSparrowAtlas(splashAssetPath, getAssetLibrary(getSplashAssetPath(true)));
-    splashFrames.parent.persist = true;
-    if (splashFrames == null)
-    {
-      throw 'Could not load notesplash frames for note style: $id';
-    }
-    return splashFrames;
-  }
-
-  function getSplashAssetPath(raw:Bool = false):Null<String>
-  {
-    if (raw)
-    {
-      var rawPath:Null<String> = _data?.assets?.noteSplash?.assetPath;
-      if (rawPath == null) return fallback?.getSplashAssetPath(true);
-      return rawPath;
-    }
-
-    var parts = getSplashAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return getSplashAssetPath(true);
-    return parts[1];
-  }
-
-  function buildSplashAnimations(target:NoteSplash):Void
-  {
-    final addSplashAnim:NoteDirection->Void = function(dir:NoteDirection) {
-      var animData:Null<Array<AnimationData>> = fetchSplashAnimationData(dir);
-      if (animData != null)
-      {
-        for (anim in animData)
-          FlxAnimationUtil.addAtlasAnimation(target, anim);
-      }
-    };
-
-    addSplashAnim(LEFT);
-    addSplashAnim(RIGHT);
-    addSplashAnim(UP);
-    addSplashAnim(DOWN);
-  }
-
-  public function isSplashAnimated():Bool
-  {
-    return _data?.assets?.noteSplash?.animated ?? fallback?.isSplashAnimated() ?? false;
-  }
-
-  public function getSplashScale():Float
-  {
-    return _data?.assets?.noteSplash?.scale ?? fallback?.getSplashScale() ?? 1.0;
-  }
-
-  function fetchSplashAnimationData(dir:NoteDirection):Null<Array<AnimationData>>
-  {
-    var result:Null<Array<AnimationData>> = switch (dir)
-    {
-      case LEFT: _data.assets?.noteSplash?.data?.leftSplashes?.toNamedArray("splashLEFT");
-      case DOWN: _data.assets?.noteSplash?.data?.downSplashes?.toNamedArray("splashDOWN");
-      case UP: _data.assets?.noteSplash?.data?.upSplashes?.toNamedArray("splashUP");
-      case RIGHT: _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRIGHT");
-    };
-    return result ?? fallback?.fetchSplashAnimationData(dir);
-  }
-
-  public function getSplashOffsets():Array<Float>
-  {
-    return _data?.assets?.noteSplash?.offsets ?? fallback?.getSplashOffsets() ?? [0.0, 0.0];
-  }
-
-  public function getSplashFramerate():Int
-  {
-    return _data?.assets?.noteSplash?.data?.framerateDefault ?? fallback?.getSplashFramerate() ?? 24;
-  }
-
-  public function getSplashFramerateVariance():Int
-  {
-    return _data?.assets?.noteSplash?.data?.framerateVariance ?? fallback?.getSplashFramerateVariance() ?? 2;
-  }
-
-  public function buildHoldCoverSprite(target:NoteHoldCover):Void
-  {
-    // NoteHoldCover has "glow" and "sparks". Right now it only implements "glow"
-    // but "sparks" I believe is meant to be used for the ending of the hold note
-    var glowAtlas:Null<FlxFramesCollection> = buildHoldCoverFrames(false);
-    if (glowAtlas == null)
-    {
-      throw 'Could not load spritesheet for note style: $id';
-    }
-    target.glow.frames = glowAtlas;
-
-    target.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
-    target.glow.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
-    target.scale.set(_data.assets.holdNoteCover?.scale ?? 1.0, _data.assets.holdNoteCover?.scale ?? 1.0);
-    target.updateHitbox();
-    target.glow.updateHitbox();
-
-    buildHoldCoverAnimations(target);
-  }
-
-  // we use FlxFramesCollection here so we can combine em into one atlas later
-  var holdCoverFrames:Null<FlxFramesCollection> = null;
-
-  function buildHoldCoverFrames(force:Bool = false):Null<FlxFramesCollection>
-  {
-    // If the hold cover frames got unloaded, ensure they get reloaded.
-    if (holdCoverFrames?.parent?.isDestroyed ?? true) holdCoverFrames = null;
-
-    // If the hold cover frames are already loaded, just use those.
-    if (holdCoverFrames != null && !force) return holdCoverFrames;
-
-    for (direction in Strumline.DIRECTIONS)
-    {
-      // We make a FlxFramesCollection here so we can combine em into one atlas later
-      var atlas:Null<FlxFramesCollection> = buildHoldCoverFrameForDirection(direction);
-      if (holdCoverFrames == null) holdCoverFrames = atlas;
-      else if (atlas != null) holdCoverFrames = FlxAnimationUtil.combineFramesCollections(holdCoverFrames, atlas);
-    }
-    return holdCoverFrames;
-  }
-
-  function buildHoldCoverFrameForDirection(direction:NoteDirection):Null<FlxFramesCollection>
-  {
-    var directionData = switch (direction)
-    {
-      case LEFT: _data.assets?.holdNoteCover?.data?.left;
-      case DOWN: _data.assets?.holdNoteCover?.data?.down;
-      case UP: _data.assets?.holdNoteCover?.data?.up;
-      case RIGHT: _data.assets?.holdNoteCover?.data?.right;
-    };
-
-    if (directionData == null) return null;
-
-    var holdCoverAssetPath:Null<String> = getHoldCoverDirectionAssetPath(direction) ?? fallback?.getHoldCoverDirectionAssetPath(direction);
-    if (holdCoverAssetPath == null)
-    {
-      FlxG.log.warn('Hold Note Cover asset path not found: ${id}');
-      return null;
-    }
-
-    if (!FunkinSprite.isTextureCached(Paths.image(holdCoverAssetPath)))
-    {
-      FlxG.log.warn('Hold Note Cover texture not cached: ${holdCoverAssetPath}');
-    }
-
-    var atlas:FlxFramesCollection = Paths.getSparrowAtlas(holdCoverAssetPath, getAssetLibrary(getHoldCoverDirectionAssetPath(direction, true)));
-    if (atlas == null) return null;
-
-    atlas.parent.persist = true;
-
-    return atlas;
-  }
-
-  function buildHoldCoverAnimations(target:NoteHoldCover):Void
-  {
-    for (direction in Strumline.DIRECTIONS)
-    {
-      var animData:Null<Array<AnimationData>> = fetchHoldCoverAnimationData(direction);
-      if (animData != null)
-      {
-        // this entry is the base animation that plays ("holdCover$noteColor" animation), which we want to loop
-        animData[1].looped = true;
-        FlxAnimationUtil.addAtlasAnimations(target.glow, animData);
-      }
-    }
-  }
-
-  function fetchHoldCoverAnimationData(dir:NoteDirection):Null<Array<AnimationData>>
-  {
-    var noteColor:String = dir.colorName.toTitleCase();
-    var result:Array<Null<AnimationData>> = switch (dir)
-    {
-      case LEFT: [
-          _data.assets?.holdNoteCover?.data?.left?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.left?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.left?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
-      case DOWN: [
-          _data.assets?.holdNoteCover?.data?.down?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.down?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.down?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
-      case UP: [
-          _data.assets?.holdNoteCover?.data?.up?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.up?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.up?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
-      case RIGHT: [
-          _data.assets?.holdNoteCover?.data?.right?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.right?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.right?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
-      default: [];
-    };
-
-    // New variable so we can change the type.
-    var filteredResult:Array<AnimationData> = thx.Arrays.filterNull(result);
-
-    if (filteredResult.length == 0) return fallback?.fetchHoldCoverAnimationData(dir) ?? [];
-
-    return filteredResult;
-  }
-
-  // fallbacks:
-  // assetPath for a direction -> root assetpath -> fallback assetpath for direction -> fallback root assetpath
-  // `direction` here is required, however it only is used for fallback purposes
-  function getHoldCoverRootAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
-  {
-    if (raw)
-    {
-      var rawPath:Null<String> = _data?.assets?.holdNoteCover?.assetPath;
-      // remember, if we need a fallback for our *root* asset path,
-      // we fallback and look for the *direction* asset path first
-      if (rawPath == null) return fallback?.getHoldCoverDirectionAssetPath(direction, true);
-      return rawPath;
-    }
-
-    var parts:Array<String> = getHoldCoverRootAssetPath(direction, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return getHoldCoverRootAssetPath(direction, true);
-    return parts[1];
-  }
-
-  function getHoldCoverDirectionAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
-  {
-    if (raw)
-    {
-      var rawPath:Null<String> = switch (direction)
-      {
-        case LEFT: _data?.assets?.holdNoteCover?.data?.left?.assetPath;
-        case DOWN: _data?.assets?.holdNoteCover?.data?.down?.assetPath;
-        case UP: _data?.assets?.holdNoteCover?.data?.up?.assetPath;
-        case RIGHT: _data?.assets?.holdNoteCover?.data?.right?.assetPath;
-      };
-
-      // we don't want to fallback directly just yet, we want to check our root assetpath first
-      if (rawPath == null) return getHoldCoverRootAssetPath(direction, true);
-      return rawPath;
-    }
-
-    var parts:Array<String> = getHoldCoverDirectionAssetPath(direction, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
-    if (parts.length == 0) return null;
-    if (parts.length == 1) return getHoldCoverDirectionAssetPath(direction, true);
-    return parts[1];
-  }
-
-  public function getHoldCoverOffsets():Array<Float>
-  {
-    return _data?.assets?.holdNoteCover?.offsets ?? fallback?.getHoldCoverOffsets() ?? [0.0, 0.0];
-  }
-
-  public function destroy():Void {}
 
   /**
    * Returns a string of the library name for the given asset id
@@ -1175,22 +1141,29 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return parts[0];
   }
 
+  /**
+   * Helper for getting note assets file path.
+   * @return Null<String> (Nor a library or path, could be Null)
+   */
+  function getNoteAssetPath(raw:Bool = false):Null<String>
+  {
+    if (raw)
+    {
+      var rawPath:Null<String> = _data?.assets?.note?.assetPath;
+      if (rawPath == null) return fallback?.getNoteAssetPath(true);
+      return rawPath;
+    }
+    // library:path
+    var parts = getNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getNoteAssetPath(true);
+    return parts[1];
+  }
+
   public function toString():String
   {
     return 'NoteStyle($id)';
   }
 
-  static function _fetchData(id:String):NoteStyleData
-  {
-    var result = NoteStyleRegistry.instance.parseEntryDataWithMigration(id, NoteStyleRegistry.instance.fetchEntryVersion(id));
-
-    if (result == null)
-    {
-      throw 'Could not parse note style data for id: $id';
-    }
-    else
-    {
-      return result;
-    }
-  }
+  public function destroy():Void {}
 }

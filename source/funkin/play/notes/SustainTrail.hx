@@ -24,13 +24,58 @@ class SustainTrail extends FlxSprite
    */
   static final TRIANGLE_VERTEX_INDICES:Array<Int> = [0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7];
 
-  public var strumTime:Float = 0; // millis
   public var noteDirection:NoteDirection = 0;
-  public var sustainLength(default, set):Float = 0; // millis
-  public var fullSustainLength:Float = 0;
-  public var noteData:Null<SongNoteData>;
-  public var parentStrumline:Strumline;
 
+  // Position in track's chart, in milliseconds.
+  public var strumTime:Float = 0;
+
+  // Time length, in milliseconds.
+  public var sustainLength(default, set):Float = 0;
+  // Used to determine this hold ends.
+  public var fullSustainLength:Float = 0;
+
+  public var noteData:Null<SongNoteData>;
+  public var _parentStrum:Strumline;
+
+  /**
+   * A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
+   */
+  public var vertices:DrawData<Float> = new DrawData<Float>();
+
+  /**
+   * Whether the note will recieve custom vertex data
+   */
+  public var customVertexData:Bool = false;
+
+  /**
+   * A `Vector` of integers or indexes, where every three indexes define a triangle.
+   */
+  public var indices:DrawData<Int> = new DrawData<Int>();
+
+  /**
+   * A `Vector` of normalized coordinates used to apply texture mapping.
+   */
+  public var uvtData:DrawData<Float> = new DrawData<Float>();
+
+  /**
+   * What part of the trail's end actually represents the end of the note.
+   * This can be used to have a little bit sticking out.
+   */
+  public var endOffset:Float = 0.5; // 0.73 is roughly the bottom of the sprite in the normal graphic!
+
+  /**
+   * At what point the bottom for the trail's end should be clipped off.
+   * Used in cases where there's an extra bit of the graphic on the bottom to avoid antialiasing issues with overflow.
+   */
+  public var bottomClip:Float = 0.9;
+
+  private var processedGraphic:FlxGraphic;
+  var graphicWidth:Float = 0;
+  var graphicHeight:Float = 0;
+
+  private var zoom:Float = 1;
+
+  // Not used in this class, but in parent strumline.
   public var cover:NoteHoldCover = null;
 
   /**
@@ -56,48 +101,8 @@ class SustainTrail extends FlxSprite
   public var handledMiss:Bool = false;
 
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
-
-  /**
-   * A `Vector` of floats where each pair of numbers is treated as a coordinate location (an x, y pair).
-   */
-  public var vertices:DrawData<Float> = new DrawData<Float>();
-
-  /**
-   * A `Vector` of integers or indexes, where every three indexes define a triangle.
-   */
-  public var indices:DrawData<Int> = new DrawData<Int>();
-
-  /**
-   * A `Vector` of normalized coordinates used to apply texture mapping.
-   */
-  public var uvtData:DrawData<Float> = new DrawData<Float>();
-
-  private var processedGraphic:FlxGraphic;
-
-  private var zoom:Float = 1;
-
-  /**
-   * What part of the trail's end actually represents the end of the note.
-   * This can be used to have a little bit sticking out.
-   */
-  public var endOffset:Float = 0.5; // 0.73 is roughly the bottom of the sprite in the normal graphic!
-
-  /**
-   * At what point the bottom for the trail's end should be clipped off.
-   * Used in cases where there's an extra bit of the graphic on the bottom to avoid antialiasing issues with overflow.
-   */
-  public var bottomClip:Float = 0.9;
-
-  /**
-   * Whether the note will recieve custom vertex data
-   */
-  public var customVertexData:Bool = false;
-
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
-
-  var graphicWidth:Float = 0;
-  var graphicHeight:Float = 0;
 
   /**
    * Normally you would take strumTime:Float, noteData:Int, sustainLength:Float, parentNote:Note (?)
@@ -105,7 +110,7 @@ class SustainTrail extends FlxSprite
    * @param SustainLength Length in milliseconds.
    * @param fileName
    */
-  public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
+  public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle, ?parentStrum:Strumline)
   {
     super(0, 0);
 
@@ -113,70 +118,16 @@ class SustainTrail extends FlxSprite
     this.sustainLength = sustainLength;
     this.fullSustainLength = sustainLength;
     this.noteDirection = noteDirection;
+    _parentStrum = parentStrum;
 
-    setupHoldNoteGraphic(noteStyle);
-    noteStyleOffsets = noteStyle.getHoldNoteOffsets();
+    var firstNoteStyle:NoteStyle = noteStyle;
+    if (_parentStrum != null) firstNoteStyle = _parentStrum.noteStyle;
+    setupHoldNoteGraphic(firstNoteStyle);
+    noteStyleOffsets = firstNoteStyle.getHoldNoteOffsets();
 
     setIndices(TRIANGLE_VERTEX_INDICES);
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
-  }
-
-  /**
-   * Sets the indices for the triangles.
-   * @param indices The indices to set.
-   */
-  public function setIndices(indices:Array<Int>):Void
-  {
-    if (this.indices.length == indices.length)
-    {
-      for (i in 0...indices.length)
-      {
-        this.indices[i] = indices[i];
-      }
-    }
-    else
-    {
-      this.indices = new DrawData<Int>(indices.length, false, indices);
-    }
-  }
-
-  /**
-   * Sets the vertices for the triangles.
-   * @param vertices The vertices to set.
-   */
-  public function setVertices(vertices:Array<Float>):Void
-  {
-    if (this.vertices.length == vertices.length)
-    {
-      for (i in 0...vertices.length)
-      {
-        this.vertices[i] = vertices[i];
-      }
-    }
-    else
-    {
-      this.vertices = new DrawData<Float>(vertices.length, false, vertices);
-    }
-  }
-
-  /**
-   * Sets the UV data for the triangles.
-   * @param uvtData The UV data to set.
-   */
-  public function setUVTData(uvtData:Array<Float>):Void
-  {
-    if (this.uvtData.length == uvtData.length)
-    {
-      for (i in 0...uvtData.length)
-      {
-        this.uvtData[i] = uvtData[i];
-      }
-    }
-    else
-    {
-      this.uvtData = new DrawData<Float>(uvtData.length, false, uvtData);
-    }
   }
 
   /**
@@ -206,12 +157,13 @@ class SustainTrail extends FlxSprite
 
     // CALCULATE SIZE
     graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+    graphicHeight = sustainHeight(sustainLength, _parentStrum?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
-    flipY = Preferences.downscroll;
+    flipY = _parentStrum.downScroll;
 
     // alpha = 0.6;
+    // It's intentional.
     alpha = 1.0;
     // calls updateColorTransform(), which initializes processedGraphic!
     updateColorTransform();
@@ -219,46 +171,19 @@ class SustainTrail extends FlxSprite
     updateClipping();
   }
 
-  function getBaseScrollSpeed()
-  {
-    return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
-  }
-
-  var previousScrollSpeed:Float = 1;
-
-  override function update(elapsed)
-  {
-    super.update(elapsed);
-    if (previousScrollSpeed != (parentStrumline?.scrollSpeed ?? 1.0))
-    {
-      triggerRedraw();
-    }
-    previousScrollSpeed = parentStrumline?.scrollSpeed ?? 1.0;
-  }
-
-  /**
-   * Calculates height of a sustain note for a given length (milliseconds) and scroll speed.
-   * @param	susLength	The length of the sustain note in milliseconds.
-   * @param	scroll		The current scroll speed.
-   */
-  public static inline function sustainHeight(susLength:Float, scroll:Float)
-  {
-    return (susLength * Constants.PIXELS_PER_MS * scroll);
-  }
-
   function set_sustainLength(s:Float):Float
   {
     if (s < 0.0) s = 0.0;
 
     if (sustainLength == s) return s;
-    this.sustainLength = s;
+    sustainLength = s;
     triggerRedraw();
-    return this.sustainLength;
+    return sustainLength;
   }
 
   function triggerRedraw()
   {
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+    graphicHeight = sustainHeight(sustainLength, _parentStrum?.scrollSpeed ?? 1.0);
     updateClipping();
     updateHitbox();
   }
@@ -269,6 +194,42 @@ class SustainTrail extends FlxSprite
     height = graphicHeight;
     offset.set(noteStyleOffsets[0], noteStyleOffsets[1]);
     origin.set(width * 0.5, height * 0.5);
+  }
+
+  /**
+   * Sets the indices for the triangles.
+   * @param indices The indices to set.
+   */
+  public function setIndices(indices:Array<Int>):Void
+  {
+    if (this.indices.length == indices.length) for (i in 0...indices.length)
+      this.indices[i] = indices[i];
+    else
+      this.indices = new DrawData<Int>(indices.length, false, indices);
+  }
+
+  /**
+   * Sets the vertices for the triangles.
+   * @param vertices The vertices to set.
+   */
+  public function setVertices(vertices:Array<Float>):Void
+  {
+    if (this.vertices.length == vertices.length) for (i in 0...vertices.length)
+      this.vertices[i] = vertices[i];
+    else
+      this.vertices = new DrawData<Float>(vertices.length, false, vertices);
+  }
+
+  /**
+   * Sets the UV data for the triangles.
+   * @param uvtData The UV data to set.
+   */
+  public function setUVTData(uvtData:Array<Float>):Void
+  {
+    if (this.uvtData.length == uvtData.length) for (i in 0...uvtData.length)
+      this.uvtData[i] = uvtData[i];
+    else
+      this.uvtData = new DrawData<Float>(uvtData.length, false, uvtData);
   }
 
   /**
@@ -283,7 +244,7 @@ class SustainTrail extends FlxSprite
       return;
     }
 
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
+    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), _parentStrum?.scrollSpeed ?? 1.0), 0, graphicHeight);
     if (clipHeight <= 0.1)
     {
       visible = false;
@@ -364,14 +325,7 @@ class SustainTrail extends FlxSprite
     // === END CAP UVs ===
     // Top left
     uvtData[4 * 2] = uvtData[2 * 2] + 1 / 8; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
-    uvtData[4 * 2 + 1] = if (partHeight > 0)
-    {
-      0;
-    }
-    else
-    {
-      (bottomHeight - clipHeight) / zoom / graphic.height;
-    };
+    uvtData[4 * 2 + 1] = (partHeight > 0) ? 0 : ((bottomHeight - clipHeight) / zoom / graphic.height);
 
     // Top right
     uvtData[5 * 2] = uvtData[4 * 2] + 1 / 8; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
@@ -403,6 +357,38 @@ class SustainTrail extends FlxSprite
     #if FLX_DEBUG
     if (FlxG.debugger.drawDebug) drawDebug();
     #end
+  }
+
+  override function updateColorTransform():Void
+  {
+    super.updateColorTransform();
+    if (processedGraphic != null) processedGraphic.destroy();
+    processedGraphic = FlxGraphic.fromGraphic(graphic, true);
+    processedGraphic.bitmap.colorTransform(processedGraphic.bitmap.rect, colorTransform);
+  }
+
+  var previousScrollSpeed:Float = 1;
+
+  function getBaseScrollSpeed()
+  {
+    return (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+  }
+
+  override function update(elapsed)
+  {
+    super.update(elapsed);
+    if (previousScrollSpeed != (_parentStrum?.scrollSpeed ?? 1.0)) triggerRedraw();
+    previousScrollSpeed = _parentStrum?.scrollSpeed ?? 1.0;
+  }
+
+  /**
+   * Calculates height of a sustain note for a given length (milliseconds) and scroll speed.
+   * @param	susLength	The length of the sustain note in milliseconds.
+   * @param	scroll		The current scroll speed.
+   */
+  public static inline function sustainHeight(susLength:Float, scroll:Float)
+  {
+    return (susLength * Constants.PIXELS_PER_MS * scroll);
   }
 
   public override function kill():Void
@@ -442,13 +428,5 @@ class SustainTrail extends FlxSprite
     processedGraphic.destroy();
 
     super.destroy();
-  }
-
-  override function updateColorTransform():Void
-  {
-    super.updateColorTransform();
-    if (processedGraphic != null) processedGraphic.destroy();
-    processedGraphic = FlxGraphic.fromGraphic(graphic, true);
-    processedGraphic.bitmap.colorTransform(processedGraphic.bitmap.rect, colorTransform);
   }
 }

@@ -385,11 +385,6 @@ class BaseCharacter extends Bopper
     // Handle character note hold time.
     if (isSinging())
     {
-      // TODO: Rework this code (and all character animations ugh)
-      // such that the hold time is handled by padding frames,
-      // and reverting to the idle animation is done when `isAnimationFinished()`.
-      // This lets you add frames to the end of the sing animation to ease back into the idle!
-
       holdTimer += event.elapsed;
       var singTimeSec:Float = singTimeSteps * (Conductor.instance.stepLengthMs / Constants.MS_PER_SEC); // x beats, to ms.
 
@@ -398,8 +393,8 @@ class BaseCharacter extends Bopper
       // Without this check here, the player character would only play the `sing` animation
       // for one beat, as opposed to holding it as long as the player is holding the button.
       var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
-
       FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
+
       if (holdTimer > singTimeSec && shouldStopSinging)
       {
         // trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
@@ -509,26 +504,22 @@ class BaseCharacter extends Bopper
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteHit(event:HitNoteScriptEvent)
+  public override function onNoteHit(event:HitNoteScriptEvent):Void
   {
     super.onNoteHit(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.note.noteData.getMustHitNote() && characterType == BF)
+    if (event.targerCharacter == this)
     {
-      // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
-      holdTimer = 0;
+      playSingAnimation(event.note.noteData.getDirection(), false);
+      if (characterType != BF) holdTimer = -(event.note.length / 1000); // ms to s
+      else
+        holdTimer = 0;
     }
-    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
-    {
-      // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
-      holdTimer = 0;
-    }
-    else if (characterType == GF && event.note.noteData.getMustHitNote())
+
+    if (/*characterType == GF &&*/ event.note.noteData.getMustHitNote())
     {
       switch (event.judgement)
       {
@@ -541,53 +532,46 @@ class BaseCharacter extends Bopper
   }
 
   /**
+   * Writing `this` in Polymod scritped class returns `PolymodScriptedClass`, not modified(extended) class!?
+   * @return BaseCharacter
+   */
+  public function getSelf():BaseCharacter
+  {
+    return this; // Stuff for polymod?
+  }
+
+  // Also can be overriden for more comples characters, like Nene. (ABot)
+  public function setShader(shader:flixel.system.FlxAssets.FlxShader):Void
+  {
+    this.shader = shader;
+  }
+
+  /**
    * Every time a note is missed, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteMiss(event:NoteScriptEvent)
+  public override function onNoteMiss(event:NoteScriptEvent):Void
   {
     super.onNoteMiss(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.note.noteData.getMustHitNote() && characterType == BF)
-    {
-      // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), true);
-    }
-    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
-    {
-      // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), true);
-    }
-    else if (event.note.noteData.getMustHitNote() && characterType == GF)
-    {
-      playComboDropAnimation(event.comboCount);
-    }
+    if (event.targerCharacter == this) playSingAnimation(event.note.noteData.getDirection(), true);
+    if (event.note.noteData.getMustHitNote() /*&& characterType == GF*/) playComboDropAnimation(event.comboCount);
   }
 
-  public override function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  public override function onNoteHoldDrop(event:HoldNoteScriptEvent):Void
   {
     super.onNoteHoldDrop(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
-    {
-      // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
-    }
-    else if (!event.holdNote.noteData.getMustHitNote() && characterType == DAD)
-    {
-      // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
-    }
-    else if (event.holdNote.noteData.getMustHitNote() && event.isComboBreak && characterType == GF)
-    {
-      playComboDropAnimation(event.comboCount);
-    }
+    if (event.targerCharacter == this) playSingAnimation(event.holdNote.noteData.getDirection(), true);
+
+    if (event.holdNote.noteData.getMustHitNote()
+      && event.isComboBreak /*&& characterType == GF*/) playComboDropAnimation(event.comboCount);
   }
 
   function playComboAnimation(comboCount:Int):Void
@@ -595,7 +579,7 @@ class BaseCharacter extends Bopper
     var comboAnim = 'combo${comboCount}';
     if (hasAnimation(comboAnim))
     {
-      trace('Playing GF combo animation: ${comboAnim}');
+      trace('Playing $characterType combo animation: ${comboAnim}');
       this.playAnimation(comboAnim, true, true);
     }
   }
@@ -608,16 +592,11 @@ class BaseCharacter extends Bopper
     // If there are several (for example, drop10 and drop50) the highest one will be used.
     // If the combo count is too low, no animation will be played.
     for (count in dropNoteCounts)
-    {
-      if (comboCount >= count)
-      {
-        dropAnim = 'drop${count}';
-      }
-    }
+      if (comboCount >= count) dropAnim = 'drop${count}';
 
     if (dropAnim != null)
     {
-      trace('Playing GF combo drop animation: ${dropAnim}');
+      trace('Playing $characterType combo drop animation: ${dropAnim}');
       this.playAnimation(dropAnim, true, true);
     }
   }

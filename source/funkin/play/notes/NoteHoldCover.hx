@@ -11,9 +11,11 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
   static final FRAMERATE_DEFAULT:Int = 24;
 
   public var holdNote:SustainTrail;
-
   public var glow:FlxSprite;
 
+  /**
+   * NOT USED HERE, but exists in `.fla` file for hold covers.
+   */
   var sparks:FlxSprite;
 
   public function new(noteStyle:NoteStyle)
@@ -28,18 +30,10 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
    */
   function setupHoldNoteCover(noteStyle:NoteStyle):Void
   {
-    glow = new FlxSprite();
-    add(glow);
-
-    // TODO: null check here like how NoteSplash does
+    add(glow = new FlxSprite());
     noteStyle.buildHoldCoverSprite(this);
-
     glow.animation.onFinish.add(this.onAnimationFinished);
-
-    if (glow.animation.getAnimationList().length < 3 * 4)
-    {
-      trace('WARNING: NoteHoldCover failed to initialize all animations.');
-    }
+    if (glow.animation.getAnimationList().length < 3 * 4) trace('WARNING: NoteHoldCover failed to initialize all animations.');
   }
 
   public override function update(elapsed):Void
@@ -88,10 +82,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 
   public function onAnimationFinished(animationName:String):Void
   {
-    if (animationName.startsWith('holdCoverStart'))
-    {
-      playContinue();
-    }
+    if (animationName.startsWith('holdCoverStart')) playContinue();
     if (animationName.startsWith('holdCoverEnd'))
     {
       // *lightning* *zap* *crackle*
