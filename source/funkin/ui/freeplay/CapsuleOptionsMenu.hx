@@ -24,6 +24,10 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
 
   var busy:Bool = false;
 
+  var leftArrow:InstrumentalSelector;
+
+  var rightArrow:InstrumentalSelector;
+
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
   {
     super(x, y);
@@ -41,8 +45,8 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     currentInstrumental.setFormat('VCR OSD Mono', 40, FlxTextAlign.CENTER, true);
 
     final PAD = 4;
-    var leftArrow = new InstrumentalSelector(parent, PAD, 30, false, parent.getControls());
-    var rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.getControls());
+    leftArrow = new InstrumentalSelector(parent, PAD, 30, false, parent.getControls());
+    rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.getControls());
 
     var label:FlxText = new FlxText(0, 5, capsuleMenuBG.width, 'INSTRUMENTAL');
     label.setFormat('VCR OSD Mono', 24, FlxTextAlign.CENTER, true);
@@ -109,6 +113,8 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
   {
     // Play in reverse.
     capsuleMenuBG.animation.play('open', true, true);
+    if (leftArrow.moveShitDownTimer != null) leftArrow.moveShitDownTimer.cancel();
+    if (rightArrow.moveShitDownTimer != null) rightArrow.moveShitDownTimer.cancel();
     capsuleMenuBG.animation.finishCallback = function(_) {
       parent.cleanupCapsuleOptionsMenu();
       queueDestroy = true;
@@ -135,6 +141,8 @@ class InstrumentalSelector extends FunkinSprite
   var parent:FreeplayState;
 
   var baseScale:Float = 0.6;
+
+  public var moveShitDownTimer:FlxTimer;
 
   public function new(parent:FreeplayState, x:Float, y:Float, flipped:Bool, controls:Controls)
   {
@@ -174,7 +182,7 @@ class InstrumentalSelector extends FunkinSprite
 
     scale.x = scale.y = 0.5 * baseScale;
 
-    new FlxTimer().start(2 / 24, function(tmr) {
+    moveShitDownTimer = new FlxTimer().start(2 / 24, function(tmr) {
       scale.x = scale.y = 1 * baseScale;
       whiteShader.colorSet = false;
       updateHitbox();
