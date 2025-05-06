@@ -16,7 +16,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
   /**
    * NOT USED HERE, but exists in `.fla` file for hold covers.
    */
-  var sparks:FlxSprite;
+  // var sparks:FlxSprite;
 
   public function new(noteStyle:NoteStyle)
   {
@@ -30,7 +30,9 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
    */
   function setupHoldNoteCover(noteStyle:NoteStyle):Void
   {
-    add(glow = new FlxSprite());
+    glow = new FlxSprite();
+    add(glow);
+
     noteStyle.buildHoldCoverSprite(this);
     glow.animation.onFinish.add(this.onAnimationFinished);
     if (glow.animation.getAnimationList().length < 3 * 4) trace('WARNING: NoteHoldCover failed to initialize all animations.');
@@ -66,7 +68,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     this.visible = false;
 
     if (glow != null) glow.visible = false;
-    if (sparks != null) sparks.visible = false;
+    // if (sparks != null) sparks.visible = false;
   }
 
   public override function revive():Void
@@ -77,7 +79,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     this.alpha = 1.0;
 
     if (glow != null) glow.visible = true;
-    if (sparks != null) sparks.visible = true;
+    // if (sparks != null) sparks.visible = true;
   }
 
   public function onAnimationFinished(animationName:String):Void

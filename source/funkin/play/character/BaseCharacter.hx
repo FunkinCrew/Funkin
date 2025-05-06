@@ -517,7 +517,7 @@ class BaseCharacter extends Bopper
       hitHoldTimer(event.note.length);
     }
 
-    if (/*characterType == GF &&*/ event.note.noteData.getMustHitNote())
+    if (characterType != BF && event.note.noteData.getMustHitNote())
     {
       switch (event.judgement)
       {
@@ -566,7 +566,7 @@ class BaseCharacter extends Bopper
     if (event.eventCanceled) return;
 
     if (event.targetCharacter == this) playSingAnimation(event.note.noteData.getDirection(), true);
-    if (event.note.noteData.getMustHitNote() /*&& characterType == GF*/) playComboDropAnimation(event.comboCount);
+    if (event.note.noteData.getMustHitNote() && characterType != BF) playComboDropAnimation(event.comboCount);
   }
 
   public override function onNoteHoldDrop(event:HoldNoteScriptEvent):Void
@@ -578,8 +578,7 @@ class BaseCharacter extends Bopper
 
     if (event.targetCharacter == this) playSingAnimation(event.holdNote.noteData.getDirection(), true);
 
-    if (event.holdNote.noteData.getMustHitNote()
-      && event.isComboBreak /*&& characterType == GF*/) playComboDropAnimation(event.comboCount);
+    if (event.holdNote.noteData.getMustHitNote() && event.isComboBreak && characterType != BF) playComboDropAnimation(event.comboCount);
   }
 
   function playComboAnimation(comboCount:Int):Void
