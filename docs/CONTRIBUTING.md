@@ -77,18 +77,15 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Flashy Combo Milestones | https://github.com/FunkinCrew/Funkin/pull/4700#issuecomment-2798916579 |
 | Losing Icons for DD and Parents | https://github.com/FunkinCrew/Funkin/issues/3048#issuecomment-2243491536 |
 | Playable GF / Speaker BF / Speaker Pico | https://github.com/FunkinCrew/Funkin/issues/2953#issuecomment-2216985230 |
+| New Intro Text Lines | https://github.com/FunkinCrew/Funkin/issues/5031#issuecomment-2855593376 |
 | Fresh (Chill Mix) as Title Screen Music | https://github.com/FunkinCrew/Funkin/pull/4282#issuecomment-2709334718 |
-| Adjusted Difficulty Ratings | https://github.com/FunkinCrew/Funkin/issues/2781#issuecomment-2172053144 |
 | Difficulty Ratings above 20 | https://github.com/FunkinCrew/Funkin/issues/3075#issuecomment-2368984497 |
-| Ability to Reset a Song's Score | https://github.com/FunkinCrew/Funkin/issues/3916#issuecomment-2525408261 |
 | Quick Restart Keybind (not R) | https://github.com/FunkinCrew/Funkin/issues/3268#issuecomment-2351095232 |
 | Countdown after Unpausing Song | https://github.com/FunkinCrew/Funkin/issues/2721#issuecomment-2159330106 |
-| 4:3 Aspect Ratio for Week 6 | https://github.com/FunkinCrew/Funkin/issues/3840#issuecomment-2689158438 |
 | "Philly Glow" Effect from Psych Engine | https://github.com/FunkinCrew/Funkin/issues/3788#issuecomment-2688966982 |
 | Importing Charts from Psych Engine (and other mod content) | https://github.com/FunkinCrew/Funkin/issues/2586#issuecomment-2125733327 |
 | Backwards Compatibility for Modding | https://github.com/FunkinCrew/Funkin/issues/3949#issuecomment-2608391329 |
 | Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 |
-
 
 ## Issue Types
 Choose the issue template that best suits your needs!
@@ -156,14 +153,14 @@ Choosing the right base branch helps keep your commit history clean and avoid me
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
 ## Maintaining your pull request
-Keeping your pull request clean and easy to review increases the chance that it will be accepted! 
+Keeping your pull request clean and easy to review increases the chance that it will be accepted!
 
 Our maintenance policy is as follows:
 - If we require changes to your PR, we will label your PR `status: needs revision`.
 - We may also leave a comment under your PR specifying what changes you should make.
 - If you receive a comment, you have 90 days to implement the requested changes.
 - After this period, your PR will be closed due to inactivity and labeled `status: stale`.
-- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!   
+- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!
 
 This policy ensures that PRs awaiting review are up to date and ready to merge.
 
