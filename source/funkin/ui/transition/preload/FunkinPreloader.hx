@@ -111,7 +111,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   var vfdShader:VFDOverlay;
   var vfdBitmap:Bitmap;
-  var box:Sprite;
+  var rTextGroup:Sprite;
   var progressLines:Sprite;
 
   public function new()
@@ -131,8 +131,17 @@ class FunkinPreloader extends FlxBasePreloader
     Lib.current.stage.color = Constants.COLOR_PRELOADER_BG;
 
     // Width and height of the preloader.
+    // Reference: Mobile resolution actually spits out smaller number
+    // this._width is 893 on iPhone 14 Pro
+    // and this._height is 393
+    // so a few lines lower
+    // ratio = 893 / 1280 / 2.0 = ~0.3 on iPhone
+    // ratio = 1280 / 1280 / 2.0 = 0.5 on desktop
+    // However on Android, this._width/_height are the devices actual resolution.
     this._width = Lib.current.stage.stageWidth;
     this._height = Lib.current.stage.stageHeight;
+
+    trace('Preloader size: ' + this._width + 'x' + this._height);
 
     // Scale assets to the screen size.
     ratio = this._width / BASE_WIDTH / 2.0;
@@ -199,17 +208,19 @@ class FunkinPreloader extends FlxBasePreloader
     progressRightText.y = this._height - BAR_PADDING - BAR_HEIGHT - 16 - 4;
     addChild(progressRightText);
 
-    box = new Sprite();
-    box.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 1);
-    box.graphics.drawRoundRect(0, 0, 64, 20, 5, 5);
-    box.graphics.drawRoundRect(70, 0, 58, 20, 5, 5);
-    box.graphics.endFill();
-    box.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 0.1);
-    box.graphics.drawRoundRect(0, 0, 128, 20, 5, 5);
-    box.graphics.endFill();
-    box.x = this._width - BAR_PADDING - BAR_HEIGHT - 432;
-    box.y = this._height - BAR_PADDING - BAR_HEIGHT - 244;
-    addChild(box);
+    // note: on mobile we generally dont want to scale these texts down
+    // however should test on android + iPad to see how it fits!
+    rTextGroup = new Sprite();
+    rTextGroup.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 1);
+    rTextGroup.graphics.drawRoundRect(0, 0, 64, 20, 5, 5);
+    rTextGroup.graphics.drawRoundRect(70, 0, 58, 20, 5, 5);
+    rTextGroup.graphics.endFill();
+    rTextGroup.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 0.1);
+    rTextGroup.graphics.drawRoundRect(0, 0, 128, 20, 5, 5);
+    rTextGroup.graphics.endFill();
+    rTextGroup.x = this._width - BAR_PADDING - BAR_HEIGHT - 432;
+    rTextGroup.y = this._height - BAR_PADDING - BAR_HEIGHT - 244;
+    addChild(rTextGroup);
 
     dspText.selectable = false;
     dspText.textColor = 0x000000;
@@ -218,7 +229,7 @@ class FunkinPreloader extends FlxBasePreloader
     dspText.text = 'DSP';
     dspText.x = 10;
     dspText.y = -7;
-    box.addChild(dspText);
+    rTextGroup.addChild(dspText);
 
     fnfText.selectable = false;
     fnfText.textColor = 0x000000;
@@ -227,7 +238,7 @@ class FunkinPreloader extends FlxBasePreloader
     fnfText.x = 78;
     fnfText.y = -7;
     fnfText.text = 'FNF';
-    box.addChild(fnfText);
+    rTextGroup.addChild(fnfText);
 
     enhancedText.selectable = false;
     enhancedText.textColor = Constants.COLOR_PRELOADER_BAR;
@@ -236,7 +247,7 @@ class FunkinPreloader extends FlxBasePreloader
     enhancedText.text = 'ENHANCED';
     enhancedText.x = -100;
     enhancedText.y = 0;
-    box.addChild(enhancedText);
+    rTextGroup.addChild(enhancedText);
 
     stereoText.selectable = false;
     stereoText.textColor = Constants.COLOR_PRELOADER_BAR;
@@ -245,7 +256,7 @@ class FunkinPreloader extends FlxBasePreloader
     stereoText.text = 'STEREO';
     stereoText.x = 0;
     stereoText.y = -40;
-    box.addChild(stereoText);
+    rTextGroup.addChild(stereoText);
 
     vfdBitmap = new Bitmap(new BitmapData(this._width, this._height, true, 0xFFFFFFFF));
     addChild(vfdBitmap);
@@ -930,7 +941,7 @@ class FunkinPreloader extends FlxBasePreloader
     // Fade out progress bar too.
     progressLeftText.alpha = alphaToFade;
     progressRightText.alpha = alphaToFade;
-    box.alpha = alphaToFade;
+    rTextGroup.alpha = alphaToFade;
     dspText.alpha = alphaToFade;
     fnfText.alpha = alphaToFade;
     enhancedText.alpha = alphaToFade;
