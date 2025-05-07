@@ -1,25 +1,25 @@
 package funkin.data.song;
 
-import funkin.Conductor;
-
 using SongData.SongNoteData;
 
 /**
  * Utility class for extra handling of song notes
  */
+@:nullSafety
 class SongNoteDataUtils
 {
   static final CHUNK_INTERVAL_MS:Float = 2500;
 
   /**
-   * Retrieves all stacked notes.
+   * Retrieves all stacked notes. It does this by cycling through "chunks" of notes within a certain interval.
+   * Will use `getStackedNotes` if threshold exceeds chunk interval.
    *
    * @param notes Sorted notes by time.
-   * @param snapThreshold The note snap threshold.
+   * @param threshold The note stack threshold. Refer to `doNotesStack` for more details.
    * @param includeOverlapped (Optional) If overlapped notes should be included.
    * @return Stacked notes.
    */
-  public static function listStackedNotes(notes:Array<SongNoteData>, snapThreshold:Int, includeOverlapped:Bool = true):Array<SongNoteData>
+  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float, includeOverlapped:Bool = true):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
 
@@ -51,7 +51,7 @@ class SongNoteDataUtils
           var noteI:SongNoteData = chunk[i];
           var noteJ:SongNoteData = chunk[j];
 
-          if (doNotesStack(noteI, noteJ, snapThreshold))
+          if (doNotesStack(noteI, noteJ, threshold))
           {
             if (includeOverlapped && !stackedNotes.fastContains(noteI))
             {
@@ -78,11 +78,11 @@ class SongNoteDataUtils
    * @param lhs An array of notes
    * @param rhs An array of notes to concatenate into `lhs`
    * @param overwrittenNotes An optional array that is modified in-place with the notes in `lhs` that were overwritten.
-   * @param snapThreshold The note snap threshold.
+   * @param threshold The note stack threshold. Refer to `doNotesStack` for more details.
    * @return The unsorted resulting array.
    */
   public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>,
-      snapThreshold:Int):Array<SongNoteData>
+      threshold:Float = 0):Array<SongNoteData>
   {
     if (lhs == null || rhs == null || rhs.length == 0) return lhs;
     if (lhs.length == 0) return rhs;
@@ -96,7 +96,7 @@ class SongNoteDataUtils
       for (j in 0...lhs.length)
       {
         var noteA:SongNoteData = lhs[j];
-        if (doNotesStack(noteA, noteB, snapThreshold))
+        if (doNotesStack(noteA, noteB, threshold))
         {
           // Long hold notes should have priority over shorter hold notes
           if (noteA.length <= noteB.length)
@@ -118,16 +118,17 @@ class SongNoteDataUtils
   /**
    * @param noteA First note.
    * @param noteB Second note.
-   * @param snapFraction The note snap threshold.
+   * @param threshold The note stack threshold, in steps.
    * @return Returns `true` if both notes are on the same strumline, have the same direction
-   * and their time difference is less than the snap-based threshold.
+   * and their time difference in steps is less than the step-based threshold.
+   * A threshold of 0 will return `True...` if notes are exactly aligned.
    */
-  public static inline function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, snapFraction:Int = 32):Bool
+  public static function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float = 0):Bool
   {
-    final timeDiff:Float = Math.abs(noteA.time - noteB.time);
-    if (snapFraction == 0) return noteA.data == noteB.data && Math.floor(timeDiff) == 0;
+    if (noteA.data != noteB.data) return false;
+    else if (threshold == 0) return Math.abs(Math.ffloor(noteA.time - noteB.time)) <= 1.00001;
 
-    final snapThreshold:Float = Conductor.instance.beatLengthMs / snapFraction;
-    return noteA.data == noteB.data && timeDiff <= snapThreshold;
+    final stepDiff:Float = Math.abs(noteA.getStepTime() - noteB.getStepTime());
+    return stepDiff <= threshold + 0.00001;
   }
 }

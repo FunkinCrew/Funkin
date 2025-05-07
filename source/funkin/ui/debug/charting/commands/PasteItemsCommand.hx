@@ -19,6 +19,7 @@ class PasteItemsCommand implements ChartEditorCommand
   var addedNotes:Array<SongNoteData> = [];
   var addedEvents:Array<SongEventData> = [];
   var removedNotes:Array<SongNoteData> = [];
+  var isRedo:Bool = false;
 
   public function new(targetTimestamp:Float)
   {
@@ -44,8 +45,8 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    var mergedNotes:Array<SongNoteData> = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, addedNotes, removedNotes,
-      ChartEditorState.stackNoteThreshold);
+    removedNotes.clear();
+    var mergedNotes:Array<SongNoteData> = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, addedNotes, removedNotes);
 
     state.currentSongChartNoteData = mergedNotes;
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
@@ -58,26 +59,38 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    if (removedNotes.length > 0) state.warning('Paste Successful', 'However overlapped notes were overwritten.');
+    var title = isRedo ? 'Redone Paste Succesfully' : 'Paste Successful';
+    var msgType = removedNotes.length > 0 ? 'warning' : 'success';
+    var msg = if (removedNotes.length > 0)
+    {
+      'However overlapped notes were overwritten.';
+    }
     else
-      state.success('Paste Successful', 'Successfully pasted clipboard contents.');
+    {
+      isRedo ? 'Successfully placed pasted note back.' : 'Successfully pasted clipboard contents.';
+    }
+
+    Reflect.callMethod(null, Reflect.field(ChartEditorNotificationHandler, msgType), [state, title, msg]);
+
+    isRedo = false;
   }
 
   public function undo(state:ChartEditorState):Void
   {
     state.playSound(Paths.sound('chartingSounds/undo'));
 
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
-    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, removedNotes, ChartEditorState.stackNoteThreshold);
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes).concat(removedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
-    state.currentNoteSelection = removedNotes.copy();
     state.currentEventSelection = [];
+    state.performCommand(new SelectItemsCommand(removedNotes.copy()), false);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
 
     state.sortChartData();
+
+    isRedo = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool

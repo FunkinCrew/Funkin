@@ -64,6 +64,7 @@ import funkin.ui.debug.charting.commands.PasteItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
+import funkin.ui.debug.charting.commands.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
@@ -98,6 +99,7 @@ import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.properties.Property;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
@@ -783,11 +785,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var currentLiveInputPlaceNoteData:Array<SongNoteData> = [];
 
   /**
-   * Defines how "close" two notes must be to be considered stacked, based on note snaps.
-   * For example, setting this to `128` treats notes closer than a 128th note (relative to the song's BPM) as stacked.
-   * Setting it to `0` only detects notes that are perfectly aligned.
+   * Defines how "close" two notes must be to be considered stacked, based on steps.
+   * For example, setting this to `0.5` (16/32) will highlight notes half a step apart.
+   * Setting it to `0` only highlights notes that are perfectly aligned.
    */
-  public static var stackNoteThreshold:Int = 0;
+  public static var stackedNoteThreshold:Float = 0.25;
 
   // Note Movement
 
@@ -1831,7 +1833,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The `Edit -> Stacked Note Threshold` number stepper
    */
-  var menuBarItemStackedNoteThreshold:NumberStepper;
+  var menuBarItemStackedNoteThreshold:Property;
 
   /**
    * The `View -> Downscroll` menu item.
@@ -2992,7 +2994,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         var stackedSelection = SongNoteDataUtils.listStackedNotes(currentNoteSelection.length > 0 ? currentNoteSelection : currentSongChartNoteData,
-          stackNoteThreshold, false);
+          stackedNoteThreshold, false);
         performCommand(new RemoveNotesCommand(stackedSelection));
       }
     };
@@ -3019,11 +3021,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
 
-    menuBarItemStackedNoteThreshold.pos = stackNoteThreshold;
-    menuBarItemStackedNoteThreshold.autoCorrect = true;
+    menuBarItemStackedNoteThreshold.value = stackedNoteThreshold == 0 ? 0 : BASE_QUANT / stackedNoteThreshold;
     menuBarItemStackedNoteThreshold.onChange = event -> {
+      var snapThreshold:Float = cast menuBarItemStackedNoteThreshold.value;
+      stackedNoteThreshold = snapThreshold == 0 ? 0 : snapThreshold / BASE_QUANT;
       noteDisplayDirty = true;
-      stackNoteThreshold = event.value;
+      notePreviewDirty = true;
     }
 
     menuBarItemInputStyleNone.onClick = function(event:UIEvent) {
@@ -3771,9 +3774,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       // Gather stacked notes to render later
       // No need to update it every time we scroll
-      if (Math.abs(currentScrollEase - scrollPositionInPixels) < .5)
+      if (Math.abs(currentScrollEase - scrollPositionInPixels) < .0001)
       {
-        currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackNoteThreshold);
+        currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackedNoteThreshold);
       }
 
       // Readd selection squares for selected notes.
@@ -5603,8 +5606,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
-          var stackedSelection = SongNoteDataUtils.listStackedNotes(noteSelection ? currentNoteSelection : currentSongChartNoteData, stackNoteThreshold, false);
-          performCommand(new RemoveNotesCommand(stackedSelection));
+          performCommand(new RemoveStackedNotesCommand(noteSelection ? currentNoteSelection : null));
         }
       }
       else
@@ -6297,8 +6299,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // TODO: Only update the notes that have changed.
       notePreview.erase();
       notePreview.addNotes(currentSongChartNoteData, Std.int(songLengthInMs));
-      notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
       notePreview.addOverlappingNotes(currentOverlappingNotes, Std.int(songLengthInMs));
+      notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
       notePreview.addEvents(currentSongChartEventData, Std.int(songLengthInMs));
     }
 
