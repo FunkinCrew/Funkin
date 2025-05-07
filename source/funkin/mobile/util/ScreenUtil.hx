@@ -14,6 +14,7 @@ class ScreenUtil
 {
   /**
    * Get `Rectangle` Object that contains the dimensions of the screen's Notch.
+   * Scales the dimensions to return coords in pixels, not points
    * @return Rectangle
    */
   public static function getNotchRect():Rectangle
@@ -64,11 +65,19 @@ class ScreenUtil
     ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(width), cpp.RawPointer.addressOf(height));
 
     // Calculate the rectangle dimensions for the notch
-    rectangle.width = -(width - left - right);
-    rectangle.width += width;
-    rectangle.height = top;
-    rectangle.x = left;
-    // notchs are always at the top of the screen so they have 0 y position
+    // Note: iOS only spits out *insets* for "safe areas", so we can only get a broad position for the notch
+    // left + right insets are the same, so we can use either
+
+    // If we're in landscape, we want to create the rectangle with our left inset as width (notch width),
+    // otherwise, we can just use the screen width
+    rectangle.width = left > top ? left : width;
+
+    // If we're in landscape, we want to create the rectangle with the screen size as height,
+    // otherwise, we use the top inset as height
+    rectangle.height = left > top ? height : top;
+
+    // Todo: Check which landscape orientation we're in, and set `rectangle.x = width - right` if we're in flipped landscape
+    rectangle.x = 0;
     rectangle.y = 0.0;
     #end
 
