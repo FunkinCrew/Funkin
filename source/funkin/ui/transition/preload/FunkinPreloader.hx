@@ -154,13 +154,9 @@ class FunkinPreloader extends FlxBasePreloader
 
     progressLines = new openfl.display.Sprite();
     progressLines.graphics.lineStyle(2, Constants.COLOR_PRELOADER_BAR);
-    progressLines.graphics.drawRect(-2, this._height - BAR_PADDING - BAR_HEIGHT - 208, this._width + 4, 30);
+    progressLines.graphics.drawRect(-2, 0, this._width + 4, 30);
+    progressLines.y = this._height * 0.66;
     addChild(progressLines);
-
-    var progressBarPiece:Sprite = new Sprite();
-    progressBarPiece.graphics.beginFill(Constants.COLOR_PRELOADER_BAR);
-    progressBarPiece.graphics.drawRoundRect(0, 0, pieceWidth - pieceGap, BAR_HEIGHT, 4, 4);
-    progressBarPiece.graphics.endFill();
 
     for (i in 0...amountOfPieces)
     {
@@ -170,42 +166,30 @@ class FunkinPreloader extends FlxBasePreloader
       piece.graphics.endFill();
 
       piece.x = i * (piece.width + pieceGap);
-      piece.y = this._height - BAR_PADDING - BAR_HEIGHT - 200;
+      piece.y = progressLines.y + 8;
       addChild(piece);
       progressBarPieces.push(piece);
     }
 
     // Create the progress message.
-    progressLeftText = new TextField();
-    dspText = new TextField();
-    fnfText = new TextField();
-    enhancedText = new TextField();
-    stereoText = new TextField();
 
-    var progressLeftTextFormat = new TextFormat("DS-Digital", 32, Constants.COLOR_PRELOADER_BAR, true);
+    var progressLeftTextFormat:TextFormat = new TextFormat("DS-Digital", Std.int(32 * (ratio / 0.5)), Constants.COLOR_PRELOADER_BAR, true);
     progressLeftTextFormat.align = TextFormatAlign.LEFT;
-    progressLeftText.defaultTextFormat = progressLeftTextFormat;
+    var progressRightTextFormat:TextFormat = new TextFormat("DS-Digital", 16, Constants.COLOR_PRELOADER_BAR, true);
+    progressRightTextFormat.align = TextFormatAlign.RIGHT;
 
-    progressLeftText.selectable = false;
+    progressLeftText = makeText(BAR_PADDING, this._height * 0.54, 'Downloading assets...', Constants.COLOR_PRELOADER_BAR);
+    progressLeftText.defaultTextFormat = progressLeftTextFormat;
     progressLeftText.width = this._width - BAR_PADDING * 2;
-    progressLeftText.text = 'Downloading assets...';
-    progressLeftText.x = BAR_PADDING;
-    progressLeftText.y = this._height - BAR_PADDING - BAR_HEIGHT - 290;
-    // progressLeftText.shader = new VFDOverlay();
     addChild(progressLeftText);
 
-    // Create the progress %.
-    progressRightText = new TextField();
+    if (!isLandscapeFlipped()) progressLeftText.x += ScreenUtil.getNotchRect().width * ratio;
 
-    var progressRightTextFormat = new TextFormat("DS-Digital", 16, Constants.COLOR_PRELOADER_BAR, true);
-    progressRightTextFormat.align = TextFormatAlign.RIGHT;
+    // Create the progress % in the bottom right
+    // This displays in the bottom right corner, so it's generally safe from notches...
+    // but we should do a sweep online to make sure that there's no hole-punch style cameras on android that may block this
+    progressRightText = makeText(BAR_PADDING, this._height - BAR_PADDING - BAR_HEIGHT - 16 - 4, '0%', Constants.COLOR_PRELOADER_BAR);
     progressRightText.defaultTextFormat = progressRightTextFormat;
-
-    progressRightText.selectable = false;
-    progressRightText.width = this._width - BAR_PADDING * 2;
-    progressRightText.text = '0%';
-    progressRightText.x = BAR_PADDING;
-    progressRightText.y = this._height - BAR_PADDING - BAR_HEIGHT - 16 - 4;
     addChild(progressRightText);
 
     // note: on mobile we generally dont want to scale these texts down
@@ -218,45 +202,33 @@ class FunkinPreloader extends FlxBasePreloader
     rTextGroup.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 0.1);
     rTextGroup.graphics.drawRoundRect(0, 0, 128, 20, 5, 5);
     rTextGroup.graphics.endFill();
-    rTextGroup.x = this._width - BAR_PADDING - BAR_HEIGHT - 432;
-    rTextGroup.y = this._height - BAR_PADDING - BAR_HEIGHT - 244;
+    rTextGroup.x = this._width * 0.64;
+    rTextGroup.y = this._height * 0.6;
     addChild(rTextGroup);
 
-    dspText.selectable = false;
-    dspText.textColor = 0x000000;
+    dspText = makeText(10, -7, 'DSP', 0x000000);
     dspText.width = this._width;
     dspText.height = 30;
-    dspText.text = 'DSP';
-    dspText.x = 10;
-    dspText.y = -7;
     rTextGroup.addChild(dspText);
 
-    fnfText.selectable = false;
-    fnfText.textColor = 0x000000;
+    fnfText = makeText(78, -7, 'FNF', 0x000000);
     fnfText.width = this._width;
     fnfText.height = 30;
-    fnfText.x = 78;
-    fnfText.y = -7;
-    fnfText.text = 'FNF';
     rTextGroup.addChild(fnfText);
 
-    enhancedText.selectable = false;
-    enhancedText.textColor = Constants.COLOR_PRELOADER_BAR;
+    enhancedText = makeText(-100, 0, 'ENHANCED', Constants.COLOR_PRELOADER_BAR);
     enhancedText.width = this._width;
     enhancedText.height = 100;
-    enhancedText.text = 'ENHANCED';
-    enhancedText.x = -100;
-    enhancedText.y = 0;
     rTextGroup.addChild(enhancedText);
 
-    stereoText.selectable = false;
-    stereoText.textColor = Constants.COLOR_PRELOADER_BAR;
+    stereoText = makeText(0, -40, 'STEREO', Constants.COLOR_PRELOADER_BAR);
     stereoText.width = this._width;
     stereoText.height = 100;
-    stereoText.text = 'STEREO';
-    stereoText.x = 0;
-    stereoText.y = -40;
     rTextGroup.addChild(stereoText);
+
+    // todo: check if these actually overlap the notch with some rect check thing
+    // im making more sweeping assumptions rn because i only have iOS
+    if (isLandscapeFlipped()) rTextGroup.x -= ScreenUtil.getNotchRect().width * ratio;
 
     vfdBitmap = new Bitmap(new BitmapData(this._width, this._height, true, 0xFFFFFFFF));
     addChild(vfdBitmap);
@@ -279,6 +251,18 @@ class FunkinPreloader extends FlxBasePreloader
     touchHereSprite.addChild(touchHereToPlay);
     addChild(touchHereSprite);
     #end
+  }
+
+  function makeText(txtX:Float, txtY:Float, txt:String, color:Int):TextField
+  {
+    var text:TextField = new TextField();
+    text.selectable = false;
+    text.width = this._width - BAR_PADDING * 2;
+    text.x = txtX;
+    text.y = txtY;
+    text.text = txt;
+    text.textColor = color;
+    return text;
   }
 
   var lastElapsed:Float = 0.0;
@@ -922,6 +906,16 @@ class FunkinPreloader extends FlxBasePreloader
     }
   }
 
+  /**
+   * Whether or not we are in flipped landscape device rotation,
+   * generally for mobile to accomodate the device notch!
+   * @return Bool
+   */
+  function isLandscapeFlipped():Bool
+  {
+    return lime.system.System.getDisplayOrientation(0) == DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED;
+  }
+
   function immediatelyStartGame():Void
   {
     _loaded = true;
@@ -942,10 +936,6 @@ class FunkinPreloader extends FlxBasePreloader
     progressLeftText.alpha = alphaToFade;
     progressRightText.alpha = alphaToFade;
     rTextGroup.alpha = alphaToFade;
-    dspText.alpha = alphaToFade;
-    fnfText.alpha = alphaToFade;
-    enhancedText.alpha = alphaToFade;
-    stereoText.alpha = alphaToFade;
     progressLines.alpha = alphaToFade;
 
     for (piece in progressBarPieces)
