@@ -830,7 +830,7 @@ class FunkinPreloader extends FlxBasePreloader
   }
   #end
 
-  static final TOTAL_STEPS:Int = 11;
+  public static final TOTAL_STEPS:Int = 11;
   static final ELLIPSIS_TIME:Float = 0.5;
 
   function updateGraphics(percent:Float, elapsed:Float):Void
@@ -876,7 +876,7 @@ class FunkinPreloader extends FlxBasePreloader
     var percentage:Int = Math.floor(percent * 100);
     progressRightText.text = '$percentage%';
 
-    trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
+    if (currentState.getProgressLeftText() != null) trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
 
     super.update(percent);
   }
@@ -960,7 +960,7 @@ class FunkinPreloader extends FlxBasePreloader
   }
 }
 
-enum abstract FunkinPreloaderState(Int) to Int
+enum abstract FunkinPreloaderState(String) to String
 {
   /**
    * The state before downloading has begun.
@@ -1037,12 +1037,14 @@ enum abstract FunkinPreloaderState(Int) to Int
 
   /**
    * Formats the status text for progress bar display.
-   * @param steps The total number of steps
-   * @param suffix What to append to the end of the text, usually those dynamic ellipsis
+   * @param steps The total number of steps. Defaults to `FunkinPreloader.TOTAL_STEPS`.
+   * @param suffix What to append to the end of the text, usually those dynamic ellipsis. Defaults to an empty string.
    * @return String 'Loading \n0/$steps $suffix' for example
    */
-  public function getProgressLeftText(steps:Int, suffix:String):String
+  public function getProgressLeftText(?steps:Int, ?suffix:String):String
   {
+    steps = steps ?? FunkinPreloader.TOTAL_STEPS;
+    suffix = suffix ?? '';
     switch (this)
     {
       case NotStarted:
