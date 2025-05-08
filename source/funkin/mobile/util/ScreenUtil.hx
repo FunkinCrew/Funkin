@@ -19,7 +19,7 @@ class ScreenUtil
    */
   public static function getNotchRect():Rectangle
   {
-    final rectangle:Rectangle = new Rectangle();
+    final notchRect:Rectangle = new Rectangle();
 
     #if android
     final rectDimensions:Array<Array<Float>> = [[], [], [], []];
@@ -41,28 +41,28 @@ class ScreenUtil
         switch (i)
         {
           case 0:
-            rectangle.x += dimension;
+            notchRect.x += dimension;
           case 1:
-            rectangle.y += dimension;
+            notchRect.y += dimension;
           case 2:
-            rectangle.width += dimension;
+            notchRect.width += dimension;
           case 3:
-            rectangle.height += dimension;
+            notchRect.height += dimension;
         }
       }
     }
     #elseif ios
-    var top:Float = -1;
-    var left:Float = -1;
-    var right:Float = -1;
-    var bottom:Float = -1;
-    var width:Float = -1;
-    var height:Float = -1;
+    var topInset:Float = -1;
+    var leftInset:Float = -1;
+    var rightInset:Float = -1;
+    var bottomInset:Float = -1;
+    var deviceWidth:Float = -1;
+    var deviceHeight:Float = -1;
 
-    ScreenUtils.getSafeAreaInsets(cpp.RawPointer.addressOf(top), cpp.RawPointer.addressOf(bottom), cpp.RawPointer.addressOf(left),
-      cpp.RawPointer.addressOf(right));
+    ScreenUtils.getSafeAreaInsets(cpp.RawPointer.addressOf(topInset), cpp.RawPointer.addressOf(bottomInset), cpp.RawPointer.addressOf(leftInset),
+      cpp.RawPointer.addressOf(rightInset));
 
-    ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(width), cpp.RawPointer.addressOf(height));
+    ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(deviceWidth), cpp.RawPointer.addressOf(deviceHeight));
 
     // Calculate the rectangle dimensions for the notch
     // Note: iOS only spits out *insets* for "safe areas", so we can only get a broad position for the notch
@@ -70,17 +70,17 @@ class ScreenUtil
 
     // If we're in landscape, we want to create the rectangle with our left inset as width (notch width),
     // otherwise, we can just use the screen width
-    rectangle.width = left > top ? left : width;
+    notchRect.width = leftInset > topInset ? leftInset : deviceWidth;
 
     // If we're in landscape, we want to create the rectangle with the screen size as height,
     // otherwise, we use the top inset as height
-    rectangle.height = left > top ? height : top;
+    notchRect.height = leftInset > topInset ? deviceHeight : topInset;
 
     // Todo: Check which landscape orientation we're in, and set `rectangle.x = width - right` if we're in flipped landscape
-    rectangle.x = 0;
-    rectangle.y = 0.0;
+    notchRect.x = 0;
+    notchRect.y = 0.0;
     #end
 
-    return rectangle;
+    return notchRect;
   }
 }
