@@ -61,13 +61,17 @@ class PasteItemsCommand implements ChartEditorCommand
 
     var title = isRedo ? 'Redone Paste Successfully' : 'Paste Successful';
     var msgType = removedNotes.length > 0 ? 'warning' : 'success';
-    var msg = if (removedNotes.length > 0)
+    var msg = if (removedNotes.length == 1)
+    {
+      'But 1 overlapped note was overwritten.';
+    }
+    else if (removedNotes.length > 1)
     {
       'But ${removedNotes.length} overlapped notes were overwritten.';
     }
     else if (isRedo)
     {
-      'Successfully placed pasted notes back.';
+      'Successfully placed pasted note(s) back.';
     }
     else 'Successfully pasted clipboard contents.';
 
