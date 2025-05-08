@@ -3170,6 +3170,9 @@ class PlayState extends MusicBeatSubState
       // TODO: Uncache the song.
     }
 
+    // Prevent vwoosh timer from running outside PlayState (e.g Chart Editor)
+    vwooshTimer.cancel();
+
     if (overrideMusic)
     {
       // Stop the music. Do NOT destroy it, something still references it!
