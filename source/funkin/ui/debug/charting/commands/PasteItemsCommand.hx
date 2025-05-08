@@ -59,7 +59,7 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    var title = isRedo ? 'Redone Paste Succesfully' : 'Paste Successful';
+    var title = isRedo ? 'Redone Paste Successfully' : 'Paste Successful';
     var msgType = removedNotes.length > 0 ? 'warning' : 'success';
     var msg = if (removedNotes.length > 0)
     {
