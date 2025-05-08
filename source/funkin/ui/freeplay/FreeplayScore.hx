@@ -35,7 +35,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
       loopNum--;
     }
 
-    while (loopNum > 0)
+    while (loopNum >= 0)
     {
       group.members[loopNum].digit = 0;
       loopNum--;
