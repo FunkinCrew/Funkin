@@ -12,7 +12,6 @@ class SongNoteDataUtils
 
   /**
    * Retrieves all stacked notes. It does this by cycling through "chunks" of notes within a certain interval.
-   * Will use `getStackedNotes` if threshold exceeds chunk interval.
    *
    * @param notes Sorted notes by time.
    * @param threshold The note stack threshold. Refer to `doNotesStack` for more details.

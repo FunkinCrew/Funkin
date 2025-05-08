@@ -13,11 +13,13 @@ import funkin.data.song.SongNoteDataUtils;
 class RemoveStackedNotesCommand implements ChartEditorCommand
 {
   var notes:Null<Array<SongNoteData>>;
+  var overlappedNotes:Array<SongNoteData>;
   var removedNotes:Array<SongNoteData>;
 
   public function new(?notes:Array<SongNoteData>)
   {
     this.notes = notes;
+    this.overlappedNotes = [];
     this.removedNotes = [];
   }
 
@@ -31,8 +33,17 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     removedNotes = SongNoteDataUtils.listStackedNotes(notes, ChartEditorState.stackedNoteThreshold, false);
     if (removedNotes.length == 0) return;
 
+    overlappedNotes = notes.filter((a) -> {
+      for (b in removedNotes)
+      {
+        if (a == b) continue;
+        if (SongNoteDataUtils.doNotesStack(a, b, ChartEditorState.stackedNoteThreshold)) return true;
+      }
+      return false;
+    });
+
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, removedNotes);
-    state.currentNoteSelection = isSelection ? notes : [];
+    state.currentNoteSelection = isSelection ? overlappedNotes : [];
     state.currentEventSelection = [];
 
     state.playSound(Paths.sound('chartingSounds/noteErase'));
@@ -48,8 +59,8 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
   {
     if (removedNotes.length == 0) return;
 
-    state.currentSongChartNoteData = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, removedNotes);
-    state.currentNoteSelection = (notes ?? []).concat(removedNotes.copy());
+    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(removedNotes);
+    state.currentNoteSelection = overlappedNotes.concat(removedNotes).copy();
     state.currentEventSelection = [];
     state.playSound(Paths.sound('chartingSounds/undo'));
 
