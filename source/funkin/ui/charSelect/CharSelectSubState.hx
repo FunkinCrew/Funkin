@@ -556,12 +556,14 @@ class CharSelectSubState extends MusicBeatSubState
       unlockSound.volume = 0.7;
       unlockSound.play(true);
 
-      syncLock = lock;
+      // Do not sync the lock, because otherwise the animation will be out of sync!
 
-      sync = true;
+      /*syncLock = lock;
+
+        sync = true; */
 
       lock.onAnimationComplete.addOnce(function(_) {
-        syncLock = null;
+        // syncLock = null;
         var char = availableChars.get(index);
         camera.flash(0xFFFFFFFF, 0.1);
         playerChill.playAnimation("unlock");
