@@ -6,7 +6,7 @@ import funkin.data.song.SongNoteDataUtils;
 
 /**
  * Deletes the given notes from the current chart in the chart editor if any overlap another.
- * Use only when ONLY notes are being deleted.
+ * Use when ONLY notes are being deleted.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
