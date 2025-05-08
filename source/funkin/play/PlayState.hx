@@ -186,6 +186,11 @@ class PlayState extends MusicBeatSubState
   public var needsReset:Bool = false;
 
   /**
+   * A timer that gets active once resetting happens. Used to vwoosh in notes.
+   */
+  public var vwooshTimer:FlxTimer = new FlxTimer();
+
+  /**
    * The current 'Blueball Counter' to display in the pause menu.
    * Resets when you beat a song or go back to the main menu.
    */
@@ -875,9 +880,6 @@ class PlayState extends MusicBeatSubState
       // Delete all notes and reset the arrays.
       regenNoteData();
 
-      // so the song doesn't start too early :D
-      Conductor.instance.update(-5000, false);
-
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -886,16 +888,22 @@ class PlayState extends MusicBeatSubState
       health = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
+
+      // so the song doesn't start too early :D
+      var vwooshDelay:Float = 0.5;
+      Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -5);
+
       // timer for vwoosh
-      var vwooshTimer = new FlxTimer();
-      vwooshTimer.start(0.5, function(t:FlxTimer) {
-        Conductor.instance.update(startTimestamp - Conductor.instance.combinedOffset, false);
+      vwooshTimer.start(vwooshDelay, function(_) {
         if (playerStrumline.notes.length == 0) playerStrumline.updateNotes();
         if (opponentStrumline.notes.length == 0) opponentStrumline.updateNotes();
         playerStrumline.vwooshInNotes();
         opponentStrumline.vwooshInNotes();
         Countdown.performCountdown();
       });
+
+      // Stops any existing countdown.
+      Countdown.stopCountdown();
 
       // Reset the health icons.
       currentStage?.getBoyfriend()?.initHealthIcon(false);
@@ -958,6 +966,9 @@ class PlayState extends MusicBeatSubState
         persistentUpdate = false;
         // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
         persistentDraw = true;
+
+        // Prevent vwoosh timer from starting countdown in pause menu
+        vwooshTimer.active = false;
 
         // There is a 1/1000 change to use a special pause menu.
         // This prevents the player from resuming, but that's the point.
@@ -1127,6 +1138,8 @@ class PlayState extends MusicBeatSubState
     playerStrumline.clean();
     opponentStrumline.clean();
 
+    vwooshTimer.cancel();
+
     songScore = 0;
     updateScoreText();
 
@@ -1280,6 +1293,9 @@ class PlayState extends MusicBeatSubState
       dispatchEvent(event);
 
       if (event.eventCanceled) return;
+
+      // Resume vwooshTimer
+      if (!vwooshTimer.finished) vwooshTimer.active = true;
 
       // Resume music if we paused it.
       if (musicPausedBySubState)
@@ -3153,6 +3169,9 @@ class PlayState extends MusicBeatSubState
     {
       // TODO: Uncache the song.
     }
+
+    // Prevent vwoosh timer from running outside PlayState (e.g Chart Editor)
+    vwooshTimer.cancel();
 
     if (overrideMusic)
     {
