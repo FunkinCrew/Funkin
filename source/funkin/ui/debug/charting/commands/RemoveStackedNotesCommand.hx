@@ -1,8 +1,8 @@
 package funkin.ui.debug.charting.commands;
 
-import funkin.data.song.SongNoteDataUtils;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 
 /**
  * Deletes the given notes from the current chart in the chart editor if any overlap another.

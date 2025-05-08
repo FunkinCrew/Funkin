@@ -31,8 +31,6 @@ import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongNoteDataUtils;
-import funkin.data.song.SongRegistry;
-import funkin.data.stage.StageData;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
@@ -1781,7 +1779,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemDelete:MenuItem;
 
   /**
-   * The `Edit -> Delete Stacked` menu item.
+   * The `Edit -> Delete Stacked Notes` menu item.
    */
   var menubarItemDeleteStacked:MenuItem;
 
@@ -1831,7 +1829,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menuBarItemNoteSnapIncrease:MenuItem;
 
   /**
-   * The `Edit -> Stacked Note Threshold` number stepper
+   * The `Edit -> Stacked Note Threshold` property
    */
   var menuBarItemStackedNoteThreshold:Property;
 
@@ -2986,16 +2984,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
 
     menubarItemDeleteStacked.onClick = _ -> {
-      // Delete stacked notes.
       if (currentEventSelection.length > 0 && currentNoteSelection.length == 0)
       {
         performCommand(new RemoveEventsCommand(currentEventSelection));
       }
       else
       {
-        var stackedSelection = SongNoteDataUtils.listStackedNotes(currentNoteSelection.length > 0 ? currentNoteSelection : currentSongChartNoteData,
-          stackedNoteThreshold, false);
-        performCommand(new RemoveNotesCommand(stackedSelection));
+        performCommand(new RemoveStackedNotesCommand(currentNoteSelection.length > 0 ? currentNoteSelection : null));
       }
     };
 
@@ -5597,9 +5592,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var noteSelection = currentNoteSelection.length > 0;
       var eventSelection = currentEventSelection.length > 0;
 
+      // Shift to delete stacked notes
       if (FlxG.keys.pressed.SHIFT)
       {
-        // Delete stacked notes.
         if (eventSelection && !noteSelection)
         {
           performCommand(new RemoveEventsCommand(currentEventSelection));
