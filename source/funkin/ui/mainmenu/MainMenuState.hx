@@ -31,6 +31,8 @@ import funkin.api.newgrounds.NewgroundsClient;
 
 class MainMenuState extends MusicBeatState
 {
+  public static var instance:MainMenuState = null;
+
   var menuItems:MenuTypedList<AtlasMenuItem>;
 
   var magenta:FlxSprite;
@@ -51,6 +53,7 @@ class MainMenuState extends MusicBeatState
     #if FEATURE_DISCORD_RPC
     DiscordClient.instance.setPresence({state: "In the Menus", details: null});
     #end
+    instance = this;
 
     FlxG.cameras.reset(new FunkinCamera('mainMenu'));
 
@@ -418,5 +421,11 @@ class MainMenuState extends MusicBeatState
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    instance = null;
   }
 }
