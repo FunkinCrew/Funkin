@@ -125,9 +125,9 @@ class SongNoteDataUtils
   public static function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float = 0):Bool
   {
     if (noteA.data != noteB.data) return false;
-    else if (threshold == 0) return Math.abs(Math.ffloor(noteA.time - noteB.time)) <= 1.00001;
+    else if (threshold == 0) return Math.abs(Math.ffloor(noteA.time - noteB.time)) < 1;
 
     final stepDiff:Float = Math.abs(noteA.getStepTime() - noteB.getStepTime());
-    return stepDiff <= threshold + 0.00001;
+    return stepDiff <= threshold + 0.001;
   }
 }

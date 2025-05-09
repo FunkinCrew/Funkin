@@ -785,9 +785,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Defines how "close" two notes must be to be considered stacked, based on steps.
    * For example, setting this to `0.5` (16/32) will highlight notes half a step apart.
-   * Setting it to `0` only highlights notes that are perfectly aligned.
+   * Setting it to `0` only highlights notes that are nearly perfectly aligned.
    */
-  public static var stackedNoteThreshold:Float = 0.25;
+  public static var stackedNoteThreshold:Float = 0;
 
   // Note Movement
 
@@ -3016,7 +3016,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
 
-    for (snap in SNAP_QUANTS)
+    final REVERSE_SNAPS = SNAP_QUANTS.reversed();
+    for (snap in REVERSE_SNAPS)
     {
       menuBarStackedNoteThreshold.dataSource.add({text: '1/$snap'});
     }
@@ -3024,7 +3025,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBarStackedNoteThreshold.onChange = event -> {
       var snapValue:String = menuBarStackedNoteThreshold.selectedItem.text;
       // NOTE: It needs to be offset by 1 because of the 'Exact' option
-      stackedNoteThreshold = snapValue == 'Exact' ? 0.0 : BASE_QUANT / SNAP_QUANTS[menuBarStackedNoteThreshold.selectedIndex - 1];
+      stackedNoteThreshold = snapValue == 'Exact' ? 0.0 : BASE_QUANT / REVERSE_SNAPS[menuBarStackedNoteThreshold.selectedIndex - 1];
       noteDisplayDirty = true;
       notePreviewDirty = true;
     }
