@@ -1430,7 +1430,7 @@ class FreeplayState extends MusicBeatSubState
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
     if ((controls.FREEPLAY_CHAR_SELECT #if FEATURE_TOUCH_CONTROLS
-      || (TouchUtil.overlaps(djHitbox, funnyCam) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
+      || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
       && !busy)
     {
       tryOpenCharSelect();
@@ -1575,11 +1575,9 @@ class FreeplayState extends MusicBeatSubState
   function handleDifficultySwitch():Void
   {
     #if FEATURE_TOUCH_CONTROLS
-    final leftPressed:Bool = controls.UI_LEFT_P
-      || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased);
+    final leftPressed:Bool = controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.pressAction(diffSelLeft, funnyCam, false));
 
-    final rightPressed:Bool = controls.UI_RIGHT_P
-      || (diffSelRight != null && TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justReleased);
+    final rightPressed:Bool = controls.UI_RIGHT_P || (diffSelRight != null && TouchUtil.pressAction(diffSelRight, funnyCam, false));
     #else
     final leftPressed:Bool = controls.UI_LEFT_P;
     final rightPressed:Bool = controls.UI_RIGHT_P;
@@ -1604,7 +1602,7 @@ class FreeplayState extends MusicBeatSubState
   private function handleTouchCapsuleClick():Void
   {
     if (diffSelRight == null) return;
-    if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.touch.ticksDeltaSincePress < 200)
+    if (TouchUtil.pressAction() && !TouchUtil.overlaps(diffSelRight, funnyCam))
     {
       curSelected = Math.round(curSelectedFloat);
 
@@ -1628,7 +1626,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    if (TouchUtil.justPressed)
+    if (TouchUtil.pressAction())
     {
       final selected = grpCapsules.members[curSelected].theActualHitbox;
       _pressedOn = selected != null && TouchUtil.overlaps(selected, funnyCam);
@@ -2033,8 +2031,8 @@ class FreeplayState extends MusicBeatSubState
 
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : Math.max(0, ((songScore.tallies.sick +
-        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
+      intendedCompletion = songScore == null ? 0.0 : Math.max(0,
+        ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }

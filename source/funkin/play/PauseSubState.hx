@@ -434,11 +434,11 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
-    if (TouchUtil.justReleased && !SwipeUtil.swipeAny && !justOpened)
+    if (!SwipeUtil.swipeAny && !justOpened)
     {
       for (i in 0...menuEntryText.members.length)
       {
-        if (!TouchUtil.overlaps(menuEntryText.members[i], camera)) continue;
+        if (!TouchUtil.pressAction(menuEntryText.members[i], camera, false)) continue;
 
         if (i == currentEntry)
         {

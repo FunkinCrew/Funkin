@@ -63,7 +63,7 @@ class SchemeMenuButton extends FlxSpriteGroup
   {
     super.update(elapsed);
 
-    if (!busy && (TouchUtil.justPressed && TouchUtil.overlapsComplex(this) && !SwipeUtil.swipeAny))
+    if (!busy && (TouchUtil.pressAction(this) && !SwipeUtil.swipeAny))
     {
       busy = true;
 

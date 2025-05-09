@@ -369,12 +369,12 @@ class StoryMenuState extends MusicBeatState
         #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P || SwipeUtil.swipeRight || (TouchUtil.overlaps(rightDifficultyArrow) && TouchUtil.justPressed))
+        if (controls.UI_RIGHT_P || SwipeUtil.swipeRight || (TouchUtil.pressAction(rightDifficultyArrow, null, false)))
         {
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P || SwipeUtil.swipeLeft || (TouchUtil.overlaps(leftDifficultyArrow) && TouchUtil.justPressed))
+        if (controls.UI_LEFT_P || SwipeUtil.swipeLeft || (TouchUtil.pressAction(leftDifficultyArrow, null, false)))
         {
           changeDifficulty(-1);
         }

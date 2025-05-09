@@ -78,25 +78,25 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     if (!busy)
     {
       @:privateAccess
-      if (parent.controls.BACK #if mobile || TouchUtil.overlapsComplex(parent.backButton) && TouchUtil.justPressed #end)
+      if (parent.controls.BACK #if mobile || TouchUtil.pressAction(parent.backButton) #end)
       {
         close();
         return;
       }
 
-      if (parent.getControls().UI_LEFT_P #if mobile || TouchUtil.overlapsComplex(leftArrow) && TouchUtil.justPressed #end)
+      if (parent.getControls().UI_LEFT_P #if mobile || TouchUtil.pressAction(leftArrow) #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls().UI_RIGHT_P #if mobile || TouchUtil.overlapsComplex(rightArrow) && TouchUtil.justPressed #end)
+      if (parent.getControls().UI_RIGHT_P #if mobile || TouchUtil.pressAction(rightArrow) #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
         changedInst = true;
       }
       if (parent.getControls()
         .ACCEPT #if mobile
-        || ((TouchUtil.overlapsComplex(currentInstrumental) && TouchUtil.justPressed)
+        || ((TouchUtil.pressAction(currentInstrumental))
           && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
       {
         busy = true;
@@ -112,9 +112,9 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
     }
 
-    if (parent.getControls().ACCEPT #if mobile
-      || TouchUtil.overlapsComplex(currentInstrumental)
-      && TouchUtil.justPressed
+    if (parent.getControls()
+      .ACCEPT #if mobile
+      || TouchUtil.pressAction(currentInstrumental)
       && !TouchUtil.overlapsComplex(leftArrow)
       && !TouchUtil.overlapsComplex(rightArrow) #end)
     {

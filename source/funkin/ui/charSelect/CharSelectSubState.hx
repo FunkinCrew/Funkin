@@ -781,7 +781,7 @@ class CharSelectSubState extends MusicBeatSubState
         }
       }
 
-      if (TouchUtil.justReleased && TouchUtil.overlaps(charHitbox))
+      if (TouchUtil.pressAction(charHitbox, null, false))
       {
         mobileAccept = true;
       }
