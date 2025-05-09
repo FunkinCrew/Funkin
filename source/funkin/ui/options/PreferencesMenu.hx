@@ -160,7 +160,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     #end
     createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
       Preferences.framerate = Std.int(value);
-    }, null, Preferences.framerate, 30, 360, 5, 0);
+    }, null, Preferences.framerate, 30, 500, 5, 0);
     #end
 
     #if FEATURE_SCREENSHOTS
