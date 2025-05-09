@@ -1343,7 +1343,7 @@ class FreeplayState extends MusicBeatSubState
           grpCapsules.members[realShit].favIconBlurred.animation.play('fav');
           FunkinSound.playOnce(Paths.sound('fav'), 1);
           grpCapsules.members[realShit].checkClip();
-          grpCapsules.members[realShit].selected = grpCapsules.members[realShit].selected; // set selected again, so it can run it's getter function to initialize movement
+          grpCapsules.members[realShit].selected = true; // set selected again, so it can run it's getter function to initialize movement
           busy = true;
 
           grpCapsules.members[realShit].doLerp = false;
@@ -1368,6 +1368,7 @@ class FreeplayState extends MusicBeatSubState
             grpCapsules.members[realShit].favIcon.visible = false;
             grpCapsules.members[realShit].favIconBlurred.visible = false;
             grpCapsules.members[realShit].checkClip();
+            grpCapsules.members[realShit].selected = true; // set selected again, so it can run it's getter function to initialize movement
           });
 
           busy = true;
@@ -1832,6 +1833,8 @@ class FreeplayState extends MusicBeatSubState
 
     // Set difficulty star count.
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
+
+    grpCapsules.members[curSelected].selected = true; // set selected again, so it can run it's getter function to initialize movement
   }
 
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
