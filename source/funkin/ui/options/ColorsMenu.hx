@@ -23,7 +23,7 @@ class ColorsMenu extends Page<OptionsState.OptionsMenuPageName>
 
     for (i in 0...4)
     {
-      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), i);
+      var note:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault(), null, i);
 
       note.x = (100 * i) + i;
       note.screenCenter(Y);

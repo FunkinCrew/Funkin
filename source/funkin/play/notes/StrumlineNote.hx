@@ -10,10 +10,14 @@ import funkin.play.notes.NoteSprite;
  */
 class StrumlineNote extends FunkinSprite
 {
+  static final CONFIRM_HOLD_TIME:Float = 0.1;
+  static final DEFAULT_OFFSET:Int = 13;
+
   /**
-   * Whether this strumline note is on the player's side or the opponent's side.
+   * Set this flag to `true` to disable performance optimizations that cause
+   * the Strumline note sprite to ignore `velocity` and `acceleration`.
    */
-  public var isPlayer(default, null):Bool;
+  public var forceActive:Bool = false;
 
   /**
    * The direction which this strumline note is facing.
@@ -32,26 +36,16 @@ class StrumlineNote extends FunkinSprite
   public var yOffset:Float = 0.0;
 
   /**
-   * Set this flag to `true` to disable performance optimizations that cause
-   * the Strumline note sprite to ignore `velocity` and `acceleration`.
-   */
-  public var forceActive:Bool = false;
-
-  /**
    * How long to continue the hold note animation after a note is pressed.
    */
-  static final CONFIRM_HOLD_TIME:Float = 0.1;
-
   /**
    * How long the hold note animation has been playing after a note is pressed.
    */
   var confirmHoldTimer:Float = -1;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool, direction:NoteDirection)
+  public function new(noteStyle:NoteStyle, direction:NoteDirection)
   {
     super(0, 0);
-
-    this.isPlayer = isPlayer;
 
     this.direction = direction;
 
@@ -74,10 +68,7 @@ class StrumlineNote extends FunkinSprite
     // Run a timer before we stop playing the confirm animation.
     // On opponent, this prevent issues with hold notes.
     // On player, this allows holding the confirm key to fall back to press.
-    if (name == 'confirm')
-    {
-      confirmHoldTimer = 0;
-    }
+    if (name == 'confirm') confirmHoldTimer = 0;
   }
 
   override function update(elapsed:Float)
@@ -110,9 +101,7 @@ class StrumlineNote extends FunkinSprite
 
     noteStyle.applyStrumlineFrames(this);
     noteStyle.applyStrumlineAnimations(this, this.direction);
-
-    var scale = noteStyle.getStrumlineScale();
-    this.scale.set(scale, scale);
+    scale.x = scale.y = noteStyle.getStrumlineScale();
     this.updateHitbox();
     noteStyle.applyStrumlineOffsets(this);
 
@@ -154,22 +143,14 @@ class StrumlineNote extends FunkinSprite
   {
     this.active = true;
 
-    if (getCurrentAnimation() == "confirm-hold")
+    if (getCurrentAnimation() == "confirm-hold") return;
+    else if (getCurrentAnimation() == "confirm") if (isAnimationFinished())
     {
-      return;
-    }
-    else if (getCurrentAnimation() == "confirm")
-    {
-      if (isAnimationFinished())
-      {
-        this.confirmHoldTimer = -1;
-        this.playAnimation('confirm-hold', false, false);
-      }
+      this.confirmHoldTimer = -1;
+      this.playAnimation('confirm-hold', false, false);
     }
     else
-    {
-      this.playAnimation('confirm', false, false);
-    }
+      playAnimation('confirm', false, false);
   }
 
   /**
@@ -188,8 +169,6 @@ class StrumlineNote extends FunkinSprite
     return this.animation.finished;
   }
 
-  static final DEFAULT_OFFSET:Int = 13;
-
   /**
    * Adjusts the position of the sprite's graphic relative to the hitbox.
    */
@@ -206,8 +185,6 @@ class StrumlineNote extends FunkinSprite
       this.offset.y -= DEFAULT_OFFSET;
     }
     else
-    {
       this.centerOrigin();
-    }
   }
 }
