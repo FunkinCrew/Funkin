@@ -53,6 +53,7 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
+import funkin.util.assets.SoundUtil;
 import haxe.Int64;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -1469,30 +1470,36 @@ class PlayState extends MusicBeatSubState
         @:privateAccess // todo: maybe make the groups public :thinking:
         {
           vocals.playerVoices.forEachAlive(function(voice:FunkinSound) {
-            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset;
+            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset + SoundUtil.getPlaybackDeviceDelay(voice);
             if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError)) playerVoicesError = currentRawVoiceTime - correctSync;
           });
 
           vocals.opponentVoices.forEachAlive(function(voice:FunkinSound) {
-            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset;
+            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset + SoundUtil.getPlaybackDeviceDelay(voice);
             if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError)) opponentVoicesError = currentRawVoiceTime - correctSync;
           });
         }
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
+        && (Math.abs(FlxG.sound.music.time + SoundUtil.getPlaybackDeviceDelay(FlxG.sound.music) - correctSync) > 100
           || Math.abs(playerVoicesError) > 100
           || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
+        trace("Inst position: ", Conductor.instance.songPosition);
+        trace("Inst real time: ", FlxG.sound.music.time);
         if (vocals != null)
         {
-          trace(playerVoicesError);
-          trace(opponentVoicesError);
+          trace("Player mic delay time: ", SoundUtil.getPlaybackDeviceDelay(FlxG.sound.music));
+          trace("Player real time: ", vocals.getPlayerVoice().time);
+          trace("Enemy real time: ", vocals.getOpponentVoice().time);
+
+          trace("Player error: ", playerVoicesError);
+          trace("Opponent error: ", opponentVoicesError);
         }
-        trace(FlxG.sound.music.time);
-        trace(correctSync);
+        trace("Additional offsets: ", Conductor.instance.combinedOffset);
+        trace("Correct sync: ", correctSync);
         resyncVocals();
       }
     }
