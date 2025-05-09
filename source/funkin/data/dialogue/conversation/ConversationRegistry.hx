@@ -5,6 +5,7 @@ import funkin.play.cutscene.dialogue.ScriptedConversation;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
+@:nullSafety
 class ConversationRegistry extends BaseRegistry<Conversation, ConversationData> implements ISingleton implements DefaultRegistryImpl
 {
   /**
