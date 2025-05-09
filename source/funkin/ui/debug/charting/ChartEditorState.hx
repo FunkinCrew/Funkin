@@ -90,6 +90,7 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
+import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
@@ -97,7 +98,6 @@ import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuCheckBox;
 import haxe.ui.containers.menus.MenuItem;
-import haxe.ui.containers.properties.Property;
 import haxe.ui.core.Screen;
 import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
@@ -1829,9 +1829,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menuBarItemNoteSnapIncrease:MenuItem;
 
   /**
-   * The `Edit -> Stacked Note Threshold` property
+   * The `Edit -> Stacked Note Threshold` menu dropdown
    */
-  var menuBarItemStackedNoteThreshold:Property;
+  var menuBarStackedNoteThreshold:DropDown;
 
   /**
    * The `View -> Downscroll` menu item.
@@ -3016,10 +3016,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
 
-    menuBarItemStackedNoteThreshold.value = stackedNoteThreshold == 0 ? 0 : BASE_QUANT / stackedNoteThreshold;
-    menuBarItemStackedNoteThreshold.onChange = event -> {
-      var snapThreshold:Float = cast menuBarItemStackedNoteThreshold.value;
-      stackedNoteThreshold = snapThreshold == 0 ? 0 : snapThreshold / BASE_QUANT;
+    for (snap in SNAP_QUANTS)
+    {
+      menuBarStackedNoteThreshold.dataSource.add({text: '1/$snap'});
+    }
+
+    menuBarStackedNoteThreshold.onChange = event -> {
+      var snapValue:String = menuBarStackedNoteThreshold.selectedItem.text;
+      // NOTE: It needs to be offset by 1 because of the 'Exact' option
+      stackedNoteThreshold = snapValue == 'Exact' ? 0.0 : BASE_QUANT / SNAP_QUANTS[menuBarStackedNoteThreshold.selectedIndex - 1];
       noteDisplayDirty = true;
       notePreviewDirty = true;
     }

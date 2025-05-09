@@ -120,7 +120,7 @@ class SongNoteDataUtils
    * @param threshold The note stack threshold, in steps.
    * @return Returns `true` if both notes are on the same strumline, have the same direction
    * and their time difference in steps is less than the step-based threshold.
-   * A threshold of 0 will return `True...` if notes are exactly aligned.
+   * A threshold of 0 will return `true` if notes are exactly aligned.
    */
   public static function doNotesStack(noteA:SongNoteData, noteB:SongNoteData, threshold:Float = 0):Bool
   {
