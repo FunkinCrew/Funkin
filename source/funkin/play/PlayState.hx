@@ -1487,19 +1487,13 @@ class PlayState extends MusicBeatSubState
           || Math.abs(opponentVoicesError) > 100))
       {
         trace("VOCALS NEED RESYNC");
-        trace("Inst position: ", Conductor.instance.songPosition);
-        trace("Inst real time: ", FlxG.sound.music.time);
         if (vocals != null)
         {
-          trace("Player mic delay time: ", SoundUtil.getPlaybackDeviceDelay(FlxG.sound.music));
-          trace("Player real time: ", vocals.getPlayerVoice().time);
-          trace("Enemy real time: ", vocals.getOpponentVoice().time);
-
-          trace("Player error: ", playerVoicesError);
-          trace("Opponent error: ", opponentVoicesError);
+          trace(playerVoicesError);
+          trace(opponentVoicesError);
         }
-        trace("Additional offsets: ", Conductor.instance.combinedOffset);
-        trace("Correct sync: ", correctSync);
+        trace(FlxG.sound.music.time);
+        trace(correctSync);
         resyncVocals();
       }
     }
