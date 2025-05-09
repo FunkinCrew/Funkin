@@ -786,6 +786,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Defines how "close" two notes must be to be considered stacked, based on steps.
    * For example, setting this to `0.5` (16/32) will highlight notes half a step apart.
    * Setting it to `0` only highlights notes that are nearly perfectly aligned.
+   * In the dropdown menu, the threshold is based on note snaps instead.
+   * For example, `0.5` would be displayed as `1/32`, and `0` would show as `Exact`.
    */
   public static var stackedNoteThreshold:Float = 0;
 
