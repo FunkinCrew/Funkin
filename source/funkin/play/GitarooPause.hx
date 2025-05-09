@@ -7,6 +7,7 @@ import funkin.ui.MusicBeatState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.mainmenu.MainMenuState;
 
+@:nullSafety
 class GitarooPause extends MusicBeatState
 {
   var replayButton:FlxSprite;
@@ -21,6 +22,9 @@ class GitarooPause extends MusicBeatState
     super();
 
     this.previousParams = previousParams;
+
+    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.28, FlxG.height * 0.7, 'pauseAlt/pauseUI');
+    cancelButton = FunkinSprite.createSparrow(FlxG.width * 0.58, replayButton.y, 'pauseAlt/pauseUI');
   }
 
   override function create():Void
@@ -28,6 +32,7 @@ class GitarooPause extends MusicBeatState
     if (FlxG.sound.music != null)
     {
       FlxG.sound.music.destroy();
+      @:nullSafety(Off)
       FlxG.sound.music = null;
     }
 
@@ -40,13 +45,11 @@ class GitarooPause extends MusicBeatState
     add(bf);
     bf.screenCenter(X);
 
-    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.28, FlxG.height * 0.7, 'pauseAlt/pauseUI');
     replayButton.animation.addByPrefix('selected', 'bluereplay', 0, false);
     replayButton.animation.appendByPrefix('selected', 'yellowreplay');
     replayButton.animation.play('selected');
     add(replayButton);
 
-    cancelButton = FunkinSprite.createSparrow(FlxG.width * 0.58, replayButton.y, 'pauseAlt/pauseUI');
     cancelButton.animation.addByPrefix('selected', 'bluecancel', 0, false);
     cancelButton.animation.appendByPrefix('selected', 'cancelyellow');
     cancelButton.animation.play('selected');
