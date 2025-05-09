@@ -42,6 +42,8 @@ import funkin.api.newgrounds.Medals;
 @:nullSafety
 class ResultState extends MusicBeatSubState
 {
+  public static var instance:Null<ResultState> = null;
+
   final params:ResultsStateParams;
 
   final rank:ScoringRank;
@@ -131,6 +133,8 @@ class ResultState extends MusicBeatSubState
 
   override function create():Void
   {
+    instance = this;
+
     if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
     // We need multiple cameras so we can put one at an angle.
@@ -487,8 +491,7 @@ class ResultState extends MusicBeatSubState
     bgFlash.visible = true;
     FlxTween.tween(bgFlash, {alpha: 0}, 5 / 24);
     // NOTE: Only divide if totalNotes > 0 to prevent divide-by-zero errors.
-    var clearPercentFloat = params.scoreData.tallies.totalNotes == 0 ? 0.0 : (params.scoreData.tallies.sick +
-    params.scoreData.tallies.good
+    var clearPercentFloat = params.scoreData.tallies.totalNotes == 0 ? 0.0 : (params.scoreData.tallies.sick + params.scoreData.tallies.good
       - params.scoreData.tallies.missed) / params.scoreData.tallies.totalNotes * 100;
     clearPercentTarget = Math.floor(clearPercentFloat);
     // Prevent off-by-one errors.
@@ -901,6 +904,12 @@ class ResultState extends MusicBeatSubState
     }
 
     super.update(elapsed);
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    instance = null;
   }
 }
 

@@ -39,6 +39,8 @@ typedef StickerSubStateParams =
 @:nullSafety
 class StickerSubState extends MusicBeatSubState
 {
+  public static var instance:Null<StickerSubState> = null;
+
   public var grpStickers:FlxTypedGroup<StickerSprite>;
 
   /**
@@ -123,6 +125,13 @@ class StickerSubState extends MusicBeatSubState
     {
       regenStickers();
     }
+  }
+
+  override function create():Void
+  {
+    super.create();
+
+    instance = this;
   }
 
   public function degenStickers():Void
@@ -284,5 +293,6 @@ class StickerSubState extends MusicBeatSubState
   {
     if (switchingState) return;
     super.destroy();
+    instance = null;
   }
 }

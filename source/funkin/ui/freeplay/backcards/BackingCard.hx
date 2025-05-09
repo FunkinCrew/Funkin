@@ -29,13 +29,9 @@ class BackingCard extends FlxSpriteGroup
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
   var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
 
-  public var instance:FreeplayState;
-
-  public function new(currentCharacter:PlayableCharacter, ?_instance:FreeplayState)
+  public function new(currentCharacter:PlayableCharacter)
   {
     super();
-
-    if (_instance != null) instance = _instance;
 
     cardGlow = new FlxSprite(-30, -30).loadGraphic(Paths.image('freeplay/cardGlow'));
     confirmGlow = new FlxSprite(-30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
@@ -184,10 +180,10 @@ class BackingCard extends FlxSpriteGroup
     confirmGlow2.alpha = 0;
     confirmGlow.alpha = 0;
 
-    FlxTween.color(instance.backingImage, 0.5, 0xFFA8A8A8, 0xFF646464,
+    FlxTween.color(FreeplayState.instance.backingImage, 0.5, 0xFFA8A8A8, 0xFF646464,
       {
         onUpdate: function(_) {
-          instance.angleMaskShader.extraColor = instance.backingImage.color;
+          FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
         }
       });
     FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
@@ -200,11 +196,11 @@ class BackingCard extends FlxSpriteGroup
           confirmTextGlow.alpha = 1;
           FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
           FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
-          FlxTween.color(instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555,
+          FlxTween.color(FreeplayState.instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555,
             {
               ease: FlxEase.expoOut,
               onUpdate: function(_) {
-                instance.angleMaskShader.extraColor = instance.backingImage.color;
+                FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
               }
             });
         }

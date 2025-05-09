@@ -151,65 +151,65 @@ class PicoCard extends BackingCard
     confirmAtlas.visible = true;
     confirmAtlas.anim.play("");
 
-    FlxTween.color(instance.backingImage, 10 / 24, 0xFFFFFFFF, 0xFF8A8A8A,
+    FlxTween.color(FreeplayState.instance.backingImage, 10 / 24, 0xFFFFFFFF, 0xFF8A8A8A,
       {
         ease: FlxEase.expoOut,
         onUpdate: function(_) {
-          instance.angleMaskShader.extraColor = instance.backingImage.color;
+          FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
         }
       });
 
     new FlxTimer().start(10 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.backingImage, 3 / 24, 0xFF343036, 0xFF696366,
+      FlxTween.color(FreeplayState.instance.backingImage, 3 / 24, 0xFF343036, 0xFF696366,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.backingImage.color;
+            FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(14 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.backingImage, 3 / 24, 0xFF27292D, 0xFF686A6F,
+      FlxTween.color(FreeplayState.instance.backingImage, 3 / 24, 0xFF27292D, 0xFF686A6F,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.backingImage.color;
+            FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(18 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.backingImage, 3 / 24, 0xFF2D282D, 0xFF676164,
+      FlxTween.color(FreeplayState.instance.backingImage, 3 / 24, 0xFF2D282D, 0xFF676164,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.backingImage.color;
+            FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(21 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.backingImage, 3 / 24, 0xFF29292F, 0xFF62626B,
+      FlxTween.color(FreeplayState.instance.backingImage, 3 / 24, 0xFF29292F, 0xFF62626B,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.backingImage.color;
+            FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
           }
         });
     });
 
     new FlxTimer().start(24 / 24, function(_) {
       // shoot
-      FlxTween.color(instance.backingImage, 3 / 24, 0xFF29232C, 0xFF808080,
+      FlxTween.color(FreeplayState.instance.backingImage, 3 / 24, 0xFF29232C, 0xFF808080,
         {
           ease: FlxEase.expoOut,
           onUpdate: function(_) {
-            instance.angleMaskShader.extraColor = instance.backingImage.color;
+            FreeplayState.instance.angleMaskShader.extraColor = FreeplayState.instance.backingImage.color;
           }
         });
     });

@@ -101,6 +101,8 @@ class PauseSubState extends MusicBeatSubState
 
   static final CHARTER_FADE_DURATION:Float = 0.75;
 
+  public static var instance:PauseSubState = null;
+
   /**
    * Defines which pause music to use.
    */
@@ -203,6 +205,8 @@ class PauseSubState extends MusicBeatSubState
   {
     super.create();
 
+    instance = this;
+
     startPauseMusic();
 
     buildBackground();
@@ -235,6 +239,7 @@ class PauseSubState extends MusicBeatSubState
     super.destroy();
     charterFadeTween.cancel();
     charterFadeTween = null;
+    instance = null;
     pauseMusic.stop();
   }
 

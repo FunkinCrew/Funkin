@@ -33,6 +33,8 @@ class StoryMenuState extends MusicBeatState
   static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString('#F9CF51');
   static final BACKGROUND_HEIGHT:Int = 400;
 
+  public static var instance:StoryMenuState = null;
+
   var currentDifficultyId:String = 'normal';
 
   var currentLevelId:String = 'tutorial';
@@ -125,6 +127,8 @@ class StoryMenuState extends MusicBeatState
   override function create():Void
   {
     super.create();
+
+    instance = this;
 
     levelList = LevelRegistry.instance.listSortedLevelIds();
     levelList = levelList.filter(function(id) {
@@ -661,5 +665,11 @@ class StoryMenuState extends MusicBeatState
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;
     // levelScore.accuracy
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    instance = null;
   }
 }

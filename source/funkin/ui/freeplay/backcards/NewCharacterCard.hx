@@ -221,9 +221,9 @@ class NewCharacterCard extends BackingCard
 
     yellow.alpha = FlxMath.lerp(0.2, 0.72, sinTest);
 
-    if (instance != null)
+    if (FreeplayState.instance != null)
     {
-      instance.angleMaskShader.extraColor = FlxColor.interpolate(0xFF2E2E46, 0xFF60607B, sinTest);
+      FreeplayState.instance.angleMaskShader.extraColor = FlxColor.interpolate(0xFF2E2E46, 0xFF60607B, sinTest);
     }
   }
 

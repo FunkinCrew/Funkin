@@ -37,6 +37,8 @@ import funkin.api.newgrounds.Medals;
 
 class CharSelectSubState extends MusicBeatSubState
 {
+  public static var instance:CharSelectSubState = null;
+
   var cursor:FlxSprite;
 
   var cursorBlue:FlxSprite;
@@ -120,6 +122,8 @@ class CharSelectSubState extends MusicBeatSubState
   override public function create():Void
   {
     super.create();
+
+    instance = this;
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
 
@@ -1111,5 +1115,11 @@ class CharSelectSubState extends MusicBeatSubState
     grpYSpread = value;
     updateIconPositions();
     return value;
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    instance = null;
   }
 }
