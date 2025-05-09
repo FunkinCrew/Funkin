@@ -4,6 +4,8 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
+import funkin.data.song.SongNoteDataUtils;
+import funkin.ui.debug.charting.ChartEditorState;
 
 /**
  * A command which inserts the contents of the clipboard into the chart editor.
@@ -13,9 +15,11 @@ import funkin.data.song.SongDataUtils.SongClipboardItems;
 class PasteItemsCommand implements ChartEditorCommand
 {
   var targetTimestamp:Float;
-  // Notes we added with this command, for undo.
+  // Notes we added and removed with this command, for undo.
   var addedNotes:Array<SongNoteData> = [];
   var addedEvents:Array<SongEventData> = [];
+  var removedNotes:Array<SongNoteData> = [];
+  var isRedo:Bool = false;
 
   public function new(targetTimestamp:Float)
   {
@@ -41,7 +45,10 @@ class PasteItemsCommand implements ChartEditorCommand
     addedEvents = SongDataUtils.offsetSongEventData(currentClipboard.events, Std.int(targetTimestamp));
     addedEvents = SongDataUtils.clampSongEventData(addedEvents, 0.0, msCutoff);
 
-    state.currentSongChartNoteData = state.currentSongChartNoteData.concat(addedNotes);
+    removedNotes.clear();
+    var mergedNotes:Array<SongNoteData> = SongNoteDataUtils.concatOverwrite(state.currentSongChartNoteData, addedNotes, removedNotes);
+
+    state.currentSongChartNoteData = mergedNotes;
     state.currentSongChartEventData = state.currentSongChartEventData.concat(addedEvents);
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
@@ -52,29 +59,49 @@ class PasteItemsCommand implements ChartEditorCommand
 
     state.sortChartData();
 
-    state.success('Paste Successful', 'Successfully pasted clipboard contents.');
+    var title = isRedo ? 'Redone Paste Successfully' : 'Paste Successful';
+    var msgType = removedNotes.length > 0 ? 'warning' : 'success';
+    var msg = if (removedNotes.length == 1)
+    {
+      'But 1 overlapped note was overwritten.';
+    }
+    else if (removedNotes.length > 1)
+    {
+      'But ${removedNotes.length} overlapped notes were overwritten.';
+    }
+    else if (isRedo)
+    {
+      'Successfully placed pasted note(s) back.';
+    }
+    else 'Successfully pasted clipboard contents.';
+
+    Reflect.callMethod(null, Reflect.field(ChartEditorNotificationHandler, msgType), [state, title, msg]);
+
+    isRedo = false;
   }
 
   public function undo(state:ChartEditorState):Void
   {
     state.playSound(Paths.sound('chartingSounds/undo'));
 
-    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes);
+    state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes).concat(removedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
-    state.currentNoteSelection = [];
     state.currentEventSelection = [];
+    state.performCommand(new SelectItemsCommand(removedNotes.copy()), false);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
 
     state.sortChartData();
+
+    isRedo = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
     // This command is undoable. Add to the history if we actually performed an action.
-    return (addedNotes.length > 0 || addedEvents.length > 0);
+    return (addedNotes.length > 0 || addedEvents.length > 0 || removedNotes.length > 0);
   }
 
   public function toString():String
