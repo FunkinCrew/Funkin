@@ -2694,6 +2694,8 @@ class PlayState extends MusicBeatSubState
 
       playerStrumline.releaseKey(input.noteDirection);
     }
+
+    playerStrumline.noteVibrations.tryNoteVibration();
   }
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void

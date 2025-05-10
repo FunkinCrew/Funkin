@@ -84,6 +84,11 @@ class NoteVibrationsHandler
     if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
 
     if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude);
+
+    for (currentNoteStatus in noteStatuses)
+    {
+      if (currentNoteStatus == NoteStatus.holdConfirm && holdNoteEnded) currentNoteStatus == NoteStatus.pressed;
+    }
   }
 }
 

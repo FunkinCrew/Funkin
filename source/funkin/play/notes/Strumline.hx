@@ -620,6 +620,12 @@ class Strumline extends FlxSpriteGroup
       }
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
+        if (isPlayer)
+        {
+          // Hold note's final vibration.
+          noteVibrations.tryHoldNoteVibration(true);
+        }
+
         // Hold note is completed, kill it.
         if (isKeyHeld(holdNote.noteDirection))
         {
@@ -641,13 +647,6 @@ class Strumline extends FlxSpriteGroup
           // *lightning* *zap* *crackle*
           holdNote.cover.visible = false;
           holdNote.cover.kill();
-        }
-
-        if (isPlayer)
-        {
-          // Hold note's final vibration.
-          noteVibrations.tryHoldNoteVibration(true);
-          noteVibrations.noteStatuses[holdNote.noteDirection] = NoteStatus.pressed;
         }
 
         holdNote.visible = false;
@@ -981,11 +980,7 @@ class Strumline extends FlxSpriteGroup
   {
     getByDirection(direction).playConfirm();
 
-    if (isPlayer)
-    {
-      noteVibrations.noteStatuses[direction] = NoteStatus.confirm;
-      noteVibrations.tryNoteVibration();
-    }
+    if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.confirm;
   }
 
   /**
