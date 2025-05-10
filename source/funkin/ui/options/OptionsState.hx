@@ -154,7 +154,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     createItem("Launch purchase flow", function() {
       #if android
       funkin.mobile.util.InAppPurchasesUtil.purchase('test_product_0');
-      #elseif (ios || tvos)
+      #elseif ios
       funkin.mobile.util.InAppPurchasesUtil.purchase('adfree');
       #end
     });
