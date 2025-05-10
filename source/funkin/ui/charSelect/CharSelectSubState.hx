@@ -225,6 +225,9 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.y += 210;
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
 
+    grpCursors = new FlxTypedGroup<FlxSprite>();
+    add(grpCursors);
+
     grpIcons = new FlxSpriteGroup();
     add(grpIcons);
 
@@ -264,9 +267,6 @@ class CharSelectSubState extends MusicBeatSubState
     // FlxG.debugger.track(dipshitBacking, "dipshitBacking");
     // FlxG.debugger.track(charLightGF, "charLight");
     // FlxG.debugger.track(gfChill, "gfChill");
-
-    grpCursors = new FlxTypedGroup<FlxSprite>();
-    add(grpCursors);
 
     cursor = new FlxSprite(0, 0);
     cursor.loadGraphic(Paths.image('charSelect/charSelector'));
@@ -469,8 +469,8 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var grpIcons:FlxSpriteGroup;
-  var grpXSpread(default, set):Float = 107;
-  var grpYSpread(default, set):Float = 127;
+  var grpXSpread(default, set):Float = 110;
+  var grpYSpread(default, set):Float = 110;
   var nonLocks = [];
 
   function initLocks():Void
@@ -632,6 +632,9 @@ class CharSelectSubState extends MusicBeatSubState
 
       member.x += grpIcons.x;
       member.y += grpIcons.y;
+
+      member.x += (member.ID == 1 ? 10 : 0);
+      member.y += 17;
     }
   }
 
