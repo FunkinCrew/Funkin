@@ -710,79 +710,10 @@ class CharSelectSubState extends MusicBeatSubState
 
     Conductor.instance.update();
 
-    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R) selectSound.pitch = 1;
-
     syncAudio(elapsed);
 
-    if (allowInput && !pressedSelect)
-    {
-      if (controls.UI_UP) holdTmrUp += elapsed;
-      if (controls.UI_UP_R)
-      {
-        holdTmrUp = 0;
-        spamUp = false;
-      }
-
-      if (controls.UI_DOWN) holdTmrDown += elapsed;
-      if (controls.UI_DOWN_R)
-      {
-        holdTmrDown = 0;
-        spamDown = false;
-      }
-
-      if (controls.UI_LEFT) holdTmrLeft += elapsed;
-      if (controls.UI_LEFT_R)
-      {
-        holdTmrLeft = 0;
-        spamLeft = false;
-      }
-
-      if (controls.UI_RIGHT) holdTmrRight += elapsed;
-      if (controls.UI_RIGHT_R)
-      {
-        holdTmrRight = 0;
-        spamRight = false;
-      }
-
-      var initSpam = 0.5;
-
-      if (holdTmrUp >= initSpam) spamUp = true;
-      if (holdTmrDown >= initSpam) spamDown = true;
-      if (holdTmrLeft >= initSpam) spamLeft = true;
-      if (holdTmrRight >= initSpam) spamRight = true;
-
-      if (controls.UI_UP_P)
-      {
-        cursorY -= 1;
-        cursorDenied.visible = false;
-
-        holdTmrUp = 0;
-
-        selectSound.play(true);
-      }
-      if (controls.UI_DOWN_P)
-      {
-        cursorY += 1;
-        cursorDenied.visible = false;
-        holdTmrDown = 0;
-        selectSound.play(true);
-      }
-      if (controls.UI_LEFT_P)
-      {
-        cursorX -= 1;
-        cursorDenied.visible = false;
-
-        holdTmrLeft = 0;
-        selectSound.play(true);
-      }
-      if (controls.UI_RIGHT_P)
-      {
-        cursorX += 1;
-        cursorDenied.visible = false;
-        holdTmrRight = 0;
-        selectSound.play(true);
-      }
-    }
+    if (allowInput && !pressedSelect) handleInputs(elapsed);
+    
 
     if (cursorX < -1)
     {
@@ -911,7 +842,85 @@ class CharSelectSubState extends MusicBeatSubState
     cursorDenied.x = cursor.x - 2;
     cursorDenied.y = cursor.y - 4;
   }
+  function handleInputs(elapsed:Float):Void
+  {
+    var upP:Bool = controls.UI_UP_P;
+    var downP:Bool = controls.UI_DOWN_P;
+    var leftP:Bool = controls.UI_LEFT_P;
+    var rightP:Bool = controls.UI_RIGHT_P;
+    if (controls.UI_UP) holdTmrUp += elapsed;
+      if (controls.UI_UP_R)
+      {
 
+        holdTmrUp = 0;
+        spamUp = false;
+      }
+
+      if (controls.UI_DOWN) holdTmrDown += elapsed;
+      if (controls.UI_DOWN_R)
+      {
+        holdTmrDown = 0;
+        spamDown = false;
+      }
+
+      if (controls.UI_LEFT) holdTmrLeft += elapsed;
+      if (leftP)
+      {
+
+        holdTmrLeft = 0;
+        spamLeft = false;
+      }
+
+      if (controls.UI_RIGHT) holdTmrRight += elapsed;
+      if (rightP)
+      {
+
+        holdTmrRight = 0;
+        spamRight = false;
+      }
+
+      var initSpam = 0.5;
+
+      if (holdTmrUp >= initSpam) spamUp = true;
+      if (holdTmrDown >= initSpam) spamDown = true;
+      if (holdTmrLeft >= initSpam) spamLeft = true;
+      if (holdTmrRight >= initSpam) spamRight = true;
+
+      if (upP)
+      {
+        cursorY -= 1;
+        cursorDenied.visible = false;
+
+        holdTmrUp = 0;
+
+        selectSound.play(true);
+      }
+      if (downP)
+      {
+
+        cursorY += 1;
+        cursorDenied.visible = false;
+        holdTmrDown = 0;
+        selectSound.play(true);
+      }
+      if (leftP)
+      {
+
+        cursorX -= 1;
+        cursorDenied.visible = false;
+
+        holdTmrLeft = 0;
+        selectSound.play(true);
+      }
+      if (rightP)
+      {
+
+        cursorX += 1;
+        cursorDenied.visible = false;
+        holdTmrRight = 0;
+        selectSound.play(true);
+      }
+  }
   var bopTimer:Float = 0;
   var delay = 1 / 24;
   var bopFr = 0;
