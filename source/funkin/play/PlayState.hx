@@ -930,8 +930,8 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
-
+      // Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
+      Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
       if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
@@ -1470,19 +1470,19 @@ class PlayState extends MusicBeatSubState
         @:privateAccess // todo: maybe make the groups public :thinking:
         {
           vocals.playerVoices.forEachAlive(function(voice:FunkinSound) {
-            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset + SoundUtil.getPlaybackDeviceDelay(voice);
+            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset; // + SoundUtil.getPlaybackDeviceDelay(voice);
             if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError)) playerVoicesError = currentRawVoiceTime - correctSync;
           });
 
           vocals.opponentVoices.forEachAlive(function(voice:FunkinSound) {
-            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset + SoundUtil.getPlaybackDeviceDelay(voice);
+            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset; // + SoundUtil.getPlaybackDeviceDelay(voice);
             if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError)) opponentVoicesError = currentRawVoiceTime - correctSync;
           });
         }
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time + SoundUtil.getPlaybackDeviceDelay(FlxG.sound.music) - correctSync) > 100
+        && (Math.abs(FlxG.sound.music.time - correctSync) > 100
           || Math.abs(playerVoicesError) > 100
           || Math.abs(opponentVoicesError) > 100))
       {
@@ -2074,6 +2074,7 @@ class PlayState extends MusicBeatSubState
     vocals.time = FlxG.sound.music.time;
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
+    Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
     resyncVocals();
 
     #if FEATURE_DISCORD_RPC
@@ -2122,6 +2123,7 @@ class PlayState extends MusicBeatSubState
 
     vocals.time = timeToPlayAt;
     vocals.play(false, timeToPlayAt);
+    trace(timeToPlayAt, " == ", FlxG.sound.music.time);
   }
 
   /**
