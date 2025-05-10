@@ -1,5 +1,6 @@
 package funkin.util.assets;
 
+import flixel.sound.FlxSound;
 import haxe.io.Bytes;
 import openfl.media.Sound as OpenFLSound;
 import funkin.audio.FunkinSound;
