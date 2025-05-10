@@ -47,20 +47,18 @@ class NoteVibrationsHandler
    */
   public function tryNoteVibration():Void
   {
-    if (!HapticUtil.hapticsAvailable) return;
+    if (noteStatuses == null || !HapticUtil.hapticsAvailable) return;
 
     var stackingAmplitude:Float = 0;
 
     for (currentNoteStatus in noteStatuses)
     {
-      if (currentNoteStatus != NoteStatus.isJustPressed) continue;
-
-      trace("Note is Just Pressed!");
+      if (currentNoteStatus != NoteStatus.confirm) continue;
 
       stackingAmplitude += Constants.MAX_VIBRATION_AMPLITUDE / 4;
     }
 
-    trace("amplitude: " + stackingAmplitude);
+    if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
 
     if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude);
   }
@@ -69,24 +67,21 @@ class NoteVibrationsHandler
    * Checks if any note status is equal to NoteStatus.isHoldNotePressed.
    * If yes, then vibration is being triggered, amplitude value is stacked depending on how much hold notes are pressed.
    */
-  public function tryHoldNoteVibration():Void
+  public function tryHoldNoteVibration(holdNoteEnded:Bool = false):Void
   {
-    if (!HapticUtil.hapticsAvailable) return;
+    if (noteStatuses == null || !HapticUtil.hapticsAvailable) return;
 
     var stackingAmplitude:Float = 0;
 
     for (currentNoteStatus in noteStatuses)
     {
-      if (currentNoteStatus != NoteStatus.isHoldNotePressed) continue;
+      if (currentNoteStatus != NoteStatus.holdConfirm) continue;
 
-      trace("Hold Note is Pressed!");
-
-      stackingAmplitude += Constants.MAX_VIBRATION_AMPLITUDE / 4;
-
-      if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
+      final amplitudeDivider:Float = holdNoteEnded ? 4 : 10;
+      stackingAmplitude += Constants.MAX_VIBRATION_AMPLITUDE / amplitudeDivider;
     }
 
-    trace("amplitude: " + stackingAmplitude);
+    if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
 
     if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude);
   }
@@ -97,7 +92,8 @@ class NoteVibrationsHandler
  */
 enum abstract NoteStatus(Int) from Int to Int
 {
-  var isReleased = 0;
-  var isJustPressed = 1;
-  var isHoldNotePressed = 2;
+  var idle = 0;
+  var pressed = 1;
+  var confirm = 2;
+  var holdConfirm = 3;
 }
