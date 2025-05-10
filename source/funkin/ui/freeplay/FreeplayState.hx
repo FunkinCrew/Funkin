@@ -154,7 +154,9 @@ class FreeplayState extends MusicBeatSubState
 
   var dj:Null<FreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
+  // For proper hitbox detection, flxanimate doesn't work with touch overlap!!
   var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358);
+  var capsuleHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 370, 150);
   #end
 
   var ostName:FlxText;
@@ -377,11 +379,15 @@ class FreeplayState extends MusicBeatSubState
     backingImage.shader = angleMaskShader;
     backingImage.visible = false;
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     djHitbox = djHitbox.makeGraphic(400, 400, FlxColor.TRANSPARENT);
     if (dj != null) djHitbox.cameras = dj.cameras;
     djHitbox.active = false;
     add(djHitbox);
+    capsuleHitbox = capsuleHitbox.makeGraphic(570, 576, FlxColor.TRANSPARENT);
+    capsuleHitbox.cameras = [funnyCam];
+    capsuleHitbox.active = false;
+    add(capsuleHitbox);
     #end
 
     var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(backingImage.width), Std.int(backingImage.height), FlxColor.BLACK);
@@ -1636,6 +1642,12 @@ class FreeplayState extends MusicBeatSubState
   function handleTouchSelectionScroll(elapsed:Float):Void
   {
     if (draggingDifficulty) return;
+
+    for (capsule in grpCapsules.members)
+    {
+      if (capsule == null) continue;
+      if (!TouchUtil.overlaps(capsuleHitbox, funnyCam)) return;
+    }
 
     if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
     {
