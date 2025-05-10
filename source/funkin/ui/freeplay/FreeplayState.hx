@@ -1604,7 +1604,10 @@ class FreeplayState extends MusicBeatSubState
   private function handleTouchCapsuleClick():Void
   {
     if (diffSelRight == null) return;
-    if (TouchUtil.justReleased && !TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.touch.ticksDeltaSincePress < 200)
+    if (TouchUtil.justReleased
+      && TouchUtil.touch.velocity.length < 5
+      && !TouchUtil.overlaps(diffSelRight, funnyCam)
+      && TouchUtil.touch.ticksDeltaSincePress < 500)
     {
       curSelected = Math.round(curSelectedFloat);
 
@@ -1667,7 +1670,7 @@ class FreeplayState extends MusicBeatSubState
         if (Math.isFinite(flickVelocity))
         {
           _flickEnded = false;
-          var velocityMove = flickVelocity / FlxG.updateFramerate * 0.03;
+          var velocityMove = flickVelocity * elapsed;
           _moveLength += Math.abs(velocityMove);
           curSelectedFloat -= velocityMove;
           updateSongsScroll();
