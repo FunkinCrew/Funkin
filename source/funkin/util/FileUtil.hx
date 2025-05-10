@@ -1009,7 +1009,7 @@ class FileUtil
     tempDir = Path.join([path ?? '', 'funkin/']);
     return tempDir;
     #elseif android
-    tempDir = Path.addTrailingSlash(android.content.Context.getCacheDir());
+    tempDir = Path.addTrailingSlash(extension.androidtools.content.Context.getCacheDir());
     return tempDir;
     #else
     tempDir = '/tmp/funkin/';

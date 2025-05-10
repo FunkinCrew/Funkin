@@ -201,7 +201,7 @@ class AdMobUtil
   private static function logMessage(message:String):Void
   {
     #if android
-    android.widget.Toast.makeText(message, android.widget.Toast.LENGTH_SHORT);
+    extension.androidtools.widget.Toast.makeText(message, extension.androidtools.widget.Toast.LENGTH_SHORT);
     #end
 
     Sys.println(message);

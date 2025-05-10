@@ -288,9 +288,9 @@ class PolymodHandler
     // Can load and execute compiled binaries.
     Polymod.blacklistImport('lime.system.JNI');
 
-    // `android.jni.JNICache`
+    // `extension.androidtools.androidtools.jni.JNICache`
     // Same as `lime.system.JNI`
-    Polymod.blacklistImport('android.jni.JNICache');
+    Polymod.blacklistImport('extension.androidtools.androidtools.jni.JNICache');
 
     // Disable access to in-app purchases
     Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');

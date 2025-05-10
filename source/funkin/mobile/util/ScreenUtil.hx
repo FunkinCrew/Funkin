@@ -3,7 +3,7 @@ package funkin.mobile.util;
 #if ios
 import funkin.mobile.external.ScreenUtils;
 #elseif android
-import android.Tools;
+import extension.androidtools.Tools;
 #end
 import lime.math.Rectangle;
 

@@ -220,10 +220,8 @@
     },
     {
       "name": "extension-androidtools",
-      "type": "git",
-      "dir": null,
-      "ref": "d6203857ff5c4193e3dac9ab337e8c016f7ad47e",
-      "url": "https://github.com/MAJigsaw77/extension-androidtools"
+      "type": "haxelib",
+      "version": "2.2.0"
     },
     {
       "name": "extension-iapcore",
