@@ -3025,9 +3025,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     menuBarStackedNoteThreshold.onChange = event -> {
-      var snapValue:String = menuBarStackedNoteThreshold.selectedItem.text;
       // NOTE: It needs to be offset by 1 because of the 'Exact' option
-      stackedNoteThreshold = snapValue == 'Exact' ? 0.0 : BASE_QUANT / REVERSE_SNAPS[menuBarStackedNoteThreshold.selectedIndex - 1];
+      // -1 value means that it is the one selected
+      var selectedIdx:Int = menuBarStackedNoteThreshold.selectedIndex - 1;
+      stackedNoteThreshold = selectedIdx == -1 ? 0 : BASE_QUANT / REVERSE_SNAPS[selectedIdx];
       noteDisplayDirty = true;
       notePreviewDirty = true;
     }
