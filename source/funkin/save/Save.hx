@@ -185,6 +185,8 @@ class Save
           noteQuant: 3,
           chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
           theme: Constants.DEFAULT_EDITOR_THEME,
+          startingDifficulty: Constants.DEFAULT_DIFFICULTY,
+          startingVariation: Constants.DEFAULT_VARIATION,
           playtestStartTime: false,
           downscroll: false,
           showNoteKinds: true,
@@ -391,6 +393,40 @@ class Save
     data.optionsChartEditor.playtestStartTime = value;
     flush();
     return data.optionsChartEditor.playtestStartTime;
+  }
+
+  public var chartEditorStartingDifficulty(get, set):String;
+
+  function get_chartEditorStartingDifficulty():String
+  {
+    if (data.optionsChartEditor.startingDifficulty == null) data.optionsChartEditor.startingDifficulty = Constants.DEFAULT_DIFFICULTY;
+
+    return data.optionsChartEditor.startingDifficulty;
+  }
+
+  function set_chartEditorStartingDifficulty(value:String):String
+  {
+    // Set and apply.
+    data.optionsChartEditor.startingDifficulty = value;
+    flush();
+    return data.optionsChartEditor.startingDifficulty;
+  }
+
+  public var chartEditorStartingVariation(get, set):String;
+
+  function get_chartEditorStartingVariation():String
+  {
+    if (data.optionsChartEditor.startingVariation == null) data.optionsChartEditor.startingVariation = Constants.DEFAULT_VARIATION;
+
+    return data.optionsChartEditor.startingVariation;
+  }
+
+  function set_chartEditorStartingVariation(value:String):String
+  {
+    // Set and apply.
+    data.optionsChartEditor.startingVariation = value;
+    flush();
+    return data.optionsChartEditor.startingVariation;
   }
 
   public var chartEditorTheme(get, set):String;
@@ -1887,6 +1923,18 @@ typedef SaveDataChartEditorOptions =
    * @default `Constants.DEFAULT_EDITOR_THEME`
    */
   var ?theme:String;
+
+  /**
+   * Starting difficulty in the Chart Editor.
+   * @default `Constants.DEFAULT_DIFFICULTY`
+   */
+  var ?startingDifficulty:String;
+
+  /**
+   * Starting variation in the Chart Editor.
+   * @default `Constants.DEFAULT_VARIATION`
+   */
+  var ?startingVariation:String;
 
   /**
    * Downscroll in the Chart Editor.

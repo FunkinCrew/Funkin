@@ -162,6 +162,24 @@ class ChartEditorDialogHandler
     };
     themeMusic.selected = state.welcomeMusic.active;
 
+    var startingDifficulty:Null<DropDown> = dialog.findComponent('optionsStartingDifficulty', DropDown);
+    if (startingDifficulty == null) throw 'Could not locate startingDifficulty DropDown in Preferences dialog';
+    startingDifficulty.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      save.chartEditorStartingDifficulty = event.data.id;
+    };
+    var startingValue = ChartEditorDropdowns.populateDropdownWithDifficulties(startingDifficulty, save.chartEditorStartingDifficulty);
+    startingDifficulty.value = startingValue;
+
+    var startingVariation:Null<DropDown> = dialog.findComponent('optionsStartingVariation', DropDown);
+    if (startingVariation == null) throw 'Could not locate startingVariation DropDown in Preferences dialog';
+    startingVariation.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      save.chartEditorStartingVariation = event.data.id;
+    };
+    var startingValueVariation = ChartEditorDropdowns.populateDropdownWithVariations(startingVariation, state, save.chartEditorStartingVariation, true, false);
+    startingVariation.value = startingValueVariation;
+
     var autoSaveExit:Null<CheckBox> = dialog.findComponent('optionsAutoSaveExit', CheckBox);
     if (autoSaveExit == null) throw 'Could not locate autoSaveExit CheckBox in Preferences dialog';
     autoSaveExit.onChange = function(event:UIEvent) {
@@ -177,22 +195,6 @@ class ChartEditorDialogHandler
       save.chartEditorAutoSaveTimer = event.value;
     };
     autoSaveTimer.value = save.chartEditorAutoSaveTimer;
-
-    // var pitchNoteDirection:Null<CheckBox> = dialog.findComponent('optionsHitsoundPitchNoteDirection', CheckBox);
-    // if (pitchNoteDirection == null) throw 'Could not locate pitchNoteDirection CheckBox in Preferences dialog';
-    // pitchNoteDirection.onChange = function(event:UIEvent) {
-    //   if (event.value == null) return;
-    //   save.chartEditorHitsoundPitchNoteDirection = event.value;
-    // };
-    // pitchNoteDirection.selected = save.chartEditorHitsoundPitchNoteDirection;
-
-    // var randomPitch:Null<CheckBox> = dialog.findComponent('optionsRandomPitch', CheckBox);
-    // if (randomPitch == null) throw 'Could not locate randomPitch CheckBox in Preferences dialog';
-    // randomPitch.onChange = function(event:UIEvent) {
-    //   if (event.value == null) return;
-    //   save.chartEditorRandomPitch = event.value;
-    // };
-    // randomPitch.selected = save.chartEditorRandomPitch;
 
     var inputTheme:Null<DropDown> = dialog.findComponent('optionsThemeGroup', DropDown);
     if (inputTheme == null) throw 'Could not locate inputTheme DropDown in Preferences dialog';
@@ -1335,7 +1337,7 @@ class ChartEditorDialogHandler
 
     var dialogVariation:Null<DropDown> = dialog.findComponent('dialogVariation', DropDown);
     if (dialogVariation == null) throw 'Could not locate dialogVariation DropDown in Add Variation dialog';
-    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, true);
+    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, Constants.DEFAULT_VARIATION, false, true);
 
     var labelScrollSpeed:Null<Label> = dialog.findComponent('labelScrollSpeed', Label);
     if (labelScrollSpeed == null) throw 'Could not find labelScrollSpeed component.';
