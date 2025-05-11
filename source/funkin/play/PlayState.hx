@@ -1423,6 +1423,10 @@ class PlayState extends MusicBeatSubState
   {
     performCleanup();
 
+    // `performCleanup()` clears the static reference to this state
+    // scripts might sitll need it, so we set it back to `this`
+    instance = this;
+
     funkin.modding.PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
     LoadingState.loadPlayState(lastParams);
