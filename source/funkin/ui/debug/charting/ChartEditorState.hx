@@ -3339,7 +3339,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   **/
   public override function onFocus():Void
   {
-    if (this.subState != null && Std.isOfType(this.subState, funkin.play.PlayState) {
+    if (this.subState != null && Std.isOfType(this.subState, funkin.play.PlayState)) {
       var playState = cast(this.subState, funkin.play.PlayState);
       if (!playState.isInCountdown && playState.subState == null) startAudioPlayback();
     }
