@@ -1424,7 +1424,7 @@ class PlayState extends MusicBeatSubState
     performCleanup();
 
     // `performCleanup()` clears the static reference to this state
-    // scripts might sitll need it, so we set it back to `this`
+    // scripts might still need it, so we set it back to `this`
     instance = this;
 
     funkin.modding.PolymodHandler.forceReloadAssets();
