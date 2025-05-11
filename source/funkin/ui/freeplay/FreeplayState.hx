@@ -1651,7 +1651,11 @@ class FreeplayState extends MusicBeatSubState
           final delta = touch.deltaViewY;
           if (Math.abs(delta) >= 2)
           {
-            var moveLength = delta / FlxG.updateFramerate * 1.2;
+            var dpiScale = FlxG.stage.window.display.dpi / 160;
+
+            FlxMath.clamp(dpiScale, 0.5, 2);
+
+            var moveLength = delta / FlxG.updateFramerate / dpiScale;
             _moveLength += Math.abs(moveLength);
             curSelectedFloat -= moveLength;
             updateSongsScroll();
