@@ -87,7 +87,7 @@ class FreeplayDJ extends FlxAtlasSprite
       case Intro:
         // Play the intro animation then leave this state immediately.
         var animPrefix = playableCharData.getAnimationPrefix('intro');
-        if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, true);
+        if (getCurrentAnimation() != animPrefix || !this.anim.isPlaying) playFlashAnimation(animPrefix, true);
         timeIdling = 0;
       case Idle:
         // We are in this state the majority of the time.

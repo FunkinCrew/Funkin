@@ -2,6 +2,7 @@ package funkin.ui.haxeui.components;
 
 import funkin.modding.events.ScriptEvent.GhostMissNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.NoteScriptEvent;
+import funkin.modding.events.ScriptEvent.HoldNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.HitNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
@@ -100,16 +101,12 @@ class CharacterPlayer extends Box
     if (flip) character.flipX = !character.flipX;
     if (targetScale != 1.0) character.setScale(targetScale);
 
-    character.animation.callback = function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
-      @:privateAccess
-      character.onAnimationFrame(name, frameNumber, frameIndex);
+    character.animation.onFrameChange.add(function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
       dispatch(new AnimationEvent(AnimationEvent.FRAME));
-    };
-    character.animation.finishCallback = function(name:String = '') {
-      @:privateAccess
-      character.onAnimationFinished(name);
+    });
+    character.animation.onFinish.add(function(name:String = '') {
       dispatch(new AnimationEvent(AnimationEvent.END));
-    };
+    });
     add(character);
 
     invalidateComponentLayout();
@@ -239,6 +236,16 @@ class CharacterPlayer extends Box
   public function onNoteMiss(event:NoteScriptEvent):Void
   {
     if (character != null) character.onNoteMiss(event);
+  }
+
+  /**
+   * Called when a hold note is dropped in the song
+   * Used to play character animations.
+   * @param event The event.
+   */
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent):Void
+  {
+    if (character != null) character.onNoteHoldDrop(event);
   }
 
   /**

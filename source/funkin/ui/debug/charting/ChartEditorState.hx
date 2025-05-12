@@ -1334,7 +1334,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       result = [];
       trace('Initializing blank chart for difficulty ' + selectedDifficulty);
       currentSongChartData.notes.set(selectedDifficulty, result);
-      currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
       return result;
     }
     return result;
@@ -1343,7 +1342,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_currentSongChartNoteData(value:Array<SongNoteData>):Array<SongNoteData>
   {
     currentSongChartData.notes.set(selectedDifficulty, value);
-    currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
     return value;
   }
 
@@ -1635,9 +1633,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
-
-    // Make sure the difficulty we selected is in the list of difficulties.
-    currentSongMetadata.playData.difficulties.pushUnique(selectedDifficulty);
 
     return selectedDifficulty;
   }
@@ -2361,7 +2356,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
 
-      if (!FileUtil.doesFileExist(chartPath))
+      if (!FileUtil.fileExists(chartPath))
       {
         trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
         menuItemRecentChart.disabled = true;
@@ -3230,7 +3225,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?
     var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
-    WindowUtil.openFolder(absoluteBackupsPath);
+    FileUtil.openFolder(absoluteBackupsPath);
     return true;
     #else
     trace('No file system access, cannot open backups folder.');
@@ -5118,6 +5113,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
 
+    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
+    var parts:Array<String> = Std.string(roundedBeat).split('.');
+    if (parts.length == 1) parts.push('00');
+    else if (parts[1].length < 2) parts[1] += '0';
+    songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
+
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
     var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
@@ -5837,6 +5838,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     uiCamera.revive();
     FlxG.cameras.reset(uiCamera);
+    uiCamera.onResize();
 
     add(this.root);
   }

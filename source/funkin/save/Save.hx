@@ -43,7 +43,7 @@ class Save
   {
     if (_instance == null)
     {
-      return _instance = load();
+      return load();
     }
     return _instance;
   }
@@ -55,7 +55,10 @@ class Save
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    return loadFromSlot(BASE_SAVE_SLOT);
+    var loadedSave:Save = loadFromSlot(BASE_SAVE_SLOT);
+    if (_instance == null) _instance = loadedSave;
+
+    return loadedSave;
   }
 
   public static function clearData():Void
@@ -116,6 +119,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
+          vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
           inputOffset: 0,
@@ -1129,6 +1133,7 @@ class Save
    * @param slot The slot number to check.
    * @return Whether the slot is not empty.
    */
+  @:haxe.warning("-WDeprecated")
   static function querySlot(slot:Int):Bool
   {
     var targetSaveData = new FlxSave();
@@ -1421,6 +1426,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
+   * @default `Off`
+   */
+  var vsyncMode:String;
 
   /**
    * If >0, the game will display a semi-opaque background under the notes.
