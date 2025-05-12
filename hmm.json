@@ -8,6 +8,35 @@
       "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
     },
     {
+      "name": "astc-compressor",
+      "type": "git",
+      "dir": null,
+      "ref": "9204077f468e85d67d63974e99d70348eebf99ba",
+      "url": "https://github.com/KarimAkra/astc-compressor"
+    },
+    {
+      "name": "extension-admob",
+      "type": "git",
+      "dir": null,
+      "ref": "439cd3953ea6c75444b05ab721e82f6e803aa2df",
+      "url": "https://github.com/FunkinCrew/extension-admob"
+    },
+    {
+      "name": "extension-androidtools",
+      "type": "haxelib",
+      "version": "2.2.0"
+    },
+    {
+      "name": "extension-haptics",
+      "type": "haxelib",
+      "version": "1.0.1"
+    },
+    {
+      "name": "extension-iapcore",
+      "type": "haxelib",
+      "version": "1.0.1"
+    },
+    {
       "name": "flixel",
       "type": "git",
       "dir": null,
@@ -210,35 +239,6 @@
       "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
-    },
-    {
-      "name": "extension-admob",
-      "type": "git",
-      "dir": null,
-      "ref": "439cd3953ea6c75444b05ab721e82f6e803aa2df",
-      "url": "https://github.com/FunkinCrew/extension-admob"
-    },
-    {
-      "name": "extension-androidtools",
-      "type": "haxelib",
-      "version": "2.2.0"
-    },
-    {
-      "name": "extension-iapcore",
-      "type": "haxelib",
-      "version": "1.0.1"
-    },
-    {
-      "name": "extension-haptics",
-      "type": "haxelib",
-      "version": "1.0.1"
-    },
-    {
-      "name": "astc-compressor",
-      "type": "git",
-      "dir": null,
-      "ref": "9204077f468e85d67d63974e99d70348eebf99ba",
-      "url": "https://github.com/KarimAkra/astc-compressor"
     }
   ]
 }
