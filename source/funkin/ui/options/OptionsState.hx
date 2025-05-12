@@ -92,7 +92,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     add(items = new TextMenuList());
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
     createItem("CONTROLS", function() codex.switchPage(Controls));
-    createItem("INPUT OFFSETS", function() {
+    createItem("OFFSET ADJUSTMENT", function() {
       #if web
       LoadingState.transitionToState(() -> new LatencyState());
       #else
