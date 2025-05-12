@@ -53,6 +53,38 @@ class EditorTheme implements IRegistryEntry<ThemeData>
     return _data?.stage;
   }
 
+  public function getColor(name:String, fallback:FlxColor, ?useStageData:Bool = false):FlxColor
+  {
+    var data:Dynamic = useStageData ? getStageData() : getChartData();
+    if (data == null) return fallback;
+
+    var regex = ~/^([a-zA-Z0-9_]+)\[(\d+)\]$/;
+    if (regex.match(name))
+    {
+      var fieldName = regex.matched(1);
+      var index = Std.parseInt(regex.matched(2));
+      if (fieldName == null || index == null) return fallback;
+
+      var arr:Null<Array<String>> = Reflect.field(data, fieldName);
+      if (arr != null && index >= 0 && index < arr.length)
+      {
+        var colorStr = arr[index];
+        var targetColor:Null<FlxColor> = FlxColor.fromString(colorStr);
+        return targetColor != null ? targetColor : fallback;
+      }
+
+      return fallback;
+    }
+
+    var fieldValue = Reflect.field(data, name);
+    if (fieldValue == null) return fallback;
+
+    var targetColor:Null<FlxColor> = FlxColor.fromString(fieldValue);
+    if (targetColor != null) return targetColor;
+
+    return fallback;
+    }
+
   public function toString():String
   {
     return 'EditorTheme($id)';

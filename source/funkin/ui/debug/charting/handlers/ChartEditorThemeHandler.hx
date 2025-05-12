@@ -18,7 +18,6 @@ import openfl.geom.Rectangle;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorThemeHandler
 {
-
   public static var theme:Null<EditorTheme>;
 
   static final BACKGROUND_COLOR_LIGHT:FlxColor = 0xFF673AB7;
@@ -83,47 +82,14 @@ class ChartEditorThemeHandler
     updateNotePreview(state);
   }
 
-  static function getColor(name:String, fallback:FlxColor):FlxColor
-  {
-    if (theme == null) return fallback;
-    var data:Dynamic = theme.getChartData();
-    if (data == null) return fallback;
-
-    var regex = ~/^([a-zA-Z0-9_]+)\[(\d+)\]$/;
-    if (regex.match(name))
-    {
-      var fieldName = regex.matched(1);
-      var index = Std.parseInt(regex.matched(2));
-      if (fieldName == null || index == null) return fallback;
-
-      var arr:Null<Array<String>> = Reflect.field(data, fieldName);
-      if (arr != null && index >= 0 && index < arr.length)
-      {
-        var colorStr = arr[index];
-        var targetColor:Null<FlxColor> = FlxColor.fromString(colorStr);
-        return targetColor != null ? targetColor : fallback;
-      }
-
-      return fallback;
-    }
-
-    var fieldValue = Reflect.field(theme.getChartData(), name);
-    if (fieldValue == null) return fallback;
-
-    var targetColor:Null<FlxColor> = FlxColor.fromString(fieldValue);
-    if (targetColor != null) return targetColor;
-
-    return fallback;
-  }
-
   /**
    * Updates the tint of the background sprite to match the current theme.
    * @param state The ChartEditorState to update.
    */
   static function updateBackground(state:ChartEditorState):Void
   {
-    if (state.menuBG == null) return;
-    state.menuBG.color = getColor("background", BACKGROUND_COLOR_LIGHT);
+    if (theme == null || state.menuBG == null) return;
+    state.menuBG.color = theme.getColor("background", BACKGROUND_COLOR_LIGHT);
   }
 
   /**
@@ -132,9 +98,10 @@ class ChartEditorThemeHandler
    */
   static function updateGridBitmap(state:ChartEditorState):Void
   {
-    var gridColor1:FlxColor = getColor("gridColors[0]", GRID_COLOR_1_LIGHT);
+    if (theme == null) return;
+    var gridColor1:FlxColor = theme.getColor("gridColors[0]", GRID_COLOR_1_LIGHT);
 
-    var gridColor2:FlxColor = getColor("gridColors[1]", GRID_COLOR_2_LIGHT);
+    var gridColor2:FlxColor = theme.getColor("gridColors[1]", GRID_COLOR_2_LIGHT);
 
     // Draw the base grid.
 
@@ -145,7 +112,7 @@ class ChartEditorThemeHandler
     state.gridBitmap = FlxGridOverlay.createGrid(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
 
     // Selection borders
-    var selectionBorderColor:FlxColor = getColor("gridColors[2]", GRID_COLOR_3_LIGHT);
+    var selectionBorderColor:FlxColor = theme.getColor("gridColors[2]", GRID_COLOR_3_LIGHT);
 
     // Selection border at top.
     state.gridBitmap.fillRect(new Rectangle(0, -(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), state.gridBitmap.width,
@@ -185,7 +152,7 @@ class ChartEditorThemeHandler
 
     // Draw horizontal dividers between the measures.
 
-    var gridMeasureDividerColor:FlxColor = getColor("gridMeasureDivider", GRID_MEASURE_DIVIDER_COLOR_LIGHT);
+    var gridMeasureDividerColor:FlxColor = theme.getColor("gridMeasureDivider", GRID_MEASURE_DIVIDER_COLOR_LIGHT);
 
     // Divider at top
     state.gridBitmap.fillRect(new Rectangle(0, 0, state.gridBitmap.width, GRID_MEASURE_DIVIDER_WIDTH / 2), gridMeasureDividerColor);
@@ -195,7 +162,7 @@ class ChartEditorThemeHandler
 
     // Draw horizontal dividers between the beats.
 
-    var gridBeatDividerColor:FlxColor = getColor("gridBeatDivider", GRID_BEAT_DIVIDER_COLOR_LIGHT);
+    var gridBeatDividerColor:FlxColor = theme.getColor("gridBeatDivider", GRID_BEAT_DIVIDER_COLOR_LIGHT);
 
     // Selection borders horizontally in the middle.
     for (i in 1...(Conductor.instance.stepsPerMeasure))
@@ -211,7 +178,7 @@ class ChartEditorThemeHandler
 
     // Draw vertical dividers between the strumlines.
 
-    var gridStrumlineDividerColor:FlxColor = getColor("gridStrumlineDivider", GRID_STRUMLINE_DIVIDER_COLOR_LIGHT);
+    var gridStrumlineDividerColor:FlxColor = theme.getColor("gridStrumlineDivider", GRID_STRUMLINE_DIVIDER_COLOR_LIGHT);
 
     // Divider at 1 * (Strumline Size)
     var dividerLineAX:Float = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
@@ -314,9 +281,10 @@ class ChartEditorThemeHandler
 
   static function updateSelectionSquare(state:ChartEditorState):Void
   {
-    var selectionSquareBorderColor:FlxColor = getColor("selectionSquareBorder", SELECTION_SQUARE_BORDER_COLOR_LIGHT);
+    if (theme == null) return;
+    var selectionSquareBorderColor:FlxColor = theme.getColor("selectionSquareBorder", SELECTION_SQUARE_BORDER_COLOR_LIGHT);
 
-    var selectionSquareFillColor:FlxColor = getColor("selectionSquareFill", SELECTION_SQUARE_FILL_COLOR_LIGHT);
+    var selectionSquareFillColor:FlxColor = theme.getColor("selectionSquareFill", SELECTION_SQUARE_FILL_COLOR_LIGHT);
 
     state.selectionSquareBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
 
@@ -343,9 +311,10 @@ class ChartEditorThemeHandler
 
   static function updateNotePreview(state:ChartEditorState):Void
   {
-    var viewportBorderColor:FlxColor = getColor("notePreviewViewportBorder", NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT);
+    if (theme == null) return;
+    var viewportBorderColor:FlxColor = theme.getColor("notePreviewViewportBorder", NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT);
 
-    var viewportFillColor:FlxColor = getColor("notePreviewViewportFill", NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT);
+    var viewportFillColor:FlxColor = theme.getColor("notePreviewViewportFill", NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT);
 
     state.notePreviewViewportBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
 
