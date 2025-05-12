@@ -104,7 +104,7 @@ class ResultState extends MusicBeatSubState
     rank = Scoring.calculateRank(params.scoreData) ?? SHIT;
 
     cameraBG = new FunkinCamera('resultsBG', 0, 0, FlxG.width, FlxG.height);
-    cameraScroll = new FunkinCamera('resultsScroll', 0, 0, FlxG.width, FlxG.height);
+    cameraScroll = new FunkinCamera('resultsScroll', 0, 0, FlxG.width, Math.round(FlxG.height * 1.2));
     cameraEverything = new FunkinCamera('resultsEverything', 0, 0, FlxG.width, FlxG.height);
 
     // We build a lot of this stuff in the constructor, then place it in create().
