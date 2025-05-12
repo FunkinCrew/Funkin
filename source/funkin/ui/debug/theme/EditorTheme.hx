@@ -83,7 +83,7 @@ class EditorTheme implements IRegistryEntry<ThemeData>
     if (targetColor != null) return targetColor;
 
     return fallback;
-    }
+  }
 
   public function toString():String
   {
