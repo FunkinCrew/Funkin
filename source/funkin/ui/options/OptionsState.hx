@@ -31,6 +31,8 @@ class OptionsState extends MusicBeatState
 {
   var optionsCodex:Codex<OptionsMenuPageName>;
 
+  public static var rememberedSelectedIndex:Int = 0;
+
   override function create():Void
   {
     persistentUpdate = true;
@@ -113,6 +115,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     createItem("CONTROLS", function() codex.switchPage(Controls));
     #end
     createItem("INPUT OFFSETS", function() {
+      OptionsState.rememberedSelectedIndex = items.selectedIndex;
       #if web
       LoadingState.transitionToState(() -> new LatencyState());
       #else
@@ -151,6 +154,8 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       promptClearSaveData();
     });
     createItem("EXIT", exit);
+
+    items.selectItem(OptionsState.rememberedSelectedIndex);
   }
 
   function createItem(name:String, callback:Void->Void, fireInstantly = false)
