@@ -6,6 +6,7 @@ import funkin.mobile.external.ScreenUtils;
 import extension.androidtools.Tools;
 #end
 import lime.math.Rectangle;
+import lime.system.System;
 
 /**
  * A Utility class to get mobile screen related informations.
@@ -64,21 +65,34 @@ class ScreenUtil
 
     ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(deviceWidth), cpp.RawPointer.addressOf(deviceHeight));
 
+    var displayOrientation = System.getDisplayOrientation(0);
+
+    notchRect.x = 0;
+    notchRect.y = 0.0;
+
     // Calculate the rectangle dimensions for the notch
     // Note: iOS only spits out *insets* for "safe areas", so we can only get a broad position for the notch
     // left + right insets are the same, so we can use either
-
-    // If we're in landscape, we want to create the rectangle with our left inset as width (notch width),
-    // otherwise, we can just use the screen width
-    notchRect.width = leftInset > topInset ? leftInset : deviceWidth;
-
-    // If we're in landscape, we want to create the rectangle with the screen size as height,
-    // otherwise, we use the top inset as height
-    notchRect.height = leftInset > topInset ? deviceHeight : topInset;
-
-    // Todo: Check which landscape orientation we're in, and set `rectangle.x = width - right` if we're in flipped landscape
-    notchRect.x = 0;
-    notchRect.y = 0.0;
+    // Note: *inset* is the distance from the edge of the screen where a safe area gets defined
+    // see: https://developer.apple.com/documentation/uikit/uiview/safeareainsets
+    switch (displayOrientation)
+    {
+      case DISPLAY_ORIENTATION_LANDSCAPE: // landscape
+        notchRect.width = leftInset;
+        notchRect.height = deviceHeight;
+      case DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED: // landscape
+        notchRect.width = leftInset;
+        notchRect.height = deviceHeight;
+        notchRect.x = deviceWidth - notchRect.width; // move notchRect if we are flipped, notch is at the right of screen
+      case DISPLAY_ORIENTATION_PORTRAIT: // portrait
+        notchRect.width = deviceWidth;
+        notchRect.height = topInset;
+      case DISPLAY_ORIENTATION_PORTRAIT_FLIPPED: // portrait
+        notchRect.width = deviceWidth;
+        notchRect.height = bottomInset;
+        notchRect.y = deviceHeight - notchRect.height; // move notchRect if we are flipped, the notch is at the bottom of screen
+      default: // display orientation unknown? perhaps this occurs on desktop
+    }
     #end
 
     return notchRect;
