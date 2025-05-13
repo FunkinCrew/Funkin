@@ -30,6 +30,7 @@ Full credits can be found in-game, or in the `credits.json` file which is locate
 - [EliteMasterEric](https://twitter.com/EliteMasterEric) - Programmer
 - [MtH](https://twitter.com/emmnyaa) - Charting and Additional Programming
 - [GeoKureli](https://twitter.com/Geokureli/) - Additional Programming
+- [reftixd](https://github.com/KUKKARUUKKU417/- Programmer
 - Our contributors on GitHub
 
 ## Art / Animation / UI
