@@ -66,7 +66,6 @@ class StageEditorState extends UIState
   // the uh finals
   public static final BACKUPS_PATH:String = "./stagebackups/";
   public static final LIGHT_MODE_COLORS:Array<FlxColor> = [0xFFE7E6E6, 0xFFF8F8F8];
-  public static final DARK_MODE_COLORS:Array<FlxColor> = [0xFF181919, 0xFF202020];
 
   public static final DEFAULT_POSITIONS:Map<CharacterType, Array<Float>> = [
     CharacterType.BF => [989.5, 885],
