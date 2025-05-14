@@ -24,7 +24,9 @@ class ScriptHandler
 
   public function new()
   {
+    #if cpp
     this.modules = [];
+    #end
   }
 
   public function clearModules():Void

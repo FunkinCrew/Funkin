@@ -295,6 +295,7 @@ class Project extends HXProject {
 		configureIncludeMacros();
 		configureCustomMacros();
     configureOutputDir();
+    configureCppia();
     configurePolymod();
     configureHaxelibs();
     configureAssets();
@@ -562,8 +563,6 @@ class Project extends HXProject {
 		setHaxedef("HXCPP_STACK_TRACE");
 		setHaxedef("hscriptPos");
 
-		setHaxedef("scriptable");
-
 		setHaxedef("safeMode");
 
 		// If we aren't using the Flixel debugger, strip it out.
@@ -623,6 +622,13 @@ class Project extends HXProject {
 		// Ensure all Flixel classes are available at runtime.
 		// Explicitly ignore packages which require additional dependencies.
 		addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
+
+		if (isWeb()) {
+			// include scripts as if they were regular .hx files
+			// will need to fix all the scripts later
+			addHaxeFlag("-cp \"assets/preload/scripts/test\"");
+			addHaxeMacro("include('', true, [], [\"assets/preload/scripts/test\"])");
+		}
 	}
 
 	/**
@@ -650,6 +656,23 @@ class Project extends HXProject {
 		// setenv('BUILD_DIR', buildDir);
 		app.path = buildDir;
   }
+
+	function configureCppia() {
+		setHaxedef("scriptable");
+
+		var platformFolder:String =
+			if (isWeb()) 'html5';
+			else if (isWindows()) 'windows';
+			else if (isLinux()) 'linux';
+			else if (isMac()) 'macos';
+			else if (isAndroid()) 'android';
+			else if (isIOS()) 'ios';
+			else throw 'Is anything else even supported?';
+
+		// in the future we will do some first remove a few classes from the .info file
+		// and only then move it into the `bin` directory
+		setHaxedef("dll_export", app.path + platformFolder + "/bin/export_classes.info");
+	}
 
   function configurePolymod() {
 		// The file extension to use for script files.
