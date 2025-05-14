@@ -250,6 +250,12 @@ class Constants
   public static final DEFAULT_BOP_INTENSITY:Float = 1.015;
 
   /**
+   * The default intensity multiplier for hud camera bops.
+   * Prolly needs to be tuned bc it's a multiplier now.
+   */
+  public static final DEFAULT_HUD_BOP_INTENSITY:Float = 1.03;
+
+  /**
    * The default rate for camera zooms (in beats per zoom).
    */
   public static final DEFAULT_ZOOM_RATE:Int = 4;
