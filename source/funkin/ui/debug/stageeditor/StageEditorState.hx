@@ -18,8 +18,6 @@ import funkin.save.Save;
 import funkin.input.Cursor;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.containers.menus.MenuItem;
-import funkin.ui.debug.theme.EditorTheme;
-import funkin.data.theme.ThemeRegistry;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuOptionBox;
@@ -895,9 +893,7 @@ class StageEditorState extends UIState
 
   function autosavePerCrash(message:String)
   {
-    trace("Crashed the game for the reason: " + message);
-
-    writePreferences();
+    trace("fuuuucckkkkk we crashed, reason: " + message);
 
     if (!saved)
     {
@@ -1337,6 +1333,8 @@ class StageEditorState extends UIState
           reloadRecentFiles();
         }, null, null, "Open Stage Data");
 
+      case "preferences":
+
       case "exit":
         if (!saved)
         {
@@ -1365,8 +1363,8 @@ class StageEditorState extends UIState
         CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
         Cursor.hide();
-        FlxG.switchState(() -> new MainMenuState());
-        if (welcomeMusic != null) welcomeMusic.destroy();
+        FlxG.switchState(() -> new DebugMenuSubState());
+        FlxG.sound.music.stop();
 
       case "switch mode":
         if (testingMode) return;
