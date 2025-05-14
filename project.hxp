@@ -503,7 +503,7 @@ class Project extends HXProject {
 		FEATURE_POLYMOD_MODS.apply(this, true);
 		FEATURE_FUNKVIS.apply(this, true);
 		FEATURE_PARTIAL_SOUNDS.apply(this, true);
-		FEATURE_VIDEO_PLAYBACK.apply(this, true);
+		FEATURE_VIDEO_PLAYBACK.apply(this, false);
 		FEATURE_STAGE_EDITOR.apply(this, true);
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
@@ -525,7 +525,7 @@ class Project extends HXProject {
 
 		// Should be true on desktop, release, non-tester builds.
 		// We don't want testers to accidentally leak songs to their Discord friends!
-		FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+		FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this) && false);
 
 		// Should be true only on web builds.
 		// Audio context issues only exist there.
@@ -561,6 +561,8 @@ class Project extends HXProject {
 		setHaxedef("HXCPP_STACK_LINE");
 		setHaxedef("HXCPP_STACK_TRACE");
 		setHaxedef("hscriptPos");
+
+		setHaxedef("scriptable");
 
 		setHaxedef("safeMode");
 
