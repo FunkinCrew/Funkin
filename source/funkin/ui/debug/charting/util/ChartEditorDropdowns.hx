@@ -275,7 +275,8 @@ class ChartEditorDropdowns
 
     var returnValue:DropDownEntry = includeNone ? ({id: "none", text: ""}) : ({id: "default", text: "Default"});
 
-    for (variationId in variationIds) {
+    for (variationId in variationIds)
+    {
       var value = {id: variationId, text: variationId.toTitleCase()};
       if (startingVariation == variationId) returnValue = value;
 

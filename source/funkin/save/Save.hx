@@ -205,7 +205,8 @@ class Save
           previousFiles: [],
           moveStep: "1px",
           angleStep: 5,
-          theme: StageEditorTheme.Light,
+          themeMusic: true,
+          theme: Constants.DEFAULT_EDITOR_THEME,
           bfChar: "bf",
           gfChar: "gf",
           dadChar: "dad"
@@ -708,16 +709,33 @@ class Save
     return data.optionsStageEditor.angleStep;
   }
 
-  public var stageEditorTheme(get, set):StageEditorTheme;
+  public var stageEditorThemeMusic(get, set):Bool;
 
-  function get_stageEditorTheme():StageEditorTheme
+  function get_stageEditorThemeMusic():Bool
   {
-    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = StageEditorTheme.Light;
+    if (data.optionsStageEditor.themeMusic == null) data.optionsStageEditor.themeMusic = true;
+
+    return data.optionsStageEditor.themeMusic;
+  }
+
+  function set_stageEditorThemeMusic(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsStageEditor.themeMusic = value;
+    flush();
+    return data.optionsStageEditor.themeMusic;
+  }
+
+  public var stageEditorTheme(get, set):String;
+
+  function get_stageEditorTheme():String
+  {
+    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = Constants.DEFAULT_EDITOR_THEME;
 
     return data.optionsStageEditor.theme;
   }
 
-  function set_stageEditorTheme(value:StageEditorTheme):StageEditorTheme
+  function set_stageEditorTheme(value:String):String
   {
     // Set and apply.
     data.optionsStageEditor.theme = value;
@@ -2045,10 +2063,16 @@ typedef SaveDataStageEditorOptions =
   var ?angleStep:Float;
 
   /**
-   * Theme in the Stage Editor.
-   * @default `StageEditorTheme.Light`
+   * Theme music in the Stage Editor.
+   * @default `true`
    */
-  var ?theme:StageEditorTheme;
+  var ?themeMusic:Bool;
+
+  /**
+   * Theme in the Stage Editor.
+   * @default `Constants.DEFAULT_EDITOR_THEME`
+   */
+  var ?theme:String;
 
   /**
    * The BF character ID used in testing stages.

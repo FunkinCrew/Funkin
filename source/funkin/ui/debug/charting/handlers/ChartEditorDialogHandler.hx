@@ -31,6 +31,7 @@ import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
 import haxe.ui.components.CheckBox;
+import haxe.ui.components.OptionStepper;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
@@ -195,6 +196,24 @@ class ChartEditorDialogHandler
       save.chartEditorAutoSaveTimer = event.value;
     };
     autoSaveTimer.value = save.chartEditorAutoSaveTimer;
+
+    var inputMode:Null<OptionStepper> = dialog.findComponent('optionsLiveInputMode', OptionStepper);
+    if (inputMode == null) throw 'Could not locate inputMode OptionStepper in Preferences dialog';
+    inputMode.onChange = function(event:UIEvent) {
+      if (event.value == null || event.value < 0) return;
+      state.currentLiveInputStyle = inputMode.dataSource.get(event.value).id;
+    };
+    // if someone finds a better way to do this, please let me know
+    var currentLiveInputStyleId:Int = -1;
+    for (i in 0...inputMode.dataSource.size)
+    {
+      if (inputMode.dataSource.get(i).id == state.currentLiveInputStyle)
+      {
+        currentLiveInputStyleId = i;
+        break;
+      }
+    }
+    inputMode.value = currentLiveInputStyleId;
 
     var inputTheme:Null<DropDown> = dialog.findComponent('optionsThemeGroup', DropDown);
     if (inputTheme == null) throw 'Could not locate inputTheme DropDown in Preferences dialog';
