@@ -295,8 +295,12 @@ class Project extends HXProject {
 		configureIncludeMacros();
 		configureCustomMacros();
     configureOutputDir();
-    configureCppia();
-    configurePolymod();
+
+		if (isDesktop()) {
+    	configureCppia();
+		}
+
+		configurePolymod();
     configureHaxelibs();
     configureAssets();
     configureIcons();
@@ -661,13 +665,10 @@ class Project extends HXProject {
 		setHaxedef("scriptable");
 
 		var platformFolder:String =
-			if (isWeb()) 'html5';
-			else if (isWindows()) 'windows';
+			if (isWindows()) 'windows';
 			else if (isLinux()) 'linux';
 			else if (isMac()) 'macos';
-			else if (isAndroid()) 'android';
-			else if (isIOS()) 'ios';
-			else throw 'Is anything else even supported?';
+			else throw '???';
 
 		// in the future we will do some first remove a few classes from the .info file
 		// and only then move it into the `bin` directory
