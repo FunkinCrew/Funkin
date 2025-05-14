@@ -9,7 +9,7 @@ import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
-class AddCameraZoomEvent extends SongEvent
+class AddCameraZoomSongEvent extends SongEvent
 {
   public function new()
   {
