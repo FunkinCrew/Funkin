@@ -37,7 +37,7 @@ class SoundUtil
     #if (lime_cffi && lime_openal && !macro)
     @:privateAccess
     {
-      if (sound.time <= 0) return 0;
+      if (sound.time <= 0 || sound._channel == null) return 0;
       var handle:ALSource = sound._channel.__audioSource.__backend.handle;
       var offsets = AL.getSourcedvSOFT(handle, AL.SEC_OFFSET_LATENCY_SOFT, 2);
       return offsets[1] * 1000;
