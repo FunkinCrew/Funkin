@@ -16,7 +16,3 @@ node_modules/
 package.json
 package-lock.json
 .aider*
-
-# CPPIA Stuff
-# Will remove when i figure out to set dll_export to the correct bin path
-export_classes.info
