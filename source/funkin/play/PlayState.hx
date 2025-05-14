@@ -2094,7 +2094,7 @@ class PlayState extends MusicBeatSubState
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
-    resyncVocals();
+    // resyncVocals();
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
