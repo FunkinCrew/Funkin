@@ -21,7 +21,7 @@ jobs:
       trigger-build: ${{ steps.should-trigger.outputs.result }}
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.1
         with:
           submodules: false
       - uses: dorny/paths-filter@v3
@@ -93,7 +93,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.1
         with:
           submodules: false
       - name: Log into GitHub Container Registry
@@ -144,7 +144,7 @@ jobs:
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.1
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
@@ -204,7 +204,7 @@ jobs:
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.1
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
