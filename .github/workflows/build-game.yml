@@ -149,6 +149,9 @@ jobs:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
           persist-credentials: false
+          submodule-aliases: |
+            https://github.com/FunkinCrew/Funkin.assets > https://github.com/FunkinCrew/Funkin-assets-secret
+            https://github.com/FunkinCrew/Funkin.art > https://github.com/FunkinCrew/Funkin-art-secret
       - name: Setup build environment
         uses: ./.github/actions/setup-haxe
         with:
@@ -209,6 +212,9 @@ jobs:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
           persist-credentials: false
+          submodule-aliases: |
+            https://github.com/FunkinCrew/Funkin.assets > https://github.com/FunkinCrew/Funkin-assets-secret
+            https://github.com/FunkinCrew/Funkin.art > https://github.com/FunkinCrew/Funkin-art-secret
       - name: Config haxelib
         run: |
           haxelib --never newrepo
