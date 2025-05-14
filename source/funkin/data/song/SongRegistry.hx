@@ -10,11 +10,13 @@ import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
+import funkin.util.tools.ISingleton;
+import funkin.data.DefaultRegistryImpl;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
 @:nullSafety
-class SongRegistry extends BaseRegistry<Song, SongMetadata>
+class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
@@ -38,19 +40,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   static function get_DEFAULT_GENERATEDBY():String
   {
     return '${Constants.TITLE} - ${Constants.VERSION}';
-  }
-
-  /**
-   * TODO: What if there was a Singleton macro which automatically created the property for us?
-   */
-  public static var instance(get, never):SongRegistry;
-
-  static var _instance:Null<SongRegistry> = null;
-
-  static function get_instance():SongRegistry
-  {
-    if (_instance == null) _instance = new SongRegistry();
-    return _instance;
   }
 
   public function new()
@@ -419,16 +408,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
   }
 
-  function createScriptedEntry(clsName:String):Song
-  {
-    return ScriptedSong.init(clsName, "unknown");
-  }
-
-  function getScriptedClassNames():Array<String>
-  {
-    return ScriptedSong.listScriptClasses();
-  }
-
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
@@ -501,52 +480,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     chartData.variation = variation;
 
     return chartData;
-  }
-
-  /**
-   * A list of all the story weeks from the base game, in order.
-   * TODO: Should this be hardcoded?
-   */
-  public function listBaseGameSongIds():Array<String>
-  {
-    return [
-      "tutorial",
-      "bopeebo",
-      "fresh",
-      "dadbattle",
-      "spookeez",
-      "south",
-      "monster",
-      "pico",
-      "philly-nice",
-      "blammed",
-      "satin-panties",
-      "high",
-      "milf",
-      "cocoa",
-      "eggnog",
-      "winter-horrorland",
-      "senpai",
-      "roses",
-      "thorns",
-      "ugh",
-      "guns",
-      "stress",
-      "darnell",
-      "lit-up",
-      "2hot",
-      "blazin"
-    ];
-  }
-
-  /**
-   * A list of all installed story weeks that are not from the base game.
-   */
-  public function listModdedSongIds():Array<String>
-  {
-    return listEntryIds().filter(function(id:String):Bool {
-      return listBaseGameSongIds().indexOf(id) == -1;
-    });
   }
 
   /**

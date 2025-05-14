@@ -528,8 +528,11 @@ class DebugBoundingState extends FlxState
     trace('Added ${offsetAnimationDropdown.dataSource.size} to HaxeUI dropdown');
 
     offsetAnimationDropdown.onChange = function(event:UIEvent) {
-      trace('Selected animation ${event?.data?.id}');
-      playCharacterAnimation(event.data.id, true);
+      if (event.data != null)
+      {
+        trace('Selected animation ${event.data.id}');
+        playCharacterAnimation(event.data.id, true);
+      }
     }
 
     txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
@@ -569,7 +572,7 @@ class DebugBoundingState extends FlxState
       _file.addEventListener(Event.COMPLETE, onSaveComplete);
       _file.addEventListener(Event.CANCEL, onSaveCancel);
       _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-      _file.save(saveString,);
+      _file.save(saveString, fileName);
     }
   }
 

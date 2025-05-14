@@ -168,6 +168,8 @@ class CapsuleText extends FlxSpriteGroup
 
   public function resetText():Void
   {
+    scale.x = 1;
+    scale.y = 1;
     if (moveTween != null) moveTween.cancel();
     if (moveTimer != null) moveTimer.cancel();
     whiteText.offset.x = 0;

@@ -6,6 +6,7 @@ import funkin.graphics.FlxFilteredSprite;
  * The icon that gets used for Freeplay capsules and char select
  * NOT to be confused with the CharIcon class, which is for the in-game icons
  */
+@:nullSafety
 class PixelatedIcon extends FlxFilteredSprite
 {
   public function new(x:Float, y:Float)
