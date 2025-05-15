@@ -1429,11 +1429,12 @@ class FreeplayState extends MusicBeatSubState
     handleInputs(elapsed);
 
     if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
+    if (justClosedCapsuleOptions) justClosedCapsuleOptions = false;
   }
 
   function handleInputs(elapsed:Float):Void
   {
-    if (busy) return;
+    if (busy || justClosedCapsuleOptions) return;
 
     var upP:Bool = controls.UI_UP_P;
     var downP:Bool = controls.UI_DOWN_P;
@@ -1904,6 +1905,13 @@ class FreeplayState extends MusicBeatSubState
     trace('target difficulty: ${targetDifficultyId}');
     trace('target variation: ${targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION}');
 
+    // Open a CapsuleOptionsMenu instead where you decide whether to actually delete the data of the song or not.
+    if (FlxG.keys.pressed.DELETE)
+    {
+      openDeleteSongDataOption(cap, targetSongId);
+      return;
+    }
+
     var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
     var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
       targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
@@ -1925,9 +1933,40 @@ class FreeplayState extends MusicBeatSubState
     return controls;
   }
 
+  function openDeleteSongDataOption(cap:SongMenuItem, targetSongId:String):Void
+  {
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.targetPos.x + 175, cap.targetPos.y + 115, ["Funk NO!", "True.."], 'DELETE SONG DATA?');
+    capsuleOptionsMenu.cameras = [funnyCam];
+    capsuleOptionsMenu.zIndex = 10000;
+    add(capsuleOptionsMenu);
+
+    capsuleOptionsMenu.onConfirm = function(targetOption:String) {
+      if (targetOption == "True..") Save.instance.setSongScore(targetSongId, currentDifficulty,
+        {
+          // Zer0.
+          score: 0,
+          tallies:
+            {
+              sick: 0,
+              good: 0,
+              bad: 0,
+              shit: 0,
+              missed: 0,
+              combo: 0,
+              maxCombo: 0,
+              totalNotesHit: 0,
+              totalNotes: 0,
+            },
+        });
+      cleanupCapsuleOptionsMenu();
+      // Refresh the song to update the score.
+      changeSelection();
+    };
+  }
+
   function openInstrumentalList(cap:SongMenuItem, instrumentalIds:Array<String>):Void
   {
-    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.targetPos.x + 175, cap.targetPos.y + 115, instrumentalIds);
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.targetPos.x + 175, cap.targetPos.y + 115, instrumentalIds, 'INSTRUMENTAL');
     capsuleOptionsMenu.cameras = [funnyCam];
     capsuleOptionsMenu.zIndex = 10000;
     add(capsuleOptionsMenu);
@@ -1938,11 +1977,13 @@ class FreeplayState extends MusicBeatSubState
   }
 
   var capsuleOptionsMenu:Null<CapsuleOptionsMenu> = null;
+  var justClosedCapsuleOptions:Bool = false;
 
   public function cleanupCapsuleOptionsMenu():Void
   {
     this.busy = false;
     letterSort.inputEnabled = true;
+    justClosedCapsuleOptions = true;
 
     if (capsuleOptionsMenu != null)
     {
