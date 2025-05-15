@@ -2429,6 +2429,8 @@ class PlayState extends MusicBeatSubState
             trace('Hold note too short, not penalizing...');
           }
         }
+        playerStrumline.holdNotes.remove(holdNote);
+        holdNote.kill();
       }
     }
   }
