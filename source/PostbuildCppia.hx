@@ -19,6 +19,9 @@ class PostbuildCppia
     processExportClasses();
   }
 
+  /**
+   * TODO: removed blacklisted classes from the file
+   */
   static function processExportClasses():Void
   {
     if (FileSystem.exists(EXPORT_CLASSES_FILE))
