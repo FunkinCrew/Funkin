@@ -4,6 +4,7 @@ import funkin.data.stickers.StickerData;
 import funkin.ui.transition.stickers.StickerPack;
 import funkin.ui.transition.stickers.ScriptedStickerPack;
 
+@:nullSafety
 class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
 {
   /**
@@ -24,7 +25,9 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
 
   public function fetchDefault():StickerPack
   {
-    return fetchEntry(Constants.DEFAULT_STICKER_PACK);
+    var stickerPack:Null<StickerPack> = fetchEntry(Constants.DEFAULT_STICKER_PACK);
+    if (stickerPack == null) throw 'Default sticker pack was null! This should not happen!';
+    return stickerPack;
   }
 
   /**
