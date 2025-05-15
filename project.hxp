@@ -295,11 +295,7 @@ class Project extends HXProject {
 		configureIncludeMacros();
 		configureCustomMacros();
     configureOutputDir();
-
-		if (isDesktop()) {
-    	configureCppia();
-		}
-
+    configureCppia();
 		configurePolymod();
     configureHaxelibs();
     configureAssets();
@@ -662,17 +658,9 @@ class Project extends HXProject {
   }
 
 	function configureCppia() {
+		if (!isDesktop()) return;
+
 		setHaxedef("scriptable");
-
-		var platformFolder:String =
-			if (isWindows()) 'windows';
-			else if (isLinux()) 'linux';
-			else if (isMac()) 'macos';
-			else throw '???';
-
-		// in the future we will remove blacklisted classes from the .info file
-		// and only then move it into the `bin` directory
-		setHaxedef("dll_export", app.path + platformFolder + "/bin/export_classes.info");
 	}
 
   function configurePolymod() {
