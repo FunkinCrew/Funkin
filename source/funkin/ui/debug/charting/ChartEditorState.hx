@@ -4462,6 +4462,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
           var dragDistanceColumns:Int = dragTargetCurrentColumn;
 
+          if (dragDistanceMs == 0 && dragDistanceColumns == 0)
+          {
+            // There's no need to move anything.
+            // Also prevents the selection boxes on notes from disappearing when they're 'moved' like this.
+            dragTargetNote = null;
+            dragTargetEvent = null;
+            dragTargetCurrentStep = 0;
+            dragTargetCurrentColumn = 0;
+            return;
+          }
+
           if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
           {
             // Both notes and events are selected.
@@ -4527,6 +4538,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else if (dragTargetEvent != null)
           {
             data = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
+            noteGridPos = noteDataToGridColumn(data) - 1;
           }
           var dragDistanceColumns:Int = cursorGridPos - noteGridPos;
 
