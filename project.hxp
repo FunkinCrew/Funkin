@@ -76,6 +76,11 @@ class Project extends HXProject {
    */
   static final POSTBUILD_HX:String = "source/Postbuild.hx";
 
+  /**
+   * Path to the Haxe script run before building the game.
+   */
+	static final POSTBUILD_CPPIA_HX:String = "source/PostbuildCppia.hx";
+
 	/**
 	 * Asset path globs to always exclude from asset libraries.
 	 */
@@ -661,6 +666,15 @@ class Project extends HXProject {
 		if (!isDesktop()) return;
 
 		setHaxedef("scriptable");
+
+		var binDir:String = "BIN_DIR=" + app.path;
+		binDir +=
+			if (isWindows()) "windows";
+			else if (isLinux()) "linux";
+			else if (isMac()) "macos";
+			else throw 'There should be no other desktop platform, right?';
+		binDir += "/bin";
+    postBuildCallbacks.push(new CLICommand("haxe", ["-main", POSTBUILD_CPPIA_HX, "--interp", "-D", binDir]));
 	}
 
   function configurePolymod() {
