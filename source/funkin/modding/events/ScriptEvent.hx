@@ -255,7 +255,7 @@ class HoldNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Int, isComboBreak:Bool, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Int, isComboBreak:Bool, comboCount:Int = 0, cancelable:Bool = false):Void
   {
     super(type, null, healthChange, comboCount, true);
     this.holdNote = holdNote;
