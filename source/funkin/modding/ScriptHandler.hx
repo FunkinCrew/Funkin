@@ -5,19 +5,11 @@ import sys.io.File;
 import haxe.io.Bytes;
 import cpp.cppia.Module;
 #end
+import funkin.util.tools.ISingleton;
 
 @:nullSafety
-class ScriptHandler
+class ScriptHandler implements ISingleton
 {
-  static var _instance:Null<ScriptHandler>;
-  public static var instance(get, never):ScriptHandler;
-
-  static function get_instance():ScriptHandler
-  {
-    if (_instance == null) _instance = new ScriptHandler();
-    return _instance;
-  }
-
   #if cpp
   var modules:Array<Module>;
   #end
