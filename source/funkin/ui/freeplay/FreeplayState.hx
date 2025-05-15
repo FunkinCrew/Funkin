@@ -738,7 +738,10 @@ class FreeplayState extends MusicBeatSubState
     randomCapsule.initData(null, styleData, 1);
     randomCapsule.y = randomCapsule.intendedY(0) + 10;
     randomCapsule.targetPos.x = randomCapsule.x;
-    randomCapsule.alpha = 0.5;
+    randomCapsule.alpha = 0;
+    // Some of the random capsule's texts are not invisible'd here.
+    // So there's a weird case where it appears to have a difficulty when given a non-zero alpha value.
+    randomCapsule.bpmText.visible = false;
     randomCapsule.songText.visible = false;
     randomCapsule.favIcon.visible = false;
     randomCapsule.favIconBlurred.visible = false;
