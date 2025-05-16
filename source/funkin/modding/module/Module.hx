@@ -176,13 +176,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   /**
    * Called when the game regains focus.
-   * This does not get called if "Auto Pause" is disabled.
+   * This does not get called if "Pause on Unfocus" is disabled.
    */
   public function onFocusGained(event:FocusScriptEvent) {}
 
   /**
    * Called when the game loses focus.
-   * This does not get called if "Auto Pause" is disabled.
+   * This does not get called if "Pause on Unfocus" is disabled.
    */
   public function onFocusLost(event:FocusScriptEvent) {}
 
