@@ -2,21 +2,21 @@
 'size: tiny':
   max: 4
 
-# Add 'size: small' to any changes between 5 and 9 lines
+# Add 'size: small' to any changes between 5 and 10 lines
 'size: small':
   min: 5
-  max: 9
+  max: 10
 
-# Add 'size: medium' to any changes between 10 and 99 lines
+# Add 'size: medium' to any changes between 11 and 100 lines
 'size: medium':
-  min: 10
-  max: 99
+  min: 11
+  max: 100
 
-# Add 'size: large' to any changes between 100 and 499 lines
+# Add 'size: large' to any changes between 101 and 500 lines
 'size: large':
-  min: 100
-  max: 499
+  min: 101
+  max: 500
 
-# Add 'size: huge' to any changes of at least 500 lines
+# Add 'size: huge' to any changes of more than 500 lines
 'size: huge':
-  min: 500
+  min: 501
