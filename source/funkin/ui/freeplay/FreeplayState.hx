@@ -726,10 +726,6 @@ class FreeplayState extends MusicBeatSubState
     currentFilteredSongs = tempSongs;
     curSelected = 0;
 
-    // If curSelected is 0, the result will be null and fall back to the rememberedSongId.
-    // We set this so if we change the filter, we'd remain on the same song if it's still in the list.
-    rememberedSongId = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? rememberedSongId;
-
     grpCapsules.killMembers();
 
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
