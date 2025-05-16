@@ -76,6 +76,7 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | MultiKey, 9k, More than 4 keys, etc. | https://github.com/FunkinCrew/Funkin/issues/4243#issuecomment-2692371969 |
 | Flashy Combo Milestones | https://github.com/FunkinCrew/Funkin/pull/4700#issuecomment-2798916579 |
 | Losing Icons for DD and Parents | https://github.com/FunkinCrew/Funkin/issues/3048#issuecomment-2243491536 |
+| Reducing Saturation for the Week 5 Erect Background | https://github.com/FunkinCrew/Funkin/issues/4471#issuecomment-2819760848 |
 | Playable GF / Speaker BF / Speaker Pico | https://github.com/FunkinCrew/Funkin/issues/2953#issuecomment-2216985230 |
 | New Intro Text Lines | https://github.com/FunkinCrew/Funkin/issues/5031#issuecomment-2855593376 |
 | Fresh (Chill Mix) as Title Screen Music | https://github.com/FunkinCrew/Funkin/pull/4282#issuecomment-2709334718 |
