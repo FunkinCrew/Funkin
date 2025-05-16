@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
@@ -37,6 +38,13 @@ import funkin.api.newgrounds.Medals;
 
 class CharSelectSubState extends MusicBeatSubState
 {
+  static final SLOTS_PER_ROW:Int = 3;
+  static final MIN_SLOTS:Int = 9;
+
+  static final SLOT_LERP_VALUE:Float = 0.1;
+
+  var totalSlots:Int = MIN_SLOTS;
+
   var cursor:FlxSprite;
 
   var cursorBlue:FlxSprite;
@@ -44,8 +52,7 @@ class CharSelectSubState extends MusicBeatSubState
   var grpCursors:FlxTypedGroup<FlxSprite>;
   var cursorConfirmed:FlxSprite;
   var cursorDenied:FlxSprite;
-  var cursorX:Int = 0;
-  var cursorY:Int = 0;
+  var curSelected:Int = Math.floor(MIN_SLOTS / 2);
   var cursorFactor:Float = 110;
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
@@ -91,6 +98,12 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super();
     loadAvailableCharacters();
+
+    // Add additional slots to fill up the last row.
+    if (totalSlots % SLOTS_PER_ROW != 0)
+    {
+      totalSlots += (SLOTS_PER_ROW - totalSlots % SLOTS_PER_ROW);
+    }
   }
 
   function loadAvailableCharacters():Void
@@ -109,6 +122,8 @@ class CharSelectSubState extends MusicBeatSubState
       {
         targetPosition += 1;
       }
+
+      totalSlots = Std.int(Math.max(targetPosition, totalSlots));
 
       trace('Placing player ${playerId} at position ${targetPosition}');
       availableChars.set(targetPosition, playerId);
@@ -210,6 +225,12 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.y += 210;
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
 
+    grpCursors = new FlxTypedGroup<FlxSprite>();
+    add(grpCursors);
+
+    grpIcons = new FlxSpriteGroup();
+    add(grpIcons);
+
     chooseDipshit = new FlxSprite(426, -13);
     chooseDipshit.loadGraphic(Paths.image('charSelect/chooseDipshit'));
     add(chooseDipshit);
@@ -246,9 +267,6 @@ class CharSelectSubState extends MusicBeatSubState
     // FlxG.debugger.track(dipshitBacking, "dipshitBacking");
     // FlxG.debugger.track(charLightGF, "charLight");
     // FlxG.debugger.track(gfChill, "gfChill");
-
-    grpCursors = new FlxTypedGroup<FlxSprite>();
-    add(grpCursors);
 
     cursor = new FlxSprite(0, 0);
     cursor.loadGraphic(Paths.image('charSelect/charSelector'));
@@ -451,19 +469,16 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var grpIcons:FlxSpriteGroup;
-  var grpXSpread(default, set):Float = 107;
-  var grpYSpread(default, set):Float = 127;
+  var grpXSpread(default, set):Float = 110;
+  var grpYSpread(default, set):Float = 110;
   var nonLocks = [];
 
   function initLocks():Void
   {
-    grpIcons = new FlxSpriteGroup();
-    add(grpIcons);
-
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSpriteGroup, ["x", "y"]));
     // FlxG.debugger.track(grpIcons, "iconGrp");
 
-    for (i in 0...9)
+    for (i in 0...totalSlots)
     {
       if (availableChars.exists(i) && Save.instance.charactersSeen.contains(availableChars[i]))
       {
@@ -482,7 +497,7 @@ class CharSelectSubState extends MusicBeatSubState
         var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
         if (availableChars.exists(i) && isPlayerUnlocked) nonLocks.push(i);
 
-        var temp:Lock = new Lock(0, 0, i);
+        var temp:Lock = new Lock(0, 0, i % MIN_SLOTS);
         temp.ID = 1;
 
         // temp.onAnimationComplete.add(function(anim) {
@@ -500,31 +515,15 @@ class CharSelectSubState extends MusicBeatSubState
 
   function unLock():Void
   {
-    var index = nonLocks[0];
-
     pressedSelect = true;
-
-    var copy = 3;
-
-    var yThing = -1;
-
-    while ((index + 1) > copy)
-    {
-      yThing++;
-      copy += 3;
-    }
-
-    var xThing = (copy - index - 2) * -1;
-    // Look, I'd write better code but I had better aneurysms, my bad - Cheems
-    cursorY = yThing;
-    cursorX = xThing;
+    curSelected = nonLocks[0];
 
     selectSound.play(true);
 
     nonLocks.shift();
 
     selectTimer.start(0.5, function(_) {
-      var lock:Lock = cast grpIcons.group.members[index];
+      var lock:Lock = cast grpIcons.group.members[curSelected];
 
       lock.anim.getFrameLabel("unlockAnim").add(function() {
         playerChillOut.playAnimation("death");
@@ -541,7 +540,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       lock.onAnimationComplete.addOnce(function(_) {
         syncLock = null;
-        var char = availableChars.get(index);
+        var char = availableChars.get(curSelected);
         camera.flash(0xFFFFFFFF, 0.1);
         playerChill.playAnimation("unlock");
         playerChill.visible = true;
@@ -607,7 +606,7 @@ class CharSelectSubState extends MusicBeatSubState
       });
 
       playerChill.visible = false;
-      playerChill.switchChar(availableChars[index]);
+      playerChill.switchChar(availableChars[curSelected]);
 
       playerChillOut.visible = true;
     });
@@ -617,16 +616,25 @@ class CharSelectSubState extends MusicBeatSubState
   {
     grpIcons.x = 450;
     grpIcons.y = 120;
+
+    var finalRow:Int = Math.floor(totalSlots / SLOTS_PER_ROW);
+    var curRow:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+
+    grpIcons.y -= (FlxMath.bound(curRow, 1, finalRow - 2) - 1) * grpYSpread;
+
     for (index => member in grpIcons.members)
     {
-      var posX:Float = (index % 3);
-      var posY:Float = Math.floor(index / 3);
+      var posX:Float = (index % SLOTS_PER_ROW);
+      var posY:Float = Math.floor(index / SLOTS_PER_ROW);
 
       member.x = posX * grpXSpread;
       member.y = posY * grpYSpread;
 
       member.x += grpIcons.x;
       member.y += grpIcons.y;
+
+      member.x += (member.ID == 1 ? 10 : 0);
+      member.y += 17;
     }
   }
 
@@ -684,7 +692,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         ease: FlxEase.backIn,
         onComplete: function(_) {
-          FlxG.switchState(FreeplayState.build(
+          FlxG.switchState(() -> FreeplayState.build(
             {
               {
                 character: curChar,
@@ -753,57 +761,45 @@ class CharSelectSubState extends MusicBeatSubState
 
       if (controls.UI_UP_P)
       {
-        cursorY -= 1;
+        var column:Int = curSelected % SLOTS_PER_ROW;
+        curSelected = FlxMath.wrap(curSelected - SLOTS_PER_ROW, column, totalSlots + column - 1);
+
         cursorDenied.visible = false;
-
         holdTmrUp = 0;
-
         selectSound.play(true);
       }
       if (controls.UI_DOWN_P)
       {
-        cursorY += 1;
+        var column:Int = curSelected % SLOTS_PER_ROW;
+        curSelected = FlxMath.wrap(curSelected + SLOTS_PER_ROW, column, totalSlots + column - 1);
+
         cursorDenied.visible = false;
         holdTmrDown = 0;
         selectSound.play(true);
       }
       if (controls.UI_LEFT_P)
       {
-        cursorX -= 1;
-        cursorDenied.visible = false;
+        var row:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+        curSelected = FlxMath.wrap(curSelected - 1, row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
 
+        cursorDenied.visible = false;
         holdTmrLeft = 0;
         selectSound.play(true);
       }
       if (controls.UI_RIGHT_P)
       {
-        cursorX += 1;
+        var row:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+        curSelected = FlxMath.wrap(curSelected + 1, row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
+
         cursorDenied.visible = false;
         holdTmrRight = 0;
         selectSound.play(true);
       }
     }
 
-    if (cursorX < -1)
+    if (availableChars.exists(curSelected) && Save.instance.charactersSeen.contains(availableChars[curSelected]))
     {
-      cursorX = 1;
-    }
-    if (cursorX > 1)
-    {
-      cursorX = -1;
-    }
-    if (cursorY < -1)
-    {
-      cursorY = 1;
-    }
-    if (cursorY > 1)
-    {
-      cursorY = -1;
-    }
-
-    if (availableChars.exists(getCurrentSelected()) && Save.instance.charactersSeen.contains(availableChars[getCurrentSelected()]))
-    {
-      curChar = availableChars.get(getCurrentSelected());
+      curChar = availableChars.get(curSelected);
 
       if (allowInput && !pressedSelect && controls.ACCEPT)
       {
@@ -883,15 +879,42 @@ class CharSelectSubState extends MusicBeatSubState
 
     updateLockAnims();
 
+    var column:Int = curSelected % SLOTS_PER_ROW;
+
+    var row:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+    var finalRow:Int = Math.floor(totalSlots / SLOTS_PER_ROW);
+    var middleRow:Int = Std.int(FlxMath.bound(row, 1, finalRow - 2));
+
+    grpIcons.y = MathUtil.smoothLerp(grpIcons.y, 120 - (middleRow - 1) * grpYSpread, elapsed, SLOT_LERP_VALUE);
+
+    // Update icon visibility based on the position.
+    for (index => member in grpIcons.members)
+    {
+      var slotRow:Int = Math.floor(index / SLOTS_PER_ROW);
+      var targetAlpha:Float = 0;
+
+      // If the row of the slot is the same as the current row or one away, have it's alpha be set to one.
+      // If the difference is 2, have the visibility be halved. This lets the player know that they can scroll to the next icon.
+      // Otherwise, have the alpha be 0.
+      if (Math.abs(slotRow - middleRow) <= 1) targetAlpha = 1;
+      else if (Math.abs(slotRow - middleRow) == 2) targetAlpha = 0.75;
+
+      member.alpha = MathUtil.smoothLerp(member.alpha, targetAlpha, elapsed, SLOT_LERP_VALUE);
+    }
+
+    var cursorColumn:Int = column - 1;
+    var cursorRow:Int = ((row == 0 || row == finalRow - 1) ? row - 1 : 0);
+    cursorRow = Std.int(Math.min(cursorRow, 1)); // finalRow drags the cursor further down than it should.
+
     if (autoFollow == true)
     {
       camFollow.screenCenter();
-      camFollow.x += cursorX * 10;
-      camFollow.y += cursorY * 10;
+      camFollow.x += cursorColumn * 10;
+      camFollow.y += cursorRow * 10;
     }
 
-    cursorLocIntended.x = (cursorFactor * cursorX) + (FlxG.width / 2) - cursor.width / 2;
-    cursorLocIntended.y = (cursorFactor * cursorY) + (FlxG.height / 2) - cursor.height / 2;
+    cursorLocIntended.x = (cursorFactor * cursorColumn) + (FlxG.width / 2) - cursor.width / 2;
+    cursorLocIntended.y = (cursorFactor * cursorRow) + (FlxG.height / 2) - cursor.height / 2;
 
     cursorLocIntended.x += cursorOffsetX;
     cursorLocIntended.y += cursorOffsetY;
@@ -969,25 +992,21 @@ class CharSelectSubState extends MusicBeatSubState
 
       cursorDenied.visible = false;
 
-      if (spamUp)
+      if (spamUp || spamDown)
       {
-        cursorY -= 1;
-        holdTmrUp = 0;
+        var column:Int = curSelected % SLOTS_PER_ROW;
+        curSelected = FlxMath.wrap(curSelected + SLOTS_PER_ROW * (spamUp ? -1 : 1), column, totalSlots + column - 1);
+
+        if (spamUp) holdTmrUp = 0;
+        else if (spamDown) holdTmrDown = 0;
       }
-      if (spamDown)
+      if (spamLeft || spamRight)
       {
-        cursorY += 1;
-        holdTmrDown = 0;
-      }
-      if (spamLeft)
-      {
-        cursorX -= 1;
-        holdTmrLeft = 0;
-      }
-      if (spamRight)
-      {
-        cursorX += 1;
-        holdTmrRight = 0;
+        var row:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+        curSelected = FlxMath.wrap(curSelected + (spamLeft ? -1 : 1), row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
+
+        if (spamLeft) holdTmrLeft = 0;
+        else if (spamRight) holdTmrRight = 0;
       }
     }
   }
@@ -1000,7 +1019,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         case 1:
           var lock:Lock = cast member;
-          if (index == getCurrentSelected())
+          if (index == curSelected)
           {
             switch (lock.getCurrentAnimation())
             {
@@ -1017,7 +1036,7 @@ class CharSelectSubState extends MusicBeatSubState
         case 0:
           var memb:PixelatedIcon = cast member;
 
-          if (index == getCurrentSelected())
+          if (index == curSelected)
           {
             // memb.pixels = memb.withDropShadow.clone();
 
@@ -1053,14 +1072,6 @@ class CharSelectSubState extends MusicBeatSubState
           }
       }
     }
-  }
-
-  function getCurrentSelected():Int
-  {
-    var tempX:Int = cursorX + 1;
-    var tempY:Int = cursorY + 1;
-    var gridPosition:Int = tempX + tempY * 3;
-    return gridPosition;
   }
 
   function set_curChar(value:String):String
