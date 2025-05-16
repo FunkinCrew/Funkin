@@ -6,6 +6,8 @@ import funkin.modding.events.ScriptEvent;
 
 class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
+  var pressedSelect:Bool = false;
+
   public function new(x:Float, y:Float)
   {
     super(x, y, Paths.animateAtlas("charSelect/bfChill"));
@@ -16,10 +18,22 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
         case "slidein":
           if (hasAnimation("slidein idle point"))
           {
+            if (pressedSelect)
+            {
+              playAnimation("select");
+              pressedSelect = false;
+            }
+            else
             playAnimation("slidein idle point", true, false, false);
           }
           else
           {
+            if (pressedSelect)
+            {
+              playAnimation("select");
+              pressedSelect = false;
+            }
+            else
             playAnimation("idle", true, false, false);
           }
         case "deselect":
@@ -63,7 +77,7 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
   }
 
-  public function switchChar(str:String)
+  public function switchChar(str:String, pressedSelect:Bool = false)
   {
     switch str
     {
@@ -72,6 +86,8 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
 
     playAnimation("slidein", true, false, false);
+
+    this.pressedSelect = pressedSelect;
 
     updateHitbox();
 
