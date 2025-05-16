@@ -44,6 +44,8 @@ import funkin.play.notes.NoteSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.save.Save;
+import funkin.ui.debug.theme.EditorTheme;
+import funkin.data.theme.ThemeRegistry;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
@@ -626,17 +628,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
-   * Currently hardcoded to just Light and Dark.
    */
-  var currentTheme(default, set):ChartEditorTheme = ChartEditorTheme.Light;
+  public var themeId(default, set):String;
 
-  function set_currentTheme(value:ChartEditorTheme):ChartEditorTheme
+  function set_themeId(value:String):String
   {
-    if (value == null || value == currentTheme) return currentTheme;
+    if (value == null || value == themeId) return themeId;
 
-    currentTheme = value;
+    themeId = value;
     this.updateTheme();
     return value;
+  }
+
+  function get_themeId():String
+  {
+    return themeId ?? Constants.DEFAULT_EDITOR_THEME;
   }
 
   /**
@@ -916,7 +922,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (value)
     {
       // Start the auto-save timer.
-      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
+      autoSaveTimer = new FlxTimer().start(Save.instance.chartEditorAutoSaveTimer * Constants.SECS_PER_MIN, (_) -> autoSave());
     }
     else
     {
@@ -1828,11 +1834,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeMetronome:Slider;
 
   /**
-   * The `Audio -> Play Theme Music` menu checkbox.
-   */
-  var menubarItemThemeMusic:MenuCheckBox;
-
-  /**
    * The `Audio -> Player Hitsound Volume` label.
    */
   var menubarLabelVolumeHitsoundPlayer:Label;
@@ -2283,7 +2284,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentLiveInputStyle = save.chartEditorLiveInputStyle;
     isViewDownscroll = save.chartEditorDownscroll;
     playtestStartTime = save.chartEditorPlaytestStartTime;
-    currentTheme = save.chartEditorTheme;
+    themeId = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumeOpponent;
@@ -2312,7 +2313,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorLiveInputStyle = currentLiveInputStyle;
     save.chartEditorDownscroll = isViewDownscroll;
     save.chartEditorPlaytestStartTime = playtestStartTime;
-    save.chartEditorTheme = currentTheme;
+    save.chartEditorTheme = themeId;
     save.chartEditorMetronomeVolume = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
@@ -2894,6 +2895,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
     menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null);
+    menubarItemPreferences.onClick = _ -> this.openPreferencesDialog(true);
     menubarItemExit.onClick = _ -> quitChartEditor();
 
     // Edit
@@ -2958,19 +2960,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
 
-    menuBarItemInputStyleNone.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = None;
-    };
-    menuBarItemInputStyleNone.selected = currentLiveInputStyle == None;
-    menuBarItemInputStyleNumberKeys.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = NumberKeys;
-    };
-    menuBarItemInputStyleNumberKeys.selected = currentLiveInputStyle == NumberKeys;
-    menuBarItemInputStyleWASD.onClick = function(event:UIEvent) {
-      currentLiveInputStyle = WASDKeys;
-    };
-    menuBarItemInputStyleWASD.selected = currentLiveInputStyle == WASDKeys;
-
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
 
@@ -2988,16 +2977,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
-
-    menuBarItemThemeLight.onChange = function(event:UIEvent) {
-      if (event.target.value) currentTheme = ChartEditorTheme.Light;
-    };
-    menuBarItemThemeLight.selected = currentTheme == ChartEditorTheme.Light;
-
-    menuBarItemThemeDark.onChange = function(event:UIEvent) {
-      if (event.target.value) currentTheme = ChartEditorTheme.Dark;
-    };
-    menuBarItemThemeDark.selected = currentTheme == ChartEditorTheme.Dark;
 
     menubarItemPlayPause.onClick = _ -> toggleAudioPlayback();
 
@@ -3027,12 +3006,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
     };
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
-
-    menubarItemThemeMusic.onChange = event -> {
-      this.welcomeMusic.active = event.value;
-      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
-    };
-    menubarItemThemeMusic.selected = this.welcomeMusic.active;
 
     menubarItemVolumeHitsoundPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -5431,7 +5404,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   @:nullSafety(Off)
   function quitChartEditor():Void
   {
-    autoSave();
+    if (Save.instance.chartEditorAutoSaveExit) autoSave();
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;

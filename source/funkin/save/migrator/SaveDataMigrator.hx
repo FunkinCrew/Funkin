@@ -54,8 +54,8 @@ class SaveDataMigrator
 
     // Reset these values to valid ones.
     saveDataWithDefaults.optionsChartEditor.chartEditorLiveInputStyle = funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle.None;
-    saveDataWithDefaults.optionsChartEditor.theme = funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme.Light;
-    saveDataWithDefaults.optionsStageEditor.theme = funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme.Light;
+    saveDataWithDefaults.optionsChartEditor.theme = Constants.DEFAULT_EDITOR_THEME;
+    saveDataWithDefaults.optionsStageEditor.theme = Constants.DEFAULT_EDITOR_THEME;
 
     var save:Save = new Save(saveDataWithDefaults);
     return save;

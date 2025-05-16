@@ -14,6 +14,7 @@ import funkin.data.dialogue.conversation.ConversationRegistry;
 import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.theme.ThemeRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -108,7 +109,7 @@ class InitState extends FlxState
     FlxG.game.focusLostFramerate = 30;
 
     // Makes Flixel use frame times instead of locked movements per frame for things like tweens
-    FlxG.fixedTimestep = false; 
+    FlxG.fixedTimestep = false;
 
     setupFlixelDebug();
 
@@ -195,6 +196,7 @@ class InitState extends FlxState
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
     StickerRegistry.instance.loadEntries();
+    ThemeRegistry.instance.loadEntries();
 
     // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.

@@ -244,6 +244,11 @@ class Constants
   public static final DEFAULT_STICKER_PACK:String = 'default';
 
   /**
+   * Default theme for editors.
+   */
+  public static final DEFAULT_EDITOR_THEME:String = 'light';
+
+  /**
    * The default intensity multiplier for camera bops.
    * Prolly needs to be tuned bc it's a multiplier now.
    */

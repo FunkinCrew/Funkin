@@ -18,6 +18,8 @@ import funkin.save.Save;
 import funkin.input.Cursor;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.containers.menus.MenuItem;
+import funkin.ui.debug.theme.EditorTheme;
+import funkin.data.theme.ThemeRegistry;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuOptionBox;
@@ -45,6 +47,8 @@ import funkin.audio.FunkinSound;
 import haxe.ui.notifications.NotificationType;
 import haxe.ui.notifications.NotificationManager;
 import funkin.util.logging.CrashHandler;
+import funkin.ui.debug.theme.EditorTheme;
+import funkin.data.theme.ThemeRegistry;
 
 /**
  * Da Stage Editor woo!!
@@ -53,11 +57,11 @@ import funkin.util.logging.CrashHandler;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/stage-editor/main-view.xml"))
 class StageEditorState extends UIState
 {
+  public static var theme:Null<EditorTheme>;
   // i aint documenting allat
   // the uh finals
   public static final BACKUPS_PATH:String = "./stagebackups/";
   public static final LIGHT_MODE_COLORS:Array<FlxColor> = [0xFFE7E6E6, 0xFFF8F8F8];
-  public static final DARK_MODE_COLORS:Array<FlxColor> = [0xFF181919, 0xFF202020];
 
   public static final DEFAULT_POSITIONS:Map<CharacterType, Array<Float>> = [
     CharacterType.BF => [989.5, 885],
@@ -87,6 +91,7 @@ class StageEditorState extends UIState
   var menubarItemSaveStage:MenuItem; // save
   var menubarItemSaveStageAs:MenuItem; // save as
   var menubarItemClearAssets:MenuItem; // clear assets
+  var menubarItemPreferences:MenuItem; // preferences
   var menubarItemExit:MenuItem; // exit
 
   var menubarMenuEdit:Menu;
@@ -128,6 +133,30 @@ class StageEditorState extends UIState
   var bottomBarAngleStepText:Label;
 
   var bg:FlxSprite;
+
+  var welcomeMusic:FunkinSound = new FunkinSound();
+
+  var isWelcomeMusic:Bool = false;
+
+  /**
+   * The current theme used by the editor.
+   * Dictates the appearance of many UI elements.
+   */
+  public var themeId(default, set):String;
+
+  function set_themeId(value:String):String
+  {
+    if (value == null || value == themeId) return themeId;
+
+    themeId = value;
+    updateTheme();
+    return value;
+  }
+
+  function get_themeId():String
+  {
+    return themeId ?? Constants.DEFAULT_EDITOR_THEME;
+   }
 
   public var selectedSprite(default, set):StageEditorObject = null;
 
@@ -294,6 +323,8 @@ class StageEditorState extends UIState
 
     AssetDataHandler.init(this);
 
+    setupWelcomeMusic();
+
     camGame = new FlxCamera();
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0;
@@ -310,7 +341,9 @@ class StageEditorState extends UIState
     bg.scrollFactor.set();
     add(bg);
 
-    updateBGColors();
+    loadPreferences();
+
+    updateTheme();
 
     super.create();
     root.scrollFactor.set();
@@ -473,8 +506,51 @@ class StageEditorState extends UIState
     Save.instance.stageEditorHasBackup = false;
 
     Cursor.show();
-    FlxG.sound.playMusic(Paths.music('chartEditorLoop/chartEditorLoop'));
-    FlxG.sound.music.fadeIn(10, 0, 1);
+    fadeInWelcomeMusic();
+  }
+
+  function setupWelcomeMusic()
+  {
+    this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop/chartEditorLoop'));
+    FlxG.sound.list.add(this.welcomeMusic);
+    this.welcomeMusic.looped = true;
+  }
+
+  function fadeInWelcomeMusic(?fadeInTime:Float = 10)
+  {
+    if (!isWelcomeMusic)
+    {
+      stopWelcomeMusic();
+      return;
+    }
+
+    this.welcomeMusic.volume = 0;
+    if (isWelcomeMusic)
+    {
+      this.welcomeMusic.play();
+      this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
+    }
+  }
+
+  function stopWelcomeMusic():Void
+  {
+    this.welcomeMusic.pause();
+  }
+
+  public function loadPreferences():Void
+  {
+    var save:Save = Save.instance;
+
+    themeId = save.stageEditorTheme;
+    isWelcomeMusic = save.stageEditorThemeMusic;
+  }
+
+  public function writePreferences():Void
+  {
+    var save:Save = Save.instance;
+
+    save.stageEditorTheme = themeId;
+    save.stageEditorThemeMusic = isWelcomeMusic;
   }
 
   var curTestChar:Int = 0;
@@ -757,6 +833,8 @@ class StageEditorState extends UIState
   {
     trace("fuuuucckkkkk we crashed, reason: " + message);
 
+    writePreferences();
+
     if (!saved)
     {
       trace("dw we're making a backup!!!");
@@ -921,16 +999,25 @@ class StageEditorState extends UIState
     WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 
+  public function updateTheme():Void
+  {
+    theme = ThemeRegistry.instance.fetchEntry(themeId);
+    if (theme == null) theme = ThemeRegistry.instance.fetchDefault();
+
+    updateBGColors();
+  }
+
   function updateBGColors():Void
   {
-    var colArray = Save.instance.stageEditorTheme == StageEditorTheme.Dark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
+    var color1:FlxColor = theme.getColor("backgroundColors[0]", LIGHT_MODE_COLORS[0], true);
+    var color2:FlxColor = theme.getColor("backgroundColors[1]", LIGHT_MODE_COLORS[1], true);
 
     var index = members.indexOf(bg);
     bg.kill();
     remove(bg);
     bg.destroy();
 
-    bg = FlxGridOverlay.create(10, 10, -1, -1, true, colArray[0], colArray[1]);
+    bg = FlxGridOverlay.create(10, 10, -1, -1, true, color1, color2);
     bg.scrollFactor.set();
     members.insert(index, bg);
   }
@@ -962,6 +1049,7 @@ class StageEditorState extends UIState
     menubarItemSaveStage.onClick = function(_) onMenuItemClick("save stage");
     menubarItemSaveStageAs.onClick = function(_) onMenuItemClick("save stage as");
     menubarItemClearAssets.onClick = function(_) onMenuItemClick("clear assets");
+    menubarItemPreferences.onClick = function(_) this.openPreferencesDialog(true);
     menubarItemExit.onClick = function(_) onMenuItemClick("exit");
     menubarItemUndo.onClick = function(_) onMenuItemClick("undo");
     menubarItemRedo.onClick = function(_) onMenuItemClick("redo");
@@ -1032,18 +1120,18 @@ class StageEditorState extends UIState
     menubarItemWindowCharacter.onChange = function(_) toggleDialog(StageEditorDialogType.CHARACTER, menubarItemWindowCharacter.selected);
     menubarItemWindowStage.onChange = function(_) toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
 
-    menubarItemThemeLight.onClick = function(_) {
-      Save.instance.stageEditorTheme = StageEditorTheme.Light;
-      updateBGColors();
-    }
+    // menubarItemThemeLight.onClick = function(_) {
+    //   Save.instance.stageEditorTheme = StageEditorTheme.Light;
+    //   updateBGColors();
+    // }
 
-    menubarItemThemeDark.onClick = function(_) {
-      Save.instance.stageEditorTheme = StageEditorTheme.Dark;
-      updateBGColors();
-    }
+    // menubarItemThemeDark.onClick = function(_) {
+    //   Save.instance.stageEditorTheme = StageEditorTheme.Dark;
+    //   updateBGColors();
+    // }
 
-    menubarItemThemeDark.selected = Save.instance.stageEditorTheme == StageEditorTheme.Dark;
-    menubarItemThemeLight.selected = Save.instance.stageEditorTheme == StageEditorTheme.Light;
+    // menubarItemThemeDark.selected = Save.instance.stageEditorTheme == StageEditorTheme.Dark;
+    // menubarItemThemeLight.selected = Save.instance.stageEditorTheme == StageEditorTheme.Light;
 
     menubarItemViewChars.onChange = function(_) showChars = menubarItemViewChars.selected;
     menubarItemViewNameText.onChange = function(_) nameTxt.visible = menubarItemViewNameText.selected;
@@ -1181,6 +1269,8 @@ class StageEditorState extends UIState
           reloadRecentFiles();
         }, null, null, "Open Stage Data");
 
+      case "preferences":
+
       case "exit":
         if (!saved)
         {
@@ -1198,13 +1288,15 @@ class StageEditorState extends UIState
 
         resetWindowTitle();
 
+        writePreferences();
+
         WindowUtil.windowExit.remove(windowClose);
         CrashHandler.errorSignal.remove(autosavePerCrash);
         CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
         Cursor.hide();
         FlxG.switchState(() -> new DebugMenuSubState());
-        FlxG.sound.music.stop();
+        if (welcomeMusic != null) welcomeMusic.destroy();
 
       case "switch mode":
         if (!testingMode) moveMode = (moveMode == "assets" ? "chars" : "assets");

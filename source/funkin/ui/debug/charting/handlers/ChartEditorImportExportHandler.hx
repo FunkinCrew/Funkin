@@ -13,6 +13,7 @@ import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import thx.semver.Version as SemverVersion;
+import funkin.save.Save;
 
 /**
  * Contains functions for importing, loading, saving, and exporting charts.
@@ -115,14 +116,14 @@ class ChartEditorImportExportHandler
    */
   public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>):Void
   {
+    state.selectedVariation = Save.instance.chartEditorStartingVariation;
+    state.selectedDifficulty = Save.instance.chartEditorStartingDifficulty;
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
-    state.selectedDifficulty = state.availableDifficulties[0];
 
-    if (!newSongMetadata.exists(state.selectedVariation))
-    {
-      state.selectedVariation = Constants.DEFAULT_VARIATION;
-    }
+    // this should be fixed by https://github.com/FunkinCrew/Funkin/pull/4949 instead! show lasercar some love!
+    if (!newSongMetadata.exists(state.selectedVariation)) state.selectedVariation = Constants.DEFAULT_VARIATION;
+    if (!state.availableDifficulties.contains(state.selectedDifficulty)) state.selectedDifficulty = state.availableDifficulties[0];
 
     Conductor.instance.forceBPM(null); // Disable the forced BPM.
     Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
@@ -203,6 +204,7 @@ class ChartEditorImportExportHandler
     var songChartDatas:Map<String, SongChartData> = [];
     songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
 
+    trace(baseMetadata.playData.songVariations);
     var variationList:Array<String> = baseMetadata.playData.songVariations;
 
     for (variation in variationList)
