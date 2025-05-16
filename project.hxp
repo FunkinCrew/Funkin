@@ -631,8 +631,8 @@ class Project extends HXProject {
 		if (isWeb()) {
 			// include scripts as if they were regular .hx files
 			// will need to fix all the scripts later
-			addHaxeFlag("-cp \"assets/preload/scripts/test\"");
-			addHaxeMacro("include('', true, [], [\"assets/preload/scripts/test\"])");
+			addHaxeFlag("-cp \"assets/preload/scripts\"");
+			addHaxeMacro("include('', true, [], [\"assets/preload/scripts\"])");
 		}
 	}
 
