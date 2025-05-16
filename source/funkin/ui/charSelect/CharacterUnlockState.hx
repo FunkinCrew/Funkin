@@ -24,6 +24,8 @@ class CharacterUnlockState extends MusicBeatState
   public var targetCharacterId:String = "";
   public var targetCharacterData:Null<PlayableCharacter>;
 
+  public static var instance:CharacterUnlockState = null;
+
   var nextState:FlxState;
 
   static final DIALOG_BG_COLOR:FlxColor = 0xFF000000; // Iconic
@@ -44,6 +46,8 @@ class CharacterUnlockState extends MusicBeatState
   override function create():Void
   {
     super.create();
+
+    instance = this;
 
     handleMusic();
 
@@ -122,5 +126,11 @@ class CharacterUnlockState extends MusicBeatState
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () -> {
       FlxG.switchState(nextState);
     });
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    instance = null;
   }
 }

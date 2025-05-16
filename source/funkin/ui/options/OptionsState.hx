@@ -25,9 +25,13 @@ class OptionsState extends MusicBeatState
 {
   var optionsCodex:Codex<OptionsMenuPageName>;
 
+  public static var instance:OptionsState = null;
+
   override function create():Void
   {
     persistentUpdate = true;
+
+    instance = this;
 
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
@@ -75,6 +79,12 @@ class OptionsState extends MusicBeatState
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
     FlxG.switchState(() -> new MainMenuState());
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    instance = null;
   }
 }
 

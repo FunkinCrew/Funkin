@@ -41,6 +41,8 @@ class TitleState extends MusicBeatState
    */
   public static var initialized:Bool = false;
 
+  public static var instance:TitleState = null;
+
   var blackScreen:FlxSprite;
   var credGroup:FlxGroup;
   var textGroup:FlxGroup;
@@ -53,6 +55,9 @@ class TitleState extends MusicBeatState
   override public function create():Void
   {
     super.create();
+
+    instance = this;
+
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -486,5 +491,11 @@ class TitleState extends MusicBeatState
       if (credGroup != null) remove(credGroup);
       skippedIntro = true;
     }
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    instance = null;
   }
 }

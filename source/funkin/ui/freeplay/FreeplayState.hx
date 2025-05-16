@@ -72,6 +72,8 @@ class FreeplayState extends MusicBeatSubState
    */
   public static final FADE_IN_DURATION:Float = 0.5;
 
+  public static var instance:Null<FreeplayState> = null;
+
   /**
    * For the audio preview, the duration of the fade-out effect.
    *
@@ -250,6 +252,8 @@ class FreeplayState extends MusicBeatSubState
   {
     super.create();
 
+    instance = this;
+
     FlxG.state.persistentUpdate = false;
     FlxTransitionableState.skipNextTransIn = true;
 
@@ -321,7 +325,6 @@ class FreeplayState extends MusicBeatSubState
       add(backingCard);
       backingCard.init();
       backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
-      backingCard.instance = this;
     }
 
     if (currentCharacter?.getFreeplayDJData() != null)
@@ -1673,6 +1676,7 @@ class FreeplayState extends MusicBeatSubState
   {
     super.destroy();
     FlxG.cameras.remove(funnyCam);
+    instance = null;
   }
 
   /**
@@ -1765,8 +1769,8 @@ class FreeplayState extends MusicBeatSubState
 
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : Math.max(0, ((songScore.tallies.sick +
-        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
+      intendedCompletion = songScore == null ? 0.0 : Math.max(0,
+        ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
