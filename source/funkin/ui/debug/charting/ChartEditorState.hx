@@ -5891,7 +5891,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
-    var playbackRate:Float = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
 
@@ -6365,11 +6365,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
 
     // Reapply the volume and playback rate.
-    var instTargetVolume:Float = menubarItemVolumeInstrumental.value / 100.0 ?? 1.0;
-    var vocalPlayerTargetVolume:Float = menubarItemVolumeVocalsPlayer.value / 100.0 ?? 1.0;
-    var vocalOpponentTargetVolume:Float = menubarItemVolumeVocalsOpponent.value / 100.0 ?? 1.0;
+    var instTargetVolume:Float = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
+    var vocalPlayerTargetVolume:Float = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
+    var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
 
-    var playbackRate = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    var playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
 
@@ -6543,8 +6543,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public function postLoadInstrumental():Void
   {
     // Reapply the volume and playback rate.
-    var instTargetVolume:Float = menubarItemVolumeInstrumental.value ?? 1.0;
-    var playbackRate = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    var instTargetVolume:Float = ((menubarItemVolumeInstrumental.value / 100) ?? 1.0);
+    var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
     if (audioInstTrack != null)
@@ -6582,9 +6582,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public function postLoadVocals():Void
   {
     // Reapply the volume and playback rate.
-    var vocalPlayerTargetVolume:Float = menubarItemVolumeVocalsPlayer.value ?? 1.0;
-    var vocalOpponentTargetVolume:Float = menubarItemVolumeVocalsOpponent.value ?? 1.0;
-    var playbackRate = ((menubarItemPlaybackSpeed.value ?? 1.0) * 2.0) / 100.0;
+    var vocalPlayerTargetVolume:Float = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
+    var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
+    var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
 
