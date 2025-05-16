@@ -314,7 +314,7 @@ class LatencyState extends MusicBeatSubState
     {
       // close();
       cleanup();
-      FlxG.switchState(() -> new MainMenuState());
+      FlxG.switchState(() -> new funkin.ui.options.OptionsState());
     }
 
     super.update(elapsed);
