@@ -90,6 +90,9 @@ import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
+import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
@@ -5431,7 +5434,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   @:nullSafety(Off)
   function quitChartEditor():Void
   {
-    autoSave();
+    if (saveDataDirty) {
+      Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true, function(button:DialogButton) {
+        if (button == DialogButton.YES)
+        {
+          autoSave();
+          quitChartEditor();
+        }
+      });
+
+      return;
+    }
+
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
