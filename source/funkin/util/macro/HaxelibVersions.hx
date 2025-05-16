@@ -2,6 +2,7 @@ package funkin.util.macro;
 
 import haxe.io.Path;
 
+@:nullSafety
 class HaxelibVersions
 {
   public static macro function getLibraryVersions():haxe.macro.Expr.ExprOf<Array<String>>

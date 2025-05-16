@@ -3,6 +3,7 @@ package funkin.util;
 /**
  * Utilities for performing mathematical operations.
  */
+@:nullSafety
 class MathUtil
 {
   /**
@@ -56,7 +57,7 @@ class MathUtil
     return (result == Math.NaN) ? 1.0 : result;
   }
 
-  public static function easeInOutBack(x:Float, ?c:Float = 1.70158):Float
+  public static function easeInOutBack(x:Float, c:Float = 1.70158):Float
   {
     if (x <= 0.0) return 0.0;
     if (x >= 1.0) return 1.0;
@@ -64,14 +65,14 @@ class MathUtil
     return (result == Math.NaN) ? 1.0 : result;
   }
 
-  public static function easeInBack(x:Float, ?c:Float = 1.70158):Float
+  public static function easeInBack(x:Float, c:Float = 1.70158):Float
   {
     if (x <= 0.0) return 0.0;
     if (x >= 1.0) return 1.0;
     return (1 + c) * x * x * x - c * x * x;
   }
 
-  public static function easeOutBack(x:Float, ?c:Float = 1.70158):Float
+  public static function easeOutBack(x:Float, c:Float = 1.70158):Float
   {
     if (x <= 0.0) return 0.0;
     if (x >= 1.0) return 1.0;

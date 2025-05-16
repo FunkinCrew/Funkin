@@ -5,6 +5,7 @@ import haxe.Int64;
 /**
  * Why `haxe.Int64` doesn't have a built-in `toFloat` function is beyond me.
  */
+@:nullSafety
 class Int64Tools
 {
   private inline static var MAX_32_PRECISION:Float = 4294967296.0;
