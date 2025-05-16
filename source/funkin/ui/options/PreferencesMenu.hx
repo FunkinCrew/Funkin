@@ -14,6 +14,8 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.audio.FunkinSound;
+import funkin.play.notes.notesound.NoteSoundType;
 import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
@@ -100,6 +102,26 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemCheckbox('Note Highlights', 'If enabled, this will show a highlight effect while hitting a note', function(value:Bool):Void {
+      Preferences.noteHighlights = value;
+    }, Preferences.noteHighlights);
+    createPrefItemCheckbox('Note Splashes', 'If enabled, this will show a splash particle effect when hitting a note', function(value:Bool):Void {
+      Preferences.noteSplashes = value;
+    }, Preferences.noteSplashes);
+    createPrefItemEnum('Note Sound', 'If enabled, plays a sound effect when a note is hit', [
+      NoteSoundType.None => 'None',
+      NoteSoundType.PingPong => 'Ping Pong',
+      NoteSoundType.PoolBall => 'Pool Ball',
+    ], function(value:String):Void {
+      Preferences.noteSoundType = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'));
+    }, Preferences.noteSoundType);
+    createPrefItemPercentage('Note Sound Volume', 'The volume to play the note hit sound effects at', function(value:Int) {
+      Preferences.noteSoundVolume = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'), Preferences.noteSoundVolume / 100.0);
+    }, Preferences.noteSoundVolume);
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
