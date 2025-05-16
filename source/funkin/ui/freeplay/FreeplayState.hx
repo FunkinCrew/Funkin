@@ -744,7 +744,7 @@ class FreeplayState extends MusicBeatSubState
     randomCapsule.favIconBlurred.visible = false;
     randomCapsule.ranking.visible = false;
     randomCapsule.onConfirm = function() {
-      capsuleOnConfirmRandom(randomCapsule);
+      capsuleOnOpenRandom(randomCapsule);
     };
 
     if (fromCharSelect) randomCapsule.forcePosition();
@@ -1834,12 +1834,12 @@ class FreeplayState extends MusicBeatSubState
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
   }
 
-  function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
+  /**
+   * Called when hitting ENTER to open the instrumental choice for random capsule
+   */
+  function capsuleOnOpenRandom(randomCapsule:SongMenuItem):Void
   {
     trace('RANDOM SELECTED');
-
-    busy = true;
-    letterSort.inputEnabled = false;
 
     var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
       // Dead capsules are ones which were removed from the list when changing filters.
@@ -1853,20 +1853,77 @@ class FreeplayState extends MusicBeatSubState
     if (availableSongCapsules.length == 0)
     {
       trace('No songs available!');
-      busy = false;
-      letterSort.inputEnabled = true;
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       return;
     }
 
-    var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+    busy = true;
+    letterSort.inputEnabled = false;
+    var instrumentalChoices:Array<String> = ['default', 'random'];
 
+    capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.targetPos.x + 175, randomCapsule.targetPos.y + 115, instrumentalChoices);
+    capsuleOptionsMenu.cameras = [funnyCam];
+    capsuleOptionsMenu.zIndex = 10000;
+    add(capsuleOptionsMenu);
+
+    capsuleOptionsMenu.onConfirm = function(instChoice:String) {
+      capsuleOnConfirmRandom(availableSongCapsules, instChoice);
+    }
+  }
+
+  /**
+   * Called when hitting ENTER on an instrumental choice for random capsule
+   */
+    function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
+  {
+    cleanupCapsuleOptionsMenu();
+    busy = true;
+    letterSort.inputEnabled = false;
+
+    var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
     // Seeing if I can do an animation...
-    curSelected = grpCapsules.members.indexOf(targetSong);
-    changeSelection(0); // Trigger an update.
+    curSelected = grpCapsules.members.indexOf(targetSongCap);
+    changeSelection(); // Trigger an update. This will also fix the target variation.
 
-    // Act like we hit Confirm on that song.
-    capsuleOnConfirmDefault(targetSong);
+    var targetSongId:String = targetSongCap?.freeplayData?.data.id ?? 'unknown';
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    if (targetSongNullable == null)
+    {
+      FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      busy = false;
+      letterSort.inputEnabled = true;
+      return;
+    }
+    var targetSong:Song = targetSongNullable;
+    var targetDifficultyId:String = currentDifficulty;
+    var targetVariation:Null<String> = currentVariation;
+
+    var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(targetDifficultyId, targetVariation);
+    if (targetDifficulty == null)
+    {
+      FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
+      busy = false;
+      letterSort.inputEnabled = true;
+      return;
+    }
+
+    if (instChoice == 'random')
+    {
+      var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
+      var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
+        targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+
+      // Choose a random instrumental
+      var instrumentalIds:Array<String> = [baseInstrumentalId].concat(altInstrumentalIds);
+      var targetInstrumentalId:String = FlxG.random.getObject(instrumentalIds);
+      // Hit Confirm on that song with random instrumental
+      capsuleOnConfirmDefault(targetSongCap, targetInstrumentalId);
+    }
+    else
+    {
+      // Hit Confirm on that song with default instrumental
+      capsuleOnConfirmDefault(targetSongCap);
+    }
   }
 
   /**
