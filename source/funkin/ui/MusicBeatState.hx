@@ -91,12 +91,24 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     super.onFocus();
 
+    // I don't think onFocus works in substates so this will do for now.
+    if (subState != null)
+    {
+      subState.onFocus();
+    }
+
     dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
   }
 
   override function onFocusLost():Void
   {
     super.onFocusLost();
+
+    // I don't think onFocusLost works in substates so this will do for now.
+    if (subState != null)
+    {
+      subState.onFocusLost();
+    }
 
     dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
   }
