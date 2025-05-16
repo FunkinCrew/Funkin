@@ -48,18 +48,16 @@ class WaveformDataParser
     var samplesPerPoint:Int = 256; // I don't think we need to configure this.
 
     // TODO: Make this work better on HTML5.
-    var soundData:lime.utils.Int16Array = cast soundBuffer.data;
-
-    var soundDataSampleCount:Int = Std.int(Math.ceil(soundData.length / channels / (bitsPerSample == 16 ? 2 : 1)));
-    var outputPointCount:Int = Std.int(Math.ceil(soundDataSampleCount / samplesPerPoint));
+    var soundData:haxe.io.Bytes = soundBuffer.data.toBytes();
+    var soundDataSampleCount:Int = Math.ceil(soundData.length / channels / (bitsPerSample / 8));
+    var outputPointCount:Int = Math.ceil(soundDataSampleCount / samplesPerPoint);
 
     // Pre-allocate Vector with exact final size for better performance and memory efficiency
     var outputDataLength:Int = outputPointCount * channels * 2;
     var outputData = new haxe.ds.Vector<Int>(outputDataLength);
 
-    // Reusable min/max tracking arrays to avoid allocation in the loop
-    var minValues = new haxe.ds.Vector<Int>(channels);
-    var maxValues = new haxe.ds.Vector<Int>(channels);
+    // Reusable min/max tracking array to avoid allocation in the loop
+    var values = new haxe.ds.Vector<Int>(channels * 2);
 
     for (pointIndex in 0...outputPointCount)
     {
@@ -69,8 +67,8 @@ class WaveformDataParser
       // Reset min/max values for this range
       for (i in 0...channels)
       {
-        minValues[i] = bitsPerSample == 16 ? INT16_MAX : INT8_MAX;
-        maxValues[i] = bitsPerSample == 16 ? INT16_MIN : INT8_MIN;
+        values[i * 2] = bitsPerSample == 8 ? INT8_MAX : INT16_MAX;
+        values[i * 2 + 1] = bitsPerSample == 8 ? INT8_MIN : INT16_MIN;
       }
 
       // Process all samples in this range
@@ -78,22 +76,32 @@ class WaveformDataParser
       {
         for (channelIndex in 0...channels)
         {
-          var sampleValue:Int = soundData[sampleIndex * channels + channelIndex];
+          var sampleIndex:Int = sampleIndex * channels + channelIndex;
+          var sampleValue:Int = switch (bitsPerSample)
+          {
+            case 8:
+              final byte = soundData.get(sampleIndex);
+              (byte & 0x80) != 0 ? (byte | ~0xFF) : (byte & 0xFF);
+            case 16:
+              final word = soundData.getUInt16(sampleIndex * 2);
+              (word & 0x8000) != 0 ? (word | ~0xFFFF) : (word & 0xFFFF);
+            case 32:
+              Std.int(soundData.getFloat(sampleIndex * 4) * INT16_MAX);
+            default:
+              0;
+          }
 
-          if (sampleValue < minValues[channelIndex]) minValues[channelIndex] = sampleValue;
-          if (sampleValue > maxValues[channelIndex]) maxValues[channelIndex] = sampleValue;
+          if (sampleValue < values[channelIndex * 2]) values[channelIndex * 2] = sampleValue;
+          if (sampleValue > values[channelIndex * 2 + 1]) values[channelIndex * 2 + 1] = sampleValue;
         }
       }
 
       // Write directly to final positions in output Vector
-      var baseIndex:Int = pointIndex * channels * 2;
-      for (channelIndex in 0...channels)
-      {
-        outputData[baseIndex + channelIndex * 2] = minValues[channelIndex];
-        outputData[baseIndex + channelIndex * 2 + 1] = maxValues[channelIndex];
-      }
+      var baseIndex:Int = pointIndex * values.length;
+      haxe.ds.Vector.blit(values, 0, outputData, baseIndex, values.length);
     }
 
+    if (bitsPerSample == 32) bitsPerSample = 16;
     var result = new WaveformData(null, channels, soundBuffer.sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData.toArray());
 
     return result;
