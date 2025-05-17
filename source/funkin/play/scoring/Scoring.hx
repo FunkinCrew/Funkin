@@ -384,7 +384,7 @@ class Scoring
 
     // Final Grade = (Sick + Good - Miss) / (Total Notes)
 
-    var grade = (scoreData.tallies.sick + scoreData.tallies.good) / scoreData.tallies.totalNotes;
+    var grade = (scoreData.tallies.sick + scoreData.tallies.good - scoreData.tallies.missed) / scoreData.tallies.totalNotes;
 
     if (grade == Constants.RANK_PERFECT_THRESHOLD)
     {

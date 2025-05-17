@@ -116,7 +116,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           autoPause: true,
-          vsyncMode: lime.ui.WindowVSyncMode.OFF,
+          vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
           inputOffset: 0,
@@ -1459,9 +1459,9 @@ typedef SaveDataOptions =
 
   /**
    * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
-   * @default `OFF`
+   * @default `Off`
    */
-  var vsyncMode:lime.ui.WindowVSyncMode;
+  var vsyncMode:String;
 
   /**
    * If >0, the game will display a semi-opaque background under the notes.

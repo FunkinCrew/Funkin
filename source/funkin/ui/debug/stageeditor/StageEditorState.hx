@@ -1336,7 +1336,7 @@ class StageEditorState extends UIState
       case "open folder":
         #if sys
         var absoluteBackupsPath:String = haxe.io.Path.join([Sys.getCwd(), BACKUPS_PATH]);
-        WindowUtil.openFolder(absoluteBackupsPath);
+        FileUtil.openFolder(absoluteBackupsPath);
         #end
 
       case "test stage":

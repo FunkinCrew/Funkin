@@ -5,7 +5,6 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import funkin.util.FileUtil;
 import haxe.io.Path;
 import funkin.util.DateUtil;
-import funkin.util.WindowUtil;
 
 using StringTools;
 
@@ -57,7 +56,7 @@ class BackupAvailableDialog extends Dialog
       // :[
       #if sys
       var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorState.BACKUPS_PATH]);
-      WindowUtil.openFolder(absoluteBackupsPath);
+      FileUtil.openFolder(absoluteBackupsPath);
       #end
     }
 
