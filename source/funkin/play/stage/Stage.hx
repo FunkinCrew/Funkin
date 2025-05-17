@@ -44,6 +44,25 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     return _data?.cameraZoom ?? 1.0;
   }
 
+  /**
+   * The animation speed of objects.
+   */
+  public var animationSpeed(default, set):Float = 1.0;
+
+  function set_animationSpeed(value:Float)
+  {
+    for (member in this.members)
+    {
+      if (member?.animation == null) continue;
+      member.animation.timeScale /= this.animationSpeed;
+      member.animation.timeScale *= value;
+    }
+
+    this.animationSpeed = value;
+
+    return animationSpeed;
+  }
+
   var frameBufferMan:FrameBufferManager;
 
   /**

@@ -693,6 +693,9 @@ class PlayState extends MusicBeatSubState
     {
       initStage();
       initCharacters();
+
+      // Set animation speed AFTER initializing the characters, so that their animation speeds get updated too.
+      currentStage.animationSpeed = playbackRate;
     }
     else
     {
@@ -861,7 +864,11 @@ class PlayState extends MusicBeatSubState
       vocals.playerVolume = 1;
       vocals.opponentVolume = 1;
 
-      if (currentStage != null) currentStage.resetStage();
+      if (currentStage != null)
+      {
+        currentStage.resetStage();
+        currentStage.animationSpeed = playbackRate;
+      }
 
       if (!fromDeathState)
       {
@@ -929,7 +936,7 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false); // Normal conductor update.
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000 * playbackRate, false); // Normal conductor update.
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
