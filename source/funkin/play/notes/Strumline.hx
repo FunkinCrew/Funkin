@@ -10,6 +10,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
 import funkin.graphics.FunkinSprite;
+import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
 import funkin.play.notes.notekind.NoteKindManager;
@@ -130,14 +131,32 @@ class Strumline extends FlxSpriteGroup
 
   var background:FunkinSprite;
 
+  /**
+   * The note style ID for this strumline.
+   * Changing this will update the note style graphic.
+   */
+  public var noteStyleId(default, set):String;
+
+  function set_noteStyleId(value:String):String
+  {
+    noteStyleId = value;
+
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+
+    this.noteStyle = noteStyle;
+
+    updateNoteStyle(noteStyle);
+
+    return noteStyleId;
+  }
+
   var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
   var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
 
   var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
-
-  final noteStyle:NoteStyle;
 
   #if FEATURE_GHOST_TAPPING
   var ghostTapTimer:Float = 0.0;
@@ -155,16 +174,21 @@ class Strumline extends FlxSpriteGroup
 
   static final BACKGROUND_PAD:Int = 16;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool)
+  var noteStyle:NoteStyle;
+
+  public function new(noteStyleId:String, isPlayer:Bool)
   {
     super();
-
-    this.isPlayer = isPlayer;
-    this.noteStyle = noteStyle;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
     this.strumlineNotes.zIndex = 10;
     this.add(this.strumlineNotes);
+
+    var noteStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+
+    this.noteStyle = noteStyle;
+    this.isPlayer = isPlayer;
 
     // Hold notes are added first so they render behind regular notes.
     this.holdNotes = new FlxTypedSpriteGroup<SustainTrail>();
@@ -205,18 +229,10 @@ class Strumline extends FlxSpriteGroup
 
     for (i in 0...KEY_COUNT)
     {
-      var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
-      child.x = getXPos(DIRECTIONS[i]);
-      child.x += INITIAL_OFFSET;
-      child.y = 0;
-      noteStyle.applyStrumlineOffsets(child);
-      this.strumlineNotes.add(child);
-    }
-
-    for (i in 0...KEY_COUNT)
-    {
       heldKeys.push(false);
     }
+
+    this.noteStyleId = noteStyleId;
 
     // This MUST be true for children to update!
     this.active = true;
@@ -289,6 +305,40 @@ class Strumline extends FlxSpriteGroup
     return true;
   }
   #end
+
+  public function updateNoteStyle(noteStyle:NoteStyle):Void
+  {
+    strumlineNotes.clear();
+
+    for (i in 0...KEY_COUNT)
+    {
+      var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
+      child.x = getXPos(DIRECTIONS[i]);
+      child.x += INITIAL_OFFSET;
+      child.y = 0;
+      noteStyle.applyStrumlineOffsets(child);
+      this.strumlineNotes.add(child);
+    }
+
+    // Update the notes currently on screen
+    for (note in notes.members)
+    {
+      if (note == null) continue;
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note?.noteData?.kind, this.noteStyle.id) ?? this.noteStyle;
+      note.setupNoteGraphic(noteKindStyle);
+      note.direction = note.noteData.getDirection();
+      if (note.holdNoteSprite != null)
+      {
+        note.holdNoteSprite.setupHoldNoteGraphic(noteKindStyle);
+        note.holdNoteSprite.noteStyleOffsets = noteKindStyle.getHoldNoteOffsets();
+        note.holdNoteSprite.triggerRedraw();
+        note.holdNoteSprite.x = this.x;
+        note.holdNoteSprite.x += getXPos(DIRECTIONS[note.noteData.getDirection() % KEY_COUNT]);
+        note.holdNoteSprite.x += STRUMLINE_SIZE / 2;
+        note.holdNoteSprite.x -= note.holdNoteSprite.width / 2;
+      }
+    }
+  }
 
   /**
    * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
