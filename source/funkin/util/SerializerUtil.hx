@@ -34,6 +34,8 @@ class SerializerUtil
    */
   public static function fromJSON(input:String):Dynamic
   {
+    input = input.substring(input.indexOf("{"), input.lastIndexOf("}") + 1);
+
     try
     {
       return Json.parse(input);
