@@ -134,11 +134,13 @@ class RegistryMacro
    */
   static function buildRegistryMethods(cls:ClassType, fields:Array<Field>, entryType:ClassType, dataType:Dynamic):Array<Field>
   {
+    var entryClsName:String = entryType.pack.join('.') + '.' + entryType.name;
+
     var scriptedEntryClsName:String = entryType.pack.join('.') + '.Scripted' + entryType.name;
 
-    var getScriptedClassName:String = '${scriptedEntryClsName}';
+    var getScriptedClass:String = 'funkin.util.macro.ClassMacro.listSubclassesOf(${entryClsName})';
 
-    var createScriptedEntry:String = '${scriptedEntryClsName}.init(clsName, "unknown")';
+    var createScriptedEntry:String = 'Type.createInstance(Type.resolveClass(clsName), [])';
 
     var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>()';
 
@@ -159,9 +161,12 @@ class RegistryMacro
           });
         }
 
-        function getScriptedClassNames()
+        function getScriptedClasses()
         {
-          return ${Context.parse(getScriptedClassName, Context.currentPos())}.listScriptClasses();
+          return ${Context.parse(getScriptedClass, Context.currentPos())}.filter((cls) -> {
+            return cls != ${Context.parse(entryClsName, Context.currentPos())}
+              && cls != ${Context.parse(scriptedEntryClsName, Context.currentPos())};
+          });
         }
 
         function createScriptedEntry(clsName:String)

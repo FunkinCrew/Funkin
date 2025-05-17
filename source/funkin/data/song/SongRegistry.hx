@@ -54,22 +54,21 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata> implements ISingleto
     //
     // SCRIPTED ENTRIES
     //
-    var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
+    var scriptedEntryClasses:List<Class<Song>> = getScriptedClasses();
+    log('Parsing ${scriptedEntryClasses.length} scripted entries...');
 
-    for (entryCls in scriptedEntryClassNames)
+    for (entryCls in scriptedEntryClasses)
     {
-      var entry:Song = createScriptedEntry(entryCls);
-
+      var entry:Null<Song> = Type.createInstance(entryCls, []);
       if (entry != null)
       {
-        log('Successfully created scripted entry (${entryCls} = ${entry.id})');
+        log('Successfully created scripted entry (${Type.getClassName(entryCls)} = ${entry.id})');
         entries.set(entry.id, entry);
-        scriptedEntryIds.set(entry.id, entryCls);
+        scriptedEntryIds.set(entry.id, Type.getClassName(entryCls));
       }
       else
       {
-        log('Failed to create scripted entry (${entryCls})');
+        log('Failed to create scripted entry (${Type.getClassName(entryCls)})');
       }
     }
 

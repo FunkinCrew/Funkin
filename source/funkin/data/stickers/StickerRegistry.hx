@@ -79,11 +79,13 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
 
   function createScriptedEntry(clsName:String):StickerPack
   {
-    return ScriptedStickerPack.init(clsName, 'unknown');
+    return Type.createInstance(Type.resolveClass(clsName), []);
   }
 
-  function getScriptedClassNames():Array<String>
+  function getScriptedClasses():List<Class<StickerPack>>
   {
-    return ScriptedStickerPack.listScriptClasses();
+    return funkin.util.macro.ClassMacro.listSubclassesOf(funkin.ui.transition.stickers.StickerPack).filter((cls) -> {
+      return cls != StickerPack && cls != ScriptedStickerPack;
+    });
   }
 }
