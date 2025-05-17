@@ -6,6 +6,8 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.util.typeLimit.NextState;
+import funkin.data.stage.StageData;
+import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.ScreenWipeShader;
 import funkin.play.PlayState;
@@ -19,6 +21,8 @@ import lime.utils.AssetManifest;
 import lime.utils.Assets as LimeAssets;
 import openfl.filters.ShaderFilter;
 import openfl.utils.Assets as OpenFLAssets;
+
+using StringTools;
 
 class LoadingState extends MusicBeatSubState
 {
@@ -217,6 +221,8 @@ class LoadingState extends MusicBeatSubState
     stageDirectory = daStage?._data?.directory ?? "shared";
     Paths.setCurrentLevel(stageDirectory);
 
+    var stageIdsMap:Map<String, String> = new Map();
+
     var playStateCtor:() -> PlayState = function() {
       return new PlayState(params);
     };
@@ -263,7 +269,35 @@ class LoadingState extends MusicBeatSubState
 
     var shouldPreloadLevelAssets:Bool = !(params?.minimalMode ?? false);
 
-    if (shouldPreloadLevelAssets) preloadLevelAssets();
+    if (shouldPreloadLevelAssets)
+    {
+      preloadLevelAssets();
+
+      // Preload all the stage props for songs with the "Set Stage" song event.
+      for (event in daChart.events)
+      {
+        if (event.eventKind == 'SetStage')
+        {
+          var stageId:String = event.value.stageId;
+          stageIdsMap.set(stageId, stageId);
+        }
+      }
+
+      for (stageId in stageIdsMap.keys())
+      {
+        trace('Preloading stage props for: ${stageId}');
+        var stageData:StageData = StageRegistry.instance.parseEntryDataWithMigration(stageId, StageRegistry.instance.fetchEntryVersion(stageId));
+        for (prop in stageData.props)
+        {
+          if (prop.assetPath.startsWith('#'))
+          {
+            continue;
+          }
+          trace('Caching texture for prop: ${prop.assetPath}');
+          FunkinSprite.cacheTexture(Paths.image(prop.assetPath, stageData.directory ?? 'shared'));
+        }
+      }
+    }
 
     if (asSubState)
     {
