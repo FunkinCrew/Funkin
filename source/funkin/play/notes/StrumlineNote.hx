@@ -72,7 +72,6 @@ class StrumlineNote extends FunkinSprite
   function onAnimationFinished(name:String):Void
   {
     // Do nothing.
-    // Do nothing.
   }
 
   override function update(elapsed:Float)
