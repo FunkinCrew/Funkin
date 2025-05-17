@@ -17,8 +17,10 @@ class PixelatedIcon extends FlxFilteredSprite
     this.active = false;
   }
 
-  public function setCharacter(char:String):Void
+  public function setCharacter(char:String, ?offsets:Null<Array<Float>>):Void
   {
+    if (offsets == null) offsets = [0, 0];
+
     var charPath:String = "freeplay/icons/";
 
     switch (char)
@@ -71,13 +73,10 @@ class PixelatedIcon extends FlxFilteredSprite
 
     this.scale.x = this.scale.y = 2;
 
-    switch (char)
-    {
-      case 'parents-christmas':
-        this.origin.x = 140;
-      default:
-        this.origin.x = 100;
-    }
+    this.origin.x = 100;
+
+    this.origin.x += offsets[0];
+    this.origin.y += offsets[1];
 
     if (isAnimated)
     {
