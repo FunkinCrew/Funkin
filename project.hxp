@@ -76,6 +76,11 @@ class Project extends HXProject {
    */
   static final POSTBUILD_HX:String = "source/Postbuild.hx";
 
+  /**
+   * Path to the Haxe script run before building the game.
+   */
+	static final POSTBUILD_CPPIA_HX:String = "source/PostbuildCppia.hx";
+
 	/**
 	 * Asset path globs to always exclude from asset libraries.
 	 */
@@ -295,7 +300,8 @@ class Project extends HXProject {
 		configureIncludeMacros();
 		configureCustomMacros();
     configureOutputDir();
-    configurePolymod();
+    configureCppia();
+		configurePolymod();
     configureHaxelibs();
     configureAssets();
     configureIcons();
@@ -503,7 +509,7 @@ class Project extends HXProject {
 		FEATURE_POLYMOD_MODS.apply(this, true);
 		FEATURE_FUNKVIS.apply(this, true);
 		FEATURE_PARTIAL_SOUNDS.apply(this, true);
-		FEATURE_VIDEO_PLAYBACK.apply(this, true);
+		FEATURE_VIDEO_PLAYBACK.apply(this, false);
 		FEATURE_STAGE_EDITOR.apply(this, true);
 
 		// Should be true on debug builds or if GITHUB_BUILD is enabled.
@@ -525,7 +531,7 @@ class Project extends HXProject {
 
 		// Should be true on desktop, release, non-tester builds.
 		// We don't want testers to accidentally leak songs to their Discord friends!
-		FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+		FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this) && false);
 
 		// Should be true only on web builds.
 		// Audio context issues only exist there.
@@ -621,6 +627,13 @@ class Project extends HXProject {
 		// Ensure all Flixel classes are available at runtime.
 		// Explicitly ignore packages which require additional dependencies.
 		addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
+
+		if (isWeb()) {
+			// include scripts as if they were regular .hx files
+			// will need to fix all the scripts later
+			addHaxeFlag("-cp \"assets/preload/scripts\"");
+			addHaxeMacro("include('', true, [], [\"assets/preload/scripts\"])");
+		}
 	}
 
 	/**
@@ -648,6 +661,21 @@ class Project extends HXProject {
 		// setenv('BUILD_DIR', buildDir);
 		app.path = buildDir;
   }
+
+	function configureCppia() {
+		if (!isDesktop()) return;
+
+		setHaxedef("scriptable");
+
+		var binDir:String = "BIN_DIR=" + app.path;
+		binDir +=
+			if (isWindows()) "windows";
+			else if (isLinux()) "linux";
+			else if (isMac()) "macos";
+			else throw 'There should be no other desktop platform, right?';
+		binDir += "/bin";
+    postBuildCallbacks.push(new CLICommand("haxe", ["-main", POSTBUILD_CPPIA_HX, "--interp", "-D", binDir]));
+	}
 
   function configurePolymod() {
 		// The file extension to use for script files.
