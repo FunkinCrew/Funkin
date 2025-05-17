@@ -42,23 +42,23 @@ class ScriptHandler implements ISingleton
     #end
   }
 
-  public function resolveClass(classPath:String):Null<Class<Dynamic>>
+  public function resolveClass<T>(classPath:String):Null<Class<T>>
   {
     #if cpp
     for (m in modules)
     {
-      var cls:Null<Class<Dynamic>> = m.resolveClass(classPath);
+      var cls:Null<Class<T>> = m.resolveClass(classPath);
       if (cls != null) return cls;
     }
     return null;
     #else
-    return Type.resolveClass(classPath);
+    return cast Type.resolveClass(classPath);
     #end
   }
 
-  public function instantiateClass(classPath:String, ?args:Array<Dynamic>):Null<Dynamic>
+  public function instantiateClass<T>(classPath:String, ?args:Array<Dynamic>):Null<T>
   {
-    var cls:Null<Class<Dynamic>> = resolveClass(classPath);
+    var cls:Null<Class<T>> = resolveClass(classPath);
     return cls != null ? Type.createInstance(cls, args ?? []) : null;
   }
 }

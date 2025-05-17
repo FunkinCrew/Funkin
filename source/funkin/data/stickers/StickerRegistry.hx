@@ -79,7 +79,7 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
 
   function createScriptedEntry(clsName:String):StickerPack
   {
-    return Type.createInstance(Type.resolveClass(clsName), []);
+    return funkin.modding.ScriptHandler.instance.instantiateClass(clsName, []);
   }
 
   function getScriptedClasses():List<Class<StickerPack>>

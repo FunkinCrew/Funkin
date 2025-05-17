@@ -80,7 +80,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
     for (entryCls in scriptedEntryClasses)
     {
-      var entry:Null<T> = Type.createInstance(entryCls, []);
+      var entry:Null<T> = createScriptedEntry(Type.getClassName(entryCls));
       if (entry != null)
       {
         log('Successfully created scripted entry (${Type.getClassName(entryCls)} = ${entry.id})');

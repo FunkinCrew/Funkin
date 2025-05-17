@@ -140,7 +140,7 @@ class RegistryMacro
 
     var getScriptedClass:String = 'funkin.util.macro.ClassMacro.listSubclassesOf(${entryClsName})';
 
-    var createScriptedEntry:String = 'Type.createInstance(Type.resolveClass(clsName), [])';
+    var createScriptedEntry:String = 'funkin.modding.ScriptHandler.instance.instantiateClass(clsName, [])';
 
     var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>()';
 
