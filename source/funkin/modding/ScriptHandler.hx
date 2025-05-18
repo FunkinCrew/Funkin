@@ -11,46 +11,35 @@ import funkin.util.tools.ISingleton;
 class ScriptHandler implements ISingleton
 {
   #if cpp
-  var modules:Array<Module>;
+  var module:Null<Module>;
   #end
 
   public function new()
   {
     #if cpp
-    this.modules = [];
+    this.module = null;
     #end
   }
 
-  public function clearModules():Void
+  public function loadScripts():Void
   {
     #if cpp
-    modules.clear();
-    #end
-  }
-
-  public function registerModule(scriptPath:String):Void
-  {
-    #if cpp
+    var scriptPath:String = 'script.cppia';
     var scriptBytes:Bytes = File.getBytes(scriptPath);
     if (scriptBytes == null) throw 'Could not get bytes from ${scriptPath}';
 
-    var module:Module = Module.fromData(scriptBytes.getData());
+    module = Module.fromData(scriptBytes.getData());
     if (module == null) throw 'Could create module for ${scriptPath}';
 
     module.boot();
-    modules.push(module);
     #end
   }
 
   public function resolveClass<T>(classPath:String):Null<Class<T>>
   {
     #if cpp
-    for (m in modules)
-    {
-      var cls:Null<Class<T>> = m.resolveClass(classPath);
-      if (cls != null) return cls;
-    }
-    return null;
+    if (module == null) throw 'Scripts have not been loaded yet';
+    return cast module.resolveClass(classPath);
     #else
     return cast Type.resolveClass(classPath);
     #end
