@@ -482,7 +482,7 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.alignment = CENTER;
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     charSelectHint.text = 'Press on the DJ to change characters';
     #else
     charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
@@ -760,7 +760,7 @@ class FreeplayState extends MusicBeatSubState
     rankBg.cameras = [rankCamera];
     rankBg.alpha = 0;
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
 
     FlxTween.tween(backButton, {x: FlxG.width - 456}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
@@ -1289,7 +1289,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, FlxG.random.float(0.2, 0.85), {ease: FlxEase.backIn});
     #end
 
@@ -1880,7 +1880,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, 0.2, {ease: FlxEase.backIn});
     #end
 
@@ -2149,7 +2149,7 @@ class FreeplayState extends MusicBeatSubState
     trace('RANDOM SELECTED');
 
     busy = true;
-    #if NO_TOUCH_CONTROLS
+    #if NO_FEATURE_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
     #end
 
@@ -2166,7 +2166,7 @@ class FreeplayState extends MusicBeatSubState
     {
       trace('No songs available!');
       busy = false;
-      #if NO_TOUCH_CONTROLS
+      #if NO_FEATURE_TOUCH_CONTROLS
       letterSort.inputEnabled = true;
       #end
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
@@ -2271,7 +2271,7 @@ class FreeplayState extends MusicBeatSubState
   function capsuleOnConfirmDefault(cap:SongMenuItem, ?targetInstId:String):Void
   {
     busy = true;
-    #if NO_TOUCH_CONTROLS
+    #if NO_FEATURE_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
     #end
 
