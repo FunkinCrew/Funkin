@@ -6,6 +6,7 @@ import funkin.play.cutscene.dialogue.ScriptedDialogueBox;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
+@:nullSafety
 class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData> implements ISingleton implements DefaultRegistryImpl
 {
   /**
