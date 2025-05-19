@@ -1725,11 +1725,11 @@ class FreeplayState extends MusicBeatSubState
     {
       if (_pressedOnSelected && TouchUtil.touch != null)
       {
-        draggingDifficulty = true;
         // Have to turn off null safety in-order to compile this!! -Zack
         @:nullSafety(Off)
         if (SwipeUtil.swipeLeft)
         {
+          draggingDifficulty = true;
           dj?.resetAFKTimer();
           changeDiff(1, false, true);
           _pressedOnSelected = false;
@@ -1743,6 +1743,7 @@ class FreeplayState extends MusicBeatSubState
         }
         else if (SwipeUtil.swipeRight)
         {
+          draggingDifficulty = true;
           dj?.resetAFKTimer();
           changeDiff(-1, false, true);
           _pressedOnSelected = false;
