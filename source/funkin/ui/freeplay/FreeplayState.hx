@@ -155,8 +155,8 @@ class FreeplayState extends MusicBeatSubState
   var dj:Null<FreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
   // For proper hitbox detection, flxanimate doesn't work with touch overlap!!
-  var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358);
-  var capsuleHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 370, 150);
+  var djHitbox:FlxObject = new FlxObject((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358, 400, 400);
+  var capsuleHitbox:FlxObject = new FlxObject((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 370, 150, 570, 576);
   #end
 
   var ostName:FlxText;
@@ -380,11 +380,9 @@ class FreeplayState extends MusicBeatSubState
     backingImage.visible = false;
 
     #if FEATURE_TOUCH_CONTROLS
-    djHitbox = djHitbox.makeGraphic(400, 400, FlxColor.TRANSPARENT);
     if (dj != null) djHitbox.cameras = dj.cameras;
     djHitbox.active = false;
     add(djHitbox);
-    capsuleHitbox = capsuleHitbox.makeGraphic(570, 576, FlxColor.TRANSPARENT);
     capsuleHitbox.cameras = [funnyCam];
     capsuleHitbox.active = false;
     add(capsuleHitbox);
