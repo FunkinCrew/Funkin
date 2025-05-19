@@ -144,10 +144,8 @@
     },
     {
       "name": "hxvlc",
-      "type": "git",
-      "dir": null,
-      "ref": "d71ee67870308ef821179bd7d7796064f695c645",
-      "url": "https://github.com/MAJigsaw77/hxvlc"
+      "type": "haxelib",
+      "version": "2.2.0"
     },
     {
       "name": "json2object",
