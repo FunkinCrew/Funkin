@@ -51,11 +51,46 @@ class WaveformDataParser
     var pointsPerSecond:Float = sampleRate / samplesPerPoint; // 172 samples per second for most songs is plenty precise while still being performant..
 
     // TODO: Make this work better on HTML5.
-    var soundData:lime.utils.Int16Array = cast soundBuffer.data;
+    var bytes:haxe.io.Bytes = soundBuffer.data.toBytes();
+    var soundData:Array<Int> = [];
+    soundData.resize(Std.int(bytes.length / (bitsPerSample / 8)));
+    var minSampleValue:Int;
+    var maxSampleValue:Int;
+
+    switch (bitsPerSample)
+    {
+      case 8:
+        for (i in 0...soundData.length)
+        {
+          soundData[i] = bytes.get(i) - 128;
+        }
+        minSampleValue = INT8_MIN;
+        maxSampleValue = INT8_MAX;
+      case 16:
+        for (i in 0...soundData.length)
+        {
+          var val = bytes.getUInt16(i * 2);
+          if (val > INT16_MAX) val -= 65536;
+          soundData[i] = val;
+        };
+        minSampleValue = INT16_MIN;
+        maxSampleValue = INT16_MAX;
+      case 32:
+        // We cheat by scaling the values to fit in a 16-bit range.
+        for (i in 0...soundData.length)
+        {
+          soundData[i] = Std.int(bytes.getFloat(i * 4) * INT16_MAX);
+        }
+        minSampleValue = INT16_MIN;
+        maxSampleValue = INT16_MAX;
+        bitsPerSample = 16;
+      default:
+        throw 'Unsupported bits per sample: $bitsPerSample';
+    }
 
     var soundDataRawLength:Int = soundData.length;
-    var soundDataSampleCount:Int = Std.int(Math.ceil(soundDataRawLength / channels / (bitsPerSample == 16 ? 2 : 1)));
-    var outputPointCount:Int = Std.int(Math.ceil(soundDataSampleCount / samplesPerPoint));
+    var soundDataSampleCount:Int = Math.ceil(soundDataRawLength / channels / (bitsPerSample / 8));
+    var outputPointCount:Int = Math.ceil(soundDataSampleCount / samplesPerPoint);
 
     // trace('Interpreting audio buffer:');
     // trace('  sampleRate: ${sampleRate}');
@@ -68,9 +103,6 @@ class WaveformDataParser
     // trace('  soundDataRawLength/4: ${soundDataRawLength / 4}');
     // trace('  outputPointCount: ${outputPointCount}');
 
-    var minSampleValue:Int = bitsPerSample == 16 ? INT16_MIN : INT8_MIN;
-    var maxSampleValue:Int = bitsPerSample == 16 ? INT16_MAX : INT8_MAX;
-
     var outputData:Array<Int> = [];
 
     var perfStart:Float = TimerUtil.start();
@@ -80,10 +112,10 @@ class WaveformDataParser
       // minChannel1, maxChannel1, minChannel2, maxChannel2, ...
       var values:Array<Int> = [];
 
-      for (i in 0...channels)
+      for (_ in 0...channels)
       {
-        values.push(bitsPerSample == 16 ? INT16_MAX : INT8_MAX);
-        values.push(bitsPerSample == 16 ? INT16_MIN : INT8_MIN);
+        values.push(maxSampleValue);
+        values.push(minSampleValue);
       }
 
       var rangeStart = pointIndex * samplesPerPoint;
@@ -95,7 +127,7 @@ class WaveformDataParser
         for (channelIndex in 0...channels)
         {
           var sampleIndex:Int = sampleIndex * channels + channelIndex;
-          var sampleValue = soundData[sampleIndex];
+          var sampleValue:Int = soundData[sampleIndex];
 
           if (sampleValue < values[channelIndex * 2]) values[(channelIndex * 2)] = sampleValue;
           if (sampleValue > values[channelIndex * 2 + 1]) values[(channelIndex * 2) + 1] = sampleValue;
@@ -103,8 +135,7 @@ class WaveformDataParser
       }
 
       // We now have the min and max values for the range.
-      for (value in values)
-        outputData.push(value);
+      outputData = outputData.concat(values);
     }
 
     var outputDataLength:Int = Std.int(outputData.length / channels / 2);

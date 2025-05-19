@@ -72,12 +72,12 @@ class WaveformData
     return (channelData == null) ? buildChannelData()[index] : channelData[index];
   }
 
-  public function get(index:Int):Int
+  public inline function get(index:Int):Int
   {
     return data[index] ?? 0;
   }
 
-  public function set(index:Int, value:Int)
+  public inline function set(index:Int, value:Int)
   {
     data[index] = value;
   }
@@ -88,8 +88,9 @@ class WaveformData
    */
   public function maxSampleValue():Int
   {
+    // TODO: Should this still be cached?
     if (_maxSampleValue != 0) return _maxSampleValue;
-    return _maxSampleValue = Std.int(Math.pow(2, bits));
+    return _maxSampleValue = 1 << bits;
   }
 
   /**
