@@ -9,6 +9,9 @@ import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.MemoryCounter;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
+#if hxvlc
+import hxvlc.util.Handle;
+#end
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -116,6 +119,11 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
+
+    #if hxvlc
+    // Initialize hxvlc's Handle here so the videos are loading faster.
+    Handle.init();
+    #end
 
     // Don't call anything from the preferences until the save is loaded!
     #if web
