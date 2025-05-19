@@ -1,17 +1,13 @@
 package funkin.ui.freeplay;
 
-import funkin.ui.freeplay.backcards.*;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.FlxObject;
 import flixel.FlxCamera;
+import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import funkin.ui.FullScreenScaleMode;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -19,17 +15,17 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.effects.IntervalShake;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.AngleMask;
+import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.PureColor;
-import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.StrokeShader;
-import openfl.filters.ShaderFilter;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.scoring.Scoring.ScoringRank;
@@ -37,22 +33,26 @@ import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
+import funkin.ui.FullScreenScaleMode;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.freeplay.backcards.*;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.Level;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.stickers.StickerSubState;
+import funkin.util.HapticUtil;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
-import funkin.util.HapticUtil;
 import openfl.display.BlendMode;
-import funkin.data.freeplay.style.FreeplayStyleRegistry;
+import openfl.filters.ShaderFilter;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+#end
 
 /**
  * The state for the freeplay menu, allowing the player to select any song to play.
