@@ -10,6 +10,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.vis.dsp.SpectralAnalyzer;
 import funkin.data.freeplay.player.PlayerRegistry;
 
+@:nullSafety
 class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
   var fadeTimer:Float = 0;
@@ -21,9 +22,9 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   var intendedYPos:Float = 0;
   var intendedAlpha:Float = 0;
-  var list:Array<String> = [];
+  var list:Array<Null<String>> = [];
 
-  var analyzer:SpectralAnalyzer;
+  var analyzer:Null<SpectralAnalyzer>;
   var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
 
   var currentGFPath:Null<String>;
@@ -35,7 +36,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
     list = anim.curSymbol.getFrameLabelNames();
 
-    switchGF("bf");
+    switchGF(Constants.DEFAULT_CHARACTER);
   }
 
   override public function update(elapsed:Float):Void
@@ -50,9 +51,9 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
         // maybe reset timers?
         resetFadeAnimParams();
       case FADE_OUT:
-        doFade(animOutInfo);
+        if (animOutInfo != null) doFade(animOutInfo);
       case FADE_IN:
-        doFade(animInInfo);
+        if (animInInfo != null) doFade(animInInfo);
       default:
     }
   }
@@ -83,10 +84,11 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   function drawFFT()
   {
-    if (enableVisualizer)
+    if (enableVisualizer && analyzer != null)
     {
       analyzerLevelsCache = analyzer.getLevels(analyzerLevelsCache);
       var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
+      if (frame == null) return;
       var elements = frame.getList();
       var len:Int = cast Math.min(elements.length, 7);
 
@@ -167,7 +169,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
     var bfObj = PlayerRegistry.instance.fetchEntry(bf);
     var gfData = bfObj?.getCharSelectData()?.gf;
-    currentGFPath = gfData?.assetPath != null ? Paths.animateAtlas(gfData?.assetPath) : null;
+    if (gfData != null && gfData.assetPath != null) currentGFPath = Paths.animateAtlas(gfData.assetPath);
 
     // We don't need to update any anims if we didn't change GF
     trace('currentGFPath(${currentGFPath})');

@@ -5,6 +5,7 @@ import funkin.graphics.shaders.MosaicEffect;
 import flixel.util.FlxTimer;
 import funkin.util.TimerUtil;
 
+@:nullSafety
 class Nametag extends FlxSprite
 {
   @:allow(funkin.ui.charSelect.CharSelectSubState)
