@@ -10,10 +10,12 @@ shitAudio/
 .build_time
 .swp
 NewgroundsCredentials.hx
-export_classes.info
 
 # Exclude JS stuff
 node_modules/
 package.json
 package-lock.json
 .aider*
+
+# CPPIA Temporary Ignores
+script_std/

@@ -2,6 +2,7 @@ package funkin.modding;
 
 #if cpp
 import sys.io.File;
+import sys.io.Process;
 import haxe.io.Bytes;
 import cpp.cppia.Module;
 #end
@@ -11,35 +12,50 @@ import funkin.util.tools.ISingleton;
 class ScriptHandler implements ISingleton
 {
   #if cpp
-  var module:Null<Module>;
+  var classMap:Map<String, Class<Dynamic>>;
   #end
 
   public function new()
   {
     #if cpp
-    this.module = null;
+    this.classMap = new Map<String, Class<Dynamic>>();
     #end
   }
 
   public function loadScripts():Void
   {
     #if cpp
+    var cmd:Process = new Process('haxe --cppia script.cppia -cp assets/scripts __Boot__ -dce no -D dll_import=export_classes.info');
+
     var scriptPath:String = 'script.cppia';
     var scriptBytes:Bytes = File.getBytes(scriptPath);
     if (scriptBytes == null) throw 'Could not get bytes from ${scriptPath}';
 
-    module = Module.fromData(scriptBytes.getData());
-    if (module == null) throw 'Could create module for ${scriptPath}';
+    var module:Module = Module.fromData(scriptBytes.getData());
+    if (module == null) throw 'Could not create module for ${scriptPath}';
 
     module.boot();
+
+    var __boot__:Class<Dynamic> = module.resolveClass('__Boot__');
+    var classes:Array<Class<Dynamic>> = Reflect.callMethod(__boot__, Reflect.field(__boot__, '__boot__'), []);
+
+    trace(classes);
+    for (clazz in classes)
+    {
+      trace(Type.getClassName(clazz), clazz);
+      classMap.set(Type.getClassName(clazz), clazz);
+    }
+
+    trace('Loaded ${classMap.size()} scripted classes');
+
+    cmd.close();
     #end
   }
 
   public function resolveClass<T>(classPath:String):Null<Class<T>>
   {
     #if cpp
-    if (module == null) throw 'Scripts have not been loaded yet';
-    return cast module.resolveClass(classPath);
+    return classMap.exists(classPath) ? cast classMap.get(classPath) : null;
     #else
     return cast Type.resolveClass(classPath);
     #end
@@ -47,7 +63,33 @@ class ScriptHandler implements ISingleton
 
   public function instantiateClass<T>(classPath:String, ?args:Array<Dynamic>):Null<T>
   {
-    var cls:Null<Class<T>> = resolveClass(classPath);
-    return cls != null ? Type.createInstance(cls, args ?? []) : null;
+    var clazz:Null<Class<T>> = resolveClass(classPath);
+    return clazz != null ? Type.createInstance(clazz, args ?? []) : null;
+  }
+
+  public function listClasses():Array<Class<Dynamic>>
+  {
+    #if cpp
+    return classMap.values();
+    #else
+    throw 'Temporary throw';
+    #end
+  }
+
+  public function listSubclassesOf<T>(parentClass:Class<T>):Array<T>
+  {
+    #if cpp
+    var classes:Array<T> = [];
+    for (clazz in listClasses())
+    {
+      if (Std.isOfType(clazz, parentClass))
+      {
+        classes.push(cast clazz);
+      }
+    }
+    return classes;
+    #else
+    throw 'Temporary throw';
+    #end
   }
 }
