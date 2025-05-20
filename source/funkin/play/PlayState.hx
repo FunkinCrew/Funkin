@@ -44,6 +44,7 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.scoring.Scoring;
+import funkin.play.scoring.SongScore;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;

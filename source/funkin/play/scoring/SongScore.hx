@@ -7,6 +7,10 @@ class SongScore
 {
   private static var points:Int = 0;
 
+  /**
+   * Returns the value of the score
+   * @return the score variable
+   */
   public static function getPoints():Int
   {
     return points;
