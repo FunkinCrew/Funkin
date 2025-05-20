@@ -4,6 +4,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
 
+@:nullSafety
 class FreeplayFlames extends FlxSpriteGroup
 {
   var flameX(default, set):Float = (FlxG.width - 363) - funkin.ui.FullScreenScaleMode.gameNotchSize.x;

@@ -2779,6 +2779,7 @@ class FreeplayState extends MusicBeatSubState
 /**
  * The difficulty selector arrows to the left and right of the difficulty.
  */
+@:nullSafety
 class DifficultySelector extends FlxSprite
 {
   var controls:Controls;
@@ -2796,16 +2797,15 @@ class DifficultySelector extends FlxSprite
 
     this.parent = parent;
     this.controls = controls;
+    whiteShader = new PureColor(FlxColor.WHITE);
 
-    frames = Paths.getSparrowAtlas(styleData == null ? 'freeplay/freeplaySelector' : styleData.getSelectorAssetKey());
+    this.frames = Paths.getSparrowAtlas(styleData?.getSelectorAssetKey() ?? "freeplay/freeplaySelector");
     animation.addByPrefix('shine', 'arrow pointer loop', 24);
     animation.play('shine');
 
-    whiteShader = new PureColor(FlxColor.WHITE);
+    this.shader = whiteShader;
 
-    shader = whiteShader;
-
-    flipX = flipped;
+    this.flipX = flipped;
   }
 
   override function update(elapsed:Float):Void
@@ -2897,6 +2897,7 @@ enum abstract FilterType(String)
 /**
  * Data about a specific song in the freeplay menu.
  */
+@:nullSafety
 class FreeplaySongData
 {
   /**
@@ -2993,7 +2994,8 @@ class FreeplaySongData
     // and is only accessible with the correct valid variation inputs
 
     var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
-    var variation:String = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    var variation:Null<String> = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
     return data.isSongNew(FreeplayState.rememberedDifficulty, variation);
   }
 
@@ -3026,7 +3028,7 @@ class FreeplaySongData
   function get_scoringRank():Null<ScoringRank>
   {
     var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
-    var variation:String = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    var variation:Null<String> = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
 
     return Save.instance.getSongRank(data.id, FreeplayState.rememberedDifficulty, variation);
   }
@@ -3092,6 +3094,7 @@ typedef MoveData =
 /**
  * The sprite for the difficulty
  */
+@:nullSafety
 class DifficultySprite extends FlxSprite
 {
   /**
