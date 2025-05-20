@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import funkin.graphics.shaders.MosaicEffect;
 import flixel.util.FlxTimer;
 
+@:nullSafety
 class Nametag extends FlxSprite
 {
   var midpointX(default, set):Float = 1008;

@@ -12,6 +12,7 @@ import funkin.save.Save;
 /**
  * When you first enter the character select state, it will play an introductory video opening up the lights
  */
+@:nullSafety
 class IntroSubState extends MusicBeatSubState
 {
   #if html5
@@ -33,6 +34,7 @@ class IntroSubState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       FlxG.sound.music.destroy();
+      @:nullSafety(Off)
       FlxG.sound.music = null;
     }
 
@@ -77,7 +79,7 @@ class IntroSubState extends MusicBeatSubState
   #end
 
   #if hxvlc
-  var vid:FunkinVideoSprite;
+  var vid:Null<FunkinVideoSprite>;
 
   function playVideoNative(filePath:String):Void
   {
@@ -89,7 +91,7 @@ class IntroSubState extends MusicBeatSubState
     if (vid != null)
     {
       vid.zIndex = 0;
-      vid.bitmap.onEndReached.add(onLightsEnd);
+      vid.bitmap?.onEndReached.add(onLightsEnd);
 
       add(vid);
       if (vid.load(filePath)) vid.play();
@@ -128,6 +130,7 @@ class IntroSubState extends MusicBeatSubState
       #end
       remove(vid);
       vid.destroy();
+      @:nullSafety(Off)
       vid = null;
     }
 

@@ -4,6 +4,7 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
+@:nullSafety
 class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
   public function new(x:Float, y:Float)

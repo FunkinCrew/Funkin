@@ -4,6 +4,7 @@ import flixel.util.FlxColor;
 import flxanimate.effects.FlxTint;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
+@:nullSafety
 class Lock extends FlxAtlasSprite
 {
   var colors:Array<FlxColor> = [
@@ -22,7 +23,10 @@ class Lock extends FlxAtlasSprite
 
     var func = function(name) {
       var symbol = anim.symbolDictionary[name];
-      if (symbol != null && symbol.timeline.get("color") != null) symbol.timeline.get("color").get(0).colorEffect = tint;
+      if (symbol != null && symbol.timeline.get("color") != null) {
+        var color = symbol.timeline.get("color").get(0);
+        if (color != null) color.colorEffect = tint;
+      }
     }
     for (symbol in arr)
     {
