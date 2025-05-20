@@ -6,6 +6,7 @@ import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 
+@:nullSafety
 class FreeplayDJ extends FlxAtlasSprite
 {
   // Represents the sprite's current status.
@@ -29,25 +30,25 @@ class FreeplayDJ extends FlxAtlasSprite
   var timeIdling:Float = 0;
 
   final characterId:String = Constants.DEFAULT_CHARACTER;
-  final playableCharData:PlayerFreeplayDJData;
+  final playableCharData:Null<PlayerFreeplayDJData>;
 
   public function new(x:Float, y:Float, characterId:String)
   {
     this.characterId = characterId;
 
     var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
-    playableCharData = playableChar.getFreeplayDJData();
+    playableCharData = playableChar?.getFreeplayDJData();
 
-    super(x, y, playableCharData.getAtlasPath());
+    super(x, y, playableCharData?.getAtlasPath());
 
     onAnimationFrame.add(function(name, number) {
-      if (name == playableCharData.getAnimationPrefix('cartoon'))
+      if (name == playableCharData?.getAnimationPrefix('cartoon'))
       {
-        if (number == playableCharData.getCartoonSoundClickFrame())
+        if (number == playableCharData?.getCartoonSoundClickFrame())
         {
           FunkinSound.playOnce(Paths.sound('remote_click'));
         }
-        if (number == playableCharData.getCartoonSoundCartoonFrame())
+        if (number == playableCharData?.getCartoonSoundCartoonFrame())
         {
           runTvLogic();
         }
@@ -86,49 +87,49 @@ class FreeplayDJ extends FlxAtlasSprite
     {
       case Intro:
         // Play the intro animation then leave this state immediately.
-        var animPrefix = playableCharData.getAnimationPrefix('intro');
-        if (getCurrentAnimation() != animPrefix || !this.anim.isPlaying) playFlashAnimation(animPrefix, true);
+        var animPrefix = playableCharData?.getAnimationPrefix('intro');
+        if (animPrefix != null && (getCurrentAnimation() != animPrefix || !this.anim.isPlaying)) playFlashAnimation(animPrefix, true);
         timeIdling = 0;
       case Idle:
         // We are in this state the majority of the time.
-        var animPrefix = playableCharData.getAnimationPrefix('idle');
-        if (getCurrentAnimation() != animPrefix)
+        var animPrefix = playableCharData?.getAnimationPrefix('idle');
+        if (animPrefix != null && getCurrentAnimation() != animPrefix)
         {
           playFlashAnimation(animPrefix, true, false, true);
         }
         timeIdling += elapsed;
       case NewUnlock:
-        var animPrefix = playableCharData.getAnimationPrefix('newUnlock');
-        if (!hasAnimation(animPrefix))
+        var animPrefix = playableCharData?.getAnimationPrefix('newUnlock');
+        if (animPrefix != null && !hasAnimation(animPrefix))
         {
           currentState = Idle;
         }
-        if (getCurrentAnimation() != animPrefix)
+        if (animPrefix != null && getCurrentAnimation() != animPrefix)
         {
           playFlashAnimation(animPrefix, true, false, true);
         }
       case Confirm:
-        var animPrefix = playableCharData.getAnimationPrefix('confirm');
-        if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, false);
+        var animPrefix = playableCharData?.getAnimationPrefix('confirm');
+        if (animPrefix != null && getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, false);
         timeIdling = 0;
       case FistPumpIntro:
-        var animPrefixA = playableCharData.getAnimationPrefix('fistPump');
-        var animPrefixB = playableCharData.getAnimationPrefix('loss');
+        var animPrefixA = playableCharData?.getAnimationPrefix('fistPump');
+        var animPrefixB = playableCharData?.getAnimationPrefix('loss');
 
         if (getCurrentAnimation() == animPrefixA)
         {
-          var endFrame = playableCharData.getFistPumpIntroEndFrame();
+          var endFrame = playableCharData?.getFistPumpIntroEndFrame() ?? 0;
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playFlashAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpIntroStartFrame());
+            playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
           }
         }
         else if (getCurrentAnimation() == animPrefixB)
         {
-          var endFrame = playableCharData.getFistPumpIntroBadEndFrame();
+          var endFrame = playableCharData?.getFistPumpIntroBadEndFrame() ?? 0;
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playFlashAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
+            playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
           }
         }
         else
@@ -137,23 +138,23 @@ class FreeplayDJ extends FlxAtlasSprite
         }
 
       case FistPump:
-        var animPrefixA = playableCharData.getAnimationPrefix('fistPump');
-        var animPrefixB = playableCharData.getAnimationPrefix('loss');
+        var animPrefixA = playableCharData?.getAnimationPrefix('fistPump');
+        var animPrefixB = playableCharData?.getAnimationPrefix('loss');
 
         if (getCurrentAnimation() == animPrefixA)
         {
-          var endFrame = playableCharData.getFistPumpLoopEndFrame();
+          var endFrame = playableCharData?.getFistPumpLoopEndFrame() ?? 0;
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playFlashAnimation(animPrefixA, true, false, false, playableCharData.getFistPumpLoopStartFrame());
+            playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
           }
         }
         else if (getCurrentAnimation() == animPrefixB)
         {
-          var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
+          var endFrame = playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
-            playFlashAnimation(animPrefixB, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
+            playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
           }
         }
         else
@@ -162,8 +163,8 @@ class FreeplayDJ extends FlxAtlasSprite
         }
 
       case IdleEasterEgg:
-        var animPrefix = playableCharData.getAnimationPrefix('idleEasterEgg');
-        if (getCurrentAnimation() != animPrefix)
+        var animPrefix = playableCharData?.getAnimationPrefix('idleEasterEgg');
+        if (animPrefix != null && getCurrentAnimation() != animPrefix)
         {
           onIdleEasterEgg.dispatch();
           playFlashAnimation(animPrefix, false);
@@ -171,7 +172,7 @@ class FreeplayDJ extends FlxAtlasSprite
         }
         timeIdling = 0;
       case Cartoon:
-        var animPrefix = playableCharData.getAnimationPrefix('cartoon');
+        var animPrefix = playableCharData?.getAnimationPrefix('cartoon');
         if (animPrefix == null)
         {
           currentState = IdleEasterEgg;
@@ -190,7 +191,7 @@ class FreeplayDJ extends FlxAtlasSprite
   {
     // var name = anim.curSymbol.name;
 
-    if (name == playableCharData.getAnimationPrefix('intro'))
+    if (name == playableCharData?.getAnimationPrefix('intro'))
     {
       if (PlayerRegistry.instance.hasNewCharacter())
       {
@@ -202,7 +203,7 @@ class FreeplayDJ extends FlxAtlasSprite
       }
       onIntroDone.dispatch();
     }
-    else if (name == playableCharData.getAnimationPrefix('idle'))
+    else if (name == playableCharData?.getAnimationPrefix('idle'))
     {
       // trace('Finished idle');
 
@@ -215,47 +216,48 @@ class FreeplayDJ extends FlxAtlasSprite
         currentState = Cartoon;
       }
     }
-    else if (name == playableCharData.getAnimationPrefix('confirm'))
+    else if (name == playableCharData?.getAnimationPrefix('confirm'))
     {
       // trace('Finished confirm');
     }
-    else if (name == playableCharData.getAnimationPrefix('fistPump'))
+    else if (name == playableCharData?.getAnimationPrefix('fistPump'))
     {
       // trace('Finished fist pump');
       currentState = Idle;
     }
-    else if (name == playableCharData.getAnimationPrefix('idleEasterEgg'))
+    else if (name == playableCharData?.getAnimationPrefix('idleEasterEgg'))
     {
       // trace('Finished spook');
       currentState = Idle;
     }
-    else if (name == playableCharData.getAnimationPrefix('loss'))
+    else if (name == playableCharData?.getAnimationPrefix('loss'))
     {
       // trace('Finished loss reaction');
       currentState = Idle;
     }
-    else if (name == playableCharData.getAnimationPrefix('cartoon'))
+    else if (name == playableCharData?.getAnimationPrefix('cartoon'))
     {
       // trace('Finished cartoon');
 
-      var frame:Int = FlxG.random.bool(33) ? playableCharData.getCartoonLoopBlinkFrame() : playableCharData.getCartoonLoopFrame();
+      var frame:Int = FlxG.random.bool(33) ? (playableCharData?.getCartoonLoopBlinkFrame() ?? 0) : (playableCharData?.getCartoonLoopFrame() ?? 0);
 
       // Character switches channels when the video ends, or at a 10% chance each time his idle loops.
       if (FlxG.random.bool(5))
       {
-        frame = playableCharData.getCartoonChannelChangeFrame();
+        frame = playableCharData?.getCartoonChannelChangeFrame() ?? 0;
         // boyfriend switches channel code?
         // runTvLogic();
       }
       trace('Replay idle: ${frame}');
-      playFlashAnimation(playableCharData.getAnimationPrefix('cartoon'), true, false, false, frame);
+      var animPrefix = playableCharData?.getAnimationPrefix('cartoon');
+      if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, frame);
       // trace('Finished confirm');
     }
-    else if (name == playableCharData.getAnimationPrefix('newUnlock'))
+    else if (name == playableCharData?.getAnimationPrefix('newUnlock'))
     {
       // Animation should loop.
     }
-    else if (name == playableCharData.getAnimationPrefix('charSelect'))
+    else if (name == playableCharData?.getAnimationPrefix('charSelect'))
     {
       onCharSelectComplete();
     }
@@ -300,7 +302,7 @@ class FreeplayDJ extends FlxAtlasSprite
     {
       // plays it smidge after the click
       FunkinSound.playOnce(Paths.sound('channel_switch'), 1.0, function() {
-        cartoonSnd.destroy();
+        if (cartoonSnd != null) cartoonSnd.destroy();
         loadCartoon();
       });
     }
@@ -311,7 +313,8 @@ class FreeplayDJ extends FlxAtlasSprite
   function loadCartoon()
   {
     cartoonSnd = FunkinSound.load(Paths.sound(getRandomFlashToon()), 1.0, false, true, true, function() {
-      playFlashAnimation(playableCharData.getAnimationPrefix('cartoon'), true, false, false, 60);
+      var animPrefix = playableCharData?.getAnimationPrefix('cartoon');
+      if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, 60);
     });
 
     // Fade out music to 40% volume over 1 second.
@@ -319,7 +322,7 @@ class FreeplayDJ extends FlxAtlasSprite
     FlxG.sound.music.fadeOut(1.0, 0.1);
 
     // Play the cartoon at a random time between the start and 5 seconds from the end.
-    cartoonSnd.time = FlxG.random.float(0, Math.max(cartoonSnd.length - (5 * Constants.MS_PER_SEC), 0.0));
+    if (cartoonSnd != null) cartoonSnd.time = FlxG.random.float(0, Math.max(cartoonSnd.length - (5 * Constants.MS_PER_SEC), 0.0));
   }
 
   final cartoonList:Array<String> = openfl.utils.Assets.list().filter(function(path) return path.startsWith("assets/sounds/cartoons/"));
@@ -350,10 +353,10 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function toCharSelect():Void
   {
-    if (hasAnimation(playableCharData.getAnimationPrefix('charSelect')))
+    var animPrefix = playableCharData?.getAnimationPrefix('charSelect');
+    if (animPrefix != null && hasAnimation(animPrefix))
     {
       currentState = CharSelect;
-      var animPrefix = playableCharData.getAnimationPrefix('charSelect');
       playFlashAnimation(animPrefix, true, false, false, 0);
     }
     else
@@ -375,8 +378,8 @@ class FreeplayDJ extends FlxAtlasSprite
     }
 
     currentState = FistPumpIntro;
-    var animPrefix = playableCharData.getAnimationPrefix('fistPump');
-    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroStartFrame());
+    var animPrefix = playableCharData?.getAnimationPrefix('fistPump');
+    if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
   }
 
   public function fistPump():Void
@@ -389,8 +392,8 @@ class FreeplayDJ extends FlxAtlasSprite
     }
 
     currentState = FistPump;
-    var animPrefix = playableCharData.getAnimationPrefix('fistPump');
-    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopStartFrame());
+    var animPrefix = playableCharData?.getAnimationPrefix('fistPump');
+    if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
   }
 
   public function fistPumpLossIntro():Void
@@ -403,8 +406,8 @@ class FreeplayDJ extends FlxAtlasSprite
     }
 
     currentState = FistPumpIntro;
-    var animPrefix = playableCharData.getAnimationPrefix('loss');
-    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpIntroBadStartFrame());
+    var animPrefix = playableCharData?.getAnimationPrefix('loss');
+    if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
   }
 
   public function fistPumpLoss():Void
@@ -417,8 +420,8 @@ class FreeplayDJ extends FlxAtlasSprite
     }
 
     currentState = FistPump;
-    var animPrefix = playableCharData.getAnimationPrefix('loss');
-    playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
+    var animPrefix = playableCharData?.getAnimationPrefix('loss');
+    if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
   }
 
   override public function getCurrentAnimation():String
@@ -436,7 +439,7 @@ class FreeplayDJ extends FlxAtlasSprite
   function applyAnimOffset()
   {
     var AnimName = getCurrentAnimation();
-    var daOffset = playableCharData.getAnimationOffsetsByPrefix(AnimName);
+    var daOffset = playableCharData?.getAnimationOffsetsByPrefix(AnimName);
     if (daOffset != null)
     {
       var xValue = daOffset[0];
