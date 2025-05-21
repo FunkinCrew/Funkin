@@ -24,7 +24,7 @@
     {
       "name": "extension-androidtools",
       "type": "haxelib",
-      "version": "2.2.0"
+      "version": "2.2.1"
     },
     {
       "name": "extension-haptics",
@@ -145,7 +145,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.0"
+      "version": "2.2.1"
     },
     {
       "name": "json2object",
