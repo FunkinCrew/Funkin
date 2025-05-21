@@ -31,6 +31,8 @@ class DeselectItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
 
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
     state.editButtonsDirty = true;
@@ -52,6 +54,8 @@ class DeselectItemsCommand implements ChartEditorCommand
     {
       state.currentEventSelection.pushUnique(event);
     }
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;

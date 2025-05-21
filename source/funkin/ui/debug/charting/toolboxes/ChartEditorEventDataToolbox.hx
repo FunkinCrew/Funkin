@@ -36,8 +36,13 @@ import openfl.geom.Rectangle;
 @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/event-data.xml'))
 class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
-  var toolboxEventsEventKind:DropDown;
+  var toolboxEventsModifyAllEvents:CheckBox;
   var toolboxEventsDataBox:VBox;
+  var toolboxEventsSelectedEvents:DropDown;
+  var selectedEventDropdownItemRenderer:haxe.ui.core.ItemRenderer;
+  var toolboxEventsCustomKindLabel:Label;
+  var toolboxEventsCustomKind:TextField;
+
   var easeGraphImage:Image;
   var easeDotImage:Image;
   var _easeGraphSprite:Null<flixel.FlxSprite> = null;
@@ -50,6 +55,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   static var _loopPause:Float = 0.15;
 
   var _initializing:Bool = true;
+  var populateSelectedEventsDropDown:Bool = true;
 
   /**
    * If `true`, changing the value of the Event Kind dropdown will trigger the `onEventKindChanged` callback,
@@ -78,6 +84,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   {
     super(chartEditorState2);
 
+    selectedEventDropdownItemRenderer = toolboxEventsSelectedEvents.findComponent(haxe.ui.core.ItemRenderer);
+
     initialize();
 
     this.onDialogClosed = onClose;
@@ -95,6 +103,65 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     toolboxEventsEventKind.onChange = onEventKindChanged;
     shouldTriggerOnEventKindChanged = false;
 
+    toolboxEventsCustomKind.onChange = function(event:UIEvent)
+    {
+      var customKind:Null<String> = event?.target?.text;
+      if (customKind == null) return;
+
+      var prevEventKindToPlace = chartEditorState.eventKindToPlace;
+      chartEditorState.eventKindToPlace = customKind;
+      if (!_initializing && chartEditorState.currentEventSelection.length > 0)
+      {
+        if (toolboxEventsModifyAllEvents.selected)
+        {
+          trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event toolbox MODIFYING events to kind "${chartEditorState.eventKindToPlace}"');
+          // Edit the event data of any existing events of the same type.
+          for (event in chartEditorState.currentEventSelection)
+          {
+            if (event.eventKind == prevEventKindToPlace)
+            {
+              event.eventKind = chartEditorState.eventKindToPlace;
+              event.value = Reflect.copy(chartEditorState.eventDataToPlace);
+            }
+          }
+        }
+        else
+        {
+          // Find the currently selected event and update it's values.
+          var event = chartEditorState.currentEventSelection[toolboxEventsSelectedEvents.selectedIndex - 1];
+          if (event != null)
+          {
+            event.eventKind = chartEditorState.eventKindToPlace;
+            event.value = Reflect.copy(chartEditorState.eventDataToPlace);
+          }
+        }
+        chartEditorState.saveDataDirty = true;
+        chartEditorState.noteDisplayDirty = true;
+        chartEditorState.notePreviewDirty = true;
+        chartEditorState.noteTooltipsDirty = true;
+      }
+    }
+
+    toolboxEventsSelectedEvents.onChange = function(event:UIEvent)
+    {
+      if (event.target.value == null) return;
+      var selectedEvent = chartEditorState.currentEventSelection[toolboxEventsSelectedEvents.selectedIndex - 1];
+      if (selectedEvent != null && chartEditorState.eventDataToPlace != selectedEvent.value)
+      {
+        chartEditorState.eventKindToPlace = selectedEvent.eventKind;
+        chartEditorState.eventDataToPlace = selectedEvent.value;
+        if (shouldTriggerOnEventKindChanged) // only refresh if there isn't one already taking place.
+        {
+          populateSelectedEventsDropDown = false;
+
+          refresh();
+
+          populateSelectedEventsDropDown = true;
+        }
+      }
+    };
+    refreshSelectedEvents(toolboxEventsSelectedEvents.selectedIndex);
+
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
     toolboxEventsEventKind.value = startingEventValue;
 
@@ -108,6 +175,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       return;
     }
 
+    var prevEventKindToPlace = chartEditorState.eventKindToPlace;
     var eventKind:String = event.data.id;
     var sameEvent:Bool = (eventKind == chartEditorState.eventKindToPlace);
 
@@ -118,31 +186,64 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     var schema:SongEventSchema = SongEventRegistry.getEventSchema(eventKind);
 
+    if (!sameEvent) chartEditorState.eventDataToPlace = {};
     if (schema == null)
     {
       chartEditorState.warning('Invalid Event Kind', 'Event toolbox tried to use unknown event kind "$eventKind", did you define a schema?');
-      return;
+      toolboxEventsCustomKindLabel.hidden = false;
+      toolboxEventsCustomKind.hidden = false;
+      buildEventDataFormFromSchema(toolboxEventsDataBox, buildSchemaFromEventData(), chartEditorState.eventKindToPlace);
     }
-
-    if (!sameEvent) chartEditorState.eventDataToPlace = {};
-    buildEventDataFormFromSchema(toolboxEventsDataBox, schema, chartEditorState.eventKindToPlace);
+    else
+    {
+      toolboxEventsCustomKindLabel.hidden = true;
+      toolboxEventsCustomKind.hidden = true;
+      buildEventDataFormFromSchema(toolboxEventsDataBox, schema, chartEditorState.eventKindToPlace);
+    }
 
     if (!_initializing && chartEditorState.currentEventSelection.length > 0)
     {
-      // Edit the event data of any selected events.
-      chartEditorState.success(
-        'Modified Events',
-        'Switching ${chartEditorState.currentEventSelection.length} events to "${chartEditorState.eventKindToPlace}"'
-      );
-      for (event in chartEditorState.currentEventSelection)
+      if (toolboxEventsModifyAllEvents.selected)
       {
-        event.eventKind = chartEditorState.eventKindToPlace;
-        event.value = chartEditorState.eventDataToPlace;
+        chartEditorState.success(
+          'Modified Events',
+          'Switching ${chartEditorState.currentEventSelection.length} events to "${chartEditorState.eventKindToPlace}"'
+        );
+        // Edit the event data of any selected events of the same type.
+        for (event in chartEditorState.currentEventSelection)
+        {
+          if (event.eventKind == prevEventKindToPlace)
+          {
+            event.eventKind = chartEditorState.eventKindToPlace;
+            event.value = Reflect.copy(chartEditorState.eventDataToPlace);
+          }
+        }
+      }
+      else
+      {
+        // Find the currently selected event and update it's values.
+        var event = chartEditorState.currentEventSelection[toolboxEventsSelectedEvents.selectedIndex - 1];
+        if (event != null)
+        {
+          event.eventKind = chartEditorState.eventKindToPlace;
+          event.value = Reflect.copy(chartEditorState.eventDataToPlace);
+        }
       }
       chartEditorState.saveDataDirty = true;
       chartEditorState.noteDisplayDirty = true;
       chartEditorState.notePreviewDirty = true;
+      chartEditorState.noteTooltipsDirty = true;
     }
+  }
+
+  function refreshSelectedEvents(startingChartEvent:Int = 0):Void
+  {
+    toolboxEventsSelectedEvents.pauseEvent(UIEvent.CHANGE, true);
+    var startingSelectedEvent = ChartEditorDropdowns.populateDropdownWithChartEvents(toolboxEventsSelectedEvents, chartEditorState, startingChartEvent);
+    toolboxEventsSelectedEvents.selectedIndex = Std.parseInt(startingSelectedEvent.id);
+    toolboxEventsSelectedEvents.value = startingSelectedEvent;
+    selectedEventDropdownItemRenderer.data = startingSelectedEvent;
+    toolboxEventsSelectedEvents.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   override public function refresh():Void
@@ -151,24 +252,37 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     shouldTriggerOnEventKindChanged = false;
 
+    if (populateSelectedEventsDropDown) refreshSelectedEvents(toolboxEventsSelectedEvents.selectedIndex);
+
     var newDropdownElement = ChartEditorDropdowns.findDropdownElement(chartEditorState.eventKindToPlace, toolboxEventsEventKind);
 
     if (newDropdownElement == null)
     {
       trace(' WARNING '.bold().bg_yellow() + ' CHART EDITOR - Event kind "${chartEditorState.eventKindToPlace}" not found in dropdown lookup. Attempting to proceed...');
-      newDropdownElement = toolboxEventsEventKind.dataSource.get(0);
+      newDropdownElement = ChartEditorDropdowns.findDropdownElement('unknown', toolboxEventsEventKind);
+      toolboxEventsCustomKindLabel.hidden = false;
+      toolboxEventsCustomKind.hidden = false;
+      toolboxEventsCustomKind.value = chartEditorState.eventKindToPlace;
     }
-    else if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)
+    else
+    {
+      toolboxEventsCustomKindLabel.hidden = true;
+      toolboxEventsCustomKind.hidden = true;
+    }
+
+    if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)
     {
       toolboxEventsEventKind.value = newDropdownElement;
 
       var schema:SongEventSchema = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
       if (schema == null)
       {
+        // Build the event schema using the selected unknown event's value instead.
         chartEditorState.warning(
           'Invalid Event Kind',
           'Event toolbox tried to use unknown event kind "${chartEditorState.eventKindToPlace}", did you define a schema?'
         );
+        buildEventDataFormFromSchema(toolboxEventsDataBox, buildSchemaFromEventData(), chartEditorState.eventKindToPlace);
       }
       else
       {
@@ -190,7 +304,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       if (field != null)
       {
         field.pauseEvent(UIEvent.CHANGE, true);
-
         switch (Type.getClass(field))
         {
           case NumberStepper:
@@ -216,8 +329,81 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       }
     }
 
-    shouldTriggerOnEventKindChanged = true;
     updateEasePreview();
+
+    shouldTriggerOnEventKindChanged = true;
+  }
+
+  function buildSchemaFromEventData():SongEventSchema
+  {
+    var schema:SongEventSchema = new SongEventSchema([]);
+
+    for (pair in chartEditorState.eventDataToPlace.keyValueIterator())
+    {
+      var fieldId:String = pair.key;
+      var value:Null<Dynamic> = pair.value;
+
+      switch (value)
+      {
+        case Std.isOfType(_, Int) => true:
+          schema.push(
+            {
+              name: '$fieldId',
+              title: '$fieldId',
+              defaultValue: value,
+              step: 1,
+              type: SongEventFieldType.INTEGER,
+            });
+        case Std.isOfType(_, Float) => true:
+          schema.push(
+            {
+              name: '$fieldId',
+              title: '$fieldId',
+              defaultValue: value,
+              step: 0.1,
+              type: SongEventFieldType.FLOAT,
+            });
+        case Std.isOfType(_, Bool) => true:
+          schema.push(
+            {
+              name: '$fieldId',
+              title: '$fieldId',
+              type: SongEventFieldType.BOOL,
+              defaultValue: value,
+            });
+        case Std.isOfType(_, String) => true:
+          schema.push(
+            {
+              name: '$fieldId',
+              title: '$fieldId',
+              type: SongEventFieldType.STRING,
+              defaultValue: '$value',
+            });
+        default:
+          throw 'ChartEditorEventDataToolbox - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(value))}".';
+      }
+    }
+
+    if (schema.getFirstField() == null)
+    {
+      // Fine, here's some useless values for the psychic in you.
+      schema = new SongEventSchema([
+        {
+          name: 'value1',
+          title: 'value1',
+          type: SongEventFieldType.STRING,
+          defaultValue: '',
+        },
+        {
+          name: 'value2',
+          title: 'value2',
+          type: SongEventFieldType.STRING,
+          defaultValue: '',
+        },
+      ]);
+    }
+
+    return schema;
   }
 
   var lastEventKind:String = 'unknown';
@@ -365,16 +551,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       hbox.addComponent(field.type == FRAME ? input : inputBox);
 
-      // Ensure chartEditorState.eventDataToPlace reflects default UI values so preview is correct on first open
-      if (field.defaultValue != null)
-      {
-        // Only set if not already present (don't overwrite existing selection data)
-        if (chartEditorState.eventDataToPlace.get(field.name) == null)
-        {
-          chartEditorState.eventDataToPlace.set(field.name, field.defaultValue);
-        }
-      }
-
       // Update the value of the event data without modifying
       input.pauseEvent(UIEvent.CHANGE, true);
       input.onChange = function(event:UIEvent)
@@ -404,14 +580,26 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           chartEditorState.eventDataToPlace.set(event.target.id, value);
         }
 
-        // Edit the event data of any existing events.
         if (!_initializing && chartEditorState.currentEventSelection.length > 0)
         {
-          // chartEditorState.success('Modified Events', 'Edited ${chartEditorState.currentEventSelection.length} selected events')
-          for (songEvent in chartEditorState.currentEventSelection)
+          if (toolboxEventsModifyAllEvents.selected)
           {
-            songEvent.eventKind = chartEditorState.eventKindToPlace;
-            songEvent.value = Reflect.copy(chartEditorState.eventDataToPlace);
+            // Edit the event data of any existing events of the same type.
+            trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event Toolbox MODIFYING all selected events...');
+            for (event in chartEditorState.currentEventSelection)
+            {
+              if (event.eventKind == chartEditorState.eventKindToPlace) event.value = chartEditorState.eventDataToPlace;
+            }
+          }
+          else
+          {
+            // Find the currently selected event and update it's values.
+            var event = chartEditorState.currentEventSelection[toolboxEventsSelectedEvents.selectedIndex - 1];
+            if (event != null)
+            {
+              event.eventKind = chartEditorState.eventKindToPlace;
+              event.value = Reflect.copy(chartEditorState.eventDataToPlace);
+            }
           }
           chartEditorState.saveDataDirty = true;
           chartEditorState.noteDisplayDirty = true;
