@@ -25,6 +25,8 @@ class InvertSelectedItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentSongChartNoteData, previousNoteSelection);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentSongChartEventData, previousEventSelection);
 
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+
     state.noteDisplayDirty = true;
   }
 
@@ -32,6 +34,8 @@ class InvertSelectedItemsCommand implements ChartEditorCommand
   {
     state.currentNoteSelection = previousNoteSelection;
     state.currentEventSelection = previousEventSelection;
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.noteDisplayDirty = true;
   }

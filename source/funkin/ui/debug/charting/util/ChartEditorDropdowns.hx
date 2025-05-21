@@ -103,6 +103,39 @@ class ChartEditorDropdowns
   }
 
   /**
+   * Populate a dropdown with the current event selection.
+   */
+  public static function populateDropdownWithChartEvents(dropDown:DropDown, state:ChartEditorState, startingChartEvent:Int = 0):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var events = state.currentEventSelection;
+
+    var returnValue:DropDownEntry =
+      {
+        id: "0",
+        text: (events[0] != null) ? (events[0].time + ' : ' + events[0].buildTooltip()) : ('No event selected!')
+      };
+
+    for (index in 0...events.length)
+    {
+      var value =
+        {
+          id: '$index',
+          text: '${events[index].time} : ${events[index].buildTooltip()}'
+        };
+      if (startingChartEvent == index) returnValue = value;
+      dropDown.dataSource.add(value);
+    }
+
+    if (events.length == 0) dropDown.dataSource.add(returnValue);
+
+    dropDown.dataSource.sort('id', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
    * Given the ID of a dropdown element, find the corresponding entry in the dropdown's dataSource.
    */
   public static function findDropdownElement(id:String, dropDown:DropDown):Null<DropDownEntry>
