@@ -38,7 +38,7 @@ class HostClasses
   ];
 
   /**
-   * TODO: Handle abstracts correctly
+   * TODO: Handle generics correctly
    */
   static function onGenerate(types:Array<Type>):Void
   {
@@ -80,14 +80,14 @@ class HostClasses
           content += 'extern class ' + typeName + '\n{\n';
           for (f in t.fields.get())
           {
-            var fieldCode:String = fieldToString(f);
+            var fieldCode:String = fieldToString(f, false);
             fieldCode = 'extern ' + fieldCode;
             content += '  ' + fieldCode + '\n';
           }
 
           for (f in t.statics.get())
           {
-            var fieldCode:String = fieldToString(f);
+            var fieldCode:String = fieldToString(f, false);
             fieldCode = 'extern static ' + fieldCode;
             content += '  ' + fieldCode + '\n';
           }
@@ -132,7 +132,7 @@ class HostClasses
 
           for (f in a.impl.get().statics.get())
           {
-            var fieldCode:String = fieldToString(f);
+            var fieldCode:String = fieldToString(f, true);
             fieldCode = 'extern ' + fieldCode;
             content += '  ' + fieldCode + '\n';
           }
@@ -153,7 +153,7 @@ class HostClasses
     return Context.getBuildFields();
   }
 
-  static function fieldToString(field:ClassField):String
+  static function fieldToString(field:ClassField, fromAbstractType:Bool):String
   {
     var fieldCode:String = '';
 
@@ -164,8 +164,6 @@ class HostClasses
     switch (field.kind)
     {
       case FVar(read, write):
-        fieldCode += 'var ${field.name}';
-
         var getStr:String = switch (read)
         {
           case AccNormal: 'default';
@@ -186,7 +184,11 @@ class HostClasses
           default: 'default';
         };
 
-        fieldCode += ' (';
+        if (fromAbstractType && getStr == 'default') fieldCode += 'static ';
+
+        fieldCode += 'var ${field.name}';
+
+        fieldCode += '(';
         fieldCode += getStr;
         fieldCode += ', ';
         fieldCode += setStr;
@@ -194,8 +196,33 @@ class HostClasses
 
         fieldCode += ': ' + field.type.toString() + ';';
 
-      case FMethod(_):
-        fieldCode += 'function ${field.name}(): ' + field.type.toString() + ';';
+      case FMethod(kind):
+        var kindStr:String = switch (kind)
+        {
+          case MethNormal: '';
+          case MethInline: ''; // inline is not supported in externs
+          case MethDynamic: 'dynamic ';
+          case MethMacro: 'macro ';
+        }
+
+        fieldCode += kindStr;
+
+        switch (field.type)
+        {
+          case TFun(args, ret):
+            if (fromAbstractType)
+            {
+              if (args.length > 0 && args[0].name == 'this') args.shift();
+              else if (args.length == 0 || (args.length > 0 && args[0].name != 'this')) fieldCode += 'static ';
+            }
+
+            fieldCode += 'function ${field.name}(';
+            var argList:String = args.map(a -> (a.opt ? '?' : '') + '${a.name}: ${a.t.toString()}').join(', ');
+            fieldCode += argList;
+            fieldCode += '): ' + ret.toString() + ';';
+          default:
+            throw 'Should not happen';
+        }
     }
 
     return fieldCode;
