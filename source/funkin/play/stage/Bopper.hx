@@ -3,6 +3,7 @@ package funkin.play.stage;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
+import funkin.data.animation.AnimationData;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
@@ -274,7 +275,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     var animationPriority = priorityMap.get(correctName);
     var currentAnimationPriority = priorityMap.get(getCurrentAnimation());
 
-    if (currentAnimationPriority > animationPriority)
+    if (currentAnimationPriority > animationPriority && !isAnimationFinished())
     {
       FlxG.log.warn('Bopper tried to play animation "$name" that has a lower priority than the current animation\'s (${getCurrentAnimation()}) priority! ($currentAnimationPriority)');
       return;
