@@ -882,7 +882,7 @@ class ResultState extends MusicBeatSubState
               }
               else
               {
-                FlxG.switchState(targetState);
+                FlxG.switchState(() -> targetState);
               }
             }
           });
@@ -895,7 +895,7 @@ class ResultState extends MusicBeatSubState
         }
         else
         {
-          FlxG.switchState(targetState);
+          FlxG.switchState(() -> targetState);
         }
       }
     }
