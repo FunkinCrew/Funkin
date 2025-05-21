@@ -6,6 +6,8 @@ import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
+using StringTools;
+
 typedef AnimationFrameCallback = String->Int->Int->Void;
 typedef AnimationFinishedCallback = String->Void;
 
@@ -54,6 +56,11 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (isPixel == value) return value;
     return isPixel = value;
   }
+
+  /**
+   * A map of animation names with their priority values.
+   */
+  public var priorityMap:Map<String, Int> = new Map<String, Int>();
 
   /**
    * Whether this bopper should bop every beat. By default it's true, but when used
@@ -253,8 +260,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public var canPlayOtherAnims:Bool = true;
 
-  public var ignoreExclusionPref:Array<String> = [];
-
   /**
    * @param name The name of the animation to play.
    * @param restart Whether to restart the animation if it is already playing.
@@ -263,38 +268,29 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    */
   public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
-    if ((!canPlayOtherAnims))
-    {
-      var id = name;
-      if (getCurrentAnimation() == id && restart) {}
-      else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
-      {
-        var detected:Bool = false;
-        for (entry in ignoreExclusionPref)
-        {
-          if (StringTools.startsWith(id, entry))
-          {
-            detected = true;
-            break;
-          }
-        }
-        if (!detected) return;
-      }
-      else
-        return;
-    }
-
     var correctName = correctAnimationName(name);
     if (correctName == null) return;
 
-    this.animation.play(correctName, restart, reversed, 0);
+    var animationPriority = priorityMap.get(correctName);
+    var currentAnimationPriority = priorityMap.get(getCurrentAnimation());
 
-    if (ignoreOther)
+    if (currentAnimationPriority > animationPriority)
     {
-      canPlayOtherAnims = false;
+      FlxG.log.warn('Bopper tried to play animation "$name" that has a lower priority than the current animation\'s (${getCurrentAnimation()}) priority! ($currentAnimationPriority)');
+      return;
     }
 
+    this.animation.play(correctName, restart, reversed, 0);
+
     applyAnimationOffsets(correctName);
+  }
+
+  function setAnimationPriorities(animations:Array<AnimationData>):Void
+  {
+    for (anim in animations)
+    {
+      priorityMap.set(anim.name, anim.priority ?? 0);
+    }
   }
 
   var forceAnimationTimer:FlxTimer = new FlxTimer();

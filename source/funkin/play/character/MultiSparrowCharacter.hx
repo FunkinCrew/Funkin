@@ -122,6 +122,8 @@ class MultiSparrowCharacter extends BaseCharacter
       }
     }
 
+    setAnimationPriorities(_data.animations);
+
     var animNames = this.animation.getNameList();
     trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
   }
