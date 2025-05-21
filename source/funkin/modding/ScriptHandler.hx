@@ -29,23 +29,10 @@ class ScriptHandler implements ISingleton
     #if cpp
     var cmd:Process = new Process('haxe --cppia script.cppia -cp assets/scripts __Boot__');
 
-    if (cmd.exitCode != 0)
+    if (cmd.exitCode() != 0)
     {
       trace('Failed to compile scripts');
       return;
-    }
-
-    var start:Float = Timer.stamp();
-    while (!FileSystem.exists('script.cppia'))
-    {
-      trace('Waiting for script.cppia to be created...');
-      Sys.sleep(0.1);
-
-      if (Timer.stamp() - start > 5)
-      {
-        trace('Timed out waiting for script.cppia');
-        return;
-      }
     }
 
     var scriptPath:String = 'script.cppia';
@@ -68,6 +55,8 @@ class ScriptHandler implements ISingleton
     }
 
     trace('Loaded ${classMap.size()} scripted classes');
+
+    FileSystem.deleteFile(scriptPath);
 
     cmd.close();
     #end
