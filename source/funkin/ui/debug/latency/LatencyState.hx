@@ -356,7 +356,7 @@ class LatencyState extends MusicBeatSubState
     handleSelectionInput(multiply);
     #end
 
-    if (controls.BACK #if mobile || (TouchUtil.overlapsComplex(helpText) && TouchUtil.justPressed) #end)
+    if (controls.BACK #if mobile || (TouchUtil.pressAction(helpText)) #end)
     {
       // close();
       cleanup();

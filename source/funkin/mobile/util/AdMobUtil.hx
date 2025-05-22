@@ -93,7 +93,11 @@ class AdMobUtil
         case AdmobEvent.INTERSTITIAL_LOADED:
           Admob.showInterstitial();
       }
+
+      logMessage(message.length > 0 ? '$event:$message' : event);
     });
+
+    Admob.configureConsentMetadata(Admob.getTCFConsentForPurpose(0) == 1, StringTools.startsWith(Admob.getUSPrivacy(), '1Y'));
 
     Admob.init(#if TESTING_ADS true #else false #end);
   }
@@ -145,9 +149,9 @@ class AdMobUtil
    * @param purpose The purpose for which consent is required.
    * @return An Int indicating consent status (-1 for no consent, 1 for granted).
    */
-  public static inline function hasConsentForPurpose(purpose:Int):Int
+  public static inline function getTCFConsentForPurpose(purpose:Int):Int
   {
-    return Admob.hasConsentForPurpose(purpose);
+    return Admob.getTCFConsentForPurpose(purpose);
   }
 
   /**
@@ -155,11 +159,11 @@ class AdMobUtil
    * This is typically required for GDPR compliance, where each purpose (0-9) needs to be individually consented.
    * @return Bool indicating whether the user has consented to all purposes.
    */
-  public static function hasFullConsent():Bool
+  public static function hasFullTCFConsent():Bool
   {
-    for (purpose in 0...11)
+    for (purpose in 0...Admob.getTCFPurposeConsent().length)
     {
-      if (Admob.hasConsentForPurpose(purpose) != 1) return false;
+      if (Admob.getTCFConsentForPurpose(purpose) != 1) return false;
     }
 
     return true;
@@ -170,9 +174,9 @@ class AdMobUtil
    * Useful for GDPR compliance to understand if ads can be personalized.
    * @return A String with the consent status.
    */
-  public static inline function getConsent():String
+  public static inline function getTCFPurposeConsent():String
   {
-    return Admob.getConsent();
+    return Admob.getTCFPurposeConsent();
   }
 
   /**
@@ -191,6 +195,16 @@ class AdMobUtil
   public static inline function showPrivacyOptionsForm():Void
   {
     Admob.showPrivacyOptionsForm();
+  }
+
+  @:noCompletion
+  private static function logMessage(message:String):Void
+  {
+    #if android
+    extension.androidtools.widget.Toast.makeText(message, extension.androidtools.widget.Toast.LENGTH_SHORT);
+    #end
+
+    Sys.println(message);
   }
 }
 #end

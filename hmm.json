@@ -8,6 +8,35 @@
       "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
     },
     {
+      "name": "astc-compressor",
+      "type": "git",
+      "dir": null,
+      "ref": "9204077f468e85d67d63974e99d70348eebf99ba",
+      "url": "https://github.com/KarimAkra/astc-compressor"
+    },
+    {
+      "name": "extension-admob",
+      "type": "git",
+      "dir": null,
+      "ref": "439cd3953ea6c75444b05ab721e82f6e803aa2df",
+      "url": "https://github.com/FunkinCrew/extension-admob"
+    },
+    {
+      "name": "extension-androidtools",
+      "type": "haxelib",
+      "version": "2.2.1"
+    },
+    {
+      "name": "extension-haptics",
+      "type": "haxelib",
+      "version": "1.0.1"
+    },
+    {
+      "name": "extension-iapcore",
+      "type": "haxelib",
+      "version": "1.0.1"
+    },
+    {
       "name": "flixel",
       "type": "git",
       "dir": null,
@@ -115,10 +144,8 @@
     },
     {
       "name": "hxvlc",
-      "type": "git",
-      "dir": null,
-      "ref": "d71ee67870308ef821179bd7d7796064f695c645",
-      "url": "https://github.com/MAJigsaw77/hxvlc"
+      "type": "haxelib",
+      "version": "2.2.1"
     },
     {
       "name": "json2object",
@@ -145,7 +172,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "b79ac7bc76714bff64eaa01b5fb9349dd47c88b8",
+      "ref": "15640a344d73c86059275e8b9bf308bb546f6406",
       "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {
@@ -210,39 +237,6 @@
       "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
-    },
-    {
-      "name": "extension-admob",
-      "type": "git",
-      "dir": null,
-      "ref": "2a44162b6d13679d3e8f5b5e5cb4f014f43a6fee",
-      "url": "https://github.com/FunkinCrew/extension-admob"
-    },
-    {
-      "name": "extension-androidtools",
-      "type": "git",
-      "dir": null,
-      "ref": "d6203857ff5c4193e3dac9ab337e8c016f7ad47e",
-      "url": "https://github.com/MAJigsaw77/extension-androidtools"
-    },
-    {
-      "name": "extension-iapcore",
-      "type": "git",
-      "dir": null,
-      "ref": "3a3fe3c0871655d38827113261db380ffa8d0efa",
-      "url": "https://github.com/MAJigsaw77/extension-iapcore"
-    },
-    {
-      "name": "extension-haptics",
-      "type": "haxelib",
-      "version": "1.0.0"
-    },
-    {
-      "name": "astc-compressor",
-      "type": "git",
-      "dir": null,
-      "ref": "9204077f468e85d67d63974e99d70348eebf99ba",
-      "url": "https://github.com/KarimAkra/astc-compressor"
     }
   ]
 }

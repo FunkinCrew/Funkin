@@ -3,9 +3,10 @@ package funkin.mobile.util;
 #if ios
 import funkin.mobile.external.ScreenUtils;
 #elseif android
-import android.Tools;
+import extension.androidtools.Tools;
 #end
 import lime.math.Rectangle;
+import lime.system.System;
 
 /**
  * A Utility class to get mobile screen related informations.
@@ -14,11 +15,12 @@ class ScreenUtil
 {
   /**
    * Get `Rectangle` Object that contains the dimensions of the screen's Notch.
+   * Scales the dimensions to return coords in pixels, not points
    * @return Rectangle
    */
   public static function getNotchRect():Rectangle
   {
-    final rectangle:Rectangle = new Rectangle();
+    final notchRect:Rectangle = new Rectangle();
 
     #if android
     final rectDimensions:Array<Array<Float>> = [[], [], [], []];
@@ -40,38 +42,59 @@ class ScreenUtil
         switch (i)
         {
           case 0:
-            rectangle.x += dimension;
+            notchRect.x += dimension;
           case 1:
-            rectangle.y += dimension;
+            notchRect.y += dimension;
           case 2:
-            rectangle.width += dimension;
+            notchRect.width += dimension;
           case 3:
-            rectangle.height += dimension;
+            notchRect.height += dimension;
         }
       }
     }
     #elseif ios
-    var top:Float = -1;
-    var left:Float = -1;
-    var right:Float = -1;
-    var bottom:Float = -1;
-    var width:Float = -1;
-    var height:Float = -1;
+    var topInset:Float = -1;
+    var leftInset:Float = -1;
+    var rightInset:Float = -1;
+    var bottomInset:Float = -1;
+    var deviceWidth:Float = -1;
+    var deviceHeight:Float = -1;
 
-    ScreenUtils.getSafeAreaInsets(cpp.RawPointer.addressOf(top), cpp.RawPointer.addressOf(bottom), cpp.RawPointer.addressOf(left),
-      cpp.RawPointer.addressOf(right));
+    ScreenUtils.getSafeAreaInsets(cpp.RawPointer.addressOf(topInset), cpp.RawPointer.addressOf(bottomInset), cpp.RawPointer.addressOf(leftInset),
+      cpp.RawPointer.addressOf(rightInset));
 
-    ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(width), cpp.RawPointer.addressOf(height));
+    ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(deviceWidth), cpp.RawPointer.addressOf(deviceHeight));
+
+    var displayOrientation = System.getDisplayOrientation(0);
+
+    notchRect.x = 0;
+    notchRect.y = 0.0;
 
     // Calculate the rectangle dimensions for the notch
-    rectangle.width = -(width - left - right);
-    rectangle.width += width;
-    rectangle.height = top;
-    rectangle.x = left;
-    // notchs are always at the top of the screen so they have 0 y position
-    rectangle.y = 0.0;
+    // Note: iOS only spits out *insets* for "safe areas", so we can only get a broad position for the notch
+    // left + right insets are the same, so we can use either
+    // Note: *inset* is the distance from the edge of the screen where a safe area gets defined
+    // see: https://developer.apple.com/documentation/uikit/uiview/safeareainsets
+    switch (displayOrientation)
+    {
+      case DISPLAY_ORIENTATION_LANDSCAPE: // landscape
+        notchRect.width = leftInset;
+        notchRect.height = deviceHeight;
+      case DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED: // landscape
+        notchRect.width = leftInset;
+        notchRect.height = deviceHeight;
+        notchRect.x = deviceWidth - notchRect.width; // move notchRect if we are flipped, notch is at the right of screen
+      case DISPLAY_ORIENTATION_PORTRAIT: // portrait
+        notchRect.width = deviceWidth;
+        notchRect.height = topInset;
+      case DISPLAY_ORIENTATION_PORTRAIT_FLIPPED: // portrait
+        notchRect.width = deviceWidth;
+        notchRect.height = bottomInset;
+        notchRect.y = deviceHeight - notchRect.height; // move notchRect if we are flipped, the notch is at the bottom of screen
+      default: // display orientation unknown? perhaps this occurs on desktop
+    }
     #end
 
-    return rectangle;
+    return notchRect;
   }
 }

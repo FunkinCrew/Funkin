@@ -128,6 +128,32 @@ class TouchUtil
     return false;
   }
 
+  /**
+   * A helper function to check if the selection is pressed using touch.
+   *
+   * @param object The optional FlxBasic to check for overlap.
+   * @param camera Optional camera for the overlap check. Defaults to all cameras of the object.
+   * @param useOverlapsComplex If true and atleast the object is not null, the function will use complex overlaps method.
+   */
+  public static function pressAction(?object:FlxBasic, ?camera:FlxCamera, useOverlapsComplex:Bool = true):Bool
+  {
+    #if FEATURE_TOUCH_CONTROLS
+    if (TouchUtil.touch == null || (TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress > 200)) return false;
+
+    if (object == null && camera == null)
+    {
+      return justReleased;
+    }
+    else if (object != null)
+    {
+      final overlapsObject:Bool = useOverlapsComplex ? overlapsComplex(cast(object, FlxObject), camera) : overlaps(object, camera);
+      return justReleased && overlapsObject;
+    }
+    #end
+
+    return false;
+  }
+
   // weird mix between "looks weird" and "looks neat" but i'll keep it for now -Zack
 
   @:noCompletion

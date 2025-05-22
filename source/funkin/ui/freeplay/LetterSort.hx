@@ -107,7 +107,7 @@ class LetterSort extends FlxSpriteGroup
 
     if (inputEnabled)
     {
-      if (TouchUtil.justReleased && TouchUtil.touch.ticksDeltaSincePress < 200)
+      if (TouchUtil.pressAction())
       {
         for (index => letter in letterHitboxes)
         {

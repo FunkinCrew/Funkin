@@ -1006,7 +1006,7 @@ class PlayState extends MusicBeatSubState
     var androidPause:Bool = false;
     // So the player wouldn't miss when pressing the pause utton
     #if mobile
-    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justPressed;
+    pauseButtonCheck = TouchUtil.pressAction(pauseButton);
     #end
 
     #if android
@@ -1229,7 +1229,7 @@ class PlayState extends MusicBeatSubState
     if (!isMinimalMode)
     {
       if (iconP1 != null) iconP1.updatePosition();
-      if (iconP1 != null) iconP2.updatePosition();
+      if (iconP2 != null) iconP2.updatePosition();
     }
 
     // Transition to the game over substate.
@@ -1531,8 +1531,8 @@ class PlayState extends MusicBeatSubState
     if (iconP1 != null) iconP1.onStepHit(Std.int(Conductor.instance.currentStep));
     if (iconP2 != null) iconP2.onStepHit(Std.int(Conductor.instance.currentStep));
 
-    // Try to vibrate each 2 step hits. Works if atleast one note status is NoteStatus.isHoldNotePressed.
-    if (Conductor.instance.currentStep % 2 == 0) playerStrumline.noteVibrations.tryHoldNoteVibration();
+    // Try to call hold note haptics each step hit. Works if atleast one note status is NoteStatus.isHoldNotePressed.
+    playerStrumline.noteVibrations.tryHoldNoteVibration();
 
     return true;
   }
@@ -1898,14 +1898,15 @@ class PlayState extends MusicBeatSubState
     // Position the player strumline on the right half of the screen
     playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
-    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+
+    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
 
     playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
-    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
-    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET : Constants.STRUMLINE_Y_OFFSET;
+    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
+    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
 
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
@@ -2681,9 +2682,6 @@ class PlayState extends MusicBeatSubState
 
       // Play the strumline animation.
       playerStrumline.playConfirm(input.noteDirection);
-
-      // Set current note's status to isJustPressed.
-      playerStrumline.noteVibrations.noteStatuses[input.noteDirection] = NoteStatus.isJustPressed;
     }
     }
 
@@ -2697,7 +2695,6 @@ class PlayState extends MusicBeatSubState
       playerStrumline.releaseKey(input.noteDirection);
     }
 
-    // Try to vibrate. Works if atleast one note status is NoteStatus.isJustPressed.
     playerStrumline.noteVibrations.tryNoteVibration();
   }
 
@@ -2889,7 +2886,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // 9: Toggle the old icon.
-    if (FlxG.keys.justPressed.NINE) iconP1.toggleOldIcon();
+    if (FlxG.keys.justPressed.NINE && iconP1 != null) iconP1.toggleOldIcon();
 
     #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
@@ -2990,7 +2987,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if mobile
-    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton) && TouchUtil.justPressed;
+    pauseButtonCheck = TouchUtil.pressAction(pauseButton);
     #end
 
     if (currentConversation != null)

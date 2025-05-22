@@ -64,8 +64,8 @@ class GitarooPause extends MusicBeatState
   #if mobile
   function checkSelectionPress():Bool
   {
-    var buttonOverlapCheck:Bool = replaySelect ? TouchUtil.overlapsComplex(replayButton) : TouchUtil.overlapsComplex(cancelButton);
-    return buttonOverlapCheck && TouchUtil.justPressed && !SwipeUtil.swipeAny;
+    var buttonAcceptCheck:Bool = replaySelect ? TouchUtil.pressAction(replayButton) : TouchUtil.pressAction(cancelButton);
+    return buttonAcceptCheck && !SwipeUtil.swipeAny;
   }
   #end
 

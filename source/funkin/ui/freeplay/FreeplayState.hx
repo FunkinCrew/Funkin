@@ -1,17 +1,13 @@
 package funkin.ui.freeplay;
 
-import funkin.ui.freeplay.backcards.*;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.FlxObject;
 import flixel.FlxCamera;
+import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import funkin.ui.FullScreenScaleMode;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -19,17 +15,17 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.effects.IntervalShake;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.AngleMask;
+import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.PureColor;
-import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.StrokeShader;
-import openfl.filters.ShaderFilter;
 import funkin.input.Controls;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.scoring.Scoring.ScoringRank;
@@ -37,22 +33,26 @@ import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.AtlasText;
+import funkin.ui.FullScreenScaleMode;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.freeplay.backcards.*;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.Level;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.stickers.StickerSubState;
+import funkin.util.HapticUtil;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
-import funkin.util.HapticUtil;
 import openfl.display.BlendMode;
-import funkin.data.freeplay.style.FreeplayStyleRegistry;
+import openfl.filters.ShaderFilter;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+#end
 
 /**
  * The state for the freeplay menu, allowing the player to select any song to play.
@@ -154,7 +154,9 @@ class FreeplayState extends MusicBeatSubState
 
   var dj:Null<FreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
-  var djHitbox:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358);
+  // For proper hitbox detection, flxanimate doesn't work with touch overlap!!
+  var djHitbox:FlxObject = new FlxObject((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358, 400, 400);
+  var capsuleHitbox:FlxObject = new FlxObject((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 370, 150, 570, 576);
   #end
 
   var ostName:FlxText;
@@ -377,11 +379,13 @@ class FreeplayState extends MusicBeatSubState
     backingImage.shader = angleMaskShader;
     backingImage.visible = false;
 
-    #if mobile
-    djHitbox = djHitbox.makeGraphic(400, 400, FlxColor.TRANSPARENT);
+    #if FEATURE_TOUCH_CONTROLS
     if (dj != null) djHitbox.cameras = dj.cameras;
     djHitbox.active = false;
     add(djHitbox);
+    capsuleHitbox.cameras = [funnyCam];
+    capsuleHitbox.active = false;
+    add(capsuleHitbox);
     #end
 
     var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(backingImage.width), Std.int(backingImage.height), FlxColor.BLACK);
@@ -478,7 +482,7 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.alignment = CENTER;
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     charSelectHint.text = 'Press on the DJ to change characters';
     #else
     charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
@@ -567,13 +571,13 @@ class FreeplayState extends MusicBeatSubState
       switch (str)
       {
         case 'fav':
-          generateSongList({filterType: FAVORITE}, true);
+          generateSongList({filterType: FAVORITE}, true, false);
         case 'ALL':
-          generateSongList(null, true);
+          generateSongList(null, true, false);
         case '#':
-          generateSongList({filterType: REGEXP, filterData: '0-9'}, true);
+          generateSongList({filterType: REGEXP, filterData: '0-9'}, true, false);
         default:
-          generateSongList({filterType: REGEXP, filterData: str}, true);
+          generateSongList({filterType: REGEXP, filterData: str}, true, false);
       }
 
       // If the current song is still in the list, or if it was random, we'll land on it
@@ -756,7 +760,7 @@ class FreeplayState extends MusicBeatSubState
     rankBg.cameras = [rankCamera];
     rankBg.alpha = 0;
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
 
     FlxTween.tween(backButton, {x: FlxG.width - 456}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
@@ -1285,7 +1289,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, FlxG.random.float(0.2, 0.85), {ease: FlxEase.backIn});
     #end
 
@@ -1430,7 +1434,7 @@ class FreeplayState extends MusicBeatSubState
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
     if ((controls.FREEPLAY_CHAR_SELECT #if FEATURE_TOUCH_CONTROLS
-      || (TouchUtil.overlaps(djHitbox, funnyCam) && TouchUtil.justReleased && !SwipeUtil.swipeAny) #end)
+      || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
       && !busy)
     {
       tryOpenCharSelect();
@@ -1489,7 +1493,13 @@ class FreeplayState extends MusicBeatSubState
     if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
   }
 
-  var pressedOnFreeplay:Bool = false;
+  var _pressedOnFreeplay:Bool = false;
+  var _dragOffset:Float = 0;
+  var _pressedOnSelected:Bool = false;
+  var _moveLength:Float = 0;
+  var _flickEnded:Bool = true;
+  var _pressedOnCapsule:Bool = false;
+  var draggingDifficulty:Bool = false;
 
   function handleInputs(elapsed:Float):Void
   {
@@ -1506,7 +1516,7 @@ class FreeplayState extends MusicBeatSubState
     handleTouchFreeplayDrag();
     #end
 
-    if (!pressedOnFreeplay)
+    if (!_pressedOnFreeplay)
     {
       handleDirectionalInput(elapsed);
 
@@ -1521,6 +1531,15 @@ class FreeplayState extends MusicBeatSubState
 
     handleDifficultySwitch();
 
+    #if FEATURE_TOUCH_CONTROLS
+    if (TouchUtil.justReleased)
+    {
+      _pressedOnSelected = false;
+      _pressedOnCapsule = false;
+      _pressedOnFreeplay = false;
+    }
+    #end
+
     if (controls.BACK)
     {
       goBack();
@@ -1531,12 +1550,6 @@ class FreeplayState extends MusicBeatSubState
       grpCapsules.members[curSelected].onConfirm();
     }
   }
-
-  var _dragOffset:Float = 0;
-  var _pressedOn:Bool = false;
-  var _moveLength:Float = 0;
-  var _flickEnded:Bool = true;
-  var draggingDifficulty:Bool = false;
 
   function handleDirectionalInput(elapsed:Float):Void
   {
@@ -1575,11 +1588,8 @@ class FreeplayState extends MusicBeatSubState
   function handleDifficultySwitch():Void
   {
     #if FEATURE_TOUCH_CONTROLS
-    final leftPressed:Bool = controls.UI_LEFT_P
-      || (diffSelLeft != null && TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justReleased);
-
-    final rightPressed:Bool = controls.UI_RIGHT_P
-      || (diffSelRight != null && TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justReleased);
+    final leftPressed:Bool = controls.UI_LEFT_P || (diffSelLeft != null && TouchUtil.pressAction(diffSelLeft, funnyCam, false));
+    final rightPressed:Bool = controls.UI_RIGHT_P || (diffSelRight != null && TouchUtil.pressAction(diffSelRight, funnyCam, false));
     #else
     final leftPressed:Bool = controls.UI_LEFT_P;
     final rightPressed:Bool = controls.UI_RIGHT_P;
@@ -1604,10 +1614,10 @@ class FreeplayState extends MusicBeatSubState
   private function handleTouchCapsuleClick():Void
   {
     if (diffSelRight == null) return;
-    if (TouchUtil.justReleased
-      && TouchUtil.touch.velocity.length < 5
+    if (TouchUtil.pressAction()
       && !TouchUtil.overlaps(diffSelRight, funnyCam)
-      && TouchUtil.touch.ticksDeltaSincePress < 500)
+      && TouchUtil.touch.velocity.length < 5
+      && !draggingDifficulty)
     {
       curSelected = Math.round(curSelectedFloat);
 
@@ -1634,7 +1644,7 @@ class FreeplayState extends MusicBeatSubState
     if (TouchUtil.justPressed)
     {
       final selected = grpCapsules.members[curSelected].theActualHitbox;
-      _pressedOn = selected != null && TouchUtil.overlaps(selected, funnyCam);
+      _pressedOnSelected = selected != null && TouchUtil.overlaps(selected, funnyCam);
     }
   }
 
@@ -1642,131 +1652,122 @@ class FreeplayState extends MusicBeatSubState
   {
     if (draggingDifficulty) return;
 
-    if (!TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam))
+    if (TouchUtil.justPressed && TouchUtil.overlaps(capsuleHitbox, funnyCam))
     {
-      for (touch in FlxG.touches.list)
+      _pressedOnCapsule = true;
+    }
+
+    if (TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam)) return;
+
+    for (touch in FlxG.touches.list)
+    {
+      if (touch.pressed && _pressedOnCapsule)
       {
-        if (touch.pressed)
+        final delta = touch.deltaViewY;
+        if (Math.abs(delta) >= 2)
         {
-          final delta = touch.deltaViewY;
-          if (Math.abs(delta) >= 2)
-          {
-            var dpiScale = FlxG.stage.window.display.dpi / 160;
+          var dpiScale = FlxG.stage.window.display.dpi / 160;
 
-            FlxMath.clamp(dpiScale, 0.5, 2);
+          dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
 
-            var moveLength = delta / FlxG.updateFramerate / dpiScale;
-            _moveLength += Math.abs(moveLength);
-            curSelectedFloat -= moveLength;
-            updateSongsScroll();
-          }
-        }
-        else if (_moveLength > 0)
-        {
-          _moveLength = 0.0;
-          changeSelection(0);
-        }
-      }
-
-      if (FlxG.touches.flickManager.initialized)
-      {
-        var flickVelocity = FlxG.touches.flickManager.velocity.y;
-        if (Math.isFinite(flickVelocity))
-        {
-          _flickEnded = false;
-          var velocityMove = flickVelocity * elapsed;
-          _moveLength += Math.abs(velocityMove);
-          curSelectedFloat -= velocityMove;
+          var moveLength = delta / FlxG.updateFramerate / dpiScale;
+          _moveLength += Math.abs(moveLength);
+          curSelectedFloat -= moveLength;
           updateSongsScroll();
         }
       }
-      else if (!_flickEnded)
+      else if (_moveLength > 0)
       {
-        _flickEnded = true;
-        if (_moveLength > 0)
-        {
-          _moveLength = 0.0;
-          changeSelection(0);
-        }
+        _moveLength = 0.0;
+        changeSelection(0);
       }
+    }
 
-      curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
-      curSelected = Std.int(curSelectedFloat);
-
-      for (i in 0...grpCapsules.members.length)
+    if (FlxG.touches.flickManager.initialized)
+    {
+      var flickVelocity = FlxG.touches.flickManager.velocity.y;
+      if (Math.isFinite(flickVelocity))
       {
-        grpCapsules.members[i].selected = (i == curSelected);
+        _flickEnded = false;
+        var dpiScale = FlxG.stage.window.display.dpi / 160;
+
+        dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
+        var velocityMove = flickVelocity * elapsed / dpiScale;
+        _moveLength += Math.abs(velocityMove);
+        curSelectedFloat -= velocityMove;
+        updateSongsScroll();
       }
-
-      if (!TouchUtil.pressed && (curSelected == 0 || curSelected == grpCapsules.countLiving() - 1))
+    }
+    else if (!_flickEnded)
+    {
+      _flickEnded = true;
+      if (_moveLength > 0)
       {
-        FlxG.touches.flickManager.destroy();
-        _flickEnded = true;
-        if (_moveLength > 0)
-        {
-          _moveLength = 0.0;
-          changeSelection(0);
-        }
+        _moveLength = 0.0;
+        changeSelection(0);
+      }
+    }
+
+    curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
+    curSelected = Std.int(curSelectedFloat);
+
+    for (i in 0...grpCapsules.members.length)
+    {
+      grpCapsules.members[i].selected = (i == curSelected);
+    }
+
+    if (!TouchUtil.pressed && (curSelected == 0 || curSelected == grpCapsules.countLiving() - 1) && FlxG.touches.flickManager.initialized)
+    {
+      FlxG.touches.flickManager.destroy();
+      _flickEnded = true;
+      if (_moveLength > 0)
+      {
+        _moveLength = 0.0;
+        changeSelection(0);
       }
     }
   }
 
   function handleTouchFavoritesAndDifficulties()
   {
-    if ((TouchUtil.pressed || TouchUtil.justReleased) && !pressedOnFreeplay)
+    if ((TouchUtil.pressed || TouchUtil.justReleased) && !_pressedOnFreeplay)
     {
-      final selected = grpCapsules.members[curSelected].theActualHitbox;
-      _pressedOn = _pressedOn && selected != null && TouchUtil.overlaps(selected, funnyCam);
-
-      if (_pressedOn && TouchUtil.touch != null)
+      if (_pressedOnSelected && TouchUtil.touch != null)
       {
-        draggingDifficulty = true;
         // Have to turn off null safety in-order to compile this!! -Zack
         @:nullSafety(Off)
         if (SwipeUtil.swipeLeft)
         {
-          changeDiff(1);
-          _pressedOn = false;
-          busy = true;
-          grpCapsules.members[curSelected].doLerp = false;
+          draggingDifficulty = true;
+          dj?.resetAFKTimer();
+          changeDiff(1, false, true);
+          _pressedOnSelected = false;
 
-          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + 15}, 0.1, {ease: FlxEase.expoOut});
-          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - 15}, 0.1,
-            {
-              ease: FlxEase.expoIn,
-              startDelay: 0.1,
-              onComplete: function(_) {
-                grpCapsules.members[curSelected].doLerp = true;
-                draggingDifficulty = false;
-                busy = false;
-                generateSongList(currentFilter, true, false);
-              }
-            });
+          new FlxTimer().start(0.2, (afteranim) -> {
+            grpCapsules.members[curSelected].doLerp = true;
+            busy = false;
+            draggingDifficulty = false;
+            generateSongList(currentFilter, true, false);
+          });
         }
         else if (SwipeUtil.swipeRight)
         {
-          changeDiff(-1);
-          _pressedOn = false;
-          busy = true;
-          grpCapsules.members[curSelected].doLerp = false;
+          draggingDifficulty = true;
+          dj?.resetAFKTimer();
+          changeDiff(-1, false, true);
+          _pressedOnSelected = false;
 
-          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - 15}, 0.1, {ease: FlxEase.expoOut});
-          FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + 15}, 0.1,
-            {
-              ease: FlxEase.expoIn,
-              startDelay: 0.1,
-              onComplete: function(_) {
-                grpCapsules.members[curSelected].doLerp = true;
-                busy = false;
-                draggingDifficulty = false;
-                generateSongList(currentFilter, true, false);
-              }
-            });
+          new FlxTimer().start(0.2, (afteranim) -> {
+            grpCapsules.members[curSelected].doLerp = true;
+            busy = false;
+            draggingDifficulty = false;
+            generateSongList(currentFilter, true, false);
+          });
         }
 
         if (TouchUtil.touch.ticksDeltaSincePress >= 500)
         {
-          _pressedOn = false;
+          _pressedOnSelected = false;
           draggingDifficulty = false;
           favoriteSong();
         }
@@ -1808,24 +1809,25 @@ class FreeplayState extends MusicBeatSubState
     if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam));
   }
 
-  function handleTouchFreeplayDrag()
+  function handleTouchFreeplayDrag():Void
   {
     if (fnfFreeplay == null || freeplayTxtBg == null || freeplayArrow == null) return;
 
     if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
     {
       _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
-      pressedOnFreeplay = true;
+      _pressedOnFreeplay = true;
     }
 
-    if (pressedOnFreeplay && TouchUtil.pressed)
+    if (_pressedOnFreeplay && TouchUtil.pressed)
     {
-      fnfFreeplay.x = TouchUtil.touch.x + _dragOffset;
-      freeplayTxtBg.x = TouchUtil.touch.x + _dragOffset - 8;
+      final dragX:Float = TouchUtil.touch.x + _dragOffset;
+      fnfFreeplay.x = dragX;
+      freeplayTxtBg.x = dragX - 8;
 
       if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
       {
-        pressedOnFreeplay = false;
+        _pressedOnFreeplay = false;
         goBack();
       }
     }
@@ -1833,7 +1835,7 @@ class FreeplayState extends MusicBeatSubState
     {
       fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
       freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
-      pressedOnFreeplay = false;
+      _pressedOnFreeplay = false;
     }
   }
   #end
@@ -1888,7 +1890,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, 0.2, {ease: FlxEase.backIn});
     #end
 
@@ -1964,10 +1966,24 @@ class FreeplayState extends MusicBeatSubState
    * It's generally recommended that after calling this you re-sort the song list, however usually it's already on the way to being sorted.
    * @param change
    * @param force
+   * @param capsuleAnim
    */
-  function changeDiff(change:Int = 0, force:Bool = false):Void
+  function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
     if (busy) return;
+
+    if (capsuleAnim)
+    {
+      if (grpCapsules.members[curSelected] != null)
+      {
+        busy = true;
+        grpCapsules.members[curSelected].doLerp = false;
+
+        var movement:Float = (change > 0) ? -15 : 15;
+        FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - movement}, 0.1, {ease: FlxEase.expoOut});
+        FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + movement}, 0.1, {ease: FlxEase.expoIn, startDelay: 0.1});
+      }
+    }
 
     for (diff in grpDifficulties.group.members)
     {
@@ -1975,7 +1991,7 @@ class FreeplayState extends MusicBeatSubState
       if (change == 0) break;
 
       diff.visible = true;
-      final newX = (change > 0) ? 500 : -320;
+      final newX:Int = (change > 0) ? 500 : -320;
 
       busy = true;
       FlxTween.tween(diff, {x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.1,
@@ -2040,7 +2056,8 @@ class FreeplayState extends MusicBeatSubState
 
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick + songScore.tallies.good) / songScore.tallies.totalNotes);
+      intendedCompletion = songScore == null ? 0.0 : Math.max(0,
+        ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
@@ -2122,7 +2139,7 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      diff.x = 90; // Reset position
+      diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI); // Reset position
     }
 
     _dragOffset = 0;
@@ -2142,7 +2159,7 @@ class FreeplayState extends MusicBeatSubState
     trace('RANDOM SELECTED');
 
     busy = true;
-    #if NO_TOUCH_CONTROLS
+    #if NO_FEATURE_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
     #end
 
@@ -2159,7 +2176,7 @@ class FreeplayState extends MusicBeatSubState
     {
       trace('No songs available!');
       busy = false;
-      #if NO_TOUCH_CONTROLS
+      #if NO_FEATURE_TOUCH_CONTROLS
       letterSort.inputEnabled = true;
       #end
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
@@ -2264,7 +2281,7 @@ class FreeplayState extends MusicBeatSubState
   function capsuleOnConfirmDefault(cap:SongMenuItem, ?targetInstId:String):Void
   {
     busy = true;
-    #if NO_TOUCH_CONTROLS
+    #if NO_FEATURE_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
     #end
 
@@ -2416,13 +2433,21 @@ class FreeplayState extends MusicBeatSubState
 
     if (curSelected < 0)
     {
+      #if FEATURE_TOUCH_CONTROLS
       curSelected = (SwipeUtil.flickUp) ? 0 : grpCapsules.countLiving() - 1;
       SwipeUtil.resetSwipeVelocity();
+      #else
+      curSelected = grpCapsules.countLiving() - 1;
+      #end
     }
     if (curSelected >= grpCapsules.countLiving())
     {
+      #if FEATURE_TOUCH_CONTROLS
       curSelected = (SwipeUtil.flickDown) ? grpCapsules.countLiving() - 1 : 0;
       SwipeUtil.resetSwipeVelocity();
+      #else
+      curSelected = 0;
+      #end
     }
 
     if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
@@ -2870,9 +2895,7 @@ class FreeplaySongData
 typedef FreeplayStateParams =
 {
   ?character:String,
-
   ?fromCharSelect:Bool,
-
   ?fromResults:FromResultsParams,
 };
 

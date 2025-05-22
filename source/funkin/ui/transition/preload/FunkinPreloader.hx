@@ -1,5 +1,6 @@
 package funkin.ui.transition.preload;
 
+import funkin.mobile.util.ScreenUtil;
 import openfl.events.MouseEvent;
 import flash.display.Bitmap;
 import flash.display.BitmapData;

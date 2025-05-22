@@ -362,7 +362,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   private static function set_enabled(Value:Bool):Bool
   {
     if (ratioAxis == FlxAxes.X #if android
-      && (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P || android.Tools.isTablet()) #end)
+      && (extension.androidtools.os.Build.VERSION.SDK_INT >= extension.androidtools.os.Build.VERSION_CODES.P
+        || extension.androidtools.Tools.isTablet()) #end)
     {
       enabled = Value;
     }

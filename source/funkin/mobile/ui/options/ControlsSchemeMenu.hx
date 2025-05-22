@@ -319,7 +319,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     handleDrag();
 
-    if (TouchUtil.justPressed && TouchUtil.overlapsComplex(itemNavHitbox))
+    if (TouchUtil.pressAction(itemNavHitbox))
     {
       hitboxShowcases.members[currentIndex].onPress();
 

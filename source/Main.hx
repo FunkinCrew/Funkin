@@ -9,6 +9,9 @@ import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.MemoryCounter;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
+#if hxvlc
+import hxvlc.util.Handle;
+#end
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -36,8 +39,8 @@ class Main extends Sprite
     // Set the current working directory for Android and iOS devices
     #if android
     // For Android we determine the appropriate directory based on Android version
-    Sys.setCwd(haxe.io.Path.addTrailingSlash(android.os.Build.VERSION.SDK_INT > 30 ? android.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
-      android.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(extension.androidtools.os.Build.VERSION.SDK_INT > 30 ? extension.androidtools.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
+      extension.androidtools.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
     ));
     #elseif ios
     Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory)); // For iOS we use documents directory and this is only way we can do.
@@ -116,6 +119,11 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
+
+    #if hxvlc
+    // Initialize hxvlc's Handle here so the videos are loading faster.
+    Handle.init();
+    #end
 
     // Don't call anything from the preferences until the save is loaded!
     #if web
