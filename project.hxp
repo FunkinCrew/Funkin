@@ -653,7 +653,8 @@ class Project extends HXProject {
     FEATURE_NEWGROUNDS.apply(this, false);
     EXCLUDE_ARMV7.apply(this, false);
     FEATURE_COMPRESSED_TEXTURES.apply(this, false);
-    FEATURE_GHOST_TAPPING.apply(this, isTest());
+    FEATURE_GHOST_TAPPING.apply(this, false);
+    UNLOCK_EVERYTHING.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
@@ -670,7 +671,7 @@ class Project extends HXProject {
 
     // Got a lot of complains about this being turned off by default on some builds.
     // TODO: Look into ways to optimize logging (maybe by using a thread pool?)
-    FEATURE_LOG_TRACE.apply(this, isDebug() || isTest());
+    FEATURE_LOG_TRACE.apply(this, isDebug());
 
     FEATURE_NEWGROUNDS.apply(this, !isMobile());
     FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
@@ -719,10 +720,7 @@ class Project extends HXProject {
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && envConfig != null));
 
     // Should be true only on debug mobile builds.
-    TESTING_ADS.apply(this, (isTest() || isDebug()) && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
-
-    // For now needed only on mobile for testing.
-    UNLOCK_EVERYTHING.apply(this, isMobile());
+    TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
   }
 
   /**
@@ -1126,11 +1124,6 @@ class Project extends HXProject {
   public function isBundle():Bool
   {
     return this.targetFlags.exists("bundle") && isAndroid();
-  }
-
-  public function isTest():Bool
-  {
-    return this.targetFlags.exists("test");
   }
 
   public function getHaxedef(name:String):Null<Dynamic>

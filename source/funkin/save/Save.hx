@@ -858,10 +858,6 @@ class Save
    */
   public function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
   {
-    #if UNLOCK_EVERYTHING
-    return true;
-    #end
-
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
@@ -876,6 +872,7 @@ class Save
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {
+        #if NO_UNLOCK_EVERYTHING
         if (score.score > 0)
         {
           // Level has score data, which means we cleared it!
@@ -886,6 +883,9 @@ class Save
           // Level has score data, but the score is 0.
           continue;
         }
+        #else
+        return true;
+        #end
       }
     }
     return false;
