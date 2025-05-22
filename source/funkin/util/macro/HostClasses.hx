@@ -77,7 +77,7 @@ class HostClasses
       switch (type)
       {
         case TInst(_.get() => t, _):
-          content += 'extern class ' + typeName + '\n{\n';
+          content += 'class ' + typeName + '\n{\n';
           for (f in t.fields.get())
           {
             var fieldCode:String = fieldToString(f, false);
@@ -94,7 +94,7 @@ class HostClasses
           content += '}\n';
 
         case TEnum(_.get() => e, _):
-          content += 'extern enum ' + typeName + '\n{\n';
+          content += 'enum ' + typeName + '\n{\n';
           for (n in e.names)
           {
             content += '  ' + n + ';\n';
