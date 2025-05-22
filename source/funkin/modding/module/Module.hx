@@ -40,15 +40,26 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   }
 
   /**
+   * The state this module is associated with.
+   * If set, this module will only receive events when the game is in this state.
+   */
+  public var state:Null<Class<Dynamic>> = null;
+
+  /**
    * Called when the module is initialized.
    * It may not be safe to reference other modules here since they may not be loaded yet.
    *
    * NOTE: To make the module start inactive, call `this.active = false` in the constructor.
    */
-  public function new(moduleId:String, priority:Int = 1000):Void
+  public function new(moduleId:String, priority:Int = 1000, state:Null<Class<Dynamic>> = null):Void
   {
     this.moduleId = moduleId;
     this.priority = priority;
+
+    if (state != null)
+    {
+      this.state = state;
+    }
   }
 
   public function toString()
