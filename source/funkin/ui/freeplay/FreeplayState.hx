@@ -1625,6 +1625,7 @@ class FreeplayState extends MusicBeatSubState
       {
         final capsule = grpCapsules.members[i];
         if (!TouchUtil.overlaps(capsule.theActualHitbox, funnyCam)) continue;
+        if (SwipeUtil.swipeAny) continue;
 
         if (capsule.selected)
         {
@@ -1651,13 +1652,12 @@ class FreeplayState extends MusicBeatSubState
   function handleTouchSelectionScroll(elapsed:Float):Void
   {
     if (draggingDifficulty) return;
+    if (TouchUtil.pressAction(grpCapsules.members[curSelected].theActualHitbox, funnyCam)) return;
 
     if (TouchUtil.justPressed && TouchUtil.overlaps(capsuleHitbox, funnyCam))
     {
       _pressedOnCapsule = true;
     }
-
-    if (TouchUtil.overlaps(grpCapsules.members[curSelected].theActualHitbox, funnyCam)) return;
 
     for (touch in FlxG.touches.list)
     {
@@ -1742,12 +1742,16 @@ class FreeplayState extends MusicBeatSubState
           dj?.resetAFKTimer();
           changeDiff(1, false, true);
           _pressedOnSelected = false;
+          FlxG.touches.flickManager.destroy();
+          _flickEnded = true;
 
           new FlxTimer().start(0.2, (afteranim) -> {
             grpCapsules.members[curSelected].doLerp = true;
             busy = false;
-            draggingDifficulty = false;
             generateSongList(currentFilter, true, false);
+          });
+          new FlxTimer().start(0.3, (afteranim) -> {
+            draggingDifficulty = false;
           });
         }
         else if (SwipeUtil.swipeRight)
@@ -1756,12 +1760,16 @@ class FreeplayState extends MusicBeatSubState
           dj?.resetAFKTimer();
           changeDiff(-1, false, true);
           _pressedOnSelected = false;
+          FlxG.touches.flickManager.destroy();
+          _flickEnded = true;
 
           new FlxTimer().start(0.2, (afteranim) -> {
             grpCapsules.members[curSelected].doLerp = true;
             busy = false;
-            draggingDifficulty = false;
             generateSongList(currentFilter, true, false);
+          });
+          new FlxTimer().start(0.3, (afteranim) -> {
+            draggingDifficulty = false;
           });
         }
 
@@ -1774,7 +1782,6 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
-        draggingDifficulty = false;
         grpCapsules.members[curSelected].doLerp = true;
       }
 
@@ -2421,6 +2428,8 @@ class FreeplayState extends MusicBeatSubState
     {
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       HapticUtil.vibrate(0, 0.01, 0.2);
+      dj?.resetAFKTimer();
+      _pressedOnSelected = false;
     }
   }
 
