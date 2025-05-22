@@ -1614,8 +1614,10 @@ class FreeplayState extends MusicBeatSubState
   private function handleTouchCapsuleClick():Void
   {
     if (diffSelRight == null) return;
-
-    if (TouchUtil.pressAction() && !TouchUtil.overlaps(diffSelRight, funnyCam) && !draggingDifficulty)
+    if (TouchUtil.pressAction()
+      && !TouchUtil.overlaps(diffSelRight, funnyCam)
+      && TouchUtil.touch.velocity.length < 5
+      && !draggingDifficulty)
     {
       curSelected = Math.round(curSelectedFloat);
 
@@ -1664,7 +1666,11 @@ class FreeplayState extends MusicBeatSubState
         final delta = touch.deltaViewY;
         if (Math.abs(delta) >= 2)
         {
-          var moveLength = delta / FlxG.updateFramerate * 1.2;
+          var dpiScale = FlxG.stage.window.display.dpi / 160;
+
+          dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
+
+          var moveLength = delta / FlxG.updateFramerate / dpiScale;
           _moveLength += Math.abs(moveLength);
           curSelectedFloat -= moveLength;
           updateSongsScroll();
@@ -1683,7 +1689,10 @@ class FreeplayState extends MusicBeatSubState
       if (Math.isFinite(flickVelocity))
       {
         _flickEnded = false;
-        var velocityMove = flickVelocity / FlxG.updateFramerate * 0.03;
+        var dpiScale = FlxG.stage.window.display.dpi / 160;
+
+        dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
+        var velocityMove = flickVelocity * elapsed / dpiScale;
         _moveLength += Math.abs(velocityMove);
         curSelectedFloat -= velocityMove;
         updateSongsScroll();
@@ -2886,9 +2895,7 @@ class FreeplaySongData
 typedef FreeplayStateParams =
 {
   ?character:String,
-
   ?fromCharSelect:Bool,
-
   ?fromResults:FromResultsParams,
 };
 
