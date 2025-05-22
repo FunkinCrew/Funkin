@@ -5,6 +5,18 @@ import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 /**
+ * Parameters used to initialize a module.
+ */
+typedef ModuleParams =
+{
+  /**
+   * The state this module is associated with.
+   * If set, this module will only receive events when the game is in this state.
+   */
+  ?state:Class<Dynamic>
+}
+
+/**
  * A module is a scripted class which receives all events without requiring a specific context.
  * You may have the module active at all times, or only when another script enables it.
  */
@@ -51,14 +63,14 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    *
    * NOTE: To make the module start inactive, call `this.active = false` in the constructor.
    */
-  public function new(moduleId:String, priority:Int = 1000, state:Null<Class<Dynamic>> = null):Void
+  public function new(moduleId:String, priority:Int = 1000, ?params:ModuleParams):Void
   {
     this.moduleId = moduleId;
     this.priority = priority;
 
-    if (state != null)
+    if (params != null)
     {
-      this.state = state;
+      this.state = params.state ?? null;
     }
   }
 
