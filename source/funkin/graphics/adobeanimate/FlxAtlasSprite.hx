@@ -114,8 +114,6 @@ class FlxAtlasSprite extends FlxAnimate
 
   var looping:Bool = false;
 
-  public var ignoreExclusionPref:Array<String> = [];
-
   /**
    * Plays an animation.
    * @param id A string ID of the animation to play.

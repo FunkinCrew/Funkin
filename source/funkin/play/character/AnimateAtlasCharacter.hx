@@ -176,8 +176,6 @@ class AnimateAtlasCharacter extends BaseCharacter
 
     this.mainSprite = sprite;
 
-    mainSprite.ignoreExclusionPref = ["sing"];
-
     // This forces the atlas to recalcuate its width and height
     this.mainSprite.alpha = 0.0001;
     this.mainSprite.draw();
