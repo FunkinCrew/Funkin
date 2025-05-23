@@ -99,6 +99,8 @@ class ChartEditorDropdowns
 
     dropDown.dataSource.sort('text', ASCENDING);
 
+    dropDown.dataSource.add({id: 'unknown', text: 'Unknown Event'});
+
     return returnValue;
   }
 
@@ -114,7 +116,7 @@ class ChartEditorDropdowns
     var returnValue:DropDownEntry =
       {
         id: "0",
-        text: (events[0] != null) ? (events[0].time + ' : ' + events[0].buildTooltip()) : ('No event selected!')
+        text: (events[0] != null) ? (events[0].time + ' : ' + events[0].buildTooltip()) : ('No Event Selected!')
       };
 
     for (index in 0...events.length)
@@ -128,7 +130,13 @@ class ChartEditorDropdowns
       dropDown.dataSource.add(value);
     }
 
-    if (events.length == 0) dropDown.dataSource.add(returnValue);
+    if (events.length > 0) dropDown.dataSource.add(
+      {
+        id: "-1",
+        text: 'No Selected Event'
+      });
+    else
+      dropDown.dataSource.add(returnValue);
 
     dropDown.dataSource.sort('id', ASCENDING);
 
