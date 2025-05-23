@@ -25,13 +25,13 @@ class PostbuildCppia
   {
     if (FileSystem.exists(EXPORT_CLASSES_FILE))
     {
-      // var content = File.getContent(EXPORT_CLASSES_FILE);
-      // var lines = content.split('\n');
-      // var filtered = lines.filter(function(line) return !line.ltrim().startsWith('file'));
+      var content = File.getContent(EXPORT_CLASSES_FILE);
+      var lines = content.split('\n');
+      var filtered = lines.filter(function(line) return !line.ltrim().startsWith('file'));
       FileSystem.deleteFile(EXPORT_CLASSES_FILE);
-      // File.saveContent('${BIN_DIR}/${EXPORT_CLASSES_FILE}', content);
+      File.saveContent('${BIN_DIR}/${EXPORT_CLASSES_FILE}', filtered.join('\n'));
 
-      // trace('Saved exported classes to: ${BIN_DIR}/${EXPORT_CLASSES_FILE}');
+      trace('Saved exported classes to: ${BIN_DIR}/${EXPORT_CLASSES_FILE}');
     }
   }
 }
