@@ -30,6 +30,7 @@ class RemoveEventsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
   }
@@ -48,6 +49,7 @@ class RemoveEventsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
   }
