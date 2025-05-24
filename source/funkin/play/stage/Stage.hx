@@ -166,15 +166,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       var isSolidColor = dataProp.assetPath.startsWith('#');
       var isAnimated = dataProp.animations.length > 0;
 
-      var propSprite:StageProp;
-      if (dataProp.danceEvery != 0)
-      {
-        propSprite = new Bopper(dataProp.danceEvery);
-      }
-      else
-      {
-        propSprite = new StageProp();
-      }
+      var propSprite:Bopper = new Bopper(dataProp.danceEvery);
 
       if (isAnimated)
       {
@@ -186,6 +178,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
           default: // 'sparrow'
             propSprite.loadSparrow(dataProp.assetPath);
         }
+
+        propSprite.setAnimationPriorities(dataProp.animations);
       }
       else if (isSolidColor)
       {

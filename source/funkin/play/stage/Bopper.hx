@@ -277,7 +277,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
     if (currentAnimationPriority > animationPriority && !isAnimationFinished())
     {
-      FlxG.log.warn('Bopper tried to play animation "$name" that has a lower priority than the current animation\'s (${getCurrentAnimation()}) priority! ($currentAnimationPriority)');
+      trace('Bopper tried to play animation "$name" that has a lower priority than the current animation\'s (${getCurrentAnimation()}) priority! ($currentAnimationPriority)');
       return;
     }
 
@@ -286,7 +286,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     applyAnimationOffsets(correctName);
   }
 
-  function setAnimationPriorities(animations:Array<AnimationData>):Void
+  public function setAnimationPriorities(animations:Array<AnimationData>):Void
   {
     for (anim in animations)
     {
