@@ -448,7 +448,6 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
-
   /**
    * For a note's strumTime, calculate its Y position relative to the strumline.
    * NOTE: Assumes Conductor and PlayState are both initialized.
