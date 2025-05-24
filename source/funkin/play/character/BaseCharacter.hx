@@ -2,6 +2,10 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.boombox.Boombox;
+import funkin.play.boombox.ScriptedBoombox;
+import funkin.play.character.CharacterData.BoomboxData;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
@@ -344,6 +348,31 @@ class BaseCharacter extends Bopper
       }
       PlayState.instance.iconP2.configure(_data?.healthIcon);
     }
+  }
+
+  public function fetchBoombox():Boombox
+  {
+    var dataToUse:Null<BoomboxData> = _data?.boombox;
+    if (dataToUse?.scriptClass == null)
+    {
+      return null;
+    }
+
+    var output:Boombox = ScriptedBoombox.init(dataToUse.scriptClass);
+    output.parentCharacter = this;
+
+    ScriptEventDispatcher.callEvent(output, new ScriptEvent(CREATE));
+    return output;
+  }
+
+  public function getBoomboxOffsets():Array<Float>
+  {
+    return _data?.boombox?.offsets ?? [0.0, 0.0];
+  }
+
+  public function getBoomboxZIndex():Int
+  {
+    return _data?.boombox?.zIndex ?? 0;
   }
 
   public override function onUpdate(event:UpdateScriptEvent):Void
