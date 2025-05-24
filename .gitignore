@@ -16,3 +16,6 @@ node_modules/
 package.json
 package-lock.json
 .aider*
+
+# CPPIA Temporary Ignores
+script_std/
