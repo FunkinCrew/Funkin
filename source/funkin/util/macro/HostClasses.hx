@@ -9,7 +9,7 @@ using StringTools;
 
 #if !macro
 #if (cpp && scriptable)
-@:build(funkin.util.macro.HostClasses.exclude())
+@:build(funkin.util.macro.HostClasses.generate())
 class HostClasses {}
 #end
 #else
@@ -38,194 +38,49 @@ class HostClasses
   ];
 
   /**
-   * TODO: Handle generics correctly
+   * TODO: remove as many function bodies as possible from the generated code,
+   * in order to reduce the size of the generated code. Abstract inline functions require
+   * the function body to be present, so we cannot remove them.
    */
-  static function onGenerate(types:Array<Type>):Void
+  static function generate():Array<Field>
   {
-    for (type in types)
-    {
-      var classPath:String = type.toString();
+    Context.onGenerate((types) -> {
+      var files:Map<String, String> = new Map<String, String>();
 
-      var isBlackListed:Bool = false;
-      for (black in BLACK_LIST)
+      for (type in types)
       {
-        if ((black.endsWith('.*') && classPath.startsWith(black.substr(0, black.length - 2))) || (black == classPath))
+        switch (type)
         {
-          isBlackListed = true;
-          break;
+          case TInst(_.get() => t, _):
+            if (files.exists(t.pos.getInfos().file)) continue;
+            files.set(t.pos.getInfos().file, t.module.split('.').join('/'));
+          case TEnum(_.get() => e, _):
+            if (files.exists(e.pos.getInfos().file)) continue;
+            files.set(e.pos.getInfos().file, e.module.split('.').join('/'));
+          case TType(_.get() => t, _):
+            if (files.exists(t.pos.getInfos().file)) continue;
+            files.set(t.pos.getInfos().file, t.module.split('.').join('/'));
+          case TAbstract(_.get() => a, _):
+            if (files.exists(a.pos.getInfos().file)) continue;
+            files.set(a.pos.getInfos().file, a.module.split('.').join('/'));
+          default:
+            Context.warning('funkin.util.macro.HostClasses.generate(): Type not handled: ' + type.toString(), Context.currentPos());
         }
       }
-      if (isBlackListed) continue;
 
-      var filePath:String = classPath.indexOf('<') == -1 ? classPath : classPath.substr(0, classPath.indexOf('<'));
-      var parts:Array<String> = filePath.split('.');
-      if (parts.length == 0) continue;
-      var typeName:String = parts.pop();
-
-      // skip abstract implementations
-      if (parts.length > 0 && parts[parts.length - 1].charAt(0).toUpperCase() == parts[parts.length - 1].charAt(0)) continue;
-
-      var folderPath:String = parts.join('/');
-
-      var folderPath:String = 'script_std/' + folderPath;
-
-      sys.FileSystem.createDirectory(folderPath);
-
-      var filePath:String = folderPath + '/' + typeName + '.hx';
-      var content:String = 'package ' + parts.join('.') + ';\n\n';
-
-      switch (type)
+      for (file => module in files)
       {
-        case TInst(_.get() => t, _):
-          content += 'class ' + typeName + '\n{\n';
-          for (f in t.fields.get())
-          {
-            var fieldCode:String = fieldToString(f, false);
-            fieldCode = 'extern ' + fieldCode;
-            content += '  ' + fieldCode + '\n';
-          }
+        var content = sys.io.File.getContent(file);
 
-          for (f in t.statics.get())
-          {
-            var fieldCode:String = fieldToString(f, false);
-            fieldCode = 'extern static ' + fieldCode;
-            content += '  ' + fieldCode + '\n';
-          }
-          content += '}\n';
+        var folderPath:String = 'script_std/' + module.split('/').slice(0, -1).join('/');
+        var filePath:String = 'script_std/' + module + '.hx';
 
-        case TEnum(_.get() => e, _):
-          content += 'enum ' + typeName + '\n{\n';
-          for (n in e.names)
-          {
-            content += '  ' + n + ';\n';
-          }
-
-          for (_ => c in e.constructs)
-          {
-            switch (c.type)
-            {
-              case TFun(args, _):
-                var argList:String = args.map(arg -> '${arg.name}: ${arg.t.toString()}').join(', ');
-                content += '  ' + c.name + '(' + argList + ');\n';
-              default:
-                content += '  ' + c.name + ';\n';
-            }
-          }
-          content += '}\n';
-
-        case TType(_.get() => t, _):
-          content += 'typedef ' + typeName + ' = ' + t.type.toString() + ';\n';
-
-        case TAbstract(_.get() => a, _):
-          content += 'abstract ' + typeName + '(' + a.type.toString() + ')';
-          for (from in a.from)
-          {
-            content += ' from ' + from.t.toString();
-          }
-          for (to in a.to)
-          {
-            content += ' to ' + to.t.toString();
-          }
-          content += '\n{\n';
-
-          if (a.impl == null) continue;
-
-          for (f in a.impl.get().statics.get())
-          {
-            var fieldCode:String = fieldToString(f, true);
-            fieldCode = 'extern ' + fieldCode;
-            content += '  ' + fieldCode + '\n';
-          }
-          content += '}\n';
-
-        default:
-          Context.warning('funkin.util.macro.HostClasses.onGenerate(): Type not handled: ' + type.toString(), Context.currentPos());
+        sys.FileSystem.createDirectory(folderPath);
+        sys.io.File.saveContent(filePath, content);
       }
-
-      sys.io.File.saveContent(filePath, content);
-    }
-  }
-
-  static function exclude():Array<Field>
-  {
-    Context.onGenerate(onGenerate);
+    });
 
     return Context.getBuildFields();
-  }
-
-  static function fieldToString(field:ClassField, fromAbstractType:Bool):String
-  {
-    var fieldCode:String = '';
-
-    fieldCode += field.isPublic ? 'public ' : 'private ';
-    if (field.isAbstract) fieldCode += 'abstract ';
-    if (field.isFinal) fieldCode += 'final ';
-
-    switch (field.kind)
-    {
-      case FVar(read, write):
-        var getStr:String = switch (read)
-        {
-          case AccNormal: 'default';
-          case AccNo: 'null';
-          case AccResolve: 'resolve';
-          case AccCall: 'get';
-          case AccNever: 'never';
-          default: 'default';
-        };
-
-        var setStr:String = switch (write)
-        {
-          case AccNormal: 'default';
-          case AccNo: 'null';
-          case AccResolve: 'resolve';
-          case AccCall: 'set';
-          case AccNever: 'never';
-          default: 'default';
-        };
-
-        if (fromAbstractType && getStr == 'default') fieldCode += 'static ';
-
-        fieldCode += 'var ${field.name}';
-
-        fieldCode += '(';
-        fieldCode += getStr;
-        fieldCode += ', ';
-        fieldCode += setStr;
-        fieldCode += ')';
-
-        fieldCode += ': ' + field.type.toString() + ';';
-
-      case FMethod(kind):
-        var kindStr:String = switch (kind)
-        {
-          case MethNormal: '';
-          case MethInline: ''; // inline is not supported in externs
-          case MethDynamic: 'dynamic ';
-          case MethMacro: 'macro ';
-        }
-
-        fieldCode += kindStr;
-
-        switch (field.type)
-        {
-          case TFun(args, ret):
-            if (fromAbstractType)
-            {
-              if (args.length > 0 && args[0].name == 'this') args.shift();
-              else if (args.length == 0 || (args.length > 0 && args[0].name != 'this')) fieldCode += 'static ';
-            }
-
-            fieldCode += 'function ${field.name}(';
-            var argList:String = args.map(a -> (a.opt ? '?' : '') + '${a.name}: ${a.t.toString()}').join(', ');
-            fieldCode += argList;
-            fieldCode += '): ' + ret.toString() + ';';
-          default:
-            throw 'Should not happen';
-        }
-    }
-
-    return fieldCode;
   }
 }
 #end
