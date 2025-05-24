@@ -13,6 +13,7 @@ import funkin.graphics.FunkinSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
+import funkin.data.animation.AnimationData;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.CharacterData.CharacterRenderType;
@@ -105,6 +106,15 @@ class AnimateAtlasCharacter extends BaseCharacter
       return;
     }
 
+    var animationPriority = priorityMap.get(correctName);
+    var currentAnimationPriority = priorityMap.get(getCurrentAnimation());
+
+    if (currentAnimationPriority > animationPriority && !isAnimationFinished())
+    {
+      trace('Bopper tried to play animation "$name" that has a lower priority than the current animation\'s (${getCurrentAnimation()}) priority! ($currentAnimationPriority)');
+      return;
+    }
+
     var animData = getAnimationData(correctName);
     currentAnimName = correctName;
     var prefix:String = animData.prefix;
@@ -176,8 +186,6 @@ class AnimateAtlasCharacter extends BaseCharacter
 
     this.mainSprite = sprite;
 
-    mainSprite.ignoreExclusionPref = ["sing"];
-
     // This forces the atlas to recalcuate its width and height
     this.mainSprite.alpha = 0.0001;
     this.mainSprite.draw();
@@ -216,6 +224,8 @@ class AnimateAtlasCharacter extends BaseCharacter
       animations.set(anim.name, anim);
       trace('[ATLASCHAR] - Successfully loaded animation ${anim.name} to ${characterId}');
     }
+
+    setAnimationPriorities(_data.animations);
 
     trace('[ATLASCHAR] Loaded ${animations.size()} animations for ${characterId}');
   }

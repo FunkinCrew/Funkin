@@ -137,4 +137,12 @@ typedef UnnamedAnimationData =
   @:default([])
   @:optional
   var frameIndices:Null<Array<Int>>;
+
+  /**
+   * The priority value for this animation.
+   * Higher values will be prioritized when playing animations.
+   */
+  @:default(0)
+  @:optional
+  var priority:Null<Int>;
 }

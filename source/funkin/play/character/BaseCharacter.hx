@@ -152,8 +152,6 @@ class BaseCharacter extends Bopper
 
     this.characterId = id;
 
-    ignoreExclusionPref = ["sing"];
-
     _data = CharacterDataParser.fetchCharacterData(this.characterId);
     if (_data == null)
     {

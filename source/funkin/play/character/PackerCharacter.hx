@@ -76,6 +76,8 @@ class PackerCharacter extends BaseCharacter
       }
     }
 
+    setAnimationPriorities(_data.animations);
+
     var animNames = this.animation.getNameList();
     trace('[PACKERCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
   }

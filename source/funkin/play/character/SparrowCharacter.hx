@@ -79,6 +79,8 @@ class SparrowCharacter extends BaseCharacter
       }
     }
 
+    setAnimationPriorities(_data.animations);
+
     var animNames = this.animation.getNameList();
     trace('[SPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
   }
