@@ -1500,9 +1500,9 @@ class PlayState extends MusicBeatSubState
       }
       var hardwareDelay = SoundUtil.getPlaybackDeviceDelay(FlxG.sound.music);
       if (!startingSong
-        && (!FlxMath.inBounds(FlxG.sound.music.time - correctSync, -100, 100 + hardwareDelay)
-          || !FlxMath.inBounds(playerVoicesError, -100, 100 + hardwareDelay)
-          || !FlxMath.inBounds(opponentVoicesError, -100, 100 + hardwareDelay)))
+        && (!FlxMath.inBounds(FlxG.sound.music.time - correctSync, -100, Math.max(100, hardwareDelay + 20))
+          || !FlxMath.inBounds(playerVoicesError, -100, Math.max(100, hardwareDelay + 20))
+          || !FlxMath.inBounds(opponentVoicesError, -100, Math.max(100, hardwareDelay + 20))))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
