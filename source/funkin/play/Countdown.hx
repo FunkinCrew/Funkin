@@ -238,6 +238,7 @@ class Countdown
       });
 
     countdownSprite.cameras = [PlayState.instance.camHUD];
+    countdownSprite.zIndex = 9999;
     PlayState.instance.add(countdownSprite);
     countdownSprite.screenCenter();
 
