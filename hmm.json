@@ -11,7 +11,7 @@
       "name": "astc-compressor",
       "type": "git",
       "dir": null,
-      "ref": "9204077f468e85d67d63974e99d70348eebf99ba",
+      "ref": "8c9f56927c523df7b849352c6951f04112fe15cc",
       "url": "https://github.com/KarimAkra/astc-compressor"
     },
     {
@@ -40,7 +40,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "3e3a7be79a40a3423cdf88b29b5a85a8442fcc61",
+      "ref": "e24c62c08d951351749e62ec31a95316974b91d9",
       "url": "https://github.com/FunkinCrew/flixel-mobile"
     },
     {
@@ -172,7 +172,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "15640a344d73c86059275e8b9bf308bb546f6406",
+      "ref": "8d16f921a8627f4b39b2973518fac22e36a88fe6",
       "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {

@@ -51,13 +51,8 @@ class BackingCard extends FlxSpriteGroup
     pinkBack.loadGraphic(bitmap);
 
     orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
-    orangeBackShit.scale.y = FullScreenScaleMode.windowScale.y;
-
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
-    scale.x = FullScreenScaleMode.windowScale.x;
-
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('freeplay/confirmGlow2'));
-
     backingTextYeah = new FlxAtlasSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + 640, 370,
       Paths.animateAtlas("freeplay/backing-text-yeah"), {
         FrameRate: 24.0,
