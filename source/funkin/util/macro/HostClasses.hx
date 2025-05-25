@@ -31,6 +31,10 @@ class HostClasses
     'openfl.system.ApplicationDomain',
     'openfl.net.SharedObject',
     'openfl.desktop.NativeProcess',
+    // big classes that are probably not needed
+    // they just take a long time to process
+    'ManifestResources',
+    'lime._internal.backend.native.NativeCFFI',
     // packages
     'funkin.api.newgrounds.*',
     'io.newgrounds.*',

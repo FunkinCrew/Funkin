@@ -7,8 +7,6 @@ using StringTools;
 
 /**
  * A script which executes after the game is built.
- * TODO: when i finish the HostClasses macro, this will move
- * the generated extern definitions to the shipped haxe compiler
  */
 class PostbuildCppia
 {
@@ -19,6 +17,7 @@ class PostbuildCppia
   static function main():Void
   {
     processExportClasses();
+    processHaxeCompiler();
   }
 
   static function processExportClasses():Void
@@ -33,5 +32,55 @@ class PostbuildCppia
 
       trace('Saved exported classes to: ${BIN_DIR}/${EXPORT_CLASSES_FILE}');
     }
+  }
+
+  static function processHaxeCompiler():Void
+  {
+    var haxeCompilerSrc:String = 'haxe';
+    var haxeCompilerDest:String = '${BIN_DIR}/haxe';
+
+    if (!FileSystem.exists(haxeCompilerSrc)) throw 'Haxe compiler binaries do not exist';
+
+    var scriptStdSrc:String = 'script_std';
+    var scriptStdDest:String = '${BIN_DIR}/haxe/std';
+
+    if (!FileSystem.exists(scriptStdSrc)) throw 'Script standard library does not exist';
+
+    function copyDir(from:String, to:String):Void
+    {
+      if (!FileSystem.exists(to)) FileSystem.createDirectory(to);
+      for (entry in FileSystem.readDirectory(from))
+      {
+        var fromPath:String = from + '/' + entry;
+        var toPath:String = to + '/' + entry;
+        if (FileSystem.isDirectory(fromPath)) copyDir(fromPath, toPath);
+        else
+          File.saveBytes(toPath, File.getBytes(fromPath));
+      }
+    }
+    copyDir(haxeCompilerSrc, haxeCompilerDest);
+    trace('Copied haxe compiler to: $haxeCompilerDest');
+
+    copyDir(scriptStdSrc, scriptStdDest);
+    trace('Copied script standard library to: $scriptStdDest');
+
+    function deleteDirContents(dir:String):Void
+    {
+      for (entry in FileSystem.readDirectory(dir))
+      {
+        var path:String = dir + '/' + entry;
+        if (FileSystem.isDirectory(path))
+        {
+          deleteDirContents(path);
+          FileSystem.deleteDirectory(path);
+        }
+        else
+        {
+          FileSystem.deleteFile(path);
+        }
+      }
+    }
+    deleteDirContents(scriptStdSrc);
+    FileSystem.deleteDirectory(scriptStdSrc);
   }
 }

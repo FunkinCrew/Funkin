@@ -1,0 +1,3071 @@
+2025-05-09 4.3.7
+
+	General improvements:
+
+	all : update bundled haxelib version to 4.1.1
+	all : update bundled neko version to 2.4.1 (#12183)
+	all : use -w rules instead of defines to configure warnings (#11826, #12013)
+
+	Bugfixes:
+
+	all : fix compiler hanging issue (#11820)
+	all : local statics fixes (#11803, #11849)
+	all : fix for inline constructor bug triggering "Unbound variable" (#12169)
+	all : check caught error position when recovering from match typing failure (#12098)
+	macro : local statics vs ExprTools.map (#12030)
+	eval : https fixes (mbedtls update) (#11646)
+	eval : ssl cert verification failures on windows (#11838)
+	hl/c : fix comparison of HArray,HArray and HBytes,HBytes (#11610)
+	cppia : generate scriptable functions for overriden functions (#11773)
+
+2024-08-07 4.3.6
+
+	Bugfixes:
+
+	display : do not define "display" for json rpc diagnostics (#11746)
+	cpp : null check interfaces (#11743)
+	hl : ignore WANT_READ/WANT_WRITE errors when the socket is known to be blocking (#11655)
+	hl : fix weird compiler error (#11690)
+	jvm : fix --java out -D jvm deprecation warning (#11739)
+	macro : Context.reportError should not abort build macros (#11741)
+
+2024-07-18 4.3.5
+
+	General improvements:
+
+	all : macOS universal binaries (#11572)
+	display : migrated diagnostics to Json RPC (#11707)
+	macro : expose TVar VStatic flag in macros. (#11683)
+
+	Bugfixes:
+
+	all : fix `@:structInit` with getter + setter (#11662)
+	all : add missing recursion when checking abstract casts (#11676)
+	all : fail nicer if unify_min can't find a common type (#11684)
+	all : fix pretty errors failure (#11700)
+	all : disallow local statics when inlining (#11725)
+	display : unused pattern variables should be marked as unused (#7282)
+	display : diagnostics miss "used without being initialized" errors (#7931)
+	display : recursive inline is not supported on enum abstract constructor (#11177)
+	display : Void as value error disappears on second compilation (#11184)
+	display : false positives of "This cast has no effect, but some of its sub-expressions" (#11203)
+	cpp : inherit `@:unreflective` on generic classes
+	hl : fix bit shift + assignment in while loop header (#10783)
+	hl : fix do-while loop in genhl+hlopt (#11461)
+	hl/c : use uint64 instead of uint64_t for shift cast (#11721)
+	macro : don't choke on namePos for reification pattern matching (#11671)
+
+	Deprecation / future version handling:
+
+	macro : `Compiler.include()` warning when used outside init macros
+
+2024-03-04 4.3.4
+
+	General improvements:
+
+	all : allow @:using with Class and Enum (#11553)
+	display : expose list of metadata/defines (#11399)
+
+	Bugfixes:
+
+	all : typedef vs. GADT (#11446)
+	all : don't double-throw exceptions (#11175)
+	all : fix some abstract inlining failures (#11526)
+	all : fix JsonPrinter empty parent class (#11560)
+	all : dce: clean up operator handling (#11427)
+	all : analyzer: deal with unreachable block in binops (#11402)
+	all : analyzer: don't recursively check enum values when const propagating (#11429)
+	all : analyzer: fix check for inlined purity meta
+	display : fix errors from parser missing in diagnostics (#8687)
+	display : fix display services with static extension (#11285)
+	display : fix display services with safe navigation (#11205)
+	hl : hlopt rework try-catch control flow (#11581)
+	hl/c : fix reserved keywords (#11408)
+
+	Deprecation / future version handling:
+
+	all : don't infer string on concat, when using -D haxe-next (#11318)
+	all : handle optional arguments with bind, when using -D haxe-next (#11533)
+	macro : build order vs inheritance, when using -D haxe-next (#11582)
+	macro : deprecate some API from haxe.macro.Compiler (see #11540)
+	java/jvm : warn about --java ... -D jvm vs --jvm ...
+
+2023-09-17 4.3.3
+
+	General improvements:
+
+	all : improve extra field error range (#11335)
+	all : better error messages for --connect
+	hl : improve error message when hl_version is missing (#11086)
+	hl/c : compiler now adds hlc define when targeting hl/c (#11382)
+	macro : update macro API restriction warnings when using -D haxe-next (#11377)
+
+	Bugfixes:
+
+	all : handle non existing files for positions in pretty errors (#11364)
+	all : metadata support for local static vars
+	all : catch trailing invalid syntax in string interpolation (#10287)
+	eval : fix Array.resize retaining values (#11317)
+	eval/hl : fix catching haxe.ValueException (#11321)
+	hl : make genhl respect Meta.NoExpr (#11257)
+	hl : don't add bindings for non existing methods
+	hl/c : add missing I64 mod support
+	hl/c : rework reserved keywords (#11293, #11378)
+	hl/c : fix Int64 unsigned right shift overflow (#11382)
+	java/cs: fix stack overflow from closures constraints (#11350)
+	js : DOMElement insertAdjacentElement should not be pure (#11333)
+	macro : catch trailing invalid syntax in Context.parseInlineString (#11368)
+	macro : fix TDAbstract without flags in haxe.macro.Printer
+
+2023-09-01 4.3.2
+
+	General improvements:
+
+	all : do not raise error on no-op reification outside macro
+
+	Bugfixes:
+
+	all : don't infer Null<?> if it already is Null<?> (#11286)
+	all : fix ?? inference and precedence (#11252)
+	all : bring back forced inline (#11217)
+	all : allow non constant "inline" var init with -D no-inline (#11192)
+	all : improve @:enum abstract deprecation warning handling (#11302)
+	all : fix some stack overflow with pretty errors
+	display : fix go to definition with final (#11173)
+	display : fix completion requests with @:forwardStatics (#11294)
+	eval : fix MainLoop.add not repeating (#11202)
+	hl/eval/neko : fix exception stack when wrapping native exceptions (#11249)
+	macro : map `this` when restoring typed expressions (#11212)
+	macro : safe navigation fix for ExprTools.map (#11204)
+	macro : safe navigation fix for haxe.macro.Printer (#11206)
+	macro : macro generated EVars position fixes (#11163)
+	macro : fix abstract casts for local statics (#11301)
+	macro : add flags to TDAbstract to be able to construct enum abstracts (#11230)
+	nullsafety : make break/continue expressions not-nullable (#11269)
+	nullsafety : handle return in assignment (#11114)
+
+2023-04-28 4.3.1
+
+	Breaking changes:
+
+	all : namespace message reporting defines (#11142)
+
+	General improvements:
+
+	all : support deprecation for defines
+
+	Bugfixes:
+
+	all : fix --times with compilation server (#11091)
+	all : fix default type parameters not respecting imports (#11161)
+	all : fix bytecode bindings issues (#11098)
+	macro : allow local statics in macro functions (#11096)
+	cpp : fix AtomicInt warnings on cppia (#11105)
+	cpp : fix deprecated implicit casts of cpp.Int64 (#10998)
+	cpp : add white space around template type syntax (#11107)
+	java : don't check native signatures on extern functions (#11131)
+	lua : remove non existent luautf8 charCodeAt extern (#11097)
+
+2023-04-06 4.3.0
+
+	New features:
+
+	all : support defaults for type parameters (#10518)
+	all : support @:op(a()) on abstracts (#10119)
+	all : support abstract keyword to reference the abstract (#10513)
+	all : support static var at expression-level (#10555)
+	all : support ?. safe navigation operator (#10561)
+	all : added ?? null coalescing operator (#10428)
+	all : add -w compiler option to configure warnings (#10612)
+	all : added new error reporting modes (#10863)
+	all : support custom metadata and defines (#10858)
+
+	General improvements:
+
+	all : made various optimizations in the analyzer
+	all : made various improvements to diagnostics
+	all : made various improvements to null-safety
+	all : optimize `.bind` for instance methods (#10737)
+	all : improved various parser error messages
+	all : improved compilation server performance
+	all : improved code generation for try/catch (#10519)
+	all : infer property accessor type from the property (#10569)
+	all : improved inference of local functions typed against abstracts (#10336)
+	all : improved completion on module-level fields
+	all : improved handling of native libraries on the compilation server
+	all : improved performance when generating locals (#10648)
+	all : made Std.parseInt more consistent across targets (#10664)
+	all : infer null literals as Null<?> (#7736)
+	all : made field access errors more consistent (#10896)
+	all : consistently allow trailing commas (#11009)
+	all : migrated all relevant targets to PCRE2 (#10491)
+	all : made analyzer reconstruct do-while loops (#7979)
+	all : improved restrictions on init macros (#11043)
+	all : improved positions of @:structInit fields (#9318)
+	macro : support map literals in Context.makeExpr (#10259)
+	macro : added haxe.macro.Compiler.getConfiguration() (#10871)
+	macro : added withImports and withOption to haxe.macro.Context
+	macro : added getMacroStack and onAfterInitMacros to haxe.macro.Context (#11043)
+	macro : added haxe.macro.Context.makeMonomorph (#10728)
+	eval : added dictionary mode to objects, increasing performance in some cases (#10284)
+	eval : fixed Sys.exit handling messing up the compilation server (#10642)
+	eval : added -D eval-print-depth and -D eval-pretty-print (#10952, #10963)
+	cpp : supported type parameters on extern classes (#10415)
+	cpp : haxe.Int64 improvements (#9935)
+	cpp : non-blocking process exit code reading (#10321)
+	js : improved type names for debugger (#10894)
+	lua : added SSL implementation (#10593)
+	lua : fixed String API when -D no-inline was in place (#11057)
+	lua : non-zero exit code in case of uncaught exception (#11082)
+	java : deal with default implementations when loading extern libraries (#10466)
+	jvm : improved closure naming (#10571)
+	jvm : supported --jvm dir (#10614)
+	jvm : added some missing TShort and TFloat handling (#10722)
+	jvm : added experimental support for functional interfaces (#11019)
+	php : added and fixed several extern functions
+
+	Standard Library:
+
+	all : added atomic operations to several targets (#10610)
+	all : added Vector.fill (#10687)
+	sys : added sys.thread.Condition and Semaphore (#10503)
+	sys : added Http.getResponseHeaderValues to deal with multiple values of same key (#10812)
+	sys : make Sys.environment consistent between targets (#10460)
+	sys : consistent way to unset environment variables with Sys.putEnv (#10402)
+
+	Bugfixes:
+
+	all : properly disallowed macro reification in invalid places (#10883)
+	all : fixed behavior when extending abstract classes with final fields (#10139)
+	all : addressed some issues with constructor inlining (#10304)
+	all : fixed pattern matcher bug related to null-guards (#10291)
+	all : fixed weird parser behavior on first offset in files (#10322)
+	all : fixed various issues related to the final modifier
+	all : fixed various issues related to overload handling
+	all : fixed precedence of => vs. ?: (#10455)
+	all : made error positions in structure declarations more accurate (#9584)
+	all : brought back proper check when accessing super fields (#10521)
+	all : fixed @:publicFields on abstracts (#10541)
+	all : inherited some metadata to @:generic implementation classes (#10557)
+	all : fixed various problems in EventLoop and MainLoop
+	all : fixed infinite recursion from invalid inheritance (#10245)
+	all : fixed strange interaction between static extensions and macro functions (#10587)
+	all : fixed problems with @:generic on the compilation server (#10635)
+	all : fixed Context.onTypeNotFound being called multiple times for the same thing (#10678)
+	all : fixed type parameter problem involving abstract classes and interfaces (#10748)
+	all : fixed #if (a != b) yielding true for nonexistent values (#10868)
+	all : fixed interaction between @:generic and abstract class (#10735)
+	all : fixed @:using loading types too eagerly (#10107)
+	all : fixed parser ignoring subsequent documentation comments (#10171)
+	all : fixed parser function messing up unrelated file state in some cases (#10763)
+	all : unified Map printing to always use [] (#9260)
+	cpp : fixed problem with cpp.Pointer being used in enum arguments (#10831)
+	macro : improved handling of macro this expressions (#10793)
+	eval : fixed bit shift operations > 31 (#10752)
+	eval : fixed Bytes.toString causing an internal exception (#10623)
+	jvm : fixed @:native processing (#10280)
+	jvm : fixed Type.getEnumConstructs on native enums (#10508)
+	jvm : fixed @:volatile being ignored (#10594)
+	jvm : fixed some hashing issue when pattern matching on emojis (#10720)
+	jvm : fixed stack handling on return return (#10743)
+	hl : fixed various code generation problems
+	python : fixed SslSocket for newer python versions (#8401)
+	python : fixed syntax issue related to Vector (#11060)
+
+2021-03-06 4.2.5:
+
+	New features:
+
+	php : support PHP attributes generation (#9964)
+
+	Bugfixes:
+
+	all : fixed compiler crash in complex constraints chains (#10445)
+	all : fixed timers execution order for timers with small time delta (#10567)
+	js : fixed constructors with rest arguments when compiling for ES3, ES5 (#10490)
+	php : excluded E_DEPRECATED notices from error reporting (#10502)
+	php : fixed safe casts to native arrays (#10576)
+	nullsafety : fixed false error on extern var fields without initialization (#10448)
+
+2021-10-22 4.2.4:
+
+	New features:
+
+	hl : add clipboard support in hl 1.12 (#10320)
+
+	General improvements:
+
+	all : improved error messages upon directory creation failures (#10361)
+	eval : added `%` operator to `eval.numbers.Int64` and `eval.numbers.UInt64` (#10411)
+
+	Bugfixes:
+
+	all : fixed errors on final vars modification with `+=`, `*=` etc operations (#10325)
+	all : fixed hanging of MainLoop.add on threaded targets (#10308, #10329)
+	all : fixed compiler crash when resolving overloads with not enough arguments (#10434)
+	all : fixed non-static `@:to` methods on `@:multiType` abstracts (#10145)
+	analyzer : fixed analyzer on overloads (#10405)
+	analyzer : fixed issues with fields initialization expressions (#10405)
+	display : improved code completion in anonymous objects declarations (#10414)
+	js : fixed IntMap for keys greater than 2^31 (#10316)
+	js : workaround to fix sourcemaps on Firefox in Windows (#10217)
+	js : delayed truncation of the output file on `Compiler.setCustomJSGenerator` (#10387)
+	cs/java : fixed rest arguments for cases when only one argument is provided (#10315)
+	php : fixed type of `php.db.PDO.ATTR_DRIVER_NAME` (#10319)
+	eval : fixed signature of `eval.luv.Tcp.noDelay` method
+	lua : fixed `string.length` when `string` has type of a type parameter constrained to `String` (#10343)
+	jvm : fixed `Reflect.compare()` for different number types (#10350)
+	python : fixed exceptions on tracing some native values (#10440)
+
+2021-07-01 4.2.3:
+
+	General improvements:
+
+	all : analyzer optimizations
+	macro : support maps in `haxe.macro.Context.makeExpr` (#10259)
+	js : added `-D js-global=globalThis` to customize global object name (#10282)
+	php : added externs for `quoted_printable_decode`, `quoted_printable_encode`, `Attribute`, `NumberFormat`, `IntlCalendar` and other `Intl*` classes
+
+	Bugfixes:
+
+	all : fixed compiler crash on some unreachable code blocks (#10261)
+	jvm : fixed `@:native` (#10280)
+	jvm : fixed `--xml` generation (#10279)
+
+2021-05-14 4.2.2:
+
+	Bugfixes:
+
+	all : fixed piping stdin/stdout in `--cmd` (#4669, #6726)
+	all : fixed rest args typing for overloaded functions (#10143)
+	all : fixed using `var` fields as static extensions (#10144)
+	all : fixed completion for a type in `expr is Type` (#10167)
+	all : fixed subtypes in `expr is Module.SubType` expressions (#10174)
+	all : fixed typing chains of calls with constrained type params (#10198)
+	all : fixed mixed constraints of anonymous structures and other types (#10162)
+	all : fixed operator overloading for enum abstracts (#10173)
+	hl : fixed debugging of `catch` blocks (#10109)
+	jvm : fixed manifest generation for cases with a lot of jar libraries (#10157)
+	js : fixed extending extern classes for es5 (#10192)
+	js : fixed checking `this` before `super` for es6 (#10193)
+	eval : fixed null pointer exception in `eval.NativeString.fromString(null)`
+	eval : fixed multiple locks of `sys.thread.Mutex` from the same thread (#10249)
+
+2021-02-26 4.2.1:
+
+	General improvements:
+
+	threads : changed main thread initialization to make main event loop available during static initialization (#10114)
+	php : added extern for `number_format` function (#10115)
+	python : rewrote `sys.thread.Thread`, `Mutex` and `Lock` as classes instead of abstracts.
+
+	Bugfixes:
+
+	all : fixed compiler compatibility with OS X 10.13 (#10110)
+	all : fixed compiler hanging on `switch` for abstracts with implicit casts involving type parameters and constraints (#10082)
+	all : fixed inlining of `haxe.DynamicAccess.keyValueIterator` (#10118)
+	all : fixed rest arguments typing against type parameters (#10124)
+	analyzer : fixed side effect handling for enums (#10032)
+	cpp : fixed handling of `cpp.ConstCharStar` with analyzer enabled (#9733)
+	php : fixed failure with trailing slash in output dir (#6212)
+	hl : fixed call stack of rethrown exceptions (#10109)
+
+2021-02-09 4.2.0:
+
+	New features:
+
+	all : implemented "classic" abstract classes and functions (see [haxe-evolution#69](https://github.com/HaxeFoundation/haxe-evolution/pull/69)) (#9716)
+	all : module-level static declarations (#8460)
+	all : implemented rest arguments (variadic functions) for all targets with `haxe.Rest` type (#9961)
+	all : per-thread event loops `sys.thread.Thread.events` (#9868)
+	all : added `@:inheritDoc` meta to inherit documentation for a type or field from another type or field (#9817)
+	all : support method overloading for extern methods on all targets (#9793)
+	all : constructors forwarding for abstracts with `@:forward.new` (#9735)
+	all : added `EIs` constructor to `haxe.macro.Expr` (#9689)
+	all : added variance forwarding with `@:forward.variance` (#9741)
+	all : treat `Any` as `Dynamic` in variance unification (#6649)
+	all : added some common exception types to `haxe.exceptions` package
+	all : support metadata in var declaration syntax (#9618)
+	all : added `StringTools.unsafeCharAt` (#9467)
+	eval : added libuv bindings under `eval.luv` package (#9903)
+	eval : added bindings to native `Int64` and `UInt64` implementations under `eval.integers` package (#9903)
+	cs : UDP socket implementation (#8498)
+	cs : added `cs.Syntax` module (#10051)
+	jvm : added `-D jvm.dynamic-level` to control the amount of dynamic support code being generated. 0 = none, 1 = field read/write optimization (default), 2 = compile-time method closures
+	java,jvm : support `--java-lib <directory>` (#9551)
+	python : threading API implementation (#9754)
+
+	General improvements:
+
+	all : `expr is SomeType` doesn't require parentheses anymore (#9672)
+	all : increased priority of @:using extensions (#9681)
+	all : allowed usage of static extensions with super (#10062)
+	all : allow @:noDoc on fields too (#9893)
+	all : made `Map` abstract transitive (#9877)
+	all : support `@:native` on enum constructors (#9806)
+	all : support `@:using` on typedefs (#9749)
+	all : changed multiline errors format to use "..." as a prefix for subsequent lines (#9651)
+	all : improved type inference with constrained monomorphs (#9549)
+	all : print no-argument function types as `()->...` instead of `Void->...` (#8148)
+	all : allow `function` as package name
+	all : improved object inlining (#9599)
+	display : narrow range for hover on parametrized types (#8073)
+	cs : added .NET 5.0 support (#10043)
+	cpp : support native constructors on extern classes (#9516)
+	php: `php.Syntax.customArrayDecl` (#9113)
+	php : added externs for various php functions and classes
+	php : optimized anonymous objects instantiation (#7916)
+	hl : skip compilation if no module has been changed (#9922)
+	lua : use hx-lua-simdjson for Lua json parsing (#9885)
+	jvm : less CPU consuming `sys.thread.Lock` implementation
+
+	Bugfixes:
+
+	all : fixed Template.resolve when current context is not an object (#9372)
+	all : `get` and `set` functions of `haxe.io.Float64Array` actually use 64-bit floats now (#9972)
+	all : treat empty blocks `{}` as object declarations in array comprehension (fixes #9971)
+	all : `haxe.format.JsonParser`: preserve Float-typed values when they are written as such in JSON (ie. "5.0" or "0.0") (#9844)
+	all : fixed priority of forwarded static extensions (#9680)
+	all : fixed some inconsistency in variance unification for abstracts (#9743)
+	display : fixed completion with platform-specific files (#9423)
+	cpp : fixed conversion of `cpp.Int64` to/from `haxe.Int64` (#10101)
+	cpp : fixed extending extern classes with `@:nativeGen` classes (#9431)
+	php : fixed generation with subdirectories in `-D php-front=subdir/index.php` (#10037)
+	php : fixed local vars with the same names as super global vars (#9924)
+	eval : allow full range of 32bit integers in `Std.random` (#9974)
+	js : fixed `haxe.CallStack.exceptionStack` (#9968)
+	js : fixed compatibility issue with closure compiler upon unused `catch` vars (#9617)
+	lua : fixed anonymous object printing issue with null fields on tables
+	hl : drop data of terminated threads (#9875)
+	macro : fixed `haxe.macro.Context.storeTypedExpr` for enum constructs (#9828)
+	macro : emit a deprecation warning upon a macro call instead of upon a macro function declaration (#9425)
+	macro : fixed uncatchable error from `haxe.macro.Context.getType` (#9449)
+	jvm : fixed `Type.resolveEnum` for enums in the root package (#9809)
+	jvm : fixed `Type.resolveEnumName` for enums in the root package (#9759)
+	cs : fixed cs.Lib.rethrow (#9738)
+	nullsafety : respect `@:nullSafety(Off)` on var declarations: `var @:nullSafety(Off) v`
+	nullsafety : respect `@:nullSafety(Off)` in closures in constructors (#9643)
+	nullsafety : fixed error "Type not found : haxe.macro._Compiler.NullSafetyMode_Impl_" (#9483)
+
+2020-12-31 4.1.5:
+
+	General improvements:
+
+	all : added an argument to `haxe.CallStack.exceptionStack` to return full stack up to the topmost call (#9947)
+	php : compatibility with PHP 8
+
+	Bugfixes:
+
+	all : fixed empty object declarations in array comprehension (#9971)
+	jvm : fixed equality checks for `Null<Float>` and `Null<Int>` (#9897)
+	hl : fixed crash if a thread finishes without invoking `sendMessage`/`readMessage` (#9920)
+	php : fixed local vars with certain names (_SERVER, _GET etc) overriding super global values (#9924)
+	php : fixed generation with directories in `-D php-front`. For example `-D php-front=sub/index.php` (#10037)
+	macro : added return type hint to haxe.macro.MacroStringTools.formatString (#9928)
+	cs : fixed catching exceptions from static closures (#9957)
+	eval : fixed `Std.random(arg)` for `arg` values of more than 30 bits (#9974)
+	js : fixed `haxe.CallStack.exceptionStack` (#9968)
+
+2020-09-11 4.1.4:
+
+	General improvements:
+
+	all : allowed `Any` as type parameter in `catch(e:SomeType<Any>)` (#9641)
+	all : improved compilation speed for `try..catch` expressions (#9848)
+
+	Bugfixes:
+
+	all : fixed `switch` typing error for arrow functions with `Void` return type (#9813)
+	all : fixed typing of arrow functions with empty blocks as bodies (closes #9843)
+	macro : fixed `haxe.macro.Context.getResources()` (#9838)
+	php : fixed false detection of `catch` vars in anonymous functions as captured from outer scope
+	php : fixed return type of extern definition for `fseek` function
+	cs,java : fixed generation of `@:generic` classes with anonymous functions (#9799)
+	jvm : fixed sending/reading messages with `sys.thread.Threads` for threads created outside of Haxe (#9863)
+	jvm : fixed multiplication of `Null<Float>` and `Int` (#9870)
+	flash : fixed loading swc libraries containing `Vector` without a type parameter (#9805)
+	hl : fixed messages being send to wrong threads with `sendMessage`/`readMessage` in `sys.thread.Thread` (#9875)
+	cpp : fixed `cpp.Lib.stringReference()` (#8457)
+
+2020-07-22 4.1.3
+
+	General improvements:
+
+	all : added an error on `return` outside of a function (#9659)
+	php : support @:native("") for extern classes (#6448)
+	python : support @:native("") for extern classes (#6448)
+
+	Bugfixes:
+
+	all : fixed compilation server bug caused by removing `inline` from a method (#9690)
+	macro : fixed compiler crash if `@:genericBuild` meta is removed by a macro during building (#9391)
+	jvm : fixed "--java-lib-extern" (#9515)
+	flash : fixed var shadowing issue for variables captured in a closure inside of a loop (#9624)
+	flash : fixed `VerifyError` exception when `Void` end up as an argument type after inlining (#9678)
+	php : fixed runtime error "cannot use temporary expression in write context" for call arguments passed by reference
+	cs : fixed `cs.Lib.rethrow` (#9738)
+	nullsafety: fixed `@:nullSafety(Off)` in closures inside of constructors (#9643)
+	nullsafety: fixed "Type not found NullSafetyMode_Impl_" (#9483)
+
+2020-06-19 4.1.2
+
+	Bugfixes:
+
+	all : added `contains` and `keyValueIterator` methods to haxe.ds.ReadOnlyArray
+	all : fixed super constructor call when extending externs (#7837, #9501)
+	all : fixed compiler crash for "--run" argument without a value (#9513)
+	all : fixed local variable name collision in `try..catch` (#9533)
+	all : fixed memory leak in completion server related to haxe.Exception (#9537)
+	display : fixed completion for out-of-bounds argument in a call (#9435)
+	display : fixed "find references" through interfaces (#9470)
+	display : optimized "find references" (#9504)
+	display : optimized "server/invalidate" requests (#9509)
+	analyzer : fixed compiler crash upon handling code branches with enums with optional arguments (#9591)
+	jvm : added "--java-lib-extern" to use jar files as externs without adding them to the compiled project (#9515)
+	macro : fixed type intersection syntax in macro reification (#9404)
+	eval : fixed exception message when catching compiler-generated `haxe.macro.Error` as `Dynamic` (#9600)
+	lua : fixed lua code generation without `--main` compilation argument (#9489)
+	php : added an overload signature for `session_set_cookie_params` function (#9507)
+	js : fixed name collisions for catch variables to avoid closure compiler errors (#9617)
+	nullsafety : fixed various scenarios of `if..else` branching (#9474)
+
+2020-05-22 4.1.1
+
+	New features:
+
+	jvm : added `--jvm path/to.jar` CLI argument
+
+	Bugfixes:
+
+	all : fixed arguments ordering for @:structInit constructors (#9418)
+	all : fixed display/references completion server request for static fields (#9440)
+	all : fixed "Module not found" error reporting during macro execution in display requests (#9449)
+	all : fixed module name completion for target-specific modules like `Mod.js.hx` (#9423)
+	all : fixed completion for packages named "function" (#7697)
+	all : fixed recursive typedefs with optional arguments in `@:overload` functions (#9455)
+	cpp : fixed StringTools.endsWith() for unicode characters (#8980)
+	cpp : fixed broken externs in `cpp` package (#9452)
+	js/cpp : fixed catch var naming collision (#9413)
+	interp : fixed throwing `haxe.macro.Error` outside of a macro context (#9390)
+	lua : fixed lua.PairTools.ipairsMap method
+	php : fixed an edge case in String methods generation (#9464)
+
+2020-05-13: 4.1.0
+
+	New features:
+
+	all : added tail recursion elimination (#8908)
+	all : added unified exception handling (#9124)
+	all : allow `try {} catch(e) {}` as a shortcut for `try {} catch(e:haxe.Exception) {}` (#9269)
+	eval : added SSL support (#9009)
+	jvm : the JVM target is no longer considered experimental
+
+	General improvements:
+
+	all : implemented different display support approach (#8962)
+	all : improved display services related to reference finding
+	all : added go-to-implementation support (#9043)
+	all : made various improvements to diagnostics
+	all : support completion for map keys (#9133)
+	all : improved parser robustness for incomplete syntax (#9148)
+	all : disallowed the combination of `@:overload` and inline (#3846)
+	all : improved renaming of local variables (#9304)
+	all : better inlining of for-loops with anonymous iterators (#8848)
+	all : remove redundant final `return` in `Void` functions (#6420)
+	all : remove redundant `continue` in loops (#8952)
+	all : improved various compilation errors reporting
+	all : allowed `(get,default)` property access combination (#6195, #8825)
+	all : allowed ++ and -- on member properties of abstracts (#8930)
+	js : use abstract type name for generating its implementation class (#9006)
+	js : improve haxe.ds.StringMap implementation (#8909)
+	js : improve interface checking and make it more minifier-friendly (#9178)
+	js : generate `let` instead of `var` when compiler with `-D js-es=6` (#9280)
+	js : optimize `.bind` on constructors (#9227)
+	jvm : rewrote function handling to me much faster and more portable (#9208)
+	jvm : generate interfaces for typedefs for improved performance (#9195)
+	jvm : added support for haxe.MainLoop
+	jvm : support `@:jvm.synthetic` and use it to hide some generated fields (#9213)
+	jvm : respect `@:private` and `@:protected`
+	lua : improve error handling behavior when throwing objects/instances
+	lua : optimize `haxe.iterators.StringIterator`
+	php : optimize `Std.isOfType` for String, Bool and Float
+	php : make Haxe Array implement native interfaces Iterator, IteratorAggregate, Countable (#8821, 9377)
+	cs : support `@:assemblyMeta` and `@:assemblyStrict` (#8347)
+	python : added `__contains__` and `__getitem__` implementations to generated python code for `_hx_AnonObject`, so it is subscribable and behaves like a python dict (#9109)
+
+	Standard Library:
+
+	all : negative `startIndex` argument of `String.indexOf` and `String.lastIndexOf` is unspecified (#8365)
+	all : changed Array.iterator() to return instances of haxe.iterators.ArrayIterator (#8987)
+	all : added Array.contains (#9179)
+	all : added Array.keyValueIterator (#7422)
+	all : added haxe.Constraints.NotVoid (#8357)
+	all : added Lambda.findIndex() (#9071)
+	all : added Lambda.foldi() (#9054)
+	all : added array access and key-value iteration support to haxe.ds.HashMap (#9056)
+	jvm : added JVM-specific versions of sys.thread.Lock and sys.thread.Thread
+	jvm : added JVM-specific version of haxe.ds.StringMap
+	java/jvm : use native versions of MD-5, SHA-1 and SHA-256 for `haxe.crypto` modules (#9298)
+	macro : added haxe.macro.Context.containsDisplayPosition(pos) (#9077)
+	nullsafety : treat Strict as a single-threaded mode; added StrictThreaded (#8895)
+
+	Deprecations:
+
+	all : deprecated `Std.is`; use `Std.isOfType` instead (#2976)
+	all : added a warning for an uninitialized variable usage captured in a closure (#7447)
+	js : deprecated `untyped __js__(code, args)`; use `js.Syntax.code(code, args)` instead
+	php/neko : deprecated neko.Web and php.Web; will be moved to hx4compat library later (#9153)
+
+	Bugfixes:
+
+	all : fixed display support for static imports (#9012)
+	all : fixed completion in macro mode picking up the wrong type (#7703)
+	all : fixed wonky analyzer transformation related to locals captured in closures (#9305)
+	all : allow `return;` in abstract constructors (#7809)
+	all : fixed static @:op([]) functions (#9347)
+	all : fixed `@:optional` handling in the inheritance of `@:structInit` classes (#7559)
+	all : support negative numbers as constant type parameters for `@:generic` types (#9149)
+	all : fixed false positive compilation server error with empty methods in inheritance (#9029)
+	all : fixed default values for manually defined @:structInit constructors (#9177, #9258)
+	all : fixed inference of `Void` return type for arrow functions (#9181)
+	all : fixed inconsistencies in wildcard imports resolution (#9189, #9190)
+	all : fix array comprehension for a chain of `if..else if` without final `else` (#9040)
+	all : prohibit @:structInit on interfaces (#9017)
+	macro : fixed handling `TAnonymous` in `haxe.macro.TypeTools.map` (#9147)
+	eval : fixed EReg.matchSub handling with negative length (#9333)
+	eval : fixed extern classes being generated and causing errors in some cases (#9366)
+	eval : fixed StringBuf.addSub unicode handling (#9382)
+	jvm : fixed Void being generated with the wrong casing (#8717)
+	jvm : fixed debugging-related data being generated in the wrong place
+	jvm : fixed switches on string values being too optimistic
+	jvm : fixed problems with Std.parseInt and Std.parseFloat
+	jvm : made sure type parameter types are boxed
+	jvm : fixed dynamic access on `null` yielding `null` (#8452)
+	cpp : fixed native compilation if there is a `hx` package in a project (#8543)
+	cs : fixed `null` to `0` conversion in parametrized functions for `Null<Int>` params (#7428)
+	cs : fixed integer division handling (#9232)
+	php : fixed closure creation out of fields with `null` value (#9316)
+	js : fixed interface generation for minification with Google Closure Compiler in advanced mode (#9172)
+	js : fixed a crash at startup in IE8 (#9062)
+	hl : fixed BLOB handling in SQLite (#9048)
+
+2019-12-17: 4.0.5
+
+	Bugfixes:
+
+	java : fix boolean arguments for `Type.createInstance(cls, args)` (#9025)
+	jvm : fix static overloads (#9034)
+	java/cs : fixed `Reflect.makeVarArgs(fn)` for calls of `fn` without arguments (#9037)
+	js : fix multiple appearances of the first object added to `ObjectMap` is passed to `ObjectMap.set(obj, v)` multiple times (#9026)
+	js : automatically wrap compound expressions with parentheses when passed to `js.Syntax.code()` (#9024)
+	windows : fix adding neko to PATH env var running windows installer (#9021)
+
+2019-11-29: 4.0.3
+
+	General improvements:
+
+	hl : profiler API
+
+	Bugfixes:
+
+	all : fixed EnumValue handling in constant propagation with analyzer enabled (#8959)
+	all : fixed compiler crash upon Void items in array declarations (#8972)
+	hl : fixed `sys.thread.Lock` implementation for Hashlink 1.11+ (#8699)
+	js/eval/java/jvm/cs/python/lua : fixed `Std.parseInt()` for hexadecimals with leading whitespaces (#8978)
+	java/cs : fixed `Reflect.callMethod(o, method, args)` for `args` not containing optional arguments (#8975)
+	cs : fixed Json.stringify for @:struct-annotated classes (#8979)
+	cs : fixed bitwise shifts for `cs.types.Int64` (#8978)
+	python : fixed invalid generation of some inlined code blocks (#8971)
+	std : fixed an exception from `haxe.zip.Huffman` on reading a zip (#8875)
+	windows : workaround windows installer being detected as a malware by some anti-virus software (#8951)
+	windows : fix PATH env var modification when running windows installer without admin privileges (#8870)
+	all : fixed null-safety checker for field access on a call to inlined function
+
+2019-11-11: 4.0.2
+
+	General improvements and optimizations:
+
+	php : improved performance of `haxe.io.Bytes.get()` (#8938)
+	php : improved performance of serialization/unserialization of `haxe.io.Bytes` (#8943)
+	php : improved performance of enum-related methods in `Type` class of standard library
+
+	Bugfixes:
+
+	haxelib : Fixed too strict requirements to haxelib.json data for private libs
+	all : fixed `@:using` static extensions on `Null<SomeType>` (#8928)
+	php : fixed static methods with the same name in parent and child classes (#8944)
+
+2019-11-04: 4.0.1
+
+	Bugfixes:
+
+	haxelib : fixed git dependencies in haxelib.json
+	neko : updated windows & osx installer to install Neko 2.3.0 (#8906)
+	jvm : fixed compilation failure caused by a specific usage of `Array<Dynamic>` (#8872)
+	all : fixed compiler crash on loops with `continue` in all branches of the body (#8912)
+	all : fixed erasing typedef in AST on field access to forwarded abstract fields (#8919)
+
+
+2019-10-26: 4.0.0
+
+	General improvements:
+
+	js : updated externs for `Float32Array` and `Float64Array` (#8864)
+	php : added array access to `php.NativeStructArray` (#8893)
+
+	Bugfixes:
+
+	cs : fixed "This expression may be invalid" false warning (#8589)
+	php : fixed iterator fields on maps being removed (#8851)
+	php : fixed `-2147483648` as init value for static vars (#5289)
+	python : fixed modulo by a negative number (#8845)
+	java : fixed backslash escaping on `EReg.replace` (#3430)
+	lua : fixed `EReg.map` for unicode (#8861)
+	hl : fixed sqlite connection on OSX/Linux (#8878)
+
+2019-09-12: 4.0.0-rc.5
+
+	General improvements and optimizations:
+
+	eval: improved performance of regular expressions (#8693)
+
+	Bugfixes:
+
+	all: fixed regression, which caused compiler to crash on enum abstracts with explicit casting (#8765)
+	all: fixed regression of macro `@:from` methods on abstracts (#8779)
+	all: fixed switching on `this` (#8781)
+
+2019-09-04: 4.0.0-rc.4
+
+	Standard Library:
+
+	all : added Map.clear (#8681)
+	all : improved Date API (#8508)
+	all : added JSON-RPC protocol types to haxe.display package (#8610)
+	all : added default timeout to HTTP sockets (#8646)
+	macro : added Context.info (#8478)
+	macro : added Context.getMessages and Context.filterMessages (#8471)
+	macro : added function kind to EFunction (#8653)
+	macro : added string literal kind to CString (#8668)
+	flash : added flash.AnyType (#8549)
+
+	General improvements and optimizations:
+
+	all : allowed enum constructors without arguments as static inline var (#8187)
+	all : improved handling of default values when inlining (#8397)
+	all : made various improvements to the display API as usual
+	all : detect invalid #tokens in inactive code (#7108)
+	all : allowed function types in @:generic (#3697)
+	all : improved --help-defines and --help-metas
+	all : improved overall file finding (#8202)
+	all : improved server reaction to added and removed files (#8451)
+	all : improved memory handling of the compilation server (8727)
+	all : improved handling of native libraries on the compilation server (#8629)
+	all : support partial completion results (#8642)
+	all : improved support of hovering over inactive conditional compilation blocks
+	all : improved completion support in .platform.hx files
+	all : support hovering conditional compilation identifiers
+	all : improved and unified identifier checks for names, fields and types (#8708)
+	all : improved --times performance (#8733)
+	all : remove some redundant cast expressions (#8725)
+	all : added --server-connect (#8730)
+	lua : improved -D lua-vanilla
+	js : improved HTML externs
+
+	Bugfixes :
+
+	all : fixed various position and replace ranges in the display API
+	all : fixed compiler hang related to @:arrayAccess (#5525)
+	all : fixed bug regarding abstract `this` modification in inline methods (#8454)
+	all : fixed `from Dynamic` on abstracts (#8425)
+	all : fixed overeager recursive inline check (#8489)
+	all : fixed the pattern matcher allowing inexhaustive switches in value-places (#8277)
+	all : fixed pattern matcher allowing invalid abstract unification (#8579)
+	all : fixed local variable type information being lost on the compilation server (#8511)
+	all : don't generate return expressions in Void lambda functions (#6503)
+	all : fixed unification of recursive typedefs again (#8523)
+	all : fixed various hangs related to abstracts (#8588)
+	all : fixed various GADT-related problems (#7672)
+	all : fixed macro `@:from` methods allowing any return type (#8463)
+	macro : fixed Sys.programPath assertion failure (#8466)
+	js : fixed typed array APIs (#8422)
+	java : fixed Std.is on non-reference and unrelated types (#5168)
+	java/macro : fixed null-pointer exception in Reflect.getProperty (#4934)
+	java/jvm : fix switch on null string (#4481)
+	jvm : fixed boxed vs. unboxed comparison (#8577)
+	jvm : generate toplevel types to haxe.root like genjava does (#8590)
+	jvm : improved 32bit support (#8601)
+	cs/python : fixed various issues with code generation
+	cs : fixed NativeArray casting (#3949)
+
+2019-06-13: 4.0.0-rc.3
+
+	New features:
+
+	all : added JVM target
+
+	General improvements and optimizations:
+
+	all : create temp vars in pattern matcher to avoid duplicate access (#8064)
+	all : support parsing dots in conditional compilation, e.g. `#if target.sys`
+	all : added `@:bypassAccessor`
+	all : improved various aspects of the display API
+	all : properly error on `@:op(a = b)` (#6903)
+	all : made `@:using` actually work
+	all : properly disallowed some modifier combinations related to `final` (#8335)
+	all : support `@:pure(false)` on variable fields (#8338)
+	flash : updated Flash externs to version 32.0 (now using `final`, `enum abstract` and `haxe.extern.Rest`)
+	flash : rework support for native Flash properties (#8241)
+	php : improved performance of various parser implementations (#8083)
+	cs : support .NET core target (#8391)
+	cs : generate native type parameter constraints (#8311, #7863)
+
+	Standard Library:
+
+	all : added StringTools.contains (#7608)
+	all : turned sys.thread.Thread into abstracts (#8130)
+	all : introduced `Std.downcast` as replacement for `Std.instance` (#8301)
+	all : introduced `UnicodeString`, deprecated `haxe.Utf8` (#8298)
+	java : added java.NativeString (#8163)
+	cs : added sys.thread implementations (#8166)
+	js : moved various classes to js.lib (#7390)
+
+	Bugfixes
+
+	all : fixed issue with `@:generic` type parameters not being bound to Dynamic (#8102)
+	all : fixed various issues related to `@:structInit`
+	all : fixed top-down inference on abstract setters (#7674)
+	all : fixed DCE issue related to closures (#8200)
+	all : fixed and restricted various Unicode-related issues in String literals
+	all : fixed various priority issues regarding loops and iterators
+	all : fixed cast handling in try-catch expressions (#8257)
+	all : fixed `inline new` handling (#8240)
+	all : fixed pattern matcher issue with wildcards in or-patterns (#8296)
+	all : fixed `@:allow(package)` allowing too much (#8306)
+	all : fixed various issues with startIndex handling on String.indexOf and String.lastIndexOf
+	all : fixed infinite recursion related to printing of objects with circular references (#8113)
+	sys : fixed various Unicode issues (#8135)
+	macro : fixed Array.pop handling (#8075)
+	macro : fixed assertion failure when throwing exception (#8039)
+	macro : fixed various uncatchable exceptions being thrown
+	php : error on case-insensitive name clashes (#8219)
+	lua : fixed issue where Process output occasionally is missing some data
+	hl : fixed various String Unicode issues
+	java : fixed null exception in CallStack.exceptionStack (#8322)
+	js : fixed code generation issue related to negative abstract values (#8318)
+	flash : fix various issues, including native `protected` handling and method overloading
+
+	Removals:
+
+	all : remove support for `@:fakeEnum` enums
+	all : disallowed `\x` with values > 0x7F (#8141)
+	all : consistently disallowed metadata in lambda function arguments (#7800)
+	all : removed `--gen-hx-classes` (#8237)
+
+2019-03-22: 4.0.0-rc.2
+
+	New features:
+
+	all : added strictness settings for the null-safety checker, using loose checking by default (#7811)
+	js : added ES6 class generation with `-D js-es=6` (#7806)
+
+	General improvements and optimizations:
+
+	all : inherit `@:native` for overriden methods (#7844)
+	all : standardized identifiers allowed in markup literals (#7558)
+	all : show typo suggestions when declaring `override` field (#7847)
+	all : improved parser error messages (#7912)
+	all : improved diagnostics of syntax errors (#7940)
+	all : improved positions of `switch` and `case` expressions (#7947)
+	all : allow parsing `#if (a.b)` (#8005)
+	eval : improved performance of various string operations (#7982)
+	eval : fixed many error positions
+	eval : greatly improved debugger interaction (#7839)
+	eval : properly support threads when debugging (#7991)
+	eval : improved handling of capture variables (#8017)
+	js : generate dot-access for "keyword" field names (#7645)
+	js : optimized run-time type checking against interfaces (#7834)
+	js : skip generation of interfaces when no run-time type checking needed (#7843)
+
+	Standard Library:
+
+	all : unified various Thread APIs in sys.thread (#7999)
+	all : moved typed arrays from `js.html` to `js.lib` (#7894)
+	all : added `iterator()` to `haxe.DynamicAccess` (#7892)
+	all : added `keyValueIterator()` to `haxe.DynamicAccess` (#7769)
+	eval : completed Thread API
+
+	Bugfixes:
+
+	all : fixed argument default value checking for externs (#7752)
+	all : fixed optional status of overloaded arguments with default values (#7794)
+	all : fixed DCE compilation server state issue (#7805)
+	all : fixed compilation server module dependency issue related to macros (#7448)
+	all : fixed call-site inlining on abstracts (#7886)
+	all : fixed Constructible not checking constraints properly (#6714)
+	all : fixed @:structInit not being compatible with `final` fields (#7182)
+	all : fixed capture variables being allowed in `.match` (#7921)
+	all : fixed infinite recursion on `@:generic` field access (#6430)
+	all : fixed `-D no-deprecation-warnings` for typedefs and enums
+	js : fixed bad stack handling on `Map` constraint checks (#7781)
+	js : fixed DCE issues related to haxe.CallStack (#7908)
+	cpp : fixed Socket flags not being preserved (#7989)
+	lua : fixed broken output when compiling through the compilation server (#7851)
+	lua : fixed `StringTools.fastCodeAt` with `-D lua-vanilla` (#7589)
+	lua : fixed `@:expose` for classes inside packages (#7849)
+
+2019-02-01: 4.0.0-rc.1
+
+	New features:
+
+	all : added experimental null-safety feature through `--macro nullSafety("package")` (#7717)
+
+	General improvements and optimizations:
+
+	all : improved unification error messages (#7547)
+	all : added `haxe4` define
+	all : do not require semicolon for markup literals (#7438)
+	all : made `@:expose` imply `@:keep` (#7695)
+	all : unified cast, catch and Std.is behavior of null-values (#7532)
+	macro : static variables are now always re-initialized when using the compilation server (#5746)
+	macro : support `@:persistent` to keep macro static values across compilations
+	js : improve js.Promise extern: now `then` callback argument types can be properly inferred (#7644)
+
+	Bugfixes:
+
+	all : fixed various pattern matching problems
+	all : fixed various wrong positions when encoding data to macros
+	all : specified String.indexOf with out-of-bounds indices (#7601)
+	all : fixed various problems related to DCE and feature-handling (#7694)
+	all : fixed bad unary operator optimization (#7704)
+	js : fixed syntax problem related to `instanceof` (#7653)
+	flash : fixed var field access on interfaces being uncast (#7727)
+	cpp : fixed various issues related to casts
+	cpp : fixed some leftover unicode issues
+	php : fixed class naming conflicts (#7716)
+	eval : fixed Socket.setTimeout (#7682)
+	eval : fixed int switch bug related to overflows
+
+	Removals:
+
+	macro : deprecated Context.registerModuleReuseCall and onMacroContextReused (#5746)
+
+2018-10-13: 4.0.0-preview.5
+	New features:
+
+	all : support Unicode strings properly on all targets
+	all : support `for (key => value in e)` syntax for key-value iterators
+	all : added keyValueIterator to Map and its implementations
+	all : support loop-unrolling on `for (i in 0...5)` (#7365)
+	all : added support for write-mode `@:op(a.b)`
+	all : support `inline call()` and `inline new` expressions (#7425)
+	all : support `@:using` on type declarations (#7462)
+	all : support markup literal strings but require them to be macro-processed (#7438)
+	all : allow enum values without arguments as default function argument values (#7439)
+	lua : add -D lua-vanilla, which emits code with reduced functionality but no additional lib dependencies
+
+	General improvements and optimizations:
+
+	all : [breaking] reserved `operator` and `overload` as keywords (#7413)
+	all : made `final` on structure fields invariant (#7039)
+	all : [breaking] disallowed static variables that have no type-hint and expression (#6440)
+	all : added display/typeDefinition to display protocol (#7266)
+	all : fixed various display-related problems
+	all : made parser in display mode much more tolerant
+	all : allowed assigning `[]` where `Map` is expected (#7426)
+	all : unified various parts of the String API across all targets
+	php : Optimized haxe.ds.Vector (VectorData is not Array anymore)
+	php : Optimized `Map.copy()` and `Array.copy()`
+	php : Optimized iterators of `Map` and native arrays.
+	php : Support native PHP generators. See `php.Syntax.yield()` and `php.Generator`
+	js : updated HTML externs
+	eval : improved object prototype field handling (#7393)
+	eval : optimized int switches (#7481)
+	eval : improved IntMap and StringMap performance
+	eval : improved performance of instance calls
+
+	Removals :
+
+	all : disallowed get_x/set_x property syntax, use get/set instead (#4699)
+	all : disallowed default values on interface variables (#4087)
+	all : disallowed `implements Dynamic` on non-extern classes (#6191)
+	all : warn about expressions in extern non-inline fields (#5898)
+	all : removed `-D use-rtti-doc`, always store documentation instead (#7493)
+	all : disallowed macro-in-macro calls (#7496)
+	js : removed jQuery and swfobject externs (#7494)
+
+	Bugfixes:
+
+	all : fix GC compacting too often in server mode
+	all : [breaking] `function () { }(e)` is no longer parsed as a call (#5854)
+	all : fixed various minor inlining issues
+	all : disallowed `return null` from Void-functions (#7198)
+	all : fixed various pattern matching problems
+	all : fixed compiler hang in display mode (#7236)
+	all : fixed the XML printer trimming CDATA content (#7454)
+	all : fixed invalid visibility unification with statics (#7527)
+	php : Escape `$` in field names of anonymous objects (#7230)
+	php : Generate `switch` as `if...else if...else...` to avoid loose comparison (#7257)
+	cs : fixed bad evaluation order in structures (#7531)
+	eval : fixed various problems with the debugger
+	eval : fixed Vector.fromArrayCopy (#7492)
+	eval : fixed bad string conversions on invalid + operations
+
+	Standard Library:
+
+	all : [breaking] made Lambda functions return Array instead of List (#7097)
+	all : added haxe.iterators package
+	all : improved StringTools.lpad/rpad/htmlEscape implementation
+
+2018-06-12: 4.0.0-preview.4
+
+	New features:
+
+	all : added JSON-RPC-based display protocol
+	all : allow `enum abstract` syntax instead of `@:enum abstract` (#4282)
+	all : allow `extern` on fields instead of `@:extern`
+	all : support signature completion on incomplete structures (#5767)
+	all : support auto-numbering and auto-stringification in enum abstracts (#7139)
+	all : support `Type1 & Type2` intersection syntax for type parameter constraints and structures (#7127)
+
+	General improvements and optimizations:
+
+	all : reworked CLI usage/help output (#6862)
+	all : implemented `for` loop unrolling (#3784)
+	all : metadata can now use `.`, e.g. `@:a.b`. This is represented as a string (#3959)
+	all : [breaking] disallow static extensions through abstract field casts (#5924)
+	all : [breaking] disallow static extensions on implicit `this` (#6036)
+	all : allow true and false expressions as type parameters (#6958)
+	all : improved display support in many areas
+	all : support `override |` completion
+	all : make display/references and display/toplevel actually work sometimes
+	all : allow `var ?x` and `final ?x` parsing in structures (#6947)
+	all : improved overall robustness of the parser in display mode
+	all : allow `@:commutative` on non-static abstract functions (#5599)
+	js : added externs for js.Date (#6855)
+	js : respect `-D source-map` flag to generate source maps in release builds
+	js : enums are now generated as objects instead of arrays (#6350)
+	eval : improved debugger, support conditional breakpoints
+
+	Removals:
+
+	all : moved haxe.remoting to hx3compat
+	js : moved js.XMLSocket to hx3compat
+	neko : moved neko.net to hx3compat
+	all : removed support for `T:(A, B)` constraint syntax
+
+	Bugfixes:
+
+	all : fixed various issues with diagnostics
+	all : fixed fields with default values for `@:structInit` classes (#5449)
+	all : fixed `Null<T>` inconsistency in if/ternary expressions (#6955)
+	all : fixed visibility check related to private constructors of sibling classes (#6957)
+	all : fixed @:generic naming (#6968)
+	all : fixed handling of type parameters in local functions (#6560)
+	all : fixed resolution order between `untyped` and type parameters (#7113)
+	all : fixed unification behavior in try/catch expressions (#7120)
+	all : fixed field type being lost for Int expressions on Float fields (#7132)
+	all : cleaned up `inline` handling (#7155)
+	display : fixed completion in packages starting with underscore (#5417)
+	php : fixed Reflect.callMethod with classes as first argument (#7106)
+	eval : fixed internal exception surfacing in some context calls (#7007)
+	eval : fixed Type.enumEq (#6710)
+	flash : fixed silently swallowing exceptions in getters/setters when invoked with Reflect methods (#5460, #6871)
+
+	Standard Library:
+
+	all : added `resize` to Array (#6869)
+	all : [breaking] removed `return this` from some haxe.Http methods (#6980)
+
+2018-02-23: 4.0.0-preview.3
+
+	See full commit history at https://github.com/HaxeFoundation/haxe/compare/4.0.0-preview.2...4.0.0-preview.3, notable changes below:
+
+	New features:
+
+	all : added new function type syntax (`(a:Int, b:String)->Void`) (#6645)
+	all : added column to StackItem.FilePos (#6665)
+	all : added `-D warn-var-shadowing`
+	all : added haxe.Log.formatOutput (#6738)
+	js : added js.Syntax class for generating unsupported JavaScript syntax in a type-safe analyzer-friendly way
+	js : added js.Map and js.Set and js.JsIterator extern definitions (ES6)
+	hl : added hl.Format.digest, use it for native Sha1/Md5
+
+	General improvements and optimizations:
+
+	all : made all non-warning/non-error compiler messages output to stdout (#4480)
+	all : make DCE keep constructor if any instance field is kept (#6690)
+	all : make `final` in structures use class notation
+	display : added `this` and `super` to toplevel completion (#6051)
+	php : implemented direct method comparison. No need to use `Reflect.compareMethods()`
+	php : added `php.Syntax.code()` instead of deprecated `untyped __php__()` (#6708)
+	php : added methods to `php.Syntax` for each php operator: `??`, `?:`, `**` etc. (#6708)
+	python : add ssl support for http requests
+	python : improve Sys.print(ln) code generation (#6184)
+	js : generate faster code for `x.iterator()` calls (#6669)
+	js : rework exception handling, added js.Lib.getOriginalException (#6713)
+	js : generate `value instanceof MyClass` instead of `Std.is(value, MyClass)` (#6687)
+	js : use lazy getter for HaxeError.message instead of calling String(val) in the ctor (#6754)
+
+	Removals:
+
+	php : removed `php.Syntax.binop()` (#6708)
+
+	Deprecations:
+
+	php : deprecated support for `untyped __php__`, `untyped __call__` etc. Use `php.Syntax` instead.
+
+	Bugfixes:
+
+	all : delay interface accessor generation properly (#6225, #6672)
+	all : fixed unbound variable error in anonymous functions (#6674)
+	all : fixed abstract `@:to` used when `from` is available in a specific case (#6751)
+	all : sys.Http: fix chunked encoding handling (#6763)
+	all : fix some invalid Json being accepted by haxe.format.JsonParser (#6734)
+	all : fixed haxe.format.JsonPrinter for instances of classes to make it produce consistent result across targets (#6801)
+	all : fixed autogenerated constructor for extending @:structInit classes (#6822, #6078)
+	js : fixed saving setter to `tmp` var before invocation (#6672)
+	lua : fix toString behavior in the case of -0 (#6652)
+	lua : properly bind field functions when passed as arguments (#6722)
+	php : don't fail on generating import aliases for classes with the similar names (#6680)
+	php : fixed `Sys.environment()` to also return variables set by `Sys.putEnv()`
+	php : fixed `sys.net.Socket.bind()` (#6693)
+	php : fixed appending "sqlite:" prefix to the names of files created by `sys.db.Sqlite.open()` (#6692)
+	php : made php.Lib.objectOfAssociativeArray() recursive (#6698)
+	php : fixed php error on parsing expressions like `a == b == c` (#6720)
+	php : fixed multiple file uploads in php.Web.parseMultiPart() (#4173)
+	php : fixed an issue with "Object" used as a class name for PHP 7.2 (it's a new keyword in php) (#6838)
+	eval : don't lose dynamic function inits from parent classes (#6660)
+	cs : fix order-dependent enum type parameter issue (#6016)
+
+2017-10-08: 4.0.0-preview.2
+
+	New features:
+
+	all : added final keyword (#6596)
+
+	General improvements and optimizations:
+
+	all : replaced some occurrences of List with Array
+	all : changed haxe.xml.Fast to an abstract
+	all : improved optimization when comparing against `null`
+	all : added support for `case var x` syntax and detect possible typos (#6608)
+	php : changed `--php-prefix`, `--php-front` and `--php-lib` to `-D php-prefix=`, `-D php-front=` and `-D php-lib=` respectively
+
+	Removals:
+
+	all : moved haxe.unit to hx3compat
+	all : moved haxe.web.Request to hx3compat
+	php : dropped php5 support; minimum supported php version is 7.0 now
+
+	Bugfixes:
+
+	all : fixed issue with various functions not being displayed in macro context (#6000)
+	all : fixed invalid static extension lookup on `super` (#3607)
+	all : fixed typing error when constructing enums with abstracts over functions (#6609)
+	all : fixed bug that skipped checking @:from typing in some cases (#6564)
+	all : fixed Int64 parsing of negative numbers that end in a zero (#5493)
+	all : fixed top-down inference when constructing enums (#6606)
+	eval : fixed bug with equality handling
+	eval : fixed issue with file creation not defaulting to binary
+	eval : fixed invalid override detection (#6583)
+	eval : fixed infinite recursion when printing arrays/vectors
+	cs/java : fixed DCE bug that would lose toString method of thrown objects
+	php/python : fixed some bit operators for Int32 (#5938)
+	php : fixed accessing `static inline var` via reflection (#6630)
+	php : fixed Math.min() and Math.max() for NAN on PHP 7.1.9 and 7.1.10
+	js : fixed js syntax error for `value.iterator--` (#6637)
+
+	Standard Library:
+
+	macro : added have.display.Position and PositionTools.toRange (#6599)
+	all : moved List to haxe.ds (#6610)
+
+2017-09-12: 4.0.0-preview.1
+
+	New features:
+
+	all : reworked macro interpreter
+	all : added support for arrow functions
+
+	General improvements and optimizations:
+
+	js : improved generation of `break` inside `switch` inside loops (#4964)
+	cs : improved generation of enum classes (#6119)
+	sys : the `database` parameter of `Mysql.connect` is now optional
+	js : updated jQuery extern (js.jquery.*) for jQuery 1.12.4 / 3.2.1 support.
+	Makefile : default Unix installation location $(INSTALL_DIR) changed from /usr to /usr/local.
+	Makefile : default Unix std location $(INSTALL_STD_DIR) changed from $(INSTALL_LIB_DIR)/std to $(INSTALL_DIR)/share/haxe/std.
+
+	Removals:
+
+	all : removed --eval command line argument
+	sys : SPOD (sys.db.Object, sys.db.Manager and friends) was moved into a separate library `record-macros` (https://github.com/HaxeFoundation/record-macros)
+	js : js.JQuery and js.SWFObject were moved into hx3compat library (https://github.com/HaxeFoundation/hx3compat),
+	     it's recommended to use more modern js.jquery.JQuery and js.swfobject.SWFObject classes.
+	all : moved haxe.web.Dispatch into hx3compat library (https://github.com/HaxeFoundation/hx3compat).
+
+	Bugfixes:
+
+	php7: fix Reflect.field() for strings (#6276)
+	php7: fix `@:enum abstract` generation without `-dce full` (#6175)
+	php7: fix using enum constructor with arguments as a call argument (#6177)
+	php7: fix `null` property access (#6281)
+	php7: fix setting values in a map stored in another map (#6257)
+	php7: fix haxe.io.Input.readAll() with disabled analyzer optimizations (#6387)
+	php/php7: fixed accessing enum constructors on enum type stored to a variable (#6159)
+	php/php7: fix "cannot implement previously implemented interface" (#6208)
+	php: fix invoking functions stored in dynamic static vars (#6158)
+	php: fix field access on `new MyClass()` expressions wrapped in a `cast` (#6294)
+
+	Standard Library:
+
+	all : added `EReg.escape` (#5098)
+	all : `BalancedTree implements `haxe.Constraints.IMap` (#6231)
+
+2018-01-31: 3.4.5
+
+	General improvements and optimizations:
+
+	dce : optimized DCE performance (#6181)
+
+	Bugfixes:
+
+	dce : don't remove constructor if any instance field is kept (#6062)
+	js : fixed saving setter to `tmp` var before invocation (#6672)
+	php7 : don't fail on generating import aliases for classes with the similar names (#6680)
+	php7 : fixed appending "sqlite:" prefix to the names of files created by `sys.db.Sqlite.open()` (#6692)
+	php7 : made php.Lib.objectOfAssociativeArray() recursive (#6698)
+	php7 : fixed php error on parsing expressions like `a == b == c` (#6720)
+	php/php7 : fixed `sys.net.Socket.bind()` (#6693)
+
+2017-10-08: 3.4.4
+
+	Bugfixes:
+
+	flash : fixed flash target broken when compiled with OCaml 4.05 (#6589)
+	php7 : fixed accessing `static inline var` via reflection (#6630)
+	js : fixed js syntax error for `value.iterator--` (#6637)
+	cpp : fixed evaluation order problem when constructing enums (#6643)
+
+2017-09-10: 3.4.3
+
+	Bugfixes:
+
+	all : fixed DCE issue with interface fields (#6502)
+	cpp : fixed return typing for embedded closures (#6121)
+	php7: fixed `@:enum abstract` generation without `-dce full` (#6175)
+	php7: fixed using enum constructor with arguments as a call argument (#6177)
+	php7: fixed accessing methods on dynamic values (#6211)
+	php7: fixed `null` property access (#6281)
+	php7: fixed setting values in a map stored in another map (#6257)
+	php7: implemented `php.Lib.mail()`
+	php7: implemented `php.Lib.loadLib()`
+	php7: implemented `php.Lib.getClasses()` (#6384)
+	php7: fixed exception on `Reflect.getProperty(o, field)` if requested field does not exist (#6559)
+	php/php7: fixed accessing enum constructors on enum type stored to a variable (#6159)
+	php/php7: fixed "cannot implement previously implemented interface" (#6208)
+	php: fixed invoking functions stored in dynamic static vars (#6158)
+	php: fixed field access on `new MyClass()` expressions wrapped in a `cast` (#6294)
+	macro : fixed bug in addClassPath that overwrites macro class paths with context class paths
+
+2017-03-20: 3.4.2
+
+	Bugfixes:
+
+	cpp : fixed issue with @:native names being prefixed with :: (#6086)
+	cpp : fixed issue with return type handling (#6103)
+	cpp : fixed inaccurate line numbers that threw off debugging
+	php7 : fixed generation of `[][0]` constructs (#6090)
+
+2017-03-17: 3.4.1
+
+	New features:
+
+	php7 : added source maps generation with `-D source_map` flag.
+
+	General improvements and optimizations:
+
+	cpp : added cpp.Star and cpp.Struct to help with extern typing
+	lua : cleaned up various parts of the standard library
+
+	Bugfixes:
+
+	all : fixed compilation server issue with two identical @:native paths on extern abstracts (#5993)
+	all : fixed invalid inling in a specific case (#6067)
+	all : fixed various display related issues
+	all : fixed inline super() calls missing field initializations (#6097)
+	all : consider UNC paths to be absolute in haxe.io.Path.isAbsolute (#6061)
+	cpp : improved typing of some Function/Callable-related types
+	cpp : fixed problem with line numbers when debugging
+	hl : various fixes and improvements
+	php : fixed FileSystem.stat() for directories on Windows (#6057)
+	php/php7 : fixed invalid result of Web.getPostData() (#6033)
+	php7 : fixed invalid access to length of string in some cases (#6055)
+	php7 : fixed infinite recursion on MysqlConnection.close() (#6056)
+
+2017-01-31: 3.4.0
+
+	General improvements and optimizations:
+
+	all : support completion for static extensions (#5766)
+	all : removed neko dependency for macros, use PCRE instead
+	all : disabled analyzer optimizations by default, re-enable with -D analyzer-optimize
+	php7 : generate native `$v instanceof MyType` instead of `Std.is(v, MyType)` where possible for better performance
+	php7 : added @:phpNoConstructor meta for externs which do not have native php constructors and yet can be constructed
+	php7 : greatly reduced amount of generated tmp vars
+	php7 : `Array` performance improvements
+	hl : made various improvements
+
+	Bugfixes:
+
+	all : fixed `using` picking up non-static abstract functions (#5888)
+	all : fixed issue with side-effect detection when optimizing (#5911)
+	all : fixed issue with zlib bindings causing zlib_deflate errors (#5941)
+	php7 : Allow user-defined modules in `php` package (#5921)
+	php7 : Dereference some of `php.Syntax` methods if required (#5923)
+	php : fixed assigning a method of dynamic value to a variable (#5469)
+	php : fixed missing initialization of dynamic methods in classes with empty constructors (#4723)
+
+2016-12-24: 3.4.0-RC2
+
+	New features:
+
+	js : added API documentation to HTML externs (#5868)
+	php : added php7 target, enabled with -D php7
+
+	Bugfixes:
+
+	all : fixed top-down inference infinite recursion issue (#5848)
+	all : fixed regression in Compiler.include (#5847)
+	all : fixed Not_found exception related to try/catch (#5851)
+	all : fixed metadata completion showing up in trace arguments (#5775)
+	all : fixed problem with useless pattern detection (#5873)
+	all : fixed issue with toString handling in trace arguments (#5858)
+	all : fixed inline constructor scoping (#5855)
+	cpp : fixed issue with cpp.Pointer variables being eliminated (#5850)
+	js : added Notification API to HTML externs (#5852)
+	js : fixed several options structures in HTML externs (#5849)
+	php/cs : FileSystem.deleteFile() and FileSystem.deleteDirectory() now throw on non-existent path (#5742)
+	php/lua : fixed field access on `null` (#4988)
+	php : fixed static field access on a `Class<T>` stored to a field (#5383)
+	php : fixed invalid detection of `NativeArray` by `Std.is()` (#5565)
+	php : fixed `stdin()`, `stdout()`, `stderr()` of `Sys` to use predefined constants for corresponding channels (#5733)
+	php : fixed Std.parseInt() on hexstrings for PHP7+ (#5521)
+	php : fixed typed cast in assign operations (#5135)
+	php : fixed exception thrown by `Reflect.fields(o)` when `o` is `Class<T>` (#5608)
+	php : fixed json encoding of empty objects (#5015)
+	php : fixed checking floats for equality (#4260)
+	php : throw if invalid json string supplied to Json.parse() (#4592)
+	php : fixed ssl connections (#4581)
+	php : fixed writing bytes containing zero byte to MySQL & SQLite (#4489)
+	php : fixed call()() cases for PHP5 (#5569)
+
+2016-11-29: 3.4.0-RC1
+
+	New features:
+
+	all : support metadata completion
+	all : support type-hint completion
+	all : added @signature display mode (#4758)
+	all : finalized HashLink (HL) target
+
+	General improvements and optimizations:
+
+	all : greatly improved support for display mode in general
+	all : made --times output look much nicer
+	all : remove calls to functions that have no side-effect
+	all : hid private property accessors from completion (#5678)
+	js : updated jQuery extern (js.jquery.*) for jQuery 1.12.4 / 3.1.0 support.
+	js : jQuery extern (js.jquery.*) now includes deprecated fields marked with @:deprecated.
+	js : no longer rewrite `o["s"]` to `o.s` (#5724)
+	cpp : greatly improved ObjC output and integration options
+	lua : greatly improved code output quality
+
+	Bugfixes:
+
+	all : fixed various optimization issues
+	all : fixed various issues with side-effect detection
+	all : fixed performance drain in the DCE implementation (#5716)
+	all : fixed issue with assignments when inlining constructors (#5340)
+	all : fixed major inlining issue when using compilation server (#5320)
+	all : fixed pattern matching evaluation order issue (#5274)
+	cpp : fixed various minor code generation issues
+	js : fixed issue regarding iterating over abstracts (#5385)
+	python : fixed evaluation order issue for array writing (#5366)
+
+	Standard Library:
+
+	all : added Any type (#5500)
+	all : added haxe.extern.AsVar
+	all : added haxe.macro.CompilationServer (experimental)
+	all : fixed haxe.Template.resolve (#5301)
+
+2016-05-27: 3.3.0-RC1
+
+	New features:
+
+	all : support @:resolve on abstracts (#3753)
+	all : support extern abstracts and extern @:enum abstracts (#4862)
+	all : support completion on { if the expected type is a structure (#3907)
+	all : support (expr is Type) with mandatory parentheses (#2976)
+	all : allowed passing package dot-paths on command line (#4227)
+	all : support import.hx modules that define per-directory import/using directives (#1138)
+	all : support parsing of postfix ! operator (can be used by abstract operator overloading and macros) (#4284)
+	all : support parsing of ||= and &&= operators (can be used by abstract operator overloading and macros) (#4427)
+	all : support @:structInit classes (#4526)
+	all : reworked static analyzer and enabled it by default
+	flash : update flash externs to version 21
+	hl : added HL target (interpreter and C output)
+	lua: added lua target
+	js : introduced new jQuery extern (js.jquery.*) for jQuery 1.12.4 / 2.2.4 support. (#4377)
+	js : introduced new SWFObject extern (js.swfobject.SWFObject) for SWFObject 2.3.20130521 (#4451)
+	js : added js.Lib.rethrow (#4551)
+	cs/java : added -D fast_cast as an experimental feature to cleanup casts
+
+	Bugfixes:
+
+	all : properly disallowed assigning methods to structures with read-accessors (#3975)
+	all : fixed a bug related to abstract + Int/Float and implicit casts (#4122)
+	all : disallowed duplicate type parameter names (#4293)
+	all : made UInt's >>> behave like >> (#2736)
+	all : fixed various type loading issues
+	all : fixed code generation problems with `inline` (#1827)
+	php/as3 : support run-time metadata on interfaces (#2042)
+	php : fixed argument passing to closures (#2587)
+	neko/cpp : fixed various sys.Filesystem issues with Windows drive paths (#3266)
+	as3 : fixed problem with covariant return types (#4222)
+	as3 : fixed rare problem with static initialization order (#3563)
+	python : fixed various reflection problems
+
+	General improvements and optimizations:
+
+	all : added support for determining minimal types in Map literals (#4196)
+	all : allowed @:native on abstracts to set the name of the implementation class (#4158)
+	all : allowed creating closures on abstract inline methods (#4165)
+	all : type parameter declarations can now have metadata (#3836)
+	all : optimize Math.ceil/floor on constant arguments (#4223)
+	all : allowed extern classes to have field names being used for both static and instance (#4376)
+	all : added haxe.Constraints.Constructible (#4761)
+	all : rewrote pattern matcher to improve output in many cases (#4940)
+	python : use spaces instead of tabs to indent the output (#4299)
+	cpp : reworked backend to improve overall code output quality and fix various issues
+	swf : added scene-tag to allow creating accessible SWF files
+
+	Standard Library:
+
+	all : added Lambda.flatten and Lambda.flatMap (#3553)
+	all : added haxe.Constraints.Constructible (#4761)
+	sys : proper quoting/escaping (can be opt-out) for Sys.command and sys.io.Process (#3603)
+	js : added position parameter to haxe.macro.Compiler.includeFile
+	js : removed -D embed-js (#4074)
+	js : updated HTML externs
+
+	Macro features and changes:
+
+	macro : added overloads field to ClassField (#3460)
+	macro : added Context.getLocalImports (#3560)
+	macro : added Context.onAfterTyping (#4714)
+	macro : added Context.resolveType
+
+2015-10-11: 3.2.1
+
+	Bugfixes:
+
+	cs/java : fixed `-dce no` issues
+	cs/java : fixed how KExpr type parameters are generated
+	cs : fixed enum creation by reflection problem
+	cpp : do not rely in reflection to make interfaces work for non-first interface parents
+	cpp : fixed setting of static variables via reflection when class has no member variables
+	cpp : make sure StringMap's h field is kept if we use StringMap
+	js : Avoid the use of `eval`/`Function` to get the top-level defined type/var to not break ContentSecurityPolicy
+
+2015-05-12: 3.2.0
+
+	New features:
+
+	all : added @:noPrivateAccess to re-enable access restrictions within @:privateAccess
+	cpp : some support for @:nativeGen metadata
+
+	Bugfixes:
+
+	all : fixed detection of @:generic classes with constructor constraints
+	all : fixed variable initialization check issue in loop condition
+	all : fixed pattern matching on @:enum abstracts via field access (#4084)
+	all : fixed missing implicit casts in Map literals (#4100)
+	all : fixed various minor issues in haxe.xml.Parser
+	all : fixed class path issue when HAXE_STD_PATH is set (#4163)
+	js : fixed DCE issue related to printing enums (#4197)
+	js : fixed various issues with the new Bytes implementation
+	php : fixed EOF handling in FileInput.readByte (#4082)
+	cs/java : fixed Math.fround implementation (#4177)
+	cs/java : fixed some cases of Std.parseInt failing (#4132)
+	cpp : fixed compilation without -main (#4199)
+
+	General improvements and optimizations:
+
+	all : --macro keep no longer causes types to be included for compilation
+	php : support interpolation in __php__ code
+	js : added variable number of arguments support in js.html.* classes
+	js : refined new HTML externs
+
+	Macro features and changes:
+
+	macro : [breaking] synced FClosure and FInstance with the compiler updates
+
+2015-03-15: 3.2.0-RC1
+
+	This release removes support for Flash 8 target
+
+	New features:
+
+	all : added --display mode for toplevel completion
+	all : added --display mode for position and usage information
+	all : allowed @:callable on abstracts to forward calls to their underlying type
+	all : allowed pattern matching on getters
+	all : allowed @:native on class fields
+	all : added static analyzer with constant propagation
+	all : added Haxe-based XML implementation
+	python : added python target
+	flash : flash player 12-14 support
+	js : added @:jsRequire and js.Lib.require
+	js : support haxe.CallStack.exceptionStack
+	cs : added @:bridgeProperties
+	cs : added -D erase_generics
+	cs : added -D dll_import to import haxe-generated dlls
+	java/cs : added `sys.db` package
+	java/cs : clean unused files in output folder, unless `-D keep_old_output` is defined
+	java/cs : added `-c-arg` to add C#/Java compiler arguments
+	cpp : inititial implementation of cppia scripting
+
+	Bugfixes:
+
+	all : fixed nullability of abstracts over functions
+	all : fixed some equality checks between UInt and Int
+	all : fixed rare issue with abstract casts
+	all : fixed some internal code which relied on unspecified evaluation order
+	all : fixed exhaustiveness checks involving guards
+	all : fixed issue involving recursively constrained type parameters and @:generic
+	all : fixed type inference issue in map literals
+	all : fixed type inference issue when calling abstract method from within the abstract
+	all : fixed several abstract variance issues
+	all : fixed DCE issues with interface properties
+	all : fixed variance issue with function variables and dynamic methods on interfaces
+	all : fixed pattern matching on empty arrays that are typed as Dynamic
+	all : fixed various @:generic issues
+	all : fixed default cases on @:enum abstract being omitted
+	all : fixed various expression positions
+	all : disallowed break/continue in closures in loops
+	all : disallowed inline functions in value places
+	all : fixed parsing of cast followed by parentheses
+	all : fixed resource naming in case of invalid file system characters
+	all : fixed issue with inlined array declarations with field access
+	cpp : fixed issue with the side-effect handler
+	cpp : fixed issue with NativeArray in --no-inline mode
+	php : fixed issue with invalid references for closures in for-loops
+	php : fixed Reflect.compare and string comparison for numeric strings
+	cs/java : fixed various issues with -java-lib and -net-lib.
+	cs/java : added @:libType to skip checking on -java-lib / -net-lib types
+	cs/java : compilation server now works with C#/Java [experimental support]
+	cs : fixed Type.enumIndex / switch on C# native enums
+	cs : fixed reflection on COM types
+	java : fixed sys.net.Socket server implementation
+	spod : various fixes - working now on cpp, java, neko, php and c#
+	cpp : improved boot order, with enums constants first
+
+	General improvements and optimizations:
+
+	all : disallowed using `super` in value positions
+	all : check exhaustiveness of explicit Null types
+	all : resolve unqualified identifiers to @:enum abstract constructors
+	all : determine @:generic type parameters from constructor call if possible
+	all : properly disallowed field redefinition in extending interface
+	all : properly disallowed leading zeroes for Int and Float literals
+	all : allowed variance on interface variables
+	all : allowed pattern matching on arrays if they are typed as Dynamic
+	all : allowed pattern matching on fields of parent classes
+	all : -D doc-gen no longer implies -dce no
+	all : allowed matching against null on any enum instance
+	flash/js: optimized haxe.ds.StringMap
+	neko : create output directory if it does not exist
+	js : inline Math methods and fields
+	cs/java : optimized Reflect.fields on dynamic structures
+	cs/java : haxe will now clear output directory of old files (use -D keep-old-output to keep them)
+	cs : optimized field lookup structure
+	cs : optimized casting of parametrized types
+	cs : beautify c# code output
+	cs : added `cs.Flags` to manipulate C# enums that can be also flags
+	xml : improved documentation generation and fixed missing entity escaping
+	cpp : property access via Dynamic variables now requires property to be declared with @:nativeProperty
+	cpp : allow injection of code from relative paths using @:sourceFile and @:cppInclude
+	cpp : stronger typing of native functions via cpp.Function + cpp.Callable
+	cpp : moved 'Class' implementation to hx namespace to improve objective C interaction
+	cpp : added file_extension define to change the output filename extension (eg, ".mm")
+	cpp : added pre-calculated hashes to string constants to allow faster lookups
+	cpp : map implementation allows strongly typed interactions in some cases (avoids boxing)
+	cpp : added native WeakMap implementation
+	cpp : put each resource into own cpp file to allow more data/smaller files
+
+	Standard Library:
+
+	all : added typed arrays to haxe.io package
+	all : added haxe.ds.Either
+	all : added haxe.extern.Rest type for representing "rest" arguments in extern method signatures
+	all : added haxe.extern.EitherType abstract type for dealing with externs for dynamic targets
+	all : added haxe.DynamicAccess type for working with dynamic anonymous structures using a Map-like interface
+	all : [breaking] changed haxe.ds.Vector.get to return T instead of Null<T>
+	all : added haxe.macro.Compiler.addGlobalMetadata
+	all : changed haxe.Int64 to be an abstract type instead of a class
+	js : updated HTML externs
+
+	Macro features and changes:
+
+	macro : added Context.getLocalTVars
+	macro : added TypedExprTools.iter
+	macro : added Context.getCallArguments
+	macro : changed @:genericBuild macros to prefer ComplexType returns
+	macro : [breaking] extended TAnonymous structures now have AExtend status instead of AClosed
+	macro : added Context.getDefines
+	macro : fixed file_seek from end (position was inversed)
+	macro : added Context.storeTypedExpr
+	macro : allowed type name reification
+
+	Deprecations:
+
+	all : deprecated structurally extending classes and interfaces
+	sys : Sys.command shell special chars (&|<>#;*?(){}$) are now properly escaped
+	java/cs : Lib.nativeType is now renamed to Lib.getNativeType
+
+2014-04-13: 3.1.3
+
+	Bugfixes:
+
+	all : fixed handling of abstract variance
+	flash : ensure correct endianess in haxe.io.BytesBuffer
+	cpp : fixed issue involving class paths with spaces
+	php : fixed >>>
+	macro : fixed haxe.macro.Compiler.keep
+
+	General improvements and optimizations:
+
+	all : give @:deprecated warnings by default, allow -D no-deprecation-warnings
+	cpp : optimized Vector implementation
+
+	Standard Library:
+
+	all : renamed Bytes.readDouble/Float to getDouble/Float to avoid inheritance issues
+	all : deprecated Bytes.readString in favor of getString
+	all : added pretty-printing to haxe.format.JsonPrinter (and haxe.Json)
+
+2014-03-29: 3.1.2
+
+	Bugfixes:
+
+	all : disallowed spaces between >>, >>>, >>= and >>>=
+	all : fix branching issue when switching on Dynamic values with only one case
+	all : added missing abstract cast call when checking for equality
+	all : fixed member fields initializations on parent classes that have no constructor
+	all : fixed toString usage of abstracts which are argument to Std.string
+	flash : avoid rare FP 12 PPAPI JIT crash
+	cpp : fixed bug in side-effect handler which caused incorrect behavior of while loops
+	js : fixed missing print function for enum values with DCE
+	macro : make sure member field initializations are respected
+
+	General improvements and optimizations:
+
+	all : cached file exist checks to speed up compilations with a lot of class paths
+	all : improved completion related to super class fields
+	all : allowed iterating on abstract which have get_length and @:arrayAccess fields
+	js : improved Type.allEnums implementation to avoid issues with obfuscation
+
+	Standard Library:
+
+	all : added haxe.io.Bytes.readDouble/Float
+	all : added haxe.io.BytesBuffer.addString/Float/Double
+
+2014-03-15: 3.1.1
+
+	New features:
+
+	all : added -D deprecation-warnings
+	all : allowed \u escape sequences in strings
+	cs : implemented haxe.CallStack
+
+	Bugfixes:
+
+	all : fixed wrong handling of "" and null in haxe.io.Path.join
+	all : fixed invalid cast-to-self generation on some abstracts
+	all : removed @:to Dynamic from UInt to avoid issues in the Map selection algorithm
+	all : fixed various issues with UInt
+	all : fixed position setter in haxe.io.BytesInput
+	all : fixed various issues with member/static extension macros
+	flash : fixed invalid override involving single-constraint type parameters
+	flash8 : fixed various bugs
+	js : fixed a problem with Std.string(null) being optimized incorrectly
+	js : fixed custom generators
+	cpp : dealt with string literals that are too long for MSVC
+	cs : fixed various issues with -net-lib
+
+2014-03-04: 3.1.0
+
+	New features:
+
+	all : allowed null-patterns in pattern matching
+	all : allowed extractors in pattern matching using => syntax
+	all : allowed extending generic type parameters
+	all : allowed (expr : type) syntax (ECheckType)
+	all : allowed @:enum and @:forward on abstracts
+	all : allowed using abstracts as static extension
+	all : allowed Class.new
+	all : added EnumValue.match
+	all : allow multiple structural extension using { > T1, > T2, fields }
+	all : inline array and structure declarations if possible
+	cs : added -net-lib
+	cs : support for native delegates
+	cs : support for attributes
+	cs : support for events
+
+	Standard Library:
+
+	all : support abstract types in haxe.rtti.XmlParser
+	all : added Std.instance
+	all : added length field to BytesBuffer, BytesOutput, BytesInput and StringBuf
+	all : added UInt for all targets
+	all : added Array.indexOf and Array.lastIndexOf
+	all : added haxe.xml.Printer
+	all : added haxe.Int32 as abstract type
+	all : added haxe.format.JsonParser/Printer
+
+	General improvements and optimizations:
+
+	all : optimized pattern matching output
+	all : allowed recursive type parameter constraints
+	all : improved support of custom @:coreType abstracts
+	all : evaluate conditional expressions in @:require
+	all : improved inline constructors by detecting more cases where it can be applied
+	js : improved inlining
+	js : always use JSON extern (compile with -D old-browser to disable)
+	js : added -D js-flatten
+	js : added -D js-es5
+	cpp : improved side-effect detection
+
+	Bugfixes:
+
+	all : inlining a parameter which has side effects will not remove it even if not used
+	all : implemented constraints check on enum and enum field type parameters
+	all : fixed memory leak in compilation server and optimized caching in general
+	all : fixed issue with invalid lowercase class name in Windows completion
+	flash : fixed font embedding with UTF8 chars
+	flash : give error if non-nullable basic types are skipped in a call
+	flash : give error if assigned parent class field values would be overwritten by super()
+
+	Macro features and changes:
+
+	macro : add Context.onAfterGenerate
+	macro : add Context.typeExpr
+	macro : add Context.getExpectedType
+	macro : add ExprTools.getValue
+	macro : allowed $v{(c:Float|Int|String)}
+	macro : resolve error line number in external files
+	macro : rewrote macros used as static extension
+	macro : exposed typed AST
+	macro : added @:genericBuild
+	macro : [breaking] first argument of ComplexType.TExtend is now Array<TypePath> instead of TypePath
+	macro : improved expression printing
+
+2013-09-25: 3.0.1
+	all : minor DCE bug fix
+
+2013-05-25: 3.0.0
+	all : added haxe.ds.BalancedTree
+	all : added haxe.ds.EnumValueMap
+	all : allow enum constructors as keys to Map
+	all : haxe.ds.ObjectMap is now correctly constrained on all targets
+	all : preliminary support of -D display-mode=usage|position|metadata
+	all : improved pattern matcher error messages
+	all : allow inline constructors
+	all : allow abstract member macros (not for @:op, @:arrayAccess, @:from, @:to)
+	all : allow abstract type parameter variance
+	all : do not generate hidden null on if without else
+	macro : made abstract structure available
+
+2013-05-08: 3.0.0-RC2
+	all : improved abstract support
+	all : renamed HAXE_LIBRARY_PATH to HAXE_STD_PATH
+	all : added inlinable constructors
+	all : renamed haxe.ds.FastCell to GenericCell
+	all : fixed >= operator in #if conditionals
+	all : improved completion support for Unknown results
+	all : allowed [] access for Map
+	all : added haxe.ds.WeakMap (not yet supported on all platforms)
+	all : all trace parameters are now printed by default
+	all : added --help-metas
+	all : improved completion
+	all : improved pattern matching variable capture and GADT support
+	js : cached $bind results (unique closure creation per instance)
+	js : removed --js-modern (now as default)
+	cpp : added socket.setFastSend
+	flash : update player 11.7 api
+	flash : improved @:font, @:sound and @:bitmap support
+	neko/java/cs : improved Array performances when growing with []
+	java : added -java-lib support
+	java : added sys.net package implementation (alpha)
+	java : complete java std library through hxjava haxelib
+	java/cs : added support for overloaded function declarations
+	java/cs : overload selection algorithm
+	cs : operator overloading is now accessible through Haxe
+	cs : source mapping; can be disabled with -D real_position
+	as3 : fixed rare syntax ambiguity
+	php : removed initialization of some inline fields
+	macro : fixed several issues with 'using' a macro function
+	macro : improved expression printing
+
+2013-02-24: 3.0.0-RC
+	flash : updated player 11.4 api
+	all : allowed named functions as r-value
+	all : fixed using + overload usage
+	all : allow any type constraint for type parameters
+	all : make property type optional (when a initial value is set)
+	all : Std.random(x) when x <= 0 is now always 0
+	spod : added serialized data with SData<T>
+	all : Dispatcher will now throw DETooManyValues
+	all : speed up neko compilation by using native compiler
+	all : allow @:generic on functions
+	all : allow constructing generic type parameters
+	swf : added support for SWC files in -swf-lib
+	macro : added Context.onTypeNotFound callback for unresolved types
+	js : no JS embed as default (use -D embed-js instead)
+	all : added abstract types (Int/Float/Bool/Void/Class/Enum/EnumValue)
+	all : added --help-defines
+	all : changed DCE with three modes : std(default), no and full
+	all : Haxe3 packages changes (see http://haxe.org/manual/haxe3)
+	all : Removed haxe.Int32, haxe.Firebug, haxe.TimerQueue
+	all : added -D key=value and #if (key >= value) operations
+	all : StringTools.htmlEscape/unescape nows handle "/&quot; and '/&#039;
+	all : using and import must now appear before any type declaration in a file
+	all : no longer create variable fields for pure getter/setter properties (unless @:isVar is used)
+	all : use default get_prop/set_prop instead of custom getter/setter names for properties
+	js : added JQuery.delegateTarget
+	macro : removed EType and CType, added EMeta, modified ESwitch
+	all : allow @metadata expr
+	all : replaced haxe.rtti.Generic interface with @:generic metadata
+	all : no longer infer arrays of mixed types as Array<Dynamic>
+	all : all type/import/enum constructor resolution now follows the shadowing principle (latest has priority)
+	all : added EReg.matchSub, renamed EReg.customReplace to map
+	all : no longer allow initialization of extern non-inline variables
+	swf : fixed out of memory errors on very large swf-lib files
+	swf : added -D swf_preloader_frame, swf_gpu, swf_direct_blit
+	swf : added -D swf_script_timeout=seconds, swf_debug_password=password, swf_metadata=file
+	swf : added -swf-lib-extern
+	swf : added @:font support (beta)
+	all : added GADT support in enums
+	all : added pattern matching (beta)
+	all : changed callback(func, args) to func.bind(args)
+	macro : added haxe.macro.ExprTools/ComplexTypeTools/TypeTools
+	macro : changed reification syntax to ${expr}, $a{array}, $p{path}, $v{value}
+	macro : allow macro @:pos(pos-expr) to inject positions for reification
+	all : added array comprehension
+	flash : Vector.length is now Int instead of UInt
+	all : moved haxe.BaseCode, haxe.Md5 and haxe.SHA1 to haxe.crypto package
+	all : disallow Void variables and arguments (still allow S -> T to S -> Void)
+	all : added Array.map/filter
+	all : added spell check suggestions for enum constructors and fields
+	all : added opaque abstract(T) types
+	all : allow operator overloading on opaque abstract types
+	all : renamed IntIter to IntIterator
+	all : added Map
+	all : added haxe.ds with StringMap, IntMap, HashMap, ObjectMap, Vector, GenericStack
+	all : removed Hash, IntHash and haxe.FastList in favor of the types in haxe.ds
+	all : haxe.xml.Parser now handles entities consistently across platforms
+	all : renamed HAXE_LIBRARY_PATH environment variable to HAXE_STD_PATH
+
+2012-07-16: 2.10
+	java/cs : added two new targets (beta)
+	all : fixed List and Null<T> for first, last, pop
+	js : added js.Lib.debug()
+	flash : fixed Xml.parent() when no parent
+	flash : fixed haxe.io.Bytes.blit when len=0
+	js/php/flash8 : fixed haxe.Int32.mul overflow on 52 bits
+	js : fixed haxe.Utf8 usage (static 'length' issue)
+	all : does not allow overriding var/prop
+	flash : removed wrapping for Xml nodes, use instead specific compare when comparing two typed nodes
+	js : use new haxe.xml.Parser (faster, not based on Regexp)
+	flash : fixed completion issue with for( x in Vector )
+	all : optimized Std.int(123) and Std.int(123.45)
+	flash : bugfix for @:bitmap with 24-bits PNG (flash decode wrong colors)
+	as3 : fixed EnumValue becomes Object
+	js : removed js.Lib.isIE/isOpera (not complete, use js.JQuery.browser instead)
+	all : function parameters are nullable if they are declared with '?'
+	all : added support for finding common base types of multiple types (unify_min) for array, switch, if
+	php : do not implement duplicate interfaces
+	haxelib : added git support through haxelib git
+	all : allow derived classes to widen method visibility
+	macro : added haxe.macro.Context.getLocalMethod
+	macro : improved support of "using" macro functions
+	php : optimized Xml implementation
+	php : fixed Reflect.get/setProperty not working on PHP < 5.3
+	all : support for callback(f, _, x)
+	all : allow private access between classes that have a common base class
+	all : added Output.writeFloat/Double and Input.readFloat/Double
+	all : support for var:{x:Float} = { x = 1 } constant structure subtyping
+	all : allow contravariant function arguments and covariant function returns in overrides
+	macro : support for final Array<Expr> argument as rest argument
+	macro : use top-down inference on macro calls
+	all : made "using" imply "import"
+	all : made String concat more consistent across platforms (add Std.string wrappers)
+	all : allow direct member variable/property and static property initialization
+	js : greatly reduced amount of generated code by using smarter DCE
+	php : made modulo operations more consistent
+	all : allow local functions to have both type parameters and be inlined
+	all : functions type parameters can be constraint (will be checked at end of compilation)
+	macro : use NekoVM runtime for regexps, process and xml parsing
+	flash : allow @:getter/@:setter in interfaces
+	flash : added support for "arguments" in methods
+	all : not used enums and inline var/methods are now removed by DCE
+	all : allow @:overload to use type parameters and not-absolute type paths
+	all : ensure that Std.string of arrays and enums are now consistent across platforms
+	all : allow to inline functions containing other functions
+	xml : added metadata output to xml generator
+	macro : added macro <expr> and macro : <type> reification
+	all : renamed type(e) to $type(e)
+	as3 : support for metadata and resources, and other fixes
+
+2012-04-14: 2.09
+	all : optimized const == const and const != const (with different const types)
+	all : add Type.allEnums(e)
+	all : big improvements with completion speed and fixed many issues
+	flash9 : fixed -D swfprotected with swc output
+	neko : added ~ implementation
+	js : upgraded jquery version, more api overloads
+	sys : added "in" operator for spod macros, added relation access in expressions
+	macro : added ECheckType
+	macro : added TLazy for not-yet-typed class fields
+	js/php/neko : added haxe.web.Request
+	all : added Std.format
+	js : trace() output fallback on console.log if no id="haxe:trace"
+	all : ensure that Std.is(2.0,Int) returns true on all platforms
+	js : replaced $closure by function.$bind + changes in output format
+	all : allowed @:extern on static methods (no generate + no closure + force inlining)
+	all : added documentation in --display infos + display overloads in completion
+	js : removed --js-namespace, added $hxClasses
+	flash : output traces to native trace() when using -D fdb or -D nativeTrace
+	all : allowed abitrary string fields in anonymous objects
+	all : allowed optional structure fields (for constant structs)
+	all : allowed optional args in functions types (?Int -> Void)
+	all : added Reflect.getProperty/setProperty (except flash8)
+	all : added --wait and --cwd and --connect (parsed files and module caching)
+	all : fixed completion in macros calls arguments
+	all : fixed DCE removing empty but still used interfaces/superclasses
+	all : added haxe.Utf8 (crossplatform)
+	neko : Reflect now uses $fasthash (require neko 1.8.2)
+	all : allow \uXXXX in regexp (although not supported everywhere)
+	js : make difference between values and statements expressions in JSGenApi
+	js : added source mapping with -debug (replace previous stack emulation)
+	flash : added @:file("a.dat") class File extends flash.utils.ByteArray
+	flash : added @:sound("file.wav|mp3") class S extends flash.media.Sound
+	js : added --js-modern for wrapping output in a closure and ES5 strict mode
+	all : null, true and false are now keywords
+	all : neko.io.Path, cpp.io.Path and php.io.Path are now haxe.io.Path
+	neko, cpp, php : added Sys class, sys.io and sys.net packages and "sys" define
+	all : allow to access root package with std prefix (std.Type for example)
+	all : added haxe.EnumFlags
+	sys : io.File.getChar/stdin/stdout/stderr are now in Sys class
+	cpp : Reflect.getField and Reflect.setField no longer call property functions. Use Reflect.getProperty and Refelect.setProperty instead.
+	cpp : Default arguments now use Null<T> for performance increase and interface compatibility
+	cpp : Added metadata options for injecting native cpp code into headers, classes and functions
+	php : added php.Lib.mail
+	(hotfix) fixed bug in completion and disabled profiling on Linux
+	(hotfix) fixed $ssize when doing new String(v) in neko
+	(hotfix) fixed bug with properties in interfaces for Flash & PHP
+
+2011-09-25: 2.08
+	js : added js.JQuery
+	all : added @:overload
+	js : upgraded js.SWFObject from 1.4.4 inlined to 1.5 embedded
+	js : code generator beautify
+	all : ensure that modifying returned Type.getEnumConstructs array does not affect enum
+	all : allow macro typed parameters (other than Expr)
+	flash : added flash11 apis
+	neko : added support for https to haxe.Http (using hxssl library)
+	all : added haxe.Int64
+	all : added haxe.Int32 isNeg,isZero,ucompare, fixed overflows for js/flash8/php
+	all : bugfix when optimizing inlined immediate function call
+	all : fixed "using" on macro function
+	all : allowed member macros functions (called as static)
+	neko : allowed serialization of haxe.Int32 (as Int)
+	all : fixed invalid optimization of two constant numbers comparison
+	flash8 : bugfix Std.parseInt with some hex values
+	flash9 : added flash.utils.RegExp
+	all : changed @:build behavior, now takes/returns a var with anonymous fields
+	all : added @:native support for enums
+	neko : changed the result of array-assign expression (was null)
+	flash9 : no longer auto create enums from SWF classes
+		(need explicit "enum" type patch)
+	all : optimized variable tracking/renaming
+	all : optimized macro engine (speed x2)
+	all : added -D macrotimes support
+	flash9 : store resources in bytes tag instead of bytecode
+	all : allow $ prefixed identifiers (for macros usage only)
+	all : allow to access modules subtype statics with pack.Mod.Type.value
+		and fixed identifier resolution order
+	flash9 : added @:bitmap("file") for simple embedding
+	all : added haxe.web.Dispatch
+	js : added js.Storage
+	all : allow this + member variables access in local functions
+		added untyped __this__ support and transition error
+	all : added haxe.macro.MacroType
+	neko : neko.Lib.serialize/unserialize now returns bytes
+	neko : added sys.db package (crossplatform with -D spod_macro support)
+		spod_macro now uses wrappers for Bytes (require neko 1.8.2)
+	php : added --php-prefix for prefixing generated files and class names
+	all : added type_expr_with_type enum support
+	php/js : fixed adding 'null' to StringBuf
+	all : added haxe.macro.Context.defineType
+
+2011-01-30: 2.07
+	all : fixed completion support with --remap
+	all : added macros, added --interp
+	all : removed 'here' special identifier
+	neko : fixed neko.Web.getParamsString() returning "null" instead of ""
+	flash9 : fixed issue with @:bind
+	flash9 : added some missing errors
+	flash9 : fixed TypedDictionary.exists
+	all : added @:build and @:autoBuild for enums and classes
+	neko : Std.parseFloat now returns NaN with invalid string
+	php: fixed Array.push must return the current length (issue 219)
+	php: fixed EReg.replace (issue 194)
+	php: FileSystem.readDirectory now skips '.' and '..' to be consistent with neko (issue 226)
+	flash9 : add trace text on stage (always over current and subclips)
+	flash9 : delay SWF initialization until it's added on stage and stageWidth > 0
+	         (this can be disabled with -D dontWaitStage)
+	all : added haxe.Timer.measure
+	all : added Lambda.indexOf and Lambda.concat
+	all : no longer allow inline vars as metadata values
+	neko : added getFieldsNames to neko.db.ResultSet (supported in Neko 1.8.2 mysql driver)
+	all : added --macro and haxe.macro.Compiler
+	all : allow macro type patches
+	flash9 : changed --gen-hx-classes implementation
+		now use 'haxe -swf-lib lib.swf --gen-hx-classes' instead
+	flash9 : added @:getter and @:setter
+	all : added @:require
+	flash9 : moved vector utils functions from flash.Lib to flash.Vector
+	flash9 : added support for FP 10.1 and 10.2
+	flash9 : added @:meta(Meta(k="v")) support
+	all : improved #if support (fixed ! precedence)
+	all : lookup unqualified types in all package hierarchy and not only in current package
+	flash : set default flash version to 10 (-swf9 deprecated, use -swf-version 8 for avm1)
+	php : added --php-lib to allow to rename the destination path of the generated lib
+	all : added --dead-code-elimination, removes unused functions from the output
+	     (beta feature could not make in the final release)
+	all : added @:keep to prevent --dead-code-elimination of class/method
+	flash9 : fixed issues with loading a Haxe SWF (boot_XXXX class extends flash.Boot)
+	all : allow to inline override methods (if the superclass method is not inlined already)
+	all : fixed escape sequences in literal regular expressions
+	flash9 : fixed Xml.setNodeValue
+	all : removed -excluded, replaced by --macro excludeFile('filename')
+	all : added --macro exclude('package') and --macro include('package')
+	all : importing a typedef of an enum allow to access its constructors
+	all : removed String.cca (replaced by StringTools.fastCodeAt + StringTools.isEOF)
+	flash9 : fixed use of default values when null is passed for nullable basic types
+	all : fixed issues with inlining and class/function type parameters
+	all : big speedup for compiler internal completion
+	all : added --macro keepClass('classname')
+	flash9 : fixed Xml.nodeValue for comments (does not include <!--/-->)
+	all : added named local functions (allow self-recursion)
+	all : use left-assoc for (==,!=,>,>=,<,<=)(==,!=,>,>=,<,<=) (&&)(&&) and (||)(||)
+	all : give prefix unary operators higher priority than ?:
+	php : fixed XML parsing
+	cpp : many fixes
+
+2010-08-14: 2.06
+	neko : change serializer to be able to handle instances of basic classes from other modules
+	js : add Document.createTextNode
+	all : bugfix with inline when modifying var with same name as one of current local
+	flash9 : classes implementing ArrayAccess<T> are now dynamic (including TypedDictionary)
+	all : allow "using" on typedefs
+	as3 : minor fixes in genas3 and --gen-hx-classes
+	as3 : fix with readonly/writeonly properties accesses
+	flash9 : list native getter/setters in Type API class/instance fields
+	all : make haxe.rtti.Generic typing lazy (fix for self-recursion)
+	all : allow haxe.rtti.Generic + inheritance
+	all : added resource size limit to 12MB (ocaml max_string_size is 16MB + b64)
+	flash : changes in swf handling to work with >16MB swfs
+	flash9 : only init dynamic methods if not already defined (in subclass)
+	std : added haxe.SHA1
+	compiler : added TCast, allow cast optimization on flash9/cpp
+	as3 : fixed Std.__init__ generating 'null'
+	compiler : fixed -no-opt
+	flash : allow several -swf-lib
+		no longer support automatic creation of classes for f8 swfs in f9 mode
+		classes defined in f9 swf are not redefinable in Haxe code (use extern)
+	flash9 : allow direct access and completion with classes defined in -swf-lib's
+	flash9 : remove imported libraries debug infos when not compiled with -debug
+	all : only display errors with --display if no completion matched
+	all : some completion related errors fixed
+	flash9 : added @:bind support
+	all : fixed StringTools.hex with negative numbers
+	flash9 : fixed Type.typeof(1<<28) was TFloat
+	flash9 : use flash.XML parser for Xml class implementation
+	neko : fixed Array.splice (was not setting null at end of array)
+	neko : rewrote Array class using neko.NativeArray
+	all : core classes implementation are now in std/(platform)/_std
+	all : added @:final support
+	all : added haxe.rtti.Meta
+	flash9 : added flash.desktop.Clipboard* classes (added in flash10)
+	as3 : fixed Date.toString issue in flash.Boot (now use .toStringHX instead)
+		this will only work if .toString called explicitely on Date class
+	all : only allow "using" on Dynamic if first parameter is Dynamic
+	php : haxe.Http now supports Https connections when OpenSSL extension is enabled (issue 143)
+	php : fixed enum constructors sequence (issue 142)
+	php : added error message when using 2 fields with different cases in the same class/enum
+	php : fixed field declaration for properties with getter and setter (issue 124)
+	php : fixed comparison issues between strings (issue 132)
+	php : enhanced FileInput.readLine using native fgets function (issue 103)
+	flash9 : renamed flash.Error to flash.errors.Error
+	php : removed eval() everywhere and simplified _hx_lambda
+	php : fixed return type for Std.string() with integers and floats
+	php : fixed php.Lib.rethrow
+	all : added custom Haxe serialization
+	php : aligned php.Web.parseMultipart signature with neko implementation
+	cpp : Added source location and stack dump for errors in debug mode
+	cpp : Remapped more keywords
+	cpp : Added templated fast iterator code for arrays and FastLists
+	cpp : Added option for tracing GC references in debug mode
+	cpp : Switch the native string implementation from wchar_t to utf8 - for regex speed
+	cpp : Added extra "()" to ensure correct order of operations
+	cpp : Fixed various bugs for unusual (and not so unusual) language constructs
+	cpp : Fixed order of enum generation from index
+	cpp : Added __unsafe_get and __unsafe_set to Array as possible optimizations
+	cpp : Default to mult-thread compiling on windows for cl version >= 14
+	cpp : Seed Math.random
+	cpp : Use strftime for Dates
+	cpp : Fix socket sellect passing _s
+	cpp : Throw error when match count does not match regex
+	cpp : Improve register capture in GC
+	cpp : Fix Dynamic integer compare
+	cpp : Implement makeVarArgs
+	cpp : Fix toString for nulls in Enums and Arrays
+	cpp : Added initial Android support
+	cpp : Move initializers to entry functions in standard ndlls.
+	cpp : Changes some CFFI register funtions to char*, from wchar_t*
+	cpp : Added some initial support for v8 script target
+	cpp : Use non-recursive GC marking to avoid overflow in big lists
+	cpp : Added __hxcpp_obj_id
+
+2010-01-09: 2.05
+	js : added js.Scroll
+	js : package names are now checked at runtime to avoid clashes with existing libs
+	js : added --js-namespace to create a namespace for types that are defined in the root
+	all : updated xml output and html doc - add inline, override, dynamic functions support
+	all : added error when comparing enum with arguments
+	all : optimize constant equality for enums
+	flash9 : fixed verify error with inline + null type
+	flash9 : bugfix when overriding/implementing an method with an applied type parameter
+	php : fixed issues with classes that implement Dynamic
+	all : ignore #! line at beginning of the hx file
+	haxelib : added tags, added documentation
+	flash8 : don't use b64 encoding for text ressources
+	php : fixed bug in Hash.exists for null values and Reflect.callMethod
+	js/flash9 : throw exception in Xml.parse when unclosed node
+	all : improve return type progagation in inlined expression (fix some VerifyErrors)
+	all : optimize {const} into const
+	all : added structure / Dynamic<T> subtyping
+	all : fixed List.map2 error when inline + optional args
+	flash9 : encode all ISO constant strings into UTF8 at compilation time
+	all : allow hxml with only -cmd statements
+	spod : moved Manager.addQuote to Connection.addValue
+	flash9 : removed .iterator() from Vector (not implementable)
+	all : fixed haxe.rtti.Generic on interfaces
+	php : fixed issue with Reflect.callMethod
+	php : fixed issue with PHP reserved word used in callbacks
+	all : bugfix with non-constant enums in switches
+	flash9 : fix for interfaces (use namespace)
+	all : "using" now works for identifiers in member methods
+	flash9 : bugfix with switch on some big integers
+	all : bugfix when optimizing (function(x) return x)(x)
+	neko : improved speed of Xml.toString()
+	all : added -D dump (for debugging purposes)
+	neko : added neko.Web.isTora
+	php : added php.db.PDO (php.db.Sqlite is now deprecated)
+	php : fixed bug in Type.getClassFields() that reported duplicated entries
+	php : fixed errror in XML error reporting
+	all : allow sub-types declarations everywhere (pack.Type.Sub)
+	all : added completion for sub-types declarations
+	all : improved completion with lambda function
+	as3 : several generation fixes
+	all : bugfix haxe.rtti.Generic on private class
+	php/js/cpp : sanitize binary expressions to prevent inlining errors
+	spod : remove object from cache when deleted
+
+2009-07-26: 2.04
+	flash9 : fixed get_full_path error with -D fdb
+	js : fixed Array.remove on IE
+	flash8 : removed extra empty AS3 tag (causing some issue with F8 loadMovie)
+	improved speed of Bytes unserializing (no need for BytesBuffer)
+	flash9 : bugfix, Null<Typedef> was generating dynamic code
+	flash9 : added error message in flash.Vector if used without flash 10
+	flash9 : fixed some "never" property access issues
+	all : added "never" property access support for all platforms
+	js : small syntax fix with value-blocks
+	js : fixed Type.enumEq with null values
+	js/flash8 : use &0xFF in haxe.io.Bytes.set
+	flash9 : fixed switch on Null<Int> verify error
+	flash9 : fixes related to UInt type + error when using Int/UInt comparison
+	as3 : improved Vector support, inline flash.Lib.as
+	as3 : bugfix with skip_constructor
+	as3 : added Enum.__constructs__ (allow Type.getEnumConstructs)
+	as3 : make all constructor parameters optional (allow Type.createEmptyInstance)
+	as3 : bugfix with property access inside setter (stack overflow)
+	all : Enum is now Enum<T>
+	all : added Type.createEnumIndex
+	all : forbid same name for static+instance field (not supported on several platforms)
+	all : renamed haxe.Http.request to "requestUrl"
+	all : renamed neko.zip.Compress/Uncompress.run to "execute"
+	spod : fix very rare issue with relations and transactions
+	compiler : added TClosure - optimize closure creation and ease code generation
+	cpp : added CPP platform
+	all : added 'using' syntax
+	neko : added 'domains' optional param to ThreadRemotingServer to answer policy-file-request
+	php : fixed php.db.Mysql so that getResult is consistent with Neko behavior
+	php : fixed __toString for anonymouse objects
+	php : fixed bug in overridden dynamic functions
+	php : fixed round to be consistent with other platforms
+	php : fixed bug concatenating two dynamic variables
+	php : php.Lib.rethrow now works as expected
+	flash9 : fixed bug with SWC output and recursive types
+	flash8 : fixed inversed arguments in __new__
+	neko : added neko.net.Socket.setFastSend
+	php: fixed String.charCodeAt
+	php: minor optimization (removed foreach from std code)
+	php: implemented haxe.Stack
+	php: changed exception handler to use Haxe call stack
+	php: changed special vars to use the '\xBB' prefix instead of __
+	php: fixed use of reserved keywords for var names
+	php: List iterator is now class based (faster)
+	php: fixed behavior of class variables having assigned functions
+	php: fixed php.db.Manager (was uncorrectly removing superclass fields)
+	php: added support for native Iterator and IteratorAggregate interfaces
+	all : added --display classes and --display keywords
+	all : fixed issue with optional parameters in inline functions
+	all : allow implementing interfaces with inline methods
+	all : enable inlining for getter/setter/iterator/resolve/using
+
+2009-03-22: 2.03
+	optimized Type.enumEq : use index instead of tag comparison for neko/flash9/php
+	bugfix for flash.display.BitmapDataChannel and GraphicsPathCommand (allow inline static)
+	resolve environment variable in -cmd commands
+	added flash.Vector.indexOf and lastIndexOf
+	fixed bug in interfaces that define the method toString (Haxe/PHP)
+	fixed bug in haxe.io.BytesInput.readBytes in Flash9 (was throwing Eof if full buffer can't be read)
+	fixed implements/extends special classes when they are imported
+	StringBuf now uses an array for JS implementation (around same on FF, faster on IE)
+	fixed assignment of field length in anonym objects (Haxe/PHP)
+	fixed addEventListener typing for flash9
+	fixed __vector__ generation for AS3 target
+	fix with inline functions : position is now the inserted position and not the original one (better error reporting)
+	added SWC output support
+	fixed issues with unset of values in for loops and executing blocks that return functions (Haxe/PHP)
+	"throw" type is now Unknown instead of Dynamic (prevent type-hole in "if A else if B else throw")
+	added __foreach__ for flash9/as3
+	fixed f9 verify error with different kind of functions
+	moved eof() from neko.io.FileOutput to FileInput
+	added haxe.rtti.HtmlEditor
+	added neko.db.Manager.setLockMode
+	genAS3 : fixed Error classes issues
+	genAS3 : fixed default basic type value in interfaces
+	flash9 : fixed UInt default parameter verify error
+	flash9 : fixed issue with flash.* string enums verify error
+	compiler : allowed \r line separators for HXML files
+	flash9 : fixed verify error with loop variable beeing a specific class
+	compiler : prevent truncating float dynamic values to int when using numerical operations
+	neko.db.Manager fix : synchronize fields after locking an unlocked cached object
+	compiler : fixed issue with cascading inline+haxe.rtti.Generic
+	optimizer : reduce constant int/float/bool expressions and immediate function calls
+	flash9/as3/php : don't add Boot.skip_constructor test if no side effects in constructor
+	compiler : added --no-opt to disable expr reduction
+	compiler : separated basic and advanced commandline options
+	compiler : fixed printing of sub-function types
+	genHX : fixed generation of classes that extends another class (shouldn't be turned into enums)
+	speedup Array.remove on flash9/js
+
+2008-11-23: 2.02
+	Std.is(MyInterface, Class) now returns true (Haxe/PHP)
+	php arrays are wrapped into _hx_array instances, fixes issues with references (array cast, access out of bounds ...)
+	removed untested php classes (php.DBase, php.IniHash)
+	added -D use_rtti_doc
+	flash.Lib.getTimer() now returns Int and is inlined
+	fixed php.FileSystem.stat
+	added memory related functions to php.Sys
+	added error when trying to extend Array, String, Date and Xml
+	fixed handling of implements ArrayAccess
+	fixed some minor things in flash10 api
+	switch/for/while/do/try/if are no longer using parse_next (parenthesises requ. instead)
+	fixed Type.typeof and Std.is in case of too much large integers for Flash6-8/JS
+	haxe.xml.Check : treat comments the same as PCDATA spaces
+	haxe.io.BytesData now uses strings instead of arrays for PHP
+	compiler : optimized line calculus from ast position
+	lexer : allow identifiers starting with _[0-9]
+	fixed access to flash.Vector methods : use AS3 namespace (faster)
+	bugfix in inline functions : modifying a parameter can't modify a real local var anymore
+	bugfix in inline functions : handle class type parameters and method type parameters
+	fixed issue with Int default value for Float parameter
+	flash9 : bugfix when using the retval after setting a closure variable
+	added flash.Memory API for flash10 alchemy opcodes access
+	changed #if as3gen to #if as3 when generating as3 code
+	fixed as3 flash.Vector generation
+	fixed haxe.io.BytesOutput for flash9 : set default to little-endian
+	some flash9 fixes related to extern enums
+	updated flash.text.engine package with haxe enums
+	flash9 : use target file path for Boot unique ID instead of random number
+	as3 : fixed bug when anonymous field was a reserved identifier
+	flash9 : added flash.Lib.vectorOfArray and vectorConvert for flash10
+	added -D check-js-packages to allow several haxe-generated js files in same page
+
+2008-10-04: 2.01
+	fixed php.Sys
+	added neko.NativeString and neko.NativeArray
+	fixed php.Boot.__string_rec() when invoked from toString
+	fixed null references in class constructors for array arguments
+	fixed Type.enumParameters() and Type.typeOf() for PHP
+	fixed SPOD/MySql for PHP
+	fixed php.net.Socket.setTimeout(), php.io.Process
+	fixed php.Web.setCookie() for expire time
+	fixed php rethrow in catches and added the possibility to catch native exceptions
+	added runttime check for php.io.Socket.shutdown (uses fclose in php 5.1.x)
+	allowed optional Context in remoting connections
+	fixed extern classes for flash < 8
+	fixed inherited protected/private properties in as3 SWF library
+	fixed haxe.io float/double in Neko (when bigEndian was null)
+	added __FSCommand2__ support
+	optimized haxe.Unserializer (use faster buffer access)
+	use "Dynamic" instead of Dynamic->Void for flash9 IEventDispatcher
+	always use full classes paths for genAS3
+	prevent different get/set property accesses when implementing an interface
+	fixed assign of dynamicfunction references in PHP
+	Haxe/PHP now generates code for extern classes __init__
+	added strings literal support in haxe.Template
+	fixed Process arguments and exitCode() in Haxe/PHP
+	fixed hierarchy problem for classes with the name from different packages Haxe/PHP
+	php.db.Mysql now throws an exception when tries to connect to an unexistant DB
+	fixed blocks in if statements for Haxe/PHP
+	added php check on the full hierarchy for colliding names
+	added support for "g" modifier in EReg for PHP
+	PHP now generates __toString for classes that have toString defined
+	implemented php.Lib.getClasses()
+	fixed duplicate fields in Type.getInstanceFields on subclass
+	Enum is no longer defined inside Type but is standalone class
+	fixed Date.getDay on Neko/Windows (use %w instead of %u)
+	fixed memory leak with PHP closures
+	fixed wrong scope in PHP closures
+	fixed Array.reverse() in PHP
+	fixed Reflect.compareMethods in Neko (require Neko 1.8.0)
+	fixed flash7-8 register usage for __init__ and static variables initialization
+	moved StringTools.baseEncode/Decode to haxe.BaseCode
+	fixed binary resources for Flash, JS and PHP outputs
+	fixed compiler bug with inline + optional arguments
+	fixed Type.createInstance and createEmptyInstance with Array for flash6-8
+
+2008-07-28: 2.0
+	fixed current package bug in inherited constructor type
+	delayed type-parameter constraints check (allow mutual rec extends for SPOD)
+	improved unclosed macro error reporting
+	Haxe/PHP integration
+	renamed NekoSocketConnection to SyncSocketConnection (php support)
+	fixes in genAs3
+	fix for flash9 : always coerce call return type
+	set all private+protected names from SWF lib to public (allow override+reflect)
+	flash9 : use findprop instead of findpropstrict for 'this' access (allow dynamic)
+	don't allow nullness changes in overrided/implemented
+	prevent typing hole with overridden polymorphic methods
+	added neko.vm.Mutex and neko.vm.Deque (included in neko 1.7.1)
+	added package remapping using --remap
+
+2008-07-17: 2.0-RC1
+	genneko : remove big array error (fixed in neko 1.7.1)
+	fixed neko.net.ThreadRemotingServer.onXML
+	genswf9 : fixed verify error with Null<Class> (was using dynamic access)
+	small patch for jsfl support
+	added .cca for faster string operations on Flash9/Flash/JS
+	bugfix with inlined local variables
+	upgraded flash9 api to flex3/player 9.0.115
+	override is now mandatory, no more --override
+	dynamic is now a keyword
+	f9dynamic is now dynamic and is mandatory on all platforms
+	public/private/dynamic are inherited by default when overriding a method
+	removed Reflect.empty() : use {} instead
+	changed #else by #elseif, added #else
+	flash9 : optimized Hash,IntHash,StringBuf (use typed value)
+	Reflect.field/setField/callMethod , Type.enumIndex and StringBuf methods are now inlined
+	optimized haxe.Md5 : don't use statics
+	allow up to 8 parameters in Reflect.createInstance
+	flash9 : some minor optimizations in haxe.Serializer
+	added haxe.io package (removed things from neko.io)
+	__resolve becomes resolve (and should be documented)
+	added haxe.Int32
+	removed neko.Int32
+	removed neko.io.Input/Output/Eof/Error/Logger/Multiple/StringInput/StringOutput
+	removed neko.net.RemotingServer
+	changed neko apis to use haxe.io and Bytes instead of String buffers
+	fixed big bug in js/flash8 debug stack handling
+	complete rewrite of haxe.remoting package
+	haxe.io.Bytes serialization support	(replace deprecated string support)
+	removed === and !==
+	removed Std.bool
+	fixed : Reflect.field(null) in flash9 doesn't throw an error anymore
+	removed Type.toClass and Type.toEnum
+	Dynamic type is now a class and not an enum
+	moved reflection support for core types from Boot to Std
+	fixed Type.getClassName/getEnumName/resolve for core flash9 types
+	renamed haxe.rtti.Type to haxe.rtti.CType (with changes in prefix)
+	added haxe.TimerQueue, added haxe.Timer.delay, remove haxe.Timer.delayed
+	flash9 : bugfix, generated interfaces were empty
+	fixed bug while writing block-vars in flash/js
+	added parameters default value (constants)
+	removed Std.resource, Std.ord, Std.chr
+	added haxe.Resource, allow binary data in resources
+	added Type.createEnum
+	check that local variables get correctly initialized before usage
+	haxe.Stack support for flash9
+
+2008-04-05: 1.19
+	fixed flash9 Array.toString
+	fixed inline return bug
+	added haxe.rtti.Generic behavior
+	added haxe.FastList
+	bugfix to prevent recursive anonymous
+	fixed some incorrectly reported "recursive inline" errors
+	fixes in genas3 + genswf9 for Dynamic/* in methods
+	{} is now an empty object and not an empty block
+	fixed some verify errors left in flash9
+	fixed private/protected differences in gen-hx-classes
+	genswf9 : allowed to store a Class in a typed register
+	fixed switch-on-bool (don't use matching)
+	genswf9 : optimized switch on ints
+	some renames in haxe.rtti.Type
+	added flash.utils.TypedDictionary for F9
+	genswf9 : fixe debug filename with inline code
+	fixed completion for packages starting with 'a' or 'z'
+	added flash9.Lib.as
+	prevent double Movieclip class declaration when linking flash9 lib
+	allow numerical operations on type parameters constraint by Float
+	genswf9 : fixed dynamic inheritance
+
+2008-02-23: 1.18
+	some optimization and bugfix for as3 codegen
+	bugfix : allow bitmaps and fonts classes for F9 library
+	bugfix : neko.Web.setCookie
+	bugfix : as3 switches in -swf-lib, and enable to "repair" corrupted as3 bytecode
+	fixed --i return value in flash9
+	fixed some transforms in flash9
+	added js.Selection
+	simplified js.Dom (more events)
+	added haxe.xml.Fast.innerHTML
+	added Reflect.compare
+	fixed "".split() in Neko (now returns [""] instead of [])
+	bugfix for swf-lib f9 classes ordering
+	added EReg.customReplace
+	added neko.Lib.lazyLoad and improved neko.net.Poll for Neko 1.6.1
+	prevented static fields in interfaces
+	added neko.Sys.cpuTime()
+	fix for protected as3 classes
+	added support for flash9 XML (in flash.xml package)
+	added neko.vm.Tls for Neko 1.6.1
+	added --no-inline
+	renamed neko.zip.File to neko.zip.Reader
+	added neko.zip.Writer and neko.zip.CRC32
+	fixed multilevel Transform.block_vars
+	added js.SWFObject
+	fixes for if/switch with null or Null<T> on Flash9
+
+2008-01-13: 1.17
+	fixed Int32.compare, added Int32.read and Int32.write
+	fixed type of unitialized registers in flash9
+	fixed Sqlite transactions (commit and rollback now restart a transaction)
+	several flash9 optimizations
+	flash9 debug support (with -D fdb)
+	set align to TopLeft if not defined for flash9
+	added neko.vm.Gc
+	fixed Null should not be a value
+	bugfix in serialization format with USE_ENUM_INDEXES
+	added apis in DateTools for time manipulation
+	bugfix in flash9 : strictly typed local vars used in local functions
+	always force swf version and sandbox redefinition
+	added as3hl layer
+	merge as3 classes
+	use flash9 fast switch for enums
+	always use match for enums (no switch even if constant)
+	fixed DateTools.format %I and %l in Flash/JS
+	securized Hash for JS and Flash
+	compiletime F9 class generation for F8 swflib
+	optimized for loops (Array and IntIter)
+	added #line support
+	more f9 Null<T> support for "if" and array declarations
+	more neko.Web.setCookie parameters
+	added "inline" for methods and static vars
+	fixed % type in flash9
+
+2007-10-31: 1.16
+	use _sans font for default flash traces (better Linux support)
+	fixed haxe.remoting.Connection compilation for Flash<8
+	added fix to prevent 64K identifiers limit on Flash<9
+	ensure order of anonymous fields initialization
+	fixed haxe.remoting.Connection.urlConnect in JS
+	use amortized O(1) for Neko Array implementation
+	ndlls libraries should now use .neko() instead of __a
+	allowed 'u' utf8 for regexp (needs Neko 1.6.1 regexp.ndll on windows)
+	onclick and onsubmit JS events returns Bool
+	fixed inherited constructor of extern class was always private
+	fixed Ereg.split without 'g' flag on JS/Flash9
+	fixed haxe.Stack in JS without -debug
+	added support for -D no-swf-compress
+	fixed ByteArray.readObject
+	fixed implements Dynamic in Flash9
+	removed neko.io.FileInput.eof, fixed neko.io.Input.readLine
+	fixed haxe.Template for Flash9
+	added neko.Sys.command optional array of arguments
+	removed haxe.Proxy
+	added flash.XMLRequest
+	fixed Type.enumParameters for Neko
+	guaranteed order of Type.getEnumConstructs same as code
+	used index-based dispatch for enums
+	added Type.enumIndex
+	fixed enum.toString for Flash and JS
+	support for -Dnetwork-sandbox
+	trim -cp and -resource
+	various genas3 fixes
+
+2007-08-29: 1.15
+	fixed bug with Enum.construct when Enum have type parameters
+	change with "untyped" : arguments types are checked (because of opt select)
+	haxedoc : fixed type parameters display
+	fix for JS and Flash9 XML parser : allow newlines in attributes
+	disable Flash9 resources with AS3Gen
+	error on extra anonymous fields
+	error on too much big neko array declaration (neko 1.6 max_stack limit)
+	fixed Flash9 statics slots (FP 9,0,60 compatibility)
+	fixed Flash9 Type.getClassName
+	optional enums arguments on Flash9 are now automatically Null
+	forbid usage of type parameters in static functions
+	fixed Std.int with negative numbers
+	fixed some F9 issues with Haxe-specific Array, Date and Math methods
+	used AS3 namespace for F9 Array and String instance methods
+	fixed F9 with uninitialized integer registers
+	fixed F9 + operator with Dynamic/Null operands
+	added Enum subtyping
+	fix with remoting threadserver and exceptions
+	fixed Flash9 dynamic runtime type field access
+	fixed very tricky typing bug with constructors inheritance
+	fixed some documentation related parser bug
+	fixed stack overflow with static setter
+	fixed package completion bug when -cp points to an not existing dir
+	fix duplicate sandboxes tags with -swf
+	__resolve in Haxe Remoting is now public
+
+2007-07-25: 1.14
+	fixed no error when invalid "catch" expression
+	remove variance
+	fixed prototype bug in neko when "Main" class is defined
+	fixed flash9 xml iterator methods
+	bugfix in flash9 ByteArray serialization
+	fixed genAS3 conflicting classes and interfaces
+	preserve neko output file extension
+	added flash.Event for Flash9
+	added --no-output
+	fixed neko.net.Socket peer and host methods
+	added neko.io.Process and neko.vm.Ui
+	added haxe.xml.Proxy
+	some flash6 fixes
+	allowed simplequotes for xml attributes in Flash9 and JS
+	flash9 optimizing compiler
+	new faster neko binary AST
+	added haxe.remoting.NekoSocketConnection and SocketProtocol
+	don't allow for...in iteration with Dynamic or Unknown
+	added flash9 resources
+	fixed precedence of ternary operator ?:
+
+2007-05-18: 1.13
+	fixed bug with local variable masking package in catch type
+	fixed "Not_found" when enum params differs
+	added "override" for AS3 generator
+	fixed stack overflow in typedefs
+	added haxe.Timer.queue, removed delayedArg (use callback instead)
+	fixed haxe.remoting.SocketConnection (msg invertions might occur)
+	add uniqueness check for switch constants
+	js : HtmlCollection and MetaDom.childNodes are not true Arrays
+	allowed semicolon after typedef declaration
+	fixed in-loop closure usage of "for" variable for Flash and JS
+	added neko.net.ThreadRemotingServer.onXml (to handle crossdomain xml)
+	more accurate stack trace for socket remoting
+	prevent some memory leak in haxe.Timer / JS
+	added flash fullscreen support
+	added cond?a:b syntax support
+	added utf8 buffer api
+	added haxelib "dev" mode
+	renamed Http.asyncRequest to customRequest
+	add classes to Neko module export table
+	fixed parametrized enums for Flash6
+	fixed bug with completion and interfaces
+	fixed --flash-use-stage in Flash9
+
+2007-03-06: 1.12
+	added flash lite support with -D flash_lite
+	bugfix for Unknown<X> should Unknown<X>
+	prevent some exceptions in neko.net.ProxyDetect
+	fixed ByteArray serialization
+	added neko.Int32
+	added -x for fast neko scripting
+	prevent locals from breaking class access (works with imports)
+	fix in function overriding subtyping
+	added haxe.remoting.FlashJsConnection
+	fixed tar support in neko.zip.File
+	ide completion support using --display
+	give access to neko.net.Host ip (as Int32)
+	fixed bug when calling super.UpperCaseMethod()
+	hide additional flash Array methods
+	allow leading comma in anonymous types
+	added haxe.Public interface
+	added AS3 code generator
+	field lookup gives priority to superclass over interfaces
+	improved haxedoc output
+	fixed bug in neko regexp split/replace when empty match at eol
+	fixed bug in flash 6-7-8 resources generation
+
+2007-01-28: 1.11
+	changed StringBuf.add implementation
+	added haxe.Firebug
+	allowed variable return type for overridden/implemented methods
+	display error position in front of each error line
+	improved error messages when optional arguments not matched
+	added neko.io.Path
+	added neko.net.ProxyDetect
+	bugfix in unify : prevent recursive anonymous objects
+	haxe.Http call "prepare" only if size is known
+	added multiple expressions in "case"
+	serialization : deprecated old string format, use urlEncode/Decode
+	added flash9 bytearray serialization (to binary string, for neko com)
+	fixed Type.typeof on some flash9 instances
+	no more dontUseCache (haxe.Serializer.USE_CACHE, default to false)
+	small genxml/haxedoc improvements
+	added Type.enumEq
+	local function parameters are now inferred in several cases
+	optional RTTI for Spod Object
+	bugfix related to callback in neko code generator
+	more type error stack (now includes type parameters)
+	type system fixes in anonymous subtyping
+	added Iterable<T>, changed Lambda
+	added TAR and GZIP support to neko.io.Zip
+	compute minimal array content type
+	fixes in enum switchs
+
+2007-01-01: 1.10
+	fix in haxe.remoting.SocketConnection.readAnswer
+	fix in postfix incr/decr and getter/setter
+	added haxe.Http.fileTransfert for Neko
+	fixed haxelib to 1.02 (use multipart file transfert)
+	fixed Array.reverse
+	added flash.Lib.getURL and fscommand for Flash9
+	fixed some ignored parse errors
+	fixed minor syntax : immediate object access
+	allow extend/implements a typedef
+	fixed Flash9 AMF remoting
+	fixed Flash9 bugs in Date object
+	fixed dynamic Array typing bug
+	allowed typedef private field access
+	added Class<T> base class type
+	AsyncConnection.call callback is now optional
+	fixed if/switch with no else/default compilation
+	moved Reflect.createInstance to Type
+	added Reflect.makeVarArgs
+	haXelib 1.03 : several developers per project + web interface
+
+2006-11-22: 1.09
+	added neko.vm.Module and neko.vm.Loader
+	haxelib : allowed spaces in "run" arguments
+	allowed Thread comparison
+	fixed bug in SWF6 compilation
+	allowed either Mysql or Mysql5 usage
+	replaced db.Connection.hasFeature by db.Connection.dbName
+	added Socket.custom field
+	moved neko.Thread to neko.vm.Thread
+	define haxe_109 (for api changes)
+	fixes in haxe.remoting.Connection and haxe.Unserializer for F9
+	added haxe.remoting.Connection.urlConnect for JS
+	allowed private typedef fields
+	added neko.net.ThreadServer, ThreadRemotingServer and Poll
+	removed neko.net.RemotingBuffer
+	relaxed enums switchs (allow value in first case)
+	changed "cast" codegeneration (fix some F9 usages)
+	change in POST data handling in mod_neko (max 256K, except multipart)
+	added neko.Web.getClientHeaders and neko.Web.flush
+	"callback" is now a keyword
+	fixed stack overflow when typedef = Dynamic
+	fixed Reflect.createInstance on F9
+	Array : slice optional length, fixed neko slice & splice
+	+ fixed cast return type
+
+2006-10-29: 1.08
+	fixed bug in flash -debug
+	fixed Sqlite result .length
+	fixed missing "." in OSX/Linux default classpath
+	fixed haxelib NDLL autoloading on OSX
+	fixed bug in deserialization of "\\\r" sequence
+	added inheritance and fields getter/setter to xml output
+	haxedoc 2.0
+	fixed neko native enum serialization
+	fixed "all constructors matched" for enums without params
+	fixed returned value semantics in neko (prevent remoting leak)
+	more documentation
+	added haxe.rtti package (classes can implement haxe.rtti.Infos)
+	fixed windows line endings in exclude files under linux/osx
+	fixed small bug in "cast" syntax
+	added "callback" for partial function application
+	added --auto-xml for future haxeFD usage
+	fixed Reflect.isFunction
+	minor bugfix in JS code generator
+	new neko.net package
+	allow recursive remoting proxys (skip instead of error)
+	added neko.Thread and neko.Lock MultiThread classes
+	added neko.net.ServerLoop for multiple clients handling
+
+2006-09-11: 1.07
+	fixed resources in Neko
+	typedef, override, package and f9dynamic are now keywords
+	slighly changed error format output
+	fixed "undefined" serialization and Type.typeof
+	some fixes in haxelib
+	set default classpath for non windows systems
+	added variance
+	fixed bug in bounded type parameters
+	fixed scope bug in try/catch with Flash9
+	added remoting over XMLSocket and LocalConnection for Flash9
+	fixed Std.is(*,null) = false
+	allowed >64K Haxe/neko strings
+	-debug and stack traces support for Flash and JS
+	minor changes in xml output
+
+2006-08-28: 1.06
+	allowed extern enums
+	use only matching construct when parameters are matched
+	fixed bug preventing & char to be sent between JS and Flash remoting
+	improved flash9 api (more strict)
+	flash9 xml : use JS ReXml parser
+	added neko.io package (Input/Output)
+	moved neko.File and neko.Socket to neko.io package
+	fixed flash optional arguments (when extending flash.MC)
+	fixed neko native serialization problems
+	variable modification does not have side effects in 'for x in a...b'
+	jit disabled by default for neko web server
+	enable flash7-8 libraries usage from flash9
+	unknown identifier become "class not found" when representing a classpath
+	changed haxe.PosInfos handling
+	added -debug (removed --flash-debug) effective on flash9 and neko only now
+	added Type.typeof
+	improved Serializer speed
+	added Serialization support for Date, Hash, IntHash, List
+	added flash9 and JS IE/Opera class reflection
+	added haxe.xml.Check and haxe.xml.Fast
+	added Xml.parent
+	added haxelib
+	added ArrayAccess interface
+
+2006-08-16: 1.05
+	moved Md5 to haxe package.
+	some method renamed in neko.FileSystem.
+	added neko.remoting.Server.setLogger
+	fixed bug in haxe.Serializer on neko (was preventing List serialization)
+	fixed bugs in Haxe.Unserializer on neko (invalid enum tag & pbs with UTF8 strings)
+	fixed sqlite escape & quote , added BOOL support
+	allowed direct property access in getter/setter (prevent rec loop)
+	allowed event-driven neko http requests
+	forbidden "name" static in js
+	don't allow variable redeclaration in subclasses
+	added && || and ! in conditional compilation rules
+	metas : removed __construct__ and class.toString.
+	metas : __super__ and __interfaces__ now optional
+	added Type api (seperated from Reflect)
+	flash 9 support
+
+2006-07-25: 1.04
+	added macros in haxe.Template
+	allowed static variables access from a signature shortcut
+	allowed new Signature when signature is a class
+	fixed : modulo priority is now higher than mult and div
+	fixed bug in haxe.Proxy generation
+	fixed more stack overflows with recursive signatures
+	fixed bug in class <: anonymous subtyping (inherited fields)
+	override is not mandatory by default (need --override)
+	added neko just-in-time
+	fixed bugs in haxe.Serializer and haxe.Unserializer (enum format change)
+	changed "signature" by "typedef" (more comprehensible)
+	restricted objects comparisons
+	fixed bug with js operator priority
+	improved performances for haxe.Serializer and haxe.Unserializer
+	fixed bug in static variable lookup (should look class in the last case)
+	prevented several prints of "not enough arguments".
+
+2006-06-23: 1.03
+	haxedoc executable now part of the distribution
+	removed selectDB from the neko.db.Connection API
+	added optional parameters with selection
+	removed --no-flash-opt-args
+	changes in SWF packages handling
+	fixed optional leading comma in anonymous object and array values
+	fixed bug in inheritend constructor type parameters
+	fixed bug in type_field with inherited type parameters
+	added haxe.Proxy
+	added code transformations for swf/js block variables
+	fixed very tricky bug with constraint parameters used together with polymorphic methods
+	added selective import (import x.y.Class.InnerType)
+	added optional enum constructor parameters
+	added opened anonymous types (no more Unknown has no field...)
+	fixed "MovieClip extends flash.MovieClip".
+	added Reflect.copy
+	added neko.Random
+	added Date.fromString
+	fixed bug in haxe.Unserializer, slighlty optimized haxe.Serializer
+	added __setfield magic (complete __resolve)
+	added explicit override when overriding methods
+
+2006-06-08: 1.02
+	fixed stack overflow when recursive class <: recursive signature
+	improved a bit commandline : allow several hxml arguments
+	added {> Class, fields... } types declarations
+	added cast without type (less dangerous than untyped)
+	no stage objects by default, added --flash-use-stage
+	added haxe.remoting.DelayedConnection
+	added -exclude
+	removed classpath from neko debug infos filenames
+	fixed bug in Neko empty Array.pop and Neko EReg.replace ""
+	fixed nodeValue for Neko XML comments, doctype, prolog
+	improved DocView : formating, signatures, files generation
+	added neko.zip package
+	fixed bug in neko.File binary flags
+	fixed problems when downloading large files using haxe.Http under Neko
+	neko.db.Connection and neko.db.ResultSet are now interfaces
+	added neko.db.Sqlite and neko sqlite ndll
+	mod_neko2.ndll for Apache2 in Windows distribution
+	fixed bug in static properties method resolution
+	change js.Dom : use cascading signatures and improved api
+	added haxe.unit Unit test framework
+
+2006-05-25: 1.01
+	added neko.Utf8
+	Serializer/Unserializer now support utf8 strings
+	allowed subtyping of prop accesses public/private when implementing an interface
+	removed "eval" from Remoting APIs (only calls - more easy to handle).
+	added flash6 support
+	fixed Std.is on different platforms (interfaces implements interface)
+	added AsyncConnection.amfConnect for flash
+	added SWF overflow checks
+	changed "property" to "var"
+	don't allow monorph unification with Dynamic (more safe)
+	allowed multiple parsing and typing errors
+	review and completed commandline options
+	error on backwards constant integer iterators
+	remoting proxy constructor is now public
+	fixed -swf-header override the swflib background color
+	moved all remoting classes into the haxe.remoting package
+	added haxe.remoting.LocalConnection
+
+2006-05-17: 1.0
+	fixed small bugs in JS Xml Parser (empty attribute, newlines in attributes)
+	added default Content-Type for haxe.Http in JS
+	haxe.AsyncConnection : onError should not be call if error occur in onData
+	fixed infinite loop if haxe.Unserializer.readDigits reach eof on JS/Flash
+	fixed bugs in neko.Web and neko.Sys (some methods returning "null" instead of null)
+	added neko.Socket.setBlocking for nonblocking sockets
+	fixed bug in js generator when using cascading iterators
+	fixed typing bug when overloading parametrized method
+	fixed bug in js generator when "try" without curly braces.
+	allowed enum catching
+	added remoting proxys
+	allowed neko.Web API commandline emulation outside mod_neko
+	removed subtyping Anon :> Instance
+	added signatures, Iterator is now a signature
+	getter/setter and public/private unification
+	allowed anonymous declaration with interface-style syntax (for signatures)
+	optimized code generated for underscore in enum matches parameters
+	fixed flash/js String.charCodeAt(outside) => null
+	fixed neko charAt(outside) => ""
+	added errors for strings containing \0 in JS and Flash
+	added HAXE_LIBRARY_PATH environment variable support
+	fixed interfaces inheritance : can't extend, can implement (type-sums)
+	fixed fixed >64K resource bug in SWF
+	fixed newline problems with Flash/JS Connection
+
+2006-05-02: RC1
+	added the Socket class
+	fixed a bug of returned value in neko with 6 or more parameters
+	added "Missing type" error for catchs.
+	added regular expressions (still missing Flash implementation)
+	fixed type printing and parenthesis in type declarations
+	different behavior when elements removed during Array.iteration
+	fixed genswf : local variables used in for...function
+	improved type parameters structure coherency
+	enable usage of Spod without Transaction
+	implemented neko.db.Transaction.isDeadlock
+	slighly relaxed one of the javascript generator constraint
+	added haxe.Template
+	moved Log , PosInfos and ImportAll to haxe package
+	completed private class/interface/enum support
+	removed Array.indexes
+	added __resolve compile-time support when class implement Dynamic
+	added haxe Remoting
+	added "module with different case" error (for windows)
+	added Reflect.resolveClass, Reflect.resolveEnum, Reflect.setPrototype
+	added access to classes by name in genneko
+	added enum.__ename__
+	fixed Std.is(e,enum)
+	fixed infinite loop in neko EReg split/replace and epsilon matching
+	added neko native serialization support
+	fixed syntax for multiple constraints in type parameter
+	added recursive type parameters constraints (T : C<T> constraints)
+	updated Xml handling
+
+2006-04-17: beta 5
+	fixed bug : continue in do...while
+	changed typing order for do...while (infer condition after block)
+	fixed JS "catch" generation
+	fixed extending flash.* extern class
+	fixed bug in neko generator w/ closures
+	fixed bug in js generator (return switch need correct "this" context)
+	fixed bug in for x in a...b : invalid local variables overridding
+	added properties
+	fixed bug in js generator : while...switch...break
+	new List implementation
+	can use static function __init__ on every platform
+	bug fixes in Reflect.fields
+	added Hash.remove, changed Hash/JS implementation
+	added flash __delete__ support
+	added neko.db.Object, Manager, Transaction
+	fixed neko class.__interfaces__
+	added "assigning a value to itself" error
+	added automatic PosInfos when is last parameter
+	added polymorphic methods
+	added check_flash_args support
+
+2006-04-02: beta 4
+	fixed javascript events case
+	fixed invalid use of physeq
+	fixed + type inference
+	added -altfmt
+	allowed anonymous <: class subtyping
+	relaxed unifications of expressions in "for" and "while"
+	more methods in List
+	syntax changes : mandatory parenthesis for "for" and "while"
+	allowed any kind of identifier almost everywhere
+	moved tools, flash, js and neko inside "std"
+	no need for 0x in flash header bgcolor
+	added -res
+	fixed type parameter contraint holes
+	Std.is Dynamic always returns true
+	added Enum.toString
+	neko : env locals can be modified in inner functions
+	completed js keywords list in generator
+	added Reflect.typeof
+	prioritize neko.Lib.load static calls
+	fixed bugs in for...in optimization with continue
+	fixed Reflect fields, added documentation, added Class
+	added javascript closures, fixed null closures on flash and Neko
+	added javascript __init__ statics and js.XMLHttpRequest
+	added neko.Stack
+	fixed bug in Std.ord
+	convert neko string to haxe string on catch
+	automaticaly creates empty clips for classes extending flash.MovieClip
+	unify stack : several meaningful unification errors
+	added cast operation and keyword
+
+2006-03-11: beta 3
+	javascript generator
+	optimized for in interval
+	renaming of locals (name must be unique)
+	added uncaught exceptions handling in Flash
+	fixed Bool.true == true and Bool.false == false on all platforms
+	fixed matching on Bool different from enums
+	removed -fplayer (use -D instead) and added -fheader
+	fixed infinity is Int
+	added "here" special identifier
+	neko Apis : File, FileSystem, Sys
+	added base JS API
+
+2006-02-19: beta 2
+	renamed neko.db.Result to neko.db.ResultSet
+	added Date support for Mysql results
+	added private fields for static class anonymous types
+	disambigous >=, >>= and >>>=
+	fixed inheritance bug in swf and neko generators
+	improved function parameters type error reporting.
+	allowed variable number of args for flash.* constructors.
+	added Math.random(), Reflect.empty()
+	added flash.XMLSocket and flash.Timer classes
+	completed Std class with conversion functions and others.
+	completed flash.Lib class with flash toplevel functions.
+	fixed bugs in neko webserver
+
+2006-02-04: beta 1
+	allowed array literals to be dynamic
+	use neko 1.2 commandline and prototypes
+	changed #cond to #if cond for conditional compilation
+	all fields are defined to null by default
+	defined __class__ and other meta accesses for Flash and Neko
+	fixed type hole for compiler-know types (should not resolve using imports)
+	changed packages : neko.* and flash.* (with protection)
+	added Lazy types : type the fields when they are needed with recursion
+	untyped accesses are monomorphs, not dynamics
+	generated __string check that toString() return an object
+	XmlParser and other APIs for Neko
+	fixed escaped chars in Neko generation
+	conservative static initialization order
+	allowed no type parameters for new Class
+	function types carry parameter names
+	anonymous types contain private variables (for private static accesses)
+	added optional name for anonymous types in typer (for static accesses)
+	private classes and enums (partial support)
+	improved error message for invalid number of arguments
+	flash extern classes can take variable number of args.
+	added -swf-lib for importing SWF library
+	added neko.db package
+
+2005-12-23: alpha 5
+	added -main commandline parameter
+	catches are now working with Neko
+	restricted catch types for type-safety
+	added constructor inheritance + check if superconstructor is called
+	allowed Dynamic-only subtyping on type parameters
+	added method closures to Neko generation
+	added class Reflect
+	added License : libraries are BSD
+	added -xml documentation output
+	allowed class instance :> anonymous subtyping
+
+2005-12-10: alpha 4
+	forbid break and continue outside loops
+	fixed SWF generation bugs
+	added SWF "extends" support
+	added method closures
+	added some flash lowlevel operations (__xxx__)
+	added Log, LogInfos and trace
+	added Neko generation
+	fixed problems with conditional compilation macros
+
+2005-11-30: alpha 3
+	added Flash extern classes
+	Boot initialization
+	added "untyped"
+	added conditional compilation
+	added interfaces
+	changed iterators from closures to objects
+	added (XML)Node and XmlParser for Flash
+
+2005-11-25: alpha 2
+	swf generation (missing iterators)
+	some typing fixes
+
+2005-11-17: alpha 1b
+	fix some bugs
+	changed package tests.lang
+
+2005-11-14: alpha 1
+	lexer
+	parser
+	typer
