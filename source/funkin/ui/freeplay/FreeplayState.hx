@@ -2350,11 +2350,11 @@ class FreeplaySongData
   {
     if (isFav)
     {
-      Save.instance.unfavoriteSong(data.id, FreeplayState.rememberedVariation);
+      Save.instance.unfavoriteSong(fullSongName);
     }
     else
     {
-      Save.instance.favoriteSong(data.id, FreeplayState.rememberedVariation);
+      Save.instance.favoriteSong(fullSongName);
     }
     return isFav;
   }
@@ -2366,9 +2366,7 @@ class FreeplaySongData
 
   function get_isFav():Bool
   {
-    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
-    var variation:String = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
-    return Save.instance.isSongFavorited(data.id, variation);
+    return Save.instance.isSongFavorited(fullSongName);
   }
 
   function get_isNew():Bool

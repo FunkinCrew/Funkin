@@ -855,7 +855,7 @@ class Save
     return false;
   }
 
-  public function isSongFavorited(id:String, ?variation:String):Bool
+  public function isSongFavorited(id:String):Bool
   {
     if (data.favoriteSongs == null)
     {
@@ -863,31 +863,23 @@ class Save
       flush();
     };
 
-    if (variation == null) variation = Constants.DEFAULT_VARIATION;
-    var song:String = '$id${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
-    return data.favoriteSongs.contains(song);
+    return data.favoriteSongs.contains(id);
   }
 
-  public function favoriteSong(id:String, ?variation:String):Void
+  public function favoriteSong(id:String):Void
   {
-    if (!isSongFavorited(id, variation))
+    if (!isSongFavorited(id))
     {
-      if (variation == null) variation = Constants.DEFAULT_VARIATION;
-      var song:String = '$id${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
-
-      data.favoriteSongs.push(song);
+      data.favoriteSongs.push(id);
       flush();
     }
   }
 
-  public function unfavoriteSong(id:String, ?variation:String):Void
+  public function unfavoriteSong(id:String):Void
   {
-    if (isSongFavorited(id, variation))
+    if (isSongFavorited(id))
     {
-      if (variation == null) variation = Constants.DEFAULT_VARIATION;
-      var song:String = '$id${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
-
-      data.favoriteSongs.remove(song);
+      data.favoriteSongs.remove(id);
       flush();
     }
   }
