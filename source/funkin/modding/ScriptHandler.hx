@@ -27,7 +27,7 @@ class ScriptHandler implements ISingleton
   public function loadScripts():Void
   {
     #if cpp
-    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info');
+    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info -D lime -D FLX_STANDARD_ASSETS_DIRECTORY');
 
     if (cmd.exitCode() != 0)
     {

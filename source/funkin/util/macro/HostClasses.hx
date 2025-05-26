@@ -44,7 +44,7 @@ class HostClasses
   {
     for (entry in BLACK_LIST)
     {
-      if (entry.endsWith(".*"))
+      if (entry.endsWith('.*'))
       {
         var prefix:String = entry.substr(0, entry.length - 2);
         if (name.startsWith(prefix)) return true;
@@ -60,130 +60,70 @@ class HostClasses
   static function generate():Array<Field>
   {
     Context.onGenerate((types) -> {
-      var files:Map<String, Null<String>> = new Map<String, Null<String>>();
+      var cps:Array<String> = [
+        for (cp in Context.getClassPath())
+          if (cp.length > 0) haxe.io.Path.normalize(sys.FileSystem.absolutePath(cp))
+      ];
+      cps = cps.filter((cp) -> !cp.contains('haxe/std'));
 
-      function getInfo(type:Type):Null<{module:String, file:String}>
-      {
-        switch (type)
-        {
-          case TInst(_.get() => t, _):
-            return {
-              module: t.module,
-              file: t.pos.getInfos().file
-            };
-          case TEnum(_.get() => e, _):
-            return {
-              module: e.module,
-              file: e.pos.getInfos().file
-            };
-          case TType(_.get() => t, _):
-            switch (t.type)
-            {
-              case TInst(_.get() => t, _):
-                if (!t.isExtern) return {
-                  module: t.module,
-                  file: t.pos.getInfos().file
-                };
-              default:
-            }
-            return {
-              module: t.module,
-              file: t.pos.getInfos().file
-            };
-          case TAbstract(_.get() => a, _):
-            return {
-              module: a.module,
-              file: a.pos.getInfos().file
-            };
-          default:
-            return null;
-        }
-      }
+      var directoriesToCopy:Array<String> = [];
 
       for (type in types)
       {
-        var info:{module:String, file:String} = getInfo(type);
+        var file:String;
+        switch (type)
+        {
+          case TInst(_.get() => t, _):
+            file = t.pos.getInfos().file;
+          case TType(_.get() => t, _):
+            file = t.pos.getInfos().file;
+          case TAbstract(_.get() => t, _):
+            file = t.pos.getInfos().file;
+          case TEnum(_.get() => t, _):
+            file = t.pos.getInfos().file;
+          default:
+            throw 'Unsupported type: ${type}';
+        }
+        var directory:String = haxe.io.Path.normalize(haxe.io.Path.directory(file));
 
-        if (haxe.io.Path.normalize(info.file).contains('haxe/std')) continue;
+        for (cp in cps)
+        {
+          if (!directory.contains(cp)) continue;
 
-        if (isBlacklisted(info.module)) files.set(info.file, null);
-        else if (!files.exists(info.file)) files.set(info.file, info.module.split('.').join('/'));
+          directory = haxe.io.Path.join([cp, directory.substr(cp.length + 1).split('/')[0]]);
+
+          if (!directoriesToCopy.contains(directory)) directoriesToCopy.push(directory);
+
+          break;
+        }
       }
 
-      var count:Int = [for (m in files.iterator()) if (m != null) 0].length;
-      var finished:Int = 0;
-
-      for (file => module in files)
+      // maybe rather copy the directories in PostBuildCppia.hx?
+      // that way we don't do it twice
+      for (directory in directoriesToCopy)
       {
-        if (module == null) continue;
-
-        var content:String = sys.io.File.getContent(file);
-
-        // content = processFile(content);
-
-        var folderPath:String = 'script_std/${module.split('/').slice(0, -1).join('/')}';
-        var filePath:String = 'script_std/${module}.hx';
-
-        sys.FileSystem.createDirectory(folderPath);
-        sys.io.File.saveContent(filePath, content);
-
-        // trace('Generated ${++finished}/${count}');
+        copyDirectory(directory, 'script_std/${directory.split('/').pop()}');
       }
     });
 
     return Context.getBuildFields();
   }
 
-  /**
-   * TODO: This is slow and does not work with all files yet.
-   * The main point of this is to remove function bodies
-   * to make the generated files smaller.
-   */
-  static function processFile(content:String):String
+  static function copyDirectory(source:String, target:String):Void
   {
-    var regex:EReg = ~/\b((?:public|private|static|override|dynamic|final|\s)*function\s+\w+\s*\([^)]*\)(?:\s*:\s*[\w<>\[\], ?]+)?)/g;
+    if (!sys.FileSystem.exists(source)) throw 'Source directory does not exist: ${source}';
 
-    var contentCopy:String = content;
-    while (regex.match(contentCopy))
+    if (!sys.FileSystem.exists(target)) sys.FileSystem.createDirectory(target);
+
+    for (file in sys.FileSystem.readDirectory(source))
     {
-      var signature:String = regex.matched(1);
-      var body:String = regex.matchedRight();
-      contentCopy = regex.matchedRight();
+      var sourceFile:String = haxe.io.Path.join([source, file]);
+      var targetFile:String = haxe.io.Path.join([target, file]);
 
-      if (~/\b(?:inline|macro|extern)\b/.match(regex.matchedLeft())) continue;
-
-      var doCheck:Bool = false;
-      var braces:Int = 0;
-
-      var i:Int = 0;
-      while (true)
-      {
-        var c:String = body.charAt(i++);
-        if (c.length == 0) break;
-
-        if (!doCheck && c == ';') break;
-
-        if (c == '{')
-        {
-          doCheck = true;
-          braces++;
-        }
-        else if (c == '}')
-        {
-          braces--;
-        }
-
-        if (doCheck && braces == 0)
-        {
-          content = content.replace(body.substr(0, i), '');
-          contentCopy = contentCopy.replace(body.substr(0, i), '');
-          content = content.replace(signature, 'extern ${signature};');
-          break;
-        }
-      }
+      if (sys.FileSystem.isDirectory(sourceFile)) copyDirectory(sourceFile, targetFile);
+      else if (!isBlacklisted(haxe.io.Path.withoutExtension(sourceFile)) && !sys.FileSystem.exists(targetFile))
+        sys.io.File.saveContent(targetFile, sys.io.File.getContent(sourceFile));
     }
-
-    return content;
   }
 }
 #end
