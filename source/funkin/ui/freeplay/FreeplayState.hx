@@ -1765,8 +1765,8 @@ class FreeplayState extends MusicBeatSubState
 
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : Math.max(0, ((songScore.tallies.sick +
-        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
+      intendedCompletion = songScore == null ? 0.0 : Math.max(0,
+        ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
@@ -2309,7 +2309,7 @@ class FreeplaySongData
   /**
    * Whether or not the song has been favorited.
    */
-  public var isFav:Bool = false;
+  public var isFav(get, never):Bool;
 
   /**
    * Whether the player has seen/played this song before within freeplay
@@ -2340,7 +2340,6 @@ class FreeplaySongData
   {
     this.data = data;
     _levelId = levelData.id;
-    this.isFav = Save.instance.isSongFavorited(data.songName);
   }
 
   /**
@@ -2349,14 +2348,13 @@ class FreeplaySongData
    */
   public function toggleFavorite():Bool
   {
-    isFav = !isFav;
     if (isFav)
     {
-      Save.instance.favoriteSong(data.songName);
+      Save.instance.unfavoriteSong(fullSongName);
     }
     else
     {
-      Save.instance.unfavoriteSong(data.songName);
+      Save.instance.favoriteSong(fullSongName);
     }
     return isFav;
   }
@@ -2364,6 +2362,11 @@ class FreeplaySongData
   function updateValues(variations:Array<String>):Void
   {
     // this.isNew = song.isSongNew(suffixedDifficulty);
+  }
+
+  function get_isFav():Bool
+  {
+    return Save.instance.isSongFavorited(fullSongName);
   }
 
   function get_isNew():Bool
