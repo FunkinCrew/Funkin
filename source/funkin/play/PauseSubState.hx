@@ -939,7 +939,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static function changeDifficulty(state:PauseSubState, difficulty:String):Void
   {
-    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
+    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase(),
+      {variation: PlayState.instance.currentChart.variation});
 
     // Reset campaign score when changing difficulty
     // So if you switch difficulty on the last song of a week you get a really low overall score.

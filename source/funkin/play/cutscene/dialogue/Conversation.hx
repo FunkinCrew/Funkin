@@ -89,7 +89,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   var currentDialogueBox:Null<DialogueBox>;
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 
