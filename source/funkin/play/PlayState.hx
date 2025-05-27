@@ -1711,7 +1711,8 @@ class PlayState extends MusicBeatSubState
     {
       throw "No lastParams to refer to";
     }
-    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id) ?? throw "Could not load current song from ID. This shouldn't happen!";
+    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id,
+      {variation: currentVariation}) ?? throw "Could not load current song from ID. This shouldn't happen!";
     LoadingState.loadPlayState(lastParams);
   }
 
