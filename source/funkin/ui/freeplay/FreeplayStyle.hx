@@ -21,7 +21,7 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    * The full data for a freeplay style.
    */
   // public final _data:FreeplayStyleData;
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
     this._data = _fetchData(id);
