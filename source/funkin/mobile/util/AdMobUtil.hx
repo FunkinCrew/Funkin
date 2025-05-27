@@ -5,6 +5,8 @@ import extension.admob.Admob;
 import extension.admob.AdmobBannerAlign;
 import extension.admob.AdmobBannerSize;
 import extension.admob.AdmobEvent;
+import flixel.FlxG;
+import funkin.play.cutscene.VideoCutscene;
 import funkin.util.macro.EnvironmentConfigMacro;
 
 /**
@@ -40,6 +42,11 @@ class AdMobUtil
    * Ad unit ID for displaying interstitial video ads.
    */
   private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
+
+  /**
+   * Ad unit ID for displaying rewarded ads.
+   */
+  private static final REWARDED_AD_UNIT_ID:String = "";
   #else
 
   /**
@@ -54,10 +61,10 @@ class AdMobUtil
    * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
    * Replace with your actual banner ad unit ID for production.
    *
-   * - Android: "6300978111" (test ad unit ID)
-   * - iOS: "2934735716" (test ad unit ID)
+   * - Android: "9214589741" (test ad unit ID)
+   * - iOS: "2435281174" (test ad unit ID)
    */
-  private static final BANNER_AD_UNIT_ID:String = #if android "6300978111" #elseif ios "2934735716" #else "" #end;
+  private static final BANNER_AD_UNIT_ID:String = #if android "9214589741" #elseif ios "2435281174" #else "" #end;
 
   /**
    * Ad unit ID for displaying interstitial ads.
@@ -73,11 +80,18 @@ class AdMobUtil
    * Ad unit ID for displaying interstitial video ads.
    * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
    * Replace with your actual interstitial video ad unit ID for production.
+   */
+  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
+
+  /**
+   * Ad unit ID for displaying rewarded ads.
+   * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
+   * Replace with your actual interstitial video ad unit ID for production.
    *
    * - Android: "8691691433" (test ad unit ID)
    * - iOS: "5135589807" (test ad unit ID)
    */
-  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = #if android "8691691433" #elseif ios "5135589807" #else "" #end;
+  private static final REWARDED_AD_UNIT_ID:String = #if android "8691691433" #elseif ios "5135589807" #else "" #end;
   #end
 
   /**
@@ -87,14 +101,39 @@ class AdMobUtil
    */
   public static function init():Void
   {
-    Admob.onEvent.add(function(event:String, message:String):Void {
-      switch (event)
+    Admob.onEvent.add(function(event:AdmobEvent):Void {
+      if (event.name == AdmobEvent.INTERSTITIAL_LOADED) Admob.showInterstitial();
+      else if (event.name == AdmobEvent.REWARDED_LOADED) Admob.showRewarded();
+      #if ios
+      else if (event.name == AdmobEvent.AVM_WILL_PLAY_AUDIO)
       {
-        case AdmobEvent.INTERSTITIAL_LOADED:
-          Admob.showInterstitial();
-      }
+        if (FlxG.sound.music != null) FlxG.sound.music.pause();
 
-      logMessage(message.length > 0 ? '$event:$message' : event);
+        for (sound in FlxG.sound.list)
+        {
+          if (sound != null) sound.pause();
+        }
+
+        #if hxvlc
+        if (VideoCutscene.vid != null) VideoCutscene.vid.pause();
+        #end
+      }
+      else if (event.name == AdmobEvent.AVM_DID_STOP_PLAYING_AUDIO)
+      {
+        if (FlxG.sound.music != null) FlxG.sound.music.resume();
+
+        for (sound in FlxG.sound.list)
+        {
+          if (sound != null) sound.resume();
+        }
+
+        #if hxvlc
+        if (VideoCutscene.vid != null) VideoCutscene.vid.resume();
+        #end
+      }
+      #end
+
+      logMessage(event.toString());
     });
 
     Admob.configureConsentMetadata(Admob.getTCFConsentForPurpose(0) == 1, StringTools.startsWith(Admob.getUSPrivacy(), '1Y'));
@@ -133,6 +172,14 @@ class AdMobUtil
     {
       Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_AD_UNIT_ID].join('/'));
     }
+  }
+
+  /**
+   * Loads an rewarded ad.
+   */
+  public static inline function loadRewarded():Void
+  {
+    Admob.loadRewarded([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.REWARDED_AD_UNIT_ID].join('/'));
   }
 
   /**
