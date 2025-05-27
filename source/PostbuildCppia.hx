@@ -1,5 +1,6 @@
 package source; // Yeah, I know...
 
+import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -18,6 +19,7 @@ class PostbuildCppia
   {
     processExportClasses();
     processHaxeCompiler();
+    trace('Postbuild script executed successfully.');
   }
 
   static function processExportClasses():Void
@@ -36,51 +38,40 @@ class PostbuildCppia
 
   static function processHaxeCompiler():Void
   {
-    var haxeCompilerSrc:String = 'haxe';
+    trace('Initializing Haxe compiler...');
+
+    var haxeCompilerSrc:String = Path.normalize(Sys.getEnv("HAXEPATH"));
     var haxeCompilerDest:String = '${BIN_DIR}/haxe';
 
-    if (!FileSystem.exists(haxeCompilerSrc)) throw 'Haxe compiler binaries do not exist';
+    if (haxeCompilerSrc == null || !FileSystem.exists(haxeCompilerSrc)) throw 'Haxe compiler binaries do not exist or HAXEPATH is not set';
 
-    var scriptStdSrc:String = 'script_std';
-    var scriptStdDest:String = '${BIN_DIR}/haxe/std';
+    recursiveCopy(haxeCompilerSrc, haxeCompilerDest, ['$haxeCompilerSrc/lib']);
 
-    if (!FileSystem.exists(scriptStdSrc)) throw 'Script standard library does not exist';
+    var libs:Array<String> = File.getContent('.copy_libs').split('\n');
 
-    function copyDir(from:String, to:String):Void
+    for (lib in libs)
     {
-      if (!FileSystem.exists(to)) FileSystem.createDirectory(to);
-      for (entry in FileSystem.readDirectory(from))
-      {
-        var fromPath:String = from + '/' + entry;
-        var toPath:String = to + '/' + entry;
-        if (FileSystem.isDirectory(fromPath)) copyDir(fromPath, toPath);
-        else
-          File.saveBytes(toPath, File.getBytes(fromPath));
-      }
+      if (!FileSystem.exists(lib)) throw 'Library does not exist: $lib';
+
+      var dest:String = '${BIN_DIR}/haxe/std/${lib.split('/').pop()}';
+
+      recursiveCopy(lib, dest, []);
     }
-    copyDir(haxeCompilerSrc, haxeCompilerDest);
-    trace('Copied haxe compiler to: $haxeCompilerDest');
 
-    copyDir(scriptStdSrc, scriptStdDest);
-    trace('Copied script standard library to: $scriptStdDest');
+    FileSystem.deleteFile('.copy_libs');
+  }
 
-    function deleteDirContents(dir:String):Void
+  static function recursiveCopy(from:String, to:String, skip:Array<String>):Void
+  {
+    if (!FileSystem.exists(to)) FileSystem.createDirectory(to);
+    for (entry in FileSystem.readDirectory(from))
     {
-      for (entry in FileSystem.readDirectory(dir))
-      {
-        var path:String = dir + '/' + entry;
-        if (FileSystem.isDirectory(path))
-        {
-          deleteDirContents(path);
-          FileSystem.deleteDirectory(path);
-        }
-        else
-        {
-          FileSystem.deleteFile(path);
-        }
-      }
+      var fromPath:String = '$from/$entry';
+      var toPath:String = '$to/$entry';
+      if (skip.contains(fromPath)) continue;
+      if (FileSystem.isDirectory(fromPath)) recursiveCopy(fromPath, toPath, skip);
+      else
+        File.saveBytes(toPath, File.getBytes(fromPath));
     }
-    deleteDirContents(scriptStdSrc);
-    FileSystem.deleteDirectory(scriptStdSrc);
   }
 }

@@ -4,6 +4,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+using StringTools;
+
 /**
  * A collection of utility functions for Haxe macros.
  */
@@ -21,6 +23,22 @@ class MacroUtil
     var value:Null<String> = haxe.macro.Context.definedValue(key);
     if (value == null) value = defaultValue;
     return macro $v{value};
+  }
+
+  /**
+   * Gets all Haxe compiler defines as a command line string.
+   * @return An expression containing the command line string of defines.
+   */
+  public static macro function getDefinesAsCommand():ExprOf<String>
+  {
+    return macro $v
+    {
+      [
+        for (name => value in Context.getDefines())
+          if (!['utf16', 'true', 'sys', 'static', 'haxe_ver', 'haxe-ver', 'haxe', 'cpp'].contains(name)
+            && !name.startsWith('target.')) '-D ${name}=${value.contains(' ') ? '"$value"' : value}'
+      ].join(' ')
+    };
   }
 
   /**

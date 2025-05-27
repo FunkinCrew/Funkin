@@ -15,6 +15,8 @@ class ScriptHandler implements ISingleton
 {
   #if cpp
   var classMap:Map<String, Class<Dynamic>>;
+
+  static final DEFINES:String = funkin.util.macro.MacroUtil.getDefinesAsCommand();
   #end
 
   public function new()
@@ -27,15 +29,13 @@ class ScriptHandler implements ISingleton
   public function loadScripts():Void
   {
     #if cpp
-    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info -D lime -D FLX_STANDARD_ASSETS_DIRECTORY');
+    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info $DEFINES');
 
     if (cmd.exitCode() != 0)
     {
       trace('Failed to compile scripts: ${cmd.stderr.readAll().toString()}');
       return;
     }
-
-    // A:\Haxe\haxe\std\
 
     var scriptPath:String = 'script.cppia';
     var scriptBytes:Bytes = File.getBytes(scriptPath);

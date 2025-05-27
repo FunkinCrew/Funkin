@@ -18,5 +18,5 @@ package-lock.json
 .aider*
 
 # CPPIA Ignores
-script_std/
+.copy_libs
 export_classes.info
