@@ -487,8 +487,7 @@ class ResultState extends MusicBeatSubState
     bgFlash.visible = true;
     FlxTween.tween(bgFlash, {alpha: 0}, 5 / 24);
     // NOTE: Only divide if totalNotes > 0 to prevent divide-by-zero errors.
-    var clearPercentFloat = params.scoreData.tallies.totalNotes == 0 ? 0.0 : (params.scoreData.tallies.sick +
-    params.scoreData.tallies.good
+    var clearPercentFloat = params.scoreData.tallies.totalNotes == 0 ? 0.0 : (params.scoreData.tallies.sick + params.scoreData.tallies.good
       - params.scoreData.tallies.missed) / params.scoreData.tallies.totalNotes * 100;
     clearPercentTarget = Math.floor(clearPercentFloat);
     // Prevent off-by-one errors.
@@ -793,7 +792,10 @@ class ResultState extends MusicBeatSubState
 
       var stickerPackId:Null<String> = null;
 
-      var song:Null<Song> = params.songId == null ? null : SongRegistry.instance.fetchEntry(params.songId);
+      var song:Null<Song> = params.songId == null ? null : SongRegistry.instance.fetchEntry(params.songId,
+        {
+          variation: params?.variationId
+        });
 
       if (song != null)
       {

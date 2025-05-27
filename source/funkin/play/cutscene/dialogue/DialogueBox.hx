@@ -89,7 +89,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     return this.speed;
   }
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
     this.id = id;

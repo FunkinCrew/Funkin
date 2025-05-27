@@ -11,7 +11,7 @@ import flixel.graphics.FlxGraphic;
  */
 class Album implements IRegistryEntry<AlbumData>
 {
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
     this._data = _fetchData(id);
