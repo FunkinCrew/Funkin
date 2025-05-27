@@ -29,10 +29,16 @@ class ScriptHandler implements ISingleton
   public function loadScripts():Void
   {
     #if cpp
+    var oldStdPath:String = Sys.getEnv('HAXE_STD_PATH');
+    Sys.putEnv('HAXE_STD_PATH', 'haxe/std');
+
+    trace('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info $DEFINES');
+
     var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info $DEFINES');
 
     if (cmd.exitCode() != 0)
     {
+      Sys.putEnv('HAXE_STD_PATH', oldStdPath);
       trace('Failed to compile scripts: ${cmd.stderr.readAll().toString()}');
       return;
     }
@@ -61,6 +67,8 @@ class ScriptHandler implements ISingleton
     FileSystem.deleteFile(scriptPath);
 
     cmd.close();
+
+    Sys.putEnv('HAXE_STD_PATH', oldStdPath);
     #end
   }
 

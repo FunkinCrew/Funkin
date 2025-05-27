@@ -42,7 +42,7 @@ class HostClasses
           default:
             throw 'Unsupported type: ${type}';
         }
-        var directory:String = haxe.io.Path.normalize(haxe.io.Path.directory(file));
+        var directory:String = haxe.io.Path.normalize(haxe.io.Path.directory(sys.FileSystem.absolutePath(file)));
 
         for (cp in cps)
         {
