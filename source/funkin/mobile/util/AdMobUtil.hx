@@ -104,7 +104,6 @@ class AdMobUtil
     Admob.onEvent.add(function(event:AdmobEvent):Void {
       if (event.name == AdmobEvent.INTERSTITIAL_LOADED) Admob.showInterstitial();
       else if (event.name == AdmobEvent.REWARDED_LOADED) Admob.showRewarded();
-      #if ios
       else if (event.name == AdmobEvent.AVM_WILL_PLAY_AUDIO)
       {
         if (FlxG.sound.music != null) FlxG.sound.music.pause();
@@ -115,6 +114,7 @@ class AdMobUtil
         }
 
         #if hxvlc
+        @:privateAccess
         if (VideoCutscene.vid != null) VideoCutscene.vid.pause();
         #end
       }
@@ -128,10 +128,10 @@ class AdMobUtil
         }
 
         #if hxvlc
+        @:privateAccess
         if (VideoCutscene.vid != null) VideoCutscene.vid.resume();
         #end
       }
-      #end
 
       logMessage(event.toString());
     });
