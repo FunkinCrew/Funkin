@@ -18,6 +18,26 @@ class Boombox extends FlxSpriteGroup implements IPlayStateScriptedClass
 {
   public var parentCharacter:Null<BaseCharacter> = null;
 
+  public var originalPosition:FlxPoint = new FlxPoint(0, 0);
+
+  /**
+   * Reset the boombox so it can be used at the start of the level.
+   * Call this when restarting the level.
+   */
+  public function resetBoombox():Void
+  {
+    this.resetPosition();
+  }
+
+  /**
+   * If this Boombox was defined by the stage, return the prop to its original position.
+   */
+  public function resetPosition()
+  {
+    this.x = originalPosition.x;
+    this.y = originalPosition.y;
+  }
+
   public function refresh():Void
   {
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
