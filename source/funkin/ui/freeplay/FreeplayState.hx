@@ -1740,7 +1740,7 @@ class FreeplayState extends MusicBeatSubState
         {
           draggingDifficulty = true;
           dj?.resetAFKTimer();
-          changeDiff(1, false, true);
+          changeDiff(-1, false, true);
           _pressedOnSelected = false;
           FlxG.touches.flickManager.destroy();
           _flickEnded = true;
@@ -1758,7 +1758,7 @@ class FreeplayState extends MusicBeatSubState
         {
           draggingDifficulty = true;
           dj?.resetAFKTimer();
-          changeDiff(-1, false, true);
+          changeDiff(1, false, true);
           _pressedOnSelected = false;
           FlxG.touches.flickManager.destroy();
           _flickEnded = true;
