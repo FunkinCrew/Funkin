@@ -113,7 +113,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
   {
     FlxG.plugins.drawOnTop = true;
     instance = new NewgroundsMedalPlugin();
-    FlxG.plugins.add(instance);
+    FlxG.plugins.addPlugin(instance);
 
     instance.medal.anim.onComplete.add(function() {
       if (instance.funcs.length > 0)

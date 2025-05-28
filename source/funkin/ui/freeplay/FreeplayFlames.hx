@@ -29,9 +29,9 @@ class FreeplayFlames extends FlxSpriteGroup
       flameCount = 0;
 
       // sets the loop... maybe better way to do this lol!
-      flame.animation.finishCallback = function(_) {
+      flame.animation.onFinish.add(function(_) {
         flame.animation.play("flame", true, false, 2);
-      };
+      });
       add(flame);
     }
   }

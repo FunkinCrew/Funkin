@@ -276,12 +276,12 @@ class ResultState extends MusicBeatSubState
 
           if (animData.loopFrame != null)
           {
-            animation.animation.finishCallback = (_name:String) -> {
+            animation.animation.onFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.animation.play('idle', true, false, animData.loopFrame ?? 0);
               }
-            }
+            });
           }
 
           // Hide until ready to play.
@@ -349,7 +349,7 @@ class ResultState extends MusicBeatSubState
     new FlxTimer().start(36 / 24, _ -> {
       scorePopin.visible = true;
       scorePopin.animation.play("score");
-      scorePopin.animation.finishCallback = anim -> {};
+      scorePopin.animation.onFinish.add(anim -> {});
     });
 
     new FlxTimer().start(37 / 24, _ -> {
@@ -379,7 +379,7 @@ class ResultState extends MusicBeatSubState
       {
         highscoreNew.visible = true;
         highscoreNew.animation.play("new");
-        highscoreNew.animation.finishCallback = _ -> highscoreNew.animation.play("new", true, false, 16);
+        highscoreNew.animation.onFinish.add(_ -> highscoreNew.animation.play("new", true, false, 16));
       }
       else
       {
@@ -587,7 +587,7 @@ class ResultState extends MusicBeatSubState
       // ratingsPopin.animation.play("idle");
       // ratingsPopin.visible = true;
 
-      ratingsPopin.animation.finishCallback = anim -> {
+      ratingsPopin.animation.onFinish.add(anim -> {
         // scorePopin.animation.play("score");
 
         // scorePopin.visible = true;
@@ -601,7 +601,7 @@ class ResultState extends MusicBeatSubState
         {
           highscoreNew.visible = false;
         }
-      };
+      });
     }
 
     refresh();
@@ -1017,7 +1017,7 @@ class ResultState extends MusicBeatSubState
               }
               else
               {
-                FlxG.switchState(targetState);
+                FlxG.switchState(() -> targetState);
               }
             }
           });
@@ -1039,7 +1039,7 @@ class ResultState extends MusicBeatSubState
         }
         else
         {
-          FlxG.switchState(targetState);
+          FlxG.switchState(() -> targetState);
         }
       }
     }

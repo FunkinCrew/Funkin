@@ -58,9 +58,9 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     add(label);
     add(currentInstrumental);
 
-    capsuleMenuBG.animation.finishCallback = function(_) {
+    capsuleMenuBG.animation.onFinish.add(function(_) {
       capsuleMenuBG.animation.play('idle', true);
-    };
+    });
     capsuleMenuBG.animation.play('open', true);
   }
 
@@ -73,7 +73,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       destroy();
       return;
     }
-    var changedInst = false;
+    var changedInst:Bool = false;
 
     if (!busy)
     {
@@ -128,10 +128,10 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     capsuleMenuBG.animation.play('open', true, true);
     if (leftArrow.moveShitDownTimer != null) leftArrow.moveShitDownTimer.cancel();
     if (rightArrow.moveShitDownTimer != null) rightArrow.moveShitDownTimer.cancel();
-    capsuleMenuBG.animation.finishCallback = function(_) {
+    capsuleMenuBG.animation.onFinish.add(function(_) {
       parent.cleanupCapsuleOptionsMenu();
       queueDestroy = true;
-    };
+    });
   }
 
   /**

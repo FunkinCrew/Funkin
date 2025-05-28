@@ -650,11 +650,10 @@ class Project extends HXProject {
 
     // Should be false unless explicitly requested.
     GITHUB_BUILD.apply(this, false);
-    FEATURE_NEWGROUNDS.apply(this, false);
     EXCLUDE_ARMV7.apply(this, false);
+    UNLOCK_EVERYTHING.apply(this, false);
     FEATURE_COMPRESSED_TEXTURES.apply(this, false);
     FEATURE_GHOST_TAPPING.apply(this, false);
-    UNLOCK_EVERYTHING.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
@@ -663,7 +662,6 @@ class Project extends HXProject {
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
     FEATURE_VIDEO_PLAYBACK.apply(this, true);
-    FEATURE_STAGE_EDITOR.apply(this, true);
 
     // Should be true on debug builds or if GITHUB_BUILD is enabled.
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
@@ -673,7 +671,7 @@ class Project extends HXProject {
     // TODO: Look into ways to optimize logging (maybe by using a thread pool?)
     FEATURE_LOG_TRACE.apply(this, isDebug());
 
-    FEATURE_NEWGROUNDS.apply(this, !isMobile());
+    FEATURE_NEWGROUNDS.apply(this, true);
     FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
     FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
     FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
@@ -702,6 +700,7 @@ class Project extends HXProject {
     // Should be true except on web and mobile builds.
     // Chart editor doesn't work there.
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
 
     // Should be true except on web and mobile builds.
     // Screenshots doesn't work there.

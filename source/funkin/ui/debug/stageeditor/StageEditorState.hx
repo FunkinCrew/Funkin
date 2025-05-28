@@ -729,8 +729,8 @@ class StageEditorState extends UIState
     bottomBarSelectText.text = infoSelection;
 
     // ui stuff
-    nameTxt.x = FlxG.mouse.getScreenPosition(camHUD).x;
-    nameTxt.y = FlxG.mouse.getScreenPosition(camHUD).y - nameTxt.height;
+    nameTxt.x = FlxG.mouse.getViewPosition(camHUD).x;
+    nameTxt.y = FlxG.mouse.getViewPosition(camHUD).y - nameTxt.height;
 
     // spriteMarker.visible = (moveMode == "assets" && selectedSprite != null);
     camMarker.visible = moveMode == "chars";
@@ -946,7 +946,7 @@ class StageEditorState extends UIState
   {
     if (FlxG.mouse.overlaps(spr) /*spr.overlapsPoint(FlxG.mouse.getWorldPosition(spr.camera), true, spr.camera) */
       && Screen.instance != null
-      && !Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY)
+      && !Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY)
       && WindowManager.instance.windows.length == 0) // ik its stupid but maybe I have other cases soon (i did)
       return true;
 

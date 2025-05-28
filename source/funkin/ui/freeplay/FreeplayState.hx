@@ -1060,10 +1060,10 @@ class FreeplayState extends MusicBeatSubState
         sparks.animation.play('sparks', true);
         sparksADD.animation.play('sparks add', true);
 
-        sparks.animation.finishCallback = anim -> {
+        sparks.animation.onFinish.add(anim -> {
           sparks.visible = false;
           sparksADD.visible = false;
-        };
+        });
       }
 
       switch (fromResultsParams?.newRank)
@@ -1297,7 +1297,7 @@ class FreeplayState extends MusicBeatSubState
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
       FullScreenScaleMode.enabled = false;
-      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
     });
     for (grpSpr in exitMoversCharSel.keys())
     {
