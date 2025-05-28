@@ -32,6 +32,7 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.modding.base.ScriptedFlxAtlasSprite;
+import funkin.modding.base.ScriptedFunkinSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -258,7 +259,15 @@ class ResultState extends MusicBeatSubState
           // Add to the scene.
           add(animation);
         case 'sparrow':
-          var animation:FunkinSprite = FunkinSprite.createSparrow(offsets[0], offsets[1], animPath);
+          @:nullSafety(Off)
+          var animation:FunkinSprite = null;
+
+          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.init(animData.scriptClass, offsets[0], offsets[1]);
+          else
+            animation = FunkinSprite.createSparrow(offsets[0], offsets[1], animPath);
+
+          if (animation == null) continue;
+
           animation.animation.addByPrefix('idle', '', 24, false, false, false);
 
           if (animData.loopFrame != null)
@@ -487,8 +496,7 @@ class ResultState extends MusicBeatSubState
     bgFlash.visible = true;
     FlxTween.tween(bgFlash, {alpha: 0}, 5 / 24);
     // NOTE: Only divide if totalNotes > 0 to prevent divide-by-zero errors.
-    var clearPercentFloat = params.scoreData.tallies.totalNotes == 0 ? 0.0 : (params.scoreData.tallies.sick +
-    params.scoreData.tallies.good
+    var clearPercentFloat = params.scoreData.tallies.totalNotes == 0 ? 0.0 : (params.scoreData.tallies.sick + params.scoreData.tallies.good
       - params.scoreData.tallies.missed) / params.scoreData.tallies.totalNotes * 100;
     clearPercentTarget = Math.floor(clearPercentFloat);
     // Prevent off-by-one errors.
