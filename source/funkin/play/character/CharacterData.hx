@@ -680,6 +680,12 @@ typedef CharacterData =
    */
   var healthIcon:Null<HealthIconData>;
 
+  /**
+   * Optional data about the boombox for the character.
+   * Used only if the character is loaded in the GF slot.
+   */
+  var boombox:Null<BoomboxData>;
+
   var death:Null<DeathData>;
 
   /**
@@ -775,6 +781,30 @@ typedef HealthIconData =
    * @default [0, 25]
    */
   var offsets:Null<Array<Float>>;
+}
+
+/**
+ * The JSON data schema used to define the boombox for a character, if used on GF's position.
+ */
+typedef BoomboxData =
+{
+  /**
+   * The scripted class' name for the boombox.
+   * @default `null`
+   */
+  var scriptClass:Null<String>;
+
+  /**
+   * The offset of the boombox, in pixels.
+   * @default [0, 0]
+   */
+  var offsets:Null<Array<Float>>;
+
+  /**
+   * The z-Index offset of the boom box.
+   * For example, using the offset `-5` while your character has z-Index `100` will make the boombox have its z-Index be `95`.
+   */
+  var zIndex:Null<Int>;
 }
 
 typedef DeathData =

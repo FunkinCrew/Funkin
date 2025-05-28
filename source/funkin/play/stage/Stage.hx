@@ -13,6 +13,7 @@ import openfl.display.BitmapData;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.boombox.Boombox;
 import funkin.play.character.BaseCharacter;
 import funkin.data.IRegistryEntry;
 import funkin.data.stage.StageData;
@@ -53,6 +54,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   var namedProps:Map<String, StageProp> = new Map<String, StageProp>();
   var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
+  var boomboxes:Map<String, Boombox> = new Map<String, Boombox>();
   var boppers:Array<Bopper> = new Array<Bopper>();
 
   /**
@@ -95,6 +97,20 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   public function resetStage():Void
   {
+    // Reset positions of boomboxes.
+    for (charId in boomboxes.keys())
+    {
+      var boombox:Null<Boombox> = boomboxes.get(charId);
+      if (boombox != null)
+      {
+        boombox.resetBoombox();
+      }
+      else
+      {
+        trace('STAGE RESET: No boombox found for $charId.');
+      }
+    }
+
     // Reset positions of characters.
     if (getBoyfriend() != null)
     {
@@ -110,6 +126,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     {
       trace('STAGE RESET: No boyfriend found.');
     }
+
     if (getGirlfriend() != null)
     {
       getGirlfriend().resetCharacter(true);
@@ -387,6 +404,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   public function addCharacter(character:BaseCharacter, charType:CharacterType):Void
   {
     if (character == null) return;
+    var boombox:Null<Boombox> = null;
 
     #if FEATURE_DEBUG_FUNCTIONS
     // Temporary marker that shows where the character's location is relative to.
@@ -417,6 +435,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         stageCharData = _data.characters.gf;
         character.flipX = character.getDataFlipX();
         character.name = 'gf';
+
       case DAD:
         this.characters.set('dad', character);
         stageCharData = _data.characters.dad;
@@ -425,6 +444,20 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         character.initHealthIcon(true);
       default:
         this.characters.set(character.characterId, character);
+    }
+
+    // Add the boombox.
+    boombox = character.fetchBoombox();
+    if (boombox != null)
+    {
+      if (character.name != null && character.name.length > 0)
+      {
+        this.boomboxes.set(character.name, boombox);
+      }
+      else
+      {
+        this.boomboxes.set(character.characterId, boombox);
+      }
     }
 
     // Reset the character before adding it to the stage.
@@ -465,10 +498,34 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         debugIcon2.y = character.y;
       }
       #end
+
+      // Update the boombox.
+      if (boombox != null)
+      {
+        boombox.zIndex = character.zIndex + character.getBoomboxZIndex();
+
+        boombox.x = stageCharData.position[0] + character.getBoomboxOffsets()[0];
+        boombox.y = stageCharData.position[1] + character.getBoomboxOffsets()[1];
+
+        boombox.originalPosition.set(boombox.x, boombox.y);
+
+        boombox.scrollFactor.x = character.scrollFactor.x;
+        boombox.scrollFactor.y = character.scrollFactor.y;
+
+        boombox.alpha = character.alpha;
+        boombox.angle = character.angle;
+      }
     }
 
     // Set the characters type
     character.characterType = charType;
+
+    // Add the boombox to the scene, if provided.
+    if (boombox != null)
+    {
+      this.add(boombox);
+      ScriptEventDispatcher.callEvent(boombox, new ScriptEvent(ADDED, false));
+    }
 
     // Add the character to the scene.
     this.add(character);
@@ -573,6 +630,41 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   /**
+   * Rereive the Boombox object that the provided character is sitting on.
+   * @param character The character's boombox to retrieve.
+   * @param pop If true, the boombox will be removed from the stage as well.
+   * @return The Boombox object.
+   */
+  public function getCharacterBoombox(character:String, pop:Bool = false):Null<Boombox>
+  {
+    if (pop)
+    {
+      var boombox:Null<Boombox> = boomboxes.get(character);
+      if (boombox == null) return null; // Only YOU can prevent Null Object Reference.
+
+      // Remove the boombox from the stage.
+      this.remove(boombox);
+      this.boomboxes.remove(character);
+
+      return boombox;
+    }
+    else
+    {
+      return boomboxes.get(character);
+    }
+  }
+
+  /**
+   * Rereive the Boombox object that the Girlfriend character is sitting on.
+   * @param pop If true, the boombox will be removed from the stage as well.
+   * @return The Boombox object.
+   */
+  public function getBoombox(pop:Bool = false):Null<Boombox>
+  {
+    return getCharacterBoombox('gf', pop);
+  }
+
+  /**
    * Retrieve the Dad character.
    * @param pop If true, the character will be removed from the stage as well.
    * @return The Dad character.
@@ -659,7 +751,16 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   {
     var charList = this.characters.keys().array();
 
-    // Dad, then BF, then GF, in that order.
+    // Boomboxes, then Dad, then BF, then GF, in that order.
+
+    for (char in charList)
+    {
+      var boombox:Null<Boombox> = getCharacterBoombox(char);
+      if (boombox != null)
+      {
+        ScriptEventDispatcher.callEvent(boombox, event);
+      }
+    }
 
     if (charList.contains('dad'))
     {
