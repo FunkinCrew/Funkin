@@ -50,7 +50,6 @@ class CharSelectSubState extends MusicBeatSubState
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
   var cursorLocIntended:FlxPoint = new FlxPoint(0, 0);
-  var lerpAmnt:Float = 0.95;
   var tmrFrames:Int = 60;
   var currentStage:Stage;
   var playerChill:CharSelectPlayer;
@@ -899,11 +898,11 @@ class CharSelectSubState extends MusicBeatSubState
     cursor.x = MathUtil.smoothLerp(cursor.x, cursorLocIntended.x, elapsed, 0.1);
     cursor.y = MathUtil.smoothLerp(cursor.y, cursorLocIntended.y, elapsed, 0.1);
 
-    cursorBlue.x = MathUtil.coolLerp(cursorBlue.x, cursor.x, lerpAmnt * 0.4);
-    cursorBlue.y = MathUtil.coolLerp(cursorBlue.y, cursor.y, lerpAmnt * 0.4);
+    cursorBlue.x = MathUtil.smoothLerp(cursorBlue.x, cursor.x, elapsed, 0.202);
+    cursorBlue.y = MathUtil.smoothLerp(cursorBlue.y, cursor.y, elapsed, 0.202);
 
-    cursorDarkBlue.x = MathUtil.coolLerp(cursorDarkBlue.x, cursorLocIntended.x, lerpAmnt * 0.2);
-    cursorDarkBlue.y = MathUtil.coolLerp(cursorDarkBlue.y, cursorLocIntended.y, lerpAmnt * 0.2);
+    cursorDarkBlue.x = MathUtil.smoothLerp(cursorDarkBlue.x, cursorLocIntended.x, elapsed, 0.404);
+    cursorDarkBlue.y = MathUtil.smoothLerp(cursorDarkBlue.y, cursorLocIntended.y, elapsed, 0.404);
 
     cursorConfirmed.x = cursor.x - 2;
     cursorConfirmed.y = cursor.y - 4;
