@@ -14,6 +14,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.stickers.StickerPack;
+import funkin.FunkinMemory;
 
 using Lambda;
 using StringTools;
@@ -158,6 +159,7 @@ class StickerSubState extends MusicBeatSubState
         if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
           switchingState = false;
+          FunkinMemory.clearStickers();
           close();
         }
       });
@@ -254,14 +256,14 @@ class StickerSubState extends MusicBeatSubState
               dipshit.addChild(bitmap);
               // FlxG.addChildBelowMouse(dipshit);
              */
-
+            FlxG.signals.preStateSwitch.addOnce(function() {
+              funkin.FunkinMemory.purgeCache(true);
+            });
             FlxG.switchState(() -> {
               // TODO: Rework this asset caching stuff
               // NOTE: This has to come AFTER the state switch,
               // otherwise the game tries to render destroyed sprites!
               // FunkinSprite.preparePurgeCache();
-              funkin.FunkinMemory.purgeCache(true);
-
               return targetState(this);
             });
           }
