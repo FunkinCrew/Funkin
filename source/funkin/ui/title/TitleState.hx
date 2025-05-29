@@ -316,10 +316,10 @@ class TitleState extends MusicBeatState
 
   function cheatCodeShit():Void
   {
-    if (controls.NOTE_DOWN_P || controls.UI_DOWN_P #if mobile || SwipeUtil.justSwipedUp #end) codePress(FlxDirectionFlags.DOWN);
-    if (controls.NOTE_UP_P || controls.UI_UP_P #if mobile || SwipeUtil.justSwipedDown #end) codePress(FlxDirectionFlags.UP);
-    if (controls.NOTE_LEFT_P || controls.UI_LEFT_P #if mobile || SwipeUtil.justSwipedLeft #end) codePress(FlxDirectionFlags.LEFT);
-    if (controls.NOTE_RIGHT_P || controls.UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end) codePress(FlxDirectionFlags.RIGHT);
+    if (controls.NOTE_DOWN_P || controls.UI_DOWN_P #if mobile || SwipeUtil.justSwipedUp #end) codePress(FlxDirectionFlags.DOWN.toInt());
+    if (controls.NOTE_UP_P || controls.UI_UP_P #if mobile || SwipeUtil.justSwipedDown #end) codePress(FlxDirectionFlags.UP.toInt());
+    if (controls.NOTE_LEFT_P || controls.UI_LEFT_P #if mobile || SwipeUtil.justSwipedLeft #end) codePress(FlxDirectionFlags.LEFT.toInt());
+    if (controls.NOTE_RIGHT_P || controls.UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end) codePress(FlxDirectionFlags.RIGHT.toInt());
   }
 
   function codePress(input:Int)

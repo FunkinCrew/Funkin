@@ -28,13 +28,13 @@ class MouseUtil
     if (jusPres)
     {
       oldCamPos.set(target.x, target.y);
-      oldMousePos.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
+      oldMousePos.set(FlxG.mouse.viewX, FlxG.mouse.viewY);
     }
 
     if (pressed)
     {
-      target.x = oldCamPos.x - (FlxG.mouse.screenX - oldMousePos.x);
-      target.y = oldCamPos.y - (FlxG.mouse.screenY - oldMousePos.y);
+      target.x = oldCamPos.x - (FlxG.mouse.viewX - oldMousePos.x);
+      target.y = oldCamPos.y - (FlxG.mouse.viewY - oldMousePos.y);
     }
   }
 

@@ -720,7 +720,7 @@ class CharSelectSubState extends MusicBeatSubState
         ease: FlxEase.backIn,
         onComplete: function(_) {
           funkin.ui.FullScreenScaleMode.enabled = true;
-          FlxG.switchState(FreeplayState.build(
+          FlxG.switchState(() -> FreeplayState.build(
             {
               {
                 character: curChar,
@@ -954,10 +954,10 @@ class CharSelectSubState extends MusicBeatSubState
 
         HapticUtil.vibrate(0, 0.2);
 
-        cursorDenied.animation.play("idle", true);
-        cursorDenied.animation.finishCallback = (_) -> {
+        cursorDenied.animation.play('idle', true);
+        cursorDenied.animation.onFinish.add((_) -> {
           cursorDenied.visible = false;
-        };
+        });
       }
     }
 
@@ -1115,14 +1115,16 @@ class CharSelectSubState extends MusicBeatSubState
               memb.filters = selectedBizz;
               memb.scale.set(2.6, 2.6);
             }
-            if (pressedSelect && memb.animation.curAnim.name == "idle") memb.animation.play("confirm");
-            if (autoFollow && !pressedSelect && memb.animation.curAnim.name != "idle")
+            if (pressedSelect && memb.animation.curAnim.name == 'idle') memb.animation.play('confirm');
+            if (autoFollow && !pressedSelect && memb.animation.curAnim.name != 'idle')
             {
               memb.animation.play("confirm", false, true);
-              member.animation.finishCallback = (_) -> {
-                member.animation.play("idle");
-                member.animation.finishCallback = null;
+              var onFinish:String->Void = null;
+              onFinish = (_) -> {
+                member.animation.play('idle');
+                member.animation.onFinish.remove(onFinish);
               };
+              member.animation.onFinish.add(onFinish);
             }
           }
           else

@@ -97,37 +97,37 @@ class DebugMenuSubState extends MusicBeatSubState
     return item;
   }
 
-  function openChartEditor()
+  function openChartEditor():Void
   {
     FlxTransitionableState.skipNextTransIn = true;
 
     FlxG.switchState(() -> new ChartEditorState());
   }
 
-  function openInputOffsetTesting()
+  function openInputOffsetTesting():Void
   {
     openSubState(new funkin.ui.debug.latency.LatencyState());
     trace('Input Offset Testing');
   }
 
-  function openCharSelect()
+  function openCharSelect():Void
   {
-    FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+    FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
   }
 
-  function openAnimationEditor()
+  function openAnimationEditor():Void
   {
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     trace('Animation Editor');
   }
 
-  function testStickers()
+  function testStickers():Void
   {
     openSubState(new funkin.ui.transition.stickers.StickerSubState({}));
     trace('opened stickers');
   }
 
-  function openStageEditor()
+  function openStageEditor():Void
   {
     trace('Stage Editor');
   }
