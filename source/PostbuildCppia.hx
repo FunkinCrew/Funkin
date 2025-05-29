@@ -46,19 +46,6 @@ class PostbuildCppia
     if (haxeCompilerSrc == null || !FileSystem.exists(haxeCompilerSrc)) throw 'Haxe compiler binaries do not exist or HAXEPATH is not set';
 
     recursiveCopy(haxeCompilerSrc, haxeCompilerDest, ['$haxeCompilerSrc/lib']);
-
-    var libs:Array<String> = File.getContent('.copy_libs').split('\n');
-
-    for (lib in libs)
-    {
-      if (!FileSystem.exists(lib)) throw 'Library does not exist: $lib';
-
-      var dest:String = '${BIN_DIR}/haxe/std/${lib.split('/').pop()}';
-
-      recursiveCopy(lib, dest, []);
-    }
-
-    FileSystem.deleteFile('.copy_libs');
   }
 
   static function recursiveCopy(from:String, to:String, skip:Array<String>):Void

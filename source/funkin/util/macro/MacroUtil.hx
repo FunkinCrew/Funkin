@@ -26,22 +26,6 @@ class MacroUtil
   }
 
   /**
-   * Gets all Haxe compiler defines as a command line string.
-   * @return An expression containing the command line string of defines.
-   */
-  public static macro function getDefinesAsCommand():ExprOf<String>
-  {
-    return macro $v
-    {
-      [
-        for (name => value in Context.getDefines())
-          if (!['utf16', 'true', 'sys', 'static', 'haxe_ver', 'haxe-ver', 'haxe', 'cpp'].contains(name)
-            && !name.startsWith('target.')) '-D ${name}=${value.contains(' ') ? '"$value"' : value}'
-      ].join(' ')
-    };
-  }
-
-  /**
    * Gets the current date and time (at compile time).
    * @return A `Date` object containing the current date and time.
    */

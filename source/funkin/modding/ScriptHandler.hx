@@ -3,7 +3,7 @@ package funkin.modding;
 #if cpp
 import sys.io.File;
 import sys.FileSystem;
-import haxe.Timer;
+import haxe.io.Path;
 import sys.io.Process;
 import haxe.io.Bytes;
 import cpp.cppia.Module;
@@ -15,8 +15,6 @@ class ScriptHandler implements ISingleton
 {
   #if cpp
   var classMap:Map<String, Class<Dynamic>>;
-
-  static final DEFINES:String = funkin.util.macro.MacroUtil.getDefinesAsCommand();
   #end
 
   public function new()
@@ -30,11 +28,9 @@ class ScriptHandler implements ISingleton
   {
     #if cpp
     var oldStdPath:String = Sys.getEnv('HAXE_STD_PATH');
-    Sys.putEnv('HAXE_STD_PATH', 'haxe/std');
+    Sys.putEnv('HAXE_STD_PATH', Path.join([Path.normalize(Sys.getCwd()), 'haxe', 'std']));
 
-    trace('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info $DEFINES');
-
-    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info $DEFINES');
+    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info');
 
     if (cmd.exitCode() != 0)
     {
