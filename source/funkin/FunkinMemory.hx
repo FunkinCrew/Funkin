@@ -309,9 +309,9 @@ class FunkinMemory
     var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound != null)
     {
-    permanentCachedSounds.set(key, sound);
-    currentCachedSounds.set(key, sound);
-  }
+      permanentCachedSounds.set(key, sound);
+      currentCachedSounds.set(key, sound);
+    }
   }
 
   ///// MISC /////
@@ -338,9 +338,9 @@ class FunkinMemory
       {
         obj.destroy();
       }
-          FlxG.bitmap.removeKey(key);
-          if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
-          Assets.cache.clear(key);
+      FlxG.bitmap.removeKey(key);
+      if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
+      Assets.cache.clear(key);
     }
 
     preparePurgeSoundCache();
