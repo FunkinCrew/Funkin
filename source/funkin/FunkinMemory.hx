@@ -13,6 +13,7 @@ import lime.app.Promise;
  * Handles caching of textures and sounds for the game.
  * TODO: Remove this once Eric finishes the memory system.
  */
+@:nullSafety
 class FunkinMemory
 {
   static var permanentCachedTextures:Map<String, FlxGraphic> = [];
@@ -92,13 +93,15 @@ class FunkinMemory
   /**
    * Clears the current texture and sound caches.
    */
-  public static inline function purgeCache(?callGarbageCollector:Bool = false):Void
+  public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
     preparePurgeTextureCache();
     purgeTextureCache();
     preparePurgeSoundCache();
     purgeSoundCache();
-    if (callGarbageCollector) System.gc();
+    #if (cpp || neko || hl)
+    if (callGarbageCollector) funkin.util.MemoryUtil.collect(true);
+    #end
   }
 
   ///// TEXTURES /////
@@ -117,13 +120,13 @@ class FunkinMemory
     if (previousCachedTextures.exists(key))
     {
       // Move the texture from the previous cache to the current cache.
-      var graphic = previousCachedTextures.get(key);
+      var graphic:Null<FlxGraphic> = previousCachedTextures.get(key);
       previousCachedTextures.remove(key);
-      currentCachedTextures.set(key, graphic);
+      if (graphic != null) currentCachedTextures.set(key, graphic);
       return;
     }
 
-    var graphic = FlxGraphic.fromAssetKey(key, false, null, true);
+    var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
       FlxG.log.warn('Failed to cache graphic: $key');
@@ -147,7 +150,7 @@ class FunkinMemory
       return; // Already cached.
     }
 
-    var graphic = FlxGraphic.fromAssetKey(key, false, null, true);
+    var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
       FlxG.log.warn('Failed to cache graphic: $key');
@@ -195,7 +198,7 @@ class FunkinMemory
 
       if (graphicKey.contains("fonts")) continue;
 
-      var graphic = previousCachedTextures.get(graphicKey);
+      var graphic:Null<FlxGraphic> = previousCachedTextures.get(graphicKey);
       if (graphic != null)
       {
         FlxG.bitmap.remove(graphic);
@@ -214,7 +217,7 @@ class FunkinMemory
     @:privateAccess
     for (key in FlxG.bitmap._cache.keys())
     {
-      var obj = FlxG.bitmap.get(key);
+      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
 
       if (obj == null || obj.persist || permanentCachedTextures.exists(key) || key.contains("fonts"))
       {
@@ -240,13 +243,13 @@ class FunkinMemory
     if (previousCachedSounds.exists(key))
     {
       // Move the texture from the previous cache to the current cache.
-      var sound = previousCachedSounds.get(key);
+      var sound:Null<Sound> = previousCachedSounds.get(key);
       previousCachedSounds.remove(key);
-      currentCachedSounds.set(key, sound);
+      if (sound != null) currentCachedSounds.set(key, sound);
       return;
     }
 
-    var sound = Assets.getSound(key, true);
+    var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound == null) return;
     else
       currentCachedSounds.set(key, sound);
@@ -256,12 +259,12 @@ class FunkinMemory
   {
     if (permanentCachedSounds.exists(key)) return;
 
-    var sound = Assets.getSound(key, true);
+    var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound == null) return;
     else
       permanentCachedSounds.set(key, sound);
 
-    currentCachedSounds.set(key, sound);
+    if (sound != null) currentCachedSounds.set(key, sound);
   }
 
   public static function preparePurgeSoundCache():Void
@@ -292,21 +295,23 @@ class FunkinMemory
         continue;
       }
 
-      var sound = previousCachedSounds.get(key);
+      var sound:Null<Sound> = previousCachedSounds.get(key);
       if (sound != null)
       {
         Assets.cache.removeSound(key);
         previousCachedTextures.remove(key);
-        sound = null;
       }
     }
     Assets.cache.clear("songs");
     Assets.cache.clear("music");
     // Felt lazy.
     var key = Paths.music("freakyMenu/freakyMenu");
-    var sound = Assets.getSound(key, true);
+    var sound:Null<Sound> = Assets.getSound(key, true);
+    if (sound != null)
+    {
     permanentCachedSounds.set(key, sound);
     currentCachedSounds.set(key, sound);
+  }
   }
 
   ///// MISC /////
