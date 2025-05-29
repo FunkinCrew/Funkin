@@ -1538,6 +1538,12 @@ class FreeplayState extends MusicBeatSubState
       _pressedOnCapsule = false;
       _pressedOnFreeplay = false;
     }
+
+    if (!TouchUtil.pressed && !FlxG.touches.flickManager.initialized)
+    {
+      _flickEnded = true;
+      draggingDifficulty = false;
+    }
     #end
 
     if (controls.BACK)
@@ -1614,10 +1620,7 @@ class FreeplayState extends MusicBeatSubState
   private function handleTouchCapsuleClick():Void
   {
     if (diffSelRight == null) return;
-    if (TouchUtil.pressAction()
-      && !TouchUtil.overlaps(diffSelRight, funnyCam)
-      && TouchUtil.touch.velocity.length < 5
-      && !draggingDifficulty)
+    if (TouchUtil.pressAction() && !TouchUtil.overlaps(diffSelRight, funnyCam) && !draggingDifficulty)
     {
       curSelected = Math.round(curSelectedFloat);
 
