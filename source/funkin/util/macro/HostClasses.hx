@@ -19,6 +19,7 @@ class HostClasses
   {
     Context.onGenerate((types) -> {
       var modules:Map<String, Array<Type>> = new Map<String, Array<Type>>();
+      var typeMap:Map<String, Bool> = new Map<String, Bool>();
 
       var binDir:String;
       for (cp in Context.getClassPath())
@@ -38,18 +39,26 @@ class HostClasses
           case TInst(_.get() => t, _):
             if (haxe.io.Path.normalize(t.pos.getInfos().file).contains('haxe/std')) continue;
             if (t.name.endsWith('_Impl_')) continue;
+            typeMap.set('${t.module}.${t.name}', true);
+            typeMap.set('${t.pack.join('.')}.${t.name}', true);
             var types:Array<Type> = modules.get(t.module) ?? [];
             modules.set(t.module, types.concat([type]));
           case TType(_.get() => t, _):
             if (haxe.io.Path.normalize(t.pos.getInfos().file).contains('haxe/std')) continue;
+            typeMap.set('${t.module}.${t.name}', true);
+            typeMap.set('${t.pack.join('.')}.${t.name}', true);
             var types:Array<Type> = modules.get(t.module) ?? [];
             modules.set(t.module, types.concat([type]));
           case TAbstract(_.get() => t, _):
             if (haxe.io.Path.normalize(t.pos.getInfos().file).contains('haxe/std')) continue;
+            typeMap.set('${t.module}.${t.name}', true);
+            typeMap.set('${t.pack.join('.')}.${t.name}', true);
             var types:Array<Type> = modules.get(t.module) ?? [];
             modules.set(t.module, types.concat([type]));
           case TEnum(_.get() => t, _):
             if (haxe.io.Path.normalize(t.pos.getInfos().file).contains('haxe/std')) continue;
+            typeMap.set('${t.module}.${t.name}', true);
+            typeMap.set('${t.pack.join('.')}.${t.name}', true);
             var types:Array<Type> = modules.get(t.module) ?? [];
             modules.set(t.module, types.concat([type]));
           default:
@@ -61,36 +70,81 @@ class HostClasses
       {
         var content:String = 'package ${module.split('.').slice(0, -1).join('.')};\n\n';
 
+        var file:String = switch (types[0])
+        {
+          case TInst(_.get() => t, _):
+            t.pos.getInfos().file;
+          case TType(_.get() => t, _):
+            t.pos.getInfos().file;
+          case TAbstract(_.get() => t, _):
+            t.pos.getInfos().file;
+          case TEnum(_.get() => t, _):
+            t.pos.getInfos().file;
+          default:
+            throw 'Unsupported type: ${types[0]}';
+        }
+
+        var typeReplace:Map<String, String> = new Map<String, String>();
+        var typeReplaceContent:Map<String, String> = new Map<String, String>();
+
+        var importContent:String = sys.io.File.getContent(file);
+        var importRegex:EReg = ~/import\s+([a-zA-Z0-9_.]+)\s+as\s+([a-zA-Z0-9_]+)\s*;/;
+        while (importRegex.match(importContent))
+        {
+          var imp:String = importRegex.matched(1);
+          var name:String = importRegex.matched(2);
+          importContent = importRegex.matchedRight();
+          if (typeMap.exists(imp) && !imp.contains('flash'))
+          {
+            // i am too lazy to parse preprocessors
+            // so i am just going to override these overlapping imports
+            for (i => n in typeReplace)
+              if (n == name) typeReplace.remove(i);
+            typeReplace.set('${module}.${name}', name);
+            typeReplaceContent.set(name, imp);
+          }
+        }
+
+        for (n => i in typeReplaceContent)
+          content += 'import ${i} as ${n};\n\n';
+
         for (type in types)
         {
           switch (type)
           {
             case TInst(_.get() => t, params):
               content += t.isPrivate ? 'private ' : '';
-              content += '${t.isInterface ? 'interface' : 'class'} ${t.name}${paramsToString(params)}\n';
+              content += '${t.isInterface ? 'interface' : 'class'} ${t.name}${paramsToString(typeReplace, params)} ';
+              if (t.superClass != null) content += 'extends ${typeToString(TInst(t.superClass.t, t.superClass.params), typeReplace, params)} ';
+              content += t.interfaces.map((i) -> (t.isInterface ? 'extends' : 'implements') + ' ${typeToString(TInst(i.t, i.params), typeReplace, params)}')
+                .join(' ');
+              content += '\n';
               content += '{\n';
-              for (f in t.statics.get())
-                content += '  extern static ${fieldToString(f, params, false)};\n';
+              for (f in removeGeneratedGenerics(t.statics.get()))
+                content += '  static ${fieldToString(f, typeReplace, params, Class)};\n';
 
-              for (f in t.fields.get().concat(t.constructor != null ? [t.constructor.get()] : []))
-                content += '  extern ${fieldToString(f, params, false)};\n';
+              for (f in removeGeneratedGenerics(t.fields.get()).concat(t.constructor != null ? [t.constructor.get()] : []))
+                content += '  ${fieldToString(f, typeReplace, params, Class)};\n';
 
               content += '}\n\n';
 
             case TAbstract(_.get() => t, params):
-              content += 'abstract ${t.name}${paramsToString(params)}(${typeToString(t.type, params)}) ';
-              content += t.from.map((from) -> from.field == null ? 'from ${typeToString(from.t, params)} ' : '').join(' ');
-              content += t.to.map((to) -> to.field == null ? 'to ${typeToString(to.t, params)} ' : '').join(' ');
+              content += t.isPrivate ? 'private ' : '';
+              content += t.meta.has(':enum') ? 'enum ' : '';
+              content += 'abstract ${t.name}${paramsToString(typeReplace, params)}(${typeToString(t.type, typeReplace, params)}) ';
+              content += t.from.map((from) -> from.field == null ? 'from ${typeToString(from.t, typeReplace, params)} ' : '').join(' ');
+              content += t.to.map((to) -> to.field == null ? 'to ${typeToString(to.t, typeReplace, params)} ' : '').join(' ');
               content += '\n';
               content += '{\n';
 
-              if (t.impl != null) for (f in t.impl.get().statics.get())
-                content += '  extern ${fieldToString(f, params, true)};\n';
+              if (t.impl != null) for (f in removeGeneratedGenerics(t.impl.get().statics.get()))
+                content += '  ${fieldToString(f, typeReplace, params, t.meta.has(':enum') ? EnumAbstract : Abstract)};\n';
 
               content += '}\n\n';
 
             case TEnum(_.get() => t, params):
-              content += 'enum ${t.name}${paramsToString(params)}\n';
+              content += t.isPrivate ? 'private ' : '';
+              content += 'enum ${t.name}${paramsToString(typeReplace, params)}\n';
               content += '{\n';
 
               for (n in t.names)
@@ -99,7 +153,8 @@ class HostClasses
               content += '}\n\n';
 
             case TType(_.get() => t, params):
-              content += 'typedef ${t.name}${paramsToString(params)} = ${typeToString(t.type, params)};\n\n';
+              content += t.isPrivate ? 'private ' : '';
+              content += 'typedef ${t.name}${paramsToString(typeReplace, params)} = ${typeToString(t.type, typeReplace, params)};\n\n';
 
             default:
               throw 'Unsupported type: ${type}';
@@ -117,28 +172,30 @@ class HostClasses
     return Context.getBuildFields();
   }
 
-  static function fieldToString(field:ClassField, params:Array<Type>, fromAbstractType:Bool):String
+  static function fieldToString(field:ClassField, typeReplace:Map<String, String>, params:Array<Type>, typeInfo:TypeInfo):String
   {
     var string:String = '';
+    string += 'extern ';
     string += field.isPublic ? 'public ' : 'private ';
     string += field.isFinal ? 'final ' : '';
     string += field.isAbstract ? 'abstract ' : '';
-
     params = params.concat(field.params.map((p) -> p.t));
 
     switch (field.kind)
     {
       case FVar(ra, wa):
+        if (typeInfo == EnumAbstract) string = string.replace('extern ', '');
         var rs:String = getter(ra);
         var ws:String = setter(wa);
 
         if (!field.isFinal) string += 'var ';
 
-        if (fromAbstractType && rs == 'default') string = 'static ' + string;
+        if (typeInfo == Abstract && rs == 'default') string = 'static ' + string;
 
         string += '${field.name}';
-        if (!field.isFinal) string += '($rs, $ws)';
-        string += ' : ${typeToString(field.type, params)}';
+        if (!field.isFinal && typeInfo != EnumAbstract) string += '($rs, $ws)';
+        string += ' : ${typeToString(field.type, typeReplace, params)}';
+        if (typeInfo == EnumAbstract && field.expr() != null) string += ' = ${field.expr().toString(true)}';
 
       case FMethod(k):
         string += switch (k)
@@ -149,9 +206,9 @@ class HostClasses
           case MethDynamic: 'dynamic ';
         }
 
-        string += 'function ${(fromAbstractType && field.name == '_new') ? 'new' : field.name}${paramsToString(field.params.map((p) -> p.t))}';
+        string += 'function ${((typeInfo == Abstract || typeInfo == EnumAbstract) && field.name == '_new') ? 'new' : field.name}${paramsToString(typeReplace, field.params.map((p) -> p.t))}';
 
-        var noRet:Bool = field.name == 'new' || (fromAbstractType && field.name == '_new');
+        var noRet:Bool = field.name == 'new' || ((typeInfo == Abstract || typeInfo == EnumAbstract) && field.name == '_new');
 
         // using the expr() to get default values for arguments
         // sadly if there is no expr() it means we can't get the default values
@@ -161,18 +218,18 @@ class HostClasses
           {
             case TFunction(f):
               var args:Array<String> = [];
-              if (fromAbstractType
+              if ((typeInfo == Abstract || typeInfo == EnumAbstract)
                 && field.name != '_new'
                 && (f.args.length == 0 || (f.args.length > 0 && !f.args[0].v.name.startsWith('this')))) string = 'static ' + string;
               for (a in f.args)
               {
-                if (fromAbstractType && a.v.name.startsWith('this')) continue;
-                var arg:String = '${a.v.name} : ${typeToString(a.v.t, params)}';
-                if (a.value != null) arg += ' = ${a.value.toString(true)}';
+                if ((typeInfo == Abstract || typeInfo == EnumAbstract) && a.v.name.startsWith('this')) continue;
+                var arg:String = '${a.v.name} : ${typeToString(a.v.t, typeReplace, params)}';
+                if (a.value != null) arg += ' = cast ${a.value.toString(true)}';
                 args.push(arg);
               }
               string += '(${args.join(', ')})';
-              if (!noRet) string += ' : ${typeToString(f.t, params)}';
+              if (!noRet) string += ' : ${typeToString(f.t, typeReplace, params)}';
             default:
               throw 'Should not happen, right?';
           }
@@ -183,16 +240,16 @@ class HostClasses
           {
             case TFun(args_, ret):
               var args:Array<String> = [];
-              if (fromAbstractType
+              if ((typeInfo == Abstract || typeInfo == EnumAbstract)
                 && field.name != '_new'
                 && (args_.length == 0 || (args_.length > 0 && !args_[0].name.startsWith('this')))) string = 'static ' + string;
               for (a in args_)
               {
-                if (fromAbstractType && a.name.startsWith('this')) continue;
-                args.push((a.opt ? '?' : '') + '${a.name} : ${typeToString(a.t, params)}');
+                if ((typeInfo == Abstract || typeInfo == EnumAbstract) && a.name.startsWith('this')) continue;
+                args.push((a.opt ? '?' : '') + '${a.name} : ${typeToString(a.t, typeReplace, params)}');
               }
               string += '(${args.join(',')})';
-              if (!noRet) string += ' : ${typeToString(ret, params)}';
+              if (!noRet) string += ' : ${typeToString(ret, typeReplace, params)}';
             default:
               throw 'Should not happen, right?';
           }
@@ -228,12 +285,12 @@ class HostClasses
     };
   }
 
-  static function typeToString(type:Type, params:Array<Type>):String
+  static function typeToString(type:Type, typeReplace:Map<String, String>, params:Array<Type>):String
   {
     function typeParams(underlyingParams:Array<Type>):String
     {
       if (underlyingParams.length == 0) return '';
-      return '<' + underlyingParams.map((t) -> typeToString(t, params)).join(', ') + '>';
+      return '<' + underlyingParams.map((t) -> typeToString(t, typeReplace, params)).join(', ') + '>';
     }
 
     function typePath(type:Type):String
@@ -241,24 +298,40 @@ class HostClasses
       return switch (type)
       {
         case TInst(_.get() => t, params):
-          '${t.module}.${t.name}${typeParams(params)}';
+          var path:String = (t.module == 'StdTypes' ? t.name : (t.module.split('.').pop() == t.name ? t.module : '${t.module}.${t.name}'));
+          '${path}${typeParams(params)}';
         case TAbstract(_.get() => t, params):
-          '${t.module}.${t.name}${typeParams(params)}';
+          var path:String = (t.module == 'StdTypes' ? t.name : (t.module.split('.').pop() == t.name ? t.module : '${t.module}.${t.name}'));
+          '${path}${typeParams(params)}';
         case TEnum(_.get() => t, params):
-          '${t.module}.${t.name}${typeParams(params)}';
+          var path:String = (t.module == 'StdTypes' ? t.name : (t.module.split('.').pop() == t.name ? t.module : '${t.module}.${t.name}'));
+          '${path}${typeParams(params)}';
         case TType(_.get() => t, params):
-          '${t.module}.${t.name}${typeParams(params)}';
+          var path:String = (t.module == 'StdTypes' ? t.name : (t.module.split('.').pop() == t.name ? t.module : '${t.module}.${t.name}'));
+          '${path}${typeParams(params)}';
         case TAnonymous(_.get() => t):
-          '{\n${[for (f in t.fields) '  ${f.name} : ${typeToString(f.type, params)}'].join(',\n')}\n}';
+          '{\n${[for (f in t.fields) '  ${f.name} : ${typeToString(f.type, typeReplace, params)}'].join(',\n')}\n}';
+        case TFun(args, ret):
+          var args:String = args.map((a) -> (a.opt ? '?' : '') + '${typeToString(a.t, typeReplace, params)}').join(', ');
+          '(${args}) -> ${typeToString(ret, typeReplace, params)}';
+        case TDynamic(t):
+          'Dynamic${typeParams(t != null ? [t] : [])}';
+        case TMono(t):
+          'Dynamic';
+        case TLazy(_() => t):
+          typeToString(t, typeReplace, params);
         default:
-          type.toString();
+          throw 'Unsupported type: ${type}';
       };
     }
 
     var string:String = typePath(type);
+    for (i => n in typeReplace)
+      string = string.replace(i, n);
     for (p in params)
     {
-      var p1:String = switch (p) {
+      var p1:String = switch (p)
+      {
         case TInst(_.get() => t, _):
           '${t.module}.${t.name}';
         default:
@@ -271,10 +344,29 @@ class HostClasses
     return string;
   }
 
-  static function paramsToString(params:Array<Type>):String
+  static function paramsToString(typeReplace:Map<String, String>, params:Array<Type>):String
   {
     if (params.length == 0) return '';
-    return '<' + params.map((t) -> typeToString(t, params)).join(', ') + '>';
+    return '<' + params.map((t) -> typeToString(t, typeReplace, params)).join(', ') + '>';
   }
+
+  static function removeGeneratedGenerics(fields:Array<ClassField>):Array<ClassField>
+  {
+    var generics:Array<String> = [];
+    for (f in fields)
+      if (f.meta.has(':generic')) generics.push('${f.name}_');
+    return fields.filter((f) -> {
+      for (g in generics)
+        if (f.name.startsWith(g)) return false;
+      return true;
+    });
+  }
+}
+
+enum TypeInfo
+{
+  Class;
+  Abstract;
+  EnumAbstract;
 }
 #end
