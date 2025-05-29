@@ -318,31 +318,29 @@ class FunkinMemory
 
   public static inline function clearFreeplay():Void
   {
+    var keysToRemove:Array<String> = [];
+
     @:privateAccess
     for (key in FlxG.bitmap._cache.keys())
     {
-      var obj = FlxG.bitmap.get(key);
-      if (obj == null) continue;
-
-      if (!key.contains("stickers"))
-      {
-        continue;
-      }
-
+      if (!key.contains("freeplay")) continue;
       if (permanentCachedTextures.exists(key) || key.contains("fonts")) continue;
 
-      trace('Queued $key to clean up');
+      keysToRemove.push(key);
+    }
 
-      new Future<String>(function() {
-        new flixel.util.FlxTimer().start(1 / 24, function(_) {
+    @:privateAccess
+    for (key in keysToRemove)
+    {
+      trace('Cleaning up $key');
+      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
+      if (obj != null)
+      {
+        obj.destroy();
+      }
           FlxG.bitmap.removeKey(key);
           if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
-          obj.destroy();
           Assets.cache.clear(key);
-          trace('$key destroyed');
-        });
-        return '$key destroyed';
-      }, true);
     }
 
     preparePurgeSoundCache();
