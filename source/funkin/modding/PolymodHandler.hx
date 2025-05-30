@@ -11,6 +11,7 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.data.song.SongRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
+import funkin.data.stickers.StickerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -38,7 +39,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  static final API_VERSION_RULE:String = ">=0.5.0 <0.6.0";
+  static final API_VERSION_RULE:String = ">=0.6.3 <0.7.0";
 
   /**
    * Where relative to the executable that mods are located.
@@ -79,8 +80,10 @@ class PolymodHandler
    */
   public static function loadAllMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
+    #end
     trace('Initializing Polymod (using all mods)...');
     loadModsById(getAllModIds());
   }
@@ -90,9 +93,10 @@ class PolymodHandler
    */
   public static function loadEnabledMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     trace('Initializing Polymod (using configured mods)...');
     loadModsById(Save.instance.enabledModIds);
   }
@@ -102,9 +106,10 @@ class PolymodHandler
    */
   public static function loadNoMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     // We still need to configure the debug print calls etc.
     trace('Initializing Polymod (using no mods)...');
     loadModsById([]);
@@ -249,6 +254,9 @@ class PolymodHandler
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
+
+    // `funkin.util.FileUtil` has unrestricted access to the file system.
+    Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
 
     // Add blacklisting for prohibited classes and packages.
 
@@ -480,6 +488,7 @@ class PolymodHandler
     SpeakerRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+    StickerRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();

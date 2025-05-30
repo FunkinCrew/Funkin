@@ -65,19 +65,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    */
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
 
-  /**
-   * The internal ID of the song.
-   */
-  public final id:String;
-
-  /**
-   * Song metadata as parsed from the JSON file.
-   * This is the data for the `default` variation specifically,
-   * and is needed for the IRegistryEntry interface.
-   * Will only be null if the song data could not be loaded.
-   */
-  public final _data:Null<SongMetadata>;
-
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
 
@@ -289,6 +276,14 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return diff.album ?? '';
   }
 
+  public function getStickerPackId(diffId:String, variation:String):Null<String>
+  {
+    var diff:Null<SongDifficulty> = getDifficulty(diffId, variation);
+    if (diff == null) return null;
+
+    return diff.stickerPack;
+  }
+
   /**
    * Populate the difficulty data from the provided metadata.
    * Does not load chart data (that is triggered later when we want to play the song).
@@ -331,6 +326,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.difficultyRating = metadata.playData.ratings.get(diffId) ?? 0;
         difficulty.album = metadata.playData.album;
+        difficulty.stickerPack = metadata.playData.stickerPack;
 
         difficulty.stage = metadata.playData.stage;
         difficulty.noteStyle = metadata.playData.noteStyle;
@@ -624,13 +620,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
   }
 
-  public function toString():String
-  {
-    return 'Song($id)';
-  }
-
-  public function destroy():Void {}
-
   public function onPause(event:PauseScriptEvent):Void {};
 
   public function onResume(event:ScriptEvent):Void {};
@@ -650,6 +639,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   public function onNoteHit(event:HitNoteScriptEvent) {};
 
   public function onNoteMiss(event:NoteScriptEvent):Void {};
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 
   public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {};
 
@@ -750,6 +741,7 @@ class SongDifficulty
 
   public var difficultyRating:Int = 0;
   public var album:Null<String> = null;
+  public var stickerPack:Null<String> = null;
 
   public function new(song:Song, diffId:String, variation:String)
   {
@@ -809,7 +801,7 @@ class SongDifficulty
   {
     var suffix:String = (instId != '') ? '-$instId' : '';
 
-    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true);
+    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true, false, null, null, true);
 
     // Workaround for a bug where FlxG.sound.music.update() was being called twice.
     FlxG.sound.list.remove(FlxG.sound.music);
@@ -956,15 +948,20 @@ class SongDifficulty
     for (playerVoice in playerVoiceList)
     {
       if (!Assets.exists(playerVoice)) continue;
-      result.addPlayerVoice(FunkinSound.load(playerVoice));
+      result.addPlayerVoice(FunkinSound.load(playerVoice, 1.0, false, false, false, false, null, null, true));
     }
 
     // Add opponent vocals.
     for (opponentVoice in opponentVoiceList)
     {
       if (!Assets.exists(opponentVoice)) continue;
-      result.addOpponentVoice(FunkinSound.load(opponentVoice));
+      result.addOpponentVoice(FunkinSound.load(opponentVoice, 1.0, false, false, false, false, null, null, true));
     }
+
+    // Sometimes the sounds don't set their important value to true, so we have to do this manually.
+    result.forEach(function(snd:FunkinSound) {
+      snd.important = true;
+    });
 
     result.playerVoicesOffset = offsets.getVocalOffset(characters.player, instId);
     result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent, instId);
