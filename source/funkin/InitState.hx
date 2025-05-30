@@ -242,6 +242,9 @@ class InitState extends FlxState
     #elseif CHARTING
     // -DCHARTING
     FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState());
+    #elseif STAGING
+    // -DSTAGING
+    FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
     #elseif STAGEBUILD
     // -DSTAGEBUILD
     FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
