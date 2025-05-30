@@ -99,14 +99,18 @@ class HostClasses
             // i am too lazy to parse preprocessors
             // so i am just going to override these overlapping imports
             for (i => n in typeReplace)
+            {
               if (n == name) typeReplace.remove(i);
+            }
             typeReplace.set('${module}.${name}', name);
             typeReplaceContent.set(name, imp);
           }
         }
 
         for (n => i in typeReplaceContent)
+        {
           content += 'import ${i} as ${n};\n\n';
+        }
 
         for (type in types)
         {
@@ -120,11 +124,16 @@ class HostClasses
                 .join(' ');
               content += '\n';
               content += '{\n';
+
               for (f in removeGeneratedGenerics(t.statics.get()))
+              {
                 content += '  static ${fieldToString(f, typeReplace, params, Class)};\n';
+              }
 
               for (f in removeGeneratedGenerics(t.fields.get()).concat(t.constructor != null ? [t.constructor.get()] : []))
+              {
                 content += '  ${fieldToString(f, typeReplace, params, Class)};\n';
+              }
 
               content += '}\n\n';
 
@@ -137,9 +146,22 @@ class HostClasses
               content += '\n';
               content += '{\n';
 
-              if (t.impl != null) for (f in removeGeneratedGenerics(t.impl.get().statics.get()))
-                content += '  ${fieldToString(f, typeReplace, params, t.meta.has(':enum') ? EnumAbstract : Abstract)};\n';
+              var isEnum:Bool = t.meta.has(':enum');
 
+              if (t.impl != null)
+              {
+                var abstractFields:{fields:Array<ClassField>, statics:Array<ClassField>} = abstractFields(t);
+
+                for (f in removeGeneratedGenerics(abstractFields.statics))
+                {
+                  content += '  static ${fieldToString(f, typeReplace, params, Abstract(isEnum))};\n';
+                }
+
+                for (f in removeGeneratedGenerics(abstractFields.fields))
+                {
+                  content += '  ${fieldToString(f, typeReplace, params, Abstract(isEnum))};\n';
+                }
+              }
               content += '}\n\n';
 
             case TEnum(_.get() => t, params):
@@ -148,7 +170,9 @@ class HostClasses
               content += '{\n';
 
               for (n in t.names)
+              {
                 content += '  ${n};\n';
+              }
 
               content += '}\n\n';
 
@@ -176,26 +200,42 @@ class HostClasses
   {
     var string:String = '';
     string += 'extern ';
-    string += field.isPublic ? 'public ' : 'private ';
+    string += field.isPublic ? 'public ' : 'public '; // 'private ';
     string += field.isFinal ? 'final ' : '';
     string += field.isAbstract ? 'abstract ' : '';
     params = params.concat(field.params.map((p) -> p.t));
 
     switch (field.kind)
     {
-      case FVar(ra, wa):
-        if (typeInfo == EnumAbstract) string = string.replace('extern ', '');
-        var rs:String = getter(ra);
-        var ws:String = setter(wa);
+      case FVar(read, write):
+        var getter:String = switch (read)
+        {
+          case AccNormal: 'default';
+          case AccNo: 'null';
+          case AccNever: 'never';
+          case AccCall: 'get';
+          default: 'default';
+        };
+
+        var setter:String = switch (write)
+        {
+          case AccNormal: 'default';
+          case AccNo: 'null';
+          case AccNever: 'never';
+          case AccCall: 'set';
+          default: 'default';
+        };
 
         if (!field.isFinal) string += 'var ';
 
-        if (typeInfo == Abstract && rs == 'default') string = 'static ' + string;
-
         string += '${field.name}';
-        if (!field.isFinal && typeInfo != EnumAbstract) string += '($rs, $ws)';
+        if (!field.isFinal && !typeInfo.match(Abstract(true))) string += '($getter, $setter)';
         string += ' : ${typeToString(field.type, typeReplace, params)}';
-        if (typeInfo == EnumAbstract && field.expr() != null) string += ' = ${field.expr().toString(true)}';
+        if (typeInfo.match(Abstract(true)) && field.expr() != null)
+        {
+          string = string.replace('extern ', '');
+          string += ' = ${field.expr().toString(true)}';
+        }
 
       case FMethod(k):
         string += switch (k)
@@ -206,9 +246,9 @@ class HostClasses
           case MethDynamic: 'dynamic ';
         }
 
-        string += 'function ${((typeInfo == Abstract || typeInfo == EnumAbstract) && field.name == '_new') ? 'new' : field.name}${paramsToString(typeReplace, field.params.map((p) -> p.t))}';
+        var isConstructor:Bool = field.name == 'new' || (typeInfo.match(Abstract(_)) && field.name == '_new');
 
-        var noRet:Bool = field.name == 'new' || ((typeInfo == Abstract || typeInfo == EnumAbstract) && field.name == '_new');
+        string += 'function ${isConstructor ? 'new' : field.name}${paramsToString(typeReplace, field.params.map((p) -> p.t))}';
 
         // using the expr() to get default values for arguments
         // sadly if there is no expr() it means we can't get the default values
@@ -218,18 +258,16 @@ class HostClasses
           {
             case TFunction(f):
               var args:Array<String> = [];
-              if ((typeInfo == Abstract || typeInfo == EnumAbstract)
-                && field.name != '_new'
-                && (f.args.length == 0 || (f.args.length > 0 && !f.args[0].v.name.startsWith('this')))) string = 'static ' + string;
+              if (typeInfo.match(Abstract(_)) && !isAbstractStaticFunction(field)) f.args.shift();
               for (a in f.args)
               {
-                if ((typeInfo == Abstract || typeInfo == EnumAbstract) && a.v.name.startsWith('this')) continue;
                 var arg:String = '${a.v.name} : ${typeToString(a.v.t, typeReplace, params)}';
-                if (a.value != null) arg += ' = cast ${a.value.toString(true)}';
+                // if (a.value != null) arg += ' = cast ${a.value.toString(true)}';
+                if (a.value != null) arg = '?${arg}';
                 args.push(arg);
               }
               string += '(${args.join(', ')})';
-              if (!noRet) string += ' : ${typeToString(f.t, typeReplace, params)}';
+              if (!isConstructor) string += ' : ${typeToString(f.t, typeReplace, params)}';
             default:
               throw 'Should not happen, right?';
           }
@@ -240,16 +278,13 @@ class HostClasses
           {
             case TFun(args_, ret):
               var args:Array<String> = [];
-              if ((typeInfo == Abstract || typeInfo == EnumAbstract)
-                && field.name != '_new'
-                && (args_.length == 0 || (args_.length > 0 && !args_[0].name.startsWith('this')))) string = 'static ' + string;
+              if (typeInfo.match(Abstract(_)) && !isAbstractStaticFunction(field)) args_.shift();
               for (a in args_)
               {
-                if ((typeInfo == Abstract || typeInfo == EnumAbstract) && a.name.startsWith('this')) continue;
                 args.push((a.opt ? '?' : '') + '${a.name} : ${typeToString(a.t, typeReplace, params)}');
               }
               string += '(${args.join(',')})';
-              if (!noRet) string += ' : ${typeToString(ret, typeReplace, params)}';
+              if (!isConstructor) string += ' : ${typeToString(ret, typeReplace, params)}';
             default:
               throw 'Should not happen, right?';
           }
@@ -257,32 +292,6 @@ class HostClasses
     }
 
     return string;
-  }
-
-  static function getter(access:VarAccess):String
-  {
-    return switch (access)
-    {
-      case AccNormal: 'default';
-      case AccNo: 'null';
-      case AccNever: 'never';
-      case AccCall: 'get';
-      case AccInline: 'default'; // 'inline';
-      default: 'default';
-    };
-  }
-
-  static function setter(access:VarAccess):String
-  {
-    return switch (access)
-    {
-      case AccNormal: 'default';
-      case AccNo: 'null';
-      case AccNever: 'never';
-      case AccCall: 'set';
-      case AccInline: 'default'; // 'inline';
-      default: 'default';
-    };
   }
 
   static function typeToString(type:Type, typeReplace:Map<String, String>, params:Array<Type>):String
@@ -327,7 +336,9 @@ class HostClasses
 
     var string:String = typePath(type);
     for (i => n in typeReplace)
+    {
       string = string.replace(i, n);
+    }
     for (p in params)
     {
       var p1:String = switch (p)
@@ -354,19 +365,81 @@ class HostClasses
   {
     var generics:Array<String> = [];
     for (f in fields)
+    {
       if (f.meta.has(':generic')) generics.push('${f.name}_');
+    }
     return fields.filter((f) -> {
       for (g in generics)
+      {
         if (f.name.startsWith(g)) return false;
+      }
       return true;
     });
+  }
+
+  static function abstractFields(type:AbstractType):{fields:Array<ClassField>, statics:Array<ClassField>}
+  {
+    if (type.impl == null) throw '${type.module}.${type.name} has no implementation';
+
+    var fields:Array<ClassField> = [];
+    var statics:Array<ClassField> = [];
+
+    for (f in type.impl.get().statics.get())
+    {
+      switch (f.kind)
+      {
+        case FVar(ra, wa):
+          if (ra == AccNormal || ra == AccInline)
+          {
+            statics.push(f);
+            continue;
+          }
+
+          for (f2 in type.impl.get().statics.get())
+          {
+            if (f2.name == 'get_${f.name}' || f2.name == 'set_${f.name}')
+            {
+              switch (f2.type)
+              {
+                case TFun(args, _):
+                  if (isAbstractStaticFunction(f2)) statics.push(f); else fields.push(f);
+                default:
+                  throw 'Should not happen, right? (${type.module}.${type.name}, ${f.name})';
+              }
+
+              break;
+            }
+          }
+
+        case FMethod(_):
+          switch (f.type)
+          {
+            case TFun(args, _):
+              if (isAbstractStaticFunction(f)) statics.push(f); else fields.push(f);
+            default:
+              throw 'Should not happen, right? (${type.module}.${type.name}, ${f.name})';
+          }
+      }
+    }
+
+    return {fields: fields, statics: statics};
+  }
+
+  static function isAbstractStaticFunction(fun:ClassField):Bool
+  {
+    switch (fun.type)
+    {
+      case TFun(args, _):
+        return (args.length == 0 || !(['this', 'this1'].contains(args[0].name))) && fun.name != '_new';
+      default:
+        throw 'Invalid type';
+    }
   }
 }
 
 enum TypeInfo
 {
   Class;
-  Abstract;
-  EnumAbstract;
+  Abstract(isEnum:Bool);
 }
 #end
