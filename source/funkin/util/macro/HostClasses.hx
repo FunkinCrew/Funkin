@@ -229,7 +229,7 @@ class HostClasses
         if (!field.isFinal) string += 'var ';
 
         string += '${field.name}';
-        if (!field.isFinal && !typeInfo.match(Abstract(true))) string += '($getter, $setter)';
+        if (!field.isFinal && !(field.expr() != null && setter == 'never')) string += '($getter, $setter)';
         string += ' : ${typeToString(field.type, typeReplace, params)}';
         if (typeInfo.match(Abstract(true)) && field.expr() != null)
         {
@@ -262,8 +262,8 @@ class HostClasses
               for (a in f.args)
               {
                 var arg:String = '${a.v.name} : ${typeToString(a.v.t, typeReplace, params)}';
-                // if (a.value != null) arg += ' = cast ${a.value.toString(true)}';
-                if (a.value != null) arg = '?${arg}';
+                if (a.value != null) arg += ' = cast ${a.value.toString(true)}';
+                //if (a.value != null) arg = '?${arg}';
                 args.push(arg);
               }
               string += '(${args.join(', ')})';
@@ -283,7 +283,7 @@ class HostClasses
               {
                 args.push((a.opt ? '?' : '') + '${a.name} : ${typeToString(a.t, typeReplace, params)}');
               }
-              string += '(${args.join(',')})';
+              string += '(${args.join(', ')})';
               if (!isConstructor) string += ' : ${typeToString(ret, typeReplace, params)}';
             default:
               throw 'Should not happen, right?';
