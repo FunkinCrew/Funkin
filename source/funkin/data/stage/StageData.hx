@@ -205,7 +205,7 @@ typedef StageDataProp =
 
   /**
    * The angle of the prop, as a float.
-   * @default 1.0
+   * @default 0.0
    */
   @:optional
   @:default(0.0)
@@ -284,7 +284,7 @@ typedef StageDataCharacter =
 
   /**
    * The angle of the character, as a float.
-   * @default 1.0
+   * @default 0.0
    */
   @:optional
   @:default(0.0)
