@@ -303,6 +303,9 @@ class MainMenuState extends MusicBeatState
     {
       persistentUpdate = false;
 
+      // Cancel the currently flickering menu item because it's about to call a state switch
+      if (menuItems.busy) menuItems.cancelAccept();
+
       FlxG.state.openSubState(new DebugMenuSubState());
     }
 

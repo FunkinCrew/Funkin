@@ -136,6 +136,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.autoFullscreen);
     #end
 
+    #if web
+    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
+      Preferences.unlockedFramerate = value;
+    }, Preferences.unlockedFramerate);
+    #else
     // disabled on macos due to "error: Late swap tearing currently unsupported"
     // disable on mobile since it barely has any effect
     #if !(mac || mobile)
@@ -153,14 +158,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case WindowVSyncMode.ADAPTIVE: "Adaptive";
       });
     #end
-    #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
-      Preferences.unlockedFramerate = value;
-    }, Preferences.unlockedFramerate);
-    #else
     createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
       Preferences.framerate = Std.int(value);
-    }, null, Preferences.framerate, 30, 300, 5, 0);
+    }, null, Preferences.framerate, 30, 500, 5, 0);
     #end
 
     #if FEATURE_SCREENSHOTS
@@ -173,27 +173,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
-    // TODO: having oValue is weird, probably change this later? was done to accomodate VSync changes.
-    createPrefItemEnum('Save Format', 'Save screenshots to this format.', ['PNG' => 'PNG', 'JPEG' => 'JPEG'], function(value:String, oValue:String):Void {
-      Preferences.saveFormat = value;
-    }, Preferences.saveFormat);
-    createPrefItemNumber('JPEG Quality', 'The quality of JPEG screenshots.', function(value:Float) {
-      Preferences.jpegQuality = Std.int(value);
-    }, null, Preferences.jpegQuality, 0, 100, 5, 0);
-    #end
-
-    #if FEATURE_HAPTICS
-    createPrefItemCheckbox('Vibration', 'If enabled, Haptic Feedback vibration effects will be active.', function(value:Bool):Void {
-      Preferences.vibration = value;
-    }, Preferences.vibration);
-    #end
-
-    #if mobile
-    createPrefItemCheckbox('Allow Screen Timeout',
-      'If enabled, The phone screen will timeout (sleep) after few seconds of inactivity.\nDoesn\'t apply when playing a song.', function(value:Bool):Void {
-        Preferences.screenTimeout = value;
-    }, Preferences.screenTimeout);
-    #end
   }
 
   override function update(elapsed:Float):Void

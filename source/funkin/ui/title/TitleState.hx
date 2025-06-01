@@ -234,12 +234,29 @@ class TitleState extends MusicBeatState
 
     Conductor.instance.update();
 
-    if (FlxG.keys.justPressed.I)
+    /* if (FlxG.onMobile)
+          {
+      if (gfDance != null)
+      {
+        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
+        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
+      }
+          }
+     */
+    if (outlineShaderShit != null)
     {
-      FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+      if (FlxG.keys.justPressed.I)
+      {
+        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+      }
+
+      if (FlxG.keys.pressed.D)
+      {
+        outlineShaderShit.funnyX += 1;
+      }
+
+      // outlineShaderShit.xPos.value[0] += 1;
     }
-    if (FlxG.keys.pressed.D) outlineShaderShit.funnyX += 1;
-    // outlineShaderShit.xPos.value[0] += 1;
 
     if (FlxG.keys.justPressed.Y)
     {

@@ -26,7 +26,7 @@ class ChartEditorImportExportHandler
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
    */
-  public static function loadSongAsTemplate(state:ChartEditorState, songId:String):Void
+  public static function loadSongAsTemplate(state:ChartEditorState, songId:String, targetSongDifficulty:String = null, targetSongVariation:String = null):Void
   {
     trace('===============START');
 
@@ -92,6 +92,14 @@ class ChartEditorImportExportHandler
         {
           trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
         }
+        // Set the difficulty of the song if one was passed in the params, and it isn't the default
+        if (targetSongDifficulty != null
+          && targetSongDifficulty != state.selectedDifficulty
+          && targetSongDifficulty == diff.difficulty) state.selectedDifficulty = targetSongDifficulty;
+        // Set the variation of the song if one was passed in the params, and it isn't the default
+        if (targetSongVariation != null
+          && targetSongVariation != state.selectedVariation
+          && targetSongVariation == diff.variation) state.selectedVariation = targetSongVariation;
       }
     }
 
@@ -103,7 +111,11 @@ class ChartEditorImportExportHandler
 
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
-    state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
+    // Actually state the correct variation loaded
+    for (metadata in rawSongMetadata)
+    {
+      if (metadata.variation == state.selectedVariation) state.success('Success', 'Loaded song (${metadata.songName})');
+    }
 
     trace('===============END');
   }
@@ -143,6 +155,11 @@ class ChartEditorImportExportHandler
     }
     state.audioVocalTrackGroup.stop();
     state.audioVocalTrackGroup.clear();
+
+    // Clear the undo and redo history
+    state.undoHistory = [];
+    state.redoHistory = [];
+    state.commandHistoryDirty = true;
   }
 
   /**
@@ -295,7 +312,7 @@ class ChartEditorImportExportHandler
   public static function getLatestBackupPath():Null<String>
   {
     #if sys
-    if (!sys.FileSystem.exists(BACKUPS_PATH)) sys.FileSystem.createDirectory(BACKUPS_PATH);
+    FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
     entries.sort(SortUtil.alphabetically);
