@@ -173,6 +173,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
+    #end
   }
 
   override function update(elapsed:Float):Void
