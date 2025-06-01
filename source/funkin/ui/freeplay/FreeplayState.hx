@@ -156,7 +156,7 @@ class FreeplayState extends MusicBeatSubState
   #if FEATURE_TOUCH_CONTROLS
   // For proper hitbox detection, flxanimate doesn't work with touch overlap!!
   var djHitbox:FlxObject = new FlxObject((CUTOUT_WIDTH * DJ_POS_MULTI), 320, 400, 400);
-  var capsuleHitbox:FlxObject = new FlxObject((CUTOUT_WIDTH * SONGS_POS_MULTI) + 360, 150, CUTOUT_WIDTH + 570, 576);
+  var capsuleHitbox:FlxObject = new FlxObject((CUTOUT_WIDTH * SONGS_POS_MULTI) + 380, 150, CUTOUT_WIDTH + 590, 576);
   #end
 
   var ostName:FlxText;
@@ -1680,6 +1680,10 @@ class FreeplayState extends MusicBeatSubState
         _moveLength = 0.0;
         changeSelection(0);
       }
+    }
+    if (!TouchUtil.overlaps(capsuleHitbox, funnyCam) && TouchUtil.justReleased)
+    {
+      FlxG.touches.flickManager.destroy();
     }
 
     if (FlxG.touches.flickManager.initialized)
