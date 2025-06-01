@@ -398,6 +398,16 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+
+    // `funkin.util.macro.*`
+    // CompiledClassList's get function allows access to sys and Newgrounds classes
+    // None of the classes are suitable for mods anyway
+    for (cls in ClassMacro.listClassesInPackage('funkin.util.macro'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
   }
 
   /**
