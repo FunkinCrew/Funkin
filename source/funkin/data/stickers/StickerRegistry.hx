@@ -84,7 +84,7 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
 
   function getScriptedClasses():List<Class<StickerPack>>
   {
-    return funkin.util.macro.ClassMacro.listSubclassesOf(funkin.ui.transition.stickers.StickerPack).filter((cls) -> {
+    return funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.ui.transition.stickers.StickerPack).filter((cls) -> {
       return cls != StickerPack && cls != ScriptedStickerPack;
     });
   }

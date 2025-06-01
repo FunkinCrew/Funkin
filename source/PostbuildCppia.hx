@@ -26,9 +26,9 @@ class PostbuildCppia
   {
     if (FileSystem.exists(EXPORT_CLASSES_FILE))
     {
-      var content = File.getContent(EXPORT_CLASSES_FILE);
-      var lines = content.split('\n');
-      var filtered = lines.filter(function(line) return !line.ltrim().startsWith('file'));
+      var content:String = File.getContent(EXPORT_CLASSES_FILE);
+      var lines:Array<String> = content.split('\n');
+      var filtered:Array<String> = lines.filter(function(line) return !line.ltrim().startsWith('file'));
       FileSystem.deleteFile(EXPORT_CLASSES_FILE);
       File.saveContent('${BIN_DIR}/${EXPORT_CLASSES_FILE}', filtered.join('\n'));
 

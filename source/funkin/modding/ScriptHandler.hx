@@ -1,6 +1,7 @@
 package funkin.modding;
 
 #if cpp
+import haxe.ds.List;
 import sys.io.File;
 import sys.FileSystem;
 import haxe.io.Path;
@@ -30,7 +31,7 @@ class ScriptHandler implements ISingleton
     var oldStdPath:String = Sys.getEnv('HAXE_STD_PATH');
     Sys.putEnv('HAXE_STD_PATH', Path.join([Path.normalize(Sys.getCwd()), 'haxe', 'std']));
 
-    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info');
+    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info --macro "include(\\"\\", true, [], [\\"assets/scripts\\"])"');
 
     if (cmd.exitCode() != 0)
     {
@@ -49,13 +50,11 @@ class ScriptHandler implements ISingleton
     module.boot();
 
     var __boot__:Class<Dynamic> = module.resolveClass('__Boot__');
-    var classes:Array<Class<Dynamic>> = Reflect.callMethod(__boot__, Reflect.field(__boot__, '__boot__'), []);
+    var classes:Array<String> = haxe.rtti.Meta.getType(__boot__).classList.map((c) -> cast(c, String));
 
-    trace(classes);
     for (clazz in classes)
     {
-      trace(Type.getClassName(clazz), clazz);
-      classMap.set(Type.getClassName(clazz), clazz);
+      classMap.set(clazz, module.resolveClass(clazz));
     }
 
     trace('Loaded ${classMap.size()} scripted classes');
@@ -83,29 +82,29 @@ class ScriptHandler implements ISingleton
     return clazz != null ? Type.createInstance(clazz, args ?? []) : null;
   }
 
-  public function listClasses():Array<Class<Dynamic>>
+  #if cpp
+  function listClasses():Array<Class<Dynamic>>
   {
-    #if cpp
     return classMap.values();
-    #else
-    throw 'Temporary throw';
-    #end
   }
 
-  public function listSubclassesOf<T>(parentClass:Class<T>):Array<T>
+  public function listSubclassesOf<T>(parentClass:Class<T>):List<Class<T>>
   {
-    #if cpp
-    var classes:Array<T> = [];
+    var classes:List<Class<T>> = new List<Class<T>>();
     for (clazz in listClasses())
     {
-      if (Std.isOfType(clazz, parentClass))
+      var o:Any = Type.createEmptyInstance(clazz);
+      if (Std.isOfType(o, parentClass))
       {
-        classes.push(cast clazz);
+        classes.add(cast clazz);
       }
     }
     return classes;
-    #else
-    throw 'Temporary throw';
-    #end
   }
+  #else
+  public function listSubclassesOf<T>(parentClass:Class<T>):List<Class<T>>
+  {
+    throw 'Temporary throw';
+  }
+  #end
 }

@@ -1,6 +1,6 @@
 package funkin.graphics;
 
-import flash.geom.ColorTransform;
+import openfl.geom.ColorTransform;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;

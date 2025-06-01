@@ -138,7 +138,7 @@ class RegistryMacro
 
     var scriptedEntryClsName:String = entryType.pack.join('.') + '.Scripted' + entryType.name;
 
-    var getScriptedClass:String = 'funkin.util.macro.ClassMacro.listSubclassesOf(${entryClsName})';
+    var getScriptedClass:String = 'funkin.modding.ScriptHandler.instance.listSubclassesOf(${entryClsName})';
 
     var createScriptedEntry:String = 'funkin.modding.ScriptHandler.instance.instantiateClass(clsName, [])';
 

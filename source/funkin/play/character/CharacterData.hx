@@ -75,7 +75,7 @@ class CharacterDataParser
     // SCRIPTED CHARACTERS
     //
 
-    for (cls in funkin.util.macro.ClassMacro.listSubclassesOf(funkin.play.character.SparrowCharacter))
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.SparrowCharacter))
     {
       if (cls == SparrowCharacter || cls == ScriptedSparrowCharacter) continue;
       var character:SparrowCharacter = Type.createInstance(cls, []);
@@ -83,7 +83,7 @@ class CharacterDataParser
       characterScriptedClass.set(character.characterId, Type.getClassName(cls));
     }
 
-    for (cls in funkin.util.macro.ClassMacro.listSubclassesOf(funkin.play.character.PackerCharacter))
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.PackerCharacter))
     {
       if (cls == PackerCharacter || cls == ScriptedPackerCharacter) continue;
       var character:PackerCharacter = Type.createInstance(cls, []);
@@ -91,7 +91,7 @@ class CharacterDataParser
       characterScriptedClass.set(character.characterId, Type.getClassName(cls));
     }
 
-    for (cls in funkin.util.macro.ClassMacro.listSubclassesOf(funkin.play.character.MultiSparrowCharacter))
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.MultiSparrowCharacter))
     {
       if (cls == MultiSparrowCharacter || cls == ScriptedMultiSparrowCharacter) continue;
       var character:MultiSparrowCharacter = Type.createInstance(cls, []);
@@ -99,7 +99,7 @@ class CharacterDataParser
       characterScriptedClass.set(character.characterId, Type.getClassName(cls));
     }
 
-    for (cls in funkin.util.macro.ClassMacro.listSubclassesOf(funkin.play.character.AnimateAtlasCharacter))
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.AnimateAtlasCharacter))
     {
       if (cls == AnimateAtlasCharacter || cls == ScriptedAnimateAtlasCharacter) continue;
       var character:AnimateAtlasCharacter = Type.createInstance(cls, []);

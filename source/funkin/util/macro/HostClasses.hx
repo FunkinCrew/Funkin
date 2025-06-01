@@ -118,6 +118,7 @@ class HostClasses
           {
             case TInst(_.get() => t, params):
               content += t.isPrivate ? 'private ' : '';
+              content += t.isAbstract ? 'abstract ' : '';
               content += '${t.isInterface ? 'interface' : 'class'} ${t.name}${paramsToString(typeReplace, params)} ';
               if (t.superClass != null) content += 'extends ${typeToString(TInst(t.superClass.t, t.superClass.params), typeReplace, params)} ';
               content += t.interfaces.map((i) -> (t.isInterface ? 'extends' : 'implements') + ' ${typeToString(TInst(i.t, i.params), typeReplace, params)}')
@@ -138,6 +139,7 @@ class HostClasses
               content += '}\n\n';
 
             case TAbstract(_.get() => t, params):
+              content += t.meta.has(':forward') ? '@:forward\n' : '';
               content += t.isPrivate ? 'private ' : '';
               content += t.meta.has(':enum') ? 'enum ' : '';
               content += 'abstract ${t.name}${paramsToString(typeReplace, params)}(${typeToString(t.type, typeReplace, params)}) ';
@@ -171,7 +173,18 @@ class HostClasses
 
               for (n in t.names)
               {
-                content += '  ${n};\n';
+                content += '  ${n}';
+                if (t.constructs.exists(n))
+                {
+                  switch (t.constructs.get(n).type)
+                  {
+                    case TFun(args, _):
+                      var args:String = args.map((a) -> '${a.opt ? '?' : ''}${a.name} : ${typeToString(a.t, typeReplace, params)}').join(', ');
+                      content += '(${args})';
+                    default:
+                  }
+                }
+                content += ';\n';
               }
 
               content += '}\n\n';
@@ -234,7 +247,7 @@ class HostClasses
         if (typeInfo.match(Abstract(true)) && field.expr() != null)
         {
           string = string.replace('extern ', '');
-          string += ' = ${field.expr().toString(true)}';
+          string += ' = ${typedExprToString(field.expr())}';
         }
 
       case FMethod(k):
@@ -250,44 +263,23 @@ class HostClasses
 
         string += 'function ${isConstructor ? 'new' : field.name}${paramsToString(typeReplace, field.params.map((p) -> p.t))}';
 
-        // using the expr() to get default values for arguments
-        // sadly if there is no expr() it means we can't get the default values
-        if (field.expr() != null)
+        // if field.expr() is not null, we could get the correct default values,
+        // however since some fields can only use fake defaults, i decided to
+        // always use fake defaults, just so that it is consistent
+        // the fake defaults aren't actually used, cpp will automatically use the correct defaults
+        switch (field.type)
         {
-          switch (field.expr().expr)
-          {
-            case TFunction(f):
-              var args:Array<String> = [];
-              if (typeInfo.match(Abstract(_)) && !isAbstractStaticFunction(field)) f.args.shift();
-              for (a in f.args)
-              {
-                var arg:String = '${a.v.name} : ${typeToString(a.v.t, typeReplace, params)}';
-                if (a.value != null) arg += ' = cast ${a.value.toString(true)}';
-                //if (a.value != null) arg = '?${arg}';
-                args.push(arg);
-              }
-              string += '(${args.join(', ')})';
-              if (!isConstructor) string += ' : ${typeToString(f.t, typeReplace, params)}';
-            default:
-              throw 'Should not happen, right?';
-          }
-        }
-        else
-        {
-          switch (field.type)
-          {
-            case TFun(args_, ret):
-              var args:Array<String> = [];
-              if (typeInfo.match(Abstract(_)) && !isAbstractStaticFunction(field)) args_.shift();
-              for (a in args_)
-              {
-                args.push((a.opt ? '?' : '') + '${a.name} : ${typeToString(a.t, typeReplace, params)}');
-              }
-              string += '(${args.join(', ')})';
-              if (!isConstructor) string += ' : ${typeToString(ret, typeReplace, params)}';
-            default:
-              throw 'Should not happen, right?';
-          }
+          case TFun(args_, ret):
+            var args:Array<String> = [];
+            if (typeInfo.match(Abstract(_)) && !isAbstractStaticFunction(field) && !isConstructor) args_.shift();
+            for (a in args_)
+            {
+              args.push('${a.name} : ${typeToString(a.t, typeReplace, params)}${a.opt ? ' = ${defaultValue(a.t, typeReplace, params)}' : ''}');
+            }
+            string += '(${args.join(', ')})';
+            if (!isConstructor) string += ' : ${typeToString(ret, typeReplace, params)}';
+          default:
+            throw 'Should not happen, right?';
         }
     }
 
@@ -319,7 +311,7 @@ class HostClasses
           var path:String = (t.module == 'StdTypes' ? t.name : (t.module.split('.').pop() == t.name ? t.module : '${t.module}.${t.name}'));
           '${path}${typeParams(params)}';
         case TAnonymous(_.get() => t):
-          '{\n${[for (f in t.fields) '  ${f.name} : ${typeToString(f.type, typeReplace, params)}'].join(',\n')}\n}';
+          '{\n${[for (f in t.fields) '  ${f.meta.has(':optional') ? '?' : ''}${f.name} : ${typeToString(f.type, typeReplace, params)}'].join(',\n')}\n}';
         case TFun(args, ret):
           var args:String = args.map((a) -> (a.opt ? '?' : '') + '${typeToString(a.t, typeReplace, params)}').join(', ');
           '(${args}) -> ${typeToString(ret, typeReplace, params)}';
@@ -389,9 +381,17 @@ class HostClasses
       switch (f.kind)
       {
         case FVar(ra, wa):
-          if (ra == AccNormal || ra == AccInline)
+          if (ra == AccNormal)
           {
             statics.push(f);
+            continue;
+          }
+
+          if (ra == AccInline)
+          {
+            if (type.meta.has(':enum') && f.type.toString() == '${type.pack.join('.')}.${type.name}') fields.push(f);
+            else
+              statics.push(f);
             continue;
           }
 
@@ -434,6 +434,72 @@ class HostClasses
       default:
         throw 'Invalid type';
     }
+  }
+
+  static function defaultValue(type:Type, typeReplace:Map<String, String>, params:Array<Type>):String
+  {
+    return switch (type)
+    {
+      case TAbstract(_.get() => t, _):
+        if (['Int', 'UInt', 'Float', 'Single'].contains(t.name)) '0'; else if (t.name == 'Bool') 'false'; else 'null';
+      case TEnum(_.get() => t, _):
+        switch (t.constructs.get(t.names[0]).type)
+        {
+          case TFun(args, _):
+            var args:String = args.map((a) -> defaultValue(a.t, typeReplace, params)).join(', ');
+            '${typeToString(type, typeReplace, params)}.${t.names[0]}(${args})';
+          default:
+            '${typeToString(type, typeReplace, params)}.${t.names[0]}';
+        }
+      case TType(_.get() => t, _):
+        defaultValue(t.type, typeReplace, params);
+      default: 'null';
+    }
+  }
+
+  static function typedExprToString(expr:TypedExpr):String
+  {
+    var typeReplace:Map<String, String> = new Map<String, String>();
+    function update(e:TypedExpr):Void
+    {
+      switch (e.expr)
+      {
+        case TTypeExpr(m):
+          switch (m)
+          {
+            case TClassDecl(_.get() => t):
+              if (t.module != 'StdTypes' && t.module.split('.').pop() != t.name) typeReplace.set(m.fromModuleType().toString(), '${t.module}.${t.name}');
+            case TAbstract(_.get() => t):
+              if (t.module != 'StdTypes' && t.module.split('.').pop() != t.name) typeReplace.set(m.fromModuleType().toString(), '${t.module}.${t.name}');
+            case TEnumDecl(_.get() => t):
+              if (t.module != 'StdTypes' && t.module.split('.').pop() != t.name) typeReplace.set(m.fromModuleType().toString(), '${t.module}.${t.name}');
+            case TTypeDecl(_.get() => t):
+              if (t.module != 'StdTypes' && t.module.split('.').pop() != t.name) typeReplace.set(m.fromModuleType().toString(), '${t.module}.${t.name}');
+          }
+        case TNew(c, _, el):
+          for (e in el)
+          {
+            update(e);
+          }
+          var t:ClassType = c.get();
+          if (t.module != 'StdTypes' && t.module.split('.').pop() != t.name) typeReplace.set(c.toString(), '${t.module}.${t.name}');
+        case TField(e, _):
+          update(e);
+        case TObjectDecl(fields):
+          for (f in fields)
+          {
+            update(f.expr);
+          }
+        default:
+      }
+    }
+    update(expr);
+    var string:String = expr.toString(true);
+    for (i => n in typeReplace)
+    {
+      string = string.replace(i, n);
+    }
+    return string;
   }
 }
 
