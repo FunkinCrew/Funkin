@@ -157,8 +157,8 @@ class FreeplayState extends MusicBeatSubState
   var dj:Null<FreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
   // For proper hitbox detection, flxanimate doesn't work with touch overlap!!
-  var djHitbox:FlxObject = new FlxObject((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 58, 358, 400, 400);
-  var capsuleHitbox:FlxObject = new FlxObject((FullScreenScaleMode.gameCutoutSize.x * DJ_POS_MULTI) + 370, 150, 570, 576);
+  var djHitbox:FlxObject = new FlxObject((CUTOUT_WIDTH * DJ_POS_MULTI), 320, 400, 400);
+  var capsuleHitbox:FlxObject = new FlxObject((CUTOUT_WIDTH * SONGS_POS_MULTI) + 380, 150, CUTOUT_WIDTH + 590, 576);
   #end
 
   var ostName:FlxText;
@@ -227,7 +227,6 @@ class FreeplayState extends MusicBeatSubState
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
-    CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
     currentCharacterId = params?.character ?? rememberedCharacterId;
     styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
 
@@ -1684,6 +1683,10 @@ class FreeplayState extends MusicBeatSubState
         changeSelection(0);
       }
     }
+    if (!TouchUtil.overlaps(capsuleHitbox, funnyCam) && TouchUtil.justReleased)
+    {
+      FlxG.touches.flickManager.destroy();
+    }
 
     if (FlxG.touches.flickManager.initialized)
     {
@@ -2626,6 +2629,8 @@ class FreeplayState extends MusicBeatSubState
    */
   public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
   {
+    // Since CUTOUT_WIDTH is static it might retain some old inccrect values so we update it before loading freeplay
+    CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
     var result:MainMenuState;
     result = new MainMenuState(true);
     result.openSubState(new FreeplayState(params, stickers));
