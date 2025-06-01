@@ -69,7 +69,7 @@ class ReflectUtil
    * @param obj The object to copy.
    * @return An independent clone of that object.
    */
-  public static function copy(obj:Any):Any
+  public static function copy(obj:Any):Null<Any>
   {
     return copyAnonymousFieldsOf(obj);
   }
@@ -79,7 +79,7 @@ class ReflectUtil
    * @param obj The object to copy.
    * @return An independent clone of the structure.
    */
-  public static function copyAnonymousFieldsOf(obj:Any):Any
+  public static function copyAnonymousFieldsOf(obj:Any):Null<Any>
   {
     return Reflect.copy(obj);
   }
