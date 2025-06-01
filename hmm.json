@@ -77,15 +77,15 @@
       "name": "hscript",
       "type": "git",
       "dir": null,
-      "ref": "27c86f9a761c1d16d4433c4cf252eccb7b2e18de",
-      "url": "https://github.com/FunkinCrew/hscript"
+      "ref": "d914cac17779efad8b3aa6f4a12dff566518d1b9",
+      "url": "https://github.com/lemz1/hscript"
     },
     {
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "v4.3.75",
-      "url": "https://github.com/HaxeFoundation/hxcpp"
+      "ref": "c44f0abb927998e3c5796ae5a268cf04826c2698",
+      "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",

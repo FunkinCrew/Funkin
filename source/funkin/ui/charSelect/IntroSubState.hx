@@ -50,6 +50,10 @@ class IntroSubState extends MusicBeatSubState
     // FlxG.camera.zoom = 0.66666666666666666666666666666667;
     // vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
     // vid.y = -((FlxG.height - (FlxG.height * FlxG.camera.zoom)) * 0.75);
+
+    #if !FEATURE_VIDEO_PLAYBACK
+    onLightsEnd();
+    #end
   }
 
   #if html5
@@ -121,6 +125,7 @@ class IntroSubState extends MusicBeatSubState
    */
   function onLightsEnd():Void
   {
+    #if FEATURE_VIDEO_PLAYBACK
     if (vid != null)
     {
       #if hxvlc
@@ -130,6 +135,7 @@ class IntroSubState extends MusicBeatSubState
       vid.destroy();
       vid = null;
     }
+    #end
 
     FlxG.camera.zoom = 1;
 

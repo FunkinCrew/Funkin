@@ -75,94 +75,47 @@ class CharacterDataParser
     // SCRIPTED CHARACTERS
     //
 
-    // Fuck I wish scripted classes supported static functions.
-
-    var scriptedCharClassNames1:Array<String> = ScriptedSparrowCharacter.listScriptClasses();
-    if (scriptedCharClassNames1.length > 0)
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.SparrowCharacter))
     {
-      trace('  Instantiating ${scriptedCharClassNames1.length} (Sparrow) scripted characters...');
-      for (charCls in scriptedCharClassNames1)
-      {
-        try
-        {
-          var character:SparrowCharacter = ScriptedSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
-          trace('  Initialized character ${character.characterName}');
-          characterScriptedClass.set(character.characterId, charCls);
-        }
-        catch (e)
-        {
-          trace('    FAILED to instantiate scripted Sparrow character: ${charCls}');
-          trace(e);
-        }
-      }
+      if (cls == SparrowCharacter || cls == ScriptedSparrowCharacter) continue;
+      var character:SparrowCharacter = Type.createInstance(cls, []);
+      trace('  Initialized character ${character.characterName}');
+      characterScriptedClass.set(character.characterId, Type.getClassName(cls));
     }
 
-    var scriptedCharClassNames2:Array<String> = ScriptedPackerCharacter.listScriptClasses();
-    if (scriptedCharClassNames2.length > 0)
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.PackerCharacter))
     {
-      trace('  Instantiating ${scriptedCharClassNames2.length} (Packer) scripted characters...');
-      for (charCls in scriptedCharClassNames2)
-      {
-        try
-        {
-          var character:PackerCharacter = ScriptedPackerCharacter.init(charCls, DEFAULT_CHAR_ID);
-          characterScriptedClass.set(character.characterId, charCls);
-        }
-        catch (e)
-        {
-          trace('    FAILED to instantiate scripted Packer character: ${charCls}');
-          trace(e);
-        }
-      }
+      if (cls == PackerCharacter || cls == ScriptedPackerCharacter) continue;
+      var character:PackerCharacter = Type.createInstance(cls, []);
+      trace('  Initialized character ${character.characterName}');
+      characterScriptedClass.set(character.characterId, Type.getClassName(cls));
     }
 
-    var scriptedCharClassNames3:Array<String> = ScriptedMultiSparrowCharacter.listScriptClasses();
-    if (scriptedCharClassNames3.length > 0)
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.MultiSparrowCharacter))
     {
-      trace('  Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
-      for (charCls in scriptedCharClassNames3)
-      {
-        try
-        {
-          var character:MultiSparrowCharacter = ScriptedMultiSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
-          characterScriptedClass.set(character.characterId, charCls);
-        }
-        catch (e)
-        {
-          trace('    FAILED to instantiate scripted Multi-Sparrow character: ${charCls}');
-          trace(e);
-        }
-      }
+      if (cls == MultiSparrowCharacter || cls == ScriptedMultiSparrowCharacter) continue;
+      var character:MultiSparrowCharacter = Type.createInstance(cls, []);
+      trace('  Initialized character ${character.characterName}');
+      characterScriptedClass.set(character.characterId, Type.getClassName(cls));
     }
 
-    var scriptedCharClassNames4:Array<String> = ScriptedAnimateAtlasCharacter.listScriptClasses();
-    if (scriptedCharClassNames4.length > 0)
+    for (cls in funkin.modding.ScriptHandler.instance.listSubclassesOf(funkin.play.character.AnimateAtlasCharacter))
     {
-      trace('  Instantiating ${scriptedCharClassNames4.length} (Animate Atlas) scripted characters...');
-      for (charCls in scriptedCharClassNames4)
-      {
-        try
-        {
-          var character:AnimateAtlasCharacter = ScriptedAnimateAtlasCharacter.init(charCls, DEFAULT_CHAR_ID);
-          characterScriptedClass.set(character.characterId, charCls);
-        }
-        catch (e)
-        {
-          trace('    FAILED to instantiate scripted Animate Atlas character: ${charCls}');
-          trace(e);
-        }
-      }
+      if (cls == AnimateAtlasCharacter || cls == ScriptedAnimateAtlasCharacter) continue;
+      var character:AnimateAtlasCharacter = Type.createInstance(cls, []);
+      trace('  Initialized character ${character.characterName}');
+      characterScriptedClass.set(character.characterId, Type.getClassName(cls));
     }
 
     // NOTE: Only instantiate the ones not populated above.
     // ScriptedBaseCharacter.listScriptClasses() will pick up scripts extending the other classes.
     var scriptedCharClassNames:Array<String> = ScriptedBaseCharacter.listScriptClasses();
-    scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool {
-      return !(scriptedCharClassNames1.contains(charCls)
-        || scriptedCharClassNames2.contains(charCls)
-        || scriptedCharClassNames3.contains(charCls)
-        || scriptedCharClassNames4.contains(charCls));
-    });
+    // scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool {
+    //   return !(scriptedCharClassNames1.contains(charCls)
+    //     || scriptedCharClassNames2.contains(charCls)
+    //     || scriptedCharClassNames3.contains(charCls)
+    //     || scriptedCharClassNames4.contains(charCls));
+    // });
 
     if (scriptedCharClassNames.length > 0)
     {
@@ -210,20 +163,7 @@ class CharacterDataParser
 
     if (charScriptClass != null)
     {
-      switch (charData.renderType)
-      {
-        case CharacterRenderType.AnimateAtlas:
-          char = ScriptedAnimateAtlasCharacter.init(charScriptClass, charId);
-        case CharacterRenderType.MultiSparrow:
-          char = ScriptedMultiSparrowCharacter.init(charScriptClass, charId);
-        case CharacterRenderType.Sparrow:
-          char = ScriptedSparrowCharacter.init(charScriptClass, charId);
-        case CharacterRenderType.Packer:
-          char = ScriptedPackerCharacter.init(charScriptClass, charId);
-        default:
-          // We're going to assume that the script class does the rendering.
-          char = ScriptedBaseCharacter.init(charScriptClass, charId, CharacterRenderType.Custom);
-      }
+      char = Type.createInstance(Type.resolveClass(charScriptClass), []);
     }
     else
     {

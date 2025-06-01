@@ -75,31 +75,21 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     //
     // SCRIPTED ENTRIES
     //
-    var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
+    var scriptedEntryClasses:List<Class<T>> = getScriptedClasses();
+    log('Parsing ${scriptedEntryClasses.length} scripted entries...');
 
-    for (entryCls in scriptedEntryClassNames)
+    for (entryCls in scriptedEntryClasses)
     {
-      var entry:Null<T> = null;
-      try
-      {
-        entry = createScriptedEntry(entryCls);
-      }
-      catch (e)
-      {
-        log('Failed to create scripted entry (${entryCls})');
-        continue;
-      }
-
+      var entry:Null<T> = createScriptedEntry(Type.getClassName(entryCls));
       if (entry != null)
       {
-        log('Successfully created scripted entry (${entryCls} = ${entry.id})');
+        log('Successfully created scripted entry (${Type.getClassName(entryCls)} = ${entry.id})');
         entries.set(entry.id, entry);
-        scriptedEntryIds.set(entry.id, entryCls);
+        scriptedEntryIds.set(entry.id, Type.getClassName(entryCls));
       }
       else
       {
-        log('Failed to create scripted entry (${entryCls})');
+        log('Failed to create scripted entry (${Type.getClassName(entryCls)})');
       }
     }
 
@@ -308,10 +298,10 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   }
 
   /**
-   * Retrieve the list of scripted class names to load.
-   * @return An array of scripted class names.
+   * Retrieve the list of scripted classes to load.
+   * @return An array of scripted classes.
    */
-  abstract function getScriptedClassNames():Array<String>;
+  abstract function getScriptedClasses():List<Class<T>>;
 
   /**
    * Create an entry from the given ID.
