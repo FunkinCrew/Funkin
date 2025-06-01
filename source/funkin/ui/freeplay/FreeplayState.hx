@@ -214,19 +214,26 @@ class FreeplayState extends MusicBeatSubState
 
     if (stickers?.members != null) stickerSubState = stickers;
 
-    switch (currentCharacterId)
+    if (PlayerRegistry.instance.hasNewCharacter())
     {
-      case(PlayerRegistry.instance.hasNewCharacter()) => true:
-        backingCard = new NewCharacterCard(currentCharacterId);
-      default:
-        backingCard = PlayerRegistry.instance.getBackingCard(currentCharacterId);
-        /*case 'bf':
-            backingCard = new BoyfriendCard(currentCharacter);
-          case 'pico':
-            backingCard = new PicoCard(currentCharacter);
-          default:
-            backingCard = new BackingCard(currentCharacter); */
+      backingCard = new NewCharacterCard(currentCharacterId);
     }
+    else
+    {
+      var allScriptedCards:Array<String> = ScriptedBackingCard.listScriptClasses();
+      for (cardClass in allScriptedCards)
+      {
+        var card:BackingCard = ScriptedBackingCard.init(cardClass, "unknown");
+        if (card.currentCharacter == currentCharacterId)
+        {
+          backingCard = card;
+          break;
+        }
+      }
+    }
+
+    // Return the default backing card if there isn't one specific for the character.
+    if (backingCard == null) backingCard = new BackingCard(currentCharacterId);
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
     albumRoll = new AlbumRoll();
@@ -245,9 +252,7 @@ class FreeplayState extends MusicBeatSubState
     ostName = new FlxText(8, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
-    bgDad = new FlxSprite(backingCard == null ? 0 : backingCard.pinkBack.width * 0.74,
-      0).loadGraphic(styleData == null ? 'freeplay/freeplayBGdad' : styleData.getBgAssetGraphic());
-    backingImage = FunkinSprite.create(bgDad.x, bgDad.y, styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey());
+    backingImage = FunkinSprite.create(backingCard.pinkBack.width * 0.74, 0, styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey());
   }
 
   override function create():Void
@@ -1769,8 +1774,8 @@ class FreeplayState extends MusicBeatSubState
 
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : Math.max(0, ((songScore.tallies.sick +
-        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
+      intendedCompletion = songScore == null ? 0.0 : Math.max(0,
+        ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
