@@ -347,6 +347,15 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
+    // `hscript.*
+    // Contains functions which may allow for interpreting unsanitized strings.
+    for (cls in ClassMacro.listClassesInPackage('hscript'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
     // `funkin.api.newgrounds.*`
     // Contains functions which allow for cheating medals and leaderboards.
     for (cls in ClassMacro.listClassesInPackage('funkin.api.newgrounds'))

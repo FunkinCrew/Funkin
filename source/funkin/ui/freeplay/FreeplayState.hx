@@ -12,6 +12,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import openfl.filters.ShaderFilter;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
@@ -1845,6 +1846,8 @@ class FreeplayState extends MusicBeatSubState
       freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
       _pressedOnFreeplay = false;
     }
+
+    #if FEATURE_CHART_EDITOR
     if (controls.DEBUG_CHART && !busy)
     {
       busy = true;
@@ -1884,6 +1887,7 @@ class FreeplayState extends MusicBeatSubState
           targetSongId: targetSongID,
         }));
     }
+    #end
   }
   #end
 
