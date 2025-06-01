@@ -519,16 +519,6 @@ class PlayState extends MusicBeatSubState
   public var iconP2:Null<HealthIcon>;
 
   /**
-   * The base character for the opponent.
-   */
-  var dad:BaseCharacter;
-
-  /**
-   * The base character for the player.
-   */
-  var boyfriend:BaseCharacter;
-
-  /**
    * The sprite group containing active player's strumline notes.
    */
   public var playerStrumline:Strumline;
@@ -624,12 +614,6 @@ class PlayState extends MusicBeatSubState
     if (currentSong == null || currentDifficulty == null) return null;
     return currentSong.getDifficulty(currentDifficulty, currentVariation);
   }
-
-  /**
-   * The current data contained for BOTH characters. This is data from the current
-   * chart being played by the user.
-   */
-  var currentCharacterData:SongCharacterData;
 
   /**
    * The internal ID of the currently active Stage.
@@ -815,6 +799,7 @@ class PlayState extends MusicBeatSubState
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
+    initHealthBar();
     if (!isMinimalMode)
     {
       initStage();
@@ -826,7 +811,6 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
     initPopups();
-    initHealthBar();
 
     #if mobile
     if (!ControlsHandler.usingExternalInputDevice)
@@ -1900,42 +1884,6 @@ class PlayState extends MusicBeatSubState
     scoreText.scrollFactor.set();
     scoreText.zIndex = 1004;
     add(scoreText);
-
-    //
-    // HEALTH ICONS
-    //
-
-    // Opponent
-    if (dad != null)
-    {
-      iconP2 = new HealthIcon('dad', 1);
-      dad.initHealthIcon(true); // Apply the character ID here
-      iconP2.y = healthBar.y - (iconP2.height / 2);
-      iconP2.zIndex = 1050;
-      add(iconP2);
-      iconP2.cameras = [camHUD];
-
-      #if FEATURE_DISCORD_RPC
-      discordRPCAlbum = 'album-${currentChart.album}';
-      discordRPCIcon = 'icon-${currentCharacterData.opponent}';
-      #end
-    }
-
-    // Player
-    if (boyfriend != null)
-    {
-      iconP1 = new HealthIcon('bf', 0);
-      boyfriend.initHealthIcon(false); // Apply the character ID here
-      iconP1.y = healthBar.y - (iconP1.height / 2);
-      iconP1.zIndex = 1051;
-      add(iconP1);
-      iconP1.cameras = [camHUD];
-    }
-
-    // Move the health bar to the HUD camera.
-    healthBar.cameras = [camHUD];
-    healthBarBG.cameras = [camHUD];
-    scoreText.cameras = [camHUD];
   }
 
   /**
@@ -2085,10 +2033,46 @@ class PlayState extends MusicBeatSubState
     //
 
     // Set the opponent character based on the chart data.
-    dad = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+    var dad = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
 
     // Set the player character based on the chart data.
-    boyfriend = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+    var boyfriend = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+
+    //
+    // HEALTH ICONS
+    //
+
+    // Opponent
+    if (dad != null)
+      {
+        iconP2 = new HealthIcon('dad', 1);
+        dad.initHealthIcon(true); // Apply the character ID here
+        iconP2.y = healthBar.y - (iconP2.height / 2);
+        iconP2.zIndex = 1050;
+        add(iconP2);
+        iconP2.cameras = [camHUD];
+
+        #if FEATURE_DISCORD_RPC
+        discordRPCAlbum = 'album-${currentChart.album}';
+        discordRPCIcon = 'icon-${currentCharacterData.opponent}';
+        #end
+      }
+
+      // Player
+      if (boyfriend != null)
+      {
+        iconP1 = new HealthIcon('bf', 0);
+        boyfriend.initHealthIcon(false); // Apply the character ID here
+        iconP1.y = healthBar.y - (iconP1.height / 2);
+        iconP1.zIndex = 1051;
+        add(iconP1);
+        iconP1.cameras = [camHUD];
+      }
+
+      // Move the health bar to the HUD camera.
+      healthBar.cameras = [camHUD];
+      healthBarBG.cameras = [camHUD];
+      scoreText.cameras = [camHUD];
 
     if (currentStage != null)
     {
