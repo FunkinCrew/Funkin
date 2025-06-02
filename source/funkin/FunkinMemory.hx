@@ -13,6 +13,7 @@ import lime.app.Promise;
  * Handles caching of textures and sounds for the game.
  * TODO: Remove this once Eric finishes the memory system.
  */
+@:nullSafety
 class FunkinMemory
 {
   static var permanentCachedTextures:Map<String, FlxGraphic> = [];
@@ -23,6 +24,8 @@ class FunkinMemory
   static var permanentCachedSounds:Map<String, Sound> = [];
   static var currentCachedSounds:Map<String, Sound> = [];
   static var previousCachedSounds:Map<String, Sound> = [];
+
+  static var purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
 
   /**
    * Caches textures that are always required.
@@ -92,13 +95,15 @@ class FunkinMemory
   /**
    * Clears the current texture and sound caches.
    */
-  public static inline function purgeCache(?callGarbageCollector:Bool = false):Void
+  public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
     preparePurgeTextureCache();
     purgeTextureCache();
     preparePurgeSoundCache();
     purgeSoundCache();
-    if (callGarbageCollector) System.gc();
+    #if (cpp || neko || hl)
+    if (callGarbageCollector) funkin.util.MemoryUtil.collect(true);
+    #end
   }
 
   ///// TEXTURES /////
@@ -117,13 +122,13 @@ class FunkinMemory
     if (previousCachedTextures.exists(key))
     {
       // Move the texture from the previous cache to the current cache.
-      var graphic = previousCachedTextures.get(key);
+      var graphic:Null<FlxGraphic> = previousCachedTextures.get(key);
       previousCachedTextures.remove(key);
-      currentCachedTextures.set(key, graphic);
+      if (graphic != null) currentCachedTextures.set(key, graphic);
       return;
     }
 
-    var graphic = FlxGraphic.fromAssetKey(key, false, null, true);
+    var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
       FlxG.log.warn('Failed to cache graphic: $key');
@@ -147,7 +152,7 @@ class FunkinMemory
       return; // Already cached.
     }
 
-    var graphic = FlxGraphic.fromAssetKey(key, false, null, true);
+    var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
       FlxG.log.warn('Failed to cache graphic: $key');
@@ -195,7 +200,7 @@ class FunkinMemory
 
       if (graphicKey.contains("fonts")) continue;
 
-      var graphic = previousCachedTextures.get(graphicKey);
+      var graphic:Null<FlxGraphic> = previousCachedTextures.get(graphicKey);
       if (graphic != null)
       {
         FlxG.bitmap.remove(graphic);
@@ -214,20 +219,24 @@ class FunkinMemory
     @:privateAccess
     for (key in FlxG.bitmap._cache.keys())
     {
-      var obj = FlxG.bitmap.get(key);
+      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
 
       if (obj == null || obj.persist || permanentCachedTextures.exists(key) || key.contains("fonts"))
       {
         continue;
       }
 
-      if (obj.useCount > 0 && !key.contains("characters") && !key.contains("charSelect") && !key.contains("results"))
+      if (obj.useCount > 0)
       {
-        continue;
+        for (purgeEntry in purgeFilter)
+        {
+          if (key.contains(purgeEntry))
+          {
+            FlxG.bitmap.removeKey(key);
+            obj.destroy();
+          }
+        }
       }
-
-      FlxG.bitmap.removeKey(key);
-      obj.destroy();
     }
   }
 
@@ -240,13 +249,13 @@ class FunkinMemory
     if (previousCachedSounds.exists(key))
     {
       // Move the texture from the previous cache to the current cache.
-      var sound = previousCachedSounds.get(key);
+      var sound:Null<Sound> = previousCachedSounds.get(key);
       previousCachedSounds.remove(key);
-      currentCachedSounds.set(key, sound);
+      if (sound != null) currentCachedSounds.set(key, sound);
       return;
     }
 
-    var sound = Assets.getSound(key, true);
+    var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound == null) return;
     else
       currentCachedSounds.set(key, sound);
@@ -256,12 +265,12 @@ class FunkinMemory
   {
     if (permanentCachedSounds.exists(key)) return;
 
-    var sound = Assets.getSound(key, true);
+    var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound == null) return;
     else
       permanentCachedSounds.set(key, sound);
 
-    currentCachedSounds.set(key, sound);
+    if (sound != null) currentCachedSounds.set(key, sound);
   }
 
   public static function preparePurgeSoundCache():Void
@@ -292,55 +301,83 @@ class FunkinMemory
         continue;
       }
 
-      var sound = previousCachedSounds.get(key);
+      var sound:Null<Sound> = previousCachedSounds.get(key);
       if (sound != null)
       {
         Assets.cache.removeSound(key);
         previousCachedTextures.remove(key);
-        sound = null;
       }
     }
     Assets.cache.clear("songs");
     Assets.cache.clear("music");
     // Felt lazy.
     var key = Paths.music("freakyMenu/freakyMenu");
-    var sound = Assets.getSound(key, true);
-    permanentCachedSounds.set(key, sound);
-    currentCachedSounds.set(key, sound);
+    var sound:Null<Sound> = Assets.getSound(key, true);
+    if (sound != null)
+    {
+      permanentCachedSounds.set(key, sound);
+      currentCachedSounds.set(key, sound);
+    }
   }
 
   ///// MISC /////
 
   public static inline function clearFreeplay():Void
   {
+    var keysToRemove:Array<String> = [];
+
     @:privateAccess
     for (key in FlxG.bitmap._cache.keys())
     {
-      var obj = FlxG.bitmap.get(key);
-      if (obj == null) continue;
-
-      if (!key.contains("stickers"))
-      {
-        continue;
-      }
-
+      if (!key.contains("freeplay")) continue;
       if (permanentCachedTextures.exists(key) || key.contains("fonts")) continue;
 
-      trace('Queued $key to clean up');
+      keysToRemove.push(key);
+    }
 
-      new Future<String>(function() {
-        new flixel.util.FlxTimer().start(1 / 24, function(_) {
-          FlxG.bitmap.removeKey(key);
-          if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
-          obj.destroy();
-          Assets.cache.clear(key);
-          trace('$key destroyed');
-        });
-        return '$key destroyed';
-      }, true);
+    @:privateAccess
+    for (key in keysToRemove)
+    {
+      trace('Cleaning up $key');
+      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
+      if (obj != null)
+      {
+        obj.destroy();
+      }
+      FlxG.bitmap.removeKey(key);
+      if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
+      Assets.cache.clear(key);
     }
 
     preparePurgeSoundCache();
     purgeSoundCache();
+  }
+
+  public static inline function clearStickers():Void
+  {
+    var keysToRemove:Array<String> = [];
+
+    @:privateAccess
+    for (key in FlxG.bitmap._cache.keys())
+    {
+      if (!key.contains("stickers")) continue;
+      if (permanentCachedTextures.exists(key) || key.contains("fonts")) continue;
+
+      keysToRemove.push(key);
+    }
+
+    @:privateAccess
+    for (key in keysToRemove)
+    {
+      trace('Cleaning up $key');
+      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
+      if (obj != null)
+      {
+        obj.destroy();
+      }
+      FlxG.bitmap.removeKey(key);
+      if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
+      Assets.cache.clear(key);
+    }
   }
 }

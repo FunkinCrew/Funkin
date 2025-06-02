@@ -328,7 +328,11 @@ class LoadingState extends MusicBeatSubState
     }
     else
     {
-      funkin.FunkinMemory.clearFreeplay();
+      // funkin.FunkinMemory.clearFreeplay();
+      FlxG.signals.preStateSwitch.addOnce(function() {
+        funkin.FunkinMemory.clearFreeplay();
+        funkin.FunkinMemory.purgeCache(true);
+      });
       FlxG.switchState(playStateCtor);
     }
     #end

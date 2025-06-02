@@ -124,7 +124,8 @@ class CharacterUnlockState extends MusicBeatState
   {
     // Fade to black, then switch state.
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () -> {
-      funkin.FunkinMemory.purgeCache();
+      funkin.FunkinMemory.clearFreeplay();
+      funkin.FunkinMemory.purgeCache(true);
       FlxG.switchState(() -> nextState);
     });
   }
