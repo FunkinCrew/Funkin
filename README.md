@@ -7,12 +7,6 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 - [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
 - [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
 
-## Holy shit, FNF on mobile?
-
-With this fan port we try and make it so FNF runs on mobile as if it was made FOR mobile gameplay. Coming toe-to-toe with what would be an official Friday Night Funkin’ mobile build! Little to no new features will be added unless it really really REALLY enhances the mobile experience.
-
-Currently speaking, this mobile port can: Load videos, mods, visualize sounds, basically everything else the base game does!
-
 # Getting Started
 
 **PLEASE USE THE LINKS ABOVE IF YOU JUST WANT TO PLAY THE GAME**
