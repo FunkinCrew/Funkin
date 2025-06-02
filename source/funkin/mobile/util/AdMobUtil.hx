@@ -246,6 +246,15 @@ class AdMobUtil
     Admob.showPrivacyOptionsForm();
   }
 
+  /**
+   * Opens the Ad Inspector interface.
+   * This method works for test devices registered programmatically or in the AdMob UI.
+   */
+  public static inline function openAdInspector():Void
+  {
+    Admob.openAdInspector();
+  }
+
   @:noCompletion
   private static function logMessage(message:String):Void
   {
