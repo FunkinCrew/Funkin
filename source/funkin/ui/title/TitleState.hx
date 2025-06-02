@@ -309,6 +309,7 @@ class TitleState extends MusicBeatState
         // Assets.cache.clear(Paths.image('logoBumpin'));
         // Assets.cache.clear(Paths.image('titleEnter'));
         // ngSpr??
+        funkin.FunkinMemory.purgeCache();
         FlxG.switchState(targetState);
       });
       // FunkinSound.playOnce(Paths.music('titleShoot'), 0.7);

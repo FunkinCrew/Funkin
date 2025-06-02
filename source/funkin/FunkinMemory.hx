@@ -25,6 +25,8 @@ class FunkinMemory
   static var currentCachedSounds:Map<String, Sound> = [];
   static var previousCachedSounds:Map<String, Sound> = [];
 
+  static var purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
+
   /**
    * Caches textures that are always required.
    */
@@ -224,13 +226,17 @@ class FunkinMemory
         continue;
       }
 
-      if (obj.useCount > 0 && !key.contains("characters") && !key.contains("charSelect") && !key.contains("results"))
+      if (obj.useCount > 0)
       {
-        continue;
+        for (purgeEntry in purgeFilter)
+        {
+          if (key.contains(purgeEntry))
+          {
+            FlxG.bitmap.removeKey(key);
+            obj.destroy();
+          }
+        }
       }
-
-      FlxG.bitmap.removeKey(key);
-      obj.destroy();
     }
   }
 
