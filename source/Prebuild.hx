@@ -21,7 +21,7 @@ class NewgroundsCredentials
 
   static function main():Void
   {
-    trace('Building...');
+    trace('[PREBUILD] Building...');
 
     saveBuildTime();
 
@@ -38,19 +38,17 @@ class NewgroundsCredentials
 
   static function buildCredsFile():Void
   {
-    #if (sys && FEATURE_NEWGROUNDS)
     if (sys.FileSystem.exists(NG_CREDS_PATH))
     {
-      trace('NewgroundsCredentials.hx already exists, skipping.');
+      trace('[PREBUILD] NewgroundsCredentials.hx already exists, skipping.');
     }
     else
     {
-      trace('Creating NewgroundsCredentials.hx...');
+      trace('[PREBUILD] Creating NewgroundsCredentials.hx...');
 
       var fileContents:String = NG_CREDS_TEMPLATE;
 
       sys.io.File.saveContent(NG_CREDS_PATH, fileContents);
     }
-    #end
   }
 }
