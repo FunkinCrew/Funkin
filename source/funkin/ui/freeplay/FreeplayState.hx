@@ -1712,7 +1712,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
-    curSelected = Std.int(curSelectedFloat);
+    curSelected = Math.round(curSelectedFloat);
 
     for (i in 0...grpCapsules.members.length)
     {
@@ -2414,7 +2414,7 @@ class FreeplayState extends MusicBeatSubState
   function updateSongsScroll():Void
   {
     var prevSelected:Int = curSelected;
-    curSelected = Std.int(curSelectedFloat);
+    curSelected = Math.round(curSelectedFloat);
 
     for (index => capsule in grpCapsules.members)
     {
