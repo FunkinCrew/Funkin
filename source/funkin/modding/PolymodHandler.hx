@@ -280,20 +280,29 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('Unserializer');
 
-    // `lime.system.CFFI`
-    // Can load and execute compiled binaries.
-    Polymod.blacklistImport('lime.system.CFFI');
+    // Disable access to AdMob Util
+    Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
 
-    // `lime.system.JNI`
-    // Can load and execute compiled binaries.
-    Polymod.blacklistImport('lime.system.JNI');
-
-    // `extension.androidtools.androidtools.jni.JNICache`
-    // Same as `lime.system.JNI`
-    Polymod.blacklistImport('extension.androidtools.androidtools.jni.JNICache');
-
-    // Disable access to in-app purchases
+    // Disable access to In-App Purchases Util
     Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');
+
+    // Disable access to Admob Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // Disable access to AndroidTools Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.androidtools'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // Disable access to IAPCore Extension
     for (cls in ClassMacro.listClassesInPackage('extension.iapcore'))
     {
       if (cls == null) continue;
@@ -301,14 +310,21 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
-    // Disable access to Google AdMob
-    Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
-    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
+    // Disable access to Haptics Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.haptics'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+
+    // `lime.system.CFFI`
+    // Can load and execute compiled binaries.
+    Polymod.blacklistImport('lime.system.CFFI');
+
+    // `lime.system.JNI`
+    // Can load and execute compiled binaries.
+    Polymod.blacklistImport('lime.system.JNI');
 
     // `lime.system.System`
     // System.load() can load malicious DLLs
