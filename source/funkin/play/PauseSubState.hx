@@ -21,9 +21,6 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
-#if FEATURE_MOBILE_ADVERTISEMENTS
-import funkin.mobile.util.AdMobUtil;
-#end
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -153,6 +150,11 @@ class PauseSubState extends MusicBeatSubState
   // ===============
 
   /**
+   * The placeholder sprite displayed when an advertisement fails to load or display.
+   */
+  var failedAdPlaceHolder:FunkinSprite;
+
+  /**
    * The semi-transparent black background that appears when the game is paused.
    */
   var background:FunkinSprite;
@@ -209,7 +211,9 @@ class PauseSubState extends MusicBeatSubState
   {
     // Add banner ad when game is state is first loaded.
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
+    extension.admob.Admob.onEvent.add(onBannerEvent);
+
+    funkin.mobile.util.AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
     #end
 
     super.create();
@@ -243,6 +247,9 @@ class PauseSubState extends MusicBeatSubState
    */
   public override function destroy():Void
   {
+    #if FEATURE_MOBILE_ADVERTISEMENTS
+    extension.admob.Admob.onEvent.remove(onBannerEvent);
+    #end
     super.destroy();
     charterFadeTween.cancel();
     charterFadeTween = null;
@@ -252,6 +259,36 @@ class PauseSubState extends MusicBeatSubState
   // ===============
   // Initialization Functions
   // ===============
+  #if FEATURE_MOBILE_ADVERTISEMENTS
+  function onBannerEvent(event:extension.admob.AdmobEvent):Void
+  {
+    if (event.name.indexOf('BANNER') == -1) return;
+
+    if (event.errorCode != null && event.errorDescription != null)
+    {
+      if (failedAdPlaceHolder == null || members.indexOf(failedAdPlaceHolder) == -1)
+      {
+        var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
+
+        #if android
+        scale = Math.max(scale, 1);
+        #else
+        scale = Math.min(scale, 1);
+        #end
+
+        failedAdPlaceHolder = new FunkinSprite(0, 0);
+        failedAdPlaceHolder.makeSolidColor(Math.floor(320 * scale), Math.floor(50 * scale), FlxColor.RED);
+        failedAdPlaceHolder.updateHitbox();
+        failedAdPlaceHolder.scrollFactor.set(0, 0);
+        add(failedAdPlaceHolder);
+      }
+    }
+    else if (failedAdPlaceHolder != null && members.indexOf(failedAdPlaceHolder) != -1)
+    {
+      remove(failedAdPlaceHolder);
+    }
+  }
+  #end
 
   /**
    * Play the pause music.
@@ -670,7 +707,7 @@ class PauseSubState extends MusicBeatSubState
     // Resume a paused video if it exists.
     VideoCutscene.resumeVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -707,7 +744,7 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.needsReset = true;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -720,7 +757,7 @@ class PauseSubState extends MusicBeatSubState
   {
     PlayState.instance.needsReset = true;
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -745,7 +782,7 @@ class PauseSubState extends MusicBeatSubState
   {
     VideoCutscene.restartVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -758,7 +795,7 @@ class PauseSubState extends MusicBeatSubState
   {
     VideoCutscene.finishVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -773,7 +810,7 @@ class PauseSubState extends MusicBeatSubState
 
     PlayState.instance.currentConversation.resetConversation();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -788,7 +825,7 @@ class PauseSubState extends MusicBeatSubState
 
     PlayState.instance.currentConversation.skipConversation();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -829,7 +866,7 @@ class PauseSubState extends MusicBeatSubState
     }
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
 
     state.openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
@@ -842,7 +879,7 @@ class PauseSubState extends MusicBeatSubState
   static function quitToChartEditor(state:PauseSubState):Void
   {
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
+    funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
