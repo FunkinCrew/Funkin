@@ -1539,6 +1539,12 @@ class FreeplayState extends MusicBeatSubState
       _pressedOnCapsule = false;
       _pressedOnFreeplay = false;
     }
+
+    if (!TouchUtil.pressed && !FlxG.touches.flickManager.initialized)
+    {
+      _flickEnded = true;
+      draggingDifficulty = false;
+    }
     #end
 
     if (controls.BACK)
@@ -1615,10 +1621,7 @@ class FreeplayState extends MusicBeatSubState
   private function handleTouchCapsuleClick():Void
   {
     if (diffSelRight == null) return;
-    if (TouchUtil.pressAction()
-      && !TouchUtil.overlaps(diffSelRight, funnyCam)
-      && TouchUtil.touch.velocity.length < 5
-      && !draggingDifficulty)
+    if (TouchUtil.pressAction() && !TouchUtil.overlaps(diffSelRight, funnyCam) && !draggingDifficulty)
     {
       curSelected = Math.round(curSelectedFloat);
 
@@ -1714,7 +1717,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
-    curSelected = Std.int(curSelectedFloat);
+    curSelected = Math.round(curSelectedFloat);
 
     for (i in 0...grpCapsules.members.length)
     {
@@ -1745,7 +1748,7 @@ class FreeplayState extends MusicBeatSubState
         {
           draggingDifficulty = true;
           dj?.resetAFKTimer();
-          changeDiff(1, false, true);
+          changeDiff(-1, false, true);
           _pressedOnSelected = false;
           FlxG.touches.flickManager.destroy();
           _flickEnded = true;
@@ -1763,7 +1766,7 @@ class FreeplayState extends MusicBeatSubState
         {
           draggingDifficulty = true;
           dj?.resetAFKTimer();
-          changeDiff(-1, false, true);
+          changeDiff(1, false, true);
           _pressedOnSelected = false;
           FlxG.touches.flickManager.destroy();
           _flickEnded = true;
@@ -2458,7 +2461,7 @@ class FreeplayState extends MusicBeatSubState
   function updateSongsScroll():Void
   {
     var prevSelected:Int = curSelected;
-    curSelected = Std.int(curSelectedFloat);
+    curSelected = Math.round(curSelectedFloat);
 
     for (index => capsule in grpCapsules.members)
     {
