@@ -135,7 +135,7 @@ class AdMobUtil
       }
       #end
 
-      logMessage(event.toString());
+      trace(event.toString());
     });
 
     Admob.configureConsentMetadata(Admob.getTCFConsentForPurpose(0) == 1, StringTools.startsWith(Admob.getUSPrivacy(), '1Y'));
@@ -253,16 +253,6 @@ class AdMobUtil
   public static inline function openAdInspector():Void
   {
     Admob.openAdInspector();
-  }
-
-  @:noCompletion
-  private static function logMessage(message:String):Void
-  {
-    #if android
-    extension.androidtools.widget.Toast.makeText(message, extension.androidtools.widget.Toast.LENGTH_SHORT);
-    #end
-
-    Sys.println(message);
   }
 }
 #end

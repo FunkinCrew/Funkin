@@ -54,19 +54,19 @@ class InAppPurchasesUtil
   {
     #if android
     IAPAndroid.onLog.add(function(message:String):Void {
-      logMessage(message);
+      trace(message);
     });
 
     IAPAndroid.onBillingSetupFinished.add(function(result:IAPResult):Void {
       if (result.getResponseCode() != IAPResponseCode.OK)
       {
-        logMessage('Billing setup failed "$result"!');
+        trace('Billing setup failed "$result"!');
         return;
       }
 
       if (reconnectAttempts > 0)
       {
-        logMessage('Billing service successfully reconnected!');
+        trace('Billing service successfully reconnected!');
 
         reconnectAttempts = 0;
       }
@@ -77,19 +77,19 @@ class InAppPurchasesUtil
     });
 
     IAPAndroid.onBillingServiceDisconnected.add(function():Void {
-      logMessage("Billing service disconnected!");
+      trace("Billing service disconnected!");
 
       if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS)
       {
         reconnectAttempts++;
 
-        logMessage('Attempting to reconnect... ($reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)');
+        trace('Attempting to reconnect... ($reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)');
 
         IAPAndroid.startConnection();
       }
       else
       {
-        logMessage('Max reconnect attempts reached.');
+        trace('Max reconnect attempts reached.');
       }
     });
 
@@ -97,7 +97,7 @@ class InAppPurchasesUtil
       if (result.getResponseCode() == IAPResponseCode.OK) currentProductDetails = productDetails;
       else
       {
-        logMessage('Failed to fetch product details: "$result"');
+        trace('Failed to fetch product details: "$result"');
       }
     });
 
@@ -105,7 +105,7 @@ class InAppPurchasesUtil
       if (result.getResponseCode() == IAPResponseCode.OK) handlePurchases(purchases);
       else
       {
-        logMessage('Failed to query purchases: "$result"');
+        trace('Failed to query purchases: "$result"');
       }
     });
 
@@ -113,15 +113,15 @@ class InAppPurchasesUtil
       if (result.getResponseCode() == IAPResponseCode.OK) handlePurchases(purchases);
       else
       {
-        logMessage('Failed to update purchases: "$result"');
+        trace('Failed to update purchases: "$result"');
       }
     });
 
     IAPAndroid.onAcknowledgePurchaseResponse.add(function(result:IAPResult):Void {
-      if (result.getResponseCode() == IAPResponseCode.OK) logMessage('Purchase acknowledged successfully!');
+      if (result.getResponseCode() == IAPResponseCode.OK) trace('Purchase acknowledged successfully!');
       else
       {
-        logMessage('Failed to acknowledge purchase: $result');
+        trace('Failed to acknowledge purchase: $result');
       }
     });
 
@@ -134,7 +134,7 @@ class InAppPurchasesUtil
     });
 
     IAPIOS.onProductDetailsFailed.add(function(error:IAPError):Void {
-      logMessage('Failed to request product details: "$error"');
+      trace('Failed to request product details: "$error"');
     });
 
     IAPIOS.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void {
@@ -173,7 +173,7 @@ class InAppPurchasesUtil
       #end
     }
 
-    logMessage("Didn't find product details for ID: " + id);
+    trace("Didn't find product details for ID: " + id);
   }
 
   /**
@@ -204,16 +204,6 @@ class InAppPurchasesUtil
   }
 
   @:noCompletion
-  private static function logMessage(message:String):Void
-  {
-    #if android
-    extension.androidtools.widget.Toast.makeText(message, extension.androidtools.widget.Toast.LENGTH_SHORT);
-    #end
-
-    Sys.println(message);
-  }
-
-  @:noCompletion
   private static function handlePurchases(purchases:Array<IAPPurchase>):Void
   {
     for (purchase in purchases)
@@ -240,21 +230,21 @@ class InAppPurchasesUtil
         if (!alreadyTracked)
         {
           currentPurchased.push(purchase);
-          logMessage('Android purchase tracked: ${purchase.getPurchaseToken()}');
+          trace('Android purchase tracked: ${purchase.getPurchaseToken()}');
         }
         else
         {
-          logMessage('Android purchase already tracked: ${purchase.getPurchaseToken()}');
+          trace('Android purchase already tracked: ${purchase.getPurchaseToken()}');
         }
       }
       else
       {
-        logMessage('Android purchase not completed: ${purchase.getPurchaseState()}');
+        trace('Android purchase not completed: ${purchase.getPurchaseState()}');
       }
       #elseif ios
-      logMessage('Transaction ID: ${purchase.getTransactionIdentifier()}');
-      logMessage('Transaction Date: ${purchase.getTransactionDate()}');
-      logMessage('Transaction Payment Product ID: ${purchase.getPaymentProductIdentifier()}');
+      trace('Transaction ID: ${purchase.getTransactionIdentifier()}');
+      trace('Transaction Date: ${purchase.getTransactionDate()}');
+      trace('Transaction Payment Product ID: ${purchase.getPaymentProductIdentifier()}');
 
       var alreadyTracked:Bool = false;
 
@@ -270,25 +260,25 @@ class InAppPurchasesUtil
       switch (purchase.getTransactionState())
       {
         case IAPPurchaseState.PURCHASING:
-          logMessage('iOS purchase is in progress.');
+          trace('iOS purchase is in progress.');
         case IAPPurchaseState.DEFERRED:
-          logMessage('iOS purchase is deferred.');
+          trace('iOS purchase is deferred.');
         case IAPPurchaseState.FAILED:
-          logMessage('iOS purchase failed: ${purchase.getTransactionError()}.');
+          trace('iOS purchase failed: ${purchase.getTransactionError()}.');
         case IAPPurchaseState.PURCHASED | IAPPurchaseState.RESTORED:
-          logMessage('iOS purchase successful or restored.');
+          trace('iOS purchase successful or restored.');
 
           if (!alreadyTracked)
           {
             currentPurchased.push(purchase);
 
-            logMessage('iOS purchase tracked: ${purchase.getTransactionIdentifier()}');
+            trace('iOS purchase tracked: ${purchase.getTransactionIdentifier()}');
 
             IAPIOS.finishPurchase(purchase);
           }
           else
           {
-            logMessage('iOS purchase already tracked: ${purchase.getTransactionIdentifier()}');
+            trace('iOS purchase already tracked: ${purchase.getTransactionIdentifier()}');
           }
       }
       #end
