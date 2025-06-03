@@ -130,7 +130,7 @@ class Project extends HXProject
    * Higher block size means lower quality and lighter file size for the generated compressed textures.
    * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
    */
-  static var ASTC_BLOCKSIZE:String = "12x12";
+  static var ASTC_BLOCKSIZE:String = "10x10";
 
   /**
    * The quality of the compression process.
