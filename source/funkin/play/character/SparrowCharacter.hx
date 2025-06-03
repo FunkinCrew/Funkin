@@ -32,23 +32,6 @@ class SparrowCharacter extends BaseCharacter
     super.onCreate(event);
   }
 
-  function setSprite(sprite:FlxAtlasSprite):Void
-  {
-    trace('[SPARROWDJ] Applying sprite properties to ${characterId}');
-
-    this.mainSprite = sprite;
-
-    mainSprite.updateHitbox();
-
-    sprite.x = this.x;
-    sprite.y = this.y;
-    sprite.alpha *= alpha;
-    sprite.flipX = flipX;
-    sprite.flipY = flipY;
-    sprite.scrollFactor.copyFrom(scrollFactor);
-    sprite.cameras = _cameras;
-  }
-
   function loadSpritesheet()
   {
     trace('Loading assets for Sparrow character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));

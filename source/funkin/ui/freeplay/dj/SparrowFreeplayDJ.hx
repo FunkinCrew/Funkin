@@ -60,6 +60,23 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
     super.onCreate(event);
   }
 
+  function setSprite(sprite:FunkinSprite):Void
+  {
+    trace('[SPARROWDJ] Applying sprite properties to ${characterId}');
+
+    this.mainSprite = sprite;
+
+    mainSprite.updateHitbox();
+
+    sprite.x = this.x;
+    sprite.y = this.y;
+    sprite.alpha *= alpha;
+    sprite.flipX = flipX;
+    sprite.flipY = flipY;
+    sprite.scrollFactor.copyFrom(scrollFactor);
+    sprite.cameras = _cameras;
+  }
+
   function loadSparrowSprite():FunkinSprite
   {
     trace('[SPRARROWDJ] Loading sprite sparrow for ${characterId}.');
