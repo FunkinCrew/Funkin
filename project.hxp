@@ -494,7 +494,7 @@ class Project extends HXProject {
 		// For example, `-DGITHUB_BUILD` or `-DNO_HARDCODED_CREDITS`
 
 		// Should be false unless explicitly requested.
-		GITHUB_BUILD.apply(this, false
+		GITHUB_BUILD.apply(this, false);
 		FEATURE_GHOST_TAPPING.apply(this, false);
 
 		// Should be true unless explicitly requested.
