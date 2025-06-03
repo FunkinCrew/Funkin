@@ -88,17 +88,17 @@ class ChartEditorImportExportHandler
         var diff:Null<SongDifficulty> = song.getDifficulty(difficultyId, variation);
         if (diff == null) continue;
 
-        var variationId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
+        var vocalId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
         var voiceList:Array<String> = diff.buildVoiceList(); // SongDifficulty accounts for variation already.
 
         if (voiceList.length == 2)
         {
-          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, variationId);
-          state.loadVocalsFromAsset(voiceList[1], diff.characters.opponent, variationId);
+          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, vocalId);
+          state.loadVocalsFromAsset(voiceList[1], diff.characters.opponent, vocalId);
         }
         else if (voiceList.length == 1)
         {
-          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, variationId);
+          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, vocalId);
         }
         else
         {
