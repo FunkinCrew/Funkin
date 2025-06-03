@@ -12,6 +12,10 @@ import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
 import thx.semver.Version;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+import funkin.api.newgrounds.Leaderboards;
+#end
 
 @:nullSafety
 class Save

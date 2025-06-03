@@ -5119,12 +5119,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     else if (parts[1].length < 2) parts[1] += '0';
     songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
 
-    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
-    var parts:Array<String> = Std.string(roundedBeat).split('.');
-    if (parts.length == 1) parts.push('00');
-    else if (parts[1].length < 2) parts[1] += '0';
-    songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
-
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
     var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);

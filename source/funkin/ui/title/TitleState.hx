@@ -23,8 +23,12 @@ import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
+import openfl.media.Video;
+import openfl.net.NetStream;
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Medals;
+#end
 import funkin.ui.freeplay.FreeplayState;
-import funkin.api.newgrounds.NGio;
 import openfl.display.BlendMode;
 import funkin.save.Save;
 
@@ -271,9 +275,7 @@ class TitleState extends MusicBeatState
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
-      NGio.unlockMedal(60960);
-      // If it's Friday according to da clock
-      if (Date.now().getDay() == 5) NGio.unlockMedal(61034);
+      // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);

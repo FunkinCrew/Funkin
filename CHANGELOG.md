@@ -95,7 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The nearest song with an Erect variation will be selected when switching.
 - Switching difficulties now always plays the capsule jump-in animation.
 - The "Random" capsule now plays animations consistent with other capsules.
-- The Eggnog Erect cutscene can now be skipped. ([0303a03](https://github.com/FunkinCrew/funkin.assets/commit/1202651db8ea938fe11b6b734fbf7884d101e6ad)) - by @ShadzXD in [#62](https://github.com/FunkinCrew/funkin.assets/pull/62)
+- The Eggnog Erect cutscene can now be skipped. ([0303a03](https://github.com/FunkinCrew/funkin.assets/commit/1202651db8ea938fe11b6b734fbf7884d101e6ad)) - by @ShadzXD in [funkin.assets#62](https://github.com/FunkinCrew/funkin.assets/pull/62)
 - Swapped the positions of “skip” and “restart” items in the dialogue pause menu for consistency. ([1f88a3b](https://github.com/FunkinCrew/Funkin/commit/1f88a3b6e13e9283ad680805deab5e27ba141d96)) - by @VioletSnowLeopard in [#4553](https://github.com/FunkinCrew/Funkin/pull/4553)
 - The Controls menu now prevents unbinding essential UI controls to safeguard against softlocking save files. ([7eebce4](https://github.com/FunkinCrew/Funkin/commit/7eebce432d7627a1cf0bbd43f22a6f9bcb63ff65)) - by @VioletSnowLeopard in [#4382](https://github.com/FunkinCrew/Funkin/pull/4382)
 - Renamed “Auto Pause” preference to “Pause on Unfocus” for clarity. ([52be941](https://github.com/FunkinCrew/Funkin/commit/52be941b4503da0ac76918e2482ab1804866f2cf)) - by @JackXson-Real in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
@@ -118,7 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A-Bot's visualizer is now blank before the song starts.
 - Debug editor tooltips no longer display behind windows.
 - Clearing save data no longer crashes the game.
-- Adding custom parameters to note kinds no longer crashes the Chart Editor. ([0a7bd31](https://github.com/FunkinCrew/Funkin/commit/0a7bd3111f59efbecfe097f8bbcfdefa5ace299d)) - by @Lasercar in [#136](https://github.com/FunkinCrew/funkin.assets/pull/136)
+- Adding custom parameters to note kinds no longer crashes the Chart Editor. ([0a7bd31](https://github.com/FunkinCrew/Funkin/commit/0a7bd3111f59efbecfe097f8bbcfdefa5ace299d)) - by @Lasercar in [funkin.assets#136](https://github.com/FunkinCrew/funkin.assets/pull/136)
 - Improved performance in the Freeplay menu before entering a song. ([2b7254f](https://github.com/FunkinCrew/Funkin/commit/2b7254fbd2356e9da91e216f178a88f17874a6eb)) - by @superpowers04 in [#4729](https://github.com/FunkinCrew/Funkin/pull/4729)
 - Prevented a crash by capping Freeplay and Results screen score displays at their largest possible values (actual scores are not capped). ([51324e9](https://github.com/FunkinCrew/Funkin/commit/51324e9c283c43ca861d3369ba9b3e1db9c89765)) - by @KoloInDaCrib in [#3634](https://github.com/FunkinCrew/Funkin/pull/3634)
 - The Animation Editor no longer crashes when opened. ([b40b4b0](https://github.com/FunkinCrew/Funkin/commit/b40b4b03692910afceff361cf6ca3298fd787e3c)) - by @sector-a in [#4582](https://github.com/FunkinCrew/Funkin/pull/4582)
@@ -184,13 +184,14 @@ The Pit Stop 2 update!
   - Added new stickers which appear when exiting Pico songs!
   - The new sticker system isn't fully available to mods yet, but we're working on it!
 - New option in the Preferences menu: Strumline Backgrounds!
+- Options in the Preferences menu now display an on-screen description when selected.
 - New song event type in the Chart Editor: Set Health Icon!
   - This event is now used in Stress (Pico Mix).
 - The HOME and END keys now jump to the top and bottom of the Freeplay song list, respectively. ([bb974c2](https://github.com/FunkinCrew/Funkin/commit/bb974c264270d10ff503784063e5d77bb352b3f7)) - by @AbnormalPoof in [#4103](https://github.com/FunkinCrew/Funkin/pull/4103)
 - Added an option to launch the game in fullscreen. ([ee53ccd](https://github.com/FunkinCrew/Funkin/commit/ee53ccd32721e0790adfe82c60d4aca419db0a7f)) - by @AbnormalPoof in [#3738](https://github.com/FunkinCrew/Funkin/pull/3738)
 - Added on-screen descriptions for each item in the Preferences menu. ([a17b0e8](https://github.com/FunkinCrew/Funkin/commit/a17b0e8b3cc1d56fcdc0b51eaca9fd57cdb5bce0)) - by @anysad in [#3872](https://github.com/FunkinCrew/Funkin/pull/3872)
 - Added precise scrolling in the Chart Editor using Ctrl-Mouse Wheel. ([0d8e4a5](https://github.com/FunkinCrew/Funkin/commit/0d8e4a53305d6d069454812766300122f3581e31)) - by @ninjamuffin99 in [#3806](https://github.com/FunkinCrew/Funkin/pull/3806)
-- Added a “None” option to the character selector in the Chart Editor. ([d9637d3](https://github.com/FunkinCrew/Funkin/commit/d9637d3a19466b9fc68a102676c46a74ef504909)) - by @Lasercar in [#4279](https://github.com/FunkinCrew/Funkin/pull/4279)
+- Added a “None” option to the character selector in the Chart Editor. ([9c2ef02](https://github.com/FunkinCrew/Funkin/commit/9c2ef0236818883ad1275571dac49eab70ca0ea0)) - by @Lasercar in [#4279](https://github.com/FunkinCrew/Funkin/pull/4279)
 - Added the ability to flip the character horizontally in the Animation Editor by pressing G. ([de02137](https://github.com/FunkinCrew/Funkin/commit/de02137d7c7d1779e85aeda34743f506a5b9cc27)) - by @AbnormalPoof in [#3028](https://github.com/FunkinCrew/Funkin/pull/3028)
 - Added offsets support for album titles. ([69d8570](https://github.com/FunkinCrew/Funkin/commit/69d8570a9eb06011ed6dd95fcbef83d90f7f8684)) - by @AbnormalPoof in [#3618](https://github.com/FunkinCrew/Funkin/pull/3618)
 - Added three new properties to stage data: `angle`, `scroll`, and `alpha`. ([ff56b19](https://github.com/FunkinCrew/Funkin/commit/ff56b1948aef42bbb6bb4ede4f9b2012d49ab044)) - by @AbnormalPoof in [#3720](https://github.com/FunkinCrew/Funkin/pull/3720)
@@ -230,16 +231,17 @@ The Pit Stop 2 update!
 - Reduced stuttering when resyncing instrumental and voices tracks. ([22d41d2](https://github.com/FunkinCrew/Funkin/commit/22d41d21b88acb7422a0afcda8414682710bd2ed)) - by @TechnikTil in [#3955](https://github.com/FunkinCrew/Funkin/pull/3955)
 - Songs with only instrumental tracks no longer stutter. ([dfe02ec](https://github.com/FunkinCrew/Funkin/commit/dfe02ec668b61d6308f459c978d12a7487f9dc28)) - by @KoloInDaCrib in [#3861](https://github.com/FunkinCrew/Funkin/pull/3861)
 - The debug mouse cursor no longer flickers before the Title Screen loads. ([1c12b84](https://github.com/FunkinCrew/Funkin/commit/1c12b8467eca350eb28138473360d5358fa620e2)) - by @sphis-Sinco in [#3881](https://github.com/FunkinCrew/Funkin/pull/3881)
-- Unbound keys now display as [N/A] instead of crashing the game. ([94e5d3c](https://github.com/FunkinCrew/Funkin/commit/94e5d3ca258cbaa5d9ab6f0cb26feda83b3433a2)) - by @NotHyper-474 in [#4355](https://github.com/FunkinCrew/Funkin/pull/4355)
+- Unbound keys now display as [N/A] instead of crashing the game. ([099c309](https://github.com/FunkinCrew/Funkin/commit/099c309f9babdc1ea99b7dbed3fdccf1e952fc8e)) - by @NotHyper-474 in [#4355](https://github.com/FunkinCrew/Funkin/pull/4355)
 - Songs can no longer be spam-selected after selecting an instrumental in Freeplay. ([0e0c4ae](https://github.com/FunkinCrew/Funkin/commit/0e0c4aeb7745cfb9479685ccbb635cf3743cddbb)) - by @AbnormalPoof in [#3866](https://github.com/FunkinCrew/Funkin/pull/3866)
-- The Random capsule can now switch to Erect/Nightmare difficulties in Freeplay. ([6f32747](https://github.com/FunkinCrew/Funkin/commit/6f327474f30374f50774f432ea3ccb6d02579445)) - by @KoloInDaCrib in [#3838](https://github.com/FunkinCrew/Funkin/pull/3838)
+- The Random capsule can now switch to Erect/Nightmare difficulties in Freeplay. ([a90b911](https://github.com/FunkinCrew/Funkin/commit/a90b911653a1beaba57d64b1f05b840109fec42b)) - by @KoloInDaCrib in [#3838](https://github.com/FunkinCrew/Funkin/pull/3838)
 - Fixed a rare bug where a song would not register as beaten. ([a3e2373](https://github.com/FunkinCrew/Funkin/commit/a3e23733db104b1ef00cfcff17db3a5d032a4d67)) - by @AbnormalPoof in [#3820](https://github.com/FunkinCrew/Funkin/pull/3820)
 - The difficulty graphic on the Results screen no longer cuts off incorrectly. ([b13bf05](https://github.com/FunkinCrew/Funkin/commit/b13bf05d16ff2977309e0c7ba3f049c0134e8902)) - by @AbnormalPoof in [#4161](https://github.com/FunkinCrew/Funkin/pull/4161)
-- Four-digit long Total Notes values in the Results screen no longer overflow to the right. ([2be4c0c](https://github.com/FunkinCrew/Funkin/commit/2be4c0c7196e018a43f9697f015179f3efc3fcdb)) - by @Hundrec in [#4356](https://github.com/FunkinCrew/Funkin/pull/4356)
+- Four-digit long Total Notes values in the Results screen no longer overflow to the right. ([91a594c](https://github.com/FunkinCrew/Funkin/commit/91a594cc858ed086cd2146a1ac5d2379c6fdd27a)) - by @Hundrec in [#4356](https://github.com/FunkinCrew/Funkin/pull/4356)
 - The Character Select screen no longer plays the unlock animation for some locked characters. ([7058126](https://github.com/FunkinCrew/Funkin/commit/7058126e99adb55e43f5f487b007d3efa9f324d5)) - by @AbnormalPoof in [#3748](https://github.com/FunkinCrew/Funkin/pull/3748)
 - All time signatures in the Chart Editor now display the correct number of beat/step tick lines. ([e570dfb](https://github.com/FunkinCrew/Funkin/commit/e570dfb8e754f9cb29ac2d8fff6e8513bc68b630)) - by @Keoiki in [#2860](https://github.com/FunkinCrew/Funkin/pull/2860)
 - The Debug menu now opens with the correct camera position. ([090ddd1](https://github.com/FunkinCrew/Funkin/commit/090ddd1f1c2aa48fdb83127b2235041643c99af5)) - by @ninjamuffin99 in [#3769](https://github.com/FunkinCrew/Funkin/pull/3769)
-- Removed some Freeplay variables left over from legacy versions. ([6f6529f](https://github.com/FunkinCrew/Funkin/commit/6f6529f3c460721755dfdd0a7a26578c0de429d2)) - by @AbnormalPoof in [#4370](https://github.com/FunkinCrew/Funkin/pull/4370)
+- Finally added an outline to the third GF sticker. [9e62572](https://github.com/FunkinCrew/funkin.assets/commit/9e62572ae27dc676c624a81af5c755490eb2dafe) - @M7theguy in [funkin.assets#33](https://github.com/FunkinCrew/funkin.assets/pull/33)
+- Removed an unused Freeplay class left over from legacy versions. ([abe4ac8](https://github.com/FunkinCrew/Funkin/commit/abe4ac8485539cbebe527a9a75698950232b68d2)) - by @AbnormalPoof in [#4370](https://github.com/FunkinCrew/Funkin/pull/4370)
 - Blacklisted an additional class for security. ([3492d41](https://github.com/FunkinCrew/Funkin/commit/3492d412c65c7f3fd61e6fc6c9410d8467122ab0)) - by @AbnormalPoof in [#4074](https://github.com/FunkinCrew/Funkin/pull/4074)
 - Removed an unused class from Polymod blacklist. ([06c12e3](https://github.com/FunkinCrew/Funkin/commit/06c12e36c6bd6df4e2be32a3bec540172e79e162)) - by @AbnormalPoof in [#3729](https://github.com/FunkinCrew/Funkin/pull/3729)
 - Many additional small bug fixes.
@@ -252,6 +254,7 @@ The Pit Stop 2 update!
 * @MidyGamy made their first contribution in [#4068](https://github.com/FunkinCrew/Funkin/pull/4068)
 * @Lasercar made their first contribution in [#4082](https://github.com/FunkinCrew/Funkin/pull/4082)
 * @MrScottyPieey made their first contribution in [#4085](https://github.com/FunkinCrew/Funkin/pull/4085)
+* @M7theguy made their first contribution in [funkin.assets#33](https://github.com/FunkinCrew/funkin.assets/pull/33)
 
 
 
@@ -357,7 +360,7 @@ This patch resolves a critical issue that could cause user's save data to become
 - Spookeez (Pico Mix) is now properly credited to `Six Impala (ft. Saster)`.
 - The audio track now unmutes if you miss a note just before Pico burps.
 - Pico now plays out his full burp animation in South (Pico Mix).
-- Removed a tap note stacked on top of a hold note in Cocoa Erect (Erect difficulty). 
+- Removed a tap note stacked on top of a hold note in Cocoa Erect (Erect difficulty).
 - Pico Erect can no longer be played with different instrumentals.
 - The curtains in Week 1 no longer display in front of larger characters.
 - Boyfriend now plays his death animation properly on the Week 2 Remix stage.
@@ -404,7 +407,7 @@ This patch resolves a critical issue that could cause user's save data to become
 
 
 ## [0.5.0] - 2024-09-12
-
+The Playable Pico Update!
 ### Added
 
 - Added a new Character Select screen to switch between playable characters in Freeplay.
@@ -545,7 +548,7 @@ This patch resolves a critical issue that could cause user's save data to become
 
 
 ## [0.4.0] - 2024-06-06
-
+The Pit Stop 1 update!
 ### Added
 
 - 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
@@ -716,7 +719,7 @@ This patch resolves a critical issue that could cause user's save data to become
 
 
 ## [0.3.0] - 2024-04-30
-
+The Weekend 1 update!
 ### Added
 
 - New Story Level: Weekend 1, starring Pico, Darnell, and Nene.

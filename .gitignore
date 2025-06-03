@@ -4,6 +4,7 @@
 APIStuff.hx
 dump/
 export/
+project/
 RECOVER_*.fla
 shitAudio/
 .build_time
