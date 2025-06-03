@@ -762,7 +762,8 @@ class FreeplayState extends MusicBeatSubState
     rankBg.alpha = 0;
 
     #if FEATURE_TOUCH_CONTROLS
-    addBackButton(FlxG.width * 0.96, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width * 0.96, FlxG.height * 0.86, FlxColor.WHITE, goBack);
+    if (backButton != null) backButton.scale.set(0.85, 0.85);
 
     FlxTween.tween(backButton, {x: FlxG.width - 456}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
     #end
