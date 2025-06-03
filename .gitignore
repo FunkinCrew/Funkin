@@ -15,3 +15,6 @@ node_modules/
 package.json
 package-lock.json
 .aider*
+
+# Other Stuff
+.stfolder/*
