@@ -130,6 +130,10 @@ class PlayerFreeplayDJData
   @:optional
   var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
+  @:optional
+  @:default("animateatlas")
+  var renderType:Null<String>;
+
   public function new()
   {
     animationMap = new Map();

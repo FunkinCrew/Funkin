@@ -44,6 +44,11 @@ import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
+import funkin.ui.freeplay.dj.BaseFreeplayDJ;
+import funkin.ui.freeplay.dj.SparrowFreeplayDJ;
+import funkin.ui.freeplay.dj.MultiSparrowFreeplayDJ;
+import funkin.ui.freeplay.dj.PackerFreeplayDJ;
+import funkin.ui.freeplay.dj.AnimateAtlasFreeplayDJ;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -131,7 +136,7 @@ class FreeplayState extends MusicBeatSubState
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
   var curPlaying:Bool = false;
 
-  var dj:Null<FreeplayDJ> = null;
+  var dj:Null<BaseFreeplayDJ> = null;
 
   var ostName:FlxText;
   var albumRoll:AlbumRoll;
@@ -326,7 +331,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (currentCharacter?.getFreeplayDJData() != null)
     {
-      dj = new FreeplayDJ(640, 366, currentCharacterId);
+      createFreeplayDJ(640, 366, currentCharacterId);
       exitMovers.set([dj],
         {
           x: -dj.width * 1.6,
@@ -670,6 +675,30 @@ class FreeplayState extends MusicBeatSubState
     {
       enterFromCharSel();
       onDJIntroDone();
+    }
+  }
+
+  /**
+   * Create a FreeplayDJ for the current character.
+   * @param x The X position.
+   * @param y The Y position.
+   * @param characterId The character ID to use.
+   */
+  @:privateAccess
+  public function createFreeplayDJ(x:Float, y:Float, characterId:String):Void
+  {
+    var renderType:String = currentCharacter.getFreeplayDJData().renderType;
+
+    switch (renderType)
+    {
+      case 'sparrow':
+        dj = new SparrowFreeplayDJ(x, y, characterId);
+      case 'multisparrow':
+        dj = new MultiSparrowFreeplayDJ(x, y, characterId);
+      case 'packer':
+        dj = new PackerFreeplayDJ(x, y, characterId);
+      case 'animateatlas':
+        dj = new AnimateAtlasFreeplayDJ(x, y, characterId);
     }
   }
 
@@ -1765,8 +1794,8 @@ class FreeplayState extends MusicBeatSubState
 
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : Math.max(0, ((songScore.tallies.sick +
-        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
+      intendedCompletion = songScore == null ? 0.0 : Math.max(0,
+        ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }

@@ -81,11 +81,12 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
   {
     trace('[SPRARROWDJ] Loading sprite sparrow for ${characterId}.');
 
-    var sprite:FlxAtlasSprite = FunkinSprite.createSparrow(0, 0, _data.assetPath);
+    var sprite:FunkinSprite = FunkinSprite.createSparrow(0, 0, _data.assetPath);
 
     return sprite;
   }
 
+  @:privateAccess
   function loadAnimations()
   {
     trace('[SPARROWCHAR] Loading ${playableCharData.animations.length} animations for ${characterId}');
@@ -113,7 +114,7 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
     return mainSprite.animation.getNameList();
   }
 
-  public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
+  override public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
   {
     mainSprite.animation.play(id, Force, Reverse, Frame);
     applyAnimOffset();
