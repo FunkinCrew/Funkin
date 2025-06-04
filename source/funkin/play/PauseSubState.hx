@@ -471,7 +471,7 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
-    if (!SwipeUtil.swipeAny && !justOpened)
+    if (!SwipeUtil.justSwipedAny && !justOpened)
     {
       for (i in 0...menuEntryText.members.length)
       {
