@@ -1,7 +1,11 @@
 package funkin.mobile.util;
 
 #if FEATURE_MOBILE_IAR
-import extension.iarcore.IAR;
+#if android
+import extension.iarcore.android.IARAndroid as IAR;
+#elseif ios
+import extension.iarcore.ios.IARIOS as IAR;
+#end
 #end
 
 /**
@@ -17,6 +21,7 @@ class InAppReviewUtil
   public static function init():Void
   {
     #if FEATURE_MOBILE_IAR
+    #if android
     trace('[IAR] Initializing callbacks...');
 
     IAR.onLog.add(function(message:String):Void {
@@ -28,6 +33,7 @@ class InAppReviewUtil
     IAR.onReviewError.add(function(message:String):Void {
       trace('[IAR] Review failed: "$message"');
     });
+    #end
     #else
     trace('[IAR] IAR is disabled...');
     #end
@@ -43,12 +49,16 @@ class InAppReviewUtil
   {
     #if FEATURE_MOBILE_IAR
     trace('[IAR] Sending in-app review request...');
+    #if android
     IAR.init();
 
     #if FEATURE_DEBUG_FUNCTIONS
     IAR.requestAndLaunchFakeReviewFlow();
     #else
     IAR.requestAndLaunchReviewFlow();
+    #end
+    #else
+    IAR.requestReview();
     #end
     #else
     trace('[IAR] IAR is disabled...');

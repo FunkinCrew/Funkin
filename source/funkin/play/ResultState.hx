@@ -1067,14 +1067,10 @@ class ResultState extends MusicBeatSubState
   function requestReview():Void
   {
     #if FEATURE_MOBILE_IAR
-    if (FlxG.random.bool(IN_APP_REVIEW_ODDS))
+    if (FlxG.random.bool(Constants.IN_APP_REVIEW_ODDS))
     {
       trace('Attempting to display in-app review!');
       InAppReviewUtil.requestReview();
-    }
-    else
-    {
-      // Skipping in-app review.
     }
     #end
   }
