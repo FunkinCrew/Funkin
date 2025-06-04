@@ -179,7 +179,7 @@ class FunkinHint extends FunkinButton
     if (followTarget != null)
     {
       final widthMultiplier:Float = isPixel ? 1.35 : 1.35;
-      final heightMultiplier:Float = 4;
+      final heightMultiplier:Float = 8;
 
       final xOffset:Float = isPixel ? 43.265 : 0;
       final yOffset:Float = isPixel ? 57.65 : 0;
@@ -190,7 +190,7 @@ class FunkinHint extends FunkinButton
         setSize(followTarget.width * widthMultiplier + (isPixel ? 93.05 : 0), followTarget.height * heightMultiplier + (isPixel ? 118 : 0));
       }
 
-      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset, (followTarget.y - 80) - yOffset);
+      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset, (followTarget.y - 220) - yOffset);
     }
   }
 
