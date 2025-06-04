@@ -2037,7 +2037,7 @@ class FreeplayState extends MusicBeatSubState
         busy = true;
         grpCapsules.members[curSelected].doLerp = false;
 
-        var movement:Float = (change > 0) ? -15 : 15;
+        var movement:Float = (change > 0) ? 15 : -15;
         FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - movement}, 0.1, {ease: FlxEase.expoOut});
         FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + movement}, 0.1, {ease: FlxEase.expoIn, startDelay: 0.1});
       }
@@ -2049,10 +2049,10 @@ class FreeplayState extends MusicBeatSubState
       if (change == 0) break;
 
       diff.visible = true;
-      final newX:Int = (change > 0) ? 500 : -320;
+      final newX:Int = (change > 0) ? -320 : 500;
 
       busy = true;
-      FlxTween.tween(diff, {x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.1,
+      FlxTween.tween(diff, {x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2,
         {
           ease: FlxEase.circInOut,
           onComplete: function(_) {
@@ -2141,10 +2141,10 @@ class FreeplayState extends MusicBeatSubState
 
       if (!isCurrentDiff || change == 0) continue;
 
-      diffSprite.x = (change > 0) ? -320 : 500;
+      diffSprite.x = (change > 0) ? 500 : -320;
       diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
 
-      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.1, {ease: FlxEase.circInOut});
+      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2, {ease: FlxEase.circInOut});
 
       diffSprite.offset.y += 5;
       diffSprite.alpha = 0.5;
@@ -2189,11 +2189,11 @@ class FreeplayState extends MusicBeatSubState
   {
     if (diffSelLeft != null && diffSelLeft.x > diff.x)
     {
-      handleDiffBoundaryChange(-1);
+      handleDiffBoundaryChange(1);
     }
     else if (diffSelRight != null && diffSelRight.x - 140 < diff.x)
     {
-      handleDiffBoundaryChange(1);
+      handleDiffBoundaryChange(-1);
     }
     else
     {
