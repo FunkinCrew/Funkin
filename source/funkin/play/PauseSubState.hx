@@ -331,7 +331,7 @@ class PauseSubState extends MusicBeatSubState
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20, 15, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
+    var metadataSong:FlxText = new FlxText(20, 580, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
     metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -442,7 +442,7 @@ class PauseSubState extends MusicBeatSubState
     var delay:Float = 0.1;
     for (child in metadata.members)
     {
-      FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
+      FlxTween.tween(child, {alpha: 1, y: child.y - 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
       delay += 0.1;
     }
   }
@@ -680,7 +680,13 @@ class PauseSubState extends MusicBeatSubState
   function updateMetadataText():Void
   {
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
-
+    if (metadata.members[0].y != 548 && metadataPractice.visible)
+    {
+      for (text in metadata)
+      {
+        text.y -= 32;
+      }
+    }
     switch (this.currentMode)
     {
       case Standard | Difficulty:

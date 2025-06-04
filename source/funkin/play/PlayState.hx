@@ -1155,6 +1155,8 @@ class PlayState extends MusicBeatSubState
       // If the game is already paused, or we just unpaused, do nothing.
       return;
     }
+    Countdown.pauseCountdown();
+
     #if mobile
     pauseButton.alpha = 0;
     hitbox.visible = false;
@@ -1512,8 +1514,6 @@ class PlayState extends MusicBeatSubState
     #end
     if (subState == null)
     {
-      // Pause the countdown.
-      Countdown.pauseCountdown();
       pause();
     }
     super.onFocusLost();
