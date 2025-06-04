@@ -633,4 +633,9 @@ class Constants
    * Max vibration amplitude.
    */
   public inline static final MAX_VIBRATION_AMPLITUDE:Float = 1;
+
+  /**
+   * Default vibration sharpness.
+   */
+  public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
 }

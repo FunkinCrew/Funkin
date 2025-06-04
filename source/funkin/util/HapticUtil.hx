@@ -32,9 +32,10 @@ class HapticUtil
    * @param period The time for one complete vibration in seconds.
    * @param duration The time taken for a complete cycle in seconds.
    * @param amplitude The intensity of the vibration (0.0 to 1.0).
+   * @param sharpness Controls the feel of vibration.
    */
   public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD, duration:Float = Constants.DEFAULT_VIBRATION_DURATION,
-      amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE):Void
+      amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE, sharpness:Float = Constants.DEFAULT_VIBRATION_SHARPNESS):Void
   {
     #if FEATURE_HAPTICS
     if (!HapticUtil.hapticsAvailable) return;
@@ -57,14 +58,13 @@ class HapticUtil
       {
         durations[i] = durationPeriod;
         amplitudes[i] = amplitudeValue;
-        sharpnesses[i] = (durationPeriod < 0.1) ? 1 : 0;
+        sharpnesses[i] = sharpness;
       }
 
       Haptic.vibratePattern(durations, amplitudes, sharpnesses);
     }
     else
     {
-      final sharpness:Float = (duration < 0.1) ? 1 : 0;
       Haptic.vibrateOneShot(duration, amplitudeValue, sharpness);
     }
     #end
@@ -81,7 +81,7 @@ class HapticUtil
 
     final preset:VibrationPreset = (vibrationPreset != null) ? vibrationPreset : defaultVibrationPreset;
 
-    vibrate(preset.period, preset.duration, preset.amplitude);
+    vibrate(preset.period, preset.duration, preset.amplitude, preset.sharpness);
   }
 
   /**
@@ -111,7 +111,12 @@ class HapticUtil
 
   static function get_defaultVibrationPreset():VibrationPreset
   {
-    return {period: Constants.DEFAULT_VIBRATION_PERIOD, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: Constants.DEFAULT_VIBRATION_AMPLITUDE};
+    return {
+      period: Constants.DEFAULT_VIBRATION_PERIOD,
+      duration: Constants.DEFAULT_VIBRATION_DURATION,
+      amplitude: Constants.DEFAULT_VIBRATION_AMPLITUDE,
+      sharpness: Constants.DEFAULT_VIBRATION_SHARPNESS
+    };
   }
 
   static function get_hapticsAvailable():Bool
@@ -143,4 +148,9 @@ typedef VibrationPreset =
    * The distance of movement of the wave from its original position.
    */
   var amplitude:Float;
+
+  /**
+   * Controls the feel of vibration.
+   */
+  var sharpness:Float;
 }
