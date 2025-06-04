@@ -685,7 +685,6 @@ class Project extends HXProject
     EXCLUDE_ARMV7.apply(this, false);
     UNLOCK_EVERYTHING.apply(this, false);
     FEATURE_COMPRESSED_TEXTURES.apply(this, false);
-    FEATURE_GHOST_TAPPING.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
@@ -694,6 +693,7 @@ class Project extends HXProject
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
     FEATURE_VIDEO_PLAYBACK.apply(this, true);
+    FEATURE_GHOST_TAPPING.apply(this, true);
 
     // Should be true on debug builds or if GITHUB_BUILD is enabled.
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
@@ -718,7 +718,7 @@ class Project extends HXProject
 
     // Should be true only on web builds.
     // Audio context issues only exist there.
-    TOUCH_HERE_TO_PLAY.apply(this, isWeb() || isMobile());
+    TOUCH_HERE_TO_PLAY.apply(this, isWeb());
 
     // Should be true only on web builds.
     // Enabling embedding and preloading is required to preload assets properly.
