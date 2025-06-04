@@ -2290,16 +2290,22 @@ class FreeplayState extends MusicBeatSubState
     var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
       targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
+    #if !mobile
     if (altInstrumentalIds.length > 0)
     {
       var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
       openInstrumentalList(cap, instrumentalIds);
+
+      return;
     }
-    else
-    {
-      trace('NO ALTS');
-      capsuleOnConfirmDefault(cap);
-    }
+    #end
+
+    #if mobile
+    trace('ALTS ARE DISABLED');
+    #else
+    trace('NO ALTS');
+    #end
+    capsuleOnConfirmDefault(cap);
   }
 
   public function getControls():Controls
