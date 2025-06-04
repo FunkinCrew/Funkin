@@ -109,10 +109,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var newIndex = 0;
 
     // Define unified input handlers
-    final inputUp:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
-    final inputDown:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
-    final inputLeft:Bool = controls.UI_LEFT_P || SwipeUtil.swipeLeft;
-    final inputRight:Bool = controls.UI_RIGHT_P || SwipeUtil.swipeRight;
+    final inputUp:Bool = controls.UI_UP_P || (!_isMainMenuState && SwipeUtil.swipeUp);
+    final inputDown:Bool = controls.UI_DOWN_P || (!_isMainMenuState && SwipeUtil.swipeDown);
+    final inputLeft:Bool = controls.UI_LEFT_P || (!_isMainMenuState && SwipeUtil.swipeLeft);
+    final inputRight:Bool = controls.UI_RIGHT_P || (!_isMainMenuState && SwipeUtil.swipeRight);
 
     // Keepin' these for keyboard/controller support on mobile platforms
     newIndex = switch (navControls)
@@ -137,28 +137,43 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       for (i in 0...members.length)
       {
         final item = members[i];
-
         final menuCamera = FlxG.cameras.list[1];
 
         final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
-        final itemPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, item, 0) && _isMainMenuState;
+        final itemPixelOverlap:Bool = _isMainMenuState && FlxG.pixelPerfectOverlap(touchBuddy, item, 0);
 
-        if (item.available && ((itemOverlaps && TouchUtil.justPressed) || itemPixelOverlap))
+        final isTouchingItem:Bool = itemOverlaps || itemPixelOverlap;
+
+        if (item.available && isTouchingItem && TouchUtil.justPressed)
         {
-          if (selectedIndex == i && TouchUtil.justPressed) accept();
-          else
+          if (!_isMainMenuState && selectedIndex != i)
+          {
             newIndex = i;
+            break;
+          }
+          else
+          {
+            selectItem(i);
+          }
+          accept();
+
           break;
         }
       }
     }
-    #end
 
+    if (newIndex != selectedIndex && !_isMainMenuState)
+    {
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      selectItem(newIndex);
+    }
+    #else
     if (newIndex != selectedIndex)
     {
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       selectItem(newIndex);
     }
+    #end
 
     // Todo: bypass popup blocker on firefox
     if (controls.ACCEPT) accept();
