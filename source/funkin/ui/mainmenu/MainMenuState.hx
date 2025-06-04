@@ -134,7 +134,9 @@ class MainMenuState extends MusicBeatState
     // we need to open the link as an immediate result of a keypress event,
     // so we can't wait for the flicker animation to complete.
     var hasPopupBlocker = #if web true #else false #end;
+    #if desktop
     createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
+    #end
     #end
 
     createMenuItem('options', 'mainmenu/options', function() {
@@ -156,6 +158,11 @@ class MainMenuState extends MusicBeatState
       menuItem.scrollFactor.x = 0.0;
       // This one affects how much the menu items move when you scroll between them.
       menuItem.scrollFactor.y = 0.4;
+
+      if (i == 1)
+      {
+        camFollow.setPosition(menuItem.getGraphicMidpoint().x, menuItem.getGraphicMidpoint().y);
+      }
     }
 
     menuItems.selectItem(rememberedSelectedIndex);
@@ -230,6 +237,16 @@ class MainMenuState extends MusicBeatState
     menuItems.addItem(name, item);
   }
 
+  var buttonGrp:Array<FlxSprite> = [];
+
+  function createMenuButtion(name:String, atlas:String, callback:Void->Void):Void
+  {
+    var item = new funkin.mobile.ui.FunkinButton(Math.round(FlxG.width * 0.8), Math.round(FlxG.height * 0.7));
+    item.makeGraphic(250, 250, FlxColor.BLUE);
+    item.onDown.add(callback);
+    buttonGrp.push(item);
+  }
+
   override function closeSubState():Void
   {
     magenta.visible = false;
@@ -246,7 +263,9 @@ class MainMenuState extends MusicBeatState
 
   function onMenuItemChange(selected:MenuListItem)
   {
+    #if NO_FEATURE_TOUCH_CONTROLS
     camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
+    #end
   }
 
   #if FEATURE_OPEN_URL
