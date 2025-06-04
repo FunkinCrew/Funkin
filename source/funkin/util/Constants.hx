@@ -605,6 +605,11 @@ class Constants
   #end
 
   /**
+   * Chance for exiting the Results screen to display a prompt to review the game, as a percent.
+   */
+  public static var IN_APP_REVIEW_ODDS:Int = 5;
+
+  /**
    * Default period value for vibration.
    */
   public inline static final DEFAULT_VIBRATION_PERIOD:Float = 0.1;

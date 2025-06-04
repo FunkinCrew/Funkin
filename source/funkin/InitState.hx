@@ -106,6 +106,11 @@ class InitState extends FlxState
     funkin.mobile.util.InAppPurchasesUtil.init();
     #end
 
+    #if FEATURE_MOBILE_IAR
+    // Setup In-App purchases
+    funkin.mobile.util.InAppReviewUtil.init();
+    #end
+
     // This ain't a pixel art game! (most of the time)
     FlxSprite.defaultAntialiasing = true;
 

@@ -37,6 +37,11 @@
       "version": "1.0.1"
     },
     {
+      "name": "extension-iarcore",
+      "type": "haxelib",
+      "version": null
+    },
+    {
       "name": "flixel",
       "type": "git",
       "dir": null,

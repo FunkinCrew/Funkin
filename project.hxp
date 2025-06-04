@@ -389,6 +389,12 @@ class Project extends HXProject
    */
   static final FEATURE_MOBILE_IAP:FeatureFlag = "FEATURE_MOBILE_IAP";
 
+  /**
+   * `-DFEATURE_MOBILE_IAR`
+   * If this feature flag is enabled, the user may sometimes be prompted to review the app.
+   */
+  static final FEATURE_MOBILE_IAR:FeatureFlag = "FEATURE_MOBILE_IAR";
+
   //
   // CONFIGURATION FUNCTIONS
   //
@@ -746,9 +752,8 @@ class Project extends HXProject
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
     FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && envConfig != null));
-
-    // Should be true only on android release builds for now. Remember you can add the flag manually for testing.
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && envConfig != null));
+    FEATURE_MOBILE_IAR.apply(this, (isMobile() && isRelease()));
 
     // Should be true only on debug mobile builds.
     TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
@@ -997,6 +1002,11 @@ class Project extends HXProject
     if (FEATURE_MOBILE_IAP.isEnabled(this))
     {
       addHaxelib('extension-iapcore'); // In-app purchases Extension
+    }
+
+    if (FEATURE_MOBILE_IAR.isEnabled(this))
+    {
+      addHaxelib('extension-iarcore'); // In-app reviews Extension
     }
   }
 
