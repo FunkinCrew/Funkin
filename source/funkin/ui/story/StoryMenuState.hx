@@ -369,13 +369,25 @@ class StoryMenuState extends MusicBeatState
         #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P || SwipeUtil.swipeRight || (TouchUtil.pressAction(rightDifficultyArrow, null, false)))
+        if (controls.UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS
+          || (SwipeUtil.swipeRight && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
+          || (TouchUtil.pressAction(rightDifficultyArrow, null, false)) #end)
         {
+          #if FEATURE_TOUCH_CONTROLS
+          @:privateAccess
+          if (!TouchUtil.pressAction(rightDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          #end
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P || SwipeUtil.swipeLeft || (TouchUtil.pressAction(leftDifficultyArrow, null, false)))
+        if (controls.UI_LEFT_P #if FEATURE_TOUCH_CONTROLS
+          || (SwipeUtil.swipeLeft && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
+          || (TouchUtil.pressAction(leftDifficultyArrow, null, false)) #end)
         {
+          #if FEATURE_TOUCH_CONTROLS
+          @:privateAccess
+          if (!TouchUtil.pressAction(leftDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          #end
           changeDifficulty(-1);
         }
 
@@ -403,14 +415,14 @@ class StoryMenuState extends MusicBeatState
         selectLevel();
       }
 
-      if (TouchUtil.justPressed && !TouchUtil.overlaps(leftDifficultyArrow))
+      if (TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
       {
         for (i in 0...levelTitles.members.length)
         {
           final item = levelTitles.members[i];
           final selectedItem = levelTitles.members[levelList.indexOf(currentLevelId)];
 
-          if (!TouchUtil.overlaps(item)) continue;
+          if (!TouchUtil.pressAction(item, null, false)) continue;
 
           (item == selectedItem) ? selectLevel() : changeLevel(i - levelList.indexOf(currentLevelId));
         }
