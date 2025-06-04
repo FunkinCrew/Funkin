@@ -1017,68 +1017,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || androidPause || pauseButtonCheck) && isInCountdown && mayPauseGame && !justUnpaused)
-    {
-      #if mobile
-      pauseButton.alpha = 0;
-      hitbox.visible = false;
-      #end
-      var event = new PauseScriptEvent(FlxG.random.bool((1 / 1000) * 100));
-
-      dispatchEvent(event);
-
-      if (!event.eventCanceled)
-      {
-        // Pause updates while the substate is open, preventing the game state from advancing.
-        persistentUpdate = false;
-        // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
-        persistentDraw = true;
-
-        // There is a 1/1000 change to use a special pause menu.
-        // This prevents the player from resuming, but that's the point.
-        // It's a reference to Gitaroo Man, which doesn't let you pause the game.
-        if (!isSubState && event.gitaroo)
-        {
-          this.remove(currentStage);
-          FlxG.switchState(() -> new GitarooPause(
-            {
-              targetSong: currentSong,
-              targetDifficulty: currentDifficulty,
-              targetVariation: currentVariation,
-            }));
-        }
-        else
-        {
-          var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
-
-          // Prevent the game from crashing if Boyfriend isn't present.
-          if (currentStage != null && currentStage.getBoyfriend() != null)
-          {
-            boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-          }
-
-          var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
-
-          FlxTransitionableState.skipNextTransIn = true;
-          FlxTransitionableState.skipNextTransOut = true;
-          pauseSubState.camera = camCutscene;
-          openSubState(pauseSubState);
-          // boyfriendPos.put(); // TODO: Why is this here?
-        }
-
-        #if FEATURE_DISCORD_RPC
-        DiscordClient.instance.setPresence(
-          {
-            details: 'Paused - ${buildDiscordRPCDetails()}',
-
-            state: buildDiscordRPCState(),
-
-            largeImageKey: discordRPCAlbum,
-            smallImageKey: discordRPCIcon
-          });
-        #end
-      }
-    }
+    if ((controls.PAUSE || androidPause || pauseButtonCheck)) pause();
 
     #if mobile
     if (justUnpaused)
@@ -1207,6 +1146,74 @@ class PlayState extends MusicBeatSubState
     #end
 
     justUnpaused = false;
+  }
+
+  function pause():Void
+  {
+    if (!isInCountdown || !mayPauseGame || justUnpaused || isInCutscene)
+    {
+      // If the game is already paused, or we just unpaused, do nothing.
+      return;
+    }
+    #if mobile
+    pauseButton.alpha = 0;
+    hitbox.visible = false;
+    #end
+    var event = new PauseScriptEvent(FlxG.random.bool((1 / 1000) * 100));
+
+    dispatchEvent(event);
+
+    if (!event.eventCanceled)
+    {
+      // Pause updates while the substate is open, preventing the game state from advancing.
+      persistentUpdate = false;
+      // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
+      persistentDraw = true;
+
+      // There is a 1/1000 change to use a special pause menu.
+      // This prevents the player from resuming, but that's the point.
+      // It's a reference to Gitaroo Man, which doesn't let you pause the game.
+      if (!isSubState && event.gitaroo)
+      {
+        this.remove(currentStage);
+        FlxG.switchState(() -> new GitarooPause(
+          {
+            targetSong: currentSong,
+            targetDifficulty: currentDifficulty,
+            targetVariation: currentVariation,
+          }));
+      }
+      else
+      {
+        var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
+
+        // Prevent the game from crashing if Boyfriend isn't present.
+        if (currentStage != null && currentStage.getBoyfriend() != null)
+        {
+          boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
+        }
+
+        var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
+
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        pauseSubState.camera = camCutscene;
+        openSubState(pauseSubState);
+        // boyfriendPos.put(); // TODO: Why is this here?
+      }
+
+      #if FEATURE_DISCORD_RPC
+      DiscordClient.instance.setPresence(
+        {
+          details: 'Paused - ${buildDiscordRPCDetails()}',
+
+          state: buildDiscordRPCState(),
+
+          largeImageKey: discordRPCAlbum,
+          smallImageKey: discordRPCIcon
+        });
+      #end
+    }
   }
 
   function moveToGameOver():Void
@@ -1353,9 +1360,6 @@ class PlayState extends MusicBeatSubState
           cameraTweensPausedBySubState.add(tween);
         }
       }
-
-      // Pause the countdown.
-      Countdown.pauseCountdown();
     }
 
     super.openSubState(subState);
@@ -1506,7 +1510,12 @@ class PlayState extends MusicBeatSubState
         });
     }
     #end
-
+    if (subState == null)
+    {
+      // Pause the countdown.
+      Countdown.pauseCountdown();
+      pause();
+    }
     super.onFocusLost();
   }
 
