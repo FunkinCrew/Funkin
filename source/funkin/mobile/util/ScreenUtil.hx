@@ -78,11 +78,13 @@ class ScreenUtil
     switch (displayOrientation)
     {
       case DISPLAY_ORIENTATION_LANDSCAPE: // landscape
-        notchRect.width = leftInset;
-        notchRect.height = deviceHeight;
+        notchRect.width = leftInset + rightInset;
+        notchRect.height = bottomInset - topInset;
+        notchRect.y = topInset;
       case DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED: // landscape
-        notchRect.width = leftInset;
-        notchRect.height = deviceHeight;
+        notchRect.width = leftInset + rightInset;
+        notchRect.height = bottomInset - topInset;
+        notchRect.y = topInset;
         notchRect.x = deviceWidth - notchRect.width; // move notchRect if we are flipped, notch is at the right of screen
       case DISPLAY_ORIENTATION_PORTRAIT: // portrait
         notchRect.width = deviceWidth;
