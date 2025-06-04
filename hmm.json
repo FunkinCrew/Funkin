@@ -39,7 +39,7 @@
     {
       "name": "extension-iarcore",
       "type": "haxelib",
-      "version": null
+      "version": "1.0.2"
     },
     {
       "name": "flixel",
