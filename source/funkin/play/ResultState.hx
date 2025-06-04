@@ -6,7 +6,6 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import funkin.ui.FullScreenScaleMode;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
@@ -14,26 +13,27 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
-import funkin.util.HapticUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerResultsAnimationData;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.song.SongRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.LeftMaskShader;
+import funkin.modding.base.ScriptedFlxAtlasSprite;
 import funkin.play.components.ClearPercentCounter;
 import funkin.play.components.TallyCounter;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
-import funkin.data.song.SongRegistry;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
-import funkin.modding.base.ScriptedFlxAtlasSprite;
+import funkin.util.HapticUtil;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -41,6 +41,9 @@ import funkin.api.newgrounds.Medals;
 import funkin.util.TouchUtil;
 #if FEATURE_MOBILE_ADVERTISEMENTS
 import funkin.mobile.util.AdMobUtil;
+#end
+#if FEATURE_MOBILE_IAR
+import funkin.mobile.util.InAppReviewUtil;
 #end
 #end
 
@@ -1009,6 +1012,12 @@ class ResultState extends MusicBeatSubState
               {
                 AdMobUtil.loadInterstitial();
               }
+              else
+              {
+                requestReview();
+              }
+              #else
+              requestReview();
               #end
 
               if (shouldUseSubstate && targetState is FlxSubState)
@@ -1031,6 +1040,12 @@ class ResultState extends MusicBeatSubState
         {
           AdMobUtil.loadInterstitial();
         }
+        else
+        {
+          requestReview();
+        }
+        #else
+        requestReview();
         #end
 
         if (shouldUseSubstate && targetState is FlxSubState)
@@ -1047,6 +1062,17 @@ class ResultState extends MusicBeatSubState
     if (HapticUtil.hapticsAvailable) handleAnimationVibrations();
 
     super.update(elapsed);
+  }
+
+  function requestReview():Void
+  {
+    #if FEATURE_MOBILE_IAR
+    if (FlxG.random.bool(Constants.IN_APP_REVIEW_ODDS))
+    {
+      trace('Attempting to display in-app review!');
+      InAppReviewUtil.requestReview();
+    }
+    #end
   }
 }
 
