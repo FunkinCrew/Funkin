@@ -762,6 +762,10 @@ class Project extends HXProject
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
 
+    // Disable a macro in Lime that generates a random number for Assets.cache.version every build.
+    // This doesn't seem to be of any use and it causes lime.utils.AssetCache to be re-compiled on every build.
+    setHaxeDef("lime_disable_assets_version");
+
     // Enable stack trace tracking. Good for debugging but has a (minor) performance impact.
     setHaxedef("HXCPP_CHECK_POINTER");
     setHaxedef("HXCPP_STACK_LINE");
