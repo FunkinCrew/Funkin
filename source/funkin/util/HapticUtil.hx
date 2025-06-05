@@ -34,10 +34,13 @@ class HapticUtil
    * @param amplitude The intensity of the vibration (0.0 to 1.0).
    */
   public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD, duration:Float = Constants.DEFAULT_VIBRATION_DURATION,
-      amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE):Void
+      amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE, ?targetHapticsModes:Array<HapticsMode>):Void
   {
     #if FEATURE_HAPTICS
     if (!HapticUtil.hapticsAvailable) return;
+
+    final hapticsModes:Array<HapticsMode> = targetHapticsModes ?? [HapticsMode.ALL];
+    if (!hapticsModes.contains(Preferences.hapticsMode)) return;
 
     #if ios
     final amplitudeValue = FlxMath.bound(amplitude * 2.5, 0, Constants.MAX_VIBRATION_AMPLITUDE);
@@ -117,7 +120,7 @@ class HapticUtil
   static function get_hapticsAvailable():Bool
   {
     #if FEATURE_HAPTICS
-    if (Preferences.vibration) return true;
+    if (Preferences.hapticsMode != HapticsMode.NONE) return true;
     #end
 
     return false;
@@ -143,4 +146,25 @@ typedef VibrationPreset =
    * The distance of movement of the wave from its original position.
    */
   var amplitude:Float;
+}
+
+/**
+ * An abstract for vibrations preference.
+ */
+enum abstract HapticsMode(Int) from Int to Int
+{
+  /**
+   * Haptics are completely disabled.
+   */
+  var NONE:Int = 0;
+
+  /**
+   * Only note haptics are enabled.
+   */
+  var NOTES_ONLY:Int = 1;
+
+  /**
+   * All the haptics are enabled.
+   */
+  var ALL:Int = 2;
 }

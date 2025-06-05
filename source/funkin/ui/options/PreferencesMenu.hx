@@ -22,6 +22,7 @@ import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
+import funkin.util.HapticUtil;
 import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
@@ -124,6 +125,20 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+    #if FEATURE_HAPTICS
+    createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
+      "All" => HapticsMode.ALL,
+      "Notes Only" => HapticsMode.NOTES_ONLY,
+      "None" => HapticsMode.NONE,
+    ], function(key:String, value:HapticsMode):Void {
+      Preferences.hapticsMode = value;
+    }, switch (Preferences.hapticsMode)
+      {
+        case HapticsMode.NOTES_ONLY: "Notes Only";
+        case HapticsMode.NONE: "None";
+        default: "All";
+      });
+    #end
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);

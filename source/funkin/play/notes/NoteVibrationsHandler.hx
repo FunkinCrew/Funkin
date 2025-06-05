@@ -1,6 +1,7 @@
 package funkin.play.notes;
 
 import funkin.util.HapticUtil;
+import funkin.util.HapticUtil.HapticsMode;
 
 /**
  * Handles vibrations on note presses.
@@ -60,7 +61,7 @@ class NoteVibrationsHandler
 
     if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
 
-    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude);
+    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude, [HapticsMode.ALL, HapticsMode.NOTES_ONLY]);
   }
 
   /**
@@ -83,7 +84,7 @@ class NoteVibrationsHandler
 
     if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
 
-    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude);
+    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude, [HapticsMode.ALL, HapticsMode.NOTES_ONLY]);
 
     for (currentNoteStatus in noteStatuses)
     {

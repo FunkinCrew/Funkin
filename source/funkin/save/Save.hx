@@ -121,7 +121,7 @@ class Save
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
-          vibration: true,
+          hapticsMode: 'All',
           autoPause: true,
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
@@ -1435,10 +1435,10 @@ typedef SaveDataOptions =
   var debugDisplay:Bool;
 
   /**
-   * If enabled, vibration will be enabled.
-   * @default `true`
+   * If enabled, haptic feedback will be enabled.
+   * @default `All`
    */
-  var vibration:Bool;
+  var hapticsMode:String;
 
   /**
    * If enabled, the game will automatically pause when tabbing out.
