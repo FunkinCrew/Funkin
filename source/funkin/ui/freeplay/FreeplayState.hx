@@ -1655,12 +1655,17 @@ class FreeplayState extends MusicBeatSubState
         changeSelection(0);
         targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
       }
-      FlxG.switchState(() -> new ChartEditorState(
-        {
-          targetSongId: targetSongID,
-          targetSongDifficulty: currentDifficulty,
-          targetSongVariation: currentVariation,
-        }));
+      // Play the confirm animation so the user knows they actually did something.
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      if (dj != null) dj.confirm();
+      new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: targetSongID,
+            targetSongDifficulty: currentDifficulty,
+            targetSongVariation: currentVariation,
+          }));
+      });
     }
     #end
   }
