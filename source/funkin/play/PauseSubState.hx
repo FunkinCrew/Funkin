@@ -213,7 +213,7 @@ class PauseSubState extends MusicBeatSubState
     #if FEATURE_MOBILE_ADVERTISEMENTS
     extension.admob.Admob.onEvent.add(onBannerEvent);
 
-    funkin.mobile.util.AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
+    funkin.mobile.util.AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_CENTER);
     #end
 
     super.create();
@@ -279,6 +279,7 @@ class PauseSubState extends MusicBeatSubState
         failedAdPlaceHolder = new FunkinSprite(0, 0);
         failedAdPlaceHolder.makeSolidColor(Math.floor(320 * scale), Math.floor(50 * scale), FlxColor.RED);
         failedAdPlaceHolder.updateHitbox();
+        failedAdPlaceHolder.screenCenter(X);
         failedAdPlaceHolder.scrollFactor.set(0, 0);
         add(failedAdPlaceHolder);
       }
