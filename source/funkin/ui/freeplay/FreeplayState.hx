@@ -1658,6 +1658,8 @@ class FreeplayState extends MusicBeatSubState
       FlxG.switchState(() -> new ChartEditorState(
         {
           targetSongId: targetSongID,
+          targetSongDifficulty: currentDifficulty,
+          targetSongVariation: currentVariation,
         }));
     }
     #end
