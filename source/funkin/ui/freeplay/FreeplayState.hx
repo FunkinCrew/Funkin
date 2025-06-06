@@ -568,6 +568,7 @@ class FreeplayState extends MusicBeatSubState
     // Reminder, this is a callback function being set, rather than these being called here in create()
     letterSort.changeSelectionCallback = (str) -> {
       var curSong:Null<FreeplaySongData> = grpCapsules.members[curSelected]?.freeplayData;
+      grpCapsules.members[curSelected].selected = false;
 
       switch (str)
       {
@@ -2077,6 +2078,7 @@ class FreeplayState extends MusicBeatSubState
 
     var previousVariation:String = currentVariation;
     var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
+    grpCapsules.members[curSelected].selected = false;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
