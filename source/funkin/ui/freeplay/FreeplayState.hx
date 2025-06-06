@@ -833,10 +833,6 @@ class FreeplayState extends MusicBeatSubState
     currentFilteredSongs = tempSongs;
     curSelected = 0;
 
-    // If curSelected is 0, the result will be null and fall back to the rememberedSongId.
-    // We set this so if we change the filter, we'd remain on the same song if it's still in the list.
-    rememberedSongId = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? rememberedSongId;
-
     grpCapsules.killMembers();
 
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
@@ -963,6 +959,9 @@ class FreeplayState extends MusicBeatSubState
 
     rememberedSongId = fromResults.songId;
     rememberedDifficulty = fromResults.difficultyId;
+    capsuleToRank.fakeRanking.visible = true;
+    capsuleToRank.fakeRanking.alpha = 0; // If this isn't done, you'd see a tiny E being replaced for the first rank
+
     changeSelection();
     changeDiff();
 
@@ -1003,6 +1002,7 @@ class FreeplayState extends MusicBeatSubState
       sparksADD.cameras = [rankCamera];
       sparksADD.color = fromResults.oldRank.getRankingFreeplayColor();
       // sparksADD.color = sparks.color;
+      capsuleToRank.fakeRanking.alpha = 1.0;
     }
 
     capsuleToRank.doLerp = false;
@@ -1015,7 +1015,6 @@ class FreeplayState extends MusicBeatSubState
     trace(originalPos);
 
     capsuleToRank.ranking.visible = false;
-    capsuleToRank.fakeRanking.visible = false;
 
     // Rank animation vibrations.
     HapticUtil.increasingVibrate(Constants.MIN_VIBRATION_AMPLITUDE, Constants.MAX_VIBRATION_AMPLITUDE, 0.6);
@@ -2290,16 +2289,22 @@ class FreeplayState extends MusicBeatSubState
     var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
       targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
 
+    #if !mobile
     if (altInstrumentalIds.length > 0)
     {
       var instrumentalIds = [baseInstrumentalId].concat(altInstrumentalIds);
       openInstrumentalList(cap, instrumentalIds);
+
+      return;
     }
-    else
-    {
-      trace('NO ALTS');
-      capsuleOnConfirmDefault(cap);
-    }
+    #end
+
+    #if mobile
+    trace('ALTS ARE DISABLED');
+    #else
+    trace('NO ALTS');
+    #end
+    capsuleOnConfirmDefault(cap);
   }
 
   public function getControls():Controls

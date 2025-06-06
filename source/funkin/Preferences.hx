@@ -5,6 +5,7 @@ import funkin.mobile.ui.FunkinHitbox;
 #end
 import funkin.save.Save;
 import funkin.util.WindowUtil;
+import funkin.util.HapticUtil.HapticsMode;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -147,20 +148,42 @@ class Preferences
   }
 
   /**
-   * If enabled, vibration will be enabled.
-   * @default `true`
+   * If enabled, haptic feedback will be enabled.
+   * @default `All`
    */
-  public static var vibration(get, set):Bool;
+  public static var hapticsMode(get, set):HapticsMode;
 
-  static function get_vibration():Bool
+  static function get_hapticsMode():HapticsMode
   {
-    return Save?.instance?.options?.vibration ?? true;
+    var value = Save?.instance?.options?.hapticsMode ?? "All";
+
+    return switch (value)
+    {
+      case "None":
+        HapticsMode.NONE;
+      case "Notes Only":
+        HapticsMode.NOTES_ONLY;
+      default:
+        HapticsMode.ALL;
+    };
   }
 
-  static function set_vibration(value:Bool):Bool
+  static function set_hapticsMode(value:HapticsMode):HapticsMode
   {
+    var string;
+
+    switch (value)
+    {
+      case HapticsMode.NONE:
+        string = "None";
+      case HapticsMode.NOTES_ONLY:
+        string = "Notes Only";
+      default:
+        string = "All";
+    };
+
     var save:Save = Save.instance;
-    save.options.vibration = value;
+    save.options.hapticsMode = string;
     save.flush();
     return value;
   }
