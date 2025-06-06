@@ -315,13 +315,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Whether the game is currently in Practice Mode.
-   * If true, player will not lose gain or lose score from notes.
+   * If true, player will not gain or lose score from notes.
    */
   public var isPracticeMode:Bool = false;
 
   /**
    * Whether the game is currently in Bot Play Mode.
-   * If true, player will not lose gain or lose score from notes.
+   * If true, player will not gain or lose score from notes.
    */
   public var isBotPlayMode:Bool = false;
 
@@ -1169,7 +1169,7 @@ class PlayState extends MusicBeatSubState
       // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
       persistentDraw = true;
 
-      // There is a 1/1000 change to use a special pause menu.
+      // There is a 1/1000 chance to use a special pause menu.
       // This prevents the player from resuming, but that's the point.
       // It's a reference to Gitaroo Man, which doesn't let you pause the game.
       if (!isSubState && event.gitaroo)
@@ -2272,7 +2272,7 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Resyncronize the vocal tracks if they have become offset from the instrumental.
+     * Resynchronize the vocal tracks if they have become offset from the instrumental.
      */
   function resyncVocals():Void
   {
@@ -2618,7 +2618,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    // Respawns notes that were b
+    // Respawns notes that were between the previous time and the current time when skipping backward, or destroy notes between the previous time and the current time when skipping forward.
     playerStrumline.handleSkippedNotes();
     opponentStrumline.handleSkippedNotes();
   }
@@ -3627,7 +3627,7 @@ class PlayState extends MusicBeatSubState
     cancelCameraZoomTween();
   }
 
-  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruely
+  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruly
 
   /**
      * The magical function that shall tween the scroll speed.
