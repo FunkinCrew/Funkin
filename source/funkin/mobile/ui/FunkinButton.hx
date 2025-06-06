@@ -93,12 +93,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var limitToBounds:Bool = true;
 
   /**
-   * Whether this button is a circle or not (This affects the overlap check method).
-   */
-  public var isCircle:Bool = false;
-
-  /**
    * A radius for circular buttons.
+   * If this radius is larger than 0 then the overlap check will look if the touch point is inside this raius.
    */
   public var radius:Float = 0;
 
