@@ -103,7 +103,13 @@ class GameOverSubState extends MusicBeatSubState
 
   var isSpecialAnimation:Bool = false;
 
-  var gameOverVibrationPreset:VibrationPreset = {period: 0, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: Constants.MIN_VIBRATION_AMPLITUDE};
+  var gameOverVibrationPreset:VibrationPreset =
+    {
+      period: 0,
+      duration: Constants.DEFAULT_VIBRATION_DURATION,
+      amplitude: Constants.MIN_VIBRATION_AMPLITUDE,
+      sharpness: Constants.DEFAULT_VIBRATION_SHARPNESS
+    };
 
   public function new(params:GameOverParams)
   {

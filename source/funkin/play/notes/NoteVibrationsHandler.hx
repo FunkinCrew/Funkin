@@ -61,7 +61,7 @@ class NoteVibrationsHandler
 
     if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
 
-    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude, [HapticsMode.ALL, HapticsMode.NOTES_ONLY]);
+    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude, 1, [HapticsMode.ALL, HapticsMode.NOTES_ONLY]);
   }
 
   /**
@@ -84,7 +84,7 @@ class NoteVibrationsHandler
 
     if (stackingAmplitude > Constants.MAX_VIBRATION_AMPLITUDE) stackingAmplitude = Constants.MAX_VIBRATION_AMPLITUDE;
 
-    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude, [HapticsMode.ALL, HapticsMode.NOTES_ONLY]);
+    if (stackingAmplitude > 0) HapticUtil.vibrate(0, 0.01, stackingAmplitude, 1, [HapticsMode.ALL, HapticsMode.NOTES_ONLY]);
 
     for (currentNoteStatus in noteStatuses)
     {
