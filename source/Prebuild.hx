@@ -21,15 +21,22 @@ class NewgroundsCredentials
 
   static function main():Void
   {
-    trace('[PREBUILD] Building...');
+    var start:Float = Sys.time();
+    trace('[PREBUILD] Performing pre-build tasks...');
 
     saveBuildTime();
 
     buildCredsFile();
+    buildHXCPP();
+
+    var end:Float = Sys.time();
+    var duration:Float = end - start;
+    trace('[PREBUILD] Finished pre-build tasks in $duration seconds.');
   }
 
   static function saveBuildTime():Void
   {
+    // PostBuild.hx reads this file and computes the total build duration.
     var fo:sys.io.FileOutput = File.write(BUILD_TIME_FILE);
     var now:Float = Sys.time();
     fo.writeDouble(now);
@@ -50,5 +57,15 @@ class NewgroundsCredentials
 
       sys.io.File.saveContent(NG_CREDS_PATH, fileContents);
     }
+  }
+
+  static function buildHXCPP():Void
+  {
+    // This sometimes needs to be run on HXCPP development builds.
+    // It's quick enough to run that it saves work to just run it every time.
+    trace('[PREBUILD] Building HXCPP binaries...');
+
+    Sys.command("cd", [".\\.haxelib\\hxcpp\\git\\tools\\hxcpp"]);
+    Sys.command("haxe", ["compile.hxml"]);
   }
 }
