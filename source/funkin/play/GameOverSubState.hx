@@ -600,68 +600,76 @@ class GameOverSubState extends MusicBeatSubState
     if (boyfriend.animation == null) return;
 
     final curFrame:Int = (boyfriend.animation.curAnim != null) ? boyfriend.animation.curAnim.curFrame : -1;
-    switch (boyfriend.characterId)
+    if (boyfriend.characterId.startsWith("bf"))
     {
-      case "bf" | "bf-pixel":
-        // BF's mic drops.
-        if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 27)
+      // BF's mic drops.
+      if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 27)
+      {
+        HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+      }
+
+      // BF's balls pulsating.
+      if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && (curFrame == 0 || curFrame == 18))
+      {
+        HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+      }
+
+      return;
+    }
+
+    // Pico dies because of Darnell beating him up.
+    if (boyfriend.characterId == "pico-blazin")
+    {
+      if (!startedTimerHaptics)
+      {
+        startedTimerHaptics = true;
+
+        new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+          // Pico falls on his knees.
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+
+          new FlxTimer().start(0.6, function(tmr:FlxTimer) {
+            // Pico falls "asleep". :)
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          });
+        });
+
+        return;
+      }
+    }
+    else if (boyfriend.characterId.startsWith("pico") && boyfriend.characterId != "pico-holding-nene")
+    {
+      if (isSpecialAnimation)
+      {
+        if (startedTimerHaptics) return;
+
+        startedTimerHaptics = true;
+
+        // Death by Darnell's can.
+        new FlxTimer().start(1.85, function(tmr:FlxTimer) {
+          // Pico falls on his knees.
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+        });
+      }
+      else
+      {
+        // Pico falls on his back.
+        if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 20)
         {
           HapticUtil.vibrateByPreset(gameOverVibrationPreset);
         }
 
-        // BF's balls pulsating.
-        if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && (curFrame == 0 || curFrame == 18))
+        // Blood firework woohoo!!!!
+        if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && curFrame % 2 == 0)
         {
-          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          final randomAmplitude:Float = FlxG.random.float(Constants.MIN_VIBRATION_AMPLITUDE / 100, Constants.MIN_VIBRATION_AMPLITUDE);
+          final randomDuration:Float = FlxG.random.float(Constants.DEFAULT_VIBRATION_DURATION / 10, Constants.DEFAULT_VIBRATION_DURATION);
+
+          HapticUtil.vibrate(0, randomDuration, randomAmplitude);
         }
+      }
 
-      case "pico-playable" | "pico-dark" | "pico-christmas":
-        if (isSpecialAnimation)
-        {
-          if (startedTimerHaptics) return;
-
-          startedTimerHaptics = true;
-
-          // Death by Darnell's can.
-          new FlxTimer().start(1.85, function(tmr:FlxTimer) {
-            // Pico falls on his knees.
-            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-          });
-        }
-        else
-        {
-          // Pico falls on his back.
-          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 20)
-          {
-            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-          }
-
-          // Blood firework woohoo!!!!
-          if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && curFrame % 2 == 0)
-          {
-            final randomAmplitude:Float = FlxG.random.float(Constants.MIN_VIBRATION_AMPLITUDE / 100, Constants.MIN_VIBRATION_AMPLITUDE);
-            final randomDuration:Float = FlxG.random.float(Constants.DEFAULT_VIBRATION_DURATION / 10, Constants.DEFAULT_VIBRATION_DURATION);
-
-            HapticUtil.vibrate(0, randomDuration, randomAmplitude);
-          }
-        }
-
-      case "pico-blazin":
-        // Pico dies because of Darnell beating him up.
-        if (!startedTimerHaptics)
-        {
-          startedTimerHaptics = true;
-
-          new FlxTimer().start(0.5, function(tmr:FlxTimer) {
-            // Pico falls on his knees.
-            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-
-            new FlxTimer().start(0.6, function(tmr:FlxTimer) {
-              // Pico falls "asleep". :)
-              HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-            });
-          });
-        }
+      return;
     }
   }
 
