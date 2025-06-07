@@ -1852,7 +1852,7 @@ class FreeplayState extends MusicBeatSubState
       for (diff in grpDifficulties.group.members)
       {
         if (diff == null || diff.difficultyId != currentDifficulty) continue;
-        if (!TouchUtil.overlaps(diff, funnyCam) && !busy)
+        if (!TouchUtil.overlaps(diff, funnyCam))
         {
           diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
           break;
