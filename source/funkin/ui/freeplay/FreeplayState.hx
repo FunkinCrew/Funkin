@@ -1560,8 +1560,8 @@ class FreeplayState extends MusicBeatSubState
 
   function handleDirectionalInput(elapsed:Float):Void
   {
-    final upP:Bool = controls.UI_UP_P;
-    final downP:Bool = controls.UI_DOWN_P;
+    final upP:Bool = controls.UI_UP;
+    final downP:Bool = controls.UI_DOWN;
 
     if (upP || downP)
     {
