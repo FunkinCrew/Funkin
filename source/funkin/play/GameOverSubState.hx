@@ -22,6 +22,9 @@ import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
 import funkin.util.TouchUtil;
 import openfl.utils.Assets;
+#if FEATURE_MOBILE_ADVERTISEMENTS
+import funkin.mobile.util.AdMobUtil;
+#end
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -408,13 +411,32 @@ class GameOverSubState extends MusicBeatSubState
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
           new FlxTimer().start(2, _ -> {
             FlxG.camera.filters = [];
+
+            #if FEATURE_MOBILE_ADVERTISEMENTS
+            if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0)
+            {
+              AdMobUtil.loadInterstitial(resetPlaying.bind(true));
+            }
+            else
+              resetPlaying(true);
+            #else
             resetPlaying(true);
+            #end
           });
         }
         else
         {
           FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+            #if FEATURE_MOBILE_ADVERTISEMENTS
+            if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0)
+            {
+              AdMobUtil.loadInterstitial(resetPlaying.bind());
+            }
+            else
+              resetPlaying();
+            #else
             resetPlaying();
+            #end
           });
         }
       });

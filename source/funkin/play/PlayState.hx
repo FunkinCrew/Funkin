@@ -1250,34 +1250,6 @@ class PlayState extends MusicBeatSubState
       if (iconP2 != null) iconP2.updatePosition();
     }
 
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0)
-    {
-      AdMobUtil.loadInterstitial(function():Void {
-        // Transition to the game over substate.
-        var gameOverSubState = new GameOverSubState(
-          {
-            isChartingMode: isChartingMode,
-            transparent: persistentDraw
-          });
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-        openSubState(gameOverSubState);
-      });
-    }
-    else
-    {
-      // Transition to the game over substate.
-      var gameOverSubState = new GameOverSubState(
-        {
-          isChartingMode: isChartingMode,
-          transparent: persistentDraw
-        });
-      FlxTransitionableState.skipNextTransIn = true;
-      FlxTransitionableState.skipNextTransOut = true;
-      openSubState(gameOverSubState);
-    }
-    #else
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
       {
@@ -1287,7 +1259,6 @@ class PlayState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
     openSubState(gameOverSubState);
-    #end
   }
 
   function processSongEvents():Void
