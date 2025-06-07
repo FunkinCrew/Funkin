@@ -21,15 +21,21 @@ class NewgroundsCredentials
 
   static function main():Void
   {
-    trace('[PREBUILD] Building...');
+    var start:Float = Sys.time();
+    trace('[PREBUILD] Performing pre-build tasks...');
 
     saveBuildTime();
 
     buildCredsFile();
+
+    var end:Float = Sys.time();
+    var duration:Float = end - start;
+    trace('[PREBUILD] Finished pre-build tasks in $duration seconds.');
   }
 
   static function saveBuildTime():Void
   {
+    // PostBuild.hx reads this file and computes the total build duration.
     var fo:sys.io.FileOutput = File.write(BUILD_TIME_FILE);
     var now:Float = Sys.time();
     fo.writeDouble(now);
