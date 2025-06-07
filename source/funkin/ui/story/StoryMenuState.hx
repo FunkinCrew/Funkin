@@ -196,7 +196,7 @@ class StoryMenuState extends MusicBeatState
     buildLevelTitles();
 
     final useNotch:Bool = Math.max(35, FullScreenScaleMode.gameNotchSize.x) != 35;
-    leftDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? (FullScreenScaleMode.gameNotchSize.x / 2) + 410 : 410), 480);
+    leftDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? (FullScreenScaleMode.gameNotchSize.x) + 410 : 410), 480);
     leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
     leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
     leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
@@ -206,7 +206,7 @@ class StoryMenuState extends MusicBeatState
     buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
-    rightDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? FullScreenScaleMode.gameNotchSize.x : 35), leftDifficultyArrow.y);
+    rightDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? FullScreenScaleMode.gameNotchSize.x * 1.5 : 35), leftDifficultyArrow.y);
     rightDifficultyArrow.frames = leftDifficultyArrow.frames;
     rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
     rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
