@@ -332,6 +332,7 @@ class GameOverSubState extends MusicBeatSubState
 
   function playDeathQuote():Void
   {
+    if (isEnding) return;
     if (boyfriend == null) return;
 
     var deathQuote = boyfriend.getDeathQuote();
@@ -494,7 +495,7 @@ class GameOverSubState extends MusicBeatSubState
         onComplete = function() {
           isStarting = true;
           // We need to force to ensure that the non-starting music plays.
-          startDeathMusic(1.0, true);
+          startDeathMusic(0.0, true);
         };
       }
     }
@@ -523,7 +524,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  public function goBack()
+  public function goBack():Void
   {
     isEnding = true;
     blueballed = false;
