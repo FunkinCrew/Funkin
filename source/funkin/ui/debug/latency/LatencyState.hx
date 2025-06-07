@@ -10,7 +10,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.input.PreciseInputManager;
 import funkin.play.notes.Strumline;
-import funkin.ui.mainmenu.MainMenuState;
 import funkin.data.song.SongData.SongNoteData;
 #if mobile
 import funkin.util.TouchUtil;
@@ -207,7 +206,7 @@ class LatencyState extends MusicBeatSubState
 
     helpText = new FlxText();
     helpText.setFormat(Paths.font("vcr.ttf"), 20 #if mobile * 3 #end);
-    helpText.text = #if mobile "Back" #else "Press BACK to return to main menu" #end;
+    helpText.text = #if mobile "Back" #else "Press BACK to return to options menu" #end;
     helpText.x = FlxG.width - helpText.width #if mobile * 1.5 #end;
     helpText.y = FlxG.height - (helpText.height * 2) - 2;
     add(helpText);
@@ -412,6 +411,8 @@ class LatencyState extends MusicBeatSubState
 
     if (TouchUtil.overlapsComplex(visualOffsetRightArrow) && touchPressCheck)
     {
+      cleanup();
+      FlxG.switchState(() -> new funkin.ui.options.OptionsState());      
       localConductor.audioVisualOffset += 1 * multiply;
     }
 
