@@ -118,13 +118,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
-    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
-      function(value:Bool):Void {
-        Preferences.flashingLights = value;
-      }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
-      Preferences.zoomCamera = value;
-    }, Preferences.zoomCamera);
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
       "All" => HapticsMode.ALL,
@@ -139,6 +132,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         default: "All";
       });
     #end
+    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
+      function(value:Bool):Void {
+        Preferences.flashingLights = value;
+      }, Preferences.flashingLights);
+    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+      Preferences.zoomCamera = value;
+    }, Preferences.zoomCamera);
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
