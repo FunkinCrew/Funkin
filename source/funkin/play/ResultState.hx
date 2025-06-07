@@ -1007,8 +1007,7 @@ class ResultState extends MusicBeatSubState
             onComplete: function(_) {
               // Shows a interstital ad on mobile devices each week victory.
               #if FEATURE_MOBILE_ADVERTISEMENTS
-              if (PlayStatePlaylist.isStoryMode
-                || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+              if (PlayStatePlaylist.isStoryMode || (Constants.GLOBAL_PLAYING_COUNTER > 0 && Constants.GLOBAL_PLAYING_COUNTER % 3 == 0))
               {
                 AdMobUtil.loadInterstitial(function():Void {
                   if (shouldUseSubstate && targetState is FlxSubState)
@@ -1053,8 +1052,7 @@ class ResultState extends MusicBeatSubState
       {
         // Shows a interstital ad on mobile devices each week victory.
         #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (PlayStatePlaylist.isStoryMode
-          || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+        if (PlayStatePlaylist.isStoryMode || (Constants.GLOBAL_PLAYING_COUNTER > 0 && Constants.GLOBAL_PLAYING_COUNTER % 3 == 0))
         {
           AdMobUtil.loadInterstitial(function():Void {
             if (shouldUseSubstate && targetState is FlxSubState)
