@@ -411,9 +411,8 @@ class GameOverSubState extends MusicBeatSubState
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
           new FlxTimer().start(2, _ -> {
             FlxG.camera.filters = [];
-
             #if FEATURE_MOBILE_ADVERTISEMENTS
-            if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0)
+            if (Constants.GLOBAL_PLAYING_COUNTER > 0 && Constants.GLOBAL_PLAYING_COUNTER % 3 == 0)
             {
               AdMobUtil.loadInterstitial(resetPlaying.bind(true));
             }
@@ -428,7 +427,7 @@ class GameOverSubState extends MusicBeatSubState
         {
           FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
             #if FEATURE_MOBILE_ADVERTISEMENTS
-            if (Constants.GLOBAL_BLUEBALL_COUNTER > 0 && Constants.GLOBAL_BLUEBALL_COUNTER % 3 == 0)
+            if (Constants.GLOBAL_PLAYING_COUNTER > 0 && Constants.GLOBAL_PLAYING_COUNTER % 3 == 0)
             {
               AdMobUtil.loadInterstitial(resetPlaying.bind());
             }

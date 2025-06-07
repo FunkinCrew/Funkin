@@ -592,22 +592,17 @@ class Constants
 
   #if FEATURE_MOBILE_ADVERTISEMENTS
   /**
-   * A Counter that is increased by 1 each blueball.
-   * Only used for interstital ads each 3 blueballs on mobile.
+   * Global counter tracking the number of times a blueball event or a victory occurs.
    */
-  public static var GLOBAL_BLUEBALL_COUNTER:Int = 0;
-
-  /**
-   * A Counter that is increased by 1 each victory only in freep;ay songs.
-   * Only used for interstital ads each 3 victories on mobile.
-   */
-  public static var GLOBAL_FREEPLAY_VICTORY_COUNTER:Int = 0;
+  public static var GLOBAL_PLAYING_COUNTER:Int = 0;
   #end
 
+  #if FEATURE_MOBILE_IAR
   /**
    * Chance for exiting the Results screen to display a prompt to review the game, as a percent.
    */
   public static var IN_APP_REVIEW_ODDS:Int = 5;
+  #end
 
   /**
    * Default period value for vibration.

@@ -1106,6 +1106,10 @@ class PlayState extends MusicBeatSubState
 
         isPlayerDying = true;
 
+        #if FEATURE_MOBILE_ADVERTISEMENTS
+        Constants.GLOBAL_PLAYING_COUNTER++;
+        #end
+
         var deathPreTransitionDelay = currentStage?.getBoyfriend()?.getDeathPreTransitionDelay() ?? 0.0;
         if (deathPreTransitionDelay > 0)
         {
@@ -1225,11 +1229,6 @@ class PlayState extends MusicBeatSubState
 
   function moveToGameOver():Void
   {
-    // Shows an interstital ad on mobile devices each 3 blueballs
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    Constants.GLOBAL_BLUEBALL_COUNTER++;
-    #end
-
     // Reset and update a bunch of values in advance for the transition back from the game over substate.
     playerStrumline.clean();
     opponentStrumline.clean();
@@ -3189,6 +3188,10 @@ class PlayState extends MusicBeatSubState
 
       Events.logEarnRank(scoreRank.toString());
     }
+    #end
+
+    #if FEATURE_MOBILE_ADVERTISEMENTS
+    Constants.GLOBAL_PLAYING_COUNTER++;
     #end
 
     if (PlayStatePlaylist.isStoryMode)
