@@ -39,11 +39,6 @@ class AdMobUtil
   private static final INTERSTITIAL_AD_UNIT_ID:String = #if mobile EnvironmentConfigMacro.environmentConfig.get(#if android "ANDROID_ADMOB_INTERSTITIAL_ID" #else "IOS_ADMOB_INTERSTITIAL_ID" #end) #else "" #end;
 
   /**
-   * Ad unit ID for displaying interstitial video ads.
-   */
-  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
-
-  /**
    * Ad unit ID for displaying rewarded ads.
    */
   private static final REWARDED_AD_UNIT_ID:String = "";
@@ -77,13 +72,6 @@ class AdMobUtil
   private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "1033173712" #elseif ios "4411468910" #else "" #end;
 
   /**
-   * Ad unit ID for displaying interstitial video ads.
-   * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
-   * Replace with your actual interstitial video ad unit ID for production.
-   */
-  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
-
-  /**
    * Ad unit ID for displaying rewarded ads.
    * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
    * Replace with your actual interstitial video ad unit ID for production.
@@ -102,10 +90,8 @@ class AdMobUtil
   public static function init():Void
   {
     Admob.onEvent.add(function(event:AdmobEvent):Void {
-      if (event.name == AdmobEvent.INTERSTITIAL_LOADED) Admob.showInterstitial();
-      else if (event.name == AdmobEvent.REWARDED_LOADED) Admob.showRewarded();
       #if ios
-      else if (event.name == AdmobEvent.AVM_WILL_PLAY_AUDIO)
+      if (event.name == AdmobEvent.AVM_WILL_PLAY_AUDIO)
       {
         if (FlxG.sound.music != null) FlxG.sound.music.pause();
 
@@ -162,25 +148,58 @@ class AdMobUtil
   }
 
   /**
-   * Loads an interstitial ad. It loads either a video (if avalible) or a standard interstitial ad (it uses a 50% chance to decide that).
+   * Loads an interstitial ad using AdMob.
+   *
+   * @param onInterstitialFinish Callback function to be called when the rewarded ad has been completed by the user.
    */
-  public static inline function loadInterstitial():Void
+  public static function loadInterstitial(onInterstitialFinish:Void->Void):Void
   {
-    if (FlxG.random.bool(50) && AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID.length > 0)
+    function interstitialEvent(event:AdmobEvent):Void
     {
-      Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID].join('/'));
+      if (event.name == AdmobEvent.INTERSTITIAL_LOADED)
+      {
+        Admob.showInterstitial();
+      }
+      else if (event.name == AdmobEvent.INTERSTITIAL_DISMISSED
+        || event.name == AdmobEvent.INTERSTITIAL_FAILED_TO_LOAD
+        || event.name == AdmobEvent.INTERSTITIAL_FAILED_TO_SHOW)
+      {
+        if (onInterstitialFinish != null) onInterstitialFinish();
+
+        Admob.onEvent.remove(interstitialEvent);
+      }
     }
-    else
-    {
-      Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_AD_UNIT_ID].join('/'));
-    }
+
+    Admob.onEvent.add(interstitialEvent);
+
+    Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_AD_UNIT_ID].join('/'));
   }
 
   /**
-   * Loads an rewarded ad.
+   * Loads a rewarded ad using Admob.
+   *
+   * @param onRewardedFinish Callback function to be called when the rewarded ad has been completed by the user.
    */
-  public static inline function loadRewarded():Void
+  public static function loadRewarded(onRewardedFinish:Void->Void):Void
   {
+    function rewardedEvent(event:AdmobEvent):Void
+    {
+      if (event.name == AdmobEvent.REWARDED_LOADED)
+      {
+        Admob.showRewarded();
+      }
+      else if (event.name == AdmobEvent.REWARDED_DISMISSED
+        || event.name == AdmobEvent.REWARDED_FAILED_TO_LOAD
+        || event.name == AdmobEvent.REWARDED_FAILED_TO_SHOW)
+      {
+        if (onRewardedFinish != null) onRewardedFinish();
+
+        Admob.onEvent.remove(rewardedEvent);
+      }
+    }
+
+    Admob.onEvent.add(rewardedEvent);
+
     Admob.loadRewarded([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.REWARDED_AD_UNIT_ID].join('/'));
   }
 

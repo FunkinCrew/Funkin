@@ -1010,15 +1010,32 @@ class ResultState extends MusicBeatSubState
               if (PlayStatePlaylist.isStoryMode
                 || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
               {
-                AdMobUtil.loadInterstitial();
+                AdMobUtil.loadInterstitial(function():Void {
+                  if (shouldUseSubstate && targetState is FlxSubState)
+                  {
+                    openSubState(cast targetState);
+                  }
+                  else
+                  {
+                    FlxG.switchState(() -> targetState);
+                  }
+                });
               }
               else
               {
                 requestReview();
+
+                if (shouldUseSubstate && targetState is FlxSubState)
+                {
+                  openSubState(cast targetState);
+                }
+                else
+                {
+                  FlxG.switchState(() -> targetState);
+                }
               }
               #else
               requestReview();
-              #end
 
               if (shouldUseSubstate && targetState is FlxSubState)
               {
@@ -1028,6 +1045,7 @@ class ResultState extends MusicBeatSubState
               {
                 FlxG.switchState(() -> targetState);
               }
+              #end
             }
           });
       }
@@ -1038,15 +1056,32 @@ class ResultState extends MusicBeatSubState
         if (PlayStatePlaylist.isStoryMode
           || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
         {
-          AdMobUtil.loadInterstitial();
+          AdMobUtil.loadInterstitial(function():Void {
+            if (shouldUseSubstate && targetState is FlxSubState)
+            {
+              openSubState(cast targetState);
+            }
+            else
+            {
+              FlxG.switchState(() -> targetState);
+            }
+          });
         }
         else
         {
           requestReview();
+
+          if (shouldUseSubstate && targetState is FlxSubState)
+          {
+            openSubState(cast targetState);
+          }
+          else
+          {
+            FlxG.switchState(() -> targetState);
+          }
         }
         #else
         requestReview();
-        #end
 
         if (shouldUseSubstate && targetState is FlxSubState)
         {
@@ -1056,6 +1091,7 @@ class ResultState extends MusicBeatSubState
         {
           FlxG.switchState(() -> targetState);
         }
+        #end
       }
     }
 
