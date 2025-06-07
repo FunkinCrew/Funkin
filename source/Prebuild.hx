@@ -27,7 +27,6 @@ class NewgroundsCredentials
     saveBuildTime();
 
     buildCredsFile();
-    buildHXCPP();
 
     var end:Float = Sys.time();
     var duration:Float = end - start;
@@ -57,15 +56,5 @@ class NewgroundsCredentials
 
       sys.io.File.saveContent(NG_CREDS_PATH, fileContents);
     }
-  }
-
-  static function buildHXCPP():Void
-  {
-    // This sometimes needs to be run on HXCPP development builds.
-    // It's quick enough to run that it saves work to just run it every time.
-    trace('[PREBUILD] Building HXCPP binaries...');
-
-    Sys.command("cd", [".\\.haxelib\\hxcpp\\git\\tools\\hxcpp"]);
-    Sys.command("haxe", ["compile.hxml"]);
   }
 }
