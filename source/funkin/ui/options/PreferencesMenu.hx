@@ -77,7 +77,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     });
 
     #if mobile
-    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK, exit);
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width * 0.83, FlxG.height * 0.75, exit);
     add(backButton);
     #end
   }
