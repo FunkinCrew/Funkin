@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.ui.transition.stickers.StickerSubState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.effects.FlxFlicker;
 import flixel.FlxSprite;
@@ -97,6 +98,10 @@ class ResultState extends MusicBeatSubState
   final cameraEverything:FunkinCamera;
 
   var blackTopBar:FlxSprite = new FlxSprite();
+
+  var targetStateFactory:Null<Void->StickerSubState> = null;
+
+  var busy:Bool = false;
 
   public function new(params:ResultsStateParams)
   {
@@ -865,6 +870,7 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE || controls.ACCEPT #if mobile || TouchUtil.pressAction() #end)
     {
+      if (busy) return;
       if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
       {
         if (introMusicAudio != null)
@@ -955,7 +961,12 @@ class ResultState extends MusicBeatSubState
           // No new characters.
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.stickers.StickerSubState(
+          // targetState = new funkin.ui.transition.stickers.StickerSubState(
+          //   {
+          //     targetState: (sticker) -> new StoryMenuState(sticker),
+          //     stickerPack: stickerPackId
+          //   });
+          targetStateFactory = () -> new StickerSubState(
             {
               targetState: (sticker) -> new StoryMenuState(sticker),
               stickerPack: stickerPackId
@@ -991,7 +1002,7 @@ class ResultState extends MusicBeatSubState
         {
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.stickers.StickerSubState(
+          targetStateFactory = () -> new StickerSubState(
             {
               targetState: (sticker) -> FreeplayState.build(null, sticker),
               stickerPack: stickerPackId
@@ -1007,19 +1018,51 @@ class ResultState extends MusicBeatSubState
             onComplete: function(_) {
               // Shows a interstital ad on mobile devices each week victory.
               #if FEATURE_MOBILE_ADVERTISEMENTS
-              if (PlayStatePlaylist.isStoryMode
-                || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+              if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= 3))
               {
-                AdMobUtil.loadInterstitial();
+                busy = true;
+                AdMobUtil.loadInterstitial(function():Void {
+                  AdMobUtil.PLAYING_COUNTER = 0;
+
+                  if (targetStateFactory != null)
+                  {
+                    targetState = targetStateFactory();
+                  }
+
+                  busy = false;
+                  if (shouldUseSubstate && targetState is FlxSubState)
+                  {
+                    openSubState(cast targetState);
+                  }
+                  else
+                  {
+                    FlxG.switchState(() -> targetState);
+                  }
+                });
               }
               else
               {
                 requestReview();
+                if (targetStateFactory != null)
+                {
+                  targetState = targetStateFactory();
+                }
+                if (shouldUseSubstate && targetState is FlxSubState)
+                {
+                  openSubState(cast targetState);
+                }
+                else
+                {
+                  FlxG.switchState(() -> targetState);
+                }
               }
               #else
               requestReview();
-              #end
 
+              if (targetStateFactory != null)
+              {
+                targetState = targetStateFactory();
+              }
               if (shouldUseSubstate && targetState is FlxSubState)
               {
                 openSubState(cast targetState);
@@ -1028,6 +1071,7 @@ class ResultState extends MusicBeatSubState
               {
                 FlxG.switchState(() -> targetState);
               }
+              #end
             }
           });
       }
@@ -1035,18 +1079,52 @@ class ResultState extends MusicBeatSubState
       {
         // Shows a interstital ad on mobile devices each week victory.
         #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (PlayStatePlaylist.isStoryMode
-          || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+        if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= 3))
         {
-          AdMobUtil.loadInterstitial();
+          busy = true;
+          AdMobUtil.loadInterstitial(function():Void {
+            AdMobUtil.PLAYING_COUNTER = 0;
+
+            if (targetStateFactory != null)
+            {
+              targetState = targetStateFactory();
+            }
+            if (shouldUseSubstate && targetState is FlxSubState)
+            {
+              openSubState(cast targetState);
+              busy = false;
+            }
+            else
+            {
+              FlxG.switchState(() -> targetState);
+            }
+          });
         }
         else
         {
           requestReview();
+
+          if (targetStateFactory != null)
+          {
+            targetState = targetStateFactory();
+          }
+
+          if (shouldUseSubstate && targetState is FlxSubState)
+          {
+            openSubState(cast targetState);
+          }
+          else
+          {
+            FlxG.switchState(() -> targetState);
+          }
         }
         #else
         requestReview();
-        #end
+
+        if (targetStateFactory != null)
+        {
+          targetState = targetStateFactory();
+        }
 
         if (shouldUseSubstate && targetState is FlxSubState)
         {
@@ -1056,6 +1134,7 @@ class ResultState extends MusicBeatSubState
         {
           FlxG.switchState(() -> targetState);
         }
+        #end
       }
     }
 
@@ -1067,7 +1146,7 @@ class ResultState extends MusicBeatSubState
   function requestReview():Void
   {
     #if FEATURE_MOBILE_IAR
-    if (FlxG.random.bool(Constants.IN_APP_REVIEW_ODDS))
+    if (FlxG.random.bool(InAppReviewUtil.ODDS))
     {
       trace('Attempting to display in-app review!');
       InAppReviewUtil.requestReview();

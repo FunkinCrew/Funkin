@@ -590,25 +590,6 @@ class Constants
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
 
-  #if FEATURE_MOBILE_ADVERTISEMENTS
-  /**
-   * A Counter that is increased by 1 each blueball.
-   * Only used for interstital ads each 3 blueballs on mobile.
-   */
-  public static var GLOBAL_BLUEBALL_COUNTER:Int = 0;
-
-  /**
-   * A Counter that is increased by 1 each victory only in freep;ay songs.
-   * Only used for interstital ads each 3 victories on mobile.
-   */
-  public static var GLOBAL_FREEPLAY_VICTORY_COUNTER:Int = 0;
-  #end
-
-  /**
-   * Chance for exiting the Results screen to display a prompt to review the game, as a percent.
-   */
-  public static var IN_APP_REVIEW_ODDS:Int = 5;
-
   /**
    * Default period value for vibration.
    */

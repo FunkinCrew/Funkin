@@ -22,6 +22,9 @@ import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
 import funkin.util.TouchUtil;
 import openfl.utils.Assets;
+#if FEATURE_MOBILE_ADVERTISEMENTS
+import funkin.mobile.util.AdMobUtil;
+#end
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -329,6 +332,7 @@ class GameOverSubState extends MusicBeatSubState
 
   function playDeathQuote():Void
   {
+    if (isEnding) return;
     if (boyfriend == null) return;
 
     var deathQuote = boyfriend.getDeathQuote();
@@ -408,13 +412,37 @@ class GameOverSubState extends MusicBeatSubState
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
           new FlxTimer().start(2, _ -> {
             FlxG.camera.filters = [];
+            #if FEATURE_MOBILE_ADVERTISEMENTS
+            if (AdMobUtil.PLAYING_COUNTER >= 3)
+            {
+              AdMobUtil.loadInterstitial(function():Void {
+                AdMobUtil.PLAYING_COUNTER = 0;
+                resetPlaying(true);
+              });
+            }
+            else
+              resetPlaying(true);
+            #else
             resetPlaying(true);
+            #end
           });
         }
         else
         {
           FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+            #if FEATURE_MOBILE_ADVERTISEMENTS
+            if (AdMobUtil.PLAYING_COUNTER >= 3)
+            {
+              AdMobUtil.loadInterstitial(function():Void {
+                AdMobUtil.PLAYING_COUNTER = 0;
+                resetPlaying();
+              });
+            }
+            else
+              resetPlaying();
+            #else
             resetPlaying();
+            #end
           });
         }
       });
@@ -472,7 +500,7 @@ class GameOverSubState extends MusicBeatSubState
         onComplete = function() {
           isStarting = true;
           // We need to force to ensure that the non-starting music plays.
-          startDeathMusic(1.0, true);
+          startDeathMusic(0.0, true);
         };
       }
     }
@@ -501,7 +529,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  public function goBack()
+  public function goBack():Void
   {
     isEnding = true;
     blueballed = false;

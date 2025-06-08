@@ -24,6 +24,9 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
+#if FEATURE_MOBILE_ADVERTISEMENTS
+import funkin.mobile.util.AdMobUtil;
+#end
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -230,7 +233,7 @@ class PauseSubState extends MusicBeatSubState
     #if FEATURE_MOBILE_ADVERTISEMENTS
     extension.admob.Admob.onEvent.add(onBannerEvent);
 
-    funkin.mobile.util.AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_CENTER);
+    AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_CENTER);
     #end
 
     super.create();
@@ -826,7 +829,7 @@ class PauseSubState extends MusicBeatSubState
     // Resume a paused video if it exists.
     VideoCutscene.resumeVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -863,7 +866,7 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.needsReset = true;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -875,10 +878,33 @@ class PauseSubState extends MusicBeatSubState
   static function restartPlayState(state:PauseSubState):Void
   {
     PlayState.instance.needsReset = true;
+
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
-    #end
+    if (AdMobUtil.PLAYING_COUNTER < 3) AdMobUtil.PLAYING_COUNTER++;
+
+    if (AdMobUtil.PLAYING_COUNTER >= 3)
+    {
+      state.allowInput = false;
+
+      AdMobUtil.loadInterstitial(function():Void {
+        AdMobUtil.PLAYING_COUNTER = 0;
+
+        AdMobUtil.removeBanner();
+
+        state.allowInput = true;
+
+        state.close();
+      });
+    }
+    else
+    {
+      AdMobUtil.removeBanner();
+
+      state.close();
+    }
+    #else
     state.close();
+    #end
   }
 
   /**
@@ -901,7 +927,7 @@ class PauseSubState extends MusicBeatSubState
   {
     VideoCutscene.restartVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -914,7 +940,7 @@ class PauseSubState extends MusicBeatSubState
   {
     VideoCutscene.finishVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -929,7 +955,7 @@ class PauseSubState extends MusicBeatSubState
 
     PlayState.instance.currentConversation.resetConversation();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -944,7 +970,7 @@ class PauseSubState extends MusicBeatSubState
 
     PlayState.instance.currentConversation.skipConversation();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -985,7 +1011,7 @@ class PauseSubState extends MusicBeatSubState
     }
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
 
     state.openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
@@ -998,7 +1024,7 @@ class PauseSubState extends MusicBeatSubState
   static function quitToChartEditor(state:PauseSubState):Void
   {
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
