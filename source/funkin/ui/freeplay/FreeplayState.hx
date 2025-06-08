@@ -762,10 +762,9 @@ class FreeplayState extends MusicBeatSubState
     rankBg.alpha = 0;
 
     #if FEATURE_TOUCH_CONTROLS
-    addBackButton(FlxG.width * 0.96, FlxG.height * 0.86, FlxColor.WHITE, goBack);
-    if (backButton != null) backButton.scale.set(0.85, 0.85);
+    addBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack);
 
-    FlxTween.tween(backButton, {x: FlxG.width - 456}, FlxG.random.float(0.5, 0.95), {ease: FlxEase.backOut});
+    FlxTween.tween(backButton, {x: FlxG.width - 230}, 0.5, {ease: FlxEase.expoOut});
     #end
 
     if (prepForNewRank)
@@ -1291,7 +1290,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     #if FEATURE_TOUCH_CONTROLS
-    FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, FlxG.random.float(0.2, 0.85), {ease: FlxEase.backIn});
+    FlxTween.tween(backButton, {alpha: 0.0001}, 0.4, {ease: FlxEase.quadOut});
     #end
 
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
@@ -1948,7 +1947,8 @@ class FreeplayState extends MusicBeatSubState
     }
 
     #if FEATURE_TOUCH_CONTROLS
-    FlxTween.tween(backButton, {y: FlxG.height, alpha: 0.0001}, 0.2, {ease: FlxEase.backIn});
+    FlxTween.tween(backButton, {x: FlxG.width + 300}, 0.45, {ease: FlxEase.expoIn});
+    FlxTween.tween(backButton, {alpha: 0.0001}, 0.3, {ease: FlxEase.quadOut, startDelay: 0.15});
     #end
 
     for (caps in grpCapsules.members)
