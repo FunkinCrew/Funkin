@@ -128,7 +128,7 @@ class Project extends HXProject
   /**
    * The team ID to use for the iOS app. Configured in XCode.
    */
-  static var IOS_TEAM_ID:String = "24PL72Q95R";
+  static var IOS_TEAM_ID:String = "Z7G7AVNGSH";
 
   /**
    * The block size of the ASTC compressed textures.
