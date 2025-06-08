@@ -16,7 +16,7 @@ import funkin.input.Controls;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
-import funkin.mobile.ui.FunkinBackspace;
+import funkin.mobile.ui.FunkinBackButton;
 import funkin.util.TouchUtil;
 import funkin.mobile.ui.options.ControlsSchemeMenu;
 #end
