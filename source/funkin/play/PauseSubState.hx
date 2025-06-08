@@ -376,7 +376,9 @@ class PauseSubState extends MusicBeatSubState
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20, camera.height - 155, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
+    var metadataSong:FlxText = new FlxText(20,
+      #if mobile (PlayState.instance?.isPracticeMode ?? false) ? camera.height - 185 : camera.height - 155 #else 15 #end,
+      camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
     metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -520,7 +522,7 @@ class PauseSubState extends MusicBeatSubState
     var delay:Float = 0.1;
     for (child in metadata.members)
     {
-      FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
+      FlxTween.tween(child, {alpha: 1, y: child.y - 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
       delay += 0.1;
     }
   }
@@ -787,6 +789,16 @@ class PauseSubState extends MusicBeatSubState
   function updateMetadataText():Void
   {
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
+
+    #if mobile
+    if (metadata.members[0].y != camera.height - 185 && metadataPractice.visible)
+    {
+      for (text in metadata)
+      {
+        text.y -= 30;
+      }
+    }
+    #end
 
     switch (this.currentMode)
     {
