@@ -183,7 +183,7 @@ class GameOverSubState extends MusicBeatSubState
     Conductor.instance.update(0);
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack);
     #end
 
     // Allow input a second later to prevent accidental gameover skips.

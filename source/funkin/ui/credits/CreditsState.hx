@@ -120,7 +120,7 @@ class CreditsState extends MusicBeatState
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, exit);
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, exit, 0.7);
     #end
   }
 

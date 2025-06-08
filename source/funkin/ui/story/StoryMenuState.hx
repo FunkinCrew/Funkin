@@ -226,7 +226,7 @@ class StoryMenuState extends MusicBeatState
     #end
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width - 230, FlxG.height - 170, FlxColor.WHITE, goBack, 0.7);
     #end
 
     #if FEATURE_TOUCH_CONTROLS

@@ -10,6 +10,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
@@ -540,6 +541,11 @@ class PlayState extends MusicBeatSubState
    * The pause button for the game, only appears in Mobile targets.
    */
   var pauseButton:FunkinSprite;
+
+  /**
+   * The pause circle for the game, only appears in Mobile targets.
+   */
+  var pauseCircle:FunkinSprite;
   #end
 
   /**
@@ -785,17 +791,27 @@ class PlayState extends MusicBeatSubState
 
     // Create the pause button.
     #if mobile
-    pauseButton = FunkinSprite.createSparrow(0, 0, "fonts/bold");
-    pauseButton.animation.addByPrefix("idle", "(", 24, true);
-    pauseButton.animation.play("idle");
-    pauseButton.color = FlxColor.WHITE;
-    pauseButton.alpha = 0.65;
+    pauseButton = FunkinSprite.createSparrow(0, 0, "pauseButton");
+    pauseButton.animation.addByIndices('idle', 'back', [0], "", 24, false);
+    pauseButton.animation.addByIndices('hold', 'back', [5], "", 24, false);
+    pauseButton.animation.addByIndices('confirm', 'back', [
+      6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+    ], "", 24, false);
+    pauseButton.scale.set(0.8, 0.8);
     pauseButton.updateHitbox();
-    pauseButton.setPosition((FlxG.width - pauseButton.width) - Math.max(40, FullScreenScaleMode.gameNotchSize.x), 3);
+    pauseButton.animation.play("idle");
+    pauseButton.setPosition((FlxG.width - pauseButton.width) - 35, 35);
     pauseButton.cameras = [camControls];
-    pauseButton.width *= 2;
-    pauseButton.height *= 2;
-    pauseButton.offset.set(-(pauseButton.width / 4), -(pauseButton.height / 4));
+
+    pauseCircle = FunkinSprite.create(0, 0, 'pauseCircle');
+    pauseCircle.scale.set(0.84, 0.8);
+    pauseCircle.updateHitbox();
+    pauseCircle.cameras = [camControls];
+    pauseCircle.x = ((pauseButton.x + (pauseButton.width / 2)) - (pauseCircle.width / 2));
+    pauseCircle.y = ((pauseButton.y + (pauseButton.height / 2)) - (pauseCircle.height / 2));
+    pauseCircle.alpha = 0.1;
+
+    add(pauseCircle);
     add(pauseButton);
     hitbox.forEachAlive(function(hint:FunkinHint) {
       hint.deadZones.push(pauseButton);
@@ -1027,7 +1043,14 @@ class PlayState extends MusicBeatSubState
     #if mobile
     if (justUnpaused)
     {
-      pauseButton.alpha = 0.65;
+      // pauseButton.alpha = 1;
+      // pauseCircle.alpha = 0.1;
+
+      FlxTween.cancelTweensOf(pauseButton);
+      FlxTween.cancelTweensOf(pauseCircle);
+
+      FlxTween.tween(pauseButton, {alpha: 1}, 0.25, {ease: FlxEase.quartOut});
+      FlxTween.tween(pauseCircle, {alpha: 0.1}, 0.25, {ease: FlxEase.quartOut});
 
       if (!startingSong) hitbox.visible = true;
     }
@@ -1148,6 +1171,7 @@ class PlayState extends MusicBeatSubState
 
     #if mobile
     if ((VideoCutscene.isPlaying() || isInCutscene) && !pauseButton.visible) pauseButton.visible = true;
+    pauseCircle.visible = pauseButton.visible;
     #end
 
     justUnpaused = false;
@@ -1163,7 +1187,11 @@ class PlayState extends MusicBeatSubState
     Countdown.pauseCountdown();
 
     #if mobile
+    FlxTween.cancelTweensOf(pauseButton);
+    FlxTween.cancelTweensOf(pauseCircle);
+
     pauseButton.alpha = 0;
+    pauseCircle.alpha = 0;
     hitbox.visible = false;
     #end
     var event = new PauseScriptEvent(FlxG.random.bool((1 / 1000) * 100));
@@ -3031,7 +3059,11 @@ class PlayState extends MusicBeatSubState
       {
         currentConversation.pauseMusic();
         #if mobile
+        FlxTween.cancelTweensOf(pauseButton);
+        FlxTween.cancelTweensOf(pauseCircle);
+
         pauseButton.alpha = 0;
+        pauseCircle.alpha = 0;
         hitbox.visible = false;
         #end
 
@@ -3051,7 +3083,11 @@ class PlayState extends MusicBeatSubState
       {
         VideoCutscene.pauseVideo();
         #if mobile
+        FlxTween.cancelTweensOf(pauseButton);
+        FlxTween.cancelTweensOf(pauseCircle);
+
         pauseButton.alpha = 0;
+        pauseCircle.alpha = 0;
         hitbox.visible = false;
         #end
 
@@ -3093,6 +3129,7 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Hide the buttons while the song is ending.
     hitbox.visible = pauseButton.visible = false;
+    pauseCircle.visible = false;
     #end
 
     // Check if any events want to prevent the song from ending.

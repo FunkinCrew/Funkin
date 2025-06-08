@@ -184,7 +184,7 @@ class MainMenuState extends MusicBeatState
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     #if mobile
-    addBackButton(FlxG.width * 0.03, FlxG.height * 0.79, FlxColor.BLACK, goBack);
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
     #end
 
     super.create();

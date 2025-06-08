@@ -17,7 +17,7 @@ import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
 #if mobile
-import funkin.mobile.ui.FunkinBackspace;
+import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
@@ -77,7 +77,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     });
 
     #if mobile
-    var backButton:FunkinBackspace = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK, exit);
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width * 0.83, FlxG.height * 0.75, exit);
     add(backButton);
     #end
   }
