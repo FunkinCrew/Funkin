@@ -150,6 +150,18 @@ class InAppPurchasesUtil
   }
 
   /**
+   * Restores previously made in-app purchases for the current user.
+   */
+  public static function restorePurchases():Void
+  {
+    #if android
+    IAPAndroid.queryPurchases();
+    #else
+    IAPIOS.restorePurchases();
+    #end
+  }
+
+  /**
    * Initiates the purchase process for the specified item.
    *
    * @param id The identifier of the item to be purchased.
