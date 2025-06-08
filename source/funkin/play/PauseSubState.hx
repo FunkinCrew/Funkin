@@ -764,6 +764,7 @@ class PauseSubState extends MusicBeatSubState
   {
     PlayState.instance.needsReset = true;
     #if FEATURE_MOBILE_ADVERTISEMENTS
+    Constants.GLOBAL_PLAYING_COUNTER++;
     funkin.mobile.util.AdMobUtil.removeBanner();
     #end
     state.close();
