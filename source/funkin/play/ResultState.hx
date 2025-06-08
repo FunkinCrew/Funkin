@@ -1018,10 +1018,12 @@ class ResultState extends MusicBeatSubState
             onComplete: function(_) {
               // Shows a interstital ad on mobile devices each week victory.
               #if FEATURE_MOBILE_ADVERTISEMENTS
-              if (PlayStatePlaylist.isStoryMode || (Constants.GLOBAL_PLAYING_COUNTER > 0 && Constants.GLOBAL_PLAYING_COUNTER % 3 == 0))
+              if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= 3))
               {
                 busy = true;
                 AdMobUtil.loadInterstitial(function():Void {
+                  AdMobUtil.PLAYING_COUNTER = 0;
+
                   if (targetStateFactory != null)
                   {
                     targetState = targetStateFactory();
@@ -1077,10 +1079,12 @@ class ResultState extends MusicBeatSubState
       {
         // Shows a interstital ad on mobile devices each week victory.
         #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (PlayStatePlaylist.isStoryMode || (Constants.GLOBAL_PLAYING_COUNTER > 0 && Constants.GLOBAL_PLAYING_COUNTER % 3 == 0))
+        if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= 3))
         {
           busy = true;
           AdMobUtil.loadInterstitial(function():Void {
+            AdMobUtil.PLAYING_COUNTER = 0;
+
             if (targetStateFactory != null)
             {
               targetState = targetStateFactory();
@@ -1142,7 +1146,7 @@ class ResultState extends MusicBeatSubState
   function requestReview():Void
   {
     #if FEATURE_MOBILE_IAR
-    if (FlxG.random.bool(Constants.IN_APP_REVIEW_ODDS))
+    if (FlxG.random.bool(InAppReviewUtil.ODDS))
     {
       trace('Attempting to display in-app review!');
       InAppReviewUtil.requestReview();

@@ -17,6 +17,11 @@ import funkin.util.macro.EnvironmentConfigMacro;
  */
 class AdMobUtil
 {
+  /**
+   * Counter that tracks the number of times a blueball event or a victory occurs.
+   */
+  public static var PLAYING_COUNTER:UInt = 0;
+
   #if NO_TESTING_ADS
   /**
    * AdMob publisher ID used for the application.

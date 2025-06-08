@@ -590,20 +590,6 @@ class Constants
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
 
-  #if FEATURE_MOBILE_ADVERTISEMENTS
-  /**
-   * Global counter tracking the number of times a blueball event or a victory occurs.
-   */
-  public static var GLOBAL_PLAYING_COUNTER:Int = 0;
-  #end
-
-  #if FEATURE_MOBILE_IAR
-  /**
-   * Chance for exiting the Results screen to display a prompt to review the game, as a percent.
-   */
-  public static var IN_APP_REVIEW_ODDS:Int = 5;
-  #end
-
   /**
    * Default period value for vibration.
    */
