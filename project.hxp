@@ -56,7 +56,7 @@ class Project extends HXProject
   /**
    * A package name used for identifying the app on various app stores.
    */
-  static final PACKAGE_NAME:String = "me.funkin.fnfxyz100";
+  static final PACKAGE_NAME:String = "me.funkin.fnf";
 
   /**
    * The build's number and version code.
