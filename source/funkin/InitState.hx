@@ -216,7 +216,9 @@ class InitState extends FlxState
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
+    #if !mobile
     funkin.util.plugins.VolumePlugin.initialize();
+    #end
     funkin.util.plugins.WatchPlugin.initialize();
     #if mobile
     funkin.util.plugins.TouchPointerPlugin.initialize();

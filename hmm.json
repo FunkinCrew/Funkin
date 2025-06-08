@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "fd87f72e4331e2cf26ab2b176bfa64c6b51912e9",
+      "ref": "b0fe062c5eacd7cde80fd21544fe27616e5b4f9e",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -29,12 +29,12 @@
     {
       "name": "extension-haptics",
       "type": "haxelib",
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "name": "extension-iapcore",
       "type": "haxelib",
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "name": "extension-iarcore",
@@ -118,7 +118,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "43e368e3af08ea38bdc4ea9d4a7a9d4365941b9a",
+      "ref": "d5d9bd200e509f2e6022c8999c91543a0fda30c6",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {

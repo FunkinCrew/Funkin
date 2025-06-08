@@ -198,6 +198,11 @@ class PlayState extends MusicBeatSubState
   public var needsReset:Bool = false;
 
   /**
+   * A timer that gets active once resetting happens. Used to vwoosh in notes.
+   */
+  public var vwooshTimer:FlxTimer = new FlxTimer();
+
+  /**
    * The current 'Blueball Counter' to display in the pause menu.
    * Resets when you beat a song or go back to the main menu.
    */
@@ -316,13 +321,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Whether the game is currently in Practice Mode.
-   * If true, player will not lose gain or lose score from notes.
+   * If true, player will not gain or lose score from notes.
    */
   public var isPracticeMode:Bool = false;
 
   /**
    * Whether the game is currently in Bot Play Mode.
-   * If true, player will not lose gain or lose score from notes.
+   * If true, player will not gain or lose score from notes.
    */
   public var isBotPlayMode:Bool = false;
 
@@ -954,9 +959,6 @@ class PlayState extends MusicBeatSubState
       // Delete all notes and reset the arrays.
       regenNoteData();
 
-      // so the song doesn't start too early :D
-      Conductor.instance.update(-5000, false);
-
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -965,16 +967,22 @@ class PlayState extends MusicBeatSubState
       health = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
+
+      // so the song doesn't start too early :D
+      var vwooshDelay:Float = 0.5;
+      Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -5);
+
       // timer for vwoosh
-      var vwooshTimer = new FlxTimer();
-      vwooshTimer.start(0.5, function(t:FlxTimer) {
-        Conductor.instance.update(startTimestamp - Conductor.instance.combinedOffset, false);
+      vwooshTimer.start(vwooshDelay, function(_) {
         if (playerStrumline.notes.length == 0) playerStrumline.updateNotes();
         if (opponentStrumline.notes.length == 0) opponentStrumline.updateNotes();
         playerStrumline.vwooshInNotes();
         opponentStrumline.vwooshInNotes();
         Countdown.performCountdown();
       });
+
+      // Stops any existing countdown.
+      Countdown.stopCountdown();
 
       // Reset the health icons.
       currentStage?.getBoyfriend()?.initHealthIcon(false);
@@ -1197,7 +1205,7 @@ class PlayState extends MusicBeatSubState
       // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
       persistentDraw = true;
 
-      // There is a 1/1000 change to use a special pause menu.
+      // There is a 1/1000 chance to use a special pause menu.
       // This prevents the player from resuming, but that's the point.
       // It's a reference to Gitaroo Man, which doesn't let you pause the game.
       if (!isSubState && event.gitaroo)
@@ -1254,6 +1262,8 @@ class PlayState extends MusicBeatSubState
     // Reset and update a bunch of values in advance for the transition back from the game over substate.
     playerStrumline.clean();
     opponentStrumline.clean();
+
+    vwooshTimer.cancel();
 
     songScore = 0;
     updateScoreText();
@@ -1405,6 +1415,9 @@ class PlayState extends MusicBeatSubState
       dispatchEvent(event);
 
       if (event.eventCanceled) return;
+
+      // Resume vwooshTimer
+      if (!vwooshTimer.finished) vwooshTimer.active = true;
 
       // Resume music if we paused it.
       if (musicPausedBySubState)
@@ -2300,7 +2313,7 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Resyncronize the vocal tracks if they have become offset from the instrumental.
+     * Resynchronize the vocal tracks if they have become offset from the instrumental.
      */
   function resyncVocals():Void
   {
@@ -2646,7 +2659,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    // Respawns notes that were b
+    // Respawns notes that were between the previous time and the current time when skipping backward, or destroy notes between the previous time and the current time when skipping forward.
     playerStrumline.handleSkippedNotes();
     opponentStrumline.handleSkippedNotes();
   }
@@ -3389,6 +3402,9 @@ class PlayState extends MusicBeatSubState
       // TODO: Uncache the song.
     }
 
+    // Prevent vwoosh timer from running outside PlayState (e.g Chart Editor)
+    vwooshTimer.cancel();
+
     if (overrideMusic)
     {
       // Stop the music. Do NOT destroy it, something still references it!
@@ -3664,7 +3680,7 @@ class PlayState extends MusicBeatSubState
     cancelCameraZoomTween();
   }
 
-  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruely
+  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruly
 
   /**
      * The magical function that shall tween the scroll speed.
