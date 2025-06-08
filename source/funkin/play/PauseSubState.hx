@@ -172,7 +172,7 @@ class PauseSubState extends MusicBeatSubState
   /**
    * The placeholder sprite displayed when an advertisement fails to load or display.
    */
-  var failedAdPlaceHolder:FunkinSprite;
+  // var failedAdPlaceHolder:FunkinSprite;
 
   /**
    * The semi-transparent black background that appears when the game is paused.
@@ -231,7 +231,7 @@ class PauseSubState extends MusicBeatSubState
   {
     // Add banner ad when game is state is first loaded.
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    extension.admob.Admob.onEvent.add(onBannerEvent);
+    // extension.admob.Admob.onEvent.add(onBannerEvent);
 
     AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_CENTER);
     #end
@@ -267,9 +267,9 @@ class PauseSubState extends MusicBeatSubState
    */
   public override function destroy():Void
   {
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    extension.admob.Admob.onEvent.remove(onBannerEvent);
-    #end
+    // #if FEATURE_MOBILE_ADVERTISEMENTS
+    // extension.admob.Admob.onEvent.remove(onBannerEvent);
+    // #end
     super.destroy();
     charterFadeTween.cancel();
     charterFadeTween = null;
@@ -283,38 +283,38 @@ class PauseSubState extends MusicBeatSubState
   // ===============
   // Initialization Functions
   // ===============
-  #if FEATURE_MOBILE_ADVERTISEMENTS
-  function onBannerEvent(event:extension.admob.AdmobEvent):Void
-  {
-    if (event.name.indexOf('BANNER') == -1) return;
 
-    if (event.errorCode != null && event.errorDescription != null)
+  /*#if FEATURE_MOBILE_ADVERTISEMENTS
+    function onBannerEvent(event:extension.admob.AdmobEvent):Void
     {
-      if (failedAdPlaceHolder == null || members.indexOf(failedAdPlaceHolder) == -1)
+      if (event.name.indexOf('BANNER') == -1) return;
+
+      if (event.errorCode != null && event.errorDescription != null)
       {
-        var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
+        if (failedAdPlaceHolder == null || members.indexOf(failedAdPlaceHolder) == -1)
+        {
+          var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
 
-        #if android
-        scale = Math.max(scale, 1);
-        #else
-        scale = Math.min(scale, 1);
-        #end
+          #if android
+          scale = Math.max(scale, 1);
+          #else
+          scale = Math.min(scale, 1);
+          #end
 
-        failedAdPlaceHolder = new FunkinSprite(0, 0);
-        failedAdPlaceHolder.makeSolidColor(Math.floor(320 * scale), Math.floor(50 * scale), FlxColor.RED);
-        failedAdPlaceHolder.updateHitbox();
-        failedAdPlaceHolder.screenCenter(X);
-        failedAdPlaceHolder.scrollFactor.set(0, 0);
-        add(failedAdPlaceHolder);
+          failedAdPlaceHolder = new FunkinSprite(0, 0);
+          failedAdPlaceHolder.makeSolidColor(Math.floor(320 * scale), Math.floor(50 * scale), FlxColor.RED);
+          failedAdPlaceHolder.updateHitbox();
+          failedAdPlaceHolder.screenCenter(X);
+          failedAdPlaceHolder.scrollFactor.set(0, 0);
+          add(failedAdPlaceHolder);
+        }
+      }
+      else if (failedAdPlaceHolder != null && members.indexOf(failedAdPlaceHolder) != -1)
+      {
+        remove(failedAdPlaceHolder);
       }
     }
-    else if (failedAdPlaceHolder != null && members.indexOf(failedAdPlaceHolder) != -1)
-    {
-      remove(failedAdPlaceHolder);
-    }
-  }
-  #end
-
+    #end */
   /**
    * Play the pause music.
    */
