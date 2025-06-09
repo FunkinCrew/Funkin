@@ -5481,20 +5481,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // SHIFT + press or LEFT_SHOULDER + press to remove notes instead of placing them.
     var removeNoteInstead:Bool = FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_SHOULDER ?? false);
 
-    var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
-    var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
+    var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
+    var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+    var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
     // Look for notes within 1 step of the playhead.
-    var notesAtPos:Array<SongNoteData> = SongDataUtils.getNotesInTimeRange(currentSongChartNoteData, playheadPosSnappedMs,
-      playheadPosSnappedMs + Conductor.instance.stepLengthMs * noteSnapRatio);
+    var notesAtPos:Array<SongNoteData> = SongDataUtils.getNotesInTimeRange(currentSongChartNoteData, playheadSnappedMs,
+      playheadSnappedMs + Conductor.instance.getTypeLengthAtMs(playheadSnappedMs, "step") * noteSnapRatio);
     notesAtPos = SongDataUtils.getNotesWithData(notesAtPos, [column]);
 
     if (notesAtPos.length == 0 && !removeNoteInstead)
     {
       trace('Placing note. ${column}');
-      var newNoteData:SongNoteData = new SongNoteData(playheadPosSnappedMs, column, 0, noteKindToPlace, ChartEditorState.cloneNoteParams(noteParamsToPlace));
+      var newNoteData:SongNoteData = new SongNoteData(playheadSnappedMs, column, 0, noteKindToPlace, ChartEditorState.cloneNoteParams(noteParamsToPlace));
       performCommand(new AddNotesCommand([newNoteData], pressingControl()));
       currentLiveInputPlaceNoteData[column] = newNoteData;
     }
@@ -5514,20 +5513,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // SHIFT + press or LEFT_SHOULDER + press to remove events instead of placing them.
     var removeEventInstead:Bool = FlxG.keys.pressed.SHIFT || (FlxG.gamepads.firstActive?.pressed?.LEFT_SHOULDER ?? false);
 
-    var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
-    var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
+    var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
+    var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+    var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
     // Look for events within 1 step of the playhead.
-    var eventsAtPos:Array<SongEventData> = SongDataUtils.getEventsInTimeRange(currentSongChartEventData, playheadPosSnappedMs,
-      playheadPosSnappedMs + Conductor.instance.stepLengthMs * noteSnapRatio);
+    var eventsAtPos:Array<SongEventData> = SongDataUtils.getEventsInTimeRange(currentSongChartEventData, playheadSnappedMs,
+      playheadSnappedMs + Conductor.instance.getTypeLengthAtMs(playheadSnappedMs, "step") * noteSnapRatio);
     eventsAtPos = SongDataUtils.getEventsWithKind(eventsAtPos, ['FocusCamera']);
 
     if (eventsAtPos.length == 0 && !removeEventInstead)
     {
       trace('Placing event ${isOpponent}');
-      var newEventData:SongEventData = new SongEventData(playheadPosSnappedMs, 'FocusCamera',
+      var newEventData:SongEventData = new SongEventData(playheadSnappedMs, 'FocusCamera',
         {
           char: isOpponent ? 1 : 0,
         });
@@ -5592,12 +5590,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         continue;
       }
 
-      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-      var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
-      var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-      var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
+      var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
+      var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+      var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
-      var newNoteLength:Float = playheadPosSnappedMs - ghostHold.noteData.time;
+      var newNoteLength:Float = playheadSnappedMs - ghostHold.noteData.time;
       trace('newNoteLength: ${newNoteLength}');
 
       if (newNoteLength > 0)
@@ -5634,12 +5631,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (currentLiveInputPlaceNoteData[column] == null) return;
 
-    var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-    var playheadPosFractionalStep:Float = playheadPos / GRID_SIZE / noteSnapRatio;
-    var playheadPosStep:Int = Std.int(Math.floor(playheadPosFractionalStep));
-    var playheadPosSnappedMs:Float = playheadPosStep * Conductor.instance.stepLengthMs * noteSnapRatio;
+    var playheadFractionalStep:Float = (scrollPositionInPixels + playheadPositionInPixels) / GRID_SIZE;
+    var playheadSnappedStep:Float = Math.floor(playheadFractionalStep / noteSnapRatio) * noteSnapRatio;
+    var playheadSnappedMs:Float = Conductor.instance.getStepTimeInMs(playheadSnappedStep);
 
-    var newNoteLength:Float = playheadPosSnappedMs - currentLiveInputPlaceNoteData[column].time;
+    var newNoteLength:Float = playheadSnappedMs - currentLiveInputPlaceNoteData[column].time;
     trace('finishPlace newNoteLength: ${newNoteLength}');
 
     if (newNoteLength < Conductor.instance.stepLengthMs)
