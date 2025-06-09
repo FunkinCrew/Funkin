@@ -48,8 +48,6 @@ class UpgradeSparkle extends FlxSprite
     visible = true;
     alpha = 1;
 
-    trace('sparkle!', x, y);
-
     flipX = !flipX;
 
     var targetScale:Float = FlxG.random.float(0.6, 1);
