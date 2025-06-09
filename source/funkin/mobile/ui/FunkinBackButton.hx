@@ -5,10 +5,15 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.util.HapticUtil;
+import flixel.util.FlxSignal;
 
 class FunkinBackButton extends FunkinButton
 {
   var restingOpacity:Float;
+
+  public var onConfirmEnd(default, null):FlxSignal = new FlxSignal();
+
+  var instant:Bool = false;
 
   /**
    * Creates a new FunkinBackButton instance.
@@ -17,8 +22,11 @@ class FunkinBackButton extends FunkinButton
    * @param yPos The y position of the object.
    * @param theColor Button's optional color.
    * @param confirmCallback An optional callback function that will be triggered when the object is clicked.
+   * @param restOpacity An optional float that is the alpha the button will be when not selected/hovered over.
+   * @param instant An optional flag that makes the button not play the full animation before calling the callback.
    */
-  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void, ?_restOpacity:Float = 0.3):Void
+  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?theColor:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void, ?_restOpacity:Float = 0.3,
+      _instant:Bool = false):Void
   {
     super(xPos, yPos);
 
@@ -36,9 +44,18 @@ class FunkinBackButton extends FunkinButton
     alpha = restingOpacity;
 
     ignoreDownHandler = true;
+    instant = _instant;
+
+    if (instant)
+    {
+      onUp.add(confirmCallback);
+    }
+    else
+    {
+      onConfirmEnd.add(confirmCallback);
+    }
 
     onUp.add(playConfirmAnim);
-    if (confirmCallback != null) onUp.add(confirmCallback);
     onDown.add(playHoldAnim);
     onOut.add(playOutAnim);
   }
@@ -59,6 +76,13 @@ class FunkinBackButton extends FunkinButton
     FlxTween.cancelTweensOf(this);
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
+
+    if (!instant)
+    {
+      animation.onFinish.add(function(name:String) {
+        onConfirmEnd.dispatch();
+      });
+    }
 
     onUp.remove(playConfirmAnim);
     onDown.remove(playHoldAnim);
