@@ -484,7 +484,7 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
     #if FEATURE_TOUCH_CONTROLS
-    charSelectHint.text = 'Press on the DJ to change characters';
+    charSelectHint.text = 'Tap the DJ to change characters';
     #else
     charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
     #end
@@ -631,7 +631,7 @@ class FreeplayState extends MusicBeatSubState
     add(fnfFreeplay);
     add(ostName);
 
-    if (PlayerRegistry.instance.hasNewCharacter())
+    if (PlayerRegistry.instance.countUnlockedCharacters() > 1)
     {
       add(charSelectHint);
     }
