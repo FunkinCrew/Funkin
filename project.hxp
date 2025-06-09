@@ -699,7 +699,7 @@ class Project extends HXProject
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
     FEATURE_VIDEO_PLAYBACK.apply(this, true);
-    FEATURE_GHOST_TAPPING.apply(this, true);
+    FEATURE_GHOST_TAPPING.apply(this, isMobile());
 
     // Should be true on debug builds or if GITHUB_BUILD is enabled.
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
