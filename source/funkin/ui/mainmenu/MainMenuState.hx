@@ -25,6 +25,8 @@ import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
 import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
+import funkin.ui.mainmenu.UpgradeSparkle;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -42,6 +44,11 @@ class MainMenuState extends MusicBeatState
   var overrideMusic:Bool = false;
 
   static var rememberedSelectedIndex:Int = 0;
+
+  // TODO: this needs to eventually reflect the actual state of whether the player has upgraded or not.
+  // this should never be false on non-mobile targets.
+  var hasUpgraded:Bool = true;
+  var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
 
   public function new(?_overrideMusic:Bool = false)
   {
@@ -123,6 +130,14 @@ class MainMenuState extends MusicBeatState
       var targetCharacter:Null<String> = null;
       #end
 
+      if (!hasUpgraded)
+      {
+        for (i in 0...upgradeSparkles.length)
+        {
+          upgradeSparkles.members[i].cancelSparkle();
+        }
+      }
+
       openSubState(new FreeplayState(
         {
           character: targetCharacter
@@ -142,6 +157,17 @@ class MainMenuState extends MusicBeatState
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
+
+    if (!hasUpgraded)
+    {
+      upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
+      add(upgradeSparkles);
+
+      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
+        // TODO: this needs to actually lead you to the purchase screen
+        startExitState(() -> new funkin.ui.options.OptionsState());
+      });
+    }
 
     createMenuItem('credits', 'mainmenu/credits', function() {
       startExitState(() -> new funkin.ui.credits.CreditsState());
@@ -166,6 +192,28 @@ class MainMenuState extends MusicBeatState
     }
 
     menuItems.selectItem(rememberedSelectedIndex);
+
+    if (!hasUpgraded)
+    {
+      // the upgrade item
+      var targetItem = menuItems.members[4];
+      for (i in 0...8)
+      {
+        var sparkle:UpgradeSparkle = new UpgradeSparkle(targetItem.x - (targetItem.width / 2), targetItem.y - (targetItem.height / 2), targetItem.width,
+          targetItem.height, FlxG.random.bool(80));
+        upgradeSparkles.add(sparkle);
+
+        sparkle.scrollFactor.x = 0.0;
+        sparkle.scrollFactor.y = 0.4;
+      }
+
+      subStateClosed.add(_ -> {
+        for (i in 0...upgradeSparkles.length)
+        {
+          upgradeSparkles.members[i].restartSparkle();
+        }
+      });
+    }
 
     resetCamStuff();
 
