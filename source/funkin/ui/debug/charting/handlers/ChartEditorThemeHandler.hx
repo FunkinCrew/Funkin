@@ -202,10 +202,10 @@ class ChartEditorThemeHandler
     // Make the bitmap.
     var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE);
     var linesWidth:Int = Std.int(ChartEditorState.GRID_SIZE * TOTAL_COLUMN_COUNT);
-    state.measureTickBitmap = new BitmapData(ticksWidth + linesWidth, 4096, true, 0x00FFFFFF);
+    state.measureTickBitmap = new BitmapData(ticksWidth + linesWidth, 6144, true, 0x00FFFFFF);
 
     // Draw the vertical grey sidebar.
-    state.measureTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, 4096), GRID_BEAT_DIVIDER_COLOR_DARK);
+    state.measureTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, 6144), GRID_BEAT_DIVIDER_COLOR_DARK);
 
     // Then draw the ticks and dividers themselves.
     var totalTicksHeight:Int = 0;
