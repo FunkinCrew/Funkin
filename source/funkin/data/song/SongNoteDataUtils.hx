@@ -55,14 +55,14 @@ class SongNoteDataUtils
 
           if (doNotesStack(noteI, noteJ, threshold))
           {
-            if (!stackedNotes.contains(noteI))
+            if (!stackedNotes.fastContains(noteI))
             {
               if (includeOverlapped) stackedNotes.push(noteI);
 
               if (overlapped != null && !overlapped.contains(noteI)) overlapped.push(noteI);
             }
 
-            if (!stackedNotes.contains(noteJ))
+            if (!stackedNotes.fastContains(noteJ))
             {
               stackedNotes.push(noteJ);
             }
