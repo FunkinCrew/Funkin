@@ -1297,9 +1297,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var variationMetadata:Null<SongMetadata> = songMetadata.get(selectedVariation);
     if (variationMetadata != null)
     {
-      // Add the difficulties to the metadata if they're new so that the editor properly loads them
-      // This is a silly way of getting the new difficulties but what other option do I have?
-      var keys:Array<String> = [for (x in songChartData.get(selectedVariation).scrollSpeed.keys()) x];
+      // Add the chartdata difficulties to the metadata difficulties if they don't exist so that the editor properly loads them
+      var keys:Array<String> = [[for (x in songChartData.get(selectedVariation).notes.keys()) x]];
       for (key in keys)
       {
         variationMetadata.playData.difficulties.pushUnique(key);
