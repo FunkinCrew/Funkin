@@ -838,6 +838,38 @@ class Conductor
   }
 
   /**
+   * An all-in-one function for getting either a step, beat, or measure's length in milliseconds from a given time change.
+   * @param ms The time in milliseconds. The time change is determined by this.
+   * @param type The type of length to return. Either "step", "beat", or "measure" works, along with their first character.
+   * @return The length of a step/beat/measure in milliseconds.
+   */
+  public function getTypeLengthAtMs(ms:Float, type:String = "beat"):Float
+  {
+    if (timeChanges.length == 0) return 0;
+    var wantedTimeChange:SongTimeChange = timeChanges[0];
+    for (timeChange in timeChanges)
+    {
+      if (ms >= timeChange.timeStamp)
+      {
+        wantedTimeChange = timeChange;
+      }
+      else
+      {
+        // This time change is after the requested time.
+        break;
+      }
+    }
+    var wantedBeatLengthMs:Float = ((Constants.SECS_PER_MIN / wantedTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / wantedTimeChange.timeSignatureDen);
+    return switch (type.toLowerCase())
+    {
+      case "measure", "m": wantedBeatLengthMs * wantedTimeChange.timeSignatureNum;
+      case "beat", "b": wantedBeatLengthMs;
+      case "step", "s": wantedBeatLengthMs / Constants.STEPS_PER_BEAT;
+      default: wantedBeatLengthMs;
+    }
+  }
+
+  /**
    * Adds Conductor fields to the Flixel debugger variable display.
    * @param conductorToUse The conductor to use. Defaults to `Conductor.instance`.
    */

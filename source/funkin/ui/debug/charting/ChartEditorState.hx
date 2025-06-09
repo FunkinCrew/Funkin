@@ -500,13 +500,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_playheadPositionInMs():Float
   {
-    return Conductor.instance.getStepTimeInMs(playheadPositionInSteps);
+    var playheadPositionInSong:Float = Conductor.instance.getStepTimeInMs(playheadPositionInSteps + scrollPositionInSteps);
+    return playheadPositionInSong - scrollPositionInMs;
   }
 
   function set_playheadPositionInMs(value:Float):Float
   {
     playheadPositionInSteps = Conductor.instance.getTimeInSteps(value);
-
     return value;
   }
 
@@ -4160,23 +4160,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     var funcJumpUp = (playheadOnly:Bool) -> {
-      var measureHeight:Float = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
-      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-      var targetScrollPosition:Float = Math.floor(playheadPos / measureHeight) * measureHeight;
-      // If we would move less than one grid, instead move to the top of the previous measure.
-      var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
-      if (targetScrollAmount < GRID_SIZE)
+      var playheadPosition:Float = scrollPositionInMs + playheadPositionInMs;
+      var currentPositionMeasure:Float = Conductor.instance.currentMeasureTime;
+      var currentPositionMeasureFlooredInMs:Float = Conductor.instance.getMeasureTimeInMs(Math.floor(currentPositionMeasure));
+      var targetScrollPosition:Float = 0;
+      if (FlxMath.inBounds(playheadPosition, currentPositionMeasureFlooredInMs - 1,
+        currentPositionMeasureFlooredInMs + Conductor.instance.getTypeLengthAtMs(playheadPosition, "step")))
       {
-        targetScrollPosition -= GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.instance.beatsPerMeasure;
-      }
-
-      if (playheadOnly)
-      {
-        playheadAmount = targetScrollPosition - playheadPos;
+        targetScrollPosition = Conductor.instance.getMeasureTimeInMs(Math.floor(currentPositionMeasure - 1));
       }
       else
       {
-        scrollAmount = targetScrollPosition - playheadPos;
+        targetScrollPosition = currentPositionMeasureFlooredInMs;
+      }
+
+      targetScrollPosition = Conductor.instance.getTimeInSteps(targetScrollPosition) * GRID_SIZE;
+      playheadPosition = Conductor.instance.getTimeInSteps(playheadPosition) * GRID_SIZE;
+
+      if (playheadOnly)
+      {
+        playheadAmount = targetScrollPosition - playheadPosition;
+      }
+      else
+      {
+        scrollAmount = targetScrollPosition - playheadPosition;
       }
     }
 
@@ -4200,23 +4207,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     var funcJumpDown = (playheadOnly:Bool) -> {
-      var measureHeight:Float = GRID_SIZE * 4 * Conductor.instance.beatsPerMeasure;
-      var playheadPos:Float = scrollPositionInPixels + playheadPositionInPixels;
-      var targetScrollPosition:Float = Math.ceil(playheadPos / measureHeight) * measureHeight;
-      // If we would move less than one grid, instead move to the top of the next measure.
-      var targetScrollAmount = Math.abs(targetScrollPosition - playheadPos);
-      if (targetScrollAmount < GRID_SIZE)
-      {
-        targetScrollPosition += GRID_SIZE * Constants.STEPS_PER_BEAT * Conductor.instance.beatsPerMeasure;
-      }
+      var playheadPosition:Float = scrollPositionInMs + playheadPositionInMs;
+      var currentPositionMeasure:Float = Conductor.instance.currentMeasureTime;
+      var targetScrollPosition:Float = Conductor.instance.getMeasureTimeInMs(Math.floor(currentPositionMeasure + 1.0001));
+      // Now, why the hell is that .0001 there? It's to fix floating point bullshit that would result in "floor(measure + 1)" giving back
+      // the SAME MEASURE NUMBER that you can see in the Flixel F2 debugger.
+      // tldr: we wouldn't actually jump to the next measure.
+
+      targetScrollPosition = Conductor.instance.getTimeInSteps(targetScrollPosition) * GRID_SIZE;
+      playheadPosition = Conductor.instance.getTimeInSteps(playheadPosition) * GRID_SIZE;
 
       if (playheadOnly)
       {
-        playheadAmount = targetScrollPosition - playheadPos;
+        playheadAmount = targetScrollPosition - playheadPosition;
       }
       else
       {
-        scrollAmount = targetScrollPosition - playheadPos;
+        scrollAmount = targetScrollPosition - playheadPosition;
       }
     }
 
