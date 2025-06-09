@@ -126,6 +126,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   var fadeShader:BlueFade = new BlueFade();
 
+  var speakers2:FlxAtlasSprite;
+
   override public function create():Void
   {
     super.create();
@@ -145,13 +147,14 @@ class CharSelectSubState extends MusicBeatSubState
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FlxSprite = new FlxSprite(-40, 391);
-    stageSpr.frames = Paths.getSparrowAtlas("charSelect/charSelectStage");
-    stageSpr.animation.addByPrefix("idle", "stage full instance 1", 24, true);
-    stageSpr.animation.play("idle");
+    var stageSpr:FlxAtlasSprite = new FlxAtlasSprite(-2, 1, Paths.animateAtlas("charSelect/charSelectStage"));
+    stageSpr.anim.play("");
+    stageSpr.anim.onComplete.add(function() {
+      stageSpr.anim.play("");
+    });
     add(stageSpr);
 
-    var curtains:FlxSprite = new FlxSprite(-47, -49);
+    var curtains:FlxSprite = new FlxSprite(-47 - 165, -49 - 50);
     curtains.loadGraphic(Paths.image('charSelect/curtains'));
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
