@@ -85,8 +85,8 @@
       "name": "grig.audio",
       "type": "git",
       "dir": "src",
-      "ref": "57f5d47f2533fd0c3dcd025a86cb86c0dfa0b6d2",
-      "url": "https://gitlab.com/haxe-grig/grig.audio.git"
+      "ref": "5ef71ce3e790ef6b029864332835f226ddf4132c",
+      "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
       "name": "hamcrest",
