@@ -47,7 +47,7 @@ class MainMenuState extends MusicBeatState
 
   // TODO: this needs to eventually reflect the actual state of whether the player has upgraded or not.
   // this should never be false on non-mobile targets.
-  var hasUpgraded:Bool = true;
+  var hasUpgraded:Bool = false;
   var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
 
   public function new(?_overrideMusic:Bool = false)
@@ -154,9 +154,11 @@ class MainMenuState extends MusicBeatState
     #end
     #end
 
+    #if !mobile
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
+    #end
 
     if (!hasUpgraded)
     {
@@ -196,7 +198,7 @@ class MainMenuState extends MusicBeatState
     if (!hasUpgraded)
     {
       // the upgrade item
-      var targetItem = menuItems.members[4];
+      var targetItem = menuItems.members[2];
       for (i in 0...8)
       {
         var sparkle:UpgradeSparkle = new UpgradeSparkle(targetItem.x - (targetItem.width / 2), targetItem.y - (targetItem.height / 2), targetItem.width,
@@ -232,7 +234,12 @@ class MainMenuState extends MusicBeatState
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     #if mobile
+    camFollow.y = 355;
+
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
+    addOptionsButton(35, FlxG.height - 210, function() {
+      startExitState(() -> new funkin.ui.options.OptionsState());
+    });
     #end
 
     super.create();
@@ -357,6 +364,11 @@ class MainMenuState extends MusicBeatState
         item.visible = false;
       }
     });
+
+    #if mobile
+    FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+    FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+    #end
 
     new FlxTimer().start(duration, function(_) FlxG.switchState(state));
   }
