@@ -6,7 +6,6 @@ import funkin.data.song.SongRegistry;
 import haxe.ui.components.Button;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
-import funkin.data.song.SongData.SongMetadata;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.HorizontalSlider;
 import funkin.util.VersionUtil;
@@ -214,6 +213,16 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
       treeVariation.expanded = true;
 
       var difficultyList:Array<String> = variationMetadata.playData.difficulties;
+
+      var variationChartdata:Null<SongChartData> = chartEditorState.songChartData.get(curVariation);
+      if(variationChartdata != null)
+      {
+        var keys:Array<String> = [for (x in variationChartdata.notes.keys()) x];
+        for (key in keys)
+          {
+            difficultyList.pushUnique(key);
+          }
+      }
 
       for (difficulty in difficultyList)
       {
