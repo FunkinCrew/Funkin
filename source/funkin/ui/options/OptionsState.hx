@@ -108,15 +108,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
     #if mobile
     if (FlxG.gamepads.numActiveGamepads > 0)
-    {
-      createItem("CONTROLS", function() codex.switchPage(Controls));
-    }
-    createItem("CONTROL SCHEMES", function() {
-      FlxG.state.openSubState(new ControlsSchemeMenu());
-    });
-    #else
-    createItem("CONTROLS", function() codex.switchPage(Controls));
     #end
+    createItem("CONTROLS", function() codex.switchPage(Controls));
+    // createItem("CONTROL SCHEMES", function() {
+    //   FlxG.state.openSubState(new ControlsSchemeMenu());
+    // });
     createItem("INPUT OFFSETS", function() {
       OptionsState.rememberedSelectedIndex = items.selectedIndex;
       #if web
@@ -161,7 +157,12 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     createItem("CLEAR SAVE DATA", function() {
       promptClearSaveData();
     });
+    #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
+    #else
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
+    add(backButton);
+    #end
 
     items.selectItem(OptionsState.rememberedSelectedIndex);
   }
