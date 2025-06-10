@@ -14,6 +14,7 @@ class Preferences
 {
   /**
    * FPS
+   * Always the refresh rate of the display on mobile, or 60 on web.
    * @default `60`
    */
   public static var framerate(get, set):Int;
@@ -27,7 +28,7 @@ class Preferences
 
     if (refreshRate < 60) refreshRate = 60;
 
-    return Save?.instance?.options?.framerate ?? refreshRate;
+    return refreshRate;
     #else
     return Save?.instance?.options?.framerate ?? 60;
     #end
@@ -125,12 +126,16 @@ class Preferences
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
+   * Always disabled on mobile.
    * @default `false`
    */
   public static var debugDisplay(get, set):Bool;
 
   static function get_debugDisplay():Bool
   {
+    #if mobile
+    return false;
+    #end
     return Save?.instance?.options?.debugDisplay;
   }
 
@@ -190,12 +195,16 @@ class Preferences
 
   /**
    * If enabled, the game will automatically pause when tabbing out.
+   * Always enabled on mobile.
    * @default `true`
    */
   public static var autoPause(get, set):Bool;
 
   static function get_autoPause():Bool
   {
+    #if mobile
+    return true;
+    #end
     return Save?.instance?.options?.autoPause ?? true;
   }
 
