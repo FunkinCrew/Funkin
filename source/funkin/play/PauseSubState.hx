@@ -880,9 +880,9 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.needsReset = true;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    if (AdMobUtil.PLAYING_COUNTER < 3) AdMobUtil.PLAYING_COUNTER++;
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
 
-    if (AdMobUtil.PLAYING_COUNTER >= 3)
+    if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
     {
       state.allowInput = false;
 

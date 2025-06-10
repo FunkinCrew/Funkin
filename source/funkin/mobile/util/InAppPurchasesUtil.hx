@@ -25,9 +25,7 @@ class InAppPurchasesUtil
   /**
    * The product ID used for the "No Ads" in-app purchase upgrade.
    */
-  @:allow(funkin.mobile.util.AdMobUtil)
-  @:allow(funkin.ui.mainmenu.MainMenuState)
-  static final UPGRADE_PRODUCT_ID:String = 'no_ads';
+  public static final UPGRADE_PRODUCT_ID:String = 'no_ads';
 
   /**
    * The maximum number of attempts to reconnect in case of a failure.
