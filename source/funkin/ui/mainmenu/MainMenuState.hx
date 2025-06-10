@@ -33,6 +33,9 @@ import funkin.api.discord.DiscordClient;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
+#if mobile
+import funkin.mobile.util.InAppPurchasesUtil;
+#end
 
 class MainMenuState extends MusicBeatState
 {
@@ -67,7 +70,9 @@ class MainMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    #if !mobile
+    #if mobile
+    hasUpgraded = InAppPurchasesUtil.isPurchased("no_ads");
+    #else
     // just to make sure its never accidentally turned off
     hasUpgraded = true;
     #end
@@ -149,32 +154,34 @@ class MainMenuState extends MusicBeatState
         }));
     });
 
-    #if FEATURE_OPEN_URL
-    // In order to prevent popup blockers from triggering,
-    // we need to open the link as an immediate result of a keypress event,
-    // so we can't wait for the flicker animation to complete.
-    var hasPopupBlocker = #if web true #else false #end;
-    #if desktop
-    createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
-    #end
-    #end
+    if (hasUpgraded)
+    {
+      #if FEATURE_OPEN_URL
+      // In order to prevent popup blockers from triggering,
+      // we need to open the link as an immediate result of a keypress event,
+      // so we can't wait for the flicker animation to complete.
+      var hasPopupBlocker = #if web true #else false #end;
+      createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
+      #end
+    }
+    else
+    {
+      upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
+      add(upgradeSparkles);
+
+      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
+        #if mobile
+        InAppPurchasesUtil.purchase("no_ads");
+        FlxG.resetState();
+        #end
+      });
+    }
 
     #if !mobile
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
     #end
-
-    if (!hasUpgraded)
-    {
-      upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
-      add(upgradeSparkles);
-
-      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
-        // TODO: this needs to actually lead you to the purchase screen
-        startExitState(() -> new funkin.ui.options.OptionsState());
-      });
-    }
 
     createMenuItem('credits', 'mainmenu/credits', function() {
       startExitState(() -> new funkin.ui.credits.CreditsState());
