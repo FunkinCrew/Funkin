@@ -10,11 +10,9 @@ import funkin.play.cutscene.VideoCutscene;
 import funkin.util.macro.EnvironmentConfigMacro;
 
 /**
- * Utility class for managing AdMob advertisements in a mobile application.
- * This class provides functions to initialize AdMob, manage ad events,
- * and control the display of different ad types, including banners,
- * interstitial ads, and rewarded ads.
+ * Provides utility functions for working with admob advertisements.
  */
+@:nullSafety
 class AdMobUtil
 {
   /**
@@ -141,7 +139,9 @@ class AdMobUtil
    */
   public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM_CENTER):Void
   {
-    if (InAppPurchasesUtil.isPurchased("no_ads")) return;
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID)) return;
+    #end
     Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.BANNER_AD_UNIT_ID].join('/'), size, align);
   }
 
@@ -150,6 +150,9 @@ class AdMobUtil
    */
   public static inline function removeBanner():Void
   {
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID)) return;
+    #end
     Admob.hideBanner();
   }
 
@@ -160,11 +163,14 @@ class AdMobUtil
    */
   public static function loadInterstitial(onInterstitialFinish:Void->Void):Void
   {
-    if (InAppPurchasesUtil.isPurchased("no_ads"))
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID))
     {
-      onInterstitialFinish();
+      if (onInterstitialFinish != null) onInterstitialFinish();
+
       return;
     }
+    #end
 
     function interstitialEvent(event:AdmobEvent):Void
     {
@@ -194,11 +200,14 @@ class AdMobUtil
    */
   public static function loadRewarded(onRewardedFinish:Void->Void):Void
   {
-    if (InAppPurchasesUtil.isPurchased("no_ads"))
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID))
     {
-      onRewardedFinish();
+      if (onRewardedFinish != null) onRewardedFinish();
+
       return;
     }
+    #end
 
     function rewardedEvent(event:AdmobEvent):Void
     {
