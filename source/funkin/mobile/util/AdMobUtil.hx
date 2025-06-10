@@ -23,7 +23,7 @@ class AdMobUtil
   /**
    * The maximum number of actions or events allowed before an advertisement is shown.
    */
-  public static var MAX_BEFORE_AD:UInt = 3;
+  public static final MAX_BEFORE_AD:UInt = 3;
 
   #if NO_TESTING_ADS
   /**
