@@ -160,7 +160,11 @@ class AdMobUtil
    */
   public static function loadInterstitial(onInterstitialFinish:Void->Void):Void
   {
-    if (InAppPurchasesUtil.isPurchased("no_ads")) return;
+    if (InAppPurchasesUtil.isPurchased("no_ads"))
+    {
+      onInterstitialFinish();
+      return;
+    }
 
     function interstitialEvent(event:AdmobEvent):Void
     {
@@ -190,7 +194,11 @@ class AdMobUtil
    */
   public static function loadRewarded(onRewardedFinish:Void->Void):Void
   {
-    if (InAppPurchasesUtil.isPurchased("no_ads")) return;
+    if (InAppPurchasesUtil.isPurchased("no_ads"))
+    {
+      onRewardedFinish();
+      return;
+    }
 
     function rewardedEvent(event:AdmobEvent):Void
     {
