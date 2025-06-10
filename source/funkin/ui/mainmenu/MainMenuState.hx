@@ -25,11 +25,16 @@ import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
 import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
+import funkin.ui.mainmenu.UpgradeSparkle;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
+#end
+#if mobile
+import funkin.mobile.util.InAppPurchasesUtil;
 #end
 
 class MainMenuState extends MusicBeatState
@@ -42,6 +47,11 @@ class MainMenuState extends MusicBeatState
   var overrideMusic:Bool = false;
 
   static var rememberedSelectedIndex:Int = 0;
+
+  // TODO: this needs to eventually reflect the actual state of whether the player has upgraded or not.
+  // this should never be false on non-mobile targets.
+  var hasUpgraded:Bool = false;
+  var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
 
   public function new(?_overrideMusic:Bool = false)
   {
@@ -59,6 +69,13 @@ class MainMenuState extends MusicBeatState
 
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
+
+    #if mobile
+    hasUpgraded = InAppPurchasesUtil.isPurchased("no_ads");
+    #else
+    // just to make sure its never accidentally turned off
+    hasUpgraded = true;
+    #end
 
     if (!overrideMusic) playMenuMusic();
 
@@ -123,25 +140,48 @@ class MainMenuState extends MusicBeatState
       var targetCharacter:Null<String> = null;
       #end
 
+      if (!hasUpgraded)
+      {
+        for (i in 0...upgradeSparkles.length)
+        {
+          upgradeSparkles.members[i].cancelSparkle();
+        }
+      }
+
       openSubState(new FreeplayState(
         {
           character: targetCharacter
         }));
     });
 
-    #if FEATURE_OPEN_URL
-    // In order to prevent popup blockers from triggering,
-    // we need to open the link as an immediate result of a keypress event,
-    // so we can't wait for the flicker animation to complete.
-    var hasPopupBlocker = #if web true #else false #end;
-    #if desktop
-    createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
-    #end
-    #end
+    if (hasUpgraded)
+    {
+      #if FEATURE_OPEN_URL
+      // In order to prevent popup blockers from triggering,
+      // we need to open the link as an immediate result of a keypress event,
+      // so we can't wait for the flicker animation to complete.
+      var hasPopupBlocker = #if web true #else false #end;
+      createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
+      #end
+    }
+    else
+    {
+      upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
+      add(upgradeSparkles);
 
+      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
+        #if mobile
+        InAppPurchasesUtil.purchase("no_ads");
+        FlxG.resetState();
+        #end
+      });
+    }
+
+    #if !mobile
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
+    #end
 
     createMenuItem('credits', 'mainmenu/credits', function() {
       startExitState(() -> new funkin.ui.credits.CreditsState());
@@ -167,6 +207,28 @@ class MainMenuState extends MusicBeatState
 
     menuItems.selectItem(rememberedSelectedIndex);
 
+    if (!hasUpgraded)
+    {
+      // the upgrade item
+      var targetItem = menuItems.members[2];
+      for (i in 0...8)
+      {
+        var sparkle:UpgradeSparkle = new UpgradeSparkle(targetItem.x - (targetItem.width / 2), targetItem.y - (targetItem.height / 2), targetItem.width,
+          targetItem.height, FlxG.random.bool(80));
+        upgradeSparkles.add(sparkle);
+
+        sparkle.scrollFactor.x = 0.0;
+        sparkle.scrollFactor.y = 0.4;
+      }
+
+      subStateClosed.add(_ -> {
+        for (i in 0...upgradeSparkles.length)
+        {
+          upgradeSparkles.members[i].restartSparkle();
+        }
+      });
+    }
+
     resetCamStuff();
 
     // reset camera when debug menu is closed
@@ -184,7 +246,12 @@ class MainMenuState extends MusicBeatState
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     #if mobile
+    camFollow.y = 355;
+
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
+    addOptionsButton(35, FlxG.height - 210, function() {
+      startExitState(() -> new funkin.ui.options.OptionsState());
+    });
     #end
 
     super.create();
@@ -309,6 +376,11 @@ class MainMenuState extends MusicBeatState
         item.visible = false;
       }
     });
+
+    #if mobile
+    FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+    FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+    #end
 
     new FlxTimer().start(duration, function(_) FlxG.switchState(state));
   }

@@ -80,7 +80,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   }
 
   public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void = null,
-      ?restOpacity:Float = 0.3):Void
+      ?restOpacity:Float = 0.3, ?instant:Bool = false):Void
   {
     if (backButton != null) remove(backButton);
 
@@ -91,7 +91,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
       camControls.bgColor = 0x0;
     }
 
-    backButton = new FunkinBackButton(xPos, yPos, color, confirmCallback, restOpacity);
+    backButton = new FunkinBackButton(xPos, yPos, color, confirmCallback, restOpacity, instant);
     backButton.cameras = [camControls];
     add(backButton);
   }

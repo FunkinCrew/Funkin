@@ -141,6 +141,7 @@ class AdMobUtil
    */
   public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM_CENTER):Void
   {
+    if (InAppPurchasesUtil.isPurchased("no_ads")) return;
     Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.BANNER_AD_UNIT_ID].join('/'), size, align);
   }
 
@@ -159,6 +160,8 @@ class AdMobUtil
    */
   public static function loadInterstitial(onInterstitialFinish:Void->Void):Void
   {
+    if (InAppPurchasesUtil.isPurchased("no_ads")) return;
+
     function interstitialEvent(event:AdmobEvent):Void
     {
       if (event.name == AdmobEvent.INTERSTITIAL_LOADED)
@@ -187,6 +190,8 @@ class AdMobUtil
    */
   public static function loadRewarded(onRewardedFinish:Void->Void):Void
   {
+    if (InAppPurchasesUtil.isPurchased("no_ads")) return;
+
     function rewardedEvent(event:AdmobEvent):Void
     {
       if (event.name == AdmobEvent.REWARDED_LOADED)

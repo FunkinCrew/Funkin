@@ -76,8 +76,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
-    #if mobile
-    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width * 0.83, FlxG.height * 0.75, exit);
+    #if FEATURE_TOUCH_CONTROLS
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
     add(backButton);
     #end
   }
@@ -139,13 +139,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+    #if !mobile
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    #if !mobile
     createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
@@ -173,9 +173,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case WindowVSyncMode.ADAPTIVE: "Adaptive";
       });
     #end
+    #if !mobile
     createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 500, 5, 0);
+    #end
     #end
 
     #if FEATURE_SCREENSHOTS
