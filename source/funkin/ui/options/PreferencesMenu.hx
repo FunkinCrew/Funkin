@@ -76,8 +76,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
-    #if mobile
-    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width * 0.83, FlxG.height * 0.75, exit);
+    #if FEATURE_TOUCH_CONTROLS
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
     add(backButton);
     #end
   }
