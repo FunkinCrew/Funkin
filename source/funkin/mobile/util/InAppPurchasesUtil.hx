@@ -17,15 +17,15 @@ import extension.iapcore.ios.IAPPurchaseState;
 #end
 
 /**
- * Utility class for managing in-app purchases.
+ * Provides utility functions for working with in-app purchases.
  */
+@:nullSafety
 class InAppPurchasesUtil
 {
-  #if android
-  static final FETCH_PRODUCT_DETAILS_IDS:Array<String> = ['test_product_0'];
-  #elseif ios
-  static final FETCH_PRODUCT_DETAILS_IDS:Array<String> = ['adfree'];
-  #end
+  /**
+   * The product ID used for the "No Ads" in-app purchase upgrade.
+   */
+  public static final UPGRADE_PRODUCT_ID:String = 'no_ads';
 
   /**
    * The maximum number of attempts to reconnect in case of a failure.
@@ -35,12 +35,12 @@ class InAppPurchasesUtil
   /**
    * A static variable that holds an array of currently loaded product details for in-app purchases.
    */
-  public static var currentProductDetails:Array<IAPProductDetails> = [];
+  static var currentProductDetails:Array<IAPProductDetails> = [];
 
   /**
    * A static variable that holds an array of currently purchased for in-app purchases.
    */
-  public static var currentPurchased:Array<IAPPurchase> = [];
+  static var currentPurchased:Array<IAPPurchase> = [];
 
   /**
    * A static variable to track the number of attempts made to reconnect.
@@ -73,7 +73,7 @@ class InAppPurchasesUtil
 
       IAPAndroid.queryPurchases();
 
-      IAPAndroid.queryProductDetails(FETCH_PRODUCT_DETAILS_IDS);
+      IAPAndroid.queryProductDetails([UPGRADE_PRODUCT_ID]);
     });
 
     IAPAndroid.onBillingServiceDisconnected.add(function():Void {
@@ -145,7 +145,7 @@ class InAppPurchasesUtil
 
     IAPIOS.restorePurchases();
 
-    IAPIOS.requestProducts(FETCH_PRODUCT_DETAILS_IDS);
+    IAPIOS.requestProducts([UPGRADE_PRODUCT_ID]);
     #end
   }
 
@@ -165,20 +165,37 @@ class InAppPurchasesUtil
    * Initiates the purchase process for the specified item.
    *
    * @param id The identifier of the item to be purchased.
+   * @param onPurchasesUpdated Callback function to be called when the purchases have been updated.
    */
-  public static function purchase(id:String):Void
+  public static function purchase(id:String, onPurchasesUpdated:Void->Void):Void
   {
     for (product in currentProductDetails)
     {
       #if android
       if (product.getProductId() == id)
       {
+        function purchasesUpdatedEvent(result:IAPResult, purchases:Array<IAPPurchase>):Void
+        {
+          if (onPurchasesUpdated != null) onPurchasesUpdated();
+
+          IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+        }
+
+        IAPAndroid.onPurchasesUpdated.add(purchasesUpdatedEvent);
         IAPAndroid.launchPurchaseFlow(product);
         return;
       }
       #elseif ios
       if (product.getProductIdentifier() == id)
       {
+        function purchasesUpdatedEvent(purchases:Array<IAPPurchase>):Void
+        {
+          if (onPurchasesUpdated != null) onPurchasesUpdated();
+
+          IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+        }
+
+        IAPIOS.onPurchasesUpdated.add(purchasesUpdatedEvent);
         IAPIOS.purchaseProduct(product);
         return;
       }

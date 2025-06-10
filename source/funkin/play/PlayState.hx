@@ -1130,7 +1130,7 @@ class PlayState extends MusicBeatSubState
         isPlayerDying = true;
 
         #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (AdMobUtil.PLAYING_COUNTER < 3) AdMobUtil.PLAYING_COUNTER++;
+        if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
         #end
 
         var deathPreTransitionDelay = currentStage?.getBoyfriend()?.getDeathPreTransitionDelay() ?? 0.0;
@@ -3223,7 +3223,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    if (AdMobUtil.PLAYING_COUNTER < 3) AdMobUtil.PLAYING_COUNTER++;
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
     #end
 
     if (PlayStatePlaylist.isStoryMode)

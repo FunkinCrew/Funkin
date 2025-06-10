@@ -70,8 +70,8 @@ class MainMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
-    #if mobile
-    hasUpgraded = InAppPurchasesUtil.isPurchased("no_ads");
+    #if FEATURE_MOBILE_IAP
+    hasUpgraded = InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID);
     #else
     // just to make sure its never accidentally turned off
     hasUpgraded = true;
@@ -170,9 +170,8 @@ class MainMenuState extends MusicBeatState
       add(upgradeSparkles);
 
       createMenuItem('upgrade', 'mainmenu/upgrade', function() {
-        #if mobile
-        InAppPurchasesUtil.purchase("no_ads");
-        FlxG.resetState();
+        #if FEATURE_MOBILE_IAP
+        InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
         #end
       });
     }
