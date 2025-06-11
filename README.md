@@ -6,8 +6,8 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 
 - [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
 - [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
-- [Download Android builds from Play Store!](https://play.google.com/store/apps/details?id=me.funkin.fnf)
-- [Download iOS builds from the AppStore!](https://apps.apple.com/app/id6740428530)
+- [Download Android builds from Google Play!](https://play.google.com/store/apps/details?id=me.funkin.fnf)
+- [Download iOS builds from the App Store!](https://apps.apple.com/app/id6740428530)
 
 # Getting Started
 
