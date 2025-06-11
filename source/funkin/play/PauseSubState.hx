@@ -866,9 +866,31 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.needsReset = true;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
-    #end
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
+
+    if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
+    {
+      state.allowInput = false;
+
+      AdMobUtil.loadInterstitial(function():Void {
+        AdMobUtil.PLAYING_COUNTER = 0;
+
+        AdMobUtil.removeBanner();
+
+        state.allowInput = true;
+
+        state.close();
+      });
+    }
+    else
+    {
+      AdMobUtil.removeBanner();
+
+      state.close();
+    }
+    #else
     state.close();
+    #end
   }
 
   /**
