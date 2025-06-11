@@ -304,6 +304,10 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
+    // `hscript.Interp`
+    // The `cnew` function allows for instantiating blacklisted classes (such as `sys.io.Process`).
+    Polymod.blacklistImport('hscript.Interp');
+
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))
