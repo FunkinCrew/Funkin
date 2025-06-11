@@ -546,12 +546,12 @@ class PlayState extends MusicBeatSubState
   /**
    * The pause button for the game, only appears in Mobile targets.
    */
-  var pauseButton:FunkinSprite;
+  public var pauseButton:FunkinSprite;
 
   /**
    * The pause circle for the game, only appears in Mobile targets.
    */
-  var pauseCircle:FunkinSprite;
+  public var pauseCircle:FunkinSprite;
   #end
 
   /**
@@ -3147,7 +3147,8 @@ class PlayState extends MusicBeatSubState
 
     #if mobile
     // Hide the buttons while the song is ending.
-    hitbox.visible = pauseButton.visible = false;
+    hitbox.visible = false;
+    pauseButton.visible = false;
     pauseCircle.visible = false;
     #end
 

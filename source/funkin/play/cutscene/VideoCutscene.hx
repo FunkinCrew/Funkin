@@ -89,6 +89,14 @@ class VideoCutscene
 
     VideoCutscene.cutsceneType = cutsceneType;
 
+    #if mobile
+    if (cutsceneType == CutsceneType.ENDING)
+    {
+      PlayState.instance.pauseCircle.visible = false;
+      PlayState.instance.pauseButton.visible = false;
+    }
+    #end
+
     #if html5
     playVideoHTML5(rawFilePath);
     #elseif hxvlc
