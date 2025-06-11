@@ -56,7 +56,11 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
+    #if NO_FEATURE_NAUGHTYNESS
+    return false;
+    #else
     return Save?.instance?.options?.naughtyness;
+    #end
   }
 
   static function set_naughtyness(value:Bool):Bool
