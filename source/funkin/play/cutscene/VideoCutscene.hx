@@ -171,7 +171,7 @@ class VideoCutscene
   }
   #end
 
-  public static function restartVideo(resume:Bool = true):Void
+  public static function restartVideo():Void
   {
     #if html5
     if (vid != null)
@@ -184,14 +184,8 @@ class VideoCutscene
     #if hxvlc
     if (vid != null)
     {
-      // Seek to the start of the video.
-      vid.bitmap.time = 0;
-      if (resume)
-      {
-        // Resume the video if it was paused.
-        vid.resume();
-      }
-
+      vid.stop();
+      vid.play();
       onVideoRestarted.dispatch();
     }
     #end
