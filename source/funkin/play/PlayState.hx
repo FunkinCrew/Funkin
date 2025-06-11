@@ -1366,13 +1366,16 @@ class PlayState extends MusicBeatSubState
           musicPausedBySubState = true;
         }
 
-        // Pause any sounds that are playing and keep track of them.
+        // Pause any sounds that are playing and keep track of them.Add commentMore actions
         // Vocals are also paused here but are not included as they are handled separately.
         if (Std.isOfType(subState, PauseSubState))
         {
           FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
-            // The need to check for time is obligatory because of scheduled sounds
-            if (!sound.active || sound == FlxG.sound.music || (!sound.playing && sound.time >= 0)) return;
+            if (!sound.active || sound == FlxG.sound.music) return;
+            // In case it's a scheduled sound
+            var funkinSound:FunkinSound = cast sound;
+            if (funkinSound != null && !funkinSound.isPlaying) return;
+            if (!sound.playing && sound.time >= 0) return;
             sound.pause();
             soundsPausedBySubState.add(sound);
           });
