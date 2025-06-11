@@ -560,6 +560,11 @@ class Constants
   #end
 
   /**
+   * Otherwise known as "The FuckCunt Variable"
+   */
+  public static final MOBILE_CENSORSHIP:Bool = #if (MOBILE_CENSORSHIP || NO_FEATURE_NAUGHTYNESS) true #else false #end;
+
+  /**
    * The maximum number of previous file paths for the Chart Editor to remember.
    */
   public static final MAX_PREVIOUS_WORKING_FILES:Int = 10;

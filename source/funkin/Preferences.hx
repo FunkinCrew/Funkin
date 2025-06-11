@@ -65,6 +65,10 @@ class Preferences
 
   static function set_naughtyness(value:Bool):Bool
   {
+    #if NO_FEATURE_NAUGHTYNESS
+    value = false;
+    #end
+
     var save:Save = Save.instance;
     save.options.naughtyness = value;
     save.flush();
