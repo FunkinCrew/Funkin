@@ -96,6 +96,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   var charHitbox:FlxObject;
 
+  var cutoutSize:Float = 0;
+
   public function new()
   {
     super();
@@ -132,14 +134,16 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super.create();
 
+    cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
+
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
 
-    var bg:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + -153, -140);
+    var bg:FlxSprite = new FlxSprite(cutoutSize + -153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FlxAtlasSprite = new FlxAtlasSprite(FullScreenScaleMode.gameCutoutSize.x / 2, 0, Paths.animateAtlas("charSelect/crowd"));
+    var crowd:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize, 0, Paths.animateAtlas("charSelect/crowd"));
     crowd.anim.play();
     crowd.anim.onComplete.add(function() {
       crowd.anim.play();
@@ -147,19 +151,20 @@ class CharSelectSubState extends MusicBeatSubState
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FlxAtlasSprite = new FlxAtlasSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + -2, 1, Paths.animateAtlas("charSelect/charSelectStage"));
+    var stageSpr:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize + -2, 1, Paths.animateAtlas("charSelect/charSelectStage"));
     stageSpr.anim.play("");
     stageSpr.anim.onComplete.add(function() {
       stageSpr.anim.play("");
     });
     add(stageSpr);
 
-    var curtains:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + (-47 - 165), -49 - 50);
+    var curtains:FlxSprite = new FlxSprite(cutoutSize + (-47 - 165), -49 - 50);
     curtains.loadGraphic(Paths.image('charSelect/curtains'));
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
 
     barthing = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/barThing"));
+    barthing.scale.x = 2.5;
     barthing.anim.play("");
     barthing.anim.onComplete.add(function() {
       barthing.anim.play("");
@@ -171,31 +176,29 @@ class CharSelectSubState extends MusicBeatSubState
     barthing.y += 80;
     FlxTween.tween(barthing, {y: barthing.y - 80}, 1.3, {ease: FlxEase.expoOut});
 
-    var charLight:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + 800, 250);
+    var charLight:FlxSprite = new FlxSprite(cutoutSize + 800, 250);
     charLight.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLight);
 
-    var charLightGF:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + 180, 240);
+    var charLightGF:FlxSprite = new FlxSprite(cutoutSize + 180, 240);
     charLightGF.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLightGF);
 
     gfChill = new CharSelectGF();
     gfChill.switchGF("bf");
-    gfChill.x += FullScreenScaleMode.gameCutoutSize.x / 2;
+    gfChill.x += cutoutSize;
     add(gfChill);
 
-    playerChillOut = new CharSelectPlayer((FullScreenScaleMode.gameCutoutSize.x / 2), 0);
+    playerChillOut = new CharSelectPlayer(cutoutSize, 0);
     playerChillOut.switchChar("bf");
-    playerChillOut.x += FullScreenScaleMode.gameCutoutSize.x / 2;
     playerChillOut.visible = false;
     add(playerChillOut);
 
-    playerChill = new CharSelectPlayer(0, 0);
+    playerChill = new CharSelectPlayer(cutoutSize, 0);
     playerChill.switchChar("bf");
-    playerChill.x += FullScreenScaleMode.gameCutoutSize.x / 2;
     add(playerChill);
 
-    var speakers:FlxAtlasSprite = new FlxAtlasSprite((FullScreenScaleMode.gameCutoutSize.x / 2), 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
+    var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 15, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
     speakers.anim.onComplete.add(function() {
       speakers.anim.play("");
@@ -203,19 +206,19 @@ class CharSelectSubState extends MusicBeatSubState
     speakers.scrollFactor.set(1.8, 1.8);
     add(speakers);
 
-    var fgBlur:FlxSprite = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + -125, 170);
+    var fgBlur:FlxSprite = new FlxSprite(cutoutSize + -125, 170);
     fgBlur.loadGraphic(Paths.image('charSelect/foregroundBlur'));
     fgBlur.blend = openfl.display.BlendMode.MULTIPLY;
     add(fgBlur);
 
-    dipshitBlur = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + 419, -65);
+    dipshitBlur = new FlxSprite(cutoutSize + 419, -65);
     dipshitBlur.frames = Paths.getSparrowAtlas("charSelect/dipshitBlur");
     dipshitBlur.animation.addByPrefix('idle', "CHOOSE vertical offset instance 1", 24, true);
     dipshitBlur.blend = BlendMode.ADD;
     dipshitBlur.animation.play("idle");
     add(dipshitBlur);
 
-    dipshitBacking = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + 423, -17);
+    dipshitBacking = new FlxSprite(cutoutSize + 423, -17);
     dipshitBacking.frames = Paths.getSparrowAtlas("charSelect/dipshitBacking");
     dipshitBacking.animation.addByPrefix('idle', "CHOOSE horizontal offset instance 1", 24, true);
     dipshitBacking.blend = BlendMode.ADD;
@@ -225,7 +228,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.y += 210;
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
 
-    chooseDipshit = new FlxSprite((FullScreenScaleMode.gameCutoutSize.x / 2) + 426, -13);
+    chooseDipshit = new FlxSprite(cutoutSize + 426, -13);
     chooseDipshit.loadGraphic(Paths.image('charSelect/chooseDipshit'));
     add(chooseDipshit);
 
@@ -240,7 +243,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBlur.scrollFactor.set();
 
     nametag = new Nametag();
-    nametag.midpointX += FullScreenScaleMode.gameCutoutSize.x / 2;
+    nametag.midpointX += cutoutSize;
     add(nametag);
 
     nametag.scrollFactor.set();
@@ -598,7 +601,6 @@ class CharSelectSubState extends MusicBeatSubState
           // sync = false;
           playerChillOut.visible = false;
           playerChillOut.switchChar(char);
-          if (char == 'bf' || char == 'pico') playerChillOut.x += FullScreenScaleMode.gameCutoutSize.x / 2;
         });
 
         #if FEATURE_NEWGROUNDS
@@ -639,7 +641,6 @@ class CharSelectSubState extends MusicBeatSubState
 
       playerChill.visible = false;
       playerChill.switchChar(availableChars[index]);
-      playerChill.x += FullScreenScaleMode.gameCutoutSize.x / 2;
 
       playerChillOut.visible = true;
     });
@@ -647,7 +648,7 @@ class CharSelectSubState extends MusicBeatSubState
 
   function updateIconPositions()
   {
-    grpIcons.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + 450;
+    grpIcons.x = cutoutSize + 450;
     grpIcons.y = 120;
     for (index => member in grpIcons.members)
     {
@@ -728,7 +729,6 @@ class CharSelectSubState extends MusicBeatSubState
       {
         ease: FlxEase.backIn,
         onComplete: function(_) {
-          funkin.ui.FullScreenScaleMode.enabled = true;
           FlxG.switchState(() -> FreeplayState.build(
             {
               {
@@ -1176,14 +1176,12 @@ class CharSelectSubState extends MusicBeatSubState
       {
         playerChill.visible = true;
         playerChill.switchChar(value);
-        playerChill.x += FullScreenScaleMode.gameCutoutSize.x / 2;
         gfChill.switchGF(value);
         gfChill.visible = true;
       }
       if (frame >= index + 2)
       {
         playerChillOut.switchChar(value);
-        if (value == 'bf' || value == 'pico') playerChillOut.x += FullScreenScaleMode.gameCutoutSize.x / 2;
         playerChillOut.visible = false;
         playerChillOut.onAnimationFrame.removeAll();
       }

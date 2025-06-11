@@ -1296,7 +1296,6 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
-      // FullScreenScaleMode.enabled = false;
       FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
     });
     for (grpSpr in exitMoversCharSel.keys())

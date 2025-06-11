@@ -100,6 +100,9 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
     instance = this;
 
+    // Required so we can check on which axies is the game wide.
+    if (FlxG.stage != null) updateGameSize(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
+
     enabled = enable;
   }
 
@@ -130,11 +133,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     if (enabled)
     {
       cutoutSize.set(ratioAxis != Y ? Width - gameSize.x : 0, ratioAxis == Y ? Height - gameSize.y : 0);
-      #if android
-      gameCutoutSize.set(ratioAxis != Y ? cutoutSize.x / 2 : 0, ratioAxis == Y ? cutoutSize.y / 2 : 0);
-      #else
-      gameCutoutSize.set(ratioAxis != Y ? cutoutSize.x : 0, ratioAxis == Y ? cutoutSize.y : 0);
-      #end
+      gameCutoutSize.copyFrom(cutoutSize);
+      gameCutoutSize /= gameSize.x / FlxG.initialWidth;
     }
     else
     {
@@ -278,11 +278,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           final oldGameHeight = gameHeight;
           gameHeight = ((gameSize.x / scale.x) / maxAspectRatio.x) * maxAspectRatio.y;
           cutoutSize.set(0, cutoutSize.y - (oldGameHeight - gameHeight));
-          #if android
-          gameCutoutSize.set(0, cutoutSize.y / 2);
-          #else
           gameCutoutSize.copyFrom(cutoutSize);
-          #end
+          gameCutoutSize /= gameSize.x / FlxG.initialWidth;
           offset.y = Math.ceil((deviceSize.y - (gameHeight * scale.y)) * 0.5);
           updateGamePosition();
         }
@@ -319,11 +316,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           final oldGameWidth = gameWidth;
           gameWidth = ((gameSize.y / scale.y) / maxAspectRatio.y) * maxAspectRatio.x;
           cutoutSize.set(cutoutSize.x - (oldGameWidth - gameWidth), 0);
-          #if android
-          gameCutoutSize.set(cutoutSize.x / 2, 0);
-          #else
           gameCutoutSize.copyFrom(cutoutSize);
-          #end
+          gameCutoutSize /= gameSize.x / FlxG.initialWidth;
           offset.x = Math.ceil((deviceSize.x - (gameWidth * scale.x)) * 0.5);
           updateGamePosition();
         }
