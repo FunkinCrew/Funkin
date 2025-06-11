@@ -1366,7 +1366,7 @@ class PlayState extends MusicBeatSubState
           musicPausedBySubState = true;
         }
 
-        // Pause any sounds that are playing and keep track of them.Add commentMore actions
+        // Pause any sounds that are playing and keep track of them.
         // Vocals are also paused here but are not included as they are handled separately.
         if (Std.isOfType(subState, PauseSubState))
         {
