@@ -444,6 +444,7 @@ class Project extends HXProject
     {
       config.set("ios.non-exempt-encryption", "false");
       config.set("ios.team-id", "Z7G7AVNGSH");
+      config.set("ios.deployment", "16.0");
 
       // launchStoryboard = new LaunchStoryboard();
       // launchStoryboard.path = "./LaunchScreen.storyboard";
