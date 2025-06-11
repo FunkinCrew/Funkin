@@ -2039,7 +2039,7 @@ class FreeplayState extends MusicBeatSubState
    * @param force
    * @param capsuleAnim
    */
-  function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = true):Void
+  function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
     if (busy) return;
 
@@ -2131,7 +2131,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = songScore == null ? 0.0 : Math.max(0,
         ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
-      grpCapsules.members[curSelected].refreshDisplay(capsuleAnim);
+      grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
@@ -2543,8 +2543,8 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick +
         songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
-      changeDiff(0, false, false);
-      daSongCapsule.refreshDisplay(false);
+      changeDiff();
+      daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
