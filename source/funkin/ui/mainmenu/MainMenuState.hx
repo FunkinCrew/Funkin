@@ -41,6 +41,7 @@ class MainMenuState extends MusicBeatState
 {
   var menuItems:MenuTypedList<AtlasMenuItem>;
 
+  var bg:FlxSprite;
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
@@ -83,8 +84,8 @@ class MainMenuState extends MusicBeatState
     persistentUpdate = true;
     persistentDraw = true;
 
-    var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
-    bg.scrollFactor.x = 0;
+    bg = new FlxSprite(Paths.image('menuBG'));
+    bg.scrollFactor.x = #if !mobile 0 #else 0.17 #end; // we want a lil x scroll on mobile
     bg.scrollFactor.y = 0.17;
     bg.setGraphicSize(Std.int(FlxG.width * 1.2));
     bg.updateHitbox();
@@ -194,7 +195,7 @@ class MainMenuState extends MusicBeatState
       var menuItem = menuItems.members[i];
       menuItem.x = FlxG.width / 2;
       menuItem.y = top + spacing * i;
-      menuItem.scrollFactor.x = 0.0;
+      menuItem.scrollFactor.x = #if !mobile 0.0 #else 0.4 #end; // we want a lil scroll on mobile, for the cute gyro effect
       // This one affects how much the menu items move when you scroll between them.
       menuItem.scrollFactor.y = 0.4;
 
@@ -245,7 +246,7 @@ class MainMenuState extends MusicBeatState
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     #if mobile
-    camFollow.y = 355;
+    camFollow.y = bg.getGraphicMidpoint().y;
 
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
     addOptionsButton(35, FlxG.height - 210, function() {
@@ -389,6 +390,11 @@ class MainMenuState extends MusicBeatState
     super.update(elapsed);
 
     Conductor.instance.update();
+
+    #if mobile
+    camFollow.y += FlxG.gyroscope.roll * 3;
+    camFollow.x += FlxG.gyroscope.pitch * -3;
+    #end
 
     // Open the debug menu, defaults to ` / ~
     // This includes stuff like the Chart Editor, so it should be present on all builds.
