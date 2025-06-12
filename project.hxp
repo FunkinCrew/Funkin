@@ -776,7 +776,7 @@ class Project extends HXProject
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true on mobile builds.
-    MOBILE_CENSORSHIP.apply(this, isMobile());
+    CENSOR_EXPLETIVES.apply(this, isMobile());
 
     // Should be true on everything.
     FEATURE_NAUGHTYNESS.apply(this, true);
