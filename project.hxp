@@ -211,12 +211,14 @@ class Project extends HXProject
   static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
 
   /**
-   * `-DMOBILE_CENSORSHIP`
-   * The Android platform specifically dislikes the words "fuck" and "cunt",
-   * but "cock", implied nudity/covered sex, etc. are fine, so fully disabling naughtyness is overly broad.
-   * If this flag is enabled, some censorship will be applied to the game even if naughtyness is on.
+   * `-DCENSOR_EXPLETIVES`
+   * If enabled, specifically disable "sexual explitives" in the game.
+   * This will forcibly censor these words (even if naughtyness is enabled), while leaving other swears.
+   *
+   * NOTE: This is needed because the Android platform specifically hates "fuck" and "cunt",
+   * but is fine with other naughtyness such as "cock", "asshole", implied sex, cigarettes, etc.
    */
-   static final MOBILE_CENSORSHIP:FeatureFlag = "MOBILE_CENSORSHIP";
+   static final CENSOR_EXPLETIVES:FeatureFlag = "CENSOR_EXPLETIVES";
 
   /**
    * `-DFEATURE_DEBUG_FUNCTIONS`
