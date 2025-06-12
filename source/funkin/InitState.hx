@@ -255,6 +255,8 @@ class InitState extends FlxState
 
     funkin.input.Cursor.hide();
 
+    #if !html5
+    // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
     funkin.FunkinMemory.initialCache();
   }
 
