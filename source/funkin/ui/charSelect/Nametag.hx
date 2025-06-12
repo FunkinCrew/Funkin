@@ -6,7 +6,9 @@ import flixel.util.FlxTimer;
 
 class Nametag extends FlxSprite
 {
+  @:allow(funkin.ui.charSelect.CharSelectSubState)
   var midpointX(default, set):Float = 1008;
+  @:allow(funkin.ui.charSelect.CharSelectSubState)
   var midpointY(default, set):Float = 100;
   var mosaicShader:MosaicEffect;
 

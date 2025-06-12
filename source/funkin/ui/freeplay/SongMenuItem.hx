@@ -624,7 +624,7 @@ class SongMenuItem extends FlxSpriteGroup
         capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
-        final shiftx:Float = FullScreenScaleMode.windowScale.x * 320;
+        final shiftx:Float = FullScreenScaleMode.wideScale.x * 320;
         final widescreenMult:Float = (FullScreenScaleMode.gameCutoutSize.x / 1.5) * 0.75;
         // Move the targetPos set to the if statement below if you want them to shift to their target positions after jumping in instead
         // I have no idea why this if instead of frameInTypeBeat == xFrames.length works even though they're the same thing

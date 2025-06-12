@@ -746,7 +746,7 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
-    rankVignette.scale.set(2 * FullScreenScaleMode.windowScale.x, 2 * FullScreenScaleMode.windowScale.y);
+    rankVignette.scale.set(2 * FullScreenScaleMode.wideScale.x, 2 * FullScreenScaleMode.wideScale.y);
     rankVignette.updateHitbox();
     rankVignette.blend = BlendMode.ADD;
     // rankVignette.cameras = [rankCamera];
@@ -1296,7 +1296,6 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
-      FullScreenScaleMode.enabled = false;
       FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
     });
     for (grpSpr in exitMoversCharSel.keys())
