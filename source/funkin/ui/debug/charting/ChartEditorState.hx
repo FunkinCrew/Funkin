@@ -1340,7 +1340,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (variationMetadata != null)
     {
       // Add the chartdata difficulties to the metadata difficulties if they don't exist so that the editor properly loads them
-      var keys:Array<String> = [[for (x in songChartData.get(selectedVariation).notes.keys()) x]];
+      var keys:Array<String> = [for (x in songChartData.get(selectedVariation).notes.keys()) x];
       for (key in keys)
       {
         variationMetadata.playData.difficulties.pushUnique(key);
@@ -6704,10 +6704,12 @@ typedef ChartEditorParams =
    * If non-null, load this song immediately instead of the welcome screen.
    */
   var ?targetSongId:String;
+
   /**
    * If non-null, load this difficulty immediately instead of the default difficulty.
    */
   var ?targetSongDifficulty:String;
+
   /**
    * If non-null, load this variation immediately instead of the default variation.
    */
