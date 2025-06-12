@@ -150,6 +150,7 @@ class VideoCutscene
     {
       vid.zIndex = 0;
       vid.active = false;
+      vid.bitmap.onEncounteredError.add((_) -> finishVideo(0.5));
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
 
       vid.cameras = [PlayState.instance.camCutscene];
