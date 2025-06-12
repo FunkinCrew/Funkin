@@ -280,7 +280,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     gameNotchSize.copyFrom(notchSize);
 
     final scale:Float = logicalSize.x / FlxG.initialWidth;
-    if (logicalSize > FlxG.initialWidth)
+    if (Math.ceil(logicalSize.x) > FlxG.initialWidth)
     {
       gameNotchPosition /= scale;
       gameNotchSize /= scale;

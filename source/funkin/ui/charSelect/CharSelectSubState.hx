@@ -128,16 +128,11 @@ class CharSelectSubState extends MusicBeatSubState
 
   var fadeShader:BlueFade = new BlueFade();
 
-  var speakers2:FlxAtlasSprite;
-
   override public function create():Void
   {
     super.create();
 
     cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
-    #if !ios
-    cutoutSize *= FullScreenScaleMode.wideScale.x;
-    #end
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
 
@@ -201,13 +196,13 @@ class CharSelectSubState extends MusicBeatSubState
     playerChill.switchChar("bf");
     add(playerChill);
 
-    var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
+    var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 10, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
     speakers.anim.onComplete.add(function() {
       speakers.anim.play("");
     });
     speakers.scrollFactor.set(1.8, 1.8);
-    speakers.scale.set(1.12, 1.12);
+    speakers.scale.set(1.05, 1.05);
     add(speakers);
 
     var fgBlur:FlxSprite = new FlxSprite(cutoutSize + -125, 170);
