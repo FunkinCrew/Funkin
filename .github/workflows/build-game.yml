@@ -1,3 +1,6 @@
+# Builds the game on all platforms, to ensure it compiles on all target platforms.
+# This helps to ensure workers focus on the master branch.
+
 name: Build and Upload nightly game builds
 
 on:

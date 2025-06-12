@@ -1,3 +1,6 @@
+# When a pull request is merged, cancel all queued workflows for that branch
+# This helps to ensure workers focus on the master branch.
+
 name: Cancel queued workflows on PR merge
 
 on:
