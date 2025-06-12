@@ -90,10 +90,9 @@ class VideoCutscene
     VideoCutscene.cutsceneType = cutsceneType;
 
     #if mobile
-    if (cutsceneType == CutsceneType.ENDING)
+    if (cutsceneType == ENDING)
     {
-      PlayState.instance.pauseCircle.visible = false;
-      PlayState.instance.pauseButton.visible = false;
+      PlayState.instance.togglePauseButton();
     }
     #end
 

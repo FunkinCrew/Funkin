@@ -546,12 +546,12 @@ class PlayState extends MusicBeatSubState
   /**
    * The pause button for the game, only appears in Mobile targets.
    */
-  public var pauseButton:FunkinSprite;
+  var pauseButton:FunkinSprite;
 
   /**
    * The pause circle for the game, only appears in Mobile targets.
    */
-  public var pauseCircle:FunkinSprite;
+  var pauseCircle:FunkinSprite;
   #end
 
   /**
@@ -843,6 +843,14 @@ class PlayState extends MusicBeatSubState
     // This step ensures z-indexes are applied properly,
     // and it's important to call it last so all elements get affected.
     refresh();
+  }
+
+  public function togglePauseButton(visible:Bool = false):Void
+  {
+    #if mobile
+    pauseCircle.alpha = visible ? 0.1 : 0;
+    pauseButton.alpha = visible ? 1 : 0;
+    #end
   }
 
   function assertChartExists():Bool
