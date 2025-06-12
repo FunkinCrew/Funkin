@@ -1883,30 +1883,31 @@ class FreeplayState extends MusicBeatSubState
   {
     if (fnfFreeplay == null || freeplayTxtBg == null || freeplayArrow == null) return;
 
-    if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
-    {
-      _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
-      _pressedOnFreeplay = true;
-    }
+    // Commenting this out for now, since it doesn't work properly with the new touch controls. - Zack
+    // if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
+    // {
+    //   _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
+    //   _pressedOnFreeplay = true;
+    // }
 
-    if (_pressedOnFreeplay && TouchUtil.pressed)
-    {
-      final dragX:Float = TouchUtil.touch.x + _dragOffset;
-      fnfFreeplay.x = dragX;
-      freeplayTxtBg.x = dragX - 8;
+    // if (_pressedOnFreeplay && TouchUtil.pressed)
+    // {
+    //   final dragX:Float = TouchUtil.touch.x + _dragOffset;
+    //   fnfFreeplay.x = dragX;
+    //   freeplayTxtBg.x = dragX - 8;
 
-      if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
-      {
-        _pressedOnFreeplay = false;
-        goBack();
-      }
-    }
-    else
-    {
-      fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
-      freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
-      _pressedOnFreeplay = false;
-    }
+    //   if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
+    //   {
+    //     _pressedOnFreeplay = false;
+    //     goBack();
+    //   }
+    // }
+    // else
+    // {
+    fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
+    freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
+    _pressedOnFreeplay = false;
+    // }
   }
   #end
 
