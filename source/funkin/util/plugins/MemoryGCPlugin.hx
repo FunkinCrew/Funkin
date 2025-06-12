@@ -1,7 +1,6 @@
 package funkin.util.plugins;
 
 import flixel.FlxBasic;
-import funkin.util.TimerUtil;
 
 /**
  * A plugin which adds functionality to press `Ins` to immediately perform memory garbage collection.
@@ -24,9 +23,9 @@ class MemoryGCPlugin extends FlxBasic
 
     if (FlxG.keys.justPressed.INSERT)
     {
-      var perfStart:Float = TimerUtil.start();
+      var perf = new funkin.util.logging.Perf();
       funkin.util.MemoryUtil.collect(true);
-      trace('Memory GC took: ${TimerUtil.seconds(perfStart)}');
+      perf.print();
     }
   }
 

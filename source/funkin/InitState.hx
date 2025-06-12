@@ -33,7 +33,6 @@ import funkin.ui.transition.LoadingState;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.macro.MacroUtil;
-import funkin.util.TimerUtil;
 import funkin.util.TrackerUtil;
 import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
@@ -231,7 +230,6 @@ class InitState extends FlxState
     // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
     trace('Parsing game data...');
-    var perfStart:Float = TimerUtil.start();
     SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
@@ -260,9 +258,6 @@ class InitState extends FlxState
     #if !html5
     // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
     funkin.FunkinMemory.initialCache();
-    #end
-
-    trace('Parsing game data took: ${TimerUtil.ms(perfStart)}');
   }
 
   /**

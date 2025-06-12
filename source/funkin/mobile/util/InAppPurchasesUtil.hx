@@ -165,9 +165,9 @@ class InAppPurchasesUtil
    * Initiates the purchase process for the specified item.
    *
    * @param id The identifier of the item to be purchased.
-   * @param onPurchasesUpdated Callback function to be called when the purchases have been updated.
+   * @param onPurchased The function to be called when the the product is purchased.
    */
-  public static function purchase(id:String, onPurchasesUpdated:Void->Void):Void
+  public static function purchase(id:String, onPurchased:Void->Void):Void
   {
     for (product in currentProductDetails)
     {
@@ -176,9 +176,18 @@ class InAppPurchasesUtil
       {
         function purchasesUpdatedEvent(result:IAPResult, purchases:Array<IAPPurchase>):Void
         {
-          if (onPurchasesUpdated != null) onPurchasesUpdated();
+          for (purchase in purchases)
+          {
+            if (purchase.getProducts().contains(id))
+            {
+              if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
+              {
+                if (onPurchased != null) onPurchased();
 
-          IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+              }
+            }
+          }
         }
 
         IAPAndroid.onPurchasesUpdated.add(purchasesUpdatedEvent);
@@ -190,9 +199,22 @@ class InAppPurchasesUtil
       {
         function purchasesUpdatedEvent(purchases:Array<IAPPurchase>):Void
         {
-          if (onPurchasesUpdated != null) onPurchasesUpdated();
+          for (purchase in purchases)
+          {
+            if (purchase.getPaymentProductIdentifier() == id)
+            {
+              switch (purchase.getTransactionState())
+              {
+                case IAPPurchaseState.PURCHASED | IAPPurchaseState.RESTORED:
+                  if (onPurchased != null) onPurchased();
 
-          IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                case IAPPurchaseState.FAILED:
+                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                default:
+              }
+            }
+          }
         }
 
         IAPIOS.onPurchasesUpdated.add(purchasesUpdatedEvent);
