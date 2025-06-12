@@ -27,6 +27,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   public static var notchSize:FlxPoint = FlxPoint.get(0, 0);
 
   /**
+   * The size of the game in screen resolution relativly to the initial size.
+   * eg: If screen is 1080p and initial size of the game is 1280x720 then this is 1920x1080.
+   */
+  public static var logicalSize:FlxPoint = FlxPoint.get(0, 0);
+
+  /**
    * The maximum aspect ratio a screen can have.
    */
   public static var maxAspectRatio:FlxPoint = FlxPoint.get(20, 9);
@@ -223,10 +229,10 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   {
     if (enabled)
     {
-      cutoutSize.x = ratioAxis == X ? Math.ceil(Width - (Height * (FlxG.width / FlxG.height))) : 0;
-      cutoutSize.y = ratioAxis == Y ? Math.ceil(Height - (Width / (FlxG.width / FlxG.height))) : 0;
+      cutoutSize.x = ratioAxis == X ? Math.ceil(Width - logicalSize.x) : 0;
+      cutoutSize.y = ratioAxis == Y ? Math.ceil(Height - logicalSize.y) : 0;
       gameCutoutSize.copyFrom(cutoutSize);
-      gameCutoutSize /= gameSize.x / FlxG.initialWidth;
+      gameCutoutSize /= logicalSize.x / FlxG.initialWidth;
     }
     else
     {
@@ -241,22 +247,26 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     screenRatio = Width / Height;
     ratioAxis = screenRatio < gameRatio ? FlxAxes.Y : FlxAxes.X;
 
+    logicalSize.set(Width, Height);
+
     if (ratioAxis == FlxAxes.Y)
     {
       gameSize.x = Width;
-      gameSize.y = enabled ? Height : Math.ceil(gameSize.x / gameRatio);
+      logicalSize.y = Math.ceil(gameSize.x / gameRatio);
+      gameSize.y = enabled ? Height : logicalSize.y;
     }
     else
     {
       gameSize.y = Height;
-      gameSize.x = enabled ? Width : Math.ceil(gameSize.y * gameRatio);
+      logicalSize.x = Math.ceil(gameSize.y * gameRatio);
+      gameSize.x = enabled ? Width : logicalSize.x;
     }
   }
 
   override public function updateScaleOffset():Void
   {
-    scale.x = ratioAxis == X ? Math.ceil(deviceSize.y * (FlxG.width / FlxG.height)) / FlxG.width : deviceSize.x / FlxG.width;
-    scale.y = ratioAxis == Y ? Math.ceil(deviceSize.x / (FlxG.width / FlxG.height)) / FlxG.height : deviceSize.y / FlxG.height;
+    scale.x = ratioAxis == X ? logicalSize.x / FlxG.width : deviceSize.x / FlxG.width;
+    scale.y = ratioAxis == Y ? logicalSize.y / FlxG.height : deviceSize.y / FlxG.height;
     updateOffsetX();
     updateOffsetY();
   }
@@ -269,7 +279,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     gameNotchPosition.copyFrom(notchPosition);
     gameNotchSize.copyFrom(notchSize);
 
-    final scale:Float = gameSize.x / FlxG.initialWidth;
+    final scale:Float = logicalSize.x / FlxG.initialWidth;
     gameNotchPosition /= scale;
     gameNotchSize /= scale;
   }
@@ -312,12 +322,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           gameHeight = ((gameSize.x / scale.x) / maxAspectRatio.x) * maxAspectRatio.y;
           gameSize.y = gameHeight * scale.y;
 
-          cutoutSize.set(0, cutoutSize.y - (oldGameHeight - gameHeight));
-          gameCutoutSize.copyFrom(cutoutSize);
-          gameCutoutSize /= gameSize.x / FlxG.initialWidth;
-
           final sizeDifference:Float = oldGameHeight - gameSize.y;
-          final scale:Float = gameSize.y / FlxG.initialHeight;
+          final scale:Float = logicalSize.y / FlxG.initialHeight;
           cutoutSize.set(0, cutoutSize.y - sizeDifference);
           gameCutoutSize.copyFrom(cutoutSize);
           gameCutoutSize /= scale;
@@ -355,7 +361,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
           gameSize.x = gameWidth * scale.x;
 
           final sizeDifference:Float = oldGameWidth - gameSize.x;
-          final scale:Float = gameSize.x / FlxG.initialWidth;
+          final scale:Float = logicalSize.x / FlxG.initialWidth;
           cutoutSize.set(cutoutSize.x - sizeDifference, 0);
           gameCutoutSize.copyFrom(cutoutSize);
           gameCutoutSize /= scale;
