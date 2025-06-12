@@ -97,6 +97,11 @@ class AttractState extends MusicBeatState
     {
       vid.zIndex = 0;
       vid.active = false;
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+        trace('[VLC] Encountered an error: $msg');
+
+        onAttractEnd();
+      });
       vid.bitmap.onEndReached.add(onAttractEnd);
       vid.bitmap.onFormatSetup.add(() -> {
         vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);

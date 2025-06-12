@@ -150,6 +150,11 @@ class VideoCutscene
     {
       vid.zIndex = 0;
       vid.active = false;
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+        trace('[VLC] Encountered an error: $msg');
+
+        finishVideo(0.5);
+      });
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
 
       vid.cameras = [PlayState.instance.camCutscene];
@@ -191,8 +196,8 @@ class VideoCutscene
     #if hxvlc
     if (vid != null)
     {
-      vid.stop();
-      vid.play();
+      vid.bitmap.time = 0;
+      vid.resume();
       onVideoRestarted.dispatch();
     }
     #end
