@@ -349,6 +349,12 @@ class Project extends HXProject
   static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
   /**
+   * `-DFEATURE_INPUT_OFFSETS`
+   * If this flag is enabled, the input offsets menu will be available to configure your audio and visual offsets.
+   */
+  static final FEATURE_INPUT_OFFSETS:FeatureFlag = "FEATURE_INPUT_OFFSETS";
+
+  /**
    * `-DFEATURE_HAPTICS`
    * If this flag is enabled, the game provide haptic feedback vibrations.
    * Works for mobile targets (Android and iOS).
@@ -692,6 +698,7 @@ class Project extends HXProject
     EXCLUDE_ARMV7.apply(this, false);
     UNLOCK_EVERYTHING.apply(this, false);
     FEATURE_COMPRESSED_TEXTURES.apply(this, false);
+    FEATURE_INPUT_OFFSETS.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);

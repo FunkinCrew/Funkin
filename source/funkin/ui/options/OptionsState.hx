@@ -123,6 +123,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     // createItem("CONTROL SCHEMES", function() {
     //   FlxG.state.openSubState(new ControlsSchemeMenu());
     // });
+    #if FEATURE_INPUT_OFFSETS
     createItem("INPUT OFFSETS", function() {
       OptionsState.rememberedSelectedIndex = items.selectedIndex;
       #if web
@@ -131,6 +132,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       FlxG.state.openSubState(new LatencyState());
       #end
     });
+    #end
     #if FEATURE_MOBILE_IAP
     createItem("RESTORE PURCHASES", function() {
       InAppPurchasesUtil.restorePurchases();
