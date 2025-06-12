@@ -2785,6 +2785,13 @@ class DifficultySelector extends FlxSprite
 
     pressed = press;
   }
+
+  override function updateHitbox()
+  {
+    super.updateHitbox();
+    width *= 1.5;
+    height *= 1.5;
+  }
   #end
 
   function moveShitDown():Void
