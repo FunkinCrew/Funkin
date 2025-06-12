@@ -1,6 +1,8 @@
 package funkin.audio.waveform;
 
 import funkin.util.TimerUtil;
+import haxe.ds.Vector;
+import haxe.io.Bytes;
 
 class WaveformDataParser
 {
@@ -51,9 +53,8 @@ class WaveformDataParser
     var pointsPerSecond:Float = sampleRate / samplesPerPoint; // 172 samples per second for most songs is plenty precise while still being performant..
 
     // TODO: Make this work better on HTML5.
-    var bytes:haxe.io.Bytes = soundBuffer.data.toBytes();
-    var soundData:Array<Int> = [];
-    soundData.resize(Std.int(bytes.length / (bitsPerSample / 8)));
+    var bytes:Bytes = soundBuffer.data.toBytes();
+    var soundData:Vector<Int> = new Vector<Int>(Std.int(bytes.length / (bitsPerSample / 8)));
     var minSampleValue:Int;
     var maxSampleValue:Int;
 
@@ -89,7 +90,7 @@ class WaveformDataParser
     }
 
     var soundDataRawLength:Int = soundData.length;
-    var soundDataSampleCount:Int = Math.ceil(soundDataRawLength / channels / (bitsPerSample / 8));
+    var soundDataSampleCount:Int = Math.ceil(soundDataRawLength / channels);
     var outputPointCount:Int = Math.ceil(soundDataSampleCount / samplesPerPoint);
 
     // trace('Interpreting audio buffer:');
@@ -103,19 +104,19 @@ class WaveformDataParser
     // trace('  soundDataRawLength/4: ${soundDataRawLength / 4}');
     // trace('  outputPointCount: ${outputPointCount}');
 
-    var outputData:Array<Int> = [];
+    var outputData:Vector<Int> = new Vector<Int>(outputPointCount * 2 * channels);
 
     var perfStart:Float = TimerUtil.start();
 
+    // minChannel1, maxChannel1, minChannel2, maxChannel2, ...
+    var values:Vector<Int> = new Vector<Int>(2 * channels);
+
     for (pointIndex in 0...outputPointCount)
     {
-      // minChannel1, maxChannel1, minChannel2, maxChannel2, ...
-      var values:Array<Int> = [];
-
-      for (_ in 0...channels)
+      for (i in 0...channels)
       {
-        values.push(maxSampleValue);
-        values.push(minSampleValue);
+        values[i * 2] = maxSampleValue;
+        values[i * 2 + 1] = minSampleValue;
       }
 
       var rangeStart = pointIndex * samplesPerPoint;
@@ -135,11 +136,11 @@ class WaveformDataParser
       }
 
       // We now have the min and max values for the range.
-      outputData = outputData.concat(values);
+      Vector.blit(values, 0, outputData, pointIndex * 4, 4);
     }
 
     var outputDataLength:Int = Std.int(outputData.length / channels / 2);
-    var result = new WaveformData(null, channels, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData);
+    var result = new WaveformData(null, channels, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData.toArray());
 
     trace('[WAVEFORM] Interpreted audio buffer in ${TimerUtil.seconds(perfStart)}.');
 
