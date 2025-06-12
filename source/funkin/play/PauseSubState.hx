@@ -80,9 +80,7 @@ class PauseSubState extends MusicBeatSubState
    * Pause menu entries for when the game is paused during a video cutscene.
    */
   static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
-    #if !mobile
     {text: 'Resume', callback: resume},
-    #end
     {text: 'Skip Cutscene', callback: skipVideoCutscene},
     {text: 'Restart Cutscene', callback: restartVideoCutscene},
     {text: 'Exit to Menu', callback: quitToMenu},

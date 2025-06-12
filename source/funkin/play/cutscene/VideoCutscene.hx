@@ -89,6 +89,13 @@ class VideoCutscene
 
     VideoCutscene.cutsceneType = cutsceneType;
 
+    #if mobile
+    if (cutsceneType == ENDING)
+    {
+      PlayState.instance.togglePauseButton();
+    }
+    #end
+
     #if html5
     playVideoHTML5(rawFilePath);
     #elseif hxvlc

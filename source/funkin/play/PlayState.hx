@@ -845,6 +845,14 @@ class PlayState extends MusicBeatSubState
     refresh();
   }
 
+  public function togglePauseButton(visible:Bool = false):Void
+  {
+    #if mobile
+    pauseCircle.alpha = visible ? 0.1 : 0;
+    pauseButton.alpha = visible ? 1 : 0;
+    #end
+  }
+
   function assertChartExists():Bool
   {
     // Returns null if the song failed to load or doesn't have the selected difficulty.
@@ -3153,7 +3161,8 @@ class PlayState extends MusicBeatSubState
 
     #if mobile
     // Hide the buttons while the song is ending.
-    hitbox.visible = pauseButton.visible = false;
+    hitbox.visible = false;
+    pauseButton.visible = false;
     pauseCircle.visible = false;
     #end
 
