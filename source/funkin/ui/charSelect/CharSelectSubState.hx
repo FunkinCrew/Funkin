@@ -135,7 +135,9 @@ class CharSelectSubState extends MusicBeatSubState
     super.create();
 
     cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
+    #if !ios
     cutoutSize *= FullScreenScaleMode.wideScale.x;
+    #end
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
 
