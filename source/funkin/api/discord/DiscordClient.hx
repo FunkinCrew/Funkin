@@ -198,4 +198,17 @@ typedef DiscordClientPresenceParams =
    */
   var ?smallImageKey:String;
 }
+
+class DiscordClientSandboxed
+{
+  public static function setPresence(params:DiscordClientPresenceParams)
+  {
+    return DiscordClient.instance.setPresence(params);
+  }
+
+  public static function shutdown()
+  {
+    DiscordClient.instance.shutdown();
+  }
+}
 #end

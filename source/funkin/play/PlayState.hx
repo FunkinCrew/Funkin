@@ -8,6 +8,7 @@ import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -450,6 +451,11 @@ class PlayState extends MusicBeatSubState
   var cameraTweensPausedBySubState:List<FlxTween> = new List<FlxTween>();
 
   /**
+   * Track any sounds we've paused for a Pause substate, so we can unpause them when we return.
+   */
+  var soundsPausedBySubState:List<FlxSound> = new List<FlxSound>();
+
+  /**
    * False until `create()` has completed.
    */
   var initialized:Bool = false;
@@ -839,6 +845,14 @@ class PlayState extends MusicBeatSubState
     refresh();
   }
 
+  public function togglePauseButton(visible:Bool = false):Void
+  {
+    #if mobile
+    pauseCircle.alpha = visible ? 0.1 : 0;
+    pauseButton.alpha = visible ? 1 : 0;
+    #end
+  }
+
   function assertChartExists():Bool
   {
     // Returns null if the song failed to load or doesn't have the selected difficulty.
@@ -891,7 +905,6 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    var list = FlxG.sound.list;
     updateHealthBar();
     updateScoreText();
 
@@ -921,9 +934,9 @@ class PlayState extends MusicBeatSubState
       // Reset music properly.
       if (FlxG.sound.music != null)
       {
-        FlxG.sound.music.time = startTimestamp - Conductor.instance.combinedOffset;
-        FlxG.sound.music.pitch = playbackRate;
         FlxG.sound.music.pause();
+        FlxG.sound.music.time = startTimestamp;
+        FlxG.sound.music.pitch = playbackRate;
       }
 
       if (!overrideMusic)
@@ -938,7 +951,7 @@ class PlayState extends MusicBeatSubState
         }
       }
       vocals.pause();
-      vocals.time = 0 - Conductor.instance.combinedOffset;
+      vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
 
       if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
@@ -1130,7 +1143,7 @@ class PlayState extends MusicBeatSubState
         isPlayerDying = true;
 
         #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (AdMobUtil.PLAYING_COUNTER < 3) AdMobUtil.PLAYING_COUNTER++;
+        if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
         #end
 
         var deathPreTransitionDelay = currentStage?.getBoyfriend()?.getDeathPreTransitionDelay() ?? 0.0;
@@ -1215,12 +1228,7 @@ class PlayState extends MusicBeatSubState
       if (!isSubState && event.gitaroo)
       {
         this.remove(currentStage);
-        FlxG.switchState(() -> new GitarooPause(
-          {
-            targetSong: currentSong,
-            targetDifficulty: currentDifficulty,
-            targetVariation: currentVariation,
-          }));
+        FlxG.switchState(() -> new GitarooPause(lastParams));
       }
       else
       {
@@ -1366,9 +1374,28 @@ class PlayState extends MusicBeatSubState
           musicPausedBySubState = true;
         }
 
-        // Pause vocals.
-        // Not tracking that we've done this via a bool because vocal re-syncing involves pausing the vocals anyway.
-        if (vocals != null) vocals.pause();
+        // Pause any sounds that are playing and keep track of them.
+        // Vocals are also paused here but are not included as they are handled separately.
+        if (Std.isOfType(subState, PauseSubState))
+        {
+          FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
+            if (!sound.active || sound == FlxG.sound.music) return;
+            // In case it's a scheduled sound
+            var funkinSound:FunkinSound = cast sound;
+            if (funkinSound != null && !funkinSound.isPlaying) return;
+            if (!sound.playing && sound.time >= 0) return;
+            sound.pause();
+            soundsPausedBySubState.add(sound);
+          });
+
+          vocals?.forEach(function(voice:FunkinSound) {
+            soundsPausedBySubState.remove(voice);
+          });
+        }
+        else
+        {
+          vocals?.pause();
+        }
       }
 
       // Pause camera tweening, and keep track of which tweens we pause.
@@ -1423,6 +1450,8 @@ class PlayState extends MusicBeatSubState
         FlxG.sound.music.play();
         musicPausedBySubState = false;
       }
+
+      forEachPausedSound((s) -> needsReset ? s.destroy() : s.resume());
 
       // Resume camera tweens if we paused any.
       for (camTween in cameraTweensPausedBySubState)
@@ -2265,9 +2294,9 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.onComplete = function() {
       if (mayPauseGame) endSong(skipEndingTransition);
     };
-    // A negative instrumental offset means the song skips the first few milliseconds of the track.
-    // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
-    FlxG.sound.music.play(true, Math.max(0, startTimestamp - Conductor.instance.combinedOffset));
+
+    FlxG.sound.music.pause();
+    FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
 
     // Prevent the volume from being wrong.
@@ -2276,13 +2305,17 @@ class PlayState extends MusicBeatSubState
 
     trace('Playing vocals...');
     add(vocals);
-    vocals.play();
-    vocals.volume = 1.0;
+
+    vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
     vocals.pitch = playbackRate;
-    vocals.time = FlxG.sound.music.time;
+    vocals.volume = 1.0;
+
+    // trace('STARTING SONG AT:');
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
-    resyncVocals();
+
+    FlxG.sound.music.play();
+    vocals.play();
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
@@ -2320,8 +2353,10 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length,
+      Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
     trace('Resyncing vocals to ${timeToPlayAt}');
+
     FlxG.sound.music.pause();
     vocals.pause();
 
@@ -3126,7 +3161,8 @@ class PlayState extends MusicBeatSubState
 
     #if mobile
     // Hide the buttons while the song is ending.
-    hitbox.visible = pauseButton.visible = false;
+    hitbox.visible = false;
+    pauseButton.visible = false;
     pauseCircle.visible = false;
     #end
 
@@ -3228,7 +3264,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    if (AdMobUtil.PLAYING_COUNTER < 3) AdMobUtil.PLAYING_COUNTER++;
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
     #end
 
     if (PlayStatePlaylist.isStoryMode)
@@ -3427,6 +3463,8 @@ class PlayState extends MusicBeatSubState
         remove(vocals);
       }
     }
+
+    forEachPausedSound((s) -> s.destroy());
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
@@ -3734,6 +3772,15 @@ class PlayState extends MusicBeatSubState
       }
     }
     scrollSpeedTweens = [];
+  }
+
+  function forEachPausedSound(f:FlxSound->Void):Void
+  {
+    for (sound in soundsPausedBySubState)
+    {
+      f(sound);
+    }
+    soundsPausedBySubState.clear();
   }
 
   #if FEATURE_DEBUG_FUNCTIONS

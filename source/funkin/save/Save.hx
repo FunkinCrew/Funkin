@@ -2,6 +2,7 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -199,7 +200,10 @@ class Save
           previousFiles: [],
           moveStep: "1px",
           angleStep: 5,
-          theme: StageEditorTheme.Light
+          theme: StageEditorTheme.Light,
+          bfChar: "bf",
+          gfChar: "gf",
+          dadChar: "dad"
         }
     };
   }
@@ -629,6 +633,60 @@ class Save
     data.optionsStageEditor.theme = value;
     flush();
     return data.optionsStageEditor.theme;
+  }
+
+  public var stageBoyfriendChar(get, set):String;
+
+  function get_stageBoyfriendChar():String
+  {
+    if (data.optionsStageEditor.bfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null) data.optionsStageEditor.bfChar = "bf";
+
+    return data.optionsStageEditor.bfChar;
+  }
+
+  function set_stageBoyfriendChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.bfChar = value;
+    flush();
+    return data.optionsStageEditor.bfChar;
+  }
+
+  public var stageGirlfriendChar(get, set):String;
+
+  function get_stageGirlfriendChar():String
+  {
+    if (data.optionsStageEditor.gfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null) data.optionsStageEditor.gfChar = "gf";
+
+    return data.optionsStageEditor.gfChar;
+  }
+
+  function set_stageGirlfriendChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.gfChar = value;
+    flush();
+    return data.optionsStageEditor.gfChar;
+  }
+
+  public var stageDadChar(get, set):String;
+
+  function get_stageDadChar():String
+  {
+    if (data.optionsStageEditor.dadChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null) data.optionsStageEditor.dadChar = "dad";
+
+    return data.optionsStageEditor.dadChar;
+  }
+
+  function set_stageDadChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.dadChar = value;
+    flush();
+    return data.optionsStageEditor.dadChar;
   }
 
   /**
@@ -1821,4 +1879,22 @@ typedef SaveDataStageEditorOptions =
    * @default `StageEditorTheme.Light`
    */
   var ?theme:StageEditorTheme;
+
+  /**
+   * The BF character ID used in testing stages.
+   * @default bf
+   */
+  var ?bfChar:String;
+
+  /**
+   * The GF character ID used in testing stages.
+   * @default gf
+   */
+  var ?gfChar:String;
+
+  /**
+   * The Dad character ID used in testing stages.
+   * @default dad
+   */
+  var ?dadChar:String;
 };

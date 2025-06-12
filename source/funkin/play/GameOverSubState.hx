@@ -413,7 +413,7 @@ class GameOverSubState extends MusicBeatSubState
           new FlxTimer().start(2, _ -> {
             FlxG.camera.filters = [];
             #if FEATURE_MOBILE_ADVERTISEMENTS
-            if (AdMobUtil.PLAYING_COUNTER >= 3)
+            if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
             {
               AdMobUtil.loadInterstitial(function():Void {
                 AdMobUtil.PLAYING_COUNTER = 0;
@@ -431,7 +431,7 @@ class GameOverSubState extends MusicBeatSubState
         {
           FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
             #if FEATURE_MOBILE_ADVERTISEMENTS
-            if (AdMobUtil.PLAYING_COUNTER >= 3)
+            if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
             {
               AdMobUtil.loadInterstitial(function():Void {
                 AdMobUtil.PLAYING_COUNTER = 0;

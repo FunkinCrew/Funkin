@@ -7,6 +7,7 @@ import Type.ValueType;
  * Used for sandboxing in scripts.
  */
 @:nullSafety
+@SuppressWarnings("checkstyle:VarTypeHint")
 class ReflectUtil
 {
   /**
@@ -360,7 +361,11 @@ class ReflectUtil
    */
   public static function getClassFieldsOf(obj:Any):Array<String>
   {
-    return Type.getClassFields(Type.getClass(obj));
+    if (obj == null) return [];
+    @:nullSafety(Off)
+    var cls = Type.getClass(obj);
+    if (cls == null) return [];
+    return Type.getClassFields(cls);
   }
 
   /**
@@ -380,7 +385,11 @@ class ReflectUtil
    */
   public static function getInstanceFieldsOf(obj:Any):Array<String>
   {
-    return Type.getInstanceFields(Type.getClass(obj));
+    if (obj == null) return [];
+    @:nullSafety(Off)
+    var cls = Type.getClass(obj);
+    if (cls == null) return [];
+    return Type.getInstanceFields(cls);
   }
 
   /**
@@ -396,10 +405,14 @@ class ReflectUtil
   /**
    * Get the string name of the class of the given object.
    * @param obj The object to query.
-   * @return The name of the given class.
+   * @return The name of the given class, or `Unknown` if the class couldn't be determined.
    */
   public static function getClassNameOf(obj:Any):String
   {
-    return Type.getClassName(Type.getClass(obj));
+    if (obj == null) return "Unknown";
+    @:nullSafety(Off)
+    var cls = Type.getClass(obj);
+    if (cls == null) return "Unknown";
+    return Type.getClassName(cls);
   }
 }

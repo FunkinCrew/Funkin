@@ -9,6 +9,9 @@ import funkin.audio.FunkinSound;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 import funkin.ui.Page.PageName;
+import flixel.tweens.FlxEase;
+import funkin.util.HapticUtil;
+import flixel.tweens.FlxTween;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
@@ -146,6 +149,8 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
         if (item.available && isTouchingItem && TouchUtil.justPressed)
         {
+          var prevIndex:Int = selectedIndex;
+
           if (!_isMainMenuState && selectedIndex != i)
           {
             newIndex = i;
@@ -153,9 +158,34 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
           }
           else
           {
+            FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
             selectItem(i);
           }
-          accept();
+
+          if (_isMainMenuState)
+          {
+            if (prevIndex == i)
+            {
+              FlxTween.cancelTweensOf(item);
+              item.scale.set(1.1, 1.1);
+              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+
+              HapticUtil.vibrate(0, 0.05, 0.5);
+              accept();
+            }
+            else
+            {
+              FlxTween.cancelTweensOf(item);
+              item.scale.set(0.94, 0.94);
+              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+
+              HapticUtil.vibrate(0, 0.01, 0.2);
+            }
+          }
+          else
+          {
+            accept();
+          }
 
           break;
         }

@@ -36,15 +36,18 @@ class GitarooPause extends MusicBeatState
     }
 
     var bg:FunkinSprite = FunkinSprite.create('pauseAlt/pauseBG');
+    bg.setGraphicSize(Std.int(FlxG.width));
+    bg.updateHitbox();
+    bg.screenCenter();
     add(bg);
 
     var bf:FunkinSprite = FunkinSprite.createSparrow(0, 30, 'pauseAlt/bfLol');
     bf.animation.addByPrefix('lol', "funnyThing", 13);
     bf.animation.play('lol');
-    add(bf);
     bf.screenCenter(X);
+    add(bf);
 
-    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.28, FlxG.height * 0.7, 'pauseAlt/pauseUI');
+    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.25, FlxG.height * 0.7, 'pauseAlt/pauseUI');
     replayButton.animation.addByPrefix('selected', 'bluereplay', 0, false);
     replayButton.animation.appendByPrefix('selected', 'yellowreplay');
     replayButton.animation.play('selected');

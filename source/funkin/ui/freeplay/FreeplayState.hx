@@ -484,7 +484,7 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
     #if FEATURE_TOUCH_CONTROLS
-    charSelectHint.text = 'Press on the DJ to change characters';
+    charSelectHint.text = 'Tap the DJ to change characters';
     #else
     charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
     #end
@@ -631,7 +631,7 @@ class FreeplayState extends MusicBeatSubState
     add(fnfFreeplay);
     add(ostName);
 
-    if (PlayerRegistry.instance.hasNewCharacter())
+    if (PlayerRegistry.instance.countUnlockedCharacters() > 1)
     {
       add(charSelectHint);
     }
@@ -763,7 +763,7 @@ class FreeplayState extends MusicBeatSubState
     rankBg.alpha = 0;
 
     #if FEATURE_TOUCH_CONTROLS
-    addBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack, 0.3, true);
 
     FlxTween.tween(backButton, {x: FlxG.width - 230}, 0.5, {ease: FlxEase.expoOut});
     #end
@@ -1882,30 +1882,31 @@ class FreeplayState extends MusicBeatSubState
   {
     if (fnfFreeplay == null || freeplayTxtBg == null || freeplayArrow == null) return;
 
-    if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
-    {
-      _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
-      _pressedOnFreeplay = true;
-    }
+    // Commenting this out for now, since it doesn't work properly with the new touch controls. - Zack
+    // if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
+    // {
+    //   _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
+    //   _pressedOnFreeplay = true;
+    // }
 
-    if (_pressedOnFreeplay && TouchUtil.pressed)
-    {
-      final dragX:Float = TouchUtil.touch.x + _dragOffset;
-      fnfFreeplay.x = dragX;
-      freeplayTxtBg.x = dragX - 8;
+    // if (_pressedOnFreeplay && TouchUtil.pressed)
+    // {
+    //   final dragX:Float = TouchUtil.touch.x + _dragOffset;
+    //   fnfFreeplay.x = dragX;
+    //   freeplayTxtBg.x = dragX - 8;
 
-      if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
-      {
-        _pressedOnFreeplay = false;
-        goBack();
-      }
-    }
-    else
-    {
-      fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
-      freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
-      _pressedOnFreeplay = false;
-    }
+    //   if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
+    //   {
+    //     _pressedOnFreeplay = false;
+    //     goBack();
+    //   }
+    // }
+    // else
+    // {
+    fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
+    freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
+    _pressedOnFreeplay = false;
+    // }
   }
   #end
 
@@ -2782,6 +2783,13 @@ class DifficultySelector extends FlxSprite
     }
 
     pressed = press;
+  }
+
+  override function updateHitbox()
+  {
+    super.updateHitbox();
+    width *= 1.5;
+    height *= 1.5;
   }
   #end
 

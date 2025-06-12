@@ -132,7 +132,8 @@ class WelcomeDialog extends Dialog
 
   function killDaDialog()
   {
-    stageEditorState.updateDialog(StageEditorDialogType.OBJECT);
+    stageEditorState.updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+    stageEditorState.updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
     stageEditorState.updateDialog(StageEditorDialogType.CHARACTER);
     stageEditorState.updateDialog(StageEditorDialogType.STAGE);
 

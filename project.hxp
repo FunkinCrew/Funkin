@@ -349,6 +349,12 @@ class Project extends HXProject
   static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
   /**
+   * `-DFEATURE_INPUT_OFFSETS`
+   * If this flag is enabled, the input offsets menu will be available to configure your audio and visual offsets.
+   */
+  static final FEATURE_INPUT_OFFSETS:FeatureFlag = "FEATURE_INPUT_OFFSETS";
+
+  /**
    * `-DFEATURE_HAPTICS`
    * If this flag is enabled, the game provide haptic feedback vibrations.
    * Works for mobile targets (Android and iOS).
@@ -444,6 +450,7 @@ class Project extends HXProject
     {
       config.set("ios.non-exempt-encryption", "false");
       config.set("ios.team-id", "Z7G7AVNGSH");
+      config.set("ios.deployment", "16.0");
 
       // launchStoryboard = new LaunchStoryboard();
       // launchStoryboard.path = "./LaunchScreen.storyboard";
@@ -691,6 +698,7 @@ class Project extends HXProject
     EXCLUDE_ARMV7.apply(this, false);
     UNLOCK_EVERYTHING.apply(this, false);
     FEATURE_COMPRESSED_TEXTURES.apply(this, false);
+    FEATURE_INPUT_OFFSETS.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
@@ -1088,17 +1096,33 @@ class Project extends HXProject
     info('Configuring application icons...');
     if (!isIOS())
     {
-      addIcon("art/icon16.png", 16);
-      addIcon("art/icon32.png", 32);
-      addIcon("art/icon64.png", 64);
-      addIcon("art/iconOG.png");
+      addIcon("art/icons/icon16.png", 16);
+      addIcon("art/icons/icon32.png", 32);
+      addIcon("art/icons/icon64.png", 64);
+      addIcon("art/icons/iconOG.png");
     }
     else
     {
-      addIcon("icon16_noalpha.png", 16);
-      addIcon("art/icon32_noalpha.png", 32);
-      addIcon("art/icon64_noalpha.png", 64);
-      addIcon("art/iconOG_noalpha.png");
+      // Note: the icons on iOS (and likely even android too) support nice P3 colors space
+      // However, lime's IconHelper.hx` and the general accompyaning encoding stuff to automatically
+      // generate icons of different sizes doesnt accomodate for the nice yummy color space
+      // so we do indeed need to make sure we declare the icons here
+      // on iOS
+
+      // addIcon("icon16_noalpha.png", 16);
+      // addIcon("art/icons/icon32_noalpha.png", 32);
+      // addIcon("art/icons/icon64_noalpha.png", 64);
+      // addIcon("art/icons/iconOG_noalpha.png");
+      addIcon("art/icons/bf-iOS-Default-20x20@2x.png", 40);
+      addIcon("art/icons/bf-iOS-Default-20x20@3x.png", 60);
+      addIcon("art/icons/bf-iOS-Default-29x29.png", 29);
+      addIcon("art/icons/bf-iOS-Default-29x29@2x.png", 58);
+      addIcon("art/icons/bf-iOS-Default-29x29@3x.png", 87);
+      addIcon("art/icons/bf-iOS-Default-40x40@2x.png", 80);
+      addIcon("art/icons/bf-iOS-Default-60x60@2x.png", 120);
+      addIcon("art/icons/bf-iOS-Default-60x60@3x.png", 180);
+      addIcon("art/icons/bf-iOS-Default-1024x1024.png", 1024);
+      addIcon("art/icons/bf-iOS-Default-1024x1024.png");
     }
     info('Done configuring icons.');
   }

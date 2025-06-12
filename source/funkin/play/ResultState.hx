@@ -1018,7 +1018,7 @@ class ResultState extends MusicBeatSubState
             onComplete: function(_) {
               // Shows a interstital ad on mobile devices each week victory.
               #if FEATURE_MOBILE_ADVERTISEMENTS
-              if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= 3))
+              if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
               {
                 busy = true;
                 AdMobUtil.loadInterstitial(function():Void {
@@ -1079,7 +1079,7 @@ class ResultState extends MusicBeatSubState
       {
         // Shows a interstital ad on mobile devices each week victory.
         #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= 3))
+        if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
         {
           busy = true;
           AdMobUtil.loadInterstitial(function():Void {

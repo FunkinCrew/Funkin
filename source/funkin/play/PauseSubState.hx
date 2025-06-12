@@ -80,9 +80,7 @@ class PauseSubState extends MusicBeatSubState
    * Pause menu entries for when the game is paused during a video cutscene.
    */
   static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
-    #if !mobile
     {text: 'Resume', callback: resume},
-    #end
     {text: 'Skip Cutscene', callback: skipVideoCutscene},
     {text: 'Restart Cutscene', callback: restartVideoCutscene},
     {text: 'Exit to Menu', callback: quitToMenu},
@@ -233,7 +231,7 @@ class PauseSubState extends MusicBeatSubState
     #if FEATURE_MOBILE_ADVERTISEMENTS
     // extension.admob.Admob.onEvent.add(onBannerEvent);
 
-    AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_CENTER);
+    AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
     #end
 
     super.create();
@@ -866,9 +864,31 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.needsReset = true;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
-    #end
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
+
+    if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
+    {
+      state.allowInput = false;
+
+      AdMobUtil.loadInterstitial(function():Void {
+        AdMobUtil.PLAYING_COUNTER = 0;
+
+        AdMobUtil.removeBanner();
+
+        state.allowInput = true;
+
+        state.close();
+      });
+    }
+    else
+    {
+      AdMobUtil.removeBanner();
+
+      state.close();
+    }
+    #else
     state.close();
+    #end
   }
 
   /**
@@ -880,9 +900,9 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.needsReset = true;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    if (AdMobUtil.PLAYING_COUNTER < 3) AdMobUtil.PLAYING_COUNTER++;
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
 
-    if (AdMobUtil.PLAYING_COUNTER >= 3)
+    if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
     {
       state.allowInput = false;
 
@@ -1026,9 +1046,9 @@ class PauseSubState extends MusicBeatSubState
     #if FEATURE_MOBILE_ADVERTISEMENTS
     AdMobUtil.removeBanner();
     #end
-    state.close();
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
     PlayState.instance.close(); // This only works because PlayState is a substate!
+    state.close();
   }
 }
 

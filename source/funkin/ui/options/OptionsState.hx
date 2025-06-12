@@ -3,7 +3,9 @@ package funkin.ui.options;
 import funkin.ui.Page.PageName;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
+import flixel.math.FlxPoint;
 import flixel.FlxSprite;
+import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
@@ -101,22 +103,27 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
 
+  /**
+   * Camera focus point
+   */
+  var camFocusPoint:FlxObject;
+
+  final CAMERA_MARGIN:Int = 150;
+
   public function new()
   {
     super();
     add(items = new TextMenuList());
+
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
     #if mobile
     if (FlxG.gamepads.numActiveGamepads > 0)
-    {
-      createItem("CONTROLS", function() codex.switchPage(Controls));
-    }
-    createItem("CONTROL SCHEMES", function() {
-      FlxG.state.openSubState(new ControlsSchemeMenu());
-    });
-    #else
-    createItem("CONTROLS", function() codex.switchPage(Controls));
     #end
+    createItem("CONTROLS", function() codex.switchPage(Controls));
+    // createItem("CONTROL SCHEMES", function() {
+    //   FlxG.state.openSubState(new ControlsSchemeMenu());
+    // });
+    #if FEATURE_INPUT_OFFSETS
     createItem("INPUT OFFSETS", function() {
       OptionsState.rememberedSelectedIndex = items.selectedIndex;
       #if web
@@ -125,6 +132,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       FlxG.state.openSubState(new LatencyState());
       #end
     });
+    #end
     #if FEATURE_MOBILE_IAP
     createItem("RESTORE PURCHASES", function() {
       InAppPurchasesUtil.restorePurchases();
@@ -161,9 +169,33 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     createItem("CLEAR SAVE DATA", function() {
       promptClearSaveData();
     });
+    #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
+    #else
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
+    add(backButton);
+    #end
+
+    // Create an object for the camera to track.
+    camFocusPoint = new FlxObject(0, 0, 140, 70);
+    add(camFocusPoint);
+
+    // Follow the camera focus as we scroll.
+    FlxG.camera.follow(camFocusPoint, null, 0.085);
+    FlxG.camera.deadzone.set(0, CAMERA_MARGIN / 2, FlxG.camera.width, FlxG.camera.height - CAMERA_MARGIN + 40);
+    FlxG.camera.minScrollY = -CAMERA_MARGIN / 2;
+
+    // Move the camera when the menu is scrolled.
+    items.onChange.add(onMenuChange);
+
+    onMenuChange(items.members[0]);
 
     items.selectItem(OptionsState.rememberedSelectedIndex);
+  }
+
+  function onMenuChange(selected:TextMenuList.TextMenuItem)
+  {
+    camFocusPoint.y = selected.y;
   }
 
   function createItem(name:String, callback:Void->Void, fireInstantly = false)

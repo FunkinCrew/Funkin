@@ -85,8 +85,8 @@
       "name": "grig.audio",
       "type": "git",
       "dir": "src",
-      "ref": "57f5d47f2533fd0c3dcd025a86cb86c0dfa0b6d2",
-      "url": "https://gitlab.com/haxe-grig/grig.audio.git"
+      "ref": "bcfc273ca6d52827bc5b1d910115ce212b50b76b",
+      "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
       "name": "hamcrest",
@@ -150,7 +150,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.1"
+      "version": "2.2.2"
     },
     {
       "name": "json2object",
@@ -177,7 +177,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "4f4c83ba8ed4d2b31b0f161c2b9db5abdd0e00b3",
+      "ref": "9f2b3d5747ad0e05c2b0465959770a88c1990656",
       "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {
