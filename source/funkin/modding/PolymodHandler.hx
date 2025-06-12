@@ -31,7 +31,12 @@ class PolymodHandler
    * The API version for the current version of the game. Since 0.5.0, we've just made this the game version!
    * Minor updates rarely impact mods but major versions sometimes do.
    */
-  static final API_VERSION:String = Constants.VERSION;
+  public static var API_VERSION(get, never):String;
+
+  static function get_API_VERSION():String
+  {
+    return Constants.VERSION;
+  }
 
   /**
    * The Semantic Versioning rule
@@ -39,7 +44,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  static final API_VERSION_RULE:String = ">=0.6.3 <0.8.0";
+  public static final API_VERSION_RULE:String = ">=0.6.3 <0.8.0";
 
   /**
    * Where relative to the executable that mods are located.
