@@ -135,6 +135,7 @@ class CharSelectSubState extends MusicBeatSubState
     super.create();
 
     cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
+    cutoutSize *= FullScreenScaleMode.wideScale.x;
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
 
@@ -164,12 +165,12 @@ class CharSelectSubState extends MusicBeatSubState
     add(curtains);
 
     barthing = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/barThing"));
-    barthing.scale.x = 2.5;
     barthing.anim.play("");
     barthing.anim.onComplete.add(function() {
       barthing.anim.play("");
     });
     barthing.blend = BlendMode.MULTIPLY;
+    barthing.scale.x = 2.5;
     barthing.scrollFactor.set(0, 0);
     add(barthing);
 
@@ -198,12 +199,13 @@ class CharSelectSubState extends MusicBeatSubState
     playerChill.switchChar("bf");
     add(playerChill);
 
-    var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 15, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
+    var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
     speakers.anim.onComplete.add(function() {
       speakers.anim.play("");
     });
     speakers.scrollFactor.set(1.8, 1.8);
+    speakers.scale.set(1.12, 1.12);
     add(speakers);
 
     var fgBlur:FlxSprite = new FlxSprite(cutoutSize + -125, 170);

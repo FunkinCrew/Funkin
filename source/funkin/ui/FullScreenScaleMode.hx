@@ -59,12 +59,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   /**
    * The aspect ratio of the window.
    */
-  public static var windowRatio:Float = -1;
+  public static var screenRatio:Float = -1;
 
   /**
    * The scale factor for the window.
    */
-  public static var windowScale:FlxPoint = FlxPoint.get(1, 1);
+  public static var wideScale:FlxPoint = FlxPoint.get(1, 1);
 
   /**
    * Axis used to determine the ratio (X or Y).
@@ -125,22 +125,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     updateScaleOffset();
     updateGamePosition();
 
-    adjustWindowScale();
-  }
-
-  private function updateDeviceCutout(Width:Int, Height:Int):Void
-  {
-    if (enabled)
-    {
-      cutoutSize.set(ratioAxis != Y ? Width - gameSize.x : 0, ratioAxis == Y ? Height - gameSize.y : 0);
-      gameCutoutSize.copyFrom(cutoutSize);
-      gameCutoutSize /= gameSize.x / FlxG.initialWidth;
-    }
-    else
-    {
-      cutoutSize.set(0, 0);
-      gameCutoutSize.set(0, 0);
-    }
+    adjustGameSize();
   }
 
   /**
@@ -234,121 +219,158 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     hasFakeCutouts = false;
   }
 
+  private function updateDeviceCutout(Width:Int, Height:Int):Void
+  {
+    if (enabled)
+    {
+      cutoutSize.x = ratioAxis == X ? Math.ceil(Width - (Height * (FlxG.width / FlxG.height))) : 0;
+      cutoutSize.y = ratioAxis == Y ? Math.ceil(Height - (Width / (FlxG.width / FlxG.height))) : 0;
+      gameCutoutSize.copyFrom(cutoutSize);
+      gameCutoutSize /= gameSize.x / FlxG.initialWidth;
+    }
+    else
+    {
+      cutoutSize.set(0, 0);
+      gameCutoutSize.set(0, 0);
+    }
+  }
+
+  override public function updateGameSize(Width:Int, Height:Int):Void
+  {
+    gameRatio = FlxG.width / FlxG.height;
+    screenRatio = Width / Height;
+    ratioAxis = screenRatio < gameRatio ? FlxAxes.Y : FlxAxes.X;
+
+    if (ratioAxis == FlxAxes.Y)
+    {
+      gameSize.x = Width;
+      gameSize.y = enabled ? Height : Math.ceil(gameSize.x / gameRatio);
+    }
+    else
+    {
+      gameSize.y = Height;
+      gameSize.x = enabled ? Width : Math.ceil(gameSize.y * gameRatio);
+    }
+  }
+
+  override public function updateScaleOffset():Void
+  {
+    scale.x = ratioAxis == X ? Math.ceil(deviceSize.y * (FlxG.width / FlxG.height)) / FlxG.width : deviceSize.x / FlxG.width;
+    scale.y = ratioAxis == Y ? Math.ceil(deviceSize.x / (FlxG.width / FlxG.height)) / FlxG.height : deviceSize.y / FlxG.height;
+    updateOffsetX();
+    updateOffsetY();
+  }
+
   #if mobile
   private function updateDeviceNotch(notch:lime.math.Rectangle):Void
   {
     notchPosition.set(enabled ? notch.x : 0, enabled ? notch.y : 0);
     notchSize.set(enabled ? notch.width : 0, enabled ? notch.height : 0);
-    gameNotchPosition.set((notchPosition.x * scale.x) / 2, (notchPosition.y * scale.y) / 2);
-    gameNotchSize.set((notchSize.x * scale.x) / 2, (notchSize.y * scale.y) / 2);
+    gameNotchPosition.copyFrom(notchPosition);
+    gameNotchSize.copyFrom(notchSize);
+
+    final scale:Float = gameSize.x / FlxG.initialWidth;
+    gameNotchPosition /= scale;
+    gameNotchSize /= scale;
   }
   #end
 
-  private function adjustWindowScale():Void
+  public function reset():Void
+  {
+    cutoutSize.set(0, 0);
+    gameCutoutSize.set(0, 0);
+    notchSize.set(0, 0);
+    gameNotchSize.set(0, 0);
+    notchPosition.set(0, 0);
+    gameNotchPosition.set(0, 0);
+  }
+
+  private function adjustGameSize():Void
   {
     if ((cutoutSize.x > 0 || cutoutSize.y > 0) && enabled)
     {
-      windowScale.set(1, 1);
+      wideScale.set(1, 1);
 
       if (ratioAxis == Y)
       {
-        gameSize.y += cutoutSize.y;
-
         var gameHeight:Float = gameSize.y / scale.y;
 
         #if desktop
         if (MathUtil.gcd(FlxG.width, Math.ceil(gameHeight)) == 1)
         {
           gameSize.y -= cutoutSize.y;
-          cutoutSize.set(0, 0);
-          gameCutoutSize.set(0, 0);
-          notchSize.set(0, 0);
-          gameNotchSize.set(0, 0);
-          notchPosition.set(0, 0);
-          gameNotchPosition.set(0, 0);
-
           offset.y = Math.ceil((deviceSize.y - gameSize.y) * 0.5);
           updateGamePosition();
+          reset();
           return;
         }
         #end
 
         if (gameHeight / FlxG.width > maxAspectRatio.y / maxAspectRatio.x && maxRatioAxis.y)
         {
-          final oldGameHeight = gameHeight;
+          final oldGameHeight = gameSize.y;
           gameHeight = ((gameSize.x / scale.x) / maxAspectRatio.x) * maxAspectRatio.y;
+          gameSize.y = gameHeight * scale.y;
+
           cutoutSize.set(0, cutoutSize.y - (oldGameHeight - gameHeight));
           gameCutoutSize.copyFrom(cutoutSize);
           gameCutoutSize /= gameSize.x / FlxG.initialWidth;
-          offset.y = Math.ceil((deviceSize.y - (gameHeight * scale.y)) * 0.5);
+
+          final sizeDifference:Float = oldGameHeight - gameSize.y;
+          final scale:Float = gameSize.y / FlxG.initialHeight;
+          cutoutSize.set(0, cutoutSize.y - sizeDifference);
+          gameCutoutSize.copyFrom(cutoutSize);
+          gameCutoutSize /= scale;
+
+          notchSize.y = Math.max(0, notchSize.y - sizeDifference);
+          gameNotchSize.y = notchSize.y / scale;
+
+          offset.y = Math.ceil((deviceSize.y - gameSize.y) * 0.5);
           updateGamePosition();
         }
 
         untyped FlxG.height = Math.ceil(gameHeight);
 
-        windowScale.y = FlxG.height / FlxG.initialHeight;
+        wideScale.y = FlxG.height / FlxG.initialHeight;
       }
       else
       {
-        gameSize.x += cutoutSize.x;
-
         var gameWidth:Float = gameSize.x / scale.x;
 
         #if desktop
         if (MathUtil.gcd(Math.ceil(gameWidth), FlxG.height) == 1)
         {
           gameSize.x -= cutoutSize.x;
-          cutoutSize.set(0, 0);
-          gameCutoutSize.set(0, 0);
-          notchSize.set(0, 0);
-          gameNotchSize.set(0, 0);
-          notchPosition.set(0, 0);
-          gameNotchPosition.set(0, 0);
-
           offset.x = Math.ceil((deviceSize.x - gameSize.x) * 0.5);
           updateGamePosition();
+          reset();
           return;
         }
         #end
 
         if (gameWidth / FlxG.height > maxAspectRatio.x / maxAspectRatio.y && maxRatioAxis.x)
         {
-          final oldGameWidth = gameWidth;
+          final oldGameWidth = gameSize.x;
           gameWidth = ((gameSize.y / scale.y) / maxAspectRatio.y) * maxAspectRatio.x;
-          cutoutSize.set(cutoutSize.x - (oldGameWidth - gameWidth), 0);
+          gameSize.x = gameWidth * scale.x;
+
+          final sizeDifference:Float = oldGameWidth - gameSize.x;
+          final scale:Float = gameSize.x / FlxG.initialWidth;
+          cutoutSize.set(cutoutSize.x - sizeDifference, 0);
           gameCutoutSize.copyFrom(cutoutSize);
-          gameCutoutSize /= gameSize.x / FlxG.initialWidth;
-          offset.x = Math.ceil((deviceSize.x - (gameWidth * scale.x)) * 0.5);
+          gameCutoutSize /= scale;
+
+          notchSize.x = Math.max(0, notchSize.x - sizeDifference);
+          gameNotchSize.x = notchSize.x / scale;
+
+          offset.x = Math.ceil((deviceSize.x - gameSize.x) * 0.5);
           updateGamePosition();
         }
 
         untyped FlxG.width = Math.ceil(gameWidth);
 
-        windowScale.x = FlxG.width / FlxG.initialWidth;
+        wideScale.x = FlxG.width / FlxG.initialWidth;
       }
-    }
-  }
-
-  /**
-   * Updates the game size based on the provided width and height.
-   * @param Width The width of the screen.
-   * @param Height The height of the screen.
-   */
-  override public function updateGameSize(Width:Int, Height:Int):Void
-  {
-    gameRatio = FlxG.width / FlxG.height;
-    windowRatio = Width / Height;
-    ratioAxis = windowRatio < gameRatio ? FlxAxes.Y : FlxAxes.X;
-
-    if (ratioAxis == FlxAxes.Y)
-    {
-      gameSize.x = Width;
-      gameSize.y = Math.ceil(gameSize.x / gameRatio);
-    }
-    else
-    {
-      gameSize.y = Height;
-      gameSize.x = Math.ceil(gameSize.y * gameRatio);
     }
   }
 

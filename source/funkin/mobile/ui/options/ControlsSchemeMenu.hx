@@ -166,7 +166,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
     for (i in 0...availableSchemes.length)
     {
       final hitboxShowcase:HitboxShowcase = new HitboxShowcase(0, 0, i, currentIndex, availableSchemes[i], onSelectHitbox);
-      hitboxShowcase.x = Math.floor(FlxG.width * -0.16 + (1500 * (i * FullScreenScaleMode.windowScale.x)));
+      hitboxShowcase.x = Math.floor(FlxG.width * -0.16 + (1500 * (i * FullScreenScaleMode.wideScale.x)));
       hitboxShowcases.add(hitboxShowcase);
     }
 
