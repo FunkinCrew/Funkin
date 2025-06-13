@@ -746,7 +746,7 @@ class FreeplayState extends MusicBeatSubState
     funnyCam.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.add(funnyCam, false);
 
-    rankVignette.scale.set(2 * FullScreenScaleMode.windowScale.x, 2 * FullScreenScaleMode.windowScale.y);
+    rankVignette.scale.set(2 * FullScreenScaleMode.wideScale.x, 2 * FullScreenScaleMode.wideScale.y);
     rankVignette.updateHitbox();
     rankVignette.blend = BlendMode.ADD;
     // rankVignette.cameras = [rankCamera];
@@ -1296,7 +1296,6 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
-      FullScreenScaleMode.enabled = false;
       FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
     });
     for (grpSpr in exitMoversCharSel.keys())
@@ -1883,30 +1882,31 @@ class FreeplayState extends MusicBeatSubState
   {
     if (fnfFreeplay == null || freeplayTxtBg == null || freeplayArrow == null) return;
 
-    if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
-    {
-      _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
-      _pressedOnFreeplay = true;
-    }
+    // Commenting this out for now, since it doesn't work properly with the new touch controls. - Zack
+    // if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
+    // {
+    //   _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
+    //   _pressedOnFreeplay = true;
+    // }
 
-    if (_pressedOnFreeplay && TouchUtil.pressed)
-    {
-      final dragX:Float = TouchUtil.touch.x + _dragOffset;
-      fnfFreeplay.x = dragX;
-      freeplayTxtBg.x = dragX - 8;
+    // if (_pressedOnFreeplay && TouchUtil.pressed)
+    // {
+    //   final dragX:Float = TouchUtil.touch.x + _dragOffset;
+    //   fnfFreeplay.x = dragX;
+    //   freeplayTxtBg.x = dragX - 8;
 
-      if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
-      {
-        _pressedOnFreeplay = false;
-        goBack();
-      }
-    }
-    else
-    {
-      fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
-      freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
-      _pressedOnFreeplay = false;
-    }
+    //   if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
+    //   {
+    //     _pressedOnFreeplay = false;
+    //     goBack();
+    //   }
+    // }
+    // else
+    // {
+    fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
+    freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
+    _pressedOnFreeplay = false;
+    // }
   }
   #end
 
@@ -2783,6 +2783,13 @@ class DifficultySelector extends FlxSprite
     }
 
     pressed = press;
+  }
+
+  override function updateHitbox()
+  {
+    super.updateHitbox();
+    width *= 1.5;
+    height *= 1.5;
   }
   #end
 
