@@ -94,6 +94,7 @@ class FunkinBackButton extends FunkinButton
   {
     FlxTween.cancelTweensOf(this);
     HapticUtil.vibrate(0, 0.01, 0.2);
+
     animation.play('idle');
     FlxTween.tween(this, {alpha: restingOpacity}, 0.5, {ease: FlxEase.expoOut});
   }
@@ -105,5 +106,12 @@ class FunkinBackButton extends FunkinButton
     #if android
     if (FlxG.android.justReleased.BACK) onDown.dispatch();
     #end
+  }
+
+  override function destroy():Void
+  {
+    super.destroy();
+    onConfirmEnd.removeAll();
+    if (animation != null && animation.onFinish != null) animation.onFinish.removeAll();
   }
 }
