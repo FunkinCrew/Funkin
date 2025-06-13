@@ -172,7 +172,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
     #else
-    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0, true);
     add(backButton);
     #end
 
