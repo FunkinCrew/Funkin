@@ -136,7 +136,7 @@ class WaveformDataParser
       }
 
       // We now have the min and max values for the range.
-      Vector.blit(values, 0, outputData, pointIndex * 4, 4);
+      Vector.blit(values, 0, outputData, pointIndex * values.length, values.length);
     }
 
     var outputDataLength:Int = Std.int(outputData.length / channels / 2);
