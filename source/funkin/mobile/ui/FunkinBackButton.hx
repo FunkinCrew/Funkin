@@ -76,6 +76,7 @@ class FunkinBackButton extends FunkinButton
     FlxTween.cancelTweensOf(this);
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
+    funkin.audio.FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
     if (!instant)
     {
