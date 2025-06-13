@@ -32,6 +32,12 @@ class PlayerData
   public var showUnownedChars:Bool = false;
 
   /**
+   * The name used for the character's type of death as seen on the pause menu.
+   */
+  @:optional
+  public var deathName:String = 'Deaths';
+
+  /**
    * The default sticker pack to use for songs featuring this playable character.
    * Can be overridden by specific songs.
    * @default `default`

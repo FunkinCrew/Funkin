@@ -135,7 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * @JackXson-Real made their first contribution in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
 * @VioletSnowLeopard made their first contribution in [#4382](https://github.com/FunkinCrew/Funkin/pull/4382)
 * @superpowers04 made their first contribution in [#4729](https://github.com/FunkinCrew/Funkin/pull/4729)
-* @ShadzXD made their first contribution in [#62](https://github.com/FunkinCrew/Funkin/pull/4729)
+* @ShadzXD made their first contribution in [funkin.assets#62](https://github.com/FunkinCrew/funkin.assets/pull/62)
 
 
 
