@@ -1975,7 +1975,7 @@ class PlayState extends MusicBeatSubState
     add(playerStrumline);
     add(opponentStrumline);
 
-    final cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2.0;
+    final cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2.5;
     // Position the player strumline on the right half of the screen
     playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
