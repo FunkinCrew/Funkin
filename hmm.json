@@ -45,7 +45,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "e24c62c08d951351749e62ec31a95316974b91d9",
+      "ref": "db5c3678c7fc275b41d14e593be28fe6068870fa",
       "url": "https://github.com/FunkinCrew/flixel-mobile"
     },
     {
@@ -177,7 +177,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "9f2b3d5747ad0e05c2b0465959770a88c1990656",
+      "ref": "54ae276eaef55ee70fc2aa0605b4f423ca916bf0",
       "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {
@@ -219,7 +219,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "5237781d5930a7db11f7f717a40926d8b63758e5",
+      "ref": "c267d7fa666cf88faca984d7c0263d35a244708e",
       "url": "https://github.com/FunkinCrew/openfl-mobile"
     },
     {
