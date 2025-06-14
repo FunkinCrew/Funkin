@@ -53,44 +53,30 @@ class WaveformDataParser
     var pointsPerSecond:Float = sampleRate / samplesPerPoint; // 172 samples per second for most songs is plenty precise while still being performant..
 
     // TODO: Make this work better on HTML5.
-    var bytes:Bytes = soundBuffer.data.toBytes();
-    var soundData:Vector<Int> = new Vector<Int>(Std.int(bytes.length / (bitsPerSample / 8)));
+    var soundData:Bytes = soundBuffer.data.toBytes();
+    var fakeBitsPerSample:Int = bitsPerSample;
     var minSampleValue:Int;
     var maxSampleValue:Int;
 
     switch (bitsPerSample)
     {
       case 8:
-        for (i in 0...soundData.length)
-        {
-          soundData[i] = bytes.get(i) - 128;
-        }
         minSampleValue = INT8_MIN;
         maxSampleValue = INT8_MAX;
       case 16:
-        for (i in 0...soundData.length)
-        {
-          var val = bytes.getUInt16(i * 2);
-          if (val > INT16_MAX) val -= 65536;
-          soundData[i] = val;
-        };
         minSampleValue = INT16_MIN;
         maxSampleValue = INT16_MAX;
       case 32:
-        // We cheat by scaling the values to fit in a 16-bit range.
-        for (i in 0...soundData.length)
-        {
-          soundData[i] = Std.int(bytes.getFloat(i * 4) * INT16_MAX);
-        }
+        // We'll cheat by scaling the values to fit in a 16-bit range.
         minSampleValue = INT16_MIN;
         maxSampleValue = INT16_MAX;
-        bitsPerSample = 16;
+        fakeBitsPerSample = 16;
       default:
         throw 'Unsupported bits per sample: $bitsPerSample';
     }
 
     var soundDataRawLength:Int = soundData.length;
-    var soundDataSampleCount:Int = Math.ceil(soundDataRawLength / channels);
+    var soundDataSampleCount:Int = Math.ceil(soundDataRawLength / channels / (bitsPerSample / 8));
     var outputPointCount:Int = Math.ceil(soundDataSampleCount / samplesPerPoint);
 
     // trace('Interpreting audio buffer:');
@@ -128,7 +114,19 @@ class WaveformDataParser
         for (channelIndex in 0...channels)
         {
           var sampleIndex:Int = sampleIndex * channels + channelIndex;
-          var sampleValue:Int = soundData[sampleIndex];
+          var sampleValue:Int = switch (bitsPerSample)
+          {
+            case 8:
+              final byte = soundData.get(sampleIndex);
+              (byte & 0x80) != 0 ? (byte | ~0xFF) : (byte & 0xFF);
+            case 16:
+              final word = soundData.getUInt16(sampleIndex * 2);
+              (word & 0x8000) != 0 ? (word | ~0xFFFF) : (word & 0xFFFF);
+            case 32:
+              Std.int(soundData.getFloat(sampleIndex * 4) * INT16_MAX);
+            default:
+              0;
+          }
 
           if (sampleValue < values[channelIndex * 2]) values[(channelIndex * 2)] = sampleValue;
           if (sampleValue > values[channelIndex * 2 + 1]) values[(channelIndex * 2) + 1] = sampleValue;
@@ -140,7 +138,7 @@ class WaveformDataParser
     }
 
     var outputDataLength:Int = Std.int(outputData.length / channels / 2);
-    var result = new WaveformData(null, channels, sampleRate, samplesPerPoint, bitsPerSample, outputPointCount, outputData.toArray());
+    var result = new WaveformData(null, channels, sampleRate, samplesPerPoint, fakeBitsPerSample, outputPointCount, outputData.toArray());
 
     trace('[WAVEFORM] Interpreted audio buffer in ${TimerUtil.seconds(perfStart)}.');
 
