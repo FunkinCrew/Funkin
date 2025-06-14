@@ -211,6 +211,16 @@ class Project extends HXProject
   static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
 
   /**
+   * `-DCENSOR_EXPLETIVES`
+   * If enabled, specifically disable "sexual explitives" in the game.
+   * This will forcibly censor these words (even if naughtyness is enabled), while leaving other swears.
+   *
+   * NOTE: This is needed because the Android platform specifically hates "fuck" and "cunt",
+   * but is fine with other naughtyness such as "cock", "asshole", implied sex, cigarettes, etc.
+   */
+   static final CENSOR_EXPLETIVES:FeatureFlag = "CENSOR_EXPLETIVES";
+
+  /**
    * `-DFEATURE_DEBUG_FUNCTIONS`
    * If this flag is enabled, the game will have all playtester-only debugging functionality enabled.
    * This includes debug hotkeys like time travel in the Play State.
@@ -400,6 +410,13 @@ class Project extends HXProject
    * If this feature flag is enabled, the user may sometimes be prompted to review the app.
    */
   static final FEATURE_MOBILE_IAR:FeatureFlag = "FEATURE_MOBILE_IAR";
+
+  /**
+   * `-DFEATURE_NAUGHTYNESS`
+   * If this feature flag is enabled, naughtyness will be a toggleable option in the Options Menu.
+   * If disabled, the option will be hidden and the game will always be censored.
+   */
+  static final FEATURE_NAUGHTYNESS:FeatureFlag = "FEATURE_NAUGHTYNESS";
 
   //
   // CONFIGURATION FUNCTIONS
@@ -757,6 +774,12 @@ class Project extends HXProject
 
     // Should be true only on mobile builds.
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
+
+    // Should be true on mobile builds.
+    CENSOR_EXPLETIVES.apply(this, isMobile());
+
+    // Should be true on everything.
+    FEATURE_NAUGHTYNESS.apply(this, true);
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
     FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && envConfig != null));
