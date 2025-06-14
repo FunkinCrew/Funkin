@@ -163,6 +163,20 @@ class Project extends HXProject
    */
   static final EXCLUDE_ASSETS_NATIVE:Array<String> = ["*.mp3"];
 
+  /**
+   * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` enabled.
+   */
+  static final EXCLUDE_ASSETS_CENSORED:Array<String> = ["stressCutscene.mp4", "stressPicoCutscene.mp4", "darnellCutscene.mp4"];
+
+  /**
+   * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` disabled.
+   */
+  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = [
+    "stressCutscene-censored.mp4",
+    "stressPicoCutscene-censored.mp4",
+    "darnellCutscene-censored.mp4"
+  ];
+
   //
   // BUILD FLAGS
   // Inverse build flags are automatically populated.
@@ -1087,6 +1101,15 @@ class Project extends HXProject
     var exclude = EXCLUDE_ASSETS.concat(isWeb() ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
     var shouldPreload = PRELOAD_ALL.isEnabled(this);
     var shouldEmbed = EMBED_ASSETS.isEnabled(this);
+
+    if (CENSOR_EXPLETIVES.isEnabled(this))
+    {
+      exclude = exclude.concat(EXCLUDE_ASSETS_CENSORED);
+    }
+    else
+    {
+      exclude = exclude.concat(EXCLUDE_ASSETS_UNCENSORED);
+    }
 
     if (shouldEmbed)
     {
