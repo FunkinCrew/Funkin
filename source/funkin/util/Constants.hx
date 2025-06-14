@@ -560,6 +560,11 @@ class Constants
   #end
 
   /**
+   * Otherwise known as "The FuckCunt Variable"
+   */
+  public static final CENSOR_EXPLETIVES:Bool = #if CENSOR_EXPLETIVES true #else false #end;
+
+  /**
    * The maximum number of previous file paths for the Chart Editor to remember.
    */
   public static final MAX_PREVIOUS_WORKING_FILES:Int = 10;
