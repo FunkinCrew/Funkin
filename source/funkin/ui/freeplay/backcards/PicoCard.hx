@@ -144,6 +144,8 @@ class PicoCard extends BackingCard
 
     confirmAtlas = new FlxAtlasSprite(5, 55, Paths.animateAtlas("freeplay/backingCards/pico/pico-confirm"));
     confirmAtlas.visible = false;
+    confirmAtlas.scale *= FullScreenScaleMode.wideScale.x;
+    confirmAtlas.x += ((confirmAtlas.width * FullScreenScaleMode.wideScale.x) - confirmAtlas.width) * 2.58;
     add(confirmAtlas);
 
     cardGlow.blend = BlendMode.ADD;
