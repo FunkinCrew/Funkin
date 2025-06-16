@@ -69,7 +69,8 @@ class CharSelectSubState extends MusicBeatSubState
   var chooseDipshit:FlxSprite;
   var dipshitBlur:FlxSprite;
   var transitionGradient:FlxSprite;
-  var curChar(default, set):String = "pico";
+  var curChar(default, set):String = Constants.DEFAULT_CHARACTER;
+  var rememberedChar:String;
   var nametag:Nametag;
   var camFollow:FlxObject;
   var autoFollow:Bool = false;
@@ -98,9 +99,10 @@ class CharSelectSubState extends MusicBeatSubState
 
   var cutoutSize:Float = 0;
 
-  public function new()
+  public function new(?params:CharSelectSubStateParams)
   {
     super();
+    rememberedChar = params?.character;
     loadAvailableCharacters();
   }
 
@@ -182,19 +184,40 @@ class CharSelectSubState extends MusicBeatSubState
     charLightGF.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLightGF);
 
-    gfChill = new CharSelectGF();
-    gfChill.switchGF("bf");
-    gfChill.x += cutoutSize;
-    add(gfChill);
+    function setupPlayerChill(character:String)
+    {
+      gfChill = new CharSelectGF();
+      gfChill.switchGF(character);
+      gfChill.x += cutoutSize;
+      add(gfChill);
 
-    playerChillOut = new CharSelectPlayer(cutoutSize, 0);
-    playerChillOut.switchChar("bf");
-    playerChillOut.visible = false;
-    add(playerChillOut);
+      playerChillOut = new CharSelectPlayer(cutoutSize, 0);
+      playerChillOut.switchChar(character);
+      playerChillOut.visible = false;
+      add(playerChillOut);
 
-    playerChill = new CharSelectPlayer(cutoutSize, 0);
-    playerChill.switchChar("bf");
-    add(playerChill);
+      playerChill = new CharSelectPlayer(cutoutSize, 0);
+      playerChill.switchChar(character);
+      add(playerChill);
+    }
+
+    // I think I can do the character preselect thing here? This better work
+    // Edit: [UH-OH!] yes! It does!
+    if (rememberedChar != null && rememberedChar != Constants.DEFAULT_CHARACTER)
+    {
+      setupPlayerChill(rememberedChar);
+      for (pos => charId in availableChars)
+      {
+        if (charId == rememberedChar)
+        {
+          setCursorPosition(pos);
+          break;
+        }
+      }
+      @:bypassAccessor curChar = rememberedChar;
+    }
+    else
+      setupPlayerChill(Constants.DEFAULT_CHARACTER);
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 10, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
@@ -241,7 +264,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.scrollFactor.set();
     dipshitBlur.scrollFactor.set();
 
-    nametag = new Nametag();
+    nametag = new Nametag(curChar);
     nametag.midpointX += cutoutSize;
     add(nametag);
 
@@ -1153,6 +1176,25 @@ class CharSelectSubState extends MusicBeatSubState
     return gridPosition;
   }
 
+  // Moved this code into a function because is now used twice
+  function setCursorPosition(index:Int)
+  {
+    var copy = 3;
+    var yThing = -1;
+
+    while ((index + 1) > copy)
+    {
+      yThing++;
+      copy += 3;
+    }
+
+    var xThing = (copy - index - 2) * -1;
+
+    // Look, I'd write better code but I had better aneurysms, my bad - Cheems
+    cursorY = yThing;
+    cursorX = xThing;
+  }
+
   function set_curChar(value:String):String
   {
     if (curChar == value) return value;
@@ -1203,3 +1245,11 @@ class CharSelectSubState extends MusicBeatSubState
     return value;
   }
 }
+
+/**
+ * Parameters used to initialize the CharSelectSubState.
+ */
+typedef CharSelectSubStateParams =
+{
+  ?character:String, // ?fromFreeplaySelect:Bool,
+};
