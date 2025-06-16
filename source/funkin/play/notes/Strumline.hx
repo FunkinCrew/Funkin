@@ -10,6 +10,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
 import funkin.graphics.FunkinSprite;
+import flixel.graphics.FlxGraphic;
 import flixel.util.FlxColor;
 import funkin.play.notes.NoteHoldCover;
 import funkin.play.notes.NoteSplash;
