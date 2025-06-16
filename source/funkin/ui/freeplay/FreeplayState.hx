@@ -29,6 +29,8 @@ import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.StrokeShader;
 import openfl.filters.ShaderFilter;
 import funkin.input.Controls;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.play.song.Song;
@@ -327,10 +329,10 @@ class FreeplayState extends MusicBeatSubState
 
     if (backingCard != null)
     {
-      add(backingCard);
-      backingCard.initCard();
-      backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
       backingCard.instance = this;
+      add(backingCard);
+      ScriptEventDispatcher.callEvent(backingCard, new ScriptEvent(CREATE, false));
+      backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
     }
 
     if (currentCharacter?.getFreeplayDJData() != null)
@@ -680,6 +682,12 @@ class FreeplayState extends MusicBeatSubState
       enterFromCharSel();
       onDJIntroDone();
     }
+  }
+
+  override public function dispatchEvent(event:ScriptEvent)
+  {
+    super.dispatchEvent(event);
+    if (backingCard != null) ScriptEventDispatcher.callEvent(backingCard, event);
   }
 
   var currentFilter:Null<SongFilter> = null;

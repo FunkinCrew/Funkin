@@ -12,12 +12,13 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
+import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 /**
  * A class for the backing cards so they dont have to be part of freeplayState......
  */
-class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass
+class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass implements IStateChangingScriptedClass
 {
   public var backingTextYeah:FlxAtlasSprite;
   public var orangeBackShit:FunkinSprite;
@@ -124,43 +125,6 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass
   }
 
   /**
-   * Called in create. Adds sprites and tweens.
-   */
-  public function initCard():Void
-  {
-    FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
-    add(pinkBack);
-
-    add(orangeBackShit);
-
-    add(alsoOrangeLOL);
-
-    FlxSpriteUtil.alphaMaskFlxSprite(orangeBackShit, pinkBack, orangeBackShit);
-    orangeBackShit.visible = false;
-    alsoOrangeLOL.visible = false;
-
-    confirmTextGlow.blend = BlendMode.ADD;
-    confirmTextGlow.visible = false;
-
-    confirmGlow.blend = BlendMode.ADD;
-
-    confirmGlow.visible = false;
-    confirmGlow2.visible = false;
-
-    add(confirmGlow2);
-    add(confirmGlow);
-
-    add(confirmTextGlow);
-
-    add(backingTextYeah);
-
-    cardGlow.blend = BlendMode.ADD;
-    cardGlow.visible = false;
-
-    add(cardGlow);
-  }
-
-  /**
    * Called after the dj finishes their start animation.
    */
   public function introDone():Void
@@ -241,15 +205,66 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass
     alsoOrangeLOL.visible = false;
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {};
+  public function onScriptEvent(event:ScriptEvent):Void {}
 
-  public function onCreate(event:ScriptEvent):Void {};
+  /**
+   * Called in create. Adds sprites and tweens.
+   */
+  public function onCreate(event:ScriptEvent):Void
+  {
+    FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
+    add(pinkBack);
 
-  public function onDestroy(event:ScriptEvent):Void {};
+    add(orangeBackShit);
 
-  public function onUpdate(event:UpdateScriptEvent):Void {};
+    add(alsoOrangeLOL);
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {};
+    FlxSpriteUtil.alphaMaskFlxSprite(orangeBackShit, pinkBack, orangeBackShit);
+    orangeBackShit.visible = false;
+    alsoOrangeLOL.visible = false;
 
-  public function onBeatHit(event:SongTimeScriptEvent):Void {};
+    confirmTextGlow.blend = BlendMode.ADD;
+    confirmTextGlow.visible = false;
+
+    confirmGlow.blend = BlendMode.ADD;
+
+    confirmGlow.visible = false;
+    confirmGlow2.visible = false;
+
+    add(confirmGlow2);
+    add(confirmGlow);
+
+    add(confirmTextGlow);
+
+    add(backingTextYeah);
+
+    cardGlow.blend = BlendMode.ADD;
+    cardGlow.visible = false;
+
+    add(cardGlow);
+  }
+
+  public function onDestroy(event:ScriptEvent):Void {}
+
+  public function onUpdate(event:UpdateScriptEvent):Void {}
+
+  public function onStepHit(event:SongTimeScriptEvent):Void {}
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void {}
+
+  public function onStateChangeBegin(event:StateChangeScriptEvent):Void {}
+
+  public function onStateChangeEnd(event:StateChangeScriptEvent):Void {}
+
+  public function onSubStateOpenBegin(event:SubStateScriptEvent):Void {}
+
+  public function onSubStateOpenEnd(event:SubStateScriptEvent):Void {}
+
+  public function onSubStateCloseBegin(event:SubStateScriptEvent):Void {}
+
+  public function onSubStateCloseEnd(event:SubStateScriptEvent):Void {}
+
+  public function onFocusLost(event:FocusScriptEvent):Void {}
+
+  public function onFocusGained(event:FocusScriptEvent):Void {}
 }
