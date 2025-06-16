@@ -23,6 +23,7 @@ import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.menus.MenuCheckBox;
 import funkin.util.FileUtil;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler.StageEditorObjectData;
 import funkin.ui.debug.stageeditor.handlers.StageDataHandler;
@@ -638,6 +639,7 @@ class StageEditorState extends UIState
         if (FlxG.keys.justPressed.F) onMenuItemClick("find object");
         if (FlxG.keys.justPressed.O) onMenuItemClick("open stage");
         if (FlxG.keys.justPressed.N) onMenuItemClick("new stage");
+        if (FlxG.keys.justPressed.Q) onMenuItemClick("exit");
       }
 
       if (FlxG.keys.justPressed.TAB) onMenuItemClick("switch mode");
