@@ -17,7 +17,7 @@ using StringTools;
 
 // Annotation embeds the asset in the executable for faster loading.
 // Polymod can't override this, so we can't use this technique elsewhere.
-#if TOUCH_HERE_TO_PLAY
+#if FEATURE_TOUCH_HERE_TO_PLAY
 @:bitmap('art/touchHereToPlay.png')
 class TouchHereToPlayImage extends BitmapData {}
 #end
@@ -96,7 +96,7 @@ class FunkinPreloader extends FlxBasePreloader
   private var completeTime:Float = -1;
 
   // Graphics
-  #if TOUCH_HERE_TO_PLAY
+  #if FEATURE_TOUCH_HERE_TO_PLAY
   var touchHereToPlay:Bitmap;
   var touchHereSprite:Sprite;
   #end
@@ -253,7 +253,7 @@ class FunkinPreloader extends FlxBasePreloader
     vfdShader = new VFDOverlay();
     vfdBitmap.shader = vfdShader;
 
-    #if TOUCH_HERE_TO_PLAY
+    #if FEATURE_TOUCH_HERE_TO_PLAY
     touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap) {
       // Scale and center the touch to start image.
       // We have to do this inside the async call, after the image size is known.
@@ -766,7 +766,7 @@ class FunkinPreloader extends FlxBasePreloader
         }
 
         return 1.0;
-      #if TOUCH_HERE_TO_PLAY
+      #if FEATURE_TOUCH_HERE_TO_PLAY
       case FunkinPreloaderState.TouchHereToPlay:
         if (completeTime < 0)
         {
@@ -795,7 +795,7 @@ class FunkinPreloader extends FlxBasePreloader
     return 0.0;
   }
 
-  #if TOUCH_HERE_TO_PLAY
+  #if FEATURE_TOUCH_HERE_TO_PLAY
   function overTouchHereToPlay(e:MouseEvent):Void
   {
     touchHereToPlay.scaleX = touchHereToPlay.scaleY = ratio * 1.1;
@@ -841,7 +841,7 @@ class FunkinPreloader extends FlxBasePreloader
       var elapsedFinished:Float = renderDisplayFadeOut(elapsed);
       if (elapsedFinished > FADE_TIME)
       {
-        #if TOUCH_HERE_TO_PLAY
+        #if FEATURE_TOUCH_HERE_TO_PLAY
         // The display has faded out, but we're not quite done yet.
         // In order to prevent autoplay issues, we need the user to click after the loading finishes.
         currentState = FunkinPreloaderState.TouchHereToPlay;
@@ -1028,7 +1028,7 @@ enum abstract FunkinPreloaderState(Int) to Int
    */
   var Complete;
 
-  #if TOUCH_HERE_TO_PLAY
+  #if FEATURE_TOUCH_HERE_TO_PLAY
   /**
    * Touch Here to Play is displayed.
    */
@@ -1069,7 +1069,7 @@ enum abstract FunkinPreloaderState(Int) to Int
         return 'Parsing songs \n10/$steps $suffix';
       case Complete:
         return 'Finishing up \n$steps/$steps $suffix';
-      #if TOUCH_HERE_TO_PLAY
+      #if FEATURE_TOUCH_HERE_TO_PLAY
       case TouchHereToPlay:
         return null; // return null here to hide the text
       #end
