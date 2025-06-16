@@ -340,7 +340,7 @@ class Project extends HXProject
 
   /**
    * `-DFEATURE_RESULTS_DEBUG`
-   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+   * If this flag is enabled, a debug tester for Results screens will be accessible from the debug menu.
    */
   static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
 
@@ -360,7 +360,7 @@ class Project extends HXProject
 
   /**
    * `-DFEATURE_INPUT_OFFSETS`
-   * If this flag is enabled, the input offsets menu will be available to configure your audio and visual offsets.
+   * If this flag is enabled, the input offsets menu will be available to configure audio and visual offsets.
    */
   static final FEATURE_INPUT_OFFSETS:FeatureFlag = "FEATURE_INPUT_OFFSETS";
 
@@ -395,13 +395,13 @@ class Project extends HXProject
 
   /**
    * `-DFEATURE_MOBILE_ADVERTISEMENTS`
-   * If this flag is enabled, Google AdMob will be enabled. Banner and interstitial ads will some
+   * If this flag is enabled, Google AdMob will be enabled. Banner and interstitial ads will sometimes appear.
    */
   static final FEATURE_MOBILE_ADVERTISEMENTS:FeatureFlag = "FEATURE_MOBILE_ADVERTISEMENTS";
 
   /**
    * `-DFEATURE_MOBILE_IAP`
-   * If this flag is enabled, ADs from AdMob will be disabled.
+   * If this flag is enabled, ads from AdMob will be disabled.
    */
   static final FEATURE_MOBILE_IAP:FeatureFlag = "FEATURE_MOBILE_IAP";
 
