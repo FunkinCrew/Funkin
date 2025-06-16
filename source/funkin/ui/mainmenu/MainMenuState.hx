@@ -6,6 +6,7 @@ import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
+import flixel.math.FlxPoint;
 import flixel.util.typeLimit.NextState;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
@@ -23,6 +24,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
+import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
 import funkin.ui.mainmenu.UpgradeSparkle;
@@ -44,6 +46,10 @@ class MainMenuState extends MusicBeatState
   var bg:FlxSprite;
   var magenta:FlxSprite;
   var camFollow:FlxObject;
+
+  #if mobile
+  var gyroPan:FlxPoint;
+  #end
 
   var overrideMusic:Bool = false;
 
@@ -247,6 +253,8 @@ class MainMenuState extends MusicBeatState
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     #if mobile
+    gyroPan = new FlxPoint();
+
     camFollow.y = bg.getGraphicMidpoint().y;
 
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
@@ -393,8 +401,15 @@ class MainMenuState extends MusicBeatState
     Conductor.instance.update();
 
     #if mobile
-    camFollow.y += FlxG.gyroscope.roll * 3;
-    camFollow.x += FlxG.gyroscope.pitch * -3;
+    gyroPan.add(FlxG.gyroscope.pitch * -3, FlxG.gyroscope.roll * 3);
+
+    // our pseudo damping
+    gyroPan.x = MathUtil.smoothLerp(gyroPan.x, 0, elapsed, 5);
+    gyroPan.y = MathUtil.smoothLerp(gyroPan.y, 0, elapsed, 5);
+
+    // how far away from bg mid do we want to pan via gyroPan
+    camFollow.x = bg.getGraphicMidpoint().x - gyroPan.x;
+    camFollow.y = bg.getGraphicMidpoint().y - gyroPan.y;
     #end
 
     // Open the debug menu, defaults to ` / ~
