@@ -29,6 +29,8 @@ import funkin.graphics.shaders.BlueFade;
 import funkin.graphics.shaders.StrokeShader;
 import openfl.filters.ShaderFilter;
 import funkin.input.Controls;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.play.song.Song;
@@ -220,16 +222,25 @@ class FreeplayState extends MusicBeatSubState
 
     if (stickers?.members != null) stickerSubState = stickers;
 
-    switch (currentCharacterId)
+    if (PlayerRegistry.instance.hasNewCharacter())
     {
-      case(PlayerRegistry.instance.hasNewCharacter()) => true:
-        backingCard = new NewCharacterCard(currentCharacter);
-      case 'bf':
-        backingCard = new BoyfriendCard(currentCharacter);
-      case 'pico':
-        backingCard = new PicoCard(currentCharacter);
-      default:
-        backingCard = new BackingCard(currentCharacter);
+      backingCard = new NewCharacterCard(currentCharacterId);
+    }
+    else
+    {
+      var allScriptedCards:Array<String> = ScriptedBackingCard.listScriptClasses();
+      for (cardClass in allScriptedCards)
+      {
+        var card:BackingCard = ScriptedBackingCard.init(cardClass, "unknown");
+        if (card.currentCharacter == currentCharacterId)
+        {
+          backingCard = card;
+          break;
+        }
+      }
+
+      // Return the default backing card if there isn't one specific for the character.
+      if (backingCard == null) backingCard = new BackingCard(currentCharacterId);
     }
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
@@ -324,10 +335,10 @@ class FreeplayState extends MusicBeatSubState
 
     if (backingCard != null)
     {
-      add(backingCard);
-      backingCard.init();
-      backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
       backingCard.instance = this;
+      add(backingCard);
+      ScriptEventDispatcher.callEvent(backingCard, new ScriptEvent(CREATE, false));
+      backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
     }
 
     if (currentCharacter?.getFreeplayDJData() != null)
@@ -683,6 +694,12 @@ class FreeplayState extends MusicBeatSubState
         onDJIntroDone();
       }
     }
+  }
+
+  override public function dispatchEvent(event:ScriptEvent)
+  {
+    super.dispatchEvent(event);
+    if (backingCard != null) ScriptEventDispatcher.callEvent(backingCard, event);
   }
 
   var currentFilter:Null<SongFilter> = null;
