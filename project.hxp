@@ -715,7 +715,7 @@ class Project extends HXProject
     EXCLUDE_ARMV7.apply(this, false);
     UNLOCK_EVERYTHING.apply(this, false);
     FEATURE_COMPRESSED_TEXTURES.apply(this, false);
-    FEATURE_INPUT_OFFSETS.apply(this, false);
+    FEATURE_INPUT_OFFSETS.apply(this, !isMobile());
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
