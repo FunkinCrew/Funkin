@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.ui.freeplay.charselect.PlayableCharacter;
 import flixel.FlxState;
 import funkin.data.freeplay.player.PlayerRegistry;
 import flixel.FlxG;
@@ -10,7 +11,6 @@ import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
@@ -121,8 +121,18 @@ class GameOverSubState extends MusicBeatSubState
     this.isChartingMode = params?.isChartingMode ?? false;
     transparent = params.transparent;
 
-    cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
+    cameraFollowPoint = new FlxObject(0, 0, 1, 1);
+    if (parentPlayState != null)
+    {
+      cameraFollowPoint.x = parentPlayState.cameraFollowPoint.x;
+      cameraFollowPoint.y = parentPlayState.cameraFollowPoint.y;
+    }
   }
+
+  /**
+   * The PlayState that this GameOverSubState is displaying on top of.
+   */
+  public var parentPlayState:Null<PlayState>;
 
   /**
    * Reset the game over configuration to the default.
@@ -139,18 +149,17 @@ class GameOverSubState extends MusicBeatSubState
   {
     if (instance != null)
     {
-      // TODO: Do something in this case? IDK.
       FlxG.log.warn('WARNING: GameOverSubState instance already exists. This should not happen.');
     }
     instance = this;
 
     super.create();
 
+    parentPlayState = cast _parentState;
+
     //
     // Set up the visuals
     //
-
-    var playState = PlayState.instance;
 
     // Add a black background to the screen.
     var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
@@ -163,10 +172,10 @@ class GameOverSubState extends MusicBeatSubState
 
     // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
     // We can then play the character's `firstDeath` animation.
-    if (PlayState.instance.isMinimalMode) {}
+    if ((parentPlayState?.isMinimalMode ?? true)) {}
     else
     {
-      boyfriend = PlayState.instance.currentStage.getBoyfriend(true);
+      boyfriend = parentPlayState?.currentStage.getBoyfriend(true);
       if (boyfriend != null)
       {
         boyfriend.canPlayOtherAnims = true;
@@ -198,10 +207,10 @@ class GameOverSubState extends MusicBeatSubState
   @:nullSafety(Off)
   function setCameraTarget():Void
   {
-    if (PlayState.instance.isMinimalMode || boyfriend == null) return;
+    if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null) return;
 
     // Assign a camera follow point to the boyfriend's position.
-    cameraFollowPoint = new FlxObject(PlayState.instance.cameraFollowPoint.x, PlayState.instance.cameraFollowPoint.y, 1, 1);
+    cameraFollowPoint = new FlxObject(parentPlayState.cameraFollowPoint.x, parentPlayState.cameraFollowPoint.y, 1, 1);
     cameraFollowPoint.x = getMidPointOld(boyfriend).x;
     cameraFollowPoint.y = getMidPointOld(boyfriend).y;
     var offsets:Array<Float> = boyfriend.getDeathCameraOffsets();
@@ -211,7 +220,7 @@ class GameOverSubState extends MusicBeatSubState
 
     FlxG.camera.target = null;
     FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE / 2);
-    targetCameraZoom = (PlayState?.instance?.currentStage?.camZoom ?? 1.0) * boyfriend.getDeathCameraZoom();
+    targetCameraZoom = (parentPlayState?.currentStage?.camZoom ?? 1.0) * boyfriend.getDeathCameraZoom();
   }
 
   /**
@@ -236,7 +245,7 @@ class GameOverSubState extends MusicBeatSubState
   public function resetCameraZoom():Void
   {
     // Apply camera zoom level from stage data.
-    FlxG.camera.zoom = PlayState?.instance?.currentStage?.camZoom ?? 1.0;
+    FlxG.camera.zoom = parentPlayState?.currentStage?.camZoom ?? 1.0;
   }
 
   var hasStartedAnimation:Bool = false;
@@ -247,7 +256,7 @@ class GameOverSubState extends MusicBeatSubState
     {
       hasStartedAnimation = true;
 
-      if (boyfriend == null || PlayState.instance.isMinimalMode)
+      if (boyfriend == null || (parentPlayState?.isMinimalMode ?? true))
       {
         // Play the "blue balled" sound. May play a variant if one has been assigned.
         playBlueBalledSFX();
@@ -293,9 +302,9 @@ class GameOverSubState extends MusicBeatSubState
     }
     else if (boyfriend != null)
     {
-      if (PlayState.instance.isMinimalMode)
+      if ((parentPlayState?.isMinimalMode ?? true))
       {
-        // startDeathMusic(1.0, false);
+        // Do nothing?
       }
       else
       {
@@ -334,8 +343,9 @@ class GameOverSubState extends MusicBeatSubState
   {
     if (isEnding) return;
     if (boyfriend == null) return;
+    if (parentPlayState == null) return;
 
-    var deathQuote = boyfriend.getDeathQuote();
+    var deathQuote:Null<String> = boyfriend.getDeathQuote();
     if (deathQuote == null) return;
 
     if (deathQuoteSound != null)
@@ -374,7 +384,7 @@ class GameOverSubState extends MusicBeatSubState
         deathQuoteSound = null;
       }
 
-      if (PlayState.instance.isMinimalMode || boyfriend == null) {}
+      if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null) {}
       else
       {
         boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
@@ -389,15 +399,15 @@ class GameOverSubState extends MusicBeatSubState
           if (pixel) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
           else
             FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
-          PlayState.instance.needsReset = true;
+          if (parentPlayState != null) parentPlayState.needsReset = true;
 
-          if (PlayState.instance.isMinimalMode || boyfriend == null) {}
+          if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null) {}
           else
           {
             // Readd Boyfriend to the stage.
             boyfriend.isDead = false;
             remove(boyfriend);
-            PlayState.instance.currentStage.addCharacter(boyfriend, BF);
+            parentPlayState?.currentStage.addCharacter(boyfriend, BF);
           }
 
           // Snap reset the camera which may have changed because of the player character data.
@@ -485,7 +495,7 @@ class GameOverSubState extends MusicBeatSubState
   public function startDeathMusic(startingVolume:Float = 1, force:Bool = false):Void
   {
     var musicPath:Null<String> = resolveMusicPath(musicSuffix, isStarting, isEnding);
-    var onComplete:() -> Void = () -> {};
+    var onComplete:Void->Void = () -> {};
 
     if (isStarting)
     {
@@ -529,11 +539,14 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
+  /**
+   * Pressing BACK from the Game Over screen should return the player to the Story/Freeplay menu as appropriate.
+   */
   public function goBack():Void
   {
     isEnding = true;
     blueballed = false;
-    PlayState.instance.deathCounter = 0;
+    if (parentPlayState != null) parentPlayState.deathCounter = 0;
     // PlayState.seenCutscene = false; // old thing...
     if (gameOverMusic != null) gameOverMusic.stop();
 
@@ -549,7 +562,8 @@ class GameOverSubState extends MusicBeatSubState
     {
       this.close();
       if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
-      PlayState.instance.close(); // This only works because PlayState is a substate!
+      if (parentPlayState != null) parentPlayState.close(); // This only works because PlayState is a substate!
+      parentPlayState = null;
       return;
     }
     else
@@ -562,12 +576,12 @@ class GameOverSubState extends MusicBeatSubState
         PlayStatePlaylist.reset();
       }
 
-      var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
+      var stickerPackId:Null<String> = parentPlayState?.currentChart.stickerPack;
 
       if (stickerPackId == null)
       {
-        var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
-        var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
+        var playerCharacterId:Null<String> = PlayerRegistry.instance.getCharacterOwnerId(parentPlayState?.currentChart.characters.player);
+        var playerCharacter:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
 
         if (playerCharacter != null)
         {
@@ -602,14 +616,14 @@ class GameOverSubState extends MusicBeatSubState
   /**
    * Used for death haptics.
    */
-  private var startedTimerHaptics:Bool = false;
+  var startedTimerHaptics:Bool = false;
 
   /**
    * Unique vibrations for each death animation.
    */
-  private function handleAnimationVibrations():Void
+  function handleAnimationVibrations():Void
   {
-    if (PlayState.instance.isMinimalMode || boyfriend == null) return;
+    if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null) return;
 
     if (justDied)
     {
