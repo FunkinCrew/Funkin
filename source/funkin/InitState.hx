@@ -207,6 +207,8 @@ class InitState extends FlxState
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
 
+    funkin.ui.title.OutdatedSubState.checkForUpdates();
+
     funkin.input.Cursor.hide();
 
     trace('Parsing game data took: ${TimerUtil.ms(perfStart)}');
