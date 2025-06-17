@@ -27,6 +27,7 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.PlayStatePlaylist;
 import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.title.TitleState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.CLIUtil;
@@ -301,6 +302,13 @@ class InitState extends FlxState
       FlxG.switchState(() -> new ChartEditorState(
         {
           fnfcTargetPath: params.chart.chartPath,
+        }));
+    }
+    else if (params.stage.shouldLoadStage)
+    {
+      FlxG.switchState(() -> new StageEditorState(
+        {
+          fnfsTargetPath: params.stage.stagePath,
         }));
     }
     else

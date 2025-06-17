@@ -7,6 +7,7 @@ import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
@@ -186,6 +187,11 @@ class PlayState extends MusicBeatSubState
   public var needsReset:Bool = false;
 
   /**
+   * A timer that gets active once resetting happens. Used to vwoosh in notes.
+   */
+  public var vwooshTimer:FlxTimer = new FlxTimer();
+
+  /**
    * The current 'Blueball Counter' to display in the pause menu.
    * Resets when you beat a song or go back to the main menu.
    */
@@ -304,13 +310,13 @@ class PlayState extends MusicBeatSubState
 
   /**
    * Whether the game is currently in Practice Mode.
-   * If true, player will not lose gain or lose score from notes.
+   * If true, player will not gain or lose score from notes.
    */
   public var isPracticeMode:Bool = false;
 
   /**
    * Whether the game is currently in Bot Play Mode.
-   * If true, player will not lose gain or lose score from notes.
+   * If true, player will not gain or lose score from notes.
    */
   public var isBotPlayMode:Bool = false;
 
@@ -431,6 +437,11 @@ class PlayState extends MusicBeatSubState
    * Track any camera tweens we've paused for a Pause substate, so we can unpause them when we return.
    */
   var cameraTweensPausedBySubState:List<FlxTween> = new List<FlxTween>();
+
+  /**
+   * Track any sounds we've paused for a Pause substate, so we can unpause them when we return.
+   */
+  var soundsPausedBySubState:List<FlxSound> = new List<FlxSound>();
 
   /**
    * False until `create()` has completed.
@@ -807,7 +818,6 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    var list = FlxG.sound.list;
     updateHealthBar();
     updateScoreText();
 
@@ -837,9 +847,9 @@ class PlayState extends MusicBeatSubState
       // Reset music properly.
       if (FlxG.sound.music != null)
       {
-        FlxG.sound.music.time = startTimestamp - Conductor.instance.combinedOffset;
-        FlxG.sound.music.pitch = playbackRate;
         FlxG.sound.music.pause();
+        FlxG.sound.music.time = startTimestamp;
+        FlxG.sound.music.pitch = playbackRate;
       }
 
       if (!overrideMusic)
@@ -854,7 +864,7 @@ class PlayState extends MusicBeatSubState
         }
       }
       vocals.pause();
-      vocals.time = 0 - Conductor.instance.combinedOffset;
+      vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
 
       if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       vocals.volume = 1;
@@ -875,9 +885,6 @@ class PlayState extends MusicBeatSubState
       // Delete all notes and reset the arrays.
       regenNoteData();
 
-      // so the song doesn't start too early :D
-      Conductor.instance.update(-5000, false);
-
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
@@ -886,16 +893,22 @@ class PlayState extends MusicBeatSubState
       health = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
+
+      // so the song doesn't start too early :D
+      var vwooshDelay:Float = 0.5;
+      Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -5);
+
       // timer for vwoosh
-      var vwooshTimer = new FlxTimer();
-      vwooshTimer.start(0.5, function(t:FlxTimer) {
-        Conductor.instance.update(startTimestamp - Conductor.instance.combinedOffset, false);
+      vwooshTimer.start(vwooshDelay, function(_) {
         if (playerStrumline.notes.length == 0) playerStrumline.updateNotes();
         if (opponentStrumline.notes.length == 0) opponentStrumline.updateNotes();
         playerStrumline.vwooshInNotes();
         opponentStrumline.vwooshInNotes();
         Countdown.performCountdown();
       });
+
+      // Stops any existing countdown.
+      Countdown.stopCountdown();
 
       // Reset the health icons.
       currentStage?.getBoyfriend()?.initHealthIcon(false);
@@ -959,18 +972,16 @@ class PlayState extends MusicBeatSubState
         // Enable drawing while the substate is open, allowing the game state to be shown behind the pause menu.
         persistentDraw = true;
 
-        // There is a 1/1000 change to use a special pause menu.
+        // Prevent vwoosh timer from starting countdown in pause menu
+        vwooshTimer.active = false;
+
+        // There is a 1/1000 chance to use a special pause menu.
         // This prevents the player from resuming, but that's the point.
         // It's a reference to Gitaroo Man, which doesn't let you pause the game.
         if (!isSubState && event.gitaroo)
         {
           this.remove(currentStage);
-          FlxG.switchState(() -> new GitarooPause(
-            {
-              targetSong: currentSong,
-              targetDifficulty: currentDifficulty,
-              targetVariation: currentVariation,
-            }));
+          FlxG.switchState(() -> new GitarooPause(lastParams));
         }
         else
         {
@@ -1127,6 +1138,8 @@ class PlayState extends MusicBeatSubState
     playerStrumline.clean();
     opponentStrumline.clean();
 
+    vwooshTimer.cancel();
+
     songScore = 0;
     updateScoreText();
 
@@ -1230,9 +1243,29 @@ class PlayState extends MusicBeatSubState
           musicPausedBySubState = true;
         }
 
-        // Pause vocals.
-        // Not tracking that we've done this via a bool because vocal re-syncing involves pausing the vocals anyway.
-        if (vocals != null) vocals.pause();
+        // Pause any sounds that are playing and keep track of them.
+        // Vocals are also paused here but are not included as they are handled separately.
+        if (Std.isOfType(subState, PauseSubState))
+        {
+          FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
+            if (!sound.active || sound == FlxG.sound.music) return;
+            // In case it's a scheduled sound
+            var funkinSound:FunkinSound = cast sound;
+            if (funkinSound != null && !funkinSound.isPlaying) return;
+            if (!sound.playing && sound.time >= 0) return;
+
+            sound.pause();
+            soundsPausedBySubState.add(sound);
+          });
+
+          vocals?.forEach(function(voice:FunkinSound) {
+            soundsPausedBySubState.remove(voice);
+          });
+        }
+        else
+        {
+          vocals?.pause();
+        }
       }
 
       // Pause camera tweening, and keep track of which tweens we pause.
@@ -1281,12 +1314,17 @@ class PlayState extends MusicBeatSubState
 
       if (event.eventCanceled) return;
 
+      // Resume vwooshTimer
+      if (!vwooshTimer.finished) vwooshTimer.active = true;
+
       // Resume music if we paused it.
       if (musicPausedBySubState)
       {
         FlxG.sound.music.play();
         musicPausedBySubState = false;
       }
+
+      forEachPausedSound((s) -> needsReset ? s.destroy() : s.resume());
 
       // Resume camera tweens if we paused any.
       for (camTween in cameraTweensPausedBySubState)
@@ -1422,6 +1460,10 @@ class PlayState extends MusicBeatSubState
   override function reloadAssets():Void
   {
     performCleanup();
+
+    // `performCleanup()` clears the static reference to this state
+    // scripts might still need it, so we set it back to `this`
+    instance = this;
 
     funkin.modding.PolymodHandler.forceReloadAssets();
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id);
@@ -2056,9 +2098,9 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.onComplete = function() {
       if (mayPauseGame) endSong(skipEndingTransition);
     };
-    // A negative instrumental offset means the song skips the first few milliseconds of the track.
-    // This just gets added into the startTimestamp behavior so we don't need to do anything extra.
-    FlxG.sound.music.play(true, Math.max(0, startTimestamp - Conductor.instance.combinedOffset));
+
+    FlxG.sound.music.pause();
+    FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
 
     // Prevent the volume from being wrong.
@@ -2067,13 +2109,17 @@ class PlayState extends MusicBeatSubState
 
     trace('Playing vocals...');
     add(vocals);
-    vocals.play();
-    vocals.volume = 1.0;
+
+    vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
     vocals.pitch = playbackRate;
-    vocals.time = FlxG.sound.music.time;
+    vocals.volume = 1.0;
+
+    // trace('STARTING SONG AT:');
     // trace('${FlxG.sound.music.time}');
     // trace('${vocals.time}');
-    resyncVocals();
+
+    FlxG.sound.music.play();
+    vocals.play();
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
@@ -2102,7 +2148,7 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Resyncronize the vocal tracks if they have become offset from the instrumental.
+     * Resynchronize the vocal tracks if they have become offset from the instrumental.
      */
   function resyncVocals():Void
   {
@@ -2111,8 +2157,10 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length,
+      Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
     trace('Resyncing vocals to ${timeToPlayAt}');
+
     FlxG.sound.music.pause();
     vocals.pause();
 
@@ -2347,7 +2395,7 @@ class PlayState extends MusicBeatSubState
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Constants.HEALTH_MISS_PENALTY, 0, true);
+        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Constants.HEALTH_MISS_PENALTY, Highscore.tallies.combo, true);
         dispatchEvent(event);
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
@@ -2414,7 +2462,7 @@ class PlayState extends MusicBeatSubState
             var healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
             var scoreChange = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec);
 
-            var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true);
+            var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true, Highscore.tallies.combo);
             dispatchEvent(event);
 
             trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
@@ -2448,7 +2496,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    // Respawns notes that were b
+    // Respawns notes that were between the previous time and the current time when skipping backward, or destroy notes between the previous time and the current time when skipping forward.
     playerStrumline.handleSkippedNotes();
     opponentStrumline.handleSkippedNotes();
   }
@@ -3154,6 +3202,9 @@ class PlayState extends MusicBeatSubState
       // TODO: Uncache the song.
     }
 
+    // Prevent vwoosh timer from running outside PlayState (e.g Chart Editor)
+    vwooshTimer.cancel();
+
     if (overrideMusic)
     {
       // Stop the music. Do NOT destroy it, something still references it!
@@ -3174,6 +3225,8 @@ class PlayState extends MusicBeatSubState
         remove(vocals);
       }
     }
+
+    forEachPausedSound((s) -> s.destroy());
 
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
@@ -3429,7 +3482,7 @@ class PlayState extends MusicBeatSubState
     cancelCameraZoomTween();
   }
 
-  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruely
+  var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruly
 
   /**
      * The magical function that shall tween the scroll speed.
@@ -3481,6 +3534,15 @@ class PlayState extends MusicBeatSubState
       }
     }
     scrollSpeedTweens = [];
+  }
+
+  function forEachPausedSound(f:FlxSound->Void):Void
+  {
+    for (sound in soundsPausedBySubState)
+    {
+      f(sound);
+    }
+    soundsPausedBySubState.clear();
   }
 
   #if FEATURE_DEBUG_FUNCTIONS
