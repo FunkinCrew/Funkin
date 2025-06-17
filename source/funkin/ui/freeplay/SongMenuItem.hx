@@ -18,6 +18,7 @@ import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
 import funkin.ui.PixelatedIcon;
+import funkin.Preferences;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -221,9 +222,12 @@ class SongMenuItem extends FlxSpriteGroup
 
   function sparkleEffect(timer:FlxTimer):Void
   {
-    sparkle.setPosition(FlxG.random.float(ranking.x - 20, ranking.x + 3), FlxG.random.float(ranking.y - 29, ranking.y + 4));
-    sparkle.animation.play('sparkle', true);
-    sparkleTimer = new FlxTimer().start(FlxG.random.float(1.2, 4.5), sparkleEffect);
+    if (Preferences.flashingLights)
+    {
+      sparkle.setPosition(FlxG.random.float(ranking.x - 20, ranking.x + 3), FlxG.random.float(ranking.y - 29, ranking.y + 4));
+      sparkle.animation.play('sparkle', true);
+      sparkleTimer = new FlxTimer().start(FlxG.random.float(1.2, 4.5), sparkleEffect);
+    }
   }
 
   // no way to grab weeks rn, so this needs to be done :/
@@ -660,7 +664,7 @@ class SongMenuItem extends FlxSpriteGroup
    */
   public function confirm():Void
   {
-    if (songText != null) songText.flickerText();
+    if (songText != null && Preferences.flashingLights) songText.flickerText();
     if (pixelIcon != null && pixelIcon.visible)
     {
       pixelIcon.animation.play('confirm');
