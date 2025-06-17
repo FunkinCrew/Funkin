@@ -1282,7 +1282,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       for (x in availableVariations)
       {
         var m:Null<SongMetadata> = songMetadata.get(x);
-        m?.playData?.difficulties ?? [];
+        [for (diff in (m?.playData?.difficulties ?? [])) '$diff-$x'];
       }
     ];
     return result.flatten();
@@ -5289,7 +5289,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
-    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
+    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()} (${selectedVariation.toTitleCase()})';
     playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}';
   }
 
@@ -6163,8 +6163,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function incrementDifficulty(change:Int):Void
   {
+    var variatedDifficulty:String = '$selectedDifficulty-$selectedVariation';
     var currentDifficultyIndex:Int = availableDifficulties.indexOf(selectedDifficulty);
-    var currentAllDifficultyIndex:Int = allDifficulties.indexOf(selectedDifficulty);
+    var currentAllDifficultyIndex:Int = allDifficulties.indexOf(variatedDifficulty);
 
     if (currentDifficultyIndex == -1 || currentAllDifficultyIndex == -1)
     {
