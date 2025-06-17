@@ -132,6 +132,7 @@ class IntroSubState extends MusicBeatSubState
    */
   function onLightsEnd():Void
   {
+    #if (html5 || hxvlc)
     if (vid != null)
     {
       #if hxvlc
@@ -141,6 +142,7 @@ class IntroSubState extends MusicBeatSubState
       vid.destroy();
       vid = null;
     }
+    #end
 
     FlxG.camera.zoom = 1;
 
