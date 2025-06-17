@@ -766,13 +766,15 @@ class PauseSubState extends MusicBeatSubState
    * Quit the game and return to the chart editor.
    * @param state The current PauseSubState.
    */
+  @:access(funkin.play.PlayState)
   static function quitToChartEditor(state:PauseSubState):Void
   {
-    if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
-    @:privateAccess
-    PlayState.instance.forEachPausedSound(s -> s.destroy());
+    // This should come first because the sounds list gets cleared!
+    PlayState.instance?.forEachPausedSound(s -> s.destroy());
     state.close();
-    PlayState.instance.close(); // This only works because PlayState is a substate!
+    FlxG.sound.music?.pause(); // Don't reset song position!
+    PlayState.instance?.vocals?.pause();
+    PlayState.instance?.close(); // This only works because PlayState is a substate!
   }
 }
 
