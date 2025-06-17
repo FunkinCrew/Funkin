@@ -75,5 +75,24 @@ Note that you can only build the game for iOS on a computer running MacOS.
 1. Get Xcode from the app store on your MacOS Machine.
 2. Download the iPhone SDK (First thing that pops up in Xcode)
 3. Open up a terminal tab and run `lime test ios -xcode`
-4. You will need to sign your own copy in order to run the game with a real iOS device!
+4. You will need to sign your own copy in order to run the game with a real iOS device! That requires an Apple Developer account, sorry!
    - To run with an iOS simulator instead of `-xcode` use `-simulator`
+
+### iOS Troubleshooting
+
+- **A required plugin failed to load. Please ensure system content is up-to-date — try running 'xcodebuild -runFirstLaunch'.**
+Make sure you have the iOS SDK isntalled, see Step 2.
+
+- **error: No Accounts: Add a new account in Accounts settings. (in target 'Funkin' from project 'Funkin')**
+
+Open XCode, press CMD+, to open Settings, select Accounts, add an Apple ID.
+
+- error: No Account for Team "Z7G7AVNGSH". Add a new account in Accounts settings or verify that your accounts have valid credentials.
+
+Open `project.hxp` and change `IOS_TEAM_ID` to your personal team's ID.
+
+- error: Failed Registering Bundle Identifier: The app identifier "me.funkin.fnf" cannot be registered to your development team because it is not available.
+
+The Funkin' Crew are the only ones that can build an iOS app with the identifier `me.funkin.fnf`. Open `project.hxp` and change `PACKAGE_NAME` to a unique value.
+
+- error: No profiles for 'me.funkin.fnf' were found: Xcode couldn't find any iOS App Development provisioning profiles matching 'me.funkin.fnf'

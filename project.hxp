@@ -114,6 +114,11 @@ class Project extends HXProject
   static var ASTC_QUALITY:String = "medium";
 
   /**
+   * The team ID to use for the iOS app. Configured in XCode.
+   */
+  static var IOS_TEAM_ID:String = "Z7G7AVNGSH";
+
+  /**
    * The block size of the ASTC compressed textures.
    * Higher block size means lower quality and lighter file size for the generated compressed textures.
    * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
@@ -491,7 +496,7 @@ class Project extends HXProject
     if (isIOS())
     {
       config.set("ios.non-exempt-encryption", "false");
-      config.set("ios.team-id", "Z7G7AVNGSH");
+      config.set("ios.team-id", IOS_TEAM_ID);
       config.set("ios.deployment", "16.0");
 
       // launchStoryboard = new LaunchStoryboard();
@@ -771,7 +776,10 @@ class Project extends HXProject
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
     FEATURE_POLYMOD_MODS.apply(this, true);
-    FEATURE_VIDEO_PLAYBACK.apply(this, true);
+
+    // Video playback should be enabled on desktop, web, and mobile.
+    // HXCPP has trouble with iOS simulator builds though...
+    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
 
     // Should be true on debug builds or if GITHUB_BUILD is enabled.
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
@@ -1255,6 +1263,11 @@ class Project extends HXProject
   public function isIOS():Bool
   {
     return this.target == Platform.IOS;
+  }
+
+  public function isIOSSimulator():Bool
+  {
+    return this.target == Platform.IOS && this.targetFlags.exists("simulator");
   }
 
   public function isHashLink():Bool
