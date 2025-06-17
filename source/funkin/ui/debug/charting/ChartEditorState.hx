@@ -1340,13 +1340,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (variationMetadata != null)
     {
       // Add the chartdata difficulties to the metadata difficulties if they don't exist so that the editor properly loads them
-      var keys:Array<String> = [];
-
-      for (x in songChartData.get(selectedVariation).notes.keys())
-      {
-        keys.push(x);
-      }
-
+      var keys:Array<String> = [for (x in songChartData.get(selectedVariation).notes.keys()) x];
       for (key in keys)
       {
         variationMetadata.playData.difficulties.pushUnique(key);
@@ -3075,7 +3069,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #if sys
     menubarItemGoToBackupsFolder.onClick = _ -> this.openBackupsFolder();
     #else
-    // Disable the menu item if we're not on a desktop platform.
+    // Disable the menu item if we're not on a native platform.
     menubarItemGoToBackupsFolder.disabled = true;
     #end
 
