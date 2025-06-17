@@ -769,6 +769,8 @@ class PauseSubState extends MusicBeatSubState
   static function quitToChartEditor(state:PauseSubState):Void
   {
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+    @:privateAccess
+    PlayState.instance.forEachPausedSound(s -> s.destroy());
     state.close();
     PlayState.instance.close(); // This only works because PlayState is a substate!
   }
