@@ -1294,6 +1294,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function set_currentSongChartData(value:SongChartData):SongChartData
   {
     songChartData.set(selectedVariation, value);
+    var variationMetadata:Null<SongMetadata> = songMetadata.get(selectedVariation);
+    if (variationMetadata != null)
+    {
+      // Add the chartdata difficulties to the metadata difficulties if they don't exist so that the editor properly loads them
+      var keys:Array<String> = [[for (x in songChartData.get(selectedVariation).notes.keys()) x]];
+      for (key in keys)
+      {
+        variationMetadata.playData.difficulties.pushUnique(key);
+      }
+    }
     return value;
   }
 
@@ -3486,7 +3496,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           // This sprite is off-screen or was deleted.
           // Kill the note sprite and recycle it.
-          noteSprite.noteData = null;
+          noteSprite.kill();
         }
       }
       // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
@@ -3504,7 +3514,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // It will be displayed by gridGhostHoldNoteSprite instead.
           holdNoteSprite.kill();
         }
-        else if (!holdNoteSprite.isHoldNoteVisible(FlxG.height - MENU_BAR_HEIGHT, GRID_TOP_PAD))
+        else if (!holdNoteSprite.isHoldNoteVisible(viewAreaBottomPixels, viewAreaTopPixels))
         {
           // This hold note is off-screen.
           // Kill the hold note sprite and recycle it.
@@ -3528,7 +3538,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Update the event sprite's height and position.
           // var holdNoteHeight = holdNoteSprite.noteData.getStepLength() * GRID_SIZE;
           // holdNoteSprite.setHeightDirectly(holdNoteHeight);
-          holdNoteSprite.updateHoldNotePosition(renderedNotes);
+          holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
         }
       }
       // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
@@ -3544,7 +3554,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Resolve an issue where dragging an event too far would cause it to be hidden.
         var isSelectedAndDragged = currentEventSelection.fastContains(eventSprite.eventData) && (dragTargetCurrentStep != 0);
 
-        if ((eventSprite.isEventVisible(FlxG.height - PLAYBAR_HEIGHT, MENU_BAR_HEIGHT)
+        if ((eventSprite.isEventVisible(viewAreaBottomPixels, viewAreaTopPixels)
           && currentSongChartEventData.fastContains(eventSprite.eventData))
           || isSelectedAndDragged)
         {
@@ -3560,7 +3570,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           // This event was deleted.
           // Kill the event sprite and recycle it.
-          eventSprite.eventData = null;
+          eventSprite.kill();
         }
       }
       // Sort the note data array, using an algorithm that is fast on nearly-sorted data.
