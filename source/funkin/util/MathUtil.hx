@@ -129,6 +129,16 @@ class MathUtil
     return result;
   }
 
+  /**
+   * GCD stands for Greatest Common Divisor
+   * It's used in FullScreenScaleMode to prevent weird window resolutions from being counted as wide screen since those were causing issues positioning the game
+   * It returns the greatest common divisor between m and n
+   *
+   * think it's from hxp..?
+   * @param m
+   * @param n
+   * @return Int the common divisor between m and n
+   */
   public static function gcd(m:Int, n:Int):Int
   {
     m = Math.floor(Math.abs(m));
