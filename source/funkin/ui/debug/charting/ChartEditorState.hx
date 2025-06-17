@@ -30,6 +30,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
+import funkin.data.song.SongNoteDataUtils;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
@@ -61,6 +62,7 @@ import funkin.ui.debug.charting.commands.PasteItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
+import funkin.ui.debug.charting.commands.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
@@ -88,6 +90,7 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
+import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
@@ -779,6 +782,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var currentLiveInputPlaceNoteData:Array<SongNoteData> = [];
 
+  /**
+   * Defines how "close" two notes must be to be considered stacked, based on steps.
+   * For example, setting this to `0.5` (16/32) will highlight notes half a step apart.
+   * Setting it to `0` only highlights notes that are nearly perfectly aligned.
+   * In the dropdown menu, the threshold is based on note snaps instead.
+   * For example, `0.5` would be displayed as `1/32`, and `0` would show as `Exact`.
+   */
+  public static var stackedNoteThreshold:Float = 0;
+
   // Note Movement
 
   /**
@@ -849,6 +861,32 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     return currentNoteSelection;
+  }
+
+  var currentOverlappingNotes(default, set):Array<SongNoteData> = [];
+
+  function set_currentOverlappingNotes(value:Array<SongNoteData>):Array<SongNoteData>
+  {
+    // This value is true if all elements of the current overlapping array are also in the new array.
+    var isSuperset:Bool = currentOverlappingNotes.isSubset(value);
+    var isEqual:Bool = currentOverlappingNotes.isEqualUnordered(value);
+
+    currentOverlappingNotes = value;
+
+    if (!isEqual)
+    {
+      if (currentOverlappingNotes.length > 0 && isSuperset)
+      {
+        notePreview.addOverlappingNotes(currentOverlappingNotes, Std.int(songLengthInMs));
+      }
+      else
+      {
+        // The new array might add or remove elements from the old array, so we have to redraw the note preview.
+        notePreviewDirty = true;
+      }
+    }
+
+    return currentOverlappingNotes;
   }
 
   /**
@@ -1753,6 +1791,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemDelete:MenuItem;
 
   /**
+   * The `Edit -> Delete Stacked Notes` menu item.
+   */
+  var menubarItemDeleteStacked:MenuItem;
+
+  /**
    * The `Edit -> Flip Notes` menu item.
    */
   var menubarItemFlipNotes:MenuItem;
@@ -1796,6 +1839,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The `Edit -> Decrease Note Snap Precision` menu item.
    */
   var menuBarItemNoteSnapIncrease:MenuItem;
+
+  /**
+   * The `Edit -> Stacked Note Threshold` menu dropdown
+   */
+  var menuBarStackedNoteThreshold:DropDown;
 
   /**
    * The `View -> Downscroll` menu item.
@@ -1988,9 +2036,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The IMAGE used for the selection squares. Updated by ChartEditorThemeHandler.
-   * Used two ways:
+   * Used three ways:
    * 1. A sprite is given this bitmap and placed over selected notes.
-   * 2. The image is split and used for a 9-slice sprite for the selection box.
+   * 2. Same as above but for notes that are overlapped by another.
+   * 3. The image is split and used for a 9-slice sprite for the selection box.
    */
   var selectionSquareBitmap:Null<BitmapData> = null;
 
@@ -2946,6 +2995,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
 
+    menubarItemDeleteStacked.onClick = _ -> {
+      if (currentEventSelection.length > 0 && currentNoteSelection.length == 0)
+      {
+        performCommand(new RemoveEventsCommand(currentEventSelection));
+      }
+      else
+      {
+        performCommand(new RemoveStackedNotesCommand(currentNoteSelection.length > 0 ? currentNoteSelection : null));
+      }
+    };
+
     menubarItemFlipNotes.onClick = _ -> performCommand(new FlipNotesCommand(currentNoteSelection));
 
     menubarItemSelectAllNotes.onClick = _ -> performCommand(new SelectAllItemsCommand(true, false));
@@ -2967,6 +3027,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       noteSnapQuantIndex++;
       if (noteSnapQuantIndex >= SNAP_QUANTS.length) noteSnapQuantIndex = 0;
     };
+
+    final REVERSE_SNAPS = SNAP_QUANTS.reversed();
+    for (snap in REVERSE_SNAPS)
+    {
+      menuBarStackedNoteThreshold.dataSource.add({text: '1/$snap'});
+    }
+
+    menuBarStackedNoteThreshold.onChange = event -> {
+      // NOTE: It needs to be offset by 1 because of the 'Exact' option
+      // -1 value means that it is the one selected
+      var selectedIdx:Int = menuBarStackedNoteThreshold.selectedIndex - 1;
+      stackedNoteThreshold = selectedIdx == -1 ? 0 : BASE_QUANT / REVERSE_SNAPS[selectedIdx];
+      noteDisplayDirty = true;
+      notePreviewDirty = true;
+    }
 
     menuBarItemInputStyleNone.onClick = function(event:UIEvent) {
       currentLiveInputStyle = None;
@@ -3711,6 +3786,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         member.kill();
       }
 
+      // Gather stacked notes to render later
+      // No need to update it every time we scroll
+      if (Math.abs(currentScrollEase - scrollPositionInPixels) < .0001)
+      {
+        currentOverlappingNotes = SongNoteDataUtils.listStackedNotes(currentSongChartNoteData, stackedNoteThreshold);
+      }
+
       // Readd selection squares for selected notes.
       // Recycle selection squares if possible.
       for (noteSprite in renderedNotes.members)
@@ -3768,9 +3850,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.x = noteSprite.x;
           selectionSquare.y = noteSprite.y;
           selectionSquare.width = GRID_SIZE;
+          selectionSquare.color = FlxColor.WHITE;
 
           var stepLength = noteSprite.noteData.getStepLength();
           selectionSquare.height = (stepLength <= 0) ? GRID_SIZE : ((stepLength + 1) * GRID_SIZE);
+        }
+        else if (doesNoteStack(noteSprite.noteData, currentOverlappingNotes))
+        {
+          // TODO: Maybe use another way to display these notes
+          var selectionSquare:ChartEditorSelectionSquareSprite = renderedSelectionSquares.recycle(buildSelectionSquare);
+
+          // Set the position and size (because we might be recycling one with bad values).
+          selectionSquare.noteData = noteSprite.noteData;
+          selectionSquare.eventData = null;
+          selectionSquare.x = noteSprite.x;
+          selectionSquare.y = noteSprite.y;
+          selectionSquare.width = selectionSquare.height = GRID_SIZE;
+          selectionSquare.color = FlxColor.RED;
         }
       }
 
@@ -3807,6 +3903,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.y = eventSprite.y;
           selectionSquare.width = eventSprite.width;
           selectionSquare.height = eventSprite.height;
+          selectionSquare.color = FlxColor.WHITE;
         }
 
         // Additional cleanup on notes.
@@ -5511,18 +5608,36 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (delete)
     {
-      // Delete selected items.
-      if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
+      var noteSelection = currentNoteSelection.length > 0;
+      var eventSelection = currentEventSelection.length > 0;
+
+      // Shift to delete stacked notes
+      if (FlxG.keys.pressed.SHIFT)
       {
-        performCommand(new RemoveItemsCommand(currentNoteSelection, currentEventSelection));
+        if (eventSelection && !noteSelection)
+        {
+          performCommand(new RemoveEventsCommand(currentEventSelection));
+        }
+        else
+        {
+          performCommand(new RemoveStackedNotesCommand(noteSelection ? currentNoteSelection : null));
+        }
       }
-      else if (currentNoteSelection.length > 0)
+      else
       {
-        performCommand(new RemoveNotesCommand(currentNoteSelection));
-      }
-      else if (currentEventSelection.length > 0)
-      {
-        performCommand(new RemoveEventsCommand(currentEventSelection));
+        // Delete selected items.
+        if (noteSelection && eventSelection)
+        {
+          performCommand(new RemoveItemsCommand(currentNoteSelection, currentEventSelection));
+        }
+        else if (noteSelection)
+        {
+          performCommand(new RemoveNotesCommand(currentNoteSelection));
+        }
+        else if (eventSelection)
+        {
+          performCommand(new RemoveEventsCommand(currentEventSelection));
+        }
       }
     }
 
@@ -6198,6 +6313,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // TODO: Only update the notes that have changed.
       notePreview.erase();
       notePreview.addNotes(currentSongChartNoteData, Std.int(songLengthInMs));
+      notePreview.addOverlappingNotes(currentOverlappingNotes, Std.int(songLengthInMs));
       notePreview.addSelectedNotes(currentNoteSelection, Std.int(songLengthInMs));
       notePreview.addEvents(currentSongChartEventData, Std.int(songLengthInMs));
     }
@@ -6380,6 +6496,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function isNoteSelected(note:Null<SongNoteData>):Bool
   {
     return note != null && currentNoteSelection.indexOf(note) != -1;
+  }
+
+  function doesNoteStack(note:Null<SongNoteData>, curStackedNotes:Array<SongNoteData>):Bool
+  {
+    return note != null && curStackedNotes.contains(note);
   }
 
   override function destroy():Void
