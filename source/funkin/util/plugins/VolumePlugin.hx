@@ -31,4 +31,11 @@ class VolumePlugin extends FlxBasic
       else if (PlayerSettings.player1.controls.VOLUME_DOWN) FlxG.sound.changeVolume(-0.1);
     }
   }
+
+  override public function destroy():Void
+  {
+    if (FlxG.plugins.list.contains(this)) FlxG.plugins.remove(this);
+
+    super.destroy();
+  }
 }

@@ -14,6 +14,8 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
     var dumbNumb = Std.parseInt(Std.string(val));
     var prevNum:ScoreNum;
 
+    dumbNumb = Std.int(Math.min(dumbNumb, Math.pow(10, group.members.length) - 1));
+
     while (dumbNumb > 0)
     {
       group.members[loopNum].digit = dumbNumb % 10;
@@ -33,7 +35,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
       loopNum--;
     }
 
-    while (loopNum > 0)
+    while (loopNum >= 0)
     {
       group.members[loopNum].digit = 0;
       loopNum--;
