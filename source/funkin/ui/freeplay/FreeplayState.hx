@@ -451,6 +451,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     albumRoll.albumId = null;
+    albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
     add(albumRoll);
 
     var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 164, FlxColor.BLACK);
@@ -464,7 +465,6 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
       FlxTween.tween(overhangStuff, {y: -100}, 0.3, {ease: FlxEase.quartOut});
       FlxTween.tween(blackOverlayBullshitLOLXD, {x: backingImage.x}, 0.7, {ease: FlxEase.quintOut});
     }
@@ -493,8 +493,11 @@ class FreeplayState extends MusicBeatSubState
     #else
     charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
     #end
-    charSelectHint.y -= 100;
-    FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
+    if (!fromCharSelect)
+    {
+      charSelectHint.y -= 100;
+      FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
+    }
 
     exitMovers.set([
       overhangStuff,
@@ -1382,7 +1385,6 @@ class FreeplayState extends MusicBeatSubState
                 capsule.doLerp = true;
                 fromCharSelect = false;
                 busy = false;
-                albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
               }
             }
           });
