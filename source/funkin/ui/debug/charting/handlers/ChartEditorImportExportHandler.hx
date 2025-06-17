@@ -180,6 +180,11 @@ class ChartEditorImportExportHandler
     }
     state.audioVocalTrackGroup.stop();
     state.audioVocalTrackGroup.clear();
+
+    // Clear the undo and redo history
+    state.undoHistory = [];
+    state.redoHistory = [];
+    state.commandHistoryDirty = true;
   }
 
   /**
