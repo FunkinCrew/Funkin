@@ -798,7 +798,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function hitNote(note:NoteSprite, removeNote:Bool = true):Void
   {
-    playConfirm(note.direction);
+    playConfirm(note.direction, note.length > 0);
     note.hasBeenHit = true;
 
     if (removeNote)
@@ -884,9 +884,9 @@ class Strumline extends FlxSpriteGroup
    * Play a confirm animation for a given direction.
    * @param direction The direction of the note to play the confirm animation for.
    */
-  public function playConfirm(direction:NoteDirection):Void
+  public function playConfirm(direction:NoteDirection, hold:Bool = false):Void
   {
-    getByDirection(direction).playConfirm();
+    getByDirection(direction).playConfirm(hold);
   }
 
   /**
