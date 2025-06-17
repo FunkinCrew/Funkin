@@ -331,4 +331,22 @@ class NewgroundsClient
     return Save.instance.ngSessionId;
   }
 }
+
+/**
+ * Wrapper for `NewgroundsClient` that prevents submitting cheated data.
+ */
+class NewgroundsClientSandboxed
+{
+  public static var user(get, never):Null<User>;
+
+  static function get_user()
+  {
+    return NewgroundsClient.instance.user;
+  }
+
+  public static function isLoggedIn()
+  {
+    return NewgroundsClient.instance.isLoggedIn();
+  }
+}
 #end
