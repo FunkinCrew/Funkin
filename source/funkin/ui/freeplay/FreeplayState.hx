@@ -268,7 +268,7 @@ class FreeplayState extends MusicBeatSubState
 
     currentVariation = rememberedVariation;
     currentDifficulty = rememberedDifficulty;
-    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacter.getFreeplayStyleID());
+    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
 
     fromCharSelect = params?.fromCharSelect ?? false;
