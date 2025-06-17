@@ -291,9 +291,9 @@ class PolymodHandler
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
 
-    // `Unserializer`
+    // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
-    Polymod.blacklistImport('Unserializer');
+    Polymod.blacklistImport('haxe.Unserializer');
 
     // `lime.system.CFFI`
     // Can load and execute compiled binaries.
