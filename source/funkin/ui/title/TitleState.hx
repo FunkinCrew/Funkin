@@ -231,6 +231,8 @@ class TitleState extends MusicBeatState
 
     Conductor.instance.update();
 
+    funkin.input.Cursor.hide();
+
     /* if (FlxG.onMobile)
           {
       if (gfDance != null)

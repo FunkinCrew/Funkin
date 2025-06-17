@@ -56,8 +56,6 @@ class DiscordClient
   {
     while (true)
     {
-      trace('[DISCORD] Performing client update...');
-
       #if DISCORD_DISABLE_IO_THREAD
       Discord.updateConnection();
       #end
@@ -76,8 +74,6 @@ class DiscordClient
 
   public function setPresence(params:DiscordClientPresenceParams):Void
   {
-    trace('[DISCORD] Updating presence... (${params})');
-
     Discord.updatePresence(buildPresence(params));
   }
 
@@ -100,8 +96,6 @@ class DiscordClient
     // This should probably be album art.
     // IMPORTANT NOTE: This can be an asset key uploaded to Discord's developer panel OR any URL you like.
     presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? "album-volume1";
-
-    trace('[DISCORD] largeImageKey: ${presence.largeImageKey}');
 
     // TODO: Make this use the song's album art.
     // presence.largeImageKey = "icon";
@@ -203,5 +197,18 @@ typedef DiscordClientPresenceParams =
    * A small, inset image to the bottom right of `largeImageKey`.
    */
   var ?smallImageKey:String;
+}
+
+class DiscordClientSandboxed
+{
+  public static function setPresence(params:DiscordClientPresenceParams)
+  {
+    return DiscordClient.instance.setPresence(params);
+  }
+
+  public static function shutdown()
+  {
+    DiscordClient.instance.shutdown();
+  }
 }
 #end
