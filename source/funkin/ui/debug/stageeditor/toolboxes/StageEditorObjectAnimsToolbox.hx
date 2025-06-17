@@ -8,9 +8,11 @@ import haxe.ui.components.TextField;
 import haxe.ui.containers.ListView;
 import haxe.ui.data.ArrayDataSource;
 import flixel.graphics.frames.FlxFrame;
+import haxe.ui.events.UIEvent;
 
 using StringTools;
 
+@:access(funkin.ui.debug.stageeditor.StageEditorState)
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-anims.xml"))
 class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 {
@@ -112,6 +114,13 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
       objAnims.selectedIndex = objAnims.dataSource.size - 1;
     }
+    
+    this.onDialogClosed = onClose;
+  }
+
+  function onClose(event:UIEvent)
+  {
+    stageEditorState.menubarItemWindowObjectAnims.selected = false;
   }
 
   var previousFrames:Array<String> = [];

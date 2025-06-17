@@ -8,7 +8,9 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.util.Color;
 import flixel.util.FlxColor;
+import haxe.ui.events.UIEvent;
 
+@:access(funkin.ui.debug.stageeditor.StageEditorState)
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-properties.xml"))
 class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
 {
@@ -119,6 +121,13 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
         linkedObj.color = FlxColor.fromString(_.value) ?? 0xFFFFFFFF;
       }
     }
+    
+    this.onDialogClosed = onClose;
+  }
+
+  function onClose(event:UIEvent)
+  {
+    stageEditorState.menubarItemWindowObjectProps.selected = false;
   }
 
   override public function refresh()

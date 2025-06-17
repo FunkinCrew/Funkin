@@ -13,9 +13,11 @@ import haxe.ui.core.Screen;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import haxe.ui.containers.Grid;
+import haxe.ui.events.UIEvent;
 
 using StringTools;
 
+@:access(funkin.ui.debug.stageeditor.StageEditorState)
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/character-properties.xml"))
 class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
 {
@@ -77,6 +79,13 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
     }
 
     refresh();
+
+    this.onDialogClosed = onClose;
+  }
+
+  function onClose(event:UIEvent)
+  {
+    stageEditorState.menubarItemWindowCharacter.selected = false;
   }
 
   override public function refresh()
