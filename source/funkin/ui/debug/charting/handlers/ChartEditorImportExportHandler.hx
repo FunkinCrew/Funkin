@@ -349,7 +349,7 @@ class ChartEditorImportExportHandler
   public static function getLatestBackupPath():Null<String>
   {
     #if sys
-    if (!sys.FileSystem.exists(BACKUPS_PATH)) sys.FileSystem.createDirectory(BACKUPS_PATH);
+    FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
     entries.sort(SortUtil.alphabetically);
