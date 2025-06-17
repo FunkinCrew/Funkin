@@ -492,8 +492,6 @@ class SongMenuItem extends FlxSpriteGroup
       spr.visible = value;
     }
 
-    textAppear();
-
     updateSelected();
   }
 
@@ -660,7 +658,11 @@ class SongMenuItem extends FlxSpriteGroup
    */
   public function confirm():Void
   {
-    if (songText != null) songText.flickerText();
+    if (songText != null)
+    {
+      textAppear();
+      songText.flickerText();
+    }
     if (pixelIcon != null && pixelIcon.visible)
     {
       pixelIcon.animation.play('confirm');
