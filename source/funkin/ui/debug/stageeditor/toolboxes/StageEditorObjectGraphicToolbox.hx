@@ -148,7 +148,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
 
       stageEditorState.updateDialog(OBJECT_ANIMS);
     }
-
+    
     this.onDialogClosed = onClose;
   }
 
