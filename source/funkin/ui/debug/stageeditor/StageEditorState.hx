@@ -29,6 +29,7 @@ import funkin.ui.debug.stageeditor.handlers.StageDataHandler;
 import funkin.ui.debug.stageeditor.handlers.UndoRedoHandler.UndoAction;
 import funkin.ui.debug.stageeditor.toolboxes.*;
 import funkin.ui.debug.stageeditor.components.*;
+import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
@@ -519,7 +520,10 @@ class StageEditorState extends UIState
     Save.instance.stageEditorHasBackup = false;
 
     Cursor.show();
-    FlxG.sound.playMusic(Paths.music('chartEditorLoop/chartEditorLoop'));
+    FunkinSound.playMusic('chartEditorLoop',
+      {
+        startingVolume: 0.0
+      });
     FlxG.sound.music.fadeIn(10, 0, 1);
   }
 
@@ -1176,6 +1180,7 @@ class StageEditorState extends UIState
   public var userGuideDialog:UserGuideDialog;
   public var aboutDialog:AboutDialog;
   public var loadUrlDialog:LoadFromUrlDialog;
+  public var exitConfirmDialog:Dialog;
 
   public function onMenuItemClick(item:String):Void
   {
@@ -1250,14 +1255,19 @@ class StageEditorState extends UIState
       case "exit":
         if (!saved)
         {
-          Dialogs.messageBox("You are about to leave the Editor without Saving.\n\nAre you sure? ", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
+          if (exitConfirmDialog == null)
+          {
+            exitConfirmDialog = Dialogs.messageBox("You are about to leave the Editor without Saving.\n\nAre you sure? ", "Leave Editor",
+              MessageBoxType.TYPE_YESNO, true,
             function(btn:DialogButton) {
+                exitConfirmDialog = null;
               if (btn == DialogButton.YES)
               {
                 saved = true;
                 onMenuItemClick("exit");
               }
             });
+          }
 
           return;
         }
