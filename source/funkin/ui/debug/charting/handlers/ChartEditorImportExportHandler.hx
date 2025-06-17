@@ -173,6 +173,41 @@ class ChartEditorImportExportHandler
       }
     }
 
+    var delay:Float = 0.5;
+    for (variation => chart in state.songChartData)
+    {
+      var metadata:SongMetadata = state.songMetadata[variation] ?? continue;
+      var stackedNotesCount:Int = 0;
+      var affectedDiffs:Array<String> = [];
+
+      for (diff => notes in chart.notes)
+      {
+        if (!metadata.playData.difficulties.contains(diff)) continue;
+
+        var count:Int = SongNoteDataUtils.listStackedNotes(notes, 0, false).length;
+
+        if (count > 0)
+        {
+          affectedDiffs.push(diff.toTitleCase());
+          stackedNotesCount += count;
+        }
+      }
+
+      if (stackedNotesCount > 0)
+      {
+        // Difficulty names might be out of order due to how maps work
+        affectedDiffs.sort(SortUtil.defaultsThenAlphabetically.bind(['Easy', 'Normal', 'Hard', 'Erect', 'Nightmare']));
+
+        // Delay it so it doesn't overlap other notifications
+        flixel.util.FlxTimer.wait(delay, () -> {
+          state.warning('Stacked Notes Detected',
+            'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, ' +
+            'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
+        });
+        delay *= 1.5;
+      }
+    }
+
     Conductor.instance.forceBPM(null); // Disable the forced BPM.
     Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
     Conductor.instance.mapTimeChanges(state.currentSongMetadata.timeChanges);
