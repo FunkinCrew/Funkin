@@ -2757,6 +2757,8 @@ class PlayState extends MusicBeatSubState
         FlxG.switchState(() -> new ChartEditorState(
           {
             targetSongId: currentSong.id,
+            targetSongDifficulty: currentDifficulty,
+            targetSongVariation: currentVariation,
           }));
       }
     }
