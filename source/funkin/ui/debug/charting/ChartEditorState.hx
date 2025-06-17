@@ -1293,7 +1293,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * - Keys are the variation IDs. At least one (`default`) must exist.
    * - Values are the relevant chart data, ready to be serialized to JSON.
    */
-  var songChartData:Map<String, SongChartData> = [];
+  var songChartData:Map<String, SongChartData> = new Map<String, SongChartData>();
 
   /**
    * Convenience property to get the chart data for the current variation.
