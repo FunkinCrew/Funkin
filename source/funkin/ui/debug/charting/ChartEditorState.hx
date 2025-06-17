@@ -3797,6 +3797,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Recycle selection squares if possible.
       for (noteSprite in renderedNotes.members)
       {
+        if (noteSprite == null || noteSprite.noteData == null || !noteSprite.exists || !noteSprite.visible) continue;
+
         // TODO: Handle selection of hold notes.
         if (isNoteSelected(noteSprite.noteData))
         {
@@ -3872,6 +3874,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       for (eventSprite in renderedEvents.members)
       {
+        if (eventSprite == null || eventSprite.eventData == null || !eventSprite.exists || !eventSprite.visible) continue;
+
         if (isEventSelected(eventSprite.eventData))
         {
           // Determine if the note is being dragged and offset the position accordingly.
