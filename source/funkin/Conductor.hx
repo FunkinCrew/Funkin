@@ -504,6 +504,15 @@ class Conductor
   }
 
   /**
+   * Returns a more accurate music time for higher framerates.
+   * @return Float
+   */
+  public function getTimeWithDelta():Float
+  {
+    return this.songPosition + this.songPositionDelta;
+  }
+
+  /**
    * Can be called in-between frames, usually for input related things
    * that can potentially get processed on exact milliseconds/timestmaps.
    * If you need song position, use `Conductor.instance.songPosition` instead
