@@ -25,23 +25,34 @@ import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
 import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
+import funkin.ui.mainmenu.UpgradeSparkle;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
+#if mobile
+import funkin.mobile.util.InAppPurchasesUtil;
+#end
 
 class MainMenuState extends MusicBeatState
 {
   var menuItems:MenuTypedList<AtlasMenuItem>;
 
+  var bg:FlxSprite;
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
   var overrideMusic:Bool = false;
 
   static var rememberedSelectedIndex:Int = 0;
+
+  // TODO: this needs to eventually reflect the actual state of whether the player has upgraded or not.
+  // this should never be false on non-mobile targets.
+  var hasUpgraded:Bool = false;
+  var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
 
   public function new(?_overrideMusic:Bool = false)
   {
@@ -60,14 +71,21 @@ class MainMenuState extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
+    #if FEATURE_MOBILE_IAP
+    hasUpgraded = InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID);
+    #else
+    // just to make sure its never accidentally turned off
+    hasUpgraded = true;
+    #end
+
     if (!overrideMusic) playMenuMusic();
 
     // We want the state to always be able to begin with being able to accept inputs and show the anims of the menu items.
     persistentUpdate = true;
     persistentDraw = true;
 
-    var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
-    bg.scrollFactor.x = 0;
+    bg = new FlxSprite(Paths.image('menuBG'));
+    bg.scrollFactor.x = #if !mobile 0 #else 0.17 #end; // we want a lil x scroll on mobile
     bg.scrollFactor.y = 0.17;
     bg.setGraphicSize(Std.int(FlxG.width * 1.2));
     bg.updateHitbox();
@@ -116,12 +134,21 @@ class MainMenuState extends MusicBeatState
       // Since CUTOUT_WIDTH is static it might retain some old inccrect values so we update it before loading freeplay
       FreeplayState.CUTOUT_WIDTH = funkin.ui.FullScreenScaleMode.gameCutoutSize.x / 1.5;
 
+      var rememberedFreeplayCharacter = FreeplayState.rememberedCharacterId;
       #if FEATURE_DEBUG_FUNCTIONS
       // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
-      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
+      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : rememberedFreeplayCharacter;
       #else
-      var targetCharacter:Null<String> = null;
+      var targetCharacter:Null<String> = rememberedFreeplayCharacter;
       #end
+
+      if (!hasUpgraded)
+      {
+        for (i in 0...upgradeSparkles.length)
+        {
+          upgradeSparkles.members[i].cancelSparkle();
+        }
+      }
 
       openSubState(new FreeplayState(
         {
@@ -129,17 +156,33 @@ class MainMenuState extends MusicBeatState
         }));
     });
 
-    #if FEATURE_OPEN_URL
-    // In order to prevent popup blockers from triggering,
-    // we need to open the link as an immediate result of a keypress event,
-    // so we can't wait for the flicker animation to complete.
-    var hasPopupBlocker = #if web true #else false #end;
-    createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
-    #end
+    if (hasUpgraded)
+    {
+      #if FEATURE_OPEN_URL
+      // In order to prevent popup blockers from triggering,
+      // we need to open the link as an immediate result of a keypress event,
+      // so we can't wait for the flicker animation to complete.
+      var hasPopupBlocker = #if web true #else false #end;
+      createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
+      #end
+    }
+    else
+    {
+      upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
+      add(upgradeSparkles);
 
+      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
+        #if FEATURE_MOBILE_IAP
+        InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
+        #end
+      });
+    }
+
+    #if !mobile
     createMenuItem('options', 'mainmenu/options', function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
+    #end
 
     createMenuItem('credits', 'mainmenu/credits', function() {
       startExitState(() -> new funkin.ui.credits.CreditsState());
@@ -153,12 +196,39 @@ class MainMenuState extends MusicBeatState
       var menuItem = menuItems.members[i];
       menuItem.x = FlxG.width / 2;
       menuItem.y = top + spacing * i;
-      menuItem.scrollFactor.x = 0.0;
+      menuItem.scrollFactor.x = #if !mobile 0.0 #else 0.4 #end; // we want a lil scroll on mobile, for the cute gyro effect
       // This one affects how much the menu items move when you scroll between them.
       menuItem.scrollFactor.y = 0.4;
+
+      if (i == 1)
+      {
+        camFollow.setPosition(menuItem.getGraphicMidpoint().x, menuItem.getGraphicMidpoint().y);
+      }
     }
 
     menuItems.selectItem(rememberedSelectedIndex);
+
+    if (!hasUpgraded)
+    {
+      // the upgrade item
+      var targetItem = menuItems.members[2];
+      for (i in 0...8)
+      {
+        var sparkle:UpgradeSparkle = new UpgradeSparkle(targetItem.x - (targetItem.width / 2), targetItem.y - (targetItem.height / 2), targetItem.width,
+          targetItem.height, FlxG.random.bool(80));
+        upgradeSparkles.add(sparkle);
+
+        sparkle.scrollFactor.x = 0.0;
+        sparkle.scrollFactor.y = 0.4;
+      }
+
+      subStateClosed.add(_ -> {
+        for (i in 0...upgradeSparkles.length)
+        {
+          upgradeSparkles.members[i].restartSparkle();
+        }
+      });
+    }
 
     resetCamStuff();
 
@@ -177,7 +247,12 @@ class MainMenuState extends MusicBeatState
     // FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
     #if mobile
-    addBackButton(FlxG.width * 0.03, FlxG.height * 0.79, FlxColor.BLACK, goBack);
+    camFollow.y = bg.getGraphicMidpoint().y;
+
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
+    addOptionsButton(35, FlxG.height - 210, function() {
+      startExitState(() -> new funkin.ui.options.OptionsState());
+    });
     #end
 
     super.create();
@@ -230,6 +305,16 @@ class MainMenuState extends MusicBeatState
     menuItems.addItem(name, item);
   }
 
+  var buttonGrp:Array<FlxSprite> = [];
+
+  function createMenuButtion(name:String, atlas:String, callback:Void->Void):Void
+  {
+    var item = new funkin.mobile.ui.FunkinButton(Math.round(FlxG.width * 0.8), Math.round(FlxG.height * 0.7));
+    item.makeGraphic(250, 250, FlxColor.BLUE);
+    item.onDown.add(callback);
+    buttonGrp.push(item);
+  }
+
   override function closeSubState():Void
   {
     magenta.visible = false;
@@ -246,7 +331,9 @@ class MainMenuState extends MusicBeatState
 
   function onMenuItemChange(selected:MenuListItem)
   {
+    #if NO_FEATURE_TOUCH_CONTROLS
     camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
+    #end
   }
 
   #if FEATURE_OPEN_URL
@@ -291,6 +378,11 @@ class MainMenuState extends MusicBeatState
       }
     });
 
+    #if mobile
+    FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+    FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+    #end
+
     new FlxTimer().start(duration, function(_) FlxG.switchState(state));
   }
 
@@ -299,6 +391,11 @@ class MainMenuState extends MusicBeatState
     super.update(elapsed);
 
     Conductor.instance.update();
+
+    #if mobile
+    camFollow.y += FlxG.gyroscope.roll * 3;
+    camFollow.x += FlxG.gyroscope.pitch * -3;
+    #end
 
     // Open the debug menu, defaults to ` / ~
     // This includes stuff like the Chart Editor, so it should be present on all builds.

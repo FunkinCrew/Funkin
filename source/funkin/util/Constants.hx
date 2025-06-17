@@ -520,6 +520,11 @@ class Constants
   public static final EXT_CHART = "fnfc";
 
   /**
+   * The file extension used when exporting stage files.
+   */
+  public static final EXT_STAGE = "fnfs";
+
+  /**
    * The file extension used when loading audio files.
    */
   public static final EXT_SOUND = #if web "mp3" #else "ogg" #end;
@@ -553,6 +558,11 @@ class Constants
    */
   public static final GHOST_TAP_DELAY:Float = 3 / 8;
   #end
+
+  /**
+   * Otherwise known as "The FuckCunt Variable"
+   */
+  public static final CENSOR_EXPLETIVES:Bool = #if CENSOR_EXPLETIVES true #else false #end;
 
   /**
    * The maximum number of previous file paths for the Chart Editor to remember.
@@ -590,20 +600,6 @@ class Constants
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
 
-  #if FEATURE_MOBILE_ADVERTISEMENTS
-  /**
-   * A Counter that is increased by 1 each blueball.
-   * Only used for interstital ads each 3 blueballs on mobile.
-   */
-  public static var GLOBAL_BLUEBALL_COUNTER:Int = 0;
-
-  /**
-   * A Counter that is increased by 1 each victory only in freep;ay songs.
-   * Only used for interstital ads each 3 victories on mobile.
-   */
-  public static var GLOBAL_FREEPLAY_VICTORY_COUNTER:Int = 0;
-  #end
-
   /**
    * Default period value for vibration.
    */
@@ -628,4 +624,9 @@ class Constants
    * Max vibration amplitude.
    */
   public inline static final MAX_VIBRATION_AMPLITUDE:Float = 1;
+
+  /**
+   * Default vibration sharpness.
+   */
+  public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
 }

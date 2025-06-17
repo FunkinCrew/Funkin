@@ -93,12 +93,8 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var limitToBounds:Bool = true;
 
   /**
-   * Whether this button is a circle or not (This affects the overlap check method).
-   */
-  public var isCircle:Bool = false;
-
-  /**
    * A radius for circular buttons.
+   * If this radius is larger than 0 then the overlap check will look if the touch point is inside this raius.
    */
   public var radius:Float = 0;
 
@@ -126,9 +122,9 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   var touchID:Int = -1;
 
   /**
-   * Whether the funkin button is a back button, button shouldn't call onDownHandler() on touch.pressed.
+   * Whether the button should skip calling onDownHandler() on touch.pressed.
    */
-  public var isBackButton:Bool = false;
+  public var ignoreDownHandler:Bool = false;
 
   /**
    * Creates a new `FunkinButton` object.
@@ -334,7 +330,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
 
       onDownHandler();
     }
-    else if (status == FunkinButtonStatus.NORMAL && !isBackButton)
+    else if (status == FunkinButtonStatus.NORMAL && !ignoreDownHandler)
     {
       if (newInput.pressed)
       {

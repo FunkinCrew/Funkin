@@ -17,11 +17,12 @@ import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
 #if mobile
-import funkin.mobile.ui.FunkinBackspace;
+import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
+import funkin.util.HapticUtil;
 import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
@@ -75,8 +76,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
-    #if mobile
-    var backButton:FunkinBackspace = new FunkinBackspace(FlxG.width * 0.77, FlxG.height * 0.85, flixel.util.FlxColor.BLACK, exit);
+    #if FEATURE_TOUCH_CONTROLS
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
     add(backButton);
     #end
   }
@@ -107,9 +108,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
+    #if FEATURE_NAUGHTYNESS
     createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
+    #end
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll,
@@ -117,6 +120,20 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
+    #if FEATURE_HAPTICS
+    createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
+      "All" => HapticsMode.ALL,
+      "Notes Only" => HapticsMode.NOTES_ONLY,
+      "None" => HapticsMode.NONE,
+    ], function(key:String, value:HapticsMode):Void {
+      Preferences.hapticsMode = value;
+    }, switch (Preferences.hapticsMode)
+      {
+        case HapticsMode.NOTES_ONLY: "Notes Only";
+        case HapticsMode.NONE: "None";
+        default: "All";
+      });
+    #end
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;
@@ -124,14 +141,14 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+    #if !mobile
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    #if !mobile
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
     #end
@@ -158,9 +175,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case WindowVSyncMode.ADAPTIVE: "Adaptive";
       });
     #end
+    #if !mobile
     createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 500, 5, 0);
+    #end
     #end
 
     #if FEATURE_SCREENSHOTS

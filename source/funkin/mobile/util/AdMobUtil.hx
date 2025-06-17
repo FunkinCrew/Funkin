@@ -10,18 +10,26 @@ import funkin.play.cutscene.VideoCutscene;
 import funkin.util.macro.EnvironmentConfigMacro;
 
 /**
- * Utility class for managing AdMob advertisements in a mobile application.
- * This class provides functions to initialize AdMob, manage ad events,
- * and control the display of different ad types, including banners,
- * interstitial ads, and rewarded ads.
+ * Provides utility functions for working with admob advertisements.
  */
+@:nullSafety
 class AdMobUtil
 {
+  /**
+   * Counter that tracks the number of times a blueball event or a victory occurs.
+   */
+  public static var PLAYING_COUNTER:UInt = 0;
+
+  /**
+   * The maximum number of actions or events allowed before an advertisement is shown.
+   */
+  public static final MAX_BEFORE_AD:UInt = 3;
+
   #if NO_TESTING_ADS
   /**
    * AdMob publisher ID used for the application.
    */
-  private static final ADMOB_PUBLISHER:String = EnvironmentConfigMacro.environmentConfig.get("GLOBAL_ADMOB_PUBLISHER");
+  static final ADMOB_PUBLISHER:String = EnvironmentConfigMacro.environmentConfig.get("GLOBAL_ADMOB_PUBLISHER");
 
   /**
    * Test ad unit IDs for development and testing purposes.
@@ -31,22 +39,17 @@ class AdMobUtil
   /**
    * Ad unit ID for displaying banner ads.
    */
-  private static final BANNER_AD_UNIT_ID:String = #if mobile EnvironmentConfigMacro.environmentConfig.get(#if android "ANDROID_ADMOB_BANNER_ID" #else "IOS_ADMOB_BANNER_ID" #end) #else "" #end;
+  static final BANNER_AD_UNIT_ID:String = #if mobile EnvironmentConfigMacro.environmentConfig.get(#if android "ANDROID_ADMOB_BANNER_ID" #else "IOS_ADMOB_BANNER_ID" #end) #else "" #end;
 
   /**
    * Ad unit ID for displaying interstitial ads.
    */
-  private static final INTERSTITIAL_AD_UNIT_ID:String = #if mobile EnvironmentConfigMacro.environmentConfig.get(#if android "ANDROID_ADMOB_INTERSTITIAL_ID" #else "IOS_ADMOB_INTERSTITIAL_ID" #end) #else "" #end;
-
-  /**
-   * Ad unit ID for displaying interstitial video ads.
-   */
-  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
+  static final INTERSTITIAL_AD_UNIT_ID:String = #if mobile EnvironmentConfigMacro.environmentConfig.get(#if android "ANDROID_ADMOB_INTERSTITIAL_ID" #else "IOS_ADMOB_INTERSTITIAL_ID" #end) #else "" #end;
 
   /**
    * Ad unit ID for displaying rewarded ads.
    */
-  private static final REWARDED_AD_UNIT_ID:String = "";
+  static final REWARDED_AD_UNIT_ID:String = "";
   #else
 
   /**
@@ -54,7 +57,7 @@ class AdMobUtil
    * This ID is a test publisher ID provided by Google AdMob.
    * Replace with your actual publisher ID for production.
    */
-  private static final ADMOB_PUBLISHER:String = "ca-app-pub-3940256099942544";
+  static final ADMOB_PUBLISHER:String = "ca-app-pub-3940256099942544";
 
   /**
    * Ad unit ID for displaying banner ads.
@@ -64,7 +67,7 @@ class AdMobUtil
    * - Android: "9214589741" (test ad unit ID)
    * - iOS: "2435281174" (test ad unit ID)
    */
-  private static final BANNER_AD_UNIT_ID:String = #if android "9214589741" #elseif ios "2435281174" #else "" #end;
+  static final BANNER_AD_UNIT_ID:String = #if android "9214589741" #elseif ios "2435281174" #else "" #end;
 
   /**
    * Ad unit ID for displaying interstitial ads.
@@ -74,14 +77,7 @@ class AdMobUtil
    * - Android: "1033173712" (test ad unit ID)
    * - iOS: "4411468910" (test ad unit ID)
    */
-  private static final INTERSTITIAL_AD_UNIT_ID:String = #if android "1033173712" #elseif ios "4411468910" #else "" #end;
-
-  /**
-   * Ad unit ID for displaying interstitial video ads.
-   * Test IDs are used for Android and iOS platforms, while non-supported platforms default to an empty string.
-   * Replace with your actual interstitial video ad unit ID for production.
-   */
-  private static final INTERSTITIAL_VIDEO_AD_UNIT_ID:String = "";
+  static final INTERSTITIAL_AD_UNIT_ID:String = #if android "1033173712" #elseif ios "4411468910" #else "" #end;
 
   /**
    * Ad unit ID for displaying rewarded ads.
@@ -91,7 +87,7 @@ class AdMobUtil
    * - Android: "8691691433" (test ad unit ID)
    * - iOS: "5135589807" (test ad unit ID)
    */
-  private static final REWARDED_AD_UNIT_ID:String = #if android "8691691433" #elseif ios "5135589807" #else "" #end;
+  static final REWARDED_AD_UNIT_ID:String = #if android "8691691433" #elseif ios "5135589807" #else "" #end;
   #end
 
   /**
@@ -102,10 +98,8 @@ class AdMobUtil
   public static function init():Void
   {
     Admob.onEvent.add(function(event:AdmobEvent):Void {
-      if (event.name == AdmobEvent.INTERSTITIAL_LOADED) Admob.showInterstitial();
-      else if (event.name == AdmobEvent.REWARDED_LOADED) Admob.showRewarded();
       #if ios
-      else if (event.name == AdmobEvent.AVM_WILL_PLAY_AUDIO)
+      if (event.name == AdmobEvent.AVM_WILL_PLAY_AUDIO)
       {
         if (FlxG.sound.music != null) FlxG.sound.music.pause();
 
@@ -150,6 +144,9 @@ class AdMobUtil
    */
   public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM_CENTER):Void
   {
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID)) return;
+    #end
     Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.BANNER_AD_UNIT_ID].join('/'), size, align);
   }
 
@@ -158,29 +155,83 @@ class AdMobUtil
    */
   public static inline function removeBanner():Void
   {
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID)) return;
+    #end
     Admob.hideBanner();
   }
 
   /**
-   * Loads an interstitial ad. It loads either a video (if avalible) or a standard interstitial ad (it uses a 50% chance to decide that).
+   * Loads an interstitial ad using AdMob.
+   *
+   * @param onInterstitialFinish Callback function to be called when the rewarded ad has been completed by the user.
    */
-  public static inline function loadInterstitial():Void
+  public static function loadInterstitial(onInterstitialFinish:Void->Void):Void
   {
-    if (FlxG.random.bool(50) && AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID.length > 0)
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID))
     {
-      Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_VIDEO_AD_UNIT_ID].join('/'));
+      if (onInterstitialFinish != null) onInterstitialFinish();
+
+      return;
     }
-    else
+    #end
+
+    function interstitialEvent(event:AdmobEvent):Void
     {
-      Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_AD_UNIT_ID].join('/'));
+      if (event.name == AdmobEvent.INTERSTITIAL_LOADED)
+      {
+        Admob.showInterstitial();
+      }
+      else if (event.name == AdmobEvent.INTERSTITIAL_DISMISSED
+        || event.name == AdmobEvent.INTERSTITIAL_FAILED_TO_LOAD
+        || event.name == AdmobEvent.INTERSTITIAL_FAILED_TO_SHOW)
+      {
+        if (onInterstitialFinish != null) onInterstitialFinish();
+
+        Admob.onEvent.remove(interstitialEvent);
+      }
     }
+
+    Admob.onEvent.add(interstitialEvent);
+
+    Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.INTERSTITIAL_AD_UNIT_ID].join('/'));
   }
 
   /**
-   * Loads an rewarded ad.
+   * Loads a rewarded ad using Admob.
+   *
+   * @param onRewardedFinish Callback function to be called when the rewarded ad has been completed by the user.
    */
-  public static inline function loadRewarded():Void
+  public static function loadRewarded(onRewardedFinish:Void->Void):Void
   {
+    #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID))
+    {
+      if (onRewardedFinish != null) onRewardedFinish();
+
+      return;
+    }
+    #end
+
+    function rewardedEvent(event:AdmobEvent):Void
+    {
+      if (event.name == AdmobEvent.REWARDED_LOADED)
+      {
+        Admob.showRewarded();
+      }
+      else if (event.name == AdmobEvent.REWARDED_DISMISSED
+        || event.name == AdmobEvent.REWARDED_FAILED_TO_LOAD
+        || event.name == AdmobEvent.REWARDED_FAILED_TO_SHOW)
+      {
+        if (onRewardedFinish != null) onRewardedFinish();
+
+        Admob.onEvent.remove(rewardedEvent);
+      }
+    }
+
+    Admob.onEvent.add(rewardedEvent);
+
     Admob.loadRewarded([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.REWARDED_AD_UNIT_ID].join('/'));
   }
 

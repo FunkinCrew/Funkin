@@ -69,7 +69,8 @@ class CharSelectSubState extends MusicBeatSubState
   var chooseDipshit:FlxSprite;
   var dipshitBlur:FlxSprite;
   var transitionGradient:FlxSprite;
-  var curChar(default, set):String = "pico";
+  var curChar(default, set):String = Constants.DEFAULT_CHARACTER;
+  var rememberedChar:String;
   var nametag:Nametag;
   var camFollow:FlxObject;
   var autoFollow:Bool = false;
@@ -96,9 +97,12 @@ class CharSelectSubState extends MusicBeatSubState
 
   var charHitbox:FlxObject;
 
-  public function new()
+  var cutoutSize:Float = 0;
+
+  public function new(?params:CharSelectSubStateParams)
   {
     super();
+    rememberedChar = params?.character;
     loadAvailableCharacters();
   }
 
@@ -130,14 +134,16 @@ class CharSelectSubState extends MusicBeatSubState
   {
     super.create();
 
+    cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
+
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
 
-    var bg:FlxSprite = new FlxSprite(-153, -140);
+    var bg:FlxSprite = new FlxSprite(cutoutSize + -153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/crowd"));
+    var crowd:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize, 0, Paths.animateAtlas("charSelect/crowd"));
     crowd.anim.play();
     crowd.anim.onComplete.add(function() {
       crowd.anim.play();
@@ -145,13 +151,14 @@ class CharSelectSubState extends MusicBeatSubState
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FlxSprite = new FlxSprite(-40, 391);
-    stageSpr.frames = Paths.getSparrowAtlas("charSelect/charSelectStage");
-    stageSpr.animation.addByPrefix("idle", "stage full instance 1", 24, true);
-    stageSpr.animation.play("idle");
+    var stageSpr:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize + -2, 1, Paths.animateAtlas("charSelect/charSelectStage"));
+    stageSpr.anim.play("");
+    stageSpr.anim.onComplete.add(function() {
+      stageSpr.anim.play("");
+    });
     add(stageSpr);
 
-    var curtains:FlxSprite = new FlxSprite(-47, -49);
+    var curtains:FlxSprite = new FlxSprite(cutoutSize + (-47 - 165), -49 - 50);
     curtains.loadGraphic(Paths.image('charSelect/curtains'));
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
@@ -162,54 +169,78 @@ class CharSelectSubState extends MusicBeatSubState
       barthing.anim.play("");
     });
     barthing.blend = BlendMode.MULTIPLY;
+    barthing.scale.x = 2.5;
     barthing.scrollFactor.set(0, 0);
     add(barthing);
 
     barthing.y += 80;
     FlxTween.tween(barthing, {y: barthing.y - 80}, 1.3, {ease: FlxEase.expoOut});
 
-    var charLight:FlxSprite = new FlxSprite(800, 250);
+    var charLight:FlxSprite = new FlxSprite(cutoutSize + 800, 250);
     charLight.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLight);
 
-    var charLightGF:FlxSprite = new FlxSprite(180, 240);
+    var charLightGF:FlxSprite = new FlxSprite(cutoutSize + 180, 240);
     charLightGF.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLightGF);
 
-    gfChill = new CharSelectGF();
-    gfChill.switchGF("bf");
-    add(gfChill);
+    function setupPlayerChill(character:String)
+    {
+      gfChill = new CharSelectGF();
+      gfChill.switchGF(character);
+      gfChill.x += cutoutSize;
+      add(gfChill);
 
-    playerChillOut = new CharSelectPlayer(0, 0);
-    playerChillOut.switchChar("bf");
-    playerChillOut.visible = false;
-    add(playerChillOut);
+      playerChillOut = new CharSelectPlayer(cutoutSize, 0);
+      playerChillOut.switchChar(character);
+      playerChillOut.visible = false;
+      add(playerChillOut);
 
-    playerChill = new CharSelectPlayer(0, 0);
-    playerChill.switchChar("bf");
-    add(playerChill);
+      playerChill = new CharSelectPlayer(cutoutSize, 0);
+      playerChill.switchChar(character);
+      add(playerChill);
+    }
 
-    var speakers:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
+    // I think I can do the character preselect thing here? This better work
+    // Edit: [UH-OH!] yes! It does!
+    if (rememberedChar != null && rememberedChar != Constants.DEFAULT_CHARACTER)
+    {
+      setupPlayerChill(rememberedChar);
+      for (pos => charId in availableChars)
+      {
+        if (charId == rememberedChar)
+        {
+          setCursorPosition(pos);
+          break;
+        }
+      }
+      @:bypassAccessor curChar = rememberedChar;
+    }
+    else
+      setupPlayerChill(Constants.DEFAULT_CHARACTER);
+
+    var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 10, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
     speakers.anim.onComplete.add(function() {
       speakers.anim.play("");
     });
     speakers.scrollFactor.set(1.8, 1.8);
+    speakers.scale.set(1.05, 1.05);
     add(speakers);
 
-    var fgBlur:FlxSprite = new FlxSprite(-125, 170);
+    var fgBlur:FlxSprite = new FlxSprite(cutoutSize + -125, 170);
     fgBlur.loadGraphic(Paths.image('charSelect/foregroundBlur'));
     fgBlur.blend = openfl.display.BlendMode.MULTIPLY;
     add(fgBlur);
 
-    dipshitBlur = new FlxSprite(419, -65);
+    dipshitBlur = new FlxSprite(cutoutSize + 419, -65);
     dipshitBlur.frames = Paths.getSparrowAtlas("charSelect/dipshitBlur");
     dipshitBlur.animation.addByPrefix('idle', "CHOOSE vertical offset instance 1", 24, true);
     dipshitBlur.blend = BlendMode.ADD;
     dipshitBlur.animation.play("idle");
     add(dipshitBlur);
 
-    dipshitBacking = new FlxSprite(423, -17);
+    dipshitBacking = new FlxSprite(cutoutSize + 423, -17);
     dipshitBacking.frames = Paths.getSparrowAtlas("charSelect/dipshitBacking");
     dipshitBacking.animation.addByPrefix('idle', "CHOOSE horizontal offset instance 1", 24, true);
     dipshitBacking.blend = BlendMode.ADD;
@@ -219,7 +250,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.y += 210;
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
 
-    chooseDipshit = new FlxSprite(426, -13);
+    chooseDipshit = new FlxSprite(cutoutSize + 426, -13);
     chooseDipshit.loadGraphic(Paths.image('charSelect/chooseDipshit'));
     add(chooseDipshit);
 
@@ -233,7 +264,8 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.scrollFactor.set();
     dipshitBlur.scrollFactor.set();
 
-    nametag = new Nametag();
+    nametag = new Nametag(curChar);
+    nametag.midpointX += cutoutSize;
     add(nametag);
 
     nametag.scrollFactor.set();
@@ -638,7 +670,7 @@ class CharSelectSubState extends MusicBeatSubState
 
   function updateIconPositions()
   {
-    grpIcons.x = 450;
+    grpIcons.x = cutoutSize + 450;
     grpIcons.y = 120;
     for (index => member in grpIcons.members)
     {
@@ -719,7 +751,6 @@ class CharSelectSubState extends MusicBeatSubState
       {
         ease: FlxEase.backIn,
         onComplete: function(_) {
-          funkin.ui.FullScreenScaleMode.enabled = true;
           FlxG.switchState(() -> FreeplayState.build(
             {
               {
@@ -1145,6 +1176,25 @@ class CharSelectSubState extends MusicBeatSubState
     return gridPosition;
   }
 
+  // Moved this code into a function because is now used twice
+  function setCursorPosition(index:Int)
+  {
+    var copy = 3;
+    var yThing = -1;
+
+    while ((index + 1) > copy)
+    {
+      yThing++;
+      copy += 3;
+    }
+
+    var xThing = (copy - index - 2) * -1;
+
+    // Look, I'd write better code but I had better aneurysms, my bad - Cheems
+    cursorY = yThing;
+    cursorX = xThing;
+  }
+
   function set_curChar(value:String):String
   {
     if (curChar == value) return value;
@@ -1195,3 +1245,11 @@ class CharSelectSubState extends MusicBeatSubState
     return value;
   }
 }
+
+/**
+ * Parameters used to initialize the CharSelectSubState.
+ */
+typedef CharSelectSubStateParams =
+{
+  ?character:String, // ?fromFreeplaySelect:Bool,
+};

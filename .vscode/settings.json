@@ -228,5 +228,11 @@
     "jacoco.xml",
     "coverage.cobertura.xml"
   ],
-  "vscord.app.privacyMode.enable": true
+  "vscord.app.privacyMode.enable": true,
+  "json.schemas": [
+    {
+      "fileMatch": ["/hmm.json"],
+      "url": "./.vscode/schema/hmm.json"
+    }
+  ]
 }

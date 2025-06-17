@@ -17,10 +17,16 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.ui.AtlasText;
+import flixel.util.FlxTimer;
 import funkin.ui.MusicBeatSubState;
+import funkin.util.HapticUtil;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
+#if FEATURE_MOBILE_ADVERTISEMENTS
+import funkin.mobile.util.AdMobUtil;
+#end
 
 /**
  * Parameters for initializing the PauseSubState.
@@ -149,10 +155,22 @@ class PauseSubState extends MusicBeatSubState
   // Graphics Variables
   // ===============
 
+  #if mobile
+  /**
+   * The pause button for the game, only appears in Mobile targets. Shows up breifly to finish the pause animation.
+   */
+  var pauseButton:FunkinSprite;
+
+  /**
+   * The pause circle for the game, only appears in Mobile targets. Shows up breifly to finish the pause animation.
+   */
+  var pauseCircle:FunkinSprite;
+  #end
+
   /**
    * The placeholder sprite displayed when an advertisement fails to load or display.
    */
-  var failedAdPlaceHolder:FunkinSprite;
+  // var failedAdPlaceHolder:FunkinSprite;
 
   /**
    * The semi-transparent black background that appears when the game is paused.
@@ -211,9 +229,9 @@ class PauseSubState extends MusicBeatSubState
   {
     // Add banner ad when game is state is first loaded.
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    extension.admob.Admob.onEvent.add(onBannerEvent);
+    // extension.admob.Admob.onEvent.add(onBannerEvent);
 
-    funkin.mobile.util.AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
+    AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
     #end
 
     super.create();
@@ -247,49 +265,54 @@ class PauseSubState extends MusicBeatSubState
    */
   public override function destroy():Void
   {
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    extension.admob.Admob.onEvent.remove(onBannerEvent);
-    #end
+    // #if FEATURE_MOBILE_ADVERTISEMENTS
+    // extension.admob.Admob.onEvent.remove(onBannerEvent);
+    // #end
     super.destroy();
     charterFadeTween.cancel();
     charterFadeTween = null;
+    dataFadeTimer.cancel();
+    dataFadeTimer = null;
+    hapticTimer.cancel();
+    hapticTimer = null;
     pauseMusic.stop();
   }
 
   // ===============
   // Initialization Functions
   // ===============
-  #if FEATURE_MOBILE_ADVERTISEMENTS
-  function onBannerEvent(event:extension.admob.AdmobEvent):Void
-  {
-    if (event.name.indexOf('BANNER') == -1) return;
 
-    if (event.errorCode != null && event.errorDescription != null)
+  /*#if FEATURE_MOBILE_ADVERTISEMENTS
+    function onBannerEvent(event:extension.admob.AdmobEvent):Void
     {
-      if (failedAdPlaceHolder == null || members.indexOf(failedAdPlaceHolder) == -1)
+      if (event.name.indexOf('BANNER') == -1) return;
+
+      if (event.errorCode != null && event.errorDescription != null)
       {
-        var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
+        if (failedAdPlaceHolder == null || members.indexOf(failedAdPlaceHolder) == -1)
+        {
+          var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
 
-        #if android
-        scale = Math.max(scale, 1);
-        #else
-        scale = Math.min(scale, 1);
-        #end
+          #if android
+          scale = Math.max(scale, 1);
+          #else
+          scale = Math.min(scale, 1);
+          #end
 
-        failedAdPlaceHolder = new FunkinSprite(0, 0);
-        failedAdPlaceHolder.makeSolidColor(Math.floor(320 * scale), Math.floor(50 * scale), FlxColor.RED);
-        failedAdPlaceHolder.updateHitbox();
-        failedAdPlaceHolder.scrollFactor.set(0, 0);
-        add(failedAdPlaceHolder);
+          failedAdPlaceHolder = new FunkinSprite(0, 0);
+          failedAdPlaceHolder.makeSolidColor(Math.floor(320 * scale), Math.floor(50 * scale), FlxColor.RED);
+          failedAdPlaceHolder.updateHitbox();
+          failedAdPlaceHolder.screenCenter(X);
+          failedAdPlaceHolder.scrollFactor.set(0, 0);
+          add(failedAdPlaceHolder);
+        }
+      }
+      else if (failedAdPlaceHolder != null && members.indexOf(failedAdPlaceHolder) != -1)
+      {
+        remove(failedAdPlaceHolder);
       }
     }
-    else if (failedAdPlaceHolder != null && members.indexOf(failedAdPlaceHolder) != -1)
-    {
-      remove(failedAdPlaceHolder);
-    }
-  }
-  #end
-
+    #end */
   /**
    * Play the pause music.
    */
@@ -320,6 +343,29 @@ class PauseSubState extends MusicBeatSubState
     background.scrollFactor.set(0, 0);
     background.updateHitbox();
     add(background);
+
+    #if mobile
+    pauseButton = FunkinSprite.createSparrow(0, 0, "pauseButton");
+    pauseButton.animation.addByIndices('idle', 'pause', [0], "", 24, false);
+    pauseButton.animation.addByIndices('hold', 'pause', [5], "", 24, false);
+    pauseButton.animation.addByIndices('confirm', 'pause', [
+      6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+    ], "", 24, false);
+    pauseButton.scale.set(0.8, 0.8);
+    pauseButton.updateHitbox();
+    pauseButton.animation.play("confirm");
+    pauseButton.setPosition((FlxG.width - pauseButton.width) - 35, 35);
+
+    pauseCircle = FunkinSprite.create(0, 0, 'pauseCircle');
+    pauseCircle.scale.set(0.84, 0.8);
+    pauseCircle.updateHitbox();
+    pauseCircle.x = ((pauseButton.x + (pauseButton.width / 2)) - (pauseCircle.width / 2));
+    pauseCircle.y = ((pauseButton.y + (pauseButton.height / 2)) - (pauseCircle.height / 2));
+    pauseCircle.alpha = 0.1;
+
+    add(pauseCircle);
+    add(pauseButton);
+    #end
   }
 
   /**
@@ -331,7 +377,9 @@ class PauseSubState extends MusicBeatSubState
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20, 15, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
+    var metadataSong:FlxText = new FlxText(20,
+      #if mobile (PlayState.instance?.isPracticeMode ?? false) ? camera.height - 185 : camera.height - 155 #else 15 #end,
+      camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
     metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -371,6 +419,12 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
+
+    metadataArtist.alpha = 0;
+    metadataPractice.alpha = 0;
+    metadataSong.alpha = 0;
+    metadataDifficulty.alpha = 0;
+    metadataDeaths.alpha = 0;
 
     updateMetadataText();
   }
@@ -431,6 +485,9 @@ class PauseSubState extends MusicBeatSubState
       });
   }
 
+  var dataFadeTimer = new FlxTimer();
+  var hapticTimer = new FlxTimer();
+
   /**
    * Perform additional animations to transition the pause menu in when it is first displayed.
    */
@@ -438,11 +495,35 @@ class PauseSubState extends MusicBeatSubState
   {
     FlxTween.tween(background, {alpha: 0.6}, 0.8, {ease: FlxEase.quartOut});
 
+    #if mobile
+    HapticUtil.vibrate(0, 0.05, 0.5);
+
+    pauseButton.animation.play("confirm");
+    pauseCircle.scale.set(0.84 * 1.4, 0.8 * 1.4);
+    pauseCircle.alpha = 0.4;
+    FlxTween.tween(pauseCircle.scale, {x: 0.84 * 0.8, y: 0.8 * 0.8}, 0.4, {ease: FlxEase.backInOut});
+    FlxTween.tween(pauseCircle, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
+
+    hapticTimer.start(0.2, function(_) {
+      HapticUtil.vibrate(0, 0.01, 0.2);
+    });
+
+    dataFadeTimer.start(0.3, function(_) {
+      transitionMetadataIn();
+      FlxTween.tween(pauseButton, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
+    });
+    #else
+    transitionMetadataIn();
+    #end
+  }
+
+  function transitionMetadataIn():Void
+  {
     // Animate each element a little bit downwards.
     var delay:Float = 0.1;
     for (child in metadata.members)
     {
-      FlxTween.tween(child, {alpha: 1, y: child.y + 5}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
+      FlxTween.tween(child, {alpha: 1, y: #if mobile child.y - 5 #else child.y + 5 #end}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
       delay += 0.1;
     }
   }
@@ -459,8 +540,8 @@ class PauseSubState extends MusicBeatSubState
     if (!allowInput) return;
 
     // Doing this just so it'd look better i guess.
-    final upP:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
-    final downP:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
+    final upP:Bool = controls.UI_UP_P;
+    final downP:Bool = controls.UI_DOWN_P;
 
     if (upP)
     {
@@ -471,7 +552,7 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
-    if (!SwipeUtil.swipeAny && !justOpened)
+    if (!SwipeUtil.justSwipedAny && !justOpened)
     {
       for (i in 0...menuEntryText.members.length)
       {
@@ -480,10 +561,12 @@ class PauseSubState extends MusicBeatSubState
         if (i == currentEntry)
         {
           currentMenuEntries[currentEntry].callback(this);
+          HapticUtil.vibrate(0, 0.05, 0.5);
           break;
         }
 
         changeSelection(i - currentEntry);
+        HapticUtil.vibrate(0, 0.01, 0.2);
 
         break;
       }
@@ -497,16 +580,13 @@ class PauseSubState extends MusicBeatSubState
     {
       resume(this);
     }
-
     // we only want justOpened to be true for 1 single frame, when we first get into the pause menu substate
     justOpened = false;
-
     #if FEATURE_DEBUG_FUNCTIONS
     // to pause the game and get screenshots easy, press H on pause menu!
     if (FlxG.keys.justPressed.H)
     {
       var visible = !metadata.visible;
-
       metadata.visible = visible;
       menuEntryText.visible = visible;
       background.visible = visible;
@@ -544,11 +624,20 @@ class PauseSubState extends MusicBeatSubState
       // Set the transparency.
       text.alpha = isCurrent ? 1.0 : 0.6;
 
+      #if mobile
       // Set the position.
+      if (isCurrent && currentEntry != prevEntry)
+      {
+        FlxTween.globalManager.cancelTweensOf(text);
+        text.x = 165;
+        FlxTween.tween(text, {x: 150}, 0.2, {ease: FlxEase.backInOut});
+      }
+      #else
       var targetX = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 20 + Math.max(90, funkin.ui.FullScreenScaleMode.gameNotchSize.x);
       var targetY = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 120 + (camera.height * 0.48);
       FlxTween.globalManager.cancelTweensOf(text);
       FlxTween.tween(text, {x: targetX, y: targetY}, 0.33, {ease: FlxEase.quartOut});
+      #end
     }
   }
 
@@ -648,6 +737,26 @@ class PauseSubState extends MusicBeatSubState
       else
       {
         // Handle visible entries.
+        #if mobile
+        // var yPos:Float = (150 * entryIndex) + 100;
+
+        // var yPos:Float = (140 * entryIndex) + 150;
+        var yPos:Float = (105 * entryIndex) + 150;
+
+        var text:AtlasText = new AtlasText(110, yPos, entry.text, AtlasFont.BOLD);
+        text.scrollFactor.set(0, 0);
+        text.alpha = 0;
+        for (letter in text)
+        {
+          letter.width *= 1.2;
+          letter.height *= 1.4;
+        }
+        menuEntryText.add(text);
+
+        FlxTween.tween(text, {x: 150}, 0.4 * (entryIndex + 1), {ease: FlxEase.expoOut});
+
+        entry.sprite = text;
+        #else
         var yPos:Float = 70 * entryIndex + 30;
         var text:AtlasText = new AtlasText(0, yPos, entry.text, AtlasFont.BOLD);
         text.scrollFactor.set(0, 0);
@@ -660,6 +769,7 @@ class PauseSubState extends MusicBeatSubState
         menuEntryText.add(text);
 
         entry.sprite = text;
+        #end
 
         entryIndex++;
       }
@@ -680,6 +790,16 @@ class PauseSubState extends MusicBeatSubState
   function updateMetadataText():Void
   {
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
+
+    #if mobile
+    if (metadata.members[0].y != camera.height - 185 && metadataPractice.visible)
+    {
+      for (text in metadata)
+      {
+        text.y -= 30;
+      }
+    }
+    #end
 
     switch (this.currentMode)
     {
@@ -707,7 +827,7 @@ class PauseSubState extends MusicBeatSubState
     // Resume a paused video if it exists.
     VideoCutscene.resumeVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -744,9 +864,31 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.needsReset = true;
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
-    #end
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
+
+    if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
+    {
+      state.allowInput = false;
+
+      AdMobUtil.loadInterstitial(function():Void {
+        AdMobUtil.PLAYING_COUNTER = 0;
+
+        AdMobUtil.removeBanner();
+
+        state.allowInput = true;
+
+        state.close();
+      });
+    }
+    else
+    {
+      AdMobUtil.removeBanner();
+
+      state.close();
+    }
+    #else
     state.close();
+    #end
   }
 
   /**
@@ -756,10 +898,33 @@ class PauseSubState extends MusicBeatSubState
   static function restartPlayState(state:PauseSubState):Void
   {
     PlayState.instance.needsReset = true;
+
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
-    #end
+    if (AdMobUtil.PLAYING_COUNTER < AdMobUtil.MAX_BEFORE_AD) AdMobUtil.PLAYING_COUNTER++;
+
+    if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
+    {
+      state.allowInput = false;
+
+      AdMobUtil.loadInterstitial(function():Void {
+        AdMobUtil.PLAYING_COUNTER = 0;
+
+        AdMobUtil.removeBanner();
+
+        state.allowInput = true;
+
+        state.close();
+      });
+    }
+    else
+    {
+      AdMobUtil.removeBanner();
+
+      state.close();
+    }
+    #else
     state.close();
+    #end
   }
 
   /**
@@ -782,7 +947,7 @@ class PauseSubState extends MusicBeatSubState
   {
     VideoCutscene.restartVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -795,7 +960,7 @@ class PauseSubState extends MusicBeatSubState
   {
     VideoCutscene.finishVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -810,7 +975,7 @@ class PauseSubState extends MusicBeatSubState
 
     PlayState.instance.currentConversation.resetConversation();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -825,7 +990,7 @@ class PauseSubState extends MusicBeatSubState
 
     PlayState.instance.currentConversation.skipConversation();
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
     state.close();
   }
@@ -866,7 +1031,7 @@ class PauseSubState extends MusicBeatSubState
     }
 
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
 
     state.openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
@@ -879,10 +1044,10 @@ class PauseSubState extends MusicBeatSubState
   static function quitToChartEditor(state:PauseSubState):Void
   {
     #if FEATURE_MOBILE_ADVERTISEMENTS
-    funkin.mobile.util.AdMobUtil.removeBanner();
+    AdMobUtil.removeBanner();
     #end
-    state.close();
     if (FlxG.sound.music != null) FlxG.sound.music.pause(); // Don't reset song position!
+    state.close();
     PlayState.instance.close(); // This only works because PlayState is a substate!
   }
 }

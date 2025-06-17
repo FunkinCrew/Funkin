@@ -45,7 +45,7 @@ class FunkinHint extends FunkinButton
    */
   static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [
     INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01],
-    VISIBLE_TILL_PRESS => [0.4, 0.2, 0.05]
+    VISIBLE_TILL_PRESS => [0.4, 0.2, 0.08]
   ];
 
   /**
@@ -179,7 +179,7 @@ class FunkinHint extends FunkinButton
     if (followTarget != null)
     {
       final widthMultiplier:Float = isPixel ? 1.35 : 1.35;
-      final heightMultiplier:Float = 4;
+      final heightMultiplier:Float = 8;
 
       final xOffset:Float = isPixel ? 43.265 : 0;
       final yOffset:Float = isPixel ? 57.65 : 0;
@@ -190,7 +190,7 @@ class FunkinHint extends FunkinButton
         setSize(followTarget.width * widthMultiplier + (isPixel ? 93.05 : 0), followTarget.height * heightMultiplier + (isPixel ? 118 : 0));
       }
 
-      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset, (followTarget.y - 80) - yOffset);
+      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset, (followTarget.y - 220) - yOffset);
     }
   }
 
@@ -348,7 +348,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
           }
         }
       case FunkinHitboxControlSchemes.DoubleThumbDPad:
-        final hintSize:Int = 80;
+        final hintSize:Int = 75;
+        final outlineThickness:Int = 5;
         final hintsAngles:Array<Float> = [Math.PI, Math.PI / 2, Math.PI * 1.5, 0];
         final hintsZoneRadius:Int = 115;
 
@@ -360,7 +361,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
             final y:Float = (FlxG.height - (hintSize * 3.75)) + Math.sin(hintsAngles[j]) * hintsZoneRadius;
 
             add(createHintCircle(i == 0 ? x + FullScreenScaleMode.gameNotchSize.x : x - FullScreenScaleMode.gameNotchSize.x, y,
-              hintsNoteDirections[j % hintsNoteDirections.length], hintSize, hintsColors[j % hintsColors.length]));
+              hintsNoteDirections[j % hintsNoteDirections.length], hintSize, outlineThickness, hintsColors[j % hintsColors.length]));
           }
         }
       case FunkinHitboxControlSchemes.Arrows:
@@ -451,13 +452,14 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @param y The y position of the circular button.
    * @param noteDirection The direction of the note the button represents (e.g., left, right).
    * @param radius The radius of the circular button.
+   * @param outlineThickness The thickness of the outline for the circle.
    * @param color The color of the circular button (default is white).
    * @return A new `FunkinHint` circular object.
    */
-  function createHintCircle(x:Float, y:Float, noteDirection:NoteDirection, radius:Float, color:FlxColor = 0xFFFFFFFF):FunkinHint
+  function createHintCircle(x:Float, y:Float, noteDirection:NoteDirection, radius:Float, outlineThickness:Int, color:FlxColor = 0xFFFFFFFF):FunkinHint
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
-    hint.loadGraphic(createHintCircleGraphic(radius, color));
+    hint.loadGraphic(createHintCircleGraphic(radius, outlineThickness, color));
     hint.limitToBounds = false;
     hint.radius = radius;
     hint.onDown.add(onHintDown.dispatch.bind(hint));
@@ -611,17 +613,27 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    *
    * @param radius The radius of the circle.
    * @param baseColor The base color of the circle graphic (default is white).
+   * @param outlineThickness The thickness of the outline for the circle.
    * @return A `FlxGraphic` object representing the circular button graphic.
    */
-  function createHintCircleGraphic(radius:Float, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
+  function createHintCircleGraphic(radius:Float, outlineThickness:Int, baseColor:FlxColor = 0xFFFFFFFF):FlxGraphic
   {
+    var brightColor:FlxColor = baseColor;
+    brightColor.brightness += 0.6;
+
+    if (baseColor.brightness >= 0.75) baseColor.alphaFloat -= baseColor.brightness * 0.35;
+
     final shape:Shape = new Shape();
     shape.graphics.beginFill(baseColor.to24Bit(), baseColor.alphaFloat);
+    shape.graphics.lineStyle(outlineThickness, brightColor.to24Bit(), brightColor.alpha);
     shape.graphics.drawCircle(radius, radius, radius);
     shape.graphics.endFill();
 
-    final graphicData:BitmapData = new BitmapData(Math.floor(radius * 2), Math.floor(radius * 2), true, 0);
-    graphicData.draw(shape, true);
+    final matrix:Matrix = new Matrix();
+    matrix.translate(outlineThickness, outlineThickness);
+
+    final graphicData:BitmapData = new BitmapData(Math.floor((radius + outlineThickness) * 2), Math.floor((radius + outlineThickness) * 2), true, 0);
+    graphicData.draw(shape, matrix, true);
     return FlxGraphic.fromBitmapData(graphicData, false, null, false);
   }
 

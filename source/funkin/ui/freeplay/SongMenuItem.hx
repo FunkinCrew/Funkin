@@ -300,7 +300,7 @@ class SongMenuItem extends FlxSpriteGroup
     var clipSize:Int = 290;
     var clipType:Int = 0;
 
-    if (ranking.visible)
+    if (ranking.visible || fakeRanking.visible)
     {
       favIconBlurred.x = this.x + 370;
       favIcon.x = favIconBlurred.x;
@@ -506,8 +506,6 @@ class SongMenuItem extends FlxSpriteGroup
       spr.visible = value;
     }
 
-    textAppear();
-
     updateSelected();
   }
 
@@ -626,7 +624,7 @@ class SongMenuItem extends FlxSpriteGroup
         capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
-        final shiftx:Float = FullScreenScaleMode.windowScale.x * 320;
+        final shiftx:Float = FullScreenScaleMode.wideScale.x * 320;
         final widescreenMult:Float = (FullScreenScaleMode.gameCutoutSize.x / 1.5) * 0.75;
         // Move the targetPos set to the if statement below if you want them to shift to their target positions after jumping in instead
         // I have no idea why this if instead of frameInTypeBeat == xFrames.length works even though they're the same thing
@@ -678,7 +676,11 @@ class SongMenuItem extends FlxSpriteGroup
    */
   public function confirm():Void
   {
-    if (songText != null) songText.flickerText();
+    if (songText != null)
+    {
+      textAppear();
+      songText.flickerText();
+    }
     if (pixelIcon != null && pixelIcon.visible)
     {
       pixelIcon.animation.play('confirm');

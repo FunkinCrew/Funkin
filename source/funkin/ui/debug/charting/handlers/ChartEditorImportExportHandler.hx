@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+import funkin.data.song.SongNoteDataUtils;
 import funkin.util.VersionUtil;
 import funkin.util.DateUtil;
 import haxe.io.Path;
@@ -129,11 +130,47 @@ class ChartEditorImportExportHandler
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
-    state.selectedDifficulty = state.availableDifficulties[0];
 
-    if (!newSongMetadata.exists(state.selectedVariation))
+    if (!state.songMetadata.exists(state.selectedVariation))
     {
       state.selectedVariation = Constants.DEFAULT_VARIATION;
+    }
+    // Use the first available difficulty as a fallback if the currently selected one cannot be found.
+    if (state.availableDifficulties.indexOf(state.selectedDifficulty) < 0) state.selectedDifficulty = state.availableDifficulties[0];
+
+    var delay:Float = 0.5;
+    for (variation => chart in state.songChartData)
+    {
+      var metadata:SongMetadata = state.songMetadata[variation] ?? continue;
+      var stackedNotesCount:Int = 0;
+      var affectedDiffs:Array<String> = [];
+
+      for (diff => notes in chart.notes)
+      {
+        if (!metadata.playData.difficulties.contains(diff)) continue;
+
+        var count:Int = SongNoteDataUtils.listStackedNotes(notes, 0, false).length;
+
+        if (count > 0)
+        {
+          affectedDiffs.push(diff.toTitleCase());
+          stackedNotesCount += count;
+        }
+      }
+
+      if (stackedNotesCount > 0)
+      {
+        // Difficulty names might be out of order due to how maps work
+        affectedDiffs.sort(SortUtil.defaultsThenAlphabetically.bind(['Easy', 'Normal', 'Hard', 'Erect', 'Nightmare']));
+
+        // Delay it so it doesn't overlap other notifications
+        flixel.util.FlxTimer.wait(delay, () -> {
+          state.warning('Stacked Notes Detected',
+            'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, ' +
+            'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
+        });
+        delay *= 1.5;
+      }
     }
 
     Conductor.instance.forceBPM(null); // Disable the forced BPM.

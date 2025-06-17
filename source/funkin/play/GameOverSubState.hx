@@ -22,6 +22,9 @@ import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
 import funkin.util.TouchUtil;
 import openfl.utils.Assets;
+#if FEATURE_MOBILE_ADVERTISEMENTS
+import funkin.mobile.util.AdMobUtil;
+#end
 
 /**
  * A substate which renders over the PlayState when the player dies.
@@ -103,7 +106,13 @@ class GameOverSubState extends MusicBeatSubState
 
   var isSpecialAnimation:Bool = false;
 
-  var gameOverVibrationPreset:VibrationPreset = {period: 0, duration: Constants.DEFAULT_VIBRATION_DURATION, amplitude: Constants.MIN_VIBRATION_AMPLITUDE};
+  var gameOverVibrationPreset:VibrationPreset =
+    {
+      period: 0,
+      duration: Constants.DEFAULT_VIBRATION_DURATION,
+      amplitude: Constants.MIN_VIBRATION_AMPLITUDE,
+      sharpness: Constants.DEFAULT_VIBRATION_SHARPNESS
+    };
 
   public function new(params:GameOverParams)
   {
@@ -177,7 +186,7 @@ class GameOverSubState extends MusicBeatSubState
     Conductor.instance.update(0);
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.84, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack);
     #end
 
     // Allow input a second later to prevent accidental gameover skips.
@@ -323,6 +332,7 @@ class GameOverSubState extends MusicBeatSubState
 
   function playDeathQuote():Void
   {
+    if (isEnding) return;
     if (boyfriend == null) return;
 
     var deathQuote = boyfriend.getDeathQuote();
@@ -402,13 +412,37 @@ class GameOverSubState extends MusicBeatSubState
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
           new FlxTimer().start(2, _ -> {
             FlxG.camera.filters = [];
+            #if FEATURE_MOBILE_ADVERTISEMENTS
+            if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
+            {
+              AdMobUtil.loadInterstitial(function():Void {
+                AdMobUtil.PLAYING_COUNTER = 0;
+                resetPlaying(true);
+              });
+            }
+            else
+              resetPlaying(true);
+            #else
             resetPlaying(true);
+            #end
           });
         }
         else
         {
           FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+            #if FEATURE_MOBILE_ADVERTISEMENTS
+            if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
+            {
+              AdMobUtil.loadInterstitial(function():Void {
+                AdMobUtil.PLAYING_COUNTER = 0;
+                resetPlaying();
+              });
+            }
+            else
+              resetPlaying();
+            #else
             resetPlaying();
+            #end
           });
         }
       });
@@ -466,7 +500,7 @@ class GameOverSubState extends MusicBeatSubState
         onComplete = function() {
           isStarting = true;
           // We need to force to ensure that the non-starting music plays.
-          startDeathMusic(1.0, true);
+          startDeathMusic(0.0, true);
         };
       }
     }
@@ -495,7 +529,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  public function goBack()
+  public function goBack():Void
   {
     isEnding = true;
     blueballed = false;
@@ -594,68 +628,76 @@ class GameOverSubState extends MusicBeatSubState
     if (boyfriend.animation == null) return;
 
     final curFrame:Int = (boyfriend.animation.curAnim != null) ? boyfriend.animation.curAnim.curFrame : -1;
-    switch (boyfriend.characterId)
+    if (boyfriend.characterId.startsWith("bf"))
     {
-      case "bf" | "bf-pixel":
-        // BF's mic drops.
-        if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 27)
+      // BF's mic drops.
+      if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 27)
+      {
+        HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+      }
+
+      // BF's balls pulsating.
+      if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && (curFrame == 0 || curFrame == 18))
+      {
+        HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+      }
+
+      return;
+    }
+
+    // Pico dies because of Darnell beating him up.
+    if (boyfriend.characterId == "pico-blazin")
+    {
+      if (!startedTimerHaptics)
+      {
+        startedTimerHaptics = true;
+
+        new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+          // Pico falls on his knees.
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+
+          new FlxTimer().start(0.6, function(tmr:FlxTimer) {
+            // Pico falls "asleep". :)
+            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          });
+        });
+
+        return;
+      }
+    }
+    else if (boyfriend.characterId.startsWith("pico") && boyfriend.characterId != "pico-holding-nene")
+    {
+      if (isSpecialAnimation)
+      {
+        if (startedTimerHaptics) return;
+
+        startedTimerHaptics = true;
+
+        // Death by Darnell's can.
+        new FlxTimer().start(1.85, function(tmr:FlxTimer) {
+          // Pico falls on his knees.
+          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+        });
+      }
+      else
+      {
+        // Pico falls on his back.
+        if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 20)
         {
           HapticUtil.vibrateByPreset(gameOverVibrationPreset);
         }
 
-        // BF's balls pulsating.
-        if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && (curFrame == 0 || curFrame == 18))
+        // Blood firework woohoo!!!!
+        if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && curFrame % 2 == 0)
         {
-          HapticUtil.vibrateByPreset(gameOverVibrationPreset);
+          final randomAmplitude:Float = FlxG.random.float(Constants.MIN_VIBRATION_AMPLITUDE / 100, Constants.MIN_VIBRATION_AMPLITUDE);
+          final randomDuration:Float = FlxG.random.float(Constants.DEFAULT_VIBRATION_DURATION / 10, Constants.DEFAULT_VIBRATION_DURATION);
+
+          HapticUtil.vibrate(0, randomDuration, randomAmplitude);
         }
+      }
 
-      case "pico-playable" | "pico-dark" | "pico-christmas":
-        if (isSpecialAnimation)
-        {
-          if (startedTimerHaptics) return;
-
-          startedTimerHaptics = true;
-
-          // Death by Darnell's can.
-          new FlxTimer().start(1.85, function(tmr:FlxTimer) {
-            // Pico falls on his knees.
-            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-          });
-        }
-        else
-        {
-          // Pico falls on his back.
-          if (boyfriend.getCurrentAnimation().startsWith('firstDeath') && curFrame == 20)
-          {
-            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-          }
-
-          // Blood firework woohoo!!!!
-          if (boyfriend.getCurrentAnimation().startsWith('deathLoop') && curFrame % 2 == 0)
-          {
-            final randomAmplitude:Float = FlxG.random.float(Constants.MIN_VIBRATION_AMPLITUDE / 100, Constants.MIN_VIBRATION_AMPLITUDE);
-            final randomDuration:Float = FlxG.random.float(Constants.DEFAULT_VIBRATION_DURATION / 10, Constants.DEFAULT_VIBRATION_DURATION);
-
-            HapticUtil.vibrate(0, randomDuration, randomAmplitude);
-          }
-        }
-
-      case "pico-blazin":
-        // Pico dies because of Darnell beating him up.
-        if (!startedTimerHaptics)
-        {
-          startedTimerHaptics = true;
-
-          new FlxTimer().start(0.5, function(tmr:FlxTimer) {
-            // Pico falls on his knees.
-            HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-
-            new FlxTimer().start(0.6, function(tmr:FlxTimer) {
-              // Pico falls "asleep". :)
-              HapticUtil.vibrateByPreset(gameOverVibrationPreset);
-            });
-          });
-        }
+      return;
     }
   }
 

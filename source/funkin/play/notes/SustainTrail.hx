@@ -73,8 +73,6 @@ class SustainTrail extends FlxSprite
    */
   public var uvtData:DrawData<Float> = new DrawData<Float>();
 
-  private var processedGraphic:FlxGraphic;
-
   private var zoom:Float = 1;
 
   /**
@@ -214,7 +212,6 @@ class SustainTrail extends FlxSprite
 
     // alpha = 0.6;
     alpha = 1.0;
-    // calls updateColorTransform(), which initializes processedGraphic!
     updateColorTransform();
 
     updateClipping();
@@ -398,7 +395,7 @@ class SustainTrail extends FlxSprite
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
       getScreenPosition(_point, camera).subtractPoint(offset);
-      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
+      camera.drawTriangles(graphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
     }
 
     #if FLX_DEBUG
@@ -440,16 +437,7 @@ class SustainTrail extends FlxSprite
     vertices = null;
     indices = null;
     uvtData = null;
-    processedGraphic.destroy();
 
     super.destroy();
-  }
-
-  override function updateColorTransform():Void
-  {
-    super.updateColorTransform();
-    if (processedGraphic != null) processedGraphic.destroy();
-    processedGraphic = FlxGraphic.fromGraphic(graphic, true);
-    processedGraphic.bitmap.colorTransform(processedGraphic.bitmap.rect, colorTransform);
   }
 }

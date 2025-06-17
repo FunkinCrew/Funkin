@@ -527,20 +527,23 @@ class FileUtil
   /**
    * Prompts the user to save a file to their computer.
    */
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void)
   {
     var file = new FileReference();
 
     file.addEventListener(Event.COMPLETE, function(e:Event) {
       trace('Successfully wrote file: "$path"');
+      callback("success");
     });
 
     file.addEventListener(Event.CANCEL, function(e:Event) {
       trace('Cancelled writing file: "$path"');
+      callback("info");
     });
 
     file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
       trace('IO error writing file: "$path"');
+      callback("error");
     });
 
     file.save(data, path);
@@ -1401,9 +1404,9 @@ class FileUtilSandboxed
     FileUtil.browseFileReference(callback);
   }
 
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void):Void
   {
-    FileUtil.writeFileReference(path, data);
+    FileUtil.writeFileReference(path, data, callback);
   }
 
   public static function readJSONFromPath(path:String):Dynamic

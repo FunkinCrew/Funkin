@@ -1,5 +1,6 @@
 package funkin.ui.transition;
 
+import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
@@ -266,6 +267,16 @@ class LoadingState extends MusicBeatSubState
     if (shouldPreloadLevelAssets)
     {
       preloadLevelAssets();
+
+      // Cache the note style.
+      var songDifficulty = params.targetSong.getDifficulty(params.targetDifficulty, params.targetVariation);
+      if (songDifficulty != null)
+      {
+        var noteStyle = NoteStyleRegistry.instance.fetchEntry(songDifficulty.noteStyle);
+        FunkinMemory.cacheNoteStyle(noteStyle);
+      }
+
+      // TODO: This sucks lol.
       if (params.targetSong.songName == "2hot")
       {
         var spritesToCache = [

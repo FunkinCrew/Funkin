@@ -120,7 +120,7 @@ class CreditsState extends MusicBeatState
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, exit);
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, exit, 0.7);
     #end
   }
 
@@ -182,7 +182,7 @@ class CreditsState extends MusicBeatState
     if (!scrollPaused)
     {
       // TODO: Replace with whatever the special note button is.
-      if (controls.ACCEPT || FlxG.keys.pressed.SPACE #if mobile || TouchUtil.pressed && !TouchUtil.overlaps(backButton) #end)
+      if (FlxG.keys.pressed.ENTER || FlxG.keys.pressed.SPACE #if mobile || TouchUtil.pressed && !TouchUtil.overlaps(backButton) #end)
       {
         // Move the whole group.
         creditsGroup.y -= CREDITS_SCROLL_FAST_SPEED * elapsed;

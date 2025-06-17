@@ -32,9 +32,20 @@ class Project extends HXProject
   static final VERSION:String = "0.7.0";
 
   /**
+   * The build's number and version code.
+   * Used when publishing the game to mobile app stores. Should increment with each patch.
+   */
+  static final BUILD_NUMBER:Int = 2;
+
+  /**
    * The game's name. Used as the default window title.
    */
   static final TITLE:String = "Friday Night Funkin'";
+
+  /**
+   * A package name used for identifying the app on various app stores.
+   */
+  static final PACKAGE_NAME:String = "me.funkin.fnf";
 
   /**
    * The name of the generated executable file.
@@ -54,16 +65,6 @@ class Project extends HXProject
   static final PRELOADER:String = "funkin.ui.transition.preload.FunkinPreloader";
 
   /**
-   * A package name used for identifying the app on various app stores.
-   */
-  static final PACKAGE_NAME:String = "me.funkin.fnf";
-
-  /**
-   * The build's number and version code.
-   */
-  static final BUILD_NUMBER:Int = 2;
-
-  /**
    * The fully qualified class path for the entry point class to execute when launching the game.
    * It's where `public static function main():Void` goes.
    */
@@ -76,6 +77,64 @@ class Project extends HXProject
   static final COMPANY:String = "The Funkin' Crew";
 
   /**
+   * The app's localization languages.
+   */
+  static final LANGUAGES:Array<String> = ["en"];
+
+  /**
+   * The contents of the user's environment config.
+   * Read from the local `.env` file. Used for storing API keys.
+   */
+  static var envConfig:Null<Map<String, Dynamic>> = null;
+
+  //
+  // MOBILE METADATA
+  //
+
+  /**
+   * The app's minimal Android SDK version.
+   */
+  static final ANDROID_MINIMUM_SDK_VERSION:Int = 28;
+
+  /**
+   * The app's target Android SDK version.
+   */
+  static final ANDROID_TARGET_SDK_VERSION:Int = 35;
+
+  //
+  // ASTC COMPRESSION
+  //
+
+  /**
+   * The quality of the compression process.
+   * This doesn't exactly reduce the quality of the outputted texture..
+   * But it changes how hard the CPU gotta work to maintin the quality and details of the image while compressing.
+   * possible values: fastest, fast, medium, thorough, exhaustive.
+   */
+  static var ASTC_QUALITY:String = "medium";
+
+  /**
+   * The team ID to use for the iOS app. Configured in XCode.
+   */
+  static var IOS_TEAM_ID:String = "Z7G7AVNGSH";
+
+  /**
+   * The block size of the ASTC compressed textures.
+   * Higher block size means lower quality and lighter file size for the generated compressed textures.
+   * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
+   */
+  static var ASTC_BLOCKSIZE:String = "10x10";
+
+  /**
+   * A list of asset file globs to exclude from ASTC compression when creating optimized mobile builds.
+   */
+  static var astcExcludes:Array<String> = [];
+
+  //
+  // BUILD SCRIPTS
+  //
+
+  /**
    * Path to the Haxe script run before building the game.
    */
   static final PREBUILD_HX:String = "source/Prebuild.hx";
@@ -84,6 +143,10 @@ class Project extends HXProject
    * Path to the Haxe script run after building the game.
    */
   static final POSTBUILD_HX:String = "source/Postbuild.hx";
+
+  //
+  // ASSET FILTERS
+  //
 
   /**
    * Asset path globs to always exclude from asset libraries.
@@ -100,93 +163,25 @@ class Project extends HXProject
    */
   static final EXCLUDE_ASSETS_NATIVE:Array<String> = ["*.mp3"];
 
+  //
+  // BUILD FLAGS
+  // Inverse build flags are automatically populated.
+  //
+
   /**
-   * `-DGITHUB_BUILD`
-   * If this flag is enabled, the game will use the configuration used by GitHub Actions
-   * to generate playtest builds to be pushed to the launcher.
+   * `-DCENSOR_EXPLETIVES`
+   * If enabled, specifically disable "sexual explitives" in the game.
+   * This will forcibly censor these words (even if naughtyness is enabled), while leaving other swears.
    *
-   * This is generally used to forcibly enable debugging features,
-   * even when the game is built in release mode for performance reasons.
+   * NOTE: This is needed because the Android platform specifically hates "fuck" and "cunt",
+   * but is fine with other naughtyness such as "cock", "asshole", implied sex, cigarettes, etc.
    */
-  static final GITHUB_BUILD:FeatureFlag = "GITHUB_BUILD";
-
-  /**
-   * The app's localization languages.
-   */
-  static final LANGUAGES:Array<String> = ["en"];
-
-  /**
-   * The app's minimal android SDK version.
-   */
-  static final ANDROID_MINIMUM_SDK_VERSION:Int = 28;
-
-  /**
-   * The app's target android SDK version.
-   */
-  static final ANDROID_TARGET_SDK_VERSION:Int = 35;
-
-  /**
-   * The team ID to use for the iOS app. Configured in XCode.
-   */
-  static var IOS_TEAM_ID:String = "Z7G7AVNGSH";
-
-  /**
-   * The block size of the ASTC compressed textures.
-   * Higher block size means lower quality and lighter file size for the generated compressed textures.
-   * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
-   */
-  static var ASTC_BLOCKSIZE:String = "12x12";
-
-  /**
-   * The quality of the compression process.
-   * This doesn't exactly reduce the quality of the outputted texture..
-   * But it changes how hard the CPU gotta work to maintin the quality and details of the image while compressing.
-   * possible values: fastest, fast, medium, thorough, exhaustive.
-   */
-  static var ASTC_QUALITY:String = "medium";
-
-  /**
-   * A list of asset file globs to exclude from ASTC compression.
-   */
-  static var astcExcludes:Array<String> = [];
-
-  /**
-   * The contents of the user's environment config.
-   * Read from the `.env` file.
-   */
-  static var envConfig:Null<Map<String, Dynamic>> = null;
-
-  //
-  // FEATURE FLAGS
-  // Inverse feature flags are automatically populated.
-  //
-
-  /**
-   * `-DREDIRECT_ASSETS_FOLDER`
-   * If this flag is enabled, the game will redirect the `assets` folder from the `export` folder
-   * to the `assets` folder at the root of the workspace.
-   * This is useful for ensuring hot reloaded changes don't get lost when rebuilding the game.
-   */
-  static final REDIRECT_ASSETS_FOLDER:FeatureFlag = "REDIRECT_ASSETS_FOLDER";
-
-  /**
-   * `-DTOUCH_HERE_TO_PLAY`
-   * If this flag is enabled, the game will display a prompt to the user after the preloader completes,
-   * requiring them to click anywhere on the screen to start the game.
-   * This is done to ensure that the audio context can initialize properly on HTML5. Not necessary on desktop.
-   */
-  static final TOUCH_HERE_TO_PLAY:FeatureFlag = "TOUCH_HERE_TO_PLAY";
-
-  /**
-   * `-DPRELOAD_ALL`
-   * Whether to preload all asset libraries.
-   * Disabled on web, enabled on desktop.
-   */
-  static final PRELOAD_ALL:FeatureFlag = "PRELOAD_ALL";
+  static final CENSOR_EXPLETIVES:FeatureFlag = "CENSOR_EXPLETIVES";
 
   /**
    * `-DEMBED_ASSETS`
    * Whether to embed all asset libraries into the executable.
+   * Enabled on web, usually disabled on desktop.
    */
   static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
 
@@ -197,11 +192,36 @@ class Project extends HXProject
   static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
 
   /**
+   * `-DGITHUB_BUILD`
+   * If this flag is enabled, the game will use the configuration used by GitHub Actions
+   * to generate playtest builds to be pushed to the launcher.
+   *
+   * This is generally used to forcibly enable debugging features,
+   * even when the game is built in release mode for performance.
+   */
+  static final GITHUB_BUILD:FeatureFlag = "GITHUB_BUILD";
+
+  /**
    * `-DHARDCODED_CREDITS`
    * If this flag is enabled, the credits will be parsed and encoded in the game at compile time,
    * rather than read from JSON data at runtime.
    */
   static final HARDCODED_CREDITS:FeatureFlag = "HARDCODED_CREDITS";
+
+  /**
+   * `-DPRELOAD_ALL`
+   * Whether to preload all asset libraries.
+   * Disabled on web, enabled on desktop.
+   */
+  static final PRELOAD_ALL:FeatureFlag = "PRELOAD_ALL";
+
+  /**
+   * `-DREDIRECT_ASSETS_FOLDER`
+   * If this flag is enabled, the game will redirect the `assets` folder from the `export` folder
+   * to the `assets` folder at the root of the workspace.
+   * This is useful for ensuring hot reloaded changes don't get lost when rebuilding the game.
+   */
+  static final REDIRECT_ASSETS_FOLDER:FeatureFlag = "REDIRECT_ASSETS_FOLDER";
 
   /**
    * `-DTESTING_ADS`
@@ -214,6 +234,32 @@ class Project extends HXProject
    * If this flag is enabled, the game will assume all songs have been beaten and all content is available.
    */
   static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
+
+  //
+  // FEATURE FLAGS
+  // Inverse build flags are automatically populated.
+  //
+
+  /**
+   * `-DFEATURE_CHART_EDITOR`
+   * If this flag is enabled, the Chart Editor will be accessible from the debug menu.
+   */
+  static final FEATURE_CHART_EDITOR:FeatureFlag = "FEATURE_CHART_EDITOR";
+
+  /**
+   * `-DFEATURE_COMPRESSED_TEXTURES`
+   * If this flag is enabled, ASTC compressed textures will be used over uncompressed PNGs.
+   * Compressed ASTC textures provide lower memory usage but at the cost of a higher files size.
+   * ASTC textures are GPU Rendered so they have a few cons:
+   * - Pixel Data cannot be read directly.
+   * - Some filters specifically the ones in openfl.filters package won't work properly because they directly modify the bitmap pixels.
+   * - ASync loading for GPU Textures seem bugged and results in a black texture (This is meant to be fixed soon because it's not supposed to happen.).
+   * One thing to note is that ASTC textures aren't available on all platforms:
+   * - For iOS it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
+   * - For Android it's sorta mixed, but mostly any mid range phone from around 2018 does support ASTC.
+   * - For desktop it really all just depends on the GPU, but Windows with DirectX 12 should have supported.
+   */
+  static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
 
   /**
    * `-DFEATURE_DEBUG_FUNCTIONS`
@@ -232,75 +278,11 @@ class Project extends HXProject
   static final FEATURE_DEBUG_TRACY:FeatureFlag = "FEATURE_DEBUG_TRACY";
 
   /**
-   * `-DFEATURE_LOG_TRACE`
-   * If this flag is enabled, the game will print debug traces to the console.
-   * Disable to improve performance a bunch.
-   */
-  static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
-
-  /**
    * `-DFEATURE_DISCORD_RPC`
    * If this flag is enabled, the game will enable the Discord Remote Procedure Call library.
    * This is used to provide Discord Rich Presence support.
    */
   static final FEATURE_DISCORD_RPC:FeatureFlag = "FEATURE_DISCORD_RPC";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS`
-   * If this flag is enabled, the game will enable the Newgrounds library.
-   * This is used to provide Medal and Leaderboard support.
-   */
-  static final FEATURE_NEWGROUNDS:FeatureFlag = "FEATURE_NEWGROUNDS";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_DEBUG`
-   * If this flag is enabled, the game will enable Newgrounds.io's debug functions.
-   * This provides additional information in requests, as well as "faking" medal and leaderboard submissions.
-   */
-  static final FEATURE_NEWGROUNDS_DEBUG:FeatureFlag = "FEATURE_NEWGROUNDS_DEBUG";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_AUTOLOGIN`
-   * If this flag is enabled, the game will attempt to automatically login to Newgrounds on startup.
-   */
-  static final FEATURE_NEWGROUNDS_AUTOLOGIN:FeatureFlag = "FEATURE_NEWGROUNDS_AUTOLOGIN";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_TESTING_MEDALS`
-   * If this flag is enabled, use the medal IDs from the debug test bench.
-   * If disabled, use the actual medal IDs from the release project on Newgrounds.
-   */
-  static final FEATURE_NEWGROUNDS_TESTING_MEDALS:FeatureFlag = "FEATURE_NEWGROUNDS_TESTING_MEDALS";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_EVENTS`
-   * If this flag is enabled, the game will attempt to send events to Newgrounds when the user does stuff.
-   * This lets us see cool anonymized stats! It only works if the user is logged in.
-   */
-  static final FEATURE_NEWGROUNDS_EVENTS:FeatureFlag = "FEATURE_NEWGROUNDS_EVENTS";
-
-  /**
-   * `-DFEATURE_FUNKVIS`
-   * If this flag is enabled, the game will enable the Funkin Visualizer library.
-   * This is used to provide audio visualization like Nene's speaker.
-   * Disabling this will make some waveforms inactive.
-   */
-  static final FEATURE_FUNKVIS:FeatureFlag = "FEATURE_FUNKVIS";
-
-  /**
-   * `-DFEATURE_PARTIAL_SOUNDS`
-   * If this flag is enabled, the game will enable the FlxPartialSound library.
-   * This is used to provide audio previews in Freeplay.
-   * Disabling this will make those previews not play.
-   */
-  static final FEATURE_PARTIAL_SOUNDS:FeatureFlag = "FEATURE_PARTIAL_SOUNDS";
-
-  /**
-   * `-DFEATURE_VIDEO_PLAYBACK`
-   * If this flag is enabled, the game will enable support for video playback.
-   * This requires the hxvlc library on desktop platforms.
-   */
-  static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
 
   /**
    * `-DFEATURE_FILE_DROP`
@@ -310,41 +292,12 @@ class Project extends HXProject
   static final FEATURE_FILE_DROP:FeatureFlag = "FEATURE_FILE_DROP";
 
   /**
-   * `-DFEATURE_OPEN_URL`
-   * If this flag is enabled, the game will support opening URLs (such as the merch page).
+   * `-DFEATURE_FUNKVIS`
+   * If this flag is enabled, the game will enable the Funkin Visualizer library.
+   * This is used to provide audio visualization like Nene's speaker.
+   * Disabling this will make some waveforms inactive.
    */
-  static final FEATURE_OPEN_URL:FeatureFlag = "FEATURE_OPEN_URL";
-
-  /**
-   * `-DFEATURE_SCREENSHOTS`
-   * If this flag is enabled, the game will support the screenshots feature.
-   */
-  static final FEATURE_SCREENSHOTS:FeatureFlag = "FEATURE_SCREENSHOTS";
-
-  /**
-   * `-DFEATURE_CHART_EDITOR`
-   * If this flag is enabled, the Chart Editor will be accessible from the debug menu.
-   */
-  static final FEATURE_CHART_EDITOR:FeatureFlag = "FEATURE_CHART_EDITOR";
-
-  /**
-   * `-DFEATURE_STAGE_EDITOR`
-   * If this flag is enabled, the Stage Editor will be accessible from the debug menu.
-   */
-  static final FEATURE_STAGE_EDITOR:FeatureFlag = "FEATURE_STAGE_EDITOR";
-
-  /**
-   * `-DFEATURE_RESULTS_DEBUG`
-   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
-   */
-  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
-
-  /**
-   * `-DFEATURE_POLYMOD_MODS`
-   * If this flag is enabled, the game will enable the Polymod library's support for atomic mod loading from the `./mods` folder.
-   * If this flag is disabled, no mods will be loaded.
-   */
-  static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
+  static final FEATURE_FUNKVIS:FeatureFlag = "FEATURE_FUNKVIS";
 
   /**
    * `-DFEATURE_GHOST_TAPPING`
@@ -361,38 +314,139 @@ class Project extends HXProject
   static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
   /**
-   * `-DFEATURE_TOUCH_CONTROLS`
-   * If this flag is enabled, the touch controls for the game is also enabled.
-   * Works with desktop builds.
+   * `-DFEATURE_INPUT_OFFSETS`
+   * If this flag is enabled, the input offsets menu will be available to configure your audio and visual offsets.
    */
-  static final FEATURE_TOUCH_CONTROLS:FeatureFlag = "FEATURE_TOUCH_CONTROLS";
+  static final FEATURE_INPUT_OFFSETS:FeatureFlag = "FEATURE_INPUT_OFFSETS";
 
   /**
-   * `-DFEATURE_COMPRESSED_TEXTURES`
-   * If this flag is enabled, ASTC compressed textures will be used over uncompressed PNGs.
-   * Compressed ASTC textures provide lower memory usage but at the cost of a higher files size.
-   * ASTC textures are GPU Rendered so they have a few cons:
-   * - Pixel Data cannot be read directly.
-   * - Some filters specifically the ones in openfl.filters package won't work properly because they directly modify the bitmap pixels.
-   * - ASync loading for GPU Textures seem bugged and results in a black texture (This is meant to be fixed soon because it's not supposed to happen.).
-   * One thing to note is that ASTC textures aren't available on all platforms:
-   * - For iOS it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
-   * - For Android it's sorta mixed, but mostly any mid range phone from around 2018 does support ASTC.
-   * - For desktop it really all just depends on the GPU, but Windows with DirectX 12 should have supported.
+   * `-DFEATURE_LOG_TRACE`
+   * If this flag is enabled, the game will print debug traces to the console.
+   * Disable to improve performance a bunch.
    */
-  static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
+  static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
 
   /**
    * `-DFEATURE_MOBILE_ADVERTISEMENTS`
-   * If this flag is enabled, Google AdMob will be enabled. Banner and interstitial ads will some
+   * If this flag is enabled, Google AdMob will be enabled.
+   * Banner and interstitial ads will sometimes appear.
    */
   static final FEATURE_MOBILE_ADVERTISEMENTS:FeatureFlag = "FEATURE_MOBILE_ADVERTISEMENTS";
 
   /**
    * `-DFEATURE_MOBILE_IAP`
-   * If this flag is enabled, ADs from AdMob will be disabled.
+   * If this flag is enabled, in-app purchases will be enabled.
+   * This includes the in-app purchase to disable mobile advertisements.
    */
   static final FEATURE_MOBILE_IAP:FeatureFlag = "FEATURE_MOBILE_IAP";
+
+  /**
+   * `-DFEATURE_MOBILE_IAR`
+   * If this feature flag is enabled, the user may sometimes be prompted to review the app on their respective store.
+   */
+  static final FEATURE_MOBILE_IAR:FeatureFlag = "FEATURE_MOBILE_IAR";
+
+  /**
+   * `-DFEATURE_NAUGHTYNESS`
+   * If this feature flag is enabled, naughtyness will be a toggleable option in the Options Menu.
+   * If disabled, the option will be hidden and the game will always be censored.
+   */
+  static final FEATURE_NAUGHTYNESS:FeatureFlag = "FEATURE_NAUGHTYNESS";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS`
+   * If this flag is enabled, the game will enable the Newgrounds library.
+   * This is used to provide Medal and Leaderboard support.
+   */
+  static final FEATURE_NEWGROUNDS:FeatureFlag = "FEATURE_NEWGROUNDS";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_AUTOLOGIN`
+   * If this flag is enabled, the game will attempt to automatically login to Newgrounds on startup.
+   */
+  static final FEATURE_NEWGROUNDS_AUTOLOGIN:FeatureFlag = "FEATURE_NEWGROUNDS_AUTOLOGIN";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_DEBUG`
+   * If this flag is enabled, the game will enable Newgrounds.io's debug functions.
+   * This provides additional information in requests, as well as "faking" medal and leaderboard submissions.
+   */
+  static final FEATURE_NEWGROUNDS_DEBUG:FeatureFlag = "FEATURE_NEWGROUNDS_DEBUG";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_EVENTS`
+   * If this flag is enabled, the game will attempt to send events to Newgrounds when the user does stuff.
+   * This lets us see cool anonymized stats! It only works if the user is logged in.
+   */
+  static final FEATURE_NEWGROUNDS_EVENTS:FeatureFlag = "FEATURE_NEWGROUNDS_EVENTS";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_TESTING_MEDALS`
+   * If this flag is enabled, use the medal IDs from the debug test bench.
+   * If disabled, use the actual medal IDs from the release project on Newgrounds.
+   */
+  static final FEATURE_NEWGROUNDS_TESTING_MEDALS:FeatureFlag = "FEATURE_NEWGROUNDS_TESTING_MEDALS";
+
+  /**
+   * `-DFEATURE_OPEN_URL`
+   * If this flag is enabled, the game will support opening URLs (such as the merch page).
+   */
+  static final FEATURE_OPEN_URL:FeatureFlag = "FEATURE_OPEN_URL";
+
+  /**
+   * `-DFEATURE_PARTIAL_SOUNDS`
+   * If this flag is enabled, the game will enable the FlxPartialSound library.
+   * This is used to provide audio previews in Freeplay.
+   * Disabling this will make those previews not play.
+   */
+  static final FEATURE_PARTIAL_SOUNDS:FeatureFlag = "FEATURE_PARTIAL_SOUNDS";
+
+  /**
+   * `-DFEATURE_POLYMOD_MODS`
+   * If this flag is enabled, the game will enable the Polymod library's support for atomic mod loading from the `./mods` folder.
+   * If this flag is disabled, no mods will be loaded.
+   */
+  static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
+
+  /**
+   * `-DFEATURE_RESULTS_DEBUG`
+   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+   */
+  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
+
+  /**
+   * `-DFEATURE_SCREENSHOTS`
+   * If this flag is enabled, the game will support the screenshots feature.
+   */
+  static final FEATURE_SCREENSHOTS:FeatureFlag = "FEATURE_SCREENSHOTS";
+
+  /**
+   * `-DFEATURE_STAGE_EDITOR`
+   * If this flag is enabled, the Stage Editor will be accessible from the debug menu.
+   */
+  static final FEATURE_STAGE_EDITOR:FeatureFlag = "FEATURE_STAGE_EDITOR";
+
+  /**
+   * `-DFEATURE_TOUCH_CONTROLS`
+   * If this flag is enabled, the touch controls for the game is also enabled.
+   * Works with desktop builds I think maybe?
+   */
+  static final FEATURE_TOUCH_CONTROLS:FeatureFlag = "FEATURE_TOUCH_CONTROLS";
+
+  /**
+   * `-DFEATURE_TOUCH_HERE_TO_PLAY`
+   * If this flag is enabled, the game will display a prompt to the user after the preloader completes,
+   * requiring them to click anywhere on the screen to start the game.
+   * This is done to ensure that the audio context can initialize properly on HTML5. Not necessary on desktop.
+   */
+  static final FEATURE_TOUCH_HERE_TO_PLAY:FeatureFlag = "FEATURE_TOUCH_HERE_TO_PLAY";
+
+  /**
+   * `-DFEATURE_VIDEO_PLAYBACK`
+   * If this flag is enabled, the game will enable support for video playback.
+   * This requires the hxvlc library on desktop platforms.
+   */
+  static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
 
   //
   // CONFIGURATION FUNCTIONS
@@ -443,9 +497,10 @@ class Project extends HXProject
     {
       config.set("ios.non-exempt-encryption", "false");
       config.set("ios.team-id", IOS_TEAM_ID);
+      config.set("ios.deployment", "16.0");
 
-      launchStoryboard = new LaunchStoryboard();
-      launchStoryboard.path = "./LaunchScreen.storyboard";
+      // launchStoryboard = new LaunchStoryboard();
+      // launchStoryboard.path = "./LaunchScreen.storyboard";
     }
 
     info("Done configuring project.");
@@ -685,19 +740,42 @@ class Project extends HXProject
     // You can explicitly override any of these.
     // For example, `-DGITHUB_BUILD` or `-DNO_HARDCODED_CREDITS`
 
+    //
+    // BUILD FLAGS
+    //
+
     // Should be false unless explicitly requested.
     GITHUB_BUILD.apply(this, false);
     EXCLUDE_ARMV7.apply(this, false);
     UNLOCK_EVERYTHING.apply(this, false);
-    FEATURE_COMPRESSED_TEXTURES.apply(this, false);
-    FEATURE_GHOST_TAPPING.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
-    FEATURE_OPEN_URL.apply(this, true);
-    FEATURE_POLYMOD_MODS.apply(this, true);
+
+    // Should be true only on web builds.
+    // Enabling embedding and preloading is required to preload assets properly.
+    EMBED_ASSETS.apply(this, isWeb());
+    PRELOAD_ALL.apply(this, !isWeb());
+
+    // Should default to true on workspace builds and false on release builds.
+    REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
+
+    // Should be true only on debug mobile builds.
+    TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
+
+    // Should be true on mobile builds.
+    CENSOR_EXPLETIVES.apply(this, isMobile());
+
+    //
+    // FEATURE FLAGS
+    //
+
     FEATURE_FUNKVIS.apply(this, true);
+    FEATURE_LOG_TRACE.apply(this, true);
+    FEATURE_NAUGHTYNESS.apply(this, true);
+    FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
+    FEATURE_POLYMOD_MODS.apply(this, true);
 
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
@@ -707,59 +785,46 @@ class Project extends HXProject
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
     FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
-    // Got a lot of complains about this being turned off by default on some builds.
-    // TODO: Look into ways to optimize logging (maybe by using a thread pool?)
-    FEATURE_LOG_TRACE.apply(this, isDebug());
+    // Should be true on desktop, non-tester builds.
+    // We don't want testers to accidentally leak songs to their Discord friends!
+    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
-    FEATURE_NEWGROUNDS.apply(this, true);
+    // Newgrounds features
+    FEATURE_NEWGROUNDS.apply(this, !isMobile());
     FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
     FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
     FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
     FEATURE_NEWGROUNDS_EVENTS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this));
 
-    // Should default to true on workspace builds and false on release builds.
-    REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
-
-    // Should be true on desktop, release, non-tester builds.
-    // We don't want testers to accidentally leak songs to their Discord friends!
-    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
-
-    // Should be true only on web builds.
-    // Audio context issues only exist there.
-    TOUCH_HERE_TO_PLAY.apply(this, isWeb() || isMobile());
-
-    // Should be true only on web builds.
-    // Enabling embedding and preloading is required to preload assets properly.
-    EMBED_ASSETS.apply(this, isWeb());
-    PRELOAD_ALL.apply(this, !isWeb());
-
-    // Should be true except on MacOS and Mobile.
-    // File drop doesn't work there.
-    FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
-
     // Should be true except on web and mobile builds.
-    // Chart editor doesn't work there.
+    // Debug editors aren't built to work on web or mobile right now.
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
 
     // Should be true except on web and mobile builds.
-    // Screenshots doesn't work there.
+    // Screenshots doesn't work there, and mobile has its own screenshots anyway.
     FEATURE_SCREENSHOTS.apply(this, !(isWeb() || isMobile()));
+
+    // Should be true except on MacOS and Mobile.
+    // Dragging and dropping files onto the window doesn't work there.
+    FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
+
+    // Audio context issues only exist on web.
+    FEATURE_TOUCH_HERE_TO_PLAY.apply(this, isWeb());
 
     // Should be true only on mobile builds.
     FEATURE_HAPTICS.apply(this, isMobile());
-
-    // Should be true only on mobile builds.
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
     FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && envConfig != null));
-
-    // Should be true only on android release builds for now. Remember you can add the flag manually for testing.
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && envConfig != null));
+    FEATURE_MOBILE_IAR.apply(this, (isMobile() && isRelease()));
 
-    // Should be true only on debug mobile builds.
-    TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
+    // The coveted ghost tapping feature.
+    // Essential on mobile but delayed on desktop.
+    // Please send targeted harassment to PhantomArcade about this.
+    FEATURE_GHOST_TAPPING.apply(this, isMobile());
   }
 
   /**
@@ -769,6 +834,10 @@ class Project extends HXProject
   {
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
+
+    // Disable a macro in Lime that generates a random number for Assets.cache.version every build.
+    // This doesn't seem to be of any use and it causes lime.utils.AssetCache to be re-compiled on every build.
+    setHaxedef("lime_disable_assets_version");
 
     // Enable stack trace tracking. Good for debugging but has a (minor) performance impact.
     setHaxedef("HXCPP_CHECK_POINTER");
@@ -1006,6 +1075,11 @@ class Project extends HXProject
     {
       addHaxelib('extension-iapcore'); // In-app purchases Extension
     }
+
+    if (FEATURE_MOBILE_IAR.isEnabled(this))
+    {
+      addHaxelib('extension-iarcore'); // In-app reviews Extension
+    }
   }
 
   function configureAssets()
@@ -1082,17 +1156,33 @@ class Project extends HXProject
     info('Configuring application icons...');
     if (!isIOS())
     {
-      addIcon("art/icon16.png", 16);
-      addIcon("art/icon32.png", 32);
-      addIcon("art/icon64.png", 64);
-      addIcon("art/iconOG.png");
+      addIcon("art/icons/icon16.png", 16);
+      addIcon("art/icons/icon32.png", 32);
+      addIcon("art/icons/icon64.png", 64);
+      addIcon("art/icons/iconOG.png");
     }
     else
     {
-      addIcon("icon16_noalpha.png", 16);
-      addIcon("art/icon32_noalpha.png", 32);
-      addIcon("art/icon64_noalpha.png", 64);
-      addIcon("art/iconOG_noalpha.png");
+      // Note: the icons on iOS (and likely even android too) support nice P3 colors space
+      // However, lime's IconHelper.hx` and the general accompyaning encoding stuff to automatically
+      // generate icons of different sizes doesnt accomodate for the nice yummy color space
+      // so we do indeed need to make sure we declare the icons here
+      // on iOS
+
+      // addIcon("icon16_noalpha.png", 16);
+      // addIcon("art/icons/icon32_noalpha.png", 32);
+      // addIcon("art/icons/icon64_noalpha.png", 64);
+      // addIcon("art/icons/iconOG_noalpha.png");
+      addIcon("art/icons/bf-iOS-Default-20x20@2x.png", 40);
+      addIcon("art/icons/bf-iOS-Default-20x20@3x.png", 60);
+      addIcon("art/icons/bf-iOS-Default-29x29.png", 29);
+      addIcon("art/icons/bf-iOS-Default-29x29@2x.png", 58);
+      addIcon("art/icons/bf-iOS-Default-29x29@3x.png", 87);
+      addIcon("art/icons/bf-iOS-Default-40x40@2x.png", 80);
+      addIcon("art/icons/bf-iOS-Default-60x60@2x.png", 120);
+      addIcon("art/icons/bf-iOS-Default-60x60@3x.png", 180);
+      addIcon("art/icons/bf-iOS-Default-1024x1024.png", 1024);
+      addIcon("art/icons/bf-iOS-Default-1024x1024.png");
     }
     info('Done configuring icons.');
   }

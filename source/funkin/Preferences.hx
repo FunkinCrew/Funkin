@@ -5,6 +5,7 @@ import funkin.mobile.ui.FunkinHitbox;
 #end
 import funkin.save.Save;
 import funkin.util.WindowUtil;
+import funkin.util.HapticUtil.HapticsMode;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -13,6 +14,7 @@ class Preferences
 {
   /**
    * FPS
+   * Always the refresh rate of the display on mobile, or 60 on web.
    * @default `60`
    */
   public static var framerate(get, set):Int;
@@ -26,7 +28,7 @@ class Preferences
 
     if (refreshRate < 60) refreshRate = 60;
 
-    return Save?.instance?.options?.framerate ?? refreshRate;
+    return refreshRate;
     #else
     return Save?.instance?.options?.framerate ?? 60;
     #end
@@ -54,11 +56,19 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
+    #if NO_FEATURE_NAUGHTYNESS
+    return false;
+    #else
     return Save?.instance?.options?.naughtyness;
+    #end
   }
 
   static function set_naughtyness(value:Bool):Bool
   {
+    #if NO_FEATURE_NAUGHTYNESS
+    value = false;
+    #end
+
     var save:Save = Save.instance;
     save.options.naughtyness = value;
     save.flush();
@@ -124,12 +134,16 @@ class Preferences
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
+   * Always disabled on mobile.
    * @default `false`
    */
   public static var debugDisplay(get, set):Bool;
 
   static function get_debugDisplay():Bool
   {
+    #if mobile
+    return false;
+    #end
     return Save?.instance?.options?.debugDisplay;
   }
 
@@ -147,32 +161,58 @@ class Preferences
   }
 
   /**
-   * If enabled, vibration will be enabled.
-   * @default `true`
+   * If enabled, haptic feedback will be enabled.
+   * @default `All`
    */
-  public static var vibration(get, set):Bool;
+  public static var hapticsMode(get, set):HapticsMode;
 
-  static function get_vibration():Bool
+  static function get_hapticsMode():HapticsMode
   {
-    return Save?.instance?.options?.vibration ?? true;
+    var value = Save?.instance?.options?.hapticsMode ?? "All";
+
+    return switch (value)
+    {
+      case "None":
+        HapticsMode.NONE;
+      case "Notes Only":
+        HapticsMode.NOTES_ONLY;
+      default:
+        HapticsMode.ALL;
+    };
   }
 
-  static function set_vibration(value:Bool):Bool
+  static function set_hapticsMode(value:HapticsMode):HapticsMode
   {
+    var string;
+
+    switch (value)
+    {
+      case HapticsMode.NONE:
+        string = "None";
+      case HapticsMode.NOTES_ONLY:
+        string = "Notes Only";
+      default:
+        string = "All";
+    };
+
     var save:Save = Save.instance;
-    save.options.vibration = value;
+    save.options.hapticsMode = string;
     save.flush();
     return value;
   }
 
   /**
    * If enabled, the game will automatically pause when tabbing out.
+   * Always enabled on mobile.
    * @default `true`
    */
   public static var autoPause(get, set):Bool;
 
   static function get_autoPause():Bool
   {
+    #if mobile
+    return true;
+    #end
     return Save?.instance?.options?.autoPause ?? true;
   }
 

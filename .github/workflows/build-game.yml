@@ -1,3 +1,6 @@
+# Builds the game on all platforms, to ensure it compiles on all target platforms.
+# This helps to ensure workers focus on the master branch.
+
 name: Build and Upload nightly game builds
 
 on:
@@ -125,6 +128,9 @@ jobs:
             runs-on: windows
           - target: macos
             runs-on: macos
+          # TODO: Install XCode to build iOS
+          # - target: ios
+          #   runs-on: macos
     runs-on:
       - ${{ matrix.runs-on }}
     defaults:
@@ -193,6 +199,7 @@ jobs:
         include:
           - target: linux
           - target: html5
+          - target: android
     defaults:
       run:
         shell: bash

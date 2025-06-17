@@ -1,12 +1,12 @@
 package funkin.play;
 
+import funkin.ui.transition.stickers.StickerSubState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.effects.FlxFlicker;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import funkin.ui.FullScreenScaleMode;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
@@ -14,26 +14,27 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
-import funkin.util.HapticUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerResultsAnimationData;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.song.SongRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.LeftMaskShader;
+import funkin.modding.base.ScriptedFlxAtlasSprite;
 import funkin.play.components.ClearPercentCounter;
 import funkin.play.components.TallyCounter;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
-import funkin.data.song.SongRegistry;
 import funkin.save.Save.SaveScoreData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
-import funkin.modding.base.ScriptedFlxAtlasSprite;
+import funkin.util.HapticUtil;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -41,6 +42,9 @@ import funkin.api.newgrounds.Medals;
 import funkin.util.TouchUtil;
 #if FEATURE_MOBILE_ADVERTISEMENTS
 import funkin.mobile.util.AdMobUtil;
+#end
+#if FEATURE_MOBILE_IAR
+import funkin.mobile.util.InAppReviewUtil;
 #end
 #end
 
@@ -94,6 +98,10 @@ class ResultState extends MusicBeatSubState
   final cameraEverything:FunkinCamera;
 
   var blackTopBar:FlxSprite = new FlxSprite();
+
+  var targetStateFactory:Null<Void->StickerSubState> = null;
+
+  var busy:Bool = false;
 
   public function new(params:ResultsStateParams)
   {
@@ -862,6 +870,7 @@ class ResultState extends MusicBeatSubState
 
     if (controls.PAUSE || controls.ACCEPT #if mobile || TouchUtil.pressAction() #end)
     {
+      if (busy) return;
       if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
       {
         if (introMusicAudio != null)
@@ -952,7 +961,12 @@ class ResultState extends MusicBeatSubState
           // No new characters.
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.stickers.StickerSubState(
+          // targetState = new funkin.ui.transition.stickers.StickerSubState(
+          //   {
+          //     targetState: (sticker) -> new StoryMenuState(sticker),
+          //     stickerPack: stickerPackId
+          //   });
+          targetStateFactory = () -> new StickerSubState(
             {
               targetState: (sticker) -> new StoryMenuState(sticker),
               stickerPack: stickerPackId
@@ -988,7 +1002,7 @@ class ResultState extends MusicBeatSubState
         {
           shouldTween = false;
           shouldUseSubstate = true;
-          targetState = new funkin.ui.transition.stickers.StickerSubState(
+          targetStateFactory = () -> new StickerSubState(
             {
               targetState: (sticker) -> FreeplayState.build(null, sticker),
               stickerPack: stickerPackId
@@ -1004,13 +1018,51 @@ class ResultState extends MusicBeatSubState
             onComplete: function(_) {
               // Shows a interstital ad on mobile devices each week victory.
               #if FEATURE_MOBILE_ADVERTISEMENTS
-              if (PlayStatePlaylist.isStoryMode
-                || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+              if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
               {
-                AdMobUtil.loadInterstitial();
-              }
-              #end
+                busy = true;
+                AdMobUtil.loadInterstitial(function():Void {
+                  AdMobUtil.PLAYING_COUNTER = 0;
 
+                  if (targetStateFactory != null)
+                  {
+                    targetState = targetStateFactory();
+                  }
+
+                  busy = false;
+                  if (shouldUseSubstate && targetState is FlxSubState)
+                  {
+                    openSubState(cast targetState);
+                  }
+                  else
+                  {
+                    FlxG.switchState(() -> targetState);
+                  }
+                });
+              }
+              else
+              {
+                requestReview();
+                if (targetStateFactory != null)
+                {
+                  targetState = targetStateFactory();
+                }
+                if (shouldUseSubstate && targetState is FlxSubState)
+                {
+                  openSubState(cast targetState);
+                }
+                else
+                {
+                  FlxG.switchState(() -> targetState);
+                }
+              }
+              #else
+              requestReview();
+
+              if (targetStateFactory != null)
+              {
+                targetState = targetStateFactory();
+              }
               if (shouldUseSubstate && targetState is FlxSubState)
               {
                 openSubState(cast targetState);
@@ -1019,6 +1071,7 @@ class ResultState extends MusicBeatSubState
               {
                 FlxG.switchState(() -> targetState);
               }
+              #end
             }
           });
       }
@@ -1026,12 +1079,52 @@ class ResultState extends MusicBeatSubState
       {
         // Shows a interstital ad on mobile devices each week victory.
         #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (PlayStatePlaylist.isStoryMode
-          || (Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER > 0 && ++Constants.GLOBAL_FREEPLAY_VICTORY_COUNTER % 3 == 0))
+        if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
         {
-          AdMobUtil.loadInterstitial();
+          busy = true;
+          AdMobUtil.loadInterstitial(function():Void {
+            AdMobUtil.PLAYING_COUNTER = 0;
+
+            if (targetStateFactory != null)
+            {
+              targetState = targetStateFactory();
+            }
+            if (shouldUseSubstate && targetState is FlxSubState)
+            {
+              openSubState(cast targetState);
+              busy = false;
+            }
+            else
+            {
+              FlxG.switchState(() -> targetState);
+            }
+          });
         }
-        #end
+        else
+        {
+          requestReview();
+
+          if (targetStateFactory != null)
+          {
+            targetState = targetStateFactory();
+          }
+
+          if (shouldUseSubstate && targetState is FlxSubState)
+          {
+            openSubState(cast targetState);
+          }
+          else
+          {
+            FlxG.switchState(() -> targetState);
+          }
+        }
+        #else
+        requestReview();
+
+        if (targetStateFactory != null)
+        {
+          targetState = targetStateFactory();
+        }
 
         if (shouldUseSubstate && targetState is FlxSubState)
         {
@@ -1041,12 +1134,24 @@ class ResultState extends MusicBeatSubState
         {
           FlxG.switchState(() -> targetState);
         }
+        #end
       }
     }
 
     if (HapticUtil.hapticsAvailable) handleAnimationVibrations();
 
     super.update(elapsed);
+  }
+
+  function requestReview():Void
+  {
+    #if FEATURE_MOBILE_IAR
+    if (FlxG.random.bool(InAppReviewUtil.ODDS))
+    {
+      trace('Attempting to display in-app review!');
+      InAppReviewUtil.requestReview();
+    }
+    #end
   }
 }
 

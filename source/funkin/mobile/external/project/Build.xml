@@ -14,12 +14,14 @@
 		<compilerflag value="-I${this_dir}/ios/include" />
 
 		<file name="src/ScreenUtils.mm" />
+		<file name="src/AudioSession.mm" />
 	</files>
 
 	<target id="haxe">
 		<section if="iphoneos || iphonesim">
 			<vflag name="-framework" value="UIKit" />
 			<vflag name="-framework" value="Foundation" />
+			<vflag name="-framework" value="AVFAudio" />
 		</section>
 
 		<files id="external-ios" if="iphoneos || iphonesim" />

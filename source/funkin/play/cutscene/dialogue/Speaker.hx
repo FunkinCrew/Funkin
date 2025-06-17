@@ -67,7 +67,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     this.x += xDiff;
     this.y += yDiff;
 
-    if (FullScreenScaleMode.windowScale.x != 1)
+    if (FullScreenScaleMode.wideScale.x != 1)
     {
       this.x *= fullscreenScale;
       this.y = this.y * fullscreenScale + (-100 * fullscreenScale);
@@ -83,7 +83,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
 
   function get_fullscreenScale():Float
   {
-    return FullScreenScaleMode.windowScale.x - 0.05;
+    return FullScreenScaleMode.wideScale.x - 0.05;
   }
 
   public function new(id:String)
@@ -170,7 +170,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   {
     if (scale == null) scale = 1.0;
 
-    if (FullScreenScaleMode.windowScale.x != 1)
+    if (FullScreenScaleMode.wideScale.x != 1)
     {
       scale *= fullscreenScale;
     }

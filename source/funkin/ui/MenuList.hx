@@ -9,6 +9,9 @@ import funkin.audio.FunkinSound;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 import funkin.ui.Page.PageName;
+import flixel.tweens.FlxEase;
+import funkin.util.HapticUtil;
+import flixel.tweens.FlxTween;
 
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
@@ -109,10 +112,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     var newIndex = 0;
 
     // Define unified input handlers
-    final inputUp:Bool = controls.UI_UP_P || SwipeUtil.swipeUp;
-    final inputDown:Bool = controls.UI_DOWN_P || SwipeUtil.swipeDown;
-    final inputLeft:Bool = controls.UI_LEFT_P || SwipeUtil.swipeLeft;
-    final inputRight:Bool = controls.UI_RIGHT_P || SwipeUtil.swipeRight;
+    final inputUp:Bool = controls.UI_UP_P || (!_isMainMenuState && SwipeUtil.swipeUp);
+    final inputDown:Bool = controls.UI_DOWN_P || (!_isMainMenuState && SwipeUtil.swipeDown);
+    final inputLeft:Bool = controls.UI_LEFT_P || (!_isMainMenuState && SwipeUtil.swipeLeft);
+    final inputRight:Bool = controls.UI_RIGHT_P || (!_isMainMenuState && SwipeUtil.swipeRight);
 
     // Keepin' these for keyboard/controller support on mobile platforms
     newIndex = switch (navControls)
@@ -137,28 +140,70 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       for (i in 0...members.length)
       {
         final item = members[i];
-
         final menuCamera = FlxG.cameras.list[1];
 
         final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
-        final itemPixelOverlap:Bool = FlxG.pixelPerfectOverlap(touchBuddy, item, 0) && _isMainMenuState;
+        final itemPixelOverlap:Bool = _isMainMenuState && FlxG.pixelPerfectOverlap(touchBuddy, item, 0);
 
-        if (item.available && ((itemOverlaps && TouchUtil.justPressed) || itemPixelOverlap))
+        final isTouchingItem:Bool = itemOverlaps || itemPixelOverlap;
+
+        if (item.available && isTouchingItem && TouchUtil.justPressed)
         {
-          if (selectedIndex == i && TouchUtil.justPressed) accept();
-          else
+          var prevIndex:Int = selectedIndex;
+
+          if (!_isMainMenuState && selectedIndex != i)
+          {
             newIndex = i;
+            break;
+          }
+          else
+          {
+            FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+            selectItem(i);
+          }
+
+          if (_isMainMenuState)
+          {
+            if (prevIndex == i)
+            {
+              FlxTween.cancelTweensOf(item);
+              item.scale.set(1.1, 1.1);
+              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+
+              HapticUtil.vibrate(0, 0.05, 0.5);
+              accept();
+            }
+            else
+            {
+              FlxTween.cancelTweensOf(item);
+              item.scale.set(0.94, 0.94);
+              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+
+              HapticUtil.vibrate(0, 0.01, 0.2);
+            }
+          }
+          else
+          {
+            accept();
+          }
+
           break;
         }
       }
     }
-    #end
 
+    if (newIndex != selectedIndex && !_isMainMenuState)
+    {
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      selectItem(newIndex);
+    }
+    #else
     if (newIndex != selectedIndex)
     {
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       selectItem(newIndex);
     }
+    #end
 
     // Todo: bypass popup blocker on firefox
     if (controls.ACCEPT) accept();

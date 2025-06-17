@@ -196,7 +196,7 @@ class StoryMenuState extends MusicBeatState
     buildLevelTitles();
 
     final useNotch:Bool = Math.max(35, FullScreenScaleMode.gameNotchSize.x) != 35;
-    leftDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? (FullScreenScaleMode.gameNotchSize.x / 2) + 410 : 410), 480);
+    leftDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? (FullScreenScaleMode.gameNotchSize.x) + 410 : 410), 480);
     leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
     leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
     leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
@@ -206,7 +206,7 @@ class StoryMenuState extends MusicBeatState
     buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
-    rightDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? FullScreenScaleMode.gameNotchSize.x : 35), leftDifficultyArrow.y);
+    rightDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? FullScreenScaleMode.gameNotchSize.x * 1.5 : 35), leftDifficultyArrow.y);
     rightDifficultyArrow.frames = leftDifficultyArrow.frames;
     rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
     rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
@@ -226,7 +226,7 @@ class StoryMenuState extends MusicBeatState
     #end
 
     #if mobile
-    addBackButton(FlxG.width * 0.77, FlxG.height * 0.85, FlxColor.WHITE, goBack);
+    addBackButton(FlxG.width - 230, FlxG.height - 170, FlxColor.WHITE, goBack, 0.7);
     #end
 
     #if FEATURE_TOUCH_CONTROLS
@@ -369,13 +369,25 @@ class StoryMenuState extends MusicBeatState
         #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P || SwipeUtil.swipeRight || (TouchUtil.pressAction(rightDifficultyArrow, null, false)))
+        if (controls.UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS
+          || (SwipeUtil.swipeRight && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
+          || (TouchUtil.pressAction(rightDifficultyArrow, null, false)) #end)
         {
+          #if FEATURE_TOUCH_CONTROLS
+          @:privateAccess
+          if (!TouchUtil.pressAction(rightDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          #end
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P || SwipeUtil.swipeLeft || (TouchUtil.pressAction(leftDifficultyArrow, null, false)))
+        if (controls.UI_LEFT_P #if FEATURE_TOUCH_CONTROLS
+          || (SwipeUtil.swipeLeft && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
+          || (TouchUtil.pressAction(leftDifficultyArrow, null, false)) #end)
         {
+          #if FEATURE_TOUCH_CONTROLS
+          @:privateAccess
+          if (!TouchUtil.pressAction(leftDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          #end
           changeDifficulty(-1);
         }
 
@@ -403,14 +415,14 @@ class StoryMenuState extends MusicBeatState
         selectLevel();
       }
 
-      if (TouchUtil.justPressed && !TouchUtil.overlaps(leftDifficultyArrow))
+      if (TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
       {
         for (i in 0...levelTitles.members.length)
         {
           final item = levelTitles.members[i];
           final selectedItem = levelTitles.members[levelList.indexOf(currentLevelId)];
 
-          if (!TouchUtil.overlaps(item)) continue;
+          if (!TouchUtil.pressAction(item, null, false)) continue;
 
           (item == selectedItem) ? selectLevel() : changeLevel(i - levelList.indexOf(currentLevelId));
         }
@@ -667,7 +679,7 @@ class StoryMenuState extends MusicBeatState
   {
     for (ind => prop in currentLevel.buildProps(levelProps.members))
     {
-      prop.x += (FullScreenScaleMode.gameCutoutSize.x / 2);
+      prop.x += (FullScreenScaleMode.gameCutoutSize.x / 4);
       prop.zIndex = 1000;
       if (levelProps.members[ind] != prop) levelProps.replace(levelProps.members[ind], prop) ?? levelProps.add(prop);
     }

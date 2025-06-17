@@ -89,6 +89,13 @@ class VideoCutscene
 
     VideoCutscene.cutsceneType = cutsceneType;
 
+    #if mobile
+    if (cutsceneType == ENDING)
+    {
+      PlayState.instance.togglePauseButton();
+    }
+    #end
+
     #if html5
     playVideoHTML5(rawFilePath);
     #elseif hxvlc
@@ -143,6 +150,11 @@ class VideoCutscene
     {
       vid.zIndex = 0;
       vid.active = false;
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+        trace('[VLC] Encountered an error: $msg');
+
+        finishVideo(0.5);
+      });
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
 
       vid.cameras = [PlayState.instance.camCutscene];
@@ -171,7 +183,7 @@ class VideoCutscene
   }
   #end
 
-  public static function restartVideo(resume:Bool = true):Void
+  public static function restartVideo():Void
   {
     #if html5
     if (vid != null)
@@ -184,14 +196,8 @@ class VideoCutscene
     #if hxvlc
     if (vid != null)
     {
-      // Seek to the start of the video.
       vid.bitmap.time = 0;
-      if (resume)
-      {
-        // Resume the video if it was paused.
-        vid.resume();
-      }
-
+      vid.resume();
       onVideoRestarted.dispatch();
     }
     #end
