@@ -551,6 +551,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     FlxTween.cancelTweensOf(this);
     this._label = 'unknown';
+    this._waveformData = null;
   }
 
   @:access(openfl.media.Sound)
