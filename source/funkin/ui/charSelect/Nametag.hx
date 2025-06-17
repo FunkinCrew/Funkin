@@ -10,14 +10,17 @@ class Nametag extends FlxSprite
   var midpointY(default, set):Float = 100;
   var mosaicShader:MosaicEffect;
 
-  public function new(?x:Float = 0, ?y:Float = 0)
+  public function new(?x:Float = 0, ?y:Float = 0, character:String)
   {
     super(x, y);
 
     mosaicShader = new MosaicEffect();
     shader = mosaicShader;
 
-    switchChar("bf");
+    // So that's why there was that cursed sight (originally defaulted to bf)
+    if (character != null) switchChar(character);
+    else
+      switchChar(Constants.DEFAULT_CHARACTER);
   }
 
   public function updatePosition():Void

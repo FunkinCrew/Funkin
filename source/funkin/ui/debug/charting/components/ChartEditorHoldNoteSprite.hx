@@ -37,6 +37,30 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     return value;
   }
 
+  public var overrideStepTime(default, set):Null<Float> = null;
+
+  function set_overrideStepTime(value:Null<Float>):Null<Float>
+  {
+    if (overrideStepTime == value) return overrideStepTime;
+
+    overrideStepTime = value;
+    updateHoldNotePosition();
+    return overrideStepTime;
+  }
+
+  public var overrideData(default, set):Null<Int> = null;
+
+  function set_overrideData(value:Null<Int>):Null<Int>
+  {
+    if (overrideData == value) return overrideData;
+
+    overrideData = value;
+    if (overrideData != null) this.noteDirection = overrideData;
+    updateHoldNoteGraphic();
+    updateHoldNotePosition();
+    return overrideData;
+  }
+
   public function new(parent:ChartEditorState)
   {
     var noteStyle = NoteStyleRegistry.instance.fetchDefault();
@@ -211,7 +235,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   {
     if (this.noteData == null) return;
 
-    var cursorColumn:Int = this.noteData.data;
+    var cursorColumn:Int = (overrideData != null) ? overrideData : this.noteData.data;
 
     if (cursorColumn < 0) cursorColumn = 0;
     if (cursorColumn >= (ChartEditorState.STRUMLINE_SIZE * 2 + 1))
@@ -232,10 +256,11 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     }
 
     this.x = cursorColumn * ChartEditorState.GRID_SIZE;
+    updateHoldNoteGraphic();
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes
-    var stepTime:Float =
+    var stepTime:Float = (overrideStepTime != null) ? overrideStepTime :
     inline this.noteData.getStepTime();
     if (stepTime >= 0)
     {
