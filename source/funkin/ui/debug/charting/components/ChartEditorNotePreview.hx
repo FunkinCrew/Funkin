@@ -60,7 +60,7 @@ class ChartEditorNotePreview extends FlxSprite
    * @param note The data for the note.
    * @param songLengthInPixels The total length of the song in pixels.
    */
-  public function addNote(note:SongNoteData, songLengthInMs:Int, previewType:NotePreviewType = None):Void
+  public function addNote(note:SongNoteData, songLengthInPixels:Int, previewType:NotePreviewType = None):Void
   {
     var noteDir:Int = note.getDirection();
     var mustHit:Bool = note.getStrumlineIndex() == 0;
@@ -100,7 +100,7 @@ class ChartEditorNotePreview extends FlxSprite
   {
     for (note in notes)
     {
-      addNote(note, songLengthInMs, Selection);
+      addNote(note, songLengthInPixels, Selection);
     }
   }
 
