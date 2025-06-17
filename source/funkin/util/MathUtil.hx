@@ -130,15 +130,14 @@ class MathUtil
   }
 
   /**
-   * GCD stands for Greatest Common Division
+   * GCD stands for Greatest Common Divisor
    * It's used in FullScreenScaleMode to prevent weird window resolutions from being counted as wide screen since those were causing issues positioning the game
-   * It basically returns the common division between m and n
-   * It retruns the largest common division between both to be precise
+   * It returns the greatest common divisor between m and n
    *
    * think it's from hxp..?
    * @param m
    * @param n
-   * @return Int the common division between m and n
+   * @return Int the common divisor between m and n
    */
   public static function gcd(m:Int, n:Int):Int
   {
