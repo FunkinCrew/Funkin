@@ -469,7 +469,7 @@ class Conductor
       this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)
         + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
-      this.currentMeasureTime = getTimeInMeasures(songPos);
+      this.currentMeasureTime = getTimeInMeasures(this.songPosition);
       this.currentStep = Math.floor(currentStepTime);
       this.currentBeat = Math.floor(currentBeatTime);
       this.currentMeasure = Math.floor(currentMeasureTime);

@@ -895,7 +895,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (currentOverlappingNotes.length > 0 && isSuperset)
       {
-        notePreview.addOverlappingNotes(currentOverlappingNotes, Std.int(songLengthInMs));
+        notePreview.addOverlappingNotes(currentOverlappingNotes, songLengthInPixels);
       }
       else
       {
