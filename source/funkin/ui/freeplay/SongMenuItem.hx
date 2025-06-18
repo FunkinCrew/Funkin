@@ -1,8 +1,10 @@
 package funkin.ui.freeplay;
 
 import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
+import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.GaussianBlurShader;
+import flixel.graphics.frames.*;
 import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -17,7 +19,10 @@ import flixel.tweens.FlxTween;
 import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
+import funkin.ui.story.Level;
 import funkin.ui.PixelatedIcon;
+
+using StringTools;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -75,6 +80,7 @@ class SongMenuItem extends FlxSpriteGroup
   var sparkleTimer:FlxTimer;
 
   var index:Int;
+
   public var curSelected:Int;
 
   public function new(x:Float, y:Float)
@@ -99,8 +105,10 @@ class SongMenuItem extends FlxSpriteGroup
     weekType = new FlxSprite(291, 87);
     weekType.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/weektypes');
 
-    weekType.animation.addByPrefix('WEEK', 'WEEK text instance 1', 24, false);
-    weekType.animation.addByPrefix('WEEKEND', 'WEEKEND text instance 1', 24, false);
+    // Make the default animations start with an underscore for a better distinction from modded labels.
+    weekType.animation.addByPrefix('__WEEK', 'WEEK text instance 1', 24, false);
+    weekType.animation.addByPrefix('__WEEKEND', 'WEEKEND text instance 1', 24, false);
+    addLevelLabels();
 
     weekType.setGraphicSize(Std.int(weekType.width * 0.9));
     add(weekType);
@@ -219,6 +227,41 @@ class SongMenuItem extends FlxSpriteGroup
     setVisibleGrp(false);
   }
 
+  /**
+   * Goes over every level and checks if the files contain a label with its name.
+   * If it does, its frames are appended to the default label to be used later.
+   */
+  function addLevelLabels():Void
+  {
+    var levelList:Array<String> = LevelRegistry.instance.listSortedLevelIds();
+    for (level in levelList)
+    {
+      if (!Assets.exists(Paths.image('freeplay/freeplayCapsule/$level'))) continue;
+
+      var hasFrameData:Bool = Assets.exists(Paths.file('images/freeplay/freeplayCapsule/$level.xml'));
+      if (!hasFrameData)
+      {
+        var imgFrame:FlxImageFrame = FlxImageFrame.fromImage(Paths.image('freeplay/freeplayCapsule/$level'));
+        imgFrame.frame.name = level; // The frame has no name initially.
+        weekType.frames.pushFrame(imgFrame.frame);
+        weekType.animation.addByNames(level, [level], 24, false);
+      }
+      else
+      {
+        var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/$level');
+        var frameNames:Array<String> = [];
+        for (fr in frameCollection.frames)
+        {
+          var name:String = fr.name;
+          frameNames.push(name);
+          weekType.frames.pushFrame(fr);
+        }
+
+        weekType.animation.addByNames(level, frameNames, 24, true);
+      }
+    }
+  }
+
   function sparkleEffect(timer:FlxTimer):Void
   {
     sparkle.setPosition(FlxG.random.float(ranking.x - 20, ranking.x + 3), FlxG.random.float(ranking.y - 29, ranking.y + 4));
@@ -226,54 +269,89 @@ class SongMenuItem extends FlxSpriteGroup
     sparkleTimer = new FlxTimer().start(FlxG.random.float(1.2, 4.5), sparkleEffect);
   }
 
+  function toggleNumVis(on:Bool)
+  {
+    for (num in weekNumbers)
+      num.visible = on;
+  }
+
   // no way to grab weeks rn, so this needs to be done :/
   // negative values mean weekends
   function checkWeek(name:String):Void
   {
     // trace(name);
-    var weekNum:Int = 0;
-    switch (name)
+
+    // Go over every level and see if it contains the song.
+    var songLevel:String = "";
+    var levelList:Array<String> = LevelRegistry.instance.listSortedLevelIds();
+    for (i in 0...levelList.length)
     {
-      case 'bopeebo' | 'fresh' | 'dadbattle':
-        weekNum = 1;
-      case 'spookeez' | 'south' | 'monster':
-        weekNum = 2;
-      case 'pico' | 'philly-nice' | 'blammed':
-        weekNum = 3;
-      case "satin-panties" | 'high' | 'milf':
-        weekNum = 4;
-      case "cocoa" | 'eggnog' | 'winter-horrorland':
-        weekNum = 5;
-      case 'senpai' | 'roses' | 'thorns':
-        weekNum = 6;
-      case 'ugh' | 'guns' | 'stress':
-        weekNum = 7;
-      case 'darnell' | 'lit-up' | '2hot' | 'blazin':
-        weekNum = -1;
-      default:
-        weekNum = 0;
+      var level:Null<Level> = LevelRegistry.instance.fetchEntry(levelList[i]);
+      if (level == null) continue;
+
+      if (level.getSongs().contains(name))
+      {
+        songLevel = levelList[i];
+        break;
+      }
     }
 
-    weekNumbers[0].digit = Std.int(Math.abs(weekNum));
-
-    if (weekNum == 0)
+    if (songLevel.length == 0)
     {
+      // If the song isn't in any week, set the assets to invisible and don't do any further checks.
       weekType.visible = false;
-      weekNumbers[0].visible = false;
+      toggleNumVis(false);
+      return;
     }
-    else
+
+    if (weekType.animation.getByName(songLevel) != null)
     {
+      // If the animation for the week exists, play it.
       weekType.visible = true;
-      weekNumbers[0].visible = true;
-    }
-    if (weekNum > 0)
-    {
-      weekType.animation.play('WEEK', true);
+      weekType.animation.play(songLevel, true);
+      toggleNumVis(false);
     }
     else
     {
-      weekType.animation.play('WEEKEND', true);
-      weekNumbers[0].offset.x -= 35;
+      // Run the default logic, mostly used for base game weeks.
+      var isWeekend:Bool = false;
+      if (songLevel.startsWith("weekend"))
+      {
+        isWeekend = true;
+        songLevel = songLevel.substring(7);
+        weekType.animation.play("__WEEKEND", true);
+      }
+      else if (songLevel.startsWith("week"))
+      {
+        songLevel = songLevel.substring(4);
+        weekType.animation.play("__WEEK", true);
+      }
+      else
+      {
+        weekType.visible = false;
+        toggleNumVis(false);
+        return;
+      }
+
+      weekType.visible = true;
+      toggleNumVis(false); // Individual numbers are turned on in the for-loop.
+
+      var weekNum:Int = Std.parseInt(songLevel);
+      if (weekNum == 0)
+      {
+        // Tutorial week's label is invisible.
+        weekType.visible = false;
+        return;
+      }
+
+      var weekNumString:String = Std.string(weekNum);
+      for (i in 0...weekNumString.length)
+      {
+        if (i >= weekNumbers.length) break;
+        weekNumbers[i].digit = Std.parseInt(weekNumString.charAt(i));
+        weekNumbers[i].offset.x = (isWeekend ? -35 : 0);
+        weekNumbers[i].visible = true;
+      }
     }
   }
 
