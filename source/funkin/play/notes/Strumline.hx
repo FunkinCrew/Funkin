@@ -16,6 +16,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.notes.NoteVibrationsHandler;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
+import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKindManager;
 import flixel.math.FlxPoint;
 #if mobile
@@ -526,17 +527,6 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
-  /**
-   * For a note's strumTime, calculate its Y position relative to the strumline.
-   * NOTE: Assumes Conductor and PlayState are both initialized.
-   * @param strumTime The strumtime of the note.
-   * @return The Y position of the note.
-   */
-  public function calculateNoteYPos(strumTime:Float):Float
-  {
-    return Constants.PIXELS_PER_MS * (conductorInUse.getTimeWithDelta() - strumTime - Conductor.instance.inputOffset) * scrollSpeed * (isDownscroll ? 1 : -1);
-  }
-
   public function updateNotes():Void
   {
     if (noteData.length == 0) return;
@@ -581,7 +571,10 @@ class Strumline extends FlxSpriteGroup
       if (note == null || !note.alive) continue;
 
       // Set the note's position.
-      if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime) + note.yOffset;
+      if (!customPositionData) note.y = this.y
+        - INITIAL_OFFSET
+        + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+        + note.yOffset;
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
@@ -664,14 +657,19 @@ class Strumline extends FlxSpriteGroup
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
-              + calculateNoteYPos(holdNote.strumTime)
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
               + STRUMLINE_SIZE / 2
               + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y
+              - INITIAL_OFFSET
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+              + yOffset
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
         }
 
@@ -718,14 +716,18 @@ class Strumline extends FlxSpriteGroup
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
-              + calculateNoteYPos(holdNote.strumTime)
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
               + STRUMLINE_SIZE / 2
               + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y
+              - INITIAL_OFFSET
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
         }
       }

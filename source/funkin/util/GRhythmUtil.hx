@@ -4,24 +4,6 @@ import funkin.play.notes.NoteSprite;
 import funkin.Conductor;
 
 /**
- * A structure to hold the result of a hit window check.
- * @param inWindow True if the note is within the hit window.
- * @param hit True if the note was hit.
- * @param time The time of the hit.
- * @param note The note that was hit.
- * @param isControlled True if the note is controlled by the player.
- */
-typedef GHitRes =
-{
-  public var inWindow:Bool;
-
-  public var hit:Bool;
-  public var time:Float;
-  public var note:NoteSprite;
-  public var isControlled:Bool;
-}
-
-/**
  * A structure to hold the hit window values.
  * @param start The start time of the hit window.
  * @param center The center time of the hit window.
@@ -117,5 +99,18 @@ class GRhythmUtil
     note.hasMissed = false;
 
     return {botplayHit: false, cont: true };
+  }
+  /**
+   * Get the y-position of a note based on its strum time.
+   * @param strumTime The strum time of the note.
+   * @param scrollSpeed The scroll speed of the strumline.
+   * @param downscroll Whether the strumline is in downscroll mode.
+   * @param conductorInUse The conductor to use for calculating the y-position.
+   * @return The y-position of the note.
+   */
+  public static function getNoteY(strumTime:Float, scrollSpeed:Float, downscroll:Bool = false, ?conductorInUse:Conductor = null):Float
+  {
+    if (conductorInUse == null) conductorInUse = Conductor.instance;
+    return Constants.PIXELS_PER_MS * (conductorInUse.getTimeWithDelta() - strumTime - conductorInUse.inputOffset) * scrollSpeed * (downscroll ? 1 : -1);
   }
 }
