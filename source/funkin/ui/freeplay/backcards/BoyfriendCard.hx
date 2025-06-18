@@ -8,6 +8,7 @@ import flixel.util.FlxSpriteUtil;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
 
+@:nullSafety
 class BoyfriendCard extends BackingCard
 {
   public var moreWays:BGScrollingText;
@@ -85,6 +86,8 @@ class BoyfriendCard extends BackingCard
     moreWays2 = new BGScrollingText(0, 397, currentCharacter.getFreeplayDJText(2), FlxG.width, true, 43);
     txtNuts = new BGScrollingText(0, 285, currentCharacter.getFreeplayDJText(3), FlxG.width / 2, true, 43);
     funnyScroll3 = new BGScrollingText(0, orangeBackShit.y + 10, currentCharacter.getFreeplayDJText(1), FlxG.width / 2, 60);
+    glow = new FlxSprite(-300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
+    glowDark = new FlxSprite(-300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
   }
 
   public override function init():Void
@@ -148,11 +151,9 @@ class BoyfriendCard extends BackingCard
     funnyScroll3.speed = -3.8;
     add(funnyScroll3);
 
-    glowDark = new FlxSprite(-300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
     glowDark.blend = BlendMode.MULTIPLY;
     add(glowDark);
 
-    glow = new FlxSprite(-300, 330).loadGraphic(Paths.image('freeplay/beatglow'));
     glow.blend = BlendMode.ADD;
     add(glow);
 
