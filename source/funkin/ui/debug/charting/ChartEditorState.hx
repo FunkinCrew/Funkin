@@ -3763,7 +3763,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (noteData == currentPlaceNoteData) continue;
 
         // Is the hold note rendered already?
-        if (displayedHoldNoteData.indexOf(noteData) != -1) continue;
+        if (displayedHoldNoteData.fastContains(noteData)) continue;
 
         // Is the hold note offscreen?
         if (!ChartEditorHoldNoteSprite.wouldHoldNoteBeVisible(viewAreaBottomPixels, viewAreaTopPixels, noteData, renderedHoldNotes)) continue;
