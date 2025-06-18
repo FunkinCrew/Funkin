@@ -1214,18 +1214,22 @@ class FreeplayState extends MusicBeatSubState
   function enterFromCharSel():Void
   {
     busy = true;
+    FlxG.keys.enabled = false;
+
     if (_parentState != null) _parentState.persistentDraw = false;
 
     var transitionGradient = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
     transitionGradient.scale.set(1280, 1);
     transitionGradient.updateHitbox();
     transitionGradient.cameras = [rankCamera];
+
     exitMoversCharSel.set([transitionGradient],
       {
         y: -720,
         speed: 1.5,
         wait: 0.1
       });
+
     add(transitionGradient);
     // FlxTween.tween(transitionGradient, {alpha: 0}, 1, {ease: FlxEase.circIn});
     // for (index => capsule in grpCapsules.members)
@@ -1243,6 +1247,7 @@ class FreeplayState extends MusicBeatSubState
     //   }
     // }
     fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn});
+
     for (grpSpr in exitMoversCharSel.keys())
     {
       var moveData:Null<MoveData> = exitMoversCharSel.get(grpSpr);
@@ -1259,18 +1264,21 @@ class FreeplayState extends MusicBeatSubState
         var moveDataWait = funnyMoveShit.wait ?? 0.0;
 
         spr.y += moveDataY;
+
         FlxTween.tween(spr, {y: spr.y - moveDataY}, moveDataSpeed * 1.2,
-          {
-            ease: FlxEase.expoOut,
-            onComplete: function(_) {
-              for (index => capsule in grpCapsules.members)
-              {
-                capsule.doLerp = true;
-                fromCharSelect = false;
-                busy = false;
-              }
+        {
+          ease: FlxEase.expoOut,
+          onComplete: function(_) {
+            for (index => capsule in grpCapsules.members)
+            {
+              capsule.doLerp = true;
             }
-          });
+
+            fromCharSelect = false;
+            busy = false;
+            FlxG.keys.enabled = true;
+          }
+        });
       }
     }
   }
