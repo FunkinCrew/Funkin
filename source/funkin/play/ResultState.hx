@@ -598,7 +598,7 @@ class ResultState extends MusicBeatSubState
         // scorePopin.animation.play("score");
 
         // scorePopin.visible = true;
-      };
+      });
     }
 
     refresh();
