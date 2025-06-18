@@ -746,15 +746,6 @@ class FreeplayState extends MusicBeatSubState
       #end
     };
 
-    if (dj != null)
-    {
-      dj.onIntroDone.add(onDJIntroDone);
-    }
-    else
-    {
-      onDJIntroDone();
-    }
-
     allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId);
 
     // Generates song list with the starter params (who our current character is, last remembered difficulty, etc.)
@@ -796,6 +787,17 @@ class FreeplayState extends MusicBeatSubState
     {
       enterFromCharSel();
       onDJIntroDone();
+    }
+    else
+    {
+      if (dj != null)
+      {
+        dj.onIntroDone.add(onDJIntroDone);
+      }
+      else
+      {
+        onDJIntroDone();
+      }
     }
   }
 
