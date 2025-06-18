@@ -32,9 +32,11 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   @:nullSafety(Off)
   function set_noteStyle(value:Null<String>):Null<String>
   {
-    @:bypassAccessor final dirty:Bool = this.noteStyle != value;
+    @:bypassAccessor
+    if (this.noteStyle == value) return value;
+
     this.noteStyle = value;
-    if (dirty) this.updateHoldNoteGraphic();
+    this.updateHoldNoteGraphic();
     return value;
   }
 
