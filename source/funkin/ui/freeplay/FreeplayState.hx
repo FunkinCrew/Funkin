@@ -1268,6 +1268,7 @@ class FreeplayState extends MusicBeatSubState
 
   function transitionToCharSelect():Void
   {
+    busy = true;
     var transitionGradient = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
     transitionGradient.scale.set(1280, 1);
     transitionGradient.updateHitbox();
