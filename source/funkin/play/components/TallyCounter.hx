@@ -1,17 +1,14 @@
 package funkin.play.components;
 
 import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxMath;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.text.FlxText.FlxTextAlign;
 import funkin.util.MathUtil;
 
 /**
  * Numerical counters used next to each judgement in the Results screen.
  */
+@:nullSafety
 class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
 {
   public var curNumber:Float = 0;
@@ -21,13 +18,13 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
 
   public var align:FlxTextAlign = FlxTextAlign.LEFT;
 
-  public function new(x:Float, y:Float, neededNumber:Int = 0, ?flavour:Int = 0xFFFFFFFF, align:FlxTextAlign = FlxTextAlign.LEFT)
+  public function new(x:Float, y:Float, neededNumber:Int = 0, ?flavour:Int, align:FlxTextAlign = FlxTextAlign.LEFT)
   {
     super(x, y);
 
     this.align = align;
 
-    this.flavour = flavour;
+    this.flavour = flavour ?? 0xFFFFFFFF;
 
     this.neededNumber = neededNumber;
 
@@ -83,6 +80,7 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
   }
 }
 
+@:nullSafety
 class TallyNumber extends FlxSprite
 {
   public function new(x:Float, y:Float, digit:Int)

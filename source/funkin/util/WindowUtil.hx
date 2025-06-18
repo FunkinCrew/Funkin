@@ -17,12 +17,56 @@ using StringTools;
 class WindowUtil
 {
   /**
+   * A regex to match valid URLs.
+   */
+  public static final URL_REGEX:EReg = ~/^https?:\/?\/?(?:www\.)?[-a-zA-Z0-9@:%_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
+
+  /**
+   * Sanitizes a URL via a regex.
+   *
+   * @param targetUrl The URL to sanitize.
+   * @return The sanitized URL, or an empty string if the URL is invalid.
+   */
+  public static function sanitizeURL(targetUrl:String):String
+  {
+    targetUrl = (targetUrl ?? '').trim();
+    if (targetUrl == '')
+    {
+      return '';
+    }
+
+    final lowerUrl:String = targetUrl.toLowerCase();
+    if (!lowerUrl.startsWith('http:') && !lowerUrl.startsWith('https:'))
+    {
+      targetUrl = 'http://' + targetUrl;
+    }
+
+    if (URL_REGEX.match(targetUrl))
+    {
+      return URL_REGEX.matched(0);
+    }
+
+    return '';
+  }
+
+  /**
    * Runs platform-specific code to open a URL in a web browser.
    * @param targetUrl The URL to open.
    */
   public static function openURL(targetUrl:String):Void
   {
+    // Ensure you can't open protocols such as steam://, file://, etc
+    var protocol:Array<String> = targetUrl.split("://");
+    if (protocol.length == 1) targetUrl = 'https://${targetUrl}';
+    else if (protocol[0] != 'http' && protocol[0] != 'https') throw "openURL can only open http and https links.";
+
     #if FEATURE_OPEN_URL
+    targetUrl = sanitizeURL(targetUrl);
+    if (targetUrl == '')
+    {
+      throw 'Invalid URL: "$targetUrl"';
+    }
+
     #if linux
     Sys.command('/usr/bin/xdg-open $targetUrl &');
     #else
@@ -34,44 +78,23 @@ class WindowUtil
     #end
   }
 
+  #if FEATURE_DEBUG_TRACY
   /**
-   * Runs platform-specific code to open a path in the file explorer.
-   * @param targetPath The path to open.
+   * Initialize Tracy.
+   * NOTE: Call this from the main thread ONLY!
    */
-  public static function openFolder(targetPath:String):Void
+  public static function initTracy():Void
   {
-    #if FEATURE_OPEN_URL
-    #if windows
-    Sys.command('explorer', [targetPath.replace('/', '\\')]);
-    #elseif mac
-    Sys.command('open', [targetPath]);
-    #elseif linux
-    Sys.command('open', [targetPath]);
-    #end
-    #else
-    throw 'Cannot open URLs on this platform.';
-    #end
-  }
+    var appInfoMessage = funkin.util.logging.CrashHandler.buildSystemInfo();
 
-  /**
-   * Runs platform-specific code to open a file explorer and select a specific file.
-   * @param targetPath The path of the file to select.
-   */
-  public static function openSelectFile(targetPath:String):Void
-  {
-    #if FEATURE_OPEN_URL
-    #if windows
-    Sys.command('explorer', ['/select,' + targetPath.replace('/', '\\')]);
-    #elseif mac
-    Sys.command('open', ['-R', targetPath]);
-    #elseif linux
-    // TODO: unsure of the linux equivalent to opening a folder and then "selecting" a file.
-    Sys.command('open', [targetPath]);
-    #end
-    #else
-    throw 'Cannot open URLs on this platform.';
-    #end
+    trace("Friday Night Funkin': Connection to Tracy profiler successful.");
+
+    // Post system info like Git hash
+    cpp.vm.tracy.TracyProfiler.messageAppInfo(appInfoMessage);
+
+    cpp.vm.tracy.TracyProfiler.setThreadName("main");
   }
+  #end
 
   /**
    * Dispatched when the game window is closed.
@@ -90,14 +113,6 @@ class WindowUtil
     openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int) {
       windowExit.dispatch(exitCode);
     });
-
-    #if FEATURE_DEBUG_TRACY
-    // Apply a marker to indicate frame end for the Tracy profiler.
-    // Do this only if Tracy is configured to prevent lag.
-    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
-      cpp.vm.tracy.TracyProfiler.frameMark();
-    });
-    #end
 
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
@@ -140,5 +155,21 @@ class WindowUtil
   public static function setWindowTitle(value:String):Void
   {
     lime.app.Application.current.window.title = value;
+  }
+
+  public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
+  {
+    // vsync crap dont worky on mac rn derp
+    #if !mac
+    var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
+
+    // SDL_GL_SetSwapInterval returns the value we assigned on success, https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval#return-value.
+    // In lime, we can compare this to the original value to get a boolean.
+    if (!res)
+    {
+      trace('Failed to set VSync mode to ' + value);
+      FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+    }
+    #end
   }
 }

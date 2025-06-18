@@ -17,10 +17,10 @@ class MemoryUtil
   {
     #if cpp
     var result:String = 'HXCPP-Immix:';
-    result += '\n- Memory Used: ${cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_USAGE)} bytes';
-    result += '\n- Memory Reserved: ${cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_RESERVED)} bytes';
-    result += '\n- Memory Current Pool: ${cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_CURRENT)} bytes';
-    result += '\n- Memory Large Pool: ${cpp.vm.Gc.memInfo(cpp.vm.Gc.MEM_INFO_LARGE)} bytes';
+    result += '\n- Memory Used: ${cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE)} bytes';
+    result += '\n- Memory Reserved: ${cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_RESERVED)} bytes';
+    result += '\n- Memory Current Pool: ${cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_CURRENT)} bytes';
+    result += '\n- Memory Large Pool: ${cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_LARGE)} bytes';
     result += '\n- HXCPP Debugger: ${#if HXCPP_DEBUGGER 'Enabled' #else 'Disabled' #end}';
     result += '\n- HXCPP Exp Generational Mode: ${#if HXCPP_GC_GENERATIONAL 'Enabled' #else 'Disabled' #end}';
     result += '\n- HXCPP Exp Moving GC: ${#if HXCPP_GC_MOVING 'Enabled' #else 'Disabled' #end}';

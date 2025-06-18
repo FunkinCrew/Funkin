@@ -5,7 +5,7 @@ inputs:
   haxe:
     description: 'Version of haxe to install'
     required: true
-    default: '4.3.4'
+    default: '4.3.6'
   hxcpp-cache:
     description: 'Whether to use a shared hxcpp compile cache'
     required: true
@@ -30,7 +30,7 @@ runs:
       echo "TIMER_HAXE=$(date +%s)" >> "$GITHUB_ENV"
 
   - name: Install Haxe
-    uses: funkincrew/ci-haxe@v3.1.0
+    uses: funkincrew/ci-haxe@v3.2.7
     with:
       haxe-version: ${{ inputs.haxe }}
 

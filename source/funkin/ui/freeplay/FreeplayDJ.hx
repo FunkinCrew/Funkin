@@ -1,15 +1,10 @@
 package funkin.ui.freeplay;
 
-import flixel.FlxSprite;
 import flixel.util.FlxSignal;
-import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.audio.FunkinSound;
-import flixel.util.FlxTimer;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
-import funkin.audio.FunkinSound;
-import funkin.audio.FlxStreamSound;
 
 class FreeplayDJ extends FlxAtlasSprite
 {
@@ -63,6 +58,7 @@ class FreeplayDJ extends FlxAtlasSprite
     FlxG.console.registerObject("dj", this);
 
     onAnimationComplete.add(onFinishAnim);
+    onAnimationLoop.add(onFinishAnim);
 
     FlxG.console.registerFunction("freeplayCartoon", function() {
       currentState = Cartoon;
@@ -91,7 +87,7 @@ class FreeplayDJ extends FlxAtlasSprite
       case Intro:
         // Play the intro animation then leave this state immediately.
         var animPrefix = playableCharData.getAnimationPrefix('intro');
-        if (getCurrentAnimation() != animPrefix) playFlashAnimation(animPrefix, true);
+        if (getCurrentAnimation() != animPrefix || !this.anim.isPlaying) playFlashAnimation(animPrefix, true);
         timeIdling = 0;
       case Idle:
         // We are in this state the majority of the time.
@@ -99,18 +95,6 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() != animPrefix)
         {
           playFlashAnimation(animPrefix, true, false, true);
-        }
-
-        if (getCurrentAnimation() == animPrefix && this.isLoopComplete())
-        {
-          if (timeIdling >= IDLE_EGG_PERIOD && !seenIdleEasterEgg)
-          {
-            currentState = IdleEasterEgg;
-          }
-          else if (timeIdling >= IDLE_CARTOON_PERIOD)
-          {
-            currentState = Cartoon;
-          }
         }
         timeIdling += elapsed;
       case NewUnlock:
@@ -141,7 +125,6 @@ class FreeplayDJ extends FlxAtlasSprite
         }
         else if (getCurrentAnimation() == animPrefixB)
         {
-          trace("Loss Intro");
           var endFrame = playableCharData.getFistPumpIntroBadEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
@@ -167,7 +150,6 @@ class FreeplayDJ extends FlxAtlasSprite
         }
         else if (getCurrentAnimation() == animPrefixB)
         {
-          trace("Loss GYATT");
           var endFrame = playableCharData.getFistPumpLoopBadEndFrame();
           if (endFrame > -1 && anim.curFrame >= endFrame)
           {
@@ -202,36 +184,6 @@ class FreeplayDJ extends FlxAtlasSprite
       default:
         // I shit myself.
     }
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    if (FlxG.keys.pressed.CONTROL)
-    {
-      if (FlxG.keys.justPressed.LEFT)
-      {
-        this.offsetX -= FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.RIGHT)
-      {
-        this.offsetX += FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.UP)
-      {
-        this.offsetY -= FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.DOWN)
-      {
-        this.offsetY += FlxG.keys.pressed.ALT ? 0.1 : (FlxG.keys.pressed.SHIFT ? 10.0 : 1.0);
-      }
-
-      if (FlxG.keys.justPressed.C)
-      {
-        currentState = (currentState == Idle ? Cartoon : Idle);
-      }
-    }
-    #end
   }
 
   function onFinishAnim(name:String):Void
@@ -253,6 +205,15 @@ class FreeplayDJ extends FlxAtlasSprite
     else if (name == playableCharData.getAnimationPrefix('idle'))
     {
       // trace('Finished idle');
+
+      if (timeIdling >= IDLE_EGG_PERIOD && !seenIdleEasterEgg)
+      {
+        currentState = IdleEasterEgg;
+      }
+      else if (timeIdling >= IDLE_CARTOON_PERIOD)
+      {
+        currentState = Cartoon;
+      }
     }
     else if (name == playableCharData.getAnimationPrefix('confirm'))
     {

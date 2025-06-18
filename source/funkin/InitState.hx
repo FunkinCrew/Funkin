@@ -18,6 +18,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
+import funkin.data.stickers.StickerRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.story.level.LevelRegistry;
@@ -26,6 +27,7 @@ import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.PlayStatePlaylist;
 import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.title.TitleState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.CLIUtil;
@@ -37,6 +39,9 @@ import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
+#end
+#if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.NewgroundsClient;
 #end
 
 /**
@@ -82,6 +87,10 @@ class InitState extends FlxState
     // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
     WindowUtil.disableCrashHandler();
 
+    #if FEATURE_DEBUG_TRACY
+    funkin.util.WindowUtil.initTracy();
+    #end
+
     // This ain't a pixel art game! (most of the time)
     FlxSprite.defaultAntialiasing = true;
 
@@ -90,8 +99,17 @@ class InitState extends FlxState
     FlxG.sound.volumeDownKeys = [];
     FlxG.sound.muteKeys = [];
 
+    // A small jumpstart to the soundtray, it usually sets itself to inactive (somewhere...)
+    // but that makes our soundtray not show up on init if we have the game muted.
+    // We set it to active so it at least calls it's update function once (see FlxGame.onEnterFrame(), it's called there)
+    // and also see FunkinSoundTray.update() to see what we do and how we check if we are muted or not
+    FlxG.game.soundTray.active = true;
+
     // Set the game to a lower frame rate while it is in the background.
     FlxG.game.focusLostFramerate = 30;
+
+    // Makes Flixel use frame times instead of locked movements per frame for things like tweens
+    FlxG.fixedTimestep = false; 
 
     setupFlixelDebug();
 
@@ -117,8 +135,8 @@ class InitState extends FlxState
     //
     // NEWGROUNDS API SETUP
     //
-    #if newgrounds
-    NGio.init();
+    #if FEATURE_NEWGROUNDS
+    NewgroundsClient.instance.init();
     #end
 
     //
@@ -151,6 +169,7 @@ class InitState extends FlxState
     #if FEATURE_SCREENSHOTS
     funkin.util.plugins.ScreenshotPlugin.initialize();
     #end
+    funkin.util.plugins.NewgroundsMedalPlugin.initialize();
     funkin.util.plugins.EvacuateDebugPlugin.initialize();
     funkin.util.plugins.ForceCrashPlugin.initialize();
     funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
@@ -176,6 +195,7 @@ class InitState extends FlxState
     FreeplayStyleRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+    StickerRegistry.instance.loadEntries();
 
     // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
     // Move it to use a BaseRegistry.
@@ -222,6 +242,9 @@ class InitState extends FlxState
     #elseif CHARTING
     // -DCHARTING
     FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState());
+    #elseif STAGING
+    // -DSTAGING
+    FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
     #elseif STAGEBUILD
     // -DSTAGEBUILD
     FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
@@ -232,8 +255,8 @@ class InitState extends FlxState
         storyMode: true,
         title: "Cum Song Erect by Kawai Sprite",
         songId: "cum",
-        characterId: "pico-playable",
-        difficultyId: "nightmare",
+        characterId: "pico",
+        difficultyId: "hard",
         isNewHighscore: true,
         scoreData:
           {
@@ -248,9 +271,10 @@ class InitState extends FlxState
                 combo: 69,
                 maxCombo: 69,
                 totalNotesHit: 140,
-                totalNotes: 190
+                totalNotes: 240
               }
             // 2400 total notes = 7% = LOSS
+            // 275 total notes = 69% = NICE
             // 240 total notes = 79% = GOOD
             // 230 total notes = 82% = GREAT
             // 210 total notes = 91% = EXCELLENT
@@ -281,6 +305,13 @@ class InitState extends FlxState
       FlxG.switchState(() -> new ChartEditorState(
         {
           fnfcTargetPath: params.chart.chartPath,
+        }));
+    }
+    else if (params.stage.shouldLoadStage)
+    {
+      FlxG.switchState(() -> new StageEditorState(
+        {
+          fnfsTargetPath: params.stage.stagePath,
         }));
     }
     else

@@ -21,7 +21,7 @@ import funkin.save.Save.SaveScoreData;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
-import funkin.ui.transition.StickerSubState;
+import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.MathUtil;
 import openfl.utils.Assets;
 #if FEATURE_DISCORD_RPC
@@ -251,6 +251,7 @@ class StoryMenuState extends MusicBeatState
   function updateData():Void
   {
     currentLevel = LevelRegistry.instance.fetchEntry(currentLevelId);
+    if (currentLevel == null) throw 'Could not fetch data for level: ${currentLevelId}';
     isLevelUnlocked = currentLevel == null ? false : currentLevel.isUnlocked();
   }
 

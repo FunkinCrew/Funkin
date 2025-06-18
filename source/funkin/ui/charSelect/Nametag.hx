@@ -10,17 +10,17 @@ class Nametag extends FlxSprite
   var midpointY(default, set):Float = 100;
   var mosaicShader:MosaicEffect;
 
-  public function new(?x:Float = 0, ?y:Float = 0)
+  public function new(?x:Float = 0, ?y:Float = 0, character:String)
   {
     super(x, y);
 
     mosaicShader = new MosaicEffect();
     shader = mosaicShader;
 
-    switchChar("bf");
-
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(Nametag, ["midpointX", "midpointY"]));
-    FlxG.debugger.track(this, "Nametag");
+    // So that's why there was that cursed sight (originally defaulted to bf)
+    if (character != null) switchChar(character);
+    else
+      switchChar(Constants.DEFAULT_CHARACTER);
   }
 
   public function updatePosition():Void
@@ -71,16 +71,12 @@ class Nametag extends FlxSprite
     }
   }
 
-  function setBlockTimer(frame:Int, ?forceX:Float, ?forceY:Float)
+  function setBlockTimer(frame:Int, ?forceX:Float, ?forceY:Float):Void
   {
-    var daX:Float = 10 * FlxG.random.int(1, 4);
-    var daY:Float = 10 * FlxG.random.int(1, 4);
+    var daX:Float = forceX ?? 10 * FlxG.random.int(1, 4);
+    var daY:Float = forceY ?? 10 * FlxG.random.int(1, 4);
 
-    if (forceX != null) daX = forceX;
-
-    if (forceY != null) daY = forceY;
-
-    new FlxTimer().start(frame / 30, _ -> {
+    FlxTimer.wait(frame / 30, () -> {
       mosaicShader.setBlockSize(daX, daY);
     });
   }

@@ -1,14 +1,11 @@
 package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
-import flixel.util.FlxDirectionFlags;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.tile.FlxDrawTrianglesItem;
+import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
-import funkin.ui.options.PreferencesMenu;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -35,6 +32,11 @@ class SustainTrail extends FlxSprite
   public var parentStrumline:Strumline;
 
   public var cover:NoteHoldCover = null;
+
+  /**
+   * The Y Offset of the note.
+   */
+  public var yOffset:Float = 0.0;
 
   /**
    * Set to `true` if the user hit the note and is currently holding the sustain.

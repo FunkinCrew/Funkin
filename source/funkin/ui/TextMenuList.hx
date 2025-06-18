@@ -3,6 +3,7 @@ package funkin.ui;
 import funkin.ui.AtlasText;
 import funkin.ui.MenuList;
 
+@:nullSafety
 class TextMenuList extends MenuTypedList<TextMenuItem>
 {
   public function new(navControls:NavControls = Vertical, ?wrapMode)
@@ -10,14 +11,15 @@ class TextMenuList extends MenuTypedList<TextMenuItem>
     super(navControls, wrapMode);
   }
 
-  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false)
+  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false):TextMenuItem
   {
-    var item = new TextMenuItem(x, y, name, font, callback);
+    var item:TextMenuItem = new TextMenuItem(x, y, name, font, callback);
     item.fireInstantly = fireInstantly;
     return addItem(name, item);
   }
 }
 
+@:nullSafety
 class TextMenuItem extends TextTypedMenuItem<AtlasText>
 {
   public function new(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void)
@@ -27,6 +29,7 @@ class TextMenuItem extends TextTypedMenuItem<AtlasText>
   }
 }
 
+@:nullSafety
 class TextTypedMenuItem<T:AtlasText> extends MenuTypedItem<T>
 {
   public function new(x = 0.0, y = 0.0, label:T, name:String, ?callback:Void->Void)

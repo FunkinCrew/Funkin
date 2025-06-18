@@ -1,9 +1,9 @@
 package funkin.ui.debug.charting.handlers;
 
+import funkin.data.song.SongNoteDataUtils;
 import funkin.util.VersionUtil;
 import funkin.util.DateUtil;
 import haxe.io.Path;
-import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
 import funkin.util.FileUtil;
 import funkin.util.FileUtil.FileWriteMode;
@@ -13,6 +13,7 @@ import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongRegistry;
 import funkin.data.song.importer.ChartManifestData;
+import thx.semver.Version as SemverVersion;
 
 /**
  * Contains functions for importing, loading, saving, and exporting charts.
@@ -26,7 +27,7 @@ class ChartEditorImportExportHandler
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
    */
-  public static function loadSongAsTemplate(state:ChartEditorState, songId:String):Void
+  public static function loadSongAsTemplate(state:ChartEditorState, songId:String, targetSongDifficulty:String = null, targetSongVariation:String = null):Void
   {
     trace('===============START');
 
@@ -59,10 +60,8 @@ class ChartEditorImportExportHandler
 
     ChartEditorAudioHandler.wipeInstrumentalData(state);
     ChartEditorAudioHandler.wipeVocalData(state);
-    state.stopExistingVocals();
 
-    var variations:Array<String> = state.availableVariations;
-    for (variation in variations)
+    for (variation in state.availableVariations)
     {
       if (variation == Constants.DEFAULT_VARIATION)
       {
@@ -94,6 +93,14 @@ class ChartEditorImportExportHandler
         {
           trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
         }
+        // Set the difficulty of the song if one was passed in the params, and it isn't the default
+        if (targetSongDifficulty != null
+          && targetSongDifficulty != state.selectedDifficulty
+          && targetSongDifficulty == diff.difficulty) state.selectedDifficulty = targetSongDifficulty;
+        // Set the variation of the song if one was passed in the params, and it isn't the default
+        if (targetSongVariation != null
+          && targetSongVariation != state.selectedVariation
+          && targetSongVariation == diff.variation) state.selectedVariation = targetSongVariation;
       }
     }
 
@@ -105,7 +112,11 @@ class ChartEditorImportExportHandler
 
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
-    state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
+    // Actually state the correct variation loaded
+    for (metadata in rawSongMetadata)
+    {
+      if (metadata.variation == state.selectedVariation) state.success('Success', 'Loaded song (${metadata.songName})');
+    }
 
     trace('===============END');
   }
@@ -119,6 +130,48 @@ class ChartEditorImportExportHandler
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
+
+    if (!state.songMetadata.exists(state.selectedVariation))
+    {
+      state.selectedVariation = Constants.DEFAULT_VARIATION;
+    }
+    // Use the first available difficulty as a fallback if the currently selected one cannot be found.
+    if (state.availableDifficulties.indexOf(state.selectedDifficulty) < 0) state.selectedDifficulty = state.availableDifficulties[0];
+
+    var delay:Float = 0.5;
+    for (variation => chart in state.songChartData)
+    {
+      var metadata:SongMetadata = state.songMetadata[variation] ?? continue;
+      var stackedNotesCount:Int = 0;
+      var affectedDiffs:Array<String> = [];
+
+      for (diff => notes in chart.notes)
+      {
+        if (!metadata.playData.difficulties.contains(diff)) continue;
+
+        var count:Int = SongNoteDataUtils.listStackedNotes(notes, 0, false).length;
+
+        if (count > 0)
+        {
+          affectedDiffs.push(diff.toTitleCase());
+          stackedNotesCount += count;
+        }
+      }
+
+      if (stackedNotesCount > 0)
+      {
+        // Difficulty names might be out of order due to how maps work
+        affectedDiffs.sort(SortUtil.defaultsThenAlphabetically.bind(['Easy', 'Normal', 'Hard', 'Erect', 'Nightmare']));
+
+        // Delay it so it doesn't overlap other notifications
+        flixel.util.FlxTimer.wait(delay, () -> {
+          state.warning('Stacked Notes Detected',
+            'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, ' +
+            'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
+        });
+        delay *= 1.5;
+      }
+    }
 
     Conductor.instance.forceBPM(null); // Disable the forced BPM.
     Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
@@ -139,6 +192,11 @@ class ChartEditorImportExportHandler
     }
     state.audioVocalTrackGroup.stop();
     state.audioVocalTrackGroup.clear();
+
+    // Clear the undo and redo history
+    state.undoHistory = [];
+    state.redoHistory = [];
+    state.commandHistoryDirty = true;
   }
 
   /**
@@ -173,45 +231,30 @@ class ChartEditorImportExportHandler
    */
   public static function loadFromFNFC(state:ChartEditorState, bytes:Bytes):Null<Array<String>>
   {
-    var warnings:Array<String> = [];
+    var output:Array<String> = [];
 
-    var songMetadatas:Map<String, SongMetadata> = [];
-    var songChartDatas:Map<String, SongChartData> = [];
-
+    // Read the ZIP/.FNFC file, and create a map of entries.
     var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
     var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
-
-    var manifestBytes:Null<Bytes> = mappedFileEntries.get('manifest.json')?.data;
-    if (manifestBytes == null) throw 'Could not locate manifest.';
-    var manifestString = manifestBytes.toString();
-    var manifest:Null<ChartManifestData> = ChartManifestData.deserialize(manifestString);
-    if (manifest == null) throw 'Could not read manifest.';
-
-    // Get the song ID.
-    var songId:String = manifest.songId;
+    var manifestString:String = mappedFileEntries.get('manifest.json')?.data?.toString() ?? throw 'Could not locate manifest.';
+    var manifest:ChartManifestData = ChartManifestData.deserialize(manifestString) ?? throw 'Could not read manifest.';
 
     var baseMetadataPath:String = manifest.getMetadataFileName();
-    var baseChartDataPath:String = manifest.getChartDataFileName();
+    var baseMetadataString:String = mappedFileEntries.get(baseMetadataPath)?.data?.toString() ?? throw 'Could not locate metadata (default).';
+    var baseMetadataVersion:SemverVersion = VersionUtil.getVersionFromJSON(baseMetadataString) ?? throw 'Could not read metadata version (default).';
+    var baseMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, baseMetadataPath,
+      baseMetadataVersion) ?? throw 'Could not read metadata (default).';
 
-    var baseMetadataBytes:Null<Bytes> = mappedFileEntries.get(baseMetadataPath)?.data;
-    if (baseMetadataBytes == null) throw 'Could not locate metadata (default).';
-    var baseMetadataString:String = baseMetadataBytes.toString();
-    var baseMetadataVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(baseMetadataString);
-    if (baseMetadataVersion == null) throw 'Could not read metadata version (default).';
-
-    var baseMetadata:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, baseMetadataPath, baseMetadataVersion);
-    if (baseMetadata == null) throw 'Could not read metadata (default).';
+    var songMetadatas:Map<String, SongMetadata> = [];
     songMetadatas.set(Constants.DEFAULT_VARIATION, baseMetadata);
 
-    var baseChartDataBytes:Null<Bytes> = mappedFileEntries.get(baseChartDataPath)?.data;
-    if (baseChartDataBytes == null) throw 'Could not locate chart data (default).';
-    var baseChartDataString:String = baseChartDataBytes.toString();
-    var baseChartDataVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(baseChartDataString);
-    if (baseChartDataVersion == null) throw 'Could not read chart data (default) version.';
+    var baseChartDataPath:String = manifest.getChartDataFileName();
+    var baseChartDataString:String = mappedFileEntries.get(baseChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data (default).';
+    var baseChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(baseChartDataString) ?? throw 'Could not read chart data version (default).';
+    var baseChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(baseChartDataString, baseChartDataPath,
+      baseChartDataVersion) ?? throw 'Could not read chart data (default).';
 
-    var baseChartData:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(baseChartDataString, baseChartDataPath,
-      baseChartDataVersion);
-    if (baseChartData == null) throw 'Could not read chart data (default).';
+    var songChartDatas:Map<String, SongChartData> = [];
     songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
 
     var variationList:Array<String> = baseMetadata.playData.songVariations;
@@ -219,88 +262,74 @@ class ChartEditorImportExportHandler
     for (variation in variationList)
     {
       var variMetadataPath:String = manifest.getMetadataFileName(variation);
-      var variChartDataPath:String = manifest.getChartDataFileName(variation);
+      var variMetadataString:String = mappedFileEntries.get(variMetadataPath)?.data?.toString() ?? throw 'Could not locate metadata ($variation).';
+      var variMetadataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variMetadataString) ?? throw 'Could not read metadata ($variation) version.';
+      var variMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(variMetadataString, variMetadataPath, variMetadataVersion,
+        variation) ?? throw 'Could not read metadata ($variation).';
 
-      var variMetadataBytes:Null<Bytes> = mappedFileEntries.get(variMetadataPath)?.data;
-      if (variMetadataBytes == null) throw 'Could not locate metadata ($variation).';
-      var variMetadataString:String = variMetadataBytes.toString();
-      var variMetadataVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(variMetadataString);
-      if (variMetadataVersion == null) throw 'Could not read metadata ($variation) version.';
-
-      var variMetadata:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, variMetadataPath, variMetadataVersion);
-      if (variMetadata == null) throw 'Could not read metadata ($variation).';
       songMetadatas.set(variation, variMetadata);
 
-      var variChartDataBytes:Null<Bytes> = mappedFileEntries.get(variChartDataPath)?.data;
-      if (variChartDataBytes == null) throw 'Could not locate chart data ($variation).';
-      var variChartDataString:String = variChartDataBytes.toString();
-      var variChartDataVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(variChartDataString);
-      if (variChartDataVersion == null) throw 'Could not read chart data version ($variation).';
+      var variChartDataPath:String = manifest.getChartDataFileName(variation);
+      var variChartDataString:String = mappedFileEntries.get(variChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data ($variation).';
+      var variChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variChartDataString) ?? throw 'Could not read chart data version ($variation).';
+      var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
+        variChartDataVersion) ?? throw 'Could not read chart data ($variation).';
 
-      var variChartData:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
-        variChartDataVersion);
-      if (variChartData == null) throw 'Could not read chart data ($variation).';
       songChartDatas.set(variation, variChartData);
     }
+    loadSong(state, songMetadatas, songChartDatas);
+
+    state.sortChartData();
 
     ChartEditorAudioHandler.wipeInstrumentalData(state);
     ChartEditorAudioHandler.wipeVocalData(state);
 
     // Load instrumentals
-    for (variation in [Constants.DEFAULT_VARIATION].concat(variationList))
+    for (variation in state.availableVariations)
     {
       var variMetadata:Null<SongMetadata> = songMetadatas.get(variation);
       if (variMetadata == null) continue;
 
       var instId:String = variMetadata?.playData?.characters?.instrumental ?? '';
-      var playerCharId:String = variMetadata?.playData?.characters?.player ?? Constants.DEFAULT_CHARACTER;
-      var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent;
 
       var instFileName:String = manifest.getInstFileName(instId);
-      var instFileBytes:Null<Bytes> = mappedFileEntries.get(instFileName)?.data;
-      if (instFileBytes != null)
-      {
-        if (!ChartEditorAudioHandler.loadInstFromBytes(state, instFileBytes, instId))
-        {
-          throw 'Could not load instrumental ($instFileName).';
-        }
-      }
-      else
-      {
-        throw 'Could not find instrumental ($instFileName).';
-      }
+      var instFileBytes:Bytes = mappedFileEntries.get(instFileName)?.data ?? throw 'Could not locate instrumental ($instFileName).';
+      if (!ChartEditorAudioHandler.loadInstFromBytes(state, instFileBytes, instId)) throw 'Could not load instrumental ($instFileName).';
 
-      var playerVocalsFileName:String = manifest.getVocalsFileName(playerCharId);
+      var playerCharId:String = variMetadata?.playData?.characters?.player ?? Constants.DEFAULT_CHARACTER;
+      var playerVocalsFileName:String = manifest.getVocalsFileName(playerCharId, variation);
       var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
       if (playerVocalsFileBytes != null)
       {
         if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, playerVocalsFileBytes, playerCharId, instId))
         {
-          warnings.push('Could not parse vocals ($playerCharId).');
+          output.push('Could not parse vocals ($playerCharId).');
           // throw 'Could not parse vocals ($playerCharId).';
         }
       }
       else
       {
-        warnings.push('Could not find vocals ($playerVocalsFileName).');
+        output.push('Could not find vocals ($playerVocalsFileName).');
         // throw 'Could not find vocals ($playerVocalsFileName).';
       }
 
+      var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent;
+
       if (opponentCharId != null)
       {
-        var opponentVocalsFileName:String = manifest.getVocalsFileName(opponentCharId);
+        var opponentVocalsFileName:String = manifest.getVocalsFileName(opponentCharId, variation);
         var opponentVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(opponentVocalsFileName)?.data;
         if (opponentVocalsFileBytes != null)
         {
           if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, opponentVocalsFileBytes, opponentCharId, instId))
           {
-            warnings.push('Could not parse vocals ($opponentCharId).');
+            output.push('Could not parse vocals ($opponentCharId).');
             // throw 'Could not parse vocals ($opponentCharId).';
           }
         }
         else
         {
-          warnings.push('Could not find vocals ($opponentVocalsFileName).');
+          output.push('Could not find vocals ($opponentVocalsFileName).');
           // throw 'Could not find vocals ($opponentVocalsFileName).';
         }
       }
@@ -309,17 +338,18 @@ class ChartEditorImportExportHandler
     // Apply chart data.
     trace(songMetadatas);
     trace(songChartDatas);
-    loadSong(state, songMetadatas, songChartDatas);
 
     state.switchToCurrentInstrumental();
+    state.postLoadInstrumental();
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
-    return warnings;
+    return output;
   }
 
   public static function getLatestBackupPath():Null<String>
   {
     #if sys
-    if (!sys.FileSystem.exists(BACKUPS_PATH)) sys.FileSystem.createDirectory(BACKUPS_PATH);
+    FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
     entries.sort(SortUtil.alphabetically);
@@ -372,6 +402,12 @@ class ChartEditorImportExportHandler
     var zipEntries:Array<haxe.zip.Entry> = [];
 
     var variations = state.availableVariations;
+
+    if (state.currentSongMetadata.playData.difficulties.pushUnique(state.selectedDifficulty))
+    {
+      // Just in case the user deleted all or didn't add a difficulty
+      state.difficultySelectDirty = true;
+    }
 
     for (variation in variations)
     {
