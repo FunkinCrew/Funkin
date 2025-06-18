@@ -3886,6 +3886,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 holdNoteSprite.overrideData = null;
                 holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
+                holdNoteSprite.updateHoldNoteGraphic();
                 holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
               }
             }
