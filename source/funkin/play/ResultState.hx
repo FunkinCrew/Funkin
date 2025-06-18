@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.FlxState;
 import funkin.ui.transition.stickers.StickerSubState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.effects.FlxFlicker;
@@ -98,8 +99,6 @@ class ResultState extends MusicBeatSubState
   final cameraEverything:FunkinCamera;
 
   var blackTopBar:FlxSprite = new FlxSprite();
-
-  var targetStateFactory:Null<Void->StickerSubState> = null;
 
   var busy:Bool = false;
 
@@ -923,7 +922,8 @@ class ResultState extends MusicBeatSubState
 
       // Determining the target state(s) to go to.
       // Default to main menu because that's better than `null`.
-      var targetState:flixel.FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var targetState:FlxState = new funkin.ui.mainmenu.MainMenuState();
+      var targetStateFactory:Null<Void->StickerSubState> = null;
       var shouldTween = false;
       var shouldUseSubstate = false;
 
@@ -1010,137 +1010,78 @@ class ResultState extends MusicBeatSubState
         }
       }
 
-      if (shouldTween)
+      #if FEATURE_MOBILE_ADVERTISEMENTS
+      // Shows a interstital ad on mobile devices each week victory.
+      if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
       {
-        FlxTween.tween(rankBg, {alpha: 1}, 0.5,
-          {
-            ease: FlxEase.expoOut,
-            onComplete: function(_) {
-              // Shows a interstital ad on mobile devices each week victory.
-              #if FEATURE_MOBILE_ADVERTISEMENTS
-              if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
-              {
-                busy = true;
-                AdMobUtil.loadInterstitial(function():Void {
-                  AdMobUtil.PLAYING_COUNTER = 0;
+        busy = true;
 
-                  if (targetStateFactory != null)
-                  {
-                    targetState = targetStateFactory();
-                  }
+        AdMobUtil.loadInterstitial(function():Void {
+          AdMobUtil.PLAYING_COUNTER = 0;
 
-                  busy = false;
-                  if (shouldUseSubstate && targetState is FlxSubState)
-                  {
-                    openSubState(cast targetState);
-                  }
-                  else
-                  {
-                    FlxG.switchState(() -> targetState);
-                  }
-                });
-              }
-              else
-              {
-                requestReview();
-                if (targetStateFactory != null)
-                {
-                  targetState = targetStateFactory();
-                }
-                if (shouldUseSubstate && targetState is FlxSubState)
-                {
-                  openSubState(cast targetState);
-                }
-                else
-                {
-                  FlxG.switchState(() -> targetState);
-                }
-              }
-              #else
-              requestReview();
+          busy = false;
 
-              if (targetStateFactory != null)
-              {
-                targetState = targetStateFactory();
-              }
-              if (shouldUseSubstate && targetState is FlxSubState)
-              {
-                openSubState(cast targetState);
-              }
-              else
-              {
-                FlxG.switchState(() -> targetState);
-              }
-              #end
-            }
-          });
+          transitionToState(targetState, targetStateFactory, shouldTween, shouldUseSubstate);
+        });
       }
       else
       {
-        // Shows a interstital ad on mobile devices each week victory.
-        #if FEATURE_MOBILE_ADVERTISEMENTS
-        if (PlayStatePlaylist.isStoryMode || (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD))
-        {
-          busy = true;
-          AdMobUtil.loadInterstitial(function():Void {
-            AdMobUtil.PLAYING_COUNTER = 0;
-
-            if (targetStateFactory != null)
-            {
-              targetState = targetStateFactory();
-            }
-            if (shouldUseSubstate && targetState is FlxSubState)
-            {
-              openSubState(cast targetState);
-              busy = false;
-            }
-            else
-            {
-              FlxG.switchState(() -> targetState);
-            }
-          });
-        }
-        else
-        {
-          requestReview();
-
-          if (targetStateFactory != null)
-          {
-            targetState = targetStateFactory();
-          }
-
-          if (shouldUseSubstate && targetState is FlxSubState)
-          {
-            openSubState(cast targetState);
-          }
-          else
-          {
-            FlxG.switchState(() -> targetState);
-          }
-        }
-        #else
-        requestReview();
-
-        if (targetStateFactory != null)
-        {
-          targetState = targetStateFactory();
-        }
-
-        if (shouldUseSubstate && targetState is FlxSubState)
-        {
-          openSubState(cast targetState);
-        }
-        else
-        {
-          FlxG.switchState(() -> targetState);
-        }
-        #end
+        transitionToState(targetState, targetStateFactory, shouldTween, shouldUseSubstate);
       }
+      #else
+      transitionToState(targetState, targetStateFactory, shouldTween, shouldUseSubstate);
+      #end
     }
 
     if (HapticUtil.hapticsAvailable) handleAnimationVibrations();
 
     super.update(elapsed);
+  }
+
+  function transitionToState(targetState:FlxState, targetStateFactory:Null<Void->StickerSubState>, shouldTween:Bool, shouldUseSubstate:Bool):Void
+  {
+    if (shouldTween)
+    {
+      FlxTween.tween(rankBg, {alpha: 1}, 0.5,
+        {
+          ease: FlxEase.expoOut,
+          onComplete: function(_) {
+            requestReview();
+
+            if (targetStateFactory != null)
+            {
+              targetState = targetStateFactory();
+            }
+
+            if (shouldUseSubstate && targetState is FlxSubState)
+            {
+              openSubState(cast targetState);
+            }
+            else
+            {
+              FlxG.switchState(() -> targetState);
+            }
+          }
+        });
+    }
+    else
+    {
+      requestReview();
+
+      if (targetStateFactory != null)
+      {
+        targetState = targetStateFactory();
+      }
+
+      if (shouldUseSubstate && targetState is FlxSubState)
+      {
+        openSubState(cast targetState);
+      }
+      else
+      {
+        FlxG.switchState(() -> targetState);
+      }
+    }
   }
 
   function requestReview():Void
@@ -1149,6 +1090,7 @@ class ResultState extends MusicBeatSubState
     if (FlxG.random.bool(InAppReviewUtil.ODDS))
     {
       trace('Attempting to display in-app review!');
+
       InAppReviewUtil.requestReview();
     }
     #end
