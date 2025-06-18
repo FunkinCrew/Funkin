@@ -59,6 +59,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.SerializerUtil;
 import funkin.util.HapticUtil;
+import funkin.util.GRhythmUtil;
 import haxe.Int64;
 #if mobile
 import funkin.util.TouchUtil;
@@ -2459,32 +2460,9 @@ class PlayState extends MusicBeatSubState
     for (note in opponentStrumline.notes.members)
     {
       if (note == null) continue;
-
-      // TODO: Are offsets being accounted for in the correct direction?
-      var hitWindowStart = note.strumTime + Conductor.instance.inputOffset - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime + Conductor.instance.inputOffset;
-      var hitWindowEnd = note.strumTime + Conductor.instance.inputOffset + Constants.HIT_WINDOW_MS;
-
-      if (Conductor.instance.songPosition > hitWindowEnd)
+      var r = GRhythmUtil.processWindow(note, false);
+      if (r.botplayHit)
       {
-        if (note.hasMissed || note.hasBeenHit) continue;
-
-        note.tooEarly = false;
-        note.mayHit = false;
-        note.hasMissed = true;
-
-        if (note.holdNoteSprite != null)
-        {
-          note.holdNoteSprite.missedNote = true;
-        }
-      }
-      else if (Conductor.instance.songPosition > hitWindowCenter)
-      {
-        if (note.hasBeenHit) continue;
-
-        // Call an event to allow canceling the note hit.
-        // NOTE: This is what handles the character animations!
-
         var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', false, 0);
         dispatchEvent(event);
 
@@ -2499,22 +2477,6 @@ class PlayState extends MusicBeatSubState
         {
           opponentStrumline.playNoteHoldCover(note.holdNoteSprite);
         }
-      }
-      else if (Conductor.instance.songPosition > hitWindowStart)
-      {
-        if (note.hasBeenHit || note.hasMissed) continue;
-
-        note.tooEarly = false;
-        note.mayHit = true;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-      else
-      {
-        note.tooEarly = true;
-        note.mayHit = false;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
       }
     }
 
@@ -2548,34 +2510,9 @@ class PlayState extends MusicBeatSubState
     for (note in playerStrumline.notes.members)
     {
       if (note == null) continue;
-
-      if (note.hasBeenHit)
+      var r = GRhythmUtil.processWindow(note, !isBotPlayMode);
+      if (r.botplayHit)
       {
-        note.tooEarly = false;
-        note.mayHit = false;
-        note.hasMissed = false;
-        continue;
-      }
-
-      var hitWindowStart = note.strumTime - Constants.HIT_WINDOW_MS;
-      var hitWindowCenter = note.strumTime;
-      var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
-
-      if (Conductor.instance.songPosition > hitWindowEnd)
-      {
-        if (note.hasMissed || note.hasBeenHit) continue;
-        note.tooEarly = false;
-        note.mayHit = false;
-        note.hasMissed = true;
-        if (note.holdNoteSprite != null)
-        {
-          note.holdNoteSprite.missedNote = true;
-        }
-      }
-      else if (isBotPlayMode && Conductor.instance.songPosition > hitWindowCenter)
-      {
-        if (note.hasBeenHit) continue;
-
         // We call onHitNote to play the proper animations,
         // but not goodNoteHit! This means zero score and zero notes hit for the results screen!
 
@@ -2596,20 +2533,7 @@ class PlayState extends MusicBeatSubState
           playerStrumline.playNoteHoldCover(note.holdNoteSprite);
         }
       }
-      else if (Conductor.instance.songPosition > hitWindowStart)
-      {
-        note.tooEarly = false;
-        note.mayHit = true;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
-      else
-      {
-        note.tooEarly = true;
-        note.mayHit = false;
-        note.hasMissed = false;
-        if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-      }
+      if (!r.cont) continue;
 
       // This becomes true when the note leaves the hit window.
       // It might still be on screen.

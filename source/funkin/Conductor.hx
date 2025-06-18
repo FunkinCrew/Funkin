@@ -407,8 +407,10 @@ class Conductor
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    * @param applyOffsets If it should apply the instrumentalOffset + formatOffset + audioVisualOffset
+   * @param forceDispatch If it should force the dispatch of onStepHit, onBeatHit, and onMeasureHit
+   *        even if the current step, beat, or measure hasn't changed.
    */
-  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false)
+  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false):Void
   {
     var currentTime:Float = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
     var currentLength:Float = (FlxG.sound.music != null) ? FlxG.sound.music.length : 0.0;
