@@ -761,7 +761,6 @@ class Project extends HXProject
     // Should be false unless explicitly requested.
     GITHUB_BUILD.apply(this, false);
     EXCLUDE_ARMV7.apply(this, false);
-    UNLOCK_EVERYTHING.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
@@ -779,6 +778,7 @@ class Project extends HXProject
 
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
+    UNLOCK_EVERYTHING.apply(this, isMobile());
 
     //
     // FEATURE FLAGS
@@ -829,6 +829,10 @@ class Project extends HXProject
     // Should be true only on mobile builds.
     FEATURE_HAPTICS.apply(this, isMobile());
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
+
+    // Gameplay changes specific to mobile (enable ghost tapping, disable unlock animations for now)
+    FEATURE_GHOST_TAPPING.apply(this, isMobile());
+    UNLOCK_EVERYTHING.apply(this, isMobile());
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
     FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && envConfig != null));

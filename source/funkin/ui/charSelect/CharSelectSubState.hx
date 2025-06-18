@@ -512,7 +512,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     for (i in 0...9)
     {
-      if (availableChars.exists(i) && Save.instance.charactersSeen.contains(availableChars[i]))
+      if (availableChars.exists(i) && PlayerRegistry.instance.isCharacterSeen(availableChars.get(i)))
       {
         var path:String = availableChars.get(i);
         var temp:PixelatedIcon = new PixelatedIcon(0, 0);
@@ -905,7 +905,7 @@ class CharSelectSubState extends MusicBeatSubState
       cursorY = -1;
     }
 
-    if (availableChars.exists(getCurrentSelected()) && Save.instance.charactersSeen.contains(availableChars[getCurrentSelected()]))
+    if (availableChars.exists(getCurrentSelected()) && PlayerRegistry.instance.isCharacterSeen(availableChars[getCurrentSelected()]))
     {
       curChar = availableChars.get(getCurrentSelected());
 

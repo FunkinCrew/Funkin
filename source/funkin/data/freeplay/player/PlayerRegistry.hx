@@ -56,7 +56,11 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
       var player = fetchEntry(charId);
       if (player == null) continue;
 
+      #if UNLOCK_EVERYTHING
+      count++;
+      #else
       if (player.isUnlocked()) count++;
+      #end
     }
 
     return count;
@@ -64,6 +68,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
 
   public function hasNewCharacter():Bool
   {
+    #if (!UNLOCK_EVERYTHING)
     var charactersSeen = Save.instance.charactersSeen.clone();
 
     for (charId in listEntryIds())
@@ -77,6 +82,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
       // This character is unlocked but we haven't seen them in Freeplay yet.
       return true;
     }
+    #end
 
     // Fallthrough case.
     return false;
@@ -84,9 +90,10 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
 
   public function listNewCharacters():Array<String>
   {
-    var charactersSeen = Save.instance.charactersSeen.clone();
     var result = [];
 
+    #if (!UNLOCK_EVERYTHING)
+    var charactersSeen = Save.instance.charactersSeen.clone();
     for (charId in listEntryIds())
     {
       var player = fetchEntry(charId);
@@ -98,6 +105,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
       // This character is unlocked but we haven't seen them in Freeplay yet.
       result.push(charId);
     }
+    #end
 
     return result;
   }
@@ -121,6 +129,23 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
    */
   public function isCharacterOwned(characterId:String):Bool
   {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #else
     return ownedCharacterIds.exists(characterId);
+    #end
+  }
+
+  /**
+   * @param characterId The character ID to check.
+   * @return Whether the player saw the character unlock animation in Character Select.
+   */
+  public function isCharacterSeen(characterId:String):Bool
+  {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #else
+    return Save.instance.charactersSeen.contains(characterId);
+    #end
   }
 }
