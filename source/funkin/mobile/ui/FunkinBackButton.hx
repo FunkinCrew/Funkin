@@ -15,6 +15,10 @@ class FunkinBackButton extends FunkinButton
 
   var instant:Bool = false;
 
+  public var confirming:Bool = false;
+
+  var held:Bool = false;
+
   /**
    * Creates a new FunkinBackButton instance.
    *
@@ -62,41 +66,63 @@ class FunkinBackButton extends FunkinButton
 
   function playHoldAnim():Void
   {
+    if (confirming || held) return;
+    held = true;
+
     FlxTween.cancelTweensOf(this);
-
     HapticUtil.vibrate(0, 0.01, 0.2);
-
     animation.play('hold');
-
     alpha = 1;
   }
 
   function playConfirmAnim():Void
   {
+    if (confirming) return;
+    confirming = true;
+
     FlxTween.cancelTweensOf(this);
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
     funkin.audio.FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
-    if (!instant)
-    {
-      animation.onFinish.add(function(name:String) {
-        onConfirmEnd.dispatch();
-      });
-    }
+    animation.onFinish.addOnce(function(name:String) {
+      if (name != 'confirm') return;
 
-    onUp.remove(playConfirmAnim);
-    onDown.remove(playHoldAnim);
-    onOut.remove(playOutAnim);
+      confirming = false;
+      held = false;
+
+      if (!instant)
+      {
+        onConfirmEnd.dispatch();
+      }
+    });
   }
 
   function playOutAnim():Void
   {
+    if (confirming) return;
     FlxTween.cancelTweensOf(this);
     HapticUtil.vibrate(0, 0.01, 0.2);
-
     animation.play('idle');
-    FlxTween.tween(this, {alpha: restingOpacity}, 0.5, {ease: FlxEase.expoOut});
+    FlxTween.tween(this, {alpha: restingOpacity}, 0.5,
+      {
+        ease: FlxEase.expoOut,
+        onComplete: function(tween:FlxTween):Void {
+          held = false;
+        }
+      });
+  }
+
+  public function resetCallbacks():Void
+  {
+    onUp.removeAll();
+    onDown.removeAll();
+    onOut.removeAll();
+    confirming = false;
+    held = false;
+    onUp.add(playConfirmAnim);
+    onDown.add(playHoldAnim);
+    onOut.add(playOutAnim);
   }
 
   override public function update(elapsed:Float):Void
