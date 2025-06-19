@@ -3871,6 +3871,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             {
               holdNoteSprite.overrideData = noteSprite.overrideData;
               holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
+              holdNoteSprite.updateHoldNoteGraphic();
             }
           }
           else
@@ -3885,9 +3886,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               if (holdNoteSprite != null)
               {
                 holdNoteSprite.overrideData = null;
-                holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
-                holdNoteSprite.updateHoldNoteGraphic();
                 holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
+                holdNoteSprite.updateHoldNoteGraphic();
               }
             }
           }
