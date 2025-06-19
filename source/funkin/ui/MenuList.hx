@@ -264,7 +264,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     return Std.int(Math.min(length - 1, index * latSize + latIndex));
   }
 
-  public function accept()
+  public function accept():Void
   {
     var selected = members[selectedIndex];
 

@@ -55,7 +55,6 @@ class MainMenuState extends MusicBeatState
 
   static var rememberedSelectedIndex:Int = 0;
 
-  // TODO: this needs to eventually reflect the actual state of whether the player has upgraded or not.
   // this should never be false on non-mobile targets.
   var hasUpgraded:Bool = false;
   var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
@@ -274,10 +273,6 @@ class MainMenuState extends MusicBeatState
       this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NewgroundsClient.instance.user?.name}';
     }
     #end
-
-    #if FEATURE_TOUCH_CONTROLS
-    SwipeUtil.calculateSwipeThreshold(menuItems.members, Y);
-    #end
   }
 
   function playMenuMusic():Void
@@ -327,7 +322,9 @@ class MainMenuState extends MusicBeatState
   {
     magenta.visible = false;
     #if FEATURE_TOUCH_CONTROLS
-    SwipeUtil.calculateSwipeThreshold(menuItems.members, Y);
+    backButton.animation.play('idle');
+    optionsButton.animation.play('idle');
+    backButton.resetCallbacks();
     #end
     super.closeSubState();
   }
@@ -530,6 +527,10 @@ class MainMenuState extends MusicBeatState
     }
 
     if (_exiting) menuItems.enabled = false;
+    #if FEATURE_TOUCH_CONTROLS
+    backButton.active = menuItems.enabled && !menuItems.busy;
+    optionsButton.active = menuItems.enabled && !menuItems.busy;
+    #end
 
     if (controls.BACK)
     {
