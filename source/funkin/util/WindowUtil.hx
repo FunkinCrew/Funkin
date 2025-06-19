@@ -17,6 +17,39 @@ using StringTools;
 class WindowUtil
 {
   /**
+   * A regex to match valid URLs.
+   */
+  public static final URL_REGEX:EReg = ~/^https?:\/?\/?(?:www\.)?[-a-zA-Z0-9@:%_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
+
+  /**
+   * Sanitizes a URL via a regex.
+   *
+   * @param targetUrl The URL to sanitize.
+   * @return The sanitized URL, or an empty string if the URL is invalid.
+   */
+  public static function sanitizeURL(targetUrl:String):String
+  {
+    targetUrl = (targetUrl ?? '').trim();
+    if (targetUrl == '')
+    {
+      return '';
+    }
+
+    final lowerUrl:String = targetUrl.toLowerCase();
+    if (!lowerUrl.startsWith('http:') && !lowerUrl.startsWith('https:'))
+    {
+      targetUrl = 'http://' + targetUrl;
+    }
+
+    if (URL_REGEX.match(targetUrl))
+    {
+      return URL_REGEX.matched(0);
+    }
+
+    return '';
+  }
+
+  /**
    * Runs platform-specific code to open a URL in a web browser.
    * @param targetUrl The URL to open.
    */
@@ -28,6 +61,12 @@ class WindowUtil
     else if (protocol[0] != 'http' && protocol[0] != 'https') throw "openURL can only open http and https links.";
 
     #if FEATURE_OPEN_URL
+    targetUrl = sanitizeURL(targetUrl);
+    if (targetUrl == '')
+    {
+      throw 'Invalid URL: "$targetUrl"';
+    }
+
     #if linux
     Sys.command('/usr/bin/xdg-open $targetUrl &');
     #else
@@ -46,12 +85,6 @@ class WindowUtil
    */
   public static function initTracy():Void
   {
-    // Apply a marker to indicate frame end for the Tracy profiler.
-    // Do this only if Tracy is configured to prevent lag.
-    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
-      cpp.vm.tracy.TracyProfiler.frameMark();
-    });
-
     var appInfoMessage = funkin.util.logging.CrashHandler.buildSystemInfo();
 
     trace("Friday Night Funkin': Connection to Tracy profiler successful.");
@@ -62,54 +95,6 @@ class WindowUtil
     cpp.vm.tracy.TracyProfiler.setThreadName("main");
   }
   #end
-
-  /**
-   * Runs platform-specific code to open a path in the file explorer.
-   * @param targetPath The path to open.
-   */
-  public static function openFolder(targetPath:String):Void
-  {
-    #if html5
-    throw 'Cannot open URLs on this platform.';
-    #else
-    if (!sys.FileSystem.exists(targetPath) || !sys.FileSystem.isDirectory(targetPath)) throw 'openFolder should only be used to open existing folders.';
-    #if FEATURE_OPEN_URL
-    #if windows
-    Sys.command('explorer', [targetPath.replace('/', '\\')]);
-    #elseif mac
-    Sys.command('open', [targetPath]);
-    #elseif linux
-    Sys.command('open', [targetPath]);
-    #end
-    #else
-    throw 'Cannot open URLs on this platform.';
-    #end
-    #end
-  }
-
-  /**
-   * Runs platform-specific code to open a file explorer and select a specific file.
-   * @param targetPath The path of the file to select.
-   */
-  public static function openSelectFile(targetPath:String):Void
-  {
-    #if html5
-    throw 'Cannot open URLs on this platform.';
-    #else
-    #if FEATURE_OPEN_URL
-    #if windows
-    Sys.command('explorer', ['/select,' + targetPath.replace('/', '\\')]);
-    #elseif mac
-    Sys.command('open', ['-R', targetPath]);
-    #elseif linux
-    // TODO: unsure of the linux equivalent to opening a folder and then "selecting" a file.
-    Sys.command('open', [targetPath]);
-    #end
-    #else
-    throw 'Cannot open URLs on this platform.';
-    #end
-    #end
-  }
 
   /**
    * Dispatched when the game window is closed.

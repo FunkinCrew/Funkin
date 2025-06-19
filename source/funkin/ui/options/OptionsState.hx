@@ -3,7 +3,9 @@ package funkin.ui.options;
 import funkin.ui.Page.PageName;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
+import flixel.math.FlxPoint;
 import flixel.FlxSprite;
+import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
@@ -24,6 +26,8 @@ import funkin.api.newgrounds.NewgroundsClient;
 class OptionsState extends MusicBeatState
 {
   var optionsCodex:Codex<OptionsMenuPageName>;
+
+  public static var rememberedSelectedIndex:Int = 0;
 
   override function create():Void
   {
@@ -85,14 +89,23 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
 
+  /**
+   * Camera focus point
+   */
+  var camFocusPoint:FlxObject;
+
+  final CAMERA_MARGIN:Int = 150;
+
   public function new()
   {
     super();
 
     add(items = new TextMenuList());
+
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
     createItem("CONTROLS", function() codex.switchPage(Controls));
     createItem("INPUT OFFSETS", function() {
+      OptionsState.rememberedSelectedIndex = items.selectedIndex;
       #if web
       LoadingState.transitionToState(() -> new LatencyState());
       #else
@@ -135,6 +148,27 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     });
 
     createItem("EXIT", exit);
+    
+    // Create an object for the camera to track.
+    camFocusPoint = new FlxObject(0, 0, 140, 70);
+    add(camFocusPoint);
+
+    // Follow the camera focus as we scroll.
+    FlxG.camera.follow(camFocusPoint, null, 0.085);
+    FlxG.camera.deadzone.set(0, CAMERA_MARGIN / 2, FlxG.camera.width, FlxG.camera.height - CAMERA_MARGIN + 40);
+    FlxG.camera.minScrollY = -CAMERA_MARGIN / 2;
+
+    // Move the camera when the menu is scrolled.
+    items.onChange.add(onMenuChange);
+
+    onMenuChange(items.members[0]);
+    
+    items.selectItem(OptionsState.rememberedSelectedIndex);
+  }
+
+  function onMenuChange(selected:TextMenuList.TextMenuItem)
+  {
+    camFocusPoint.y = selected.y;
   }
 
   function createItem(name:String, callback:Void->Void, fireInstantly = false)

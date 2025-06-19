@@ -99,15 +99,17 @@ class MainMenuState extends MusicBeatState
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
+      rememberedSelectedIndex = menuItems.selectedIndex;
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
+      var rememberedFreeplayCharacter = FreeplayState.rememberedCharacterId;
       #if FEATURE_DEBUG_FUNCTIONS
       // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
-      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
+      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : rememberedFreeplayCharacter;
       #else
-      var targetCharacter:Null<String> = null;
+      var targetCharacter:Null<String> = rememberedFreeplayCharacter;
       #end
 
       openSubState(new FreeplayState(
@@ -301,6 +303,9 @@ class MainMenuState extends MusicBeatState
     {
       persistentUpdate = false;
 
+      // Cancel the currently flickering menu item because it's about to call a state switch
+      if (menuItems.busy) menuItems.cancelAccept();
+
       FlxG.state.openSubState(new DebugMenuSubState());
     }
 
@@ -413,6 +418,7 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
+      rememberedSelectedIndex = menuItems.selectedIndex;
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }

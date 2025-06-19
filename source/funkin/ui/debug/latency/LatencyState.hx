@@ -179,10 +179,10 @@ class LatencyState extends MusicBeatSubState
     strumLine.releaseKey(event.noteDirection);
   }
 
-  override public function close():Void
+  override public function destroy():Void
   {
     cleanup();
-    super.close();
+    super.destroy();
   }
 
   function cleanup():Void
@@ -314,7 +314,7 @@ class LatencyState extends MusicBeatSubState
     {
       // close();
       cleanup();
-      FlxG.switchState(() -> new MainMenuState());
+      FlxG.switchState(() -> new funkin.ui.options.OptionsState());
     }
 
     super.update(elapsed);

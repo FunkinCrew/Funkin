@@ -231,6 +231,8 @@ class TitleState extends MusicBeatState
 
     Conductor.instance.update();
 
+    funkin.input.Cursor.hide();
+
     /* if (FlxG.onMobile)
           {
       if (gfDance != null)
@@ -240,12 +242,20 @@ class TitleState extends MusicBeatState
       }
           }
      */
-    if (FlxG.keys.justPressed.I)
+    if (outlineShaderShit != null)
     {
-      FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+      if (FlxG.keys.justPressed.I)
+      {
+        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+      }
+
+      if (FlxG.keys.pressed.D)
+      {
+        outlineShaderShit.funnyX += 1;
+      }
+
+      // outlineShaderShit.xPos.value[0] += 1;
     }
-    if (FlxG.keys.pressed.D) outlineShaderShit.funnyX += 1;
-    // outlineShaderShit.xPos.value[0] += 1;
 
     if (FlxG.keys.justPressed.Y)
     {
