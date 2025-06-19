@@ -3,6 +3,8 @@ package funkin.ui.options;
 import funkin.ui.Page.PageName;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.debug.latency.LatencyState;
+import funkin.ui.TextMenuList;
+import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.math.FlxPoint;
 import flixel.FlxSprite;
 import flixel.FlxObject;
@@ -103,6 +105,10 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
 
+  #if FEATURE_TOUCH_CONTROLS
+  var backButton:FunkinBackButton;
+  #end
+
   /**
    * Camera focus point
    */
@@ -172,7 +178,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
     #else
-    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0, true);
+    backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
     add(backButton);
     #end
 
@@ -193,12 +199,12 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     items.selectItem(OptionsState.rememberedSelectedIndex);
   }
 
-  function onMenuChange(selected:TextMenuList.TextMenuItem)
+  function onMenuChange(selected:TextMenuItem):Void
   {
     camFocusPoint.y = selected.y;
   }
 
-  function createItem(name:String, callback:Void->Void, fireInstantly = false)
+  function createItem(name:String, callback:Void->Void, fireInstantly = false):TextMenuItem
   {
     var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
     item.fireInstantly = fireInstantly;
@@ -206,13 +212,16 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     return item;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     enabled = (prompt == null);
+    #if FEATURE_TOUCH_CONTROLS
+    backButton.active = !items.busy;
+    #end
     super.update(elapsed);
   }
 
-  override function set_enabled(value:Bool)
+  override function set_enabled(value:Bool):Bool
   {
     items.enabled = value;
     return super.set_enabled(value);
