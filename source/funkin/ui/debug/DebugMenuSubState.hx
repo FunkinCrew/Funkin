@@ -71,6 +71,9 @@ class DebugMenuSubState extends MusicBeatSubState
     #end
     onMenuChange(items.members[0]);
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
+
+    // Remove the "user" stylesheet to prevent components using incorrect style data when entering an editor.
+    haxe.ui.Toolkit.styleSheet.clear("user");
   }
 
   function onMenuChange(selected:TextMenuItem)
