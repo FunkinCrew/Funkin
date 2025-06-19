@@ -52,6 +52,8 @@ class MainMenuState extends MusicBeatState
   #end
 
   var overrideMusic:Bool = false;
+  var goingToOptions:Bool = false;
+  var goingBack:Bool = false;
 
   static var rememberedSelectedIndex:Int = 0;
 
@@ -257,8 +259,19 @@ class MainMenuState extends MusicBeatState
     camFollow.y = bg.getGraphicMidpoint().y;
 
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
+
     addOptionsButton(35, FlxG.height - 210, function() {
       startExitState(() -> new funkin.ui.options.OptionsState());
+    });
+
+    backButton.onConfirmStart.add(function():Void {
+      backButton.active = true;
+      goingBack = true;
+    });
+    optionsButton.onConfirmStart.add(function():Void {
+      optionsButton.active = true;
+      goingToOptions = true;
+      menuItems.busy = true;
     });
     #end
 
@@ -325,6 +338,7 @@ class MainMenuState extends MusicBeatState
     backButton.animation.play('idle');
     optionsButton.animation.play('idle');
     backButton.resetCallbacks();
+    optionsButton.resetCallbacks();
     #end
     super.closeSubState();
   }
@@ -528,10 +542,9 @@ class MainMenuState extends MusicBeatState
 
     if (_exiting) menuItems.enabled = false;
     #if FEATURE_TOUCH_CONTROLS
-    backButton.active = menuItems.enabled && !menuItems.busy;
-    optionsButton.active = menuItems.enabled && !menuItems.busy;
+    backButton.active = (goingBack || (menuItems.enabled && !menuItems.busy && !goingToOptions));
+    optionsButton.active = (goingToOptions || (menuItems.enabled && !menuItems.busy && !goingBack));
     #end
-
     if (controls.BACK)
     {
       goBack();
@@ -542,6 +555,7 @@ class MainMenuState extends MusicBeatState
   {
     if (menuItems.enabled && !menuItems.busy)
     {
+      menuItems.busy = true;
       rememberedSelectedIndex = menuItems.selectedIndex;
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
