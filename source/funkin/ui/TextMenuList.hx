@@ -24,9 +24,11 @@ class TextMenuList extends MenuTypedList<TextMenuItem>
 @:nullSafety
 class TextMenuItem extends TextTypedMenuItem<AtlasText>
 {
+  public var atlasText:AtlasText;
   public function new(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, available:Bool = true)
   {
-    super(x, y, new AtlasText(0, 0, name, font), name, callback, available);
+    atlasText = new AtlasText(0, 0, name, font);
+    super(x, y, atlasText, name, callback, available);
     setEmptyBackground();
   }
 }

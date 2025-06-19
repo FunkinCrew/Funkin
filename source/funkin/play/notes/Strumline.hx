@@ -543,7 +543,6 @@ class Strumline extends FlxSpriteGroup
     for (noteIndex in nextNoteIndex...noteData.length)
     {
       var note:Null<SongNoteData> = noteData[noteIndex];
-
       if (note == null) continue; // Note is blank
       if (note.time < songStart || note.time < hitWindowStart)
       {
@@ -569,7 +568,6 @@ class Strumline extends FlxSpriteGroup
     for (note in notes.members)
     {
       if (note == null || !note.alive) continue;
-
       // Set the note's position.
       if (!customPositionData) note.y = this.y
         - INITIAL_OFFSET
@@ -787,6 +785,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function onBeatHit():Void
   {
+    // why are we doing this every beat? >:(
     if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
 
     if (holdNotes.members.length > 1) holdNotes.members.insertionSort(compareHoldNoteSprites.bind(FlxSort.ASCENDING));
@@ -878,6 +877,20 @@ class Strumline extends FlxSpriteGroup
 
     // Sort the notes by strumtime.
     this.noteData.insertionSort(compareNoteData.bind(FlxSort.ASCENDING));
+  }
+
+  /**
+   * Add a note data to the strumline.
+   * This will not remove existing notes, so you should call `applyNoteData` if you want to reset the strumline.
+   * @param note The note data to add.
+   * @param sort Whether to sort the note data after adding.
+   */
+  public function addNoteData(note:SongNoteData, sort:Bool = true):Void
+  {
+    if (note == null) return;
+
+    this.noteData.push(note);
+    if (sort) this.noteData.sort(compareNoteData.bind(FlxSort.ASCENDING));
   }
 
   /**
@@ -1299,6 +1312,18 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Apply a small animation which moves the arrow up and fades it out.
+   * Used when the song ends in Freeplay mode.
+   *
+   * @param index The index of the arrow in the strumline.
+   * @param arrow The arrow to animate.
+   */
+  public function fadeOutArrow(index:Int, arrow:StrumlineNote):Void
+  {
+    FlxTween.tween(arrow, {y: arrow.y - 10, alpha: 0}, 0.5, {ease: FlxEase.circIn});
+  }
+
+  /**
    * Play a fade in animation on all arrows in the strumline.
    * Used when starting a song in Freeplay mode.
    */
@@ -1307,6 +1332,18 @@ class Strumline extends FlxSpriteGroup
     for (index => arrow in this.strumlineNotes.members.keyValueIterator())
     {
       fadeInArrow(index, arrow);
+    }
+  }
+
+  /**
+   * Play a fade out animation on all arrows in the strumline.
+   * Used when ending a song in Freeplay mode.
+   */
+  public function fadeOutArrows():Void
+  {
+    for (index => arrow in this.strumlineNotes.members.keyValueIterator())
+    {
+      fadeOutArrow(index, arrow);
     }
   }
 

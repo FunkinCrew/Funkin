@@ -53,8 +53,10 @@ class GRhythmUtil
    * @param isControlled True if the note is controlled by the player, false otherwise.
    * @return A HitWindowRes object containing the result of the hit window check.
    */
-  public static function processWindow(note:NoteSprite, isControlled:Bool = true):HitWindowRes
+  public static function processWindow(note:NoteSprite, isControlled:Bool = true, ?inUseConductor:Conductor = null):HitWindowRes
   {
+    if (inUseConductor == null) inUseConductor = Conductor.instance;
+
     var window:HitWindow = getHitWindow(note);
 
     var windowStart:Float = window.start;
@@ -71,7 +73,7 @@ class GRhythmUtil
     }
 
     // Treat notes as not in window if they are greater or less than the hit window
-    if (Conductor.instance.songPosition > windowEnd)
+    if (inUseConductor.songPosition > windowEnd)
     {
       note.tooEarly = false;
       note.hasMissed = true;
@@ -81,12 +83,12 @@ class GRhythmUtil
     }
 
     // Check if we're not being controlled (ie, botplay/opponent)
-    if (!isControlled && Conductor.instance.songPosition >= windowCenter)
+    if (!isControlled && inUseConductor.songPosition >= windowCenter)
       return {botplayHit: true, cont: true };
 
     if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
 
-    if (Conductor.instance.songPosition >= windowStart)
+    if (inUseConductor.songPosition >= windowStart)
     {
       note.tooEarly = false;
       note.hasMissed = false;
@@ -111,6 +113,6 @@ class GRhythmUtil
   public static function getNoteY(strumTime:Float, scrollSpeed:Float, downscroll:Bool = false, ?conductorInUse:Conductor = null):Float
   {
     if (conductorInUse == null) conductorInUse = Conductor.instance;
-    return Constants.PIXELS_PER_MS * (conductorInUse.getTimeWithDelta() - strumTime - conductorInUse.inputOffset) * scrollSpeed * (downscroll ? 1 : -1);
+    return Constants.PIXELS_PER_MS * (conductorInUse.getTimeWithDelta() - strumTime) * scrollSpeed * (downscroll ? 1 : -1);
   }
 }

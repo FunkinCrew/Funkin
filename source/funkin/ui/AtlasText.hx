@@ -212,7 +212,7 @@ class AtlasChar extends FlxSprite
       }
       else
       {
-        trace('Could not find animation for char "' + value + '"');
+        // trace('Could not find animation for char "' + value + '"');
       }
       updateHitbox();
     }

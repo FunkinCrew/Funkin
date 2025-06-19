@@ -199,6 +199,16 @@ class PauseSubState extends MusicBeatSubState
   var metadataArtist:FlxText;
 
   /**
+   * A text object that displays the current global offset.
+   */
+  var offsetText:FlxText;
+
+  /**
+   * A text object that displays information about the current global offset.
+   */
+  var offsetTextInfo:FlxText;
+
+  /**
    * The actual text objects for the menu entries.
    */
   var menuEntryText:FlxTypedSpriteGroup<AtlasText>;
@@ -420,11 +430,29 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
 
+    // Left side
+    offsetText = new FlxText(20, metadataSong.y - 12, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Global Offset: ${Preferences.globalOffset ?? 0}ms');
+    offsetText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
+    offsetText.scrollFactor.set(0, 0);
+
+    offsetTextInfo = new FlxText(20, offsetText.y + 16, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Hold SHIFT and use UP/DOWN to change the offset.');
+    offsetTextInfo.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
+    offsetTextInfo.scrollFactor.set(0, 0);
+
+    #if !mobile
+    metadata.add(offsetText);
+    metadata.add(offsetTextInfo);
+    #end
+
     metadataArtist.alpha = 0;
     metadataPractice.alpha = 0;
     metadataSong.alpha = 0;
     metadataDifficulty.alpha = 0;
     metadataDeaths.alpha = 0;
+    offsetText.alpha = 0;
+    offsetTextInfo.alpha = 0;
 
     updateMetadataText();
   }
@@ -532,6 +560,9 @@ class PauseSubState extends MusicBeatSubState
   // Input Handling
   // ===============
 
+  var fastOffset:Bool = false;
+  var lastOffsetPress:Float = 0;
+
   /**
    * Process user inputs every frame.
    */
@@ -543,6 +574,51 @@ class PauseSubState extends MusicBeatSubState
     final upP:Bool = controls.UI_UP_P;
     final downP:Bool = controls.UI_DOWN_P;
 
+    #if !mobile
+    final up:Bool = controls.UI_UP;
+    final down:Bool = controls.UI_DOWN;
+    var offset:Int = Preferences.globalOffset ?? 0;
+    if (FlxG.keys.pressed.SHIFT && (up || down))
+    {
+      lastOffsetPress += FlxG.elapsed;
+      if (!fastOffset)
+      {
+        // If the last offset press was more than 0.5 seconds ago, reset the fast offset.
+        if (lastOffsetPress > 0.5)
+        {
+          fastOffset = true;
+          lastOffsetPress = 0;
+        }
+
+        if (upP || downP)
+        {
+          offset += (upP || up) ? 1 : -1;
+
+          offsetText.text = 'Global Offset: ${offset}ms';
+        }
+      }
+      else
+      {
+        offset += (upP || up) ? 1 : -1;
+
+        offsetText.text = 'Global Offset: ${offset}ms';
+      }
+
+      if (offset > 1500) offset = 1500;
+      if (offset < -1500) offset = -1500;
+
+      Preferences.globalOffset = offset;
+
+      return;
+    }
+    else
+    {
+      // Reset the fast offset if the user is not holding SHIFT.
+      fastOffset = false;
+      lastOffsetPress = 0;
+    }
+    #end
+
     if (upP)
     {
       changeSelection(-1);
@@ -552,7 +628,7 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
-    if (!SwipeUtil.justSwipedAny && !justOpened)
+    if (!SwipeUtil.justSwipedAny && !justOpened && currentMenuEntries.length > 0)
     {
       for (i in 0...menuEntryText.members.length)
       {
@@ -572,7 +648,7 @@ class PauseSubState extends MusicBeatSubState
       }
     }
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT && currentMenuEntries.length > 0)
     {
       currentMenuEntries[currentEntry].callback(this);
     }
