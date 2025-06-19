@@ -1407,9 +1407,15 @@ class FreeplayState extends MusicBeatSubState
 
   var allowPicoBulletsVibration:Bool = false;
 
+  var backTransitioning:Bool = false;
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null && !backTransitioning) backButton.active = !busy;
+    #end
 
     if (charSelectHint != null)
     {
@@ -1936,6 +1942,7 @@ class FreeplayState extends MusicBeatSubState
   function goBack():Void
   {
     if (busy) return;
+    backTransitioning = true;
     busy = true;
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
