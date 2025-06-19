@@ -1,31 +1,32 @@
 package funkin.mobile.ui.mainmenu;
 
 import flixel.FlxG;
-import flixel.util.FlxColor;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import funkin.util.HapticUtil;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.util.HapticUtil;
 
 class FunkinOptionsButton extends FunkinButton
 {
+  public var onConfirmStart(default, null):FlxSignal = new FlxSignal();
   public var onConfirmEnd(default, null):FlxSignal = new FlxSignal();
 
+  var confirming:Bool = false;
   var instant:Bool = false;
+  var held:Bool = false;
 
   /**
    * Creates a new FunkinOptionsButton instance.
    *
-   * @param xPos The x position of the object.
-   * @param yPos The y position of the object.
+   * @param x The x position of the object.
+   * @param y The y position of the object.
    * @param confirmCallback An optional callback function that will be triggered when the object is clicked.
    * @param instant An optional flag that makes the button not play the full animation before calling the callback.
    */
-  public function new(?xPos:Float = 0, ?yPos:Float = 0, ?confirmCallback:Void->Void, _instant:Bool = false):Void
+  public function new(?x:Float = 0, ?y:Float = 0, ?confirmCallback:Void->Void, instant:Bool = false):Void
   {
-    super(xPos, yPos);
+    super(x, y);
 
     frames = Paths.getSparrowAtlas("mainmenu/optionsButton");
     animation.addByIndices('idle', 'options', [0], "", 24, false);
@@ -36,68 +37,89 @@ class FunkinOptionsButton extends FunkinButton
     scale.set(0.7, 0.7);
     updateHitbox();
 
-    ignoreDownHandler = true;
-    instant = _instant;
-
-    if (instant)
-    {
-      onUp.add(confirmCallback);
-    }
-    else
-    {
-      onConfirmEnd.add(confirmCallback);
-    }
+    this.instant = instant;
+    this.ignoreDownHandler = true;
 
     onUp.add(playConfirmAnim);
     onDown.add(playHoldAnim);
     onOut.add(playOutAnim);
+
+    onConfirmEnd.add(confirmCallback);
   }
 
   function playHoldAnim():Void
   {
+    if (confirming || held) return;
+
+    held = true;
+
     FlxTween.cancelTweensOf(this);
-
     HapticUtil.vibrate(0, 0.01, 0.2);
-
     animation.play('hold');
   }
 
   function playConfirmAnim():Void
   {
+    if (instant)
+    {
+      onConfirmEnd.dispatch();
+      return;
+    }
+    else if (confirming)
+    {
+      return;
+    }
+
+    confirming = true;
+
     FlxTween.cancelTweensOf(this);
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
+
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
 
     new FlxTimer().start(0.05, function(_) {
       HapticUtil.vibrate(0, 0.01, 0.2);
     }, 4);
 
-    if (!instant)
-    {
-      animation.onFinish.add(function(name:String) {
-        onConfirmEnd.dispatch();
-      });
-    }
+    onConfirmStart.dispatch();
 
-    onUp.remove(playConfirmAnim);
-    onDown.remove(playHoldAnim);
-    onOut.remove(playOutAnim);
+    animation.onFinish.addOnce(function(name:String) {
+      if (name != 'confirm') return;
+      onConfirmEnd.dispatch();
+    });
   }
 
   function playOutAnim():Void
   {
+    if (confirming) return;
+
     FlxTween.cancelTweensOf(this);
     HapticUtil.vibrate(0, 0.01, 0.2);
     animation.play('idle');
   }
 
-  override public function update(elapsed:Float):Void
+  public function resetCallbacks():Void
   {
-    super.update(elapsed);
+    onUp.removeAll();
+    onDown.removeAll();
+    onOut.removeAll();
 
-    #if android
-    if (FlxG.android.justReleased.BACK) onDown.dispatch();
-    #end
+    confirming = false;
+    held = false;
+
+    onUp.add(playConfirmAnim);
+    onDown.add(playHoldAnim);
+    onOut.add(playOutAnim);
+  }
+
+  override function destroy():Void
+  {
+    super.destroy();
+
+    onConfirmStart.removeAll();
+    onConfirmEnd.removeAll();
+
+    if (animation != null && animation.onFinish != null) animation.onFinish.removeAll();
   }
 }
