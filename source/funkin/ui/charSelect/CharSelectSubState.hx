@@ -271,6 +271,20 @@ class CharSelectSubState extends MusicBeatSubState
     nametag.midpointX += cutoutSize;
     add(nametag);
 
+    // May need to be updated every time a new character is added because offsets are kinda quirky.
+    if (curChar == "bf")
+    {
+    nametag.switchChar("bf");
+    nametag.y += 117;  
+    FlxTween.tween(nametag, {y: nametag.y - 80}, 1.3, {ease: FlxEase.expoOut});
+    }
+    else if (curChar == "pico")
+    {
+      nametag.switchChar("pico");
+      nametag.y += 108;
+      FlxTween.tween(nametag, {y: nametag.y - 80}, 1.3, {ease: FlxEase.expoOut});
+    }  
+
     nametag.scrollFactor.set();
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSprite, ["x", "y", "alpha", "scale", "blend"]));
@@ -739,6 +753,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(cursorConfirmed, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
 
     FlxTween.tween(barthing, {y: barthing.y + 80}, 0.8, {ease: FlxEase.backIn});
+    FlxTween.tween(nametag, {y: nametag.y + 80}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y + 210}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(chooseDipshit, {y: chooseDipshit.y + 200}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(dipshitBlur, {y: dipshitBlur.y + 220}, 0.8, {ease: FlxEase.backIn});
