@@ -4,7 +4,7 @@ import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
 import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.GaussianBlurShader;
-import flixel.graphics.frames.*;
+import flixel.graphics.frames.FlxImageFrame;
 import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -238,27 +238,10 @@ class SongMenuItem extends FlxSpriteGroup
     {
       if (!Assets.exists(Paths.image('freeplay/freeplayCapsule/$level'))) continue;
 
-      var hasFrameData:Bool = Assets.exists(Paths.file('images/freeplay/freeplayCapsule/$level.xml'));
-      if (!hasFrameData)
-      {
-        var imgFrame:FlxImageFrame = FlxImageFrame.fromImage(Paths.image('freeplay/freeplayCapsule/$level'));
-        imgFrame.frame.name = level; // The frame has no name initially.
-        weekType.frames.pushFrame(imgFrame.frame);
-        weekType.animation.addByNames(level, [level], 24, false);
-      }
-      else
-      {
-        var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/$level');
-        var frameNames:Array<String> = [];
-        for (fr in frameCollection.frames)
-        {
-          var name:String = fr.name;
-          frameNames.push(name);
-          weekType.frames.pushFrame(fr);
-        }
-
-        weekType.animation.addByNames(level, frameNames, 24, true);
-      }
+      var imgFrame:FlxImageFrame = FlxImageFrame.fromImage(Paths.image('freeplay/freeplayCapsule/$level'));
+      imgFrame.frame.name = level; // The frame has no name initially.
+      weekType.frames.pushFrame(imgFrame.frame);
+      weekType.animation.addByNames(level, [level], 24, false);
     }
   }
 
@@ -267,12 +250,6 @@ class SongMenuItem extends FlxSpriteGroup
     sparkle.setPosition(FlxG.random.float(ranking.x - 20, ranking.x + 3), FlxG.random.float(ranking.y - 29, ranking.y + 4));
     sparkle.animation.play('sparkle', true);
     sparkleTimer = new FlxTimer().start(FlxG.random.float(1.2, 4.5), sparkleEffect);
-  }
-
-  function toggleNumVis(on:Bool)
-  {
-    for (num in weekNumbers)
-      num.visible = on;
   }
 
   // no way to grab weeks rn, so this needs to be done :/
@@ -300,7 +277,7 @@ class SongMenuItem extends FlxSpriteGroup
     {
       // If the song isn't in any week, set the assets to invisible and don't do any further checks.
       weekType.visible = false;
-      toggleNumVis(false);
+      weekNumbers[0].visible = false;
       return;
     }
 
@@ -309,7 +286,7 @@ class SongMenuItem extends FlxSpriteGroup
       // If the animation for the week exists, play it.
       weekType.visible = true;
       weekType.animation.play(songLevel, true);
-      toggleNumVis(false);
+      weekNumbers[0].visible = false;
     }
     else
     {
@@ -329,20 +306,21 @@ class SongMenuItem extends FlxSpriteGroup
       else
       {
         weekType.visible = false;
-        toggleNumVis(false);
+        weekNumbers[0].visible = false;
         return;
       }
-
-      weekType.visible = true;
-      toggleNumVis(false); // Individual numbers are turned on in the for-loop.
 
       var weekNum:Int = Std.parseInt(songLevel);
       if (weekNum == 0)
       {
         // Tutorial week's label is invisible.
         weekType.visible = false;
+        weekNumbers[0].visible = false;
         return;
       }
+
+      weekType.visible = true;
+      weekNumbers[0].visible = true;
 
       var weekNumString:String = Std.string(weekNum);
       for (i in 0...weekNumString.length)
@@ -350,7 +328,6 @@ class SongMenuItem extends FlxSpriteGroup
         if (i >= weekNumbers.length) break;
         weekNumbers[i].digit = Std.parseInt(weekNumString.charAt(i));
         weekNumbers[i].offset.x = (isWeekend ? -35 : 0);
-        weekNumbers[i].visible = true;
       }
     }
   }
