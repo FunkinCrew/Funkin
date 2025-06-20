@@ -1855,6 +1855,7 @@ class FreeplayState extends MusicBeatSubState
       final selected = currentCapsule.theActualHitbox;
       _pressedOnSelected = selected != null && TouchUtil.overlaps(selected, funnyCam);
     }
+    #if FEATURE_CHART_EDITOR
     if (controls.DEBUG_CHART && !busy)
     {
       busy = true;
@@ -1870,8 +1871,8 @@ class FreeplayState extends MusicBeatSubState
         });
 
         trace('Available songs: ${availableSongCapsules.map(function(cap) {
-      return cap?.freeplayData?.data.songName;
-    })}');
+          return cap?.freeplayData?.data.songName;
+        })}');
 
         if (availableSongCapsules.length == 0)
         {
@@ -1894,6 +1895,7 @@ class FreeplayState extends MusicBeatSubState
           targetSongId: targetSongID,
         }));
     }
+    #end
   }
 
   function handleTouchSelectionScroll(elapsed:Float):Void
