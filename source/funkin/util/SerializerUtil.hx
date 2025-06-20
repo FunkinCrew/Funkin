@@ -34,11 +34,7 @@ class SerializerUtil
    */
   public static function fromJSON(input:String):Dynamic
   {
-    while (!input.startsWith("{"))
-      input = input.substring(1);
-
-    while (!input.endsWith("}"))
-      input = input.substring(0, input.length - 1);
+    input = input.substring(input.indexOf("{"), input.lastIndexOf("}") + 1);
 
     try
     {
