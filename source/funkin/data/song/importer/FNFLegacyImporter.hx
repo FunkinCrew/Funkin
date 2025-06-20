@@ -130,21 +130,31 @@ class FNFLegacyImporter
 
     if (noteSections == null || noteSections.length == 0) return result;
 
-    // Add camera events.
+    // The current step and time position of the section.
+    var totalSteps:Int = 0;
+    var totalTimePosition:Float = 0.0;
+    // The last BPM that was set.
+    var lastBPM:Float = songData?.song?.bpm ?? Constants.DEFAULT_BPM;
+
     var lastSectionWasMustHit:Null<Bool> = null;
-    for (section in noteSections)
+    // Loop through the note sections and add a camera event when the mustHitSection changes.
+    for (noteSection in noteSections)
     {
-      // Skip empty sections.
-      if (section.sectionNotes.length == 0) continue;
-
-      if (section.mustHitSection != lastSectionWasMustHit)
+      // Keep track of bpm changes for more accurate event timing.
+      if ((noteSection.changeBPM) && (noteSection.bpm != lastBPM))
       {
-        lastSectionWasMustHit = section.mustHitSection;
-
-        var firstNote:LegacyNote = section.sectionNotes[0];
-
-        result.push(new SongEventData(firstNote.time, 'FocusCamera', {char: section.mustHitSection ? 0 : 1}));
+        lastBPM = noteSection.bpm;
       }
+
+      if (lastSectionWasMustHit != noteSection.mustHitSection)
+      {
+        lastSectionWasMustHit = noteSection.mustHitSection;
+        result.push(new SongEventData(totalTimePosition, 'FocusCamera', {char: noteSection.mustHitSection ? 0 : 1}));
+      }
+      // Get the exact time position of the event simulating the way legacy conductor does it.
+      var deltaSteps:Int = noteSection.lengthInSteps ?? 16;
+      totalSteps += deltaSteps;
+      totalTimePosition += ((60 / lastBPM) * 1000 / 4 * deltaSteps);
     }
 
     return result;
@@ -152,7 +162,7 @@ class FNFLegacyImporter
 
   /**
    * Port over time changes from FNF Legacy.
-   * If a section contains a BPM change, it will be applied at the timestamp of the first note in that section.
+   * If a section contains a BPM change, it will be applied at the estimated timestamp of the start of that section.
    */
   static function rebuildTimeChanges(songData:FNFLegacyData):Array<SongTimeChange>
   {
@@ -174,13 +184,24 @@ class FNFLegacyImporter
 
     if (noteSections == null || noteSections.length == 0) return result;
 
+    // The current step and time position of the section.
+    var totalSteps:Int = 0;
+    var totalTimePosition:Float = 0.0;
+    // The last BPM that was set.
+    var lastBPM:Float = songData?.song?.bpm ?? Constants.DEFAULT_BPM;
+
     for (noteSection in noteSections)
     {
-      if (noteSection.changeBPM ?? false)
+      if ((noteSection.changeBPM) && (noteSection.bpm != lastBPM))
       {
-        var firstNote:LegacyNote = noteSection.sectionNotes[0];
-        if (firstNote != null) result.push(new SongTimeChange(firstNote.time, noteSection.bpm));
+        lastBPM = noteSection.bpm;
+        trace('Adding time change at ' + totalTimePosition + ' with BPM ' + lastBPM + ' at step ' + totalSteps);
+        result.push(new SongTimeChange(totalTimePosition, lastBPM));
       }
+      // Get the exact time position of the event simulating the way legacy conductor does it.
+      var deltaSteps:Int = noteSection.lengthInSteps ?? 16;
+      totalSteps += deltaSteps;
+      totalTimePosition += ((60 / lastBPM) * 1000 / 4 * deltaSteps);
     }
 
     return result;
