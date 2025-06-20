@@ -111,15 +111,6 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       currentInstrumental.text = instrumentalIds[currentInstrumentalIndex].toTitleCase() ?? '';
       if (currentInstrumental.text == '') currentInstrumental.text = 'Default';
     }
-
-    if (parent.getControls()
-      .ACCEPT #if mobile
-      || TouchUtil.pressAction(currentInstrumental)
-      && !TouchUtil.overlapsComplex(leftArrow)
-      && !TouchUtil.overlapsComplex(rightArrow) #end)
-    {
-      onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
-    }
   }
 
   public function close():Void
