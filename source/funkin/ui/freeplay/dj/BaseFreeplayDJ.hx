@@ -1,12 +1,13 @@
-package funkin.ui.freeplay;
+package funkin.ui.freeplay.dj;
 
 import flixel.util.FlxSignal;
+import funkin.modding.events.ScriptEvent;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 
-class FreeplayDJ extends FlxAtlasSprite
+class BaseFreeplayDJ extends FlxAtlasSprite
 {
   // Represents the sprite's current status.
   // Without state machines I would have driven myself crazy years ago.
@@ -467,6 +468,11 @@ class FreeplayDJ extends FlxAtlasSprite
       cartoonSnd = null;
     }
   }
+
+  /**
+   * By default, this function does nothing. But you can override it in your script!
+   */
+   public function onCreate(event:ScriptEvent) {}
 }
 
 enum FreeplayDJState
