@@ -1537,14 +1537,13 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocus():Void
   {
-    if (VideoCutscene.isPlaying() && FlxG.autoPause && isGamePaused) VideoCutscene.pauseVideo();
+    if (VideoCutscene.isPlaying() && Preferences.autoPause && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
-    else
-      VideoCutscene.resumeVideo();
+    else if (Preferences.autoPause) VideoCutscene.resumeVideo();
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
+    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.autoPause)
     {
       if (Conductor.instance.songPosition > 0.0)
       {
@@ -1582,11 +1581,11 @@ class PlayState extends MusicBeatSubState
   public override function onFocusLost():Void
   {
     #if html5
-    if (FlxG.autoPause) VideoCutscene.pauseVideo();
+    if (Preferences.autoPause) VideoCutscene.pauseVideo();
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && FlxG.autoPause)
+    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.autoPause)
     {
       DiscordClient.instance.setPresence(
         {
@@ -1720,6 +1719,10 @@ class PlayState extends MusicBeatSubState
     // Syncing allowScreenTimeout with Preferences option.
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
     funkin.util.plugins.TouchPointerPlugin.enabled = true;
+    #end
+
+    #if !mobile
+    FlxG.autoPause = Preferences.autoPause;
     #end
 
     super.destroy();
