@@ -764,6 +764,7 @@ class Project extends HXProject
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
+    UNLOCK_EVERYTHING.apply(this, true);
 
     // Should be true only on web builds.
     // Enabling embedding and preloading is required to preload assets properly.
@@ -778,7 +779,6 @@ class Project extends HXProject
 
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
-    UNLOCK_EVERYTHING.apply(this, isMobile());
 
     //
     // FEATURE FLAGS
@@ -815,24 +815,24 @@ class Project extends HXProject
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
 
+    // Should be true except on mobile builds.
+    // Input offsets menu isn't built to work with mobile right now.
+    FEATURE_INPUT_OFFSETS.apply(this, !isMobile())
+
     // Should be true except on web and mobile builds.
     // Screenshots doesn't work there, and mobile has its own screenshots anyway.
     FEATURE_SCREENSHOTS.apply(this, !(isWeb() || isMobile()));
 
-    // Should be true except on MacOS and Mobile.
+    // Should be true except on MacOS and mobile builds.
     // Dragging and dropping files onto the window doesn't work there.
     FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
 
-    // Audio context issues only exist on web.
+    // Audio context issues only exist on web builds.
     FEATURE_TOUCH_HERE_TO_PLAY.apply(this, isWeb());
 
     // Should be true only on mobile builds.
     FEATURE_HAPTICS.apply(this, isMobile());
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
-
-    // Gameplay changes specific to mobile (enable ghost tapping, disable unlock animations for now)
-    FEATURE_GHOST_TAPPING.apply(this, isMobile());
-    UNLOCK_EVERYTHING.apply(this, isMobile());
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
     FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && envConfig != null));
