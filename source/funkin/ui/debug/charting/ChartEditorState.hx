@@ -3590,13 +3590,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (holdNoteSprite == null || holdNoteSprite.noteData == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
 
+        // Fixes an issue where dragging an hold note too far would hide its sustain trail
+        var isSelectedAndDragged = currentNoteSelection.fastContains(holdNoteSprite.noteData) && (dragTargetCurrentStep != 0);
+
         if (holdNoteSprite.noteData == currentPlaceNoteData)
         {
           // This hold note is for the note we are currently dragging.
           // It will be displayed by gridGhostHoldNoteSprite instead.
           holdNoteSprite.kill();
         }
-        else if (!holdNoteSprite.isHoldNoteVisible(viewAreaBottomPixels, viewAreaTopPixels))
+        else if (!holdNoteSprite.isHoldNoteVisible(viewAreaBottomPixels, viewAreaTopPixels) && !isSelectedAndDragged)
         {
           // This hold note is off-screen.
           // Kill the hold note sprite and recycle it.
@@ -3617,7 +3620,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else
         {
           displayedHoldNoteData.push(holdNoteSprite.noteData);
-          // Update the event sprite's height and position.
+          // Update the hold note sprite's height and position.
           // var holdNoteHeight = holdNoteSprite.noteData.getStepLength() * GRID_SIZE;
           // holdNoteSprite.setHeightDirectly(holdNoteHeight);
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
