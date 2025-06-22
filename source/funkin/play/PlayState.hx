@@ -3105,23 +3105,7 @@ class PlayState extends MusicBeatSubState
       }
       else if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
-        currentConversation.pauseMusic();
-        #if mobile
-        FlxTween.cancelTweensOf(pauseButton);
-        FlxTween.cancelTweensOf(pauseCircle);
-
-        pauseButton.alpha = 0;
-        pauseCircle.alpha = 0;
-        hitbox.visible = false;
-        #end
-
-        var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
-
-        persistentUpdate = false;
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-        pauseSubState.camera = FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene;
-        openSubState(pauseSubState);
+        pause(Conversation);
       }
     }
     else if (VideoCutscene.isPlaying())
@@ -3129,23 +3113,7 @@ class PlayState extends MusicBeatSubState
       // This is a video cutscene.
       if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
       {
-        VideoCutscene.pauseVideo();
-        #if mobile
-        FlxTween.cancelTweensOf(pauseButton);
-        FlxTween.cancelTweensOf(pauseCircle);
-
-        pauseButton.alpha = 0;
-        pauseCircle.alpha = 0;
-        hitbox.visible = false;
-        #end
-
-        var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
-
-        persistentUpdate = false;
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-        pauseSubState.camera = FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene;
-        openSubState(pauseSubState);
+        pause(Cutscene);
       }
     }
   }
