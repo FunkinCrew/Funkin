@@ -1597,9 +1597,22 @@ class PlayState extends MusicBeatSubState
         });
     }
     #end
-    if (subState == null)
+
+    // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
+    if (!isGamePaused && Preferences.autoPause)
     {
-      pause();
+      if (currentConversation != null)
+      {
+        pause(Conversation);
+      }
+      else if (VideoCutscene.isPlaying())
+      {
+        pause(Cutscene);
+      }
+      else
+      {
+        pause();
+      }
     }
     super.onFocusLost();
   }
