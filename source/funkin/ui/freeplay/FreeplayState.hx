@@ -2255,6 +2255,7 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules.members[curSelected].selected = true; // set selected again, so it can run its getter function to initialize movement
   }
 
+  #if FEATURE_TOUCH_CONTROLS
   function handleDiffDragRelease(diff:FlxSprite):Void
   {
     @:nullSafety(Off)
@@ -2284,6 +2285,7 @@ class FreeplayState extends MusicBeatSubState
     draggingDifficulty = false;
     _heldOnDiff = true;
   }
+  #end
 
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
   {
