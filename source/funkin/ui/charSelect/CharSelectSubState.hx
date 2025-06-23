@@ -271,19 +271,11 @@ class CharSelectSubState extends MusicBeatSubState
     nametag.midpointX += cutoutSize;
     add(nametag);
 
-    // May need to be updated every time a new character is added because offsets are kinda quirky.
-    if (curChar == "bf")
+    @:privateAccess
     {
-    nametag.switchChar("bf");
-    nametag.y += 117;  
-    FlxTween.tween(nametag, {y: nametag.y - 80}, 1.3, {ease: FlxEase.expoOut});
+      nametag.midpointY += 200;
+      FlxTween.tween(nametag, {midpointY: nametag.midpointY - 200}, 1, {ease: FlxEase.expoOut});
     }
-    else if (curChar == "pico")
-    {
-      nametag.switchChar("pico");
-      nametag.y += 108;
-      FlxTween.tween(nametag, {y: nametag.y - 80}, 1.3, {ease: FlxEase.expoOut});
-    }  
 
     nametag.scrollFactor.set();
 
