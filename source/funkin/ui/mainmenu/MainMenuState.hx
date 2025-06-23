@@ -54,6 +54,7 @@ class MainMenuState extends MusicBeatState
   var overrideMusic:Bool = false;
   var goingToOptions:Bool = false;
   var goingBack:Bool = false;
+  var canInteract:Bool = false;
 
   static var rememberedSelectedIndex:Int = 0;
 
@@ -119,6 +120,7 @@ class MainMenuState extends MusicBeatState
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
+      canInteract = false;
       FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
     });
 
@@ -258,20 +260,25 @@ class MainMenuState extends MusicBeatState
 
     camFollow.y = bg.getGraphicMidpoint().y;
 
+    // TODO: This is absolutely disgusting but what the hell sure, fix it later -Zack
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
 
     addOptionsButton(35, FlxG.height - 210, function() {
+      if (!canInteract) return;
+      canInteract = false;
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
 
     backButton.onConfirmStart.add(function():Void {
       backButton.active = true;
       goingBack = true;
+      menuItems.enabled = false;
     });
+
     optionsButton.onConfirmStart.add(function():Void {
       optionsButton.active = true;
       goingToOptions = true;
-      menuItems.busy = true;
+      menuItems.enabled = false;
     });
     #end
 
@@ -346,6 +353,7 @@ class MainMenuState extends MusicBeatState
   override function finishTransIn():Void
   {
     super.finishTransIn();
+    canInteract = true;
   }
 
   function onMenuItemChange(selected:MenuListItem)
@@ -383,6 +391,7 @@ class MainMenuState extends MusicBeatState
   function startExitState(state:NextState):Void
   {
     menuItems.enabled = false; // disable for exit
+    canInteract = false;
     rememberedSelectedIndex = menuItems.selectedIndex;
 
     var duration = 0.4;
@@ -421,7 +430,23 @@ class MainMenuState extends MusicBeatState
     // how far away from bg mid do we want to pan via gyroPan
     camFollow.x = bg.getGraphicMidpoint().x - gyroPan.x;
     camFollow.y = bg.getGraphicMidpoint().y - gyroPan.y;
+
+    optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
+    backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
     #end
+
+    if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+    handleInputs();
+
+    if (_exiting) menuItems.enabled = false;
+  }
+
+  function handleInputs():Void
+  {
+    if (!canInteract) return;
 
     // Open the debug menu, defaults to ` / ~
     // This includes stuff like the Chart Editor, so it should be present on all builds.
@@ -535,26 +560,14 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
-    {
-      FlxG.sound.music.volume += 0.5 * elapsed;
-    }
-
-    if (_exiting) menuItems.enabled = false;
-    #if FEATURE_TOUCH_CONTROLS
-    backButton.active = (goingBack || (menuItems.enabled && !menuItems.busy && !goingToOptions));
-    optionsButton.active = (goingToOptions || (menuItems.enabled && !menuItems.busy && !goingBack));
-    #end
-    if (controls.BACK)
-    {
-      goBack();
-    }
+    if (controls.BACK) goBack();
   }
 
   public function goBack():Void
   {
-    if (menuItems.enabled && !menuItems.busy)
+    if (canInteract)
     {
+      canInteract = false;
       menuItems.busy = true;
       rememberedSelectedIndex = menuItems.selectedIndex;
       FlxG.switchState(() -> new TitleState());
