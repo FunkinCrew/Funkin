@@ -7,17 +7,16 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import funkin.ui.AtlasText.AtlasFont;
-import funkin.ui.options.OptionsState.Page;
+import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.TextMenuList.TextMenuItem;
-import funkin.audio.FunkinSound;
-import funkin.ui.options.MenuItemEnums;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import lime.ui.WindowVSyncMode;
 
-class PreferencesMenu extends Page
+class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   var items:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
@@ -101,6 +100,9 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     }, Preferences.downscroll);
+    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
+      Preferences.strumlineBackgroundOpacity = value;
+    }, Preferences.strumlineBackgroundOpacity);
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;
@@ -111,22 +113,48 @@ class PreferencesMenu extends Page
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Auto Pause', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup', function(value:Bool):Void {
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'Enable to unlock the framerate', function(value:Bool):Void {
+    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets', function(value:Float) {
-      Preferences.framerate = Std.int(value);
-    }, null, Preferences.framerate, 30, 300, 5, 0);
+    // disabled on macos due to "error: Late swap tearing currently unsupported"
+    #if !mac
+    createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
+      "Off" => WindowVSyncMode.OFF,
+      "On" => WindowVSyncMode.ON,
+      "Adaptive" => WindowVSyncMode.ADAPTIVE,
+    ], function(key:String, value:WindowVSyncMode):Void {
+      trace("Setting vsync mode to " + key);
+      Preferences.vsyncMode = value;
+    }, switch (Preferences.vsyncMode)
+      {
+        case WindowVSyncMode.OFF: "Off";
+        case WindowVSyncMode.ON: "On";
+        case WindowVSyncMode.ADAPTIVE: "Adaptive";
+      });
     #end
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
+      Preferences.framerate = Std.int(value);
+    }, null, Preferences.framerate, 30, 500, 5, 0);
+    #end
+
+    createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
+      Preferences.shouldHideMouse = value;
+    }, Preferences.shouldHideMouse);
+    createPrefItemCheckbox('Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
+      Preferences.fancyPreview = value;
+    }, Preferences.fancyPreview);
+    createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
+      Preferences.previewOnSave = value;
+    }, Preferences.previewOnSave);
   }
 
   override function update(elapsed:Float):Void
@@ -138,13 +166,19 @@ class PreferencesMenu extends Page
       var thyOffset:Int = 0;
       // Initializing thy text width (if thou text present)
       var thyTextWidth:Int = 0;
-      if (Std.isOfType(daItem, EnumPreferenceItem)) thyTextWidth = cast(daItem, EnumPreferenceItem).lefthandText.getWidth();
-      else if (Std.isOfType(daItem, NumberPreferenceItem)) thyTextWidth = cast(daItem, NumberPreferenceItem).lefthandText.getWidth();
-
-      if (thyTextWidth != 0)
+      switch (Type.typeof(daItem))
       {
-        // Magic number because of the weird offset thats being added by default
-        thyOffset += thyTextWidth - 75;
+        case TClass(CheckboxPreferenceItem):
+          thyTextWidth = 0;
+          thyOffset = 0;
+        case TClass(EnumPreferenceItem):
+          thyTextWidth = cast(daItem, EnumPreferenceItem<Dynamic>).lefthandText.getWidth();
+          thyOffset = 0 + thyTextWidth - 75;
+        case TClass(NumberPreferenceItem):
+          thyTextWidth = cast(daItem, NumberPreferenceItem).lefthandText.getWidth();
+          thyOffset = 0 + thyTextWidth - 75;
+        default:
+          // Huh?
       }
 
       if (items.selectedItem == daItem)
@@ -228,9 +262,9 @@ class PreferencesMenu extends Page
    * @param onChange Gets called every time the player changes the value; use this to apply the value
    * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
    */
-  function createPrefItemEnum(prefName:String, prefDesc:String, values:Map<String, String>, onChange:String->Void, defaultValue:String):Void
+  function createPrefItemEnum<T>(prefName:String, prefDesc:String, values:Map<String, T>, onChange:String->T->Void, defaultKey:String):Void
   {
-    var item = new EnumPreferenceItem(0, (120 * items.length) + 30, prefName, values, defaultValue, onChange);
+    var item = new EnumPreferenceItem<T>(0, (120 * items.length) + 30, prefName, values, defaultKey, onChange);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);

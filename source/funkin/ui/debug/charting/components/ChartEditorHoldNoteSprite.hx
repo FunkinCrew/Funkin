@@ -4,10 +4,6 @@ import funkin.play.notes.Strumline;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.FlxObject;
-import flixel.FlxSprite;
-import flixel.graphics.frames.FlxFramesCollection;
-import flixel.graphics.frames.FlxTileFrames;
-import flixel.math.FlxPoint;
 import funkin.play.notes.SustainTrail;
 import funkin.data.song.SongData.SongNoteData;
 import flixel.math.FlxMath;
@@ -36,9 +32,33 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   @:nullSafety(Off)
   function set_noteStyle(value:Null<String>):Null<String>
   {
+    @:bypassAccessor
+    if (this.noteStyle == value) return value;
+
     this.noteStyle = value;
     this.updateHoldNoteGraphic();
     return value;
+  }
+
+  public var overrideStepTime(default, set):Null<Float> = null;
+
+  function set_overrideStepTime(value:Null<Float>):Null<Float>
+  {
+    if (overrideStepTime == value) return overrideStepTime;
+
+    overrideStepTime = value;
+    updateHoldNotePosition();
+    return overrideStepTime;
+  }
+
+  public var overrideData(default, set):Null<Int> = null;
+
+  function set_overrideData(value:Null<Int>):Null<Int>
+  {
+    if (overrideData == value) return overrideData;
+
+    overrideData = value;
+    return overrideData;
   }
 
   public function new(parent:ChartEditorState)
@@ -51,7 +71,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   }
 
   @:nullSafety(Off)
-  function updateHoldNoteGraphic():Void
+  public function updateHoldNoteGraphic():Void
   {
     var bruhStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyle);
     if (bruhStyle == null) bruhStyle = NoteStyleRegistry.instance.fetchDefault();
@@ -215,31 +235,15 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   {
     if (this.noteData == null) return;
 
-    var cursorColumn:Int = this.noteData.data;
+    var cursorColumn:Int = (overrideData != null) ? overrideData : this.noteData.data;
+    cursorColumn = ChartEditorState.noteDataToGridColumn(cursorColumn);
 
-    if (cursorColumn < 0) cursorColumn = 0;
-    if (cursorColumn >= (ChartEditorState.STRUMLINE_SIZE * 2 + 1))
-    {
-      cursorColumn = (ChartEditorState.STRUMLINE_SIZE * 2 + 1);
-    }
-    else
-    {
-      // Invert player and opponent columns.
-      if (cursorColumn >= ChartEditorState.STRUMLINE_SIZE)
-      {
-        cursorColumn -= ChartEditorState.STRUMLINE_SIZE;
-      }
-      else
-      {
-        cursorColumn += ChartEditorState.STRUMLINE_SIZE;
-      }
-    }
-
+    this.noteDirection = cursorColumn % ChartEditorState.STRUMLINE_SIZE;
     this.x = cursorColumn * ChartEditorState.GRID_SIZE;
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes
-    var stepTime:Float =
+    var stepTime:Float = (overrideStepTime != null) ? overrideStepTime :
     inline this.noteData.getStepTime();
     if (stepTime >= 0)
     {

@@ -11,6 +11,7 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.data.song.SongRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.stage.StageRegistry;
+import funkin.data.stickers.StickerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
@@ -38,7 +39,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  static final API_VERSION_RULE:String = ">=0.5.0 <0.6.0";
+  static final API_VERSION_RULE:String = ">=0.6.3 <0.7.0";
 
   /**
    * Where relative to the executable that mods are located.
@@ -79,8 +80,10 @@ class PolymodHandler
    */
   public static function loadAllMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
+    #end
     trace('Initializing Polymod (using all mods)...');
     loadModsById(getAllModIds());
   }
@@ -90,9 +93,10 @@ class PolymodHandler
    */
   public static function loadEnabledMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     trace('Initializing Polymod (using configured mods)...');
     loadModsById(Save.instance.enabledModIds);
   }
@@ -102,9 +106,10 @@ class PolymodHandler
    */
   public static function loadNoMods():Void
   {
+    #if sys
     // Create the mod root if it doesn't exist.
     createModRoot();
-
+    #end
     // We still need to configure the debug print calls etc.
     trace('Initializing Polymod (using no mods)...');
     loadModsById([]);
@@ -151,7 +156,7 @@ class PolymodHandler
         frameworkParams: buildFrameworkParams(),
 
         // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
-        ignoredFiles: Polymod.getDefaultIgnoreList(),
+        ignoredFiles: buildIgnoreList(),
 
         // Parsing rules for various data formats.
         parseRules: buildParseRules(),
@@ -250,6 +255,24 @@ class PolymodHandler
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
 
+    // `funkin.util.FileUtil` has unrestricted access to the file system.
+    Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
+
+    #if FEATURE_NEWGROUNDS
+    // `funkin.api.newgrounds.Leaderboards` allows for submitting cheated scores.
+    Polymod.addImportAlias('funkin.api.newgrounds.Leaderboards', funkin.api.newgrounds.Leaderboards.LeaderboardsSandboxed);
+
+    // `funkin.api.newgrounds.Medals` allows for unfair granting of medals.
+    Polymod.addImportAlias('funkin.api.newgrounds.Medals', funkin.api.newgrounds.Medals.MedalsSandboxed);
+
+    // `funkin.api.newgrounds.NewgroundsClientSandboxed` allows for submitting cheated data.
+    Polymod.addImportAlias('funkin.api.newgrounds.NewgroundsClient', funkin.api.newgrounds.NewgroundsClient.NewgroundsClientSandboxed);
+    #end
+
+    #if FEATURE_DISCORD_RPC
+    Polymod.addImportAlias('funkin.api.discord.DiscordClient', funkin.api.discord.DiscordClient.DiscordClientSandboxed);
+    #end
+
     // Add blacklisting for prohibited classes and packages.
 
     // `Sys`
@@ -257,20 +280,20 @@ class PolymodHandler
     Polymod.blacklistImport('Sys');
 
     // `Reflect`
-    // Reflect.callMethod() can access blacklisted packages
-    Polymod.blacklistImport('Reflect');
+    // Reflect.callMethod() can access blacklisted packages, but some functions are whitelisted
+    Polymod.addImportAlias('Reflect', funkin.util.ReflectUtil);
 
     // `Type`
-    // Type.createInstance(Type.resolveClass()) can access blacklisted packages
-    Polymod.blacklistImport('Type');
+    // Type.createInstance(Type.resolveClass()) can access blacklisted packages, but some functions are whitelisted
+    Polymod.addImportAlias('Type', funkin.util.ReflectUtil);
 
     // `cpp.Lib`
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
 
-    // `Unserializer`
+    // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
-    Polymod.blacklistImport('Unserializer');
+    Polymod.blacklistImport('haxe.Unserializer');
 
     // `lime.system.CFFI`
     // Can load and execute compiled binaries.
@@ -296,9 +319,28 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
+    // `funkin.api.*`
+    // Contains functions which may allow for cheating and such.
+    for (cls in ClassMacro.listClassesInPackage('funkin.api'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      if (polymod.hscript._internal.PolymodScriptClass.importOverrides.exists(className)) continue;
+      Polymod.blacklistImport(className);
+    }
+
     // `polymod.*`
     // Contains functions which may allow for un-blacklisting other modules.
     for (cls in ClassMacro.listClassesInPackage('polymod'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // `io.newgrounds.*`
+    // Contains functions which allow for cheating medals and leaderboards.
+    for (cls in ClassMacro.listClassesInPackage('io.newgrounds'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -313,6 +355,31 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+
+    // `funkin.util.macro.*`
+    // CompiledClassList's get function allows access to sys and Newgrounds classes
+    // None of the classes are suitable for mods anyway
+    for (cls in ClassMacro.listClassesInPackage('funkin.util.macro'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+  }
+
+  /**
+   * Build a list of file paths that will be ignored in mods.
+   */
+  static function buildIgnoreList():Array<String>
+  {
+    var result = Polymod.getDefaultIgnoreList();
+
+    result.push('.git');
+    result.push('.gitignore');
+    result.push('.gitattributes');
+    result.push('README.md');
+
+    return result;
   }
 
   static function buildParseRules():polymod.format.ParseRules
@@ -438,6 +505,7 @@ class PolymodHandler
     SpeakerRegistry.instance.loadEntries();
     AlbumRegistry.instance.loadEntries();
     StageRegistry.instance.loadEntries();
+    StickerRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();

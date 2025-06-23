@@ -3,8 +3,6 @@ package funkin.play.notes;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.play.notes.notestyle.NoteStyle;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
 
@@ -105,6 +103,11 @@ class NoteSprite extends FunkinSprite
   {
     return noteData.length > 0;
   }
+
+  /**
+   * The Y Offset of the note.
+   */
+  public var yOffset:Float = 0.0;
 
   /**
    * Set this flag to true when hitting the note to avoid scoring it multiple times.

@@ -1,6 +1,7 @@
 package funkin;
 
 import funkin.save.Save;
+import funkin.util.WindowUtil;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -176,6 +177,53 @@ class Preferences
     return value;
   }
 
+  /**
+   * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
+   * @default `OFF`
+   */
+  public static var vsyncMode(get, set):lime.ui.WindowVSyncMode;
+
+  static function get_vsyncMode():lime.ui.WindowVSyncMode
+  {
+    var value = Save?.instance?.options?.vsyncMode ?? "Off";
+
+    return switch (value)
+    {
+      case "Off":
+        lime.ui.WindowVSyncMode.OFF;
+      case "On":
+        lime.ui.WindowVSyncMode.ON;
+      case "Adaptive":
+        lime.ui.WindowVSyncMode.ADAPTIVE;
+      default:
+        lime.ui.WindowVSyncMode.OFF;
+    };
+  }
+
+  static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
+  {
+    var string;
+
+    switch (value)
+    {
+      case lime.ui.WindowVSyncMode.OFF:
+        string = "Off";
+      case lime.ui.WindowVSyncMode.ON:
+        string = "On";
+      case lime.ui.WindowVSyncMode.ADAPTIVE:
+        string = "Adaptive";
+      default:
+        string = "Off";
+    };
+
+    WindowUtil.setVSyncMode(value);
+
+    var save:Save = Save.instance;
+    save.options.vsyncMode = string;
+    save.flush();
+    return value;
+  }
+
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
@@ -219,12 +267,90 @@ class Preferences
   #end
 
   /**
+   * If >0, the game will display a semi-opaque background under the notes.
+   * `0` for no background, `100` for solid black if you're freaky like that
+   * @default `0`
+   */
+  public static var strumlineBackgroundOpacity(get, set):Int;
+
+  static function get_strumlineBackgroundOpacity():Int
+  {
+    return (Save?.instance?.options?.strumlineBackgroundOpacity ?? 0);
+  }
+
+  static function set_strumlineBackgroundOpacity(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.strumlineBackgroundOpacity = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will hide the mouse when taking a screenshot.
+   * @default `true`
+   */
+  public static var shouldHideMouse(get, set):Bool;
+
+  static function get_shouldHideMouse():Bool
+  {
+    return Save?.instance?.options?.screenshot?.shouldHideMouse ?? true;
+  }
+
+  static function set_shouldHideMouse(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.shouldHideMouse = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will show a preview after taking a screenshot.
+   * @default `true`
+   */
+  public static var fancyPreview(get, set):Bool;
+
+  static function get_fancyPreview():Bool
+  {
+    return Save?.instance?.options?.screenshot?.fancyPreview ?? true;
+  }
+
+  static function set_fancyPreview(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.fancyPreview = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the game will show the preview only after a screenshot is saved.
+   * @default `true`
+   */
+  public static var previewOnSave(get, set):Bool;
+
+  static function get_previewOnSave():Bool
+  {
+    return Save?.instance?.options?.screenshot?.previewOnSave ?? true;
+  }
+
+  static function set_previewOnSave(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.screenshot.previewOnSave = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * Loads the user's preferences from the save data and apply them.
    */
   public static function init():Void
   {
     // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
+    // WindowUtil.setVSyncMode(Preferences.vsyncMode);
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
     #if web

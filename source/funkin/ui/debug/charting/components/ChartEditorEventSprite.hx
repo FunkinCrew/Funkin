@@ -4,11 +4,8 @@ import funkin.data.event.SongEventRegistry;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import flixel.FlxObject;
-import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
-import flixel.graphics.frames.FlxTileFrames;
-import flixel.math.FlxPoint;
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.tooltips.ToolTipRegionOptions;
 import funkin.util.HaxeUIUtil;
@@ -126,7 +123,6 @@ class ChartEditorEventSprite extends FlxSprite
   public function correctAnimationName(name:String):String
   {
     if (this.animation.exists(name)) return name;
-    trace('Warning: Invalid animation name "${name}" for song event. Using "${DEFAULT_EVENT}"');
     return DEFAULT_EVENT;
   }
 

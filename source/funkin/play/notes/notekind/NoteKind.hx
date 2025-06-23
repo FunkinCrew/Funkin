@@ -2,7 +2,6 @@ package funkin.play.notes.notekind;
 
 import funkin.modding.IScriptedClass.INoteScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import flixel.math.FlxMath;
 
 /**
  * Class for note scripts
@@ -67,6 +66,8 @@ class NoteKind implements INoteScriptedClass
   public function onNoteHit(event:HitNoteScriptEvent):Void {}
 
   public function onNoteMiss(event:NoteScriptEvent):Void {}
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 }
 
 /**
