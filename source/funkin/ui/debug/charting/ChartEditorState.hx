@@ -5289,7 +5289,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
-    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()} (${selectedVariation.toTitleCase()})';
+    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}${selectedVariation == Constants.DEFAULT_VARIATION ? '' : ' (${selectedVariation.toTitleCase()})'}';
     playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}';
   }
 
