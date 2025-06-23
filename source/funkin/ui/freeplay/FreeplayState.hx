@@ -1541,6 +1541,7 @@ class FreeplayState extends MusicBeatSubState
   var _moveLength:Float = 0;
   var _flickEnded:Bool = true;
   var _pressedOnCapsule:Bool = false;
+  var _heldOnDiff:Bool = false;
   var draggingDifficulty:Bool = false;
 
   function handleInputs(elapsed:Float):Void
@@ -1580,6 +1581,7 @@ class FreeplayState extends MusicBeatSubState
       _pressedOnSelected = false;
       _pressedOnCapsule = false;
       _pressedOnFreeplay = false;
+      _heldOnDiff = false;
     }
 
     if (!TouchUtil.pressed && !FlxG.touches.flickManager.initialized)
@@ -1835,7 +1837,7 @@ class FreeplayState extends MusicBeatSubState
 
   function handleTouchFavoritesAndDifficulties()
   {
-    if ((TouchUtil.pressed || TouchUtil.justReleased) && !_pressedOnFreeplay)
+    if ((TouchUtil.pressed || TouchUtil.justReleased) && !_pressedOnFreeplay && !_heldOnDiff)
     {
       if (_pressedOnSelected && TouchUtil.touch != null)
       {
@@ -2279,6 +2281,7 @@ class FreeplayState extends MusicBeatSubState
     generateSongList(currentFilter, true, false);
     _dragOffset = 0;
     draggingDifficulty = false;
+    _heldOnDiff = true;
   }
 
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
