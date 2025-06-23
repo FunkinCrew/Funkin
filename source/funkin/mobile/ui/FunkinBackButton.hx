@@ -14,7 +14,9 @@ class FunkinBackButton extends FunkinButton
   public var onConfirmEnd(default, null):FlxSignal = new FlxSignal();
 
   var confirming:Bool = false;
-  var restingOpacity:Float;
+
+  public var restingOpacity:Float;
+
   var instant:Bool = false;
   var held:Bool = false;
 

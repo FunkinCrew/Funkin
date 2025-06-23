@@ -1414,7 +1414,15 @@ class FreeplayState extends MusicBeatSubState
     super.update(elapsed);
 
     #if FEATURE_TOUCH_CONTROLS
-    if (backButton != null && !backTransitioning) backButton.active = !busy;
+    if (backButton != null && !backTransitioning)
+    {
+      if (busy)
+      {
+        backButton.animation.play("idle");
+        backButton.alpha = backButton.restingOpacity;
+      }
+      backButton.active = !busy;
+    }
     #end
 
     if (charSelectHint != null)
@@ -1943,6 +1951,9 @@ class FreeplayState extends MusicBeatSubState
   {
     if (busy) return;
     backTransitioning = true;
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null) backButton.animation.play("confirm");
+    #end
     busy = true;
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
