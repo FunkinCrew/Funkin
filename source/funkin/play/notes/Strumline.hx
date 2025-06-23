@@ -18,6 +18,9 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
 import funkin.play.notes.notekind.NoteKindManager;
 import flixel.math.FlxPoint;
+#if mobile
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+#end
 
 /**
  * A group of sprites which handles the receptor, the note splashes, and the notes (with sustains) for a given player.

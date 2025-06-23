@@ -1426,9 +1426,23 @@ class FreeplayState extends MusicBeatSubState
 
   var allowPicoBulletsVibration:Bool = false;
 
+  var backTransitioning:Bool = false;
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null && !backTransitioning)
+    {
+      if (busy)
+      {
+        backButton.animation.play("idle");
+        backButton.alpha = backButton.restingOpacity;
+      }
+      backButton.active = !busy;
+    }
+    #end
 
     if (charSelectHint != null)
     {
@@ -1955,6 +1969,14 @@ class FreeplayState extends MusicBeatSubState
   function goBack():Void
   {
     if (busy) return;
+    backTransitioning = true;
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null)
+    {
+      backButton.alpha = 1;
+      backButton.animation.play("confirm");
+    }
+    #end
     busy = true;
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
