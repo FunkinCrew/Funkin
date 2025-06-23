@@ -721,12 +721,11 @@ class StoryMenuState extends MusicBeatState
     // Every item above it should be positioned in relation to the next item.
     if (currentIndex > 0)
     {
-      var i:Int = currentIndex - 1;
-      while (i >= 0)
+      for (i in 0...currentIndex)
       {
-        var nextItem:LevelTitle = levelTitles.members[i + 1];
-        levelTitles.members[i].targetY = nextItem.targetY - (levelTitles.members[i].height + 20);
-        i--;
+        var itemIndex:Int = currentIndex - 1 - i;
+        var nextItem:LevelTitle = levelTitles.members[itemIndex + 1];
+        levelTitles.members[itemIndex].targetY = nextItem.targetY - Math.max(levelTitles.members[itemIndex].height + 20, 125);
       }
     }
 
