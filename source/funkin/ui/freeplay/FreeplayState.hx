@@ -1912,8 +1912,8 @@ class FreeplayState extends MusicBeatSubState
           break;
         }
 
-        if (diffSelLeft != null && diffSelLeft.x - 60 > diff.x) handleDiffBoundaryChange(1);
-        if (diffSelRight != null && diffSelRight.x - 40 < diff.x) handleDiffBoundaryChange(-1);
+        if (diffSelLeft != null && diffSelLeft.x - 40 > diff.x) handleDiffBoundaryChange(1);
+        if (diffSelRight != null && diffSelRight.x - 120 < diff.x) handleDiffBoundaryChange(-1);
 
         break;
       }
@@ -2257,11 +2257,12 @@ class FreeplayState extends MusicBeatSubState
 
   function handleDiffDragRelease(diff:FlxSprite):Void
   {
-    if (diffSelLeft != null && diffSelLeft.x > diff.x)
+    @:nullSafety(Off)
+    if ((diffSelLeft != null && diffSelLeft.x + 20 > diff.x) || SwipeUtil.justSwipedLeft)
     {
       handleDiffBoundaryChange(1);
     }
-    else if (diffSelRight != null && diffSelRight.x - 140 < diff.x)
+    else if ((diffSelRight != null && diffSelRight.x - 20 < diff.x) || SwipeUtil.justSwipedRight)
     {
       handleDiffBoundaryChange(-1);
     }
