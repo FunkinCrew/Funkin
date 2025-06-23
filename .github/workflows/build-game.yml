@@ -199,7 +199,7 @@ jobs:
         include:
           - target: linux
           - target: html5
-          - target: android
+          # - target: android
     defaults:
       run:
         shell: bash
