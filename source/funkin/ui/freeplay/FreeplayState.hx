@@ -1952,7 +1952,11 @@ class FreeplayState extends MusicBeatSubState
     if (busy) return;
     backTransitioning = true;
     #if FEATURE_TOUCH_CONTROLS
-    if (backButton != null) backButton.animation.play("confirm");
+    if (backButton != null)
+    {
+      backButton.alpha = 1;
+      backButton.animation.play("confirm");
+    }
     #end
     busy = true;
     FlxTween.globalManager.clear();
