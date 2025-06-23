@@ -458,6 +458,7 @@ class FreeplayState extends MusicBeatSubState
       var diffSprite:DifficultySprite = new DifficultySprite(diffId);
       diffSprite.difficultyId = diffId;
       diffSprite.visible = diffId == Constants.DEFAULT_DIFFICULTY;
+      diffSprite.height *= 2.5;
       grpDifficulties.add(diffSprite);
     }
 
@@ -2216,6 +2217,7 @@ class FreeplayState extends MusicBeatSubState
         diffSprite.alpha = 1;
         diffSprite.updateHitbox();
         diffSprite.visible = true;
+        diffSprite.height *= 2.5;
       });
     }
 
