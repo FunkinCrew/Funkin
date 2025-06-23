@@ -458,6 +458,7 @@ class FreeplayState extends MusicBeatSubState
       var diffSprite:DifficultySprite = new DifficultySprite(diffId);
       diffSprite.difficultyId = diffId;
       diffSprite.visible = diffId == Constants.DEFAULT_DIFFICULTY;
+      diffSprite.height *= 2.5;
       grpDifficulties.add(diffSprite);
     }
 
@@ -1540,6 +1541,7 @@ class FreeplayState extends MusicBeatSubState
   var _moveLength:Float = 0;
   var _flickEnded:Bool = true;
   var _pressedOnCapsule:Bool = false;
+  var _heldOnDiff:Bool = false;
   var draggingDifficulty:Bool = false;
 
   function handleInputs(elapsed:Float):Void
@@ -1579,6 +1581,7 @@ class FreeplayState extends MusicBeatSubState
       _pressedOnSelected = false;
       _pressedOnCapsule = false;
       _pressedOnFreeplay = false;
+      _heldOnDiff = false;
     }
 
     if (!TouchUtil.pressed && !FlxG.touches.flickManager.initialized)
@@ -1834,7 +1837,7 @@ class FreeplayState extends MusicBeatSubState
 
   function handleTouchFavoritesAndDifficulties()
   {
-    if ((TouchUtil.pressed || TouchUtil.justReleased) && !_pressedOnFreeplay)
+    if ((TouchUtil.pressed || TouchUtil.justReleased) && !_pressedOnFreeplay && !_heldOnDiff)
     {
       if (_pressedOnSelected && TouchUtil.touch != null)
       {
@@ -1909,8 +1912,8 @@ class FreeplayState extends MusicBeatSubState
           break;
         }
 
-        if (diffSelLeft != null && diffSelLeft.x - 60 > diff.x) handleDiffBoundaryChange(1);
-        if (diffSelRight != null && diffSelRight.x - 40 < diff.x) handleDiffBoundaryChange(-1);
+        if (diffSelLeft != null && diffSelLeft.x - 40 > diff.x) handleDiffBoundaryChange(1);
+        if (diffSelRight != null && diffSelRight.x - 120 < diff.x) handleDiffBoundaryChange(-1);
 
         break;
       }
@@ -2216,6 +2219,7 @@ class FreeplayState extends MusicBeatSubState
         diffSprite.alpha = 1;
         diffSprite.updateHitbox();
         diffSprite.visible = true;
+        diffSprite.height *= 2.5;
       });
     }
 
@@ -2253,11 +2257,12 @@ class FreeplayState extends MusicBeatSubState
 
   function handleDiffDragRelease(diff:FlxSprite):Void
   {
-    if (diffSelLeft != null && diffSelLeft.x > diff.x)
+    @:nullSafety(Off)
+    if ((diffSelLeft != null && diffSelLeft.x + 20 > diff.x) || SwipeUtil.justSwipedLeft)
     {
       handleDiffBoundaryChange(1);
     }
-    else if (diffSelRight != null && diffSelRight.x - 140 < diff.x)
+    else if ((diffSelRight != null && diffSelRight.x - 20 < diff.x) || SwipeUtil.justSwipedRight)
     {
       handleDiffBoundaryChange(-1);
     }
@@ -2277,6 +2282,7 @@ class FreeplayState extends MusicBeatSubState
     generateSongList(currentFilter, true, false);
     _dragOffset = 0;
     draggingDifficulty = false;
+    _heldOnDiff = true;
   }
 
   function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
