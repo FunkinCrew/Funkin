@@ -725,7 +725,7 @@ class StoryMenuState extends MusicBeatState
       {
         var itemIndex:Int = currentIndex - 1 - i;
         var nextItem:LevelTitle = levelTitles.members[itemIndex + 1];
-        levelTitles.members[itemIndex].targetY = nextItem.targetY - Math.max(levelTitles.members[itemIndex].height + 30, 125);
+        levelTitles.members[itemIndex].targetY = nextItem.targetY - Math.max(levelTitles.members[itemIndex].height + 20, 125);
       }
     }
 
@@ -735,7 +735,7 @@ class StoryMenuState extends MusicBeatState
       for (i in (currentIndex + 1)...levelTitles.members.length)
       {
         var previousItem:LevelTitle = levelTitles.members[i - 1];
-        levelTitles.members[i].targetY = previousItem.targetY + (previousItem.height + 30);
+        levelTitles.members[i].targetY = previousItem.targetY + (previousItem.height + 20);
       }
     }
   }
