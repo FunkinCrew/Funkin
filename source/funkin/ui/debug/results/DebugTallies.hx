@@ -72,7 +72,7 @@ class DebugTallies
     };
 
   /**
-   * 210 total notes = 91% = EXCELLENT
+   * 210 total notes = 90% = EXCELLENT
    */
   public static var EXCELLENT:SaveScoreTallyData =
     {
@@ -112,7 +112,7 @@ class DebugTallies
       good: 0,
       bad: 69,
       shit: 69,
-      missed: 69,
+      missed: 0,
       combo: 69,
       maxCombo: 69,
       totalNotesHit: 190,
