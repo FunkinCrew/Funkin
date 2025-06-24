@@ -36,7 +36,7 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.HapticUtil;
-import funkin.modding.base.ScriptedFunkinSprite;
+import funkin.graphics.ScriptedFunkinSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
