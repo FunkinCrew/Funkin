@@ -271,18 +271,19 @@ class PolymodHandler
 
     #if FEATURE_NEWGROUNDS
     // `funkin.api.newgrounds.Leaderboards` allows for submitting cheated scores.
+    // We still grant read-only access.
     Polymod.addImportAlias('funkin.api.newgrounds.Leaderboards', funkin.api.newgrounds.Leaderboards.LeaderboardsSandboxed);
 
     // `funkin.api.newgrounds.Medals` allows for unfair granting of medals.
+    // We still grant read-only access.
     Polymod.addImportAlias('funkin.api.newgrounds.Medals', funkin.api.newgrounds.Medals.MedalsSandboxed);
 
     // `funkin.api.newgrounds.NewgroundsClientSandboxed` allows for submitting cheated data.
+    // We still grant read-only access.
     Polymod.addImportAlias('funkin.api.newgrounds.NewgroundsClient', funkin.api.newgrounds.NewgroundsClient.NewgroundsClientSandboxed);
     #end
 
-    #if FEATURE_DISCORD_RPC
     Polymod.addImportAlias('funkin.api.discord.DiscordClient', funkin.api.discord.DiscordClient.DiscordClientSandboxed);
-    #end
 
     // Add blacklisting for prohibited classes and packages.
 

@@ -202,14 +202,27 @@ typedef DiscordClientPresenceParams =
 
 class DiscordClientSandboxed
 {
-  public static function setPresence(params:DiscordClientPresenceParams)
+  public static function setPresence(params:DiscordClientPresenceParams):Void
   {
-    return DiscordClient.instance.setPresence(params);
+    DiscordClient.instance.setPresence(params);
   }
 
-  public static function shutdown()
+  public static function shutdown():Void
   {
     DiscordClient.instance.shutdown();
+  }
+}
+#else
+class DiscordClientSandboxed
+{
+  public static function setPresence(params:Dynamic):Void
+  {
+    // Do nothing.
+  }
+
+  public static function shutdown():Void
+  {
+    // Do nothing.
   }
 }
 #end
