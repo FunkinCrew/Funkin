@@ -241,6 +241,7 @@ class StageDataHandler
     for (char in chars)
     {
       var charData:StageDataCharacter = null;
+      if (char == null) continue;
 
       switch (char.characterType)
       {
