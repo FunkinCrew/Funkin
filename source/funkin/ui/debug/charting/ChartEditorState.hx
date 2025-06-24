@@ -3601,30 +3601,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (holdNoteSprite == null || holdNoteSprite.noteData == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
 
-        // Fixes an issue where dragging an hold note too far would hide its sustain trail
+        // Fixes an issue where dragging a hold note too far would hide its sustain trail
         var isSelectedAndDragged = currentNoteSelection.fastContains(holdNoteSprite.noteData) && (dragTargetCurrentStep != 0);
 
-        if (holdNoteSprite.noteData == currentPlaceNoteData)
+        if (!isSelectedAndDragged
+          && (holdNoteSprite.noteData == currentPlaceNoteData // Being dragged, displayed by gridGhostHoldNoteSprite instead.
+            || !holdNoteSprite.isHoldNoteVisible(viewAreaBottomPixels, viewAreaTopPixels) // Off-screen.
+            || !currentSongChartNoteData.fastContains(holdNoteSprite.noteData) // Deleted.
+            || holdNoteSprite.noteData.length == 0 // Also deleted.
+          ))
         {
-          // This hold note is for the note we are currently dragging.
-          // It will be displayed by gridGhostHoldNoteSprite instead.
-          holdNoteSprite.kill();
-        }
-        else if (!holdNoteSprite.isHoldNoteVisible(viewAreaBottomPixels, viewAreaTopPixels) && !isSelectedAndDragged)
-        {
-          // This hold note is off-screen.
-          // Kill the hold note sprite and recycle it.
-          holdNoteSprite.kill();
-        }
-        else if (!currentSongChartNoteData.fastContains(holdNoteSprite.noteData) || holdNoteSprite.noteData.length == 0)
-        {
-          // This hold note was deleted.
-          // Kill the hold note sprite and recycle it.
-          holdNoteSprite.kill();
-        }
-        else if (displayedHoldNoteData.fastContains(holdNoteSprite.noteData))
-        {
-          // This hold note is a duplicate.
           // Kill the hold note sprite and recycle it.
           holdNoteSprite.kill();
         }
@@ -3632,8 +3618,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           displayedHoldNoteData.push(holdNoteSprite.noteData);
           // Update the hold note sprite's height and position.
-          // var holdNoteHeight = holdNoteSprite.noteData.getStepLength() * GRID_SIZE;
-          // holdNoteSprite.setHeightDirectly(holdNoteHeight);
+          var holdNoteHeight = holdNoteSprite.noteData.getStepLength() * GRID_SIZE;
+          holdNoteSprite.setHeightDirectly(holdNoteHeight);
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
         }
       }
@@ -3800,8 +3786,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
 
         holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
-
-        displayedHoldNoteData.push(noteData);
       }
 
       // Destroy all existing selection squares.
