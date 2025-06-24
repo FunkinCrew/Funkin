@@ -247,7 +247,7 @@ class FunkinMemory
   {
     // TODO: Texture paths should fall back to the default values.
     cacheTexture(Paths.image(style.getNoteAssetPath() ?? "note"));
-    cacheTexture(Paths.image(style.getHoldNoteAssetPath() ?? "noteHold"));
+    cacheTexture(style.getHoldNoteAssetPath() ?? "noteHold");
     cacheTexture(Paths.image(style.getStrumlineAssetPath() ?? "strumline"));
     cacheTexture(Paths.image(style.getSplashAssetPath() ?? "noteSplash"));
 
@@ -256,7 +256,7 @@ class FunkinMemory
     cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(UP) ?? "UP"));
     cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(DOWN) ?? "DOWN"));
 
-    cacheTexture(Paths.image(style.buildCountdownSpritePath(THREE) ?? "THREE"));
+    // cacheTexture(Paths.image(style.buildCountdownSpritePath(THREE) ?? "THREE"));
     cacheTexture(Paths.image(style.buildCountdownSpritePath(TWO) ?? "TWO"));
     cacheTexture(Paths.image(style.buildCountdownSpritePath(ONE) ?? "ONE"));
     cacheTexture(Paths.image(style.buildCountdownSpritePath(GO) ?? "GO"));
