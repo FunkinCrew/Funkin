@@ -28,7 +28,7 @@ class AnsiTrace
     #end
   }
 
-  public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM").startsWith('xterm')
+  public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM")?.startsWith('xterm')
     || Sys.getEnv("ANSICON") != null) #else false #end;
 
   // ansi stuff
