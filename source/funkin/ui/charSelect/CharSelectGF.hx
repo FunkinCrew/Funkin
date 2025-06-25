@@ -91,7 +91,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
       for (i in 0...len)
       {
-        var animFrame:Int = Math.round(levels[i].value * 12);
+        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 12);
 
         #if desktop
         // Web version scales with the Flixel volume level.
