@@ -44,7 +44,7 @@ class MainMenuState extends MusicBeatState
 {
   var menuItems:MenuTypedList<AtlasMenuItem>;
 
-  var bg:FlxSprite;
+  var bg:Null<FlxSprite>;
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
@@ -63,12 +63,13 @@ class MainMenuState extends MusicBeatState
   var hasUpgraded:Bool = false;
   var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
 
-  public function new(?_overrideMusic:Bool = false)
+  public function new(_overrideMusic:Bool = false)
   {
     super();
     overrideMusic = _overrideMusic;
 
     menuItems = new MenuTypedList<AtlasMenuItem>();
+    upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
     magenta = new FlxSprite(Paths.image('menuBGMagenta'));
     camFollow = new FlxObject(0, 0, 1, 1);
   }
@@ -179,7 +180,6 @@ class MainMenuState extends MusicBeatState
     }
     else
     {
-      upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
       add(upgradeSparkles);
 
       createMenuItem('upgrade', 'mainmenu/upgrade', function() {
@@ -311,7 +311,7 @@ class MainMenuState extends MusicBeatState
       });
   }
 
-  function resetCamStuff(?snap:Bool = true):Void
+  function resetCamStuff(snap:Bool = true):Void
   {
     FlxG.camera.follow(camFollow, null, 0.06);
 
