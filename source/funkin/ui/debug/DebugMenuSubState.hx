@@ -115,7 +115,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function openCharSelect()
   {
-    FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState());
+    FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
   }
 
   function openAnimationEditor()
