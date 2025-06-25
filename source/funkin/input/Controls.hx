@@ -1035,9 +1035,9 @@ class Controls extends FlxActionSet
       case Control.FREEPLAY_CHAR_SELECT:
         return [X];
       case Control.FREEPLAY_JUMP_TO_TOP:
-        return [];
+        return [RIGHT_STICK_DIGITAL_UP];
       case Control.FREEPLAY_JUMP_TO_BOTTOM:
-        return [];
+        return [RIGHT_STICK_DIGITAL_DOWN];
       case Control.VOLUME_UP:
         [];
       case Control.VOLUME_DOWN:
