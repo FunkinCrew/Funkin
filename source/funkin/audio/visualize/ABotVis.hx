@@ -116,7 +116,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     for (i in 0...min(group.members.length, levels.length))
     {
-      var animFrame:Int = Math.round(levels[i].value * 6);
+      var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 6);
 
       // don't display if we're at 0 volume from the level
       group.members[i].visible = animFrame > 0;
