@@ -32,6 +32,9 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   @:nullSafety(Off)
   function set_noteStyle(value:Null<String>):Null<String>
   {
+    @:bypassAccessor
+    if (this.noteStyle == value) return value;
+
     this.noteStyle = value;
     this.updateHoldNoteGraphic();
     return value;
@@ -55,9 +58,6 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     if (overrideData == value) return overrideData;
 
     overrideData = value;
-    if (overrideData != null) this.noteDirection = overrideData;
-    updateHoldNoteGraphic();
-    updateHoldNotePosition();
     return overrideData;
   }
 
@@ -71,7 +71,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   }
 
   @:nullSafety(Off)
-  function updateHoldNoteGraphic():Void
+  public function updateHoldNoteGraphic():Void
   {
     var bruhStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyle);
     if (bruhStyle == null) bruhStyle = NoteStyleRegistry.instance.fetchDefault();
@@ -236,27 +236,10 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     if (this.noteData == null) return;
 
     var cursorColumn:Int = (overrideData != null) ? overrideData : this.noteData.data;
+    cursorColumn = ChartEditorState.noteDataToGridColumn(cursorColumn);
 
-    if (cursorColumn < 0) cursorColumn = 0;
-    if (cursorColumn >= (ChartEditorState.STRUMLINE_SIZE * 2 + 1))
-    {
-      cursorColumn = (ChartEditorState.STRUMLINE_SIZE * 2 + 1);
-    }
-    else
-    {
-      // Invert player and opponent columns.
-      if (cursorColumn >= ChartEditorState.STRUMLINE_SIZE)
-      {
-        cursorColumn -= ChartEditorState.STRUMLINE_SIZE;
-      }
-      else
-      {
-        cursorColumn += ChartEditorState.STRUMLINE_SIZE;
-      }
-    }
-
+    this.noteDirection = cursorColumn % ChartEditorState.STRUMLINE_SIZE;
     this.x = cursorColumn * ChartEditorState.GRID_SIZE;
-    updateHoldNoteGraphic();
 
     // Notes far in the song will start far down, but the group they belong to will have a high negative offset.
     // noteData.getStepTime() returns a calculated value which accounts for BPM changes

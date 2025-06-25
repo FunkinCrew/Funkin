@@ -1552,13 +1552,6 @@ class PlayState extends MusicBeatSubState
     }
     // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
 
-    // That combo milestones that got spoiled that one time.
-    // Comes with NEAT visual and audio effects.
-
-    // bruh this var is bonkers i thot it was a function lmfaooo
-
-    // Break up into individual lines to aid debugging.
-
     if (playerStrumline != null) playerStrumline.onBeatHit();
     if (opponentStrumline != null) opponentStrumline.onBeatHit();
 

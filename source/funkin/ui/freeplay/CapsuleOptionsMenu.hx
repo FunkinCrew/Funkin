@@ -133,6 +133,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
 /**
  * The difficulty selector arrows to the left and right of the difficulty.
  */
+@:nullSafety
 class InstrumentalSelector extends FunkinSprite
 {
   var controls:Controls;
@@ -142,21 +143,20 @@ class InstrumentalSelector extends FunkinSprite
 
   var baseScale:Float = 0.6;
 
-  public var moveShitDownTimer:FlxTimer;
+  public var moveShitDownTimer:Null<FlxTimer> = null;
 
   public function new(parent:FreeplayState, x:Float, y:Float, flipped:Bool, controls:Controls)
   {
     super(x, y);
 
     this.parent = parent;
-
     this.controls = controls;
+
+    whiteShader = new PureColor(FlxColor.WHITE);
 
     frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
     animation.addByPrefix('shine', 'arrow pointer loop', 24);
     animation.play('shine');
-
-    whiteShader = new PureColor(FlxColor.WHITE);
 
     shader = whiteShader;
 

@@ -17,6 +17,7 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.visualize.PolygonSpectogram;
@@ -1282,7 +1283,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       for (x in availableVariations)
       {
         var m:Null<SongMetadata> = songMetadata.get(x);
-        m?.playData?.difficulties ?? [];
+        [for (diff in (m?.playData?.difficulties ?? [])) '$diff-$x'];
       }
     ];
     return result.flatten();
@@ -1958,6 +1959,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The label by the playbar telling the song position.
    */
   var playbarSongPos:Label;
+
+  /**
+   * The label by the playbar telling the current beat rounded to 2
+   */
+  var playbarBeatNum:Label;
+
+  /**
+   * The label by the playbar telling the current step
+   */
+  var playbarStepNum:Label;
 
   /**
    * The label by the playbar telling the song time remaining.
@@ -3590,13 +3601,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (holdNoteSprite == null || holdNoteSprite.noteData == null || !holdNoteSprite.exists || !holdNoteSprite.visible) continue;
 
+        // Fixes an issue where dragging an hold note too far would hide its sustain trail
+        var isSelectedAndDragged = currentNoteSelection.fastContains(holdNoteSprite.noteData) && (dragTargetCurrentStep != 0);
+
         if (holdNoteSprite.noteData == currentPlaceNoteData)
         {
           // This hold note is for the note we are currently dragging.
           // It will be displayed by gridGhostHoldNoteSprite instead.
           holdNoteSprite.kill();
         }
-        else if (!holdNoteSprite.isHoldNoteVisible(viewAreaBottomPixels, viewAreaTopPixels))
+        else if (!holdNoteSprite.isHoldNoteVisible(viewAreaBottomPixels, viewAreaTopPixels) && !isSelectedAndDragged)
         {
           // This hold note is off-screen.
           // Kill the hold note sprite and recycle it.
@@ -3617,7 +3631,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else
         {
           displayedHoldNoteData.push(holdNoteSprite.noteData);
-          // Update the event sprite's height and position.
+          // Update the hold note sprite's height and position.
           // var holdNoteHeight = holdNoteSprite.noteData.getStepLength() * GRID_SIZE;
           // holdNoteSprite.setHeightDirectly(holdNoteHeight);
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
@@ -3763,7 +3777,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (noteData == currentPlaceNoteData) continue;
 
         // Is the hold note rendered already?
-        if (displayedHoldNoteData.indexOf(noteData) != -1) continue;
+        if (displayedHoldNoteData.fastContains(noteData)) continue;
 
         // Is the hold note offscreen?
         if (!ChartEditorHoldNoteSprite.wouldHoldNoteBeVisible(viewAreaBottomPixels, viewAreaTopPixels, noteData, renderedHoldNotes)) continue;
@@ -3871,6 +3885,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             {
               holdNoteSprite.overrideData = noteSprite.overrideData;
               holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
+              holdNoteSprite.updateHoldNoteGraphic();
             }
           }
           else
@@ -3885,8 +3900,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               if (holdNoteSprite != null)
               {
                 holdNoteSprite.overrideData = null;
-                holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
                 holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
+                holdNoteSprite.updateHoldNoteGraphic();
               }
             }
           }
@@ -5272,12 +5287,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
 
-    var roundedBeat = FlxMath.roundDecimal(Conductor.instance.currentBeatTime, 2);
-    var parts:Array<String> = Std.string(roundedBeat).split('.');
-    if (parts.length == 1) parts.push('00');
-    else if (parts[1].length < 2) parts[1] += '0';
-    songPosString += ' | Beat: ${parts.join('.')} | Step: ${Conductor.instance.currentStep}';
-
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
     var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
@@ -5287,8 +5296,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;
 
+    playbarBeatNum.text = 'Beat: ${FlxStringUtil.formatMoney(Conductor.instance.currentBeatTime)}';
+    playbarStepNum.text = 'Step: ${Conductor.instance.currentStep}';
+
     playbarNoteSnap.text = '1/${noteSnapQuant}';
-    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}';
+    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}${selectedVariation == Constants.DEFAULT_VARIATION ? '' : ' (${selectedVariation.toTitleCase()})'}';
     playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}';
   }
 
@@ -6162,8 +6174,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function incrementDifficulty(change:Int):Void
   {
+    var variatedDifficulty:String = '$selectedDifficulty-$selectedVariation';
     var currentDifficultyIndex:Int = availableDifficulties.indexOf(selectedDifficulty);
-    var currentAllDifficultyIndex:Int = allDifficulties.indexOf(selectedDifficulty);
+    var currentAllDifficultyIndex:Int = allDifficulties.indexOf(variatedDifficulty);
 
     if (currentDifficultyIndex == -1 || currentAllDifficultyIndex == -1)
     {

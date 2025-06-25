@@ -427,8 +427,6 @@ class StoryMenuState extends MusicBeatState
     {
       var item:LevelTitle = levelTitles.members[index];
 
-      item.targetY = (index - currentIndex) * 125 + 480;
-
       if (index == currentIndex)
       {
         currentLevelTitle = item;
@@ -442,6 +440,7 @@ class StoryMenuState extends MusicBeatState
 
     if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
+    repositionTitles();
     updateText();
     updateBackground(previousLevelId);
     updateProps();
@@ -661,5 +660,37 @@ class StoryMenuState extends MusicBeatState
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;
     // levelScore.accuracy
+  }
+
+  /**
+   * Reposition titles based on the currently selected one.
+   */
+  function repositionTitles()
+  {
+    var currentIndex:Int = levelList.indexOf(currentLevelId);
+
+    // The current item should be at y 480.
+    levelTitles.members[currentIndex].targetY = 480;
+
+    // Every item above it should be positioned in relation to the next item.
+    if (currentIndex > 0)
+    {
+      for (i in 0...currentIndex)
+      {
+        var itemIndex:Int = currentIndex - 1 - i;
+        var nextItem:LevelTitle = levelTitles.members[itemIndex + 1];
+        levelTitles.members[itemIndex].targetY = nextItem.targetY - Math.max(levelTitles.members[itemIndex].height + 20, 125);
+      }
+    }
+
+    // Every item below it should be positioned in relation to the previous item.
+    if (currentIndex < levelTitles.members.length - 1)
+    {
+      for (i in (currentIndex + 1)...levelTitles.members.length)
+      {
+        var previousItem:LevelTitle = levelTitles.members[i - 1];
+        levelTitles.members[i].targetY = previousItem.targetY + (previousItem.height + 20);
+      }
+    }
   }
 }
