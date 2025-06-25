@@ -16,6 +16,7 @@ import funkin.data.song.SongRegistry;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.song.Song;
 import funkin.ui.AtlasText;
 import funkin.ui.MusicBeatSubState;
 
@@ -33,6 +34,7 @@ typedef PauseSubStateParams =
 /**
  * The menu displayed when the Play State is paused.
  */
+@:nullSafety
 class PauseSubState extends MusicBeatSubState
 {
   // ===============
@@ -130,7 +132,7 @@ class PauseSubState extends MusicBeatSubState
   /**
    * The entries currently displayed in the pause menu.
    */
-  var currentMenuEntries:Array<PauseMenuEntry>;
+  var currentMenuEntries:Array<PauseMenuEntry> = [];
 
   /**
    * The index of `currentMenuEntries` that is currently selected.
@@ -180,7 +182,7 @@ class PauseSubState extends MusicBeatSubState
   // ===============
   // Audio Variables
   // ===============
-  var pauseMusic:FunkinSound;
+  var pauseMusic:Null<FunkinSound>;
 
   // ===============
   // Constructor
@@ -190,6 +192,13 @@ class PauseSubState extends MusicBeatSubState
   {
     super();
     this.currentMode = params?.mode ?? Standard;
+
+    background = new FunkinSprite(0, 0);
+    metadata = new FlxTypedSpriteGroup<FlxText>();
+    metadataArtist = new FlxText(20, 47, FlxG.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataDeaths = new FlxText(20, 111, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataPractice = new FlxText(20, 143, FlxG.width - 40, 'PRACTICE MODE');
+    menuEntryText = new FlxTypedSpriteGroup<AtlasText>();
   }
 
   // ===============
@@ -209,6 +218,8 @@ class PauseSubState extends MusicBeatSubState
 
     buildMetadata();
 
+    menuEntryText.scrollFactor.set(0, 0);
+    add(menuEntryText);
     regenerateMenu();
 
     transitionIn();
@@ -233,9 +244,12 @@ class PauseSubState extends MusicBeatSubState
   public override function destroy():Void
   {
     super.destroy();
-    charterFadeTween.cancel();
-    charterFadeTween = null;
-    pauseMusic.stop();
+    if (charterFadeTween != null)
+    {
+      charterFadeTween.cancel();
+      charterFadeTween = null;
+    }
+    pauseMusic?.stop();
   }
 
   // ===============
@@ -253,6 +267,7 @@ class PauseSubState extends MusicBeatSubState
     if (pauseMusic == null)
     {
       FlxG.log.warn('Could not play pause music: ${pauseMusicPath} does not exist!');
+      return;
     }
 
     // Start playing at a random point in the song.
@@ -266,7 +281,6 @@ class PauseSubState extends MusicBeatSubState
   function buildBackground():Void
   {
     // Using state.bgColor causes bugs!
-    background = new FunkinSprite(0, 0);
     background.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
     background.alpha = 0.0;
     background.scrollFactor.set(0, 0);
@@ -279,7 +293,6 @@ class PauseSubState extends MusicBeatSubState
    */
   function buildMetadata():Void
   {
-    metadata = new FlxTypedSpriteGroup<FlxText>();
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
@@ -292,7 +305,7 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.scrollFactor.set(0, 0);
     metadata.add(metadataSong);
 
-    metadataArtist = new FlxText(20, metadataSong.y + 32, FlxG.width - 40, 'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataArtist.y = metadataSong.y + 32;
     metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -310,12 +323,12 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, FlxG.width - 40, '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataDeaths.y = metadataDifficulty.y + 32;
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
-    metadataPractice = new FlxText(20, metadataDeaths.y + 32, FlxG.width - 40, 'PRACTICE MODE');
+    metadataPractice.y = metadataDeaths.y + 32;
     metadataPractice.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
@@ -461,7 +474,12 @@ class PauseSubState extends MusicBeatSubState
       var isCurrent:Bool = entryIndex == currentEntry;
 
       var entry:PauseMenuEntry = currentMenuEntries[entryIndex];
-      var text:AtlasText = entry.sprite;
+      var text:Null<AtlasText> = entry.sprite;
+      if (text == null)
+      {
+        FlxG.log.warn('Pause menu entry ${entry.text} does not have a text object!');
+        return;
+      }
 
       // Set the transparency.
       text.alpha = isCurrent ? 1.0 : 0.6;
@@ -521,7 +539,7 @@ class PauseSubState extends MusicBeatSubState
       case PauseMode.Difficulty:
         // Prepend the difficulties.
         var entries:Array<PauseMenuEntry> = [];
-        if (PlayState.instance.currentChart != null)
+        if (PlayState.instance?.currentChart != null)
         {
           var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation, true);
           trace('DIFFICULTIES: ${difficultiesInVariation}');
@@ -542,16 +560,9 @@ class PauseSubState extends MusicBeatSubState
 
   /**
    * Clear the `menuEntryText` group and render the current menu entries to it.
-   * We first create the `menuEntryText` group if it doesn't already exist.
    */
   function clearAndAddMenuEntries():Void
   {
-    if (menuEntryText == null)
-    {
-      menuEntryText = new FlxTypedSpriteGroup<AtlasText>();
-      menuEntryText.scrollFactor.set(0, 0);
-      add(menuEntryText);
-    }
     menuEntryText.clear();
 
     // Render out the entries depending on the mode.
@@ -618,6 +629,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static function resume(state:PauseSubState):Void
   {
+    if (PlayState.instance == null) return;
+
     // Resume a paused video if it exists.
     VideoCutscene.resumeVideo();
 
@@ -642,7 +655,16 @@ class PauseSubState extends MusicBeatSubState
    */
   static function changeDifficulty(state:PauseSubState, difficulty:String):Void
   {
-    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
+    if (PlayState.instance == null || PlayState.instance.currentSong == null) return;
+
+    var currentSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
+    if (currentSongNullable == null)
+    {
+      FlxG.log.warn('Could not find the current PlayState song!');
+      return;
+    }
+
+    PlayState.instance.currentSong = currentSongNullable;
 
     // Reset campaign score when changing difficulty
     // So if you switch difficulty on the last song of a week you get a really low overall score.
@@ -664,6 +686,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static function restartPlayState(state:PauseSubState):Void
   {
+    if (PlayState.instance == null) return;
+
     PlayState.instance.needsReset = true;
     state.close();
   }
@@ -686,6 +710,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static function restartVideoCutscene(state:PauseSubState):Void
   {
+    if (PlayState.instance == null) return;
+
     VideoCutscene.restartVideo();
     state.close();
   }
@@ -696,6 +722,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static function skipVideoCutscene(state:PauseSubState):Void
   {
+    if (PlayState.instance == null) return;
+
     VideoCutscene.finishVideo();
     state.close();
   }
@@ -732,7 +760,7 @@ class PauseSubState extends MusicBeatSubState
   {
     state.allowInput = false;
 
-    PlayState.instance.deathCounter = 0;
+    if (PlayState.instance != null) PlayState.instance.deathCounter = 0;
 
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
@@ -746,11 +774,11 @@ class PauseSubState extends MusicBeatSubState
       PlayStatePlaylist.reset();
     }
 
-    var stickerPackId:Null<String> = PlayState.instance.currentChart.stickerPack;
+    var stickerPackId:Null<String> = PlayState.instance?.currentChart?.stickerPack;
 
     if (stickerPackId == null)
     {
-      var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+      var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance?.currentChart?.characters?.player);
       var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
 
       if (playerCharacter != null)

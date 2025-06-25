@@ -6,6 +6,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 
+@:nullSafety
 class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 {
   public var scoreShit(default, set):Int = 0;
@@ -16,8 +17,9 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
   {
     if (group == null || group.members == null) return val;
     var loopNum:Int = group.members.length - 1;
-    var dumbNumb = Std.parseInt(Std.string(val));
-    var prevNum:ScoreNum;
+    var dumbNumbNullable:Null<Int> = Std.parseInt(Std.string(val));
+    if (dumbNumbNullable == null) return val;
+    var dumbNumb:Int = dumbNumbNullable;
 
     dumbNumb = Std.int(Math.min(dumbNumb, Math.pow(10, group.members.length) - 1));
 
@@ -25,18 +27,6 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
     {
       scoreStart += 1;
       group.members[loopNum].finalDigit = dumbNumb % 10;
-
-      // var funnyNum = group.members[loopNum];
-      // prevNum = group.members[loopNum + 1];
-
-      // if (prevNum != null)
-      // {
-      // funnyNum.x = prevNum.x - (funnyNum.width * 0.7);
-      // }
-
-      // funnyNum.y = (funnyNum.baseY - (funnyNum.height / 2)) + 73;
-      // funnyNum.x = (funnyNum.baseX - (funnyNum.width / 2)) + 450; // this plus value is hand picked lol!
-
       dumbNumb = Math.floor(dumbNumb / 10);
       loopNum--;
     }
@@ -52,6 +42,7 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 
   public function animateNumbers():Void
   {
+    if (group == null || group.members == null) return;
     for (i in group.members.length - scoreStart...group.members.length)
     {
       // if(i.finalDigit == 10) continue;
@@ -82,6 +73,7 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
   }
 }
 
+@:nullSafety
 class ScoreNum extends FlxSprite
 {
   public var digit(default, set):Int = 10;
@@ -138,8 +130,6 @@ class ScoreNum extends FlxSprite
     animation.play(numToString[digit], true, false, 0);
   }
 
-  public var shuffleTimer:FlxTimer;
-  public var finalTween:FlxTween;
   public var finalDelay:Float = 0;
 
   public var baseY:Float = 0;
@@ -157,7 +147,7 @@ class ScoreNum extends FlxSprite
       digit = digitRounded;
     };
 
-    finalTween = FlxTween.num(0.0, finalDigit, 23 / 24,
+    FlxTween.num(0.0, finalDigit, 23 / 24,
       {
         ease: FlxEase.quadOut,
         onComplete: function(input) {
@@ -188,7 +178,7 @@ class ScoreNum extends FlxSprite
   {
     var duration:Float = 41 / 24;
     var interval:Float = 1 / 24;
-    shuffleTimer = new FlxTimer().start(interval, shuffleProgress, Std.int(duration / interval));
+    new FlxTimer().start(interval, shuffleProgress, Std.int(duration / interval));
   }
 
   public function new(x:Float, y:Float)
