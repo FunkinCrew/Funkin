@@ -67,6 +67,7 @@ class MainMenuState extends MusicBeatState
   {
     super();
     overrideMusic = _overrideMusic;
+    FlxG.cameras.reset(new FunkinCamera('mainMenu')); // sigh
 
     menuItems = new MenuTypedList<AtlasMenuItem>();
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
@@ -79,8 +80,6 @@ class MainMenuState extends MusicBeatState
     #if FEATURE_DISCORD_RPC
     DiscordClient.instance.setPresence({state: "In the Menus", details: null});
     #end
-
-    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
 
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
