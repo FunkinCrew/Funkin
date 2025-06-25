@@ -49,7 +49,7 @@ class MainMenuState extends MusicBeatState
   var camFollow:FlxObject;
 
   #if mobile
-  var gyroPan:FlxPoint;
+  var gyroPan:Null<FlxPoint>;
   #end
 
   var overrideMusic:Bool = false;
@@ -271,17 +271,25 @@ class MainMenuState extends MusicBeatState
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
 
-    backButton.onConfirmStart.add(function():Void {
-      backButton.active = true;
-      goingBack = true;
-      menuItems.enabled = false;
-    });
+    if (backButton != null)
+    {
+      backButton.onConfirmStart.add(function():Void {
+        if (backButton == null) return;
+        backButton.active = true;
+        goingBack = true;
+        menuItems.enabled = false;
+      });
+    }
 
-    optionsButton.onConfirmStart.add(function():Void {
-      optionsButton.active = true;
-      goingToOptions = true;
-      menuItems.enabled = false;
-    });
+    if (optionsButton != null)
+    {
+      optionsButton.onConfirmStart.add(function():Void {
+        if (optionsButton == null) return;
+        optionsButton.active = true;
+        goingToOptions = true;
+        menuItems.enabled = false;
+      });
+    }
     #end
 
     super.create();
@@ -347,10 +355,16 @@ class MainMenuState extends MusicBeatState
   {
     magenta.visible = false;
     #if FEATURE_TOUCH_CONTROLS
-    backButton.animation.play('idle');
-    optionsButton.animation.play('idle');
-    backButton.resetCallbacks();
-    optionsButton.resetCallbacks();
+    if (backButton != null)
+    {
+      backButton.animation.play('idle');
+      backButton.resetCallbacks();
+    }
+    if (optionsButton != null)
+    {
+      optionsButton.animation.play('idle');
+      optionsButton.resetCallbacks();
+    }
     #end
     super.closeSubState();
   }
@@ -426,18 +440,18 @@ class MainMenuState extends MusicBeatState
     Conductor.instance.update();
 
     #if mobile
-    gyroPan.add(FlxG.gyroscope.pitch * -3, FlxG.gyroscope.roll * 3);
+    if (gyroPan != null && bg != null)
+    {
+      gyroPan.add(FlxG.gyroscope.pitch * -3, FlxG.gyroscope.roll * 3);
 
-    // our pseudo damping
-    gyroPan.x = MathUtil.smoothLerp(gyroPan.x, 0, elapsed, 5);
-    gyroPan.y = MathUtil.smoothLerp(gyroPan.y, 0, elapsed, 5);
+      // our pseudo damping
+      gyroPan.x = MathUtil.smoothLerp(gyroPan.x, 0, elapsed, 5);
+      gyroPan.y = MathUtil.smoothLerp(gyroPan.y, 0, elapsed, 5);
 
-    // how far away from bg mid do we want to pan via gyroPan
-    camFollow.x = bg.getGraphicMidpoint().x - gyroPan.x;
-    camFollow.y = bg.getGraphicMidpoint().y - gyroPan.y;
-
-    optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
-    backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
+      // how far away from bg mid do we want to pan via gyroPan
+      camFollow.x = bg.getGraphicMidpoint().x - gyroPan.x;
+      camFollow.y = bg.getGraphicMidpoint().y - gyroPan.y;
+    }
     #end
 
     if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
@@ -445,8 +459,14 @@ class MainMenuState extends MusicBeatState
       FlxG.sound.music.volume += 0.5 * elapsed;
     }
     handleInputs();
-
-    if (_exiting) menuItems.enabled = false;
+    if (menuItems != null)
+    {
+      #if mobile
+      if (optionsButton != null) optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
+      if (backButton != null) backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
+      #end
+      if (_exiting) menuItems.enabled = false;
+    }
   }
 
   function handleInputs():Void
