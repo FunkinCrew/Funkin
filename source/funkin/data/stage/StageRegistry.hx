@@ -5,6 +5,7 @@ import funkin.play.stage.ScriptedStage;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
+@:nullSafety
 class StageRegistry extends BaseRegistry<Stage, StageData> implements ISingleton implements DefaultRegistryImpl
 {
   /**
