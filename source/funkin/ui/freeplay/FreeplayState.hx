@@ -1785,8 +1785,9 @@ class FreeplayState extends MusicBeatSubState
    * Call generateSongList after this with the right parameters if you want the capsules to do their jump-in animation after changing difficulties.
    * @param change
    * @param force
+   * @param updateRank
    */
-  function changeDiff(change:Int = 0, force:Bool = false):Void
+  function changeDiff(change:Int = 0, force:Bool = false, updateRank:Bool = true):Void
   {
     touchTimer = 0;
     var previousVariation:String = currentVariation;
@@ -1843,7 +1844,7 @@ class FreeplayState extends MusicBeatSubState
         ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       generateSongList(currentFilter, false, true, true);
-      grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
+      grpCapsules.members[curSelected].refreshDisplay(updateRank);
     }
     else
     {
@@ -2149,8 +2150,8 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick +
         songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
-      changeDiff();
-      daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
+      changeDiff(0, false, false);
+      daSongCapsule.refreshDisplay(false);
     }
     else
     {
