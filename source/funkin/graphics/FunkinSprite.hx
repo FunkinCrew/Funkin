@@ -318,7 +318,7 @@ class FunkinSprite extends FlxSprite
     @:privateAccess
     for (key in FlxG.bitmap._cache.keys())
     {
-      var obj = FlxG.bitmap.get(key);
+      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
       if (obj == null) continue;
       if (obj.persist) continue;
       if (permanentCachedTextures.exists(key)) continue;
