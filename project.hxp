@@ -263,15 +263,15 @@ class Project extends HXProject
   /**
    * `-DFEATURE_COMPRESSED_TEXTURES`
    * If this flag is enabled, ASTC compressed textures will be used over uncompressed PNGs.
-   * Compressed ASTC textures provide lower memory usage but at the cost of a higher files size.
+   * Compressed ASTC textures provide lower memory usage but at the cost of a slightly higher files size & more GPU usage.
    * ASTC textures are GPU Rendered so they have a few cons:
-   * - Pixel Data cannot be read directly.
+   * - Pixel Data of bitmaps cannot be read nor edited directly.
    * - Some filters specifically the ones in openfl.filters package won't work properly because they directly modify the bitmap pixels.
-   * - ASync loading for GPU Textures seem bugged and results in a black texture (This is meant to be fixed soon because it's not supposed to happen.).
+   * - ASync loading for GPU Compressed Textures doesn't work due to OpenGL being single-threaded. (Looking online there seem to be some workarounds but it's pretty complicated...).
    * One thing to note is that ASTC textures aren't available on all platforms:
-   * - For iOS it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
-   * - For Android it's sorta mixed, but mostly any mid range phone from around 2018 does support ASTC.
-   * - For desktop it really all just depends on the GPU, but Windows with DirectX 12 should have supported.
+   * - For iOS, it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
+   * - For Android, it's sorta mixed, but mostly any mid range phone that came after 2017 does support ASTC.
+   * - For desktop, it apears to be only supported on Intergrated Graphics from our testing.
    */
   static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
 
@@ -843,6 +843,11 @@ class Project extends HXProject
     // Essential on mobile but delayed on desktop.
     // Please send targeted harassment to PhantomArcade about this.
     FEATURE_GHOST_TAPPING.apply(this, isMobile());
+
+    // Enable ASTC Compressed textures for mobile.
+    // Since mobile is pretty memory safe (I'm looking at you Apple...) we need them BADLY to have the game run properly.
+    // It's kept off for desktop due to the low ASTC support on desktop GPUs (which seem to be only among Intergrated Graphics).
+    FEATURE_COMPRESSED_TEXTURES.apply(this, isMobile() && isRelease());
   }
 
   /**
