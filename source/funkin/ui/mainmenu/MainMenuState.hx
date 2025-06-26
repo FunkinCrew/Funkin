@@ -246,7 +246,9 @@ class MainMenuState extends MusicBeatState
     // reset camera when debug menu is closed
     subStateClosed.add(_ -> resetCamStuff(false));
 
-    subStateOpened.add(sub -> {
+    // TODO: Why does this specific function break with null safety?
+    @:nullSafety(Off)
+    subStateOpened.add((sub:FlxSubState) -> {
       if (Type.getClass(sub) == FreeplayState)
       {
         new FlxTimer().start(0.5, _ -> {
