@@ -3399,18 +3399,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();
-    handleSnap();
     handleCursor();
+
+    if (!(isHaxeUIFocused || isCursorOverHaxeUI))
+    {
+      handleSnap();
+      handlePlayhead();
+      handleEditKeybinds();
+    }
 
     handleMenubar();
     handleToolboxes();
     handlePlaybar();
-    handlePlayhead();
     handleNotePreview();
     handleHealthIcons();
 
     handleFileKeybinds();
-    handleEditKeybinds();
     handleViewKeybinds();
     handleTestKeybinds();
     handleHelpKeybinds();
