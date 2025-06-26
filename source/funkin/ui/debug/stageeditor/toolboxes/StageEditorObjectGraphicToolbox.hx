@@ -137,7 +137,9 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
       // Set the names of the frames.
       for (i in 0...linkedObj.frames.frames.length)
       {
-        linkedObj.frames.framesHash.set('Frame$i', linkedObj.frames.frames[i]);
+        @:privateAccess
+        linkedObj.frames.framesByName.set('Frame$i', linkedObj.frames.frames[i]);
+
         linkedObj.frames.frames[i].name = 'Frame$i';
       }
 
@@ -146,7 +148,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
 
       stageEditorState.updateDialog(OBJECT_ANIMS);
     }
-    
+
     this.onDialogClosed = onClose;
   }
 
