@@ -54,7 +54,7 @@ class OptionsState extends MusicBeatState
 
     persistentUpdate = true;
 
-    drumsBG = FunkinSound.load(Paths.music('placeholder/drumsPlaceholder'), 0, true, false, false, false);
+    drumsBG = FunkinSound.load(Paths.music('offsetsLoop/drumsLoop'), 0, true, false, false, false);
 
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
@@ -174,7 +174,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #if FEATURE_INPUT_OFFSETS
     createItem("INPUT OFFSETS", function() {
       FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
-        FunkinSound.playMusic('placeholder',
+        FunkinSound.playMusic('offsetsLoop',
           {
             startingVolume: 0,
             overrideExisting: true,

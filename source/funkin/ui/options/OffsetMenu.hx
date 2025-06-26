@@ -60,7 +60,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   var testStrumline:Strumline;
 
   var menuCamera:FunkinCamera;
-  var camFollow:FlxObject;
+  // var camFollow:FlxObject;
   var savedOffset:Int = 0;
 
   var tempOffset:Int = 0;
@@ -78,7 +78,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   var localConductor:Conductor;
 
-  var arrowBeat = 0;
+  var arrowBeat:Float = 0;
 
   var _gotMad:Bool = false;
 
@@ -235,7 +235,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     // center
     testStrumline.setPosition(FlxG.width / 2, FlxG.height / 2);
     testStrumline.x -= testStrumline.width / 2;
-    testStrumline.y = Preferences.downscroll ? FlxG.height - testStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
     testStrumline.scrollFactor.set(0, 0);
     add(testStrumline);
 
@@ -332,31 +331,45 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     });
     createButtonItem('Test', function() {
       shouldOffset = 1;
-      jumpInText.y = 350;
+      testStrumline.clean();
+      testStrumline.noteData = [];
+      testStrumline.nextNoteIndex = 0;
+
+      localConductor.update(FlxG.sound.music.time, true);
+      arrowBeat = Math.floor(localConductor.currentBeatTime);
 
       jumpInText.text = 'Hit the notes as they come in!';
+      #if mobile
       if (OptionsState.instance.hitbox != null) OptionsState.instance.hitbox.visible = true;
+      #end
       MenuTypedList.pauseInput = true;
       OptionsState.instance.drumsBG.fadeIn(1, 0, 1);
       canExit = false;
       differences = [];
 
-      testStrumline.fadeInArrows();
+      #if !mobile
+      testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
+        - Constants.STRUMLINE_Y_OFFSET;
+      testStrumline.isDownscroll = Preferences.downscroll;
+      #end
+      jumpInText.y = testStrumline.y + 175;
+      #if !mobile if (Preferences.downscroll) #end jumpInText.y = testStrumline.y - 175;
+
     });
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
     PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
 
-    camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
-    if (items != null) camFollow.y = items.selectedItem.y;
+    // camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
+    // if (items != null) camFollow.y = items.selectedItem.y;
 
-    menuCamera.follow(camFollow, null, 0.085);
-    var margin = 160;
-    menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
-    menuCamera.minScrollY = 0;
+    // menuCamera.follow(camFollow, null, 0.085);
+    // var margin = 160;
+    // menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
+    // menuCamera.minScrollY = 0;
 
-    items.onChange.add(function(selected) {
-      camFollow.y = selected.y;
-    });
+    // items.onChange.add(function(selected) {
+    //  camFollow.y = selected.y;
+    // });
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, handleMobileExit);
     #if FEATURE_TOUCH_CONTROLS
     add(backButton);
@@ -385,12 +398,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   public function exitCalibration(cancel:Bool):Void
   {
     shouldOffset = -1;
+    #if mobile
     if (OptionsState.instance.hitbox != null) OptionsState.instance.hitbox.visible = false;
-
-    if (!calibrating)
-    {
-      testStrumline.fadeOutArrows();
-    }
+    #end
     tempOffset = 0;
     if (cancel)
     {
@@ -458,7 +468,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   {
     differences.push(ms);
 
-    if (differences.length > 2 && differences.length % 2 != 0)
+    if (differences.length > 2 && differences.length % 2 != 0 && calibrating)
     {
       var avg:Float = getAverage();
       tempOffset = -Std.int(avg);
@@ -468,28 +478,57 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   var _lastBeat:Float = 0;
+  var _lastTime:Float = 0;
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    localConductor.update();
+    localConductor.update(localConductor.songPosition + elapsed * 1000, false);
 
     var b:Float = localConductor.currentBeatTime;
 
-    if (b < _lastBeat) // we restarted the song
+    // Restart logic
+    if (FlxG.sound.music.time < _lastTime)
     {
-      arrowBeat = Math.floor(b) + 2;
+      localConductor.update(FlxG.sound.music.time, !calibrating);
+
       // Update arrows to be the correct distance away from the receptor.
+      var lastArrowBeat:Float = 0;
       for (i in 0...arrows.length)
       {
         var arrow:ArrowData = arrows[i];
         var beatDiff:Float = arrow.beat - _lastBeat;
 
         arrow.beat = b + beatDiff;
+        lastArrowBeat = arrow.beat;
       }
+      if (calibrating)
+      {
+        arrowBeat = lastArrowBeat + 2;
+      }
+      else
+        arrowBeat = 4;
+
       testStrumline.clean();
+      testStrumline.noteData = [];
+      testStrumline.nextNoteIndex = 0;
     }
 
     _lastBeat = b;
+
+    // Resync logic
+    var diff:Float = Math.abs(FlxG.sound.music.time - localConductor.songPosition);
+    if (diff > 50)
+    {
+      trace('Resyncing conductor: ' + diff + 'ms difference');
+
+      // If the difference is greater than 50ms, we resync the conductor.
+      localConductor.update(FlxG.sound.music.time, true);
+      b = localConductor.currentBeatTime;
+      _lastBeat = b;
+    }
+
+    _lastTime = FlxG.sound.music.time;
+
 
     if (controls.BACK && shouldOffset == 1)
     {
@@ -545,7 +584,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         arrows.remove(arrow);
       }
 
-      while (b >= arrowBeat - 1)
+      while (b >= arrowBeat - 1 && b < 190)
       {
         // trace("Spawning arrow at beat: " + arrowBeat);
         // Create a new arrow at the next beat division.
@@ -591,7 +630,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         addDifference(ms);
 
-        if (differences.length > 16)
+        if (differences.length >= 16)
         {
           jumpInText.text = 'Calibration complete!';
           Preferences.globalOffset = tempOffset;
@@ -619,7 +658,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       processInputQueue();
 
-      while (b >= arrowBeat - 2)
+      // trace(b + ' - ' + arrowBeat);
+
+      while (b >= arrowBeat - 2 && b < 188)
       {
         // trace("Spawning arrow at beat: " + arrowBeat);
         // Create a new arrow at the next beat division.
@@ -674,7 +715,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     blackRect.alpha = FlxMath.lerp(0, 0.5, FlxEase.cubeInOut(lerped));
 
-    var yLerp = FlxMath.lerp(-485, 150, FlxEase.cubeInOut(lerped));
+    var yLerp = FlxMath.lerp(-480, 100, FlxEase.cubeInOut(lerped));
     var xLerp = FlxMath.lerp(0, FlxG.width, FlxEase.cubeInOut(offsetLerp));
 
     // center
@@ -696,6 +737,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
     else
     {
+      testStrumline.alpha = FlxMath.lerp(0, 1, FlxEase.cubeInOut(offsetLerp));
       backButton.y = FlxMath.lerp(FlxG.height - 200, 50, FlxEase.cubeInOut(offsetLerp));
     }
 
@@ -757,7 +799,18 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
-    var noteDiff:Int = Std.int(localConductor.songPosition - note.noteData.time - inputLatencyMs);
+    var diff:Float = note.noteData.time - localConductor.songPosition;
+
+    trace('Input latency: ' + inputLatencyMs + 'ms (diff: ' + diff + 'ms)');
+
+    var totalDiff:Float = diff;
+    if (totalDiff < 0) totalDiff = diff + inputLatencyMs;
+    else
+      totalDiff = diff - inputLatencyMs;
+
+    var noteDiff:Int = Std.int(totalDiff);
+
+    addDifference(noteDiff);
 
     if (noteDiff == 0)
     {
@@ -765,8 +818,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
     else
     {
-      jumpInText.text = noteDiff < 0 ? 'Early!\n' + noteDiff + 'ms' : 'Late!\n' + noteDiff + 'ms';
+      jumpInText.text = noteDiff > 0 ? 'Early!\n' + noteDiff + 'ms' : 'Late!\n' + noteDiff + 'ms';
     }
+
+    jumpInText.text += '\nAvg: ' + Std.int(getAverage()) + 'ms';
 
     testStrumline.hitNote(note);
   }
@@ -794,7 +849,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
-      trace('Processing input: ' + input.noteDirection + ' with ' + notesInDirection.length + ' notes in range.');
+      // trace('Processing input: ' + input.noteDirection + ' with ' + notesInDirection.length + ' notes in range.');
 
       if (notesInDirection.length == 0)
       {

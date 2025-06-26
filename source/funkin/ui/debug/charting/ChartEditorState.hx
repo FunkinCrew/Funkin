@@ -5259,6 +5259,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (playbarHeadLayout == null) throw "ERROR: Tried to handle playbar, but playbarHeadLayout is null!";
 
+    if (Conductor.instance == null || playbarSongRemaining == null) return;
+
     // Move the playhead to match the song position, if we aren't dragging it.
     playbarHeadLayout.playbarHead.pos = currentScrollEase;
 

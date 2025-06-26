@@ -88,8 +88,8 @@ class FunkinMemory
     permanentCacheSound(Paths.sound("soundtray/VolMAX"));
     permanentCacheSound(Paths.sound("soundtray/Volup"));
     permanentCacheSound(Paths.music("freakyMenu/freakyMenu"));
-    permanentCacheSound(Paths.music("placeholder/placeholder"));
-    permanentCacheSound(Paths.music("placeholder/drumsPlaceholder"));
+    permanentCacheSound(Paths.music("offsetsLoop/offsetsLoop"));
+    permanentCacheSound(Paths.music("offsetsLoop/drumsLoop"));
     permanentCacheSound(Paths.sound("missnote1", "shared"));
     permanentCacheSound(Paths.sound("missnote2", "shared"));
     permanentCacheSound(Paths.sound("missnote3", "shared"));

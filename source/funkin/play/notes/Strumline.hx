@@ -158,15 +158,20 @@ class Strumline extends FlxSpriteGroup
 
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
-  final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) || #end Preferences.downscroll;
+  public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) || #end Preferences.downscroll;
 
   /**
-   * The note data for the song. Should NOT be altered after the song starts,
+   * The note data for the song. Should NOT be altered after the song starts (but we alter it in OffsetState :DDD),
    * so we can easily rewind.
    */
-  var noteData:Array<SongNoteData> = [];
+  public var noteData:Array<SongNoteData> = [];
 
-  var nextNoteIndex:Int = -1;
+  /**
+   * The index of the next note to be rendered.
+   * This is used to avoid splicing the noteData array, which is slow.
+   * It is incremented every time a note is rendered.
+   */
+  public var nextNoteIndex:Int = -1;
 
   var heldKeys:Array<Bool> = [];
 
@@ -548,9 +553,12 @@ class Strumline extends FlxSpriteGroup
       {
         // Note is in the past, skip it.
         nextNoteIndex = noteIndex + 1;
+        // trace("Strumline: Skipping note at index " + noteIndex + " with strum time " + note.time);
         continue;
       }
       if (note.time > renderWindowStart) break; // Note is too far ahead to render
+
+      // trace("Strumline: Rendering note at index " + noteIndex + " with strum time " + note.time);
 
       var noteSprite:NoteSprite = buildNoteSprite(note);
 
