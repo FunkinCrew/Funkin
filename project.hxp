@@ -271,7 +271,7 @@ class Project extends HXProject
    * One thing to note is that ASTC textures aren't available on all platforms:
    * - For iOS, it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
    * - For Android, it's sorta mixed, but mostly any mid range phone that came after 2017 does support ASTC.
-   * - For desktop, it apears to be only supported on Intergrated Graphics from our testing.
+   * - For desktop, it appears to be only supported on Intergrated Graphics from our testing.
    */
   static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
 
