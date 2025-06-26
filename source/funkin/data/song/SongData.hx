@@ -140,7 +140,7 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public function toString():String
   {
-    return 'SongMetadata(${this.songName} by ${this.artist} and ${this.charter}, variation ${this.variation})';
+    return 'SongMetadata(${this.songName} by ${this.artist}, charted by ${this.charter}, variation ${this.variation})';
   }
 }
 
