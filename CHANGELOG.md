@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the Chart Editor timer occasionally displaying incorrect millisecond values. ([26dc895](https://github.com/FunkinCrew/Funkin/commit/26dc895a27e0d7e49469251cd68b83be66384e15)) - by @Hundrec in [#4257](https://github.com/FunkinCrew/Funkin/pull/4257)
 - The Chart Editor "Load Metadata File" and "Load Chart File" buttons now function properly. ([5eecef1](https://github.com/FunkinCrew/Funkin/commit/5eecef17a143cbc8cf2307bc29a20c96b8eed6a8)) - by @Lasercar in [#4278](https://github.com/FunkinCrew/Funkin/pull/4278)
 - The debug cursor is now always hidden when the game starts. ([6222c38](https://github.com/FunkinCrew/Funkin/commit/6222c389e301fa2bb4939697376c4e51e29a9977)) - by @Hundrec in [#4520](https://github.com/FunkinCrew/Funkin/pull/4520)
-- Fixed Newgrounds score submissions for Lit Up and Lit Up (BF Mix). ([183cec6](https://github.com/FunkinCrew/Funkin/commit/183cec62dc1fd3c7f3f634dd3e2400e6ee77b476)) - by @Raltryo in [#4577](https://github.com/FunkinCrew/Funkin/pull/4577)
+- Fixed Newgrounds score submissions for Lit Up and Lit Up (BF Mix). ([183cec6](https://github.com/FunkinCrew/Funkin/commit/183cec62dc1fd3c7f3f634dd3e2400e6ee77b476)) - by @Raltyro in [#4577](https://github.com/FunkinCrew/Funkin/pull/4577)
 - Freeplay song capsules now cycle through long names consistently. ([ae086e7](https://github.com/FunkinCrew/Funkin/commit/ae086e7810437069efd3a4afbd55a5c303f473fb)) - by @VioletSnowLeopard in [#4677](https://github.com/FunkinCrew/Funkin/pull/4677)
 - Properly blacklist a certain class from scripts. ([3dc7699](https://github.com/FunkinCrew/Funkin/commit/3dc7699aac737998b637ff9a9f16986a434424be)) - by @charlesisfeline in [#4773](https://github.com/FunkinCrew/Funkin/pull/4773)
 - The song countdown no longer stacks when restarting or continues behind the Pause Menu. ([63eca96](https://github.com/FunkinCrew/Funkin/commit/63eca96c98a87e7155df8b2a1735f269ea83e1b5)) - by @NotHyper-474 in [#4875](https://github.com/FunkinCrew/Funkin/pull/4875)
@@ -93,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * @KutikiPlayz made their first contribution in [#3544](https://github.com/FunkinCrew/Funkin/pull/3544)
 * @xenkap made their first contribution in [#3732](https://github.com/FunkinCrew/Funkin/pull/3732)
-* @Raltryo made their first contribution in [#4577](https://github.com/FunkinCrew/Funkin/pull/4577)
+* @Raltyro made their first contribution in [#4577](https://github.com/FunkinCrew/Funkin/pull/4577)
 * @biomseed made their first contribution in [#78](https://github.com/FunkinCrew/funkin.assets/pull/78)
 * @qt2k4 made their first contribution in [#149](https://github.com/FunkinCrew/funkin.assets/pull/149)
 * @ExtraCode75 made their first contribution in [#158](https://github.com/FunkinCrew/funkin.assets/pull/158)
