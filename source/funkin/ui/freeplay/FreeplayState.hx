@@ -2203,6 +2203,27 @@ class FreeplayState extends MusicBeatSubState
       var previewSong:Null<Song> = daSongCapsule?.freeplayData?.data;
       if (previewSong == null) return;
 
+      // Check if the song allows for playing replays. If not, play the random track.
+      if (!previewSong.canPlayPreview(currentDifficulty, currentVariation))
+      {
+        var funkinMusic:Null<FunkinSound> = (Std.isOfType(FlxG.sound.music, FunkinSound) ? cast(FlxG.sound.music, FunkinSound) : null);
+        @:privateAccess
+        if ((funkinMusic?._label ?? 'unknown') == Paths.music("freeplayRandom/freeplayRandom"))
+        {
+          // If the random track is already playing, don't do anything.
+          return;
+        }
+
+        FunkinSound.playMusic('freeplayRandom',
+          {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: false
+          });
+        FlxG.sound.music.fadeIn(2, 0, 0.8);
+        return;
+      }
+
       // Check if character-specific difficulty exists
       var songDifficulty:Null<SongDifficulty> = previewSong.getDifficulty(currentDifficulty, currentVariation);
 
