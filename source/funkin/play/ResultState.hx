@@ -48,6 +48,7 @@ import funkin.mobile.util.AdMobUtil;
 import funkin.mobile.util.InAppReviewUtil;
 #end
 #end
+import funkin.util.DeviceUtil;
 
 /**
  * The state for the results screen after a song or week is finished.
@@ -594,11 +595,12 @@ class ResultState extends MusicBeatSubState
       // ratingsPopin.animation.play("idle");
       // ratingsPopin.visible = true;
 
-      ratingsPopin.animation.onFinish.add(anim -> {
-        // scorePopin.animation.play("score");
+      ratingsPopin.animation.onFinish.add(anim ->
+        {
+          // scorePopin.animation.play("score");
 
-        // scorePopin.visible = true;
-      });
+          // scorePopin.visible = true;
+        });
     }
 
     refresh();
@@ -1049,6 +1051,16 @@ class ResultState extends MusicBeatSubState
             }
             else
             {
+              FlxG.signals.preStateSwitch.addOnce(function() {
+                #if ios
+                trace(DeviceUtil.iPhoneNumber);
+                if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+                else
+                  funkin.FunkinMemory.purgeCache();
+                #else
+                funkin.FunkinMemory.purgeCache(true);
+                #end
+              });
               FlxG.switchState(() -> targetState);
             }
           }
@@ -1069,6 +1081,16 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
+        FlxG.signals.preStateSwitch.addOnce(function() {
+          #if ios
+          trace(DeviceUtil.iPhoneNumber);
+          if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+          else
+            funkin.FunkinMemory.purgeCache();
+          #else
+          funkin.FunkinMemory.purgeCache(true);
+          #end
+        });
         FlxG.switchState(() -> targetState);
       }
     }
