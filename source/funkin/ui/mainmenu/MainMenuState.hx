@@ -166,6 +166,7 @@ class MainMenuState extends MusicBeatState
         {
           character: targetCharacter
         }));
+      canInteract = true;
     });
 
     if (hasUpgraded)
@@ -185,6 +186,7 @@ class MainMenuState extends MusicBeatState
       createMenuItem('upgrade', 'mainmenu/upgrade', function() {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
+        canInteract = true;
         #end
       });
     }
@@ -396,6 +398,7 @@ class MainMenuState extends MusicBeatState
   function selectMerch()
   {
     Referral.doMerchReferral();
+    canInteract = true;
   }
   #end
 
