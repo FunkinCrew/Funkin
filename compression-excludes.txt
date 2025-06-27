@@ -1,6 +1,8 @@
 assets/preload/images/cursor/*
 assets/preload/images/freeplay/*
 assets/preload/images/icons/*
+assets/preload/images/titleEnter.png
+assets/preload/images/titleEnter_mobile.png
 assets/preload/images/soundtray/*
 assets/preload/images/stageBuild/*
 assets/preload/images/ui/popup/pixel/
