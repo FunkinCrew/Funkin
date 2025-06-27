@@ -184,7 +184,7 @@ class InAppPurchasesUtil
               {
                 if (onPurchased != null) onPurchased();
 
-                IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                if (!IAPAndroid.onPurchasesUpdated.has(purchasesUpdatedEvent)) IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
               }
             }
           }
@@ -203,21 +203,18 @@ class InAppPurchasesUtil
           {
             if (purchase.getPaymentProductIdentifier() == id)
             {
-              switch (purchase.getTransactionState())
+              if (purchase.getTransactionState() == IAPPurchaseState.PURCHASED)
               {
-                case IAPPurchaseState.PURCHASED | IAPPurchaseState.RESTORED:
-                  if (onPurchased != null) onPurchased();
-
-                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
-                case IAPPurchaseState.FAILED:
-                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
-                default:
+                if (onPurchased != null) onPurchased();
+                IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
               }
             }
           }
         }
-
-        IAPIOS.onPurchasesUpdated.add(purchasesUpdatedEvent);
+        if (!IAPIOS.onPurchasesUpdated.has(purchasesUpdatedEvent))
+        {
+          IAPIOS.onPurchasesUpdated.add(purchasesUpdatedEvent);
+        }
         IAPIOS.purchaseProduct(product);
         return;
       }
