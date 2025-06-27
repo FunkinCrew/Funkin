@@ -2552,7 +2552,7 @@ class PlayState extends MusicBeatSubState
         {
           // Judge the miss.
           // NOTE: This is what handles the scoring.
-          trace('Missed note! ${note.noteData}');
+          // trace('Missed note! ${note.noteData}');
           onNoteMiss(note, event.playSound, event.healthChange);
         }
 

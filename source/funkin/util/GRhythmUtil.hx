@@ -65,10 +65,6 @@ class GRhythmUtil
 
     if (note.hasMissed || note.hasBeenHit)
     {
-      note.tooEarly = false;
-      note.hasMissed = false;
-      note.mayHit = false;
-
       return {botplayHit: false, cont: false };
     }
 
@@ -78,8 +74,8 @@ class GRhythmUtil
       note.tooEarly = false;
       note.hasMissed = true;
       note.mayHit = false;
-      if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
-        return {botplayHit: false, cont: false };
+      if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
+      return {botplayHit: false, cont: true};
     }
 
     // Check if we're not being controlled (ie, botplay/opponent)

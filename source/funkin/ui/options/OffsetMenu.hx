@@ -247,10 +247,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       testStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
       testStrumline.setNoteSpacing(playerNoteSpacing);
-      for (strum in testStrumline)
-      {
-        strum.width *= 2;
-      }
+      testStrumline.width *= 2;
 
       testStrumline.x = (FlxG.width - testStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
       testStrumline.y = (FlxG.height - testStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
@@ -324,7 +321,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       tempOffset = 0;
       appliedOffsetLerp = 0;
 
-      arrowBeat = Math.floor(localConductor.currentBeatTime) + 2;
+      arrowBeat = Math.floor(localConductor.currentBeatTime) + 4;
       receptor.angle = 0;
 
       _gotMad = false;
@@ -336,7 +333,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.nextNoteIndex = 0;
 
       localConductor.update(FlxG.sound.music.time, true);
-      arrowBeat = Math.floor(localConductor.currentBeatTime);
+      arrowBeat = Math.floor(localConductor.currentBeatTime) + 4;
 
       jumpInText.text = 'Hit the notes as they come in!';
       #if mobile
@@ -516,7 +513,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     _lastBeat = b;
 
     // Resync logic
-    var diff:Float = Math.abs(FlxG.sound.music.time - localConductor.songPosition);
+    var diff:Float = Math.abs((FlxG.sound.music.time + localConductor.combinedOffset) - localConductor.songPosition);
     if (diff > 50)
     {
       trace('Resyncing conductor: ' + diff + 'ms difference');
@@ -584,11 +581,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         arrows.remove(arrow);
       }
 
-      while (b >= arrowBeat - 1 && b < 190)
+      while (b >= arrowBeat - 1)
       {
         // trace("Spawning arrow at beat: " + arrowBeat);
         // Create a new arrow at the next beat division.
-        arrowBeat = arrowBeat + 2;
+        arrowBeat = (arrowBeat - (arrowBeat % 2)) + 2;
         var nextBeat:Float = arrowBeat;
         createArrow(nextBeat);
       }
