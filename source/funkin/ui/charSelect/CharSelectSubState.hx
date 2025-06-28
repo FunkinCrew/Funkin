@@ -57,7 +57,6 @@ class CharSelectSubState extends MusicBeatSubState
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
   var cursorLocIntended:FlxPoint = new FlxPoint(0, 0);
-  var lerpAmnt:Float = 0.95;
   var tmrFrames:Int = 60;
   var currentStage:Stage;
   var playerChill:CharSelectPlayer;
@@ -786,12 +785,14 @@ class CharSelectSubState extends MusicBeatSubState
 
     mobileAccept = false;
 
-    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R || TouchUtil.justReleased) selectSound.pitch = 1;
+    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R #if FEATURE_TOUCH_CONTROLS || TouchUtil.justReleased #end)
+      selectSound.pitch = 1;
 
     syncAudio(elapsed);
 
     if (allowInput && !pressedSelect)
     {
+      #if FEATURE_TOUCH_CONTROLS
       if (TouchUtil.pressed || TouchUtil.justReleased)
       {
         for (i => hitbox in grpHitboxes.members)
@@ -822,6 +823,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         mobileAccept = true;
       }
+      #end
 
       //
       if (controls.UI_UP) holdTmrUp += elapsed;
@@ -913,7 +915,7 @@ class CharSelectSubState extends MusicBeatSubState
     {
       curChar = availableChars.get(getCurrentSelected());
 
-      if (allowInput && pressedSelect && (controls.BACK || (mobileDeny && TouchUtil.justReleased)))
+      if (allowInput && pressedSelect && (controls.BACK #if FEATURE_TOUCH_CONTROLS || (mobileDeny && TouchUtil.justReleased) #end))
       {
         mobileDeny = false;
         cursorConfirmed.visible = false;
@@ -969,7 +971,9 @@ class CharSelectSubState extends MusicBeatSubState
           goToFreeplay();
         });
       }
+      #if FEATURE_TOUCH_CONTROLS
       else if (pressedSelect && TouchUtil.justReleased) mobileDeny = true;
+      #end
 
       mobileAccept = false;
     }
@@ -1011,14 +1015,14 @@ class CharSelectSubState extends MusicBeatSubState
     cursorLocIntended.x += cursorOffsetX;
     cursorLocIntended.y += cursorOffsetY;
 
-    cursor.x = MathUtil.smoothLerp(cursor.x, cursorLocIntended.x, elapsed, 0.1);
-    cursor.y = MathUtil.smoothLerp(cursor.y, cursorLocIntended.y, elapsed, 0.1);
+    cursor.x = MathUtil.snap(MathUtil.smoothLerpPrecision(cursor.x, cursorLocIntended.x, elapsed, 0.1), cursorLocIntended.x, 1);
+    cursor.y = MathUtil.snap(MathUtil.smoothLerpPrecision(cursor.y, cursorLocIntended.y, elapsed, 0.1), cursorLocIntended.y, 1);
 
-    cursorBlue.x = MathUtil.coolLerp(cursorBlue.x, cursor.x, lerpAmnt * 0.4);
-    cursorBlue.y = MathUtil.coolLerp(cursorBlue.y, cursor.y, lerpAmnt * 0.4);
+    cursorBlue.x = MathUtil.smoothLerpPrecision(cursorBlue.x, cursor.x, elapsed, 0.202);
+    cursorBlue.y = MathUtil.smoothLerpPrecision(cursorBlue.y, cursor.y, elapsed, 0.202);
 
-    cursorDarkBlue.x = MathUtil.coolLerp(cursorDarkBlue.x, cursorLocIntended.x, lerpAmnt * 0.2);
-    cursorDarkBlue.y = MathUtil.coolLerp(cursorDarkBlue.y, cursorLocIntended.y, lerpAmnt * 0.2);
+    cursorDarkBlue.x = MathUtil.smoothLerpPrecision(cursorDarkBlue.x, cursorLocIntended.x, elapsed, 0.404);
+    cursorDarkBlue.y = MathUtil.smoothLerpPrecision(cursorDarkBlue.y, cursorLocIntended.y, elapsed, 0.404);
 
     cursorConfirmed.x = cursor.x - 2;
     cursorConfirmed.y = cursor.y - 4;

@@ -56,13 +56,6 @@
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
-      "name": "flixel-text-input",
-      "type": "git",
-      "dir": null,
-      "ref": "951a0103a17bfa55eed86703ce50b4fb0d7590bc",
-      "url": "https://github.com/FunkinCrew/flixel-text-input"
-    },
-    {
       "name": "flxanimate",
       "type": "git",
       "dir": null,
@@ -85,7 +78,7 @@
       "name": "grig.audio",
       "type": "git",
       "dir": "src",
-      "ref": "bcfc273ca6d52827bc5b1d910115ce212b50b76b",
+      "ref": "8567c4dad34cfeaf2ff23fe12c3796f5db80685e",
       "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
@@ -97,14 +90,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "07fc7aa8098deaea633b0726d01f83eb4ef8a832",
+      "ref": "47ee9f5fa02d422e186e844f87e68220cabfcc5b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "b899a4c7d7318c5ff2b1bb645fbc73728fad1ac9",
+      "ref": "100f2c96beab619cfe72c567a058c41c71e3e998",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -118,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "d5d9bd200e509f2e6022c8999c91543a0fda30c6",
+      "ref": "4e24283a047f11bded6affabbc9ec405156e026e",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -177,7 +170,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "295d9458d59bae9556a16724634a5a99f9fc3cf5",
+      "ref": "045ede0363120ff0425529a4902e4da44fd6d293",
       "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {

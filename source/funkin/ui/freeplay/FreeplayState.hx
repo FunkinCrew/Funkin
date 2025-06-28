@@ -1329,7 +1329,8 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
     new FlxTimer().start(0.9, _ -> {
-      FlxG.switchState(new funkin.ui.charSelect.CharSelectSubState({character: currentCharacterId} // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
+      FlxG.switchState(() ->
+        new funkin.ui.charSelect.CharSelectSubState({character: currentCharacterId} // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
       ));
     });
     for (grpSpr in exitMoversCharSel.keys())
@@ -1501,8 +1502,8 @@ class FreeplayState extends MusicBeatSubState
       changeSelection(grpCapsules.countLiving() - curSelected - 1);
     }
 
-    lerpScore = MathUtil.smoothLerp(lerpScore, intendedScore, elapsed, 0.5);
-    lerpCompletion = MathUtil.smoothLerp(lerpCompletion, intendedCompletion, elapsed, 0.5);
+    lerpScore = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpScore, intendedScore, elapsed, 0.2), intendedScore, 1);
+    lerpCompletion = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpCompletion, intendedCompletion, elapsed, 0.5), intendedCompletion, 1 / 100);
 
     if (Math.isNaN(lerpScore))
     {
@@ -1898,6 +1899,7 @@ class FreeplayState extends MusicBeatSubState
 
       for (diff in grpDifficulties.group.members)
       {
+        if (busy) break;
         if (diff == null || diff.difficultyId != currentDifficulty) continue;
         if (!TouchUtil.overlaps(diff, funnyCam))
         {
@@ -1906,7 +1908,7 @@ class FreeplayState extends MusicBeatSubState
         }
         draggingDifficulty = true;
 
-        if (TouchUtil.justPressed) _dragOffset = diff.x - TouchUtil.touch.x;
+        if (_dragOffset == 0 && TouchUtil.pressed) _dragOffset = diff.x - TouchUtil.touch.x;
         diff.x = TouchUtil.touch.x + _dragOffset;
 
         if (TouchUtil.justReleased)

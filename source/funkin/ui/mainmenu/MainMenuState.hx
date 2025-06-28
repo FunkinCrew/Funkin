@@ -166,6 +166,7 @@ class MainMenuState extends MusicBeatState
         {
           character: targetCharacter
         }));
+      canInteract = true;
     });
 
     if (hasUpgraded)
@@ -185,6 +186,7 @@ class MainMenuState extends MusicBeatState
       createMenuItem('upgrade', 'mainmenu/upgrade', function() {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
+        canInteract = true;
         #end
       });
     }
@@ -396,6 +398,7 @@ class MainMenuState extends MusicBeatState
   function selectMerch()
   {
     Referral.doMerchReferral();
+    canInteract = true;
   }
   #end
 
@@ -450,11 +453,11 @@ class MainMenuState extends MusicBeatState
     #if mobile
     if (gyroPan != null && bg != null)
     {
-      gyroPan.add(FlxG.gyroscope.pitch * -3, FlxG.gyroscope.roll * 3);
+      gyroPan.add(FlxG.gyroscope.pitch * -1.25, FlxG.gyroscope.roll * -1.25);
 
       // our pseudo damping
-      gyroPan.x = MathUtil.smoothLerp(gyroPan.x, 0, elapsed, 5);
-      gyroPan.y = MathUtil.smoothLerp(gyroPan.y, 0, elapsed, 5);
+      gyroPan.x = MathUtil.smoothLerpPrecision(gyroPan.x, 0, elapsed, 2.5);
+      gyroPan.y = MathUtil.smoothLerpPrecision(gyroPan.y, 0, elapsed, 2.5);
 
       // how far away from bg mid do we want to pan via gyroPan
       camFollow.x = bg.getGraphicMidpoint().x - gyroPan.x;

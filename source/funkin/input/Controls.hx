@@ -484,8 +484,7 @@ class Controls extends FlxActionSet
 
   static function init():Void
   {
-    var actions = new FlxActionManager();
-    FlxG.inputs.add(actions);
+    FlxG.inputs.addUniqueType(new FlxActionManager());
   }
 
   /**

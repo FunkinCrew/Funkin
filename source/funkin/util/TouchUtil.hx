@@ -68,11 +68,9 @@ class TouchUtil
    */
   public static function overlaps(?object:FlxBasic, ?camera:FlxCamera):Bool
   {
-    #if FEATURE_TOUCH_CONTROLS
     if (object == null || touch == null) return false;
 
     return touch.overlaps(object, camera ?? object.camera);
-    #end
 
     return false;
   }
@@ -87,14 +85,12 @@ class TouchUtil
    */
   public static function overlapsComplex(?object:FlxObject, ?camera:FlxCamera):Bool
   {
-    #if FEATURE_TOUCH_CONTROLS
     if (object == null || touch == null) return false;
 
     if (camera == null) camera = object.cameras[0];
 
     @:privateAccess
     return object.overlapsPoint(touch.getWorldPosition(camera, object._point), true, camera);
-    #end
 
     return false;
   }
@@ -111,7 +107,6 @@ class TouchUtil
    */
   public static function overlapsComplexPoint(?object:FlxObject, point:FlxPoint, ?inScreenSpace:Bool = false, ?camera:FlxCamera):Bool
   {
-    #if FEATURE_TOUCH_CONTROLS
     if (object == null || point == null) return false;
 
     if (camera == null) camera = object.cameras[0];
@@ -123,7 +118,6 @@ class TouchUtil
     }
 
     point.putWeak();
-    #end
 
     return false;
   }
@@ -137,7 +131,6 @@ class TouchUtil
    */
   public static function pressAction(?object:FlxBasic, ?camera:FlxCamera, useOverlapsComplex:Bool = true):Bool
   {
-    #if FEATURE_TOUCH_CONTROLS
     if (TouchUtil.touch == null || (TouchUtil.touch != null && TouchUtil.touch.ticksDeltaSincePress > 200)) return false;
 
     if (object == null && camera == null)
@@ -149,7 +142,6 @@ class TouchUtil
       final overlapsObject:Bool = useOverlapsComplex ? overlapsComplex(cast(object, FlxObject), camera) : overlaps(object, camera);
       return justReleased && overlapsObject;
     }
-    #end
 
     return false;
   }
@@ -189,13 +181,10 @@ class TouchUtil
   }
   #else
   @:noCompletion
-  inline static function get_touch():FlxMouse
+  static function get_touch():FlxMouse
   {
-    #if FEATURE_TOUCH_CONTROLS
     FlxG.mouse.visible = true;
     return FlxG.mouse;
-    #end
-    return null;
   }
   #end
 }

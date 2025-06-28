@@ -15,6 +15,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.mainmenu.MainMenuState;
 #if mobile
 import funkin.util.TouchUtil;
+import funkin.util.DeviceUtil;
 #end
 
 using flixel.util.FlxSpriteUtil;
@@ -125,7 +126,14 @@ class CharacterUnlockState extends MusicBeatState
     // Fade to black, then switch state.
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () -> {
       funkin.FunkinMemory.clearFreeplay();
+      #if ios
+      trace(DeviceUtil.iPhoneNumber);
+      if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+      else
+        funkin.FunkinMemory.purgeCache();
+      #else
       funkin.FunkinMemory.purgeCache(true);
+      #end
       FlxG.switchState(() -> nextState);
     });
   }

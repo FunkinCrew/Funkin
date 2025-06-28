@@ -116,8 +116,14 @@ class TitleState extends MusicBeatState
 
     add(gfDance);
 
+    #if mobile
+    // shift it a bit more to the left on mobile!!
+    titleText = new FlxSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
+    titleText.frames = Paths.getSparrowAtlas('titleEnter_mobile');
+    #else
     titleText = new FlxSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter');
+    #end
     titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
     titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
     titleText.animation.play('idle');

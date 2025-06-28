@@ -125,16 +125,13 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
   /**
    * Return true if the given stage character is associated with a specific playable character.
    * If so, the level should only appear if that character is selected in Freeplay.
+   * NOTE: This is NOT THE SAME as `player.isUnlocked()`!
    * @param characterId The stage character ID.
    * @return Whether the character is owned by any one character.
    */
   public function isCharacterOwned(characterId:String):Bool
   {
-    #if UNLOCK_EVERYTHING
-    return true;
-    #else
     return ownedCharacterIds.exists(characterId);
-    #end
   }
 
   /**

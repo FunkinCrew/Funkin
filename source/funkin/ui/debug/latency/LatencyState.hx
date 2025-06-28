@@ -412,7 +412,7 @@ class LatencyState extends MusicBeatSubState
     if (TouchUtil.overlapsComplex(visualOffsetRightArrow) && touchPressCheck)
     {
       cleanup();
-      FlxG.switchState(() -> new funkin.ui.options.OptionsState());      
+      FlxG.switchState(() -> new funkin.ui.options.OptionsState());
       localConductor.audioVisualOffset += 1 * multiply;
     }
 
