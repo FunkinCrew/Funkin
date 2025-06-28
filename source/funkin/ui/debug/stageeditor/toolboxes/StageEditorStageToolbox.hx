@@ -51,7 +51,7 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
     }
 
     refresh();
-    
+
     this.onDialogClosed = onClose;
   }
 
