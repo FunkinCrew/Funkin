@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pressing Ctrl + N now creates a new stage in the Stage Editor. ([bc54634](https://github.com/FunkinCrew/Funkin/commit/bc546345377f9e9e7b69306b72d494cad02ebaba)) - by @Lasercar in [#5175](https://github.com/FunkinCrew/Funkin/pull/5175)
 - Added script support for Freeplay Backing Cards. ([92e7588](https://github.com/FunkinCrew/Funkin/commit/92e7588370fcbdc0e959e01e7e52eed5d62323f2)) - by @KoloInDaCrib in [#5233](https://github.com/FunkinCrew/Funkin/pull/5233)
 - Added a variation indicator next to the Chart Editor playbar difficulty. ([dc7fa97](https://github.com/FunkinCrew/Funkin/commit/dc7fa97d3ca3c00edbab0adc171135af0008735d)) - by @KoloInDaCrib in [#5236](https://github.com/FunkinCrew/Funkin/pull/5236)
-- Added "Flip character horizontally" to the list of shortcuts in the Animation Editor. ([f73e925](https://github.com/FunkinCrew/funkin.assets/commit/f73e925cbc1e99223095e444f9217839c7d8148e)) - by @AbnormalPoof in [#60](https://github.com/FunkinCrew/funkin.assets/pull/60)
+- Added "Flip character horizontally" to the list of shortcuts in the Animation Editor. ([f73e925](https://github.com/FunkinCrew/funkin.assets/commit/f73e925cbc1e99223095e444f9217839c7d8148e)) - by @AbnormalPoof in [funkin.assets#60](https://github.com/FunkinCrew/funkin.assets/pull/60)
 
 ### Changed
 
@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Raised the FPS cap preference from 300 to 500. ([71d7169](https://github.com/FunkinCrew/Funkin/commit/71d7169ba35c01471b4274671e238b0ac2cf04ed)) - by @Hundrec in [#5044](https://github.com/FunkinCrew/Funkin/pull/5044)
 - Blacklisted more classes for security reasons. ([cadfa3b](https://github.com/FunkinCrew/Funkin/commit/cadfa3b7ceae2ecabe2d544ddc4c9f453b0dfd56)) - by @NotHyper-474 in [#5185](https://github.com/FunkinCrew/Funkin/pull/5185)
 - Visualizers now zero out when the game audio is muted. ([3d205e9](https://github.com/FunkinCrew/Funkin/commit/3d205e935553096ab7bbd1879d8cb69bdb550ead)) - by @Lasercar in [#5266](https://github.com/FunkinCrew/Funkin/pull/5266)
-- Shifted Mommy Mearest's pixel icon to the left in Freeplay. ([d9e8085](https://github.com/FunkinCrew/funkin.assets/commit/d9e8085020cfc516b7c38ec7773081619ab840a4)) - by @KoloInDaCrib in [#197](https://github.com/FunkinCrew/funkin.assets/pull/197)
+- Shifted Mommy Mearest's pixel icon to the left in Freeplay. ([d9e8085](https://github.com/FunkinCrew/funkin.assets/commit/d9e8085020cfc516b7c38ec7773081619ab840a4)) - by @KoloInDaCrib in [funkin.assets#197](https://github.com/FunkinCrew/funkin.assets/pull/197)
 
 ### Fixed
 
@@ -89,22 +89,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reduced the severity of a memory leak in the Chart Editor. ([6ec3191](https://github.com/FunkinCrew/Funkin/commit/6ec3191b2952533afeded514d582a56f0905afb8)) - by @NotHyper-474 in [#5247](https://github.com/FunkinCrew/Funkin/pull/5247)
 - The Freeplay song preview no longer plays twice after returning from Character Select. ([f9387c1](https://github.com/FunkinCrew/Funkin/commit/f9387c144a62ecae2ea2b9da7b93ee16693bff02)) - by @Lasercar in [#5248](https://github.com/FunkinCrew/Funkin/pull/5248)
 - Undoing and redoing hold note length changes now visually updates the trail in the Chart Editor. ([254be57](https://github.com/FunkinCrew/Funkin/commit/254be5798ec0b7b2e79612ae5ade438965e65249)) - by @NotHyper-474 in [#5265](https://github.com/FunkinCrew/Funkin/pull/5265)
-- Pico's burpShit animation now re-enables volume for player vocals. ([2bf3846](https://github.com/FunkinCrew/funkin.assets/commit/2bf38463c524839e85faec19b7f31e90070e0b87)) - by @Hundrec in [#71](https://github.com/FunkinCrew/funkin.assets/pull/71)
-- Darnell's kneeCan animation now plays properly in 2hot. ([f8030c4](https://github.com/FunkinCrew/funkin.assets/commit/f8030c441c73d203f7b92c243542f99402faf2a7)) - by @biomseed in [#78](https://github.com/FunkinCrew/funkin.assets/pull/78)
-- Adjusted offsets for Freeplay DJ Pico's fistPump animation. ([17996db](https://github.com/FunkinCrew/funkin.assets/commit/17996db752c3077e005d4f05286a7795746acb05)) - by @AbnormalPoof in [#91](https://github.com/FunkinCrew/funkin.assets/pull/91)
-- Chart Editor and Stage Editor windows now consistently show a close button. ([929f61f](https://github.com/FunkinCrew/funkin.assets/commit/929f61fe86bd49d61de27e09503085a04c2cddfb)) - by @Lasercar in [#121](https://github.com/FunkinCrew/funkin.assets/pull/121)
-- Otis and Pico (Speaker) no longer spaz out when playtesting Stress. ([2fd62d8](https://github.com/FunkinCrew/funkin.assets/commit/2fd62d8f4fdefffc8d4a9cc96b9e993fd0130eb4)) - by @Lasercar in [#124](https://github.com/FunkinCrew/funkin.assets/pull/124)
-- The gasp sound now only plays once in the Week 3 Pico Mix doppelganger cutscene. ([ecda30d](https://github.com/FunkinCrew/funkin.assets/commit/ecda30d7532df3c34a4b5ad25579cc960cb30c0f)) - by @KoloInDaCrib in [#126](https://github.com/FunkinCrew/funkin.assets/pull/126)
-- Encountering an easter egg during a Chart Editor playtest no longer crashes the game. ([6cf9fb7](https://github.com/FunkinCrew/funkin.assets/commit/6cf9fb7ba48bb336f63eb940290fa051859330ec)) - by @NotHyper-474 in [#133](https://github.com/FunkinCrew/funkin.assets/pull/133)
-- Girlfriend (Tankman Stickup) now plays her combo drop animation. ([cb0e506](https://github.com/FunkinCrew/funkin.assets/commit/cb0e506599d387b1d17faee2cf319914eb2dfc80)) - by @qt2k4 in [#149](https://github.com/FunkinCrew/funkin.assets/pull/149)
-- Changed "Tankman Battlefield (Erect)" to "Tankman Battlefield [Erect]" in the Chart Editor for consistency. ([f9149eb](https://github.com/FunkinCrew/funkin.assets/commit/f9149eb72698ddd275f743080effed08c842644e)) - by @JVN-Pixels in [#155](https://github.com/FunkinCrew/funkin.assets/pull/155)
-- Fixed Pico (Pixel) having the incorrect name in the Chart Editor. ([a668659](https://github.com/FunkinCrew/funkin.assets/commit/a668659a4bbd2094fde48041c73fd1ebef551288)) - by @ExtraCode75 in [#158](https://github.com/FunkinCrew/funkin.assets/pull/158)
-- Darnell (BF Mix)'s alternate instrumental is now properly accessible. ([7bf4361](https://github.com/FunkinCrew/funkin.assets/commit/7bf436153081c27fdb354eddb05b72bd87fb18b7)) - by @Hundrec in [#168](https://github.com/FunkinCrew/funkin.assets/pull/168)
-- Adjusted the font size for Starting BPM in the Chart Editor for consistency. ([801121a](https://github.com/FunkinCrew/funkin.assets/commit/801121a7d31ef3a1ac108bf16941d88009d1b12a)) - by @Lasercar in [#170](https://github.com/FunkinCrew/funkin.assets/pull/170)
-- Removed vocals from Monster's instrumental on web builds. ([bf7b032](https://github.com/FunkinCrew/funkin.assets/commit/bf7b032154fdc9751fbe8fdf88dbc5fd24f361db)) - by @JVN-Pixels in [#182](https://github.com/FunkinCrew/funkin.assets/pull/182)
-- A-Bot's visualizer no longer jumps to a random volume when the song ends. ([2904697](https://github.com/FunkinCrew/funkin.assets/commit/2904697b6fda66db4df2b47127f05520fdf831d1)) - by @VioletSnowLeopard in [#183](https://github.com/FunkinCrew/funkin.assets/pull/183)
-- The cars in Week 4 and Weekend 1 no longer get stuck when the song is restarted. ([ecb1bbd](https://github.com/FunkinCrew/funkin.assets/commit/ecb1bbd8c8ced028b96b2c9b5572d2ea48f36cf4)) - by @MetaBreeze in [#186](https://github.com/FunkinCrew/funkin.assets/pull/186)
-- Removed a spammy console trace from Spooky Kids (Dark). ([9ee98d6](https://github.com/FunkinCrew/funkin.assets/commit/9ee98d62aa336f1fccbefaf077b4ae3222e00ec4)) - by @NotHyper-474 in [#187](https://github.com/FunkinCrew/funkin.assets/pull/187)
+- Pico's burpShit animation now re-enables volume for player vocals. ([2bf3846](https://github.com/FunkinCrew/funkin.assets/commit/2bf38463c524839e85faec19b7f31e90070e0b87)) - by @Hundrec in [funkin.assets#71](https://github.com/FunkinCrew/funkin.assets/pull/71)
+- Darnell's kneeCan animation now plays properly in 2hot. ([f8030c4](https://github.com/FunkinCrew/funkin.assets/commit/f8030c441c73d203f7b92c243542f99402faf2a7)) - by @biomseed in [funkin.assets#78](https://github.com/FunkinCrew/funkin.assets/pull/78)
+- Adjusted offsets for Freeplay DJ Pico's fistPump animation. ([17996db](https://github.com/FunkinCrew/funkin.assets/commit/17996db752c3077e005d4f05286a7795746acb05)) - by @AbnormalPoof in [funkin.assets#91](https://github.com/FunkinCrew/funkin.assets/pull/91)
+- Chart Editor and Stage Editor windows now consistently show a close button. ([929f61f](https://github.com/FunkinCrew/funkin.assets/commit/929f61fe86bd49d61de27e09503085a04c2cddfb)) - by @Lasercar in [funkin.assets#121](https://github.com/FunkinCrew/funkin.assets/pull/121)
+- Otis and Pico (Speaker) no longer spaz out when playtesting Stress. ([2fd62d8](https://github.com/FunkinCrew/funkin.assets/commit/2fd62d8f4fdefffc8d4a9cc96b9e993fd0130eb4)) - by @Lasercar in [funkin.assets#124](https://github.com/FunkinCrew/funkin.assets/pull/124)
+- The gasp sound now only plays once in the Week 3 Pico Mix doppelganger cutscene. ([ecda30d](https://github.com/FunkinCrew/funkin.assets/commit/ecda30d7532df3c34a4b5ad25579cc960cb30c0f)) - by @KoloInDaCrib in [funkin.assets#126](https://github.com/FunkinCrew/funkin.assets/pull/126)
+- Encountering an easter egg during a Chart Editor playtest no longer crashes the game. ([6cf9fb7](https://github.com/FunkinCrew/funkin.assets/commit/6cf9fb7ba48bb336f63eb940290fa051859330ec)) - by @NotHyper-474 in [funkin.assets#133](https://github.com/FunkinCrew/funkin.assets/pull/133)
+- Girlfriend (Tankman Stickup) now plays her combo drop animation. ([cb0e506](https://github.com/FunkinCrew/funkin.assets/commit/cb0e506599d387b1d17faee2cf319914eb2dfc80)) - by @qt2k4 in [funkin.assets#149](https://github.com/FunkinCrew/funkin.assets/pull/149)
+- Changed "Tankman Battlefield (Erect)" to "Tankman Battlefield [Erect]" in the Chart Editor for consistency. ([f9149eb](https://github.com/FunkinCrew/funkin.assets/commit/f9149eb72698ddd275f743080effed08c842644e)) - by @JVN-Pixels in [funkin.assets#155](https://github.com/FunkinCrew/funkin.assets/pull/155)
+- Fixed Pico (Pixel) having the incorrect name in the Chart Editor. ([a668659](https://github.com/FunkinCrew/funkin.assets/commit/a668659a4bbd2094fde48041c73fd1ebef551288)) - by @ExtraCode75 in [funkin.assets#158](https://github.com/FunkinCrew/funkin.assets/pull/158)
+- Darnell (BF Mix)'s alternate instrumental is now properly accessible. ([7bf4361](https://github.com/FunkinCrew/funkin.assets/commit/7bf436153081c27fdb354eddb05b72bd87fb18b7)) - by @Hundrec in [funkin.assets#168](https://github.com/FunkinCrew/funkin.assets/pull/168)
+- Adjusted the font size for Starting BPM in the Chart Editor for consistency. ([801121a](https://github.com/FunkinCrew/funkin.assets/commit/801121a7d31ef3a1ac108bf16941d88009d1b12a)) - by @Lasercar in [funkin.assets#170](https://github.com/FunkinCrew/funkin.assets/pull/170)
+- Removed vocals from Monster's instrumental on web builds. ([bf7b032](https://github.com/FunkinCrew/funkin.assets/commit/bf7b032154fdc9751fbe8fdf88dbc5fd24f361db)) - by @JVN-Pixels in [funkin.assets#182](https://github.com/FunkinCrew/funkin.assets/pull/182)
+- A-Bot's visualizer no longer jumps to a random volume when the song ends. ([2904697](https://github.com/FunkinCrew/funkin.assets/commit/2904697b6fda66db4df2b47127f05520fdf831d1)) - by @VioletSnowLeopard in [funkin.assets#183](https://github.com/FunkinCrew/funkin.assets/pull/183)
+- The cars in Week 4 and Weekend 1 no longer get stuck when the song is restarted. ([ecb1bbd](https://github.com/FunkinCrew/funkin.assets/commit/ecb1bbd8c8ced028b96b2c9b5572d2ea48f36cf4)) - by @MetaBreeze in [funkin.assets#186](https://github.com/FunkinCrew/funkin.assets/pull/186)
+- Removed a spammy console trace from Spooky Kids (Dark). ([9ee98d6](https://github.com/FunkinCrew/funkin.assets/commit/9ee98d62aa336f1fccbefaf077b4ae3222e00ec4)) - by @NotHyper-474 in [funkin.assets#187](https://github.com/FunkinCrew/funkin.assets/pull/187)
 
 ### Removed
 
@@ -117,10 +117,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * @KutikiPlayz made their first contribution in [#3544](https://github.com/FunkinCrew/Funkin/pull/3544)
 * @xenkap made their first contribution in [#3732](https://github.com/FunkinCrew/Funkin/pull/3732)
 * @Raltyro made their first contribution in [#4577](https://github.com/FunkinCrew/Funkin/pull/4577)
-* @biomseed made their first contribution in [#78](https://github.com/FunkinCrew/funkin.assets/pull/78)
-* @qt2k4 made their first contribution in [#149](https://github.com/FunkinCrew/funkin.assets/pull/149)
-* @ExtraCode75 made their first contribution in [#158](https://github.com/FunkinCrew/funkin.assets/pull/158)
-* @MetaBreeze made their first contribution in [#186](https://github.com/FunkinCrew/funkin.assets/pull/186)
+* @biomseed made their first contribution in [funkin.assets#78](https://github.com/FunkinCrew/funkin.assets/pull/78)
+* @qt2k4 made their first contribution in [funkin.assets#149](https://github.com/FunkinCrew/funkin.assets/pull/149)
+* @ExtraCode75 made their first contribution in [funkin.assets#158](https://github.com/FunkinCrew/funkin.assets/pull/158)
+* @MetaBreeze made their first contribution in [funkin.assets#186](https://github.com/FunkinCrew/funkin.assets/pull/186)
 
 
 
