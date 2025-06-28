@@ -2375,6 +2375,8 @@ class PlayState extends MusicBeatSubState
     #if FEATURE_NEWGROUNDS
     Events.logStartSong(currentSong.id, currentVariation);
     #end
+
+    resyncVocals();
   }
 
   /**
