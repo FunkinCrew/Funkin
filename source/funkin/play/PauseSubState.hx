@@ -630,6 +630,7 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
+    #if FEATURE_TOUCH_CONTROLS
     if (!SwipeUtil.justSwipedAny && !justOpened && currentMenuEntries.length > 0)
     {
       for (i in 0...menuEntryText.members.length)
@@ -649,6 +650,7 @@ class PauseSubState extends MusicBeatSubState
         break;
       }
     }
+    #end
 
     if (controls.ACCEPT && currentMenuEntries.length > 0)
     {

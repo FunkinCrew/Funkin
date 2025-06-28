@@ -56,13 +56,6 @@
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
-      "name": "flixel-text-input",
-      "type": "git",
-      "dir": null,
-      "ref": "951a0103a17bfa55eed86703ce50b4fb0d7590bc",
-      "url": "https://github.com/FunkinCrew/flixel-text-input"
-    },
-    {
       "name": "flxanimate",
       "type": "git",
       "dir": null,
@@ -97,14 +90,14 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "07fc7aa8098deaea633b0726d01f83eb4ef8a832",
+      "ref": "47ee9f5fa02d422e186e844f87e68220cabfcc5b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "b899a4c7d7318c5ff2b1bb645fbc73728fad1ac9",
+      "ref": "100f2c96beab619cfe72c567a058c41c71e3e998",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
@@ -177,7 +170,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "71c0f93e91c10975426d7518b826c1584a4f4b73",
+      "ref": "045ede0363120ff0425529a4902e4da44fd6d293",
       "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {

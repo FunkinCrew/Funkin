@@ -199,7 +199,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
     {
       var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId);
-
       @:privateAccess
       if (songClassName != null) result = SongRegistry.instance.createScriptedEntry(songClassName);
     }

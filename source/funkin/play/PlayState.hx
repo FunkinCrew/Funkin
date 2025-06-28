@@ -620,6 +620,12 @@ class PlayState extends MusicBeatSubState
     return FlxG?.sound?.music?.length;
   }
 
+  /**
+   * The threshold for resyncing the song.
+   * If the vocals deviate from the instrumental by more than this amount, then `resyncVocals()` will be called.
+   */
+  static final RESYNC_THRESHOLD:Float = 30;
+
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
 
@@ -1690,7 +1696,9 @@ class PlayState extends MusicBeatSubState
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > 30 || Math.abs(playerVoicesError) > 30 || Math.abs(opponentVoicesError) > 30))
+        && (Math.abs(FlxG.sound.music.time - correctSync) > RESYNC_THRESHOLD
+          || Math.abs(playerVoicesError) > RESYNC_THRESHOLD
+          || Math.abs(opponentVoicesError) > RESYNC_THRESHOLD))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
@@ -2368,6 +2376,8 @@ class PlayState extends MusicBeatSubState
     #if FEATURE_NEWGROUNDS
     Events.logStartSong(currentSong.id, currentVariation);
     #end
+
+    resyncVocals();
   }
 
   /**
