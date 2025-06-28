@@ -785,12 +785,14 @@ class CharSelectSubState extends MusicBeatSubState
 
     mobileAccept = false;
 
-    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R || TouchUtil.justReleased) selectSound.pitch = 1;
+    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R #if FEATURE_TOUCH_CONTROLS || TouchUtil.justReleased #end)
+      selectSound.pitch = 1;
 
     syncAudio(elapsed);
 
     if (allowInput && !pressedSelect)
     {
+      #if FEATURE_TOUCH_CONTROLS
       if (TouchUtil.pressed || TouchUtil.justReleased)
       {
         for (i => hitbox in grpHitboxes.members)
@@ -821,6 +823,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         mobileAccept = true;
       }
+      #end
 
       //
       if (controls.UI_UP) holdTmrUp += elapsed;
@@ -912,7 +915,7 @@ class CharSelectSubState extends MusicBeatSubState
     {
       curChar = availableChars.get(getCurrentSelected());
 
-      if (allowInput && pressedSelect && (controls.BACK || (mobileDeny && TouchUtil.justReleased)))
+      if (allowInput && pressedSelect && (controls.BACK #if FEATURE_TOUCH_CONTROLS || (mobileDeny && TouchUtil.justReleased) #end))
       {
         mobileDeny = false;
         cursorConfirmed.visible = false;
@@ -968,7 +971,9 @@ class CharSelectSubState extends MusicBeatSubState
           goToFreeplay();
         });
       }
+      #if FEATURE_TOUCH_CONTROLS
       else if (pressedSelect && TouchUtil.justReleased) mobileDeny = true;
+      #end
 
       mobileAccept = false;
     }
