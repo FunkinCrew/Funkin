@@ -394,6 +394,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   // Exits the calibration and resets the offset.
   public function exitCalibration(cancel:Bool):Void
   {
+    backButton.enabled = false;
     shouldOffset = -1;
     #if mobile
     if (OptionsState.instance.hitbox != null) OptionsState.instance.hitbox.visible = false;
@@ -705,6 +706,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       offsetLerp -= elapsed / 3;
       if (offsetLerp <= 0)
       {
+        backButton.enabled = true;
         canExit = true;
         calibrating = false;
         MenuTypedList.pauseInput = false;
@@ -779,17 +781,14 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
           numPref.lefthandText.x = xLerp
           + (FlxG.width / 2)
-          - ((thyTextWidth / 2) + daItem.atlasText.getWidth() / 2);
+          - ((thyTextWidth + daItem.atlasText.getWidth() + 20) / 2);
           numPref.lefthandText.y = yLerp + ((120 * ind) + 30);
+          daItem.x = numPref.lefthandText.x + thyTextWidth + 20;
         default:
-          // Huh? x2
+          daItem.x = xLerp + (FlxG.width / 2) - daItem.atlasText.getWidth() / 2;
       }
 
       daItem.y = yLerp + ((120 * ind) + 30);
-      daItem.x = xLerp
-        + (FlxG.width / 2)
-      + thyTextWidth
-        - daItem.atlasText.getWidth() / 2;
       ind++;
     });
   }
