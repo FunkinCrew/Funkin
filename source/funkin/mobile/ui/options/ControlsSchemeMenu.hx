@@ -345,7 +345,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
     if (TouchUtil.pressed && dragDistance != 0)
     {
       final showcasesTargetX:Float = originX + dragDistance * 10;
-      hitboxShowcases.x = MathUtil.smoothLerp(hitboxShowcases.x, showcasesTargetX, elapsed, 0.5);
+      hitboxShowcases.x = MathUtil.smoothLerpPrecision(hitboxShowcases.x, showcasesTargetX, elapsed, 0.5);
 
       final minShowcasesX:Float = -1500 * availableSchemes.length;
       hitboxShowcases.x = FlxMath.bound(hitboxShowcases.x, minShowcasesX, 400);
@@ -356,7 +356,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
     }
     else
     {
-      hitboxShowcases.x = MathUtil.smoothLerp(hitboxShowcases.x, (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex), elapsed, 0.5);
+      hitboxShowcases.x = MathUtil.smoothLerpPrecision(hitboxShowcases.x, (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex), elapsed, 0.5);
     }
   #end
   }

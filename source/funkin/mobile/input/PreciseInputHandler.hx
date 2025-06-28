@@ -31,7 +31,6 @@ class PreciseInputHandler
   static function handleHintDown(hint:FunkinHint):Void
   {
     final timestamp:Int64 = PreciseInputManager.getCurrentTimestamp();
-
     @:privateAccess
     if (hint.input?.justPressed ?? false)
     {
@@ -48,7 +47,6 @@ class PreciseInputHandler
   static function handleHintUp(hint:FunkinHint):Void
   {
     final timestamp:Int64 = PreciseInputManager.getCurrentTimestamp();
-
     @:privateAccess
     if (hint.input?.justReleased ?? false)
     {
