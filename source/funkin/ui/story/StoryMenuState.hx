@@ -321,7 +321,7 @@ class StoryMenuState extends MusicBeatState
   {
     Conductor.instance.update();
 
-    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.25));
+    highScoreLerp = Std.int(MathUtil.snap(MathUtil.smoothLerpPrecision(highScoreLerp, highScore, elapsed, 0.307), highScore, 1));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
@@ -391,7 +391,7 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(-1);
         }
 
-        if (controls.UI_RIGHT || TouchUtil.overlaps(rightDifficultyArrow))
+        if (controls.UI_RIGHT #if FEATURE_TOUCH_CONTROLS || TouchUtil.overlaps(rightDifficultyArrow) #end)
         {
           rightDifficultyArrow.animation.play('press');
         }
@@ -400,7 +400,7 @@ class StoryMenuState extends MusicBeatState
           rightDifficultyArrow.animation.play('idle');
         }
 
-        if (controls.UI_LEFT || TouchUtil.overlaps(leftDifficultyArrow))
+        if (controls.UI_LEFT #if FEATURE_TOUCH_CONTROLS || TouchUtil.overlaps(leftDifficultyArrow) #end)
         {
           leftDifficultyArrow.animation.play('press');
         }
@@ -415,6 +415,7 @@ class StoryMenuState extends MusicBeatState
         selectLevel();
       }
 
+      #if FEATURE_TOUCH_CONTROLS
       if (TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
       {
         for (i in 0...levelTitles.members.length)
@@ -427,6 +428,7 @@ class StoryMenuState extends MusicBeatState
           (item == selectedItem) ? selectLevel() : changeLevel(i - levelList.indexOf(currentLevelId));
         }
       }
+      #end
     }
 
     if (controls.BACK) goBack();

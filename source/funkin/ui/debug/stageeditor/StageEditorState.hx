@@ -1260,14 +1260,13 @@ class StageEditorState extends UIState
           if (exitConfirmDialog == null)
           {
             exitConfirmDialog = Dialogs.messageBox("You are about to leave the Editor without Saving.\n\nAre you sure? ", "Leave Editor",
-              MessageBoxType.TYPE_YESNO, true,
-            function(btn:DialogButton) {
+              MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
                 exitConfirmDialog = null;
-              if (btn == DialogButton.YES)
-              {
-                saved = true;
-                onMenuItemClick("exit");
-              }
+                if (btn == DialogButton.YES)
+                {
+                  saved = true;
+                  onMenuItemClick("exit");
+                }
             });
           }
 

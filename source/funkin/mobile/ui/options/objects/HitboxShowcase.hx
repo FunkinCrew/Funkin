@@ -110,7 +110,7 @@ class HitboxShowcase extends FlxSpriteGroup
   {
     super.update(elapsed);
 
-    alpha = MathUtil.smoothLerp(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.2);
+    alpha = MathUtil.smoothLerpPrecision(alpha, HITBOX_SHOWCASE_ALPHA[selected ? 1 : 0], elapsed, 0.2);
   }
 
   function get_selected():Bool

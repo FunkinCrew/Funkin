@@ -34,6 +34,10 @@ class PlatformUtil
   {
     #if html5
     return HTML5;
+    #elseif android
+    return ANDROID;
+    #elseif ios
+    return IOS;
     #else
     switch (Sys.systemName())
     {
@@ -59,4 +63,6 @@ enum HostPlatform
   LINUX;
   MAC;
   HTML5;
+  ANDROID;
+  IOS;
 }

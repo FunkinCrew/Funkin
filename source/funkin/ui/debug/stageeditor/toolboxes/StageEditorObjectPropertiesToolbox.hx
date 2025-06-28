@@ -121,7 +121,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
         linkedObj.color = FlxColor.fromString(_.value) ?? 0xFFFFFFFF;
       }
     }
-    
+
     this.onDialogClosed = onClose;
   }
 

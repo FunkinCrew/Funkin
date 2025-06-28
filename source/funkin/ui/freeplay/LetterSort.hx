@@ -107,6 +107,7 @@ class LetterSort extends FlxSpriteGroup
 
     if (inputEnabled)
     {
+      #if FEATURE_TOUCH_CONTROLS
       if (TouchUtil.pressAction())
       {
         for (index => letter in letterHitboxes)
@@ -132,12 +133,15 @@ class LetterSort extends FlxSpriteGroup
           break;
         }
       }
+      #end
 
       @:privateAccess
       {
-        if (controls.FREEPLAY_LEFT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft)) changeSelection(-1);
+        if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
+          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
 
-        if (controls.FREEPLAY_RIGHT || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight)) changeSelection(1);
+        if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
+          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
       }
     }
   }

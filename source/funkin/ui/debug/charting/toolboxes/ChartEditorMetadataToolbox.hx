@@ -118,7 +118,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
       if (valid)
       {
-      chartEditorState.currentSongNoteStyle = event.data.id;
+        chartEditorState.currentSongNoteStyle = event.data.id;
       }
     };
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);

@@ -1168,6 +1168,10 @@ class ChartEditorDialogHandler
     if (dialogSongArtist == null) throw 'Could not locate dialogSongArtist TextField in Add Variation dialog';
     dialogSongArtist.value = state.currentSongMetadata.artist;
 
+    var dialogSongCharter:Null<TextField> = dialog.findComponent('dialogSongCharter', TextField);
+    if (dialogSongCharter == null) throw 'Could not locate dialogSongCharter TextField in Add Variation dialog';
+    dialogSongCharter.value = state.currentSongMetadata.charter;
+
     var dialogStage:Null<DropDown> = dialog.findComponent('dialogStage', DropDown);
     if (dialogStage == null) throw 'Could not locate dialogStage DropDown in Add Variation dialog';
     var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(dialogStage, state.currentSongMetadata.playData.stage);

@@ -42,14 +42,14 @@ import funkin.mobile.util.InAppPurchasesUtil;
 @:nullSafety
 class MainMenuState extends MusicBeatState
 {
-  var menuItems:MenuTypedList<AtlasMenuItem>;
+  var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
 
   var bg:Null<FlxSprite>;
   var magenta:FlxSprite;
   var camFollow:FlxObject;
 
   #if mobile
-  var gyroPan:FlxPoint;
+  var gyroPan:Null<FlxPoint>;
   #end
 
   var overrideMusic:Bool = false;
@@ -68,7 +68,6 @@ class MainMenuState extends MusicBeatState
     super();
     overrideMusic = _overrideMusic;
 
-    menuItems = new MenuTypedList<AtlasMenuItem>();
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
     magenta = new FlxSprite(Paths.image('menuBGMagenta'));
     camFollow = new FlxObject(0, 0, 1, 1);
@@ -120,6 +119,7 @@ class MainMenuState extends MusicBeatState
 
     if (Preferences.flashingLights) add(magenta);
 
+    menuItems = new MenuTypedList<AtlasMenuItem>();
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
@@ -138,7 +138,7 @@ class MainMenuState extends MusicBeatState
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
-      rememberedSelectedIndex = menuItems.selectedIndex;
+      if (menuItems != null) rememberedSelectedIndex = menuItems.selectedIndex;
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
@@ -166,6 +166,7 @@ class MainMenuState extends MusicBeatState
         {
           character: targetCharacter
         }));
+      canInteract = true;
     });
 
     if (hasUpgraded)
@@ -185,6 +186,7 @@ class MainMenuState extends MusicBeatState
       createMenuItem('upgrade', 'mainmenu/upgrade', function() {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
+        canInteract = true;
         #end
       });
     }
@@ -246,7 +248,9 @@ class MainMenuState extends MusicBeatState
     // reset camera when debug menu is closed
     subStateClosed.add(_ -> resetCamStuff(false));
 
-    subStateOpened.add(sub -> {
+    // TODO: Why does this specific function break with null safety?
+    @:nullSafety(Off)
+    subStateOpened.add((sub:FlxSubState) -> {
       if (Type.getClass(sub) == FreeplayState)
       {
         new FlxTimer().start(0.5, _ -> {
@@ -271,17 +275,25 @@ class MainMenuState extends MusicBeatState
       startExitState(() -> new funkin.ui.options.OptionsState());
     });
 
-    backButton.onConfirmStart.add(function():Void {
-      backButton.active = true;
-      goingBack = true;
-      menuItems.enabled = false;
-    });
+    if (backButton != null)
+    {
+      backButton.onConfirmStart.add(function():Void {
+        if (backButton == null) return;
+        backButton.active = true;
+        goingBack = true;
+        if (menuItems != null) menuItems.enabled = false;
+      });
+    }
 
-    optionsButton.onConfirmStart.add(function():Void {
-      optionsButton.active = true;
-      goingToOptions = true;
-      menuItems.enabled = false;
-    });
+    if (optionsButton != null)
+    {
+      optionsButton.onConfirmStart.add(function():Void {
+        if (optionsButton == null) return;
+        optionsButton.active = true;
+        goingToOptions = true;
+        if (menuItems != null) menuItems.enabled = false;
+      });
+    }
     #end
 
     super.create();
@@ -320,17 +332,20 @@ class MainMenuState extends MusicBeatState
 
   function createMenuItem(name:String, atlas:String, callback:Void->Void, fireInstantly:Bool = false):Void
   {
-    var item = new AtlasMenuItem(name, Paths.getSparrowAtlas(atlas), callback);
-    item.fireInstantly = fireInstantly;
-    item.ID = menuItems.length;
+    if (menuItems != null)
+    {
+      var item = new AtlasMenuItem(name, Paths.getSparrowAtlas(atlas), callback);
+      item.fireInstantly = fireInstantly;
+      item.ID = menuItems.length;
 
-    item.scrollFactor.set();
+      item.scrollFactor.set();
 
-    // Set the offset of the item so the sprite is centered on the origin.
-    item.centered = true;
-    item.changeAnim('idle');
+      // Set the offset of the item so the sprite is centered on the origin.
+      item.centered = true;
+      item.changeAnim('idle');
 
-    menuItems.addItem(name, item);
+      menuItems.addItem(name, item);
+    }
   }
 
   var buttonGrp:Array<FlxSprite> = [];
@@ -347,10 +362,16 @@ class MainMenuState extends MusicBeatState
   {
     magenta.visible = false;
     #if FEATURE_TOUCH_CONTROLS
-    backButton.animation.play('idle');
-    optionsButton.animation.play('idle');
-    backButton.resetCallbacks();
-    optionsButton.resetCallbacks();
+    if (backButton != null)
+    {
+      backButton.animation.play('idle');
+      backButton.resetCallbacks();
+    }
+    if (optionsButton != null)
+    {
+      optionsButton.animation.play('idle');
+      optionsButton.resetCallbacks();
+    }
     #end
     super.closeSubState();
   }
@@ -377,16 +398,17 @@ class MainMenuState extends MusicBeatState
   function selectMerch()
   {
     Referral.doMerchReferral();
+    canInteract = true;
   }
   #end
 
   public function openPrompt(prompt:Prompt, onClose:Void->Void):Void
   {
-    menuItems.enabled = false;
+    if (menuItems != null) menuItems.enabled = false;
     persistentUpdate = false;
 
     prompt.closeCallback = function() {
-      menuItems.enabled = true;
+      if (menuItems != null) menuItems.enabled = true;
       if (onClose != null) onClose();
     }
 
@@ -395,28 +417,31 @@ class MainMenuState extends MusicBeatState
 
   function startExitState(state:NextState):Void
   {
-    menuItems.enabled = false; // disable for exit
-    canInteract = false;
-    rememberedSelectedIndex = menuItems.selectedIndex;
+    if (menuItems != null)
+    {
+      menuItems.enabled = false; // disable for exit
+      canInteract = false;
+      rememberedSelectedIndex = menuItems.selectedIndex;
 
-    var duration = 0.4;
-    menuItems.forEach(function(item) {
-      if (menuItems.selectedIndex != item.ID)
-      {
-        FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut});
-      }
-      else
-      {
-        item.visible = false;
-      }
-    });
+      var duration = 0.4;
+      menuItems.forEach(function(item) {
+        if (menuItems != null && menuItems.selectedIndex != item.ID)
+        {
+          FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+        }
+        else
+        {
+          item.visible = false;
+        }
+      });
 
-    #if mobile
-    FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
-    FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
-    #end
+      #if mobile
+      FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+      FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+      #end
 
-    new FlxTimer().start(duration, function(_) FlxG.switchState(state));
+      new FlxTimer().start(duration, function(_) FlxG.switchState(state));
+    }
   }
 
   override function update(elapsed:Float):Void
@@ -426,18 +451,18 @@ class MainMenuState extends MusicBeatState
     Conductor.instance.update();
 
     #if mobile
-    gyroPan.add(FlxG.gyroscope.pitch * -3, FlxG.gyroscope.roll * 3);
+    if (gyroPan != null && bg != null)
+    {
+      gyroPan.add(FlxG.gyroscope.pitch * -1.25, FlxG.gyroscope.roll * -1.25);
 
-    // our pseudo damping
-    gyroPan.x = MathUtil.smoothLerp(gyroPan.x, 0, elapsed, 5);
-    gyroPan.y = MathUtil.smoothLerp(gyroPan.y, 0, elapsed, 5);
+      // our pseudo damping
+      gyroPan.x = MathUtil.smoothLerpPrecision(gyroPan.x, 0, elapsed, 2.5);
+      gyroPan.y = MathUtil.smoothLerpPrecision(gyroPan.y, 0, elapsed, 2.5);
 
-    // how far away from bg mid do we want to pan via gyroPan
-    camFollow.x = bg.getGraphicMidpoint().x - gyroPan.x;
-    camFollow.y = bg.getGraphicMidpoint().y - gyroPan.y;
-
-    optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
-    backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
+      // how far away from bg mid do we want to pan via gyroPan
+      camFollow.x = bg.getGraphicMidpoint().x - gyroPan.x;
+      camFollow.y = bg.getGraphicMidpoint().y - gyroPan.y;
+    }
     #end
 
     if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
@@ -445,8 +470,14 @@ class MainMenuState extends MusicBeatState
       FlxG.sound.music.volume += 0.5 * elapsed;
     }
     handleInputs();
-
-    if (_exiting) menuItems.enabled = false;
+    if (menuItems != null)
+    {
+      #if mobile
+      if (optionsButton != null) optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
+      if (backButton != null) backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
+      #end
+      if (_exiting) menuItems.enabled = false;
+    }
   }
 
   function handleInputs():Void
@@ -460,7 +491,7 @@ class MainMenuState extends MusicBeatState
       persistentUpdate = false;
 
       // Cancel the currently flickering menu item because it's about to call a state switch
-      if (menuItems.busy) menuItems.cancelAccept();
+      if (menuItems != null && menuItems.busy) menuItems.cancelAccept();
 
       FlxG.state.openSubState(new DebugMenuSubState());
     }
@@ -573,8 +604,11 @@ class MainMenuState extends MusicBeatState
     if (canInteract)
     {
       canInteract = false;
-      menuItems.busy = true;
-      rememberedSelectedIndex = menuItems.selectedIndex;
+      if (menuItems != null)
+      {
+        menuItems.busy = true;
+        rememberedSelectedIndex = menuItems.selectedIndex;
+      }
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }
