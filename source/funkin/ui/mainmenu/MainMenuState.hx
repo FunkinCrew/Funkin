@@ -1,7 +1,9 @@
 package funkin.ui.mainmenu;
 
 import flixel.addons.transition.FlxTransitionableState;
+#if FEATURE_DEBUG_MENU
 import funkin.ui.debug.DebugMenuSubState;
+#end
 import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.FlxSprite;
@@ -484,6 +486,7 @@ class MainMenuState extends MusicBeatState
   {
     if (!canInteract) return;
 
+    #if FEATURE_DEBUG_MENU
     // Open the debug menu, defaults to ` / ~
     // This includes stuff like the Chart Editor, so it should be present on all builds.
     if (controls.DEBUG_MENU)
@@ -495,6 +498,7 @@ class MainMenuState extends MusicBeatState
 
       FlxG.state.openSubState(new DebugMenuSubState());
     }
+    #end
 
     #if FEATURE_DEBUG_FUNCTIONS
     // Ctrl+Alt+Shift+P = Character Unlock screen

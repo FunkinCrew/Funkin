@@ -255,12 +255,6 @@ class Project extends HXProject
   //
 
   /**
-   * `-DFEATURE_CHART_EDITOR`
-   * If this flag is enabled, the Chart Editor will be accessible from the debug menu.
-   */
-  static final FEATURE_CHART_EDITOR:FeatureFlag = "FEATURE_CHART_EDITOR";
-
-  /**
    * `-DFEATURE_COMPRESSED_TEXTURES`
    * If this flag is enabled, ASTC compressed textures will be used over uncompressed PNGs.
    * Compressed ASTC textures provide lower memory usage but at the cost of a slightly higher files size & more GPU usage.
@@ -282,6 +276,12 @@ class Project extends HXProject
    * By default, enabled on debug builds or playtester builds and disabled on release builds.
    */
   static final FEATURE_DEBUG_FUNCTIONS:FeatureFlag = "FEATURE_DEBUG_FUNCTIONS";
+
+  /**
+   * `-DFEATURE_RESULTS_DEBUG`
+   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+   */
+  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
 
   /**
    * `-DFEATURE_DEBUG_TRACY`
@@ -423,16 +423,28 @@ class Project extends HXProject
   static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
 
   /**
-   * `-DFEATURE_RESULTS_DEBUG`
-   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
-   */
-  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
-
-  /**
    * `-DFEATURE_SCREENSHOTS`
    * If this flag is enabled, the game will support the screenshots feature.
    */
   static final FEATURE_SCREENSHOTS:FeatureFlag = "FEATURE_SCREENSHOTS";
+
+  /**
+   * `-FEATURE_DEBUG_MENU`
+   * If this flag is enabled, a debug menu will be accessible.
+   */
+   static final FEATURE_DEBUG_MENU:FeatureFlag = "FEATURE_DEBUG_MENU";
+
+  /**
+   * `-FEATURE_ANIMATION_EDITOR`
+   * If this flag is enabled, the Animation Editor will be accessible from the debug menu.
+   */
+   static final FEATURE_ANIMATION_EDITOR:FeatureFlag = "FEATURE_ANIMATION_EDITOR";
+
+  /**
+   * `-DFEATURE_CHART_EDITOR`
+   * If this flag is enabled, the Chart Editor will be accessible from the debug menu.
+   */
+   static final FEATURE_CHART_EDITOR:FeatureFlag = "FEATURE_CHART_EDITOR";
 
   /**
    * `-DFEATURE_STAGE_EDITOR`
@@ -812,6 +824,8 @@ class Project extends HXProject
 
     // Should be true except on web and mobile builds.
     // Debug editors aren't built to work on web or mobile right now.
+    FEATURE_DEBUG_MENU.apply(this, !(isWeb() || isMobile()));
+    FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
 
