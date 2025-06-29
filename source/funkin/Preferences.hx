@@ -247,6 +247,26 @@ class Preferences
   }
 
   /**
+   * A global audio offset in milliseconds.
+   * This is used to sync the audio.
+   * @default `0`
+   */
+  public static var globalOffset(get, set):Int;
+
+  static function get_globalOffset():Int
+  {
+    return Save?.instance?.options?.globalOffset ?? 0;
+  }
+
+  static function set_globalOffset(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.globalOffset = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
    * @default `OFF`
    */

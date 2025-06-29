@@ -16,6 +16,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.notes.NoteVibrationsHandler;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
+import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKindManager;
 import flixel.math.FlxPoint;
 #if mobile
@@ -157,15 +158,20 @@ class Strumline extends FlxSpriteGroup
 
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
-  final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) || #end Preferences.downscroll;
+  public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) || #end Preferences.downscroll;
 
   /**
-   * The note data for the song. Should NOT be altered after the song starts,
+   * The note data for the song. Should NOT be altered after the song starts (but we alter it in OffsetState :DDD),
    * so we can easily rewind.
    */
-  var noteData:Array<SongNoteData> = [];
+  public var noteData:Array<SongNoteData> = [];
 
-  var nextNoteIndex:Int = -1;
+  /**
+   * The index of the next note to be rendered.
+   * This is used to avoid splicing the noteData array, which is slow.
+   * It is incremented every time a note is rendered.
+   */
+  public var nextNoteIndex:Int = -1;
 
   var heldKeys:Array<Bool> = [];
 
@@ -526,17 +532,6 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
-  /**
-   * For a note's strumTime, calculate its Y position relative to the strumline.
-   * NOTE: Assumes Conductor and PlayState are both initialized.
-   * @param strumTime The strumtime of the note.
-   * @return The Y position of the note.
-   */
-  public function calculateNoteYPos(strumTime:Float):Float
-  {
-    return Constants.PIXELS_PER_MS * (conductorInUse.getTimeWithDelta() - strumTime - Conductor.instance.inputOffset) * scrollSpeed * (isDownscroll ? 1 : -1);
-  }
-
   public function updateNotes():Void
   {
     if (noteData.length == 0) return;
@@ -553,15 +548,17 @@ class Strumline extends FlxSpriteGroup
     for (noteIndex in nextNoteIndex...noteData.length)
     {
       var note:Null<SongNoteData> = noteData[noteIndex];
-
       if (note == null) continue; // Note is blank
       if (note.time < songStart || note.time < hitWindowStart)
       {
         // Note is in the past, skip it.
         nextNoteIndex = noteIndex + 1;
+        // trace("Strumline: Skipping note at index " + noteIndex + " with strum time " + note.time);
         continue;
       }
       if (note.time > renderWindowStart) break; // Note is too far ahead to render
+
+      // trace("Strumline: Rendering note at index " + noteIndex + " with strum time " + note.time);
 
       var noteSprite:NoteSprite = buildNoteSprite(note);
 
@@ -579,9 +576,11 @@ class Strumline extends FlxSpriteGroup
     for (note in notes.members)
     {
       if (note == null || !note.alive) continue;
-
       // Set the note's position.
-      if (!customPositionData) note.y = this.y - INITIAL_OFFSET + calculateNoteYPos(note.strumTime) + note.yOffset;
+      if (!customPositionData) note.y = this.y
+        - INITIAL_OFFSET
+        + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+        + note.yOffset;
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
@@ -664,14 +663,19 @@ class Strumline extends FlxSpriteGroup
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
-              + calculateNoteYPos(holdNote.strumTime)
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
               + STRUMLINE_SIZE / 2
               + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + yOffset + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y
+              - INITIAL_OFFSET
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+              + yOffset
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
         }
 
@@ -718,14 +722,18 @@ class Strumline extends FlxSpriteGroup
           {
             holdNote.y = this.y
               - INITIAL_OFFSET
-              + calculateNoteYPos(holdNote.strumTime)
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
               + STRUMLINE_SIZE / 2
               + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + calculateNoteYPos(holdNote.strumTime) + STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            holdNote.y = this.y
+              - INITIAL_OFFSET
+              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
         }
       }
@@ -785,6 +793,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function onBeatHit():Void
   {
+    // why are we doing this every beat? >:(
     if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
 
     if (holdNotes.members.length > 1) holdNotes.members.insertionSort(compareHoldNoteSprites.bind(FlxSort.ASCENDING));
@@ -876,6 +885,20 @@ class Strumline extends FlxSpriteGroup
 
     // Sort the notes by strumtime.
     this.noteData.insertionSort(compareNoteData.bind(FlxSort.ASCENDING));
+  }
+
+  /**
+   * Add a note data to the strumline.
+   * This will not remove existing notes, so you should call `applyNoteData` if you want to reset the strumline.
+   * @param note The note data to add.
+   * @param sort Whether to sort the note data after adding.
+   */
+  public function addNoteData(note:SongNoteData, sort:Bool = true):Void
+  {
+    if (note == null) return;
+
+    this.noteData.push(note);
+    if (sort) this.noteData.sort(compareNoteData.bind(FlxSort.ASCENDING));
   }
 
   /**
@@ -1297,6 +1320,18 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Apply a small animation which moves the arrow up and fades it out.
+   * Used when the song ends in Freeplay mode.
+   *
+   * @param index The index of the arrow in the strumline.
+   * @param arrow The arrow to animate.
+   */
+  public function fadeOutArrow(index:Int, arrow:StrumlineNote):Void
+  {
+    FlxTween.tween(arrow, {y: arrow.y - 10, alpha: 0}, 0.5, {ease: FlxEase.circIn});
+  }
+
+  /**
    * Play a fade in animation on all arrows in the strumline.
    * Used when starting a song in Freeplay mode.
    */
@@ -1305,6 +1340,18 @@ class Strumline extends FlxSpriteGroup
     for (index => arrow in this.strumlineNotes.members.keyValueIterator())
     {
       fadeInArrow(index, arrow);
+    }
+  }
+
+  /**
+   * Play a fade out animation on all arrows in the strumline.
+   * Used when ending a song in Freeplay mode.
+   */
+  public function fadeOutArrows():Void
+  {
+    for (index => arrow in this.strumlineNotes.members.keyValueIterator())
+    {
+      fadeOutArrow(index, arrow);
     }
   }
 

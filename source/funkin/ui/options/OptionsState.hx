@@ -2,10 +2,11 @@ package funkin.ui.options;
 
 import funkin.ui.Page.PageName;
 import funkin.ui.transition.LoadingState;
-import funkin.ui.debug.latency.LatencyState;
 import funkin.ui.TextMenuList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.math.FlxPoint;
+import funkin.ui.TextMenuList;
+import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -36,13 +37,24 @@ import flixel.util.FlxColor;
  */
 class OptionsState extends MusicBeatState
 {
+  /**
+   * Instance of the OptionsState
+   */
+  public static var instance:OptionsState;
+
   var optionsCodex:Codex<OptionsMenuPageName>;
+
+  public var drumsBG:FunkinSound;
 
   public static var rememberedSelectedIndex:Int = 0;
 
   override function create():Void
   {
+    instance = this;
+
     persistentUpdate = true;
+
+    drumsBG = FunkinSound.load(Paths.music('offsetsLoop/drumsLoop'), 0, true, false, false, false);
 
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
@@ -59,12 +71,18 @@ class OptionsState extends MusicBeatState
     var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
+    #if FEATURE_INPUT_OFFSETS
+    var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
+    #end
 
     if (options.hasMultipleOptions())
     {
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(optionsCodex.switchPage.bind(Options));
+      #if FEATURE_INPUT_OFFSETS
+      offsets.onExit.add(exitOffsets);
+      #end
     }
     else
     {
@@ -79,6 +97,29 @@ class OptionsState extends MusicBeatState
     }
 
     super.create();
+    #if mobile
+    addHitbox();
+    hitbox.visible = false;
+    #end
+  }
+
+  function exitOffsets():Void
+  {
+    if (drumsBG.volume > 0)
+    {
+      drumsBG.fadeOut(0.5, 0);
+    }
+    FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
+      FunkinSound.playMusic('freakyMenu',
+        {
+          startingVolume: 0,
+          overrideExisting: true,
+          restartTrack: true,
+          persist: true
+        });
+      FlxG.sound.music.fadeIn(0.5, 1);
+    });
+    optionsCodex.switchPage(Options);
   }
 
   function exitControls():Void
@@ -132,12 +173,19 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     // });
     #if FEATURE_INPUT_OFFSETS
     createItem("INPUT OFFSETS", function() {
-      OptionsState.rememberedSelectedIndex = items.selectedIndex;
-      #if web
-      LoadingState.transitionToState(() -> new LatencyState());
-      #else
-      FlxG.state.openSubState(new LatencyState());
-      #end
+      FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
+        FunkinSound.playMusic('offsetsLoop',
+          {
+            startingVolume: 0,
+            overrideExisting: true,
+            restartTrack: true,
+            loop: true
+          });
+        OptionsState.instance.drumsBG.play(true);
+        FlxG.sound.music.fadeIn(1, 1);
+      });
+
+      codex.switchPage(Offsets);
     });
     #end
     #if FEATURE_MOBILE_IAP
@@ -275,4 +323,5 @@ enum abstract OptionsMenuPageName(String) to PageName
   var Colors = "colors";
   var Mods = "mods";
   var Preferences = "preferences";
+  var Offsets = "offsets";
 }

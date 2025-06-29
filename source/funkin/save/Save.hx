@@ -22,7 +22,7 @@ import funkin.api.newgrounds.Leaderboards;
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.0";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -127,7 +127,7 @@ class Save
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
-          inputOffset: 0,
+          globalOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
 
@@ -1582,9 +1582,10 @@ typedef SaveDataOptions =
    * Offset the user's inputs by this many ms.
    * @default `0`
    */
-  var inputOffset:Int;
+  var globalOffset:Int;
 
   /**
+   * Unused !!
    * Affects the delay between the audio and the visuals during gameplay.
    * @default `0`
    */

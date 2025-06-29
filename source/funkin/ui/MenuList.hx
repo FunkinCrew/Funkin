@@ -16,6 +16,8 @@ import flixel.tweens.FlxTween;
 @:nullSafety
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
+  // Pause input variable
+  public static var pauseInput:Bool = false;
   public var selectedIndex(default, null):Int = 0;
   public var selectedItem(get, never):T;
 
@@ -99,7 +101,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   {
     super.update(elapsed);
 
-    if (enabled && !busy) updateControls();
+    if (enabled && !busy && !pauseInput) updateControls();
   }
 
   inline function updateControls():Void
@@ -290,7 +292,11 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     busy = false;
   }
 
-  public function selectItem(index:Int)
+  /**
+   * Selects an item in the list. If the item is not available, it will select the next available item.
+   * @param index The index of the item to select.
+   */
+  public function selectItem(index:Int):Void
   {
     members[selectedIndex].idle();
 

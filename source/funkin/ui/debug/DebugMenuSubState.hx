@@ -65,9 +65,6 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_RESULTS_DEBUG
     createItem("RESULTS SCREEN DEBUG", openTestResultsScreen);
     #end
-    // createItem("Input Offset Testing", openInputOffsetTesting);
-    // createItem("CHARACTER SELECT", openCharSelect, true);
-    // createItem("TEST STICKERS", testStickers);
     #if sys
     createItem("OPEN CRASH LOG FOLDER", openLogFolder);
     #end
@@ -107,12 +104,6 @@ class DebugMenuSubState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
 
     FlxG.switchState(() -> new ChartEditorState());
-  }
-
-  function openInputOffsetTesting():Void
-  {
-    openSubState(new funkin.ui.debug.latency.LatencyState());
-    trace('Input Offset Testing');
   }
 
   function openCharSelect():Void
