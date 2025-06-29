@@ -472,7 +472,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     if (differences.length > 2 && differences.length % 2 != 0 && calibrating)
     {
       var avg:Float = getAverage();
-      tempOffset = -Std.int(avg);
+      tempOffset = Std.int(avg);
       _lastOffset = appliedOffsetLerp;
       _offsetLerpTime = 0;
     }
