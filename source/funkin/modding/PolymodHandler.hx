@@ -307,6 +307,10 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
+    // `flixel.util.FlxSave`
+    // FlxSave.resolveFlixelClasses() can access blacklisted packages
+    Polymod.blacklistImport('flixel.util.FlxSave');
+
     // Disable access to AdMob Util
     Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
 
