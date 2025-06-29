@@ -24,8 +24,6 @@ class BitmapUtil
     return bitmap;
   }
 
-  static var iiii:Int = 0;
-
   /**
    * Scales the bitmap at a specific position.
    * @param bitmap The original bitmap to scale.

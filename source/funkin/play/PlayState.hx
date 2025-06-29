@@ -64,6 +64,7 @@ import haxe.Int64;
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #if FEATURE_MOBILE_ADVERTISEMENTS
 import funkin.mobile.util.AdMobUtil;
@@ -761,16 +762,26 @@ class PlayState extends MusicBeatSubState
     initPopups();
 
     #if mobile
-    // Initialize the hitbox for mobile controls
-    addHitbox(false);
-    hitbox.isPixel = currentChart.noteStyle == "pixel";
-
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
+    if (!ControlsHandler.usingExternalInputDevice)
     {
-      for (direction in Strumline.DIRECTIONS)
+      // Initialize the hitbox for mobile controls
+      addHitbox(false);
+      hitbox.isPixel = currentChart.noteStyle == "pixel";
+
+      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
       {
-        hitbox.getFirstHintByDirection(direction).follow(playerStrumline.getByDirection(direction));
+        for (direction in Strumline.DIRECTIONS)
+        {
+          hitbox.getFirstHintByDirection(direction).follow(playerStrumline.getByDirection(direction));
+        }
       }
+    }
+    else
+    {
+      // The camera is still needed for the pause button!
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
     }
     #end
 
@@ -831,7 +842,7 @@ class PlayState extends MusicBeatSubState
 
     add(pauseCircle);
     add(pauseButton);
-    hitbox.forEachAlive(function(hint:FunkinHint) {
+    hitbox?.forEachAlive(function(hint:FunkinHint) {
       hint.deadZones.push(pauseButton);
     });
     #end
@@ -1082,7 +1093,7 @@ class PlayState extends MusicBeatSubState
       FlxTween.tween(pauseButton, {alpha: 1}, 0.25, {ease: FlxEase.quartOut});
       FlxTween.tween(pauseCircle, {alpha: 0.1}, 0.25, {ease: FlxEase.quartOut});
 
-      if (!startingSong) hitbox.visible = true;
+      if (!startingSong && hitbox != null) hitbox.visible = true;
     }
     #end
 
@@ -1282,7 +1293,7 @@ class PlayState extends MusicBeatSubState
     FlxTween.cancelTweensOf(pauseCircle);
     pauseButton.alpha = 0;
     pauseCircle.alpha = 0;
-    hitbox.visible = false;
+    if (hitbox != null) hitbox.visible = false;
     #end
   }
 
@@ -1795,7 +1806,8 @@ class PlayState extends MusicBeatSubState
   {
     var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) healthBarYPos = FlxG.height * 0.1;
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
     #end
 
     healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
@@ -2035,7 +2047,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.cameras = [camHUD];
 
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
     {
       initNoteHitbox();
     }
@@ -2317,7 +2329,7 @@ class PlayState extends MusicBeatSubState
     startingSong = false;
 
     #if mobile
-    hitbox.visible = true;
+    if (hitbox != null) hitbox.visible = true;
     #end
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
@@ -3100,7 +3112,7 @@ class PlayState extends MusicBeatSubState
 
     #if mobile
     // Hide the buttons while the song is ending.
-    hitbox.visible = false;
+    if (hitbox != null) hitbox.visible = false;
     pauseButton.visible = false;
     pauseCircle.visible = false;
     #end

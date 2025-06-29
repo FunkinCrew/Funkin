@@ -8,12 +8,38 @@ import flixel.input.actions.FlxActionInputDigital;
 import funkin.mobile.ui.FunkinButton;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
+import openfl.events.KeyboardEvent;
+import openfl.events.TouchEvent;
 
 /**
  * Handles setting up and managing input controls for the game.
  */
 class ControlsHandler
 {
+  /**
+   * Returns wether the last input was sent through touch.
+   */
+  public static var lastInputTouch(default, null):Bool = true;
+
+  /**
+   * Returns wether there's a gamepad or keyboard devices connected and active.
+   */
+  public static var hasExternalInputDevice(get, never):Bool;
+
+  /**
+   * Returns wether an external input device is currently used as the main input.
+   */
+  public static var usingExternalInputDevice(get, never):Bool;
+
+  /**
+   * Initialize input trackers used to get the current status of the `lastInputTouch` field.
+   */
+  public static function initInputTrackers():Void
+  {
+    FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, (_) -> lastInputTouch = false);
+    FlxG.stage.addEventListener(TouchEvent.TOUCH_TAP, (_) -> lastInputTouch = true);
+  }
+
   /**
    * Adds a button input to a given FlxActionDigital and caches it.
    *
@@ -94,5 +120,17 @@ class ControlsHandler
         }
       }
     }
+  }
+
+  @:noCompletion
+  private static function get_hasExternalInputDevice():Bool
+  {
+    return FlxG.gamepads.numActiveGamepads > 0;
+  }
+
+  @:noCompletion
+  private static function get_usingExternalInputDevice():Bool
+  {
+    return ControlsHandler.hasExternalInputDevice && !ControlsHandler.lastInputTouch;
   }
 }

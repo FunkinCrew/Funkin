@@ -137,7 +137,15 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
     }
 
-    if (TouchUtil.pressed)
+    if (funkin.mobile.input.ControlsHandler.usingExternalInputDevice)
+    {
+      if (newIndex != selectedIndex)
+      {
+        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+        selectItem(newIndex);
+      }
+    }
+    else if (TouchUtil.pressed)
     {
       for (i in 0...members.length)
       {

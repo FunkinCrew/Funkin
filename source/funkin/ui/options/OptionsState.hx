@@ -21,8 +21,9 @@ import funkin.input.Controls;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
-import funkin.mobile.ui.FunkinBackButton;
 import funkin.util.TouchUtil;
+import funkin.mobile.ui.FunkinBackButton;
+import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.options.ControlsSchemeMenu;
 #end
 #if FEATURE_MOBILE_IAP
@@ -165,7 +166,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
     #if mobile
-    if (FlxG.gamepads.numActiveGamepads > 0)
+    if (ControlsHandler.hasExternalInputDevice)
     #end
     createItem("CONTROLS", function() codex.switchPage(Controls));
     // createItem("CONTROL SCHEMES", function() {

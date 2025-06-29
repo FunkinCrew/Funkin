@@ -56,6 +56,7 @@ import funkin.api.discord.DiscordClient;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+import funkin.mobile.input.ControlsHandler;
 #end
 
 /**
@@ -2562,7 +2563,7 @@ class FreeplayState extends MusicBeatSubState
     if (curSelected < 0)
     {
       #if FEATURE_TOUCH_CONTROLS
-      curSelected = (SwipeUtil.flickUp) ? 0 : grpCapsules.countLiving() - 1;
+      curSelected = (SwipeUtil.flickUp && !ControlsHandler.usingExternalInputDevice) ? 0 : grpCapsules.countLiving() - 1;
       SwipeUtil.resetSwipeVelocity();
       #else
       curSelected = grpCapsules.countLiving() - 1;
@@ -2571,7 +2572,7 @@ class FreeplayState extends MusicBeatSubState
     if (curSelected >= grpCapsules.countLiving())
     {
       #if FEATURE_TOUCH_CONTROLS
-      curSelected = (SwipeUtil.flickDown) ? grpCapsules.countLiving() - 1 : 0;
+      curSelected = (SwipeUtil.flickDown && !ControlsHandler.usingExternalInputDevice) ? grpCapsules.countLiving() - 1 : 0;
       SwipeUtil.resetSwipeVelocity();
       #else
       curSelected = 0;

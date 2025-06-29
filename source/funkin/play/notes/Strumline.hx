@@ -20,6 +20,7 @@ import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKindManager;
 import flixel.math.FlxPoint;
 #if mobile
+import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #end
 
@@ -158,7 +159,9 @@ class Strumline extends FlxSpriteGroup
 
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
-  public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows) || #end Preferences.downscroll;
+  final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+    && !ControlsHandler.usingExternalInputDevice)
+    || #end Preferences.downscroll;
 
   /**
    * The note data for the song. Should NOT be altered after the song starts (but we alter it in OffsetState :DDD),
@@ -215,7 +218,7 @@ class Strumline extends FlxSpriteGroup
 
     var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && isPlayer)
+    if ((Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice) && isPlayer)
     {
       backgroundWidth = backgroundWidth * 1.84;
     }
@@ -226,7 +229,8 @@ class Strumline extends FlxSpriteGroup
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && isPlayer) this.background.x -= 100;
+    if ((Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
+      && isPlayer) this.background.x -= 100;
     #end
     this.add(this.background);
     strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
@@ -1102,7 +1106,7 @@ class Strumline extends FlxSpriteGroup
 
       var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
       #if mobile
-      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
+      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
@@ -1288,7 +1292,7 @@ class Strumline extends FlxSpriteGroup
   {
     var pos:Float = 0;
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+    if ((Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
       && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
     #end
     return switch (direction)

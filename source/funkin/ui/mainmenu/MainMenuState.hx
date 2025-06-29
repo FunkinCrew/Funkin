@@ -38,6 +38,7 @@ import funkin.api.discord.DiscordClient;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
+import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
 
@@ -193,11 +194,11 @@ class MainMenuState extends MusicBeatState
       });
     }
 
-    #if !mobile
-    createMenuItem('options', 'mainmenu/options', function() {
-      startExitState(() -> new funkin.ui.options.OptionsState());
-    });
-    #end
+    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end) {
+      createMenuItem('options', 'mainmenu/options', function() {
+        startExitState(() -> new funkin.ui.options.OptionsState());
+      });
+    }
 
     createMenuItem('credits', 'mainmenu/credits', function() {
       startExitState(() -> new funkin.ui.credits.CreditsState());
@@ -271,11 +272,14 @@ class MainMenuState extends MusicBeatState
     // TODO: This is absolutely disgusting but what the hell sure, fix it later -Zack
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 1.0);
 
-    addOptionsButton(35, FlxG.height - 210, function() {
-      if (!canInteract) return;
-      canInteract = false;
-      startExitState(() -> new funkin.ui.options.OptionsState());
-    });
+    if (!ControlsHandler.usingExternalInputDevice)
+    {
+      addOptionsButton(35, FlxG.height - 210, function() {
+        if (!canInteract) return;
+        canInteract = false;
+        startExitState(() -> new funkin.ui.options.OptionsState());
+      });
+    }
 
     if (backButton != null)
     {
@@ -386,9 +390,8 @@ class MainMenuState extends MusicBeatState
 
   function onMenuItemChange(selected:MenuListItem)
   {
-    #if NO_FEATURE_TOUCH_CONTROLS
-    camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
-    #end
+    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
+      camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
   }
 
   #if FEATURE_OPEN_URL
@@ -438,8 +441,10 @@ class MainMenuState extends MusicBeatState
       });
 
       #if mobile
-      FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
-      FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+      if (optionsButton != null)
+        FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+      if (backButton != null)
+        FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
       #end
 
       new FlxTimer().start(duration, function(_) FlxG.switchState(state));
@@ -453,7 +458,7 @@ class MainMenuState extends MusicBeatState
     Conductor.instance.update();
 
     #if mobile
-    if (gyroPan != null && bg != null)
+    if (gyroPan != null && bg != null && !ControlsHandler.usingExternalInputDevice)
     {
       gyroPan.add(FlxG.gyroscope.pitch * -1.25, FlxG.gyroscope.roll * -1.25);
 
