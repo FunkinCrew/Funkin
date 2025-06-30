@@ -439,7 +439,7 @@ class PauseSubState extends MusicBeatSubState
     if (Preferences.debugDisplay) offsetText.y += 32;
 
     offsetTextInfo = new FlxText(20, offsetText.y + 16, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      'Hold SHIFT and use UP/DOWN to change the offset.');
+      'Hold SHIFT-UP/DOWN,\nto change the offset.');
     offsetTextInfo.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
     offsetTextInfo.scrollFactor.set(0, 0);
 
