@@ -511,7 +511,10 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
     #if FEATURE_TOUCH_CONTROLS
-    charSelectHint.text = 'Tap the DJ to change characters';
+    if (ControlsHandler.usingExternalInputDevice)
+      charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
+    else
+      charSelectHint.text = 'Tap the DJ to change characters';
     #else
     charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
     #end
@@ -1762,7 +1765,7 @@ class FreeplayState extends MusicBeatSubState
 
   function handleTouchSelectionScroll(elapsed:Float):Void
   {
-    if (draggingDifficulty) return;
+    if (draggingDifficulty || ControlsHandler.usingExternalInputDevice) return;
     if (TouchUtil.pressAction(grpCapsules.members[curSelected].theActualHitbox, funnyCam)) return;
 
     if (TouchUtil.justPressed && TouchUtil.overlaps(capsuleHitbox, funnyCam))
@@ -2613,9 +2616,8 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = capsule.intendedX(index - curSelected) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
-      #if NO_FEATURE_TOUCH_CONTROLS
-      if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
-      #end
+      if (index < curSelected #if FEATURE_TOUCH_CONTROLS
+        && ControlsHandler.usingExternalInputDevice #end) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && !busy)

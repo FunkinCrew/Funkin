@@ -561,7 +561,6 @@ class PauseSubState extends MusicBeatSubState
   // ===============
   // Input Handling
   // ===============
-
   var fastOffset:Bool = false;
   var lastOffsetPress:Float = 0;
 
@@ -684,13 +683,16 @@ class PauseSubState extends MusicBeatSubState
     var prevEntry:Int = currentEntry;
     currentEntry += change;
 
-    #if FEATURE_TOUCH_CONTROLS
-    if (currentEntry < 0) currentEntry = 0;
-    if (currentEntry >= currentMenuEntries.length) currentEntry = currentMenuEntries.length - 1;
-    #else
-    if (currentEntry < 0) currentEntry = currentMenuEntries.length - 1;
-    if (currentEntry >= currentMenuEntries.length) currentEntry = 0;
-    #end
+    if (#if FEATURE_TOUCH_CONTROLS !funkin.mobile.input.ControlsHandler.usingExternalInputDevice #else false #end)
+    {
+      if (currentEntry < 0) currentEntry = 0;
+      if (currentEntry >= currentMenuEntries.length) currentEntry = currentMenuEntries.length - 1;
+    }
+    else
+    {
+      if (currentEntry < 0) currentEntry = currentMenuEntries.length - 1;
+      if (currentEntry >= currentMenuEntries.length) currentEntry = 0;
+    }
 
     if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 

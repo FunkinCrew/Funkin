@@ -37,7 +37,7 @@ class ControlsHandler
   public static function initInputTrackers():Void
   {
     FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, (_) -> lastInputTouch = false);
-    FlxG.stage.addEventListener(TouchEvent.TOUCH_TAP, (_) -> lastInputTouch = true);
+    FlxG.stage.addEventListener(TouchEvent.TOUCH_BEGIN, (_) -> lastInputTouch = true);
   }
 
   /**

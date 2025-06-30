@@ -375,7 +375,8 @@ class StoryMenuState extends MusicBeatState
         {
           #if FEATURE_TOUCH_CONTROLS
           @:privateAccess
-          if (!TouchUtil.pressAction(rightDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          if (TouchUtil.touch != null
+            && !TouchUtil.pressAction(rightDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
           #end
           changeDifficulty(1);
         }
@@ -386,7 +387,8 @@ class StoryMenuState extends MusicBeatState
         {
           #if FEATURE_TOUCH_CONTROLS
           @:privateAccess
-          if (!TouchUtil.pressAction(leftDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          if (TouchUtil.touch != null
+            && !TouchUtil.pressAction(leftDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
           #end
           changeDifficulty(-1);
         }
