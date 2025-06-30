@@ -40,6 +40,8 @@ class FunkinPreloader extends FlxBasePreloader
 
   static final BAR_HEIGHT:Int = 12;
 
+  static final PIECES_COUNT:Int = 16;
+
   /**
    * Display takes this long (in seconds) to fade in.
    */
@@ -144,21 +146,30 @@ class FunkinPreloader extends FlxBasePreloader
     trace('Preloader size: ' + this._width + 'x' + this._height);
 
     // Scale assets to the screen size.
-    ratio = this._width / BASE_WIDTH / 2.0;
+    // Desktop is always 1:1 scale, mobile needs DPI normalization for consistent positioning
+    #if mobile
+    var display = lime.system.System.getDisplay(0);
+    var dpiScale = display.dpi / 160.0; // 160 is Android's baseline DPI
+    var normalizedWidth = this._width / dpiScale;
+    ratio = normalizedWidth / BASE_WIDTH;
 
-    var amountOfPieces:Int = 16;
+    trace('Display info: DPI: ${display.dpi} normalizedWidth: ${normalizedWidth} ratio: ${ratio}');
+    #else
+    ratio = 1.0; // Desktop is always 1:1 scale
+    #end
+
     progressBarPieces = [];
     var maxBarWidth:Float = this._width - BAR_PADDING * 2;
-    var pieceWidth:Float = maxBarWidth / amountOfPieces;
+    var pieceWidth:Float = maxBarWidth / PIECES_COUNT;
     var pieceGap:Int = 8;
 
     progressLines = new openfl.display.Sprite();
     progressLines.graphics.lineStyle(2, Constants.COLOR_PRELOADER_BAR);
     progressLines.graphics.drawRect(-2, 0, this._width + 4, 30);
-    progressLines.y = this._height * 0.66;
+    progressLines.y = this._height * 0.67;
     addChild(progressLines);
 
-    for (i in 0...amountOfPieces)
+    for (i in 0...PIECES_COUNT)
     {
       var piece:Sprite = new Sprite();
       piece.graphics.beginFill(Constants.COLOR_PRELOADER_BAR);
@@ -173,15 +184,16 @@ class FunkinPreloader extends FlxBasePreloader
 
     // Create the progress message.
 
-    var progressLeftTextFormat:TextFormat = new TextFormat("DS-Digital", Std.int(32 * (ratio / 0.5)), Constants.COLOR_PRELOADER_BAR, true);
+    var progressLeftTextFormat:TextFormat = new TextFormat("DS-Digital", Std.int(32 * ratio), Constants.COLOR_PRELOADER_BAR, true);
     progressLeftTextFormat.align = TextFormatAlign.LEFT;
     var progressRightTextFormat:TextFormat = new TextFormat("DS-Digital", 16, Constants.COLOR_PRELOADER_BAR, true);
     progressRightTextFormat.align = TextFormatAlign.RIGHT;
 
-    progressLeftText = makeText(BAR_PADDING, this._height * 0.54, 'Downloading assets...', Constants.COLOR_PRELOADER_BAR);
+    progressLeftText = makeText(BAR_PADDING * ratio, progressLines.y, 'Downloading assets...', Constants.COLOR_PRELOADER_BAR);
     progressLeftText.defaultTextFormat = progressLeftTextFormat;
     progressLeftText.width = this._width - BAR_PADDING * 2;
     addChild(progressLeftText);
+    progressLeftText.y -= (progressLeftText.textHeight / ratio) * 2.5;
 
     if (!isLandscapeFlipped()) progressLeftText.x += ScreenUtil.getNotchRect().width * ratio;
 
@@ -196,32 +208,32 @@ class FunkinPreloader extends FlxBasePreloader
     // however should test on android + iPad to see how it fits!
     rTextGroup = new Sprite();
     rTextGroup.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 1);
-    rTextGroup.graphics.drawRoundRect(0, 0, 64, 20, 5, 5);
-    rTextGroup.graphics.drawRoundRect(70, 0, 58, 20, 5, 5);
+    rTextGroup.graphics.drawRoundRect(0, 40, 64, 20, 5, 5);
+    rTextGroup.graphics.drawRoundRect(70, 40, 58, 20, 5, 5);
     rTextGroup.graphics.endFill();
     rTextGroup.graphics.beginFill(Constants.COLOR_PRELOADER_BAR, 0.1);
-    rTextGroup.graphics.drawRoundRect(0, 0, 128, 20, 5, 5);
+    rTextGroup.graphics.drawRoundRect(0, 40, 128, 20, 5, 5);
     rTextGroup.graphics.endFill();
     rTextGroup.x = this._width * 0.64;
-    rTextGroup.y = this._height * 0.6;
+    rTextGroup.y = progressLeftText.y;
     addChild(rTextGroup);
 
-    dspText = makeText(10, -7, 'DSP', 0x000000);
+    dspText = makeText(10, 33, 'DSP', 0x000000);
     dspText.width = this._width;
     dspText.height = 30;
     rTextGroup.addChild(dspText);
 
-    fnfText = makeText(78, -7, 'FNF', 0x000000);
+    fnfText = makeText(78, 33, 'FNF', 0x000000);
     fnfText.width = this._width;
     fnfText.height = 30;
     rTextGroup.addChild(fnfText);
 
-    enhancedText = makeText(-100, 0, 'ENHANCED', Constants.COLOR_PRELOADER_BAR);
+    enhancedText = makeText(-100, 40, 'ENHANCED', Constants.COLOR_PRELOADER_BAR);
     enhancedText.width = this._width;
     enhancedText.height = 100;
     rTextGroup.addChild(enhancedText);
 
-    stereoText = makeText(0, -40, 'STEREO', Constants.COLOR_PRELOADER_BAR);
+    stereoText = makeText(0, 0, 'STEREO', Constants.COLOR_PRELOADER_BAR);
     stereoText.width = this._width;
     stereoText.height = 100;
     rTextGroup.addChild(stereoText);
