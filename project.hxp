@@ -802,7 +802,6 @@ class Project extends HXProject
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
     FEATURE_POLYMOD_MODS.apply(this, true);
-    FEATURE_INPUT_OFFSETS.apply(this, true);
 
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
@@ -830,9 +829,8 @@ class Project extends HXProject
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
 
-    // Should be true except on mobile builds.
-    // Input offsets menu isn't built to work with mobile right now.
-    FEATURE_INPUT_OFFSETS.apply(this, !isMobile());
+    // Should be true except on web builds (some asset stuff breaks it)
+    FEATURE_INPUT_OFFSETS.apply(this, !isWeb());
 
     // Should be true except on web and mobile builds.
     // Screenshots doesn't work there, and mobile has its own screenshots anyway.
