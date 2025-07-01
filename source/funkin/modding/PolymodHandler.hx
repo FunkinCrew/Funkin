@@ -255,8 +255,28 @@ class PolymodHandler
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
 
+    // Backward compatibility for certain scripted classes outside `funkin.modding.base`.
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.ScriptedFunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.ScriptedMusicBeatState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
+
     // `funkin.util.FileUtil` has unrestricted access to the file system.
     Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
+
+    #if FEATURE_NEWGROUNDS
+    // `funkin.api.newgrounds.Leaderboards` allows for submitting cheated scores.
+    Polymod.addImportAlias('funkin.api.newgrounds.Leaderboards', funkin.api.newgrounds.Leaderboards.LeaderboardsSandboxed);
+
+    // `funkin.api.newgrounds.Medals` allows for unfair granting of medals.
+    Polymod.addImportAlias('funkin.api.newgrounds.Medals', funkin.api.newgrounds.Medals.MedalsSandboxed);
+
+    // `funkin.api.newgrounds.NewgroundsClientSandboxed` allows for submitting cheated data.
+    Polymod.addImportAlias('funkin.api.newgrounds.NewgroundsClient', funkin.api.newgrounds.NewgroundsClient.NewgroundsClientSandboxed);
+    #end
+
+    #if FEATURE_DISCORD_RPC
+    Polymod.addImportAlias('funkin.api.discord.DiscordClient', funkin.api.discord.DiscordClient.DiscordClientSandboxed);
+    #end
 
     // Add blacklisting for prohibited classes and packages.
 
@@ -276,9 +296,9 @@ class PolymodHandler
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
 
-    // `Unserializer`
+    // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
-    Polymod.blacklistImport('Unserializer');
+    Polymod.blacklistImport('haxe.Unserializer');
 
     // `lime.system.CFFI`
     // Can load and execute compiled binaries.
@@ -310,21 +330,13 @@ class PolymodHandler
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
+      if (polymod.hscript._internal.PolymodScriptClass.importOverrides.exists(className)) continue;
       Polymod.blacklistImport(className);
     }
 
     // `polymod.*`
     // Contains functions which may allow for un-blacklisting other modules.
     for (cls in ClassMacro.listClassesInPackage('polymod'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
-
-    // `funkin.api.newgrounds.*`
-    // Contains functions which allow for cheating medals and leaderboards.
-    for (cls in ClassMacro.listClassesInPackage('funkin.api.newgrounds'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -343,6 +355,16 @@ class PolymodHandler
     // `sys.*`
     // Access to system utilities such as the file system.
     for (cls in ClassMacro.listClassesInPackage('sys'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // `funkin.util.macro.*`
+    // CompiledClassList's get function allows access to sys and Newgrounds classes
+    // None of the classes are suitable for mods anyway
+    for (cls in ClassMacro.listClassesInPackage('funkin.util.macro'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);

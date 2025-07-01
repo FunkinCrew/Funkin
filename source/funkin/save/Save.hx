@@ -2,6 +2,7 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -127,8 +128,6 @@ class Save
               shouldHideMouse: true,
               fancyPreview: true,
               previewOnSave: true,
-              saveFormat: 'PNG',
-              jpegQuality: 80,
             },
 
           controls:
@@ -173,6 +172,10 @@ class Save
           metronomeVolume: 1.0,
           hitsoundVolumePlayer: 1.0,
           hitsoundVolumeOpponent: 1.0,
+          instVolume: 1.0,
+          playerVoiceVolume: 1.0,
+          opponentVoiceVolume: 1.0,
+          playbackSpeed: 0.5,
           themeMusic: true
         },
 
@@ -181,7 +184,10 @@ class Save
           previousFiles: [],
           moveStep: "1px",
           angleStep: 5,
-          theme: StageEditorTheme.Light
+          theme: StageEditorTheme.Light,
+          bfChar: "bf",
+          gfChar: "gf",
+          dadChar: "dad"
         }
     };
   }
@@ -407,6 +413,57 @@ class Save
     return data.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
+  public var chartEditorInstVolume(get, set):Float;
+
+  function get_chartEditorInstVolume():Float
+  {
+    if (data.optionsChartEditor.instVolume == null) data.optionsChartEditor.instVolume = 1.0;
+
+    return data.optionsChartEditor.instVolume;
+  }
+
+  function set_chartEditorInstVolume(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.instVolume = value;
+    flush();
+    return data.optionsChartEditor.instVolume;
+  }
+
+  public var chartEditorPlayerVoiceVolume(get, set):Float;
+
+  function get_chartEditorPlayerVoiceVolume():Float
+  {
+    if (data.optionsChartEditor.playerVoiceVolume == null) data.optionsChartEditor.playerVoiceVolume = 1.0;
+
+    return data.optionsChartEditor.playerVoiceVolume;
+  }
+
+  function set_chartEditorPlayerVoiceVolume(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.playerVoiceVolume = value;
+    flush();
+    return data.optionsChartEditor.playerVoiceVolume;
+  }
+
+  public var chartEditorOpponentVoiceVolume(get, set):Float;
+
+  function get_chartEditorOpponentVoiceVolume():Float
+  {
+    if (data.optionsChartEditor.opponentVoiceVolume == null) data.optionsChartEditor.opponentVoiceVolume = 1.0;
+
+    return data.optionsChartEditor.opponentVoiceVolume;
+  }
+
+  function set_chartEditorOpponentVoiceVolume(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.opponentVoiceVolume = value;
+    flush();
+    return data.optionsChartEditor.opponentVoiceVolume;
+  }
+
   public var chartEditorThemeMusic(get, set):Bool;
 
   function get_chartEditorThemeMusic():Bool
@@ -428,7 +485,7 @@ class Save
 
   function get_chartEditorPlaybackSpeed():Float
   {
-    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 1.0;
+    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 0.5;
 
     return data.optionsChartEditor.playbackSpeed;
   }
@@ -548,6 +605,60 @@ class Save
     data.optionsStageEditor.theme = value;
     flush();
     return data.optionsStageEditor.theme;
+  }
+
+  public var stageBoyfriendChar(get, set):String;
+
+  function get_stageBoyfriendChar():String
+  {
+    if (data.optionsStageEditor.bfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null) data.optionsStageEditor.bfChar = "bf";
+
+    return data.optionsStageEditor.bfChar;
+  }
+
+  function set_stageBoyfriendChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.bfChar = value;
+    flush();
+    return data.optionsStageEditor.bfChar;
+  }
+
+  public var stageGirlfriendChar(get, set):String;
+
+  function get_stageGirlfriendChar():String
+  {
+    if (data.optionsStageEditor.gfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null) data.optionsStageEditor.gfChar = "gf";
+
+    return data.optionsStageEditor.gfChar;
+  }
+
+  function set_stageGirlfriendChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.gfChar = value;
+    flush();
+    return data.optionsStageEditor.gfChar;
+  }
+
+  public var stageDadChar(get, set):String;
+
+  function get_stageDadChar():String
+  {
+    if (data.optionsStageEditor.dadChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null) data.optionsStageEditor.dadChar = "dad";
+
+    return data.optionsStageEditor.dadChar;
+  }
+
+  function set_stageDadChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.dadChar = value;
+    flush();
+    return data.optionsStageEditor.dadChar;
   }
 
   /**
@@ -1441,16 +1552,12 @@ typedef SaveDataOptions =
    * @param shouldHideMouse Should the mouse be hidden when taking a screenshot? Default: `true`
    * @param fancyPreview Show a fancy preview? Default: `true`
    * @param previewOnSave Only show the fancy preview after a screenshot is saved? Default: `true`
-   * @param saveFormat The save format of the screenshot, PNG or JPEG. Default: `PNG`
-   * @param jpegQuality The JPEG Quality, if we're saving to the format. Default: `80`
    */
   var screenshot:
     {
       var shouldHideMouse:Bool;
       var fancyPreview:Bool;
       var previewOnSave:Bool;
-      var saveFormat:String;
-      var jpegQuality:Int;
     };
 
   var controls:
@@ -1653,10 +1760,16 @@ typedef SaveDataChartEditorOptions =
   var ?instVolume:Float;
 
   /**
-   * Voices volume in the Chart Editor.
+   * Player voice volume in the Chart Editor.
    * @default `1.0`
    */
-  var ?voicesVolume:Float;
+  var ?playerVoiceVolume:Float;
+
+  /**
+   * Opponent voice volume in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?opponentVoiceVolume:Float;
 
   /**
    * Playback speed in the Chart Editor.
@@ -1699,4 +1812,22 @@ typedef SaveDataStageEditorOptions =
    * @default `StageEditorTheme.Light`
    */
   var ?theme:StageEditorTheme;
+
+  /**
+   * The BF character ID used in testing stages.
+   * @default bf
+   */
+  var ?bfChar:String;
+
+  /**
+   * The GF character ID used in testing stages.
+   * @default gf
+   */
+  var ?gfChar:String;
+
+  /**
+   * The Dad character ID used in testing stages.
+   * @default dad
+   */
+  var ?dadChar:String;
 };

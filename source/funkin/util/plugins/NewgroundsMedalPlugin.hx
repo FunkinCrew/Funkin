@@ -9,13 +9,14 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.math.FlxRect;
 import funkin.api.newgrounds.Medals;
 
+@:nullSafety
 class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 {
-  var medal:FlxAtlasSprite = null;
-  var points:FlxText = null;
-  var name:FlxText = null;
+  var medal:FlxAtlasSprite;
+  var points:FlxText;
+  var name:FlxText;
 
-  public static var instance:NewgroundsMedalPlugin = null;
+  public static var instance:Null<NewgroundsMedalPlugin> = null;
 
   var tween:Bool = false;
 
@@ -64,7 +65,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     medal.visible = false;
 
     var fr = medal.anim.curSymbol.timeline.get(0).get(0);
-    fr.name = "START"; // woerkaround
+    if (fr != null) fr.name = "START"; // woerkaround
     // fr.add(() -> FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.));
 
     medal.anim.getFrameLabel("show").add(function() {
@@ -72,6 +73,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
       name.visible = true;
       if (name.width > name.clipRect.width)
       {
+        // TODO: Remove this once FlxText.get_size deals with TextFormat's nullable size properly
+        @:nullSafety(Off)
         am = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
         tween = true;
         // FlxTimer.wait(0.3, () -> tween = true);
@@ -114,7 +117,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     instance = new NewgroundsMedalPlugin();
     FlxG.plugins.add(instance);
 
-    instance.medal.anim.onComplete.add(function() {
+    // instance is defined above so there's no need to worry about null safety here
+    @:nullSafety(Off)
+    instance.medal.anim?.onComplete.add(function() {
       if (instance.funcs.length > 0)
       {
         instance.funcs.shift()();
@@ -122,8 +127,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     });
   }
 
-  public static function play(points:Int = 100, name:String = "I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM", graphic:FlxGraphic = null)
+  public static function play(points:Int = 100, name:String = "I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM", ?graphic:FlxGraphic)
   {
+    if (instance == null) return;
     var func = function() {
       instance.points.visible = false;
       instance.name.visible = false;

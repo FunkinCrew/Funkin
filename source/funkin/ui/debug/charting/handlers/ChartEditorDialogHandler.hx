@@ -1100,7 +1100,14 @@ class ChartEditorDialogHandler
     onDropFile = function(pathStr:String) {
       var path:Path = new Path(pathStr);
       var selectedFileText:String = FileUtil.readStringFromPath(path.toString());
-      var selectedFileData:FNFLegacyData = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
+      var selectedFileData:Null<FNFLegacyData> = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
+
+      if (selectedFileData == null)
+      {
+        state.error('Failure', 'Failed to parse FNF chart file (${path.file}.${path.ext})');
+        return;
+      }
+
       var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(selectedFileData);
       var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(selectedFileData);
 
@@ -1161,6 +1168,10 @@ class ChartEditorDialogHandler
     if (dialogSongArtist == null) throw 'Could not locate dialogSongArtist TextField in Add Variation dialog';
     dialogSongArtist.value = state.currentSongMetadata.artist;
 
+    var dialogSongCharter:Null<TextField> = dialog.findComponent('dialogSongCharter', TextField);
+    if (dialogSongCharter == null) throw 'Could not locate dialogSongCharter TextField in Add Variation dialog';
+    dialogSongCharter.value = state.currentSongMetadata.charter;
+
     var dialogStage:Null<DropDown> = dialog.findComponent('dialogStage', DropDown);
     if (dialogStage == null) throw 'Could not locate dialogStage DropDown in Add Variation dialog';
     var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(dialogStage, state.currentSongMetadata.playData.stage);
@@ -1168,7 +1179,8 @@ class ChartEditorDialogHandler
 
     var dialogNoteStyle:Null<DropDown> = dialog.findComponent('dialogNoteStyle', DropDown);
     if (dialogNoteStyle == null) throw 'Could not locate dialogNoteStyle DropDown in Add Variation dialog';
-    dialogNoteStyle.value = state.currentSongMetadata.playData.noteStyle;
+    var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(dialogNoteStyle, state.currentSongMetadata.playData.noteStyle);
+    dialogNoteStyle.value = startingValueNoteStyle;
 
     var dialogCharacterPlayer:Null<DropDown> = dialog.findComponent('dialogCharacterPlayer', DropDown);
     if (dialogCharacterPlayer == null) throw 'Could not locate dialogCharacterPlayer DropDown in Add Variation dialog';
@@ -1203,7 +1215,7 @@ class ChartEditorDialogHandler
       var pendingVariation:SongMetadata = new SongMetadata(dialogSongName.text, dialogSongArtist.text, dialogVariationName.text.toLowerCase());
 
       pendingVariation.playData.stage = dialogStage.value.id;
-      pendingVariation.playData.noteStyle = dialogNoteStyle.value;
+      pendingVariation.playData.noteStyle = dialogNoteStyle.value.id;
       pendingVariation.timeChanges[0].bpm = dialogBPM.value;
 
       state.songMetadata.set(pendingVariation.variation, pendingVariation);

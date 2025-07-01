@@ -8,9 +8,10 @@ typedef AtlasAsset = flixel.util.typeLimit.OneOfTwo<String, FlxAtlasFrames>;
 /**
  * A menulist whose items share a single texture atlas.
  */
+@:nullSafety
 class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 {
-  public var atlas:FlxAtlasFrames;
+  public var atlas:Null<FlxAtlasFrames>;
 
   public function new(atlas, navControls:NavControls = Vertical, ?wrapMode)
   {
@@ -38,9 +39,10 @@ class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 /**
  * A menu list item which uses single texture atlas.
  */
+@:nullSafety
 class AtlasMenuItem extends MenuListItem
 {
-  var atlas:FlxAtlasFrames;
+  var atlas:Null<FlxAtlasFrames>;
 
   public var centered:Bool = false;
 
@@ -52,7 +54,7 @@ class AtlasMenuItem extends MenuListItem
 
   override function setData(name:String, ?callback:Void->Void)
   {
-    frames = atlas;
+    if (atlas != null) frames = atlas;
     animation.addByPrefix('idle', '$name idle', 24);
     animation.addByPrefix('selected', '$name selected', 24);
 

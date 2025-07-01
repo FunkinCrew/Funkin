@@ -527,20 +527,23 @@ class FileUtil
   /**
    * Prompts the user to save a file to their computer.
    */
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void)
   {
     var file = new FileReference();
 
     file.addEventListener(Event.COMPLETE, function(e:Event) {
       trace('Successfully wrote file: "$path"');
+      callback("success");
     });
 
     file.addEventListener(Event.CANCEL, function(e:Event) {
       trace('Cancelled writing file: "$path"');
+      callback("info");
     });
 
     file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
       trace('IO error writing file: "$path"');
+      callback("error");
     });
 
     file.save(data, path);
@@ -1143,12 +1146,17 @@ class FileUtil
    * Runs platform-specific code to open a path in the file explorer.
    *
    * @param pathFolder The path of the folder to open.
+   * @param createIfNotExists If `true`, creates the folder if missing; otherwise, throws an error.
    */
-  public static function openFolder(pathFolder:String):Void
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
   {
     #if sys
     pathFolder = pathFolder.trim();
-    if (!directoryExists(pathFolder))
+    if (createIfNotExists)
+    {
+      createDirIfNotExists(pathFolder);
+    }
+    else if (!directoryExists(pathFolder))
     {
       throw 'Path is not a directory: "$pathFolder"';
     }
@@ -1393,9 +1401,9 @@ class FileUtilSandboxed
     FileUtil.browseFileReference(callback);
   }
 
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void):Void
   {
-    FileUtil.writeFileReference(path, data);
+    FileUtil.writeFileReference(path, data, callback);
   }
 
   public static function readJSONFromPath(path:String):Dynamic
@@ -1518,9 +1526,9 @@ class FileUtilSandboxed
     return FileUtil.makeZIPEntryFromBytes(name, data);
   }
 
-  public static function openFolder(pathFolder:String):Void
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
   {
-    FileUtil.openFolder(sanitizePath(pathFolder));
+    FileUtil.openFolder(sanitizePath(pathFolder), createIfNotExists);
   }
 
   public static function openSelectFile(path:String):Void

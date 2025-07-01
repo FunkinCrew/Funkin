@@ -8,6 +8,7 @@ import lime.app.Application;
 /**
  * A store of unchanging, globally relevant values.
  */
+@:nullSafety
 class Constants
 {
   /**
@@ -536,6 +537,11 @@ class Constants
    * - "Actually new or just a renamed ZIP?"
    */
   public static final EXT_CHART = "fnfc";
+
+  /**
+   * The file extension used when exporting stage files.
+   */
+  public static final EXT_STAGE = "fnfs";
 
   /**
    * The file extension used when loading audio files.
