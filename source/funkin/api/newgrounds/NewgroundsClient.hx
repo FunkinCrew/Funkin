@@ -34,11 +34,6 @@ class NewgroundsClient
   {
     trace('[NEWGROUNDS] Initializing client...');
 
-    #if FEATURE_NEWGROUNDS_DEBUG
-    trace('[NEWGROUNDS] App ID: ${NewgroundsCredentials.APP_ID}');
-    trace('[NEWGROUNDS] Encryption Key: ${NewgroundsCredentials.ENCRYPTION_KEY}');
-    #end
-
     if (!hasValidCredentials())
     {
       FlxG.log.warn("Tried to initialize Newgrounds client, but credentials are invalid!");
