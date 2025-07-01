@@ -432,19 +432,19 @@ class Project extends HXProject
    * `-FEATURE_DEBUG_MENU`
    * If this flag is enabled, a debug menu will be accessible.
    */
-   static final FEATURE_DEBUG_MENU:FeatureFlag = "FEATURE_DEBUG_MENU";
+  static final FEATURE_DEBUG_MENU:FeatureFlag = "FEATURE_DEBUG_MENU";
 
   /**
    * `-FEATURE_ANIMATION_EDITOR`
    * If this flag is enabled, the Animation Editor will be accessible from the debug menu.
    */
-   static final FEATURE_ANIMATION_EDITOR:FeatureFlag = "FEATURE_ANIMATION_EDITOR";
+  static final FEATURE_ANIMATION_EDITOR:FeatureFlag = "FEATURE_ANIMATION_EDITOR";
 
   /**
    * `-DFEATURE_CHART_EDITOR`
    * If this flag is enabled, the Chart Editor will be accessible from the debug menu.
    */
-   static final FEATURE_CHART_EDITOR:FeatureFlag = "FEATURE_CHART_EDITOR";
+  static final FEATURE_CHART_EDITOR:FeatureFlag = "FEATURE_CHART_EDITOR";
 
   /**
    * `-DFEATURE_STAGE_EDITOR`
