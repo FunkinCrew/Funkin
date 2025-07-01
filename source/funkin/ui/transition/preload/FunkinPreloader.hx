@@ -152,8 +152,6 @@ class FunkinPreloader extends FlxBasePreloader
     var dpiScale = display.dpi / 160.0; // 160 is Android's baseline DPI
     var normalizedWidth = this._width / dpiScale;
     ratio = normalizedWidth / BASE_WIDTH;
-
-    trace('Display info: DPI: ${display.dpi} normalizedWidth: ${normalizedWidth} ratio: ${ratio}');
     #else
     ratio = 1.0; // Desktop is always 1:1 scale
     #end
@@ -860,14 +858,10 @@ class FunkinPreloader extends FlxBasePreloader
     else
     {
       // Render progress bar
-      var maxWidth = this._width - BAR_PADDING * 2;
-      var barWidth = maxWidth * percent;
       var piecesToRender:Int = Std.int(percent * progressBarPieces.length);
 
       for (i => piece in progressBarPieces)
-      {
         piece.alpha = i <= piecesToRender ? 0.9 : 0.1;
-      }
     }
 
     // Cycle ellipsis count to show loading
@@ -896,9 +890,8 @@ class FunkinPreloader extends FlxBasePreloader
     else if (progressLeftText.text != text)
     {
       // We have to keep updating the text format, because the font can take a frame or two to load.
-      var progressLeftTextFormat:TextFormat = new TextFormat("DS-Digital", 32, Constants.COLOR_PRELOADER_BAR, true);
-      progressLeftTextFormat.align = TextFormatAlign.LEFT;
-      progressLeftText.defaultTextFormat = progressLeftTextFormat;
+      progressLeftText.defaultTextFormat = new TextFormat("DS-Digital", 32, Constants.COLOR_PRELOADER_BAR, true);
+      progressLeftText.defaultTextFormat.align = TextFormatAlign.LEFT;
       progressLeftText.text = text;
 
       dspText.defaultTextFormat = new TextFormat("Quantico", 20, 0x000000, false);
