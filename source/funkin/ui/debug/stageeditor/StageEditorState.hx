@@ -104,6 +104,7 @@ class StageEditorState extends UIState
   var menubarItemDelete:MenuItem; // delete
   var menubarItemNewObj:MenuItem; // new
   var menubarItemFindObj:MenuItem; // find
+  var menubarItemSelectNone:MenuItem; // access none
   var menubarItemMoveStep:Menu; // move step submenu
 
   var menubarMenuView:Menu;
@@ -143,6 +144,7 @@ class StageEditorState extends UIState
   {
     selectedSprite?.selectedShader.setAmount(0);
     this.selectedSprite = value;
+    infoSelection = value?.name ?? "None";
     updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
     updateDialog(StageEditorDialogType.OBJECT_ANIMS);
     updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
@@ -163,6 +165,7 @@ class StageEditorState extends UIState
   function set_selectedChar(value:BaseCharacter)
   {
     this.selectedChar = value;
+    infoSelection = Std.string(value?.characterType) ?? "None";
     updateDialog(StageEditorDialogType.CHARACTER);
     return selectedChar;
   }
@@ -597,7 +600,6 @@ class StageEditorState extends UIState
 
     // testmode
     menubarMenuFile.disabled = menubarMenuEdit.disabled = bottomBarModeText.disabled = menubarMenuWindow.disabled = testingMode;
-    menubarButtonText.selected = testingMode;
 
     if (testingMode)
     {
@@ -617,6 +619,7 @@ class StageEditorState extends UIState
       if (FlxG.keys.justPressed.TAB && !FlxG.keys.pressed.SHIFT) curTestChar++;
 
       if (curTestChar >= getCharacters().length) curTestChar = 0;
+      else if (curTestChar < 0) curTestChar = getCharacters().length - 1;
 
       var text = Std.string(getCharacters()[curTestChar]?.characterType);
       bottomBarSelectText.text = (text == 'null') ? 'None' : text;
@@ -650,10 +653,11 @@ class StageEditorState extends UIState
     }
 
     // key shortcuts and inputs
-    if (allowInput)
+    if (pressingControl() && FlxG.keys.justPressed.Q) onMenuItemClick("exit");
+
+    if (allowInput && welcomeDialog == null && userGuideDialog == null)
     {
-      // "WINDOWS" key code is the same keycode as COMMAND on mac
-      if (FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.WINDOWS)
+      if (pressingControl())
       {
         if (FlxG.keys.justPressed.Z) onMenuItemClick("undo");
         if (FlxG.keys.justPressed.Y) onMenuItemClick("redo");
@@ -662,15 +666,15 @@ class StageEditorState extends UIState
         if (FlxG.keys.justPressed.X) onMenuItemClick("cut object");
         if (FlxG.keys.justPressed.S) FlxG.keys.pressed.SHIFT ? onMenuItemClick("save stage as") : onMenuItemClick("save stage");
         if (FlxG.keys.justPressed.F) onMenuItemClick("find object");
+        if (FlxG.keys.justPressed.D) onMenuItemClick("select none");
         if (FlxG.keys.justPressed.O) onMenuItemClick("open stage");
-        if (FlxG.keys.justPressed.N && welcomeDialog == null && userGuideDialog == null) onMenuItemClick("new stage");
-        if (FlxG.keys.justPressed.Q) onMenuItemClick("exit");
+        if (FlxG.keys.justPressed.N) onMenuItemClick("new stage");
       }
 
       if (FlxG.keys.justPressed.TAB) onMenuItemClick("switch mode");
       if (FlxG.keys.justPressed.DELETE) onMenuItemClick("delete object");
       if (FlxG.keys.justPressed.ENTER) onMenuItemClick("test stage");
-      if (FlxG.keys.justPressed.F1 && welcomeDialog == null && userGuideDialog == null) onMenuItemClick("user guide");
+      if (FlxG.keys.justPressed.F1) onMenuItemClick("user guide");
 
       if (FlxG.keys.justPressed.T)
       {
@@ -678,7 +682,8 @@ class StageEditorState extends UIState
         FlxG.camera.zoom = 1;
       }
 
-      if (FlxG.keys.pressed.W || FlxG.keys.pressed.S || FlxG.keys.pressed.A || FlxG.keys.pressed.D)
+      if (!pressingControl()
+        && (FlxG.keys.pressed.W || FlxG.keys.pressed.S || FlxG.keys.pressed.A || FlxG.keys.pressed.D))
       {
         if (FlxG.keys.pressed.W) camFollow.velocity.y = -90 * (2 / FlxG.camera.zoom);
         else if (FlxG.keys.pressed.S) camFollow.velocity.y = 90 * (2 / FlxG.camera.zoom);
@@ -705,30 +710,33 @@ class StageEditorState extends UIState
 
     if (moveMode == "assets")
     {
-      if (selectedSprite != null && !FlxG.mouse.overlaps(selectedSprite) && FlxG.mouse.justPressed && !isCursorOverHaxeUI)
+      if (selectedSprite != null
+        && (!FlxG.mouse.overlaps(selectedSprite)
+        || (FlxG.mouse.overlaps(selectedSprite) && pressingControl()))
+        && FlxG.mouse.justPressed
+        && !isCursorOverHaxeUI)
       {
         selectedSprite = null;
       }
 
-      for (spr in spriteArray)
+      if (!isCursorOverHaxeUI)
       {
-        if (FlxG.mouse.overlaps(spr))
+        if (menubarItemViewNameText.selected) nameTxt.visible = true;
+        for (spr in spriteArray)
         {
-          if (spr.visible && !FlxG.keys.pressed.SHIFT) nameTxt.text = spr.name;
-
-          if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+          if (!pressingControl() && FlxG.mouse.overlaps(spr))
           {
-            selectedSprite = spr;
+            if (spr.visible && !FlxG.keys.pressed.SHIFT) nameTxt.text = spr.name;
+
+            if (FlxG.mouse.justPressed && allowInput && spr.visible && !FlxG.keys.pressed.SHIFT)
+            {
+              selectedSprite = spr;
+            }
           }
         }
-
-        if (spr == selectedSprite)
-        {
-          infoSelection = spr.name;
-
-          if (FlxG.keys.pressed.SHIFT) nameTxt.text = spr.name + " (LOCKED)";
-        }
+        if (selectedSprite != null && FlxG.keys.pressed.SHIFT) nameTxt.text = selectedSprite.name + " (LOCKED)";
       }
+      else if (nameTxt.visible) nameTxt.visible = false;
 
       if (FlxG.mouse.pressed && allowInput && selectedSprite != null && FlxG.mouse.overlaps(selectedSprite) && FlxG.mouse.justMoved && !isCursorOverHaxeUI)
       {
@@ -773,30 +781,27 @@ class StageEditorState extends UIState
     else
     {
       if (selectedChar != null) selectedChar.shader = null;
-
-      for (char in getCharacters())
+      if (!isCursorOverHaxeUI)
       {
-        if (char == null) continue;
-        if (char != selectedChar) char.shader = charDeselectShader;
-
-        if (char != null && checkCharOverlaps(char)) // flxg.mouse.overlaps crashes the game
+        if (menubarItemViewNameText.selected) nameTxt.visible = true;
+        for (char in getCharacters())
         {
-          if (char.visible && !FlxG.keys.pressed.SHIFT) nameTxt.text = Std.string(char.characterType);
+        if (char == null) continue;
+          if (char != selectedChar) char.shader = charDeselectShader;
 
-          if (FlxG.mouse.justPressed && allowInput && char.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+          if (char != null && checkCharOverlaps(char)) // flxg.mouse.overlaps crashes the game
           {
-            selectedChar = char;
-            updateDialog(StageEditorDialogType.CHARACTER);
+            if (char.visible && !FlxG.keys.pressed.SHIFT) nameTxt.text = Std.string(char.characterType);
+
+            if (FlxG.mouse.justPressed && allowInput && char.visible && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+            {
+              selectedChar = char;
+            }
           }
         }
-
-        if (selectedChar == char)
-        {
-          infoSelection = Std.string(char.characterType);
-
-          if (FlxG.keys.pressed.SHIFT) nameTxt.text = Std.string(char.characterType) + " (LOCKED)";
-        }
+        if (selectedChar != null && FlxG.keys.pressed.SHIFT) nameTxt.text = Std.string(selectedChar.characterType) + " (LOCKED)";
       }
+      else if (nameTxt.visible) nameTxt.visible = false;
 
       if (FlxG.mouse.pressed && allowInput && checkCharOverlaps(selectedChar) && FlxG.mouse.justMoved && !isCursorOverHaxeUI)
       {
@@ -822,8 +827,6 @@ class StageEditorState extends UIState
       arrowMovement(selectedChar);
       updateMarkerPos();
     }
-
-    if ((selectedSprite == null && moveMode == "assets") || (selectedChar == null && moveMode == "chars")) infoSelection = "None";
     bottomBarSelectText.text = infoSelection;
 
     // ui stuff
@@ -842,6 +845,20 @@ class StageEditorState extends UIState
 
     menubarItemUndo.disabled = undoArray.length == 0;
     menubarItemRedo.disabled = redoArray.length == 0;
+  }
+
+  /**
+   * Small helper for MacOS, "WINDOWS" is keycode 15, which maps to "COMMAND" on Mac, which is more often used than "CONTROL"
+   * Everywhere else, it just returns `FlxG.keys.pressed.CONTROL`
+   * @return Bool
+   */
+  function pressingControl():Bool
+  {
+    #if mac
+    return FlxG.keys.pressed.WINDOWS;
+    #else
+    return FlxG.keys.pressed.CONTROL;
+    #end
   }
 
   public function getCharacters()
@@ -936,7 +953,7 @@ class StageEditorState extends UIState
     if (obj == null) return;
     if (FlxG.keys.pressed.R) return; // rotations
 
-    if (allowInput)
+    if (allowInput && welcomeDialog == null)
     {
       if ((FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
         && !moveUndoed)
@@ -1040,17 +1057,6 @@ class StageEditorState extends UIState
     bg.screenCenter();
   }
 
-  function checkOverlaps(spr:FlxSprite):Bool
-  {
-    if (FlxG.mouse.overlaps(spr) /*spr.overlapsPoint(FlxG.mouse.getWorldPosition(spr.camera), true, spr.camera) */
-      && Screen.instance != null
-      && !Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY)
-      && WindowManager.instance.windows.length == 0) // ik its stupid but maybe I have other cases soon (i did)
-      return true;
-
-    return false;
-  }
-
   var sprDependant:Array<MenuItem> = [];
 
   function addUI():Void
@@ -1069,13 +1075,49 @@ class StageEditorState extends UIState
     menubarItemDelete.onClick = function(_) onMenuItemClick("delete object");
     menubarItemNewObj.onClick = function(_) onMenuItemClick("new object");
     menubarItemFindObj.onClick = function(_) onMenuItemClick("find object");
+    menubarItemSelectNone.onClick = function(_) onMenuItemClick("select none");
     menubarButtonText.onClick = function(_) onMenuItemClick("test stage");
     menubarItemUserGuide.onClick = function(_) onMenuItemClick("user guide");
     menubarItemGoToBackupsFolder.onClick = function(_) onMenuItemClick("open folder");
     menubarItemAbout.onClick = function(_) onMenuItemClick("about");
 
     bottomBarModeText.onClick = function(_) onMenuItemClick("switch mode");
-    bottomBarSelectText.onClick = function(_) onMenuItemClick("switch focus");
+    bottomBarModeText.onRightClick = function(_) onMenuItemClick("switch mode");
+
+    function switchFocus(rightClick:Bool = false)
+      if (testingMode)
+      {
+        (rightClick) ? curTestChar-- : curTestChar++;
+      }
+      else
+      {
+        if (moveMode == "chars")
+        {
+          var chars = getCharacters();
+          var index = chars.indexOf(selectedChar);
+          (rightClick) ? index-- : index++;
+
+          if (index >= chars.length) index = 0;
+          else if (index < 0) index = chars.length - 1;
+
+          selectedChar = chars[index];
+        }
+        else
+        {
+          if (selectedSprite == null || FlxG.keys.pressed.SHIFT) return;
+
+          var index = spriteArray.indexOf(selectedSprite);
+          (rightClick) ? index-- : index++;
+
+          if (index >= spriteArray.length) index = 0;
+          else if (index < 0) index = spriteArray.length - 1;
+
+          selectedSprite = spriteArray[index];
+        }
+      }
+
+    bottomBarSelectText.onClick = function(_) switchFocus();
+    bottomBarSelectText.onRightClick = function(_) switchFocus(true);
 
     var stepOptions = ["1px", "2px", "3px", "5px", "10px", "25px", "50px", "100px"];
     bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep.value) ? Save.instance.stageEditorMoveStep.value : "1px";
@@ -1149,6 +1191,7 @@ class StageEditorState extends UIState
 
     menubarItemViewChars.onChange = function(_) showChars = menubarItemViewChars.selected;
     menubarItemViewNameText.onChange = function(_) nameTxt.visible = menubarItemViewNameText.selected;
+    menubarItemViewNameText.selected = true; // TODO: Remove this when this haxeUI bug is fixed (it starts as false in the code)?
     menubarItemViewCamBounds.onChange = function(_) camFields.visible = menubarItemViewCamBounds.selected;
 
     menubarItemViewFloorLines.onChange = function(_) {
@@ -1161,7 +1204,7 @@ class StageEditorState extends UIState
         coolbeans.visible = menubarItemViewPosMarkers.selected;
     }
 
-    sprDependant = [menubarItemCopy, menubarItemCut, menubarItemDelete];
+    sprDependant = [menubarItemCopy, menubarItemCut, menubarItemDelete, menubarItemSelectNone];
     reloadRecentFiles();
   }
 
@@ -1318,6 +1361,8 @@ class StageEditorState extends UIState
         if (testingMode) return;
         moveMode = (moveMode == "assets" ? "chars" : "assets");
 
+        infoSelection = (moveMode == "chars") ? (Std.string(selectedChar?.characterType) ?? "None") : (moveMode == "assets") ? (selectedSprite?.name ?? "None") : "Wut";
+
         selectedSprite?.selectedShader.setAmount((moveMode == "assets" ? 1 : 0));
 
       case "switch focus":
@@ -1366,6 +1411,12 @@ class StageEditorState extends UIState
         findObjDialog = new FindObjDialog(this, selectedSprite == null ? "" : selectedSprite.name);
         findObjDialog.showDialog(false);
 
+      case "select none":
+        if (menubarItemSelectNone.disabled == false)
+        {
+          selectedSprite = null;
+        }
+
       case "about":
         aboutDialog = new AboutDialog();
         aboutDialog.showDialog();
@@ -1399,6 +1450,8 @@ class StageEditorState extends UIState
         {
           menubarItemWindowObjectGraphic.selected = menubarItemWindowObjectAnims.selected = menubarItemWindowObjectProps.selected = menubarItemWindowCharacter.selected = menubarItemWindowStage.selected = false;
         }
+        nameTxt.exists = testingMode;
+        menubarButtonText.selected = !testingMode;
 
         selectedSprite?.selectedShader.setAmount((testingMode ? (moveMode == "assets" ? 1 : 0) : 0));
         testingMode = !testingMode;
@@ -1443,7 +1496,6 @@ class StageEditorState extends UIState
         remove(selectedSprite, true);
         selectedSprite.destroy();
         selectedSprite = null;
-
         updateArray();
 
       case "copy object":
