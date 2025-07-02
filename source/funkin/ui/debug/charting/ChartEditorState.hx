@@ -2522,7 +2522,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(gridTiledSprite);
     gridTiledSprite.zIndex = 10;
 
-    gridGhostNote = new ChartEditorNoteSprite(this);
+    gridGhostNote = new ChartEditorNoteSprite(this, true);
     gridGhostNote.alpha = 0.6;
     gridGhostNote.noteData = new SongNoteData(0, 0, 0, "", []);
     gridGhostNote.visible = false;
@@ -3924,6 +3924,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           selectionSquare.width = selectionSquare.height = GRID_SIZE;
           selectionSquare.color = FlxColor.RED;
         }
+
+        // Additional cleanup on notes.
+        if (noteTooltipsDirty) noteSprite.updateTooltipText();
       }
 
       for (eventSprite in renderedEvents.members)
