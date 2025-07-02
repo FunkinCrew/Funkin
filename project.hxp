@@ -1199,14 +1199,33 @@ class Project extends HXProject
   function configureIcons()
   {
     info('Configuring application icons...');
-    if (!isIOS())
+
+    if (isAndroid())
     {
-      addIcon("art/icons/icon16.png", 16);
-      addIcon("art/icons/icon32.png", 32);
-      addIcon("art/icons/icon64.png", 64);
-      addIcon("art/icons/iconOG.png");
+      // Adaptive icons
+      // TODO: Add Adapative Icons in Lime
+      templatePaths.push("templates");
+
+      var androidTheme:String = "@style/LimeAppMainTheme";
+      if (window.fullscreen != null && window.fullscreen)
+      {
+        androidTheme += "Fullscreen";
+      }
+
+      final iconXmlChild:Dynamic = {
+        "android:label": meta.title,
+        "android:allowBackup": "true",
+        "android:theme": androidTheme,
+        "android:hardwareAccelerated": "true",
+        "android:allowNativeHeapPointerTagging": ANDROID_TARGET_SDK_VERSION >= 30 ? "false" : null,
+        "android:largeHeap": "true",
+        "android:icon": "@mipmap/ic_launcher",
+        "android:roundIcon": "@mipmap/ic_launcher_round"
+        };
+
+        config.set('android.application',  iconXmlChild);
     }
-    else
+    else if (isIOS())
     {
       // Note: the icons on iOS (and likely even android too) support nice P3 colors space
       // However, lime's IconHelper.hx` and the general accompyaning encoding stuff to automatically
@@ -1229,7 +1248,15 @@ class Project extends HXProject
       addIcon("art/icons/bf-iOS-Default-1024x1024.png", 1024);
       addIcon("art/icons/bf-iOS-Default-1024x1024.png");
     }
-    info('Done configuring icons.');
+    else
+    {
+      addIcon("art/icons/icon16.png", 16);
+      addIcon("art/icons/icon32.png", 32);
+      addIcon("art/icons/icon64.png", 64);
+      addIcon("art/icons/iconOG.png");
+
+      info('Done configuring icons.');
+    }
   }
 
   /**
