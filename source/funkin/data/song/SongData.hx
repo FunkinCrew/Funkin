@@ -1117,6 +1117,30 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
       + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
+
+  public function buildTooltip():String
+  {
+    var result:String = "Kind: ";
+
+    if ((this.kind?.length ?? 0) == 0)
+    {
+      result += "Default";
+      return result;
+    }
+
+    result += this.kind;
+
+    if (this.params.length == 0) return result;
+
+    result += "\nParams:";
+
+    for (param in params)
+    {
+      result += '\n- ${param.name}: ${param.value}';
+    }
+
+    return result;
+  }
 }
 
 /**
