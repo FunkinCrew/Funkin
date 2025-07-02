@@ -635,6 +635,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Whether to show an indicator if a note is of a non-default kind.
+   */
+  var showNoteKindIndicators:Bool = false;
+
+  /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
    * Currently hardcoded to just Light and Dark.
@@ -1859,6 +1864,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemDownscroll:MenuCheckBox;
 
   /**
+   * The `View -> Note Kind Indicator` menu item.
+   */
+  var menubarItemViewIndicators:MenuCheckBox;
+
+  /**
    * The `View -> Increase Difficulty` menu item.
    */
   var menubarItemDifficultyUp:MenuItem;
@@ -2361,6 +2371,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     noteSnapQuantIndex = save.chartEditorNoteQuant;
     currentLiveInputStyle = save.chartEditorLiveInputStyle;
     isViewDownscroll = save.chartEditorDownscroll;
+    showNoteKindIndicators = save.chartEditorShowNoteKinds;
     playtestStartTime = save.chartEditorPlaytestStartTime;
     currentTheme = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
@@ -2390,6 +2401,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorNoteQuant = noteSnapQuantIndex;
     save.chartEditorLiveInputStyle = currentLiveInputStyle;
     save.chartEditorDownscroll = isViewDownscroll;
+    save.chartEditorShowNoteKinds = showNoteKindIndicators;
     save.chartEditorPlaytestStartTime = playtestStartTime;
     save.chartEditorTheme = currentTheme;
     save.chartEditorMetronomeVolume = metronomeVolume;
@@ -3091,6 +3103,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemDownscroll.onClick = event -> isViewDownscroll = event.value;
     menubarItemDownscroll.selected = isViewDownscroll;
+
+    menubarItemViewIndicators.onClick = event -> showNoteKindIndicators = menubarItemViewIndicators.selected;
+    menubarItemViewIndicators.selected = showNoteKindIndicators;
 
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
@@ -6313,7 +6328,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     currentScrollEase = Math.max(0, targetScrollPosition);
     currentScrollEase = Math.min(currentScrollEase, songLengthInPixels);
-    scrollPositionInPixels = MathUtil.snap(MathUtil.smoothLerpPrecision(scrollPositionInPixels, currentScrollEase, FlxG.elapsed, SCROLL_EASE_DURATION, 1 / 1000), currentScrollEase, 1 / 1000);
+    scrollPositionInPixels = MathUtil.snap(MathUtil.smoothLerpPrecision(scrollPositionInPixels, currentScrollEase, FlxG.elapsed, SCROLL_EASE_DURATION,
+      1 / 1000), currentScrollEase, 1 / 1000);
     moveSongToScrollPosition();
   }
 

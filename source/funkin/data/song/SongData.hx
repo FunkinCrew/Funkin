@@ -1120,16 +1120,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 
   public function buildTooltip():String
   {
-    var result:String = "Kind: ";
+    if ((this.kind?.length ?? 0) == 0) return "";
 
-    if ((this.kind?.length ?? 0) == 0)
-    {
-      result += "Default";
-      return result;
-    }
-
-    result += this.kind;
-
+    var result:String = 'Kind: ${this.kind}';
     if (this.params.length == 0) return result;
 
     result += "\nParams:";
