@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting.components;
 
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -69,6 +71,11 @@ class ChartEditorNoteSprite extends FlxSprite
   public var isGhost:Bool = false;
   public var tooltip:ToolTipRegionOptions;
 
+  /**
+   * An indicator if the note is a note kind different than Default ("").
+   */
+  public var kindIndicator:FlxText = new FlxText(5, 5, 100, '*', 16);
+
   public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
     super();
@@ -97,6 +104,8 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       addNoteStyleAnimations(fetchNoteStyle(entry));
     }
+
+    kindIndicator.setFormat("VCR OSD Mono", 24, FlxColor.YELLOW, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
   }
 
   static var noteFrameCollection:Null<FlxFramesCollection> = null;
@@ -219,7 +228,7 @@ class ChartEditorNoteSprite extends FlxSprite
     // No tooltip for ghost sprites.
     if (this.isGhost) return;
 
-    if (this.noteData == null)
+    if (this.noteData == null || (this.tooltip.tipData?.text ?? "").length == 0)
     {
       // Disable the tooltip.
       ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
@@ -235,6 +244,18 @@ class ChartEditorNoteSprite extends FlxSprite
       // Enable the tooltip.
       ToolTipManager.instance.registerTooltipRegion(this.tooltip);
     }
+  }
+
+  override public function draw()
+  {
+    super.draw();
+
+    if (!parentState.showNoteKindIndicators) return;
+    if ((this.noteData?.kind ?? "").length == 0) return; // Do not render the note kind indicator if the note kind is default.
+
+    kindIndicator.x = this.x;
+    kindIndicator.y = this.y;
+    kindIndicator.draw();
   }
 
   function get_noteStyle():Null<String>
