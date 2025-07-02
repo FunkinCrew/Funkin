@@ -661,7 +661,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       // trace(b + ' - ' + arrowBeat);
 
-      while (b >= arrowBeat - 2 && b < 188)
+      while (b >= arrowBeat - 2 && b < 124)
       {
         // trace("Spawning arrow at beat: " + arrowBeat);
         // Create a new arrow at the next beat division.
