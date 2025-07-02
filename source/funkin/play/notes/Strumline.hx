@@ -159,6 +159,9 @@ class Strumline extends FlxSpriteGroup
 
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
+  final inArrowContorlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+    && !ControlsHandler.usingExternalInputDevice) #else false #end;
+
   final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice)
     || #end Preferences.downscroll;
@@ -218,7 +221,7 @@ class Strumline extends FlxSpriteGroup
 
     var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
     #if mobile
-    if ((Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice) && isPlayer)
+    if (inArrowContorlSchemeMode && isPlayer)
     {
       backgroundWidth = backgroundWidth * 1.84;
     }
@@ -229,8 +232,7 @@ class Strumline extends FlxSpriteGroup
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
     #if mobile
-    if ((Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
-      && isPlayer) this.background.x -= 100;
+    if (inArrowContorlSchemeMode && isPlayer) this.background.x -= 100;
     #end
     this.add(this.background);
     strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
@@ -1106,7 +1108,7 @@ class Strumline extends FlxSpriteGroup
 
       var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
       #if mobile
-      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
+      if (inArrowContorlSchemeMode)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
@@ -1292,8 +1294,7 @@ class Strumline extends FlxSpriteGroup
   {
     var pos:Float = 0;
     #if mobile
-    if ((Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
-      && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+    if (inArrowContorlSchemeMode && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
     #end
     return switch (direction)
     {
