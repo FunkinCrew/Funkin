@@ -28,11 +28,6 @@ class InAppPurchasesUtil
   public static final UPGRADE_PRODUCT_ID:String = 'no_ads';
 
   /**
-   * The maximum number of attempts to reconnect in case of a failure.
-   */
-  static final MAX_RECONNECT_ATTEMPTS:Int = 3;
-
-  /**
    * A static variable that holds an array of currently loaded product details for in-app purchases.
    */
   static var currentProductDetails:Array<IAPProductDetails> = [];
@@ -41,11 +36,6 @@ class InAppPurchasesUtil
    * A static variable that holds an array of currently purchased for in-app purchases.
    */
   static var currentPurchased:Array<IAPPurchase> = [];
-
-  /**
-   * A static variable to track the number of attempts made to reconnect.
-   */
-  static var reconnectAttempts:Int = 0;
 
   /**
    * Initializes the in-app purchases utility.
@@ -64,13 +54,6 @@ class InAppPurchasesUtil
         return;
       }
 
-      if (reconnectAttempts > 0)
-      {
-        trace('Billing service successfully reconnected!');
-
-        reconnectAttempts = 0;
-      }
-
       IAPAndroid.queryPurchases();
 
       IAPAndroid.queryProductDetails([UPGRADE_PRODUCT_ID]);
@@ -78,19 +61,6 @@ class InAppPurchasesUtil
 
     IAPAndroid.onBillingServiceDisconnected.add(function():Void {
       trace("Billing service disconnected!");
-
-      if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS)
-      {
-        reconnectAttempts++;
-
-        trace('Attempting to reconnect... ($reconnectAttempts/$MAX_RECONNECT_ATTEMPTS)');
-
-        IAPAndroid.startConnection();
-      }
-      else
-      {
-        trace('Max reconnect attempts reached.');
-      }
     });
 
     IAPAndroid.onProductDetailsResponse.add(function(result:IAPResult, productDetails:Array<IAPProductDetails>):Void {
