@@ -10,6 +10,9 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
+import haxe.ui.tooltips.ToolTipRegionOptions;
+import funkin.util.HaxeUIUtil;
+import haxe.ui.tooltips.ToolTipManager;
 
 /**
  * A sprite that can be used to display a note in a chart.
@@ -63,11 +66,16 @@ class ChartEditorNoteSprite extends FlxSprite
     return overrideData;
   }
 
-  public function new(parent:ChartEditorState)
+  public var isGhost:Bool = false;
+  public var tooltip:ToolTipRegionOptions;
+
+  public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
     super();
 
     this.parentState = parent;
+    this.isGhost = isGhost;
+    this.tooltip = HaxeUIUtil.buildTooltip('N/A');
 
     var entries:Array<String> = NoteStyleRegistry.instance.listEntryIds();
 
@@ -156,6 +164,7 @@ class ChartEditorNoteSprite extends FlxSprite
     if (this.noteData == null)
     {
       this.kill();
+      updateTooltipPosition();
       return this.noteData;
     }
 
@@ -167,7 +176,7 @@ class ChartEditorNoteSprite extends FlxSprite
 
     // Update the position to match the note data.
     updateNotePosition();
-
+    updateTooltipText();
     return this.noteData;
   }
 
@@ -193,6 +202,38 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       this.x += origin.x;
       this.y += origin.y;
+    }
+
+    this.updateTooltipPosition();
+  }
+
+  public function updateTooltipText():Void
+  {
+    if (this.noteData == null) return;
+    if (this.isGhost) return;
+    this.tooltip.tipData = {text: this.noteData.buildTooltip()};
+  }
+
+  public function updateTooltipPosition():Void
+  {
+    // No tooltip for ghost sprites.
+    if (this.isGhost) return;
+
+    if (this.noteData == null)
+    {
+      // Disable the tooltip.
+      ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    }
+    else
+    {
+      // Update the position.
+      this.tooltip.left = this.x;
+      this.tooltip.top = this.y;
+      this.tooltip.width = this.width;
+      this.tooltip.height = this.height;
+
+      // Enable the tooltip.
+      ToolTipManager.instance.registerTooltipRegion(this.tooltip);
     }
   }
 
