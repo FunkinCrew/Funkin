@@ -143,7 +143,7 @@ class SwipeUtil
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
-    return TouchUtil.touch != null && TouchUtil.touch.justMovedUp;
+    return TouchUtil.touch?.justMovedUp ?? false;
     #else
     return FlxG.mouse.justMovedUp && FlxG.mouse.pressed;
     #end
@@ -157,7 +157,7 @@ class SwipeUtil
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
-    return TouchUtil.touch != null && TouchUtil.touch.justMovedRight;
+    return TouchUtil.touch?.justMovedRight ?? false;
     #else
     return FlxG.mouse.justMovedRight && FlxG.mouse.pressed;
     #end
@@ -171,7 +171,7 @@ class SwipeUtil
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
-    return TouchUtil.touch != null && TouchUtil.touch.justMovedLeft;
+    return TouchUtil.touch?.justMovedLeft ?? false;
     #else
     return FlxG.mouse.justMovedLeft && FlxG.mouse.pressed;
     #end
@@ -185,7 +185,7 @@ class SwipeUtil
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
-    return TouchUtil.touch != null && TouchUtil.touch.justMovedDown;
+    return TouchUtil.touch?.justMovedDown ?? false;
     #else
     return FlxG.mouse.justMovedDown && FlxG.mouse.pressed;
     #end

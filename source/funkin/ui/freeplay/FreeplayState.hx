@@ -1846,8 +1846,6 @@ class FreeplayState extends MusicBeatSubState
     {
       if (_pressedOnSelected && TouchUtil.touch != null)
       {
-        // Have to turn off null safety in-order to compile this!! -Zack
-        @:nullSafety(Off)
         if (SwipeUtil.swipeLeft)
         {
           draggingDifficulty = true;
@@ -2266,7 +2264,6 @@ class FreeplayState extends MusicBeatSubState
   #if FEATURE_TOUCH_CONTROLS
   function handleDiffDragRelease(diff:FlxSprite):Void
   {
-    @:nullSafety(Off)
     if ((diffSelLeft != null && diffSelLeft.x + 20 > diff.x) || SwipeUtil.justSwipedLeft)
     {
       handleDiffBoundaryChange(1);
