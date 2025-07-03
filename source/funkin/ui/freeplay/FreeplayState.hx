@@ -207,7 +207,12 @@ class FreeplayState extends MusicBeatSubState
   var rankBg:FunkinSprite;
   var rankVignette:FlxSprite;
 
-  var backingCard:Null<BackingCard> = null;
+  // We can use this without doing Null<BackingCard> because we initialize it in new()
+
+  /**
+   * The card behind the DJ !
+   */
+  var backingCard:BackingCard;
 
   /**
    * The backing card that has the toned dots, right now we just use that one dad graphic dave cooked up
@@ -257,9 +262,11 @@ class FreeplayState extends MusicBeatSubState
 
     if (stickers?.members != null) stickerSubState = stickers;
 
+    var backingCardPrep:Null<BackingCard> = null;
+
     if (PlayerRegistry.instance.hasNewCharacter())
     {
-      backingCard = new NewCharacterCard(currentCharacterId);
+      backingCardPrep = new NewCharacterCard(currentCharacterId);
     }
     else
     {
@@ -269,14 +276,14 @@ class FreeplayState extends MusicBeatSubState
         var card:BackingCard = ScriptedBackingCard.init(cardClass, "unknown");
         if (card.currentCharacter == currentCharacterId)
         {
-          backingCard = card;
+          backingCardPrep = card;
           break;
         }
       }
-
-      // Return the default backing card if there isn't one specific for the character.
-      if (backingCard == null) backingCard = new BackingCard(currentCharacterId);
     }
+    // Return the default backing card if there isn't one specific for the character.
+
+    backingCard = backingCardPrep ?? new BackingCard(currentCharacterId);
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
     albumRoll = new AlbumRoll();
@@ -368,13 +375,10 @@ class FreeplayState extends MusicBeatSubState
     trace(FlxG.camera.initialZoom);
     trace(FlxCamera.defaultZoom);
 
-    if (backingCard != null)
-    {
-      backingCard.instance = this;
-      add(backingCard);
-      ScriptEventDispatcher.callEvent(backingCard, new ScriptEvent(CREATE, false));
-      backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
-    }
+    backingCard.instance = this;
+    add(backingCard);
+    ScriptEventDispatcher.callEvent(backingCard, new ScriptEvent(CREATE, false));
+    backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
 
     if (currentCharacter?.getFreeplayDJData() != null)
     {
@@ -473,7 +477,7 @@ class FreeplayState extends MusicBeatSubState
     {
       blackOverlayBullshitLOLXD.x = backingImage.x;
       overhangStuff.y = -100;
-      backingCard?.skipIntroTween();
+      backingCard.skipIntroTween();
     }
     else
     {
@@ -734,7 +738,7 @@ class FreeplayState extends MusicBeatSubState
       });
 
       backingImage.visible = true;
-      backingCard?.introDone();
+      backingCard.introDone();
 
       if (prepForNewRank && fromResultsParams != null)
       {
@@ -1351,7 +1355,7 @@ class FreeplayState extends MusicBeatSubState
         FlxTween.tween(spr, {y: moveDataY + spr.y}, moveDataSpeed, {ease: FlxEase.backIn});
       }
     }
-    backingCard?.enterCharSel();
+    backingCard.enterCharSel();
   }
 
   function enterFromCharSel():Void
@@ -1961,7 +1965,7 @@ class FreeplayState extends MusicBeatSubState
 
   override function beatHit():Bool
   {
-    backingCard?.beatHit();
+    backingCard.beatHit();
 
     return super.beatHit();
   }
@@ -1993,7 +1997,7 @@ class FreeplayState extends MusicBeatSubState
 
     var longestTimer:Float = 0;
 
-    backingCard?.disappear();
+    backingCard.disappear();
 
     for (grpSpr in exitMovers.keys())
     {
@@ -2467,7 +2471,7 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules.members[curSelected].forcePosition();
     grpCapsules.members[curSelected].confirm();
 
-    backingCard?.confirm();
+    backingCard.confirm();
 
     // Start vibration after half of second.
     if (HapticUtil.hapticsAvailable)
