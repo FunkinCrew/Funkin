@@ -228,8 +228,6 @@ class FreeplayState extends MusicBeatSubState
   var styleData:Null<FreeplayStyle> = null;
   var fromCharSelect:Bool = false;
 
-  public var fnfFreeplay:Null<FlxText>;
-  public var freeplayTxtBg:Null<FlxSprite>;
   public var freeplayArrow:Null<FlxText>;
 
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
@@ -485,12 +483,13 @@ class FreeplayState extends MusicBeatSubState
       FlxTween.tween(blackOverlayBullshitLOLXD, {x: backingImage.x}, 0.7, {ease: FlxEase.quintOut});
     }
 
-    fnfFreeplay = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY', 48);
-    fnfFreeplay.font = 'VCR OSD Mono';
-    fnfFreeplay.visible = false;
+    var topLeftCornerText:FlxText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY', 48);
+    topLeftCornerText.font = 'VCR OSD Mono';
+    topLeftCornerText.visible = false;
 
-    freeplayTxtBg = new FlxSprite().makeGraphic(Math.round(fnfFreeplay.width + 16), Math.round(fnfFreeplay.height + 16), FlxColor.BLACK);
-    freeplayTxtBg.x = fnfFreeplay.x - 8;
+    var freeplayTxtBg:FlxSprite = new FlxSprite().makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16),
+      FlxColor.BLACK);
+    freeplayTxtBg.x = topLeftCornerText.x - 8;
     freeplayTxtBg.visible = false;
 
     freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---', 48);
@@ -517,7 +516,7 @@ class FreeplayState extends MusicBeatSubState
 
     exitMovers.set([
       overhangStuff,
-      fnfFreeplay,
+      topLeftCornerText,
       ostName,
       charSelectHint,
       freeplayTxtBg,
@@ -532,7 +531,7 @@ class FreeplayState extends MusicBeatSubState
 
     exitMoversCharSel.set([
       overhangStuff,
-      fnfFreeplay,
+      topLeftCornerText,
       ostName,
       charSelectHint,
       freeplayTxtBg,
@@ -545,7 +544,7 @@ class FreeplayState extends MusicBeatSubState
       });
 
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
-    fnfFreeplay.shader = sillyStroke;
+    topLeftCornerText.shader = sillyStroke;
     freeplayArrow.shader = sillyStroke;
     ostName.shader = sillyStroke;
 
@@ -652,7 +651,7 @@ class FreeplayState extends MusicBeatSubState
     add(overhangStuff);
     add(freeplayArrow);
     add(freeplayTxtBg);
-    add(fnfFreeplay);
+    add(topLeftCornerText);
     add(ostName);
 
     if (PlayerRegistry.instance.countUnlockedCharacters() > 1)
@@ -719,9 +718,9 @@ class FreeplayState extends MusicBeatSubState
 
       new FlxTimer().start(1 / 24, function(handShit) {
         fnfHighscoreSpr.visible = true;
-        if (fnfFreeplay != null) fnfFreeplay.visible = true;
+        topLeftCornerText.visible = true;
+        freeplayTxtBg.visible = true;
         if (freeplayArrow != null) freeplayArrow.visible = true;
-        if (freeplayTxtBg != null) freeplayTxtBg.visible = true;
         ostName.visible = true;
         fp.visible = true;
         fp.updateScore(0);
@@ -1565,7 +1564,6 @@ class FreeplayState extends MusicBeatSubState
     handleTouchCapsuleClick();
     handleTouchSelectionScroll(elapsed);
     handleTouchFavoritesAndDifficulties();
-    handleTouchFreeplayDrag();
     #end
 
     if (!_pressedOnFreeplay)
@@ -1929,37 +1927,6 @@ class FreeplayState extends MusicBeatSubState
 
     if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam));
     if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam));
-  }
-
-  function handleTouchFreeplayDrag():Void
-  {
-    if (fnfFreeplay == null || freeplayTxtBg == null || freeplayArrow == null) return;
-
-    // Commenting this out for now, since it doesn't work properly with the new touch controls. - Zack
-    // if (TouchUtil.justPressed && (TouchUtil.overlaps(fnfFreeplay) || TouchUtil.overlaps(freeplayTxtBg)))
-    // {
-    //   _dragOffset = fnfFreeplay.x - TouchUtil.touch.x;
-    //   _pressedOnFreeplay = true;
-    // }
-
-    // if (_pressedOnFreeplay && TouchUtil.pressed)
-    // {
-    //   final dragX:Float = TouchUtil.touch.x + _dragOffset;
-    //   fnfFreeplay.x = dragX;
-    //   freeplayTxtBg.x = dragX - 8;
-
-    //   if (diffSelRight != null && freeplayArrow.x + 160 < fnfFreeplay.x)
-    //   {
-    //     _pressedOnFreeplay = false;
-    //     goBack();
-    //   }
-    // }
-    // else
-    // {
-    fnfFreeplay.x = Math.max(FullScreenScaleMode.gameNotchSize.x, 8);
-    freeplayTxtBg.x = FullScreenScaleMode.gameNotchSize.x;
-    _pressedOnFreeplay = false;
-    // }
   }
   #end
 
