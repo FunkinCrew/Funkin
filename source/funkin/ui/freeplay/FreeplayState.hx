@@ -1543,13 +1543,11 @@ class FreeplayState extends MusicBeatSubState
     if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
   }
 
-  var _pressedOnFreeplay:Bool = false;
   var _dragOffset:Float = 0;
   var _pressedOnSelected:Bool = false;
   var _moveLength:Float = 0;
   var _flickEnded:Bool = true;
   var _pressedOnCapsule:Bool = false;
-  var _heldOnDiff:Bool = false;
   var draggingDifficulty:Bool = false;
 
   function handleInputs(elapsed:Float):Void
@@ -1566,17 +1564,14 @@ class FreeplayState extends MusicBeatSubState
     handleTouchFavoritesAndDifficulties();
     #end
 
-    if (!_pressedOnFreeplay)
+    handleDirectionalInput(elapsed);
+
+    final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+
+    if (wheelAmount != 0)
     {
-      handleDirectionalInput(elapsed);
-
-      final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
-
-      if (wheelAmount != 0)
-      {
-        dj?.resetAFKTimer();
-        changeSelection(-Math.round(wheelAmount));
-      }
+      dj?.resetAFKTimer();
+      changeSelection(-Math.round(wheelAmount));
     }
 
     handleDifficultySwitch();
@@ -1587,8 +1582,6 @@ class FreeplayState extends MusicBeatSubState
     {
       _pressedOnSelected = false;
       _pressedOnCapsule = false;
-      _pressedOnFreeplay = false;
-      _heldOnDiff = false;
     }
 
     if (!TouchUtil.pressed && !FlxG.touches.flickManager.initialized)
@@ -1844,7 +1837,9 @@ class FreeplayState extends MusicBeatSubState
 
   function handleTouchFavoritesAndDifficulties()
   {
-    if ((TouchUtil.pressed || TouchUtil.justReleased) && !_pressedOnFreeplay && !_heldOnDiff)
+    // Note: I was a bit evil, and used `draggingDifficulty` for the DifficultySprite dragging as well!
+
+    if ((TouchUtil.pressed || TouchUtil.justReleased))
     {
       if (_pressedOnSelected && TouchUtil.touch != null)
       {
@@ -2259,7 +2254,6 @@ class FreeplayState extends MusicBeatSubState
     generateSongList(currentFilter, true, false);
     _dragOffset = 0;
     draggingDifficulty = false;
-    _heldOnDiff = true;
   }
   #end
 
