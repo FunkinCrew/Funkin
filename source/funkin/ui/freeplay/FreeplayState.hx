@@ -142,6 +142,19 @@ class FreeplayState extends MusicBeatSubState
 
   var grpDifficulties:FlxTypedSpriteGroup<DifficultySprite>;
 
+  /**
+   * Bit of a utility var to get the currently displayed DifficultySprite
+   *
+   * The getter looks like this
+   * `return grpDifficulties.members.filter(d -> d.difficultyId == currentDifficulty)[0];`
+   */
+  var currentDifficultySprite(get, never):DifficultySprite;
+
+  function get_currentDifficultySprite():DifficultySprite
+  {
+    return grpDifficulties.members.filter(d -> d.difficultyId == currentDifficulty)[0];
+  }
+
   var coolColors:Array<Int> = [
     0xFF9271FD,
     0xFF9271FD,
@@ -458,7 +471,6 @@ class FreeplayState extends MusicBeatSubState
     for (diffId in Constants.DEFAULT_DIFFICULTY_LIST_FULL)
     {
       var diffSprite:DifficultySprite = new DifficultySprite(diffId);
-      diffSprite.difficultyId = diffId;
       diffSprite.visible = diffId == Constants.DEFAULT_DIFFICULTY;
       diffSprite.height *= 2.5;
       grpDifficulties.add(diffSprite);
@@ -691,7 +703,7 @@ class FreeplayState extends MusicBeatSubState
         FlxTween.cancelTweensOf(diff);
         FlxTween.tween(diff, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
         diff.y = 80;
-        final isCurrentDiff:Bool = diff.difficultyId == currentDifficulty;
+        final isCurrentDiff:Bool = diff == currentDifficultySprite;
         diff.visible = isCurrentDiff;
       }
       FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
@@ -1544,6 +1556,7 @@ class FreeplayState extends MusicBeatSubState
   }
 
   var _dragOffset:Float = 0;
+  var _prevRoundedDragOffset:Float = 0;
   var _pressedOnSelected:Bool = false;
   var _moveLength:Float = 0;
   var _flickEnded:Bool = true;
@@ -1560,8 +1573,8 @@ class FreeplayState extends MusicBeatSubState
 
     #if FEATURE_TOUCH_CONTROLS
     handleTouchCapsuleClick();
-    handleTouchSelectionScroll(elapsed);
     handleTouchFavoritesAndDifficulties();
+    handleTouchSelectionScroll(elapsed);
     #end
 
     handleDirectionalInput(elapsed);
@@ -1892,36 +1905,47 @@ class FreeplayState extends MusicBeatSubState
         grpCapsules.members[curSelected].doLerp = true;
       }
 
-      for (diff in grpDifficulties.group.members)
+      if (busy) return;
+      if (currentDifficultySprite == null) return;
+
+      // If we press onto our difficulty, we want to "grab" it rather than simply check if we are overlapping
+      if (TouchUtil.overlapsComplex(currentDifficultySprite, funnyCam) && TouchUtil.justPressed && !draggingDifficulty)
       {
-        if (busy) break;
-        if (diff == null || diff.difficultyId != currentDifficulty) continue;
-        if (!TouchUtil.overlaps(diff, funnyCam))
-        {
-          diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI);
-          break;
-        }
+        HapticUtil.vibrate(0, 0.01, 0.15, 0.4);
         draggingDifficulty = true;
-
-        if (_dragOffset == 0 && TouchUtil.pressed) _dragOffset = diff.x - TouchUtil.touch.x;
-        diff.x = TouchUtil.touch.x + _dragOffset;
-
-        if (TouchUtil.justReleased)
-        {
-          handleDiffDragRelease(diff);
-          draggingDifficulty = false;
-          break;
-        }
-
-        if (diffSelLeft != null && diffSelLeft.x - 40 > diff.x) handleDiffBoundaryChange(1);
-        if (diffSelRight != null && diffSelRight.x - 120 < diff.x) handleDiffBoundaryChange(-1);
-
-        break;
       }
+
+      if (!draggingDifficulty) return;
+
+      if (_dragOffset == 0 && TouchUtil.pressed) _dragOffset = TouchUtil.touch.x;
+      currentDifficultySprite.offset.x = MathUtil.smoothLerpPrecision(currentDifficultySprite.offset.x, (TouchUtil.touch.x - _dragOffset) * -1, FlxG.elapsed,
+        0.2);
+
+      var vibDist:Float = 5; // essentially how far the touch needs to be before it will trigger a tiny haptic feel
+      if (Std.int((TouchUtil.touch.x - _dragOffset) / vibDist) * vibDist != _prevRoundedDragOffset)
+      {
+        HapticUtil.vibrate(0, 0.01, 0.08, 0.8);
+      }
+      _prevRoundedDragOffset = Std.int((TouchUtil.touch.x - _dragOffset) / vibDist) * vibDist;
+
+      if (TouchUtil.justReleased)
+      {
+        handleDiffDragRelease(currentDifficultySprite);
+        return;
+      }
+
+      if (TouchUtil.touch.justMovedRight) handleDiffBoundaryChange(1);
+      if (TouchUtil.touch.justMovedLeft) handleDiffBoundaryChange(-1);
+      return;
+    }
+    else
+    {
+      // we aren't pressin nothin, we should lerp our difficulty thing back to og offset/position
+      currentDifficultySprite.offset.x = MathUtil.smoothLerpPrecision(currentDifficultySprite.offset.x, 0, FlxG.elapsed, 0.4);
     }
 
-    if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam));
-    if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam));
+    if (diffSelRight != null) diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justPressed);
+    if (diffSelLeft != null) diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justPressed);
   }
   #end
 
@@ -2099,7 +2123,11 @@ class FreeplayState extends MusicBeatSubState
         });
       break;
     }
-    if (change != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (change != 0)
+    {
+      HapticUtil.vibrate(0, 0.01, 0.2, 0.1);
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    }
 
     var previousVariation:String = currentVariation;
     var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
@@ -2230,19 +2258,14 @@ class FreeplayState extends MusicBeatSubState
   #if FEATURE_TOUCH_CONTROLS
   function handleDiffDragRelease(diff:FlxSprite):Void
   {
-    if ((diffSelLeft != null && diffSelLeft.x + 20 > diff.x) || SwipeUtil.justSwipedLeft)
-    {
-      handleDiffBoundaryChange(1);
-    }
-    else if ((diffSelRight != null && diffSelRight.x - 20 < diff.x) || SwipeUtil.justSwipedRight)
-    {
-      handleDiffBoundaryChange(-1);
-    }
-    else
-    {
-      diff.x = 90 + (CUTOUT_WIDTH * DJ_POS_MULTI); // Reset position
-    }
+    if (SwipeUtil.flickLeft) handleDiffBoundaryChange(1);
+    else if (SwipeUtil.flickRight) handleDiffBoundaryChange(-1);
 
+    // stops residual flick perhaps?
+    FlxG.touches.flickManager.destroy();
+    _flickEnded = true;
+
+    draggingDifficulty = false;
     _dragOffset = 0;
   }
 
