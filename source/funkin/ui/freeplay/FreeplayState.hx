@@ -39,6 +39,7 @@ import funkin.ui.AtlasText;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.freeplay.backcards.*;
+import funkin.ui.freeplay.components.DifficultySprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.story.Level;
@@ -3102,50 +3103,4 @@ typedef MoveData =
   var ?y:Float;
   var ?speed:Float;
   var ?wait:Float;
-}
-
-/**
- * The sprite for the difficulty
- */
-@:nullSafety
-class DifficultySprite extends FlxSprite
-{
-  /**
-   * The difficulty id which this sprite represents.
-   */
-  public var difficultyId:String;
-
-  public function new(diffId:String)
-  {
-    super();
-
-    difficultyId = diffId;
-
-    var assetDiffId:String = diffId;
-    while (!Assets.exists(Paths.image('freeplay/freeplay${assetDiffId}')))
-    {
-      // Remove the last suffix of the difficulty id until we find an asset or there are no more suffixes.
-      var assetDiffIdParts:Array<String> = assetDiffId.split('-');
-      assetDiffIdParts.pop();
-      if (assetDiffIdParts.length == 0)
-      {
-        trace('Could not find difficulty asset: freeplay/freeplay${diffId} (from ${diffId})');
-        return;
-      };
-      assetDiffId = assetDiffIdParts.join('-');
-    }
-
-    // Check for an XML to use an animation instead of an image.
-    if (Assets.exists(Paths.file('images/freeplay/freeplay${assetDiffId}.xml')))
-    {
-      this.frames = Paths.getSparrowAtlas('freeplay/freeplay${assetDiffId}');
-      this.animation.addByPrefix('idle', 'idle0', 24, true);
-      if (Preferences.flashingLights) this.animation.play('idle');
-    }
-    else
-    {
-      this.loadGraphic(Paths.image('freeplay/freeplay' + assetDiffId));
-      trace('Loaded difficulty asset: freeplay/freeplay${assetDiffId} (from ${diffId})');
-    }
-  }
 }
