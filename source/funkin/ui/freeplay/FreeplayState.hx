@@ -1664,52 +1664,52 @@ class FreeplayState extends MusicBeatSubState
   function handleDebugKeys():Void
   {
     #if FEATURE_CHART_EDITOR
-    if (controls.DEBUG_CHART && !busy)
+    if (busy) return;
+    if (!controls.DEBUG_CHART) return;
+
+    busy = true;
+
+    var targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+    if (targetSongID == 'unknown')
     {
-      busy = true;
-      var targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
-      if (targetSongID == 'unknown')
-      {
-        trace('CHART RANDOM SONG');
-        letterSort.inputEnabled = false;
+      letterSort.inputEnabled = false;
 
-        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
-          // Dead capsules are ones which were removed from the list when changing filters.
-          return cap.alive && cap.freeplayData != null;
-        });
+      var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+        // Dead capsules are ones which were removed from the list when changing filters.
+        return cap.alive && cap.freeplayData != null;
+      });
 
-        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+      trace('Available songs: ${availableSongCapsules.map(function(cap) {
           return cap?.freeplayData?.data.songName;
         })}');
 
-        if (availableSongCapsules.length == 0)
-        {
-          trace('No songs available!');
-          busy = false;
-          letterSort.inputEnabled = true;
-          FunkinSound.playOnce(Paths.sound('cancelMenu'));
-          return;
-        }
-
-        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
-
-        // Seeing if I can do an animation...
-        curSelected = grpCapsules.members.indexOf(targetSong);
-        changeSelection(0);
-        targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      if (availableSongCapsules.length == 0)
+      {
+        trace('No songs available!');
+        busy = false;
+        letterSort.inputEnabled = true;
+        FunkinSound.playOnce(Paths.sound('cancelMenu'));
+        return;
       }
-      // Play the confirm animation so the user knows they actually did something.
-      FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      if (dj != null) dj.confirm();
-      new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
-        FlxG.switchState(() -> new ChartEditorState(
-          {
-            targetSongId: targetSongID,
-            targetSongDifficulty: currentDifficulty,
-            targetSongVariation: currentVariation,
-          }));
-      });
+
+      var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+      // Seeing if I can do an animation...
+      curSelected = grpCapsules.members.indexOf(targetSong);
+      changeSelection(0);
+      targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
     }
+    // Play the confirm animation so the user knows they actually did something.
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    if (dj != null) dj.confirm();
+    new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
+      FlxG.switchState(() -> new ChartEditorState(
+        {
+          targetSongId: targetSongID,
+          targetSongDifficulty: currentDifficulty,
+          targetSongVariation: currentVariation,
+        }));
+    });
     #end
   }
 
