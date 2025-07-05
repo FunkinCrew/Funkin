@@ -31,7 +31,7 @@ class ScriptHandler implements ISingleton
     var oldStdPath:String = Sys.getEnv('HAXE_STD_PATH');
     Sys.putEnv('HAXE_STD_PATH', Path.join([Path.normalize(Sys.getCwd()), 'haxe', 'std']));
 
-    var cmd:Process = new Process('"haxe/haxe.exe" --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info --macro "include(\\"\\", true, [], [\\"assets/scripts\\"])"');
+    var cmd:Process = new Process('"haxe/haxe.exe" -debug --cppia script.cppia -cp assets/scripts __Boot__ -D dll_import=export_classes.info --macro "include(\\"\\", true, [], [\\"assets/scripts\\"])"');
 
     if (cmd.exitCode() != 0)
     {
