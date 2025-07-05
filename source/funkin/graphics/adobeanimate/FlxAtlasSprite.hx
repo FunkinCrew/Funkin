@@ -60,7 +60,30 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
     }
 
-    super(x, y, path);
+    super(x, y, Assets.getPath(path));
+  }
+
+  /**
+   * Gets a list of frames that have a label of any kind.
+   * @param layer A specific layer to get the list. if set to `null`, it'll get a list from every layer.
+   */
+  public function getFrameLabels():Array<String>
+  {
+    var foundLabels:Array<String> = [];
+    var mainTimeline = this.anim.getDefaultTimeline();
+
+    for (layer in mainTimeline.layers)
+    {
+      for (frame in layer.frames)
+      {
+        if (frame.name.rtrim() != '')
+        {
+          foundLabels.push(frame.name);
+        }
+      }
+    }
+
+    return foundLabels;
   }
 
   /**
@@ -68,8 +91,13 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
-    @:privateAccess
-    return this.anim._animations.keys().array();
+    var mainSymbol = this.frames.dictionary[this.frames.timeline.name];
+    if (mainSymbol == null)
+    {
+      FlxG.log.error('FlxAtlasSprite does not have its main symbol!');
+      return [];
+    }
+    return getFrameLabels().map(keyFrame -> keyFrame.name).filterNull();
   }
 
   /**
