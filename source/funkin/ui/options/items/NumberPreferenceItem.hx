@@ -94,8 +94,7 @@ class NumberPreferenceItem extends TextMenuItem
     var valueChangeMultiplier:Float = 1;
 
     final dragThreshold:Float = 24 / elapsed / 100;
-    trace(elapsed);
-    trace(dragThreshold);
+
     if (TouchUtil.touch != null && (TouchUtil.touch.deltaViewX <= -dragThreshold || TouchUtil.touch.deltaViewX >= dragThreshold))
     {
       valueChangeMultiplier = dragStepMultiplier;
