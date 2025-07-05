@@ -1522,21 +1522,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
     add(transitionGradient);
-    // FlxTween.tween(transitionGradient, {alpha: 0}, 1, {ease: FlxEase.circIn});
-    // for (index => capsule in grpCapsules.members)
-    // {
-    //   var distFromSelected:Float = Math.abs(index - curSelected) - 1;
-    //   if (distFromSelected < 5)
-    //   {
-    //     capsule.doLerp = false;
-    //     exitMoversCharSel.set([capsule],
-    //       {
-    //         y: -250,
-    //         speed: 0.8,
-    //         wait: 0.1
-    //       });
-    //   }
-    // }
+
     funnyCam.filtersEnabled = true;
     fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn, onComplete: (twn) -> funnyCam.filtersEnabled = false});
 
@@ -1567,6 +1553,10 @@ class FreeplayState extends MusicBeatSubState
           });
       }
     }
+
+    // TODO: i have no fucking idea why the dj position is shitty when entering from char select
+    // the easiest way is to just snap them back into place
+    if (dj != null) dj.setPosition((CUTOUT_WIDTH * DJ_POS_MULTI) + 640, 366);
   }
 
   var spamTimer:Float = 0;
@@ -1630,7 +1620,8 @@ class FreeplayState extends MusicBeatSubState
 
     if ((controls.FREEPLAY_CHAR_SELECT #if FEATURE_TOUCH_CONTROLS
       || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
-      && controls.active)
+      && controls.active
+      && !FlxG.debugger.visible)
     {
       tryOpenCharSelect();
     }

@@ -1,13 +1,14 @@
 package funkin.ui.freeplay;
 
 import flixel.util.FlxSignal;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
+import funkin.ui.freeplay.FreeplayState;
 
 @:nullSafety
-class FreeplayDJ extends FlxAtlasSprite
+class FreeplayDJ extends FunkinSprite
 {
   // Represents the sprite's current status.
   // Without state machines I would have driven myself crazy years ago.
@@ -39,9 +40,24 @@ class FreeplayDJ extends FlxAtlasSprite
     var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
     playableCharData = playableChar?.getFreeplayDJData();
 
-    super(x, y, playableCharData?.getAtlasPath());
+    super(x, y);
 
-    onAnimationFrame.add(function(name, number) {
+    // TODO: dj boyfriend has some crazy fucking light effects that cause lagspikes if they're not cached
+    // bettertextureatlas can bake the filters, but they don't display properly in-game currently
+    // remove `cacheOnLoad` once bettertextureatlas filter baking is improved
+    loadTextureAtlas(playableCharData?.getAtlasPath(),
+      {
+        swfMode: true,
+        cacheOnLoad: PlayerRegistry.instance.hasNewCharacter(),
+        filterQuality: HIGH
+      });
+
+    if (playableCharData?.useApplyStageMatrix() ?? false)
+    {
+      this.applyStageMatrix = true;
+    }
+
+    anim.onFrameChange.add(function(name, number, index) {
       if (name == playableCharData?.getAnimationPrefix('cartoon'))
       {
         if (number == playableCharData?.getCartoonSoundClickFrame())
@@ -58,23 +74,44 @@ class FreeplayDJ extends FlxAtlasSprite
     FlxG.debugger.track(this);
     FlxG.console.registerObject("dj", this);
 
-    onAnimationComplete.add(onFinishAnim);
-    onAnimationLoop.add(onFinishAnim);
+    anim.onFinish.add(onFinishAnim);
+    anim.onLoop.add(onFinishAnim);
 
-    FlxG.console.registerFunction("freeplayCartoon", function() {
+    FlxG.console.registerFunction("switchDJState_Intro", function() {
+      currentState = Intro;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Idle", function() {
+      currentState = Idle;
+    });
+
+    FlxG.console.registerFunction("switchDJState_NewUnlock", function() {
+      currentState = NewUnlock;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Confirm", function() {
+      currentState = Confirm;
+    });
+
+    FlxG.console.registerFunction("switchDJState_CharSelect", function() {
+      toCharSelect();
+    });
+
+    FlxG.console.registerFunction("switchDJState_FistPump", function() {
+      currentState = FistPump;
+    });
+
+    FlxG.console.registerFunction("switchDJState_FistPumpIntro", function() {
+      currentState = FistPumpIntro;
+    });
+
+    FlxG.console.registerFunction("switchDJState_IdleEasterEgg", function() {
+      currentState = IdleEasterEgg;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Cartoon", function() {
       currentState = Cartoon;
     });
-  }
-
-  override public function listAnimations():Array<String>
-  {
-    var anims:Array<String> = [];
-    @:privateAccess
-    for (animKey in anim.symbolDictionary)
-    {
-      anims.push(animKey.name);
-    }
-    return anims;
   }
 
   var lowPumpLoopPoint:Int = 4;
@@ -86,7 +123,7 @@ class FreeplayDJ extends FlxAtlasSprite
       case Intro:
         // Play the intro animation then leave this state immediately.
         var animPrefix = playableCharData?.getAnimationPrefix('intro');
-        if (animPrefix != null && (getCurrentAnimation() != animPrefix || !this.anim.isPlaying)) playFlashAnimation(animPrefix, true);
+        if (animPrefix != null && (getCurrentAnimation() != animPrefix)) playFlashAnimation(animPrefix, true);
         timeIdling = 0;
       case Idle:
         // We are in this state the majority of the time.
@@ -117,7 +154,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpIntroEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
           }
@@ -125,7 +162,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpIntroBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
           }
@@ -142,7 +179,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
           }
@@ -150,7 +187,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
           }
@@ -426,38 +463,41 @@ class FreeplayDJ extends FlxAtlasSprite
     if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
   }
 
-  override public function getCurrentAnimation():String
-  {
-    if (this.anim == null || this.anim.curSymbol == null) return "";
-    return this.anim.curSymbol.name;
-  }
-
   public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
   {
-    playAnimation(id, Force, Reverse, Loop, Frame);
-    applyAnimOffset();
+    this.anim.play(id, Force, Reverse, Frame);
+    this.anim.curAnim.looped = Loop;
+    applyAnimationOffset();
   }
 
-  function applyAnimOffset()
+  function applyAnimationOffset():Void
   {
-    var AnimName = getCurrentAnimation();
-    var daOffset = playableCharData?.getAnimationOffsetsByPrefix(AnimName);
-    if (daOffset != null)
+    var animationName:String = getCurrentAnimation();
+    var animationOffsets:Null<Array<Float>> = playableCharData?.getAnimationOffsetsByPrefix(animationName);
+    var globalOffsets:Array<Float> = [this.x, this.y];
+
+    if (animationOffsets != null)
     {
-      var xValue = daOffset[0];
-      var yValue = daOffset[1];
-      if (AnimName == "Boyfriend DJ watchin tv OG")
+      var finalOffsetX:Float = 0;
+      var finalOffsetY:Float = 0;
+
+      if (this.applyStageMatrix)
       {
-        xValue += offsetX;
-        yValue += offsetY;
+        finalOffsetX = animationOffsets[0];
+        finalOffsetY = animationOffsets[1];
+      }
+      else
+      {
+        finalOffsetX = globalOffsets[0] - animationOffsets[0] - (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI);
+        finalOffsetY = globalOffsets[1] - animationOffsets[1];
       }
 
-      trace('Successfully applied offset ($AnimName): ' + xValue + ', ' + yValue);
-      offset.set(xValue, yValue);
+      trace('Successfully applied offset ($animationName): ' + animationOffsets[0] + ', ' + animationOffsets[1]);
+      offset.set(finalOffsetX, finalOffsetY);
     }
     else
     {
-      trace('No offset found ($AnimName), defaulting to: 0, 0');
+      trace('No offset found ($animationName), defaulting to: 0, 0');
       offset.set(0, 0);
     }
   }

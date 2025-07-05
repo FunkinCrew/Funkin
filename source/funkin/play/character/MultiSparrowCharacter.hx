@@ -126,9 +126,4 @@ class MultiSparrowCharacter extends BaseCharacter
     var animNames = this.animation.getNameList();
     trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
   }
-
-  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
-  {
-    super.playAnimation(name, restart, ignoreOther, reverse);
-  }
 }
