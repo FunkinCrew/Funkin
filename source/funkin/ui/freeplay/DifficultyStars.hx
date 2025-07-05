@@ -56,9 +56,12 @@ class DifficultyStars extends FlxSpriteGroup
     // ......
     // 1300-1499: 15 stars
     // 1500 : 0 stars
-    if (curDifficulty < 15 && stars.anim?.curAnim?.curFrame >= (curDifficulty + 1) * 100)
+    if (stars.anim.curAnim != null)
     {
-      stars.anim.play("diff stars", true, false, curDifficulty * 100);
+      if (curDifficulty < 15 && stars.anim.curAnim.curFrame >= (curDifficulty + 1) * 100)
+      {
+        stars.anim.play("diff stars", true, false, curDifficulty * 100);
+      }
     }
   }
 
@@ -104,7 +107,7 @@ class DifficultyStars extends FlxSpriteGroup
     }
     else
     {
-      stars.anim?.curAnim?.curFrame = Std.int(curDifficulty * 100);
+      stars.anim.curAnim.curFrame = Std.int(curDifficulty * 100);
       stars.anim.play("diff stars", true, false, curDifficulty * 100);
     }
 

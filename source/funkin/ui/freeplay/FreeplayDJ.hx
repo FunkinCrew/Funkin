@@ -70,6 +70,8 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public override function update(elapsed:Float):Void
   {
+    if (anim.curAnim == null) return;
+
     switch (currentState)
     {
       case Intro:
@@ -107,7 +109,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpIntroEndFrame() ?? 0;
-          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
           }
@@ -115,7 +117,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpIntroBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
           }
@@ -132,7 +134,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
           }
@@ -140,7 +142,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
           }
