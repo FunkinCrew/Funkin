@@ -39,7 +39,15 @@ class FreeplayDJ extends FlxAtlasSprite
     var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
     playableCharData = playableChar?.getFreeplayDJData();
 
-    super(x, y, playableCharData?.getAtlasPath());
+    // TODO: dj boyfriend has some crazy fucking light effects that cause lagspikes if they're not cached
+    // bettertextureatlas can bake the filters, but they don't display properly in-game currently
+    // remove `cacheOnLoad` once bettertextureatlas filter baking is improved
+    super(x, y, playableCharData?.getAtlasPath(),
+      {
+        swfMode: true,
+        cacheOnLoad: PlayerRegistry.instance.hasNewCharacter(),
+        filterQuality: MEDIUM
+      });
 
     onAnimationFrame.add(function(name, number) {
       if (name == playableCharData?.getAnimationPrefix('cartoon'))
@@ -61,20 +69,41 @@ class FreeplayDJ extends FlxAtlasSprite
     onAnimationComplete.add(onFinishAnim);
     onAnimationLoop.add(onFinishAnim);
 
-    FlxG.console.registerFunction("freeplayCartoon", function() {
+    FlxG.console.registerFunction("switchDJState_Intro", function() {
+      currentState = Intro;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Idle", function() {
+      currentState = Idle;
+    });
+
+    FlxG.console.registerFunction("switchDJState_NewUnlock", function() {
+      currentState = NewUnlock;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Confirm", function() {
+      currentState = Confirm;
+    });
+
+    FlxG.console.registerFunction("switchDJState_CharSelect", function() {
+      toCharSelect();
+    });
+
+    FlxG.console.registerFunction("switchDJState_FistPump", function() {
+      currentState = FistPump;
+    });
+
+    FlxG.console.registerFunction("switchDJState_FistPumpIntro", function() {
+      currentState = FistPumpIntro;
+    });
+
+    FlxG.console.registerFunction("switchDJState_IdleEasterEgg", function() {
+      currentState = IdleEasterEgg;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Cartoon", function() {
       currentState = Cartoon;
     });
-  }
-
-  override public function listAnimations():Array<String>
-  {
-    var anims:Array<String> = [];
-    @:privateAccess
-    for (animKey in anim.symbolDictionary)
-    {
-      anims.push(animKey.name);
-    }
-    return anims;
   }
 
   var lowPumpLoopPoint:Int = 4;
@@ -86,7 +115,7 @@ class FreeplayDJ extends FlxAtlasSprite
       case Intro:
         // Play the intro animation then leave this state immediately.
         var animPrefix = playableCharData?.getAnimationPrefix('intro');
-        if (animPrefix != null && (getCurrentAnimation() != animPrefix || !this.anim.isPlaying)) playFlashAnimation(animPrefix, true);
+        if (animPrefix != null && (getCurrentAnimation() != animPrefix)) playFlashAnimation(animPrefix, true);
         timeIdling = 0;
       case Idle:
         // We are in this state the majority of the time.
@@ -117,7 +146,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpIntroEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
           }
@@ -125,7 +154,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpIntroBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
           }
@@ -142,7 +171,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
           }
@@ -150,7 +179,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
           }
@@ -426,12 +455,6 @@ class FreeplayDJ extends FlxAtlasSprite
     if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
   }
 
-  override public function getCurrentAnimation():String
-  {
-    if (this.anim == null || this.anim.curSymbol == null) return "";
-    return this.anim.curSymbol.name;
-  }
-
   public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
   {
     playAnimation(id, Force, Reverse, Loop, Frame);
@@ -442,17 +465,13 @@ class FreeplayDJ extends FlxAtlasSprite
   {
     var AnimName = getCurrentAnimation();
     var daOffset = playableCharData?.getAnimationOffsetsByPrefix(AnimName);
+    var daGlobalOffset = [this.x, this.y];
     if (daOffset != null)
     {
-      var xValue = daOffset[0];
-      var yValue = daOffset[1];
-      if (AnimName == "Boyfriend DJ watchin tv OG")
-      {
-        xValue += offsetX;
-        yValue += offsetY;
-      }
+      var xValue = daGlobalOffset[0] - daOffset[0];
+      var yValue = daGlobalOffset[1] - daOffset[1];
 
-      trace('Successfully applied offset ($AnimName): ' + xValue + ', ' + yValue);
+      trace('Successfully applied offset ($AnimName): ' + daOffset[0] + ', ' + daOffset[1]);
       offset.set(xValue, yValue);
     }
     else

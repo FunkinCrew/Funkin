@@ -1,12 +1,80 @@
 package funkin.graphics.adobeanimate;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
-import flxanimate.FlxAnimate;
-import flxanimate.FlxAnimate.Settings;
+import animate.FlxAnimate;
+import animate.FlxAnimateFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.math.FlxPoint;
-import flxanimate.animate.FlxKeyFrame;
+import animate.internal.Frame;
+import flixel.FlxG;
+import animate.FlxAnimateFrames.FlxAnimateSettings;
+
+typedef FlxAtlasSpriteSettings =
+{
+  /**
+   * If true, the texture atlas will behave as if it was exported as an SWF file.
+   * Notably, this allows MovieClip symbols to play.
+   */
+  @:optional
+  var swfMode:Bool;
+
+  /**
+   * If true, filters and masks will be cached when the atlas is loaded, instead of during runtime.
+   */
+  @:optional
+  var cacheOnLoad:Bool;
+
+  /**
+   * The filter quality.
+   * Available values are: HIGH, MEDIUM, LOW, and RUDY.
+   *
+   * If you're making an atlas sprite in HScript, you pass an Int instead:
+   *
+   * HIGH - 0
+   * MEDIUM - 1
+   * LOW - 2
+   * RUDY - 3
+   */
+  @:optional
+  var filterQuality:FilterQuality;
+
+  /**
+   * Optional, an array of spritemaps for the atlas to load.
+   */
+  @:optional
+  var spritemaps:Array<SpritemapInput>;
+
+  /**
+   * Optional, string of the metadata.json contents.
+   */
+  @:optional
+  var metadataJson:String;
+
+  /**
+   * Optional, force the cache to use a specific key to index the texture atlas.
+   */
+  @:optional
+  var cacheKey:String;
+
+  /**
+   * If true, the texture atlas will use a new slot in the cache.
+   */
+  @:optional
+  var uniqueInCache:Bool;
+
+  /**
+   * Optional callback for when a symbol is created.
+   */
+  @:optional
+  var onSymbolCreate:animate.internal.SymbolItem->Void;
+
+  /**
+   * Whether to apply the stage matrix, if it was exported from a symbol instance.
+   */
+  @:optional
+  var applyStageMatrix:Bool;
+}
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
@@ -14,17 +82,10 @@ import flxanimate.animate.FlxKeyFrame;
 @:nullSafety
 class FlxAtlasSprite extends FlxAnimate
 {
-  static final SETTINGS:Settings =
-    {
-      // ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
-      FrameRate: 24.0,
-      Reversed: false,
-      // ?OnComplete:Void -> Void,
-      ShowPivot: false,
-      Antialiasing: true,
-      ScrollFactor: null,
-      // Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
-    };
+  /**
+   * Signal dispatched when an animation begins playing.
+   */
+  public var onAnimationPlay:FlxTypedSignal<String->Bool->Void> = new FlxTypedSignal();
 
   /**
    * Signal dispatched when an animation advances to the next frame.
@@ -41,14 +102,22 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public var onAnimationLoop:FlxTypedSignal<String->Void> = new FlxTypedSignal();
 
-  var currentAnimation:String = '';
-
   var canPlayOtherAnims:Bool = true;
 
-  @:nullSafety(Off) // null safety HATES new classes atm, it'll be fixed in haxe 4.0.0?
-  public function new(x:Float, y:Float, ?path:String, ?settings:Settings)
+  public function new(x:Float, y:Float, ?path:String, ?settings:FlxAtlasSpriteSettings)
   {
-    if (settings == null) settings = SETTINGS;
+    var validatedSettings:FlxAtlasSpriteSettings =
+      {
+        swfMode: settings?.swfMode ?? false,
+        cacheOnLoad: settings?.cacheOnLoad ?? false,
+        filterQuality: settings?.filterQuality ?? MEDIUM,
+        spritemaps: settings?.spritemaps ?? null,
+        metadataJson: settings?.metadataJson ?? null,
+        cacheKey: settings?.cacheKey ?? null,
+        uniqueInCache: settings?.uniqueInCache ?? false,
+        onSymbolCreate: settings?.onSymbolCreate ?? null,
+        applyStageMatrix: settings?.applyStageMatrix ?? false
+      };
 
     if (path == null)
     {
@@ -61,22 +130,66 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
     }
 
-    super(x, y, path, settings);
+    super(x, y);
 
-    if (this.anim.stageInstance == null)
+    this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
+
+    frames = FlxAnimateFrames.fromAnimate(path, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
+      validatedSettings.uniqueInCache, {
+        swfMode: validatedSettings.swfMode,
+        cacheOnLoad: validatedSettings.cacheOnLoad,
+        filterQuality: validatedSettings.filterQuality,
+        onSymbolCreate: validatedSettings.onSymbolCreate
+      });
+
+    this.anim.onFinish.add(_onAnimationComplete);
+    this.anim.onFrameChange.add(_onAnimationFrame);
+    this.anim.onLoop.add(_onAnimationLoop);
+  }
+
+  /**
+   * Gets a list of frame labels from the default timeline.
+   */
+  public function getFrameLabelList():Array<String>
+  {
+    var foundLabels:Array<String> = [];
+    var mainTimeline = this.anim.getDefaultTimeline();
+
+    for (layer in mainTimeline.layers)
     {
-      throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
+      @:nullSafety(Off)
+      for (frame in layer.frames)
+      {
+        if (frame.name.rtrim() != '')
+        {
+          foundLabels.push(frame.name);
+        }
+      }
     }
 
-    onAnimationComplete.add(cleanupAnimation);
+    return foundLabels;
+  }
 
-    // This defaults the sprite to play the first animation in the atlas,
-    // then pauses it. This ensures symbols are initialized properly.
-    this.anim.play('');
-    this.anim.pause();
-
-    this.anim.onComplete.add(_onAnimationComplete);
-    this.anim.onFrame.add(_onAnimationFrame);
+  /**
+   * Gets a frame label by its name.
+   * @param name The name of the frame label to retrieve.
+   * @return The frame label, or null if it doesn't exist.
+   */
+  public function getFrameLabel(name:String):Null<Frame>
+  {
+    var mainTimeline = this.anim.getDefaultTimeline();
+    for (layer in mainTimeline.layers)
+    {
+      @:nullSafety(Off)
+      for (frame in layer.frames)
+      {
+        if (frame.name == name)
+        {
+          return frame;
+        }
+      }
+    }
+    return null;
   }
 
   /**
@@ -84,22 +197,78 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
-    var mainSymbol = this.anim.symbolDictionary[this.anim.stageInstance.symbol.name];
-    if (mainSymbol == null)
-    {
-      FlxG.log.error('FlxAtlasSprite does not have its main symbol!');
-      return [];
-    }
-    return mainSymbol.getFrameLabels().map(keyFrame -> keyFrame.name).filterNull();
+    var frameLabels:Array<String> = getFrameLabelList();
+    var animationList:Array<String> = this.anim.getNameList();
+
+    return frameLabels.concat(animationList);
   }
 
   /**
+   * Checks if the atlas has a specific animation.
+   *
+   * If the animation exists as a symbol or frame label, but
+   * hasn't been added yet, it will be added automatically.
+   *
    * @param id A string ID of the animation.
    * @return Whether the animation was found on this sprite.
    */
   public function hasAnimation(id:String):Bool
   {
-    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id);
+    var frameLabels:Array<String> = listAnimations();
+
+    @:privateAccess
+    var symbols:Array<String> = this.library.dictionary.keys().array();
+
+    if (anim.getByName(id) == null)
+    {
+      if (frameLabels.contains(id))
+      {
+        // Animation exists as a frame label but wasn't added, so we add it
+        anim.addByFrameLabel(id, id, 24, false);
+        return true;
+      }
+      else if (symbols.contains(id))
+      {
+        // Animation exists as a symbol but wasn't added, so we add it
+        anim.addBySymbol(id, id, 24, false);
+        return true;
+      }
+    }
+    else
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Returns the first symbol in the atlas.
+   */
+  public function getFirstSymbol():String
+  {
+    return library.timeline.name;
+  }
+
+  public function cleanupAnimation(_:String):Void
+  {
+    canPlayOtherAnims = true;
+    this.anim.pause();
+  }
+
+  function _onAnimationFrame(animName:String, frameNumber:Int, frameIndex:Int):Void
+  {
+    onAnimationFrame.dispatch(animName, frameNumber);
+  }
+
+  function _onAnimationComplete(animName:String):Void
+  {
+    onAnimationComplete.dispatch(animName);
+  }
+
+  function _onAnimationLoop(animationName:String):Void
+  {
+    onAnimationLoop.dispatch(animationName);
   }
 
   /**
@@ -107,14 +276,8 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function getCurrentAnimation():String
   {
-    return this.currentAnimation;
+    return this.anim.curAnim?.name ?? '';
   }
-
-  var _completeAnim:Bool = false;
-
-  var fr:Null<FlxKeyFrame> = null;
-
-  var looping:Bool = false;
 
   public var ignoreExclusionPref:Array<String> = [];
 
@@ -125,14 +288,17 @@ class FlxAtlasSprite extends FlxAnimate
    * @param ignoreOther Whether to ignore all other animation inputs, until this one is done playing
    * @param loop Whether to loop the animation
    * @param startFrame The frame to start the animation on
+   * @param reversed Whether to play the animation in reverse
+   *
    * NOTE: `loop` and `ignoreOther` are not compatible with each other!
    */
-  public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
+  public function playAnimation(id:String = '', restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0,
+      reversed:Bool = false):Void
   {
     // Skip if not allowed to play animations.
     if ((!canPlayOtherAnims))
     {
-      if (this.currentAnimation == id && restart) {}
+      if (getCurrentAnimation() == id && restart) {}
       else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
       {
         var detected:Bool = false;
@@ -152,66 +318,23 @@ class FlxAtlasSprite extends FlxAnimate
 
     if (anim == null) return;
 
-    if (id == null || id == '') id = this.currentAnimation;
+    // Try to use the first symbol in the animation if one exists.
+    if (id == null || id == '') id = getFirstSymbol();
 
-    if (this.currentAnimation == id && !restart)
-    {
-      if (!anim.isPlaying)
-      {
-        if (fr != null) anim.curFrame = fr.index + startFrame;
-        else
-          anim.curFrame = startFrame;
-
-        // Resume animation if it's paused.
-        anim.resume();
-      }
-
-      return;
-    }
-    else if (!hasAnimation(id))
+    if (!hasAnimation(id))
     {
       // Skip if the animation doesn't exist
       trace('Animation ' + id + ' not found');
       return;
     }
 
-    this.currentAnimation = id;
-    anim.onComplete.removeAll();
-    anim.onComplete.add(function() {
-      _onAnimationComplete();
-    });
-
-    looping = loop;
-
     // Prevent other animations from playing if `ignoreOther` is true.
     if (ignoreOther) canPlayOtherAnims = false;
 
-    // Move to the first frame of the animation.
-    // goToFrameLabel(id);
-    // trace('Playing animation $id');
-    if ((id == null || id == "") || this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
-    {
-      this.anim.play(id, restart, false, startFrame);
+    this.anim.play(id, restart, reversed, startFrame);
+    this.anim.curAnim.looped = loop;
 
-      this.currentAnimation = anim.curSymbol.name;
-
-      fr = null;
-    }
-    var frameLabelNames = getFrameLabelNames();
-    // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
-    if (frameLabelNames != null && frameLabelNames.indexOf(id) != -1)
-    {
-      goToFrameLabel(id);
-      fr = anim.getFrameLabel(id);
-      anim.curFrame += startFrame;
-      // Resume animation if it's paused.
-      anim.resume();
-    }
-  }
-
-  override public function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
+    onAnimationPlay.dispatch(id, loop);
   }
 
   /**
@@ -220,30 +343,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function isAnimationFinished():Bool
   {
-    return isLoopComplete();
-  }
-
-  /**
-   * Returns true if the animation has reached the last frame.
-   * Can be true even if animation is configured to loop.
-   * @return Whether the animation has reached the last frame.
-   */
-  public function isLoopComplete():Bool
-  {
-    if (this.anim == null) return false;
-    if (!this.anim.isPlaying) return false;
-
-    if (fr != null)
-    {
-      var curFrame = anim.curFrame;
-
-      var startFrame = fr.index;
-      var endFrame = (fr.index + fr.duration);
-
-      return (anim.reversed) ? (curFrame < startFrame) : (curFrame >= endFrame);
-    }
-
-    return (anim.reversed && anim.curFrame == 0 || !(anim.reversed) && (anim.curFrame) >= (anim.length - 1));
+    return this.anim.finished;
   }
 
   /**
@@ -251,105 +351,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function stopAnimation():Void
   {
-    if (this.currentAnimation == null) return;
-
-    this.anim.removeAllCallbacksFrom(getNextFrameLabel(this.currentAnimation));
-
-    goToFrameIndex(0);
-  }
-
-  function addFrameCallback(label:String, callback:Void->Void):Void
-  {
-    var frameLabel = this.anim.getFrameLabel(label);
-    frameLabel.add(callback);
-  }
-
-  function goToFrameLabel(label:String):Void
-  {
-    this.anim.goToFrameLabel(label);
-  }
-
-  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String>):Null<Array<String>>
-  {
-    var labels = this.anim.getFrameLabels(layer);
-    var array = [];
-    for (label in labels)
-    {
-      array.push(label.name);
-    }
-
-    return array;
-  }
-
-  function getNextFrameLabel(label:String):String
-  {
-    return listAnimations()[(getLabelIndex(label) + 1) % listAnimations().length];
-  }
-
-  function getLabelIndex(label:String):Int
-  {
-    return listAnimations().indexOf(label);
-  }
-
-  function goToFrameIndex(index:Int):Void
-  {
-    this.anim.curFrame = index;
-  }
-
-  public function cleanupAnimation(_:String):Void
-  {
-    canPlayOtherAnims = true;
-    // this.currentAnimation = null;
-    this.anim.pause();
-  }
-
-  function _onAnimationFrame(frame:Int):Void
-  {
-    if (currentAnimation != null)
-    {
-      onAnimationFrame.dispatch(currentAnimation, frame);
-
-      if (isLoopComplete())
-      {
-        anim.pause();
-
-        if (looping)
-        {
-          anim.curFrame = (fr != null) ? fr.index : 0;
-          anim.resume();
-          _onAnimationLoop();
-        }
-        else if (fr != null && anim.curFrame != anim.length - 1)
-        {
-          anim.curFrame--;
-          _onAnimationComplete();
-        }
-      }
-    }
-  }
-
-  function _onAnimationComplete():Void
-  {
-    if (currentAnimation != null)
-    {
-      onAnimationComplete.dispatch(currentAnimation);
-    }
-    else
-    {
-      onAnimationComplete.dispatch('');
-    }
-  }
-
-  function _onAnimationLoop():Void
-  {
-    if (currentAnimation != null)
-    {
-      onAnimationLoop.dispatch(currentAnimation);
-    }
-    else
-    {
-      onAnimationLoop.dispatch('');
-    }
+    this.anim.stop();
   }
 
   var prevFrames:Map<Int, FlxFrame> = [];
@@ -389,22 +391,6 @@ class FlxAtlasSprite extends FlxAnimate
       frame.tileMatrix[0] = prevFrame.frame.width / frame.frame.width;
       frame.tileMatrix[3] = prevFrame.frame.height / frame.frame.height;
     }
-  }
-
-  public function getBasePosition():Null<FlxPoint>
-  {
-    // var stagePos = new FlxPoint(anim.stageInstance.matrix.tx, anim.stageInstance.matrix.ty);
-    var instancePos = new FlxPoint(anim.curInstance.matrix.tx, anim.curInstance.matrix.ty);
-    var firstElement = anim.curSymbol.timeline?.get(0)?.get(0)?.get(0);
-    if (firstElement == null) return instancePos;
-    var firstElementPos = new FlxPoint(firstElement.matrix.tx, firstElement.matrix.ty);
-
-    return instancePos + firstElementPos;
-  }
-
-  public function getPivotPosition():Null<FlxPoint>
-  {
-    return anim.curInstance.symbol.transformationPoint;
   }
 
   public override function destroy():Void
