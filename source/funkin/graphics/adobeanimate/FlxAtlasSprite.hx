@@ -1,12 +1,13 @@
 package funkin.graphics.adobeanimate;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
-import flxanimate.FlxAnimate;
+import animate.FlxAnimate;
+import animate.FlxAnimateFrames;
 import flxanimate.FlxAnimate.Settings;
 import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.math.FlxPoint;
-import flxanimate.animate.FlxKeyFrame;
+import animate.internal.Frame;
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
@@ -48,8 +49,6 @@ class FlxAtlasSprite extends FlxAnimate
   @:nullSafety(Off) // null safety HATES new classes atm, it'll be fixed in haxe 4.0.0?
   public function new(x:Float, y:Float, ?path:String, ?settings:Settings)
   {
-    if (settings == null) settings = SETTINGS;
-
     if (path == null)
     {
       throw 'Null path specified for FlxAtlasSprite!';
@@ -61,22 +60,12 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
     }
 
-    super(x, y, path, settings);
+    super(x, y, path);
 
     if (this.anim.stageInstance == null)
     {
       throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
     }
-
-    onAnimationComplete.add(cleanupAnimation);
-
-    // This defaults the sprite to play the first animation in the atlas,
-    // then pauses it. This ensures symbols are initialized properly.
-    this.anim.play('');
-    this.anim.pause();
-
-    this.anim.onComplete.add(_onAnimationComplete);
-    this.anim.onFrame.add(_onAnimationFrame);
   }
 
   /**
@@ -84,13 +73,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
-    var mainSymbol = this.anim.symbolDictionary[this.anim.stageInstance.symbol.name];
-    if (mainSymbol == null)
-    {
-      FlxG.log.error('FlxAtlasSprite does not have its main symbol!');
-      return [];
-    }
-    return mainSymbol.getFrameLabels().map(keyFrame -> keyFrame.name).filterNull();
+    return this.anim._animations.keys().array();
   }
 
   /**
@@ -99,7 +82,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function hasAnimation(id:String):Bool
   {
-    return getLabelIndex(id) != -1 || anim.symbolDictionary.exists(id);
+    return listAnimations().contains(id);
   }
 
   /**
@@ -110,9 +93,7 @@ class FlxAtlasSprite extends FlxAnimate
     return this.currentAnimation;
   }
 
-  var _completeAnim:Bool = false;
-
-  var fr:Null<FlxKeyFrame> = null;
+  var fr:Null<Frame> = null;
 
   var looping:Bool = false;
 
@@ -154,21 +135,7 @@ class FlxAtlasSprite extends FlxAnimate
 
     if (id == null || id == '') id = this.currentAnimation;
 
-    if (this.currentAnimation == id && !restart)
-    {
-      if (!anim.isPlaying)
-      {
-        if (fr != null) anim.curFrame = fr.index + startFrame;
-        else
-          anim.curFrame = startFrame;
-
-        // Resume animation if it's paused.
-        anim.resume();
-      }
-
-      return;
-    }
-    else if (!hasAnimation(id))
+    if (!hasAnimation(id))
     {
       // Skip if the animation doesn't exist
       trace('Animation ' + id + ' not found');
@@ -176,37 +143,17 @@ class FlxAtlasSprite extends FlxAnimate
     }
 
     this.currentAnimation = id;
-    anim.onComplete.removeAll();
-    anim.onComplete.add(function() {
-      _onAnimationComplete();
-    });
 
     looping = loop;
 
     // Prevent other animations from playing if `ignoreOther` is true.
     if (ignoreOther) canPlayOtherAnims = false;
 
-    // Move to the first frame of the animation.
-    // goToFrameLabel(id);
-    // trace('Playing animation $id');
-    if ((id == null || id == "") || this.anim.symbolDictionary.exists(id) || (this.anim.getByName(id) != null))
-    {
-      this.anim.play(id, restart, false, startFrame);
+    this.anim.play(id, restart, false, startFrame);
 
-      this.currentAnimation = anim.curSymbol.name;
+    this.currentAnimation = anim.curSymbol.name;
 
-      fr = null;
-    }
-    var frameLabelNames = getFrameLabelNames();
-    // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
-    if (frameLabelNames != null && frameLabelNames.indexOf(id) != -1)
-    {
-      goToFrameLabel(id);
-      fr = anim.getFrameLabel(id);
-      anim.curFrame += startFrame;
-      // Resume animation if it's paused.
-      anim.resume();
-    }
+    fr = null;
   }
 
   override public function update(elapsed:Float):Void
@@ -220,30 +167,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function isAnimationFinished():Bool
   {
-    return isLoopComplete();
-  }
-
-  /**
-   * Returns true if the animation has reached the last frame.
-   * Can be true even if animation is configured to loop.
-   * @return Whether the animation has reached the last frame.
-   */
-  public function isLoopComplete():Bool
-  {
-    if (this.anim == null) return false;
-    if (!this.anim.isPlaying) return false;
-
-    if (fr != null)
-    {
-      var curFrame = anim.curFrame;
-
-      var startFrame = fr.index;
-      var endFrame = (fr.index + fr.duration);
-
-      return (anim.reversed) ? (curFrame < startFrame) : (curFrame >= endFrame);
-    }
-
-    return (anim.reversed && anim.curFrame == 0 || !(anim.reversed) && (anim.curFrame) >= (anim.length - 1));
+    return this.anim.finished;
   }
 
   /**
@@ -253,103 +177,7 @@ class FlxAtlasSprite extends FlxAnimate
   {
     if (this.currentAnimation == null) return;
 
-    this.anim.removeAllCallbacksFrom(getNextFrameLabel(this.currentAnimation));
-
-    goToFrameIndex(0);
-  }
-
-  function addFrameCallback(label:String, callback:Void->Void):Void
-  {
-    var frameLabel = this.anim.getFrameLabel(label);
-    frameLabel.add(callback);
-  }
-
-  function goToFrameLabel(label:String):Void
-  {
-    this.anim.goToFrameLabel(label);
-  }
-
-  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String>):Null<Array<String>>
-  {
-    var labels = this.anim.getFrameLabels(layer);
-    var array = [];
-    for (label in labels)
-    {
-      array.push(label.name);
-    }
-
-    return array;
-  }
-
-  function getNextFrameLabel(label:String):String
-  {
-    return listAnimations()[(getLabelIndex(label) + 1) % listAnimations().length];
-  }
-
-  function getLabelIndex(label:String):Int
-  {
-    return listAnimations().indexOf(label);
-  }
-
-  function goToFrameIndex(index:Int):Void
-  {
-    this.anim.curFrame = index;
-  }
-
-  public function cleanupAnimation(_:String):Void
-  {
-    canPlayOtherAnims = true;
-    // this.currentAnimation = null;
-    this.anim.pause();
-  }
-
-  function _onAnimationFrame(frame:Int):Void
-  {
-    if (currentAnimation != null)
-    {
-      onAnimationFrame.dispatch(currentAnimation, frame);
-
-      if (isLoopComplete())
-      {
-        anim.pause();
-
-        if (looping)
-        {
-          anim.curFrame = (fr != null) ? fr.index : 0;
-          anim.resume();
-          _onAnimationLoop();
-        }
-        else if (fr != null && anim.curFrame != anim.length - 1)
-        {
-          anim.curFrame--;
-          _onAnimationComplete();
-        }
-      }
-    }
-  }
-
-  function _onAnimationComplete():Void
-  {
-    if (currentAnimation != null)
-    {
-      onAnimationComplete.dispatch(currentAnimation);
-    }
-    else
-    {
-      onAnimationComplete.dispatch('');
-    }
-  }
-
-  function _onAnimationLoop():Void
-  {
-    if (currentAnimation != null)
-    {
-      onAnimationLoop.dispatch(currentAnimation);
-    }
-    else
-    {
-      onAnimationLoop.dispatch('');
-    }
+    this.anim.stop();
   }
 
   var prevFrames:Map<Int, FlxFrame> = [];
