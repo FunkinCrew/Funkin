@@ -12,6 +12,8 @@ import flixel.util.FlxTimer;
 import funkin.input.Controls;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
+import flixel.math.FlxPoint;
+import flixel.FlxCamera;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.audio.FunkinSound;
 
@@ -290,11 +292,11 @@ class FreeplayLetter extends FlxAtlasSprite
 
     if (letterInd != null)
     {
-      this.anim.play(animLetters[letterInd] + " move");
+      this.playAnimation(animLetters[letterInd] + " move", true);
       this.anim.pause();
       curLetter = letterInd;
-      this.anim.onComplete.add(function() {
-        this.anim.play(animLetters[curLetter] + " move");
+      this.onAnimationComplete.add(function(name:String) {
+        this.playAnimation(animLetters[curLetter] + " move", true);
       });
     }
   }
@@ -323,11 +325,21 @@ class FreeplayLetter extends FlxAtlasSprite
         animName = "T move";
     }
 
-    this.anim.play(animName, true);
+    this.playAnimation(animName, true);
     if (curSelection != curLetter)
     {
       this.anim.pause();
     }
-    // updateHitbox();
+  }
+
+  /**
+   * Offset the letter.
+   */
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= 50;
+    output.y -= 60;
+    return output;
   }
 }
