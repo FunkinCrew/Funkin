@@ -3,6 +3,8 @@ package funkin.ui.charSelect;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.FullScreenScaleMode;
+import flixel.math.FlxPoint;
 
 class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
@@ -14,7 +16,10 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     initialX = x;
     initialY = y;
 
-    super(x, y, Paths.animateAtlas("charSelect/bfChill"));
+    super(x, y, Paths.animateAtlas("charSelect/bfChill"),
+      {
+        applyStageMatrix: true
+      });
 
     onAnimationComplete.add(function(animLabel:String) {
       switch (animLabel)
@@ -55,29 +60,24 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
   };
 
-  public function updatePosition(str:String)
+  public function updatePosition():Void
   {
-    switch (str)
-    {
-      case "bf" | 'pico' | "random":
-        x = initialX;
-        y = initialY;
-    }
+    // offset the position such that it's positioned exactly like in Adobe Animate
+    var bounds:FlxPoint = this.timeline.getBoundsOrigin();
+
+    x = initialX + bounds.x;
+    y = initialY + bounds.y;
   }
 
-  public function switchChar(str:String)
+  public function switchChar(str:String):Void
   {
-    switch str
-    {
-      default:
-        loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
-    }
+    frames = CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/${str}Chill'));
 
     playAnimation("slidein", true, false, false);
 
     updateHitbox();
 
-    updatePosition(str);
+    updatePosition();
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {};
