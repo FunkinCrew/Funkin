@@ -3,7 +3,6 @@ package funkin.graphics.adobeanimate;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import animate.FlxAnimate;
 import animate.FlxAnimateFrames;
-import flxanimate.FlxAnimate.Settings;
 import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.math.FlxPoint;
@@ -15,7 +14,7 @@ import animate.internal.Frame;
 @:nullSafety
 class FlxAtlasSprite extends FlxAnimate
 {
-  static final SETTINGS:Settings =
+  static final SETTINGS =
     {
       // ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
       FrameRate: 24.0,
@@ -47,7 +46,7 @@ class FlxAtlasSprite extends FlxAnimate
   var canPlayOtherAnims:Bool = true;
 
   @:nullSafety(Off) // null safety HATES new classes atm, it'll be fixed in haxe 4.0.0?
-  public function new(x:Float, y:Float, ?path:String, ?settings:Settings)
+  public function new(x:Float, y:Float, ?path:String, ?settings)
   {
     if (path == null)
     {
@@ -60,7 +59,7 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
     }
 
-    super(x, y, Assets.getPath(path));
+    super(x, y, path);
   }
 
   /**
@@ -74,6 +73,7 @@ class FlxAtlasSprite extends FlxAnimate
 
     for (layer in mainTimeline.layers)
     {
+      @:nullSafety(Off)
       for (frame in layer.frames)
       {
         if (frame.name.rtrim() != '')
@@ -91,13 +91,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
-    var mainSymbol = this.frames.dictionary[this.frames.timeline.name];
-    if (mainSymbol == null)
-    {
-      FlxG.log.error('FlxAtlasSprite does not have its main symbol!');
-      return [];
-    }
-    return getFrameLabels().map(keyFrame -> keyFrame.name).filterNull();
+    return getFrameLabels();
   }
 
   /**
