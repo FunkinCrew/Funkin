@@ -19,7 +19,6 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.ui.options.items.NumberPreferenceItem;
-
 import haxe.Int64;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
@@ -125,10 +124,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     add(arrow);
 
     /*var debugText = new FlxText(0, 0);
-    debugText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.CENTER);
-    debugText.text = 'Beat: ' + beat;
-    debugText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        add(debugText); */
+      debugText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.CENTER);
+      debugText.text = 'Beat: ' + beat;
+      debugText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+          add(debugText); */
 
     arrows.push(
       {
@@ -218,13 +217,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     add(blackRect);
 
     /*debugBeatText = new FlxText(0, 0);
-    debugBeatText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
-    debugBeatText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    debugBeatText.setPosition(10, 10);
-    debugBeatText.scrollFactor.set(0, 0);
-    add(debugBeatText);
+      debugBeatText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
+      debugBeatText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      debugBeatText.setPosition(10, 10);
+      debugBeatText.scrollFactor.set(0, 0);
+      add(debugBeatText);
 
-        debugBeatText.alpha = 0; */
+          debugBeatText.alpha = 0; */
 
     receptor = new FunkinSprite(0, 0);
     receptor.loadGraphic(Paths.image('latencyReceptor'));
@@ -303,7 +302,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     offsetItem = createPrefItemNumber('Offset (Global)', 'Offset (Global)', function(value:Float) {
       Preferences.globalOffset = Std.int(value);
-    }, null, Preferences.globalOffset, -1500, 1500, 1.0, 2);
+    }, null, Preferences.globalOffset, -1500, 1500, 1.0, 2, 5);
     createButtonItem('Reset Offset', function() {
       Preferences.globalOffset = 0;
       offsetItem.currentValue = Preferences.globalOffset;
@@ -371,7 +370,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       #end
       jumpInText.y = testStrumline.y + 175;
       #if !mobile if (Preferences.downscroll) #end jumpInText.y = testStrumline.y - 175;
-
     });
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
     PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
@@ -500,6 +498,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   var _lastBeat:Float = 0;
   var _lastTime:Float = 0;
+
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
@@ -549,8 +548,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
 
     _lastTime = FlxG.sound.music.time;
-
-
+    
     // Back logic
     if (controls.BACK && shouldOffset == 1)
     {
@@ -795,9 +793,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
 
     /*debugBeatText.x = receptor.x + receptor.width * 2;
-    debugBeatText.y = receptor.y - 20;
+      debugBeatText.y = receptor.y - 20;
 
-        debugBeatText.text = 'Beat: ' + b; */
+          debugBeatText.text = 'Beat: ' + b; */
 
     // receptor.angle += angleVel * elapsed;
 
@@ -812,9 +810,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
           var numPref:NumberPreferenceItem = cast(daItem, NumberPreferenceItem);
           thyTextWidth = numPref.lefthandText.getWidth();
 
-          numPref.lefthandText.x = xLerp
-          + (FlxG.width / 2)
-          - ((thyTextWidth + daItem.atlasText.getWidth() + 20) / 2);
+          numPref.lefthandText.x = xLerp + (FlxG.width / 2) - ((thyTextWidth + daItem.atlasText.getWidth() + 20) / 2);
           numPref.lefthandText.y = yLerp + ((120 * ind) + 30);
           daItem.x = numPref.lefthandText.x + thyTextWidth + 20;
         default:
@@ -925,13 +921,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   // Creates a preference item with a number input.
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
-      step:Float = 0.1, precision:Int):NumberPreferenceItem
+      step:Float = 0.1, precision:Int, dragStepMultiplier:Float = 1):NumberPreferenceItem
   {
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
-      precision, onChange, valueFormatter);
+      precision, onChange, valueFormatter, dragStepMultiplier);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     return item;
   }
-
 }
