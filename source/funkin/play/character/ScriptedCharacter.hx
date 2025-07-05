@@ -27,6 +27,14 @@ class ScriptedSparrowCharacter extends SparrowCharacter implements polymod.hscri
 class ScriptedMultiSparrowCharacter extends MultiSparrowCharacter implements polymod.hscript.HScriptedClass {}
 
 /**
+ * A script that can be tied to a MultiAnimateAtlasCharacter, which persists across states.
+ * Create a scripted class that extends MultiAnimateAtlasCharacter,
+ * then call `super('charId')` in the constructor to use this.
+ */
+@:hscriptClass
+class ScriptedMultiAnimateAtlasCharacter extends MultiAnimateAtlasCharacter implements polymod.hscript.HScriptedClass {}
+
+/**
  * A script that can be tied to a PackerCharacter, which persists across states.
  * Create a scripted class that extends PackerCharacter,
  * then call `super('charId')` in the constructor to use this.

@@ -1,10 +1,12 @@
 package funkin.ui.charSelect;
 
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.FullScreenScaleMode;
+import flixel.math.FlxPoint;
 
-class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
+class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 {
   var initialX:Float = 0;
   var initialY:Float = 0;
@@ -14,25 +16,31 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     initialX = x;
     initialY = y;
 
-    super(x, y, Paths.animateAtlas("charSelect/bfChill"));
+    super(x, y);
 
-    onAnimationComplete.add(function(animLabel:String) {
+    loadTextureAtlas("charSelect/bfChill",
+      {
+        applyStageMatrix: true,
+        swfMode: true
+      });
+
+    anim.onFinish.add(function(animLabel:String) {
       switch (animLabel)
       {
         case "slidein":
           if (hasAnimation("slidein idle point"))
           {
-            playAnimation("slidein idle point", true, false, false);
+            anim.play("slidein idle point", true);
           }
           else
           {
-            playAnimation("idle", true, false, false);
+            anim.play("idle", true);
+            anim.curAnim.looped = true;
           }
         case "deselect":
-          playAnimation("deselect loop start", true, false, true);
-
+          anim.play("deselect loop start", true);
         case "slidein idle point", "cannot select Label", "unlock":
-          playAnimation("idle", true, false, false);
+          anim.play("idle", true);
         case "idle":
           trace('Waiting for onBeatHit');
       }
@@ -51,33 +59,17 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     //
     if (getCurrentAnimation() == "idle")
     {
-      playAnimation("idle", true, false, false);
+      anim.play("idle", true);
     }
   };
 
-  public function updatePosition(str:String)
+  public function switchChar(str:String):Void
   {
-    switch (str)
-    {
-      case "bf" | 'pico' | "random":
-        x = initialX;
-        y = initialY;
-    }
-  }
+    frames = CharSelectAtlasHandler.loadAtlas('charSelect/${str}Chill');
 
-  public function switchChar(str:String)
-  {
-    switch str
-    {
-      default:
-        loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
-    }
-
-    playAnimation("slidein", true, false, false);
+    anim.play("slidein", true);
 
     updateHitbox();
-
-    updatePosition(str);
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {};

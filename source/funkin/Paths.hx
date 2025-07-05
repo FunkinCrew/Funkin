@@ -2,12 +2,13 @@ package funkin;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
+import funkin.util.macro.ConsoleMacro;
 
 /**
  * A core class which handles determining asset paths.
  */
 @:nullSafety
-class Paths
+class Paths implements ConsoleClass
 {
   static var currentLevel:Null<String> = null;
 
