@@ -112,6 +112,16 @@ class FunkinMemory
   ///// TEXTURES /////
 
   /**
+   * Determine whether the texture with the given key is cached.
+   * @param key The key of the texture to check.
+   * @return Whether the texture is cached.
+   */
+  public static function isTextureCached(key:String):Bool
+  {
+    return FlxG.bitmap.get(key) != null;
+  }
+
+  /**
    * Ensures a texture with the given key is cached.
    * @param key The key of the texture to cache.
    */
