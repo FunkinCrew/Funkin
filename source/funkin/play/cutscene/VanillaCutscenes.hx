@@ -23,7 +23,7 @@ class VanillaCutscenes
    */
   public static function playHorrorStartCutscene():Void
   {
-    if (Preferences.cutscenes == false)
+    if (!Preferences.cutscenes)
     {
       PlayState.instance.startCountdown();
       return;
