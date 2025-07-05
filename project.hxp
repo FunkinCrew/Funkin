@@ -1299,7 +1299,7 @@ class Project extends HXProject
     }
 
     addHaxelib('polymod'); // Modding framework
-    addHaxelib('flxanimate'); // Texture atlas rendering
+    addHaxelib('flixel-animate'); // Texture atlas rendering
 
     addHaxelib('json2object'); // JSON parsing
     addHaxelib('jsonpath'); // JSON parsing

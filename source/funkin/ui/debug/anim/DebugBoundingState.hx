@@ -51,7 +51,7 @@ class DebugBoundingState extends FlxState
   var offsetView:FlxGroup;
   var dropDownSetup:Bool = false;
 
-  var onionSkinChar:FlxSprite;
+  var onionSkinChar:BaseCharacter;
   var txtOffsetShit:FlxText;
 
   var offsetEditorDialog:CollapsibleDialog;
@@ -177,26 +177,31 @@ class DebugBoundingState extends FlxState
     if (swagChar == null) return;
     if (swagChar.hasAnimation("idle")) swagChar.playAnimation("idle", true);
 
-    onionSkinChar.loadGraphicFromSprite(swagChar);
-    onionSkinChar.frame = swagChar.frame;
     onionSkinChar.alpha = 0.6;
+
+    if (onionSkinChar.hasAnimation("idle"))
+    {
+      onionSkinChar.playAnimation("idle", true);
+    }
+    else
+    {
+      onionSkinChar.playAnimation(currentAnimationName, true);
+    }
+
+    onionSkinChar.animation.pause();
     onionSkinChar.flipX = swagChar.flipX;
     onionSkinChar.scale.set(swagChar.scale.x, swagChar.scale.y);
     onionSkinChar.updateHitbox();
     onionSkinChar.offset.x = swagChar.offset.x + (swagChar.animOffsets[0] - swagChar.globalOffsets[0]) * swagChar.scale.x;
     onionSkinChar.offset.y = swagChar.offset.y + (swagChar.animOffsets[1] - swagChar.globalOffsets[1]) * swagChar.scale.y;
 
-    swagChar.playAnimation(currentAnimationName, true); // reset animation to the one it should be
+    swagChar.playAnimation(currentAnimationName, true);
   }
 
   function initOffsetView():Void
   {
     offsetView = new FlxGroup();
     add(offsetView);
-
-    onionSkinChar = new FlxSprite().makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.TRANSPARENT);
-    onionSkinChar.visible = false;
-    offsetView.add(onionSkinChar);
 
     txtOffsetShit = new FlxText(20, 20, 0, "", 20);
     txtOffsetShit.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -205,10 +210,6 @@ class DebugBoundingState extends FlxState
     offsetView.add(txtOffsetShit);
 
     var characters:Array<String> = CharacterDataParser.listCharacterIds();
-    characters = characters.filter(function(charId:String) {
-      var char = CharacterDataParser.fetchCharacterData(charId);
-      return char.renderType != AnimateAtlas;
-    });
     characters.sort(SortUtil.alphabetically);
 
     var charDropdown:DropDown = offsetEditorDialog.findComponent('characterDropdown', DropDown);
@@ -520,10 +521,23 @@ class DebugBoundingState extends FlxState
       swagChar.destroy();
     }
 
+    if (onionSkinChar != null)
+    {
+      offsetView.remove(onionSkinChar);
+      onionSkinChar.destroy();
+    }
+
     swagChar = CharacterDataParser.fetchCharacter(char);
-    swagChar.x = onionSkinChar.x = 100;
-    swagChar.y = onionSkinChar.y = 100;
+    swagChar.x = 100;
+    swagChar.y = 100;
     swagChar.debug = true;
+
+    onionSkinChar = CharacterDataParser.fetchCharacter(char);
+    onionSkinChar.x = swagChar.x;
+    onionSkinChar.y = swagChar.y;
+    onionSkinChar.debug = true;
+
+    offsetView.add(onionSkinChar);
     offsetView.add(swagChar);
 
     if (swagChar == null || swagChar.frames == null)

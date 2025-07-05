@@ -1,41 +1,60 @@
 package funkin.ui.charSelect;
 
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 @:nullSafety
-class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
+class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 {
+  static final DEFAULT_PATH = "charSelect/bfChill";
+
   var initialX:Float = 0;
   var initialY:Float = 0;
+
+  var currentBFPath:Null<String>;
 
   public function new(x:Float, y:Float)
   {
     initialX = x;
     initialY = y;
 
-    super(x, y, Paths.animateAtlas("charSelect/bfChill"));
+    super(x, y);
 
-    onAnimationComplete.add(function(animLabel:String) {
+    loadTextureAtlas(DEFAULT_PATH,
+      {
+        applyStageMatrix: true,
+        swfMode: true
+      });
+
+    anim.onFinish.add(function(animLabel:String) {
       switch (animLabel)
       {
         case "slidein":
           if (hasAnimation("slidein idle point"))
           {
-            playAnimation("slidein idle point", true, false, false);
+            anim.play("slidein idle point", true);
           }
           else
           {
-            playAnimation("idle", true, false, false);
+            anim.play("idle", true);
+            anim.curAnim.looped = true;
           }
         case "deselect":
-          playAnimation("deselect loop start", true, false, true);
-
+          anim.play("deselect loop start", true);
         case "slidein idle point", "cannot select Label", "unlock":
-          playAnimation("idle", true, false, false);
+          anim.play("idle", true);
         case "idle":
           trace('Waiting for onBeatHit');
+
+          // TODO: once char select data is refactored, add a `shouldBop` field or something IDK
+          if (currentBFPath != null)
+          {
+            if (currentBFPath.endsWith("locked"))
+            {
+              anim.curAnim.looped = true;
+            }
+          }
       }
     });
   }
@@ -50,36 +69,30 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     // but isAnimationFinished() and isLoopComplete() both don't work! What the hell?
     // danceEvery isn't necessary if that gets fixed.
     //
-    if (getCurrentAnimation() == "idle")
+    if (getCurrentAnimation() == "idle" && isAnimationFinished())
     {
-      playAnimation("idle", true, false, false);
+      anim.play("idle", true);
     }
   };
 
-  public function updatePosition(str:String)
+  public function switchChar(str:String, playSlideAnim:Bool = true):Void
   {
-    switch (str)
-    {
-      case "bf" | 'pico' | "random":
-        x = initialX;
-        y = initialY;
-    }
-  }
+    var texture:Null<animate.FlxAnimateFrames> = CharSelectAtlasHandler.loadAtlas('charSelect/${str}Chill');
 
-  public function switchChar(str:String, playSlideAnim:Bool = true)
-  {
-    switch str
+    if (texture != null)
     {
-      default:
-        loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
+      frames = texture;
+    }
+    else
+    {
+      trace('Failed to load character atlas for ${str}');
+      return;
     }
 
     final animName:String = playSlideAnim ? "slidein" : "idle";
-    playAnimation(animName, true, false, false);
+    anim.play(animName, true);
 
     updateHitbox();
-
-    updatePosition(str);
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {};

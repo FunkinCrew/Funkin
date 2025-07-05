@@ -12,7 +12,9 @@ import flixel.util.FlxTimer;
 import funkin.input.Controls;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import flixel.math.FlxPoint;
+import flixel.FlxCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 
 class LetterSort extends FlxSpriteGroup
@@ -53,7 +55,7 @@ class LetterSort extends FlxSpriteGroup
 
     for (i in 0...5)
     {
-      var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i);
+      var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i, curSelection);
       letter.x += 50;
       letter.y += 50;
       // letter.visible = false;
@@ -247,9 +249,9 @@ class LetterSort extends FlxSpriteGroup
 }
 
 /**
- * The actual FlxAtlasSprite for the letters, with their animation code stuff and regex stuff
+ * The actual FunkinSprite for the letters, with their animation code stuff and regex stuff
  */
-class FreeplayLetter extends FlxAtlasSprite
+class FreeplayLetter extends FunkinSprite
 {
   /**
    * A preformatted array of letter strings, for use when doing regex
@@ -268,9 +270,11 @@ class FreeplayLetter extends FlxAtlasSprite
    */
   public var curLetter:Int = 0;
 
-  public function new(x:Float, y:Float, ?letterInd:Int)
+  public function new(x:Float, y:Float, ?letterInd:Int, curSelected:Int = 0)
   {
-    super(x, y, Paths.animateAtlas("freeplay/sortedLetters"));
+    super(x, y);
+
+    loadTextureAtlas("freeplay/sortedLetters");
 
     // this is used for the regex
     // /^[OR].*/gi doesn't work for showing the song Pico, so now it's
@@ -290,11 +294,16 @@ class FreeplayLetter extends FlxAtlasSprite
 
     if (letterInd != null)
     {
-      this.anim.play(animLetters[letterInd] + " move");
-      this.anim.pause();
+      this.anim.play(animLetters[letterInd] + " move", true);
       curLetter = letterInd;
-      this.anim.onComplete.add(function() {
-        this.anim.play(animLetters[curLetter] + " move");
+
+      if (curSelected != curLetter)
+      {
+        this.anim.pause();
+      }
+
+      this.anim.onFinish.add(function(name:String) {
+        this.anim.play(animLetters[curLetter] + " move", true);
       });
     }
   }
@@ -328,6 +337,16 @@ class FreeplayLetter extends FlxAtlasSprite
     {
       this.anim.pause();
     }
-    // updateHitbox();
+  }
+
+  /**
+   * Offset the letter.
+   */
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= 50;
+    output.y -= 60;
+    return output;
   }
 }

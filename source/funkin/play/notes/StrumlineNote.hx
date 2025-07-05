@@ -175,22 +175,6 @@ class StrumlineNote extends FunkinSprite
     }
   }
 
-  /**
-   * Returns the name of the animation that is currently playing.
-   * If no animation is playing (usually this means the sprite is BROKEN!),
-   *   returns an empty string to prevent NPEs.
-   */
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
-  }
-
-  public function isAnimationFinished():Bool
-  {
-    return this.animation.finished;
-  }
-
   static final DEFAULT_OFFSET:Int = 13;
 
   /**

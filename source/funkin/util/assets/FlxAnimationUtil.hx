@@ -1,6 +1,7 @@
 package funkin.util.assets;
 
 import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.animation.AnimationData;
 
@@ -13,22 +14,55 @@ class FlxAnimationUtil
   public static function addAtlasAnimation(target:FlxSprite, anim:AnimationData):Void
   {
     if (anim.prefix == null) return;
-    var frameRate = anim.frameRate == null ? 24 : anim.frameRate;
-    var looped = anim.looped == null ? false : anim.looped;
-    var flipX = anim.flipX == null ? false : anim.flipX;
-    var flipY = anim.flipY == null ? false : anim.flipY;
+
+    var frameRate:Int = anim.frameRate ?? 24;
+    var looped:Bool = anim.looped ?? false;
+    var flipX:Bool = anim.flipX ?? false;
+    var flipY:Bool = anim.flipY ?? false;
 
     if (anim.frameIndices != null && anim.frameIndices.length > 0)
     {
-      // trace('addByIndices(${anim.name}, ${anim.prefix}, ${anim.frameIndices}, ${frameRate}, ${looped}, ${flipX}, ${flipY})');
       target.animation.addByIndices(anim.name, anim.prefix, anim.frameIndices, '', frameRate, looped, flipX, flipY);
-      // trace('RESULT:${target.animation.getAnimationList()}');
     }
     else
     {
-      // trace('addByPrefix(${anim.name}, ${anim.prefix}, ${frameRate}, ${looped}, ${flipX}, ${flipY})');
       target.animation.addByPrefix(anim.name, anim.prefix, frameRate, looped, flipX, flipY);
-      // trace('RESULT:${target.animation.getAnimationList()}');
+    }
+  }
+
+  /**
+   * Properly adds an animation to a texture atlas sprite based on the provided animation data.
+   */
+  public static function addTextureAtlasAnimation(target:FunkinSprite, anim:AnimationData):Void
+  {
+    if (!target.isAnimate) return;
+    if (anim.prefix == null) return;
+
+    var frameRate:Int = anim.frameRate ?? 24;
+    var looped:Bool = anim.looped ?? false;
+    var flipX:Bool = anim.flipX ?? false;
+    var flipY:Bool = anim.flipY ?? false;
+    var animType:String = anim.animType ?? "framelabel";
+
+    if (anim.frameIndices != null && anim.frameIndices.length > 0)
+    {
+      switch (animType)
+      {
+        case "framelabel":
+          target.anim.addByFrameLabelIndices(anim.name, anim.prefix, anim.frameIndices, frameRate, looped, flipX, flipY);
+        case "symbol":
+          target.anim.addBySymbolIndices(anim.name, anim.prefix, anim.frameIndices, frameRate, looped, flipX, flipY);
+      }
+    }
+    else
+    {
+      switch (animType)
+      {
+        case "framelabel":
+          target.anim.addByFrameLabel(anim.name, anim.prefix, frameRate, looped, flipX, flipY);
+        case "symbol":
+          target.anim.addBySymbol(anim.name, anim.prefix, frameRate, looped, flipX, flipY);
+      }
     }
   }
 
@@ -40,6 +74,17 @@ class FlxAnimationUtil
     for (anim in animations)
     {
       addAtlasAnimation(target, anim);
+    }
+  }
+
+  /**
+   * Properly adds multiple animations to a texture atlas sprite based on the provided animation data.
+   */
+  public static function addTextureAtlasAnimations(target:FunkinSprite, animations:Array<AnimationData>):Void
+  {
+    for (anim in animations)
+    {
+      addTextureAtlasAnimation(target, anim);
     }
   }
 
