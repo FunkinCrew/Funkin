@@ -23,6 +23,12 @@ class VanillaCutscenes
    */
   public static function playHorrorStartCutscene():Void
   {
+    if (Preferences.cutscenes == false)
+    {
+      PlayState.instance.startCountdown();
+      return;
+    };
+
     PlayState.instance.isInCutscene = true;
     PlayState.instance.camHUD.visible = false;
 

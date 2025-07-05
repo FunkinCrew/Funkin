@@ -114,6 +114,7 @@ class Save
           downscroll: false,
           flashingLights: true,
           zoomCamera: true,
+          cutscenes: true,
           debugDisplay: false,
           autoPause: true,
           vsyncMode: 'Off',
@@ -1497,6 +1498,12 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var zoomCamera:Bool;
+
+  /**
+   * If enabled, the game will play cutscenes.
+   * @default `true`
+   */
+  var cutscenes:Bool;
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.

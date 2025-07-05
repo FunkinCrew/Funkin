@@ -61,7 +61,7 @@ class VideoCutscene
    */
   public static function play(filePath:String, ?cutsceneType:CutsceneType = STARTING):Void
   {
-    if (PlayState.instance == null) return;
+    if (PlayState.instance == null || Preferences.cutscenes == false) return;
 
     if (!openfl.Assets.exists(filePath))
     {
