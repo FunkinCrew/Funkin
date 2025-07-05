@@ -1,6 +1,7 @@
 package funkin.ui.charSelect;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import animate.FlxAnimateFrames;
 import flixel.math.FlxMath;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
@@ -21,7 +22,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   var intendedYPos:Float = 0;
   var intendedAlpha:Float = 0;
-  var list:Array<String> = [];
 
   var analyzer:SpectralAnalyzer;
 
@@ -31,8 +31,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   public function new()
   {
     super(0, 0, Paths.animateAtlas("charSelect/gfChill"));
-
-    list = anim.curSymbol.getFrameLabelNames();
 
     switchGF("bf");
   }
@@ -84,28 +82,31 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   {
     if (enableVisualizer)
     {
-      var levels = analyzer.getLevels();
-      var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
-      var elements = frame.getList();
-      var len:Int = cast Math.min(elements.length, 7);
+      // flixel-animate: Not dealing with this shit lol
+      /* var levels = analyzer.getLevels();
 
-      for (i in 0...len)
-      {
-        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 12);
+        // TODO: aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA something something flixel-animate timeline or whaetevr please just compile im going insane
+        var frame = 0;
+        var elements = frame.getList();
+        var len:Int = cast Math.min(elements.length, 7);
 
-        #if sys
-        // Web version scales with the Flixel volume level.
-        // This line brings platform parity but looks worse.
-        // animFrame = Math.round(animFrame * FlxG.sound.volume);
-        #end
+        for (i in 0...len)
+        {
+          var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 12);
 
-        animFrame = Math.floor(Math.min(12, animFrame));
-        animFrame = Math.floor(Math.max(0, animFrame));
+          #if sys
+          // Web version scales with the Flixel volume level.
+          // This line brings platform parity but looks worse.
+          // animFrame = Math.round(animFrame * FlxG.sound.volume);
+          #end
 
-        animFrame = Std.int(Math.abs(animFrame - 12)); // shitty dumbass flip, cuz dave got da shit backwards lol!
+          animFrame = Math.floor(Math.min(12, animFrame));
+          animFrame = Math.floor(Math.max(0, animFrame));
 
-        elements[i].symbol.firstFrame = animFrame;
-      }
+          animFrame = Std.int(Math.abs(animFrame - 12)); // shitty dumbass flip, cuz dave got da shit backwards lol!
+
+          elements[i].symbol.firstFrame = animFrame;
+      }*/
     }
   }
 
@@ -178,7 +179,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     else if (previousGFPath != currentGFPath)
     {
       this.visible = true;
-      loadAtlas(currentGFPath);
+      frames = FlxAnimateFrames.fromAnimate(currentGFPath);
 
       enableVisualizer = gfData?.visualizer ?? false;
 

@@ -261,8 +261,8 @@ class ResultState extends MusicBeatSubState
             animation.onAnimationComplete.add((_name:String) -> {
               if (animation != null)
               {
-                animation.anim.curFrame = animData.loopFrame ?? 0;
-                animation.anim.play(); // unpauses this anim, since it's on PlayOnce!
+                animation.anim?.curAnim?.curFrame = animData.loopFrame ?? 0;
+                animation.anim.play(""); // unpauses this anim, since it's on PlayOnce!
               }
             });
           }

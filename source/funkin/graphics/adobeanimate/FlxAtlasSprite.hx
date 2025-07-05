@@ -61,11 +61,6 @@ class FlxAtlasSprite extends FlxAnimate
     }
 
     super(x, y, path);
-
-    if (this.anim.stageInstance == null)
-    {
-      throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
-    }
   }
 
   /**
@@ -73,6 +68,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
+    @:privateAccess
     return this.anim._animations.keys().array();
   }
 
@@ -83,6 +79,12 @@ class FlxAtlasSprite extends FlxAnimate
   public function hasAnimation(id:String):Bool
   {
     return listAnimations().contains(id);
+  }
+
+  public function cleanupAnimation(_:String):Void
+  {
+    canPlayOtherAnims = true;
+    this.anim.pause();
   }
 
   /**
@@ -151,14 +153,9 @@ class FlxAtlasSprite extends FlxAnimate
 
     this.anim.play(id, restart, false, startFrame);
 
-    this.currentAnimation = anim.curSymbol.name;
+    this.currentAnimation = anim.curAnim.name;
 
     fr = null;
-  }
-
-  override public function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
   }
 
   /**
@@ -217,22 +214,6 @@ class FlxAtlasSprite extends FlxAnimate
       frame.tileMatrix[0] = prevFrame.frame.width / frame.frame.width;
       frame.tileMatrix[3] = prevFrame.frame.height / frame.frame.height;
     }
-  }
-
-  public function getBasePosition():Null<FlxPoint>
-  {
-    // var stagePos = new FlxPoint(anim.stageInstance.matrix.tx, anim.stageInstance.matrix.ty);
-    var instancePos = new FlxPoint(anim.curInstance.matrix.tx, anim.curInstance.matrix.ty);
-    var firstElement = anim.curSymbol.timeline?.get(0)?.get(0)?.get(0);
-    if (firstElement == null) return instancePos;
-    var firstElementPos = new FlxPoint(firstElement.matrix.tx, firstElement.matrix.ty);
-
-    return instancePos + firstElementPos;
-  }
-
-  public function getPivotPosition():Null<FlxPoint>
-  {
-    return anim.curInstance.symbol.transformationPoint;
   }
 
   public override function destroy():Void

@@ -147,17 +147,17 @@ class CharSelectSubState extends MusicBeatSubState
     add(bg);
 
     var crowd:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize, 0, Paths.animateAtlas("charSelect/crowd"));
-    crowd.anim.play();
-    crowd.anim.onComplete.add(function() {
-      crowd.anim.play();
+    crowd.playAnimation("");
+    crowd.anim.onFinish.add(function(name:String) {
+      crowd.playAnimation("");
     });
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
     var stageSpr:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize + -2, 1, Paths.animateAtlas("charSelect/charSelectStage"));
-    stageSpr.anim.play("");
-    stageSpr.anim.onComplete.add(function() {
-      stageSpr.anim.play("");
+    stageSpr.playAnimation("");
+    stageSpr.anim.onFinish.add(function(name:String) {
+      stageSpr.playAnimation("");
     });
     add(stageSpr);
 
@@ -167,9 +167,9 @@ class CharSelectSubState extends MusicBeatSubState
     add(curtains);
 
     barthing = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/barThing"));
-    barthing.anim.play("");
-    barthing.anim.onComplete.add(function() {
-      barthing.anim.play("");
+    barthing.playAnimation("");
+    barthing.anim.onFinish.add(function(name:String) {
+      barthing.playAnimation("");
     });
     barthing.blend = BlendMode.MULTIPLY;
     barthing.scale.x = 2.5;
@@ -223,9 +223,9 @@ class CharSelectSubState extends MusicBeatSubState
       setupPlayerChill(Constants.DEFAULT_CHARACTER);
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 10, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
-    speakers.anim.play("");
-    speakers.anim.onComplete.add(function() {
-      speakers.anim.play("");
+    speakers.playAnimation("");
+    speakers.anim.onFinish.add(function(name:String) {
+      speakers.playAnimation("");
     });
     speakers.scrollFactor.set(1.8, 1.8);
     speakers.scale.set(1.05, 1.05);
@@ -588,11 +588,8 @@ class CharSelectSubState extends MusicBeatSubState
     selectTimer.start(0.5, function(_) {
       var lock:Lock = cast grpIcons.group.members[index];
 
-      lock.anim.getFrameLabel("unlockAnim").add(function() {
-        playerChillOut.playAnimation("death");
-      });
-
       lock.playAnimation("unlock");
+      playerChillOut.playAnimation("death");
 
       unlockSound.volume = 0.7;
       unlockSound.play(true);
@@ -721,14 +718,14 @@ class CharSelectSubState extends MusicBeatSubState
       //   playerChillOut.anim.framerate = 0;
       // }
 
-      playerChillOut.anim._tick = 0;
-      if (syncLock != null) syncLock.anim._tick = 0;
+      playerChillOut.anim.timeScale = 0;
+      if (syncLock != null) syncLock.anim.timeScale = 0;
 
       if ((unlockSound.time - audioBizz) >= ((delay) * 100))
       {
-        if (syncLock != null) syncLock.anim._tick = delay;
+        if (syncLock != null) syncLock.anim.timeScale = delay;
 
-        playerChillOut.anim._tick = delay;
+        playerChillOut.anim.timeScale = delay;
         audioBizz += delay * 100;
       }
     }
@@ -1226,21 +1223,23 @@ class CharSelectSubState extends MusicBeatSubState
     playerChill.visible = false;
     playerChillOut.visible = true;
     playerChillOut.playAnimation("slideout");
-    var index = playerChillOut.anim.getFrameLabel("slideout").index;
-    playerChillOut.onAnimationFrame.removeAll();
-    playerChillOut.onAnimationFrame.add((_, frame:Int) -> {
-      if (frame >= index + 1)
+    // TODO: flixel-animate has no getFrameLabel() function
+    // hardcoded for now, taken from bf's fla
+    var index = 49;
+    playerChillOut.anim.onFrameChange.removeAll();
+    playerChillOut.anim.onFrameChange.add(function(animName:String, frameNumber:Int, frameIndex:Int) {
+      if (frameNumber >= index + 1)
       {
         playerChill.visible = true;
         playerChill.switchChar(value);
         gfChill.switchGF(value);
         gfChill.visible = true;
       }
-      if (frame >= index + 2)
+      if (frameNumber >= index + 2)
       {
         playerChillOut.switchChar(value);
         playerChillOut.visible = false;
-        playerChillOut.onAnimationFrame.removeAll();
+        playerChillOut.anim.onFrameChange.removeAll();
       }
     });
 

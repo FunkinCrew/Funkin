@@ -62,37 +62,38 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     name.scrollFactor.set();
 
     medal.scrollFactor.set();
-    medal.anim.swfRender = true;
     medal.visible = false;
 
-    var fr = medal.anim.curSymbol.timeline.get(0).get(0);
-    if (fr != null) fr.name = "START"; // woerkaround
-    // fr.add(() -> FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.));
+    // TODO: flixel-animate has no getFrameLabel() function
+    /*
+      var fr = medal.anim.curSymbol.timeline.get(0).get(0);
+      if (fr != null) fr.name = "START"; // woerkaround
+      // fr.add(() -> FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.));
 
-    medal.anim.getFrameLabel("show").add(function() {
-      points.visible = true;
-      name.visible = true;
-      if (name.width > name.clipRect.width)
-      {
-        // TODO: Remove this once FlxText.get_size deals with TextFormat's nullable size properly
-        @:nullSafety(Off)
-        am = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
-        tween = true;
-        // FlxTimer.wait(0.3, () -> tween = true);
-      }
-    });
-    // medal.anim.getFrameLabel("idle").add(() -> medal.anim.pause());
-    medal.anim.getFrameLabel("fade").add(() -> FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.));
+      medal.anim.getFrameLabel("show").add(function() {
+        points.visible = true;
+        name.visible = true;
+        if (name.width > name.clipRect.width)
+        {
+          // TODO: Remove this once FlxText.get_size deals with TextFormat's nullable size properly
+          @:nullSafety(Off)
+          am = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
+          tween = true;
+          // FlxTimer.wait(0.3, () -> tween = true);
+        }
+      });
+      // medal.anim.getFrameLabel("idle").add(() -> medal.anim.pause());
+      medal.anim.getFrameLabel("fade").add(() -> FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.));
 
-    medal.anim.getFrameLabel("hide").add(function() {
-      points.visible = false;
-      name.visible = false;
-      tween = false;
-      name.offset.x = 0;
-      name.clipRect.x = 0;
-      name.resetFrame();
-      medal.replaceFrameGraphic(3, null);
-    });
+      medal.anim.getFrameLabel("hide").add(function() {
+        points.visible = false;
+        name.visible = false;
+        tween = false;
+        name.offset.x = 0;
+        name.clipRect.x = 0;
+        name.resetFrame();
+        medal.replaceFrameGraphic(3, null);
+    });*/
 
     add(medal);
     add(points);
@@ -120,7 +121,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
     // instance is defined above so there's no need to worry about null safety here
     @:nullSafety(Off)
-    instance.medal.anim?.onComplete.add(function() {
+    instance.medal.anim?.onFinish.add(function(name:String) {
       if (instance.funcs.length > 0)
       {
         instance.funcs.shift()();
@@ -139,12 +140,12 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
       instance.medal.visible = true;
       instance.medal.replaceFrameGraphic(3, graphic);
-      instance.medal.anim.play(true);
+      // instance.medal.anim.play();
 
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
     }
 
-    if (!instance.medal.anim.isPlaying && instance.funcs.length == 0) func();
+    if (instance.medal.isAnimationFinished() && instance.funcs.length == 0) func();
     else
       instance.funcs.push(func);
   }

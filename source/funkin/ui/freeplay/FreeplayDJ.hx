@@ -66,17 +66,6 @@ class FreeplayDJ extends FlxAtlasSprite
     });
   }
 
-  override public function listAnimations():Array<String>
-  {
-    var anims:Array<String> = [];
-    @:privateAccess
-    for (animKey in anim.symbolDictionary)
-    {
-      anims.push(animKey.name);
-    }
-    return anims;
-  }
-
   var lowPumpLoopPoint:Int = 4;
 
   public override function update(elapsed:Float):Void
@@ -86,7 +75,8 @@ class FreeplayDJ extends FlxAtlasSprite
       case Intro:
         // Play the intro animation then leave this state immediately.
         var animPrefix = playableCharData?.getAnimationPrefix('intro');
-        if (animPrefix != null && (getCurrentAnimation() != animPrefix || !this.anim.isPlaying)) playFlashAnimation(animPrefix, true);
+        if (animPrefix != null
+          && (getCurrentAnimation() != animPrefix || this.isAnimationFinished())) playFlashAnimation(animPrefix, true);
         timeIdling = 0;
       case Idle:
         // We are in this state the majority of the time.
@@ -117,7 +107,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpIntroEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
           }
@@ -125,7 +115,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpIntroBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
           }
@@ -142,7 +132,7 @@ class FreeplayDJ extends FlxAtlasSprite
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
           }
@@ -150,7 +140,7 @@ class FreeplayDJ extends FlxAtlasSprite
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim?.curAnim?.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
           }
@@ -424,12 +414,6 @@ class FreeplayDJ extends FlxAtlasSprite
     currentState = FistPump;
     var animPrefix = playableCharData?.getAnimationPrefix('loss');
     if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
-  }
-
-  override public function getCurrentAnimation():String
-  {
-    if (this.anim == null || this.anim.curSymbol == null) return "";
-    return this.anim.curSymbol.name;
   }
 
   public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
