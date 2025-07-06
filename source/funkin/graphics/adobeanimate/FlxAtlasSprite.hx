@@ -175,7 +175,7 @@ class FlxAtlasSprite extends FlxAnimate
 
     this.anim.play(id, restart, false, startFrame);
 
-    this.currentAnimation = anim.curAnim.name;
+    this.currentAnimation = anim?.curAnim?.name ?? '';
 
     fr = null;
   }
