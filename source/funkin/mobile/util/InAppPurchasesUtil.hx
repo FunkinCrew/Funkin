@@ -2,6 +2,7 @@ package funkin.mobile.util;
 
 #if FEATURE_MOBILE_IAP
 #if android
+import extension.androidtools.widget.Toast;
 import extension.iapcore.android.IAPAndroid;
 import extension.iapcore.android.IAPProductDetails;
 import extension.iapcore.android.IAPPurchase;
@@ -153,11 +154,13 @@ class InAppPurchasesUtil
               if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
               {
                 if (onPurchased != null) onPurchased();
-
-                IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
               }
             }
           }
+
+          IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+
+          Toast.makeText(result.getDebugMessage(), Toast.LENGTH_SHORT);
         }
 
         if (!IAPAndroid.onPurchasesUpdated.has(purchasesUpdatedEvent))
@@ -180,11 +183,11 @@ class InAppPurchasesUtil
               if (purchase.getTransactionState() == IAPPurchaseState.PURCHASED)
               {
                 if (onPurchased != null) onPurchased();
-
-                IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
               }
             }
           }
+
+          IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
         }
 
         if (!IAPIOS.onPurchasesUpdated.has(purchasesUpdatedEvent))
