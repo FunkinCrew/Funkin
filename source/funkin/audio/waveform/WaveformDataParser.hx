@@ -56,19 +56,6 @@ class WaveformDataParser
     var soundDataSampleCount:Int = Std.int(Math.ceil(soundDataRawLength / channels / (bitsPerSample == 16 ? 2 : 1)));
     var outputPointCount:Int = Std.int(Math.ceil(soundDataSampleCount / samplesPerPoint));
 
-    // trace('Interpreting audio buffer:');
-    // trace('  sampleRate: ${sampleRate}');
-    // trace('  channels: ${channels}');
-    // trace('  bitsPerSample: ${bitsPerSample}');
-    // trace('  samplesPerPoint: ${samplesPerPoint}');
-    // trace('  pointsPerSecond: ${pointsPerSecond}');
-    // trace('  soundDataRawLength: ${soundDataRawLength}');
-    // trace('  soundDataSampleCount: ${soundDataSampleCount}');
-    // trace('  soundDataRawLength/4: ${soundDataRawLength / 4}');
-    // trace('  outputPointCount: ${outputPointCount}');
-
-    var minSampleValue:Int = bitsPerSample == 16 ? INT16_MIN : INT8_MIN;
-    var maxSampleValue:Int = bitsPerSample == 16 ? INT16_MAX : INT8_MAX;
 
     var outputData:Array<Int> = [];
 
