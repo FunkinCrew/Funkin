@@ -5151,8 +5151,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleToolboxes():Void
   {
     handleDifficultyToolbox();
-    handlePlayerPreviewToolbox();
-    handleOpponentPreviewToolbox();
+    // handlePlayerPreviewToolbox();
+    // handleOpponentPreviewToolbox();
   }
 
   function handleDifficultyToolbox():Void
