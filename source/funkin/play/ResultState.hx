@@ -32,7 +32,7 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.modding.base.ScriptedFlxAtlasSprite;
-import funkin.modding.base.ScriptedFunkinSprite;
+import funkin.graphics.ScriptedFunkinSprite;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
