@@ -497,6 +497,8 @@ class Project extends HXProject
     configureHaxelibs();
     configureAssets();
     configureIcons();
+    if (isAndroid())
+      configureDocumentProvider();
 
     readASTCExclusion();
 
@@ -1256,6 +1258,32 @@ class Project extends HXProject
       addIcon("art/icons/iconOG.png");
 
       info('Done configuring icons.');
+    }
+  }
+
+  function configureDocumentProvider()
+  {
+    final providerXml = ['
+      <provider
+        android:authorities="${PACKAGE_NAME}.docprovider"
+        android:name=".ModFolderProvider"
+        android:grantUriPermissions="true"
+        android:exported="true"
+        android:permission="android.permission.MANAGE_DOCUMENTS">
+        <intent-filter>
+            <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+        </intent-filter>
+      </provider>'];
+
+    final xmlChildren:Null<Array<String>> = config.get('android.application').xmlChildren;
+
+    if (xmlChildren != null)
+    {
+      config.get('android.application').xmlChildren = xmlChildren.concat(providerXml);
+    }
+    else
+    {
+        config.get('android.application').xmlChildren = providerXml;
     }
   }
 
