@@ -49,6 +49,7 @@ import funkin.util.HapticUtil;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
+import funkin.ui.freeplay.DifficultyDot;
 import funkin.ui.debug.charting.ChartEditorState;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -142,6 +143,7 @@ class FreeplayState extends MusicBeatSubState
   var intendedScore:Int = 0;
 
   var grpDifficulties:FlxTypedSpriteGroup<DifficultySprite>;
+  var difficultyDots:FlxTypedSpriteGroup<DifficultyDot>;
 
   /**
    * Bit of a utility var to get the currently displayed DifficultySprite
@@ -304,6 +306,7 @@ class FreeplayState extends MusicBeatSubState
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
+    difficultyDots = new FlxTypedSpriteGroup<DifficultyDot>(203, 170);
     letterSort = new LetterSort((CUTOUT_WIDTH * SONGS_POS_MULTI) + 400, 75);
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
@@ -439,6 +442,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
     add(grpDifficulties);
+    add(difficultyDots);
     add(backingImage);
     // backingCard.pinkBack.width * 0.74
 
@@ -469,6 +473,12 @@ class FreeplayState extends MusicBeatSubState
       diffSprite.visible = diffId == Constants.DEFAULT_DIFFICULTY;
       diffSprite.height *= 2.5;
       grpDifficulties.add(diffSprite);
+    }
+
+    for (i in 0...Constants.DEFAULT_DIFFICULTY_LIST_FULL.length)
+    {
+      var dot:DifficultyDot = new DifficultyDot(Constants.DEFAULT_DIFFICULTY_LIST_FULL[i], i);
+      difficultyDots.add(dot);
     }
 
     albumRoll.albumId = null;
@@ -753,6 +763,9 @@ class FreeplayState extends MusicBeatSubState
       {
         rankAnimStart(fromResultsParams, grpCapsules.members[curSelected]);
       }
+
+      refreshDots(5, Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty), Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty));
+      fadeDots(true);
 
       #if FEATURE_TOUCH_CONTROLS
       SwipeUtil.calculateSwipeThreshold(grpCapsules.members, Y);
@@ -1272,6 +1285,93 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
+  var prevDotAmount:Int = 0;
+
+  function fadeDots(fadeIn:Bool)
+  {
+    for (i in 0...difficultyDots.group.members.length)
+    {
+      if (fadeIn)
+      {
+        difficultyDots.group.members[i].fadeIn();
+      }
+      else
+      {
+        difficultyDots.group.members[i].fadeOut();
+      }
+    }
+  }
+
+  function refreshDots(amount:Int, index:Int, prevIndex:Int):Void
+  {
+    var distance:Int = 30;
+    var shiftAmt:Float = (distance * amount) / 2;
+    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
+
+    for (i in 0...difficultyDots.group.members.length)
+    {
+      // if (difficultyDots.group.members[i] == null) continue;
+      var targetState:DotState = SELECTED;
+      var targetType:DotType = NORMAL;
+      var diffId:String = difficultyDots.group.members[i].difficultyId;
+
+      difficultyDots.group.members[i].important = false;
+
+      if (i == index)
+      {
+        targetState = SELECTED;
+      }
+      else
+      {
+        if (i == prevIndex)
+        {
+          targetState = DESELECTING;
+        }
+        else
+        {
+          targetState = DESELECTED;
+        }
+      }
+
+      if (diffId == 'erect' || diffId == 'nightmare')
+      {
+        targetType = ERECT;
+      }
+
+      difficultyDots.group.members[i].visible = true;
+      difficultyDots.group.members[i].x = (difficultyDots.x + (distance * i)) - shiftAmt;
+
+      if (daSong?.data.hasDifficulty(diffId, daSong?.data.getFirstValidVariation(diffId, currentCharacter)) == false)
+      {
+        targetType = INACTIVE;
+      }
+      else
+      {
+        if (daSong?.isDifficultyNew(diffId) == true)
+        {
+          // at the moment, we don't want the other difficulties to show the pulse, cause the
+          // feature only works on new songs at the moment and its not particularly hard to find a new song on easy/normal/hard.
+          // eventually this will probably be moved to affect all types.
+          if (targetType == ERECT)
+          {
+            difficultyDots.group.members[i].important = true;
+          }
+        }
+      }
+
+      // originally was gonna hide the dots if erect/nightmare wasnt present, leaving this functionality just in case
+      // mods (or we) need to display a different amount
+      if (i > amount - 1 && amount != 5)
+      {
+        difficultyDots.group.members[i].visible = false;
+      }
+
+      difficultyDots.group.members[i].updateState(targetType, targetState);
+    }
+
+    prevDotAmount = amount;
+  }
+
   function tryOpenCharSelect():Void
   {
     // Check if we have ACCESS to character select!
@@ -1334,6 +1434,8 @@ class FreeplayState extends MusicBeatSubState
           });
       }
     }
+
+    fadeDots(false);
 
     #if FEATURE_TOUCH_CONTROLS
     FlxTween.tween(backButton, {alpha: 0.0001}, 0.4, {ease: FlxEase.quadOut});
@@ -1982,6 +2084,7 @@ class FreeplayState extends MusicBeatSubState
     var longestTimer:Float = 0;
 
     backingCard.disappear();
+    fadeDots(false);
 
     for (grpSpr in exitMovers.keys())
     {
@@ -2139,6 +2242,7 @@ class FreeplayState extends MusicBeatSubState
     var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
     var currentDifficultyIndex:Int = difficultiesAvailable.indexOf(currentDifficulty);
+    var prevDifficultyIndex:Int = currentDifficultyIndex;
 
     if (currentDifficultyIndex == -1) currentDifficultyIndex = difficultiesAvailable.indexOf(Constants.DEFAULT_DIFFICULTY);
 
@@ -2220,6 +2324,9 @@ class FreeplayState extends MusicBeatSubState
         diffSprite.height *= 2.5;
       });
     }
+
+    // refreshDots(songDifficulties.length, currentDifficultyIndex, prevDifficultyIndex);
+    refreshDots(5, currentDifficultyIndex, prevDifficultyIndex);
 
     if (change != 0 || force)
     {
@@ -2454,6 +2561,7 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules.members[curSelected].confirm();
 
     backingCard.confirm();
+    fadeDots(false);
 
     // Start vibration after half of second.
     if (HapticUtil.hapticsAvailable)
@@ -2982,6 +3090,16 @@ class FreeplaySongData
   function updateValues(variations:Array<String>):Void
   {
     // this.isNew = song.isSongNew(suffixedDifficulty);
+  }
+
+  public function isDifficultyNew(difficulty:String):Bool
+  {
+    // grabs a specific difficulty's new status. used for the difficulty dots.
+
+    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
+    var variation:Null<String> = data.getFirstValidVariation(difficulty, null, variations);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+    return data.isSongNew(difficulty, variation);
   }
 
   function get_isNew():Bool
