@@ -1287,7 +1287,7 @@ class FreeplayState extends MusicBeatSubState
 
   var prevDotAmount:Int = 0;
 
-  function fadeDots(fadeIn:Bool)
+  function fadeDots(fadeIn:Bool):Void
   {
     for (i in 0...difficultyDots.group.members.length)
     {
@@ -1339,7 +1339,7 @@ class FreeplayState extends MusicBeatSubState
       }
 
       difficultyDots.group.members[i].visible = true;
-      difficultyDots.group.members[i].x = (difficultyDots.x + (distance * i)) - shiftAmt;
+      difficultyDots.group.members[i].x = (CUTOUT_WIDTH * DJ_POS_MULTI) + ((difficultyDots.x + (distance * i)) - shiftAmt);
 
       if (daSong?.data.hasDifficulty(diffId, daSong?.data.getFirstValidVariation(diffId, currentCharacter)) == false)
       {
