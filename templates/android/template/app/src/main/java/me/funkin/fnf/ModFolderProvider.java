@@ -45,7 +45,7 @@ public class ModFolderProvider extends DocumentsProvider
         row.add(Root.COLUMN_DOCUMENT_ID, getDocumentID(rootDir));
         row.add(Root.COLUMN_TITLE, "Friday Night Funkin'");
         row.add(Root.COLUMN_SUMMARY, "Mods folder");
-        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_CREATE);
+        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_IS_CHILD);
         row.add(Root.COLUMN_ICON, R.mipmap.ic_launcher);
 
         return result;
@@ -174,6 +174,12 @@ public class ModFolderProvider extends DocumentsProvider
         }
 
         return getDocumentID(dest);
+    }
+
+    @Override
+    public boolean isChildDocument(String parentDocumentId, String documentId)
+    {
+        return documentId.startsWith(parentDocumentId);
     }
 
     @Override
