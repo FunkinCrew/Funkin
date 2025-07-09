@@ -796,7 +796,7 @@ class Project extends HXProject
     //
 
     FEATURE_FUNKVIS.apply(this, true);
-    FEATURE_LOG_TRACE.apply(this, true);
+    FEATURE_LOG_TRACE.apply(this, false);
     FEATURE_NAUGHTYNESS.apply(this, true);
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
@@ -886,6 +886,11 @@ class Project extends HXProject
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
     {
       setHaxedef("FLX_NO_DEBUG");
+    }
+
+    if (FEATURE_LOG_TRACE.isDisabled(this))
+    {
+      setHaxeFlag("--no-traces");
     }
 
     // Disable the built in pause screen when unfocusing the game.

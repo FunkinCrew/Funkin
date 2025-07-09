@@ -10,9 +10,6 @@ class AnsiTrace
    */
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
-    #if (NO_FEATURE_LOG_TRACE && !FEATURE_DEBUG_FUNCTIONS)
-    return;
-    #end
     var str = formatOutput(v, info);
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.message(str, flixel.util.FlxColor.WHITE);
