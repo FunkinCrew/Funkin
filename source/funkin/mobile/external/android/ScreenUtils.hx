@@ -6,6 +6,7 @@ import lime.system.JNI;
 /**
  * A Utility class to get Android screen related informations.
  */
+@:unreflective
 class ScreenUtils
 {
   @:noCompletion
@@ -48,7 +49,8 @@ class ScreenUtils
     return [];
   }
 
-  public static function createStaticMethod(className:String, methodName:String, signature:String, cache:Bool = true):Null<Dynamic>
+  @:noCompletion
+  private static function createStaticMethod(className:String, methodName:String, signature:String, cache:Bool = true):Null<Dynamic>
   {
     @:privateAccess
     className = JNI.transformClassName(className);
@@ -61,7 +63,8 @@ class ScreenUtils
     return staticMethodCache.get(key);
   }
 
-  public static function createMemberField(className:String, fieldName:String, signature:String, cache:Bool = true):Null<JNIMemberField>
+  @:noCompletion
+  private static function createMemberField(className:String, fieldName:String, signature:String, cache:Bool = true):Null<JNIMemberField>
   {
     @:privateAccess
     className = JNI.transformClassName(className);
