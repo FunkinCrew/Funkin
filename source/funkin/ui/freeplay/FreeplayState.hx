@@ -207,11 +207,11 @@ class FreeplayState extends MusicBeatSubState
     };
 
     currentCharacter = fetchPlayableCharacter();
-    currentCharacterId = currentCharacter.getFreeplayStyleID();
+    currentCharacterId = currentCharacter.id;
 
     currentVariation = rememberedVariation;
     currentDifficulty = rememberedDifficulty;
-    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
+    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacter.getFreeplayStyleID());
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
 
     fromCharSelect = params?.fromCharSelect ?? false;
