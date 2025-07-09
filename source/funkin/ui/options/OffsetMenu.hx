@@ -366,7 +366,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       #if !mobile
       testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
-      testStrumline.isDownscroll = Preferences.downscroll;
       #end
       jumpInText.y = testStrumline.y + 175;
       #if !mobile if (Preferences.downscroll) #end jumpInText.y = testStrumline.y - 175;
@@ -548,7 +547,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
 
     _lastTime = FlxG.sound.music.time;
-    
+
     // Back logic
     if (controls.BACK && shouldOffset == 1)
     {
