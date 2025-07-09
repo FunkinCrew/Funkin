@@ -56,13 +56,6 @@
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
-      "name": "flxanimate",
-      "type": "git",
-      "dir": null,
-      "ref": "49214278b9124823582cdcecd94f4a1de9a4b36b",
-      "url": "https://github.com/FunkinCrew/flxanimate"
-    },
-    {
       "name": "flixel-animate",
       "type": "git",
       "dir": null,
