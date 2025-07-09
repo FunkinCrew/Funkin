@@ -625,7 +625,7 @@ class PlayState extends MusicBeatSubState
    * The threshold for resyncing the song.
    * If the vocals deviate from the instrumental by more than this amount, then `resyncVocals()` will be called.
    */
-  static final RESYNC_THRESHOLD:Float = 30;
+  static final RESYNC_THRESHOLD:Float = 40;
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
