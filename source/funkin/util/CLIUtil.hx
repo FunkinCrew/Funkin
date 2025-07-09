@@ -18,7 +18,7 @@ class CLIUtil
     var cwd:String = Path.addTrailingSlash(Sys.getCwd());
     var gameDir:String = '';
     #if android
-    gameDir = Path.addTrailingSlash(extension.androidtools.os.Build.VERSION.SDK_INT > 30 ? extension.androidtools.content.Context.getObbDir() : extension.androidtools.content.Context.getExternalFilesDir());
+    gameDir = Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir());
     #elseif ios
     // Why? Because for some reason lime.system.System.documentsDirectory is returning a directory that's different and we're unable to read or write from, so it's disabled and no solution is found...
     trace('[WARN]: Reseting the Current Working Directory is unavailable on iOS targets');

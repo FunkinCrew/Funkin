@@ -114,7 +114,7 @@ class InitState extends FlxState
 
     #if ios
     // Setup Audio session
-    funkin.mobile.external.AudioSession.initialize();
+    funkin.mobile.external.ios.AudioSession.initialize();
     #end
 
     // This ain't a pixel art game! (most of the time)

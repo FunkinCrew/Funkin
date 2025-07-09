@@ -488,6 +488,7 @@ class Project extends HXProject
     configureApp();
 
     displayTarget();
+
     configureFeatureFlags();
     configureCompileDefines();
     configureIncludeMacros();
@@ -497,8 +498,6 @@ class Project extends HXProject
     configureHaxelibs();
     configureAssets();
     configureIcons();
-    if (isAndroid())
-      configureDocumentProvider();
 
     readASTCExclusion();
 
@@ -512,23 +511,14 @@ class Project extends HXProject
       configureAdMobKeys();
     }
 
-    // To sign in ios, use -xcode.
     if (isAndroid())
     {
-      if (isRelease())
-      {
-        configureAndroidRelease();
-      }
+      configureAndroid();
     }
 
     if (isIOS())
     {
-      config.set("ios.non-exempt-encryption", "false");
-      config.set("ios.team-id", IOS_TEAM_ID);
-      config.set("ios.deployment", "16.0");
-
-      // launchStoryboard = new LaunchStoryboard();
-      // launchStoryboard.path = "./LaunchScreen.storyboard";
+      configureIOS();
     }
 
     info("Done configuring project.");
@@ -979,38 +969,72 @@ class Project extends HXProject
     app.path = buildDir;
   }
 
-  function configureAndroidRelease()
+  function configureAndroid()
   {
-    if (envConfig != null)
+    javaPaths.push(Path.join([SOURCE_DIR, 'funkin/mobile/external/android/java']));
+
+    if (isRelease())
     {
-      keystore = new Keystore();
-      keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
-      keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
-      keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
+      if (envConfig != null)
+      {
+        keystore = new Keystore();
+        keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
+        keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
+        keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
+      }
+
+      Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
+
+      final permissionsConfig:Array<String> = [
+        '<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />',
+        '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'
+      ];
+
+      final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
+
+      if (xmlChildren != null)
+      {
+        config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
+      }
+      else
+      {
+        config.get('android.manifest').xmlChildren = permissionsConfig;
+      }
+
+      if (isBundle())
+      {
+        config.set("android.gradle-project-directory", "bin-bundle");
+      }
     }
 
-    Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
-
-    final permissionsConfig:Array<String> = [
-      '<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />',
-      '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'
+    final modsFolderProvider = [
+      '<provider android:authorities="$PACKAGE_NAME.docprovider" android:name="funkin.provider.DataFolderProvider" android:grantUriPermissions="true" android:exported="true" android:permission="android.permission.MANAGE_DOCUMENTS">',
+      '  <intent-filter>',
+      '    <action android:name="android.content.action.DOCUMENTS_PROVIDER" />',
+      '  </intent-filter>',
+      '</provider>'
     ];
 
-    final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
+    final xmlChildren:Null<Array<String>> = config.get('android.application').xmlChildren;
 
     if (xmlChildren != null)
     {
-      config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
+      config.get('android.application').xmlChildren = xmlChildren.concat(modsFolderProvider);
     }
     else
     {
-      config.get('android.manifest').xmlChildren = permissionsConfig;
+      config.get('android.application').xmlChildren = modsFolderProvider;
     }
+  }
 
-    if (isBundle())
-    {
-      config.set("android.gradle-project-directory", "bin-bundle");
-    }
+  function configureIOS()
+  {
+    config.set("ios.non-exempt-encryption", "false");
+    config.set("ios.team-id", IOS_TEAM_ID);
+    config.set("ios.deployment", "16.0");
+
+    // launchStoryboard = new LaunchStoryboard();
+    // launchStoryboard.path = "./LaunchScreen.storyboard";
   }
 
   function configurePolymod()
@@ -1258,32 +1282,6 @@ class Project extends HXProject
       addIcon("art/icons/iconOG.png");
 
       info('Done configuring icons.');
-    }
-  }
-
-  function configureDocumentProvider()
-  {
-    final providerXml = ['
-      <provider
-        android:authorities="${PACKAGE_NAME}.docprovider"
-        android:name=".ModFolderProvider"
-        android:grantUriPermissions="true"
-        android:exported="true"
-        android:permission="android.permission.MANAGE_DOCUMENTS">
-        <intent-filter>
-            <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
-        </intent-filter>
-      </provider>'];
-
-    final xmlChildren:Null<Array<String>> = config.get('android.application').xmlChildren;
-
-    if (xmlChildren != null)
-    {
-      config.get('android.application').xmlChildren = xmlChildren.concat(providerXml);
-    }
-    else
-    {
-        config.get('android.application').xmlChildren = providerXml;
     }
   }
 

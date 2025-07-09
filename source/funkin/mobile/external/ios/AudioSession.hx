@@ -1,4 +1,4 @@
-package funkin.mobile.external;
+package funkin.mobile.external.ios;
 
 /**
  * A Utility class to manage iOS audio.

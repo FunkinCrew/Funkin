@@ -38,12 +38,11 @@ class Main extends Sprite
   {
     // Set the current working directory for Android and iOS devices
     #if android
-    // For Android we determine the appropriate directory based on Android version
-    Sys.setCwd(haxe.io.Path.addTrailingSlash(extension.androidtools.os.Build.VERSION.SDK_INT > 30 ? extension.androidtools.content.Context.getObbDir() : // Use Obb directory for Android SDK version > 30
-      extension.androidtools.content.Context.getExternalFilesDir() // Use External Files directory for Android SDK version < 30
-    ));
+    // On Android use External Files Dir.
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir()));
     #elseif ios
-    Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory)); // For iOS we use documents directory and this is only way we can do.
+    // On iOS use Documents Dir.
+    Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory));
     #end
 
     // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.

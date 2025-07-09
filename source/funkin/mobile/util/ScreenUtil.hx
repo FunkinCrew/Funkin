@@ -1,9 +1,9 @@
 package funkin.mobile.util;
 
 #if ios
-import funkin.mobile.external.ScreenUtils;
+import funkin.mobile.external.ios.ScreenUtils;
 #elseif android
-import extension.androidtools.Tools;
+import funkin.mobile.external.android.ScreenUtils;
 #end
 import lime.math.Rectangle;
 import lime.system.System;
@@ -26,7 +26,7 @@ class ScreenUtil
     final rectDimensions:Array<Array<Float>> = [[], [], [], []];
 
     // Push all the dimensions of the cutouts into an array
-    for (rect in Tools.getCutoutDimensions())
+    for (rect in ScreenUtils.getCutoutDimensions())
     {
       rectDimensions[0].push(rect.x);
       rectDimensions[1].push(rect.y);
