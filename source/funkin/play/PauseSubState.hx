@@ -430,18 +430,19 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
 
-    // Left side
-    offsetText = new FlxText(20, metadataSong.y - 12, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+    // Right side
+    offsetText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Global Offset: ${Preferences.globalOffset ?? 0}ms');
-    offsetText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
+    offsetText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetText.scrollFactor.set(0, 0);
 
-    if (Preferences.debugDisplay) offsetText.y += 32;
-
-    offsetTextInfo = new FlxText(20, offsetText.y + 16, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+    offsetTextInfo = new FlxText(20, offsetText.y + 16, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Hold SHIFT-UP/DOWN,\nto change the offset.');
-    offsetTextInfo.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
+    offsetTextInfo.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetTextInfo.scrollFactor.set(0, 0);
+
+    offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
+    offsetTextInfo.y = offsetText.y + offsetText.height + 4;
 
     #if !mobile
     metadata.add(offsetText);
