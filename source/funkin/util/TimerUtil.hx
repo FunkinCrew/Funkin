@@ -3,8 +3,6 @@ package funkin.util;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import funkin.Conductor;
-import funkin.util.tools.FloatTools;
-import haxe.Timer;
 import haxe.ds.ArraySort;
 
 /**
@@ -55,26 +53,29 @@ class Sequence
   /**
    * The list of uncompleted timers for their respective events.
    */
-  private final timers:Array<FlxTimer> = new Array<FlxTimer>();
+  final timers:Array<FlxTimer> = [];
 
   /**
    * Controls whether this sequence is running or not.
    */
   public var running(get, set):Bool;
 
-  private var _running:Bool = false;
+  var _running:Bool = false;
 
-  @:noCompletion public function get_running():Bool
+  function get_running():Bool
   {
     return completed ? false : _running;
   }
 
-  @:noCompletion public function set_running(v:Bool):Bool
+  function set_running(v:Bool):Bool
   {
     if (completed) return false;
     for (timer in timers)
+    {
       timer.active = v;
-    return _running = v;
+    }
+    _running = v;
+    return _running;
   }
 
   /**
@@ -82,7 +83,7 @@ class Sequence
    */
   public var completed(get, never):Bool;
 
-  @:noCompletion public function get_completed():Bool
+  function get_completed():Bool
   {
     return timers.length == 0;
   }
@@ -110,7 +111,7 @@ class SongSequence
   /**
    * Signal dispatched by `Conductor.instance.update`.
    */
-  private static final update:FlxSignal = new FlxSignal();
+  static final update:FlxSignal = new FlxSignal();
 
   /**
    * Create a new sequence.
@@ -143,21 +144,23 @@ class SongSequence
   /**
    * Keeps track of the time this sequence started, or the relative time if it was previously stopped.
    */
-  private var startTime:Float = 0;
+  var startTime:Float = 0;
 
   /**
    * The list of uncompleted events.
    */
-  private final events:Array<SequenceEvent> = new Array<SequenceEvent>();
+  final events:Array<SequenceEvent> = [];
 
   /**
    * Update function invoked by the update signal.
    */
-  private function onUpdate():Void
+  function onUpdate():Void
   {
     if (!running) return;
     while (events.length > 0 && events[0].time + startTime <= Conductor.instance.songPosition)
+    {
       events.shift()?.callback();
+    }
     if (completed) destroy();
   }
 
@@ -166,18 +169,19 @@ class SongSequence
    */
   public var running(get, set):Bool;
 
-  private var _running:Bool = false;
+  var _running:Bool = false;
 
-  @:noCompletion public function get_running():Bool
+  function get_running():Bool
   {
     return _running && !completed;
   }
 
-  @:noCompletion public function set_running(v:Bool):Bool
+  function set_running(v:Bool):Bool
   {
     if (completed) return false;
     if (v != _running) startTime = Conductor.instance.songPosition - startTime; // it works trust me
-    return _running = v;
+    _running = v;
+    return _running;
   }
 
   /**
@@ -185,7 +189,7 @@ class SongSequence
    */
   public var completed(get, never):Bool;
 
-  @:noCompletion public function get_completed():Bool
+  function get_completed():Bool
   {
     return events.length == 0;
   }
@@ -197,6 +201,8 @@ class SongSequence
   {
     update.remove(onUpdate);
     while (!completed)
+    {
       events.pop();
+    }
   }
 }
