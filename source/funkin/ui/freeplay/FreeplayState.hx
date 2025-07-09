@@ -1967,7 +1967,8 @@ class FreeplayState extends MusicBeatSubState
 
           new FlxTimer().start(0.21, (afteranim) -> {
             grpCapsules.members[curSelected].doLerp = true;
-            generateSongList(currentFilter, true, false);
+            generateSongList(currentFilter, true, false, true);
+            FlxG.touches.flickManager.destroy();
           });
           new FlxTimer().start(0.3, (afteranim) -> {
             draggingDifficulty = false;
@@ -1985,7 +1986,8 @@ class FreeplayState extends MusicBeatSubState
 
           new FlxTimer().start(0.21, (afteranim) -> {
             grpCapsules.members[curSelected].doLerp = true;
-            generateSongList(currentFilter, true, false);
+            generateSongList(currentFilter, true, false, true);
+            FlxG.touches.flickManager.destroy();
           });
           new FlxTimer().start(0.3, (afteranim) -> {
             draggingDifficulty = false;
@@ -2030,12 +2032,22 @@ class FreeplayState extends MusicBeatSubState
 
       if (TouchUtil.justReleased)
       {
+        FlxG.touches.flickManager.destroy();
         handleDiffDragRelease(currentDifficultySprite);
         return;
       }
 
-      if (TouchUtil.touch.justMovedRight) handleDiffBoundaryChange(1);
-      if (TouchUtil.touch.justMovedLeft) handleDiffBoundaryChange(-1);
+      if (TouchUtil.touch.justMovedRight)
+      {
+        handleDiffBoundaryChange(1);
+        return;
+      }
+      if (TouchUtil.touch.justMovedLeft)
+      {
+        handleDiffBoundaryChange(-1);
+        return;
+      }
+
       return;
     }
     else
@@ -2284,7 +2296,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = songScore == null ? 0.0 : Math.max(0,
         ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
-      generateSongList(currentFilter, false, true, true);
+      if (!capsuleAnim) generateSongList(currentFilter, false, true, true);
       grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
@@ -2292,7 +2304,7 @@ class FreeplayState extends MusicBeatSubState
       intendedScore = 0;
       intendedCompletion = 0.0;
       rememberedDifficulty = currentDifficulty;
-      generateSongList(currentFilter, false, true, true);
+      if (!capsuleAnim) generateSongList(currentFilter, false, true, true);
     }
 
     if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
@@ -2313,7 +2325,16 @@ class FreeplayState extends MusicBeatSubState
       diffSprite.x = (change > 0) ? 500 : -320;
       diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
 
-      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2, {ease: FlxEase.circInOut});
+      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2,
+        {
+          ease: FlxEase.circInOut,
+          onComplete: function(_) {
+            #if FEATURE_TOUCH_CONTROLS
+            FlxG.touches.flickManager.destroy();
+            _flickEnded = true;
+            #end
+          }
+        });
 
       diffSprite.offset.y += 5;
       diffSprite.alpha = 0.5;
@@ -2366,10 +2387,6 @@ class FreeplayState extends MusicBeatSubState
     if (SwipeUtil.flickLeft) handleDiffBoundaryChange(1);
     else if (SwipeUtil.flickRight) handleDiffBoundaryChange(-1);
 
-    // stops residual flick perhaps?
-    FlxG.touches.flickManager.destroy();
-    _flickEnded = true;
-
     draggingDifficulty = false;
     _dragOffset = 0;
   }
@@ -2380,6 +2397,8 @@ class FreeplayState extends MusicBeatSubState
     dj?.resetAFKTimer();
     changeDiff(change);
     generateSongList(currentFilter, true, false);
+    FlxG.touches.flickManager.destroy();
+    _flickEnded = true;
     _dragOffset = 0;
     draggingDifficulty = false;
   }
