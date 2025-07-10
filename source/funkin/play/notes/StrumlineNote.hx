@@ -121,8 +121,9 @@ class StrumlineNote extends FunkinSprite
 
   public function playAnimation(name:String = 'static', force:Bool = false, reversed:Bool = false, startFrame:Int = 0):Void
   {
-    this.animation.play(name, force, reversed, startFrame);
+    if (!Preferences.noteHighlights && (name == 'press' || name == 'confirm' || name == 'confirm-hold')) return;
 
+    this.animation.play(name, force, reversed, startFrame);
     centerOffsets();
     centerOrigin();
   }
