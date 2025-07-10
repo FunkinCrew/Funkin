@@ -549,6 +549,11 @@ class Project extends HXProject
   function configureApp()
   {
     this.meta.title = TITLE;
+
+    // ios uses this character code instead of spaces...
+    if (isIOS())
+      this.meta.title = ~/ /ig.replace(TITLE, "\u2002");
+
     this.meta.version = VERSION;
     this.meta.packageName = PACKAGE_NAME;
     this.meta.company = COMPANY;
