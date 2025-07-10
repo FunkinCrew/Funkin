@@ -349,6 +349,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       var floored = Math.floor(localConductor.currentBeatTime);
       arrowBeat = floored - (floored % 4);
       arrowBeat += 4;
+      _lastDirection = 0;
 
       if (arrowBeat - localConductor.currentBeatTime < 4) arrowBeat += 4;
 
