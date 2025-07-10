@@ -18,14 +18,15 @@ class ReloadAssetsDebugPlugin extends FlxBasic
   public function new()
   {
     super();
+
+    #if android
+    CallbackUtil.onActivityResult.add(onActivityResult);
+    #end
   }
 
   public static function initialize():Void
   {
     FlxG.plugins.addPlugin(new ReloadAssetsDebugPlugin());
-    #if android
-    CallbackUtil.onActivityResult.add(_reload);
-    #end
   }
 
   public override function update(elapsed:Float):Void
@@ -47,12 +48,15 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     super.destroy();
 
     #if android
-    if (CallbackUtil.onActivityResult.has(_reload)) CallbackUtil.onActivityResult.remove(_reload);
+    if (CallbackUtil.onActivityResult.has(onActivityResult))
+    {
+      CallbackUtil.onActivityResult.remove(onActivityResult);
+    }
     #end
   }
 
   @:noCompletion
-  private static function reload():Void
+  function reload():Void
   {
     var state:Dynamic = FlxG.state;
     if (state is MusicBeatState || state is MusicBeatSubState) state.reloadAssets();
@@ -65,11 +69,12 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     }
   }
 
-  #if android
   @:noCompletion
-  private static function _reload(resultCode:Int, requestCode:Int)
+  function onActivityResult(resultCode:Int, requestCode:Int):Void
   {
-    if (resultCode == CallbackUtil.DATA_FOLDER_CLOSED) reload();
+    if (resultCode == CallbackUtil.DATA_FOLDER_CLOSED)
+    {
+      reload();
+    }
   }
-  #end
 }
