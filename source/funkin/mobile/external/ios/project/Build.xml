@@ -13,7 +13,7 @@
 	<files id="external-ios" dir="${this_dir}/ios" if="iphoneos || iphonesim">
 		<compilerflag value="-I${this_dir}/ios/include" />
 
-		<file name="src/ScreenUtils.mm" />
+		<file name="src/ScreenUtil.mm" />
 		<file name="src/AudioSession.mm" />
 	</files>
 

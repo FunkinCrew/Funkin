@@ -12,7 +12,15 @@ class CallbackUtil
   /**
    * The result code for `DATA_FOLDER_CLOSED` activity.
    */
-  public static final DATA_FOLDER_CLOSED:Int = JNI.createStaticField('funkin/extensions/CallbackUtil', 'DATA_FOLDER_CLOSED', 'I').get();
+  public static var DATA_FOLDER_CLOSED(get, never):Int;
+
+  @:noCompletion
+  static function get_DATA_FOLDER_CLOSED():Int
+  {
+    final field:Null<Dynamic> = JNIUtil.createStaticField('funkin/extensions/CallbackUtil', 'DATA_FOLDER_CLOSED', 'I');
+
+    return field != null ? field.get() : 0;
+  }
 
   /**
    * Signal triggered when an activity result is received.
@@ -21,21 +29,27 @@ class CallbackUtil
    */
   public static var onActivityResult:FlxTypedSignal<Int->Int->Void> = new FlxTypedSignal<Int->Int->Void>();
 
+  /**
+   * Initializes the callback utility.
+   */
   public static function init():Void
   {
-    final initCallBackJNI:Null<Dynamic> = JNI.createStaticMethod('funkin/extensions/CallbackUtil', 'initCallBack', '(Lorg/haxe/lime/HaxeObject;)V');
+    final initCallBackJNI:Null<Dynamic> = JNIUtil.createStaticMethod('funkin/extensions/CallbackUtil', 'initCallBack', '(Lorg/haxe/lime/HaxeObject;)V');
 
-    if (initCallBackJNI != null) initCallBackJNI(new CallBackHandler());
+    if (initCallBackJNI != null)
+    {
+      initCallBackJNI(new CallbackHandler());
+    }
   }
 }
 
 /**
  * Internal class to handle native callback events.
  */
-@:noCompletion
-private class CallBackHandler #if (lime >= "8.0.0") implements JNISafety #end
+class CallbackHandler #if (lime >= "8.0.0") implements JNISafety #end
 {
-  public function new():Void {}
+  @:allow(funkin.mobile.external.android.CallbackUtil)
+  function new():Void {}
 
   /**
    * Handles the activity result callback from native code.

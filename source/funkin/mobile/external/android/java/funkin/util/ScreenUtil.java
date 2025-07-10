@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.haxe.extension.Extension;
 
-public class ScreenUtils
+public class ScreenUtil
 {
 	public static Rect[] getCutoutDimensions()
 	{

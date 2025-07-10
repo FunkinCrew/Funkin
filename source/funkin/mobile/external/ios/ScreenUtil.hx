@@ -4,9 +4,9 @@ package funkin.mobile.external.ios;
  * A Utility class to get iOS screen related informations.
  */
 @:build(funkin.mobile.macros.LinkerMacro.xml('project/Build.xml'))
-@:include('ScreenUtils.hpp')
+@:include('ScreenUtil.hpp')
 @:unreflective
-extern class ScreenUtils
+extern class ScreenUtil
 {
   @:native('getSafeAreaInsets')
   static function getSafeAreaInsets(top:cpp.RawPointer<Float>, bottom:cpp.RawPointer<Float>, left:cpp.RawPointer<Float>, right:cpp.RawPointer<Float>):Void;

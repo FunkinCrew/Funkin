@@ -69,6 +69,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     }
   }
 
+  #if android
   @:noCompletion
   function onActivityResult(resultCode:Int, requestCode:Int):Void
   {
@@ -77,4 +78,5 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       reload();
     }
   }
+  #end
 }

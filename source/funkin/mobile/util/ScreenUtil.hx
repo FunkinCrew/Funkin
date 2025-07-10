@@ -1,9 +1,9 @@
 package funkin.mobile.util;
 
 #if ios
-import funkin.mobile.external.ios.ScreenUtils;
+import funkin.mobile.external.ios.ScreenUtil as NativeScreenUtil;
 #elseif android
-import funkin.mobile.external.android.ScreenUtils;
+import funkin.mobile.external.android.ScreenUtil as NativeScreenUtil;
 #end
 import lime.math.Rectangle;
 import lime.system.System;
@@ -26,7 +26,7 @@ class ScreenUtil
     final rectDimensions:Array<Array<Float>> = [[], [], [], []];
 
     // Push all the dimensions of the cutouts into an array
-    for (rect in ScreenUtils.getCutoutDimensions())
+    for (rect in NativeScreenUtil.getCutoutDimensions())
     {
       rectDimensions[0].push(rect.x);
       rectDimensions[1].push(rect.y);
@@ -59,13 +59,12 @@ class ScreenUtil
     var bottomInset:Float = -1;
     var deviceWidth:Float = -1;
     var deviceHeight:Float = -1;
+    var displayOrientation:DisplayOrientation = System.getDisplayOrientation(0);
 
-    ScreenUtils.getSafeAreaInsets(cpp.RawPointer.addressOf(topInset), cpp.RawPointer.addressOf(bottomInset), cpp.RawPointer.addressOf(leftInset),
+    NativeScreenUtil.getSafeAreaInsets(cpp.RawPointer.addressOf(topInset), cpp.RawPointer.addressOf(bottomInset), cpp.RawPointer.addressOf(leftInset),
       cpp.RawPointer.addressOf(rightInset));
 
-    ScreenUtils.getScreenSize(cpp.RawPointer.addressOf(deviceWidth), cpp.RawPointer.addressOf(deviceHeight));
-
-    var displayOrientation = System.getDisplayOrientation(0);
+    NativeScreenUtil.getScreenSize(cpp.RawPointer.addressOf(deviceWidth), cpp.RawPointer.addressOf(deviceHeight));
 
     notchRect.x = 0;
     notchRect.y = 0.0;
