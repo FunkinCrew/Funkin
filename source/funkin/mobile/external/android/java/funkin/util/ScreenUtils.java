@@ -15,18 +15,21 @@ public class ScreenUtils
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
 		{
-			WindowInsets insets = Extension.mainActivity.getWindow().getDecorView().getRootWindowInsets();
-
-			if (insets != null)
+			if (Extension.mainActivity != null)
 			{
-				DisplayCutout cutout = insets.getDisplayCutout();
+				WindowInsets insets = Extension.mainActivity.getWindow().getDecorView().getRootWindowInsets();
 
-				if (cutout != null)
+				if (insets != null)
 				{
-					List<Rect> boundingRects = cutout.getBoundingRects();
+					DisplayCutout cutout = insets.getDisplayCutout();
 
-					if (boundingRects != null && !boundingRects.isEmpty())
-						return boundingRects.toArray(new Rect[0]);
+					if (cutout != null)
+					{
+						List<Rect> boundingRects = cutout.getBoundingRects();
+
+						if (boundingRects != null && !boundingRects.isEmpty())
+							return boundingRects.toArray(new Rect[0]);
+					}
 				}
 			}
 		}

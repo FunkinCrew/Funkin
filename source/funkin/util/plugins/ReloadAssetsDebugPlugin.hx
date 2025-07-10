@@ -4,6 +4,9 @@ import flixel.FlxG;
 import flixel.FlxBasic;
 import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
+#if android
+import funkin.mobile.external.android.CallbackUtil;
+#end
 
 /**
  * A plugin which adds functionality to press `F5` to reload all game assets, then reload the current state.
@@ -20,6 +23,9 @@ class ReloadAssetsDebugPlugin extends FlxBasic
   public static function initialize():Void
   {
     FlxG.plugins.addPlugin(new ReloadAssetsDebugPlugin());
+    #if android
+    CallbackUtil.onActivityResult.add(_reload);
+    #end
   }
 
   public override function update(elapsed:Float):Void
@@ -32,20 +38,38 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     if (FlxG.keys.justPressed.F5)
     #end
     {
-      var state:Dynamic = FlxG.state;
-      if (state is MusicBeatState || state is MusicBeatSubState) state.reloadAssets();
-      else
-      {
-        funkin.modding.PolymodHandler.forceReloadAssets();
-
-        // Create a new instance of the current state, so old data is cleared.
-        FlxG.resetState();
-      }
+      reload();
     }
   }
 
   public override function destroy():Void
   {
     super.destroy();
+
+    #if android
+    if (CallbackUtil.onActivityResult.has(_reload)) CallbackUtil.onActivityResult.remove(_reload);
+    #end
   }
+
+  @:noCompletion
+  private static function reload():Void
+  {
+    var state:Dynamic = FlxG.state;
+    if (state is MusicBeatState || state is MusicBeatSubState) state.reloadAssets();
+    else
+    {
+      funkin.modding.PolymodHandler.forceReloadAssets();
+
+      // Create a new instance of the current state, so old data is cleared.
+      FlxG.resetState();
+    }
+  }
+
+  #if android
+  @:noCompletion
+  private static function _reload(resultCode:Int, requestCode:Int)
+  {
+    if (resultCode == CallbackUtil.DATA_FOLDER_CLOSED) reload();
+  }
+  #end
 }

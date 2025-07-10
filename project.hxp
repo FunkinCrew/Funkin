@@ -101,6 +101,8 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
+  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil"];
+
   //
   // ASTC COMPRESSION
   //
@@ -1024,6 +1026,16 @@ class Project extends HXProject
     else
     {
       config.get('android.application').xmlChildren = modsFolderProvider;
+    }
+
+    final extensions:Null<Array<String>> = config.getArrayString('android.extension');
+
+    for (extension in ANDROID_EXTENSIONS)
+    {
+      if (extensions == null || extensions != null && extensions.indexOf(extension) == -1)
+      {
+        config.push("android.extension", extension);
+      }
     }
   }
 

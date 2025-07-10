@@ -10,10 +10,10 @@ import lime.system.JNI;
 class ScreenUtils
 {
   @:noCompletion
-  private static var staticMethodCache:Map<String, Dynamic> = [];
+  static var staticMethodCache:Map<String, Dynamic> = [];
 
   @:noCompletion
-  private static var memberFieldCache:Map<String, JNIMemberField> = [];
+  static var memberFieldCache:Map<String, JNIMemberField> = [];
 
   public static function getCutoutDimensions():Array<Rectangle>
   {
@@ -50,7 +50,7 @@ class ScreenUtils
   }
 
   @:noCompletion
-  private static function createStaticMethod(className:String, methodName:String, signature:String, cache:Bool = true):Null<Dynamic>
+  static function createStaticMethod(className:String, methodName:String, signature:String, cache:Bool = true):Null<Dynamic>
   {
     @:privateAccess
     className = JNI.transformClassName(className);
@@ -64,7 +64,7 @@ class ScreenUtils
   }
 
   @:noCompletion
-  private static function createMemberField(className:String, fieldName:String, signature:String, cache:Bool = true):Null<JNIMemberField>
+  static function createMemberField(className:String, fieldName:String, signature:String, cache:Bool = true):Null<JNIMemberField>
   {
     @:privateAccess
     className = JNI.transformClassName(className);

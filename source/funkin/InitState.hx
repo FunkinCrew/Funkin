@@ -202,6 +202,7 @@ class InitState extends FlxState
     //
     #if android
     FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
+    funkin.mobile.external.android.CallbackUtil.init();
     #end
 
     //

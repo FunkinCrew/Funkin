@@ -194,6 +194,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       InAppPurchasesUtil.restorePurchases();
     });
     #end
+    #if android
+    createItem("OPEN DATA FOLDER", function() {
+      funkin.mobile.external.android.DataFolderUtil.openDataFolder();
+    });
+    #end
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
