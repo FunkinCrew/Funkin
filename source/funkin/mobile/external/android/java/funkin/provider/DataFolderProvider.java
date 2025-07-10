@@ -8,6 +8,7 @@ import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract.Document;
 import android.provider.DocumentsContract.Root;
+import android.provider.DocumentsProvider;
 import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,10 +19,8 @@ import java.util.LinkedList;
 /**
  * @see https://github.com/termux/termux-app/blob/7bceab88e2272f961d1b94ef736f1a9e20173247/app/src/main/java/com/termux/filepicker/TermuxDocumentsProvider.java
  */
-public class DataFolderProvider extends android.provider.DocumentsProvider
+public class DataFolderProvider extends DocumentsProvider
 {
-  private static final String ALL_MIME_TYPES = "*/*";
-
   private static File BASE_DIR;
 
   private static String BASE_DIR_PATH;
@@ -51,15 +50,19 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
   {
     final MatrixCursor result = new MatrixCursor(projection != null ? projection : DEFAULT_ROOT_PROJECTION);
 
+    if (BASE_DIR == null)
+      return result;
+
     final MatrixCursor.RowBuilder row = result.newRow();
+
     row.add(Root.COLUMN_ROOT_ID, getDocIdForFile(BASE_DIR));
     row.add(Root.COLUMN_DOCUMENT_ID, getDocIdForFile(BASE_DIR));
     row.add(Root.COLUMN_SUMMARY, "Data Folder");
     row.add(Root.COLUMN_FLAGS, Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD);
     row.add(Root.COLUMN_TITLE, "::APP_TITLE::");
-    row.add(Root.COLUMN_MIME_TYPES, ALL_MIME_TYPES);
+    row.add(Root.COLUMN_MIME_TYPES, "*/*");
     row.add(Root.COLUMN_AVAILABLE_BYTES, BASE_DIR.getFreeSpace());
-        ::if (APP_PACKAGE != "")::
+    ::if (APP_PACKAGE != "")::
     row.add(Root.COLUMN_ICON, ::APP_PACKAGE::.R.mipmap.ic_launcher);
     ::end::
 
@@ -79,8 +82,24 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
   {
     final MatrixCursor result = new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
 
-    for (File file : getFileForDocId(parentDocumentId).listFiles())
-      includeFile(result, null, file);
+    File parent = getFileForDocId(parentDocumentId);
+
+    if (parent != null)
+    {
+      File[] children = null;
+
+      try {
+        children = parent.listFiles();
+      } catch (SecurityException e) {
+        children = new File[0];
+      }
+
+      if (children != null)
+      {
+        for (File file : children)
+          includeFile(result, null, file);
+      }
+    }
 
     return result;
   }
@@ -103,20 +122,34 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
   public boolean onCreate()
   {
     BASE_DIR = getContext().getExternalFilesDir(null);
-    BASE_DIR_PATH = BASE_DIR.toPath().toString();
+
+    if (BASE_DIR == null)
+      return false;
+
+    try
+    {
+      BASE_DIR_PATH = BASE_DIR.getCanonicalPath();
+    }
+    catch (IOException e)
+    {
+      BASE_DIR_PATH = BASE_DIR.getAbsolutePath();
+    }
+
     return true;
   }
 
   @Override
   public String createDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException
   {
-    File newFile = new File(parentDocumentId, displayName);
+    File parentFile = getFileForDocId(parentDocumentId);
+
+    File newFile = new File(parentFile, displayName);
 
     int noConflictId = 2;
 
     while (newFile.exists())
     {
-      newFile = new File(parentDocumentId, displayName + " (" + noConflictId++ + ")");
+      newFile = new File(parentFile, displayName + " (" + noConflictId++ + ")");
     }
 
     try
@@ -143,7 +176,7 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
   public void deleteDocument(String documentId) throws FileNotFoundException
   {
     if (!deleteRecursive(getFileForDocId(documentId)))
-        throw new FileNotFoundException("Failed to delete document with id " + documentId);
+      throw new FileNotFoundException("Failed to delete document with id " + documentId);
   }
 
   @Override
@@ -156,6 +189,7 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
   public Cursor querySearchDocuments(String rootId, String query, String[] projection) throws FileNotFoundException
   {
     final MatrixCursor result = new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
+
     final LinkedList<File> pending = new LinkedList<>();
 
     pending.add(getFileForDocId(rootId));
@@ -165,6 +199,7 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
     while (!pending.isEmpty() && result.getCount() < MAX_SEARCH_RESULTS)
     {
       final File file = pending.removeFirst();
+
       boolean isInsideHome;
 
       try
@@ -180,7 +215,11 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
       {
         if (file.isDirectory())
         {
-          Collections.addAll(pending, file.listFiles());
+          try {
+            Collections.addAll(pending, file.listFiles());
+          } catch (SecurityException e) {
+            // ignore
+          }
         }
         else if (file.getName().toLowerCase().contains(query))
         {
@@ -195,7 +234,16 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
   @Override
   public boolean isChildDocument(String parentDocumentId, String documentId)
   {
-    return documentId.startsWith(parentDocumentId);
+    try
+    {
+      File parent = getFileForDocId(parentDocumentId).getCanonicalFile();
+      File child = getFileForDocId(documentId).getCanonicalFile();
+      return child.getPath().startsWith(parent.getPath() + "/");
+    }
+    catch (IOException e)
+    {
+      return false;
+    }
   }
 
   private boolean deleteRecursive(File file)
@@ -209,9 +257,7 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
         for (File child : children)
         {
           if (!deleteRecursive(child))
-          {
             return false;
-          }
         }
       }
     }
@@ -226,7 +272,10 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
 
   private static File getFileForDocId(String docId) throws FileNotFoundException
   {
-    final File f = new File(docId);
+    if (BASE_DIR == null)
+      throw new FileNotFoundException("Base directory not available");
+
+    final File f = (docId == null || docId.isEmpty()) ? BASE_DIR : new File(docId);
 
     if (!f.exists())
       throw new FileNotFoundException(f.getAbsolutePath() + " not found");
@@ -236,23 +285,24 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
 
   private static String getMimeType(File file)
   {
-    if (file.isDirectory())
+    if (file == null || file.isDirectory())
       return Document.MIME_TYPE_DIR;
-    else
+
+    String name = file.getName();
+
+    int lastDot = name.lastIndexOf('.');
+
+    if (lastDot >= 0)
     {
-      final String name = file.getName();
-      final int lastDot = name.lastIndexOf('.');
+      String extension = name.substring(lastDot + 1).toLowerCase();
 
-      if (lastDot >= 0)
-      {
-        final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(lastDot + 1).toLowerCase());
+      String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
-        if (mime != null)
-          return mime;
-      }
-
-      return "application/octet-stream";
+      if (mime != null)
+        return mime;
     }
+
+    return "application/octet-stream";
   }
 
   private void includeFile(MatrixCursor result, String docId, File file) throws FileNotFoundException
@@ -274,7 +324,7 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
       flags |= Document.FLAG_SUPPORTS_WRITE;
     }
 
-    if (file.getParentFile().canWrite())
+    if (file.getParentFile() != null && file.getParentFile().canWrite())
       flags |= Document.FLAG_SUPPORTS_DELETE;
 
     final String mimeType = getMimeType(file);
@@ -290,7 +340,7 @@ public class DataFolderProvider extends android.provider.DocumentsProvider
     row.add(Document.COLUMN_LAST_MODIFIED, file.lastModified());
     row.add(Document.COLUMN_FLAGS, flags);
     ::if (APP_PACKAGE != "")::
-    row.add(Root.COLUMN_ICON, ::APP_PACKAGE::.R.mipmap.ic_launcher);
+    row.add(Document.COLUMN_ICON, ::APP_PACKAGE::.R.mipmap.ic_launcher);
     ::end::
   }
 }
