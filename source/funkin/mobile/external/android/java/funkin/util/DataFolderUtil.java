@@ -26,6 +26,7 @@ public class DataFolderUtil
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(DocumentsContract.buildRootUri("::APP_PACKAGE::.docprovider", ""), "vnd.android.document/directory");
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         Extension.mainActivity.startActivityForResult(intent, requestCode);
     }
     ::end::
