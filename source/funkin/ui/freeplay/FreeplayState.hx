@@ -158,6 +158,16 @@ class FreeplayState extends MusicBeatSubState
     return grpDifficulties.members.filter(d -> d.difficultyId == currentDifficulty)[0];
   }
 
+  /**
+   * Another utility var, this one gets our current selected capsule easily
+   */
+  var currentCapsule(get, never):SongMenuItem;
+
+  function get_currentCapsule():SongMenuItem
+  {
+    return grpCapsules.members[curSelected];
+  }
+
   var coolColors:Array<Int> = [
     0xFF9271FD,
     0xFF9271FD,
@@ -610,8 +620,8 @@ class FreeplayState extends MusicBeatSubState
 
     // Reminder, this is a callback function being set, rather than these being called here in create()
     letterSort.changeSelectionCallback = (str) -> {
-      var curSong:Null<FreeplaySongData> = grpCapsules.members[curSelected]?.freeplayData;
-      grpCapsules.members[curSelected].selected = false;
+      var curSong:Null<FreeplaySongData> = currentCapsule?.freeplayData;
+      currentCapsule.selected = false;
 
       switch (str)
       {
@@ -687,7 +697,7 @@ class FreeplayState extends MusicBeatSubState
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
-      var daSong = grpCapsules.members[curSelected].freeplayData;
+      var daSong = currentCapsule.freeplayData;
       albumRoll.albumId = daSong?.data.getAlbumId(currentDifficulty, currentVariation);
 
       if (!fromCharSelect)
@@ -761,7 +771,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (prepForNewRank && fromResultsParams != null)
       {
-        rankAnimStart(fromResultsParams, grpCapsules.members[curSelected]);
+        rankAnimStart(fromResultsParams, currentCapsule);
       }
 
       refreshDots(5, Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty), Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty));
@@ -1298,7 +1308,7 @@ class FreeplayState extends MusicBeatSubState
   {
     var distance:Int = 30;
     var shiftAmt:Float = (distance * amount) / 2;
-    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
+    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
 
     for (i in 0...difficultyDots.group.members.length)
     {
@@ -1583,7 +1593,7 @@ class FreeplayState extends MusicBeatSubState
           newRank: PERFECT_GOLD,
           songId: "tutorial",
           difficultyId: "hard"
-        }, grpCapsules.members[curSelected]);
+        }, currentCapsule);
     }
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
@@ -1703,7 +1713,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (accepted && !busy)
     {
-      grpCapsules.members[curSelected].onConfirm();
+      currentCapsule.onConfirm();
     }
   }
 
@@ -1774,7 +1784,7 @@ class FreeplayState extends MusicBeatSubState
 
     busy = true;
 
-    var targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+    var targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
     if (targetSongID == 'unknown')
     {
       letterSort.inputEnabled = false;
@@ -1802,7 +1812,7 @@ class FreeplayState extends MusicBeatSubState
       // Seeing if I can do an animation...
       curSelected = grpCapsules.members.indexOf(targetSong);
       changeSelection(0);
-      targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
     }
     // Play the confirm animation so the user knows they actually did something.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
@@ -1852,7 +1862,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (TouchUtil.justPressed)
     {
-      final selected = grpCapsules.members[curSelected].theActualHitbox;
+      final selected = currentCapsule.theActualHitbox;
       _pressedOnSelected = selected != null && TouchUtil.overlaps(selected, funnyCam);
     }
   }
@@ -1860,7 +1870,7 @@ class FreeplayState extends MusicBeatSubState
   function handleTouchSelectionScroll(elapsed:Float):Void
   {
     if (draggingDifficulty || ControlsHandler.usingExternalInputDevice) return;
-    if (TouchUtil.pressAction(grpCapsules.members[curSelected].theActualHitbox, funnyCam)) return;
+    if (TouchUtil.pressAction(currentCapsule.theActualHitbox, funnyCam)) return;
 
     if (TouchUtil.justPressed && TouchUtil.overlaps(capsuleHitbox, funnyCam))
     {
@@ -1958,7 +1968,7 @@ class FreeplayState extends MusicBeatSubState
           _flickEnded = true;
 
           new FlxTimer().start(0.21, (afteranim) -> {
-            grpCapsules.members[curSelected].doLerp = true;
+            currentCapsule.doLerp = true;
             generateSongList(currentFilter, true, false, true);
             FlxG.touches.flickManager.destroy();
           });
@@ -1977,7 +1987,7 @@ class FreeplayState extends MusicBeatSubState
           _flickEnded = true;
 
           new FlxTimer().start(0.21, (afteranim) -> {
-            grpCapsules.members[curSelected].doLerp = true;
+            currentCapsule.doLerp = true;
             generateSongList(currentFilter, true, false, true);
             FlxG.touches.flickManager.destroy();
           });
@@ -1996,7 +2006,7 @@ class FreeplayState extends MusicBeatSubState
       }
       else
       {
-        grpCapsules.members[curSelected].doLerp = true;
+        currentCapsule.doLerp = true;
       }
 
       if (busy) return;
@@ -2197,14 +2207,14 @@ class FreeplayState extends MusicBeatSubState
 
     if (capsuleAnim)
     {
-      if (grpCapsules.members[curSelected] != null)
+      if (currentCapsule != null)
       {
         busy = true;
-        grpCapsules.members[curSelected].doLerp = false;
+        currentCapsule.doLerp = false;
 
         var movement:Float = (change > 0) ? 15 : -15;
-        FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x - movement}, 0.1, {ease: FlxEase.expoOut});
-        FlxTween.tween(grpCapsules.members[curSelected], {x: grpCapsules.members[curSelected].x + movement}, 0.1, {ease: FlxEase.expoIn, startDelay: 0.1});
+        FlxTween.tween(currentCapsule, {x: currentCapsule.x - movement}, 0.1, {ease: FlxEase.expoOut});
+        FlxTween.tween(currentCapsule, {x: currentCapsule.x + movement}, 0.1, {ease: FlxEase.expoIn, startDelay: 0.1});
       }
     }
 
@@ -2235,8 +2245,8 @@ class FreeplayState extends MusicBeatSubState
     }
 
     var previousVariation:String = currentVariation;
-    var daSong:Null<FreeplaySongData> = grpCapsules.members[curSelected].freeplayData;
-    grpCapsules.members[curSelected].selected = false;
+    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
+    currentCapsule.selected = false;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
@@ -2261,7 +2271,7 @@ class FreeplayState extends MusicBeatSubState
     {
       // Switch to the closest song with that difficulty.
       curSelected = findClosestDiff(characterVariations, difficultiesAvailable[currentDifficultyIndex]);
-      daSong = grpCapsules.members[curSelected].freeplayData;
+      daSong = currentCapsule.freeplayData;
       rememberedSongId = daSong?.data.id;
 
       // Update the variation list for the new song.
@@ -2293,7 +2303,7 @@ class FreeplayState extends MusicBeatSubState
         ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
       rememberedDifficulty = currentDifficulty;
       if (!capsuleAnim) generateSongList(currentFilter, false, true, true);
-      grpCapsules.members[curSelected].refreshDisplay((prepForNewRank == true) ? false : true);
+      currentCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
@@ -2374,7 +2384,7 @@ class FreeplayState extends MusicBeatSubState
     // Set difficulty star count.
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
 
-    grpCapsules.members[curSelected].selected = true; // set selected again, so it can run its getter function to initialize movement
+    currentCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
   }
 
   #if FEATURE_TOUCH_CONTROLS
@@ -2572,8 +2582,8 @@ class FreeplayState extends MusicBeatSubState
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
     if (dj != null) dj.confirm();
 
-    grpCapsules.members[curSelected].forcePosition();
-    grpCapsules.members[curSelected].confirm();
+    currentCapsule.forcePosition();
+    currentCapsule.confirm();
 
     backingCard.confirm();
     fadeDots(false);
@@ -2707,7 +2717,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
-    var daSongCapsule:SongMenuItem = grpCapsules.members[curSelected];
+    var daSongCapsule:SongMenuItem = currentCapsule;
     if (daSongCapsule.freeplayData != null)
     {
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.freeplayData.data.id, currentDifficulty, currentVariation);
@@ -2746,7 +2756,7 @@ class FreeplayState extends MusicBeatSubState
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && !busy)
     {
       playCurSongPreview(daSongCapsule);
-      grpCapsules.members[curSelected].selected = true;
+      currentCapsule.selected = true;
 
       // switchBackingImage(daSongCapsule.freeplayData);
     }
@@ -2757,7 +2767,7 @@ class FreeplayState extends MusicBeatSubState
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
   {
-    if (daSongCapsule == null) daSongCapsule = grpCapsules.members[curSelected];
+    if (daSongCapsule == null) daSongCapsule = currentCapsule;
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -2839,7 +2849,7 @@ class FreeplayState extends MusicBeatSubState
 
   function favoriteSong():Void
   {
-    var targetSong = grpCapsules.members[curSelected]?.freeplayData;
+    var targetSong = currentCapsule?.freeplayData;
     if (targetSong != null)
     {
       var realShit:Int = curSelected;
