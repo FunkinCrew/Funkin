@@ -895,15 +895,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Initialize the random capsule, with empty/blank info (which we display once bf/pico does his hand)
     var randomCapsule:SongMenuItem = grpCapsules.recycle(SongMenuItem);
-    randomCapsule.initPosition(FlxG.width, 0);
-    randomCapsule.initData(null, styleData, 1);
-    randomCapsule.y = randomCapsule.intendedY(0) + 10;
-    randomCapsule.targetPos.x = randomCapsule.x;
-    randomCapsule.alpha = 0.5;
-    randomCapsule.songText.visible = false;
-    randomCapsule.favIcon.visible = false;
-    randomCapsule.favIconBlurred.visible = false;
-    randomCapsule.ranking.visible = false;
+    randomCapsule.initRandom(styleData);
     randomCapsule.onConfirm = function() {
       capsuleOnConfirmRandom(randomCapsule);
     };
