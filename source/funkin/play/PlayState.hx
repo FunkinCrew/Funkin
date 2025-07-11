@@ -1425,8 +1425,11 @@ class PlayState extends MusicBeatSubState
           FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
             if (!sound.active || sound == FlxG.sound.music) return;
             // In case it's a scheduled sound
-            var funkinSound:FunkinSound = cast sound;
-            if (funkinSound != null && !funkinSound.isPlaying) return;
+            if (Std.isOfType(sound, FunkinSound))
+            {
+              var funkinSound:FunkinSound = cast sound;
+              if (funkinSound != null && !funkinSound.isPlaying) return;
+            }
             if (!sound.playing && sound.time >= 0) return;
             sound.pause();
             soundsPausedBySubState.add(sound);
