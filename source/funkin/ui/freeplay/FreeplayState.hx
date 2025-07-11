@@ -2267,9 +2267,13 @@ class FreeplayState extends MusicBeatSubState
     // For when we change the difficulty, but the song doesn't have that difficulty!
     if (daSong != null && !songDifficulties.contains(difficultiesAvailable[currentDifficultyIndex]))
     {
+      // Switch to the closest song with that difficulty.
       curSelected = findClosestDiff(characterVariations, difficultiesAvailable[currentDifficultyIndex]);
       daSong = grpCapsules.members[curSelected].freeplayData;
       rememberedSongId = daSong?.data.id;
+
+      // Update the variation list for the new song.
+      characterVariations = daSong?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
     }
 
     for (variation in characterVariations)
