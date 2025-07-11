@@ -122,6 +122,7 @@ class FreeplayState extends MusicBeatSubState
   var songs:Array<Null<FreeplaySongData>> = [];
 
   var curSelected:Int = 0;
+  // curSelectedFloat is used for mobile to get "inbetween" selections for swipe/scrolling/momentum stuff
   var curSelectedFloat:Float = 0;
 
   /**
@@ -180,7 +181,6 @@ class FreeplayState extends MusicBeatSubState
   ];
 
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
-  var curPlaying:Bool = false;
 
   var dj:Null<FreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
@@ -224,8 +224,6 @@ class FreeplayState extends MusicBeatSubState
    * The remembered variation we were on when this menu was last accessed.
    */
   public static var rememberedVariation:String = Constants.DEFAULT_VARIATION;
-
-  var allDifficulties:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST_FULL;
 
   public var funnyCam:FunkinCamera;
 
@@ -773,8 +771,6 @@ class FreeplayState extends MusicBeatSubState
       FlxG.touches.swipeThreshold.x = 60;
       #end
     };
-
-    allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId);
 
     // Generates song list with the starter params (who our current character is, last remembered difficulty, etc.)
     // Set this to false if you prefer the 50% transparency on the capsules when they first appear.
@@ -1402,7 +1398,7 @@ class FreeplayState extends MusicBeatSubState
   function transitionToCharSelect():Void
   {
     controls.active = false;
-    var transitionGradient = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
+    var transitionGradient:FlxSprite = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
     transitionGradient.scale.set(1280, 1);
     transitionGradient.updateHitbox();
     transitionGradient.cameras = [rankCamera];
@@ -1436,25 +1432,22 @@ class FreeplayState extends MusicBeatSubState
 
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
+
+    // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
     new FlxTimer().start(0.9, _ -> {
-      FlxG.switchState(() ->
-        new funkin.ui.charSelect.CharSelectSubState({character: currentCharacterId} // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
-      ));
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState({character: currentCharacterId}));
     });
+
     for (grpSpr in exitMoversCharSel.keys())
     {
-      var moveData:Null<MoveData> = exitMoversCharSel.get(grpSpr);
-      if (moveData == null) continue;
+      if (exitMoversCharSel.get(grpSpr) == null) continue;
 
       for (spr in grpSpr)
       {
         if (spr == null) continue;
 
-        var funnyMoveShit:MoveData = moveData;
-
-        var moveDataY = funnyMoveShit.y ?? spr.y;
-        var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
-        var moveDataWait = funnyMoveShit.wait ?? 0.0;
+        var moveDataY = exitMoversCharSel.get(grpSpr)?.y ?? spr.y;
+        var moveDataSpeed = exitMoversCharSel.get(grpSpr)?.speed ?? 0.2;
 
         FlxTween.tween(spr, {y: moveDataY + spr.y}, moveDataSpeed, {ease: FlxEase.backIn});
       }
@@ -1496,20 +1489,17 @@ class FreeplayState extends MusicBeatSubState
     fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn});
     for (grpSpr in exitMoversCharSel.keys())
     {
-      var moveData:Null<MoveData> = exitMoversCharSel.get(grpSpr);
-      if (moveData == null) continue;
+      if (exitMoversCharSel.get(grpSpr) == null) continue;
 
       for (spr in grpSpr)
       {
         if (spr == null) continue;
 
-        var funnyMoveShit:MoveData = moveData;
-
-        var moveDataY = funnyMoveShit.y ?? spr.y;
-        var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
-        var moveDataWait = funnyMoveShit.wait ?? 0.0;
+        var moveDataY = exitMoversCharSel.get(grpSpr)?.y ?? spr.y;
+        var moveDataSpeed = exitMoversCharSel.get(grpSpr)?.speed ?? 0.2;
 
         spr.y += moveDataY;
+
         FlxTween.tween(spr, {y: spr.y - moveDataY}, moveDataSpeed * 1.2,
           {
             ease: FlxEase.expoOut,
@@ -2237,7 +2227,7 @@ class FreeplayState extends MusicBeatSubState
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
     var characterVariations:Array<String> = daSong?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
-    var difficultiesAvailable:Array<String> = allDifficulties;
+    var difficultiesAvailable:Array<String> = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
     // Gets all available difficulties for our character, via our available variations
     var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
