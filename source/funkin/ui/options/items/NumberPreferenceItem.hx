@@ -80,8 +80,8 @@ class NumberPreferenceItem extends TextMenuItem
       changeRateTimer -= elapsed;
     }
 
-    var jpLeft:Bool = controls().UI_LEFT_P #if mobile || SwipeUtil.justSwipedLeft #end;
-    var jpRight:Bool = controls().UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end;
+    var jpLeft:Bool = controls().UI_LEFT_P #if FEATURE_TOUCH_CONTROLS || SwipeUtil.justSwipedLeft #end;
+    var jpRight:Bool = controls().UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS || SwipeUtil.justSwipedRight #end;
 
     if (jpLeft || jpRight)
     {
@@ -93,21 +93,23 @@ class NumberPreferenceItem extends TextMenuItem
     var shouldIncrease:Bool = jpRight;
     var valueChangeMultiplier:Float = 1;
 
+    #if FEATURE_TOUCH_CONTROLS
     final dragThreshold:Float = 24 / elapsed / 100;
 
     if (TouchUtil.touch != null && (TouchUtil.touch.deltaViewX <= -dragThreshold || TouchUtil.touch.deltaViewX >= dragThreshold))
     {
       valueChangeMultiplier = dragStepMultiplier;
     }
+    #end
 
     if (holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
     {
-      if (controls().UI_LEFT || (TouchUtil.touch != null && TouchUtil.touch.deltaX <= -dragThreshold))
+      if (controls().UI_LEFT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.touch != null && TouchUtil.touch.deltaX <= -dragThreshold) #end)
       {
         shouldDecrease = true;
         changeRateTimer = CHANGE_RATE;
       }
-      else if (controls().UI_RIGHT || (TouchUtil.touch != null && TouchUtil.touch.deltaX >= dragThreshold))
+      else if (controls().UI_RIGHT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.touch != null && TouchUtil.touch.deltaX >= dragThreshold) #end)
       {
         shouldIncrease = true;
         changeRateTimer = CHANGE_RATE;
