@@ -6,6 +6,7 @@ package funkin.mobile.external.android;
 @:unreflective
 class DataFolderUtil
 {
+  #if android
   /**
    * Opens the data folder on an Android device using JNI.
    */
@@ -18,4 +19,5 @@ class DataFolderUtil
       openDataFolderJNI(CallbackUtil.DATA_FOLDER_CLOSED);
     }
   }
+  #end
 }

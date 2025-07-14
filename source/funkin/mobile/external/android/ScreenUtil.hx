@@ -9,6 +9,7 @@ import lime.system.JNI;
 @:unreflective
 class ScreenUtil
 {
+  #if android
   /**
    * Retrieves the dimensions of display cutouts (such as notches) on Android devices.
    *
@@ -47,4 +48,5 @@ class ScreenUtil
 
     return [];
   }
+  #end
 }

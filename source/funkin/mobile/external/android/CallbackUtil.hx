@@ -9,6 +9,7 @@ import flixel.util.FlxSignal;
 @:unreflective
 class CallbackUtil
 {
+  #if android
   /**
    * The result code for `DATA_FOLDER_CLOSED` activity.
    */
@@ -41,6 +42,7 @@ class CallbackUtil
       initCallBackJNI(new CallbackHandler());
     }
   }
+  #end
 }
 
 /**
@@ -48,6 +50,7 @@ class CallbackUtil
  */
 class CallbackHandler #if (lime >= "8.0.0") implements JNISafety #end
 {
+  #if android
   @:allow(funkin.mobile.external.android.CallbackUtil)
   function new():Void {}
 
@@ -65,4 +68,5 @@ class CallbackHandler #if (lime >= "8.0.0") implements JNISafety #end
   {
     if (CallbackUtil.onActivityResult != null) CallbackUtil.onActivityResult.dispatch(requestCode, resultCode);
   }
+  #end
 }
