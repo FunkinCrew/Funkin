@@ -40,7 +40,8 @@ class SongMenuItem extends FlxSpriteGroup
   public var selected(default, set):Bool;
   public var forceHighlight(default, set):Bool;
 
-  public var songText:CapsuleText;
+  var songText:CapsuleText;
+
   public var favIconBlurred:FlxSprite;
   public var favIcon:FlxSprite;
 
@@ -539,6 +540,19 @@ class SongMenuItem extends FlxSpriteGroup
     refreshDisplay();
 
     checkWeek(freeplayData?.data.id);
+  }
+
+  public function initRandom(?styleData:FreeplayStyle = null):Void
+  {
+    initPosition(FlxG.width, 0);
+    initData(null, styleData, 1);
+    y = intendedY(0) + 10;
+    targetPos.x = x;
+    alpha = 0.5;
+    songText.visible = false;
+    favIcon.visible = false;
+    favIconBlurred.visible = false;
+    ranking.visible = false;
   }
 
   var frameInTicker:Float = 0;

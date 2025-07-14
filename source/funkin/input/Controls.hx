@@ -324,7 +324,7 @@ class Controls extends FlxActionSet
   inline function get_VOLUME_MUTE()
     return _volume_mute.check();
 
-  public function new(name, scheme:KeyboardScheme = null)
+  public function new(name, ?scheme:KeyboardScheme)
   {
     super(name);
 
@@ -372,7 +372,7 @@ class Controls extends FlxActionSet
     setKeyboardScheme(scheme, false);
   }
 
-  override function update()
+  override function update():Void
   {
     super.update();
   }
