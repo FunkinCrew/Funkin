@@ -21,11 +21,13 @@ body:
       label: Platform
       description: Which platform are you playing on?
       options:
+        - Android
+        - iOS/iPadOS
         - Newgrounds (Web/HTML5)
         - Itch.io (Web/HTML5)
-        - Itch.io (Downloadable Build) - Windows
-        - Itch.io (Downloadable Build) - MacOS
-        - Itch.io (Downloadable Build) - Linux
+        - Windows (Downloadable Build)
+        - MacOS (Downloadable Build)
+        - Linux (Downloadable Build)
         - Compiled from GitHub Source Code
     validations:
       required: true
@@ -41,6 +43,18 @@ body:
         - Opera
         - Safari
         - Other (Specify in Description field)
+
+  - type: input
+    attributes:
+      label: Mobile Device Model
+      description: (Mobile users only) What mobile device are you playing on?
+      placeholder: ex. iPhone 16, Galaxy S25, iPad 11th Gen
+
+  - type: input
+    attributes:
+      label: Mobile OS Version
+      description: (Mobile users only) What version is your Operating System?
+      placeholder: ex. iOS 18.5, Android 15, iPadOS 18.5
 
   - type: input
     attributes:
@@ -77,7 +91,7 @@ body:
   - type: textarea
     attributes:
       label: Crash logs
-      description: These can be found in the logs folder where Funkin.exe is.
+      description: These can be found in the logs folder where Funkin.exe is, or in your mobile device's file explorer.
       placeholder: Upload your logs here...
     validations:
       required: true
