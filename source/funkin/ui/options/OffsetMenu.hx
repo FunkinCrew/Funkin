@@ -321,6 +321,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       calibrating = true;
       MenuTypedList.pauseInput = true;
+      OptionsState.instance.drumsBG.pause();
+      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
+      OptionsState.instance.drumsBG.resume();
       OptionsState.instance.drumsBG.fadeIn(1, 0, 1);
       canExit = false;
       differences = [];
@@ -345,15 +348,23 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.noteData = [];
       testStrumline.nextNoteIndex = 0;
 
+      OptionsState.instance.drumsBG.pause();
+      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
+      OptionsState.instance.drumsBG.resume();
       localConductor.update(FlxG.sound.music.time, true);
+
       var floored = Math.floor(localConductor.currentBeatTime);
       arrowBeat = floored - (floored % 4);
       arrowBeat += 4;
       _lastDirection = 0;
 
-      if (arrowBeat - localConductor.currentBeatTime < 4) arrowBeat += 4;
+      var diffBeats = Math.floor(arrowBeat - localConductor.currentBeatTime);
 
-      trace('Testing strumline at beat: ' + arrowBeat);
+      trace('Prestart arrowBeat: ' + arrowBeat);
+
+      if (diffBeats < 4) arrowBeat += (arrowBeat % 4) + 4; // Ensure we have at least 4 beats to test.
+
+      trace('Testing strumline at beat: ' + arrowBeat + ' diff: ' + diffBeats);
 
       jumpInText.text = 'Hit the notes as they come in!';
       #if mobile
@@ -543,6 +554,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       // If the difference is greater than 50ms, we resync the conductor.
       localConductor.update(FlxG.sound.music.time, true);
+      OptionsState.instance.drumsBG.pause();
+      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
+      OptionsState.instance.drumsBG.resume();
       b = localConductor.currentBeatTime;
       _lastBeat = b;
     }
@@ -691,7 +705,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, _lastDirection, 0, null, null);
         testStrumline.addNoteData(data, false);
 
-        if (arrowBeat % 8 == 0)
+        if (Math.floor(arrowBeat % 8) == 0)
         {
           var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, 2, 0, null, null);
           testStrumline.addNoteData(data, false);
