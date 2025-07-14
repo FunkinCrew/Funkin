@@ -190,7 +190,7 @@ Select. ([3d3e2bd](https://github.com/FunkinCrew/Funkin/commit/3d3e2bd3786b85814
 - ANSI colors now display in the console on more computers. ([3747b94](https://github.com/FunkinCrew/Funkin/commit/3747b942461c3644fe31f25d2ce847fd74d1b1e0)) - by @AbnormalPoof in [#4676](https://github.com/FunkinCrew/Funkin/pull/4676)
 - Properly blacklist a certain class from scripts. ([3dc7699](https://github.com/FunkinCrew/Funkin/commit/3dc7699aac737998b637ff9a9f16986a434424be)) - by @charlesisfeline in [#4773](https://github.com/FunkinCrew/Funkin/pull/4773)
 
-## Removed
+### Removed
 
 - Removed the VSync preference from web builds, where it's non-functional. ([0b7a94b](https://github.com/FunkinCrew/Funkin/commit/0b7a94b1cc5c5d0dbac5a4c3d595349c4e6eb6e4)) - by @NotHyper-474 in [#5062](https://github.com/FunkinCrew/Funkin/pull/5062)
 - Removed a few non-functional screenshot preferences. ([93e4f79](https://github.com/FunkinCrew/Funkin/commit/93e4f799f4f0ea435b3d77ca8ef2ab6beeb0a955)) - by @Lasercar in [#4895](https://github.com/FunkinCrew/Funkin/pull/4895)
