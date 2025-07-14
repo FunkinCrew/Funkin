@@ -22,6 +22,8 @@ body:
       label: Platform
       description: Which platform are you compiling for?
       options:
+       - Android
+       - iOS/iPadOS
        - Web/HTML5
        - Desktop (Windows)
        - Desktop (Mac)
