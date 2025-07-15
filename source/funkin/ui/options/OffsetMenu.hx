@@ -713,6 +713,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         _lastDirection = (_lastDirection + 1) % 4; // Cycle through directions 0-3
       }
+      if (b >= 124 && _lastDirection != 0) _lastDirection = 0; // reset direction on loop
     }
     // Remove arrows and what not for when we are exiting calibration/testing
     else
