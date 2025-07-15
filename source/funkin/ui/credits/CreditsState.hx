@@ -41,6 +41,8 @@ class CreditsState extends MusicBeatState
   static final CREDITS_FONT = 'Consolas';
   #elseif mac
   static final CREDITS_FONT = 'Menlo';
+  #elseif ios
+  static final CREDITS_FONT = null;
   #else
   static final CREDITS_FONT = "Courier New";
   #end
