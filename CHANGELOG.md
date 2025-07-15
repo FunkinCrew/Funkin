@@ -4,6 +4,50 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.2] - 2025-07-15
+
+### Added
+
+- [MOBILE] The Android mods folder is now accessible through the Options menu.
+
+### Changed
+
+- Made several improvements to Polymod and HScript. These changes might break some mods, so please update them accordingly!
+  - Scripted classes can now create static fields and functions.
+  - Scripted classes can now create variables with the `final` keyword.
+  - Scripted classes can no longer modify `final` variables within the game.
+  - Scripted classes can now access variables from another scripted class with `class.someVariable`, instead of `class.scriptGet(“someVariable”)`
+    - This applies to functions too: `class.someFunction()`
+  - Scripted classes that don’t extend another class can now be created!
+    - This only works if you access the class in a static context. Creating an instance of said class doesn’t work just yet!
+  - Added support for properties (`get_` and `set_` functions) (Thanks KoloInDaCrib!)
+  - Added support for abstracts in a static context. (Thanks lemz1!)
+    - You can now use classes like `FlxColor` properly!
+  - Added support for creating and using enums. (Thanks lemz1!)
+    - You can import them in another script as usual.
+  - Added support for renaming imported classes using the `as` keyword. (Thanks KoloInDaCrib!)
+  - Fixed `try`/`catch` blocks not working properly. (Thanks NotHyper-474!)
+  - Fixed null-safe field access not working properly for functions (ex. `class?.someFunction()). (Thanks KoloInDaCrib!)
+
+### Fixed
+
+- [HTML5] Pausing while the train passes by on the Week 3 Erect stage no longer crashes.
+- The scroll sound no longer plays once after entering Freeplay.
+- The Freeplay song preview and album cover now update properly when switching variations.
+- [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
+- The Input Offsets Test menu no longer generates stacked notes.
+- The Input Offsets Test menu drums no longer desync from the rest of the track.
+- [MOBILE] Sustain trails now display properly with upscroll enabled.
+- [MOBILE] Fixed app name spacing on the iOS Home Screen.
+- Fixed a critical security vulnerability that could be exploited in mods.
+
+### Removed
+
+- Removed console traces from release builds to improve performance.
+  - Traces made by scripted classes will still appear.
+
+
+
 ## [0.7.1] - 2025-07-15
 
 ### Fixed
