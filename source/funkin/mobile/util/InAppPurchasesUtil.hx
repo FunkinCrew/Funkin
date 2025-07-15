@@ -147,18 +147,25 @@ class InAppPurchasesUtil
       {
         function purchasesUpdatedEvent(result:IAPResult, purchases:Array<IAPPurchase>):Void
         {
-          for (purchase in purchases)
+          if (result.getResponseCode() == IAPResponseCode.OK)
           {
-            if (purchase.getProducts().contains(id))
+            for (purchase in purchases)
             {
-              if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
+              if (purchase.getProducts().contains(id))
               {
-                if (onPurchased != null) onPurchased();
+                if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
+                {
+                  if (onPurchased != null) onPurchased();
+
+                  IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                }
               }
             }
           }
-
-          IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+          else
+          {
+            IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+          }
 
           Toast.makeText(result.getDebugMessage(), Toast.LENGTH_SHORT);
         }
@@ -180,14 +187,18 @@ class InAppPurchasesUtil
           {
             if (purchase.getPaymentProductIdentifier() == id)
             {
-              if (purchase.getTransactionState() == IAPPurchaseState.PURCHASED)
+              switch (purchase.getTransactionState())
               {
-                if (onPurchased != null) onPurchased();
+                case IAPPurchaseState.PURCHASED:
+                  if (onPurchased != null) onPurchased();
+
+                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                case IAPPurchaseState.CANCELLED | IAPPurchaseState.FAILED:
+                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                default:
               }
             }
           }
-
-          IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
         }
 
         if (!IAPIOS.onPurchasesUpdated.has(purchasesUpdatedEvent))
