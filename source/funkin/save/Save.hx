@@ -123,6 +123,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           hapticsMode: 'All',
+          hapticsIntensityMultiplier: 1,
           autoPause: true,
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
@@ -1553,6 +1554,12 @@ typedef SaveDataOptions =
    * @default `All`
    */
   var hapticsMode:String;
+
+  /**
+   * Multiplier of intensity for all the haptic feedback effects.
+   * @default `1`
+   */
+  var hapticsIntensityMultiplier:Float;
 
   /**
    * If enabled, the game will automatically pause when tabbing out.

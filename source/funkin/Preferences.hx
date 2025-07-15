@@ -204,6 +204,25 @@ class Preferences
   }
 
   /**
+   * Multiplier of intensity for all the haptic feedback effects.
+   * @default `1`
+   */
+  public static var hapticsIntensityMultiplier(get, set):Float;
+
+  static function get_hapticsIntensityMultiplier():Float
+  {
+    return Save?.instance?.options?.hapticsIntensityMultiplier ?? 1;
+  }
+
+  static function set_hapticsIntensityMultiplier(value:Float):Float
+  {
+    var save:Save = Save.instance;
+    save.options.hapticsIntensityMultiplier = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * Always enabled on mobile.
    * @default `true`

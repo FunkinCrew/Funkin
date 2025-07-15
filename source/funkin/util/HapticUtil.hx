@@ -39,16 +39,20 @@ class HapticUtil
       ?targetHapticsModes:Array<HapticsMode>):Void
   {
     #if FEATURE_HAPTICS
-    if (!HapticUtil.hapticsAvailable) return;
+    if (!HapticUtil.hapticsAvailable || Preferences.hapticsIntensityMultiplier == 0) return;
 
     final hapticsModes:Array<HapticsMode> = targetHapticsModes ?? [HapticsMode.ALL];
     if (!hapticsModes.contains(Preferences.hapticsMode)) return;
 
     #if ios
-    final amplitudeValue = FlxMath.bound(amplitude * 2.5, 0, Constants.MAX_VIBRATION_AMPLITUDE);
+    var amplitudeValue = FlxMath.bound(amplitude * 2.5, 0, Constants.MAX_VIBRATION_AMPLITUDE);
     #else
-    final amplitudeValue = amplitude;
+    var amplitudeValue = amplitude;
     #end
+
+    amplitudeValue *= Preferences.hapticsIntensityMultiplier;
+
+    if (amplitudeValue > Constants.MAX_VIBRATION_AMPLITUDE) amplitudeValue = Constants.MAX_VIBRATION_AMPLITUDE;
 
     if (period > 0)
     {
