@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - [HTML5] Pausing while the train passes by on the Week 3 Erect stage no longer crashes.
-- [DESKTOP] Getting a Bad/Shit rating on Blazin’ no longer breaks animations.
+- [DESKTOP] Getting a Bad/Shit rating on Blazin' no longer breaks animations.
 - The scroll sound no longer plays once after entering Freeplay.
 - The Freeplay song preview and album cover now update properly when switching variations.
 - [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
