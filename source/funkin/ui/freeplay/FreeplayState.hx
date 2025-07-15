@@ -1580,23 +1580,26 @@ class FreeplayState extends MusicBeatSubState
       tryOpenCharSelect();
     }
 
-    if (controls.FREEPLAY_FAVORITE && controls.active)
-    {
-      favoriteSong();
-    }
+    if (controls.FREEPLAY_FAVORITE && controls.active) favoriteSong();
 
-    if (controls.FREEPLAY_JUMP_TO_TOP && controls.active)
-    {
-      changeSelection(-curSelected);
-    }
+    if (controls.FREEPLAY_JUMP_TO_TOP && controls.active) changeSelection(-curSelected);
 
-    if (controls.FREEPLAY_JUMP_TO_BOTTOM && controls.active)
-    {
-      changeSelection(grpCapsules.countLiving() - curSelected - 1);
-    }
+    if (controls.FREEPLAY_JUMP_TO_BOTTOM && controls.active) changeSelection(grpCapsules.countLiving() - curSelected - 1);
 
-    lerpScore = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpScore, intendedScore, elapsed, 0.2), intendedScore, 1);
-    lerpCompletion = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpCompletion, intendedCompletion, elapsed, 0.5), intendedCompletion, 1 / 100);
+    calculateCompletion();
+
+    handleInputs(elapsed);
+
+    if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
+
+    // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
+    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
+  }
+
+  function calculateCompletion():Void
+  {
+    lerpScore = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpScore, intendedScore, FlxG.elapsed, 0.2), intendedScore, 1);
+    lerpCompletion = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpCompletion, intendedCompletion, FlxG.elapsed, 0.5), intendedCompletion, 1 / 100);
 
     if (Math.isNaN(lerpScore))
     {
@@ -1627,13 +1630,6 @@ class FreeplayState extends MusicBeatSubState
       default:
         txtCompletion.offset.x = 0;
     }
-
-    handleInputs(elapsed);
-
-    if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
-
-    // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
-    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
   }
 
   var _dragOffset:Float = 0;
