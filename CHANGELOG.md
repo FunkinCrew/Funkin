@@ -20,8 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Scripted classes can no longer modify `final` variables within the game.
   - Scripted classes can now access variables from another scripted class with `class.someVariable`, instead of `class.scriptGet(“someVariable”)`
     - This applies to functions too: `class.someFunction()`
-  - Scripted classes that don’t extend another class can now be created!
-    - This only works if you access the class in a static context. Creating an instance of said class doesn’t work just yet!
+  - Scripted classes that don't extend another class can now be created!
+    - This only works if you access the class in a static context. Creating an instance of said class doesn't work just yet!
   - Added support for properties (`get_` and `set_` functions) (Thanks KoloInDaCrib!)
   - Added support for abstracts in a static context. (Thanks lemz1!)
     - You can now use classes like `FlxColor` properly!
@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - [HTML5] Pausing while the train passes by on the Week 3 Erect stage no longer crashes.
+- [DESKTOP] Getting a Bad/Shit rating on Blazin' no longer breaks animations.
 - The scroll sound no longer plays once after entering Freeplay.
 - The Freeplay song preview and album cover now update properly when switching variations.
 - [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
@@ -69,12 +70,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [MOBILE] Added haptic feedback to several areas of the game.
 - Added a visual indicator that shows available difficulties for the currently selected song in Freeplay.
 - Overhauled the input offsets system, including:
-  - One unified “offset” value.
-  - An “Offset Calibration” screen where the game determines your ideal offset.
-  - A “Test” screen where you can play a short note pattern to try out your offset.
+  - One unified "offset" value.
+  - An "Offset Calibration" screen where the game determines your ideal offset.
+  - A "Test" screen where you can play a short note pattern to try out your offset.
   - A brand new offset testing theme: Syncobation by Kawai Sprite!
   - The ability to change your offsets in the Pause Menu, mid-song!
-  - The Input Offsets menu isn’t yet available on HTML5, but offsets are still configurable through the Pause Menu.
+  - The Input Offsets menu isn't yet available on HTML5, but offsets are still configurable through the Pause Menu.
 - Added null-safety to a bunch of classes in the source code.
 - Added the Changelog back to the game files, written by Hundrec and AbnormalPoof!
 - Added a few sandboxed classes to give mods limited access to the Discord and Newgrounds APIs. ([50d9584](https://github.com/FunkinCrew/Funkin/commit/50d9584a388bd891aa2f8b68a5cde894a6e1ede6)) - by @KoloInDaCrib in [#5040](https://github.com/FunkinCrew/Funkin/pull/5040)
@@ -96,15 +97,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The mod API version now supports v0.7.0, along with v0.6.3. Be sure to check that your mods still work!
 - Updated the app icon for Desktop platforms.
 - [MOBILE] Modified several parts of the game to look better on phone screens with wider aspect ratios, up to 20:9.
-- [DESKTOP] The game now tries to match the window’s aspect ratio when changing states, extending as wide as 20:9.
-- [DESKTOP] Included Mobile stage expansions on Desktop as well. Now you’ll have more room for camera events!
+- [DESKTOP] The game now tries to match the window's aspect ratio when changing states, extending as wide as 20:9.
+- [DESKTOP] Included Mobile stage expansions on Desktop as well. Now you'll have more room for camera events!
 - Playable Pico and Weekend 1 songs are now always unlocked in Freeplay, even on new saves.
 - The Freeplay difficulty graphic now scrolls smoothly when changing difficulties.
-- The “Pause on Unfocus” preference now opens the Pause Menu when unfocusing during a song.
+- The "Pause on Unfocus" preference now opens the Pause Menu when unfocusing during a song.
 - Scripts can now make hold note trails semi-transparent.
 - Completely reformatted every script file within the game's assets for better readability.
 - Completely reformatted and optimized every single chart file in the game.
-- Recharted pico-speaker’s chart in Stress
+- Recharted pico-speaker's chart in Stress
 - Tweaked charts for the following songs:
   - Bopeebo [all difficulties] - Removed an extra hey animation event
   - Bopeebo (Pico Mix) [Hard] - Added a missing note in Section 24
@@ -119,7 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Satin Panties [Normal/Hard] - Made Mom sing a sustain rather than two notes in Section 30
   - High Erect [Erect/Nightmare] - Added a missing note in Section 16
   - Cocoa [Easy] - Added some notes to reduce sparseness, fixed Mom singing Dad's notes
-  - Cocoa Erect [Erect/Nightmare] - Reimplemented BF’s censored notes for Nightmare, adjusted one note by 1/48 in Section 63
+  - Cocoa Erect [Erect/Nightmare] - Reimplemented BF's censored notes for Nightmare, adjusted one note by 1/48 in Section 63
   - Eggnog Erect [Erect/Nightmare] Added two grace notes in Sections 10 and 14 and a missing note for Dad in Section 44
   - Eggnog (Pico Mix) [Hard] - Added a missing grace note for Pico that was present on Normal in Section 20
   - Roses [Normal/Hard] - Made Senpai sing a sustain rather than two notes (sneaky)
@@ -158,7 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The first lightning strike in Week 2 Erect no longer creates a lag spike.
 - [DESKTOP] The conductor and music no longer gradually drift out of sync to eventually trigger a resync.
 - Pixel notestyle strumlines are now properly positioned when Downscroll is enabled.
-- Added the missing graffiti to the wall in the Weekend 1 Blazin’ stage.
+- Added the missing graffiti to the wall in the Weekend 1 Blazin' stage.
 - Accept keybinds now properly scroll faster through the Credits.
 - Typing in most text fields in debug editors no longer triggers keyboard shortcuts.
 - The Chart Editor playback speed feature now works properly.
