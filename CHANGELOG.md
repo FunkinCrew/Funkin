@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Made several improvements to Polymod and HScript. These changes might break some mods, so please update them accordingly!
+  - Fixed an issue where scripted classes can define two or more fields with the same name.
+  - Fixed an issue causing some syntax errors (such as missing commas) to be ignored by the parser.
   - Scripted classes can now create static fields and functions.
   - Scripted classes can now create variables with the `final` keyword.
   - Scripted classes can no longer modify `final` variables within the game.
