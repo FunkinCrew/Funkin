@@ -529,6 +529,7 @@ class Preferences
     return value;
   }
 
+  #if FEATURE_MOBILE_IAP
   /**
    * If bought, the game will not show any ads.
    * @default `false`
@@ -552,5 +553,6 @@ class Preferences
     save.flush();
     return value;
   }
+  #end
   #end
 }
