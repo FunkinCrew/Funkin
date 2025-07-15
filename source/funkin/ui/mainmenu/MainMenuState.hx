@@ -88,7 +88,7 @@ class MainMenuState extends MusicBeatState
     transOut = FlxTransitionableState.defaultTransOut;
 
     #if FEATURE_MOBILE_IAP
-    hasUpgraded = InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID);
+    hasUpgraded = Preferences.noAds;
     #else
     // just to make sure its never accidentally turned off
     hasUpgraded = true;
@@ -194,7 +194,8 @@ class MainMenuState extends MusicBeatState
       });
     }
 
-    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end) {
+    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
+    {
       createMenuItem('options', 'mainmenu/options', function() {
         startExitState(() -> new funkin.ui.options.OptionsState());
       });
@@ -390,8 +391,8 @@ class MainMenuState extends MusicBeatState
 
   function onMenuItemChange(selected:MenuListItem)
   {
-    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
-      camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
+    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end) camFollow.setPosition(selected.getGraphicMidpoint().x,
+      selected.getGraphicMidpoint().y);
   }
 
   #if FEATURE_OPEN_URL
@@ -441,10 +442,8 @@ class MainMenuState extends MusicBeatState
       });
 
       #if mobile
-      if (optionsButton != null)
-        FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
-      if (backButton != null)
-        FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+      if (optionsButton != null) FlxTween.tween(optionsButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+      if (backButton != null) FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
       #end
 
       new FlxTimer().start(duration, function(_) FlxG.switchState(state));

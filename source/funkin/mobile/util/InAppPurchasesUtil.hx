@@ -28,6 +28,8 @@ class InAppPurchasesUtil
    */
   public static final UPGRADE_PRODUCT_ID:String = 'no_ads';
 
+  public static var hasInitialized:Bool = false;
+
   /**
    * A static variable that holds an array of currently loaded product details for in-app purchases.
    */
@@ -65,9 +67,14 @@ class InAppPurchasesUtil
     });
 
     IAPAndroid.onProductDetailsResponse.add(function(result:IAPResult, productDetails:Array<IAPProductDetails>):Void {
-      if (result.getResponseCode() == IAPResponseCode.OK) currentProductDetails = productDetails;
+      if (result.getResponseCode() == IAPResponseCode.OK)
+      {
+        hasInitialized = true;
+        currentProductDetails = productDetails;
+      }
       else
       {
+        hasInitialized = false;
         trace('Failed to fetch product details: "$result"');
       }
     });
@@ -102,10 +109,12 @@ class InAppPurchasesUtil
     #else
     IAPIOS.onProductDetailsReceived.add(function(productDetails:Array<IAPProductDetails>):Void {
       if (productDetails != null) currentProductDetails = productDetails;
+      hasInitialized = true;
     });
 
     IAPIOS.onProductDetailsFailed.add(function(error:IAPError):Void {
       trace('Failed to request product details: "$error"');
+      hasInitialized = false;
     });
 
     IAPIOS.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void {
@@ -147,18 +156,25 @@ class InAppPurchasesUtil
       {
         function purchasesUpdatedEvent(result:IAPResult, purchases:Array<IAPPurchase>):Void
         {
-          for (purchase in purchases)
+          if (result.getResponseCode() == IAPResponseCode.OK)
           {
-            if (purchase.getProducts().contains(id))
+            for (purchase in purchases)
             {
-              if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
+              if (purchase.getProducts().contains(id))
               {
-                if (onPurchased != null) onPurchased();
+                if (purchase.getPurchaseState() == IAPPurchaseState.PURCHASED)
+                {
+                  if (onPurchased != null) onPurchased();
+
+                  IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                }
               }
             }
           }
-
-          IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+          else
+          {
+            IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+          }
 
           final debugMessage:Null<String> = result.getDebugMessage();
 
@@ -185,14 +201,18 @@ class InAppPurchasesUtil
           {
             if (purchase.getPaymentProductIdentifier() == id)
             {
-              if (purchase.getTransactionState() == IAPPurchaseState.PURCHASED)
+              switch (purchase.getTransactionState())
               {
-                if (onPurchased != null) onPurchased();
+                case IAPPurchaseState.PURCHASED:
+                  if (onPurchased != null) onPurchased();
+
+                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                case IAPPurchaseState.FAILED:
+                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                default:
               }
             }
           }
-
-          IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
         }
 
         if (!IAPIOS.onPurchasesUpdated.has(purchasesUpdatedEvent))
