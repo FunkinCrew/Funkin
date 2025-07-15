@@ -1610,7 +1610,10 @@ class FreeplayState extends MusicBeatSubState
 
     fp.updateScore(Std.int(lerpScore));
 
-    txtCompletion.text = '${Math.floor(lerpCompletion * 100)}';
+    // sets the text of the completion percentage. Perhaps eventually we may want to generalize this,
+    // but for now we can just clamp the values between 0 and 100.
+    // Fixes issue where it rounds to negative integer overflow on Windows? Which occurs when switching to an unranked song?
+    txtCompletion.text = '${FlxMath.clamp(Math.floor(lerpCompletion * 100), 0, 100)}';
 
     // Right align the completion percentage
     switch (txtCompletion.text.length)
