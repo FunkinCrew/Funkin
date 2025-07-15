@@ -193,7 +193,9 @@ class InAppPurchasesUtil
                   if (onPurchased != null) onPurchased();
 
                   IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
-                case IAPPurchaseState.CANCELLED | IAPPurchaseState.FAILED:
+                case IAPPurchaseState.CANCELLED:
+                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
+                case IAPPurchaseState.FAILED:
                   IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
                 default:
               }
