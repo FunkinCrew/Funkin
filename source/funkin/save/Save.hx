@@ -158,7 +158,8 @@ class Save
         {
           // Reasonable defaults.
           screenTimeout: false,
-          controlsScheme: FunkinHitboxControlSchemes.Arrows
+          controlsScheme: FunkinHitboxControlSchemes.Arrows,
+          noAds: false
         },
       #end
 
@@ -1639,6 +1640,12 @@ typedef SaveDataMobileOptions =
    * @default `Arrows`
    */
   var controlsScheme:String;
+
+  /**
+   * If bought, the game will not show any ads.
+   * @default `false`
+   */
+  var noAds:Bool;
 };
 
 #end

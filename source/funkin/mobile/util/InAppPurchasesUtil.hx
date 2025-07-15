@@ -28,6 +28,8 @@ class InAppPurchasesUtil
    */
   public static final UPGRADE_PRODUCT_ID:String = 'no_ads';
 
+  public static var hasInitialized:Bool = false;
+
   /**
    * A static variable that holds an array of currently loaded product details for in-app purchases.
    */
@@ -102,10 +104,12 @@ class InAppPurchasesUtil
     #else
     IAPIOS.onProductDetailsReceived.add(function(productDetails:Array<IAPProductDetails>):Void {
       if (productDetails != null) currentProductDetails = productDetails;
+      hasInitialized = true;
     });
 
     IAPIOS.onProductDetailsFailed.add(function(error:IAPError):Void {
       trace('Failed to request product details: "$error"');
+      hasInitialized = false;
     });
 
     IAPIOS.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void {
@@ -192,8 +196,6 @@ class InAppPurchasesUtil
                 case IAPPurchaseState.PURCHASED:
                   if (onPurchased != null) onPurchased();
 
-                  IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
-                case IAPPurchaseState.CANCELLED:
                   IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);
                 case IAPPurchaseState.FAILED:
                   IAPIOS.onPurchasesUpdated.remove(purchasesUpdatedEvent);

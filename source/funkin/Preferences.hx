@@ -2,6 +2,7 @@ package funkin;
 
 #if mobile
 import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.util.InAppPurchasesUtil;
 #end
 import funkin.save.Save;
 import funkin.util.WindowUtil;
@@ -524,6 +525,30 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobileOptions.controlsScheme = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If bought, the game will not show any ads.
+   * @default `false`
+   */
+  @:unreflective
+  public static var noAds(get, set):Bool;
+
+  @:unreflective
+  static function get_noAds():Bool
+  {
+    if (InAppPurchasesUtil.hasInitialized) noAds = InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID);
+    var returnedValue = Save?.instance?.mobileOptions?.noAds ?? false;
+    return returnedValue;
+  }
+
+  @:unreflective
+  static function set_noAds(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.noAds = value;
     save.flush();
     return value;
   }
