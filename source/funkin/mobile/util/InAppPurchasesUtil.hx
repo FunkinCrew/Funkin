@@ -160,7 +160,12 @@ class InAppPurchasesUtil
 
           IAPAndroid.onPurchasesUpdated.remove(purchasesUpdatedEvent);
 
-          Toast.makeText(result.getDebugMessage(), Toast.LENGTH_SHORT);
+          final debugMessage:Null<String> = result.getDebugMessage();
+
+          if (debugMessage != null && debugMessage.length > 0)
+          {
+            Toast.makeText(debugMessage, Toast.LENGTH_SHORT);
+          }
         }
 
         if (!IAPAndroid.onPurchasesUpdated.has(purchasesUpdatedEvent))
