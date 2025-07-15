@@ -67,9 +67,14 @@ class InAppPurchasesUtil
     });
 
     IAPAndroid.onProductDetailsResponse.add(function(result:IAPResult, productDetails:Array<IAPProductDetails>):Void {
-      if (result.getResponseCode() == IAPResponseCode.OK) currentProductDetails = productDetails;
+      if (result.getResponseCode() == IAPResponseCode.OK)
+      {
+        hasInitialized = true;
+        currentProductDetails = productDetails;
+      }
       else
       {
+        hasInitialized = false;
         trace('Failed to fetch product details: "$result"');
       }
     });
