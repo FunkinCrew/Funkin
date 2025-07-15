@@ -4,7 +4,7 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.2] - 2025-07-15
+## [0.7.2] - 2025-07-16
 
 ### Added
 
@@ -34,14 +34,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - [HTML5] Pausing while the train passes by on the Week 3 Erect stage no longer crashes.
-- [DESKTOP] Getting a Bad/Shit rating on Blazin' no longer breaks animations.
+- [DESKTOP] Getting a Bad/Shit rating on Blazin’ no longer breaks animations.
 - The scroll sound no longer plays once after entering Freeplay.
 - The Freeplay song preview and album cover now update properly when switching variations.
 - [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
 - The Input Offsets Test menu no longer generates stacked notes.
 - The Input Offsets Test menu drums no longer desync from the rest of the track.
 - [MOBILE] Sustain trails now display properly with upscroll enabled.
-- [MOBILE] Fixed app name spacing on the iOS Home Screen.
+- [MOBILE] Added a Back button to the Controls menu.
+- [iOS] Fixed app name spacing on the Home Screen.
+- [iOS] Adjusted the preloader to accommodate for different screen sizes.
+- [iOS] The Upgrade button no longer appears if you have already purchased it.
+- [ANDROID] Don’t show toasts with blank messages.
 - Fixed a critical security vulnerability that could be exploited in mods.
 
 ### Removed
