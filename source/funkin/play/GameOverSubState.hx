@@ -545,6 +545,7 @@ class GameOverSubState extends MusicBeatSubState
    */
   public function goBack():Void
   {
+    if (blueballed == false) return;
     isEnding = true;
     blueballed = false;
     if (parentPlayState != null) parentPlayState.deathCounter = 0;
