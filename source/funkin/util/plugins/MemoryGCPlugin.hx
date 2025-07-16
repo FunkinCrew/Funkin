@@ -6,6 +6,7 @@ import funkin.util.TimerUtil;
 /**
  * A plugin which adds functionality to press `Ins` to immediately perform memory garbage collection.
  */
+@:nullSafety
 class MemoryGCPlugin extends FlxBasic
 {
   public function new()

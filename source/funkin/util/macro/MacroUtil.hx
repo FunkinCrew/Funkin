@@ -4,6 +4,10 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+/**
+ * A collection of utility functions for Haxe macros.
+ */
+@:nullSafety
 class MacroUtil
 {
   /**
@@ -13,9 +17,9 @@ class MacroUtil
    * @param defaultValue The value to return if the define is not set.
    * @return An expression containing the value of the define.
    */
-  public static macro function getDefine(key:String, defaultValue:String = null):haxe.macro.Expr
+  public static macro function getDefine(key:String, ?defaultValue:String):haxe.macro.Expr
   {
-    var value = haxe.macro.Context.definedValue(key);
+    var value:Null<String> = haxe.macro.Context.definedValue(key);
     if (value == null) value = defaultValue;
     return macro $v{value};
   }
@@ -26,13 +30,13 @@ class MacroUtil
    */
   public static macro function getDate():ExprOf<Date>
   {
-    var date = Date.now();
-    var year = toExpr(date.getFullYear());
-    var month = toExpr(date.getMonth());
-    var day = toExpr(date.getDate());
-    var hours = toExpr(date.getHours());
-    var mins = toExpr(date.getMinutes());
-    var secs = toExpr(date.getSeconds());
+    var date:Date = Date.now();
+    var year:Expr = toExpr(date.getFullYear());
+    var month:Expr = toExpr(date.getMonth());
+    var day:Expr = toExpr(date.getDate());
+    var hours:Expr = toExpr(date.getHours());
+    var mins:Expr = toExpr(date.getMinutes());
+    var secs:Expr = toExpr(date.getSeconds());
     return macro new Date($year, $month, $day, $hours, $mins, $secs);
   }
 
@@ -44,6 +48,8 @@ class MacroUtil
   /**
    * Convert an ExprOf<Class<T>> to a ClassType.
    * @see https://github.com/jasononeil/compiletime/blob/master/src/CompileTime.hx#L201
+   * @param e The expression to convert.
+   * @return The `ClassType`
    */
   public static function getClassTypeFromExpr(e:Expr):ClassType
   {
@@ -99,6 +105,11 @@ class MacroUtil
     return null;
   }
 
+  /**
+   * Determine whether a field is static.
+   * @param field The field to check.
+   * @return Whether the field is static.
+   */
   public static function isFieldStatic(field:haxe.macro.Expr.Field):Bool
   {
     return field.access.contains(AStatic);
@@ -107,11 +118,17 @@ class MacroUtil
   /**
    * Converts a value to an equivalent macro expression.
    */
-  public static function toExpr(value:Dynamic):ExprOf<Dynamic>
+  public static function toExpr(value:Any):ExprOf<Any>
   {
     return Context.makeExpr(value, Context.currentPos());
   }
 
+  /**
+   * Determine whether two classes are equal.
+   * @param class1 The first class to compare.
+   * @param class2 The second class to compare.
+   * @return Whether the two classes are equivalent.
+   */
   public static function areClassesEqual(class1:ClassType, class2:ClassType):Bool
   {
     return class1.pack.join('.') == class2.pack.join('.') && class1.name == class2.name;
@@ -119,6 +136,8 @@ class MacroUtil
 
   /**
    * Retrieve a ClassType from a string name.
+   * @param name The name of the class to retrieve.
+   * @return The `ClassType`
    */
   public static function getClassType(name:String):ClassType
   {
@@ -129,6 +148,43 @@ class MacroUtil
       default:
         throw 'Class type could not be parsed: ${name}';
     }
+  }
+
+  /**
+   * If we are in a build macro, return whether a field already exists on the current class.
+   * @param name The name of the field to check for.
+   * @return Whether the field already exists.
+   */
+  public static function fieldAlreadyExists(name:String):Bool
+  {
+    for (field in Context.getBuildFields())
+    {
+      if (field.name == name && !((field.access ?? []).contains(Access.AAbstract)))
+      {
+        return true;
+      }
+    }
+
+    function fieldAlreadyExistsSuper(name:String, superClass:Null<ClassType>)
+    {
+      if (superClass == null)
+      {
+        return false;
+      }
+
+      for (field in superClass.fields.get())
+      {
+        if (field.name == name && !field.isAbstract)
+        {
+          return true;
+        }
+      }
+
+      // recursively check superclasses
+      return fieldAlreadyExistsSuper(name, superClass.superClass?.t.get());
+    }
+
+    return fieldAlreadyExistsSuper(name, Context.getLocalClass().get().superClass?.t.get());
   }
 
   /**

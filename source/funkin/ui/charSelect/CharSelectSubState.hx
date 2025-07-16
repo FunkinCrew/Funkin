@@ -50,7 +50,6 @@ class CharSelectSubState extends MusicBeatSubState
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
   var cursorLocIntended:FlxPoint = new FlxPoint(0, 0);
-  var lerpAmnt:Float = 0.95;
   var tmrFrames:Int = 60;
   var currentStage:Stage;
   var playerChill:CharSelectPlayer;
@@ -62,7 +61,8 @@ class CharSelectSubState extends MusicBeatSubState
   var chooseDipshit:FlxSprite;
   var dipshitBlur:FlxSprite;
   var transitionGradient:FlxSprite;
-  var curChar(default, set):String = "pico";
+  var curChar(default, set):String = Constants.DEFAULT_CHARACTER;
+  var rememberedChar:String;
   var nametag:Nametag;
   var camFollow:FlxObject;
   var autoFollow:Bool = false;
@@ -84,12 +84,13 @@ class CharSelectSubState extends MusicBeatSubState
     new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)
   ];
 
-  var bopInfo:FramesJSFLInfo;
+  var bopInfo:Null<FramesJSFLInfo>;
   var blackScreen:FunkinSprite;
 
-  public function new()
+  public function new(?params:CharSelectSubStateParams)
   {
     super();
+    rememberedChar = params?.character;
     loadAvailableCharacters();
   }
 
@@ -122,6 +123,10 @@ class CharSelectSubState extends MusicBeatSubState
     super.create();
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
+    if (bopInfo == null)
+    {
+      trace("[ERROR] Failed to load data for bopInfo, is the path provided correct?");
+    }
 
     var bg:FlxSprite = new FlxSprite(-153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
@@ -167,18 +172,39 @@ class CharSelectSubState extends MusicBeatSubState
     charLightGF.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLightGF);
 
-    gfChill = new CharSelectGF();
-    gfChill.switchGF("bf");
-    add(gfChill);
+    function setupPlayerChill(character:String)
+    {
+      gfChill = new CharSelectGF();
+      gfChill.switchGF(character);
+      add(gfChill);
 
-    playerChillOut = new CharSelectPlayer(0, 0);
-    playerChillOut.switchChar("bf");
-    playerChillOut.visible = false;
-    add(playerChillOut);
+      playerChillOut = new CharSelectPlayer(0, 0);
+      playerChillOut.switchChar(character);
+      playerChillOut.visible = false;
+      add(playerChillOut);
 
-    playerChill = new CharSelectPlayer(0, 0);
-    playerChill.switchChar("bf");
-    add(playerChill);
+      playerChill = new CharSelectPlayer(0, 0);
+      playerChill.switchChar(character);
+      add(playerChill);
+    }
+
+    // I think I can do the character preselect thing here? This better work
+    // Edit: [UH-OH!] yes! It does!
+    if (rememberedChar != null && rememberedChar != Constants.DEFAULT_CHARACTER)
+    {
+      setupPlayerChill(rememberedChar);
+      for (pos => charId in availableChars)
+      {
+        if (charId == rememberedChar)
+        {
+          setCursorPosition(pos);
+          break;
+        }
+      }
+      @:bypassAccessor curChar = rememberedChar;
+    }
+    else
+      setupPlayerChill(Constants.DEFAULT_CHARACTER);
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
@@ -224,7 +250,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.scrollFactor.set();
     dipshitBlur.scrollFactor.set();
 
-    nametag = new Nametag();
+    nametag = new Nametag(curChar);
     add(nametag);
 
     nametag.scrollFactor.set();
@@ -498,7 +524,7 @@ class CharSelectSubState extends MusicBeatSubState
     grpIcons.scrollFactor.set();
   }
 
-  function unLock()
+  function unLock():Void
   {
     var index = nonLocks[0];
 
@@ -896,14 +922,14 @@ class CharSelectSubState extends MusicBeatSubState
     cursorLocIntended.x += cursorOffsetX;
     cursorLocIntended.y += cursorOffsetY;
 
-    cursor.x = MathUtil.smoothLerp(cursor.x, cursorLocIntended.x, elapsed, 0.1);
-    cursor.y = MathUtil.smoothLerp(cursor.y, cursorLocIntended.y, elapsed, 0.1);
+    cursor.x = MathUtil.snap(MathUtil.smoothLerpPrecision(cursor.x, cursorLocIntended.x, elapsed, 0.1), cursorLocIntended.x, 1);
+    cursor.y = MathUtil.snap(MathUtil.smoothLerpPrecision(cursor.y, cursorLocIntended.y, elapsed, 0.1), cursorLocIntended.y, 1);
 
-    cursorBlue.x = MathUtil.coolLerp(cursorBlue.x, cursor.x, lerpAmnt * 0.4);
-    cursorBlue.y = MathUtil.coolLerp(cursorBlue.y, cursor.y, lerpAmnt * 0.4);
+    cursorBlue.x = MathUtil.smoothLerpPrecision(cursorBlue.x, cursor.x, elapsed, 0.201);
+    cursorBlue.y = MathUtil.smoothLerpPrecision(cursorBlue.y, cursor.y, elapsed, 0.201);
 
-    cursorDarkBlue.x = MathUtil.coolLerp(cursorDarkBlue.x, cursorLocIntended.x, lerpAmnt * 0.2);
-    cursorDarkBlue.y = MathUtil.coolLerp(cursorDarkBlue.y, cursorLocIntended.y, lerpAmnt * 0.2);
+    cursorDarkBlue.x = MathUtil.smoothLerpPrecision(cursorDarkBlue.x, cursorLocIntended.x, elapsed, 0.403);
+    cursorDarkBlue.y = MathUtil.smoothLerpPrecision(cursorDarkBlue.y, cursorLocIntended.y, elapsed, 0.403);
 
     cursorConfirmed.x = cursor.x - 2;
     cursorConfirmed.y = cursor.y - 4;
@@ -921,6 +947,7 @@ class CharSelectSubState extends MusicBeatSubState
 
   function doBop(icon:PixelatedIcon, elapsed:Float):Void
   {
+    if (bopInfo == null) return;
     if (bopFr >= bopInfo.frames.length)
     {
       bopRefX = 0;
@@ -1063,6 +1090,25 @@ class CharSelectSubState extends MusicBeatSubState
     return gridPosition;
   }
 
+  // Moved this code into a function because is now used twice
+  function setCursorPosition(index:Int)
+  {
+    var copy = 3;
+    var yThing = -1;
+
+    while ((index + 1) > copy)
+    {
+      yThing++;
+      copy += 3;
+    }
+
+    var xThing = (copy - index - 2) * -1;
+
+    // Look, I'd write better code but I had better aneurysms, my bad - Cheems
+    cursorY = yThing;
+    cursorX = xThing;
+  }
+
   function set_curChar(value:String):String
   {
     if (curChar == value) return value;
@@ -1113,3 +1159,11 @@ class CharSelectSubState extends MusicBeatSubState
     return value;
   }
 }
+
+/**
+  * Parameters used to initialize the CharSelectSubState.
+ */
+typedef CharSelectSubStateParams =
+{
+  ?character:String, // ?fromFreeplaySelect:Bool,
+};

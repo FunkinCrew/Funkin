@@ -207,10 +207,10 @@ class HealthIcon extends FunkinSprite
 
     if (bopEvery != 0)
     {
-      lerpIconSize();
+      lerpIconSize(false, elapsed);
 
       // Lerp the health icon back to its normal angle.
-      this.angle = MathUtil.coolLerp(this.angle, 0, 0.15);
+      this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, elapsed, 0.511);
     }
 
     this.updatePosition();
@@ -221,14 +221,14 @@ class HealthIcon extends FunkinSprite
    * Mainly forced when changing to old icon to not have a weird lerp related to changing from pixel icon to non-pixel old icon
    * @param force Force the icon immedialtely to be the target size. Defaults to false.
    */
-  function lerpIconSize(force:Bool = false):Void
+  function lerpIconSize(force:Bool = false, ?elapsed:Float):Void
   {
     // Lerp the health icon back to its normal size,
     // while maintaining aspect ratio.
     if (this.width > this.height)
     {
       // Apply linear interpolation while accounting for frame rate.
-      var targetSize:Int = Std.int(MathUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
+      var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.width, HEALTH_ICON_SIZE * this.size.x, elapsed ?? FlxG.elapsed, 0.511));
 
       if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.x);
 
@@ -236,7 +236,7 @@ class HealthIcon extends FunkinSprite
     }
     else
     {
-      var targetSize:Int = Std.int(MathUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
+      var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.height, HEALTH_ICON_SIZE * this.size.y, elapsed ?? FlxG.elapsed, 0.511));
 
       if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.y);
 

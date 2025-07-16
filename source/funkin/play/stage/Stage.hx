@@ -30,10 +30,6 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
-  public final id:String;
-
-  public final _data:StageData;
-
   public var stageName(get, never):String;
 
   function get_stageName():String
@@ -252,8 +248,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       propSprite.scrollFactor.y = dataProp.scroll[1];
 
       propSprite.angle = dataProp.angle;
-      propSprite.color = FlxColor.fromString(dataProp.color);
-      @:privateAccess if (!isSolidColor) propSprite.blend = BlendMode.fromString(dataProp.blend);
+      if (!isSolidColor) propSprite.color = FlxColor.fromString(dataProp.color);
+      @:privateAccess propSprite.blend = BlendMode.fromString(dataProp.blend);
 
       propSprite.zIndex = dataProp.zIndex;
 
@@ -859,16 +855,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
-  public override function toString():String
-  {
-    return 'Stage($id)';
-  }
-
-  static function _fetchData(id:String):Null<StageData>
-  {
-    return StageRegistry.instance.parseEntryDataWithMigration(id, StageRegistry.instance.fetchEntryVersion(id));
-  }
-
   public function onScriptEvent(event:ScriptEvent)
   {
     // Ensure all custom events get broadcast to the elements of the stage.
@@ -900,6 +886,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 
   public function onSongEvent(event:SongEventScriptEvent) {}
 

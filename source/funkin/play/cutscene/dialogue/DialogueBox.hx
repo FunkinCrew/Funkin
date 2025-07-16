@@ -5,7 +5,6 @@ import funkin.data.IRegistryEntry;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.graphics.FunkinSprite;
-import flixel.addons.text.FlxTypeText;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.events.ScriptEvent;
 import funkin.audio.FunkinSound;
@@ -16,16 +15,12 @@ import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
 
 class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<DialogueBoxData>
 {
-  public final id:String;
-
   public var dialogueBoxName(get, never):String;
 
   function get_dialogueBoxName():String
   {
     return _data.name ?? 'UNKNOWN';
   }
-
-  public final _data:DialogueBoxData;
 
   /**
    * Offset the speaker's sprite by this much when playing each animation.
@@ -70,7 +65,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   }
 
   var boxSprite:FlxSprite;
-  var textDisplay:FlxTypeText;
+  var textDisplay:FunkinTypeText;
 
   var text(default, set):String;
 
@@ -247,8 +242,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     var animNames:Array<String> = this.boxSprite?.animation?.getNameList() ?? [];
     trace('[DIALOGUE BOX] Successfully loaded ${animNames.length} animations for ${id}');
 
-    boxSprite.animation.callback = this.onAnimationFrame;
-    boxSprite.animation.finishCallback = this.onAnimationFinished;
+    boxSprite.animation.onFrameChange.add(this.onAnimationFrame);
+    boxSprite.animation.onFinish.add(this.onAnimationFinished);
   }
 
   /**
@@ -277,7 +272,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
   function loadText():Void
   {
-    textDisplay = new FlxTypeText(0, 0, 300, '', 32);
+    textDisplay = new FunkinTypeText(0, 0, 300, '', 32);
     textDisplay.fieldWidth = _data.text.width;
     textDisplay.setFormat(_data.text.fontFamily, _data.text.size, FlxColor.fromString(_data.text.color), LEFT, SHADOW,
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
@@ -419,14 +414,4 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {}
-
-  public override function toString():String
-  {
-    return 'DialogueBox($id)';
-  }
-
-  static function _fetchData(id:String):Null<DialogueBoxData>
-  {
-    return DialogueBoxRegistry.instance.parseEntryDataWithMigration(id, DialogueBoxRegistry.instance.fetchEntryVersion(id));
-  }
 }

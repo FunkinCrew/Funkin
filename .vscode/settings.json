@@ -151,6 +151,16 @@
       "args": ["-debug", "-DRESULTS"]
     },
     {
+      "label": "Windows / Debug (Straight to Stage Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DSTAGING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Stage Builder)",
+      "target": "windows",
+      "args": ["-debug", "-DSTAGEBUILD", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
       "label": "Windows / Debug (Straight to Animation Editor)",
       "target": "windows",
       "args": ["-debug", "-DANIMDEBUG", "-DFEATURE_DEBUG_FUNCTIONS"]

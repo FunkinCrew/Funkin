@@ -12,6 +12,7 @@ import funkin.util.SortUtil;
  * The graphic for the album roll in the FreeplayState.
  * Simply set `albumID` to fetch the required data and update the textures.
  */
+@:nullSafety
 class AlbumRoll extends FlxSpriteGroup
 {
   /**
@@ -32,13 +33,13 @@ class AlbumRoll extends FlxSpriteGroup
   }
 
   var newAlbumArt:FlxAtlasSprite;
-  var albumTitle:FunkinSprite;
+  var albumTitle:Null<FunkinSprite> = null;
 
   var difficultyStars:DifficultyStars;
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
   var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
 
-  var albumData:Album;
+  var albumData:Null<Album> = null;
 
   final animNames:Map<String, String> = [
     "volume1-active" => "ENTRANCE",
@@ -58,16 +59,17 @@ class AlbumRoll extends FlxSpriteGroup
 
     newAlbumArt = new FlxAtlasSprite(640, 360, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
     newAlbumArt.visible = false;
-    newAlbumArt.onAnimationComplete.add(onAlbumFinish);
-
-    add(newAlbumArt);
 
     difficultyStars = new DifficultyStars(140, 39);
     difficultyStars.visible = false;
+
+    add(newAlbumArt);
     add(difficultyStars);
 
     buildAlbumTitle("freeplay/albumRoll/volume1-text");
-    albumTitle.visible = false;
+    if (albumTitle != null) albumTitle.visible = false;
+
+    newAlbumArt.onAnimationComplete.add(onAlbumFinish);
   }
 
   function onAlbumFinish(animName:String):Void
@@ -91,20 +93,16 @@ class AlbumRoll extends FlxSpriteGroup
     if (albumId == null)
     {
       this.visible = false;
-      difficultyStars.stars.visible = false;
       return;
     }
     else
-    {
       this.visible = true;
-    }
 
     albumData = AlbumRegistry.instance.fetchEntry(albumId);
 
     if (albumData == null)
     {
       FlxG.log.warn('Could not find album data for album ID: ${albumId}');
-
       return;
     };
 
@@ -113,9 +111,7 @@ class AlbumRoll extends FlxSpriteGroup
     newAlbumArt.replaceFrameGraphic(0, albumGraphic);
 
     buildAlbumTitle(albumData.getAlbumTitleAssetKey(), albumData.getAlbumTitleOffsets());
-
     applyExitMovers();
-
     refresh();
   }
 
@@ -174,7 +170,7 @@ class AlbumRoll extends FlxSpriteGroup
    */
   public function playIntro():Void
   {
-    albumTitle.visible = false;
+    if (albumTitle != null) albumTitle.visible = false;
     newAlbumArt.visible = true;
     newAlbumArt.playAnimation('intro', true);
 
@@ -182,7 +178,7 @@ class AlbumRoll extends FlxSpriteGroup
     new FlxTimer().start(0.75, function(_) {
       showTitle();
       showStars();
-      albumTitle.animation.play('switch');
+      if (albumTitle != null) albumTitle.animation.play('switch');
     });
   }
 
@@ -190,12 +186,12 @@ class AlbumRoll extends FlxSpriteGroup
   {
     // Weird workaround
     newAlbumArt.playAnimation('switch', true);
-    albumTitle.animation.play('switch');
+    if (albumTitle != null) albumTitle.animation.play('switch');
   }
 
   public function showTitle():Void
   {
-    albumTitle.visible = true;
+    if (albumTitle != null) albumTitle.visible = true;
   }
 
   public function buildAlbumTitle(assetKey:String, ?titleOffsets:Null<Array<Float>>):Void
@@ -218,7 +214,7 @@ class AlbumRoll extends FlxSpriteGroup
     add(albumTitle);
 
     albumTitle.animation.onFinish.add(function(name) {
-      if (name == 'switch') albumTitle.animation.play('idle');
+      if (name == 'switch' && albumTitle != null) albumTitle.animation.play('idle');
     });
     albumTitle.animation.play('idle');
 

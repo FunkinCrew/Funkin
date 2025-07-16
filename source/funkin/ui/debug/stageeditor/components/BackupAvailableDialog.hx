@@ -5,14 +5,13 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import funkin.util.FileUtil;
 import haxe.io.Path;
 import funkin.util.DateUtil;
-import funkin.util.WindowUtil;
 
 using StringTools;
 
 @:xml('
 <dialog id="backupAvailableDialog" width="475" height="150" title="Hey! Listen!">
 	<vbox width="100%" height="100%">
-		<label text="There is a chart backup available, would you like to open it?\n" width="100%" textAlign="center" />
+		<label text="There is a stage backup available, would you like to open it?\n" width="100%" textAlign="center" />
 		<spacer height="6" />
 		<label id="backupTimeLabel" text="Jan 1, 1970 0:00" width="100%" textAlign="center" />
 		<spacer height="100%" />
@@ -32,7 +31,7 @@ class BackupAvailableDialog extends Dialog
   {
     super();
 
-    if (!FileUtil.doesFileExist(filePath)) return;
+    if (!FileUtil.fileExists(filePath)) return;
 
     // time text
     var fileDate = Path.withoutExtension(Path.withoutDirectory(filePath));
@@ -57,12 +56,12 @@ class BackupAvailableDialog extends Dialog
       // :[
       #if sys
       var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorState.BACKUPS_PATH]);
-      WindowUtil.openFolder(absoluteBackupsPath);
+      FileUtil.openFolder(absoluteBackupsPath);
       #end
     }
 
     buttonOpenBackup.onClick = function(_) {
-      if (FileUtil.doesFileExist(filePath) && state.welcomeDialog != null) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
+      if (FileUtil.fileExists(filePath) && state.welcomeDialog != null) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
       {
         state.welcomeDialog.loadFromFilePath(filePath);
       }

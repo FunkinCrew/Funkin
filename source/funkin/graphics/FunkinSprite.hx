@@ -17,6 +17,7 @@ import flixel.FlxCamera;
  * - A more efficient method for creating solid color sprites.
  * - TODO: Better cache handling for textures.
  */
+@:nullSafety
 class FunkinSprite extends FlxSprite
 {
   /**
@@ -158,9 +159,14 @@ class FunkinSprite extends FlxSprite
    * @param input The OpenFL `TextureBase` to apply
    * @return This sprite, for chaining
    */
-  public function loadTextureBase(input:TextureBase):FunkinSprite
+  public function loadTextureBase(input:TextureBase):Null<FunkinSprite>
   {
-    var inputBitmap:FixedBitmapData = FixedBitmapData.fromTexture(input);
+    var inputBitmap:Null<FixedBitmapData> = FixedBitmapData.fromTexture(input);
+    if (inputBitmap == null)
+    {
+      FlxG.log.warn('loadTextureBase - input resulted in null bitmap! $input');
+      return null;
+    }
 
     return loadBitmapData(inputBitmap);
   }
@@ -219,7 +225,7 @@ class FunkinSprite extends FlxSprite
       // Move the graphic from the previous cache to the current cache.
       var graphic = previousCachedTextures.get(key);
       previousCachedTextures.remove(key);
-      currentCachedTextures.set(key, graphic);
+      if (graphic != null) currentCachedTextures.set(key, graphic);
       return;
     }
 
@@ -271,8 +277,9 @@ class FunkinSprite extends FlxSprite
 
   static function isGraphicCached(graphic:FlxGraphic):Bool
   {
+    var result = null;
     if (graphic == null) return false;
-    var result = FlxG.bitmap.get(graphic.key);
+    result = FlxG.bitmap.get(graphic.key);
     if (result == null) return false;
     if (result != graphic)
     {
@@ -288,8 +295,9 @@ class FunkinSprite extends FlxSprite
    */
   public function isAnimationDynamic(id:String):Bool
   {
+    var animData = null;
     if (this.animation == null) return false;
-    var animData = this.animation.getByName(id);
+    animData = this.animation.getByName(id);
     if (animData == null) return false;
     return animData.numFrames > 1;
   }
@@ -428,6 +436,7 @@ class FunkinSprite extends FlxSprite
 
   public override function destroy():Void
   {
+    @:nullSafety(Off) // TODO: Remove when flixel.FlxSprite is null safed.
     frames = null;
     // Cancel all tweens so they don't continue to run on a destroyed sprite.
     // This prevents crashes.

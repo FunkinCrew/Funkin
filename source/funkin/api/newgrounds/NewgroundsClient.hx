@@ -149,6 +149,9 @@ class NewgroundsClient
     Save.instance.ngSessionId = null;
   }
 
+  /**
+   * @return `true` if the user is logged in to Newgrounds.
+   */
   public function isLoggedIn():Bool
   {
     #if FEATURE_NEWGROUNDS
@@ -326,6 +329,24 @@ class NewgroundsClient
 
     // We have to fetch the session ID from the save file.
     return Save.instance.ngSessionId;
+  }
+}
+
+/**
+ * Wrapper for `NewgroundsClient` that prevents submitting cheated data.
+ */
+class NewgroundsClientSandboxed
+{
+  public static var user(get, never):Null<User>;
+
+  static function get_user()
+  {
+    return NewgroundsClient.instance.user;
+  }
+
+  public static function isLoggedIn()
+  {
+    return NewgroundsClient.instance.isLoggedIn();
   }
 }
 #end

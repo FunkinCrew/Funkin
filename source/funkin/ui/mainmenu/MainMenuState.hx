@@ -21,13 +21,15 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
+import funkin.api.newgrounds.Referral;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
 #if FEATURE_NEWGROUNDS
-import io.newgrounds.NG;
+import funkin.api.newgrounds.NewgroundsClient;
 #end
 
+@:nullSafety
 class MainMenuState extends MusicBeatState
 {
   var menuItems:MenuTypedList<AtlasMenuItem>;
@@ -39,10 +41,14 @@ class MainMenuState extends MusicBeatState
 
   static var rememberedSelectedIndex:Int = 0;
 
-  public function new(?_overrideMusic:Bool = false)
+  public function new(_overrideMusic:Bool = false)
   {
     super();
     overrideMusic = _overrideMusic;
+
+    menuItems = new MenuTypedList<AtlasMenuItem>();
+    magenta = new FlxSprite(Paths.image('menuBGMagenta'));
+    camFollow = new FlxObject(0, 0, 1, 1);
   }
 
   override function create():Void
@@ -70,10 +76,8 @@ class MainMenuState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    camFollow = new FlxObject(0, 0, 1, 1);
     add(camFollow);
 
-    magenta = new FlxSprite(Paths.image('menuBGMagenta'));
     magenta.scrollFactor.x = bg.scrollFactor.x;
     magenta.scrollFactor.y = bg.scrollFactor.y;
     magenta.setGraphicSize(Std.int(bg.width));
@@ -86,7 +90,6 @@ class MainMenuState extends MusicBeatState
 
     if (Preferences.flashingLights) add(magenta);
 
-    menuItems = new MenuTypedList<AtlasMenuItem>();
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
@@ -98,15 +101,17 @@ class MainMenuState extends MusicBeatState
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
       persistentDraw = true;
       persistentUpdate = false;
+      rememberedSelectedIndex = menuItems.selectedIndex;
       // Freeplay has its own custom transition
       FlxTransitionableState.skipNextTransIn = true;
       FlxTransitionableState.skipNextTransOut = true;
 
+      var rememberedFreeplayCharacter = FreeplayState.rememberedCharacterId;
       #if FEATURE_DEBUG_FUNCTIONS
       // Debug function: Hold SHIFT when selecting Freeplay to swap character without the char select menu
-      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : null;
+      var targetCharacter:Null<String> = (FlxG.keys.pressed.SHIFT) ? (FreeplayState.rememberedCharacterId == "pico" ? "bf" : "pico") : rememberedFreeplayCharacter;
       #else
-      var targetCharacter:Null<String> = null;
+      var targetCharacter:Null<String> = rememberedFreeplayCharacter;
       #end
 
       openSubState(new FreeplayState(
@@ -152,7 +157,7 @@ class MainMenuState extends MusicBeatState
     subStateClosed.add(_ -> resetCamStuff(false));
 
     subStateOpened.add(sub -> {
-      if (Type.getClass(sub) == FreeplayState)
+      if (Std.isOfType(sub, FreeplayState))
       {
         new FlxTimer().start(0.5, _ -> {
           magenta.visible = false;
@@ -165,14 +170,17 @@ class MainMenuState extends MusicBeatState
     super.create();
 
     // This has to come AFTER!
-    this.leftWatermarkText.text = Constants.VERSION;
-
-    #if FEATURE_NEWGROUNDS
-    if (NG.core?.loggedIn)
+    if (this.leftWatermarkText != null)
     {
-      this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NG.core?.user?.name}';
+      this.leftWatermarkText.text = Constants.VERSION;
+
+      #if FEATURE_NEWGROUNDS
+      if (NewgroundsClient.instance.isLoggedIn())
+      {
+        this.leftWatermarkText.text += ' | Newgrounds: Logged in as ${NewgroundsClient.instance.user?.name}';
+      }
+      #end
     }
-    #end
   }
 
   function playMenuMusic():Void
@@ -186,7 +194,7 @@ class MainMenuState extends MusicBeatState
       });
   }
 
-  function resetCamStuff(?snap:Bool = true):Void
+  function resetCamStuff(snap:Bool = true):Void
   {
     FlxG.camera.follow(camFollow, null, 0.06);
 
@@ -233,18 +241,11 @@ class MainMenuState extends MusicBeatState
 
   function selectMerch()
   {
-    NG.core?.calls.loader.loadReferral(false)
-      .addComponentParameter("referral_name", "merch_link")
-      .addResponseHandler(response -> {
-        if (response.success) WindowUtil.openURL(response.result.data.url)
-        else
-          WindowUtil.openURL(Constants.URL_MERCH_FALLBACK);
-      })
-      .send();
+    Referral.doMerchReferral();
   }
   #end
 
-  public function openPrompt(prompt:Prompt, onClose:Void->Void):Void
+  public function openPrompt(prompt:Prompt, ?onClose:Void->Void):Void
   {
     menuItems.enabled = false;
     persistentUpdate = false;
@@ -289,7 +290,7 @@ class MainMenuState extends MusicBeatState
       {
         for (item in menuItems)
         {
-          if (touch.overlaps(item))
+          if (item != null && touch.overlaps(item))
           {
             if (menuItems.selectedIndex == item.ID && touch.justPressed) menuItems.accept();
             else
@@ -306,6 +307,9 @@ class MainMenuState extends MusicBeatState
     if (controls.DEBUG_MENU)
     {
       persistentUpdate = false;
+
+      // Cancel the currently flickering menu item because it's about to call a state switch
+      if (menuItems.busy) menuItems.cancelAccept();
 
       FlxG.state.openSubState(new DebugMenuSubState());
     }
@@ -419,6 +423,7 @@ class MainMenuState extends MusicBeatState
 
     if (controls.BACK && menuItems.enabled && !menuItems.busy)
     {
+      rememberedSelectedIndex = menuItems.selectedIndex;
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }

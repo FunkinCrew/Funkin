@@ -1,10 +1,12 @@
 package funkin;
 
 import funkin.save.Save;
+import funkin.util.WindowUtil;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
  */
+@:nullSafety
 class Preferences
 {
   /**
@@ -44,7 +46,7 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
-    return Save?.instance?.options?.naughtyness;
+    return Save?.instance?.options?.naughtyness ?? true;
   }
 
   static function set_naughtyness(value:Bool):Bool
@@ -63,7 +65,7 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll;
+    return Save?.instance?.options?.downscroll ?? false;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -101,7 +103,7 @@ class Preferences
 
   static function get_zoomCamera():Bool
   {
-    return Save?.instance?.options?.zoomCamera;
+    return Save?.instance?.options?.zoomCamera ?? true;
   }
 
   static function set_zoomCamera(value:Bool):Bool
@@ -120,7 +122,7 @@ class Preferences
 
   static function get_debugDisplay():Bool
   {
-    return Save?.instance?.options?.debugDisplay;
+    return Save?.instance?.options?.debugDisplay ?? false;
   }
 
   static function set_debugDisplay(value:Bool):Bool
@@ -176,11 +178,58 @@ class Preferences
     return value;
   }
 
+  /**
+   * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
+   * @default `OFF`
+   */
+  public static var vsyncMode(get, set):lime.ui.WindowVSyncMode;
+
+  static function get_vsyncMode():lime.ui.WindowVSyncMode
+  {
+    var value = Save?.instance?.options?.vsyncMode ?? "Off";
+
+    return switch (value)
+    {
+      case "Off":
+        lime.ui.WindowVSyncMode.OFF;
+      case "On":
+        lime.ui.WindowVSyncMode.ON;
+      case "Adaptive":
+        lime.ui.WindowVSyncMode.ADAPTIVE;
+      default:
+        lime.ui.WindowVSyncMode.OFF;
+    };
+  }
+
+  static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
+  {
+    var string;
+
+    switch (value)
+    {
+      case lime.ui.WindowVSyncMode.OFF:
+        string = "Off";
+      case lime.ui.WindowVSyncMode.ON:
+        string = "On";
+      case lime.ui.WindowVSyncMode.ADAPTIVE:
+        string = "Adaptive";
+      default:
+        string = "Off";
+    };
+
+    WindowUtil.setVSyncMode(value);
+
+    var save:Save = Save.instance;
+    save.options.vsyncMode = string;
+    save.flush();
+    return value;
+  }
+
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
   {
-    return Save?.instance?.options?.unlockedFramerate;
+    return Save?.instance?.options?.unlockedFramerate ?? false;
   }
 
   static function set_unlockedFramerate(value:Bool):Bool
@@ -296,50 +345,13 @@ class Preferences
   }
 
   /**
-   * The game will save any screenshots taken to this format.
-   * @default `PNG`
-   */
-  public static var saveFormat(get, set):Any;
-
-  static function get_saveFormat():Any
-  {
-    return Save?.instance?.options?.screenshot?.saveFormat ?? 'PNG';
-  }
-
-  static function set_saveFormat(value):Any
-  {
-    var save:Save = Save.instance;
-    save.options.screenshot.saveFormat = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * The game will save JPEG screenshots with this quality percentage.
-   * @default `80`
-   */
-  public static var jpegQuality(get, set):Int;
-
-  static function get_jpegQuality():Int
-  {
-    return Save?.instance?.options?.screenshot?.jpegQuality ?? 80;
-  }
-
-  static function set_jpegQuality(value:Int):Int
-  {
-    var save:Save = Save.instance;
-    save.options.screenshot.jpegQuality = value;
-    save.flush();
-    return value;
-  }
-
-  /**
    * Loads the user's preferences from the save data and apply them.
    */
   public static function init():Void
   {
     // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
+    // WindowUtil.setVSyncMode(Preferences.vsyncMode);
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
     #if web

@@ -3,6 +3,7 @@ package funkin.ui.freeplay;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
+@:nullSafety
 class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 {
   public var scoreShit(default, set):Int = 0;
@@ -12,7 +13,10 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
     if (group == null || group.members == null) return val;
     var loopNum:Int = group.members.length - 1;
     var dumbNumb = Std.parseInt(Std.string(val));
+    if (dumbNumb == null) dumbNumb = 0;
     var prevNum:ScoreNum;
+
+    dumbNumb = Std.int(Math.min(dumbNumb, Math.pow(10, group.members.length) - 1));
 
     while (dumbNumb > 0)
     {
@@ -33,7 +37,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
       loopNum--;
     }
 
-    while (loopNum > 0)
+    while (loopNum >= 0)
     {
       group.members[loopNum].digit = 0;
       loopNum--;
@@ -67,6 +71,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
   }
 }
 
+@:nullSafety
 class ScoreNum extends FlxSprite
 {
   public var digit(default, set):Int = 0;
@@ -128,7 +133,7 @@ class ScoreNum extends FlxSprite
       animation.addByPrefix(stringNum, '$stringNum DIGITAL', 24, false);
     }
 
-    this.digit = initDigit;
+    this.digit = initDigit ?? 0;
 
     animation.play(numToString[digit], true);
 
