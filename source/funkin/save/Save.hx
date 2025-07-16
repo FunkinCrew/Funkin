@@ -123,7 +123,7 @@ class Save
           zoomCamera: true,
           debugDisplay: false,
           hapticsMode: 'All',
-          hapticsIntensityMultiplier: 2.5,
+          hapticsIntensityMultiplier: 1,
           autoPause: true,
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
@@ -1557,7 +1557,7 @@ typedef SaveDataOptions =
 
   /**
    * Multiplier of intensity for all the haptic feedback effects.
-   * @default `2.5`
+   * @default `1`
    */
   var hapticsIntensityMultiplier:Float;
 

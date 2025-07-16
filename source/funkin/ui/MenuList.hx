@@ -18,6 +18,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
   // Pause input variable
   public static var pauseInput:Bool = false;
+
   public var selectedIndex(default, null):Int = 0;
   public var selectedItem(get, never):T;
 
@@ -180,7 +181,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
               item.scale.set(1.1, 1.1);
               FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
 
-              HapticUtil.vibrate(0, 0.05, 0.5);
+              HapticUtil.vibrate(0, 0.05, 1);
               accept();
             }
             else
@@ -189,7 +190,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
               item.scale.set(0.94, 0.94);
               FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
 
-              HapticUtil.vibrate(0, 0.01, 0.2);
+              HapticUtil.vibrate(0, 0.01, 0.5);
             }
           }
           else

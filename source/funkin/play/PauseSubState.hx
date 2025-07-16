@@ -536,7 +536,7 @@ class PauseSubState extends MusicBeatSubState
     FlxTween.tween(pauseCircle, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
 
     hapticTimer.start(0.2, function(_) {
-      HapticUtil.vibrate(0, 0.01, 0.2);
+      HapticUtil.vibrate(0, 0.01, 0.5);
     });
 
     dataFadeTimer.start(0.3, function(_) {
@@ -640,12 +640,12 @@ class PauseSubState extends MusicBeatSubState
         if (i == currentEntry)
         {
           currentMenuEntries[currentEntry].callback(this);
-          HapticUtil.vibrate(0, 0.05, 0.5);
+          HapticUtil.vibrate(0, 0.05, 1);
           break;
         }
 
         changeSelection(i - currentEntry);
-        HapticUtil.vibrate(0, 0.01, 0.2);
+        HapticUtil.vibrate(0, 0.01, 0.5);
 
         break;
       }

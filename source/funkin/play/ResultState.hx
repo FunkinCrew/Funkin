@@ -773,7 +773,7 @@ class ResultState extends MusicBeatSubState
               // GF slams into the wall.
               if (atlas.sprite.anim.curFrame == 51)
               {
-                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
+                HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
                 break;
               }
 
@@ -797,7 +797,7 @@ class ResultState extends MusicBeatSubState
               // Pico shoots.
               if (atlas.sprite.anim.curFrame == 45)
               {
-                HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
+                HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
                 break;
               }
 

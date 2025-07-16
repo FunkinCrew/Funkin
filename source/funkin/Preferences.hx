@@ -211,7 +211,7 @@ class Preferences
 
   static function get_hapticsIntensityMultiplier():Float
   {
-    return Save?.instance?.options?.hapticsIntensityMultiplier ?? 2.5;
+    return Save?.instance?.options?.hapticsIntensityMultiplier ?? 1;
   }
 
   static function set_hapticsIntensityMultiplier(value:Float):Float

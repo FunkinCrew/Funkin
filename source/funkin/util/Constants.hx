@@ -614,7 +614,7 @@ class Constants
   /**
    * Min vibration amplitude.
    */
-  public inline static final MIN_VIBRATION_AMPLITUDE:Float = 0.1;
+  public inline static final MIN_VIBRATION_AMPLITUDE:Float = 0.25;
 
   /**
    * Default vibration amplitude.
