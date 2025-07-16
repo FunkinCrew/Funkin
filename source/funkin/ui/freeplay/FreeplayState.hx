@@ -767,7 +767,6 @@ class FreeplayState extends MusicBeatSubState
       fadeDots(true);
 
       #if FEATURE_TOUCH_CONTROLS
-      SwipeUtil.calculateSwipeThreshold(grpCapsules.members, Y);
       FlxG.touches.swipeThreshold.x = 60;
       #end
     };

@@ -745,9 +745,6 @@ class PauseSubState extends MusicBeatSubState
     clearAndAddMenuEntries();
     updateMetadataText();
     changeSelection();
-    #if FEATURE_TOUCH_CONTROLS
-    SwipeUtil.calculateSwipeThreshold(menuEntryText.members, Y);
-    #end
   }
 
   /**

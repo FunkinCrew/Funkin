@@ -257,6 +257,9 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     onMenuChange(items.members[0]);
 
     items.selectItem(OptionsState.rememberedSelectedIndex);
+    #if FEATURE_TOUCH_CONTROLS
+    FlxG.touches.swipeThreshold.y = 100;
+    #end
   }
 
   function onMenuChange(selected:TextMenuItem):Void
