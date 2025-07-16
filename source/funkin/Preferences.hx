@@ -205,13 +205,13 @@ class Preferences
 
   /**
    * Multiplier of intensity for all the haptic feedback effects.
-   * @default `1`
+   * @default `2.5`
    */
   public static var hapticsIntensityMultiplier(get, set):Float;
 
   static function get_hapticsIntensityMultiplier():Float
   {
-    return Save?.instance?.options?.hapticsIntensityMultiplier ?? 1;
+    return Save?.instance?.options?.hapticsIntensityMultiplier ?? 2.5;
   }
 
   static function set_hapticsIntensityMultiplier(value:Float):Float

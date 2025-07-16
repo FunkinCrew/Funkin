@@ -137,7 +137,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       });
     createPrefItemNumber('Haptics Intensity', 'Multiplier of intensity for all the haptic feedback effects.', function(value:Float) {
       Preferences.hapticsIntensityMultiplier = value;
-    }, null, Preferences.hapticsIntensityMultiplier, 0, 2, 0.1, 0);
+    }, null, Preferences.hapticsIntensityMultiplier, 0, 5, 0.1, 1);
     #end
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
