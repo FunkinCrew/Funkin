@@ -1593,7 +1593,7 @@ class FreeplayState extends MusicBeatSubState
     if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
 
     // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
-    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, Constants.MAX_VIBRATION_AMPLITUDE / 3);
+    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
   }
 
   function calculateCompletion():Void
@@ -1829,7 +1829,7 @@ class FreeplayState extends MusicBeatSubState
           curSelected = i;
           changeSelection(0);
           FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-          HapticUtil.vibrate(0, 0.01, 0.2);
+          HapticUtil.vibrate(0, 0.01, 0.5);
         }
         break;
       }
@@ -1990,7 +1990,7 @@ class FreeplayState extends MusicBeatSubState
       // If we press onto our difficulty, we want to "grab" it rather than simply check if we are overlapping
       if (TouchUtil.overlapsComplex(currentDifficultySprite, funnyCam) && TouchUtil.justPressed && !draggingDifficulty)
       {
-        HapticUtil.vibrate(0, 0.01, 0.15, 0.4);
+        HapticUtil.vibrate(0, 0.01, 0.375, 0.4);
         draggingDifficulty = true;
       }
 
@@ -2003,7 +2003,7 @@ class FreeplayState extends MusicBeatSubState
       var vibDist:Float = 5; // essentially how far the touch needs to be before it will trigger a tiny haptic feel
       if (Std.int((TouchUtil.touch.x - _dragOffset) / vibDist) * vibDist != _prevRoundedDragOffset)
       {
-        HapticUtil.vibrate(0, 0.01, 0.08, 0.8);
+        HapticUtil.vibrate(0, 0.01, 0.2, 0.8);
       }
       _prevRoundedDragOffset = Std.int((TouchUtil.touch.x - _dragOffset) / vibDist) * vibDist;
 
@@ -2215,7 +2215,7 @@ class FreeplayState extends MusicBeatSubState
     }
     if (change != 0)
     {
-      HapticUtil.vibrate(0, 0.01, 0.2, 0.1);
+      HapticUtil.vibrate(0, 0.01, 0.5, 0.1);
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
     }
 
@@ -2578,7 +2578,7 @@ class FreeplayState extends MusicBeatSubState
 
           // A single vibration.
           default:
-            HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE / 3);
+            HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
         }
       });
     }
@@ -2658,7 +2658,7 @@ class FreeplayState extends MusicBeatSubState
     if (curSelected != prevSelected)
     {
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-      HapticUtil.vibrate(0, 0.01, 0.2);
+      HapticUtil.vibrate(0, 0.01, 0.5);
       dj?.resetAFKTimer();
       _pressedOnSelected = false;
     }
@@ -2737,7 +2737,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Small vibrations every selection change.
-    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.2);
+    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

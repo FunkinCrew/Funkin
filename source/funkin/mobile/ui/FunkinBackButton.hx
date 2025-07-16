@@ -66,7 +66,7 @@ class FunkinBackButton extends FunkinButton
     held = true;
 
     FlxTween.cancelTweensOf(this);
-    HapticUtil.vibrate(0, 0.01, 0.2);
+    HapticUtil.vibrate(0, 0.01, 0.5);
     animation.play('hold');
 
     alpha = 1;

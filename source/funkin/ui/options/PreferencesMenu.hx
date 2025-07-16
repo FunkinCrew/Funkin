@@ -135,6 +135,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case HapticsMode.NONE: "None";
         default: "All";
       });
+    createPrefItemNumber('Haptics Intensity', 'Multiplier of intensity for all the haptic feedback effects.', function(value:Float) {
+      Preferences.hapticsIntensityMultiplier = value;
+    }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
     #end
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
@@ -267,8 +270,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param step The value to increment/decrement by (default = 0.1)
    * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
    */
-  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
-      step:Float = 0.1, precision:Int):Void
+  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Float, min:Float,
+      max:Float, step:Float = 0.1, precision:Int):Void
   {
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
       precision, onChange, valueFormatter);
