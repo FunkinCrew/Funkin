@@ -566,9 +566,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     // Resync logic
     var diff:Float = Math.abs((FlxG.sound.music.time + localConductor.combinedOffset) - localConductor.songPosition);
-    if (diff > 50)
+    var diffBg:Float = Math.abs(FlxG.sound.music.time - OptionsState.instance.drumsBG.time);
+    if (diff > 50 || diffBg > 50)
     {
-      trace('Resyncing conductor: ' + diff + 'ms difference');
+      trace('Resyncing conductor: ' + (diff > diffBg ? diff : diffBg) + 'ms difference');
 
       // If the difference is greater than 50ms, we resync the conductor.
       localConductor.update(FlxG.sound.music.time, true);
