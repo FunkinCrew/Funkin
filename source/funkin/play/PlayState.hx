@@ -2965,7 +2965,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     // 9: Toggle the old icon.
-    if (FlxG.keys.justPressed.NINE && iconP1 != null) iconP1.toggleOldIcon();
+    if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
+      && iconP1 != null) iconP1.toggleOldIcon();
 
     #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
