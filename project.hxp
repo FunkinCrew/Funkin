@@ -302,21 +302,21 @@ class Project extends HXProject
     configureHaxelibs();
     configureAssets();
     configureIcons();
-  }
+    configureALSoft();
+	}
 
-  /**
-   * Do something before building, display some ASCII or something IDK
-   */
-  function flair()
-  {
-    // TODO: Implement this.
-    info("Friday Night Funkin'");
-    info("Initializing build...");
+	/**
+	 * Do something before building, display some ASCII or something IDK
+	 */
+	function flair() {
+		// TODO: Implement this.
+		info("Friday Night Funkin'");
+		info("Initializing build...");
 
-    info("Target Version: " + VERSION);
-    info("Git Branch:     " + getGitBranch());
-    info("Git Commit:     " + getGitCommit());
-    info("Git Modified?   " + getGitModified());
+		info("Target Version: " + VERSION);
+		info("Git Branch:     " + getGitBranch());
+		info("Git Commit:     " + getGitCommit());
+		info("Git Modified?   " + getGitModified());
     info("Display?        " + isDisplay());
   }
 
@@ -841,10 +841,19 @@ class Project extends HXProject
     addIcon("art/iconOG.png");
   }
 
-  //
-  // HELPER FUNCTIONS
-  // Easy functions to make the code more readable.
-  //
+  /**
+   * For desktop platforms, copy the OpenALSoft config file into the build.
+   */
+  function configureALSoft() {
+    if (isDesktop()) {
+      addAsset("alsoft.txt", 'plugins/alsoft.${isWindows() ? "ini" : "conf"}', "default", false);
+    }
+  }
+
+	//
+	// HELPER FUNCTIONS
+	// Easy functions to make the code more readable.
+	//
 
   public function isWeb():Bool
   {
