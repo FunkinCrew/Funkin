@@ -500,7 +500,6 @@ class Project extends HXProject
     configureHaxelibs();
     configureAssets();
     configureIcons();
-    configureALSoft();
 
     readASTCExclusion();
 
@@ -1326,19 +1325,10 @@ class Project extends HXProject
     }
   }
 
-  /**
-   * For desktop platforms, copy the OpenALSoft config file into the build.
-   */
-  function configureALSoft() {
-    if (isDesktop()) {
-      addAsset("alsoft.txt", 'plugins/alsoft.${isWindows() ? "ini" : "conf"}', "default", false);
-    }
-  }
-
-	//
-	// HELPER FUNCTIONS
-	// Easy functions to make the code more readable.
-	//
+  //
+  // HELPER FUNCTIONS
+  // Easy functions to make the code more readable.
+  //
 
   public function isWeb():Bool
   {
