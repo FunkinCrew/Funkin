@@ -397,6 +397,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
         if (Preferences.downscroll) jumpInText.y = testStrumline.y - 175;
+        testStrumline.isDownscroll = Preferences.downscroll;
       #if mobile
       }
       #end
