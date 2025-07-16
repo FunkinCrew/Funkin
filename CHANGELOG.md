@@ -4,14 +4,19 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.2] - 2025-07-16
+## [0.7.2] - 2025-07-17
 
 ### Added
 
-- [MOBILE] The Android mods folder is now accessible through the Options menu.
+- [ANDROID] Added a button in the Options menu to access the mods folder.
+- [MOBILE] Added a preference to adjust the intensity of haptic feedback, ranging from 0.1 to 5.
+- [MOBILE] Added an easter egg when tapping the player's healthbar icon.
 
 ### Changed
 
+- Changed default OpenAL configuration settings to improve audio quality. (Thanks Smokey555, cyn0x8, and CCobaltDev!)
+  - The difference may be more or less noticeable on different devices and hardware.
+  - Applies to Desktop and Android, but not iOS yet.
 - Made several improvements to Polymod and HScript. These changes might break some mods, so please update them accordingly!
   - Fixed an issue where scripted classes can define two or more fields with the same name.
   - Fixed an issue causing some syntax errors (such as missing commas) to be ignored by the parser.
@@ -32,27 +37,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- [HTML5] Pausing while the train passes by on the Week 3 Erect stage no longer crashes.
+- [MOBILE] Weekend 1 Story Mode no longer crashes before loading into Blazin'.
+- [MOBILE] Beating 2hot from Freeplay no longer crashes in the Results screen.
 - [MOBILE] Retrying and pressing the Back button at the same time no longer crashes the game.
+- [MOBILE] Pressing the Options and Back buttons at the same time no longer softlocks the game.
+- [HTML5] Pausing while the train passes by on the Week 3 Erect stage no longer crashes.
 - [DESKTOP] Getting a Bad/Shit rating on Blazin' no longer breaks animations.
 - The scroll sound no longer plays once after entering Freeplay.
 - The Freeplay song preview and album cover now update properly when switching variations.
+- The Freeplay clear percent counter now consistently displays the correct value on unranked songs.
+- The Freeplay menu now correctly assigns the `currentCharacterId`. (Thanks TechnikTil!)
 - [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
 - The Input Offsets Test menu no longer generates stacked notes.
 - The Input Offsets Test menu drums no longer desync from the rest of the track.
 - The Input Offsets Test menu no longer breaks when a keyboard or controller is connected.
 - [MOBILE] Sustain trails now display properly with upscroll enabled.
-- [MOBILE] Added a Back button to the Controls menu.
+- [MOBILE] Added a Back button to the keyboard/gamepad Controls menu.
 - [iOS] Fixed app name spacing on the Home Screen.
 - [iOS] Adjusted the preloader to accommodate for different screen sizes.
 - [iOS] The Upgrade button no longer appears if you have already purchased it.
-- [ANDROID] Don't show toasts with blank messages.
+- [ANDROID] Fixed some issues with scrolling.
+- [ANDROID] Toasts with blank messages no longer appear.
 - Fixed a critical security vulnerability that could be exploited in mods.
+- A few more optimizations here and there.
 
 ### Removed
 
 - Removed console traces from release builds to improve performance.
   - Traces made by scripted classes will still appear.
+
+## New Contributors for 0.7.2
+
+* @Smokey555 made their first contribution in [#3318](https://github.com/FunkinCrew/Funkin/pull/3318)
+* @CCobaltDev made their first contribution in [#3318](https://github.com/FunkinCrew/Funkin/pull/3318)
 
 
 
