@@ -7,6 +7,7 @@ import funkin.mobile.ui.FunkinBackButton;
 #if mobile
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.mobile.input.ControlsHandler;
 import funkin.util.TouchUtil;
 #end
 import funkin.input.PreciseInputManager;
@@ -241,23 +242,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     testStrumline.cameras = [menuCamera];
 
-    #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
-    {
-      final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-      final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
-      final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
-
-      testStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
-      testStrumline.setNoteSpacing(playerNoteSpacing);
-      testStrumline.width *= 2;
-
-      testStrumline.x = (FlxG.width - testStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
-      testStrumline.y = (FlxG.height - testStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
-      testStrumline.y -= 10;
-    }
-    #end
-
     testStrumline.conductorInUse = localConductor;
     testStrumline.zIndex = 1001;
     for (strum in testStrumline)
@@ -369,18 +353,52 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       jumpInText.text = 'Hit the notes as they come in!';
       #if mobile
       if (OptionsState.instance.hitbox != null) OptionsState.instance.hitbox.visible = true;
+      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
+      {
+        final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+        final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
+        final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
+
+        testStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
+        testStrumline.setNoteSpacing(playerNoteSpacing);
+        testStrumline.width *= 2;
+
+        testStrumline.x = (FlxG.width - testStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
+        testStrumline.y = (FlxG.height - testStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
+        testStrumline.y -= 10;
+      }
+      else
+      {
+        if (testStrumline != null)
+        {
+          testStrumline.destroy();
+          remove(testStrumline);
+        }
+
+        testStrumline = new Strumline(noteStyle, true);
+        // center
+        testStrumline.setPosition(FlxG.width / 2, FlxG.height / 2);
+        testStrumline.x -= testStrumline.width / 2;
+        testStrumline.scrollFactor.set(0, 0);
+        add(testStrumline);
+      }
       #end
       MenuTypedList.pauseInput = true;
       OptionsState.instance.drumsBG.fadeIn(1, 0, 1);
       canExit = false;
       differences = [];
 
-      #if !mobile
-      testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
+      #if mobile
+      if (Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows || ControlsHandler.usingExternalInputDevice)
+      {
+      #end
+        testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
+        if (Preferences.downscroll) jumpInText.y = testStrumline.y - 175;
+      #if mobile
+      }
       #end
       jumpInText.y = testStrumline.y + 175;
-      #if !mobile if (Preferences.downscroll) #end jumpInText.y = testStrumline.y - 175;
     });
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
     PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
