@@ -552,7 +552,8 @@ class Project extends HXProject
     this.meta.title = TITLE;
 
     // ios uses this character code instead of spaces...
-    if (isIOS()) this.meta.title = ~/ /ig.replace(TITLE, "\u2002");
+    if (isIOS())
+      this.meta.title = ~/ /ig.replace(TITLE, "\u2002");
 
     this.meta.version = VERSION;
     this.meta.packageName = PACKAGE_NAME;
@@ -1260,19 +1261,18 @@ class Project extends HXProject
         androidTheme += "Fullscreen";
       }
 
-      final iconXmlChild:Dynamic =
-        {
-          "android:label": meta.title,
-          "android:allowBackup": "true",
-          "android:theme": androidTheme,
-          "android:hardwareAccelerated": "true",
-          "android:allowNativeHeapPointerTagging": ANDROID_TARGET_SDK_VERSION >= 30 ? "false" : null,
-          "android:largeHeap": "true",
-          "android:icon": "@mipmap/ic_launcher",
-          "android:roundIcon": "@mipmap/ic_launcher_round"
+      final iconXmlChild:Dynamic = {
+        "android:label": meta.title,
+        "android:allowBackup": "true",
+        "android:theme": androidTheme,
+        "android:hardwareAccelerated": "true",
+        "android:allowNativeHeapPointerTagging": ANDROID_TARGET_SDK_VERSION >= 30 ? "false" : null,
+        "android:largeHeap": "true",
+        "android:icon": "@mipmap/ic_launcher",
+        "android:roundIcon": "@mipmap/ic_launcher_round"
         };
 
-      config.set('android.application', iconXmlChild);
+        config.set('android.application',  iconXmlChild);
     }
     else if (isIOS())
     {
@@ -1329,18 +1329,16 @@ class Project extends HXProject
   /**
    * For desktop platforms, copy the OpenALSoft config file into the build.
    */
-  function configureALSoft()
-  {
-    if (isDesktop())
-    {
+  function configureALSoft() {
+    if (isDesktop()) {
       addAsset("alsoft.txt", 'plugins/alsoft.${isWindows() ? "ini" : "conf"}', "default", false);
     }
   }
 
-  //
-  // HELPER FUNCTIONS
-  // Easy functions to make the code more readable.
-  //
+	//
+	// HELPER FUNCTIONS
+	// Easy functions to make the code more readable.
+	//
 
   public function isWeb():Bool
   {
