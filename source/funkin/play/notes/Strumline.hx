@@ -162,7 +162,7 @@ class Strumline extends FlxSpriteGroup
   final inArrowContorlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice) #else false #end;
 
-  var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+  public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice)
     || #end Preferences.downscroll;
 
