@@ -17,9 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed an issue causing some syntax errors (such as missing commas) to be ignored by the parser.
   - Scripted classes can now create static fields and functions.
   - Scripted classes can now create variables with the `final` keyword.
-  - Scripted classes can no longer modify `final` variables within the game.
-  - Scripted classes can now access variables from another scripted class with `class.someVariable`, instead of `class.scriptGet(“someVariable”)`
-    - This applies to functions too: `class.someFunction()`
+  - Scripted classes can now access variables from another scripted class with `class.someVariable`, instead of `class.scriptGet("someVariable")`
+    - This applies to functions too: `class.someFunction()` 
   - Scripted classes that don't extend another class can now be created!
     - This only works if you access the class in a static context. Creating an instance of said class doesn't work just yet!
   - Added support for properties (`get_` and `set_` functions) (Thanks KoloInDaCrib!)
@@ -41,12 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
 - The Input Offsets Test menu no longer generates stacked notes.
 - The Input Offsets Test menu drums no longer desync from the rest of the track.
+- The Input Offsets Test menu no longer breaks when a keyboard or controller is connected.
 - [MOBILE] Sustain trails now display properly with upscroll enabled.
 - [MOBILE] Added a Back button to the Controls menu.
 - [iOS] Fixed app name spacing on the Home Screen.
 - [iOS] Adjusted the preloader to accommodate for different screen sizes.
 - [iOS] The Upgrade button no longer appears if you have already purchased it.
-- [ANDROID] Don’t show toasts with blank messages.
+- [ANDROID] Don't show toasts with blank messages.
 - Fixed a critical security vulnerability that could be exploited in mods.
 
 ### Removed
