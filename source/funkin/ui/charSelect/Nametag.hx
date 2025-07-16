@@ -23,9 +23,10 @@ class Nametag extends FlxSprite
     shader = mosaicShader;
 
     // So that's why there was that cursed sight (originally defaulted to bf)
-    if (character != null) switchChar(character);
+    // Made it not play the shader effect to prevent its being stuck, can't see it anyway.
+    if (character != null) switchChar(character, false);
     else
-      switchChar(Constants.DEFAULT_CHARACTER);
+      switchChar(Constants.DEFAULT_CHARACTER, false);
   }
 
   public function updatePosition():Void
@@ -37,9 +38,9 @@ class Nametag extends FlxSprite
     y -= offsetY;
   }
 
-  public function switchChar(str:String):Void
+  public function switchChar(str:String, playMosaicSequence:Bool = true):Void
   {
-    shaderEffect();
+    if (playMosaicSequence) shaderEffect();
 
     new FlxTimer().start(4 / 30, _ -> {
       var path:String = str;
@@ -54,7 +55,8 @@ class Nametag extends FlxSprite
       scale.x = scale.y = 0.77;
 
       updatePosition();
-      shaderEffect(true);
+
+      if (playMosaicSequence) shaderEffect(true);
     });
   }
 
