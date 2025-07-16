@@ -545,6 +545,8 @@ class PlayState extends MusicBeatSubState
    */
   public var comboPopUps:PopUpStuff;
 
+  public var isSongEnd:Bool = false;
+
   #if mobile
   /**
    * The pause button for the game, only appears in Mobile targets.
@@ -1052,7 +1054,7 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      #if mobile
+      #if ios
       // note scrolling is shit on mobile without the arguments!!!
       Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000 * playbackRate, false);
       #else
@@ -2963,7 +2965,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     // 9: Toggle the old icon.
-    if (FlxG.keys.justPressed.NINE && iconP1 != null) iconP1.toggleOldIcon();
+    if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
+      && iconP1 != null) iconP1.toggleOldIcon();
 
     #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
@@ -3106,6 +3109,8 @@ class PlayState extends MusicBeatSubState
      */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
+    if (isSongEnd) return;
+    isSongEnd = true;
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;

@@ -269,11 +269,11 @@ class FreeplayState extends MusicBeatSubState
     };
 
     currentCharacter = fetchPlayableCharacter();
-    currentCharacterId = currentCharacter.getFreeplayStyleID();
+    currentCharacterId = currentCharacter.id;
 
     currentVariation = rememberedVariation;
     currentDifficulty = rememberedDifficulty;
-    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
+    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacter.getFreeplayStyleID());
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
 
     fromCharSelect = params?.fromCharSelect ?? false;
@@ -1580,23 +1580,26 @@ class FreeplayState extends MusicBeatSubState
       tryOpenCharSelect();
     }
 
-    if (controls.FREEPLAY_FAVORITE && controls.active)
-    {
-      favoriteSong();
-    }
+    if (controls.FREEPLAY_FAVORITE && controls.active) favoriteSong();
 
-    if (controls.FREEPLAY_JUMP_TO_TOP && controls.active)
-    {
-      changeSelection(-curSelected);
-    }
+    if (controls.FREEPLAY_JUMP_TO_TOP && controls.active) changeSelection(-curSelected);
 
-    if (controls.FREEPLAY_JUMP_TO_BOTTOM && controls.active)
-    {
-      changeSelection(grpCapsules.countLiving() - curSelected - 1);
-    }
+    if (controls.FREEPLAY_JUMP_TO_BOTTOM && controls.active) changeSelection(grpCapsules.countLiving() - curSelected - 1);
 
-    lerpScore = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpScore, intendedScore, elapsed, 0.2), intendedScore, 1);
-    lerpCompletion = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpCompletion, intendedCompletion, elapsed, 0.5), intendedCompletion, 1 / 100);
+    calculateCompletion();
+
+    handleInputs(elapsed);
+
+    if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
+
+    // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
+    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
+  }
+
+  function calculateCompletion():Void
+  {
+    lerpScore = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpScore, intendedScore, FlxG.elapsed, 0.2), intendedScore, 1);
+    lerpCompletion = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpCompletion, intendedCompletion, FlxG.elapsed, 0.5), intendedCompletion, 1 / 100);
 
     if (Math.isNaN(lerpScore))
     {
@@ -1610,7 +1613,10 @@ class FreeplayState extends MusicBeatSubState
 
     fp.updateScore(Std.int(lerpScore));
 
-    txtCompletion.text = '${Math.floor(lerpCompletion * 100)}';
+    // sets the text of the completion percentage. Perhaps eventually we may want to generalize this,
+    // but for now we can just clamp the values between 0 and 100.
+    // Fixes issue where it rounds to negative integer overflow on Windows? Which occurs when switching to an unranked song?
+    txtCompletion.text = '${FlxMath.clamp(Math.floor(lerpCompletion * 100), 0, 100)}';
 
     // Right align the completion percentage
     switch (txtCompletion.text.length)
@@ -1624,13 +1630,6 @@ class FreeplayState extends MusicBeatSubState
       default:
         txtCompletion.offset.x = 0;
     }
-
-    handleInputs(elapsed);
-
-    if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
-
-    // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
-    if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
   }
 
   var _dragOffset:Float = 0;
