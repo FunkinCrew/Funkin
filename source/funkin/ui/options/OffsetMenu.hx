@@ -388,6 +388,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       canExit = false;
       differences = [];
 
+      jumpInText.y = testStrumline.y + 175;
+
       #if mobile
       if (Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows || ControlsHandler.usingExternalInputDevice)
       {
@@ -398,7 +400,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       #if mobile
       }
       #end
-      jumpInText.y = testStrumline.y + 175;
     });
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
     PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
