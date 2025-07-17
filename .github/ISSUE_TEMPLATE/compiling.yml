@@ -36,7 +36,7 @@ body:
     attributes:
       label: Version
       description: Which version are you compiling? The game version is in the bottom left corner of the main menu or in the project.hxp file.
-      placeholder: ex. 0.7.1
+      placeholder: ex. 0.7.2
     validations:
       required: true
 
