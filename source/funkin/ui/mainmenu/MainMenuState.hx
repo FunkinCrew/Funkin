@@ -426,7 +426,9 @@ class MainMenuState extends MusicBeatState
 
   function startExitState(state:NextState):Void
   {
-    if (!canInteract) return;
+    #if mobile
+    if (!canInteract && !ControlsHandler.usingExternalInputDevice) return;
+    #end
 
     if (menuItems != null)
     {
