@@ -279,7 +279,8 @@ class MainMenuState extends MusicBeatState
     {
       addOptionsButton(35, FlxG.height - 210, function() {
         if (!canInteract) return;
-        canInteract = false;
+
+        trace("OPTIONS: Interact complete.");
         startExitState(() -> new funkin.ui.options.OptionsState());
       });
     }
@@ -291,6 +292,7 @@ class MainMenuState extends MusicBeatState
         backButton.active = true;
         goingBack = true;
         if (menuItems != null) menuItems.enabled = false;
+        trace('BACK: Interact Start');
       });
     }
 
@@ -301,6 +303,7 @@ class MainMenuState extends MusicBeatState
         optionsButton.active = true;
         goingToOptions = true;
         if (menuItems != null) menuItems.enabled = false;
+        trace('OPTIONS: Interact Start');
       });
     }
     #end
@@ -425,6 +428,8 @@ class MainMenuState extends MusicBeatState
 
   function startExitState(state:NextState):Void
   {
+    if (!canInteract) return;
+
     if (menuItems != null)
     {
       menuItems.enabled = false; // disable for exit
@@ -448,7 +453,10 @@ class MainMenuState extends MusicBeatState
       if (backButton != null) FlxTween.tween(backButton, {alpha: 0}, duration, {ease: FlxEase.quadOut});
       #end
 
-      new FlxTimer().start(duration, function(_) FlxG.switchState(state));
+      new FlxTimer().start(duration, function(_) {
+        trace('Exiting MainMenuState...');
+        FlxG.switchState(state);
+      });
     }
   }
 
@@ -613,6 +621,7 @@ class MainMenuState extends MusicBeatState
   {
     if (canInteract)
     {
+      trace("BACK: Interact complete.");
       canInteract = false;
       if (menuItems != null)
       {
