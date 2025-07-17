@@ -88,6 +88,8 @@ class MainMenuState extends MusicBeatState
     transOut = FlxTransitionableState.defaultTransOut;
 
     #if FEATURE_MOBILE_IAP
+    if (InAppPurchasesUtil.hasInitialized) noAds = InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID);
+    // If the user is faster than their shit wifi, it gets the saved noAds instead.
     hasUpgraded = Preferences.noAds;
     #else
     // just to make sure its never accidentally turned off
