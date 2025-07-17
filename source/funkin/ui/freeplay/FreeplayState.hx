@@ -761,6 +761,8 @@ class FreeplayState extends MusicBeatSubState
       if (prepForNewRank && fromResultsParams != null)
       {
         rankAnimStart(fromResultsParams, currentCapsule);
+        albumRoll.skipIntro();
+        albumRoll.showStars();
       }
 
       refreshDots(5, Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty), Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty));

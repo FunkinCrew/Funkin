@@ -175,6 +175,8 @@ class AlbumRoll extends FlxSpriteGroup
     newAlbumArt.playAnimation('intro', true);
 
     difficultyStars.visible = false;
+    difficultyStars.flameCheck();
+
     new FlxTimer().start(0.75, function(_) {
       showTitle();
       showStars();
