@@ -64,6 +64,7 @@ class FreeplayFlames extends FlxSpriteGroup
       timers.remove(timer);
     }
 
+    this.properPositions = false;
     this.flameCount = value;
     var visibleCount:Int = 0;
     for (i in 0...5)
