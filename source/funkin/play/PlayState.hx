@@ -1065,7 +1065,7 @@ class PlayState extends MusicBeatSubState
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
       if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
       {
-        if (mayPauseGame) endSong(skipEndingTransition);
+        if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
       }
     }
 
@@ -3109,11 +3109,10 @@ class PlayState extends MusicBeatSubState
      */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
-    if (isSongEnd) return;
-    isSongEnd = true;
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
     vocals.volume = 0;
     mayPauseGame = false;
+    isSongEnd = true;
 
     // Prevent ghost misses while the song is ending.
     disableKeys = true;
