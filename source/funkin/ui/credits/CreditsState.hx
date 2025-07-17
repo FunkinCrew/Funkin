@@ -41,8 +41,6 @@ class CreditsState extends MusicBeatState
   static final CREDITS_FONT = 'Consolas';
   #elseif mac
   static final CREDITS_FONT = 'Menlo';
-  #elseif ios
-  static final CREDITS_FONT = null;
   #else
   static final CREDITS_FONT = "Courier New";
   #end
@@ -92,6 +90,12 @@ class CreditsState extends MusicBeatState
   public override function create():Void
   {
     super.create();
+
+    #if ios
+    var fix = new FlxText();
+    fix.font = CREDITS_FONT;
+    fix.draw();
+    #end
 
     backersToBuild = CreditsDataHandler.fetchBackerEntries();
 
