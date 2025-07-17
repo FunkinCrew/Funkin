@@ -289,7 +289,6 @@ class MainMenuState extends MusicBeatState
     {
       backButton.onConfirmStart.add(function():Void {
         if (backButton == null) return;
-        backButton.active = true;
         goingBack = true;
         if (menuItems != null) menuItems.enabled = false;
         trace('BACK: Interact Start');
@@ -300,7 +299,6 @@ class MainMenuState extends MusicBeatState
     {
       optionsButton.onConfirmStart.add(function():Void {
         if (optionsButton == null) return;
-        optionsButton.active = true;
         goingToOptions = true;
         if (menuItems != null) menuItems.enabled = false;
         trace('OPTIONS: Interact Start');
@@ -489,8 +487,8 @@ class MainMenuState extends MusicBeatState
     if (menuItems != null)
     {
       #if mobile
-      if (optionsButton != null) optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
-      if (backButton != null) backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
+      // if (optionsButton != null) optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
+      // if (backButton != null) backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
       #end
       if (_exiting) menuItems.enabled = false;
     }
