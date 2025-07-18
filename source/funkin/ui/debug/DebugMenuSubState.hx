@@ -63,6 +63,9 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_RESULTS_DEBUG
     createItem("RESULTS SCREEN DEBUG", openTestResultsScreen);
     #end
+    #if FEATURE_SCREENSHOTS
+    createItem("GALLERY", () -> FlxG.switchState(() -> new funkin.ui.gallery.ScreenshotGalleryState()));
+    #end
     // createItem("Input Offset Testing", openInputOffsetTesting);
     // createItem("CHARACTER SELECT", openCharSelect, true);
     // createItem("TEST STICKERS", testStickers);
