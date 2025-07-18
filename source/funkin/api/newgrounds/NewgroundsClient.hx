@@ -1,5 +1,6 @@
 package funkin.api.newgrounds;
 
+import funkin.util.macro.EnvironmentConfigMacro;
 import funkin.save.Save;
 import funkin.api.newgrounds.Medals.Medal;
 #if FEATURE_NEWGROUNDS
@@ -16,6 +17,9 @@ import io.newgrounds.objects.User;
 @:nullSafety
 class NewgroundsClient
 {
+  static var APP_ID:String = EnvironmentConfigMacro.environmentConfig.get("API_NG_APP_ID");
+  static var ENCRYPTION_KEY:String = EnvironmentConfigMacro.environmentConfig.get("API_NG_ENC_KEY");
+
   public static var instance(get, never):NewgroundsClient;
   static var _instance:Null<NewgroundsClient> = null;
 
@@ -35,8 +39,8 @@ class NewgroundsClient
     trace('[NEWGROUNDS] Initializing client...');
 
     #if FEATURE_NEWGROUNDS_DEBUG
-    trace('[NEWGROUNDS] App ID: ${NewgroundsCredentials.APP_ID}');
-    trace('[NEWGROUNDS] Encryption Key: ${NewgroundsCredentials.ENCRYPTION_KEY}');
+    trace('[NEWGROUNDS] App ID: ${APP_ID}');
+    trace('[NEWGROUNDS] Encryption Key: ${ENCRYPTION_KEY}');
     #end
 
     if (!hasValidCredentials())
@@ -46,8 +50,8 @@ class NewgroundsClient
     }
 
     var debug = #if FEATURE_NEWGROUNDS_DEBUG true #else false #end;
-    NG.create(NewgroundsCredentials.APP_ID, getSessionId(), debug, onLoginResolved);
-    NG.core.setupEncryption(NewgroundsCredentials.ENCRYPTION_KEY);
+    NG.create(APP_ID, getSessionId(), debug, onLoginResolved);
+    NG.core.setupEncryption(ENCRYPTION_KEY);
   }
 
   public function init()
@@ -166,12 +170,7 @@ class NewgroundsClient
    */
   static function hasValidCredentials():Bool
   {
-    return !(NewgroundsCredentials.APP_ID == null
-      || NewgroundsCredentials.APP_ID == ""
-      || NewgroundsCredentials.APP_ID.contains(" ")
-      || NewgroundsCredentials.ENCRYPTION_KEY == null
-      || NewgroundsCredentials.ENCRYPTION_KEY == ""
-      || NewgroundsCredentials.ENCRYPTION_KEY.contains(" "));
+    return !(APP_ID == null || APP_ID == "" || APP_ID.contains(" ") || ENCRYPTION_KEY == null || ENCRYPTION_KEY == "" || ENCRYPTION_KEY.contains(" "));
   }
 
   function onLoginResolved(outcome:LoginOutcome):Void
