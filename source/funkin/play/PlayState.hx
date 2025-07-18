@@ -1054,8 +1054,8 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      #if ios
-      // note scrolling is shit on mobile without the arguments!!!
+      #if mobile
+      // Note scrolling is less smooth on mobile without these arguments!!!
       Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000 * playbackRate, false);
       #else
       Conductor.instance.update(); // Normal conductor update.
