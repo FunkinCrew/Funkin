@@ -580,7 +580,7 @@ class ChartEditorDialogHandler
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
-    var newSongMetadata:SongMetadata = new SongMetadata('', '', Constants.DEFAULT_VARIATION);
+    var newSongMetadata:SongMetadata = new SongMetadata('', '', '', Constants.DEFAULT_VARIATION);
 
     newSongMetadata.variation = targetVariation;
     newSongMetadata.playData.difficulties = (erect) ? ['erect', 'nightmare'] : ['easy', 'normal', 'hard'];
@@ -1219,7 +1219,8 @@ class ChartEditorDialogHandler
       var dialogVariationName:Null<TextField> = dialog.findComponent('dialogVariationName', TextField);
       if (dialogVariationName == null) throw 'Could not locate dialogVariationName TextField in Add Variation dialog';
 
-      var pendingVariation:SongMetadata = new SongMetadata(dialogSongName.text, dialogSongArtist.text, dialogVariationName.text.toLowerCase());
+      var pendingVariation:SongMetadata = new SongMetadata(dialogSongName.text, dialogSongArtist.text, dialogSongCharter.text,
+        dialogVariationName.text.toLowerCase());
 
       pendingVariation.playData.stage = dialogStage.value.id;
       pendingVariation.playData.noteStyle = dialogNoteStyle.value.id;
