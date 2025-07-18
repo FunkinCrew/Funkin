@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Freeplay difficulty star flames no longer become offset from the stars.
 - The Freeplay difficulty star flames no longer appear during a new rank animation.
 - The Freeplay menu now correctly assigns the `currentCharacterId`. (Thanks TechnikTil!)
+- Boyfriend's Perfect (Gold) Results animation now loops properly.
 - [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
 - The Input Offsets Test menu no longer generates stacked notes.
 - The Input Offsets Test menu drums no longer desync from the rest of the track.
