@@ -64,11 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a critical security vulnerability that could be exploited in mods.
 - A few more bugfixes and optimizations here and there.
 
-### Removed
-
-- Removed console traces from release builds to improve performance.
-  - Traces made by scripted classes will still appear.
-
 ## New Contributors for 0.7.2
 
 * @Smokey555 made their first contribution in [#3318](https://github.com/FunkinCrew/Funkin/pull/3318)
