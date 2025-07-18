@@ -4,7 +4,7 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.2] - 2025-07-17
+## [0.7.2] - 2025-07-18
 
 ### Added
 
@@ -46,6 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The scroll sound no longer plays once after entering Freeplay.
 - The Freeplay song preview and album cover now update properly when switching variations.
 - The Freeplay clear percent counter now consistently displays the correct value on unranked songs.
+- The Freeplay difficulty star flames no longer become offset from the stars.
+- The Freeplay difficulty star flames no longer appear during a new rank animation.
 - The Freeplay menu now correctly assigns the `currentCharacterId`. (Thanks TechnikTil!)
 - [DESKTOP] The Input Offsets menu no longer activates the debug cursor.
 - The Input Offsets Test menu no longer generates stacked notes.
@@ -59,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ANDROID] Fixed some issues with scrolling.
 - [ANDROID] Toasts with blank messages no longer appear.
 - Fixed a critical security vulnerability that could be exploited in mods.
-- A few more optimizations here and there.
+- A few more bugfixes and optimizations here and there.
 
 ### Removed
 
