@@ -708,6 +708,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // Audio
 
   /**
+   * This is used rather than the audiotrack time if it's higher. Low playspeeds cause the audiotrack's time to sometimes be set ~10ms before somehow.
+   */
+  var oldTime:Float;
+
+  /**
    * Whether to play a metronome sound while the playhead is moving, and what volume.
    */
   var metronomeVolume:Float = 1.0;
@@ -3487,6 +3492,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           trace('Resetting instrumental time to ${- Conductor.instance.instrumentalOffset}ms');
           audioInstTrack.time = -Conductor.instance.instrumentalOffset;
+          oldTime = audioInstTrack.time;
         }
       }
 
@@ -3503,14 +3509,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         var oldStepTime:Float = Conductor.instance.currentStepTime;
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
-        Conductor.instance.update(audioInstTrack.time);
+        // Don't go backwards in the song, only forwards
+        if (oldTime < audioInstTrack.time)
+        {
+          Conductor.instance.update(audioInstTrack.time);
+          oldTime = audioInstTrack.time;
+        }
+        else
+        {
+          Conductor.instance.update(oldTime);
+          trace('oldTime was used! audioInstTrack.time ${audioInstTrack.time} < oldTime ${oldTime}');
+        }
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
           audioVocalTrackGroup.time = audioInstTrack.time;
         }
-        var diffStepTime:Float = Conductor.instance.currentStepTime - oldStepTime;
+        var diffStepTime:Float;
+        if ((Conductor.instance.currentStepTime - oldStepTime) < 0) diffStepTime = oldStepTime - Conductor.instance.currentStepTime;
+        else
+          diffStepTime = Conductor.instance.currentStepTime - oldStepTime;
 
         // Move the playhead.
         playheadPositionInPixels += diffStepTime * GRID_SIZE;
@@ -3521,7 +3540,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Else, move the entire view.
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
-        Conductor.instance.update(audioInstTrack.time);
+        // Don't go backwards in the song, only forwards
+        if (oldTime < audioInstTrack.time)
+        {
+          Conductor.instance.update(audioInstTrack.time);
+          oldTime = audioInstTrack.time;
+        }
+        else
+        {
+          Conductor.instance.update(oldTime);
+          trace('oldTime was used! audioInstTrack.time ${audioInstTrack.time} < oldTime ${oldTime}');
+        }
+
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
@@ -6276,6 +6306,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Update the songPosition in the Conductor.
       Conductor.instance.update(audioInstTrack.time);
       audioVocalTrackGroup.time = audioInstTrack.time;
+      oldTime = audioInstTrack.time;
     }
 
     // We need to update the note sprites because we changed the scroll position.
@@ -6467,6 +6498,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (audioInstTrack != null) audioInstTrack.pause();
     audioVocalTrackGroup.pause();
+    oldTime = 0;
 
     playbarPlay.text = '>';
   }
