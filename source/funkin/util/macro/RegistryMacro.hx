@@ -178,7 +178,7 @@ class RegistryMacro
           switch (this.loadEntryFile(id))
           {
             case {fileName: fileName, contents: contents}:
-              parser.fromJson(contents, fileName);
+              parser.fromJson(contents.substring(contents.indexOf("{"), contents.lastIndexOf("}") + 1), fileName);
             default:
               return null;
           }
