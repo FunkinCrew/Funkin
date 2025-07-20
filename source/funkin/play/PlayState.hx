@@ -1501,7 +1501,9 @@ class PlayState extends MusicBeatSubState
         musicPausedBySubState = false;
       }
 
-      forEachPausedSound((s) -> needsReset ? s.destroy() : s.resume());
+      // The logic here is that if this sound doesn't auto-destroy
+      // then it's gonna be reused somewhere, so we just stop it instead.
+      forEachPausedSound(s -> needsReset ? (s.autoDestroy ? s.destroy() : s.stop()) : s.resume());
 
       // Resume camera tweens if we paused any.
       for (camTween in cameraTweensPausedBySubState)
