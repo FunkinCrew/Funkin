@@ -345,6 +345,25 @@ class Preferences
   }
 
   /**
+   * If disabled, song scripts will not play cutscenes
+   * @default `true`
+   */
+  public static var cutscenes(get, set):Bool;
+
+  static function get_cutscenes():Bool
+  {
+    return Save?.instance?.options?.cutscenes ?? true;
+  }
+
+  static function set_cutscenes(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.cutscenes = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * Loads the user's preferences from the save data and apply them.
    */
   public static function init():Void
