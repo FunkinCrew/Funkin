@@ -15,6 +15,14 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.util.WindowUtil;
 
+// Enables FeralGamemode automatically on Linux
+#if linux
+@:cppInclude('./external/gamemode_client.h')
+@:cppFileCode('
+	#define GAMEMODE_AUTO
+')
+#end
+
 /**
  * The main class which initializes HaxeFlixel and starts the game in its initial state.
  */
@@ -99,7 +107,7 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
-    
+
     // Don't call anything from the preferences until the save is loaded!
     #if web
     // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
@@ -108,7 +116,6 @@ class Main extends Sprite
     #end
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
-
 
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
 
