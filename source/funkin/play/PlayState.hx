@@ -2876,7 +2876,10 @@ class PlayState extends MusicBeatSubState
       {
         currentConversation.pauseMusic();
 
-        var pauseSubState:FlxSubState = new PauseSubState({mode: Conversation});
+        var pauseSubState:FlxSubState = new PauseSubState(
+          {
+            mode: Cutscene('Conversation', 'Conversation', null, currentConversation?.skipConversation, currentConversation?.resetConversation)
+          });
 
         persistentUpdate = false;
         FlxTransitionableState.skipNextTransIn = true;
@@ -2892,7 +2895,10 @@ class PlayState extends MusicBeatSubState
       {
         VideoCutscene.pauseVideo();
 
-        var pauseSubState:FlxSubState = new PauseSubState({mode: Cutscene});
+        var pauseSubState:FlxSubState = new PauseSubState(
+          {
+            mode: Cutscene('Cutscene', 'Video', VideoCutscene.resumeVideo, VideoCutscene.finishVideo.bind(null), VideoCutscene.restartVideo.bind(true))
+          });
 
         persistentUpdate = false;
         FlxTransitionableState.skipNextTransIn = true;
