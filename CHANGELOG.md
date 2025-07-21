@@ -412,7 +412,7 @@ Select. ([3d3e2bd](https://github.com/FunkinCrew/Funkin/commit/3d3e2bd3786b85814
 * @JackXson-Real made their first contribution in [#4346](https://github.com/FunkinCrew/Funkin/pull/4346)
 * @VioletSnowLeopard made their first contribution in [#4382](https://github.com/FunkinCrew/Funkin/pull/4382)
 * @superpowers04 made their first contribution in [#4729](https://github.com/FunkinCrew/Funkin/pull/4729)
-* @ShadzXD made their first contribution in [#62](https://github.com/FunkinCrew/Funkin/pull/4729)
+* @ShadzXD made their first contribution in [funkin.assets#62](https://github.com/FunkinCrew/funkin.assets/pull/62)
 
 
 
