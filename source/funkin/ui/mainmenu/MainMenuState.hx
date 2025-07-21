@@ -292,7 +292,7 @@ class MainMenuState extends MusicBeatState
     if (!ControlsHandler.usingExternalInputDevice)
     {
       addOptionsButton(35, FlxG.height - 210, function() {
-        if (!canInteract || menuItems.busy) return;
+        if (!canInteract || menuItems != null && menuItems.busy) return;
 
         trace("OPTIONS: Interact complete.");
         startExitState(() -> new funkin.ui.options.OptionsState());
@@ -405,6 +405,11 @@ class MainMenuState extends MusicBeatState
   {
     super.finishTransIn();
     canInteract = true;
+    if (menuItems != null)
+    {
+      menuItems.busy = false;
+      menuItems.enabled = true;
+    }
   }
 
   function onMenuItemChange(selected:MenuListItem)
