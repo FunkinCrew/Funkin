@@ -17,6 +17,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.effects.IntervalShake;
@@ -2199,6 +2200,9 @@ class FreeplayState extends MusicBeatSubState
 
       // Check if character-specific difficulty exists
       var songDifficulty:Null<SongDifficulty> = previewSong.getDifficulty(currentDifficulty, currentVariation);
+      var songMetadata:Null<SongMetadata> = null;
+      @:privateAccess
+      songMetadata = previewSong._metadata.get(currentVariation);
 
       var baseInstrumentalId:String = previewSong.getBaseInstrumentalId(currentDifficulty, songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
       var altInstrumentalIds:Array<String> = previewSong.listAltInstrumentalIds(currentDifficulty,
@@ -2224,7 +2228,9 @@ class FreeplayState extends MusicBeatSubState
             {
               loadPartial: true,
               start: 0,
-              end: 0.2
+              end: 0.2,
+              startRaw: songMetadata?.playData?.previewStart ?? 0,
+              endRaw: songMetadata?.playData?.previewEnd ?? 15000
             },
           onLoad: function() {
             FlxG.sound.music.fadeIn(2, 0, 0.4);

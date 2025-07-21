@@ -381,8 +381,19 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (shouldLoadPartial)
     {
-      var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0.0, params.partialParams?.end ?? 1.0, params?.startingVolume ?? 1.0,
-        params.loop ?? true, false, false, params.onComplete);
+      var useRaw:Bool = params.partialParams?.startRaw != null && params.partialParams?.endRaw != null;
+      var music = null;
+
+      if (useRaw)
+      {
+        music = FunkinSound.loadPartialRaw(pathToUse, params.partialParams?.startRaw ?? 0, params.partialParams?.endRaw ?? 1000,
+          params?.startingVolume ?? 1.0, params.loop ?? true, false, false, params.onComplete);
+      }
+      else
+      {
+        music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0.0, params.partialParams?.end ?? 1.0, params?.startingVolume ?? 1.0,
+          params.loop ?? true, false, false, params.onComplete);
+      }
 
       if (music != null)
       {
@@ -519,6 +530,41 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     #end
 
     var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
+
+    if (soundRequest == null)
+    {
+      promise.complete(null);
+    }
+    else
+    {
+      promise.future.onError(function(e) {
+        soundRequest.error("Sound loading was errored or cancelled");
+      });
+
+      soundRequest.future.onComplete(function(partialSound) {
+        var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, false, onComplete, onLoad);
+        promise.complete(snd);
+      });
+    }
+
+    return promise;
+  }
+
+  /**
+   * Similar to `loadPartial`, except this uses milliseconds as range parameters instead of percentages.
+   */
+  public static function loadPartialRaw(path:String, start:Int = 0, end:Int = 1000, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false,
+      autoPlay:Bool = true, ?onComplete:Void->Void, ?onLoad:Void->Void):Promise<Null<FunkinSound>>
+  {
+    var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
+
+    // split the path and get only after first :
+    // we are bypassing the openfl/lime asset library fuss on web only
+    #if web
+    path = Paths.stripLibrary(path);
+    #end
+
+    var soundRequest = FlxPartialSound.partialLoadFromFileRaw(path, start, end);
 
     if (soundRequest == null)
     {
@@ -697,4 +743,6 @@ typedef PartialSoundParams =
   var loadPartial:Bool;
   var start:Float;
   var end:Float;
+  var ?startRaw:Int;
+  var ?endRaw:Int;
 }
