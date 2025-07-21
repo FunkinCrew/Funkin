@@ -2,6 +2,7 @@ package funkin.util;
 
 import funkin.input.Controls.Device;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
 using flixel.util.FlxStringUtil;
@@ -9,6 +10,7 @@ using flixel.util.FlxStringUtil;
 /**
  * Utilities for working with inputs.
  */
+@:nullSafety
 class InputUtil
 {
   public static function format(id:Int, device:Device):String
@@ -79,7 +81,7 @@ class InputUtil
       case NUMPADPLUS: "#+";
       case NUMPADPERIOD: "#.";
       case NUMPADMULTIPLY: "#*";
-      default: titleCase(FlxKey.toStringMap[id]);
+      default: titleCase(FlxKey.toStringMap[id] ?? '?');
     }
   }
 
@@ -89,12 +91,12 @@ class InputUtil
   {
     return switch (gamepad.getInputLabel(id))
     {
-      // case null | "": shortenButtonName(FlxGamepadInputID.toStringMap[id]);
+      case null, "": shortenButtonName(FlxGamepadInputID.toStringMap[id]);
       case label: shortenButtonName(label);
     }
   }
 
-  static function shortenButtonName(name:String)
+  static function shortenButtonName(name:Null<String>)
   {
     return switch (name == null ? "" : name.toLowerCase())
     {
@@ -145,6 +147,7 @@ class InputUtil
   }
 }
 
+@:nullSafety
 @:forward
 enum abstract ControllerName(String) from String to String
 {
@@ -170,7 +173,7 @@ enum abstract ControllerName(String) from String to String
     }
   }
 
-  static public function getAsset(gamepad:FlxGamepad):String
+  static public function getAsset(gamepad:Null<FlxGamepad>):String
   {
     if (gamepad == null) return 'assets/images/ui/devices/Keys.png';
 

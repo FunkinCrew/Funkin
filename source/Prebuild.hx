@@ -21,15 +21,21 @@ class NewgroundsCredentials
 
   static function main():Void
   {
-    trace('Building...');
+    var start:Float = Sys.time();
+    trace('[PREBUILD] Performing pre-build tasks...');
 
     saveBuildTime();
 
     buildCredsFile();
+
+    var end:Float = Sys.time();
+    var duration:Float = end - start;
+    trace('[PREBUILD] Finished pre-build tasks in $duration seconds.');
   }
 
   static function saveBuildTime():Void
   {
+    // PostBuild.hx reads this file and computes the total build duration.
     var fo:sys.io.FileOutput = File.write(BUILD_TIME_FILE);
     var now:Float = Sys.time();
     fo.writeDouble(now);
@@ -38,19 +44,17 @@ class NewgroundsCredentials
 
   static function buildCredsFile():Void
   {
-    #if sys
     if (sys.FileSystem.exists(NG_CREDS_PATH))
     {
-      trace('NewgroundsCredentials.hx already exists, skipping.');
+      trace('[PREBUILD] NewgroundsCredentials.hx already exists, skipping.');
     }
     else
     {
-      trace('Creating NewgroundsCredentials.hx...');
+      trace('[PREBUILD] Creating NewgroundsCredentials.hx...');
 
       var fileContents:String = NG_CREDS_TEMPLATE;
 
       sys.io.File.saveContent(NG_CREDS_PATH, fileContents);
     }
-    #end
   }
 }

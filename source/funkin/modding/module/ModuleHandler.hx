@@ -10,6 +10,7 @@ import funkin.modding.module.ScriptedModule;
 /**
  * Utility functions for loading and manipulating active modules.
  */
+@:nullSafety
 class ModuleHandler
 {
   static final moduleCache:Map<String, Module> = new Map<String, Module>();
@@ -74,11 +75,15 @@ class ModuleHandler
    * Given two module IDs, sort them by priority.
    * @return 1 or -1 depending on which module has a higher priority.
    */
-  static function sortByPriority(a:String, b:String)
+  static function sortByPriority(a:String, b:String):Int
   {
-    var aModule:Module = moduleCache.get(a);
-    var bModule:Module = moduleCache.get(b);
+    var aModule:Null<Module> = getModule(a);
+    var bModule:Null<Module> = getModule(b);
 
+    if (aModule == null || bModule == null)
+    {
+      return 0;
+    }
     if (aModule.priority != bModule.priority)
     {
       return aModule.priority - bModule.priority;
@@ -89,14 +94,14 @@ class ModuleHandler
     }
   }
 
-  public static function getModule(moduleId:String):Module
+  public static function getModule(moduleId:String):Null<Module>
   {
     return moduleCache.get(moduleId);
   }
 
   public static function activateModule(moduleId:String):Void
   {
-    var module:Module = getModule(moduleId);
+    var module:Null<Module> = getModule(moduleId);
     if (module != null)
     {
       module.active = true;
@@ -105,7 +110,7 @@ class ModuleHandler
 
   public static function deactivateModule(moduleId:String):Void
   {
-    var module:Module = getModule(moduleId);
+    var module:Null<Module> = getModule(moduleId);
     if (module != null)
     {
       module.active = false;
@@ -136,7 +141,7 @@ class ModuleHandler
   {
     for (moduleId in modulePriorityOrder)
     {
-      var module:Module = moduleCache.get(moduleId);
+      var module:Null<Module> = moduleCache.get(moduleId);
       // The module needs to be active to receive events.
       if (module != null && module.active)
       {

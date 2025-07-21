@@ -62,7 +62,9 @@ class NewObjDialog extends Dialog
 
         spr.name = field.text;
         spr.screenCenter();
-        spr.zIndex = 0;
+
+        var sprArray = stageEditorState.spriteArray;
+        spr.zIndex = sprArray.length == 0 ? 0 : (sprArray[sprArray.length - 1].zIndex + 1);
 
         stageEditorState.selectedSprite = spr;
         stageEditorState.createAndPushAction(OBJECT_CREATED);

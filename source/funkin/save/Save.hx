@@ -2,6 +2,7 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
+import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -11,6 +12,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
+import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
@@ -20,7 +22,7 @@ import funkin.api.newgrounds.Leaderboards;
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.0";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -81,6 +83,12 @@ class Save
 
   public static function getDefault():RawSaveData
   {
+    #if mobile
+    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+
+    if (refreshRate < 60) refreshRate = 60;
+    #end
+
     return {
       // Version number is an abstract(Array) internally.
       // This means it copies by reference, so merging save data overides the version number lol.
@@ -108,17 +116,19 @@ class Save
       options:
         {
           // Reasonable defaults.
-          framerate: 60,
+          framerate: #if mobile refreshRate #else 60 #end,
           naughtyness: true,
           downscroll: false,
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
+          hapticsMode: 'All',
+          hapticsIntensityMultiplier: 1,
           autoPause: true,
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
-          inputOffset: 0,
+          globalOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
 
@@ -127,8 +137,6 @@ class Save
               shouldHideMouse: true,
               fancyPreview: true,
               previewOnSave: true,
-              saveFormat: 'PNG',
-              jpegQuality: 80,
             },
 
           controls:
@@ -146,6 +154,15 @@ class Save
                 },
             },
         },
+      #if mobile
+      mobileOptions:
+        {
+          // Reasonable defaults.
+          screenTimeout: false,
+          controlsScheme: FunkinHitboxControlSchemes.Arrows,
+          noAds: false
+        },
+      #end
 
       mods:
         {
@@ -173,6 +190,10 @@ class Save
           metronomeVolume: 1.0,
           hitsoundVolumePlayer: 1.0,
           hitsoundVolumeOpponent: 1.0,
+          instVolume: 1.0,
+          playerVoiceVolume: 1.0,
+          opponentVoiceVolume: 1.0,
+          playbackSpeed: 0.5,
           themeMusic: true
         },
 
@@ -181,7 +202,10 @@ class Save
           previousFiles: [],
           moveStep: "1px",
           angleStep: 5,
-          theme: StageEditorTheme.Light
+          theme: StageEditorTheme.Light,
+          bfChar: "bf",
+          gfChar: "gf",
+          dadChar: "dad"
         }
     };
   }
@@ -195,6 +219,18 @@ class Save
   {
     return data.options;
   }
+
+  #if mobile
+  /**
+   * NOTE: Modifications will not be saved without calling `Save.flush()`!
+   */
+  public var mobileOptions(get, never):SaveDataMobileOptions;
+
+  function get_mobileOptions():SaveDataMobileOptions
+  {
+    return data.mobileOptions;
+  }
+  #end
 
   /**
    * NOTE: Modifications will not be saved without calling `Save.flush()`!
@@ -407,6 +443,57 @@ class Save
     return data.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
+  public var chartEditorInstVolume(get, set):Float;
+
+  function get_chartEditorInstVolume():Float
+  {
+    if (data.optionsChartEditor.instVolume == null) data.optionsChartEditor.instVolume = 1.0;
+
+    return data.optionsChartEditor.instVolume;
+  }
+
+  function set_chartEditorInstVolume(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.instVolume = value;
+    flush();
+    return data.optionsChartEditor.instVolume;
+  }
+
+  public var chartEditorPlayerVoiceVolume(get, set):Float;
+
+  function get_chartEditorPlayerVoiceVolume():Float
+  {
+    if (data.optionsChartEditor.playerVoiceVolume == null) data.optionsChartEditor.playerVoiceVolume = 1.0;
+
+    return data.optionsChartEditor.playerVoiceVolume;
+  }
+
+  function set_chartEditorPlayerVoiceVolume(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.playerVoiceVolume = value;
+    flush();
+    return data.optionsChartEditor.playerVoiceVolume;
+  }
+
+  public var chartEditorOpponentVoiceVolume(get, set):Float;
+
+  function get_chartEditorOpponentVoiceVolume():Float
+  {
+    if (data.optionsChartEditor.opponentVoiceVolume == null) data.optionsChartEditor.opponentVoiceVolume = 1.0;
+
+    return data.optionsChartEditor.opponentVoiceVolume;
+  }
+
+  function set_chartEditorOpponentVoiceVolume(value:Float):Float
+  {
+    // Set and apply.
+    data.optionsChartEditor.opponentVoiceVolume = value;
+    flush();
+    return data.optionsChartEditor.opponentVoiceVolume;
+  }
+
   public var chartEditorThemeMusic(get, set):Bool;
 
   function get_chartEditorThemeMusic():Bool
@@ -428,7 +515,7 @@ class Save
 
   function get_chartEditorPlaybackSpeed():Float
   {
-    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 1.0;
+    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 0.5;
 
     return data.optionsChartEditor.playbackSpeed;
   }
@@ -550,6 +637,60 @@ class Save
     return data.optionsStageEditor.theme;
   }
 
+  public var stageBoyfriendChar(get, set):String;
+
+  function get_stageBoyfriendChar():String
+  {
+    if (data.optionsStageEditor.bfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null) data.optionsStageEditor.bfChar = "bf";
+
+    return data.optionsStageEditor.bfChar;
+  }
+
+  function set_stageBoyfriendChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.bfChar = value;
+    flush();
+    return data.optionsStageEditor.bfChar;
+  }
+
+  public var stageGirlfriendChar(get, set):String;
+
+  function get_stageGirlfriendChar():String
+  {
+    if (data.optionsStageEditor.gfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null) data.optionsStageEditor.gfChar = "gf";
+
+    return data.optionsStageEditor.gfChar;
+  }
+
+  function set_stageGirlfriendChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.gfChar = value;
+    flush();
+    return data.optionsStageEditor.gfChar;
+  }
+
+  public var stageDadChar(get, set):String;
+
+  function get_stageDadChar():String
+  {
+    if (data.optionsStageEditor.dadChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null) data.optionsStageEditor.dadChar = "dad";
+
+    return data.optionsStageEditor.dadChar;
+  }
+
+  function set_stageDadChar(value:String):String
+  {
+    // Set and apply.
+    data.optionsStageEditor.dadChar = value;
+    flush();
+    return data.optionsStageEditor.dadChar;
+  }
+
   /**
    * When we've seen a character unlock, add it to the list of characters seen.
    * @param character
@@ -636,6 +777,10 @@ class Save
 
   public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
   {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #end
+
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
@@ -840,6 +985,7 @@ class Save
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {
+        #if NO_UNLOCK_EVERYTHING
         if (score.score > 0)
         {
           // Level has score data, which means we cleared it!
@@ -850,6 +996,9 @@ class Save
           // Level has score data, but the score is 0.
           continue;
         }
+        #else
+        return true;
+        #end
       }
     }
     return false;
@@ -1238,6 +1387,13 @@ typedef RawSaveData =
 
   var unlocks:SaveDataUnlocks;
 
+  #if mobile
+  /**
+   * The user's preferences for mobile.
+   */
+  var mobileOptions:SaveDataMobileOptions;
+  #end
+
   /**
    * The user's favorited songs in the Freeplay menu,
    * as a list of song IDs.
@@ -1394,6 +1550,18 @@ typedef SaveDataOptions =
   var debugDisplay:Bool;
 
   /**
+   * If enabled, haptic feedback will be enabled.
+   * @default `All`
+   */
+  var hapticsMode:String;
+
+  /**
+   * Multiplier of intensity for all the haptic feedback effects.
+   * @default `1`
+   */
+  var hapticsIntensityMultiplier:Float;
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
@@ -1422,9 +1590,10 @@ typedef SaveDataOptions =
    * Offset the user's inputs by this many ms.
    * @default `0`
    */
-  var inputOffset:Int;
+  var globalOffset:Int;
 
   /**
+   * Unused !!
    * Affects the delay between the audio and the visuals during gameplay.
    * @default `0`
    */
@@ -1441,16 +1610,12 @@ typedef SaveDataOptions =
    * @param shouldHideMouse Should the mouse be hidden when taking a screenshot? Default: `true`
    * @param fancyPreview Show a fancy preview? Default: `true`
    * @param previewOnSave Only show the fancy preview after a screenshot is saved? Default: `true`
-   * @param saveFormat The save format of the screenshot, PNG or JPEG. Default: `PNG`
-   * @param jpegQuality The JPEG Quality, if we're saving to the format. Default: `80`
    */
   var screenshot:
     {
       var shouldHideMouse:Bool;
       var fancyPreview:Bool;
       var previewOnSave:Bool;
-      var saveFormat:String;
-      var jpegQuality:Int;
     };
 
   var controls:
@@ -1467,6 +1632,30 @@ typedef SaveDataOptions =
         };
     };
 };
+
+#if mobile
+typedef SaveDataMobileOptions =
+{
+  /**
+   * If enabled, device will be able to sleep on its own.
+   * @default `false`
+   */
+  var screenTimeout:Bool;
+
+  /**
+   * Controls scheme for the hitbox.
+   * @default `Arrows`
+   */
+  var controlsScheme:String;
+
+  /**
+   * If bought, the game will not show any ads.
+   * @default `false`
+   */
+  var noAds:Bool;
+};
+
+#end
 
 /**
  * An anonymous structure containing a specific player's bound keys.
@@ -1653,10 +1842,16 @@ typedef SaveDataChartEditorOptions =
   var ?instVolume:Float;
 
   /**
-   * Voices volume in the Chart Editor.
+   * Player voice volume in the Chart Editor.
    * @default `1.0`
    */
-  var ?voicesVolume:Float;
+  var ?playerVoiceVolume:Float;
+
+  /**
+   * Opponent voice volume in the Chart Editor.
+   * @default `1.0`
+   */
+  var ?opponentVoiceVolume:Float;
 
   /**
    * Playback speed in the Chart Editor.
@@ -1699,4 +1894,22 @@ typedef SaveDataStageEditorOptions =
    * @default `StageEditorTheme.Light`
    */
   var ?theme:StageEditorTheme;
+
+  /**
+   * The BF character ID used in testing stages.
+   * @default bf
+   */
+  var ?bfChar:String;
+
+  /**
+   * The GF character ID used in testing stages.
+   * @default gf
+   */
+  var ?gfChar:String;
+
+  /**
+   * The Dad character ID used in testing stages.
+   * @default dad
+   */
+  var ?dadChar:String;
 };

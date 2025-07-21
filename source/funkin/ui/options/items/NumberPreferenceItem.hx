@@ -3,6 +3,8 @@ package funkin.ui.options.items;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 
 /**
  * Preference item that allows the player to pick a value between min and max
@@ -29,6 +31,7 @@ class NumberPreferenceItem extends TextMenuItem
   public var precision:Int;
   public var onChangeCallback:Null<Float->Void>;
   public var valueFormatter:Null<Float->String>;
+  public var dragStepMultiplier:Float;
 
   // Variables
   var holdDelayTimer:Float = HOLD_DELAY; // seconds
@@ -40,14 +43,15 @@ class NumberPreferenceItem extends TextMenuItem
    * @param step The value to increment/decrement by (example: 10)
    * @param callback Will get called every time the user changes the setting; use this to apply/save the setting.
    * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed string looks
+   * @param dragStepMultiplier The multiplier for step value in case player does touch drag.
    */
   public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
-      ?valueFormatter:Float->String):Void
+      ?valueFormatter:Float->String, dragStepMultiplier:Float = 1):Void
   {
     super(x, y, name, function() {
       callback(this.currentValue);
     });
-    lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
+    lefthandText = new AtlasText(x + 15, y, formatted(defaultValue), AtlasFont.DEFAULT);
 
     updateHitbox();
 
@@ -58,6 +62,7 @@ class NumberPreferenceItem extends TextMenuItem
     this.precision = precision;
     this.onChangeCallback = callback;
     this.valueFormatter = valueFormatter;
+    this.dragStepMultiplier = dragStepMultiplier;
 
     this.fireInstantly = true;
   }
@@ -75,8 +80,8 @@ class NumberPreferenceItem extends TextMenuItem
       changeRateTimer -= elapsed;
     }
 
-    var jpLeft:Bool = controls().UI_LEFT_P;
-    var jpRight:Bool = controls().UI_RIGHT_P;
+    var jpLeft:Bool = controls().UI_LEFT_P #if FEATURE_TOUCH_CONTROLS || SwipeUtil.justSwipedLeft #end;
+    var jpRight:Bool = controls().UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS || SwipeUtil.justSwipedRight #end;
 
     if (jpLeft || jpRight)
     {
@@ -86,29 +91,42 @@ class NumberPreferenceItem extends TextMenuItem
 
     var shouldDecrease:Bool = jpLeft;
     var shouldIncrease:Bool = jpRight;
+    var valueChangeMultiplier:Float = 1;
 
-    if (controls().UI_LEFT && holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
+    #if FEATURE_TOUCH_CONTROLS
+    final dragThreshold:Float = 24 / elapsed / 100;
+
+    if (TouchUtil.touch != null && (TouchUtil.touch.deltaViewX <= -dragThreshold || TouchUtil.touch.deltaViewX >= dragThreshold))
     {
-      shouldDecrease = true;
-      changeRateTimer = CHANGE_RATE;
+      valueChangeMultiplier = dragStepMultiplier;
     }
-    else if (controls().UI_RIGHT && holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
+    #end
+
+    if (holdDelayTimer <= 0.0 && changeRateTimer <= 0.0)
     {
-      shouldIncrease = true;
-      changeRateTimer = CHANGE_RATE;
+      if (controls().UI_LEFT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.touch != null && TouchUtil.touch.deltaX <= -dragThreshold) #end)
+      {
+        shouldDecrease = true;
+        changeRateTimer = CHANGE_RATE;
+      }
+      else if (controls().UI_RIGHT #if FEATURE_TOUCH_CONTROLS || (TouchUtil.touch != null && TouchUtil.touch.deltaX >= dragThreshold) #end)
+      {
+        shouldIncrease = true;
+        changeRateTimer = CHANGE_RATE;
+      }
     }
 
     // Actually increasing/decreasing the value
     if (shouldDecrease)
     {
-      var isBelowMin:Bool = currentValue - step < min;
-      currentValue = (currentValue - step).clamp(min, max);
+      var isBelowMin:Bool = currentValue - step * valueChangeMultiplier < min;
+      currentValue = (currentValue - step * valueChangeMultiplier).clamp(min, max);
       if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
     }
     else if (shouldIncrease)
     {
-      var isAboveMax:Bool = currentValue + step > max;
-      currentValue = (currentValue + step).clamp(min, max);
+      var isAboveMax:Bool = currentValue + step * valueChangeMultiplier > max;
+      currentValue = (currentValue + step * valueChangeMultiplier).clamp(min, max);
       if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
     }
   }

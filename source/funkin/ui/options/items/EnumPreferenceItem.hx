@@ -3,6 +3,9 @@ package funkin.ui.options.items;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
+#if mobile
+import funkin.util.SwipeUtil;
+#end
 
 /**
  * Preference item that allows the player to pick a value from an enum (list of values)
@@ -46,7 +49,7 @@ class EnumPreferenceItem<T> extends TextMenuItem
       i += 1;
     }
 
-    lefthandText = new AtlasText(15, y, formatted(defaultKey), AtlasFont.DEFAULT);
+    lefthandText = new AtlasText(x + 15, y, formatted(defaultKey), AtlasFont.DEFAULT);
 
     this.fireInstantly = true;
   }
@@ -58,8 +61,8 @@ class EnumPreferenceItem<T> extends TextMenuItem
     // var fancyTextFancyColor:Color;
     if (selected)
     {
-      var shouldDecrease:Bool = controls().UI_LEFT_P;
-      var shouldIncrease:Bool = controls().UI_RIGHT_P;
+      var shouldDecrease:Bool = controls().UI_LEFT_P #if mobile || SwipeUtil.justSwipedLeft #end;
+      var shouldIncrease:Bool = controls().UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end;
 
       if (shouldDecrease) index -= 1;
       if (shouldIncrease) index += 1;

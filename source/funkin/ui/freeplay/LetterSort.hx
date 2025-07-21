@@ -1,14 +1,24 @@
 package funkin.ui.freeplay;
 
 import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.FlxObject;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.input.Controls;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.audio.FunkinSound;
 
-class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
+class LetterSort extends FlxSpriteGroup
 {
   public var letters:Array<FreeplayLetter> = [];
+  public var letterHitboxes:Array<FlxObject> = [];
 
   // starts at 2, cuz that's the middle letter on start (accounting for fav and #, it should begin at ALL filter)
   var curSelection:Int = 2;
@@ -20,6 +30,10 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
   var grpSeperators:Array<FlxSprite> = [];
 
   public var inputEnabled:Bool = true;
+
+  public var instance(default, set):FreeplayState;
+
+  var swipeBounds:FlxObject;
 
   public function new(x, y)
   {
@@ -37,6 +51,11 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       letter.y += 50;
       // letter.visible = false;
       add(letter);
+
+      var letterHitbox:FlxObject = new FlxObject(letter.x - 50, letter.y - 50, 50, 50);
+      letterHitbox.cameras = cameras;
+      letterHitbox.active = false;
+      letterHitboxes.push(letterHitbox);
 
       letters.push(letter);
 
@@ -57,10 +76,18 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       grpSeperators.push(sep);
     }
 
-    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+    var letterHitbox:FlxObject = new FlxObject(0, 0, 1, 1);
+    letterHitbox.cameras = cameras;
+    letterHitbox.active = false;
+    letterHitboxes.push(letterHitbox);
 
+    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
     // rightArrow.animation.play("arrow");
     add(rightArrow);
+
+    swipeBounds = new FlxObject(440, 60, 460, 80);
+    swipeBounds.cameras = cameras;
+    swipeBounds.active = false;
 
     changeSelection(0);
   }
@@ -73,15 +100,53 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    #if FEATURE_TOUCH_CONTROLS
+    @:privateAccess
+    if (TouchUtil.justPressed) inputEnabled = instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam);
+    #end
 
     if (inputEnabled)
     {
-      if (controls.FREEPLAY_LEFT) changeSelection(-1);
-      if (controls.FREEPLAY_RIGHT) changeSelection(1);
+      #if FEATURE_TOUCH_CONTROLS
+      if (TouchUtil.pressAction())
+      {
+        for (index => letter in letterHitboxes)
+        {
+          @:privateAccess
+          if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+
+          if (index == 2 || index == 5) continue;
+
+          var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
+          var changeValue = selectionChanges[index];
+
+          if (changeValue != 0)
+          {
+            changeSelection(changeValue);
+
+            if (index == 0 || index == 4)
+            {
+              changeSelection(changeValue, false);
+            }
+          }
+
+          break;
+        }
+      }
+      #end
+
+      @:privateAccess
+      {
+        if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
+          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
+
+        if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
+          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
+      }
     }
   }
 
-  public function changeSelection(diff:Int = 0):Void
+  public function changeSelection(diff:Int = 0, playSound:Bool = true):Void
   {
     doLetterChangeAnims(diff);
 
@@ -94,6 +159,7 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
     new FlxTimer().start(2 / 24, function(_) {
       arrowToMove.offset.x = 0;
     });
+    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
   }
 
   /**
@@ -154,6 +220,24 @@ class LetterSort extends FlxTypedSpriteGroup<FlxSprite>
       letter.changeLetter(diff, curSelection);
 
     if (changeSelectionCallback != null) changeSelectionCallback(letters[2].regexLetters[letters[2].curLetter]); // bullshit and long lol!
+  }
+
+  @:noCompletion
+  private function set_instance(value:FreeplayState):FreeplayState
+  {
+    instance = value;
+
+    if (value != null)
+    {
+      @:privateAccess
+      swipeBounds.cameras = [value.funnyCam];
+    }
+    else
+    {
+      swipeBounds.cameras = cameras;
+    }
+
+    return instance;
   }
 }
 

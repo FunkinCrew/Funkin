@@ -23,7 +23,10 @@ import funkin.ui.MusicBeatState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.MathUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.TouchUtil;
 import openfl.utils.Assets;
+import funkin.ui.FullScreenScaleMode;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -157,9 +160,6 @@ class StoryMenuState extends MusicBeatState
 
     updateData();
 
-    // Explicitly define the background color.
-    this.bgColor = FlxColor.BLACK;
-
     levelTitles = new FlxTypedGroup<LevelTitle>();
     levelTitles.zIndex = 15;
     add(levelTitles);
@@ -182,12 +182,12 @@ class StoryMenuState extends MusicBeatState
     tracklistText.color = 0xFFE55777;
     add(tracklistText);
 
-    scoreText = new FlxText(10, 10, 0, 'HIGH SCORE: 42069420');
+    scoreText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 10), 10, 0, 'HIGH SCORE: 42069420');
     scoreText.setFormat('VCR OSD Mono', 32);
     scoreText.zIndex = 1000;
     add(scoreText);
 
-    levelTitleText = new FlxText(FlxG.width * 0.7, 10, 0, 'LEVEL 1');
+    levelTitleText = new FlxText(Math.max((FlxG.width * 0.7), FlxG.width - FullScreenScaleMode.gameNotchSize.x), 10, 0, 'LEVEL 1');
     levelTitleText.setFormat('VCR OSD Mono', 32, FlxColor.WHITE, RIGHT);
     levelTitleText.alpha = 0.7;
     levelTitleText.zIndex = 1000;
@@ -195,7 +195,8 @@ class StoryMenuState extends MusicBeatState
 
     buildLevelTitles();
 
-    leftDifficultyArrow = new FlxSprite(870, 480);
+    final useNotch:Bool = Math.max(35, FullScreenScaleMode.gameNotchSize.x) != 35;
+    leftDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? (FullScreenScaleMode.gameNotchSize.x) + 410 : 410), 480);
     leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
     leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
     leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
@@ -205,7 +206,7 @@ class StoryMenuState extends MusicBeatState
     buildDifficultySprite(Constants.DEFAULT_DIFFICULTY);
     buildDifficultySprite();
 
-    rightDifficultyArrow = new FlxSprite(1245, leftDifficultyArrow.y);
+    rightDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? FullScreenScaleMode.gameNotchSize.x * 1.5 : 35), leftDifficultyArrow.y);
     rightDifficultyArrow.frames = leftDifficultyArrow.frames;
     rightDifficultyArrow.animation.addByPrefix('idle', 'rightIdle0');
     rightDifficultyArrow.animation.addByPrefix('press', 'rightConfirm0');
@@ -222,6 +223,14 @@ class StoryMenuState extends MusicBeatState
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
     DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
+    #end
+
+    #if mobile
+    addBackButton(FlxG.width - 230, FlxG.height - 170, FlxColor.WHITE, goBack, 0.7);
+    #end
+
+    #if FEATURE_TOUCH_CONTROLS
+    FlxG.touches.swipeThreshold.y = 100;
     #end
   }
 
@@ -312,12 +321,13 @@ class StoryMenuState extends MusicBeatState
   {
     Conductor.instance.update();
 
-    highScoreLerp = Std.int(MathUtil.smoothLerp(highScoreLerp, highScore, elapsed, 0.25));
+    highScoreLerp = Std.int(MathUtil.snap(MathUtil.smoothLerpPrecision(highScoreLerp, highScore, elapsed, 0.307), highScore, 1));
 
     scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
 
     levelTitleText.text = currentLevel.getTitle();
-    levelTitleText.x = FlxG.width - (levelTitleText.width + 10); // Right align.
+
+    levelTitleText.x = FlxG.width - (levelTitleText.width + Math.max(10, FullScreenScaleMode.gameNotchSize.x)); // Right align.
 
     handleKeyPresses();
 
@@ -330,13 +340,13 @@ class StoryMenuState extends MusicBeatState
     {
       if (!selectedLevel)
       {
-        if (controls.UI_UP_P)
+        if (controls.UI_UP_P || SwipeUtil.swipeUp)
         {
           changeLevel(-1);
           changeDifficulty(0);
         }
 
-        if (controls.UI_DOWN_P)
+        if (controls.UI_DOWN_P || SwipeUtil.swipeDown)
         {
           changeLevel(1);
           changeDifficulty(0);
@@ -359,17 +369,31 @@ class StoryMenuState extends MusicBeatState
         #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P)
+        if (controls.UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS
+          || (SwipeUtil.swipeRight && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
+          || (TouchUtil.pressAction(rightDifficultyArrow, null, false)) #end)
         {
+          #if FEATURE_TOUCH_CONTROLS
+          @:privateAccess
+          if (TouchUtil.touch != null
+            && !TouchUtil.pressAction(rightDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          #end
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P)
+        if (controls.UI_LEFT_P #if FEATURE_TOUCH_CONTROLS
+          || (SwipeUtil.swipeLeft && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
+          || (TouchUtil.pressAction(leftDifficultyArrow, null, false)) #end)
         {
+          #if FEATURE_TOUCH_CONTROLS
+          @:privateAccess
+          if (TouchUtil.touch != null
+            && !TouchUtil.pressAction(leftDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          #end
           changeDifficulty(-1);
         }
 
-        if (controls.UI_RIGHT)
+        if (controls.UI_RIGHT #if FEATURE_TOUCH_CONTROLS || TouchUtil.overlaps(rightDifficultyArrow) #end)
         {
           rightDifficultyArrow.animation.play('press');
         }
@@ -378,7 +402,7 @@ class StoryMenuState extends MusicBeatState
           rightDifficultyArrow.animation.play('idle');
         }
 
-        if (controls.UI_LEFT)
+        if (controls.UI_LEFT #if FEATURE_TOUCH_CONTROLS || TouchUtil.overlaps(leftDifficultyArrow) #end)
         {
           leftDifficultyArrow.animation.play('press');
         }
@@ -392,14 +416,24 @@ class StoryMenuState extends MusicBeatState
       {
         selectLevel();
       }
+
+      #if FEATURE_TOUCH_CONTROLS
+      if (TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
+      {
+        for (i in 0...levelTitles.members.length)
+        {
+          final item = levelTitles.members[i];
+          final selectedItem = levelTitles.members[levelList.indexOf(currentLevelId)];
+
+          if (!TouchUtil.pressAction(item, null, false)) continue;
+
+          (item == selectedItem) ? selectLevel() : changeLevel(i - levelList.indexOf(currentLevelId));
+        }
+      }
+      #end
     }
 
-    if (controls.BACK && !exitingMenu && !selectedLevel)
-    {
-      exitingMenu = true;
-      FlxG.switchState(() -> new MainMenuState());
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-    }
+    if (controls.BACK) goBack();
   }
 
   /**
@@ -413,9 +447,15 @@ class StoryMenuState extends MusicBeatState
 
     currentIndex += change;
 
+    #if FEATURE_TOUCH_CONTROLS
+    // Dont wrap around w/ touch.
+    if (currentIndex < 0) currentIndex = 0;
+    if (currentIndex >= levelList.length) currentIndex = levelList.length - 1;
+    #else
     // Wrap around
     if (currentIndex < 0) currentIndex = levelList.length - 1;
     if (currentIndex >= levelList.length) currentIndex = 0;
+    #end
 
     var previousLevelId:String = currentLevelId;
     currentLevelId = levelList[currentIndex];
@@ -426,8 +466,6 @@ class StoryMenuState extends MusicBeatState
     for (index in 0...levelTitles.members.length)
     {
       var item:LevelTitle = levelTitles.members[index];
-
-      item.targetY = (index - currentIndex) * 125 + 480;
 
       if (index == currentIndex)
       {
@@ -442,6 +480,7 @@ class StoryMenuState extends MusicBeatState
 
     if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
+    repositionTitles();
     updateText();
     updateBackground(previousLevelId);
     updateProps();
@@ -643,6 +682,7 @@ class StoryMenuState extends MusicBeatState
   {
     for (ind => prop in currentLevel.buildProps(levelProps.members))
     {
+      prop.x += (FullScreenScaleMode.gameCutoutSize.x / 4);
       prop.zIndex = 1000;
       if (levelProps.members[ind] != prop) levelProps.replace(levelProps.members[ind], prop) ?? levelProps.add(prop);
     }
@@ -656,10 +696,51 @@ class StoryMenuState extends MusicBeatState
     tracklistText.text += currentLevel.getSongDisplayNames(currentDifficultyId).join('\n');
 
     tracklistText.screenCenter(X);
-    tracklistText.x -= FlxG.width * 0.35;
+    tracklistText.x -= (FlxG.width * 0.35);
 
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;
     // levelScore.accuracy
+  }
+
+  function goBack():Void
+  {
+    if (exitingMenu || selectedLevel) return;
+
+    exitingMenu = true;
+    FlxG.switchState(() -> new MainMenuState());
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+  }
+
+  /**
+   * Reposition titles based on the currently selected one.
+   */
+  function repositionTitles()
+  {
+    var currentIndex:Int = levelList.indexOf(currentLevelId);
+
+    // The current item should be at y 480.
+    levelTitles.members[currentIndex].targetY = 480;
+
+    // Every item above it should be positioned in relation to the next item.
+    if (currentIndex > 0)
+    {
+      for (i in 0...currentIndex)
+      {
+        var itemIndex:Int = currentIndex - 1 - i;
+        var nextItem:LevelTitle = levelTitles.members[itemIndex + 1];
+        levelTitles.members[itemIndex].targetY = nextItem.targetY - Math.max(levelTitles.members[itemIndex].height + 20, 125);
+      }
+    }
+
+    // Every item below it should be positioned in relation to the previous item.
+    if (currentIndex < levelTitles.members.length - 1)
+    {
+      for (i in (currentIndex + 1)...levelTitles.members.length)
+      {
+        var previousItem:LevelTitle = levelTitles.members[i - 1];
+        levelTitles.members[i].targetY = previousItem.targetY + (previousItem.height + 20);
+      }
+    }
   }
 }
