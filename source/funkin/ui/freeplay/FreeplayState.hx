@@ -1609,12 +1609,10 @@ class FreeplayState extends MusicBeatSubState
     }
 
     if (controls.FREEPLAY_FAVORITE && controls.active) favoriteSong();
-
     if (controls.FREEPLAY_JUMP_TO_TOP && controls.active) changeSelection(-curSelected);
-
     if (controls.FREEPLAY_JUMP_TO_BOTTOM && controls.active) changeSelection(grpCapsules.countLiving() - curSelected - 1);
 
-    calculateCompletion();
+    lerpScoreDisplays();
 
     handleInputs(elapsed);
 
@@ -1624,7 +1622,7 @@ class FreeplayState extends MusicBeatSubState
     if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
   }
 
-  function calculateCompletion():Void
+  function lerpScoreDisplays():Void
   {
     lerpScore = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpScore, intendedScore, FlxG.elapsed, 0.2), intendedScore, 1);
     lerpCompletion = MathUtil.snap(MathUtil.smoothLerpPrecision(lerpCompletion, intendedCompletion, FlxG.elapsed, 0.5), intendedCompletion, 1 / 100);
