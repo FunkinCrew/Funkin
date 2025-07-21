@@ -3223,6 +3223,9 @@ class PlayState extends MusicBeatSubState
 
     forEachPausedSound((s) -> s.destroy());
 
+    FlxTween.globalManager.clear();
+    FlxTimer.globalManager.clear();
+
     // Remove reference to stage and remove sprites from it to save memory.
     if (currentStage != null)
     {

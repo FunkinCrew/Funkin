@@ -77,7 +77,7 @@
       "name": "hscript",
       "type": "git",
       "dir": null,
-      "ref": "27c86f9a761c1d16d4433c4cf252eccb7b2e18de",
+      "ref": "d60bb2947fa609fdc875ccfae89666a6984eeaf2",
       "url": "https://github.com/FunkinCrew/hscript"
     },
     {
@@ -192,7 +192,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "0fbdf27fe124549730accd540cec8a183f8652c0",
+      "ref": "3e030c81de99ca84acde681431f806d8103bcf6e",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

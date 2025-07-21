@@ -391,7 +391,6 @@ class GameOverSubState extends MusicBeatSubState
     if (!isEnding)
     {
       isEnding = true;
-      startDeathMusic(1.0, true); // isEnding changes this function's behavior.
 
       // Stop death quotes immediately.
       hasPlayedDeathQuote = true;
@@ -400,6 +399,8 @@ class GameOverSubState extends MusicBeatSubState
         deathQuoteSound.stop();
         deathQuoteSound = null;
       }
+
+      startDeathMusic(1.0, true); // isEnding changes this function's behavior.
 
       if (PlayState.instance.isMinimalMode || boyfriend == null) {}
       else

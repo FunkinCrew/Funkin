@@ -207,11 +207,11 @@ class FreeplayState extends MusicBeatSubState
     };
 
     currentCharacter = fetchPlayableCharacter();
-    currentCharacterId = currentCharacter.getFreeplayStyleID();
+    currentCharacterId = currentCharacter.id;
 
     currentVariation = rememberedVariation;
     currentDifficulty = rememberedDifficulty;
-    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacterId);
+    styleData = FreeplayStyleRegistry.instance.fetchEntry(currentCharacter.getFreeplayStyleID());
     rememberedCharacterId = currentCharacter?.id ?? Constants.DEFAULT_CHARACTER;
 
     fromCharSelect = params?.fromCharSelect ?? false;
@@ -285,12 +285,6 @@ class FreeplayState extends MusicBeatSubState
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
     DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
-    #end
-
-    var isDebug:Bool = false;
-
-    #if FEATURE_DEBUG_FUNCTIONS
-    isDebug = true;
     #end
 
     // Block input until the intro finishes.
