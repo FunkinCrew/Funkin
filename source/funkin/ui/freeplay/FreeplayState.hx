@@ -2382,7 +2382,7 @@ class FreeplaySongData
   /**
    * Whether or not the song has been favorited.
    */
-  public var isFav:Bool = false;
+  public var isFav(get, never):Bool;
 
   /**
    * Whether the player has seen/played this song before within freeplay
@@ -2413,7 +2413,6 @@ class FreeplaySongData
   {
     this.data = data;
     _levelId = levelData.id;
-    this.isFav = Save.instance.isSongFavorited(data.songName);
   }
 
   /**
@@ -2422,14 +2421,13 @@ class FreeplaySongData
    */
   public function toggleFavorite():Bool
   {
-    isFav = !isFav;
     if (isFav)
     {
-      Save.instance.favoriteSong(data.songName);
+      Save.instance.unfavoriteSong(fullSongName);
     }
     else
     {
-      Save.instance.unfavoriteSong(data.songName);
+      Save.instance.favoriteSong(fullSongName);
     }
     return isFav;
   }
@@ -2437,6 +2435,11 @@ class FreeplaySongData
   function updateValues(variations:Array<String>):Void
   {
     // this.isNew = song.isSongNew(suffixedDifficulty);
+  }
+
+  function get_isFav():Bool
+  {
+    return Save.instance.isSongFavorited(fullSongName);
   }
 
   function get_isNew():Bool
