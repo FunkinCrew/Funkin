@@ -31,6 +31,7 @@ import funkin.input.Controls;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayStatePlaylist;
+import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.play.song.Song;
 import funkin.save.Save;
@@ -2300,11 +2301,10 @@ class FreeplayState extends MusicBeatSubState
 
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSong.data.id, currentDifficulty, currentVariation);
       intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : Math.max(0,
-        ((songScore.tallies.sick + songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes));
+      intendedCompletion = Math.max(0, Scoring.tallyCompletion(songScore?.tallies));
       rememberedDifficulty = currentDifficulty;
       if (!capsuleAnim) generateSongList(currentFilter, false, true, true);
-      currentCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
+      currentCapsule.refreshDisplay(!prepForNewRank);
     }
     else
     {
@@ -2719,26 +2719,18 @@ class FreeplayState extends MusicBeatSubState
 
     if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
-    var daSongCapsule:SongMenuItem = currentCapsule;
-    if (daSongCapsule.freeplayData != null)
-    {
-      var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.freeplayData.data.id, currentDifficulty, currentVariation);
-      intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick +
-        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
-      rememberedSongId = daSongCapsule.freeplayData.data.id;
-      changeDiff();
-      daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
-    }
+    var songScore:Null<SaveScoreData> = Save.instance.getSongScore(currentCapsule.freeplayData?.data.id ?? "", currentDifficulty, currentVariation);
+    intendedScore = songScore?.score ?? 0;
+
+    intendedCompletion = Scoring.tallyCompletion(songScore?.tallies);
+    rememberedSongId = currentCapsule.freeplayData?.data.id;
+
+    if (currentCapsule.freeplayData == null) albumRoll.albumId = null;
+
+    changeDiff();
+    if (currentCapsule.freeplayData == null) currentCapsule.refreshDisplay();
     else
-    {
-      intendedScore = 0;
-      intendedCompletion = 0.0;
-      rememberedSongId = null;
-      albumRoll.albumId = null;
-      changeDiff();
-      daSongCapsule.refreshDisplay();
-    }
+      currentCapsule.refreshDisplay(!prepForNewRank);
 
     for (index => capsule in grpCapsules.members)
     {
@@ -2756,10 +2748,10 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && controls.active)
     {
-      playCurSongPreview(daSongCapsule);
+      playCurSongPreview(currentCapsule);
       currentCapsule.selected = true;
 
-      // switchBackingImage(daSongCapsule.freeplayData);
+      // switchBackingImage(currentCapsule.freeplayData);
     }
 
     // Small vibrations every selection change.
