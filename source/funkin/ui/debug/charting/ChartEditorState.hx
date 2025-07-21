@@ -3423,6 +3423,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Function called when the game window loses focus.
+  **/
+  public override function onFocusLost():Void
+  {
+    stopAudioPlayback();
+
+    super.onFocusLost();
+  }
+
+  /**
+   * Function called when the game window gains focus.
+  **/
+  public override function onFocus():Void
+  {
+    if (this.subState != null && Std.isOfType(this.subState, funkin.play.PlayState)) {
+      var playState = cast(this.subState, funkin.play.PlayState);
+      if (!playState.isInCountdown && playState.subState == null) startAudioPlayback();
+    }
+
+    super.onFocus();
+  }
+
+  /**
    * Beat hit while the song is playing.
    */
   override function beatHit():Bool

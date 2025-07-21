@@ -928,6 +928,7 @@ class PlayState extends MusicBeatSubState
         {
           trace("started song at " + Conductor.instance.songPosition);
           startSong();
+          isInCountdown = false;
         }
       }
     }
@@ -959,7 +960,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || androidPause) && isInCountdown && mayPauseGame && !justUnpaused)
+    if ((controls.PAUSE || androidPause) && mayPauseGame && !justUnpaused)
     {
       var event = new PauseScriptEvent(FlxG.random.bool((1 / 1000) * 100));
 
