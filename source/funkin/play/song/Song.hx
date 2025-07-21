@@ -90,6 +90,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return false;
   }
 
+  // this returns true so that any new song can override this and return false when needed
+  public function canPlayPreview(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return true;
+  }
+
   /**
    * Set to false if the song was edited in the charter and should not be saved as a high score.
    */
@@ -199,7 +205,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
     {
       var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId);
-
       @:privateAccess
       if (songClassName != null) result = SongRegistry.instance.createScriptedEntry(songClassName);
     }
