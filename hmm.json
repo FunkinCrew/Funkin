@@ -46,7 +46,7 @@
       "type": "git",
       "dir": null,
       "ref": "08fc955ca87f192a971719a675f1d3b21709725d",
-      "url": "https://github.com/FunkinCrew/flixel-mobile"
+      "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
@@ -171,7 +171,7 @@
       "type": "git",
       "dir": null,
       "ref": "c750ebf6b48c4bc018abe9855fbae5ffdbc4771a",
-      "url": "https://github.com/FunkinCrew/lime-mobile"
+      "url": "https://github.com/FunkinCrew/lime"
     },
     {
       "name": "mconsole",
@@ -213,7 +213,7 @@
       "type": "git",
       "dir": null,
       "ref": "a0df7c3afe360c9af59a76e45007dbf4e53b5131",
-      "url": "https://github.com/FunkinCrew/openfl-mobile"
+      "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
