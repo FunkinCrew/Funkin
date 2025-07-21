@@ -2679,6 +2679,7 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.targetPos.y = capsule.intendedY(index - curSelectedFloat);
       capsule.targetPos.x = capsule.intendedX(index - curSelectedFloat) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
+      if (index + 0.5 < curSelectedFloat) capsule.targetPos.y -= 100;
     }
 
     if (curSelected != prevSelected)
@@ -2750,8 +2751,7 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.targetPos.y = capsule.intendedY(index - curSelected);
       capsule.targetPos.x = capsule.intendedX(index - curSelected) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
-      if (index < curSelected #if FEATURE_TOUCH_CONTROLS
-        && ControlsHandler.usingExternalInputDevice #end) capsule.targetPos.y -= 100; // another 100 for good measure
+      if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && controls.active)
