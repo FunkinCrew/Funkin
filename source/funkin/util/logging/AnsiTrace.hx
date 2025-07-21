@@ -1,5 +1,6 @@
 package funkin.util.logging;
 
+@:nullSafety
 class AnsiTrace
 {
   /**
@@ -9,9 +10,6 @@ class AnsiTrace
    */
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
-    #if (NO_FEATURE_LOG_TRACE && !FEATURE_DEBUG_FUNCTIONS)
-    return;
-    #end
     var str = formatOutput(v, info);
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.message(str, flixel.util.FlxColor.WHITE);
@@ -27,7 +25,8 @@ class AnsiTrace
     #end
   }
 
-  public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM") == "xterm" || Sys.getEnv("ANSICON") != null) #else false #end;
+  public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM")?.startsWith('xterm')
+    || Sys.getEnv("ANSICON") != null) #else false #end;
 
   // ansi stuff
   public static inline var RED = "\x1b[31m";
@@ -41,7 +40,7 @@ class AnsiTrace
    * Format the output to use ANSI colors.
    * Edited from the standard `trace()` implementation.
    */
-  public static function formatOutput(v:Dynamic, infos:haxe.PosInfos):String
+  public static function formatOutput(v:Dynamic, ?infos:haxe.PosInfos):String
   {
     var str = Std.string(v);
     if (infos == null) return str;

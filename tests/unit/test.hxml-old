@@ -15,7 +15,7 @@
 -lib haxeui-core
 -lib haxeui-flixel
 -lib flxanimate
--lib hxCodec
+-lib hxvlc
 -lib thx.semver
 -lib json2object
 -lib tink_json
@@ -48,7 +48,7 @@
 -lib haxeui-flixel
 -lib polymod
 -lib flxanimate
--lib hxCodec
+-lib hxvlc
 -lib thx.semver
 -lib json2object
 -lib tink_json

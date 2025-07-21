@@ -5,6 +5,7 @@ import funkin.play.cutscene.dialogue.ScriptedSpeaker;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
+@:nullSafety
 class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData> implements ISingleton implements DefaultRegistryImpl
 {
   /**

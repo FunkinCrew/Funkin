@@ -20,9 +20,6 @@ import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundMixer;
 
-#if (openfl >= "8.0.0")
-#end
-
 /**
  * A FlxSound which adds additional functionality:
  * - Delayed playback via negative song position.
@@ -45,9 +42,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (_onVolumeChanged == null)
     {
       _onVolumeChanged = new FlxTypedSignal<Float->Void>();
-      FlxG.sound.volumeHandler = function(volume:Float) {
+      FlxG.sound.onVolumeChange.add(function(volume:Float) {
         _onVolumeChanged.dispatch(volume);
-      }
+      });
     }
     return _onVolumeChanged;
   }
@@ -478,7 +475,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (autoPlay) sound.play();
     sound.volume = volume;
-    sound.group = FlxG.sound.defaultSoundGroup;
+    FlxG.sound.defaultSoundGroup.add(sound);
     sound.persist = persist;
     sound.important = important;
 

@@ -645,7 +645,6 @@ class StageEditorState extends UIState
       if (FlxG.keys.justPressed.TAB) onMenuItemClick("switch mode");
       if (FlxG.keys.justPressed.DELETE) onMenuItemClick("delete object");
       if (FlxG.keys.justPressed.ENTER) onMenuItemClick("test stage");
-      if (FlxG.keys.justPressed.ESCAPE) onMenuItemClick("exit");
       if (FlxG.keys.justPressed.F1 && welcomeDialog == null && userGuideDialog == null) onMenuItemClick("user guide");
 
       if (FlxG.keys.justPressed.T)
@@ -799,8 +798,8 @@ class StageEditorState extends UIState
     bottomBarSelectText.text = infoSelection;
 
     // ui stuff
-    nameTxt.x = FlxG.mouse.getScreenPosition(camHUD).x;
-    nameTxt.y = FlxG.mouse.getScreenPosition(camHUD).y - nameTxt.height;
+    nameTxt.x = FlxG.mouse.getViewPosition(camHUD).x;
+    nameTxt.y = FlxG.mouse.getViewPosition(camHUD).y - nameTxt.height;
 
     camMarker.visible = moveMode == "chars";
 
@@ -1014,7 +1013,7 @@ class StageEditorState extends UIState
   {
     if (FlxG.mouse.overlaps(spr) /*spr.overlapsPoint(FlxG.mouse.getWorldPosition(spr.camera), true, spr.camera) */
       && Screen.instance != null
-      && !Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY)
+      && !Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY)
       && WindowManager.instance.windows.length == 0) // ik its stupid but maybe I have other cases soon (i did)
       return true;
 
@@ -1261,14 +1260,13 @@ class StageEditorState extends UIState
           if (exitConfirmDialog == null)
           {
             exitConfirmDialog = Dialogs.messageBox("You are about to leave the Editor without Saving.\n\nAre you sure? ", "Leave Editor",
-              MessageBoxType.TYPE_YESNO, true,
-            function(btn:DialogButton) {
+              MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
                 exitConfirmDialog = null;
-              if (btn == DialogButton.YES)
-              {
-                saved = true;
-                onMenuItemClick("exit");
-              }
+                if (btn == DialogButton.YES)
+                {
+                  saved = true;
+                  onMenuItemClick("exit");
+                }
             });
           }
 

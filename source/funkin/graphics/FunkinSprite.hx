@@ -11,12 +11,16 @@ import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
+import openfl.system.System;
+
+using StringTools;
 
 /**
  * An FlxSprite with additional functionality.
  * - A more efficient method for creating solid color sprites.
  * - TODO: Better cache handling for textures.
  */
+@:nullSafety
 class FunkinSprite extends FlxSprite
 {
   /**
@@ -30,6 +34,8 @@ class FunkinSprite extends FlxSprite
    * We don't know whether we want to keep them cached or not.
    */
   static var previousCachedTextures:Map<String, FlxGraphic> = [];
+
+  static var permanentCachedTextures:Map<String, FlxGraphic> = [];
 
   /**
    * @param x Starting X position
@@ -158,9 +164,14 @@ class FunkinSprite extends FlxSprite
    * @param input The OpenFL `TextureBase` to apply
    * @return This sprite, for chaining
    */
-  public function loadTextureBase(input:TextureBase):FunkinSprite
+  public function loadTextureBase(input:TextureBase):Null<FunkinSprite>
   {
-    var inputBitmap:FixedBitmapData = FixedBitmapData.fromTexture(input);
+    var inputBitmap:Null<FixedBitmapData> = FixedBitmapData.fromTexture(input);
+    if (inputBitmap == null)
+    {
+      FlxG.log.warn('loadTextureBase - input resulted in null bitmap! $input');
+      return null;
+    }
 
     return loadBitmapData(inputBitmap);
   }
@@ -219,7 +230,7 @@ class FunkinSprite extends FlxSprite
       // Move the graphic from the previous cache to the current cache.
       var graphic = previousCachedTextures.get(key);
       previousCachedTextures.remove(key);
-      currentCachedTextures.set(key, graphic);
+      if (graphic != null) currentCachedTextures.set(key, graphic);
       return;
     }
 
@@ -235,6 +246,27 @@ class FunkinSprite extends FlxSprite
       graphic.persist = true;
       currentCachedTextures.set(key, graphic);
     }
+  }
+
+  public static function permanentCacheTexture(key:String):Void
+  {
+    // We don't want to cache the same texture twice.
+    if (permanentCachedTextures.exists(key)) return;
+
+    // Else, texture is currently uncached.
+    var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key, false, null, true);
+    if (graphic == null)
+    {
+      FlxG.log.warn('Failed to cache graphic: $key');
+    }
+    else
+    {
+      trace('Successfully cached graphic: $key');
+      graphic.persist = true;
+      permanentCachedTextures.set(key, graphic);
+    }
+
+    currentCachedTextures = permanentCachedTextures;
   }
 
   public static function cacheSparrow(key:String):Void
@@ -253,7 +285,14 @@ class FunkinSprite extends FlxSprite
   public static function preparePurgeCache():Void
   {
     previousCachedTextures = currentCachedTextures;
-    currentCachedTextures = [];
+
+    for (graphicKey in previousCachedTextures.keys())
+    {
+      if (!permanentCachedTextures.exists(graphicKey)) continue;
+      previousCachedTextures.remove(graphicKey);
+    }
+
+    currentCachedTextures = permanentCachedTextures;
   }
 
   public static function purgeCache():Void
@@ -267,12 +306,39 @@ class FunkinSprite extends FlxSprite
       graphic.destroy();
       previousCachedTextures.remove(graphicKey);
     }
+    @:privateAccess
+    if (FlxG.bitmap._cache == null)
+    {
+      @:privateAccess
+      FlxG.bitmap._cache = new Map();
+      System.gc();
+      return;
+    }
+
+    @:privateAccess
+    for (key in FlxG.bitmap._cache.keys())
+    {
+      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
+      if (obj == null) continue;
+      if (obj.persist) continue;
+      if (permanentCachedTextures.exists(key)) continue;
+      if (!(obj.useCount <= 0 || key.contains("characters") || key.contains("charSelect") || key.contains("results"))) continue;
+
+      FlxG.bitmap.removeKey(key);
+      obj.destroy();
+    }
+    openfl.Assets.cache.clear("songs");
+    openfl.Assets.cache.clear("sounds");
+    openfl.Assets.cache.clear("music");
+
+    System.gc();
   }
 
   static function isGraphicCached(graphic:FlxGraphic):Bool
   {
+    var result = null;
     if (graphic == null) return false;
-    var result = FlxG.bitmap.get(graphic.key);
+    result = FlxG.bitmap.get(graphic.key);
     if (result == null) return false;
     if (result != graphic)
     {
@@ -288,8 +354,9 @@ class FunkinSprite extends FlxSprite
    */
   public function isAnimationDynamic(id:String):Bool
   {
+    var animData = null;
     if (this.animation == null) return false;
-    var animData = this.animation.getByName(id);
+    animData = this.animation.getByName(id);
     if (animData == null) return false;
     return animData.numFrames > 1;
   }
@@ -428,6 +495,7 @@ class FunkinSprite extends FlxSprite
 
   public override function destroy():Void
   {
+    @:nullSafety(Off) // TODO: Remove when flixel.FlxSprite is null safed.
     frames = null;
     // Cancel all tweens so they don't continue to run on a destroyed sprite.
     // This prevents crashes.

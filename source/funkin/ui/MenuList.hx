@@ -1,13 +1,24 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.audio.FunkinSound;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.ui.Page.PageName;
+import flixel.tweens.FlxEase;
+import funkin.util.HapticUtil;
+import flixel.tweens.FlxTween;
 
+@:nullSafety
 class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 {
+  // Pause input variable
+  public static var pauseInput:Bool = false;
+
   public var selectedIndex(default, null):Int = 0;
   public var selectedItem(get, never):T;
 
@@ -29,9 +40,23 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   var byName = new Map<String, T>();
 
   /** Set to true, internally to disable controls, without affecting vars like `enabled` */
-  public var busy(default, null):Bool = false;
+  public var busy:Bool = false;
 
   // bit awkward because BACK is also a menu control and this doesn't affect that
+  // #if mobile
+
+  /** touchBuddy over here helps with the touch input! Because overlap for touch does not account for the graphic, only the hitbox.
+   * And, `FlxG.pixelPerfectOverlap` uses two FlxSprites, so we can't use the `FlxTouch` object */
+  public var touchBuddy:FlxSprite;
+
+  // #end
+
+  /** Only used in Options, basically acts the same as OptionsState's `currentName`, it's the current name of the current page in OptionsState.
+   * Why is it needed? Because touch control's a bitch. Thats why. */
+  public var currentPage:Null<PageName>;
+
+  // Helper variable
+  var _isMainMenuState:Bool = false;
 
   public function new(navControls:NavControls = Vertical, ?wrapMode:WrapMode)
   {
@@ -47,6 +72,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
         default: Both;
       }
     }
+
+    touchBuddy = new FlxSprite().makeGraphic(10, 10);
+    _isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
+
     super();
   }
 
@@ -58,11 +87,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     return add(item);
   }
 
-  public function resetItem(oldName:String, newName:String, ?callback:Void->Void):T
+  public function resetItem(oldName:String, newName:String, ?callback:Void->Void):Null<T>
   {
-    if (!byName.exists(oldName)) throw "No item named:" + oldName;
-
     var item = byName[oldName];
+    if (item == null) throw 'No item named: $oldName';
     byName.remove(oldName);
     byName[newName] = item;
     item.setItem(newName, callback);
@@ -74,33 +102,124 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   {
     super.update(elapsed);
 
-    if (enabled && !busy) updateControls();
+    if (enabled && !busy && !pauseInput) updateControls();
   }
 
-  inline function updateControls()
+  inline function updateControls():Void
   {
     var controls = PlayerSettings.player1.controls;
 
     var wrapX = wrapMode.match(Horizontal | Both);
     var wrapY = wrapMode.match(Vertical | Both);
-    var newIndex = switch (navControls)
-    {
-      case Vertical: navList(controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Horizontal: navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
-      case Both: navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
 
-      case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P, controls.UI_DOWN_P, wrapY);
-      case Rows(num): navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
+    var newIndex = 0;
+
+    // Define unified input handlers
+    final inputUp:Bool = controls.UI_UP_P || (!_isMainMenuState && SwipeUtil.swipeUp);
+    final inputDown:Bool = controls.UI_DOWN_P || (!_isMainMenuState && SwipeUtil.swipeDown);
+    final inputLeft:Bool = controls.UI_LEFT_P || (!_isMainMenuState && SwipeUtil.swipeLeft);
+    final inputRight:Bool = controls.UI_RIGHT_P || (!_isMainMenuState && SwipeUtil.swipeRight);
+
+    // Keepin' these for keyboard/controller support on mobile platforms
+    newIndex = switch (navControls)
+    {
+      case Vertical: navList(inputUp, inputDown, wrapY);
+      case Horizontal: navList(inputLeft, inputRight, wrapX);
+      case Both: navList(inputLeft || inputUp, inputRight || inputDown, !wrapMode.match(None));
+
+      case Columns(num): navGrid(num, inputLeft, inputRight, wrapX, inputUp, inputDown, wrapY);
+      case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
+    };
+
+    #if FEATURE_TOUCH_CONTROLS
+    // Update touch position
+    if (TouchUtil.pressed)
+    {
+      touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
     }
 
+    if (funkin.mobile.input.ControlsHandler.usingExternalInputDevice)
+    {
+      if (newIndex != selectedIndex)
+      {
+        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+        selectItem(newIndex);
+      }
+    }
+    else if (TouchUtil.pressed)
+    {
+      for (i in 0...members.length)
+      {
+        final item = members[i];
+        final menuCamera = FlxG.cameras.list[1];
+
+        final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
+        final itemPixelOverlap:Bool = _isMainMenuState && FlxG.pixelPerfectOverlap(touchBuddy, item, 0);
+
+        final isTouchingItem:Bool = itemOverlaps || itemPixelOverlap;
+
+        if (item.available && isTouchingItem && TouchUtil.justPressed)
+        {
+          var prevIndex:Int = selectedIndex;
+
+          if (!_isMainMenuState && selectedIndex != i)
+          {
+            newIndex = i;
+            break;
+          }
+          else
+          {
+            FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+            selectItem(i);
+          }
+
+          if (_isMainMenuState)
+          {
+            if (prevIndex == i)
+            {
+              FlxTween.cancelTweensOf(item);
+              item.scale.set(1.1, 1.1);
+              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+
+              HapticUtil.vibrate(0, 0.05, 1);
+              accept();
+            }
+            else
+            {
+              FlxTween.cancelTweensOf(item);
+              item.scale.set(0.94, 0.94);
+              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+
+              HapticUtil.vibrate(0, 0.01, 0.5);
+            }
+          }
+          else
+          {
+            accept();
+          }
+
+          break;
+        }
+      }
+    }
+
+    if (newIndex != selectedIndex && !_isMainMenuState)
+    {
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      selectItem(newIndex);
+    }
+    #else
     if (newIndex != selectedIndex)
     {
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       selectItem(newIndex);
     }
+    #end
 
     // Todo: bypass popup blocker on firefox
     if (controls.ACCEPT) accept();
+
+    return;
   }
 
   function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int
@@ -156,9 +275,12 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     return Std.int(Math.min(length - 1, index * latSize + latIndex));
   }
 
-  public function accept()
+  public function accept():Void
   {
     var selected = members[selectedIndex];
+
+    if (!selected.available) return;
+
     onAcceptPress.dispatch(selected);
 
     if (selected.fireInstantly) selected.callback();
@@ -179,9 +301,29 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     busy = false;
   }
 
-  public function selectItem(index:Int)
+  /**
+   * Selects an item in the list. If the item is not available, it will select the next available item.
+   * @param index The index of the item to select.
+   */
+  public function selectItem(index:Int):Void
   {
     members[selectedIndex].idle();
+
+    if (!members[index].available)
+    {
+      if (index < selectedIndex)
+      {
+        final newIndex:Int = (index - 1 < 0) ? index + 1 : index - 1;
+        selectItem(newIndex);
+        return;
+      }
+      else if (index > selectedIndex)
+      {
+        final newIndex:Int = (index + 1 > members.length) ? index - 1 : index + 1;
+        selectItem(newIndex);
+        return;
+      }
+    }
 
     selectedIndex = index;
 
@@ -214,10 +356,12 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   }
 }
 
+@:nullSafety
 class MenuListItem extends FlxSprite
 {
   public var callback:Void->Void;
   public var name:String;
+  public var available:Bool;
 
   /**
    * Set to true for things like opening URLs otherwise, it may it get blocked.
@@ -229,19 +373,26 @@ class MenuListItem extends FlxSprite
   function get_selected()
     return alpha == 1.0;
 
-  public function new(x = 0.0, y = 0.0, name:String, callback)
+  public function new(x = 0.0, y = 0.0, name:String, callback, available:Bool = true)
   {
     super(x, y);
 
-    setData(name, callback);
+    // This is just here to satisfy the null-safety checker
+    // setData still needs to be called since other classes may override it
+    this.name = name;
+    this.callback = callback;
+    this.available = available;
+    setData(name, callback, available);
     idle();
   }
 
-  function setData(name:String, ?callback:Void->Void)
+  function setData(name:String, ?callback:Void->Void, available:Bool)
   {
     this.name = name;
 
     if (callback != null) this.callback = callback;
+
+    this.available = available;
   }
 
   /**
@@ -251,7 +402,7 @@ class MenuListItem extends FlxSprite
    */
   public function setItem(name:String, ?callback:Void->Void)
   {
-    setData(name, callback);
+    setData(name, callback, available);
 
     if (selected) select();
     else
@@ -269,13 +420,14 @@ class MenuListItem extends FlxSprite
   }
 }
 
+@:nullSafety
 class MenuTypedItem<T:FlxSprite> extends MenuListItem
 {
-  public var label(default, set):T;
+  public var label(default, set):Null<T>;
 
-  public function new(x = 0.0, y = 0.0, label:T, name:String, callback)
+  public function new(x = 0.0, y = 0.0, label:T, name:String, callback, available:Bool = true)
   {
-    super(x, y, name, callback);
+    super(x, y, name, callback, available);
     // set label after super otherwise setters fuck up
     this.label = label;
   }
@@ -292,7 +444,7 @@ class MenuTypedItem<T:FlxSprite> extends MenuListItem
     height = oldHeight;
   }
 
-  function set_label(value:T)
+  function set_label(value:Null<T>):Null<T>
   {
     if (value != null)
     {

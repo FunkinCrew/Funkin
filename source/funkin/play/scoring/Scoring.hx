@@ -456,6 +456,7 @@ enum abstract ScoringRank(String)
     return temp1 > temp2;
   }
 
+  // Greater than or equal to comparison
   @:op(A >= B) static function compareGTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
@@ -467,6 +468,7 @@ enum abstract ScoringRank(String)
     return temp1 >= temp2;
   }
 
+  // Less than comparison
   @:op(A < B) static function compareLT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
@@ -478,6 +480,7 @@ enum abstract ScoringRank(String)
     return temp1 < temp2;
   }
 
+  // Less than or equal to comparison
   @:op(A <= B) static function compareLTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;

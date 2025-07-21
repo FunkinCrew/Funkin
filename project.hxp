@@ -4,6 +4,9 @@ package;
 import hxp.*;
 import lime.tools.*;
 import sys.FileSystem;
+import sys.io.File;
+import haxe.io.Path;
+import haxe.ds.Map;
 
 using StringTools;
 
@@ -26,12 +29,23 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.6.4";
+  static final VERSION:String = "0.7.2";
+
+  /**
+   * The build's number and version code.
+   * Used when publishing the game to mobile app stores. Should increment with each patch.
+   */
+  static final BUILD_NUMBER:Int = 2;
 
   /**
    * The game's name. Used as the default window title.
    */
   static final TITLE:String = "Friday Night Funkin'";
+
+  /**
+   * A package name used for identifying the app on various app stores.
+   */
+  static final PACKAGE_NAME:String = "me.funkin.fnf";
 
   /**
    * The name of the generated executable file.
@@ -51,11 +65,6 @@ class Project extends HXProject
   static final PRELOADER:String = "funkin.ui.transition.preload.FunkinPreloader";
 
   /**
-   * A package name used for identifying the app on various app stores.
-   */
-  static final PACKAGE_NAME:String = "me.funkin.fnf";
-
-  /**
    * The fully qualified class path for the entry point class to execute when launching the game.
    * It's where `public static function main():Void` goes.
    */
@@ -68,6 +77,66 @@ class Project extends HXProject
   static final COMPANY:String = "The Funkin' Crew";
 
   /**
+   * The app's localization languages.
+   */
+  static final LANGUAGES:Array<String> = ["en"];
+
+  /**
+   * The contents of the user's environment config.
+   * Read from the local `.env` file. Used for storing API keys.
+   */
+  static var envConfig:Null<Map<String, Dynamic>> = null;
+
+  //
+  // MOBILE METADATA
+  //
+
+  /**
+   * The app's minimal Android SDK version.
+   */
+  static final ANDROID_MINIMUM_SDK_VERSION:Int = 28;
+
+  /**
+   * The app's target Android SDK version.
+   */
+  static final ANDROID_TARGET_SDK_VERSION:Int = 35;
+
+  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil"];
+
+  //
+  // ASTC COMPRESSION
+  //
+
+  /**
+   * The quality of the compression process.
+   * This doesn't exactly reduce the quality of the outputted texture..
+   * But it changes how hard the CPU gotta work to maintin the quality and details of the image while compressing.
+   * possible values: fastest, fast, medium, thorough, exhaustive.
+   */
+  static var ASTC_QUALITY:String = "medium";
+
+  /**
+   * The team ID to use for the iOS app. Configured in XCode.
+   */
+  static var IOS_TEAM_ID:String = "Z7G7AVNGSH";
+
+  /**
+   * The block size of the ASTC compressed textures.
+   * Higher block size means lower quality and lighter file size for the generated compressed textures.
+   * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
+   */
+  static var ASTC_BLOCKSIZE:String = "10x10";
+
+  /**
+   * A list of asset file globs to exclude from ASTC compression when creating optimized mobile builds.
+   */
+  static var astcExcludes:Array<String> = [];
+
+  //
+  // BUILD SCRIPTS
+  //
+
+  /**
    * Path to the Haxe script run before building the game.
    */
   static final PREBUILD_HX:String = "source/Prebuild.hx";
@@ -76,6 +145,10 @@ class Project extends HXProject
    * Path to the Haxe script run after building the game.
    */
   static final POSTBUILD_HX:String = "source/Postbuild.hx";
+
+  //
+  // ASSET FILTERS
+  //
 
   /**
    * Asset path globs to always exclude from asset libraries.
@@ -92,10 +165,47 @@ class Project extends HXProject
    */
   static final EXCLUDE_ASSETS_NATIVE:Array<String> = ["*.mp3"];
 
+  /**
+   * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` enabled.
+   */
+  static final EXCLUDE_ASSETS_CENSORED:Array<String> = ["stressCutscene.mp4", "stressPicoCutscene.mp4", "darnellCutscene.mp4"];
+
+  /**
+   * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` disabled.
+   */
+  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = [
+    "stressCutscene-censored.mp4",
+    "stressPicoCutscene-censored.mp4",
+    "darnellCutscene-censored.mp4"
+  ];
+
   //
-  // FEATURE FLAGS
-  // Inverse feature flags are automatically populated.
+  // BUILD FLAGS
+  // Inverse build flags are automatically populated.
   //
+
+  /**
+   * `-DCENSOR_EXPLETIVES`
+   * If enabled, specifically disable "sexual explitives" in the game.
+   * This will forcibly censor these words (even if naughtyness is enabled), while leaving other swears.
+   *
+   * NOTE: This is needed because the Android platform specifically hates "fuck" and "cunt",
+   * but is fine with other naughtyness such as "cock", "asshole", implied sex, cigarettes, etc.
+   */
+  static final CENSOR_EXPLETIVES:FeatureFlag = "CENSOR_EXPLETIVES";
+
+  /**
+   * `-DEMBED_ASSETS`
+   * Whether to embed all asset libraries into the executable.
+   * Enabled on web, usually disabled on desktop.
+   */
+  static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
+
+  /**
+   * `-DEXCLUDE_ARMV7`
+   * If this flag is enabled, armv7 won't be compiled when building android.
+   */
+  static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
 
   /**
    * `-DGITHUB_BUILD`
@@ -103,9 +213,23 @@ class Project extends HXProject
    * to generate playtest builds to be pushed to the launcher.
    *
    * This is generally used to forcibly enable debugging features,
-   * even when the game is built in release mode for performance reasons.
+   * even when the game is built in release mode for performance.
    */
   static final GITHUB_BUILD:FeatureFlag = "GITHUB_BUILD";
+
+  /**
+   * `-DHARDCODED_CREDITS`
+   * If this flag is enabled, the credits will be parsed and encoded in the game at compile time,
+   * rather than read from JSON data at runtime.
+   */
+  static final HARDCODED_CREDITS:FeatureFlag = "HARDCODED_CREDITS";
+
+  /**
+   * `-DPRELOAD_ALL`
+   * Whether to preload all asset libraries.
+   * Disabled on web, enabled on desktop.
+   */
+  static final PRELOAD_ALL:FeatureFlag = "PRELOAD_ALL";
 
   /**
    * `-DREDIRECT_ASSETS_FOLDER`
@@ -116,32 +240,36 @@ class Project extends HXProject
   static final REDIRECT_ASSETS_FOLDER:FeatureFlag = "REDIRECT_ASSETS_FOLDER";
 
   /**
-   * `-DTOUCH_HERE_TO_PLAY`
-   * If this flag is enabled, the game will display a prompt to the user after the preloader completes,
-   * requiring them to click anywhere on the screen to start the game.
-   * This is done to ensure that the audio context can initialize properly on HTML5. Not necessary on desktop.
+   * `-DTESTING_ADS`
+   * If this flag is enabled, mobile advertisements will use testing mode.
    */
-  static final TOUCH_HERE_TO_PLAY:FeatureFlag = "TOUCH_HERE_TO_PLAY";
+  static final TESTING_ADS:FeatureFlag = "TESTING_ADS";
 
   /**
-   * `-DPRELOAD_ALL`
-   * Whether to preload all asset libraries.
-   * Disabled on web, enabled on desktop.
+   * `-DUNLOCK_EVERYTHING`
+   * If this flag is enabled, the game will assume all songs have been beaten and all content is available.
    */
-  static final PRELOAD_ALL:FeatureFlag = "PRELOAD_ALL";
+  static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
+
+  //
+  // FEATURE FLAGS
+  // Inverse build flags are automatically populated.
+  //
 
   /**
-   * `-DEMBED_ASSETS`
-   * Whether to embed all asset libraries into the executable.
+   * `-DFEATURE_COMPRESSED_TEXTURES`
+   * If this flag is enabled, ASTC compressed textures will be used over uncompressed PNGs.
+   * Compressed ASTC textures provide lower memory usage but at the cost of a slightly higher files size & more GPU usage.
+   * ASTC textures are GPU Rendered so they have a few cons:
+   * - Pixel Data of bitmaps cannot be read nor edited directly.
+   * - Some filters specifically the ones in openfl.filters package won't work properly because they directly modify the bitmap pixels.
+   * - ASync loading for GPU Compressed Textures doesn't work due to OpenGL being single-threaded. (Looking online there seem to be some workarounds but it's pretty complicated...).
+   * One thing to note is that ASTC textures aren't available on all platforms:
+   * - For iOS, it's available starting from phones with A8 chips, so anything from iPhone 6 and beyond has it.
+   * - For Android, it's sorta mixed, but mostly any mid range phone that came after 2017 does support ASTC.
+   * - For desktop, it appears to be only supported on Intergrated Graphics from our testing.
    */
-  static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
-
-  /**
-   * `-DHARDCODED_CREDITS`
-   * If this flag is enabled, the credits will be parsed and encoded in the game at compile time,
-   * rather than read from JSON data at runtime.
-   */
-  static final HARDCODED_CREDITS:FeatureFlag = "HARDCODED_CREDITS";
+  static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
 
   /**
    * `-DFEATURE_DEBUG_FUNCTIONS`
@@ -152,19 +280,18 @@ class Project extends HXProject
   static final FEATURE_DEBUG_FUNCTIONS:FeatureFlag = "FEATURE_DEBUG_FUNCTIONS";
 
   /**
+   * `-DFEATURE_RESULTS_DEBUG`
+   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+   */
+  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
+
+  /**
    * `-DFEATURE_DEBUG_TRACY`
    * If this flag is enabled, the game will have the necessary hooks for the Tracy profiler.
    * Only enable this if you're using the correct fork of Haxe to support this.
    * @see https://github.com/HaxeFoundation/hxcpp/pull/1153
    */
   static final FEATURE_DEBUG_TRACY:FeatureFlag = "FEATURE_DEBUG_TRACY";
-
-  /**
-   * `-DFEATURE_LOG_TRACE`
-   * If this flag is enabled, the game will print debug traces to the console.
-   * Disable to improve performance a bunch.
-   */
-  static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
 
   /**
    * `-DFEATURE_DISCORD_RPC`
@@ -174,38 +301,11 @@ class Project extends HXProject
   static final FEATURE_DISCORD_RPC:FeatureFlag = "FEATURE_DISCORD_RPC";
 
   /**
-   * `-DFEATURE_NEWGROUNDS`
-   * If this flag is enabled, the game will enable the Newgrounds library.
-   * This is used to provide Medal and Leaderboard support.
+   * `-DFEATURE_FILE_DROP`
+   * If this flag is enabled, the game will support dragging and dropping files onto it for various features.
+   * Disabled on MacOS.
    */
-  static final FEATURE_NEWGROUNDS:FeatureFlag = "FEATURE_NEWGROUNDS";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_DEBUG`
-   * If this flag is enabled, the game will enable Newgrounds.io's debug functions.
-   * This provides additional information in requests, as well as "faking" medal and leaderboard submissions.
-   */
-  static final FEATURE_NEWGROUNDS_DEBUG:FeatureFlag = "FEATURE_NEWGROUNDS_DEBUG";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_AUTOLOGIN`
-   * If this flag is enabled, the game will attempt to automatically login to Newgrounds on startup.
-   */
-  static final FEATURE_NEWGROUNDS_AUTOLOGIN:FeatureFlag = "FEATURE_NEWGROUNDS_AUTOLOGIN";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_TESTING_MEDALS`
-   * If this flag is enabled, use the medal IDs from the debug test bench.
-   * If disabled, use the actual medal IDs from the release project on Newgrounds.
-   */
-  static final FEATURE_NEWGROUNDS_TESTING_MEDALS:FeatureFlag = "FEATURE_NEWGROUNDS_TESTING_MEDALS";
-
-  /**
-   * `-DFEATURE_NEWGROUNDS_EVENTS`
-   * If this flag is enabled, the game will attempt to send events to Newgrounds when the user does stuff.
-   * This lets us see cool anonymized stats! It only works if the user is logged in.
-   */
-  static final FEATURE_NEWGROUNDS_EVENTS:FeatureFlag = "FEATURE_NEWGROUNDS_EVENTS";
+  static final FEATURE_FILE_DROP:FeatureFlag = "FEATURE_FILE_DROP";
 
   /**
    * `-DFEATURE_FUNKVIS`
@@ -216,26 +316,92 @@ class Project extends HXProject
   static final FEATURE_FUNKVIS:FeatureFlag = "FEATURE_FUNKVIS";
 
   /**
-   * `-DFEATURE_PARTIAL_SOUNDS`
-   * If this flag is enabled, the game will enable the FlxPartialSound library.
-   * This is used to provide audio previews in Freeplay.
-   * Disabling this will make those previews not play.
+   * `-DFEATURE_GHOST_TAPPING`
+   * If this flag is enabled, misses will not be counted when it is not the player's turn.
+   * Misses are still counted when the player has notes to hit.
    */
-  static final FEATURE_PARTIAL_SOUNDS:FeatureFlag = "FEATURE_PARTIAL_SOUNDS";
+  static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
 
   /**
-   * `-DFEATURE_VIDEO_PLAYBACK`
-   * If this flag is enabled, the game will enable support for video playback.
-   * This requires the hxvlc library on desktop platforms.
+   * `-DFEATURE_HAPTICS`
+   * If this flag is enabled, the game provide haptic feedback vibrations.
+   * Works for mobile targets (Android and iOS).
    */
-  static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
+  static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
   /**
-   * `-DFEATURE_FILE_DROP`
-   * If this flag is enabled, the game will support dragging and dropping files onto it for various features.
-   * Disabled on MacOS.
+   * `-DFEATURE_INPUT_OFFSETS`
+   * If this flag is enabled, the input offsets menu will be available to configure your audio and visual offsets.
    */
-  static final FEATURE_FILE_DROP:FeatureFlag = "FEATURE_FILE_DROP";
+  static final FEATURE_INPUT_OFFSETS:FeatureFlag = "FEATURE_INPUT_OFFSETS";
+
+  /**
+   * `-DFEATURE_LOG_TRACE`
+   * If this flag is enabled, the game will print debug traces to the console.
+   * Disable to improve performance a bunch.
+   */
+  static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
+
+  /**
+   * `-DFEATURE_MOBILE_ADVERTISEMENTS`
+   * If this flag is enabled, Google AdMob will be enabled.
+   * Banner and interstitial ads will sometimes appear.
+   */
+  static final FEATURE_MOBILE_ADVERTISEMENTS:FeatureFlag = "FEATURE_MOBILE_ADVERTISEMENTS";
+
+  /**
+   * `-DFEATURE_MOBILE_IAP`
+   * If this flag is enabled, in-app purchases will be enabled.
+   * This includes the in-app purchase to disable mobile advertisements.
+   */
+  static final FEATURE_MOBILE_IAP:FeatureFlag = "FEATURE_MOBILE_IAP";
+
+  /**
+   * `-DFEATURE_MOBILE_IAR`
+   * If this feature flag is enabled, the user may sometimes be prompted to review the app on their respective store.
+   */
+  static final FEATURE_MOBILE_IAR:FeatureFlag = "FEATURE_MOBILE_IAR";
+
+  /**
+   * `-DFEATURE_NAUGHTYNESS`
+   * If this feature flag is enabled, naughtyness will be a toggleable option in the Options Menu.
+   * If disabled, the option will be hidden and the game will always be censored.
+   */
+  static final FEATURE_NAUGHTYNESS:FeatureFlag = "FEATURE_NAUGHTYNESS";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS`
+   * If this flag is enabled, the game will enable the Newgrounds library.
+   * This is used to provide Medal and Leaderboard support.
+   */
+  static final FEATURE_NEWGROUNDS:FeatureFlag = "FEATURE_NEWGROUNDS";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_AUTOLOGIN`
+   * If this flag is enabled, the game will attempt to automatically login to Newgrounds on startup.
+   */
+  static final FEATURE_NEWGROUNDS_AUTOLOGIN:FeatureFlag = "FEATURE_NEWGROUNDS_AUTOLOGIN";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_DEBUG`
+   * If this flag is enabled, the game will enable Newgrounds.io's debug functions.
+   * This provides additional information in requests, as well as "faking" medal and leaderboard submissions.
+   */
+  static final FEATURE_NEWGROUNDS_DEBUG:FeatureFlag = "FEATURE_NEWGROUNDS_DEBUG";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_EVENTS`
+   * If this flag is enabled, the game will attempt to send events to Newgrounds when the user does stuff.
+   * This lets us see cool anonymized stats! It only works if the user is logged in.
+   */
+  static final FEATURE_NEWGROUNDS_EVENTS:FeatureFlag = "FEATURE_NEWGROUNDS_EVENTS";
+
+  /**
+   * `-DFEATURE_NEWGROUNDS_TESTING_MEDALS`
+   * If this flag is enabled, use the medal IDs from the debug test bench.
+   * If disabled, use the actual medal IDs from the release project on Newgrounds.
+   */
+  static final FEATURE_NEWGROUNDS_TESTING_MEDALS:FeatureFlag = "FEATURE_NEWGROUNDS_TESTING_MEDALS";
 
   /**
    * `-DFEATURE_OPEN_URL`
@@ -244,10 +410,37 @@ class Project extends HXProject
   static final FEATURE_OPEN_URL:FeatureFlag = "FEATURE_OPEN_URL";
 
   /**
+   * `-DFEATURE_PARTIAL_SOUNDS`
+   * If this flag is enabled, the game will enable the FlxPartialSound library.
+   * This is used to provide audio previews in Freeplay.
+   * Disabling this will make those previews not play.
+   */
+  static final FEATURE_PARTIAL_SOUNDS:FeatureFlag = "FEATURE_PARTIAL_SOUNDS";
+
+  /**
+   * `-DFEATURE_POLYMOD_MODS`
+   * If this flag is enabled, the game will enable the Polymod library's support for atomic mod loading from the `./mods` folder.
+   * If this flag is disabled, no mods will be loaded.
+   */
+  static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
+
+  /**
    * `-DFEATURE_SCREENSHOTS`
    * If this flag is enabled, the game will support the screenshots feature.
    */
   static final FEATURE_SCREENSHOTS:FeatureFlag = "FEATURE_SCREENSHOTS";
+
+  /**
+   * `-FEATURE_DEBUG_MENU`
+   * If this flag is enabled, a debug menu will be accessible.
+   */
+  static final FEATURE_DEBUG_MENU:FeatureFlag = "FEATURE_DEBUG_MENU";
+
+  /**
+   * `-FEATURE_ANIMATION_EDITOR`
+   * If this flag is enabled, the Animation Editor will be accessible from the debug menu.
+   */
+  static final FEATURE_ANIMATION_EDITOR:FeatureFlag = "FEATURE_ANIMATION_EDITOR";
 
   /**
    * `-DFEATURE_CHART_EDITOR`
@@ -262,24 +455,26 @@ class Project extends HXProject
   static final FEATURE_STAGE_EDITOR:FeatureFlag = "FEATURE_STAGE_EDITOR";
 
   /**
-   * `-DFEATURE_RESULTS_DEBUG
-   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+   * `-DFEATURE_TOUCH_CONTROLS`
+   * If this flag is enabled, the touch controls for the game is also enabled.
+   * Works with desktop builds I think maybe?
    */
-  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
+  static final FEATURE_TOUCH_CONTROLS:FeatureFlag = "FEATURE_TOUCH_CONTROLS";
 
   /**
-   * `-DFEATURE_POLYMOD_MODS`
-   * If this flag is enabled, the game will enable the Polymod library's support for atomic mod loading from the `./mods` folder.
-   * If this flag is disabled, no mods will be loaded.
+   * `-DFEATURE_TOUCH_HERE_TO_PLAY`
+   * If this flag is enabled, the game will display a prompt to the user after the preloader completes,
+   * requiring them to click anywhere on the screen to start the game.
+   * This is done to ensure that the audio context can initialize properly on HTML5. Not necessary on desktop.
    */
-  static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
+  static final FEATURE_TOUCH_HERE_TO_PLAY:FeatureFlag = "FEATURE_TOUCH_HERE_TO_PLAY";
 
   /**
-   * `-DFEATURE_GHOST_TAPPING`
-   * If this flag is enabled, misses will not be counted when it is not the player's turn.
-   * Misses are still counted when the player has notes to hit.
+   * `-DFEATURE_VIDEO_PLAYBACK`
+   * If this flag is enabled, the game will enable support for video playback.
+   * This requires the hxvlc library on desktop platforms.
    */
-  static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
+  static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
 
   //
   // CONFIGURATION FUNCTIONS
@@ -289,10 +484,13 @@ class Project extends HXProject
   {
     super();
 
+    envConfig = readEnvironmentFile("./.env");
+
     flair();
     configureApp();
 
     displayTarget();
+
     configureFeatureFlags();
     configureCompileDefines();
     configureIncludeMacros();
@@ -302,6 +500,30 @@ class Project extends HXProject
     configureHaxelibs();
     configureAssets();
     configureIcons();
+
+    readASTCExclusion();
+
+    if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+    {
+      runASTCCompressor();
+    }
+
+    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
+    {
+      configureAdMobKeys();
+    }
+
+    if (isAndroid())
+    {
+      configureAndroid();
+    }
+
+    if (isIOS())
+    {
+      configureIOS();
+    }
+
+    info("Done configuring project.");
   }
 
   /**
@@ -327,6 +549,11 @@ class Project extends HXProject
   function configureApp()
   {
     this.meta.title = TITLE;
+
+    // ios uses this character code instead of spaces...
+    if (isIOS())
+      this.meta.title = ~/ /ig.replace(TITLE, "\u2002");
+
     this.meta.version = VERSION;
     this.meta.packageName = PACKAGE_NAME;
     this.meta.company = COMPANY;
@@ -343,8 +570,11 @@ class Project extends HXProject
     this.preBuildCallbacks.push(buildHaxeCLICommand(PREBUILD_HX));
     this.postBuildCallbacks.push(buildHaxeCLICommand(POSTBUILD_HX));
 
-    // TODO: Should we provide this?
-    // this.meta.buildNumber = 0;
+    // set the app' local languages.
+    this.languages = LANGUAGES;
+
+    // Set the build number, required for publishing the game to mobile stores.
+    this.meta.buildNumber = Std.string(BUILD_NUMBER);
 
     // These values are only used by the SWF target I think.
     // this.app.path
@@ -387,10 +617,22 @@ class Project extends HXProject
     if (isMobile())
     {
       this.window.orientation = Orientation.LANDSCAPE;
-      this.window.fullscreen = false;
+      this.window.fullscreen = true;
       this.window.resizable = false;
+      this.window.borderless = true;
       this.window.width = 0;
       this.window.height = 0;
+    }
+
+    if (isAndroid())
+    {
+      if (EXCLUDE_ARMV7.isEnabled(this))
+      {
+        this.excludeArchitectures.push(Architecture.ARMV7);
+      }
+
+      config.set("android.minimum-sdk-version", ANDROID_MINIMUM_SDK_VERSION);
+      config.set("android.target-sdk-version", ANDROID_TARGET_SDK_VERSION);
     }
   }
 
@@ -523,60 +765,101 @@ class Project extends HXProject
     // You can explicitly override any of these.
     // For example, `-DGITHUB_BUILD` or `-DNO_HARDCODED_CREDITS`
 
+    //
+    // BUILD FLAGS
+    //
+
     // Should be false unless explicitly requested.
     GITHUB_BUILD.apply(this, false);
-    FEATURE_GHOST_TAPPING.apply(this, false);
+    EXCLUDE_ARMV7.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
-    FEATURE_OPEN_URL.apply(this, true);
-    FEATURE_POLYMOD_MODS.apply(this, true);
-    FEATURE_FUNKVIS.apply(this, true);
-    FEATURE_PARTIAL_SOUNDS.apply(this, true);
-    FEATURE_VIDEO_PLAYBACK.apply(this, true);
-    FEATURE_STAGE_EDITOR.apply(this, true);
-
-    // Should be true on debug builds or if GITHUB_BUILD is enabled.
-    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-
-    // Got a lot of complains about this being turned off by default on some builds.
-    // TODO: Look into ways to optimize logging (maybe by using a thread pool?)
-    FEATURE_LOG_TRACE.apply(this, true);
-
-    FEATURE_NEWGROUNDS.apply(this, true);
-    FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
-    FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
-    FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
-    FEATURE_NEWGROUNDS_EVENTS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this));
-
-    // Should default to true on workspace builds and false on release builds.
-    REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
-
-    // Should be true on desktop, release, non-tester builds.
-    // We don't want testers to accidentally leak songs to their Discord friends!
-    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
-
-    // Should be true only on web builds.
-    // Audio context issues only exist there.
-    TOUCH_HERE_TO_PLAY.apply(this, isWeb());
+    UNLOCK_EVERYTHING.apply(this, true);
 
     // Should be true only on web builds.
     // Enabling embedding and preloading is required to preload assets properly.
     EMBED_ASSETS.apply(this, isWeb());
     PRELOAD_ALL.apply(this, !isWeb());
 
-    // Should be true except on MacOS.
-    // File drop doesn't work there.
-    FEATURE_FILE_DROP.apply(this, !isMac());
+    // Should default to true on workspace builds and false on release builds.
+    REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
 
-    // Should be true except on web builds.
-    // Chart editor doesn't work there.
-    FEATURE_CHART_EDITOR.apply(this, !isWeb());
+    // Should be true only on debug mobile builds.
+    TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
 
-    // Should be true except on web builds.
-    // Screenshots doesn't work there.
-    FEATURE_SCREENSHOTS.apply(this, !isWeb());
+    // Should be true on mobile builds.
+    CENSOR_EXPLETIVES.apply(this, isMobile());
+
+    //
+    // FEATURE FLAGS
+    //
+
+    FEATURE_FUNKVIS.apply(this, true);
+    FEATURE_LOG_TRACE.apply(this, true);
+    FEATURE_NAUGHTYNESS.apply(this, true);
+    FEATURE_OPEN_URL.apply(this, true);
+    FEATURE_PARTIAL_SOUNDS.apply(this, true);
+    FEATURE_POLYMOD_MODS.apply(this, true);
+
+    // Video playback should be enabled on desktop, web, and mobile.
+    // HXCPP has trouble with iOS simulator builds though...
+    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
+
+    // Should be true on debug builds or if GITHUB_BUILD is enabled.
+    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+
+    // Should be true on desktop, non-tester builds.
+    // We don't want testers to accidentally leak songs to their Discord friends!
+    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+
+    // Newgrounds features
+    FEATURE_NEWGROUNDS.apply(this, !isMobile());
+    FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
+    FEATURE_NEWGROUNDS_TESTING_MEDALS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+    FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
+    FEATURE_NEWGROUNDS_EVENTS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this));
+
+    // Should be true except on web and mobile builds.
+    // Debug editors aren't built to work on web or mobile right now.
+    FEATURE_DEBUG_MENU.apply(this, !(isWeb() || isMobile()));
+    FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
+
+    // Should be true except on web builds (some asset stuff breaks it)
+    FEATURE_INPUT_OFFSETS.apply(this, !isWeb());
+
+    // Should be true except on web and mobile builds.
+    // Screenshots doesn't work there, and mobile has its own screenshots anyway.
+    FEATURE_SCREENSHOTS.apply(this, !(isWeb() || isMobile()));
+
+    // Should be true except on MacOS and mobile builds.
+    // Dragging and dropping files onto the window doesn't work there.
+    FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
+
+    // Audio context issues only exist on web builds.
+    FEATURE_TOUCH_HERE_TO_PLAY.apply(this, isWeb());
+
+    // Should be true only on mobile builds.
+    FEATURE_HAPTICS.apply(this, isMobile());
+    FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
+
+    // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
+    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && envConfig != null));
+    FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && envConfig != null));
+    FEATURE_MOBILE_IAR.apply(this, (isMobile() && isRelease()));
+
+    // The coveted ghost tapping feature.
+    // Essential on mobile but delayed on desktop.
+    // Please send targeted harassment to PhantomArcade about this.
+    FEATURE_GHOST_TAPPING.apply(this, isMobile());
+
+    // Enable ASTC Compressed textures for mobile.
+    // Since mobile is pretty memory safe (I'm looking at you Apple...) we need them BADLY to have the game run properly.
+    // It's kept off for desktop due to the low ASTC support on desktop GPUs (which seem to be only among Intergrated Graphics).
+    FEATURE_COMPRESSED_TEXTURES.apply(this, isMobile() && isRelease());
   }
 
   /**
@@ -586,6 +869,10 @@ class Project extends HXProject
   {
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
+
+    // Disable a macro in Lime that generates a random number for Assets.cache.version every build.
+    // This doesn't seem to be of any use and it causes lime.utils.AssetCache to be re-compiled on every build.
+    setHaxedef("lime_disable_assets_version");
 
     // Enable stack trace tracking. Good for debugging but has a (minor) performance impact.
     setHaxedef("HXCPP_CHECK_POINTER");
@@ -599,6 +886,11 @@ class Project extends HXProject
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
     {
       setHaxedef("FLX_NO_DEBUG");
+    }
+
+    if (FEATURE_LOG_TRACE.isDisabled(this))
+    {
+      addHaxeFlag("--no-traces");
     }
 
     // Disable the built in pause screen when unfocusing the game.
@@ -642,7 +934,12 @@ class Project extends HXProject
 
     // Forcibly include all Funkin' classes in builds.
     // This prevents classes that are unused by the base game from being unavailable to HScript.
-    addHaxeMacro("include('funkin')");
+    addHaxeMacro("include('funkin', true, ['funkin.mobile.*'])");
+
+    if (isMobile())
+    {
+      addHaxeMacro("include('funkin.mobile')");
+    }
 
     // Ensure all HaxeUI components are available at runtime.
     addHaxeMacro("include('haxe.ui.backend.flixel.components')");
@@ -684,6 +981,84 @@ class Project extends HXProject
     app.path = buildDir;
   }
 
+  function configureAndroid()
+  {
+    javaPaths.push(Path.join([SOURCE_DIR, 'funkin/mobile/external/android/java']));
+
+    if (isRelease())
+    {
+      if (envConfig != null)
+      {
+        keystore = new Keystore();
+        keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
+        keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
+        keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
+      }
+
+      Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
+
+      final permissionsConfig:Array<String> = [
+        '<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />',
+        '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'
+      ];
+
+      final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
+
+      if (xmlChildren != null)
+      {
+        config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
+      }
+      else
+      {
+        config.get('android.manifest').xmlChildren = permissionsConfig;
+      }
+
+      if (isBundle())
+      {
+        config.set("android.gradle-project-directory", "bin-bundle");
+      }
+    }
+
+    final modsFolderProvider = [
+      '<provider android:authorities="$PACKAGE_NAME.docprovider" android:name="funkin.provider.DataFolderProvider" android:grantUriPermissions="true" android:exported="true" android:permission="android.permission.MANAGE_DOCUMENTS">',
+      '  <intent-filter>',
+      '    <action android:name="android.content.action.DOCUMENTS_PROVIDER" />',
+      '  </intent-filter>',
+      '</provider>'
+    ];
+
+    final xmlChildren:Null<Array<String>> = config.get('android.application').xmlChildren;
+
+    if (xmlChildren != null)
+    {
+      config.get('android.application').xmlChildren = xmlChildren.concat(modsFolderProvider);
+    }
+    else
+    {
+      config.get('android.application').xmlChildren = modsFolderProvider;
+    }
+
+    final extensions:Null<Array<String>> = config.getArrayString('android.extension');
+
+    for (extension in ANDROID_EXTENSIONS)
+    {
+      if (extensions == null || extensions != null && extensions.indexOf(extension) == -1)
+      {
+        config.push("android.extension", extension);
+      }
+    }
+  }
+
+  function configureIOS()
+  {
+    config.set("ios.non-exempt-encryption", "false");
+    config.set("ios.team-id", IOS_TEAM_ID);
+    config.set("ios.deployment", "16.0");
+
+    // launchStoryboard = new LaunchStoryboard();
+    // launchStoryboard.path = "./LaunchScreen.storyboard";
+  }
+
   function configurePolymod()
   {
     // The file extension to use for script files.
@@ -711,8 +1086,8 @@ class Project extends HXProject
   function configureHaxelibs()
   {
     // Don't enforce
-    addHaxelib('lime'); // Game engine backend
-    addHaxelib('openfl'); // Game engine backend
+    // addHaxelib('lime'); // Game engine backend
+    // addHaxelib('openfl'); // Game engine backend
 
     addHaxelib('flixel'); // Game engine
 
@@ -721,7 +1096,6 @@ class Project extends HXProject
     // addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
     addHaxelib('haxeui-core'); // UI framework
     addHaxelib('haxeui-flixel'); // Integrate HaxeUI with Flixel
-    addHaxelib('flixel-text-input'); // Improved text field rendering for HaxeUI
 
     addHaxelib('polymod'); // Modding framework
     addHaxelib('flxanimate'); // Texture atlas rendering
@@ -737,11 +1111,16 @@ class Project extends HXProject
       addHaxelib('hxcpp-debug-server'); // VSCode debug support
     }
 
-    if (isDesktop() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       // hxvlc doesn't function on HashLink or non-desktop platforms
       // It's also unnecessary if video playback is disabled
       addHaxelib('hxvlc'); // Video playback
+    }
+
+    if (isAndroid())
+    {
+      addHaxelib('extension-androidtools'); // Android Functions
     }
 
     if (FEATURE_DISCORD_RPC.isEnabled(this))
@@ -764,6 +1143,26 @@ class Project extends HXProject
     {
       addHaxelib('FlxPartialSound'); // Partial sound
     }
+
+    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
+    {
+      addHaxelib('extension-admob'); // Ads Extension
+    }
+
+    if (FEATURE_HAPTICS.isEnabled(this))
+    {
+      addHaxelib('extension-haptics'); // Haptic feedback
+    }
+
+    if (FEATURE_MOBILE_IAP.isEnabled(this))
+    {
+      addHaxelib('extension-iapcore'); // In-app purchases Extension
+    }
+
+    if (FEATURE_MOBILE_IAR.isEnabled(this))
+    {
+      addHaxelib('extension-iarcore'); // In-app reviews Extension
+    }
   }
 
   function configureAssets()
@@ -771,6 +1170,15 @@ class Project extends HXProject
     var exclude = EXCLUDE_ASSETS.concat(isWeb() ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
     var shouldPreload = PRELOAD_ALL.isEnabled(this);
     var shouldEmbed = EMBED_ASSETS.isEnabled(this);
+
+    if (CENSOR_EXPLETIVES.isEnabled(this))
+    {
+      exclude = exclude.concat(EXCLUDE_ASSETS_CENSORED);
+    }
+    else
+    {
+      exclude = exclude.concat(EXCLUDE_ASSETS_UNCENSORED);
+    }
 
     if (shouldEmbed)
     {
@@ -784,50 +1192,53 @@ class Project extends HXProject
     // Default asset library
     var shouldPreloadDefault = true;
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
-    addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
 
     // Font assets
     var shouldEmbedFonts = true;
-    addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts);
+    addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts, "assets");
 
     // Shared asset libraries
     addAssetLibrary("songs", shouldEmbed, shouldPreload);
-    addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("shared", shouldEmbed, shouldPreload);
-    addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed, "assets");
     if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       var shouldEmbedVideos = false;
       addAssetLibrary("videos", shouldEmbedVideos, shouldPreload);
-      addAssetPath("assets/videos", "assets/videos", "videos", ["*"], exclude, shouldEmbedVideos);
+      addAssetPath("assets/videos", "assets/videos", "videos", ["*"], exclude, shouldEmbedVideos, "assets");
     }
 
     // Level asset libraries
     addAssetLibrary("tutorial", shouldEmbed, shouldPreload);
-    addAssetPath("assets/tutorial", "assets/tutorial", "tutorial", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/tutorial", "assets/tutorial", "tutorial", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week1", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week2", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week2", "assets/week2", "week2", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/week2", "assets/week2", "week2", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week3", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week3", "assets/week3", "week3", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/week3", "assets/week3", "week3", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week4", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week4", "assets/week4", "week4", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/week4", "assets/week4", "week4", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week5", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week5", "assets/week5", "week5", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/week5", "assets/week5", "week5", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week6", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week6", "assets/week6", "week6", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/week6", "assets/week6", "week6", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("week7", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
-    addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed);
+    addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
 
-    // Art asset library (where README pulls from)
+    // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;
     var shouldPreloadArt = false;
     addAssetLibrary("art", shouldEmbedArt, shouldPreloadArt);
     addAsset("art/readme.txt", "do NOT readme.txt", "art", shouldEmbedArt);
     addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
+    addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
+
+    info('Done configuring assets.');
   }
 
   /**
@@ -835,10 +1246,83 @@ class Project extends HXProject
    */
   function configureIcons()
   {
-    addIcon("art/icon16.png", 16);
-    addIcon("art/icon32.png", 32);
-    addIcon("art/icon64.png", 64);
-    addIcon("art/iconOG.png");
+    info('Configuring application icons...');
+
+    if (isAndroid())
+    {
+      // Adaptive icons
+      // TODO: Add Adapative Icons in Lime
+      templatePaths.push("templates");
+
+      var androidTheme:String = "@style/LimeAppMainTheme";
+      if (window.fullscreen != null && window.fullscreen)
+      {
+        androidTheme += "Fullscreen";
+      }
+
+      final iconXmlChild:Dynamic = {
+        "android:label": meta.title,
+        "android:allowBackup": "true",
+        "android:theme": androidTheme,
+        "android:hardwareAccelerated": "true",
+        "android:allowNativeHeapPointerTagging": ANDROID_TARGET_SDK_VERSION >= 30 ? "false" : null,
+        "android:largeHeap": "true",
+        "android:icon": "@mipmap/ic_launcher",
+        "android:roundIcon": "@mipmap/ic_launcher_round"
+        };
+
+        config.set('android.application',  iconXmlChild);
+    }
+    else if (isIOS())
+    {
+      // Note: the icons on iOS (and likely even android too) support nice P3 colors space
+      // However, lime's IconHelper.hx` and the general accompyaning encoding stuff to automatically
+      // generate icons of different sizes doesnt accomodate for the nice yummy color space
+      // so we do indeed need to make sure we declare the icons here
+      // on iOS
+
+      // addIcon("icon16_noalpha.png", 16);
+      // addIcon("art/icons/icon32_noalpha.png", 32);
+      // addIcon("art/icons/icon64_noalpha.png", 64);
+      // addIcon("art/icons/iconOG_noalpha.png");
+      addIcon("art/icons/bf-iOS-Default-20x20@2x.png", 40);
+      addIcon("art/icons/bf-iOS-Default-20x20@3x.png", 60);
+      addIcon("art/icons/bf-iOS-Default-29x29.png", 29);
+      addIcon("art/icons/bf-iOS-Default-29x29@2x.png", 58);
+      addIcon("art/icons/bf-iOS-Default-29x29@3x.png", 87);
+      addIcon("art/icons/bf-iOS-Default-40x40@2x.png", 80);
+      addIcon("art/icons/bf-iOS-Default-60x60@2x.png", 120);
+      addIcon("art/icons/bf-iOS-Default-60x60@3x.png", 180);
+      addIcon("art/icons/bf-iOS-Default-1024x1024.png", 1024);
+      addIcon("art/icons/bf-iOS-Default-1024x1024.png");
+    }
+    else
+    {
+      addIcon("art/icons/icon16.png", 16);
+      addIcon("art/icons/icon32.png", 32);
+      addIcon("art/icons/icon64.png", 64);
+      addIcon("art/icons/iconOG.png");
+
+      info('Done configuring icons.');
+    }
+  }
+
+  /**
+   * Configure the platforms' Ad Mob application keys.
+   */
+  function configureAdMobKeys()
+  {
+    if (envConfig == null) return;
+
+    if (isAndroid())
+    {
+      setenv("ADMOB_APPID", Std.string(envConfig.get('ANDROID_ADMOB_APP_ID')));
+    }
+
+    if (isIOS())
+    {
+      setenv("ADMOB_APPID", Std.string(envConfig.get('IOS_ADMOB_APP_ID')));
+    }
   }
 
   //
@@ -901,6 +1385,11 @@ class Project extends HXProject
     return this.target == Platform.IOS;
   }
 
+  public function isIOSSimulator():Bool
+  {
+    return this.target == Platform.IOS && this.targetFlags.exists("simulator");
+  }
+
   public function isHashLink():Bool
   {
     return this.targetFlags.exists("hl");
@@ -939,6 +1428,11 @@ class Project extends HXProject
   public function isRelease():Bool
   {
     return !isDebug();
+  }
+
+  public function isBundle():Bool
+  {
+    return this.targetFlags.exists("bundle") && isAndroid();
   }
 
   public function getHaxedef(name:String):Null<Dynamic>
@@ -1010,15 +1504,33 @@ class Project extends HXProject
    * @param rename The path the asset should be placed.
    * @param library The asset library to add the asset to. `null` = "default"
    * @param embed Whether to embed the asset in the executable.
+   * @param padName The name of the Play Assets Delivery that this asset will be added to. (Android only)
    */
-  public function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false):Void
+  public function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false, ?padName:String):Void
   {
     // path, rename, type, embed, setDefaults
+    if (Path.extension(path) == 'png' && FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+    {
+      final astcPath:String = "astc-textures/" + path.substr(0, path.length - 3) + "astc";
+      if (!isASTCExcluded(path) && FileSystem.exists(astcPath))
+      {
+        path = astcPath;
+
+        if (rename != null) rename = rename.substr(0, rename.length - 3) + "astc";
+      }
+    }
+
     var asset = new Asset(path, rename, null, embed, true);
     @:nullSafety(Off)
     {
       asset.library = library ?? "default";
     }
+
+    if (padName != null && isBundle())
+    {
+      asset.deliveryPackName = padName;
+    }
+
     this.assets.push(asset);
   }
 
@@ -1030,8 +1542,10 @@ class Project extends HXProject
    * @param include An optional array to include specific asset names.
    * @param exclude An optional array to exclude specific asset names.
    * @param embed Whether to embed the assets in the executable.
+   * @param padName The name of the Play Assets Delivery that this asset path will be added to. (Android only)
    */
-  public function addAssetPath(path:String, ?rename:String, library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false):Void
+  public function addAssetPath(path:String, ?rename:String, library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false,
+      ?padName:String):Void
   {
     // Argument parsing.
     if (path == "") return;
@@ -1064,14 +1578,14 @@ class Project extends HXProject
         // Attempt to recursively add all assets in the directory.
         if (this.filter(file, ["*"], exclude))
         {
-          addAssetPath('${path}/${file}', '${targetPath}${file}', library, include, exclude, embed);
+          addAssetPath('${path}/${file}', '${targetPath}${file}', library, include, exclude, embed, padName);
         }
       }
       else
       {
         if (this.filter(file, include, exclude))
         {
-          addAsset('${path}/${file}', '${targetPath}${file}', library, embed);
+          addAsset('${path}/${file}', '${targetPath}${file}', library, embed, padName);
         }
       }
     }
@@ -1201,6 +1715,91 @@ class Project extends HXProject
     {
       Log.info('[INFO] ${message}');
     }
+  }
+
+  /**
+   * Read the contents of the `.env` file into a map.
+   * This is used to store secret keys as environment variables.
+   */
+  public function readEnvironmentFile(file:String):Null<Map<String, Dynamic>>
+  {
+    if (!FileSystem.exists(file))
+    {
+      info('Environment file does not exist: ${file}');
+      return null;
+    }
+
+    var envFile = File.getContent(file);
+
+    if (envFile == null)
+    {
+      info('Failed to parse environment file: ${file}');
+      return null;
+    }
+
+    var env = new Map<String, Dynamic>();
+    for (line in envFile.split('\n'))
+    {
+      if (line == "" || line.startsWith("#")) continue;
+
+      var parts = line.split('=');
+      if (parts.length != 2) continue;
+
+      env.set(parts[0], parts[1]);
+    }
+
+    return env;
+  }
+
+  public function readASTCExclusion():Void
+  {
+    astcExcludes = File.getContent('./compression-excludes.txt').trim().split('\n');
+
+    for (i in 0...astcExcludes.length)
+      astcExcludes[i] = astcExcludes[i].trim();
+  }
+
+  public function isASTCExcluded(filePath:String):Bool
+  {
+    for (exclusion in astcExcludes)
+    {
+      if (exclusion.endsWith("/*"))
+      {
+        var normalizedFilePath = Path.normalize(filePath);
+        var normalizedExclusion = Path.normalize(exclusion.substr(0, exclusion.length - 2));
+
+        if (normalizedFilePath.startsWith(normalizedExclusion)) return true;
+      }
+      else if (exclusion.endsWith("/"))
+      {
+        var normalizedExclusion = Path.normalize(exclusion);
+        var fileDirectory = Path.directory(Path.normalize(filePath));
+
+        if (fileDirectory == normalizedExclusion) return true;
+      }
+      else
+      {
+        if (filePath == exclusion) return true;
+      }
+    }
+
+    return false;
+  }
+
+  public function runASTCCompressor():Void
+  {
+    info('Compressing ASTC textures...');
+
+    var args:Array<String> = ['run', 'astc-compressor'];
+    args = args.concat(['-i', './assets']);
+    args = args.concat(['-o', './astc-textures/assets/']);
+    args = args.concat(['-blocksize', ASTC_BLOCKSIZE]);
+    args = args.concat(['-quality', ASTC_QUALITY]);
+    args = args.concat(['-excludes', './compression-excludes.txt']);
+
+    Sys.command('haxelib', args);
+
+    info('Finished compressing ASTC textures!');
   }
 }
 

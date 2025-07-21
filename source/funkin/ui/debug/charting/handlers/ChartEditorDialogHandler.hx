@@ -1043,7 +1043,14 @@ class ChartEditorDialogHandler
 
     var fileFilter = switch (format)
     {
-      case 'legacy': {label: 'JSON Data File (.json)', extension: 'json'};
+      case 'legacy':
+        // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
+        #if !mac
+        [
+          {label: 'JSON Data File (.json)', extension: 'json'}];
+        #else
+        [];
+        #end
       default: null;
     }
 
@@ -1073,7 +1080,7 @@ class ChartEditorDialogHandler
     var onDropFile:String->Void;
 
     importBox.onClick = function(_) {
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter != null ? [fileFilter] : [], function(selectedFile:SelectedFileInfo) {
+      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileInfo) {
         if (selectedFile != null && selectedFile.bytes != null)
         {
           trace('Selected file: ' + selectedFile.fullPath);
@@ -1100,7 +1107,14 @@ class ChartEditorDialogHandler
     onDropFile = function(pathStr:String) {
       var path:Path = new Path(pathStr);
       var selectedFileText:String = FileUtil.readStringFromPath(path.toString());
-      var selectedFileData:FNFLegacyData = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
+      var selectedFileData:Null<FNFLegacyData> = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
+
+      if (selectedFileData == null)
+      {
+        state.error('Failure', 'Failed to parse FNF chart file (${path.file}.${path.ext})');
+        return;
+      }
+
       var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(selectedFileData);
       var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(selectedFileData);
 
@@ -1160,6 +1174,10 @@ class ChartEditorDialogHandler
     var dialogSongArtist:Null<TextField> = dialog.findComponent('dialogSongArtist', TextField);
     if (dialogSongArtist == null) throw 'Could not locate dialogSongArtist TextField in Add Variation dialog';
     dialogSongArtist.value = state.currentSongMetadata.artist;
+
+    var dialogSongCharter:Null<TextField> = dialog.findComponent('dialogSongCharter', TextField);
+    if (dialogSongCharter == null) throw 'Could not locate dialogSongCharter TextField in Add Variation dialog';
+    dialogSongCharter.value = state.currentSongMetadata.charter;
 
     var dialogStage:Null<DropDown> = dialog.findComponent('dialogStage', DropDown);
     if (dialogStage == null) throw 'Could not locate dialogStage DropDown in Add Variation dialog';
@@ -1355,7 +1373,7 @@ class ChartEditorDialogHandler
     new FlxTimer().start(EPSILON, function(_) {
       for (handler in dropHandlers)
       {
-        if (handler.component.hitTest(FlxG.mouse.screenX, FlxG.mouse.screenY))
+        if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))
         {
           handler.handler(path);
           return;

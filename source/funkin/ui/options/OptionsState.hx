@@ -2,8 +2,11 @@ package funkin.ui.options;
 
 import funkin.ui.Page.PageName;
 import funkin.ui.transition.LoadingState;
-import funkin.ui.debug.latency.LatencyState;
+import funkin.ui.TextMenuList;
+import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.math.FlxPoint;
+import funkin.ui.TextMenuList;
+import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -17,6 +20,16 @@ import funkin.input.Controls;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
+#if mobile
+import funkin.util.TouchUtil;
+import funkin.mobile.ui.FunkinBackButton;
+import funkin.mobile.input.ControlsHandler;
+import funkin.mobile.ui.options.ControlsSchemeMenu;
+#end
+#if FEATURE_MOBILE_IAP
+import funkin.mobile.util.InAppPurchasesUtil;
+#end
+import flixel.util.FlxColor;
 
 /**
  * The main options menu
@@ -25,18 +38,29 @@ import funkin.api.newgrounds.NewgroundsClient;
  */
 class OptionsState extends MusicBeatState
 {
+  /**
+   * Instance of the OptionsState
+   */
+  public static var instance:OptionsState;
+
   var optionsCodex:Codex<OptionsMenuPageName>;
+
+  public var drumsBG:FunkinSound;
 
   public static var rememberedSelectedIndex:Int = 0;
 
   override function create():Void
   {
+    instance = this;
+
     persistentUpdate = true;
+
+    drumsBG = FunkinSound.load(Paths.music('offsetsLoop/drumsLoop'), 0, true, false, false, false);
 
     var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
     menuBG.shader = hsv;
-    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
@@ -48,21 +72,55 @@ class OptionsState extends MusicBeatState
     var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
+    #if FEATURE_INPUT_OFFSETS
+    var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
+    #end
 
     if (options.hasMultipleOptions())
     {
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(optionsCodex.switchPage.bind(Options));
+      #if FEATURE_INPUT_OFFSETS
+      offsets.onExit.add(exitOffsets);
+      #end
     }
     else
     {
       // No need to show Options page
+      #if mobile
+      preferences.onExit.add(exitToMainMenu);
+      optionsCodex.setPage(Preferences);
+      #else
       controls.onExit.add(exitToMainMenu);
       optionsCodex.setPage(Controls);
+      #end
     }
 
     super.create();
+    #if mobile
+    addHitbox();
+    hitbox.visible = false;
+    #end
+  }
+
+  function exitOffsets():Void
+  {
+    if (drumsBG.volume > 0)
+    {
+      drumsBG.fadeOut(0.5, 0);
+    }
+    FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
+      FunkinSound.playMusic('freakyMenu',
+        {
+          startingVolume: 0,
+          overrideExisting: true,
+          restartTrack: true,
+          persist: true
+        });
+      FlxG.sound.music.fadeIn(0.5, 1);
+    });
+    optionsCodex.switchPage(Options);
   }
 
   function exitControls():Void
@@ -89,6 +147,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
 
+  #if FEATURE_TOUCH_CONTROLS
+  var backButton:FunkinBackButton;
+  var goingBack:Bool = false;
+  #end
+
   /**
    * Camera focus point
    */
@@ -99,20 +162,43 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   public function new()
   {
     super();
-
     add(items = new TextMenuList());
 
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
+    #if mobile
+    if (ControlsHandler.hasExternalInputDevice)
+    #end
     createItem("CONTROLS", function() codex.switchPage(Controls));
+    // createItem("CONTROL SCHEMES", function() {
+    //   FlxG.state.openSubState(new ControlsSchemeMenu());
+    // });
+    #if FEATURE_INPUT_OFFSETS
     createItem("INPUT OFFSETS", function() {
-      OptionsState.rememberedSelectedIndex = items.selectedIndex;
-      #if web
-      LoadingState.transitionToState(() -> new LatencyState());
-      #else
-      FlxG.state.openSubState(new LatencyState());
-      #end
-    });
+      FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
+        FunkinSound.playMusic('offsetsLoop',
+          {
+            startingVolume: 0,
+            overrideExisting: true,
+            restartTrack: true,
+            loop: true
+          });
+        OptionsState.instance.drumsBG.play(true);
+        FlxG.sound.music.fadeIn(1, 1);
+      });
 
+      codex.switchPage(Offsets);
+    });
+    #end
+    #if FEATURE_MOBILE_IAP
+    createItem("RESTORE PURCHASES", function() {
+      InAppPurchasesUtil.restorePurchases();
+    });
+    #end
+    #if android
+    createItem("OPEN DATA FOLDER", function() {
+      funkin.mobile.external.android.DataFolderUtil.openDataFolder();
+    });
+    #end
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
@@ -132,7 +218,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
         NewgroundsClient.instance.login(function() {
           // Reset the options menu when login succeeds.
           // This means the logout option will be displayed.
-
           // NOTE: If the user presses login and opens the browser,
           // then navigates the UI
           FlxG.resetState();
@@ -142,13 +227,21 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       });
     }
     #end
-
     createItem("CLEAR SAVE DATA", function() {
       promptClearSaveData();
     });
-
+    #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
-    
+    #else
+    backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
+    backButton.onConfirmStart.add(function() {
+      items.busy = true;
+      goingBack = true;
+      backButton.active = true;
+    });
+    add(backButton);
+    #end
+
     // Create an object for the camera to track.
     camFocusPoint = new FlxObject(0, 0, 140, 70);
     add(camFocusPoint);
@@ -162,16 +255,19 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     items.onChange.add(onMenuChange);
 
     onMenuChange(items.members[0]);
-    
+
     items.selectItem(OptionsState.rememberedSelectedIndex);
+    #if FEATURE_TOUCH_CONTROLS
+    FlxG.touches.swipeThreshold.y = 100;
+    #end
   }
 
-  function onMenuChange(selected:TextMenuList.TextMenuItem)
+  function onMenuChange(selected:TextMenuItem):Void
   {
     camFocusPoint.y = selected.y;
   }
 
-  function createItem(name:String, callback:Void->Void, fireInstantly = false)
+  function createItem(name:String, callback:Void->Void, fireInstantly = false):TextMenuItem
   {
     var item = items.createItem(0, 100 + items.length * 100, name, BOLD, callback);
     item.fireInstantly = fireInstantly;
@@ -179,13 +275,16 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     return item;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     enabled = (prompt == null);
+    #if FEATURE_TOUCH_CONTROLS
+    backButton.active = (!goingBack) ? !items.busy : true;
+    #end
     super.update(elapsed);
   }
 
-  override function set_enabled(value:Bool)
+  override function set_enabled(value:Bool):Bool
   {
     items.enabled = value;
     return super.set_enabled(value);
@@ -205,7 +304,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   function promptClearSaveData():Void
   {
     if (prompt != null) return;
-
     prompt = new Prompt("This will delete
       \nALL your save data.
       \nAre you sure?
@@ -214,19 +312,16 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     prompt.createBgFromMargin(100, 0xFFFAFD6D);
     prompt.back.scrollFactor.set(0, 0);
     add(prompt);
-
     prompt.onYes = function() {
       // Clear the save data.
       funkin.save.Save.clearData();
-
       FlxG.switchState(() -> new funkin.InitState());
-    }
-
+    };
     prompt.onNo = function() {
       prompt.close();
       prompt.destroy();
       prompt = null;
-    }
+    };
   }
 }
 
@@ -237,4 +332,5 @@ enum abstract OptionsMenuPageName(String) to PageName
   var Colors = "colors";
   var Mods = "mods";
   var Preferences = "preferences";
+  var Offsets = "offsets";
 }

@@ -8,6 +8,7 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import funkin.data.dialogue.speaker.SpeakerData;
 import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.ui.FullScreenScaleMode;
 
 /**
  * The character sprite which displays during dialogue.
@@ -65,7 +66,24 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
 
     this.x += xDiff;
     this.y += yDiff;
+
+    if (FullScreenScaleMode.wideScale.x != 1)
+    {
+      this.x *= fullscreenScale;
+      this.y = this.y * fullscreenScale + (-100 * fullscreenScale);
+    }
+
     return globalOffsets = value;
+  }
+
+  /**
+   * A value used for scaling object's parameters on mobile.
+   */
+  var fullscreenScale(get, never):Float;
+
+  function get_fullscreenScale():Float
+  {
+    return FullScreenScaleMode.wideScale.x - 0.05;
   }
 
   public function new(id:String)
@@ -151,6 +169,12 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   public function setScale(scale:Null<Float>):Void
   {
     if (scale == null) scale = 1.0;
+
+    if (FullScreenScaleMode.wideScale.x != 1)
+    {
+      scale *= fullscreenScale;
+    }
+
     this.scale.x = scale;
     this.scale.y = scale;
     this.updateHitbox();

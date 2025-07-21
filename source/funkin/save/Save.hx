@@ -12,6 +12,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.SerializerUtil;
+import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
@@ -21,7 +22,7 @@ import funkin.api.newgrounds.Leaderboards;
 @:nullSafety
 class Save
 {
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.0";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
@@ -82,6 +83,12 @@ class Save
 
   public static function getDefault():RawSaveData
   {
+    #if mobile
+    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+
+    if (refreshRate < 60) refreshRate = 60;
+    #end
+
     return {
       // Version number is an abstract(Array) internally.
       // This means it copies by reference, so merging save data overides the version number lol.
@@ -109,17 +116,19 @@ class Save
       options:
         {
           // Reasonable defaults.
-          framerate: 60,
+          framerate: #if mobile refreshRate #else 60 #end,
           naughtyness: true,
           downscroll: false,
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
+          hapticsMode: 'All',
+          hapticsIntensityMultiplier: 1,
           autoPause: true,
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
-          inputOffset: 0,
+          globalOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
 
@@ -145,6 +154,15 @@ class Save
                 },
             },
         },
+      #if mobile
+      mobileOptions:
+        {
+          // Reasonable defaults.
+          screenTimeout: false,
+          controlsScheme: FunkinHitboxControlSchemes.Arrows,
+          noAds: false
+        },
+      #end
 
       mods:
         {
@@ -201,6 +219,18 @@ class Save
   {
     return data.options;
   }
+
+  #if mobile
+  /**
+   * NOTE: Modifications will not be saved without calling `Save.flush()`!
+   */
+  public var mobileOptions(get, never):SaveDataMobileOptions;
+
+  function get_mobileOptions():SaveDataMobileOptions
+  {
+    return data.mobileOptions;
+  }
+  #end
 
   /**
    * NOTE: Modifications will not be saved without calling `Save.flush()`!
@@ -747,6 +777,10 @@ class Save
 
   public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
   {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #end
+
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
@@ -951,6 +985,7 @@ class Save
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {
+        #if NO_UNLOCK_EVERYTHING
         if (score.score > 0)
         {
           // Level has score data, which means we cleared it!
@@ -961,6 +996,9 @@ class Save
           // Level has score data, but the score is 0.
           continue;
         }
+        #else
+        return true;
+        #end
       }
     }
     return false;
@@ -1349,6 +1387,13 @@ typedef RawSaveData =
 
   var unlocks:SaveDataUnlocks;
 
+  #if mobile
+  /**
+   * The user's preferences for mobile.
+   */
+  var mobileOptions:SaveDataMobileOptions;
+  #end
+
   /**
    * The user's favorited songs in the Freeplay menu,
    * as a list of song IDs.
@@ -1505,6 +1550,18 @@ typedef SaveDataOptions =
   var debugDisplay:Bool;
 
   /**
+   * If enabled, haptic feedback will be enabled.
+   * @default `All`
+   */
+  var hapticsMode:String;
+
+  /**
+   * Multiplier of intensity for all the haptic feedback effects.
+   * @default `1`
+   */
+  var hapticsIntensityMultiplier:Float;
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
@@ -1533,9 +1590,10 @@ typedef SaveDataOptions =
    * Offset the user's inputs by this many ms.
    * @default `0`
    */
-  var inputOffset:Int;
+  var globalOffset:Int;
 
   /**
+   * Unused !!
    * Affects the delay between the audio and the visuals during gameplay.
    * @default `0`
    */
@@ -1574,6 +1632,30 @@ typedef SaveDataOptions =
         };
     };
 };
+
+#if mobile
+typedef SaveDataMobileOptions =
+{
+  /**
+   * If enabled, device will be able to sleep on its own.
+   * @default `false`
+   */
+  var screenTimeout:Bool;
+
+  /**
+   * Controls scheme for the hitbox.
+   * @default `Arrows`
+   */
+  var controlsScheme:String;
+
+  /**
+   * If bought, the game will not show any ads.
+   * @default `false`
+   */
+  var noAds:Bool;
+};
+
+#end
 
 /**
  * An anonymous structure containing a specific player's bound keys.

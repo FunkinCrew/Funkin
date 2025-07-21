@@ -198,7 +198,7 @@ class DropShadowShader extends FlxShader
 
   /*
     Loads an image for the mask.
-    While you *could* directly set the value of the mask, this function works for both HTML5 and desktop targets.
+    While you *could* directly set the value of the mask, this function works for both HTML5 and native targets.
    */
   public function loadAltMask(path:String)
   {

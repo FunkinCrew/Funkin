@@ -8,6 +8,7 @@ import hxdiscord_rpc.Types.DiscordRichPresence;
 import hxdiscord_rpc.Types.DiscordUser;
 import sys.thread.Thread;
 
+@:nullSafety
 class DiscordClient
 {
   static final CLIENT_ID:String = "816168432860790794";
@@ -40,12 +41,12 @@ class DiscordClient
     trace('[DISCORD] Initializing connection...');
 
     // Discord.initialize(CLIENT_ID, handlers, true, null);
-    Discord.Initialize(CLIENT_ID, cpp.RawPointer.addressOf(handlers), 1, null);
+    Discord.Initialize(CLIENT_ID, cpp.RawPointer.addressOf(handlers), 1, "");
 
     createDaemon();
   }
 
-  var daemon:Thread = null;
+  var daemon:Null<Thread> = null;
 
   function createDaemon():Void
   {
@@ -88,9 +89,9 @@ class DiscordClient
     presence.largeImageText = "Friday Night Funkin'";
 
     // State should be generally what the person is doing, like "In the Menus" or "Pico (Pico Mix) [Freeplay Hard]"
-    presence.state = cast(params.state, Null<String>);
+    presence.state = cast(params.state, Null<String>) ?? "";
     // Details should be what the person is specifically doing, including stuff like timestamps (maybe something like "03:24 elapsed").
-    presence.details = cast(params.details, Null<String>);
+    presence.details = cast(params.details, Null<String>) ?? "";
 
     // The large image displaying what the user is doing.
     // This should probably be album art.
@@ -104,7 +105,7 @@ class DiscordClient
     // The small inset image for what the user is doing.
     // This can be the opponent's health icon?
     // NOTE: Like largeImageKey, this can be a URL, or an asset key.
-    presence.smallImageKey = cast(params.smallImageKey, Null<String>);
+    presence.smallImageKey = cast(params.smallImageKey, Null<String>) ?? "";
 
     // NOTE: In previous versions, this showed as "Elapsed", but now shows as playtime and doesn't look good
     // presence.startTimestamp = time - 10;
@@ -130,9 +131,9 @@ class DiscordClient
 
     final username:String = request[0].username;
     final globalName:String = request[0].username;
-    final discriminator:Int = Std.parseInt(request[0].discriminator);
+    final discriminator:Null<Int> = Std.parseInt(request[0].discriminator);
 
-    if (discriminator != 0)
+    if (discriminator != null && discriminator != 0)
     {
       trace('[DISCORD] User: ${username}#${discriminator} (${globalName})');
     }
@@ -201,14 +202,27 @@ typedef DiscordClientPresenceParams =
 
 class DiscordClientSandboxed
 {
-  public static function setPresence(params:DiscordClientPresenceParams)
+  public static function setPresence(params:DiscordClientPresenceParams):Void
   {
-    return DiscordClient.instance.setPresence(params);
+    DiscordClient.instance.setPresence(params);
   }
 
-  public static function shutdown()
+  public static function shutdown():Void
   {
     DiscordClient.instance.shutdown();
+  }
+}
+#else
+class DiscordClientSandboxed
+{
+  public static function setPresence(params:Dynamic):Void
+  {
+    // Do nothing.
+  }
+
+  public static function shutdown():Void
+  {
+    // Do nothing.
   }
 }
 #end

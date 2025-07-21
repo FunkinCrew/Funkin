@@ -6,6 +6,7 @@ import flixel.math.FlxMath;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
 import funkin.save.Save;
+import funkin.util.TimerUtil.SongSequence;
 import haxe.Timer;
 import flixel.sound.FlxSound;
 
@@ -248,25 +249,18 @@ class Conductor
    * No matter if you're using a local conductor or not, this always loads
    * to/from the save file
    */
-  public var inputOffset(get, set):Int;
+  public var globalOffset(get, never):Int;
 
   /**
    * An offset set by the user to compensate for audio/visual lag
    * No matter if you're using a local conductor or not, this always loads
    * to/from the save file
    */
-  public var audioVisualOffset(get, set):Int;
+  public var audioVisualOffset(get, never):Int;
 
-  function get_inputOffset():Int
+  function get_globalOffset():Int
   {
-    return Save?.instance?.options?.inputOffset ?? 0;
-  }
-
-  function set_inputOffset(value:Int):Int
-  {
-    Save.instance.options.inputOffset = value;
-    Save.instance.flush();
-    return Save.instance.options.inputOffset;
+    return Preferences.globalOffset;
   }
 
   function get_audioVisualOffset():Int
@@ -274,18 +268,11 @@ class Conductor
     return Save?.instance?.options?.audioVisualOffset ?? 0;
   }
 
-  function set_audioVisualOffset(value:Int):Int
-  {
-    Save.instance.options.audioVisualOffset = value;
-    Save.instance.flush();
-    return Save.instance.options.audioVisualOffset;
-  }
-
   public var combinedOffset(get, never):Float;
 
   function get_combinedOffset():Float
   {
-    return instrumentalOffset + audioVisualOffset + inputOffset;
+    return instrumentalOffset + formatOffset + globalOffset;
   }
 
   /**
@@ -407,8 +394,10 @@ class Conductor
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    * @param applyOffsets If it should apply the instrumentalOffset + formatOffset + audioVisualOffset
+   * @param forceDispatch If it should force the dispatch of onStepHit, onBeatHit, and onMeasureHit
+   *        even if the current step, beat, or measure hasn't changed.
    */
-  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false)
+  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false):Void
   {
     var currentTime:Float = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
     var currentLength:Float = (FlxG.sound.music != null) ? FlxG.sound.music.length : 0.0;
@@ -501,6 +490,17 @@ class Conductor
       prevTime = this.songPosition;
       prevTimestamp = Std.int(Timer.stamp() * 1000);
     }
+
+    if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();
+  }
+
+  /**
+   * Returns a more accurate music time for higher framerates.
+   * @return Float
+   */
+  public function getTimeWithDelta():Float
+  {
+    return this.songPosition + this.songPositionDelta;
   }
 
   /**

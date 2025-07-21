@@ -5,7 +5,9 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
@@ -14,6 +16,14 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+#if mobile
+import funkin.mobile.ui.FunkinBackButton;
+import funkin.mobile.input.ControlsHandler;
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+#end
+import funkin.util.HapticUtil;
 import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
@@ -66,6 +76,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       camFollow.y = selected.y;
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
+
+    #if FEATURE_TOUCH_CONTROLS
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
+    add(backButton);
+    #end
   }
 
   /**
@@ -94,15 +109,36 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
+    #if FEATURE_NAUGHTYNESS
     createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
+    #end
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
-    }, Preferences.downscroll);
+    },
+      Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
+      || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
+    #if FEATURE_HAPTICS
+    createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
+      "All" => HapticsMode.ALL,
+      "Notes Only" => HapticsMode.NOTES_ONLY,
+      "None" => HapticsMode.NONE,
+    ], function(key:String, value:HapticsMode):Void {
+      Preferences.hapticsMode = value;
+    }, switch (Preferences.hapticsMode)
+      {
+        case HapticsMode.NOTES_ONLY: "Notes Only";
+        case HapticsMode.NONE: "None";
+        default: "All";
+      });
+    createPrefItemNumber('Haptics Intensity', 'Multiplier of intensity for all the haptic feedback effects.', function(value:Float) {
+      Preferences.hapticsIntensityMultiplier = value;
+    }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
+    #end
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;
@@ -110,6 +146,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+    #if !mobile
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
@@ -119,6 +156,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
+    #end
 
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
@@ -126,7 +164,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.unlockedFramerate);
     #else
     // disabled on macos due to "error: Late swap tearing currently unsupported"
-    #if !mac
+    // disable on mobile since it barely has any effect
+    #if !(mac || mobile)
     createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
       "Off" => WindowVSyncMode.OFF,
       "On" => WindowVSyncMode.ON,
@@ -141,11 +180,14 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case WindowVSyncMode.ADAPTIVE: "Adaptive";
       });
     #end
+    #if !mobile
     createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 500, 5, 0);
     #end
+    #end
 
+    #if FEATURE_SCREENSHOTS
     createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
@@ -155,6 +197,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
+    #end
   }
 
   override function update(elapsed:Float):Void
@@ -190,7 +233,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         thyOffset += 120;
       }
 
-      daItem.x = thyOffset;
+      daItem.x = thyOffset + funkin.ui.FullScreenScaleMode.gameNotchSize.x;
     });
   }
 
@@ -202,15 +245,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param onChange Gets called every time the player changes the value; use this to apply the value
    * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
    */
-  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool):Void
+  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool, available:Bool = true):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(0, 120 * (items.length - 1 + 1), defaultValue);
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1),
+      defaultValue, available);
 
     items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
-    });
+    }, false, available);
 
     preferenceItems.add(checkbox);
     preferenceDesc.push(prefDesc);
@@ -226,10 +270,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param step The value to increment/decrement by (default = 0.1)
    * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
    */
-  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
-      step:Float = 0.1, precision:Int):Void
+  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Float, min:Float,
+      max:Float, step:Float = 0.1, precision:Int):Void
   {
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, step, precision, onChange, valueFormatter);
+    var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
+      precision, onChange, valueFormatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
@@ -250,7 +295,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     var formatter = function(value:Float) {
       return '${value}%';
     };
-    var item = new NumberPreferenceItem(0, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0, newCallback, formatter);
+    var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0,
+      newCallback, formatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
@@ -264,9 +310,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItemEnum<T>(prefName:String, prefDesc:String, values:Map<String, T>, onChange:String->T->Void, defaultKey:String):Void
   {
-    var item = new EnumPreferenceItem<T>(0, (120 * items.length) + 30, prefName, values, defaultKey, onChange);
+    var item = new EnumPreferenceItem<T>(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, values, defaultKey, onChange);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+  }
+
+  override function exit():Void
+  {
+    camFollow.setPosition(640, 30);
+    menuCamera.snapToTarget();
+    super.exit();
   }
 }

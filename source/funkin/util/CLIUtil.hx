@@ -15,19 +15,27 @@ class CLIUtil
   public static function resetWorkingDir():Void
   {
     #if sys
-    var exeDir:String = Path.addTrailingSlash(Path.directory(Sys.programPath()));
-    #if mac
-    exeDir = Path.addTrailingSlash(Path.join([exeDir, '../Resources/']));
-    #end
     var cwd:String = Path.addTrailingSlash(Sys.getCwd());
-    if (cwd == exeDir)
+    var gameDir:String = '';
+    #if android
+    gameDir = Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir());
+    #elseif ios
+    // Why? Because for some reason lime.system.System.documentsDirectory is returning a directory that's different and we're unable to read or write from, so it's disabled and no solution is found...
+    trace('[WARN]: Reseting the Current Working Directory is unavailable on iOS targets');
+    gameDir = cwd;
+    #elseif mac
+    gameDir = Path.addTrailingSlash(Path.join([Path.directory(Sys.programPath()), '../Resources/']));
+    #else
+    gameDir = Path.addTrailingSlash(Path.directory(Sys.programPath()));
+    #end
+    if (cwd == gameDir)
     {
       trace('Working directory is already correct.');
     }
     else
     {
-      trace('Changing working directory from ${Sys.getCwd()} to ${exeDir}');
-      Sys.setCwd(exeDir);
+      trace('Changing working directory from ${Sys.getCwd()} to ${gameDir}');
+      Sys.setCwd(gameDir);
     }
     #end
   }

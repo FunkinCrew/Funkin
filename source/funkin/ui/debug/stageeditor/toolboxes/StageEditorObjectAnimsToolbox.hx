@@ -114,7 +114,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
       objAnims.selectedIndex = objAnims.dataSource.size - 1;
     }
-    
+
     this.onDialogClosed = onClose;
   }
 

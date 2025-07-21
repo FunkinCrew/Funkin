@@ -12,6 +12,13 @@ import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 import funkin.input.Controls;
+#if mobile
+import funkin.graphics.FunkinCamera;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.input.PreciseInputHandler;
+import funkin.mobile.ui.FunkinBackButton;
+import funkin.play.notes.NoteDirection;
+#end
 
 /**
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
@@ -42,6 +49,54 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   inline function get_controls():Controls
     return PlayerSettings.player1.controls;
 
+  #if mobile
+  public var hitbox:Null<FunkinHitbox>;
+  public var backButton:Null<FunkinBackButton>;
+  public var camControls:Null<FunkinCamera>;
+
+  public function addHitbox(visible:Bool = true, initInput:Bool = true, ?schemeOverride:String, ?directionsOverride:Array<NoteDirection>,
+      ?colorsOverride:Array<FlxColor>):Void
+  {
+    if (hitbox != null)
+    {
+      hitbox.kill();
+      remove(hitbox);
+      hitbox.destroy();
+    }
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    hitbox = new FunkinHitbox(schemeOverride, directionsOverride, colorsOverride);
+    hitbox.cameras = [camControls];
+    hitbox.visible = visible;
+    add(hitbox);
+
+    if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
+  }
+
+  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void = null,
+      ?restOpacity:Float = 0.3, ?instant:Bool = false):Void
+  {
+    if (backButton != null) remove(backButton);
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    backButton = new FunkinBackButton(xPos, yPos, color, confirmCallback, restOpacity, instant);
+    backButton.cameras = [camControls];
+    add(backButton);
+  }
+  #end
+
   public function new(bgColor:FlxColor = FlxColor.TRANSPARENT)
   {
     super();
@@ -71,6 +126,11 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   public override function destroy():Void
   {
     super.destroy();
+
+    #if mobile
+    if (camControls != null) FlxG.cameras.remove(camControls);
+    #end
+
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
   }
