@@ -6,6 +6,7 @@ import flixel.FlxBasic;
  * A plugin which forcibly crashes the application.
  * TODO: Should we disable this in release builds?
  */
+@:nullSafety
 class ForceCrashPlugin extends FlxBasic
 {
   public function new()

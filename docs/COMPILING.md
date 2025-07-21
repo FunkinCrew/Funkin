@@ -23,7 +23,7 @@
     - Mac: [`lime setup mac` Documentation](https://lime.openfl.org/docs/advanced-setup/macos/)
     - Linux: [`lime setup linux` Documentation](https://lime.openfl.org/docs/advanced-setup/linux/)
         - One of Funkin's dependencies uses libVLC, which requires you to install some development packages to be able to compile.
-          Command for Ubuntu/Debian based systems: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`
+          Command for Ubuntu/Debian based systems: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`, and for other distros, please refer to [hxvlc's documentation](https://github.com/MAJigsaw77/hxvlc?tab=readme-ov-file#dependencies)
     - HTML5: Compiles without any extra setup
 10. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
 11. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
@@ -40,8 +40,8 @@ There are several useful build flags you can add to a build to affect how it wor
     - This feature causes the game to load exported assets from the project's assets folder rather than the exported one. Great for fast iteration, but the game will break if you try to zip it up and send it to someone, so it's disabled for release builds.
 - `-DFEATURE_DISCORD_RPC` or `-DNO_FEATURE_DISCORD_RPC` to forcibly enable or disable support for Discord Rich Presence.
 - `-DFEATURE_VIDEO_PLAYBACK` or `-DNO_FEATURE_VIDEO_PLAYBACK` to forcibly enable or disable video cutscene support.
-- `-DFEATURE_CHART_EDITOR` or `-DNO_FEATURE_CHART_EDITOR` to forcibly enable or disable the chart editor in the Debug menu.
 - `-DFEATURE_SCREENSHOTS` or `-DNO_FEATURE_SCREENSHOTS` to forcibly enable or disable the screenshots feature.
+- `-DFEATURE_CHART_EDITOR` or `-DNO_FEATURE_CHART_EDITOR` to forcibly enable or disable the chart editor in the Debug menu.
 - `-DFEATURE_STAGE_EDITOR` to forcibly enable the experimental stage editor.
 - `-DFEATURE_GHOST_TAPPING` to forcibly enable an experimental gameplay change to the anti-mash system.
 

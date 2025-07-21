@@ -194,14 +194,13 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       includeScript:Bool = true, validScore:Bool = false):Song
   {
     @:privateAccess
-    var result:Null<Song>;
+    var result:Null<Song> = null;
 
     if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
     {
-      var songClassName:String = SongRegistry.instance.getScriptedEntryClassName(songId);
-
+      var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId);
       @:privateAccess
-      result = SongRegistry.instance.createScriptedEntry(songClassName);
+      if (songClassName != null) result = SongRegistry.instance.createScriptedEntry(songClassName);
     }
     else
     {
@@ -794,7 +793,7 @@ class SongDifficulty
 
   public function cacheInst(instrumental = ''):Void
   {
-    FlxG.sound.cache(getInstPath(instrumental));
+    funkin.FunkinMemory.cacheSound(getInstPath(instrumental));
   }
 
   public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
@@ -816,7 +815,7 @@ class SongDifficulty
     for (voice in buildVoiceList())
     {
       trace('Caching vocal track: $voice');
-      FlxG.sound.cache(voice);
+      funkin.FunkinMemory.cacheSound(voice);
     }
   }
 

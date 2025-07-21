@@ -4,15 +4,49 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "41f35ddb1eb9d10bc742e6f8b5bcc62f9ef8ad84",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+      "ref": "3c9f63e3501c20c0b60442089dc05306f5a87968",
+      "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
+    },
+    {
+      "name": "astc-compressor",
+      "type": "git",
+      "dir": null,
+      "ref": "8c9f56927c523df7b849352c6951f04112fe15cc",
+      "url": "https://github.com/KarimAkra/astc-compressor"
+    },
+    {
+      "name": "extension-admob",
+      "type": "git",
+      "dir": null,
+      "ref": "a53d5916bdcb2e48913f94d9ae1d949b049dcdc1",
+      "url": "https://github.com/FunkinCrew/extension-admob"
+    },
+    {
+      "name": "extension-androidtools",
+      "type": "haxelib",
+      "version": "2.2.1"
+    },
+    {
+      "name": "extension-haptics",
+      "type": "haxelib",
+      "version": "1.0.3"
+    },
+    {
+      "name": "extension-iapcore",
+      "type": "haxelib",
+      "version": "1.0.3"
+    },
+    {
+      "name": "extension-iarcore",
+      "type": "haxelib",
+      "version": "1.0.2"
     },
     {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "fffb1a74cf08f63dacc2ab09976340563f5b6e6d",
-      "url": "https://github.com/FunkinCrew/flixel"
+      "ref": "08fc955ca87f192a971719a675f1d3b21709725d",
+      "url": "https://github.com/FunkinCrew/flixel-mobile"
     },
     {
       "name": "flixel-addons",
@@ -22,17 +56,10 @@
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
-      "name": "flixel-text-input",
-      "type": "git",
-      "dir": null,
-      "ref": "951a0103a17bfa55eed86703ce50b4fb0d7590bc",
-      "url": "https://github.com/FunkinCrew/flixel-text-input"
-    },
-    {
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "f8842cea9883d6112a2c854cf93fa72856171428",
+      "ref": "39c1572add28869c558b218fffed13df1b64f376",
       "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
@@ -51,8 +78,8 @@
       "name": "grig.audio",
       "type": "git",
       "dir": "src",
-      "ref": "57f5d47f2533fd0c3dcd025a86cb86c0dfa0b6d2",
-      "url": "https://gitlab.com/haxe-grig/grig.audio.git"
+      "ref": "8567c4dad34cfeaf2ff23fe12c3796f5db80685e",
+      "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
       "name": "hamcrest",
@@ -63,29 +90,29 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "07fc7aa8098deaea633b0726d01f83eb4ef8a832",
+      "ref": "47ee9f5fa02d422e186e844f87e68220cabfcc5b",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "b899a4c7d7318c5ff2b1bb645fbc73728fad1ac9",
+      "ref": "100f2c96beab619cfe72c567a058c41c71e3e998",
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
       "name": "hscript",
       "type": "git",
       "dir": null,
-      "ref": "27c86f9a761c1d16d4433c4cf252eccb7b2e18de",
+      "ref": "d60bb2947fa609fdc875ccfae89666a6984eeaf2",
       "url": "https://github.com/FunkinCrew/hscript"
     },
     {
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "v4.3.75",
-      "url": "https://github.com/HaxeFoundation/hxcpp"
+      "ref": "4e24283a047f11bded6affabbc9ec405156e026e",
+      "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
@@ -116,7 +143,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.1.2"
+      "version": "2.2.2"
     },
     {
       "name": "json2object",
@@ -143,8 +170,8 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "be81ad7e4e1a92c3482bcc009648a4ac892cfa35",
-      "url": "https://github.com/FunkinCrew/lime"
+      "ref": "c750ebf6b48c4bc018abe9855fbae5ffdbc4771a",
+      "url": "https://github.com/FunkinCrew/lime-mobile"
     },
     {
       "name": "mconsole",
@@ -185,14 +212,14 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "d061c936b462f040304ec2bd42d9f59d2e59e285",
-      "url": "https://github.com/FunkinCrew/openfl"
+      "ref": "a0df7c3afe360c9af59a76e45007dbf4e53b5131",
+      "url": "https://github.com/FunkinCrew/openfl-mobile"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "0fbdf27fe124549730accd540cec8a183f8652c0",
+      "ref": "3e030c81de99ca84acde681431f806d8103bcf6e",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
