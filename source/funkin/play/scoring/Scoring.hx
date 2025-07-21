@@ -1,6 +1,7 @@
 package funkin.play.scoring;
 
 import funkin.save.Save.SaveScoreData;
+import funkin.save.Save.SaveScoreTallyData;
 
 /**
  * Which system to use when scoring and judging notes.
@@ -374,8 +375,7 @@ class Scoring
     if (scoreData.tallies.totalNotes == 0) return null;
 
     // Perfect (Platinum) is a Sick Full Clear
-    var isPerfectGold = scoreData.tallies.sick == scoreData.tallies.totalNotes;
-    if (isPerfectGold)
+    if (scoreData.tallies.sick == scoreData.tallies.totalNotes)
     {
       return ScoringRank.PERFECT_GOLD;
     }

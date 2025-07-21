@@ -1276,7 +1276,6 @@ class FreeplayState extends MusicBeatSubState
     });
 
     new FlxTimer().start(2, _ -> {
-      // dj.fistPump();
       prepForNewRank = false;
     });
   }
