@@ -4,6 +4,26 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.3] - 2025-07-21
+
+### Fixed
+
+- Fixed stuttering throughout the game caused by the Polymod upgrade. (Thanks NotHyper-474!)
+- [MOBILE] Fixed buttons in the Main Menu not working.
+- [iOS] The Upgrade button no longer appears if you have already purchased it (actually this time).
+- Fixed the countdown overlapping itself when restarting the song. (Thanks NotHyper-474!)
+- Optimized the Week 6 Erect stage.
+- Fixed an oversight when clearing the cache. (Thanks cherrythecool!)
+- The Input Offset Test menu text now displays in the correct position.
+- Fixed script errors appearing in the Week 3 Erect stage.
+- Fixed adding variations in the Chart Editor erasing difficulties. (Thanks NotHyper-474!)
+
+## New Contributors for 0.7.3
+
+* @cherrythecool made their first contribution in [#5458](https://github.com/FunkinCrew/Funkin/pull/5458)
+
+
+
 ## [0.7.2] - 2025-07-18
 
 ### Added
