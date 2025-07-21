@@ -388,7 +388,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       canExit = false;
       differences = [];
 
-      jumpInText.y = testStrumline.y;
+      jumpInText.y = 350;
 
       #if mobile
       if (ControlsHandler.usingExternalInputDevice)
@@ -396,13 +396,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       #end
         testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
-        if (Preferences.downscroll) jumpInText.y = testStrumline.y - 190;
+        if (Preferences.downscroll) jumpInText.y = FlxG.height - 425;
         testStrumline.isDownscroll = Preferences.downscroll;
       #if mobile
       }
       else
       {
-        jumpInText.y = testStrumline.y - 190;
+        jumpInText.y = FlxG.height - 425;
       }
       #end
     });
