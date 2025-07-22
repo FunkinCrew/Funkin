@@ -102,7 +102,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.bf;
       var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
-      getBoyfriend().setScale(finalScale);
+      getBoyfriend().setScale(finalScale, stageCharData.fromOrigin);
       getBoyfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getBoyfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
@@ -116,7 +116,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.gf;
       var finalScale:Float = getGirlfriend().getBaseScale() * stageCharData.scale;
-      getGirlfriend().setScale(finalScale);
+      getGirlfriend().setScale(finalScale, stageCharData.fromOrigin);
       getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
@@ -126,7 +126,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.dad;
       var finalScale:Float = getDad().getBaseScale() * stageCharData.scale;
-      getDad().setScale(finalScale);
+      getDad().setScale(finalScale, stageCharData.fromOrigin);
       getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
@@ -439,13 +439,22 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       // Subtracting the origin ensures characters are positioned relative to their feet.
       // Subtracting the global offset allows positioning on a per-character basis.
       // We previously applied the global offset here but that is now done elsewhere.
-      character.x = stageCharData.position[0] - character.characterOrigin.x;
-      character.y = stageCharData.position[1] - character.characterOrigin.y;
+      character.x = stageCharData.position[0];
+      character.y = stageCharData.position[1];
+
+      if (stageCharData.fromOrigin)
+      {
+        character.x -= character.characterOrigin.x;
+        character.y -= character.characterOrigin.y;
+      }
+
+      character.x += character.globalOffsets[0];
+      character.y += character.globalOffsets[1];
 
       character.originalPosition.set(character.x, character.y);
 
       var finalScale = character.getBaseScale() * stageCharData.scale;
-      character.setScale(finalScale); // Don't use scale.set for characters!
+      character.setScale(finalScale, stageCharData.fromOrigin); // Don't use scale.set for characters!
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
 
