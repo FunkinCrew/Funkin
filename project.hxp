@@ -873,6 +873,9 @@ class Project extends HXProject
       }
     }
 
+    enabledFlags.sort(function(a, b) return a > b ? 1 : -1);
+    disabledFlags.sort(function(a, b) return a > b ? 1 : -1);
+
 
     var horizontalDivider:String = "".rpad("-", enabledWidth + disabledWidth);
     info(horizontalDivider);
