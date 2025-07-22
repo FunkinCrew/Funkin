@@ -144,6 +144,7 @@ class WindowUtil
       }
     });
     #end
+    _initializedWindowEvents = true;
   }
 
   /**

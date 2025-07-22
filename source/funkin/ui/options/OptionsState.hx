@@ -161,18 +161,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   final CAMERA_MARGIN:Int = 150;
 
-  #if FEATURE_TOUCH_CONTROLS
-  var backButton:FunkinBackButton;
-  var goingBack:Bool = false;
-  #end
-
-  /**
-   * Camera focus point
-   */
-  var camFocusPoint:FlxObject;
-
-  final CAMERA_MARGIN:Int = 150;
-
   public function new(saveDataMenu:SaveDataMenu)
   {
     super();
