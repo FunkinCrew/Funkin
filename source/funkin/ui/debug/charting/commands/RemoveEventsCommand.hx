@@ -27,6 +27,8 @@ class RemoveEventsCommand implements ChartEditorCommand
 
     state.playSound(Paths.sound('chartingSounds/noteErase'));
 
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
@@ -44,6 +46,8 @@ class RemoveEventsCommand implements ChartEditorCommand
     }
     state.currentEventSelection = events;
     state.playSound(Paths.sound('chartingSounds/undo'));
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

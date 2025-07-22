@@ -34,7 +34,7 @@ class SelectItemsCommand implements ChartEditorCommand
     }
 
     // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
-    if (this.notes.length == 0 && this.events.length == 1)
+    if (this.notes.length == 0 && state.currentEventSelection.length == 1)
     {
       var eventSelected = this.events[0];
 
@@ -55,8 +55,6 @@ class SelectItemsCommand implements ChartEditorCommand
       var eventData = eventSelected.valueAsStruct(defaultKey);
 
       state.eventDataToPlace = eventData;
-
-      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
     }
 
     // If we just selected one or more notes (and no events), then we should make the note data toolbox display the note data for the selected note.
@@ -70,6 +68,8 @@ class SelectItemsCommand implements ChartEditorCommand
       state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
     }
 
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
   }
@@ -78,6 +78,8 @@ class SelectItemsCommand implements ChartEditorCommand
   {
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentEventSelection, this.events);
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
