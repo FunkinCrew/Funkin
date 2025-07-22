@@ -1065,7 +1065,11 @@ class PlayState extends MusicBeatSubState
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
       if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
       {
-        if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
+        if (mayPauseGame && !isSongEnd)
+        {
+          trace("Ended song by song restarting failsafe");
+          endSong(skipEndingTransition);
+        }
       }
     }
 
@@ -1724,6 +1728,23 @@ class PlayState extends MusicBeatSubState
           || Math.abs(opponentVoicesError) > RESYNC_THRESHOLD))
       {
         trace("VOCALS NEED RESYNC");
+        if (correctSync + playerVoicesError >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
+        {
+          trace("SONG RESTARTING BUG????");
+          trace(playerVoicesError);
+          trace(opponentVoicesError);
+          trace(FlxG.sound.music.time);
+          trace(correctSync);
+          trace(Conductor.instance.songPosition);
+          trace(FlxG.sound.music.endTime);
+          trace(FlxG.sound.music.length);
+          if (mayPauseGame)
+          {
+            trace("END THE FUNKIN SONG");
+            endSong(skipEndingTransition);
+          }
+        }
+
         if (vocals != null)
         {
           trace(playerVoicesError);
@@ -2351,7 +2372,11 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = function() {
-      if (mayPauseGame) endSong(skipEndingTransition);
+      if (mayPauseGame)
+      {
+        trace("Ended song by music on complete");
+        endSong(skipEndingTransition);
+      }
     };
 
     FlxG.sound.music.pause();
