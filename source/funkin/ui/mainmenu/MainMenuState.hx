@@ -58,7 +58,20 @@ class MainMenuState extends MusicBeatState
   var overrideMusic:Bool = false;
   var goingToOptions:Bool = false;
   var goingBack:Bool = false;
-  var canInteract:Bool = false;
+  var canInteract(get, set):Bool;
+  var _canInteract:Bool = false;
+
+  function get_canInteract():Bool
+  {
+    return _canInteract;
+  }
+
+  function set_canInteract(value:Bool):Bool
+  {
+    _canInteract = value;
+    trace('canInteract set to: ' + value);
+    return value;
+  }
 
   static var rememberedSelectedIndex:Int = 0;
 
@@ -88,6 +101,7 @@ class MainMenuState extends MusicBeatState
     transOut = FlxTransitionableState.defaultTransOut;
 
     #if FEATURE_MOBILE_IAP
+    trace("hasInitialized: " + InAppPurchasesUtil.hasInitialized);
     if (InAppPurchasesUtil.hasInitialized) Preferences.noAds = InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID);
     // If the user is faster than their shit wifi, it gets the saved noAds instead.
     hasUpgraded = Preferences.noAds;
@@ -128,7 +142,7 @@ class MainMenuState extends MusicBeatState
     add(menuItems);
     menuItems.onChange.add(onMenuItemChange);
     menuItems.onAcceptPress.add(function(_) {
-      canInteract = false;
+      // canInteract = false;
       FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
     });
 
@@ -278,7 +292,7 @@ class MainMenuState extends MusicBeatState
     if (!ControlsHandler.usingExternalInputDevice)
     {
       addOptionsButton(35, FlxG.height - 210, function() {
-        if (!canInteract) return;
+        if (!canInteract || menuItems != null && menuItems.busy) return;
 
         trace("OPTIONS: Interact complete.");
         startExitState(() -> new funkin.ui.options.OptionsState());
@@ -384,12 +398,18 @@ class MainMenuState extends MusicBeatState
     }
     #end
     super.closeSubState();
+    canInteract = true;
   }
 
   override function finishTransIn():Void
   {
     super.finishTransIn();
     canInteract = true;
+    if (menuItems != null)
+    {
+      menuItems.busy = false;
+      menuItems.enabled = true;
+    }
   }
 
   function onMenuItemChange(selected:MenuListItem)
@@ -427,6 +447,7 @@ class MainMenuState extends MusicBeatState
   function startExitState(state:NextState):Void
   {
     #if mobile
+    // This just softlocks the menu items and prevents any further interaction.. needs testing with keyboard.
     if (!canInteract && !ControlsHandler.usingExternalInputDevice) return;
     #end
 
@@ -456,6 +477,7 @@ class MainMenuState extends MusicBeatState
       new FlxTimer().start(duration, function(_) {
         trace('Exiting MainMenuState...');
         FlxG.switchState(state);
+        canInteract = true;
       });
     }
   }
@@ -619,15 +641,13 @@ class MainMenuState extends MusicBeatState
 
   public function goBack():Void
   {
-    if (canInteract)
+    if (menuItems == null) return;
+    if (canInteract && !menuItems.busy)
     {
       trace("BACK: Interact complete.");
       canInteract = false;
-      if (menuItems != null)
-      {
-        menuItems.busy = true;
-        rememberedSelectedIndex = menuItems.selectedIndex;
-      }
+      menuItems.busy = true;
+      rememberedSelectedIndex = menuItems.selectedIndex;
       FlxG.switchState(() -> new TitleState());
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
     }

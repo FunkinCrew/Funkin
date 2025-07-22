@@ -1447,6 +1447,8 @@ class PlayState extends MusicBeatSubState
         }
       }
 
+      if (!vwooshTimer.finished) vwooshTimer.active = false;
+
       // Pause camera tweening, and keep track of which tweens we pause.
       if (cameraFollowTween != null && cameraFollowTween.active)
       {
