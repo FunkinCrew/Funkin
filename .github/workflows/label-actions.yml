@@ -1,5 +1,6 @@
 # Perform actions when labels are applied to issues, discussions, or pull requests
 # See .github/label-actions.yml
+
 name: 'Label Actions'
 
 on:

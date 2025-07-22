@@ -449,13 +449,13 @@ class FileUtil
 
   /**
    * Takes an array of file entries and forcibly writes a ZIP to the given path.
-   * Only works on desktop, because HTML5 doesn't allow you to write files to arbitrary paths.
+   * Only works on native, because HTML5 doesn't allow you to write files to arbitrary paths.
    * Use `saveFilesAsZIP` instead.
    * @param force Whether to force overwrite an existing file.
    */
   public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, mode:FileWriteMode = Skip):Bool
   {
-    #if desktop
+    #if sys
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
     // Write the ZIP.
@@ -468,7 +468,7 @@ class FileUtil
 
   /**
    * Read string file contents directly from a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The file contents.
@@ -484,7 +484,7 @@ class FileUtil
 
   /**
    * Read bytes file contents directly from a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The file contents.
@@ -527,20 +527,23 @@ class FileUtil
   /**
    * Prompts the user to save a file to their computer.
    */
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void)
   {
     var file = new FileReference();
 
     file.addEventListener(Event.COMPLETE, function(e:Event) {
       trace('Successfully wrote file: "$path"');
+      callback("success");
     });
 
     file.addEventListener(Event.CANCEL, function(e:Event) {
       trace('Cancelled writing file: "$path"');
+      callback("info");
     });
 
     file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
       trace('IO error writing file: "$path"');
+      callback("error");
     });
 
     file.save(data, path);
@@ -548,7 +551,7 @@ class FileUtil
 
   /**
    * Read JSON file contents directly from a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The JSON data.
@@ -564,7 +567,7 @@ class FileUtil
 
   /**
    * Write string file contents directly to a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param data The string to write.
@@ -607,7 +610,7 @@ class FileUtil
 
   /**
    * Write byte file contents directly to a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param data The bytes to write.
@@ -655,7 +658,7 @@ class FileUtil
 
   /**
    * Write string file contents directly to the end of a file at the given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param data The string to append.
@@ -696,7 +699,7 @@ class FileUtil
 
   /**
    * Moves a file from one location to another.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param destination The path to move the file to.
@@ -717,7 +720,7 @@ class FileUtil
 
   /**
    * Delete a file at the given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    */
@@ -732,7 +735,7 @@ class FileUtil
 
   /**
    * Get a file's size in bytes. Max representable size is ~2.147 GB.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The size of the file in bytes.
@@ -748,7 +751,7 @@ class FileUtil
 
   /**
    * Check if a path exists on the filesystem.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the potential file or directory.
    * @return Whether the path exists.
@@ -764,7 +767,7 @@ class FileUtil
 
   /**
    * Check if a path is a file on the filesystem.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the potential file.
    * @return Whether the path exists and is a file.
@@ -780,7 +783,7 @@ class FileUtil
 
   /**
    * Check if a path is a directory on the filesystem.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the potential directory.
    * @return Whether the path exists and is a directory.
@@ -803,7 +806,7 @@ class FileUtil
 
   /**
    * Create a directory if it doesn't already exist.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param dir The path to the directory.
    */
@@ -821,7 +824,7 @@ class FileUtil
 
   /**
    * List all entries in a directory.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @return An array of entries in the directory.
@@ -837,7 +840,7 @@ class FileUtil
 
   /**
    * Move a directory from one location to another, optionally ignoring some paths.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @param destination The path to move the directory to.
@@ -896,7 +899,7 @@ class FileUtil
 
   /**
    * Delete a directory, optionally including its contents, and optionally ignoring some paths.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @param recursive Whether to delete all contents of the directory.
@@ -945,7 +948,7 @@ class FileUtil
 
   /**
    * Get a directory's total size in bytes. Max representable size is ~2.147 GB.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @return The total size of the directory in bytes.
@@ -990,7 +993,7 @@ class FileUtil
 
   /**
    * Get the path to a temporary directory we can use for writing files.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @return The path to the temporary directory.
    */
@@ -1008,6 +1011,9 @@ class FileUtil
     }
     tempDir = Path.join([path ?? '', 'funkin/']);
     return tempDir;
+    #elseif android
+    tempDir = Path.addTrailingSlash(extension.androidtools.content.Context.getCacheDir());
+    return tempDir;
     #else
     tempDir = '/tmp/funkin/';
     return tempDir;
@@ -1019,7 +1025,7 @@ class FileUtil
 
   /**
    * Rename a file or directory.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file or directory.
    * @param newName The new name of the file or directory.
@@ -1143,12 +1149,17 @@ class FileUtil
    * Runs platform-specific code to open a path in the file explorer.
    *
    * @param pathFolder The path of the folder to open.
+   * @param createIfNotExists If `true`, creates the folder if missing; otherwise, throws an error.
    */
-  public static function openFolder(pathFolder:String):Void
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
   {
     #if sys
     pathFolder = pathFolder.trim();
-    if (!directoryExists(pathFolder))
+    if (createIfNotExists)
+    {
+      createDirIfNotExists(pathFolder);
+    }
+    else if (!directoryExists(pathFolder))
     {
       throw 'Path is not a directory: "$pathFolder"';
     }
@@ -1393,9 +1404,9 @@ class FileUtilSandboxed
     FileUtil.browseFileReference(callback);
   }
 
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void):Void
   {
-    FileUtil.writeFileReference(path, data);
+    FileUtil.writeFileReference(path, data, callback);
   }
 
   public static function readJSONFromPath(path:String):Dynamic
@@ -1518,9 +1529,9 @@ class FileUtilSandboxed
     return FileUtil.makeZIPEntryFromBytes(name, data);
   }
 
-  public static function openFolder(pathFolder:String):Void
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
   {
-    FileUtil.openFolder(sanitizePath(pathFolder));
+    FileUtil.openFolder(sanitizePath(pathFolder), createIfNotExists);
   }
 
   public static function openSelectFile(path:String):Void

@@ -8,6 +8,7 @@ import lime.ui.GamepadButton as LimeGamepadButton;
 /**
  * Utilities for working with Flixel gamepads.
  */
+@:nullSafety
 class FlxGamepadUtil
 {
   public static function getInputID(gamepad:FlxGamepad, button:LimeGamepadButton):FlxGamepadInputID
@@ -33,14 +34,14 @@ class FlxGamepadUtil
     #end
   }
 
-  @:privateAccess
   public static function getFlxGamepadByLimeGamepad(gamepad:LimeGamepad):FlxGamepad
   {
     // Why is this so elaborate?
     @:privateAccess
-    var gameInputDevice:openfl.ui.GameInputDevice = openfl.ui.GameInput.__getDevice(gamepad);
-    @:privateAccess
-    var gamepadIndex:Int = FlxG.gamepads.findGamepadIndex(gameInputDevice);
-    return FlxG.gamepads.getByID(gamepadIndex);
+    {
+      var gameInputDevice:openfl.ui.GameInputDevice = openfl.ui.GameInput.__getDevice(gamepad);
+      var gamepadIndex:Int = FlxG.gamepads.findGamepadIndex(gameInputDevice);
+      return FlxG.gamepads.getByID(gamepadIndex);
+    }
   }
 }

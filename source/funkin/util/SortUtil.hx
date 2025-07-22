@@ -22,6 +22,7 @@ import funkin.data.song.SongData.SongNoteData;
  *    You may consider using one of the functions in `funkin.util.tools.ArraySortTools` instead.
  * NOTE: Both sort functions modify the array in-place. You may consider using `Reflect.copy()` to make a copy of the array before sorting.
  */
+@:nullSafety
 class SortUtil
 {
   /**
@@ -97,7 +98,7 @@ class SortUtil
    * @param b The second string to compare.
    * @return 1 if `a` comes before `b`, -1 if `b` comes before `a`, 0 if they are equal
    */
-  public static function alphabetically(?a:String, ?b:String):Int
+  public static function alphabetically(a:String, b:String):Int
   {
     a = a.toUpperCase();
     b = b.toUpperCase();
