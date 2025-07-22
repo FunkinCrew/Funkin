@@ -2645,12 +2645,18 @@ class PlayState extends MusicBeatSubState
             var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true, Highscore.tallies.combo);
             dispatchEvent(event);
 
+            // Calling event.cancelEvent() skips all the other logic! Neat!
+            if (event.eventCanceled) continue;
+
             trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
             applyScore(event.score, '', event.healthChange, event.isComboBreak);
 
             // Play the miss sound.
+            if (event.playSound)
+            {
             vocals.playerVolume = 0;
             FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+            }
           }
           else
           {
@@ -2854,7 +2860,6 @@ class PlayState extends MusicBeatSubState
         if (pressArray[i]) indices.push(i);
       }
     }
-    vocals.playerVolume = 0;
 
     applyScore(Scoring.getMissScore(), 'miss', healthChange, true);
 
