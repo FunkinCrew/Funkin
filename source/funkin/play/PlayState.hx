@@ -2351,7 +2351,7 @@ class PlayState extends MusicBeatSubState
     }
 
     FlxG.sound.music.onComplete = function() {
-      if (mayPauseGame) endSong(skipEndingTransition);
+      if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
     };
 
     FlxG.sound.music.pause();
