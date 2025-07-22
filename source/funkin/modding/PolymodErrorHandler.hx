@@ -60,6 +60,15 @@ class PolymodErrorHandler
         logError(error.message);
         // Notify the user via popup.
         showAlert('Polymod Script Blacklist Violation', error.message);
+      case DEPENDENCY_VERSION_MISMATCH:
+        // A mod dependency was found, but the version was not compatible.
+        showAlert('Polymod Dependency Version Mismatch', error.message);
+      case DEPENDENCY_UNMET:
+        // A mod dependency was not found.
+        showAlert('Polymod Dependency Missing', error.message);
+      case MOD_API_VERSION_MISMATCH:
+        // A mod's API version does not match the version rule passed to Polymod.init.
+        showAlert('Polymod Mod API Version Mismatch', error.message);
 
       default:
         // Log the message based on its severity.
