@@ -1,7 +1,6 @@
 package funkin.modding.module;
 
-import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
-import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
+import funkin.modding.IScriptedClass.IGlobalScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 /**
@@ -9,7 +8,7 @@ import funkin.modding.events.ScriptEvent;
  * You may have the module active at all times, or only when another script enables it.
  */
 @:nullSafety
-class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass
+class Module implements IGlobalScriptedClass
 {
   /**
    * Whether the module is currently active.
@@ -64,14 +63,26 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   public function onScriptEvent(event:ScriptEvent) {}
 
   /**
-   * Called when the module is first created.
-   * This happens before the title screen appears!
+   * Called when the game is first initialized, before the title screen appears.
+   * This happens only once, immediately after the module's first `onCreate` event.
+   */
+  public function onGameInit(event:ScriptEvent) {}
+
+  /**
+   * Called when the game is closed for any reason.
+   * This happens only once, immediately before the module's last `onDestroy` event.
+   */
+  public function onGameClose(event:GameCloseScriptEvent) {}
+
+  /**
+   * Called when the module is created.
+   * This happens when the game is first initialized or after a mod reload.
    */
   public function onCreate(event:ScriptEvent) {}
 
   /**
    * Called when a module is destroyed.
-   * This currently only happens when reloading modules with F5.
+   * This happens when reloading modules with F5 or when the game is closed.
    */
   public function onDestroy(event:ScriptEvent) {}
 
@@ -79,6 +90,16 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    * Called every frame.
    */
   public function onUpdate(event:UpdateScriptEvent) {}
+
+  /**
+   * Called after `PlayState` creation, right before the countdown starts.
+   */
+  public function onPlayStateCreate(event:ScriptEvent) {}
+
+  /**
+   * Called immediately before `PlayState` cleanup.
+   */
+  public function onPlayStateClose(event:ScriptEvent) {}
 
   /**
    * Called when the game is paused.
