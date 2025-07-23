@@ -862,14 +862,14 @@ class Project extends HXProject
     {
       if (!flagStr.startsWith(FeatureFlag.INVERSE_PREFIX))
       {
-        // we do k.length + 3 to accomodate for adding the "✅ " at the beginning
+        // we do k.length + 3 to accomodate for adding the "✓ " at the beginning
         enabledWidth = Std.int(Math.max(flagStr.length + 3, enabledWidth));
-        enabledFlags.push("✅ " + flagStr);
+        enabledFlags.push("✓ " + flagStr);
       }
       else
       {
         disabledWidth = Std.int(Math.max(flagStr.length, disabledWidth));
-        disabledFlags.push("❌ " + flagStr.substring(FeatureFlag.INVERSE_PREFIX.length));
+        disabledFlags.push("× " + flagStr.substring(FeatureFlag.INVERSE_PREFIX.length));
       }
     }
 
@@ -878,10 +878,11 @@ class Project extends HXProject
 
 
     var horizontalDivider:String = "".rpad("-", enabledWidth + disabledWidth);
+
     info(horizontalDivider);
     // Header
     info("FEATURE FLAGS");
-    info("Enabled Flags ✅".rpad(" ", enabledWidth + 5) + "Disabled Flags ❌");
+    info("Enabled Flags ✓".rpad(" ", enabledWidth + 5) + "Disabled Flags ×");
     info(horizontalDivider);
 
 
