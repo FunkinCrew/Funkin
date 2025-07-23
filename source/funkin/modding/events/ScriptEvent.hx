@@ -556,3 +556,20 @@ class PauseScriptEvent extends ScriptEvent
     this.gitaroo = gitaroo;
   }
 }
+
+/**
+ * An event which is called when the game is closed for any reason.
+ */
+class GameCloseScriptEvent extends ScriptEvent
+{
+  /**
+   * The exit code. Any non-zero value is likely an error.
+   */
+  public var exitCode(default, null):Int;
+
+  public function new(exitCode:Int):Void
+  {
+    super(GAME_CLOSE, false);
+    this.exitCode = exitCode;
+  }
+}
