@@ -2270,6 +2270,9 @@ class FreeplayState extends MusicBeatSubState
       if (targetSong == null)
       {
         FlxG.log.warn('WARN: could not find song with id (${daSong.data.id})');
+        intendedScore = 0;
+        intendedCompletion = 0.0;
+        rememberedDifficulty = currentDifficulty;
         return;
       }
 
@@ -2697,17 +2700,12 @@ class FreeplayState extends MusicBeatSubState
     if (daSongCapsule.freeplayData != null)
     {
       var songScore:Null<SaveScoreData> = Save.instance.getSongScore(daSongCapsule.freeplayData.data.id, currentDifficulty, currentVariation);
-      intendedScore = songScore?.score ?? 0;
-      intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick +
-        songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
       changeDiff();
       daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
     {
-      intendedScore = 0;
-      intendedCompletion = 0.0;
       rememberedSongId = null;
       albumRoll.albumId = null;
       changeDiff();
