@@ -2130,6 +2130,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var notePreviewPlayhead:Null<FlxSprite> = null;
 
   /**
+   * Whether the note preview playhead is currently being dragged with the mouse by the user.
+   */
+  var notePreviewPlayHeadDragging:Bool = false;
+
+  /**
    * The rectangular sprite used for rendering the selection box.
    * Uses a 9-slice to stretch the selection box to the correct size without warping.
    */
@@ -2753,6 +2758,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.playbarHead.height = 10;
     playbarHeadLayout.playbarHead.styleString = 'padding-left: 0px; padding-right: 0px; border-left: 0px; border-right: 0px;';
     playbarHeadLayout.playbarHead.min = 0;
+
 
     playbarHeadLayout.playbarHead.onDragStart = function(_:DragEvent) {
       playbarHeadDragging = true;
@@ -4292,6 +4298,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else if (measureTicks != null && FlxG.mouse.overlaps(measureTicks) && !isCursorOverHaxeUI)
         {
           gridPlayheadScrollAreaPressed = true;
+          // Stop audio playback while dragging on the grid playhead.
+          if (audioInstTrack != null && audioInstTrack.isPlaying)
+          {
+            playbarHeadDraggingWasPlaying = true;
+            stopAudioPlayback();
+          }
         }
         else if (notePreview != null && FlxG.mouse.overlaps(notePreview) && !isCursorOverHaxeUI)
         {
@@ -4314,11 +4326,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (gridPlayheadScrollAreaPressed && FlxG.mouse.released)
       {
         gridPlayheadScrollAreaPressed = false;
+        // If we were dragging the playhead while the song was playing, resume playing.
+        if (playbarHeadDraggingWasPlaying)
+        {
+          playbarHeadDraggingWasPlaying = false;
+          startAudioPlayback();
+        }
       }
 
       if (notePreviewScrollAreaStartPos != null && FlxG.mouse.released)
       {
         notePreviewScrollAreaStartPos = null;
+        notePreviewPlayHeadDragging = false;
+
+        if (playbarHeadDraggingWasPlaying)
+        {
+          playbarHeadDraggingWasPlaying = false;
+          startAudioPlayback();
+        }
       }
 
       if (gridPlayheadScrollAreaPressed)
@@ -4593,6 +4618,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       else if (notePreviewScrollAreaStartPos != null)
       {
+        notePreviewPlayHeadDragging = true;
+        // Stop audio playback while dragging on the note preview playhead.
+        if (audioInstTrack != null && audioInstTrack.isPlaying)
+        {
+          playbarHeadDraggingWasPlaying = true;
+          stopAudioPlayback();
+        }
+
         // Player is clicking and holding on note preview to scrub around.
         targetCursorMode = Grabbing;
 
@@ -6038,6 +6071,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (audioInstTrack != null)
     {
+      // Don't allow the audio to be played while we're dragging any of the playheads
+      if (playbarHeadDragging || gridPlayheadScrollAreaPressed || notePreviewPlayHeadDragging) return;
       audioInstTrack.play(false, audioInstTrack.time);
       audioVocalTrackGroup.play(false, audioInstTrack.time);
     }
@@ -6491,6 +6526,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else
     {
+      // Don't allow the audio to be played while we're dragging any of the playheads
+      if (playbarHeadDragging || gridPlayheadScrollAreaPressed || notePreviewPlayHeadDragging) return;
       // Play
       startAudioPlayback();
       stopWelcomeMusic();
