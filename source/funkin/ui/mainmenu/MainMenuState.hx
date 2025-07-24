@@ -17,6 +17,8 @@ import funkin.audio.FunkinSound;
 import funkin.util.SwipeUtil;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
+import funkin.ui.UIStateMachine;
+import funkin.ui.UIStateMachine.UIState;
 import flixel.util.FlxTimer;
 import funkin.ui.AtlasMenuList.AtlasMenuItem;
 import funkin.ui.freeplay.FreeplayState;
@@ -26,6 +28,7 @@ import funkin.ui.title.TitleState;
 import funkin.ui.story.StoryMenuState;
 import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
+import funkin.mobile.ui.FunkinButton;
 import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
@@ -56,21 +59,12 @@ class MainMenuState extends MusicBeatState
   #end
 
   var overrideMusic:Bool = false;
-  var goingToOptions:Bool = false;
-  var goingBack:Bool = false;
-  var canInteract(get, set):Bool;
-  var _canInteract:Bool = false;
+  var uiStateMachine:UIStateMachine;
+  var canInteract(get, never):Bool;
 
   function get_canInteract():Bool
   {
-    return _canInteract;
-  }
-
-  function set_canInteract(value:Bool):Bool
-  {
-    _canInteract = value;
-    trace('canInteract set to: ' + value);
-    return value;
+    return uiStateMachine != null ? uiStateMachine.canInteract() : false;
   }
 
   static var rememberedSelectedIndex:Int = 0;
@@ -84,6 +78,9 @@ class MainMenuState extends MusicBeatState
     super();
     overrideMusic = _overrideMusic;
 
+    uiStateMachine = new UIStateMachine();
+    // Start in Entering state during screen fade in
+    uiStateMachine.transition(Entering);
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
     magenta = new FlxSprite(Paths.image('menuBGMagenta'));
     camFollow = new FlxObject(0, 0, 1, 1);
@@ -134,8 +131,6 @@ class MainMenuState extends MusicBeatState
     magenta.y = bg.y;
     magenta.visible = false;
 
-    // TODO: Why doesn't this line compile I'm going fucking feral
-
     if (Preferences.flashingLights) add(magenta);
 
     menuItems = new MenuTypedList<AtlasMenuItem>();
@@ -185,7 +180,6 @@ class MainMenuState extends MusicBeatState
         {
           character: targetCharacter
         }));
-      canInteract = true;
     });
 
     if (hasUpgraded)
@@ -205,7 +199,7 @@ class MainMenuState extends MusicBeatState
       createMenuItem('upgrade', 'mainmenu/upgrade', function() {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
-        canInteract = true;
+        uiStateMachine.transition(Idle);
         #end
       });
     }
@@ -289,33 +283,23 @@ class MainMenuState extends MusicBeatState
 
     if (!ControlsHandler.usingExternalInputDevice)
     {
-      addOptionsButton(35, FlxG.height - 210, function() {
-        if (!canInteract || menuItems != null && menuItems.busy) return;
-
-        trace("OPTIONS: Interact complete.");
-        startExitState(() -> new funkin.ui.options.OptionsState());
-      });
+      addOptionsButton(35, FlxG.height - 210, goOptions);
     }
 
     if (backButton != null)
     {
       backButton.onConfirmStart.add(function():Void {
         if (backButton == null) return;
-        goingBack = true;
         if (menuItems != null) menuItems.enabled = false;
         trace('BACK: Interact Start');
       });
     }
 
-    if (optionsButton != null)
-    {
-      optionsButton.onConfirmStart.add(function():Void {
-        if (optionsButton == null) return;
-        goingToOptions = true;
-        if (menuItems != null) menuItems.enabled = false;
-        trace('OPTIONS: Interact Start');
-      });
-    }
+    optionsButton?.onConfirmStart.add(function():Void {
+      if (optionsButton == null) return;
+      if (menuItems != null) menuItems.enabled = false;
+      trace('OPTIONS: Interact Start');
+    });
     #end
 
     super.create();
@@ -396,14 +380,16 @@ class MainMenuState extends MusicBeatState
     }
     #end
     super.closeSubState();
-    canInteract = true;
+    uiStateMachine.transition(Idle);
   }
 
   override function finishTransIn():Void
   {
     super.finishTransIn();
-    canInteract = true;
+
+    uiStateMachine.transition(Idle);
     FlxG.keys.enabled = true;
+
     if (menuItems != null)
     {
       menuItems.enabled = true;
@@ -425,7 +411,7 @@ class MainMenuState extends MusicBeatState
   function selectMerch()
   {
     Referral.doMerchReferral();
-    canInteract = true;
+    uiStateMachine.transition(Idle);
   }
   #end
 
@@ -452,7 +438,7 @@ class MainMenuState extends MusicBeatState
     if (menuItems != null)
     {
       menuItems.enabled = false; // disable for exit
-      canInteract = false;
+      uiStateMachine.transition(Exiting); // Start fade out
       rememberedSelectedIndex = menuItems.selectedIndex;
 
       var duration = 0.4;
@@ -474,8 +460,8 @@ class MainMenuState extends MusicBeatState
 
       new FlxTimer().start(duration, function(_) {
         trace('Exiting MainMenuState...');
+        uiStateMachine.transition(Exiting); // Actually switching now
         FlxG.switchState(state);
-        canInteract = true;
       });
     }
   }
@@ -501,19 +487,13 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8)
     {
       FlxG.sound.music.volume += 0.5 * elapsed;
     }
     handleInputs();
-    if (menuItems != null)
-    {
-      #if mobile
-      // if (optionsButton != null) optionsButton.active = canInteract && (!menuItems.busy && !goingBack);
-      // if (backButton != null) backButton.active = canInteract && (!menuItems.busy && !goingToOptions);
-      #end
-      if (_exiting) menuItems.enabled = false;
-    }
+
+    if (menuItems != null && uiStateMachine.is(Exiting)) menuItems.enabled = false;
   }
 
   function handleInputs():Void
@@ -637,13 +617,28 @@ class MainMenuState extends MusicBeatState
     if (controls.BACK) goBack();
   }
 
-  public function goBack():Void
+  function goOptions():Void
   {
     if (menuItems == null) return;
+    if (!uiStateMachine.canTransition(uiStateMachine.currentState, Exiting)) return;
+    if (canInteract && !menuItems.busy)
+    {
+      trace("OPTIONS: Interact complete.");
+
+      uiStateMachine.transition(Interacting);
+      menuItems.busy = true;
+      startExitState(() -> new funkin.ui.options.OptionsState());
+    }
+  }
+
+  function goBack():Void
+  {
+    if (menuItems == null) return;
+    if (!uiStateMachine.canTransition(uiStateMachine.currentState, Exiting)) return;
     if (canInteract && !menuItems.busy)
     {
       trace("BACK: Interact complete.");
-      canInteract = false;
+      uiStateMachine.transition(Exiting);
       menuItems.busy = true;
       rememberedSelectedIndex = menuItems.selectedIndex;
       FlxG.switchState(() -> new TitleState());
