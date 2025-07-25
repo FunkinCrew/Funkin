@@ -119,6 +119,11 @@ class FreeplayState extends MusicBeatSubState
    */
   public static final SONGS_POS_MULTI:Float = 0.75;
 
+  /**
+   * For positioning the difficulty dots.
+   */
+  public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [260, 170];
+
   var songs:Array<Null<FreeplaySongData>> = [];
 
   var curSelected:Int = 0;
@@ -315,7 +320,7 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
 
-    difficultyDots = new FlxTypedSpriteGroup<DifficultyDot>(203, 170);
+    difficultyDots = new FlxTypedSpriteGroup<DifficultyDot>(DEFAULT_DOTS_GROUP_POS[0], DEFAULT_DOTS_GROUP_POS[1]);
     letterSort = new LetterSort((CUTOUT_WIDTH * SONGS_POS_MULTI) + 400, 75);
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
@@ -1295,9 +1300,22 @@ class FreeplayState extends MusicBeatSubState
   function refreshDots(amount:Int, index:Int, prevIndex:Int):Void
   {
     var distance:Int = 30;
+    var groupOffset:Float = 14.7;
     var shiftAmt:Float = (distance * amount) / 2;
     var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
+    final maxDotsPerRow:Int = 8;
 
+    if (difficultyDots.group.members.length > maxDotsPerRow)
+    {
+      difficultyDots.x = DEFAULT_DOTS_GROUP_POS[0] - groupOffset * (maxDotsPerRow - 1);
+    }
+    else
+    {
+      difficultyDots.x = DEFAULT_DOTS_GROUP_POS[0] - groupOffset * (difficultyDots.group.members.length - 1);
+    }
+
+    var curRow:Int = 0;
+    var curDot:Int = 0;
     for (i in 0...difficultyDots.group.members.length)
     {
       // if (difficultyDots.group.members[i] == null) continue;
@@ -1329,7 +1347,16 @@ class FreeplayState extends MusicBeatSubState
       }
 
       difficultyDots.group.members[i].visible = true;
-      difficultyDots.group.members[i].x = (CUTOUT_WIDTH * DJ_POS_MULTI) + ((difficultyDots.x + (distance * i)) - shiftAmt);
+      difficultyDots.group.members[i].x = (CUTOUT_WIDTH * DJ_POS_MULTI) + ((difficultyDots.x + (distance * curDot)) - shiftAmt);
+      difficultyDots.group.members[i].y = DEFAULT_DOTS_GROUP_POS[1] + distance * curRow;
+
+      curDot++;
+
+      if (curDot >= maxDotsPerRow)
+      {
+        curDot = 0;
+        curRow++;
+      }
 
       if (daSong?.data.hasDifficulty(diffId, daSong?.data.getFirstValidVariation(diffId, currentCharacter)) == false)
       {
