@@ -1063,10 +1063,10 @@ class PlayState extends MusicBeatSubState
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
-      if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
-      {
-        if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
-      }
+      // if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
+      // {
+      //   if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
+      // }
     }
 
     var pauseButtonCheck:Bool = false;
