@@ -1234,14 +1234,12 @@ class PlayState extends MusicBeatSubState
     switch (mode)
     {
       case Conversation:
-        currentConversation.pauseMusic();
         preparePauseUI();
-        openPauseSubState(Conversation, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene);
+        openPauseSubState(Conversation, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> currentConversation.pauseMusic());
 
       case Cutscene:
-        VideoCutscene.pauseVideo();
         preparePauseUI();
-        openPauseSubState(Cutscene, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene);
+        openPauseSubState(Cutscene, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> VideoCutscene.pauseVideo());
 
       default: // also known as standard
         if (!isInCountdown || isInCutscene) return;
@@ -1299,9 +1297,9 @@ class PlayState extends MusicBeatSubState
     #end
   }
 
-  function openPauseSubState(mode:PauseMode, cam:FlxCamera):Void
+  function openPauseSubState(mode:PauseMode, cam:FlxCamera, ?onPause:Void->Void):Void
   {
-    final pauseSubState = new PauseSubState({mode: mode});
+    final pauseSubState = new PauseSubState({mode: mode}, onPause);
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
     pauseSubState.camera = cam;
