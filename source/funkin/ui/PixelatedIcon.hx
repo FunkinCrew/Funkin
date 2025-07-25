@@ -1,6 +1,5 @@
 package funkin.ui;
 
-import openfl.utils.Assets;
 import funkin.graphics.FlxFilteredSprite;
 
 /**

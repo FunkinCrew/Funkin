@@ -21,7 +21,6 @@ import funkin.util.MathUtil;
 import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
 import funkin.util.TouchUtil;
-import openfl.utils.Assets;
 #if FEATURE_MOBILE_ADVERTISEMENTS
 import funkin.mobile.util.AdMobUtil;
 #end
