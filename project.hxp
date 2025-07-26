@@ -890,7 +890,7 @@ class Project extends HXProject
 
     if (FEATURE_LOG_TRACE.isDisabled(this))
     {
-      addHaxeFlag("--no-traces");
+      setHaxedef("no-traces");
     }
 
     // Disable the built in pause screen when unfocusing the game.
