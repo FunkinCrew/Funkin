@@ -715,8 +715,6 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Force allowScreenTimeout to be disabled
     lime.system.System.allowScreenTimeout = false;
-    // TODO: For some reason the touch pointer's positioning gets weird in playstate, find a way to fix it! -Zack
-    funkin.util.plugins.TouchPointerPlugin.enabled = false;
     #end
 
     // This state receives update() even when a substate is active.
@@ -1762,7 +1760,6 @@ class PlayState extends MusicBeatSubState
     #if mobile
     // Syncing allowScreenTimeout with Preferences option.
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
-    funkin.util.plugins.TouchPointerPlugin.enabled = true;
     #end
 
     #if !mobile
