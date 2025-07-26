@@ -545,6 +545,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     if (FlxG.sound.music.time < _lastTime)
     {
       localConductor.update(FlxG.sound.music.time, !calibrating);
+      b = localConductor.currentBeatTime;
 
       // Update arrows to be the correct distance away from the receptor.
       var lastArrowBeat:Float = 0;
@@ -558,7 +559,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       }
       if (calibrating)
       {
-        arrowBeat = lastArrowBeat + 2;
+        arrowBeat = lastArrowBeat;
       }
       else
         arrowBeat = 4;
@@ -566,6 +567,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.clean();
       testStrumline.noteData = [];
       testStrumline.nextNoteIndex = 0;
+      trace('Restarting conductor');
+
+      _lastTime = FlxG.sound.music.time;
+      return;
     }
 
     _lastBeat = b;
@@ -608,7 +613,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       countText.text = 'Current Offset: ' + Std.int(appliedOffsetLerp) + 'ms';
 
       var toRemove:Array<ArrowData> = [];
-
+      var _lastArrowBeat:Float = 0;
       // Update arrows
       for (i in 0...arrows.length)
       {
@@ -629,12 +634,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
           arrow.sprite.alpha -= elapsed * 5;
         }
 
-        if (arrow.sprite.alpha <= 0)
+        if (arrow.beat == _lastArrowBeat || arrow.sprite.alpha <= 0)
         {
           toRemove.push(arrow);
           arrow.sprite.kill();
-          // arrow.debugText.kill();
+          continue;
         }
+        _lastArrowBeat = arrow.beat;
       }
 
       // Remove arrows that are marked for removal.
