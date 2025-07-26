@@ -61,11 +61,17 @@ class EnvironmentConfigMacro
     {
       if (line == "" || line.startsWith("#")) continue;
 
-      var parts = line.split('=');
-      if (parts.length != 2) continue;
+      var index:Int = line.indexOf('=');
 
-      envFields.push(parts[0]);
-      envValues.push(parts[1]);
+      if (index == -1) continue;
+
+      var field:String = line.substr(0, index);
+      var value:String = line.substr(index + 1);
+
+      if (value == "") continue;
+
+      envFields.push(field);
+      envValues.push(value);
     }
 
     var newFields = fields.copy();
