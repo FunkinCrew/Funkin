@@ -2168,7 +2168,7 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
-    if (!controls.active) return;
+    if (!controls.active && !force) return;
 
     if (capsuleAnim)
     {
@@ -2690,7 +2690,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = songScore == null ? 0.0 : ((songScore.tallies.sick +
         songScore.tallies.good - songScore.tallies.missed) / songScore.tallies.totalNotes);
       rememberedSongId = daSongCapsule.freeplayData.data.id;
-      changeDiff();
+      changeDiff(0, true);
       daSongCapsule.refreshDisplay((prepForNewRank == true) ? false : true);
     }
     else
@@ -2699,7 +2699,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0.0;
       rememberedSongId = null;
       albumRoll.albumId = null;
-      changeDiff();
+      changeDiff(0, true);
       daSongCapsule.refreshDisplay();
     }
 
