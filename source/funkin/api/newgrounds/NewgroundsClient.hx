@@ -17,8 +17,8 @@ import io.newgrounds.objects.User;
 @:nullSafety
 class NewgroundsClient
 {
-  static var APP_ID:String = EnvironmentConfigMacro.environmentConfig.get("API_NG_APP_ID");
-  static var ENCRYPTION_KEY:String = EnvironmentConfigMacro.environmentConfig.get("API_NG_ENC_KEY");
+  static var APP_ID:Null<String> = EnvironmentConfigMacro.environmentConfig.get("API_NG_APP_ID");
+  static var ENCRYPTION_KEY:Null<String> = EnvironmentConfigMacro.environmentConfig.get("API_NG_ENC_KEY");
 
   public static var instance(get, never):NewgroundsClient;
   static var _instance:Null<NewgroundsClient> = null;
