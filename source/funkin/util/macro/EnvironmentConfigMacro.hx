@@ -59,7 +59,7 @@ class EnvironmentConfigMacro
 
     for (line in envFile.split('\n'))
     {
-      if (line == "" || line.startsWith("#")) continue;
+      if (line.length <= 0 || line.startsWith("#") || shouldExcludeKey(line)) continue;
 
       var index:Int = line.indexOf('=');
 
@@ -69,6 +69,8 @@ class EnvironmentConfigMacro
       var value:String = line.substr(index + 1);
 
       if (value == "") continue;
+
+      Sys.println('[ENV] Found a key for environment value $field!');
 
       envFields.push(field);
       envValues.push(value);
@@ -105,6 +107,27 @@ class EnvironmentConfigMacro
     }
 
     return newFields;
+  }
+
+  private static function shouldExcludeKey(key:String):Bool
+  {
+    final android:Bool = key.startsWith('ANDROID_');
+    final ios:Bool = key.startsWith('IOS_');
+    final mobile:Bool = key.startsWith('MOBILE_') || ios || android;
+    final web:Bool = key.startsWith('WEB_');
+    final desktop:Bool = key.startsWith('DESKTOP_');
+
+    #if html5
+    if (mobile || desktop) return true;
+    #elseif desktop
+    if (mobile || web) return true;
+    #elseif android
+    if (mobile || web || desktop) return true;
+    #elseif ios
+    if (android || web || desktop) return true;
+    #end
+
+    return false;
   }
   #end
 }
