@@ -242,6 +242,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
     }
 
+    #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
     #else
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
