@@ -272,6 +272,7 @@ class TouchPointer extends FlxSprite
    * Used in TouchPointerPlugin's update method.
    *
    * @param touch The FlxTouch object containing the current touch input data.
+   * @param camera The FlxCamera to grab the touch's view position from.
    */
   public function updateFromTouch(touch:FlxTouch, camera:FlxCamera):Void
   {
