@@ -1,5 +1,6 @@
 package funkin.api.newgrounds;
 
+#if FEATURE_NEWGROUNDS
 import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.objects.SaveSlot;
 import io.newgrounds.Call.CallError;
@@ -102,3 +103,4 @@ class NGSaveSlot
     return haxe.Unserializer.run(encodedData);
   }
 }
+#end

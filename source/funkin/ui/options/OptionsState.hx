@@ -69,13 +69,13 @@ class OptionsState extends MusicBeatState
     optionsCodex = new Codex<OptionsMenuPageName>(Options);
     add(optionsCodex);
 
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
     var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(saveData));
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
     #if FEATURE_LAG_ADJUSTMENT
     var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
     #end
-    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
 
     if (options.hasMultipleOptions())
     {
