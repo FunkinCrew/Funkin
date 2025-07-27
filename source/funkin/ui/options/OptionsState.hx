@@ -69,7 +69,6 @@ class OptionsState extends MusicBeatState
     optionsCodex = new Codex<OptionsMenuPageName>(Options);
     add(optionsCodex);
 
-    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
     var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(saveData));
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
