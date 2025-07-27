@@ -122,7 +122,7 @@ class EnvironmentConfigMacro
     #elseif desktop
     if (mobile || web) return true;
     #elseif android
-    if (mobile || web || desktop) return true;
+    if (ios || web || desktop) return true;
     #elseif ios
     if (android || web || desktop) return true;
     #end

@@ -1763,15 +1763,10 @@ class Project extends HXProject
     final web:Bool = key.startsWith('WEB_');
     final desktop:Bool = key.startsWith('DESKTOP_');
 
-    #if html5
-    if (mobile || desktop) return true;
-    #elseif desktop
-    if (mobile || web) return true;
-    #elseif android
-    if (mobile || web || desktop) return true;
-    #elseif ios
-    if (android || web || desktop) return true;
-    #end
+    if (isWeb() && (mobile || desktop)) return true;
+    if (isDesktop() && (mobile || web)) return true;
+    if (isAndroid() && (ios || web || desktop)) return true;
+    if (isIOS() && (android || web || desktop)) return true;
 
     return false;
   }
