@@ -12,7 +12,7 @@ import sys.thread.Thread;
 @:nullSafety
 class DiscordClient
 {
-  static final CLIENT_ID:Null<String> = EnvironmentConfigMacro.environmentConfig?.get("DISCORD_CLIENT_ID");
+  static final CLIENT_ID:Null<String> = EnvironmentConfigMacro.environmentConfig?.get("DESKTOP_DISCORD_CLIENT_ID");
 
   public static var instance(get, never):DiscordClient;
   static var _instance:Null<DiscordClient> = null;

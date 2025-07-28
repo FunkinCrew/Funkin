@@ -1740,7 +1740,7 @@ class Project extends HXProject
     var env = new Map<String, Dynamic>();
     for (line in envFile.split('\n'))
     {
-      if (line.length <= 0 || line.startsWith("#") || shouldExcludeKey(line)) continue;
+      if (line.length <= 0 || line.startsWith("#") || shouldExcludeEnvKey(line)) continue;
 
       var index:Int = line.indexOf('=');
 
@@ -1755,7 +1755,7 @@ class Project extends HXProject
     return env;
   }
 
-  private static function shouldExcludeEnvKey(key:String):Bool
+  private function shouldExcludeEnvKey(key:String):Bool
   {
     final android:Bool = key.startsWith('ANDROID_');
     final ios:Bool = key.startsWith('IOS_');
