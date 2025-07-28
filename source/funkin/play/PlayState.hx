@@ -58,6 +58,7 @@ import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
+import funkin.util.AudioUtil;
 import funkin.util.SerializerUtil;
 import funkin.util.HapticUtil;
 import funkin.util.GRhythmUtil;
@@ -883,6 +884,11 @@ class PlayState extends MusicBeatSubState
     // This step ensures z-indexes are applied properly,
     // and it's important to call it last so all elements get affected.
     refresh();
+
+    #if (windows && cpp)
+    // Attempt resync if the audio device is changed.
+    AudioUtil.audioDeviceChangeSignal.add(resyncVocals);
+    #end
   }
 
   public function togglePauseButton(visible:Bool = false):Void
@@ -3519,6 +3525,10 @@ class PlayState extends MusicBeatSubState
     GameOverSubState.reset();
     PauseSubState.reset();
     Countdown.reset();
+
+    #if (windows && cpp)
+    AudioUtil.audioDeviceChangeSignal.remove(resyncVocals);
+    #end
 
     // Clear the static reference to this state.
     instance = null;
