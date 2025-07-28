@@ -32,7 +32,6 @@ import funkin.api.newgrounds.Referral;
 import funkin.ui.mainmenu.UpgradeSparkle;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 #if FEATURE_POLYMOD_MODS
-import polymod.Polymod.ModMetadata;
 import funkin.modding.PolymodHandler;
 #end
 #if FEATURE_DISCORD_RPC
