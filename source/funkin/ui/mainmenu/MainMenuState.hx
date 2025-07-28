@@ -31,6 +31,10 @@ import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
 import funkin.ui.mainmenu.UpgradeSparkle;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+#if FEATURE_POLYMOD_MODS
+import polymod.Polymod.ModMetadata;
+import funkin.modding.PolymodHandler;
+#end
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -325,7 +329,17 @@ class MainMenuState extends MusicBeatState
     // This has to come AFTER!
     if (this.leftWatermarkText != null)
     {
-      this.leftWatermarkText.text = Constants.VERSION;
+      this.leftWatermarkText.text = '';
+      #if FEATURE_POLYMOD_MODS
+      var modList:Array<String> = PolymodHandler.getAllModsList();
+      if (modList.length > 0)
+      {
+        this.leftWatermarkText.text += 'Mods:\n' + modList.join("\n") + '\n\n';
+        this.leftWatermarkText.y -= (modList.length + 2) * 15;
+      }
+      #end
+
+      this.leftWatermarkText.text += Constants.VERSION;
 
       #if FEATURE_NEWGROUNDS
       if (NewgroundsClient.instance.isLoggedIn())
