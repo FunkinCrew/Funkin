@@ -1,3 +1,6 @@
+# Builds the game on all platforms, to ensure it compiles on all target platforms.
+# This helps to ensure workers focus on the master branch.
+
 name: Build and Upload nightly game builds
 
 on:
@@ -21,7 +24,7 @@ jobs:
       trigger-build: ${{ steps.should-trigger.outputs.result }}
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: false
       - uses: dorny/paths-filter@v3
@@ -93,7 +96,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: false
       - name: Log into GitHub Container Registry
@@ -125,6 +128,9 @@ jobs:
             runs-on: windows
           - target: macos
             runs-on: macos
+          # TODO: Install XCode to build iOS
+          # - target: ios
+          #   runs-on: macos
     runs-on:
       - ${{ matrix.runs-on }}
     defaults:
@@ -144,11 +150,14 @@ jobs:
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
           persist-credentials: false
+          submodule-aliases: |
+            https://github.com/FunkinCrew/Funkin.assets > https://github.com/FunkinCrew/Funkin-assets-secret
+            https://github.com/FunkinCrew/Funkin.art > https://github.com/FunkinCrew/Funkin-art-secret
       - name: Setup build environment
         uses: ./.github/actions/setup-haxe
         with:
@@ -190,6 +199,7 @@ jobs:
         include:
           - target: linux
           - target: html5
+          # - target: android
     defaults:
       run:
         shell: bash
@@ -204,11 +214,14 @@ jobs:
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
           persist-credentials: false
+          submodule-aliases: |
+            https://github.com/FunkinCrew/Funkin.assets > https://github.com/FunkinCrew/Funkin-assets-secret
+            https://github.com/FunkinCrew/Funkin.art > https://github.com/FunkinCrew/Funkin-art-secret
       - name: Config haxelib
         run: |
           haxelib --never newrepo

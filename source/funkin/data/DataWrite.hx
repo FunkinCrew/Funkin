@@ -12,6 +12,7 @@ import haxe.ds.Either;
  *
  * NOTE: Result must include quotation marks if the value is a string! json2object will not add them for you!
  */
+@:nullSafety
 class DataWrite
 {
   /**

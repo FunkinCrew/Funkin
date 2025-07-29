@@ -52,24 +52,44 @@ class FileUtil
   /**
    * Paths which should not be deleted or modified by scripts.
    */
-  private static final PROTECTED_PATHS:Array<String> = [
-    '',
-    'assets',
-    'manifest',
-    'manifest/*',
-    'plugins',
-    'plugins/*',
-    'Funkin.exe',
-    'Funkin',
-    'libvlc.dll',
-    'libvlccore.dll',
-    'lime.ndll'
-  ];
+  public static var PROTECTED_PATHS(get, never):Array<String>;
+
+  public static function get_PROTECTED_PATHS():Array<String>
+  {
+    final protected:Array<String> = [
+      '',
+      '.',
+      'assets',
+      'assets/*',
+      'backups',
+      'backups/*',
+      'manifest',
+      'manifest/*',
+      'plugins',
+      'plugins/*',
+      'Funkin.exe',
+      'Funkin',
+      'icon.ico',
+      'libvlc.dll',
+      'libvlccore.dll',
+      'lime.ndll',
+      'scores.json'
+    ];
+
+    #if sys
+    for (i in 0...protected.length)
+    {
+      protected[i] = sys.FileSystem.fullPath(Path.join([gameDirectory, protected[i]]));
+    }
+    #end
+
+    return protected;
+  }
 
   /**
-   * Invalid filesystem characters.
+   * Regex for invalid filesystem characters.
    */
-  private static final INVALID_CHARS:Array<String> = [':', '*', '?', '"', '<', '>', '|'];
+  public static final INVALID_CHARS:EReg = ~/[:*?"<>|\n\r\t]/g;
 
   #if sys
   private static var _gameDirectory:Null<String> = null;
@@ -82,7 +102,7 @@ class FileUtil
       return _gameDirectory;
     }
 
-    return _gameDirectory = Path.directory(Path.normalize(sys.FileSystem.fullPath(Sys.programPath())));
+    return _gameDirectory = sys.FileSystem.fullPath(Path.directory(Sys.programPath()));
   }
   #end
 
@@ -429,13 +449,13 @@ class FileUtil
 
   /**
    * Takes an array of file entries and forcibly writes a ZIP to the given path.
-   * Only works on desktop, because HTML5 doesn't allow you to write files to arbitrary paths.
+   * Only works on native, because HTML5 doesn't allow you to write files to arbitrary paths.
    * Use `saveFilesAsZIP` instead.
    * @param force Whether to force overwrite an existing file.
    */
   public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, mode:FileWriteMode = Skip):Bool
   {
-    #if desktop
+    #if sys
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
     // Write the ZIP.
@@ -448,7 +468,7 @@ class FileUtil
 
   /**
    * Read string file contents directly from a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The file contents.
@@ -464,7 +484,7 @@ class FileUtil
 
   /**
    * Read bytes file contents directly from a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The file contents.
@@ -507,20 +527,23 @@ class FileUtil
   /**
    * Prompts the user to save a file to their computer.
    */
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void)
   {
     var file = new FileReference();
 
     file.addEventListener(Event.COMPLETE, function(e:Event) {
       trace('Successfully wrote file: "$path"');
+      callback("success");
     });
 
     file.addEventListener(Event.CANCEL, function(e:Event) {
       trace('Cancelled writing file: "$path"');
+      callback("info");
     });
 
     file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
       trace('IO error writing file: "$path"');
+      callback("error");
     });
 
     file.save(data, path);
@@ -528,7 +551,7 @@ class FileUtil
 
   /**
    * Read JSON file contents directly from a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The JSON data.
@@ -544,7 +567,7 @@ class FileUtil
 
   /**
    * Write string file contents directly to a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param data The string to write.
@@ -587,7 +610,7 @@ class FileUtil
 
   /**
    * Write byte file contents directly to a given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param data The bytes to write.
@@ -600,8 +623,6 @@ class FileUtil
     {
       throw 'Target path is a directory, not a file: "$path"';
     }
-
-    createDirIfNotExists(Path.directory(path));
 
     var shouldWrite:Bool = true;
     switch (mode)
@@ -637,7 +658,7 @@ class FileUtil
 
   /**
    * Write string file contents directly to the end of a file at the given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param data The string to append.
@@ -678,7 +699,7 @@ class FileUtil
 
   /**
    * Moves a file from one location to another.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @param destination The path to move the file to.
@@ -699,7 +720,7 @@ class FileUtil
 
   /**
    * Delete a file at the given path.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    */
@@ -714,7 +735,7 @@ class FileUtil
 
   /**
    * Get a file's size in bytes. Max representable size is ~2.147 GB.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file.
    * @return The size of the file in bytes.
@@ -730,7 +751,7 @@ class FileUtil
 
   /**
    * Check if a path exists on the filesystem.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the potential file or directory.
    * @return Whether the path exists.
@@ -746,7 +767,7 @@ class FileUtil
 
   /**
    * Check if a path is a file on the filesystem.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the potential file.
    * @return Whether the path exists and is a file.
@@ -762,7 +783,7 @@ class FileUtil
 
   /**
    * Check if a path is a directory on the filesystem.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the potential directory.
    * @return Whether the path exists and is a directory.
@@ -785,25 +806,25 @@ class FileUtil
 
   /**
    * Create a directory if it doesn't already exist.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param dir The path to the directory.
    */
   public static function createDirIfNotExists(dir:String):Void
   {
-    #if sys
     if (!directoryExists(dir))
     {
+      #if sys
       sys.FileSystem.createDirectory(dir);
+      #else
+      throw 'Directory creation is not supported on this platform.';
+      #end
     }
-    #else
-    throw 'Directory creation is not supported on this platform.';
-    #end
   }
 
   /**
    * List all entries in a directory.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @return An array of entries in the directory.
@@ -819,7 +840,7 @@ class FileUtil
 
   /**
    * Move a directory from one location to another, optionally ignoring some paths.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @param destination The path to move the directory to.
@@ -878,7 +899,7 @@ class FileUtil
 
   /**
    * Delete a directory, optionally including its contents, and optionally ignoring some paths.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @param recursive Whether to delete all contents of the directory.
@@ -927,7 +948,7 @@ class FileUtil
 
   /**
    * Get a directory's total size in bytes. Max representable size is ~2.147 GB.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the directory.
    * @return The total size of the directory in bytes.
@@ -972,7 +993,7 @@ class FileUtil
 
   /**
    * Get the path to a temporary directory we can use for writing files.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @return The path to the temporary directory.
    */
@@ -990,6 +1011,9 @@ class FileUtil
     }
     tempDir = Path.join([path ?? '', 'funkin/']);
     return tempDir;
+    #elseif android
+    tempDir = Path.addTrailingSlash(extension.androidtools.content.Context.getCacheDir());
+    return tempDir;
     #else
     tempDir = '/tmp/funkin/';
     return tempDir;
@@ -1001,7 +1025,7 @@ class FileUtil
 
   /**
    * Rename a file or directory.
-   * Only works on desktop.
+   * Only works on native.
    *
    * @param path The path to the file or directory.
    * @param newName The new name of the file or directory.
@@ -1121,8 +1145,69 @@ class FileUtil
     };
   }
 
-  public static function openFolder(pathFolder:String) // what is this for??
-    WindowUtil.openFolder(pathFolder);
+  /**
+   * Runs platform-specific code to open a path in the file explorer.
+   *
+   * @param pathFolder The path of the folder to open.
+   * @param createIfNotExists If `true`, creates the folder if missing; otherwise, throws an error.
+   */
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
+  {
+    #if sys
+    pathFolder = pathFolder.trim();
+    if (createIfNotExists)
+    {
+      createDirIfNotExists(pathFolder);
+    }
+    else if (!directoryExists(pathFolder))
+    {
+      throw 'Path is not a directory: "$pathFolder"';
+    }
+
+    #if windows
+    Sys.command('explorer', [pathFolder.replace('/', '\\')]);
+    #elseif mac
+    // mac could be fuckie with where the log folder is relative to the game file...
+    // if this comment is still here... it means it has NOT been verified on mac yet!
+    //
+    // FileUtil.hx note: this was originally used to open the logs specifically!
+    // thats why the above comment is there!
+    Sys.command('open', [pathFolder]);
+    #elseif linux
+    // TODO: implement linux
+    // some shit with xdg-open :thinking: emoji...
+    #end
+    #else
+    throw 'External folder open is not supported on this platform.';
+    #end
+  }
+
+  /**
+   * Runs platform-specific code to open a file explorer and select a specific file.
+   *
+   * @param path The path of the file to select.
+   */
+  public static function openSelectFile(path:String):Void
+  {
+    #if sys
+    path = path.trim();
+    if (!pathExists(path))
+    {
+      throw 'Path does not exist: "$path"';
+    }
+
+    #if windows
+    Sys.command('explorer', ['/select,', path.replace('/', '\\')]);
+    #elseif mac
+    Sys.command('open', ['-R', path]);
+    #elseif linux
+    // TODO: unsure of the linux equivalent to opening a folder and then "selecting" a file.
+    Sys.command('open', [path]);
+    #end
+    #else
+    throw 'External file selection is not supported on this platform.';
+    #end
+  }
 
   private static function convertTypeFilter(?typeFilter:Array<FileFilter>):Null<String>
   {
@@ -1157,7 +1242,8 @@ class FileUtilSandboxed
    */
   public static function sanitizePath(path:String):String
   {
-    if (path == null)
+    path = (path ?? '').trim();
+    if (path == '')
     {
       #if sys
       return FileUtil.gameDirectory;
@@ -1171,19 +1257,14 @@ class FileUtilSandboxed
       path = path.substring(path.lastIndexOf(':') + 1);
     }
 
-    path = path.trim().replace('\\', '/');
+    path = path.replace('\\', '/');
     while (path.contains('//'))
     {
       path = path.replace('//', '/');
     }
 
-    @:privateAccess for (char in FileUtil.INVALID_CHARS)
-    {
-      path = path.replace(char, '');
-    }
-
-    var parts:Array<String> = path.split('/');
-    var sanitized:Array<String> = new Array<String>();
+    final parts:Array<String> = FileUtil.INVALID_CHARS.replace(path, '').split('/');
+    final sanitized:Array<String> = new Array<String>();
     for (part in parts)
     {
       switch (part)
@@ -1193,25 +1274,31 @@ class FileUtilSandboxed
         case '..':
           sanitized.pop();
         default:
-          sanitized.push(part);
+          sanitized.push(part.trim());
       }
     }
 
-    var ret:String = sanitized.join('/');
+    if (sanitized.length == 0)
+    {
+      #if sys
+      return FileUtil.gameDirectory;
+      #else
+      return '';
+      #end
+    }
 
     #if sys
-    var realPath:String = Path.normalize(sys.FileSystem.fullPath(Path.join([FileUtil.gameDirectory, ret])));
-    // ^ TODO: figure out how to get "real" path of symlinked paths
-
-    if (!realPath.startsWith(FileUtil.gameDirectory.toString()))
+    // TODO: figure out how to get "real" path of symlinked paths
+    final realPath:String = sys.FileSystem.fullPath(Path.join([FileUtil.gameDirectory, sanitized.join('/')]));
+    if (!realPath.startsWith(FileUtil.gameDirectory))
     {
       return FileUtil.gameDirectory;
     }
 
-    ret = realPath;
+    return realPath;
+    #else
+    return sanitized.join('/');
     #end
-
-    return ret;
   }
 
   /**
@@ -1219,9 +1306,9 @@ class FileUtilSandboxed
    * @param path The path to check.
    * @return Whether the path is protected.
    */
-  public static function isProtected(path:String):Bool
+  public static function isProtected(path:String, sanitizeFirst:Bool = true):Bool
   {
-    path = sanitizePath(path);
+    if (sanitizeFirst) path = sanitizePath(path);
     @:privateAccess for (protected in FileUtil.PROTECTED_PATHS)
     {
       if (path == protected || (protected.contains('*') && path.startsWith(protected.substring(0, protected.indexOf('*')))))
@@ -1298,7 +1385,7 @@ class FileUtilSandboxed
 
   public static function saveFilesAsZIPToPath(resources:Array<Entry>, path:String, mode:FileWriteMode = Skip):Bool
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot write to protected path: $path';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot write to protected path: $path';
     return FileUtil.saveFilesAsZIPToPath(resources, path, mode);
   }
 
@@ -1317,9 +1404,9 @@ class FileUtilSandboxed
     FileUtil.browseFileReference(callback);
   }
 
-  public static function writeFileReference(path:String, data:String):Void
+  public static function writeFileReference(path:String, data:String, callback:String->Void):Void
   {
-    FileUtil.writeFileReference(path, data);
+    FileUtil.writeFileReference(path, data, callback);
   }
 
   public static function readJSONFromPath(path:String):Dynamic
@@ -1329,32 +1416,32 @@ class FileUtilSandboxed
 
   public static function writeStringToPath(path:String, data:String, mode:FileWriteMode = Skip):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot write to protected path: $path';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot write to protected path: $path';
     FileUtil.writeStringToPath(path, data, mode);
   }
 
   public static function writeBytesToPath(path:String, data:Bytes, mode:FileWriteMode = Skip):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot write to protected path: $path';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot write to protected path: $path';
     FileUtil.writeBytesToPath(path, data, mode);
   }
 
   public static function appendStringToPath(path:String, data:String):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot write to protected path: $path';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot write to protected path: $path';
     FileUtil.appendStringToPath(path, data);
   }
 
   public static function moveFile(path:String, destination:String):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot move protected path: $path';
-    if (isProtected(destination = sanitizePath(destination))) throw 'Cannot move to protected path: $destination';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot move protected path: $path';
+    if (isProtected(destination = sanitizePath(destination), false)) throw 'Cannot move to protected path: $destination';
     FileUtil.moveFile(path, destination);
   }
 
   public static function deleteFile(path:String):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot delete protected path: $path';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot delete protected path: $path';
     FileUtil.deleteFile(path);
   }
 
@@ -1390,14 +1477,14 @@ class FileUtilSandboxed
 
   public static function moveDir(path:String, destination:String, ?ignore:Array<String>, strict:Bool = true):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot move protected path: "$path"';
-    if (isProtected(destination = sanitizePath(destination))) throw 'Cannot move to protected path: "$destination"';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot move protected path: "$path"';
+    if (isProtected(destination = sanitizePath(destination), false)) throw 'Cannot move to protected path: "$destination"';
     FileUtil.moveDir(path, destination, ignore, strict);
   }
 
   public static function deleteDir(path:String, recursive:Bool = false, ?ignore:Array<String>):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot delete protected path: "$path"';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot delete protected path: "$path"';
     FileUtil.deleteDir(path, recursive, ignore);
   }
 
@@ -1413,7 +1500,7 @@ class FileUtilSandboxed
 
   public static function rename(path:String, newName:String, keepExtension:Bool = true):Void
   {
-    if (isProtected(path = sanitizePath(path))) throw 'Cannot rename protected path: "$path"';
+    if (isProtected(path = sanitizePath(path), false)) throw 'Cannot rename protected path: "$path"';
     FileUtil.rename(path, sanitizePath(newName), keepExtension);
   }
 
@@ -1442,9 +1529,14 @@ class FileUtilSandboxed
     return FileUtil.makeZIPEntryFromBytes(name, data);
   }
 
-  public static function openFolder(pathFolder:String)
+  public static function openFolder(pathFolder:String, createIfNotExists:Bool = true):Void
   {
-    FileUtil.openFolder(pathFolder);
+    FileUtil.openFolder(sanitizePath(pathFolder), createIfNotExists);
+  }
+
+  public static function openSelectFile(path:String):Void
+  {
+    FileUtil.openSelectFile(sanitizePath(path));
   }
 }
 

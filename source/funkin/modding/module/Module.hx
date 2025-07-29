@@ -8,6 +8,7 @@ import funkin.modding.events.ScriptEvent;
  * A module is a scripted class which receives all events without requiring a specific context.
  * You may have the module active at all times, or only when another script enables it.
  */
+@:nullSafety
 class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass
 {
   /**
@@ -28,7 +29,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    *
    * Priority 1 is processed before Priority 1000, etc.
    */
-  public var priority(default, set):Int;
+  public var priority(default, set):Int = 1000;
 
   function set_priority(value:Int):Int
   {
@@ -176,13 +177,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   /**
    * Called when the game regains focus.
-   * This does not get called if "Auto Pause" is disabled.
+   * This does not get called if "Pause on Unfocus" is disabled.
    */
   public function onFocusGained(event:FocusScriptEvent) {}
 
   /**
    * Called when the game loses focus.
-   * This does not get called if "Auto Pause" is disabled.
+   * This does not get called if "Pause on Unfocus" is disabled.
    */
   public function onFocusLost(event:FocusScriptEvent) {}
 
