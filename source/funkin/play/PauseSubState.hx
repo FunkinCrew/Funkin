@@ -419,7 +419,7 @@ class PauseSubState extends MusicBeatSubState
     metadata.add(metadataDifficulty);
 
     metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      '${PlayState.instance?.deathCounter} Blue Balls');
+      '${PlayState.instance?.deathCounter} ${Preferences.naughtyness ? 'Blue Ball' : 'Death'}${PlayState.instance?.deathCounter == 1 ? '' : 's'}');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
@@ -884,7 +884,7 @@ class PauseSubState extends MusicBeatSubState
     switch (this.currentMode)
     {
       case Standard | Difficulty:
-        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+        metadataDeaths.text = '${PlayState.instance?.deathCounter} ${Preferences.naughtyness ? 'Blue Ball' : 'Death'}${PlayState.instance?.deathCounter == 1 ? '' : 's'}';
       case Charting:
         metadataDeaths.text = 'Chart Editor Preview';
       case Conversation:
