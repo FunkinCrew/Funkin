@@ -1017,7 +1017,7 @@ class PlayState extends MusicBeatSubState
         if (opponentStrumline.notes.length == 0) opponentStrumline.updateNotes();
         playerStrumline.vwooshInNotes();
         opponentStrumline.vwooshInNotes();
-        Countdown.performCountdown();
+        Countdown.performCountdown(currentChart?.noteStyle);
       });
 
       // Stops any existing countdown.
@@ -1263,13 +1263,15 @@ class PlayState extends MusicBeatSubState
           }
           else
           {
-            var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
-
-            // Prevent the game from crashing if Boyfriend isn't present.
-            if (currentStage != null && currentStage.getBoyfriend() != null)
-            {
-              boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-            }
+            // Why it's even here?
+            /*
+                var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
+  
+                // Prevent the game from crashing if Boyfriend isn't present.
+                if (currentStage != null && currentStage.getBoyfriend() != null)
+                {
+                  boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
+              }*/
 
             openPauseSubState(isChartingMode ? Charting : Standard, camCutscene);
           }
@@ -2285,7 +2287,7 @@ class PlayState extends MusicBeatSubState
   public function startCountdown():Void
   {
     // If Countdown.performCountdown returns false, then the countdown was canceled by a script.
-    var result:Bool = Countdown.performCountdown();
+    var result:Bool = Countdown.performCountdown(currentChart?.noteStyle);
     if (!result) return;
 
     isInCutscene = false;
@@ -2358,9 +2360,7 @@ class PlayState extends MusicBeatSubState
       return;
     }
 
-    FlxG.sound.music.onComplete = function() {
-      if (mayPauseGame) endSong(skipEndingTransition);
-    };
+    FlxG.sound.music.onComplete = () -> if (mayPauseGame) endSong(skipEndingTransition);
 
     FlxG.sound.music.pause();
     FlxG.sound.music.time = startTimestamp;
