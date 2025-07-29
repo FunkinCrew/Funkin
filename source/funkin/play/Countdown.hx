@@ -26,8 +26,15 @@ enum CountdownStep
 
 class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
 {
+  /**
+   * Currently used Countdown in PlayState.
+   */
   public static var instance:Countdown;
 
+  /**
+   * Helper function:
+   * Decrements given countdown step.
+   */
   static function decrementStep(step:CountdownStep):CountdownStep
   {
     switch (step)
@@ -52,6 +59,10 @@ class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
     }
   }
 
+  /**
+   * Destroys previous and creates new Countdown.
+   * Used in PlayState twice!! :steamhappy:
+   */
   public static function performCountdown(?noteStyleId:String = "funkin"):Bool
   {
     // remove previous countdown
@@ -62,35 +73,53 @@ class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
     return Countdown.instance.prepareCoundown();
   }
 
+  /**
+   * Static back-compability funtions for static access from PlayState.
+   */
+  /**
+   * Resumes currently used countdown timer.
+   */
   public static inline function resumeCountdown()
   {
     Countdown.instance?.resume();
   }
 
+  /**
+   * Pauses currently used countdown timer.
+   */
   public static inline function pauseCountdown()
   {
     Countdown.instance?.pause();
   }
 
+  /**
+   * Stops currently used countdown timer and destroys countdown.
+   */
   public static inline function stopCountdown()
   {
     Countdown.instance?.stop();
   }
 
+  /**
+   * Resets currently used countdown timer.
+   */
   public static inline function resetCountdown()
   {
     Countdown.instance?.resetTimer();
   }
 
+  /**
+   * Destroys currently used countdown.
+   */
   public static inline function reset()
   {
     Countdown.instance?.destroy();
   }
 
+  /**
+   * Current notestyle, used to obtaining
+   */
   var noteStyle:NoteStyle;
-
-  public var soundSuffix:String = '';
-  public var graphicSuffix:String = '';
 
   /**
    * The current step of the countdown.
@@ -102,11 +131,18 @@ class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
    */
   public var countdownTimer:FlxTimer = null;
 
+  /**
+   * Constructor function.
+   */
   public function new(noteStyle:NoteStyle)
   {
     this.noteStyle = noteStyle;
   }
 
+  /**
+   * Dispatches CountDownScriptEvent through all tied clasees and objects.
+   * (Characters, stage and e.t.c.)
+   */
   public function propagateCountdownEvent(index:CountdownStep):Bool
   {
     var event:ScriptEvent;
@@ -129,22 +165,34 @@ class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
     return event.eventCanceled;
   }
 
+  /**
+   * Resumes current countdown.
+   */
   public function resume()
   {
     if (countdownTimer != null && !countdownTimer.finished) countdownTimer.active = true;
   };
 
+  /**
+   * Pauses current countdown.
+   */
   public function pause()
   {
     if (countdownTimer != null && !countdownTimer.finished) countdownTimer.active = false;
   };
 
+  /**
+   * Skip current countdown.
+   */
   public function skip()
   {
     stop();
     Conductor.instance.update(0);
   };
 
+  /**
+   * Destroys current countdown.
+   */
   public function stop()
   {
     // uhh
@@ -190,9 +238,12 @@ class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
     return true;
   }
 
+  /**
+   * Retrieves the sound file to use for this step of the countdown.
+   */
   public function playSound(step:CountdownStep):FunkinSound
   {
-    var path = noteStyle.getCountdownSoundPath(step);
+    final path = noteStyle.getCountdownSoundPath(step);
     if (path == null) return null;
 
     return FunkinSound.playOnce(path, Constants.COUNTDOWN_VOLUME, null, null, true);
@@ -200,9 +251,12 @@ class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
 
   private var _graphicOffsets:Array<Float>;
 
+  /**
+   * Retrieves the graphic to use for this step of the countdown.
+   */
   public function showGraphic(index:CountdownStep):Void
   {
-    var countdownSprite = noteStyle.buildCountdownSprite(index);
+    final countdownSprite = noteStyle.buildCountdownSprite(index);
     if (countdownSprite == null) return;
 
     var fadeEase = FlxEase.cubeInOut;
@@ -223,6 +277,9 @@ class Countdown implements flixel.util.FlxDestroyUtil.IFlxDestroyable
     countdownSprite.y += _graphicOffsets[1];
   }
 
+  /**
+   * Destroys some values from this countdown.
+   */
   public function destroy()
   {
     noteStyle = null;
