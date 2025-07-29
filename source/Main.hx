@@ -4,6 +4,7 @@ import lime.system.System;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
+import flixel.util.FlxColor;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.PlayerSettings;
@@ -128,17 +129,49 @@ class Main extends Sprite
     Save.load();
 
     #if hxvlc
-    // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.initAsync(function(success:Bool):Void {
-      if (success)
-      {
-        trace('[HXVLC] LibVLC instance initialized!');
-      }
-      else
-      {
-        trace('[HXVLC] LibVLC instance failed to initialize!');
-      }
-    });
+    final options:Array<String> = [];
+
+    // Font configuration
+    #if windows
+    options.push('--freetype-font=Consolas');
+    #elseif mac
+    options.push('--freetype-font=Menlo');
+    #else
+    options.push('--freetype-font=Courier New');
+    #end
+
+    // Color and transparency setup
+    var subColor:FlxColor = FlxColor.WHITE;
+    var outlineColor:FlxColor = FlxColor.BLACK;
+    var backgroundColor:FlxColor = FlxColor.BLACK;
+    var shadowColor:FlxColor = FlxColor.BLACK;
+
+    backgroundColor.alphaFloat = 0.5;
+    shadowColor.alphaFloat = 0.5;
+
+    // Font styling
+    options.push('--freetype-bold');
+    options.push('--freetype-outline-thickness=2');
+
+    // Subtitle text color and opacity
+    options.push('--freetype-color=${subColor.rgb}');
+    options.push('--freetype-opacity=${subColor.alpha}');
+
+    // Outline styling
+    options.push('--freetype-outline-color=${outlineColor.rgb}');
+    options.push('--freetype-outline-opacity=${outlineColor.alpha}');
+
+    // Background styling
+    options.push('--freetype-background-color=${backgroundColor.rgb}');
+    options.push('--freetype-background-opacity=${backgroundColor.alpha}');
+
+    // Shadow styling
+    options.push('--freetype-shadow-color=${shadowColor.rgb}');
+    options.push('--freetype-shadow-opacity=${shadowColor.alpha}');
+    options.push('--freetype-shadow-angle=-45.0');
+    options.push('--freetype-shadow-distance=0.06');
+
+    Handle.init(options);
     #end
 
     // Don't call anything from the preferences until the save is loaded!
