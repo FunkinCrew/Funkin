@@ -199,6 +199,11 @@ class PauseSubState extends MusicBeatSubState
   var metadataArtist:FlxText;
 
   /**
+  * A text object that displays if you are currently using botplay.
+  */
+  var metadataBotplay:FlxText;
+
+  /**
    * A text object that displays the current global offset.
    */
   var offsetText:FlxText;
@@ -430,6 +435,12 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
 
+    metadataBotplay = new FlxText(20, metadataDeaths.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      '${PlayState.instance?.isBotPlayMode ? 'Bot Play Enabled' : ''}');
+    metadataBotplay.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataBotplay.scrollFactor.set(0, 0);
+    metadata.add(metadataBotplay);
+
     // Right side
     offsetText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Global Offset: ${Preferences.globalOffset ?? 0}ms');
@@ -454,6 +465,7 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.alpha = 0;
     metadataDifficulty.alpha = 0;
     metadataDeaths.alpha = 0;
+    metadataBotplay.alpha = 0;
     offsetText.alpha = 0;
     offsetTextInfo.alpha = 0;
 
@@ -870,6 +882,8 @@ class PauseSubState extends MusicBeatSubState
   function updateMetadataText():Void
   {
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
+    metadataBotplay.y = PlayState.instance?.isPracticeMode ? metadataPractice.y + 32 : metadataDeaths.y + 32;
+    
 
     #if mobile
     if (metadata.members[0].y != camera.height - 185 && metadataPractice.visible)
