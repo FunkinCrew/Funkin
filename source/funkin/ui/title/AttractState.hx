@@ -4,7 +4,7 @@ package funkin.ui.title;
 import funkin.graphics.video.FlxVideo;
 #end
 #if hxvlc
-import funkin.graphics.video.FunkinVideoSprite;
+import hxvlc.flixel.FlxVideoSprite;
 #end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
@@ -114,12 +114,12 @@ class AttractState extends MusicBeatState
   #end
 
   #if hxvlc
-  var vid:FunkinVideoSprite;
+  var vid:FlxVideoSprite;
 
   function playVideoNative(filePath:String):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FunkinVideoSprite(0, 0);
+    vid = new FlxVideoSprite(0, 0);
 
     if (vid != null)
     {

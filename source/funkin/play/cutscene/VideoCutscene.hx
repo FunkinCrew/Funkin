@@ -1,16 +1,16 @@
 package funkin.play.cutscene;
 
-import funkin.play.PlayState;
 import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
+import funkin.play.PlayState;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
 #if hxvlc
-import funkin.graphics.video.FunkinVideoSprite;
+import hxvlc.flixel.FlxVideoSprite;
 #end
 
 /**
@@ -18,14 +18,21 @@ import funkin.graphics.video.FunkinVideoSprite;
  */
 class VideoCutscene
 {
+  #if hxvlc
+  @:noCompletion
+  static final DEFAULT_LANGUAGE:String = 'english';
+  #end
+
   static var blackScreen:FlxSprite;
+
   static var cutsceneType:CutsceneType;
 
   #if html5
   static var vid:FlxVideo;
   #end
+
   #if hxvlc
-  static var vid:FunkinVideoSprite;
+  static var vid:FlxVideoSprite;
   #end
 
   /**
@@ -119,6 +126,7 @@ class VideoCutscene
   {
     // Video displays OVER the FlxState.
     vid = new FlxVideo(filePath);
+
     if (vid != null)
     {
       vid.zIndex = 0;
@@ -144,18 +152,60 @@ class VideoCutscene
   static function playVideoNative(filePath:String):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FunkinVideoSprite(0, 0);
+    vid = new FlxVideoSprite(0, 0);
 
     if (vid != null)
     {
       vid.zIndex = 0;
-      vid.active = false;
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
-        trace('[VLC] Encountered an error: $msg');
 
+      vid.active = false;
+
+      vid.bitmap.onPlaying.add(function():Void {
+        if (vid.bitmap != null)
+        {
+          #if FEATURE_VIDEO_SUBTITLES
+          if (Preferences.videoSubtitles)
+          {
+            for (spuTrack in vid.bitmap.getSpuDescription())
+            {
+              if (spuTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
+              {
+                if (vid.bitmap.spuTrack != spuTrack.i_id) vid.bitmap.spuTrack = spuTrack.i_id;
+
+                break;
+              }
+            }
+          }
+          #end
+
+          for (audioTrack in vid.bitmap.getAudioDescription())
+          {
+            if (audioTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
+            {
+              if (vid.bitmap.audioTrack != audioTrack.i_id) vid.bitmap.audioTrack = audioTrack.i_id;
+
+              break;
+            }
+          }
+        }
+      });
+
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
         finishVideo(0.5);
       });
+
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
+
+      vid.bitmap.onFormatSetup.add(function():Void {
+        if (vid.bitmap != null && vid.bitmap.bitmapData != null)
+        {
+          final scale:Float = Math.min(FlxG.width / vid.bitmap.bitmapData.width, FlxG.height / vid.bitmap.bitmapData.height);
+
+          vid.setGraphicSize(vid.bitmap.bitmapData.width * scale, vid.bitmap.bitmapData.height * scale);
+          vid.updateHitbox();
+          vid.screenCenter();
+        }
+      });
 
       vid.cameras = [PlayState.instance.camCutscene];
 
@@ -163,18 +213,13 @@ class VideoCutscene
 
       PlayState.instance.refresh();
 
-      if (vid.load(filePath)) vid.play();
-
-      // Resize videos bigger or smaller than the screen.
-      vid.bitmap.onFormatSetup.add(function():Void {
-        if (vid == null) return;
-        vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
-        vid.updateHitbox();
-        vid.screenCenter();
-        // vid.scale.set(0.5, 0.5);
-      });
-
-      onVideoStarted.dispatch();
+      if (vid.load(filePath))
+      {
+        if (vid.play())
+        {
+          onVideoStarted.dispatch();
+        }
+      }
     }
     else
     {

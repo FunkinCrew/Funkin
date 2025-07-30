@@ -471,6 +471,13 @@ class Project extends HXProject
    */
   static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
 
+  /**
+   * `-DFEATURE_VIDEO_SUBTITLES`
+   * If this flag is enabled, the game will be able to show subtitles on video cutscenes.
+   * This requires the hxvlc library on desktop platforms.
+   */
+  static final FEATURE_VIDEO_SUBTITLES:FeatureFlag = "FEATURE_VIDEO_SUBTITLES";
+
   //
   // CONFIGURATION FUNCTIONS
   //
@@ -808,6 +815,13 @@ class Project extends HXProject
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
     FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
+
+    // Video subtitles only work via using hxvlc.
+    FEATURE_VIDEO_SUBTITLES.apply(this, isDesktop() || isMobile() && !isHashLink());
+
+    // Should be true on debug builds or if GITHUB_BUILD is enabled.
+    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
