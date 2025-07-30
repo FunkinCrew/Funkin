@@ -194,9 +194,13 @@ class PauseSubState extends MusicBeatSubState
 
   /**
    * A text object which displays the current song's artist.
-   * Fades to the charter after a period before fading back.
    */
   var metadataArtist:FlxText;
+
+  /**
+   * A text object which displays the current song's charter.
+   */
+  var metadataCharter:FlxText;
 
   /**
    * A text object that displays the current global offset.
@@ -263,8 +267,6 @@ class PauseSubState extends MusicBeatSubState
     regenerateMenu();
 
     transitionIn();
-
-    startCharterTimer();
   }
 
   /**
@@ -287,8 +289,6 @@ class PauseSubState extends MusicBeatSubState
     // extension.admob.Admob.onEvent.remove(onBannerEvent);
     // #end
     super.destroy();
-    charterFadeTween.cancel();
-    charterFadeTween = null;
     dataFadeTimer.cancel();
     dataFadeTimer = null;
     hapticTimer.cancel();
@@ -417,7 +417,17 @@ class PauseSubState extends MusicBeatSubState
     metadataArtist.scrollFactor.set(0, 0);
     metadata.add(metadataArtist);
 
-    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+    metadataCharter = new FlxText(20, metadataArtist.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Charter: ${Constants.DEFAULT_CHARTER}');
+    metadataCharter.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    if (PlayState.instance?.currentChart != null)
+    {
+      metadataCharter.text = 'Charter: ${PlayState.instance.currentChart.charter ?? "Unknown"}';
+    }
+    metadataCharter.scrollFactor.set(0, 0);
+    metadata.add(metadataCharter);
+
+    var metadataDifficulty:FlxText = new FlxText(20, metadataCharter.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Difficulty: ');
     metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
@@ -459,6 +469,7 @@ class PauseSubState extends MusicBeatSubState
     #end
 
     metadataArtist.alpha = 0;
+    metadataCharter.alpha = 0;
     metadataPractice.alpha = 0;
     metadataSong.alpha = 0;
     metadataDifficulty.alpha = 0;
@@ -467,62 +478,6 @@ class PauseSubState extends MusicBeatSubState
     offsetTextInfo.alpha = 0;
 
     updateMetadataText();
-  }
-
-  var charterFadeTween:Null<FlxTween> = null;
-
-  function startCharterTimer():Void
-  {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
-      {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
-          }
-          else
-          {
-            metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startArtistTimer();
-              }
-            });
-        }
-      });
-  }
-
-  function startArtistTimer():Void
-  {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
-      {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
-          }
-          else
-          {
-            metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startCharterTimer();
-              }
-            });
-        }
-      });
   }
 
   var dataFadeTimer = new FlxTimer();
@@ -889,6 +844,27 @@ class PauseSubState extends MusicBeatSubState
       }
     }
     #end
+
+    if (PlayState.instance?.currentChart != null)
+    {
+      metadataCharter.text = 'Charter: ${PlayState.instance.currentChart.charter ?? "Unknown"}';
+    }
+    else
+    {
+      metadataCharter.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
+    }
+
+    switch (this.currentMode)
+    {
+      case Standard | Difficulty:
+        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+      case Charting:
+        metadataDeaths.text = 'Chart Editor Preview';
+      case Conversation:
+        metadataDeaths.text = 'Dialogue Paused';
+      case Cutscene:
+        metadataDeaths.text = 'Video Paused';
+    }
 
     switch (this.currentMode)
     {
