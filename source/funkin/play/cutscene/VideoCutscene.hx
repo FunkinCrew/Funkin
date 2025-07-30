@@ -160,11 +160,11 @@ class VideoCutscene
 
       vid.active = false;
 
+      #if FEATURE_VIDEO_SUBTITLES
       vid.bitmap.onPlaying.add(function():Void {
-        if (vid.bitmap != null)
+        if (Preferences.videoSubtitles)
         {
-          #if FEATURE_VIDEO_SUBTITLES
-          if (Preferences.videoSubtitles)
+          if (vid.bitmap != null)
           {
             for (spuTrack in vid.bitmap.getSpuDescription())
             {
@@ -175,20 +175,24 @@ class VideoCutscene
                 break;
               }
             }
-          }
-          #end
 
-          for (audioTrack in vid.bitmap.getAudioDescription())
-          {
-            if (audioTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
-            {
-              if (vid.bitmap.audioTrack != audioTrack.i_id) vid.bitmap.audioTrack = audioTrack.i_id;
-
-              break;
-            }
+            // Just as a note, the audio tracks by default are labeled as `Track 1` etc.
+            //
+            // For multiple langauges, we would need `ffmpeg` to rename these tracks a little so its easier to mess with.
+            //
+            // for (audioTrack in vid.bitmap.getAudioDescription())
+            // {
+            //   if (audioTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
+            //   {
+            //     if (vid.bitmap.audioTrack != audioTrack.i_id) vid.bitmap.audioTrack = audioTrack.i_id;
+            //
+            //     break;
+            //   }
+            // }
           }
         }
       });
+      #end
 
       vid.bitmap.onEncounteredError.add(function(msg:String):Void {
         finishVideo(0.5);
@@ -213,12 +217,9 @@ class VideoCutscene
 
       PlayState.instance.refresh();
 
-      if (vid.load(filePath))
+      if (vid.load(filePath) && vid.play())
       {
-        if (vid.play())
-        {
-          onVideoStarted.dispatch();
-        }
+        onVideoStarted.dispatch();
       }
     }
     else
