@@ -60,7 +60,7 @@ body:
     attributes:
       label: Version
       description: Which version are you playing on? The game version is in the bottom left corner of the main menu.
-      placeholder: ex. 0.7.2
+      placeholder: ex. 0.7.4
     validations:
       required: true
 

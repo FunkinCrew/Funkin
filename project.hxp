@@ -29,7 +29,7 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.7.2";
+  static final VERSION:String = "0.7.3";
 
   /**
    * The build's number and version code.

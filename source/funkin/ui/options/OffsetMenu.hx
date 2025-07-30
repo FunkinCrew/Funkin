@@ -353,7 +353,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       jumpInText.text = 'Hit the notes as they come in!';
       #if mobile
       if (OptionsState.instance.hitbox != null) OptionsState.instance.hitbox.visible = true;
-      if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
+      if (!ControlsHandler.usingExternalInputDevice)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
@@ -388,17 +388,21 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       canExit = false;
       differences = [];
 
-      jumpInText.y = testStrumline.y + 175;
+      jumpInText.y = 350;
 
       #if mobile
-      if (Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows || ControlsHandler.usingExternalInputDevice)
+      if (ControlsHandler.usingExternalInputDevice)
       {
       #end
         testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
-        if (Preferences.downscroll) jumpInText.y = testStrumline.y - 175;
+        if (Preferences.downscroll) jumpInText.y = FlxG.height - 425;
         testStrumline.isDownscroll = Preferences.downscroll;
       #if mobile
+      }
+      else
+      {
+        jumpInText.y = FlxG.height - 425;
       }
       #end
     });

@@ -1306,7 +1306,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var result:Null<SongMetadata> = songMetadata.get(selectedVariation);
     if (result == null)
     {
-      result = new SongMetadata('Default Song Name', Constants.DEFAULT_ARTIST, selectedVariation);
+      result = new SongMetadata('Default Song Name', Constants.DEFAULT_ARTIST, Constants.DEFAULT_CHARTER, selectedVariation);
       songMetadata.set(selectedVariation, result);
     }
     return result;
