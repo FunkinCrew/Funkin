@@ -103,11 +103,18 @@ class WindowUtil
   public static final windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
 
   /**
+   * Has `initWindowEvents()` been called already?
+   * This is to prevent multiple instances of the same function.
+   */
+  private static var _initializedWindowEvents:Bool = false;
+
+  /**
    * Wires up FlxSignals that happen based on window activity.
    * For example, we can run a callback when the window is closed.
    */
   public static function initWindowEvents():Void
   {
+    if (_initializedWindowEvents) return; // Fix that annoying
     // onUpdate is called every frame just before rendering.
 
     // onExit is called when the game window is closed.
@@ -137,6 +144,7 @@ class WindowUtil
       }
     });
     #end
+    _initializedWindowEvents = true;
   }
 
   /**
