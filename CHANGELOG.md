@@ -828,7 +828,7 @@ The Playable Pico Update!
 ### Fixed
 
 - Control binds in the controls menu no longer overlap their names.
-- Attempting to exit the gameover screen and retry the song at the same time no longer crashes the game. ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
+- Attempting to exit the gameover screen and retry the song at the same time no longer crashes the game. ([thanks DM-kun for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
 - Botplay mode now handles the player's animations properly during hold notes. ([thanks Hundrec!](https://github.com/FunkinCrew/Funkin/pull/2683))
 - Camera movement now pauses when the game is paused. ([thanks Matriculaso!](https://github.com/FunkinCrew/Funkin/pull/2684))
 - Pico's gameplay sprite no longer appears on the gameover screen when dying from an explosion in 2hot.
@@ -842,7 +842,7 @@ The Playable Pico Update!
 ## New Contributors for 0.4.1
 
 * @Hundrec made their first contribution in [#2661](https://github.com/FunkinCrew/Funkin/pull/2661)
-* @DMMaster636 made their first contribution in [#2709](https://github.com/FunkinCrew/Funkin/pull/2709)
+* @DM-kun made their first contribution in [#2709](https://github.com/FunkinCrew/Funkin/pull/2709)
 * @eltociear made their first contribution in [#2730](https://github.com/FunkinCrew/Funkin/pull/2730)
 
 
