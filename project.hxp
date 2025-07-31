@@ -1251,27 +1251,7 @@ class Project extends HXProject
     if (isAndroid())
     {
       // Adaptive icons
-      // TODO: Add Adapative Icons in Lime
-      templatePaths.push("templates");
-
-      var androidTheme:String = "@style/LimeAppMainTheme";
-      if (window.fullscreen != null && window.fullscreen)
-      {
-        androidTheme += "Fullscreen";
-      }
-
-      final iconXmlChild:Dynamic = {
-        "android:label": meta.title,
-        "android:allowBackup": "true",
-        "android:theme": androidTheme,
-        "android:hardwareAccelerated": "true",
-        "android:allowNativeHeapPointerTagging": ANDROID_TARGET_SDK_VERSION >= 30 ? "false" : null,
-        "android:largeHeap": "true",
-        "android:icon": "@mipmap/ic_launcher",
-        "android:roundIcon": "@mipmap/ic_launcher_round"
-        };
-
-        config.set('android.application',  iconXmlChild);
+      adaptiveIcon = new AdaptiveIcon('art/icons/android/', true);
     }
     else if (isIOS())
     {
@@ -1303,8 +1283,9 @@ class Project extends HXProject
       addIcon("art/icons/icon64.png", 64);
       addIcon("art/icons/iconOG.png");
 
-      info('Done configuring icons.');
     }
+
+    info('Done configuring icons.');
   }
 
   /**
