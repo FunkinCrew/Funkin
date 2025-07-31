@@ -81,8 +81,6 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public override function update(elapsed:Float):Void
   {
-    super.update(elapsed);
-
     switch (currentState)
     {
       case Intro:
@@ -185,6 +183,8 @@ class FreeplayDJ extends FlxAtlasSprite
       default:
         // I shit myself.
     }
+
+    super.update(elapsed);
   }
 
   function onFinishAnim(name:String):Void
