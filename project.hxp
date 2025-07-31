@@ -330,10 +330,10 @@ class Project extends HXProject
   static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
   /**
-   * `-DFEATURE_INPUT_OFFSETS`
+   * `-DFEATURE_LAG_ADJUSTMENT`
    * If this flag is enabled, the input offsets menu will be available to configure your audio and visual offsets.
    */
-  static final FEATURE_INPUT_OFFSETS:FeatureFlag = "FEATURE_INPUT_OFFSETS";
+  static final FEATURE_LAG_ADJUSTMENT:FeatureFlag = "FEATURE_LAG_ADJUSTMENT";
 
   /**
    * `-DFEATURE_LOG_TRACE`
@@ -829,7 +829,7 @@ class Project extends HXProject
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
 
     // Should be true except on web builds (some asset stuff breaks it)
-    FEATURE_INPUT_OFFSETS.apply(this, !isWeb());
+    FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
 
     // Should be true except on web and mobile builds.
     // Screenshots doesn't work there, and mobile has its own screenshots anyway.
