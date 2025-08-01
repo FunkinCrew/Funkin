@@ -636,6 +636,17 @@ class PlayState extends MusicBeatSubState
    */
   static final RESYNC_THRESHOLD:Float = 40;
 
+  /**
+   * The threshold for using normal song position updates.
+   * If the Conductor position deviates from the music by more than this amount, then the Conductor position will be set to the raw song time.
+   */
+  static final NORMAL_MUSIC_UPDATE_THRESHOLD:Float = 80;
+
+  /**
+   * The ratio for easing the song positon for smoother notes scrolling.
+   */
+  static final MUSIC_EASE_RATIO:Float = 30;
+
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
 
@@ -1075,7 +1086,16 @@ class PlayState extends MusicBeatSubState
       // The previous method where it "guessed" the song position based on the elapsed time had some flaws
       // Somtimes the songPosition would exceed the music length causing issues in other places
       // And it was frame dependant which we don't like!!
-      Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time, 0.5), false);
+      if (Math.abs(Conductor.instance.songPosition - (FlxG.sound.music.time + Conductor.instance.combinedOffset)) > NORMAL_MUSIC_UPDATE_THRESHOLD)
+      {
+        trace('Normal Conductor Update!');
+        Conductor.instance.update();
+      }
+      else
+      {
+        final easeRatio:Float = 1.0 - Math.exp(-MUSIC_EASE_RATIO * elapsed);
+        Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
+      }
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
