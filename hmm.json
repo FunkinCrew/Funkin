@@ -18,28 +18,28 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "a53d5916bdcb2e48913f94d9ae1d949b049dcdc1",
+      "ref": "02334589ff9603a5f483077a44395009644f6274",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
       "name": "extension-androidtools",
       "type": "haxelib",
-      "version": "2.2.1"
+      "version": "2.2.2"
     },
     {
       "name": "extension-haptics",
       "type": "haxelib",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "name": "extension-iapcore",
       "type": "haxelib",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "name": "extension-iarcore",
       "type": "haxelib",
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "name": "flixel",
@@ -111,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "4e24283a047f11bded6affabbc9ec405156e026e",
+      "ref": "5a0dc3f644dc676a4a092b7e6c8edc8be941f024",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
