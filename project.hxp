@@ -5,6 +5,7 @@ import hxp.*;
 import lime.tools.*;
 import sys.FileSystem;
 import sys.io.File;
+import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ds.Map;
 
@@ -500,13 +501,7 @@ class Project extends HXProject
     configureHaxelibs();
     configureAssets();
     configureIcons();
-
-    readASTCExclusion();
-
-    if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
-    {
-      runASTCCompressor();
-    }
+    configureASTCTextures();
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
     {
@@ -1289,6 +1284,22 @@ class Project extends HXProject
   }
 
   /**
+   * Configure the astc textures.
+   */
+  function configureASTCTextures()
+  {
+    if (command != "display")
+    {
+      readASTCExclusion();
+
+      if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+      {
+        runASTCCompressor();
+      }
+    }
+  }
+
+  /**
    * Configure the platforms' Ad Mob application keys.
    */
   function configureAdMobKeys()
@@ -1684,7 +1695,8 @@ class Project extends HXProject
    */
   public function error(message:String):Void
   {
-    Log.error('${message}');
+    Sys.stderr().write(Bytes.ofString('[ERROR] ${message}'));
+    Sys.exit(1);
   }
 
   /**
@@ -1694,7 +1706,7 @@ class Project extends HXProject
   {
     if (command != "display")
     {
-      Log.info('[INFO] ${message}');
+      Sys.println('[INFO] ${message}');
     }
   }
 

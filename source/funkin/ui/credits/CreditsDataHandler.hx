@@ -19,13 +19,13 @@ class CreditsDataHandler
   {
     if (data == null)
     {
-      trace('CreditsData(NULL)');
+      Sys.println('[INFO] CreditsData(NULL)');
       return;
     }
 
     if (data.entries == null || data.entries.length == 0)
     {
-      trace('CreditsData(EMPTY)');
+      Sys.println('[INFO] CreditsData(EMPTY)');
       return;
     }
 
@@ -36,7 +36,7 @@ class CreditsDataHandler
       lineCount += entry?.body?.length ?? 0;
     }
 
-    trace('CreditsData($entryCount entries containing $lineCount lines)');
+    Sys.println('[INFO] CreditsData($entryCount entries containing $lineCount lines)');
   }
 
   /**

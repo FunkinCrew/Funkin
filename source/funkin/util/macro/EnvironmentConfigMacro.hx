@@ -70,7 +70,7 @@ class EnvironmentConfigMacro
 
       if (value == "") continue;
 
-      Sys.println('[ENV] Found a key for environment value $field!');
+      Sys.println('[INFO] Found a key for environment value $field!');
 
       envFields.push(field);
       envValues.push(value);

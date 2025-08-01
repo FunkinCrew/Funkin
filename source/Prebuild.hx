@@ -12,13 +12,13 @@ class Prebuild
   static function main():Void
   {
     var start:Float = Sys.time();
-    trace('[PREBUILD] Performing pre-build tasks...');
+    Sys.println('[INFO] Performing pre-build tasks...');
 
     saveBuildTime();
 
     var end:Float = Sys.time();
     var duration:Float = end - start;
-    trace('[PREBUILD] Finished pre-build tasks in $duration seconds.');
+    Sys.println('[INFO] Finished pre-build tasks in $duration seconds.');
   }
 
   static function saveBuildTime():Void
