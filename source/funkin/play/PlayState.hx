@@ -43,6 +43,7 @@ import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
@@ -2240,6 +2241,13 @@ class PlayState extends MusicBeatSubState
       var strumTime:Float = songNote.time;
       if (strumTime < startTime) continue; // Skip notes that are before the start time.
 
+      var scoreable = true;
+      if (songNote.kind != null)
+      {
+        var noteKind:NoteKind = NoteKindManager.getNoteKind(songNote.kind);
+        if (noteKind != null) scoreable = noteKind.scoreable;
+      }
+
       var noteData:Int = songNote.getDirection();
       var playerNote:Bool = true;
 
@@ -2250,7 +2258,7 @@ class PlayState extends MusicBeatSubState
         case 0:
           playerNoteData.push(songNote);
           // increment totalNotes for total possible notes able to be hit by the player
-          Highscore.tallies.totalNotes++;
+          if (scoreable) Highscore.tallies.totalNotes++;
         case 1:
           opponentNoteData.push(songNote);
       }
@@ -2809,14 +2817,13 @@ class PlayState extends MusicBeatSubState
     }
 
     // Send the note hit event.
-    var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, isComboBreak, Highscore.tallies.combo + 1, noteDiff,
+    var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, isComboBreak,
+      note.scoreable ? Highscore.tallies.combo + 1 : Highscore.tallies.combo, noteDiff,
       daRating == 'sick');
     dispatchEvent(event);
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
-
-    Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
     playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
@@ -2824,8 +2831,12 @@ class PlayState extends MusicBeatSubState
     vocals.playerVolume = 1;
 
     // Display the combo meter and add the calculation to the score.
-    applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
-    popUpScore(event.judgement);
+    if (note.scoreable)
+    {
+      Highscore.tallies.totalNotesHit++;
+      applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
+      popUpScore(event.judgement);
+    }
   }
 
   /**
