@@ -2403,11 +2403,6 @@ class FreeplayState extends MusicBeatSubState
   {
     trace('RANDOM SELECTED');
 
-    controls.active = false;
-    #if NO_FEATURE_TOUCH_CONTROLS
-    letterSort.inputEnabled = false;
-    #end
-
     var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
       // Dead capsules are ones which were removed from the list when changing filters.
       return cap.alive && cap.freeplayData != null;
@@ -2433,6 +2428,10 @@ class FreeplayState extends MusicBeatSubState
     // Seeing if I can do an animation...
     curSelected = grpCapsules.members.indexOf(targetSong);
     changeSelection(0); // Trigger an update.
+    controls.active = false;
+    #if NO_FEATURE_TOUCH_CONTROLS
+    letterSort.inputEnabled = false;
+    #end
 
     // Act like we hit Confirm on that song.
     capsuleOnConfirmDefault(targetSong);
