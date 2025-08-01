@@ -1060,7 +1060,7 @@ class PlayState extends MusicBeatSubState
       // The previous method where it "guessed" the song position based on the elapsed time had some flaws
       // Somtimes the songPosition would exceed the music length causing issues in other places
       // And it was frame dependant which we don't like!!
-      Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time, 0.5), false);
+      Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, 0.5), false);
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
