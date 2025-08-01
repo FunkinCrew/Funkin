@@ -1069,12 +1069,13 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      #if mobile
-      // Note scrolling is less smooth on mobile without these arguments!!!
-      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000 * playbackRate, false);
-      #else
-      Conductor.instance.update(); // Normal conductor update.
-      #end
+      // Lime has some precision loss when getting the sound current position
+      // Since the notes scrolling is dependant on the sound time that caused it to appear "stuttery" for some people
+      // As a workaround for that, we lerp the conductor position to the music time to fill the gap in this lost precision making the scrolling smoother
+      // The previous method where it "guessed" the song position based on the elapsed time had some flaws
+      // Somtimes the songPosition would exceed the music length causing issues in other places
+      // And it was frame dependant which we don't like!!
+      Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time, 0.5), false);
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
