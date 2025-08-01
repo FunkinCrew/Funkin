@@ -2689,7 +2689,7 @@ class PlayState extends MusicBeatSubState
       if (note == null || note.hasBeenHit) continue;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
-      if (FlxG.sound.music.time > hitWindowEnd)
+      if ((FlxG.sound.music.time + Conductor.instance.combinedOffset) > hitWindowEnd)
       {
         // We have passed this note.
         // Flag the note for deletion without actually penalizing the player.
@@ -2801,7 +2801,7 @@ class PlayState extends MusicBeatSubState
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
-    var diff:Float = FlxG.sound.music.time - note.noteData.time;
+    var diff:Float = (FlxG.sound.music.time + Conductor.instance.combinedOffset) - note.noteData.time;
 
     var totalDiff:Float = diff;
     if (diff < 0) totalDiff = diff + inputLatencyMs;
