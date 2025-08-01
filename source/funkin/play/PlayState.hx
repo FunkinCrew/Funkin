@@ -633,12 +633,12 @@ class PlayState extends MusicBeatSubState
    * The threshold for using normal song position updates.
    * If the Conductor position deviates from the music by more than this amount, then the Conductor position will be set to the raw song time.
    */
-  static final NORMAL_MUSIC_UPDATE_THRESHOLD:Float = 80;
+  static final NORMAL_MUSIC_UPDATE_THRESHOLD:Float = 100;
 
   /**
    * The ratio for easing the song positon for smoother notes scrolling.
    */
-  static final MUSIC_EASE_RATIO:Float = 30;
+  static final MUSIC_EASE_RATIO:Float = 27.5;
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
@@ -2689,7 +2689,7 @@ class PlayState extends MusicBeatSubState
       if (note == null || note.hasBeenHit) continue;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
-      if (Conductor.instance.songPosition > hitWindowEnd)
+      if (FlxG.sound.music.time > hitWindowEnd)
       {
         // We have passed this note.
         // Flag the note for deletion without actually penalizing the player.
@@ -2801,7 +2801,7 @@ class PlayState extends MusicBeatSubState
 
     // Get the offset and compensate for input latency.
     // Round inward (trim remainder) for consistency.
-    var diff:Float = Conductor.instance.songPosition - note.noteData.time;
+    var diff:Float = FlxG.sound.music.time - note.noteData.time;
 
     var totalDiff:Float = diff;
     if (diff < 0) totalDiff = diff + inputLatencyMs;
