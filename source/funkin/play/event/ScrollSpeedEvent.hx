@@ -130,7 +130,7 @@ class ScrollSpeedEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Instant' => 'INSTANT',
+          'Instant (Ignores duration)' => 'INSTANT',
           'Sine' => 'sine',
           'Quad' => 'quad',
           'Cube' => 'cube',

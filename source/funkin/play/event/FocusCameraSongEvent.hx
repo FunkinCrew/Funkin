@@ -200,7 +200,8 @@ class FocusCameraSongEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Instant' => 'INSTANT',
+          'Instant (Ignores duration)' => 'INSTANT',
+          'Classic (Ignores duration)' => 'CLASSIC'
           'Sine' => 'sine',
           'Quad' => 'quad',
           'Cube' => 'cube',
