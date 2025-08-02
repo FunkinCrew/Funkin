@@ -187,6 +187,7 @@ class Save
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
           downscroll: false,
+          showNoteKinds: true,
           metronomeVolume: 1.0,
           hitsoundVolumePlayer: 1.0,
           hitsoundVolumeOpponent: 1.0,
@@ -356,6 +357,23 @@ class Save
     data.optionsChartEditor.downscroll = value;
     flush();
     return data.optionsChartEditor.downscroll;
+  }
+
+  public var chartEditorShowNoteKinds(get, set):Bool;
+
+  function get_chartEditorShowNoteKinds():Bool
+  {
+    if (data.optionsChartEditor.showNoteKinds == null) data.optionsChartEditor.showNoteKinds = true;
+
+    return data.optionsChartEditor.showNoteKinds;
+  }
+
+  function set_chartEditorShowNoteKinds(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.showNoteKinds = value;
+    flush();
+    return data.optionsChartEditor.showNoteKinds;
   }
 
   public var chartEditorPlaytestStartTime(get, set):Bool;
@@ -1843,6 +1861,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?downscroll:Bool;
+
+  /**
+   * Show Note Kind Indicator in the Chart Editor.
+   * @default `true`
+   */
+  var ?showNoteKinds:Bool;
 
   /**
    * Metronome volume in the Chart Editor.
