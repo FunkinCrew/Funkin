@@ -604,7 +604,7 @@ class StoryMenuState extends MusicBeatState
 
       var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
 
-      FlxG.camera.fade(FlxColor.BLACK, 0.1, false, function() {
+      FlxG.camera.fade(FlxColor.BLACK, 0.2, false, function() {
         LoadingState.loadPlayState(
           {
             targetSong: targetSong,

@@ -2599,7 +2599,7 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
       FunkinSound.emptyPartialQueue();
 
-      funnyCam.fade(FlxColor.BLACK, 0.1, false, function() {
+      funnyCam.fade(FlxColor.BLACK, 0.2, false, function() {
         Paths.setCurrentLevel(cap?.freeplayData?.levelId);
         LoadingState.loadPlayState(
           {
