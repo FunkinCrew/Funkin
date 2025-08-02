@@ -29,7 +29,7 @@ class AdMobUtil
   /**
    * AdMob publisher ID used for the application.
    */
-  static final ADMOB_PUBLISHER:String = EnvironmentConfigMacro.environmentConfig.get("GLOBAL_ADMOB_PUBLISHER");
+  static final ADMOB_PUBLISHER:String = EnvironmentConfigMacro.environmentConfig.get("MOBILE_GLOBAL_ADMOB_PUBLISHER");
 
   /**
    * Test ad unit IDs for development and testing purposes.

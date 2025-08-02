@@ -1,6 +1,5 @@
 package;
 
-import openfl.utils.Assets;
 import openfl.errors.Error;
 import flixel.FlxG;
 import flixel.FlxState;

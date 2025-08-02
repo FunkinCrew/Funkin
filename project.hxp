@@ -5,6 +5,7 @@ import hxp.*;
 import lime.tools.*;
 import sys.FileSystem;
 import sys.io.File;
+import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ds.Map;
 
@@ -500,13 +501,7 @@ class Project extends HXProject
     configureHaxelibs();
     configureAssets();
     configureIcons();
-
-    readASTCExclusion();
-
-    if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
-    {
-      runASTCCompressor();
-    }
+    configureASTCTextures();
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
     {
@@ -890,7 +885,7 @@ class Project extends HXProject
 
     if (FEATURE_LOG_TRACE.isDisabled(this))
     {
-      addHaxeFlag("--no-traces");
+      setHaxedef("no-traces");
     }
 
     // Disable the built in pause screen when unfocusing the game.
@@ -1251,27 +1246,7 @@ class Project extends HXProject
     if (isAndroid())
     {
       // Adaptive icons
-      // TODO: Add Adapative Icons in Lime
-      templatePaths.push("templates");
-
-      var androidTheme:String = "@style/LimeAppMainTheme";
-      if (window.fullscreen != null && window.fullscreen)
-      {
-        androidTheme += "Fullscreen";
-      }
-
-      final iconXmlChild:Dynamic = {
-        "android:label": meta.title,
-        "android:allowBackup": "true",
-        "android:theme": androidTheme,
-        "android:hardwareAccelerated": "true",
-        "android:allowNativeHeapPointerTagging": ANDROID_TARGET_SDK_VERSION >= 30 ? "false" : null,
-        "android:largeHeap": "true",
-        "android:icon": "@mipmap/ic_launcher",
-        "android:roundIcon": "@mipmap/ic_launcher_round"
-        };
-
-        config.set('android.application',  iconXmlChild);
+      adaptiveIcon = new AdaptiveIcon('art/icons/android/', true);
     }
     else if (isIOS())
     {
@@ -1303,7 +1278,24 @@ class Project extends HXProject
       addIcon("art/icons/icon64.png", 64);
       addIcon("art/icons/iconOG.png");
 
-      info('Done configuring icons.');
+    }
+
+    info('Done configuring icons.');
+  }
+
+  /**
+   * Configure the astc textures.
+   */
+  function configureASTCTextures()
+  {
+    if (command != "display")
+    {
+      readASTCExclusion();
+
+      if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+      {
+        runASTCCompressor();
+      }
     }
   }
 
@@ -1703,7 +1695,8 @@ class Project extends HXProject
    */
   public function error(message:String):Void
   {
-    Log.error('${message}');
+    Sys.stderr().write(Bytes.ofString('[ERROR] ${message}'));
+    Sys.exit(1);
   }
 
   /**
@@ -1713,7 +1706,7 @@ class Project extends HXProject
   {
     if (command != "display")
     {
-      Log.info('[INFO] ${message}');
+      Sys.println('[INFO] ${message}');
     }
   }
 
@@ -1740,15 +1733,35 @@ class Project extends HXProject
     var env = new Map<String, Dynamic>();
     for (line in envFile.split('\n'))
     {
-      if (line == "" || line.startsWith("#")) continue;
+      if (line.length <= 0 || line.startsWith("#") || shouldExcludeEnvKey(line)) continue;
 
-      var parts = line.split('=');
-      if (parts.length != 2) continue;
+      var index:Int = line.indexOf('=');
 
-      env.set(parts[0], parts[1]);
+      if (index == -1) continue;
+
+      var field:String = line.substr(0, index);
+      var value:String = line.substr(index + 1);
+
+      env.set(field, value);
     }
 
     return env;
+  }
+
+  private function shouldExcludeEnvKey(key:String):Bool
+  {
+    final android:Bool = key.startsWith('ANDROID_');
+    final ios:Bool = key.startsWith('IOS_');
+    final mobile:Bool = key.startsWith('MOBILE_') || ios || android;
+    final web:Bool = key.startsWith('WEB_');
+    final desktop:Bool = key.startsWith('DESKTOP_');
+
+    if (isWeb() && (mobile || desktop)) return true;
+    if (isDesktop() && (mobile || web)) return true;
+    if (isAndroid() && (ios || web || desktop)) return true;
+    if (isIOS() && (android || web || desktop)) return true;
+
+    return false;
   }
 
   public function readASTCExclusion():Void

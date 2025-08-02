@@ -65,7 +65,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefDescription();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
-    if (items != null) camFollow.y = items.selectedItem.y;
 
     menuCamera.follow(camFollow, null, 0.085);
     var margin = 160;
@@ -73,7 +72,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     menuCamera.minScrollY = 0;
 
     items.onChange.add(function(selected) {
-      camFollow.y = selected.y;
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
@@ -203,6 +201,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    // Positions the camera to the selected item.
+    if (items != null) camFollow.y = items.selectedItem.y;
 
     // Indent the selected item.
     items.forEach(function(daItem:TextMenuItem) {

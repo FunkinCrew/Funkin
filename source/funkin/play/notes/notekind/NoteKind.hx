@@ -28,6 +28,13 @@ class NoteKind implements INoteScriptedClass
    */
   public var params:Array<NoteKindParam>;
 
+  /**
+   * If this note kind is scoreable (ie, counted towards score and accuracy)
+   * Only accessible in scripts
+   * Defaults to true
+   */
+  public var scoreable:Bool = true;
+
   public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>)
   {
     this.noteKind = noteKind;

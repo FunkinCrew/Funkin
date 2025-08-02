@@ -10,7 +10,6 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import openfl.display.BlendMode;
 import funkin.util.BitmapUtil;
-import openfl.utils.Assets;
 
 class NewCharacterCard extends BackingCard
 {
