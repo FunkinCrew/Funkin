@@ -604,12 +604,14 @@ class StoryMenuState extends MusicBeatState
 
       var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
 
-      LoadingState.loadPlayState(
-        {
-          targetSong: targetSong,
-          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-          targetVariation: targetVariation
-        }, true);
+      FlxG.camera.fade(FlxColor.BLACK, 0.1, false, function() {
+        LoadingState.loadPlayState(
+          {
+            targetSong: targetSong,
+            targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+            targetVariation: targetVariation
+          }, true);
+      });
     });
   }
 
