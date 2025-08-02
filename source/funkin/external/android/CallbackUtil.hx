@@ -1,4 +1,4 @@
-package funkin.mobile.external.android;
+package funkin.external.android;
 
 import lime.system.JNI;
 import flixel.util.FlxSignal;
@@ -51,7 +51,7 @@ class CallbackUtil
 class CallbackHandler #if (lime >= "8.0.0") implements JNISafety #end
 {
   #if android
-  @:allow(funkin.mobile.external.android.CallbackUtil)
+  @:allow(funkin.external.android.CallbackUtil)
   function new():Void {}
 
   /**

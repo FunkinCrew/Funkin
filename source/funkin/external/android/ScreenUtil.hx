@@ -1,4 +1,4 @@
-package funkin.mobile.external.android;
+package funkin.external.android;
 
 import lime.math.Rectangle;
 import lime.system.JNI;

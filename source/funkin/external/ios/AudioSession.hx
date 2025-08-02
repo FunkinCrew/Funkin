@@ -1,9 +1,9 @@
-package funkin.mobile.external.ios;
+package funkin.external.ios;
 
 /**
  * A Utility class to manage iOS audio.
  */
-@:build(funkin.mobile.macros.LinkerMacro.xml('project/Build.xml'))
+@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml'))
 @:include('AudioSession.hpp')
 @:unreflective
 extern class AudioSession
