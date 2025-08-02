@@ -351,6 +351,18 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
+        if (controls.FREEPLAY_JUMP_TO_TOP)
+        {
+          changeLevel(levelList.length);
+          changeDifficulty(0);
+        }
+
+        if (controls.FREEPLAY_JUMP_TO_BOTTOM)
+        {
+          changeLevel(-levelList.length);
+          changeDifficulty(0);
+        }
+        
         #if !html5
         if (FlxG.mouse.wheel != 0)
         {
