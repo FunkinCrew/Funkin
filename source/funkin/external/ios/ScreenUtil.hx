@@ -1,5 +1,6 @@
 package funkin.external.ios;
 
+#if ios
 /**
  * A Utility class to get iOS screen related informations.
  */
@@ -14,3 +15,4 @@ extern class ScreenUtil
   @:native('getScreenSize')
   static function getScreenSize(width:cpp.RawPointer<Float>, height:cpp.RawPointer<Float>):Void;
 }
+#end

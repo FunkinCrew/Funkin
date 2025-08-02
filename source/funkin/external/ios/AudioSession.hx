@@ -1,5 +1,6 @@
 package funkin.external.ios;
 
+#if ios
 /**
  * A Utility class to manage iOS audio.
  */
@@ -13,3 +14,4 @@ extern class AudioSession
   @:native('setActive')
   static function setActive(active:Bool):Void;
 }
+#end
