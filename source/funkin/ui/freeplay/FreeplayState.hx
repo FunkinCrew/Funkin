@@ -2599,26 +2599,28 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
       FunkinSound.emptyPartialQueue();
 
-      Paths.setCurrentLevel(cap?.freeplayData?.levelId);
-      LoadingState.loadPlayState(
-        {
-          targetSong: targetSong,
-          targetDifficulty: currentDifficulty,
-          targetVariation: currentVariation,
-          targetInstrumental: targetInstId,
-          practiceMode: false,
-          minimalMode: false,
+      funnyCam.fade(FlxColor.BLACK, 0.2, false, function() {
+        Paths.setCurrentLevel(cap?.freeplayData?.levelId);
+        LoadingState.loadPlayState(
+          {
+            targetSong: targetSong,
+            targetDifficulty: currentDifficulty,
+            targetVariation: currentVariation,
+            targetInstrumental: targetInstId,
+            practiceMode: false,
+            minimalMode: false,
 
-          #if FEATURE_DEBUG_FUNCTIONS
-          botPlayMode: FlxG.keys.pressed.SHIFT,
-          #else
-          botPlayMode: false,
-          #end
-          // TODO: Make these an option! It's currently only accessible via chart editor.
-          // startTimestamp: 0.0,
-          // playbackRate: 0.5,
-          // botPlayMode: true,
-        }, true);
+            #if FEATURE_DEBUG_FUNCTIONS
+            botPlayMode: FlxG.keys.pressed.SHIFT,
+            #else
+            botPlayMode: false,
+            #end
+            // TODO: Make these an option! It's currently only accessible via chart editor.
+            // startTimestamp: 0.0,
+            // playbackRate: 0.5,
+            // botPlayMode: true,
+          }, true);
+      });
     });
   }
 
