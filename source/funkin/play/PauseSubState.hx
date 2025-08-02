@@ -199,6 +199,11 @@ class PauseSubState extends MusicBeatSubState
   var metadataArtist:FlxText;
 
   /**
+  * A text object that displays if you are currently using botplay.
+  */
+  var metadataBotplay:FlxText;
+
+  /**
    * A text object that displays the current global offset.
    */
   var offsetText:FlxText;
@@ -213,11 +218,6 @@ class PauseSubState extends MusicBeatSubState
    */
   var menuEntryText:FlxTypedSpriteGroup<AtlasText>;
 
-  /**
-   * Callback that gets called once substate gets open.
-   */
-  var onPause:Void->Void;
-
   // ===============
   // Audio Variables
   // ===============
@@ -227,11 +227,10 @@ class PauseSubState extends MusicBeatSubState
   // Constructor
   // ===============
 
-  public function new(?params:PauseSubStateParams, ?onPause:Void->Void)
+  public function new(?params:PauseSubStateParams)
   {
     super();
     this.currentMode = params?.mode ?? Standard;
-    this.onPause = onPause;
   }
 
   // ===============
@@ -249,8 +248,6 @@ class PauseSubState extends MusicBeatSubState
 
     AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
     #end
-
-    if (onPause != null) onPause();
 
     super.create();
 
@@ -294,7 +291,6 @@ class PauseSubState extends MusicBeatSubState
     hapticTimer.cancel();
     hapticTimer = null;
     pauseMusic.stop();
-    onPause = null;
   }
 
   // ===============
@@ -428,7 +424,7 @@ class PauseSubState extends MusicBeatSubState
     metadata.add(metadataDifficulty);
 
     metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      '${PlayState.instance?.deathCounter} Blue Balls');
+      '${PlayState.instance?.deathCounter} ${Preferences.naughtyness ? 'Blue Ball' : 'Death'}${PlayState.instance?.deathCounter == 1 ? '' : 's'}');
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
@@ -438,6 +434,12 @@ class PauseSubState extends MusicBeatSubState
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
+
+    metadataBotplay = new FlxText(20, metadataDeaths.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      '${PlayState.instance?.isBotPlayMode ? 'Bot Play Enabled' : ''}');
+    metadataBotplay.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataBotplay.scrollFactor.set(0, 0);
+    metadata.add(metadataBotplay);
 
     // Right side
     offsetText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
@@ -453,7 +455,7 @@ class PauseSubState extends MusicBeatSubState
     offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
     offsetTextInfo.y = offsetText.y + offsetText.height + 4;
 
-    #if (!mobile && FEATURE_LAG_ADJUSTMENT)
+    #if !mobile
     metadata.add(offsetText);
     metadata.add(offsetTextInfo);
     #end
@@ -463,6 +465,7 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.alpha = 0;
     metadataDifficulty.alpha = 0;
     metadataDeaths.alpha = 0;
+    metadataBotplay.alpha = 0;
     offsetText.alpha = 0;
     offsetTextInfo.alpha = 0;
 
@@ -879,6 +882,8 @@ class PauseSubState extends MusicBeatSubState
   function updateMetadataText():Void
   {
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
+    metadataBotplay.y = PlayState.instance?.isPracticeMode ? metadataPractice.y + 32 : metadataDeaths.y + 32;
+    
 
     #if mobile
     if (metadata.members[0].y != camera.height - 185 && metadataPractice.visible)
@@ -893,7 +898,7 @@ class PauseSubState extends MusicBeatSubState
     switch (this.currentMode)
     {
       case Standard | Difficulty:
-        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+        metadataDeaths.text = '${PlayState.instance?.deathCounter} ${Preferences.naughtyness ? 'Blue Ball' : 'Death'}${PlayState.instance?.deathCounter == 1 ? '' : 's'}';
       case Charting:
         metadataDeaths.text = 'Chart Editor Preview';
       case Conversation:
