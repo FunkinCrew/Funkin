@@ -8,8 +8,8 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 
 - [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
 - [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
-- [Download the ANDROID Builds from Google Play Store!](https://play.google.com/store/apps/details?id=me.funkin.fnf)
-- [Download the IOS / IpadOS builds from Apple Store!](https://apps.apple.com/us/app/friday-night-funkin-mobile/id6740428530?platform=iphone)
+- [Download Android builds from Google Play!](https://play.google.com/store/apps/details?id=me.funkin.fnf)
+- [Download iOS builds from the App Store!](https://apps.apple.com/app/id6740428530)
 
 <div align='center'>
 <table>
