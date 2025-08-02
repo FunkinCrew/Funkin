@@ -1,5 +1,6 @@
 package funkin.external.android;
 
+#if android
 import lime.math.Rectangle;
 import lime.system.JNI;
 
@@ -9,7 +10,6 @@ import lime.system.JNI;
 @:unreflective
 class ScreenUtil
 {
-  #if android
   /**
    * Retrieves the dimensions of display cutouts (such as notches) on Android devices.
    *
@@ -48,5 +48,5 @@ class ScreenUtil
 
     return [];
   }
-  #end
 }
+#end
