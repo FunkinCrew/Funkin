@@ -1821,27 +1821,22 @@ class PlayState extends MusicBeatSubState
     healthBarBG = FunkinSprite.create(0, healthBarYPos, 'healthBar');
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
+    healthBarBG.zIndex = 1002;
     add(healthBarBG);
 
     healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
       'healthLerp', 0, 2);
     healthBar.scrollFactor.set();
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    healthBar.zIndex = 801;
+    healthBar.zIndex = 1003;
     add(healthBar);
 
     // The score text below the health bar.
     scoreText = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, '', 20);
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
-    scoreText.zIndex = 802;
+    scoreText.zIndex = 1004;
     add(scoreText);
-
-    // Move the health bar to the HUD camera.
-    healthBar.cameras = [camHUD];
-    healthBarBG.cameras = [camHUD];
-    scoreText.cameras = [camHUD];
   }
 
   /**
@@ -1919,7 +1914,7 @@ class PlayState extends MusicBeatSubState
       trace('Song difficulty could not be loaded.');
     }
 
-    var currentCharacterData:SongCharacterData = currentChart.characters; // Switch the variation we are playing on by manipulating targetVariation.
+    var currentCharacterData:SongCharacterData = currentChart.characters;
 
     //
     // GIRLFRIEND
@@ -1940,49 +1935,50 @@ class PlayState extends MusicBeatSubState
     }
 
     //
-    // DAD
-    //
-    var dad:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
-
-    if (dad != null)
-    {
-      //
-      // OPPONENT HEALTH ICON
-      //
-      iconP2 = new HealthIcon('dad', 1);
-      iconP2.y = healthBar.y - (iconP2.height / 2);
-      dad.initHealthIcon(true); // Apply the character ID here
-      iconP2.zIndex = 850;
-      add(iconP2);
-      iconP2.cameras = [camHUD];
-
-      #if FEATURE_DISCORD_RPC
-      discordRPCAlbum = 'album-${currentChart.album}';
-      discordRPCIcon = 'icon-${currentCharacterData.opponent}';
-      #end
-    }
-
-    //
-    // BOYFRIEND
-    //
-    var boyfriend:BaseCharacter = CharacterDataParser.fetchCharacter(currentCharacterData.player);
-
-    if (boyfriend != null)
-    {
-      //
-      // PLAYER HEALTH ICON
-      //
-      iconP1 = new HealthIcon('bf', 0);
-      iconP1.y = healthBar.y - (iconP1.height / 2);
-      boyfriend.initHealthIcon(false); // Apply the character ID here
-      iconP1.zIndex = 850;
-      add(iconP1);
-      iconP1.cameras = [camHUD];
-    }
-
-    //
     // ADD CHARACTERS TO SCENE
     //
+
+    // Set the opponent character based on the chart data.
+    var dad = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+
+    // Set the player character based on the chart data.
+    var boyfriend = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+
+    //
+    // HEALTH ICONS
+    //
+
+    // Opponent
+    if (dad != null)
+      {
+        iconP2 = new HealthIcon('dad', 1);
+        dad.initHealthIcon(true); // Apply the character ID here
+        iconP2.y = healthBar.y - (iconP2.height / 2);
+        iconP2.zIndex = 1050;
+        add(iconP2);
+        iconP2.cameras = [camHUD];
+
+        #if FEATURE_DISCORD_RPC
+        discordRPCAlbum = 'album-${currentChart.album}';
+        discordRPCIcon = 'icon-${currentCharacterData.opponent}';
+        #end
+      }
+
+      // Player
+      if (boyfriend != null)
+      {
+        iconP1 = new HealthIcon('bf', 0);
+        boyfriend.initHealthIcon(false); // Apply the character ID here
+        iconP1.y = healthBar.y - (iconP1.height / 2);
+        iconP1.zIndex = 1051;
+        add(iconP1);
+        iconP1.cameras = [camHUD];
+      }
+
+      // Move the health bar to the HUD camera.
+      healthBar.cameras = [camHUD];
+      healthBarBG.cameras = [camHUD];
+      scoreText.cameras = [camHUD];
 
     if (currentStage != null)
     {
@@ -2048,8 +2044,10 @@ class PlayState extends MusicBeatSubState
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
-    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
-    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
+
+    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
+    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET
+     - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
 
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
@@ -2108,7 +2106,7 @@ class PlayState extends MusicBeatSubState
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
     // Initialize the judgements and combo meter.
     comboPopUps = new PopUpStuff(noteStyle);
-    comboPopUps.zIndex = 900;
+    comboPopUps.zIndex = 1100;
     add(comboPopUps);
     comboPopUps.cameras = [camHUD];
   }
