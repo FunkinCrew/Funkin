@@ -218,6 +218,11 @@ class PauseSubState extends MusicBeatSubState
    */
   var menuEntryText:FlxTypedSpriteGroup<AtlasText>;
 
+  /**
+   * Callback that gets called once substate gets open.
+   */
+  var onPause:Void->Void;
+
   // ===============
   // Audio Variables
   // ===============
@@ -227,10 +232,11 @@ class PauseSubState extends MusicBeatSubState
   // Constructor
   // ===============
 
-  public function new(?params:PauseSubStateParams)
+  public function new(?params:PauseSubStateParams, ?onPause:Void->Void)
   {
     super();
     this.currentMode = params?.mode ?? Standard;
+    this.onPause = onPause;
   }
 
   // ===============
@@ -248,6 +254,8 @@ class PauseSubState extends MusicBeatSubState
 
     AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
     #end
+
+    if (onPause != null) onPause();
 
     super.create();
 
@@ -291,6 +299,7 @@ class PauseSubState extends MusicBeatSubState
     hapticTimer.cancel();
     hapticTimer = null;
     pauseMusic.stop();
+    onPause = null;
   }
 
   // ===============
@@ -455,7 +464,7 @@ class PauseSubState extends MusicBeatSubState
     offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
     offsetTextInfo.y = offsetText.y + offsetText.height + 4;
 
-    #if !mobile
+    #if (!mobile && FEATURE_LAG_ADJUSTMENT)
     metadata.add(offsetText);
     metadata.add(offsetTextInfo);
     #end

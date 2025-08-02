@@ -100,6 +100,7 @@ class DebugBoundingState extends FlxState
     offsetAnimationDropdown = offsetEditorDialog.findComponent("animationDropdown", DropDown);
 
     offsetEditorDialog.cameras = [hudCam];
+    offsetEditorDialog.closable = false;
 
     add(offsetEditorDialog);
     offsetEditorDialog.showDialog(false);

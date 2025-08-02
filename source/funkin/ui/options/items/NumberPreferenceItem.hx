@@ -148,6 +148,6 @@ class NumberPreferenceItem extends TextMenuItem
   function toFixed(value:Float):Float
   {
     var multiplier:Float = Math.pow(10, precision);
-    return Math.floor(value * multiplier) / multiplier;
+    return Math.round(value * multiplier) / multiplier;
   }
 }

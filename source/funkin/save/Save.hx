@@ -187,6 +187,7 @@ class Save
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
           downscroll: false,
+          showNoteKinds: true,
           metronomeVolume: 1.0,
           hitsoundVolumePlayer: 1.0,
           hitsoundVolumeOpponent: 1.0,
@@ -356,6 +357,23 @@ class Save
     data.optionsChartEditor.downscroll = value;
     flush();
     return data.optionsChartEditor.downscroll;
+  }
+
+  public var chartEditorShowNoteKinds(get, set):Bool;
+
+  function get_chartEditorShowNoteKinds():Bool
+  {
+    if (data.optionsChartEditor.showNoteKinds == null) data.optionsChartEditor.showNoteKinds = true;
+
+    return data.optionsChartEditor.showNoteKinds;
+  }
+
+  function set_chartEditorShowNoteKinds(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.showNoteKinds = value;
+    flush();
+    return data.optionsChartEditor.showNoteKinds;
   }
 
   public var chartEditorPlaytestStartTime(get, set):Bool;
@@ -882,14 +900,12 @@ class Save
       return;
     }
 
-    var newCompletion = (newScoreData.tallies.sick + newScoreData.tallies.good) / newScoreData.tallies.totalNotes;
-    var previousCompletion = (previousScoreData.tallies.sick + previousScoreData.tallies.good) / previousScoreData.tallies.totalNotes;
-
     // Set the high score and the high rank separately.
     var newScore:SaveScoreData =
       {
         score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
-        tallies: (previousRank > newRank || previousCompletion > newCompletion) ? previousScoreData.tallies : newScoreData.tallies
+        tallies: (previousRank > newRank
+          || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies)) ? previousScoreData.tallies : newScoreData.tallies
       };
 
     song.set(difficultyId, newScore);
@@ -1843,6 +1859,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?downscroll:Bool;
+
+  /**
+   * Show Note Kind Indicator in the Chart Editor.
+   * @default `true`
+   */
+  var ?showNoteKinds:Bool;
 
   /**
    * Metronome volume in the Chart Editor.

@@ -17,6 +17,7 @@ import funkin.play.notes.NoteVibrationsHandler;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
 import funkin.util.GRhythmUtil;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import flixel.math.FlxPoint;
 #if mobile
@@ -1103,6 +1104,7 @@ class Strumline extends FlxSpriteGroup
 
     if (noteSprite != null)
     {
+      var noteKind:NoteKind = NoteKindManager.getNoteKind(note.kind);
       var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
       noteSprite.setupNoteGraphic(noteKindStyle);
 
@@ -1127,6 +1129,7 @@ class Strumline extends FlxSpriteGroup
       noteSprite.x -= (noteSprite.width - Strumline.STRUMLINE_SIZE) / 2; // Center it
       noteSprite.x -= NUDGE;
       noteSprite.y = -9999;
+      if (noteKind != null) noteSprite.scoreable = noteKind.scoreable;
     }
 
     return noteSprite;

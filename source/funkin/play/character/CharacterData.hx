@@ -288,33 +288,22 @@ class CharacterDataParser
   {
     var charPath:String = "freeplay/icons/";
 
-    // FunkinCrew please dont skin me alive for copying pixelated icon and changing it a tiny bit
-    switch (char)
+    final charIDParts:Array<String> = char.split("-");
+    var iconName:String = "";
+    for (i in 0...charIDParts.length)
     {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf" | "bf-dark":
-        charPath += "bfpixel";
-      case "monster-christmas":
-        charPath += "monsterpixel";
-      case "mom" | "mom-car":
-        charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker" | "pico-pixel" | "pico-holding-nene":
-        charPath += "picopixel";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen" | "gf-dark":
-        charPath += "gfpixel";
-      case "dad":
-        charPath += "dadpixel";
-      case "darnell-blazin":
-        charPath += "darnellpixel";
-      case "senpai-angry":
-        charPath += "senpaipixel";
-      case "spooky-dark":
-        charPath += "spookypixel";
-      case "tankman-atlas" | "tankman-bloody":
-        charPath += "tankmanpixel";
-      case "pico-christmas" | "pico-dark":
-        charPath += "picopixel";
-      default:
-        charPath += '${char}pixel';
+      iconName += charIDParts[i];
+
+      if (Assets.exists(Paths.image(charPath + '${iconName}pixel')))
+      {
+        charPath += '${iconName}pixel';
+        break;
+      }
+      else
+      {
+        if (i < charIDParts.length - 1) iconName += '-';
+        continue;
+      }
     }
 
     if (!Assets.exists(Paths.image(charPath)))

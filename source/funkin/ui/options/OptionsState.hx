@@ -73,7 +73,7 @@ class OptionsState extends MusicBeatState
     var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(saveData));
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
-    #if FEATURE_INPUT_OFFSETS
+    #if FEATURE_LAG_ADJUSTMENT
     var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
     #end
 
@@ -82,7 +82,7 @@ class OptionsState extends MusicBeatState
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(optionsCodex.switchPage.bind(Options));
-      #if FEATURE_INPUT_OFFSETS
+      #if FEATURE_LAG_ADJUSTMENT
       offsets.onExit.add(exitOffsets);
       #end
       saveData.onExit.add(optionsCodex.switchPage.bind(Options));
@@ -174,8 +174,8 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     // createItem("CONTROL SCHEMES", function() {
     //   FlxG.state.openSubState(new ControlsSchemeMenu());
     // });
-    #if FEATURE_INPUT_OFFSETS
-    createItem("INPUT OFFSETS", function() {
+    #if FEATURE_LAG_ADJUSTMENT
+    createItem("LAG ADJUSTMENT", function() {
       FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
         FunkinSound.playMusic('offsetsLoop',
           {

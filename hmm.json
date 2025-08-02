@@ -18,28 +18,28 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "a53d5916bdcb2e48913f94d9ae1d949b049dcdc1",
+      "ref": "02334589ff9603a5f483077a44395009644f6274",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
       "name": "extension-androidtools",
       "type": "haxelib",
-      "version": "2.2.1"
+      "version": "2.2.2"
     },
     {
       "name": "extension-haptics",
       "type": "haxelib",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "name": "extension-iapcore",
       "type": "haxelib",
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "name": "extension-iarcore",
       "type": "haxelib",
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "name": "flixel",
@@ -59,7 +59,7 @@
       "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "39c1572add28869c558b218fffed13df1b64f376",
+      "ref": "b1faf19885dad06c899cb71ffe07b4e40b8c6d0c",
       "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
@@ -111,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "4e24283a047f11bded6affabbc9ec405156e026e",
+      "ref": "5a0dc3f644dc676a4a092b7e6c8edc8be941f024",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -170,7 +170,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "c750ebf6b48c4bc018abe9855fbae5ffdbc4771a",
+      "ref": "0f1193c37761f1a80a888fb84e752490b5d0b656",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -219,7 +219,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "866f19edbcd872b3358f9a41f2f6a24c71c191d1",
+      "ref": "d4142dd15a3b57ed4eb149f9f6a2c3ad9935bf7b",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

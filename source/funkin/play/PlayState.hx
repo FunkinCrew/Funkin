@@ -43,6 +43,7 @@ import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
@@ -1063,10 +1064,10 @@ class PlayState extends MusicBeatSubState
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
       // This helps prevent a major bug where the level suddenly loops back to the start or middle.
-      if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
-      {
-        if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
-      }
+      // if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
+      // {
+      //   if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
+      // }
     }
 
     var pauseButtonCheck:Bool = false;
@@ -1234,14 +1235,12 @@ class PlayState extends MusicBeatSubState
     switch (mode)
     {
       case Conversation:
-        currentConversation.pauseMusic();
         preparePauseUI();
-        openPauseSubState(Conversation, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene);
+        openPauseSubState(Conversation, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> currentConversation.pauseMusic());
 
       case Cutscene:
-        VideoCutscene.pauseVideo();
         preparePauseUI();
-        openPauseSubState(Cutscene, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene);
+        openPauseSubState(Cutscene, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> VideoCutscene.pauseVideo());
 
       default: // also known as standard
         if (!isInCountdown || isInCutscene) return;
@@ -1299,9 +1298,9 @@ class PlayState extends MusicBeatSubState
     #end
   }
 
-  function openPauseSubState(mode:PauseMode, cam:FlxCamera):Void
+  function openPauseSubState(mode:PauseMode, cam:FlxCamera, ?onPause:Void->Void):Void
   {
-    final pauseSubState = new PauseSubState({mode: mode});
+    final pauseSubState = new PauseSubState({mode: mode}, onPause);
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
     pauseSubState.camera = cam;
@@ -1502,7 +1501,9 @@ class PlayState extends MusicBeatSubState
         musicPausedBySubState = false;
       }
 
-      forEachPausedSound((s) -> needsReset ? s.destroy() : s.resume());
+      // The logic here is that if this sound doesn't auto-destroy
+      // then it's gonna be reused somewhere, so we just stop it instead.
+      forEachPausedSound(s -> needsReset ? (s.autoDestroy ? s.destroy() : s.stop()) : s.resume());
 
       // Resume camera tweens if we paused any.
       for (camTween in cameraTweensPausedBySubState)
@@ -2242,6 +2243,13 @@ class PlayState extends MusicBeatSubState
       var strumTime:Float = songNote.time;
       if (strumTime < startTime) continue; // Skip notes that are before the start time.
 
+      var scoreable = true;
+      if (songNote.kind != null)
+      {
+        var noteKind:NoteKind = NoteKindManager.getNoteKind(songNote.kind);
+        if (noteKind != null) scoreable = noteKind.scoreable;
+      }
+
       var noteData:Int = songNote.getDirection();
       var playerNote:Bool = true;
 
@@ -2252,7 +2260,7 @@ class PlayState extends MusicBeatSubState
         case 0:
           playerNoteData.push(songNote);
           // increment totalNotes for total possible notes able to be hit by the player
-          Highscore.tallies.totalNotes++;
+          if (scoreable) Highscore.tallies.totalNotes++;
         case 1:
           opponentNoteData.push(songNote);
       }
@@ -2811,14 +2819,13 @@ class PlayState extends MusicBeatSubState
     }
 
     // Send the note hit event.
-    var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, isComboBreak, Highscore.tallies.combo + 1, noteDiff,
+    var event:HitNoteScriptEvent = new HitNoteScriptEvent(note, healthChange, score, daRating, isComboBreak,
+      note.scoreable ? Highscore.tallies.combo + 1 : Highscore.tallies.combo, noteDiff,
       daRating == 'sick');
     dispatchEvent(event);
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
-
-    Highscore.tallies.totalNotesHit++;
     // Display the hit on the strums
     playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
@@ -2826,8 +2833,12 @@ class PlayState extends MusicBeatSubState
     vocals.playerVolume = 1;
 
     // Display the combo meter and add the calculation to the score.
-    applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
-    popUpScore(event.judgement);
+    if (note.scoreable)
+    {
+      Highscore.tallies.totalNotesHit++;
+      applyScore(event.score, event.judgement, event.healthChange, event.isComboBreak);
+      popUpScore(event.judgement);
+    }
   }
 
   /**
