@@ -1230,7 +1230,7 @@ class PlayState extends MusicBeatSubState
 
   function pause(?mode:PauseMode = Standard):Void
   {
-    if (!mayPauseGame || justUnpaused || isGamePaused) return;
+    if (!mayPauseGame || justUnpaused || isGamePaused || isPlayerDying) return;
 
     switch (mode)
     {
