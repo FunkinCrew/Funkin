@@ -15,6 +15,7 @@ class CreditsDataHandler
   static final CREDITS_DATA_PATH:String = "assets/data/credits.json";
   #end
 
+  #if macro
   public static function debugPrint(data:Null<CreditsData>):Void
   {
     if (data == null)
@@ -38,6 +39,7 @@ class CreditsDataHandler
 
     Sys.println('[INFO] CreditsData($entryCount entries containing $lineCount lines)');
   }
+  #end
 
   /**
    * If for some reason the full credits won't load,
