@@ -2821,14 +2821,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Setup character dropdowns.
     FlxMouseEvent.add(healthIconDad, function(_) {
-      if (!isCursorOverHaxeUI)
+      if (!isCursorOverHaxeUI && persistentDraw && persistentUpdate)
       {
         this.openCharacterDropdown(CharacterType.DAD, true);
       }
     });
 
     FlxMouseEvent.add(healthIconBF, function(_) {
-      if (!isCursorOverHaxeUI)
+      if (!isCursorOverHaxeUI && persistentDraw && persistentUpdate)
       {
         this.openCharacterDropdown(CharacterType.BF, true);
       }
