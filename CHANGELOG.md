@@ -53,7 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - You can import them in another script as usual.
   - Added support for renaming imported classes using the `as` keyword. (Thanks KoloInDaCrib!)
   - Fixed `try`/`catch` blocks not working properly. (Thanks NotHyper-474!)
-  - Fixed null-safe field access not working properly for functions (ex. `class?.someFunction()). (Thanks KoloInDaCrib!)
+  - Fixed null-safe field access not working properly for functions (ex. `class?.someFunction()`). (Thanks KoloInDaCrib!)
+  - Fixed Linux being case-sensitive with filenames. (Thanks mikolka9144!)
 
 ### Fixed
 
@@ -88,6 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * @Smokey555 made their first contribution in [#3318](https://github.com/FunkinCrew/Funkin/pull/3318)
 * @CCobaltDev made their first contribution in [#3318](https://github.com/FunkinCrew/Funkin/pull/3318)
+* @mikolka9144 made their first contribution in [polymod#212](https://github.com/larsiusprime/polymod/pull/212)
 
 
 
@@ -705,6 +707,7 @@ This patch resolves a critical issue that could cause user's save data to become
 
 ## [0.5.0] - 2024-09-12
 The Playable Pico Update!
+
 ### Added
 
 - Added a new Character Select screen to switch between playable characters in Freeplay.
@@ -825,7 +828,7 @@ The Playable Pico Update!
 ### Fixed
 
 - Control binds in the controls menu no longer overlap their names.
-- Attempting to exit the gameover screen and retry the song at the same time no longer crashes the game. ([thanks DMMaster636 for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
+- Attempting to exit the gameover screen and retry the song at the same time no longer crashes the game. ([thanks DM-kun for the PR!](https://github.com/FunkinCrew/Funkin/pull/2709))
 - Botplay mode now handles the player's animations properly during hold notes. ([thanks Hundrec!](https://github.com/FunkinCrew/Funkin/pull/2683))
 - Camera movement now pauses when the game is paused. ([thanks Matriculaso!](https://github.com/FunkinCrew/Funkin/pull/2684))
 - Pico's gameplay sprite no longer appears on the gameover screen when dying from an explosion in 2hot.
@@ -839,13 +842,14 @@ The Playable Pico Update!
 ## New Contributors for 0.4.1
 
 * @Hundrec made their first contribution in [#2661](https://github.com/FunkinCrew/Funkin/pull/2661)
-* @DMMaster636 made their first contribution in [#2709](https://github.com/FunkinCrew/Funkin/pull/2709)
+* @DM-kun made their first contribution in [#2709](https://github.com/FunkinCrew/Funkin/pull/2709)
 * @eltociear made their first contribution in [#2730](https://github.com/FunkinCrew/Funkin/pull/2730)
 
 
 
 ## [0.4.0] - 2024-06-06
 The Pit Stop 1 update!
+
 ### Added
 
 - 2 new Erect remixes, Eggnog and Satin Panties. Check them out from the Freeplay menu!
@@ -1017,6 +1021,7 @@ The Pit Stop 1 update!
 
 ## [0.3.0] - 2024-04-30
 The Weekend 1 update!
+
 ### Added
 
 - New Story Level: Weekend 1, starring Pico, Darnell, and Nene.
