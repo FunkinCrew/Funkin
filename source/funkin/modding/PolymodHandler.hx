@@ -547,6 +547,24 @@ class PolymodHandler
   }
 
   /**
+   * Retrieve a list of title and version of all enabled mods.
+   * @return An array of active mod along side with its version
+   */
+  public static function getAllModsList():Array<String>
+  {
+    var modMetadata:Array<ModMetadata> = getAllMods(); // TODO: change to getEnabledMods()
+    return [
+      for (mod in modMetadata)
+      {
+        var title = mod.title?.trim();
+        if (title == null || title == '') title = mod.id;
+        var version = mod.modVersion?.toString().trim();
+        '$title v$version';
+      }
+    ];
+  }
+
+  /**
    * Clear and reload from disk all data assets.
    * Useful for "hot reloading" for fast iteration!
    */
