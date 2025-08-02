@@ -2193,8 +2193,6 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
-    if (!controls.active && !force) return;
-
     if (capsuleAnim)
     {
       if (currentCapsule != null)
@@ -2716,7 +2714,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (currentCapsule.freeplayData == null) albumRoll.albumId = null;
 
-    changeDiff(0, true);
+    changeDiff();
     if (currentCapsule.freeplayData == null) currentCapsule.refreshDisplay();
     else
       currentCapsule.refreshDisplay(!prepForNewRank);
