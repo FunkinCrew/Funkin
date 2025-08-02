@@ -4,6 +4,22 @@ package funkin.modding.events;
 enum abstract ScriptEventType(String) from String to String
 {
   /**
+   * Called when the game is first initialized, before the title screen appears.
+   * This event is only called once.
+   *
+   * This event is not cancelable.
+   */
+  var GAME_INIT = 'GAME_INIT';
+
+  /**
+   * Called when the game is closed for any reason.
+   * This event is only called once.
+   *
+   * This event is not cancelable.
+   */
+  var GAME_CLOSE = 'GAME_CLOSE';
+
+  /**
    * Called when the relevant object is created.
    * Keep in mind that the constructor may be called before the object is needed,
    * for the purposes of caching data or otherwise.
@@ -35,6 +51,20 @@ enum abstract ScriptEventType(String) from String to String
    * This event is not cancelable.
    */
   var UPDATE = 'UPDATE';
+
+  /**
+   * Called after `PlayState` creation, right before the countdown starts.
+   *
+   * This event is not cancelable.
+   */
+  var PLAYSTATE_CREATE = 'PLAYSTATE_CREATE';
+
+  /**
+   * Called immediately before `PlayState` cleanup.
+   *
+   * This event is not cancelable.
+   */
+  var PLAYSTATE_CLOSE = 'PLAYSTATE_CLOSE';
 
   /**
    * Called when the player moves to pause the game.

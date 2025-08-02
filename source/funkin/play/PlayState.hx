@@ -802,6 +802,9 @@ class PlayState extends MusicBeatSubState
 
     FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
+    // Dispatch the `PlayState` create event.
+    dispatchEvent(new ScriptEvent(PLAYSTATE_CREATE, false));
+
     // The song is loaded and in the process of starting.
     // This gets set back to false when the chart actually starts.
     startingSong = true;
@@ -1381,7 +1384,7 @@ class PlayState extends MusicBeatSubState
     // Modules should get the first chance to cancel the event.
 
     // super.dispatchEvent(event) dispatches event to module scripts.
-    super.dispatchEvent(event);
+    if (event.type != DESTROY) super.dispatchEvent(event);
 
     // Dispatch event to note kind scripts
     NoteKindManager.callEvent(event);
@@ -3380,11 +3383,18 @@ class PlayState extends MusicBeatSubState
     super.close();
   }
 
+  private var cleanupDone:Bool = false;
+
   /**
-     * Perform necessary cleanup before leaving the PlayState.
-     */
+   * Perform necessary cleanup before leaving the PlayState.
+   */
   function performCleanup():Void
   {
+    if (cleanupDone) return;
+
+    // Dispatch the `PlayState` close event.
+    dispatchEvent(new ScriptEvent(PLAYSTATE_CLOSE, false));
+
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
 
@@ -3445,6 +3455,8 @@ class PlayState extends MusicBeatSubState
 
     // Clear the static reference to this state.
     instance = null;
+
+    cleanupDone = true;
   }
 
   /**
