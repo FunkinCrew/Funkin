@@ -692,6 +692,7 @@ class ChartEditorDialogHandler
       {
         state.songMetadata.clear();
         state.songChartData.clear();
+        state._songManifestData = null;
       }
 
       state.songMetadata.set(targetVariation, newSongMetadata);
