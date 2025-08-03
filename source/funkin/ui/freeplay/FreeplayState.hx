@@ -2756,7 +2756,7 @@ class FreeplayState extends MusicBeatSubState
           overrideExisting: true,
           restartTrack: false
         });
-      FlxG.sound.music.fadeIn(2, 0, 0.8);
+      FlxG.sound.music.fadeIn(2, 0, 0.7);
     }
     else
     {
@@ -2793,7 +2793,7 @@ class FreeplayState extends MusicBeatSubState
               end: 0.2
             },
           onLoad: function() {
-            FlxG.sound.music.fadeIn(2, 0, 0.8);
+            FlxG.sound.music.fadeIn(2, 0, 0.7);
           }
         });
       if (songDifficulty != null)
