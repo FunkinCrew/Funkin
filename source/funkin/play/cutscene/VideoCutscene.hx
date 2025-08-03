@@ -66,7 +66,7 @@ class VideoCutscene
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
-      // funkin.util.WindowUtil.showError('Video file does not exist: ${filePath}', 'Error playing video');
+      // funkin.util.WindowUtil.showError('Error playing video', 'Video file does not exist: ${filePath}');
       // return;
 
       // TODO: After moving videos to their own library,

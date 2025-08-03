@@ -916,7 +916,7 @@ class PlayState extends MusicBeatSubState
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
-      funkin.util.WindowUtil.showError(message, 'Error loading PlayState');
+      funkin.util.WindowUtil.showError('Error loading PlayState', message);
 
       // Force the user back to the main menu.
       if (isSubState)

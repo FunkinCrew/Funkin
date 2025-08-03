@@ -1220,7 +1220,7 @@ class Save
   {
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
-    funkin.util.WindowUtil.showError(msg, "Save Data Failure");
+    funkin.util.WindowUtil.showError("Save Data Failure", msg);
 
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
@@ -1407,7 +1407,7 @@ class Save
       var msg = 'There was an error loading your save data from Newgrounds.';
       msg += '\n${errorMsg}';
       msg += '\nAre you sure you are connected to the internet?';
-      funkin.util.WindowUtil.showError(msg, "Newgrounds Save Slot Failure");
+      funkin.util.WindowUtil.showError("Newgrounds Save Slot Failure", msg);
     });
   }
   #end

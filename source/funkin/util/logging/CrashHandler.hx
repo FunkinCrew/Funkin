@@ -109,7 +109,7 @@ class CrashHandler
 
   static function displayErrorMessage(message:String):Void
   {
-    funkin.util.WindowUtil.showError(message, "Fatal Uncaught Exception");
+    funkin.util.WindowUtil.showError("Fatal Uncaught Exception", message);
   }
 
   #if sys
