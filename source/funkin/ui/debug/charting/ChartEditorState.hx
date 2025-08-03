@@ -5184,7 +5184,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var variationMetadata:Null<SongMetadata> = songMetadata.get(selectedVariation);
       if (variationMetadata != null)
-      variationMetadata.playData.difficulties.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
+        variationMetadata.playData.difficulties.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
       var difficultyToolbox:ChartEditorDifficultyToolbox = cast this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
       if (difficultyToolbox == null) return;
@@ -5620,14 +5620,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   @:nullSafety(Off)
   function quitChartEditor():Void
   {
-    if (saveDataDirty) {
-      Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true, function(button:DialogButton) {
-        if (button == DialogButton.YES)
-        {
-          autoSave();
-          quitChartEditor();
-        }
-      });
+    if (saveDataDirty)
+    {
+      Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
+        function(button:DialogButton) {
+          if (button == DialogButton.YES)
+          {
+            autoSave();
+            quitChartEditor();
+          }
+        });
 
       return;
     }
@@ -5892,8 +5894,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
-    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = FlxMath.clamp(playbackRate, 0.05, 2.0); // Clamp to 5% to 200%
 
     var targetSong:Song;
     try
@@ -6370,8 +6372,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
 
     var playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
-    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+    playbackRate = FlxMath.clamp(playbackRate, 0.05, 2.0); // Clamp to 5% to 200%
 
     if (audioInstTrack != null)
     {
