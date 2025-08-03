@@ -139,8 +139,6 @@ class ChartEditorAudioHandler
 
     state.postLoadVocals();
 
-    var perfE:Float = TimerUtil.start();
-
     state.hardRefreshOffsetsToolbox();
 
     state.hardRefreshFreeplayToolbox();
