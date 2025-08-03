@@ -77,22 +77,13 @@ class PauseSubState extends MusicBeatSubState
   ];
 
   /**
-   * Pause menu entries for when the game is paused during a video cutscene.
+   * Pause menu entries for when the game is paused during a cutscene.
+   * `[CUTSCENE]` is replaced with the name of the cutscene type.
    */
-  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
+  static final PAUSE_MENU_ENTRIES_CUTSCENE:Array<PauseMenuEntry> = [
     {text: 'Resume', callback: resume},
-    {text: 'Skip Cutscene', callback: skipVideoCutscene},
-    {text: 'Restart Cutscene', callback: restartVideoCutscene},
-    {text: 'Exit to Menu', callback: quitToMenu},
-  ];
-
-  /**
-   * Pause menu entries for when the game is paused during a conversation.
-   */
-  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Skip Dialogue', callback: skipConversation},
-    {text: 'Restart Dialogue', callback: restartConversation},
+    {text: 'Skip [CUTSCENE]', callback: skipCutscene},
+    {text: 'Restart [CUTSCENE]', callback: restartCutscene},
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
@@ -792,10 +783,15 @@ class PauseSubState extends MusicBeatSubState
 
         // Add the back button.
         currentMenuEntries = entries.concat(PAUSE_MENU_ENTRIES_DIFFICULTY.clone());
-      case PauseMode.Conversation:
-        currentMenuEntries = PAUSE_MENU_ENTRIES_CONVERSATION.clone();
-      case PauseMode.Cutscene:
-        currentMenuEntries = PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE.clone();
+      case Cutscene(entryName, pauseName, onResume, onSkip, onRestart):
+        var entries:Array<PauseMenuEntry> = [];
+
+        for (entry in PAUSE_MENU_ENTRIES_CUTSCENE)
+        {
+          entries.push({text: StringTools.replace(entry.text, '[CUTSCENE]', entryName), callback: entry.callback});
+        }
+
+        currentMenuEntries = entries;
     }
   }
 
@@ -896,10 +892,8 @@ class PauseSubState extends MusicBeatSubState
         metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
       case Charting:
         metadataDeaths.text = 'Chart Editor Preview';
-      case Conversation:
-        metadataDeaths.text = 'Dialogue Paused';
-      case Cutscene:
-        metadataDeaths.text = 'Video Paused';
+      case Cutscene(entryName, pauseName, onResume, onSkip, onRestart):
+        metadataDeaths.text = '$pauseName Paused';
     }
   }
 
@@ -913,11 +907,18 @@ class PauseSubState extends MusicBeatSubState
    */
   static function resume(state:PauseSubState):Void
   {
-    // Resume a paused video if it exists.
-    VideoCutscene.resumeVideo();
     #if FEATURE_MOBILE_ADVERTISEMENTS
     AdMobUtil.removeBanner();
     #end
+    switch (state.currentMode)
+    {
+      case Cutscene(entryName, pauseName, onResume, onSkip, onRestart):
+        if (onResume != null)
+        {
+          onResume();
+        }
+      default:
+    }
     state.close();
   }
 
@@ -1029,58 +1030,40 @@ class PauseSubState extends MusicBeatSubState
   }
 
   /**
-   * Restart the paused video cutscene, then resume the game.
+   * Restart the paused cutscene, then resume the game.
    * @param state The current PauseSubState.
    */
-  static function restartVideoCutscene(state:PauseSubState):Void
+  static function restartCutscene(state:PauseSubState):Void
   {
-    VideoCutscene.restartVideo();
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
-    #end
+    switch (state.currentMode)
+    {
+      case Cutscene(entryName, pauseName, onResume, onSkip, onRestart):
+        if (onRestart != null)
+        {
+          onRestart(); // VideoCutscene.restartVideo(); on videos
+        }
+      default:
+    }
+
     state.close();
   }
 
   /**
-   * Skip the paused video cutscene, then resume the game.
+   * Skip the paused cutscene, then resume the game.
    * @param state The current PauseSubState.
    */
-  static function skipVideoCutscene(state:PauseSubState):Void
+  static function skipCutscene(state:PauseSubState):Void
   {
-    VideoCutscene.finishVideo();
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
-    #end
-    state.close();
-  }
+    switch (state.currentMode)
+    {
+      case Cutscene(entryName, pauseName, onResume, onSkip, onRestart):
+        if (onSkip != null)
+        {
+          onSkip(); // VideoCutscene.finishVideo(); on videos
+        }
+      default:
+    }
 
-  /**
-   * Restart the paused conversation, then resume the game.
-   * @param state The current PauseSubState.
-   */
-  static function restartConversation(state:PauseSubState):Void
-  {
-    if (PlayState.instance?.currentConversation == null) return;
-
-    PlayState.instance.currentConversation.resetConversation();
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
-    #end
-    state.close();
-  }
-
-  /**
-   * Skip the paused conversation, then resume the game.
-   * @param state The current PauseSubState.
-   */
-  static function skipConversation(state:PauseSubState):Void
-  {
-    if (PlayState.instance?.currentConversation == null) return;
-
-    PlayState.instance.currentConversation.skipConversation();
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    AdMobUtil.removeBanner();
-    #end
     state.close();
   }
 
@@ -1166,14 +1149,14 @@ enum PauseMode
   Difficulty;
 
   /**
-   * The menu displayed when the player pauses the game during a conversation.
+   * The menu displayed when the player pauses the game during a cutscene.
+   * @param entryName The name to show in entries.
+   * @param pauseName The name to show on the "Cutscene Paused" text.
+   * @param onResume Gets called when `Resume` is selected.
+   * @param onSkip Gets called when `Skip [entryName]` is selected.
+   * @param onRestart Gets called when `Restart [entryName]` is selected.
    */
-  Conversation;
-
-  /**
-   * The menu displayed when the player pauses the game during a video cutscene.
-   */
-  Cutscene;
+  Cutscene(entryName:String, pauseName:String, onResume:Void->Void, onSkip:Void->Void, onRestart:Void->Void);
 }
 
 /**
