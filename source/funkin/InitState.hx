@@ -82,11 +82,8 @@ class InitState extends FlxState
     // GAME SETUP
     //
 
-    // Setup window events (like callbacks for onWindowClose)
-    // and fullscreen keybind setup
+    // Setup window events (like callbacks for onWindowClose) and fullscreen keybind setup
     WindowUtil.initWindowEvents();
-    // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
-    WindowUtil.disableCrashHandler();
 
     #if FEATURE_DEBUG_TRACY
     funkin.util.WindowUtil.initTracy();

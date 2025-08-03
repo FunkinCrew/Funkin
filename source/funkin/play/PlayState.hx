@@ -916,7 +916,7 @@ class PlayState extends MusicBeatSubState
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
-      lime.app.Application.current.window.alert(message, 'Error loading PlayState');
+      funkin.util.WindowUtil.showError(message, 'Error loading PlayState');
 
       // Force the user back to the main menu.
       if (isSubState)
@@ -1912,7 +1912,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       // lolol
-      lime.app.Application.current.window.alert('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
+      funkin.util.WindowUtil.showError('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
     }
   }
 
