@@ -1628,11 +1628,13 @@ class PlayState extends MusicBeatSubState
     {
       if (currentConversation != null)
       {
-        pause(Conversation);
+        pause(Cutscene('Conversation', 'Conversation', null, currentConversation?.skipConversation, currentConversation?.resetConversation),
+          currentConversation.pauseMusic);
       }
       else if (VideoCutscene.isPlaying())
       {
-        pause(Cutscene);
+        pause(Cutscene('Cutscene', 'Video', VideoCutscene.resumeVideo, VideoCutscene.finishVideo.bind(null), VideoCutscene.restartVideo),
+          VideoCutscene.pauseVideo);
       }
       else
       {
