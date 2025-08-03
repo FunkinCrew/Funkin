@@ -2,10 +2,14 @@ package funkin.api.newgrounds;
 
 #if FEATURE_NEWGROUNDS
 import io.newgrounds.Call.CallError;
+import io.newgrounds.components.ScoreBoardComponent;
+import io.newgrounds.objects.Score;
 import io.newgrounds.objects.ScoreBoard as LeaderboardData;
+import io.newgrounds.objects.User;
 import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.utils.ScoreBoardList;
 
+@:nullSafety
 class Leaderboards
 {
   public static function listLeaderboardData():Map<Leaderboard, LeaderboardData>
@@ -16,21 +20,8 @@ class Leaderboards
       trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
       return [];
     }
-    else
-    {
-      var result:Map<Leaderboard, LeaderboardData> = [];
 
-      for (leaderboardId in leaderboardList.keys())
-      {
-        var leaderboardData = leaderboardList.get(leaderboardId);
-        if (leaderboardData == null) continue;
-
-        // A little hacky, but it works.
-        result.set(cast leaderboardId, leaderboardData);
-      }
-
-      return result;
-    }
+    return @:privateAccess leaderboardList._map?.copy() ?? [];
   }
 
   /**
@@ -67,6 +58,41 @@ class Leaderboards
   }
 
   /**
+   * Request to receive scores from Newgrounds.
+   * @param leaderboard The leaderboard to fetch scores from.
+   * @param params Additional parameters for fetching the score.
+   */
+  public static function requestScores(leaderboard:Leaderboard, ?params:RequestScoresParams)
+  {
+    // Silently reject retrieving scores from unknown leaderboards.
+    if (leaderboard == Leaderboard.Unknown) return;
+
+    var leaderboardList = NewgroundsClient.instance.leaderboards;
+    if (leaderboardList == null) return;
+
+    var leaderboardData:Null<LeaderboardData> = leaderboardList.get(leaderboard.getId());
+    if (leaderboardData == null) return;
+
+    var user:Null<User> = null;
+    if ((params?.useCurrentUser ?? false) && NewgroundsClient.instance.isLoggedIn()) user = NewgroundsClient.instance.user;
+
+    leaderboardData.requestScores(params?.limit ?? 10, params?.skip ?? 0, params?.period ?? ALL, params?.social ?? false, params?.tag, user,
+      function(outcome:Outcome<CallError>):Void {
+        switch (outcome)
+        {
+          case SUCCESS:
+            trace('[NEWGROUNDS] Fetched scores!');
+            if (params != null && params.onComplete != null) params.onComplete(leaderboardData.scores);
+
+          case FAIL(error):
+            trace('[NEWGROUNDS] Failed to fetch scores!');
+            trace(error);
+            if (params != null && params.onFail != null) params.onFail();
+        }
+      });
+  }
+
+  /**
    * Submit a score for a Story Level to Newgrounds.
    */
   public static function submitLevelScore(levelId:String, difficultyId:String, score:Int):Void
@@ -84,9 +110,77 @@ class Leaderboards
     Leaderboards.submitScore(Leaderboard.getLeaderboardBySong(songId, difficultyId), score, tag);
   }
 }
+
+/**
+ * Wrapper for `Leaderboards` that prevents submitting scores.
+ */
+@:nullSafety
+class LeaderboardsSandboxed
+{
+  public static function getLeaderboardBySong(songId:String, difficultyId:String)
+  {
+    return Leaderboard.getLeaderboardBySong(songId, difficultyId);
+  }
+
+  public static function getLeaderboardByLevel(levelId:String)
+  {
+    return Leaderboard.getLeaderboardByLevel(levelId);
+  }
+
+  public function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
+  {
+    Leaderboards.requestScores(leaderboard, params);
+  }
+}
+
+/**
+ * Additional parameters for `Leaderboards.requestScores()`
+ */
+typedef RequestScoresParams =
+{
+  /**
+   * How many scores to include in a list.
+   * @default `10`
+   */
+  var ?limit:Int;
+
+  /**
+   * How many scores to skip before starting the list.
+   * @default `0`
+   */
+  var ?skip:Int;
+
+  /**
+   * The time-frame to pull the scores from.
+   * @default `Period.ALL`
+   */
+  var ?period:Period;
+
+  /**
+   * If true, only scores by the user and their friends will be loaded. Ignored if no user is set.
+   * @default `false`
+   */
+  var ?social:Bool;
+
+  /**
+   * An optional tag to filter the results by.
+   * @default `null`
+   */
+  var ?tag:String;
+
+  /**
+   * If true, only the scores from the currently logged in user will be loaded.
+   * Additionally, if `social` is set to true, the scores of the user's friend will be loaded.
+   * @default `false`
+   */
+  var ?useCurrentUser:Bool;
+
+  var ?onComplete:Array<Score>->Void;
+  var ?onFail:Void->Void;
+}
 #end
 
-enum abstract Leaderboard(Int)
+enum abstract Leaderboard(Int) from Int to Int
 {
   /**
    * Represents an undefined or invalid leaderboard.
@@ -285,7 +379,7 @@ enum abstract Leaderboard(Int)
         {
           case "darnell":
             return DarnellBFMix;
-          case "litup":
+          case "lit-up":
             return LitUpBFMix;
           default:
             return Unknown;
@@ -379,7 +473,7 @@ enum abstract Leaderboard(Int)
             return Stress;
           case "darnell":
             return Darnell;
-          case "litup":
+          case "lit-up":
             return LitUp;
           case "2hot":
             return TwoHot;

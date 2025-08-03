@@ -13,6 +13,14 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.input.Controls;
+#if mobile
+import funkin.graphics.FunkinCamera;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.input.PreciseInputHandler;
+import funkin.mobile.ui.FunkinBackButton;
+import funkin.mobile.ui.mainmenu.FunkinOptionsButton;
+import funkin.play.notes.NoteDirection;
+#end
 
 /**
  * MusicBeatState actually represents the core utility FlxState of the game.
@@ -57,6 +65,72 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     subStateClosed.add(onCloseSubStateComplete);
   }
 
+  #if mobile
+  public var hitbox:Null<FunkinHitbox>;
+  public var backButton:Null<FunkinBackButton>;
+  public var optionsButton:Null<FunkinOptionsButton>;
+  public var camControls:Null<FunkinCamera>;
+
+  public function addHitbox(visible:Bool = true, initInput:Bool = true, ?schemeOverride:String, ?directionsOverride:Array<NoteDirection>,
+      ?colorsOverride:Array<FlxColor>):Void
+  {
+    if (hitbox != null)
+    {
+      hitbox.kill();
+      remove(hitbox);
+      hitbox.destroy();
+    }
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    hitbox = new FunkinHitbox(schemeOverride, directionsOverride, colorsOverride);
+    hitbox.cameras = [camControls];
+    hitbox.visible = visible;
+    add(hitbox);
+
+    if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
+  }
+
+  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void = null,
+      ?restOpacity:Float = 0.3, ?instant:Bool = false):Void
+  {
+    if (backButton != null) remove(backButton);
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    backButton = new FunkinBackButton(xPos, yPos, color, confirmCallback, restOpacity, instant);
+    backButton.cameras = [camControls];
+    add(backButton);
+  }
+
+  // this should get moved post ui update but this is easier rn lolll
+  public function addOptionsButton(?xPos:Float = 0, ?yPos:Float = 0, ?confirmCallback:Void->Void = null, ?instant:Bool = false):Void
+  {
+    if (optionsButton != null) remove(optionsButton);
+
+    if (camControls == null)
+    {
+      camControls = new FunkinCamera('camControls');
+      FlxG.cameras.add(camControls, false);
+      camControls.bgColor = 0x0;
+    }
+
+    optionsButton = new FunkinOptionsButton(xPos, yPos, confirmCallback, instant);
+    optionsButton.cameras = [camControls];
+    add(optionsButton);
+  }
+  #end
+
   override function create()
   {
     super.create();
@@ -70,6 +144,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public override function destroy():Void
   {
     super.destroy();
+
+    #if mobile
+    if (camControls != null) FlxG.cameras.remove(camControls);
+    #end
+
     Conductor.beatHit.remove(this.beatHit);
     Conductor.stepHit.remove(this.stepHit);
   }
@@ -105,8 +184,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     // Both have an xPos of 0, but a width equal to the full screen.
     // The rightWatermarkText is right aligned, which puts the text in the correct spot.
-    leftWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
-    rightWatermarkText = new FlxText(0, FlxG.height - 18, FlxG.width, '', 12);
+    // Their xPos is only changed when there's a notch on the device so it doesn't get covered byt it.
+    leftWatermarkText = new FlxText(funkin.ui.FullScreenScaleMode.gameNotchSize.x, FlxG.height - 18, FlxG.width, '', 12);
+    rightWatermarkText = new FlxText(-(funkin.ui.FullScreenScaleMode.gameNotchSize.x), FlxG.height - 18, FlxG.width, '', 12);
 
     // 100,000 should be good enough.
     leftWatermarkText.zIndex = 100000;

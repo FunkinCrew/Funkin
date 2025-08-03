@@ -1,5 +1,6 @@
 package funkin.modding.events;
 
+@:nullSafety
 enum abstract ScriptEventType(String) from String to String
 {
   /**

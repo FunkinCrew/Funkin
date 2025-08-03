@@ -1,3 +1,6 @@
+# When a pull request is merged, cancel all queued workflows for that branch
+# This helps to ensure workers focus on the master branch.
+
 name: Cancel queued workflows on PR merge
 
 on:
@@ -23,7 +26,7 @@ jobs:
           let branch_workflows = await github.rest.actions.listWorkflowRuns({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            workflow_id: "build-shit.yml",
+            workflow_id: "build-game.yml",
             status: "queued",
             branch: "${{ github.event.pull_request.head.ref }}"
           });

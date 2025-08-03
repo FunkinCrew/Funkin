@@ -51,9 +51,16 @@ class CrashHandler
     {
       errorSignal.dispatch(generateErrorMessage(error));
 
-      #if sys
-      logError(error);
-      #end
+      try
+      {
+        #if sys
+        logError(error);
+        #end
+      }
+      catch (e:Dynamic)
+      {
+        trace('Error while logging error: ' + e);
+      }
 
       displayError(error);
     }

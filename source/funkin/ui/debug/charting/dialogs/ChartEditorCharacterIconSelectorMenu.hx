@@ -22,7 +22,8 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
   public var charSelectScroll:ScrollView;
   public var charIconName:Label;
 
-  var currentCharButton:Button;
+  var currentCharButton:Null<Button> = null;
+  var currentCharId:String = '';
 
   public function new(chartEditorState2:ChartEditorState, charType:CharacterType, lockPosition:Bool = false)
   {
@@ -36,14 +37,16 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
         ease: FlxEase.quartOut,
         onComplete: function(_) {
           // Just focus the button FFS. Idk why, but the scrollbar doesn't update until after the tween finishes with this????
-          currentCharButton.focus = true;
+          if (currentCharButton != null) currentCharButton.focus = true;
+          else
+            chartEditorState.error('Failure', 'Could not find character of ${currentCharId} in registry (Is the character in the registry?)');
         }
       });
   }
 
   function initialize(charType:CharacterType, lockPosition:Bool)
   {
-    var currentCharId:String = switch (charType)
+    currentCharId = switch (charType)
     {
       case BF: chartEditorState.currentSongMetadata.playData.characters.player;
       case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend;

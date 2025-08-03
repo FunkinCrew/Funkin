@@ -1,15 +1,22 @@
 package funkin;
 
+#if mobile
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.util.InAppPurchasesUtil;
+#end
 import funkin.save.Save;
 import funkin.util.WindowUtil;
+import funkin.util.HapticUtil.HapticsMode;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
  */
+@:nullSafety
 class Preferences
 {
   /**
    * FPS
+   * Always the refresh rate of the display on mobile, or 60 on web.
    * @default `60`
    */
   public static var framerate(get, set):Int;
@@ -18,6 +25,12 @@ class Preferences
   {
     #if web
     return 60;
+    #elseif mobile
+    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+
+    if (refreshRate < 60) refreshRate = 60;
+
+    return refreshRate;
     #else
     return Save?.instance?.options?.framerate ?? 60;
     #end
@@ -45,11 +58,19 @@ class Preferences
 
   static function get_naughtyness():Bool
   {
-    return Save?.instance?.options?.naughtyness;
+    #if NO_FEATURE_NAUGHTYNESS
+    return false;
+    #else
+    return Save?.instance?.options?.naughtyness ?? true;
+    #end
   }
 
   static function set_naughtyness(value:Bool):Bool
   {
+    #if NO_FEATURE_NAUGHTYNESS
+    value = false;
+    #end
+
     var save:Save = Save.instance;
     save.options.naughtyness = value;
     save.flush();
@@ -64,7 +85,7 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll;
+    return Save?.instance?.options?.downscroll #if mobile ?? true #else ?? false #end;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -102,7 +123,7 @@ class Preferences
 
   static function get_zoomCamera():Bool
   {
-    return Save?.instance?.options?.zoomCamera;
+    return Save?.instance?.options?.zoomCamera ?? true;
   }
 
   static function set_zoomCamera(value:Bool):Bool
@@ -115,13 +136,17 @@ class Preferences
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
+   * Always disabled on mobile.
    * @default `false`
    */
   public static var debugDisplay(get, set):Bool;
 
   static function get_debugDisplay():Bool
   {
-    return Save?.instance?.options?.debugDisplay;
+    #if mobile
+    return false;
+    #end
+    return Save?.instance?.options?.debugDisplay ?? false;
   }
 
   static function set_debugDisplay(value:Bool):Bool
@@ -138,13 +163,77 @@ class Preferences
   }
 
   /**
+   * If enabled, haptic feedback will be enabled.
+   * @default `All`
+   */
+  public static var hapticsMode(get, set):HapticsMode;
+
+  static function get_hapticsMode():HapticsMode
+  {
+    var value = Save?.instance?.options?.hapticsMode ?? "All";
+
+    return switch (value)
+    {
+      case "None":
+        HapticsMode.NONE;
+      case "Notes Only":
+        HapticsMode.NOTES_ONLY;
+      default:
+        HapticsMode.ALL;
+    };
+  }
+
+  static function set_hapticsMode(value:HapticsMode):HapticsMode
+  {
+    var string;
+
+    switch (value)
+    {
+      case HapticsMode.NONE:
+        string = "None";
+      case HapticsMode.NOTES_ONLY:
+        string = "Notes Only";
+      default:
+        string = "All";
+    };
+
+    var save:Save = Save.instance;
+    save.options.hapticsMode = string;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * Multiplier of intensity for all the haptic feedback effects.
+   * @default `2.5`
+   */
+  public static var hapticsIntensityMultiplier(get, set):Float;
+
+  static function get_hapticsIntensityMultiplier():Float
+  {
+    return Save?.instance?.options?.hapticsIntensityMultiplier ?? 1;
+  }
+
+  static function set_hapticsIntensityMultiplier(value:Float):Float
+  {
+    var save:Save = Save.instance;
+    save.options.hapticsIntensityMultiplier = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
+   * Always enabled on mobile.
    * @default `true`
    */
   public static var autoPause(get, set):Bool;
 
   static function get_autoPause():Bool
   {
+    #if mobile
+    return true;
+    #end
     return Save?.instance?.options?.autoPause ?? true;
   }
 
@@ -173,6 +262,26 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.autoFullscreen = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * A global audio offset in milliseconds.
+   * This is used to sync the audio.
+   * @default `0`
+   */
+  public static var globalOffset(get, set):Int;
+
+  static function get_globalOffset():Int
+  {
+    return Save?.instance?.options?.globalOffset ?? 0;
+  }
+
+  static function set_globalOffset(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.globalOffset = value;
     save.flush();
     return value;
   }
@@ -228,7 +337,7 @@ class Preferences
 
   static function get_unlockedFramerate():Bool
   {
-    return Save?.instance?.options?.unlockedFramerate;
+    return Save?.instance?.options?.unlockedFramerate ?? false;
   }
 
   static function set_unlockedFramerate(value:Bool):Bool
@@ -344,44 +453,6 @@ class Preferences
   }
 
   /**
-   * The game will save any screenshots taken to this format.
-   * @default `PNG`
-   */
-  public static var saveFormat(get, set):Any;
-
-  static function get_saveFormat():Any
-  {
-    return Save?.instance?.options?.screenshot?.saveFormat ?? 'PNG';
-  }
-
-  static function set_saveFormat(value):Any
-  {
-    var save:Save = Save.instance;
-    save.options.screenshot.saveFormat = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * The game will save JPEG screenshots with this quality percentage.
-   * @default `80`
-   */
-  public static var jpegQuality(get, set):Int;
-
-  static function get_jpegQuality():Int
-  {
-    return Save?.instance?.options?.screenshot?.jpegQuality ?? 80;
-  }
-
-  static function set_jpegQuality(value:Int):Int
-  {
-    var save:Save = Save.instance;
-    save.options.screenshot.jpegQuality = value;
-    save.flush();
-    return value;
-  }
-
-  /**
    * Loads the user's preferences from the save data and apply them.
    */
   public static function init():Void
@@ -394,8 +465,16 @@ class Preferences
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end
+
+    #if desktop
     // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
     FlxG.fullscreen = Preferences.autoFullscreen;
+    #end
+
+    #if mobile
+    // Apply the allowScreenTimeout setting.
+    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    #end
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void
@@ -411,18 +490,88 @@ class Preferences
     if (show)
     {
       // Enable the debug display.
-      FlxG.stage.addChild(Main.fpsCounter);
+      FlxG.game.parent.addChild(Main.fpsCounter);
+
       #if !html5
-      FlxG.stage.addChild(Main.memoryCounter);
+      FlxG.game.parent.addChild(Main.memoryCounter);
       #end
     }
     else
     {
       // Disable the debug display.
-      FlxG.stage.removeChild(Main.fpsCounter);
+      FlxG.game.parent.removeChild(Main.fpsCounter);
+
       #if !html5
-      FlxG.stage.removeChild(Main.memoryCounter);
+      FlxG.game.parent.removeChild(Main.memoryCounter);
       #end
     }
   }
+
+  #if mobile
+  /**
+   * If enabled, device will be able to sleep on its own.
+   * @default `false`
+   */
+  public static var screenTimeout(get, set):Bool;
+
+  static function get_screenTimeout():Bool
+  {
+    return Save?.instance?.mobileOptions?.screenTimeout ?? false;
+  }
+
+  static function set_screenTimeout(value:Bool):Bool
+  {
+    if (value != Save.instance.mobileOptions.screenTimeout) lime.system.System.allowScreenTimeout = value;
+
+    var save:Save = Save.instance;
+    save.mobileOptions.screenTimeout = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * Controls Scheme for the hitbox.
+   * @default `4 Lanes`
+   */
+  public static var controlsScheme(get, set):String;
+
+  static function get_controlsScheme():String
+  {
+    return Save?.instance?.mobileOptions?.controlsScheme ?? FunkinHitboxControlSchemes.Arrows;
+  }
+
+  static function set_controlsScheme(value:String):String
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.controlsScheme = value;
+    save.flush();
+    return value;
+  }
+
+  #if FEATURE_MOBILE_IAP
+  /**
+   * If bought, the game will not show any ads.
+   * @default `false`
+   */
+  @:unreflective
+  public static var noAds(get, set):Bool;
+
+  @:unreflective
+  static function get_noAds():Bool
+  {
+    if (InAppPurchasesUtil.hasInitialized) noAds = InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID);
+    var returnedValue = Save?.instance?.mobileOptions?.noAds ?? false;
+    return returnedValue;
+  }
+
+  @:unreflective
+  static function set_noAds(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.mobileOptions.noAds = value;
+    save.flush();
+    return value;
+  }
+  #end
+  #end
 }

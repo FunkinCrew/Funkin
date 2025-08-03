@@ -16,8 +16,8 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   var fadingStatus:FadeStatus = OFF;
   var fadeAnimIndex:Int = 0;
 
-  var animInInfo:FramesJSFLInfo;
-  var animOutInfo:FramesJSFLInfo;
+  var animInInfo:Null<FramesJSFLInfo>;
+  var animOutInfo:Null<FramesJSFLInfo>;
 
   var intendedYPos:Float = 0;
   var intendedAlpha:Float = 0;
@@ -91,9 +91,9 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
       for (i in 0...len)
       {
-        var animFrame:Int = Math.round(levels[i].value * 12);
+        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 12);
 
-        #if desktop
+        #if sys
         // Web version scales with the Flixel volume level.
         // This line brings platform parity but looks worse.
         // animFrame = Math.round(animFrame * FlxG.sound.volume);
@@ -113,8 +113,13 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
    * @param animInfo Should not be confused with animInInfo!
    *                 This is merely a local var for the function!
    */
-  function doFade(animInfo:FramesJSFLInfo):Void
+  function doFade(animInfo:Null<FramesJSFLInfo>):Void
   {
+    if (animInfo == null)
+    {
+      return;
+    }
+
     fadeTimer += FlxG.elapsed;
     if (fadeTimer >= 1 / 24)
     {
@@ -181,6 +186,9 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
       animInInfo = FramesJSFLParser.parse(animInfoPath + '/In.txt');
       animOutInfo = FramesJSFLParser.parse(animInfoPath + '/Out.txt');
+
+      if (animInInfo == null) trace("[ERROR] Failed to load data for animInInfo, is the path provided correct?");
+      if (animOutInfo == null) trace("[ERROR] Failed to load data for animOutInfo, is the path provided correct?");
     }
 
     playAnimation("idle", true, false, false);

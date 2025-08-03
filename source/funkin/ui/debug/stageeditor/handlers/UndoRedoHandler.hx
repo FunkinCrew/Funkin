@@ -46,7 +46,7 @@ class UndoRedoHandler
           state.selectedSprite.x = pos[0];
           state.selectedSprite.y = pos[1];
 
-          state.updateDialog(StageEditorDialogType.OBJECT);
+          state.updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
         }
 
       case OBJECT_CREATED: // this removes the object
@@ -66,7 +66,9 @@ class UndoRedoHandler
             obj.destroy();
 
             state.updateArray();
-            state.updateDialog(StageEditorDialogType.OBJECT);
+            state.updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+            state.updateDialog(StageEditorDialogType.OBJECT_ANIMS);
+            state.updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
             trace("found object");
 
             continue;
@@ -86,7 +88,9 @@ class UndoRedoHandler
         createAndPushAction(state, OBJECT_CREATED, !redo);
         state.add(obj);
 
-        state.updateDialog(StageEditorDialogType.OBJECT);
+        state.updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+        state.updateDialog(StageEditorDialogType.OBJECT_ANIMS);
+        state.updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
         state.updateArray();
 
       case OBJECT_ROTATED: // primarily copied from OBJECT_MOVED
@@ -102,7 +106,7 @@ class UndoRedoHandler
         {
           createAndPushAction(state, actionToDo.type, !redo);
           state.selectedSprite.angle = angle;
-          state.updateDialog(StageEditorDialogType.OBJECT);
+          state.updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
         }
 
       default: // do nothing dumbass

@@ -38,7 +38,11 @@ typedef RegistryTypeParams =
  */
 class RegistryMacro
 {
-  static final DATA_FILE_BASE_PATH:String = 'assets/preload/data';
+  #if ios
+  static final DATA_FILE_BASE_PATH:String = "../../../../../assets/preload/data";
+  #else
+  static final DATA_FILE_BASE_PATH:String = "assets/preload/data";
+  #end
 
   /**
    * Builds the registry class.

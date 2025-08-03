@@ -6,6 +6,7 @@ import funkin.ui.story.ScriptedLevel;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
+@:nullSafety
 class LevelRegistry extends BaseRegistry<Level, LevelData> implements ISingleton implements DefaultRegistryImpl
 {
   /**

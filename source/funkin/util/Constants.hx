@@ -8,6 +8,7 @@ import lime.app.Application;
 /**
  * A store of unchanging, globally relevant values.
  */
+@:nullSafety
 class Constants
 {
   /**
@@ -70,16 +71,6 @@ class Constants
    * This is usually fetched from the Newgrounds API but we use this as a fallback.
    */
   public static final URL_MERCH_FALLBACK:String = 'https://needlejuicerecords.com/en-ca/pages/friday-night-funkin';
-
-  /**
-   * Preloader sitelock.
-   * Matching is done by `FlxStringUtil.getDomain`, so any URL on the domain will work.
-   * The first link in this list is the one users will be redirected to if they try to access the game from a different URL.
-   */
-  public static final SITE_LOCK:Array<String> = [
-    "https://www.newgrounds.com/portal/view/770371", // Newgrounds, baybee!
-    FlxBasePreloader.LOCAL // localhost for dev stuff
-  ];
 
   /**
    * Link to download the game on Itch.io.
@@ -172,14 +163,6 @@ class Constants
    * Color for the preloader site lock link
    */
   public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = 0xEEB211;
-
-  /**
-   * LANGUAGE
-   */
-  // ==============================
-  public static final SITE_LOCK_TITLE:String = "You Loser!";
-
-  public static final SITE_LOCK_DESC:String = "This isn't Newgrounds!\nGo play Friday Night Funkin' on Newgrounds:";
 
   /**
    * GAME DEFAULTS
@@ -538,6 +521,11 @@ class Constants
   public static final EXT_CHART = "fnfc";
 
   /**
+   * The file extension used when exporting stage files.
+   */
+  public static final EXT_STAGE = "fnfs";
+
+  /**
    * The file extension used when loading audio files.
    */
   public static final EXT_SOUND = #if web "mp3" #else "ogg" #end;
@@ -571,6 +559,11 @@ class Constants
    */
   public static final GHOST_TAP_DELAY:Float = 3 / 8;
   #end
+
+  /**
+   * Otherwise known as "The FuckCunt Variable"
+   */
+  public static final CENSOR_EXPLETIVES:Bool = #if CENSOR_EXPLETIVES true #else false #end;
 
   /**
    * The maximum number of previous file paths for the Chart Editor to remember.
@@ -607,4 +600,34 @@ class Constants
    * 0.04 = 4% of distance per frame.
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
+
+  /**
+   * Default period value for vibration.
+   */
+  public inline static final DEFAULT_VIBRATION_PERIOD:Float = 0.1;
+
+  /**
+   * Default duration value for vibration.
+   */
+  public inline static final DEFAULT_VIBRATION_DURATION:Float = 0.1;
+
+  /**
+   * Min vibration amplitude.
+   */
+  public inline static final MIN_VIBRATION_AMPLITUDE:Float = 0.25;
+
+  /**
+   * Default vibration amplitude.
+   */
+  public inline static final DEFAULT_VIBRATION_AMPLITUDE:Float = 0.5;
+
+  /**
+   * Max vibration amplitude.
+   */
+  public inline static final MAX_VIBRATION_AMPLITUDE:Float = 1;
+
+  /**
+   * Default vibration sharpness.
+   */
+  public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
 }

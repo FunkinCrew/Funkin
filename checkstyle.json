@@ -70,9 +70,10 @@
     },
     {
       "props": {
+        "severity": "IGNORE",
+
         "policy": "aligned",
-        "allowSingleline": true,
-        "severity": "INFO"
+        "allowSingleline": true
       },
       "type": "ConditionalCompilation"
     },

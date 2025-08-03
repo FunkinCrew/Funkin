@@ -13,7 +13,6 @@ import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
-import lime.ui.Haptic;
 
 /**
  * A core class which handles receiving player input and interpreting it into game actions.
@@ -64,7 +63,9 @@ class Controls extends FlxActionSet
   var _freeplay_jump_to_top = new FunkinAction(Action.FREEPLAY_JUMP_TO_TOP);
   var _freeplay_jump_to_bottom = new FunkinAction(Action.FREEPLAY_JUMP_TO_BOTTOM);
   var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
+  #if FEATURE_DEBUG_MENU
   var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
+  #end
   #if FEATURE_CHART_EDITOR
   var _debug_chart = new FunkinAction(Action.DEBUG_CHART);
   #end
@@ -287,10 +288,12 @@ class Controls extends FlxActionSet
   inline function get_CUTSCENE_ADVANCE()
     return _cutscene_advance.check();
 
+  #if FEATURE_DEBUG_MENU
   public var DEBUG_MENU(get, never):Bool;
 
   inline function get_DEBUG_MENU()
     return _debug_menu.check();
+  #end
 
   #if FEATURE_CHART_EDITOR
   public var DEBUG_CHART(get, never):Bool;
@@ -321,7 +324,7 @@ class Controls extends FlxActionSet
   inline function get_VOLUME_MUTE()
     return _volume_mute.check();
 
-  public function new(name, scheme:KeyboardScheme = null)
+  public function new(name, ?scheme:KeyboardScheme)
   {
     super(name);
 
@@ -346,7 +349,7 @@ class Controls extends FlxActionSet
     add(_freeplay_jump_to_top);
     add(_freeplay_jump_to_bottom);
     add(_cutscene_advance);
-    add(_debug_menu);
+    #if FEATURE_DEBUG_MENU add(_debug_menu); #end
     #if FEATURE_CHART_EDITOR add(_debug_chart); #end
     #if FEATURE_STAGE_EDITOR add(_debug_stage); #end
     add(_volume_up);
@@ -369,7 +372,7 @@ class Controls extends FlxActionSet
     setKeyboardScheme(scheme, false);
   }
 
-  override function update()
+  override function update():Void
   {
     super.update();
   }
@@ -474,7 +477,7 @@ class Controls extends FlxActionSet
       case FREEPLAY_JUMP_TO_TOP: _freeplay_jump_to_top;
       case FREEPLAY_JUMP_TO_BOTTOM: _freeplay_jump_to_bottom;
       case CUTSCENE_ADVANCE: _cutscene_advance;
-      case DEBUG_MENU: _debug_menu;
+      #if FEATURE_DEBUG_MENU case DEBUG_MENU: _debug_menu; #end
       #if FEATURE_CHART_EDITOR case DEBUG_CHART: _debug_chart; #end
       #if FEATURE_STAGE_EDITOR case DEBUG_STAGE: _debug_stage; #end
       case VOLUME_UP: _volume_up;
@@ -485,8 +488,7 @@ class Controls extends FlxActionSet
 
   static function init():Void
   {
-    var actions = new FlxActionManager();
-    FlxG.inputs.add(actions);
+    FlxG.inputs.addUniqueType(new FlxActionManager());
   }
 
   /**
@@ -559,8 +561,10 @@ class Controls extends FlxActionSet
         func(_freeplay_jump_to_bottom, JUST_PRESSED);
       case CUTSCENE_ADVANCE:
         func(_cutscene_advance, JUST_PRESSED);
+      #if FEATURE_DEBUG_MENU
       case DEBUG_MENU:
         func(_debug_menu, JUST_PRESSED);
+      #end
       #if FEATURE_CHART_EDITOR
       case DEBUG_CHART:
         func(_debug_chart, JUST_PRESSED);
@@ -726,11 +730,6 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, state) addKeys(action, keys, state));
   }
 
-  public function bindSwipe(control:Control, swipeDir:FlxDirectionFlags = FlxDirectionFlags.UP, ?swpLength:Float = 90)
-  {
-    forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press, swpLength)));
-  }
-
   /**
    * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
    * If binder is a literal you can inline this
@@ -788,7 +787,9 @@ class Controls extends FlxActionSet
     bindKeys(Control.FREEPLAY_JUMP_TO_TOP, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_TOP));
     bindKeys(Control.FREEPLAY_JUMP_TO_BOTTOM, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_BOTTOM));
     bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
+    #if FEATURE_DEBUG_MENU
     bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
+    #end
     #if FEATURE_CHART_EDITOR
     bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(scheme, Control.DEBUG_CHART));
     #end
@@ -798,8 +799,6 @@ class Controls extends FlxActionSet
     bindKeys(Control.VOLUME_UP, getDefaultKeybinds(scheme, Control.VOLUME_UP));
     bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(scheme, Control.VOLUME_DOWN));
     bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(scheme, Control.VOLUME_MUTE));
-
-    bindMobileLol();
   }
 
   function getDefaultKeybinds(scheme:KeyboardScheme, control:Control):Array<FlxKey>
@@ -830,7 +829,7 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
           case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
           case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
-          case Control.DEBUG_MENU: return [GRAVEACCENT];
+          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
           #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
           case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
@@ -861,7 +860,7 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
           case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
           case Control.CUTSCENE_ADVANCE: return [G, Z];
-          case Control.DEBUG_MENU: return [GRAVEACCENT];
+          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
           #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
           case Control.VOLUME_UP: return [PLUS];
@@ -892,7 +891,7 @@ class Controls extends FlxActionSet
           case Control.FREEPLAY_JUMP_TO_TOP: return [];
           case Control.FREEPLAY_JUMP_TO_BOTTOM: return [];
           case Control.CUTSCENE_ADVANCE: return [ENTER];
-          case Control.DEBUG_MENU: return [];
+          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return []; #end
           #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
           #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
           case Control.VOLUME_UP: return [NUMPADPLUS];
@@ -904,30 +903,6 @@ class Controls extends FlxActionSet
     }
 
     return [];
-  }
-
-  function bindMobileLol()
-  {
-    #if FLX_TOUCH
-    // MAKE BETTER TOUCH BIND CODE
-
-    bindSwipe(Control.NOTE_UP, FlxDirectionFlags.UP, 40);
-    bindSwipe(Control.NOTE_DOWN, FlxDirectionFlags.DOWN, 40);
-    bindSwipe(Control.NOTE_LEFT, FlxDirectionFlags.LEFT, 40);
-    bindSwipe(Control.NOTE_RIGHT, FlxDirectionFlags.RIGHT, 40);
-
-    // feels more like drag when up/down are inversed
-    bindSwipe(Control.UI_UP, FlxDirectionFlags.DOWN);
-    bindSwipe(Control.UI_DOWN, FlxDirectionFlags.UP);
-    bindSwipe(Control.UI_LEFT, FlxDirectionFlags.LEFT);
-    bindSwipe(Control.UI_RIGHT, FlxDirectionFlags.RIGHT);
-    #end
-
-    #if android
-    forEachBound(Control.BACK, function(action, pres) {
-      action.add(new FlxActionInputDigitalAndroid(FlxAndroidKey.BACK, JUST_PRESSED));
-    });
-    #end
   }
 
   function removeKeyboard()
@@ -1012,7 +987,9 @@ class Controls extends FlxActionSet
       Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
       Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
       Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
+      #if FEATURE_DEBUG_MENU
       Control.DEBUG_MENU => getDefaultGamepadBinds(Control.DEBUG_MENU),
+      #end
       #if FEATURE_CHART_EDITOR
       Control.DEBUG_CHART => getDefaultGamepadBinds(Control.DEBUG_CHART),
       #end
@@ -1067,17 +1044,19 @@ class Controls extends FlxActionSet
       case Control.FREEPLAY_CHAR_SELECT:
         return [X];
       case Control.FREEPLAY_JUMP_TO_TOP:
-        return [];
+        return [RIGHT_STICK_DIGITAL_UP];
       case Control.FREEPLAY_JUMP_TO_BOTTOM:
-        return [];
+        return [RIGHT_STICK_DIGITAL_DOWN];
       case Control.VOLUME_UP:
         [];
       case Control.VOLUME_DOWN:
         [];
       case Control.VOLUME_MUTE:
         [];
+      #if FEATURE_DEBUG_MENU
       case Control.DEBUG_MENU:
         [];
+      #end
       #if FEATURE_CHART_EDITOR
       case Control.DEBUG_CHART:
         [];
@@ -1099,13 +1078,6 @@ class Controls extends FlxActionSet
   public function bindButtons(control:Control, id, buttons)
   {
     forEachBound(control, function(action, state) addButtons(action, buttons, state, id));
-  }
-
-  public function touchShit(control:Control, id)
-  {
-    forEachBound(control, function(action, state) {
-      // action
-    });
   }
 
   /**
@@ -1469,163 +1441,6 @@ class FunkinAction extends FlxActionDigital
   }
 }
 
-class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
-{
-  var touchMap:Map<Int, Swipes> = new Map();
-
-  var vibrationSteps:Int = 5;
-  var curStep:Int = 5;
-  var activateLength:Float = 90;
-  var hapticPressure:Int = 100;
-
-  public function new(swipeDir:FlxDirectionFlags = FlxDirectionFlags.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
-  {
-    super(OTHER, swipeDir.toInt(), Trigger);
-
-    activateLength = swipeLength;
-  }
-
-  // fix right swipe
-  // make so cant double swipe during gameplay
-  // hold notes?
-
-  override function update():Void
-  {
-    super.update();
-
-    #if FLX_TOUCH
-    for (touch in FlxG.touches.list)
-    {
-      if (touch.justPressed)
-      {
-        var pos:FlxPoint = new FlxPoint(touch.screenX, touch.screenY);
-        var pos2:FlxPoint = new FlxPoint(touch.screenX, touch.screenY);
-
-        var swp:Swipes =
-          {
-            initTouchPos: pos,
-            curTouchPos: pos2,
-            touchAngle: 0,
-            touchLength: 0
-          };
-        touchMap[touch.touchPointID] = swp;
-
-        curStep = 1;
-        Haptic.vibrate(40, 70);
-      }
-      if (touch.pressed)
-      {
-        var daSwipe = touchMap[touch.touchPointID];
-
-        daSwipe.curTouchPos.set(touch.screenX, touch.screenY);
-
-        var dx = daSwipe.initTouchPos.x - touch.screenX;
-        var dy = daSwipe.initTouchPos.y - touch.screenY;
-
-        daSwipe.touchAngle = Math.atan2(dy, dx);
-        daSwipe.touchLength = Math.sqrt(dx * dx + dy * dy);
-
-        FlxG.watch.addQuick("LENGTH", daSwipe.touchLength);
-        FlxG.watch.addQuick("ANGLE", FlxAngle.asDegrees(daSwipe.touchAngle));
-
-        if (daSwipe.touchLength >= (activateLength / vibrationSteps) * curStep)
-        {
-          curStep += 1;
-          // Haptic.vibrate(Std.int(hapticPressure / (curStep * 1.5)), 50);
-        }
-      }
-
-      if (touch.justReleased)
-      {
-        touchMap.remove(touch.touchPointID);
-      }
-
-      /* switch (inputID)
-        {
-          case FlxDirectionFlags.UP:
-            return
-          case FlxDirectionFlags.DOWN:
-        }
-       */
-    }
-    #end
-  }
-
-  override public function check(Action:FlxAction):Bool
-  {
-    for (swp in touchMap)
-    {
-      var degAngle = FlxAngle.asDegrees(swp.touchAngle);
-
-      switch (trigger)
-      {
-        case JUST_PRESSED:
-          if (swp.touchLength >= activateLength)
-          {
-            if (inputID == FlxDirectionFlags.UP.toInt())
-            {
-              if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
-            }
-            else if (inputID == FlxDirectionFlags.DOWN.toInt())
-            {
-              if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
-            }
-            else if (inputID == FlxDirectionFlags.LEFT.toInt())
-            {
-              if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
-            }
-            else if (inputID == FlxDirectionFlags.RIGHT.toInt())
-            {
-              if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
-            }
-          }
-        default:
-      }
-    }
-
-    return false;
-  }
-
-  function properTouch(swipe:Swipes):Bool
-  {
-    curStep = 1;
-    Haptic.vibrate(100, 30);
-    swipe.initTouchPos.set(swipe.curTouchPos.x, swipe.curTouchPos.y);
-    return true;
-  }
-}
-
-// Maybe this can be committed to main HaxeFlixel repo?
-#if android
-class FlxActionInputDigitalAndroid extends FlxActionInputDigital
-{
-  /**
-   * Android buttons action input
-   * @param	androidKeyID Key identifier (FlxAndroidKey.BACK, FlxAndroidKey.MENU... those are the only 2 android specific ones)
-   * @param	Trigger What state triggers this action (PRESSED, JUST_PRESSED, RELEASED, JUST_RELEASED)
-   */
-  public function new(androidKeyID:FlxAndroidKey, Trigger:FlxInputState)
-  {
-    super(FlxInputDevice.OTHER, androidKeyID, Trigger);
-  }
-
-  override public function check(Action:FlxAction):Bool
-  {
-    return switch (trigger)
-    {
-      #if android
-      case PRESSED: FlxG.android.checkStatus(inputID, PRESSED) || FlxG.android.checkStatus(inputID, PRESSED);
-      case RELEASED: FlxG.android.checkStatus(inputID, RELEASED) || FlxG.android.checkStatus(inputID, JUST_RELEASED);
-      case JUST_PRESSED: FlxG.android.checkStatus(inputID, JUST_PRESSED);
-      case JUST_RELEASED: FlxG.android.checkStatus(inputID, JUST_RELEASED);
-      #end
-
-      default: false;
-    }
-  }
-}
-#end
-
 /**
  * Since, in many cases multiple actions should use similar keys, we don't want the
  * rebinding UI to list every action. ActionBinders are what the user percieves as
@@ -1664,7 +1479,7 @@ enum Control
   VOLUME_DOWN;
   VOLUME_MUTE;
   // DEBUG
-  DEBUG_MENU;
+  #if FEATURE_DEBUG_MENU DEBUG_MENU; #end
   #if FEATURE_CHART_EDITOR DEBUG_CHART; #end
   #if FEATURE_STAGE_EDITOR DEBUG_STAGE; #end
 }
@@ -1720,7 +1535,9 @@ enum abstract Action(String) to String from String
   var VOLUME_DOWN = "volume_down";
   var VOLUME_MUTE = "volume_mute";
   // DEBUG
+  #if FEATURE_DEBUG_MENU
   var DEBUG_MENU = "debug_menu";
+  #end
   #if FEATURE_CHART_EDITOR
   var DEBUG_CHART = "debug_chart";
   #end

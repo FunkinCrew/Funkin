@@ -5,13 +5,13 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.util.ClipboardUtil;
-import funkin.util.SerializerUtil;
 
 using Lambda;
 
 /**
  * Utility functions for working with song data, including note data, event data, metadata, etc.
  */
+@:nullSafety
 class SongDataUtils
 {
   /**
@@ -28,7 +28,7 @@ class SongDataUtils
       var time:Float = note.time + offset;
       var data:Int = note.data;
       var length:Float = note.length;
-      var kind:String = note.kind;
+      var kind:Null<String> = note.kind;
       return new SongNoteData(time, data, length, kind);
     };
 
@@ -132,7 +132,7 @@ class SongDataUtils
    * Create an array of notes whose note data is flipped (player becomes opponent and vice versa)
    * Does not mutate the original array.
    */
-  public static function flipNotes(notes:Array<SongNoteData>, ?strumlineSize:Int = 4):Array<SongNoteData>
+  public static function flipNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4):Array<SongNoteData>
   {
     return notes.map(function(note:SongNoteData):SongNoteData {
       var newData = note.data;
@@ -150,7 +150,7 @@ class SongDataUtils
    *
    * Offset the provided array of notes such that the first note is at 0 milliseconds.
    */
-  public static function buildNoteClipboard(notes:Array<SongNoteData>, ?timeOffset:Int = null):Array<SongNoteData>
+  public static function buildNoteClipboard(notes:Array<SongNoteData>, ?timeOffset:Int):Array<SongNoteData>
   {
     if (notes.length == 0) return notes;
     if (timeOffset == null) timeOffset = Std.int(notes[0].time);
@@ -162,7 +162,7 @@ class SongDataUtils
    *
    * Offset the provided array of events such that the first event is at 0 milliseconds.
    */
-  public static function buildEventClipboard(events:Array<SongEventData>, ?timeOffset:Int = null):Array<SongEventData>
+  public static function buildEventClipboard(events:Array<SongEventData>, ?timeOffset:Int):Array<SongEventData>
   {
     if (events.length == 0) return events;
     if (timeOffset == null) timeOffset = Std.int(events[0].time);

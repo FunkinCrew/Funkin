@@ -6,6 +6,7 @@ import funkin.modding.IScriptedClass;
 /**
  * Utility functions to assist with handling scripted classes.
  */
+@:nullSafety
 class ScriptEventDispatcher
 {
   /**

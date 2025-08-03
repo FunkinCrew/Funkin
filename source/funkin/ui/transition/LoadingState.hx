@@ -1,5 +1,6 @@
 package funkin.ui.transition;
 
+import funkin.data.notestyle.NoteStyleRegistry;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
@@ -263,7 +264,74 @@ class LoadingState extends MusicBeatSubState
 
     var shouldPreloadLevelAssets:Bool = !(params?.minimalMode ?? false);
 
-    if (shouldPreloadLevelAssets) preloadLevelAssets();
+    if (shouldPreloadLevelAssets)
+    {
+      preloadLevelAssets();
+
+      // Cache the note style.
+      var songDifficulty = params.targetSong.getDifficulty(params.targetDifficulty, params.targetVariation);
+      if (songDifficulty != null)
+      {
+        var noteStyle = NoteStyleRegistry.instance.fetchEntry(songDifficulty.noteStyle);
+        FunkinMemory.cacheNoteStyle(noteStyle);
+      }
+
+      // TODO: This sucks lol.
+      if (params.targetSong.songName == "2hot")
+      {
+        var spritesToCache = [
+          "wked1_cutscene_1_can",
+          "spraypaintExplosionEZ",
+          "SpraypaintExplosion",
+          "CanImpactParticle",
+          "spraycanAtlas/spritemap1"
+        ];
+
+        var soundsToCache = [
+          "Darnell_Lighter",
+          "fuse_burning",
+          "Gun_Prep",
+          "Kick_Can_FORWARD",
+          "Kick_Can_UP",
+          "Lightning1",
+          "Lightning2",
+          "Lightning3",
+          "Pico_Bonk",
+          "Shoot_1",
+          "shot1",
+          "shot2",
+          "shot3",
+          "shot4"
+        ];
+
+        for (sprite in spritesToCache)
+        {
+          trace('Queueing $sprite to preload.');
+          // new Future<String>(function() {
+          var path = Paths.image(sprite, "weekend1");
+          funkin.FunkinMemory.cacheTexture(path);
+          // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
+          // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
+          if (path.endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || path.endsWith('spritemap1.astc') #end)
+          {
+            trace('Preloading FlxAnimate asset: ${path}');
+            openfl.Assets.getBitmapData(path, true);
+          }
+          // return '${path} successfuly loaded.';
+          // }, true);
+        }
+
+        for (sound in soundsToCache)
+        {
+          trace('Queueing $sound to preload.');
+          new Future<String>(function() {
+            var path = Paths.sound(sound, "weekend1");
+            funkin.FunkinMemory.cacheSound(path);
+            return '${path} successfuly loaded.';
+          }, true);
+        }
+      }
+    }
 
     if (asSubState)
     {
@@ -271,6 +339,11 @@ class LoadingState extends MusicBeatSubState
     }
     else
     {
+      // funkin.FunkinMemory.clearFreeplay();
+      FlxG.signals.preStateSwitch.addOnce(function() {
+        funkin.FunkinMemory.clearFreeplay();
+        funkin.FunkinMemory.purgeCache(true);
+      });
       FlxG.switchState(playStateCtor);
     }
     #end
@@ -290,88 +363,44 @@ class LoadingState extends MusicBeatSubState
   static function preloadLevelAssets():Void
   {
     // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
-    FunkinSprite.preparePurgeCache();
-    FunkinSprite.cacheTexture(Paths.image('healthBar'));
-    FunkinSprite.cacheTexture(Paths.image('menuDesat'));
-    // Lord have mercy on me and this caching -anysad
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/combo'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num0'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num1'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num2'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num3'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num4'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num5'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num6'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num7'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num8'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/num9'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/combo'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num0'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num1'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num2'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num3'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num4'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num5'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num6'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num7'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num8'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/num9'));
-    FunkinSprite.cacheTexture(Paths.image('notes', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('noteSplashes', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('noteStrumline', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('NOTE_hold_assets'));
-
-    FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/ready', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/set', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('ui/countdown/funkin/go', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/ready', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/set', 'shared'));
-    FunkinSprite.cacheTexture(Paths.image('ui/countdown/pixel/go', 'shared'));
-
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/sick'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/good'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/bad'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/funkin/shit'));
-
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/sick'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/good'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/bad'));
-    FunkinSprite.cacheTexture(Paths.image('ui/popup/pixel/shit'));
+    // FunkinSprite.preparePurgeCache();
+    // funkin.FunkinMemory.purgeSoundCache();
 
     // List all image assets in the level's library.
+
     // This is crude and I want to remove it when we have a proper asset caching system.
     // TODO: Get rid of this junk!
-    var library = PlayStatePlaylist.campaignId != null ? openfl.utils.Assets.getLibrary(PlayStatePlaylist.campaignId) : null;
+    // var library = PlayStatePlaylist.campaignId != null ? openfl.utils.Assets.getLibrary(PlayStatePlaylist.campaignId) : null;
 
-    if (library == null) return; // We don't need to do anymore precaching.
+    // if (library == null) return; // We don't need to do anymore precaching.
 
-    var assets = library.list(lime.utils.AssetType.IMAGE);
-    trace('Got ${assets.length} assets: ${assets}');
+    // var assets = library.list(lime.utils.AssetType.IMAGE);
+    // trace('Got ${assets.length} assets: ${assets}');
 
     // TODO: assets includes non-images! This is a bug with Polymod
-    for (asset in assets)
-    {
-      // Exclude items of the wrong type.
-      var path = '${PlayStatePlaylist.campaignId}:${asset}';
-      // TODO DUMB HACK DUMB HACK why doesn't filtering by AssetType.IMAGE above work
-      // I will fix this properly later I swear -eric
-      if (!path.endsWith('.png')) continue;
+    // for (asset in assets)
+    // {
+    //   // Exclude items of the wrong type.
+    //   var path = '${PlayStatePlaylist.campaignId}:${asset}';
+    //   // TODO DUMB HACK DUMB HACK why doesn't filtering by AssetType.IMAGE above work
+    //   // I will fix this properly later I swear -eric
+    //   if (!path.endsWith('.png')) continue;
 
-      new Future<String>(function() {
-        FunkinSprite.cacheTexture(path);
-        // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
-        // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
-        if (path.endsWith('spritemap1.png'))
-        {
-          trace('Preloading FlxAnimate asset: ${path}');
-          openfl.Assets.getBitmapData(path, true);
-        }
-        return 'Done precaching ${path}';
-      }, true);
+    //   new Future<String>(function() {
+    //     FunkinSprite.cacheTexture(path);
+    //     // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
+    //     // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
+    //     if (path.endsWith('spritemap1.png'))
+    //     {
+    //       trace('Preloading FlxAnimate asset: ${path}');
+    //       openfl.Assets.getBitmapData(path, true);
+    //     }
+    //     return 'Done precaching ${path}';
+    //   }, true);
 
-      trace('Queued ${path} for precaching');
-      // FunkinSprite.cacheTexture(path);
-    }
+    //   trace('Queued ${path} for precaching');
+    //   // FunkinSprite.cacheTexture(path);
+    // }
 
     // FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
     // FunkinSprite.cacheAllCharacterTextures(player)
@@ -380,7 +409,7 @@ class LoadingState extends MusicBeatSubState
     // FunkinSprite.cacheAllStageTextures(stage)
     // FunkinSprite.cacheAllSongTextures(stage)
 
-    FunkinSprite.purgeCache();
+    // FunkinSprite.purgeCache();
   }
   #end
 

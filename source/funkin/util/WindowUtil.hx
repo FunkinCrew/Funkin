@@ -14,6 +14,7 @@ using StringTools;
 #include <psapi.h>
 ')
 #end
+@:nullSafety
 class WindowUtil
 {
   /**
@@ -85,12 +86,6 @@ class WindowUtil
    */
   public static function initTracy():Void
   {
-    // Apply a marker to indicate frame end for the Tracy profiler.
-    // Do this only if Tracy is configured to prevent lag.
-    openfl.Lib.current.stage.addEventListener(openfl.events.Event.EXIT_FRAME, (e:openfl.events.Event) -> {
-      cpp.vm.tracy.TracyProfiler.frameMark();
-    });
-
     var appInfoMessage = funkin.util.logging.CrashHandler.buildSystemInfo();
 
     trace("Friday Night Funkin': Connection to Tracy profiler successful.");
@@ -108,11 +103,18 @@ class WindowUtil
   public static final windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
 
   /**
+   * Has `initWindowEvents()` been called already?
+   * This is to prevent multiple instances of the same function.
+   */
+  private static var _initializedWindowEvents:Bool = false;
+
+  /**
    * Wires up FlxSignals that happen based on window activity.
    * For example, we can run a callback when the window is closed.
    */
   public static function initWindowEvents():Void
   {
+    if (_initializedWindowEvents) return; // Fix that annoying
     // onUpdate is called every frame just before rendering.
 
     // onExit is called when the game window is closed.
@@ -120,6 +122,7 @@ class WindowUtil
       windowExit.dispatch(exitCode);
     });
 
+    #if desktop
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
@@ -140,6 +143,8 @@ class WindowUtil
         }
       }
     });
+    #end
+    _initializedWindowEvents = true;
   }
 
   /**
