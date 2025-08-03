@@ -114,7 +114,7 @@ class InitState extends FlxState
 
     #if ios
     // Setup Audio session
-    funkin.mobile.external.ios.AudioSession.initialize();
+    funkin.external.ios.AudioSession.initialize();
     #end
 
     // This ain't a pixel art game! (most of the time)
@@ -202,7 +202,7 @@ class InitState extends FlxState
     //
     #if android
     FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
-    funkin.mobile.external.android.CallbackUtil.init();
+    funkin.external.android.CallbackUtil.init();
     #end
 
     //

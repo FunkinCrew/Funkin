@@ -12,6 +12,7 @@ import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
+import funkin.util.WindowUtil;
 import funkin.input.Controls;
 #if mobile
 import funkin.graphics.FunkinCamera;
@@ -156,7 +157,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   function handleFunctionControls():Void
   {
     // Emergency exit button.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
+    if (FlxG.keys.justPressed.F4)
+    {
+      FlxG.switchState(() -> new MainMenuState());
+      WindowUtil.setWindowTitle('Friday Night Funkin\'');
+    }
   }
 
   override function update(elapsed:Float)

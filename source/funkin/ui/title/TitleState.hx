@@ -282,7 +282,7 @@ class TitleState extends MusicBeatState
 
     if (gamepad != null)
     {
-      if (gamepad.justPressed.START) pressedEnter = true;
+      if (gamepad.justPressed.START || gamepad.justPressed.ACCEPT) pressedEnter = true;
     }
 
     // If you spam Enter, we should skip the transition.

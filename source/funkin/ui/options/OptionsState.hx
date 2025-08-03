@@ -198,7 +198,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #end
     #if android
     createItem("OPEN DATA FOLDER", function() {
-      funkin.mobile.external.android.DataFolderUtil.openDataFolder();
+      funkin.external.android.DataFolderUtil.openDataFolder();
     });
     #end
     #if FEATURE_NEWGROUNDS

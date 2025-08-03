@@ -978,7 +978,7 @@ class Project extends HXProject
 
   function configureAndroid()
   {
-    javaPaths.push(Path.join([SOURCE_DIR, 'funkin/mobile/external/android/java']));
+    javaPaths.push(Path.join([SOURCE_DIR, 'funkin/external/android/java']));
 
     if (isRelease())
     {
