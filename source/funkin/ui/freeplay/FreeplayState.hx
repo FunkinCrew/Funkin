@@ -2793,7 +2793,7 @@ class FreeplayState extends MusicBeatSubState
               end: 0.2
             },
           onLoad: function() {
-            FlxG.sound.music.fadeIn(2, 0, 0.4);
+            FlxG.sound.music.fadeIn(2, 0, 0.8);
           }
         });
       if (songDifficulty != null)
