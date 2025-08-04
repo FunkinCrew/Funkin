@@ -619,6 +619,23 @@ class ChartEditorDialogHandler
     };
     inputSongArtist.text = "";
 
+    var inputSongCharter:Null<TextField> = dialog.findComponent('inputSongCharter', TextField);
+    if (inputSongCharter == null) throw 'Could not locate inputSongCharter TextField in Song Metadata dialog';
+    inputSongCharter.onChange = function(event:UIEvent) {
+      var valid:Bool = event.target.text != null && event.target.text != '';
+
+      if (valid)
+      {
+        inputSongCharter.removeClass('invalid-value');
+        newSongMetadata.charter = event.target.text;
+      }
+      else
+      {
+        newSongMetadata.charter = "";
+      }
+    };
+    inputSongCharter.text = "";
+
     var inputStage:Null<DropDown> = dialog.findComponent('inputStage', DropDown);
     if (inputStage == null) throw 'Could not locate inputStage DropDown in Song Metadata dialog';
     inputStage.onChange = function(event:UIEvent) {
