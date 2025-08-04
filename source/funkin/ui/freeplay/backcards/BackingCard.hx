@@ -16,7 +16,6 @@ import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
-import openfl.utils.Assets;
 
 /**
  * A class for the backing cards so they dont have to be part of freeplayState......

@@ -11,7 +11,6 @@ import massive.munit.async.AsyncFactory;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.animation.FlxAnimationController;
-import openfl.utils.Assets;
 import flixel.math.FlxPoint;
 
 @:access(funkin.play.notes.notestyle.NoteStyle)
