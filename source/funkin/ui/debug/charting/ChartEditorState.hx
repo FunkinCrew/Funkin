@@ -32,6 +32,7 @@ import funkin.data.song.SongData.SongOffsets;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongNoteDataUtils;
+import funkin.data.song.importer.ChartManifestData;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
@@ -1250,6 +1251,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   // ==============================
 
   /**
+   * The song manifest data.
+   * If none already exists, it's intialized with the current song name in lower-kebab-case.
+   */
+  var _songManifestData:Null<ChartManifestData> = null;
+  var songManifestData(get, set):ChartManifestData;
+
+  function get_songManifestData():ChartManifestData
+  {
+    if (_songManifestData != null) return _songManifestData;
+    return _songManifestData = new ChartManifestData(getDefaultSongId());
+  }
+
+  function set_songManifestData(value:ChartManifestData):ChartManifestData
+  {
+    return _songManifestData = value;
+  }
+
+  /**
    * The song metadata.
    * - Keys are the variation IDs. At least one (`default`) must exist.
    * - Values are the relevant metadata, ready to be serialized to JSON.
@@ -1530,7 +1549,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_currentSongId():String
   {
-    return currentSongName.toLowerKebabCase().replace(' ', '-').sanitize();
+    return songManifestData.songId;
+  }
+
+  function getDefaultSongId():String
+  {
+    var defaultSongId:String = currentSongName.trim().toLowerKebabCase().sanitize();
+    if (defaultSongId == '') defaultSongId = 'new-song';
+    return defaultSongId;
   }
 
   var currentSongArtist(get, set):String;
