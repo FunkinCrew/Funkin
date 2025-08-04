@@ -1631,7 +1631,7 @@ class FreeplayState extends MusicBeatSubState
     // sets the text of the completion percentage. Perhaps eventually we may want to generalize this,
     // but for now we can just clamp the values between 0 and 100.
     // Fixes issue where it rounds to negative integer overflow on Windows? Which occurs when switching to an unranked song?
-    txtCompletion.text = '${FlxMath.clamp(Math.floor(lerpCompletion * 100), 0, 100)}';
+    txtCompletion.text = '${Math.floor(lerpCompletion * 100).clamp(0, 100)}';
 
     // Right align the completion percentage
     switch (txtCompletion.text.length)
@@ -1876,7 +1876,7 @@ class FreeplayState extends MusicBeatSubState
         {
           var dpiScale = FlxG.stage.window.display.dpi / 160;
 
-          dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
+          dpiScale = dpiScale.clamp(0.5, #if android 1 #else 2 #end);
 
           var moveLength = delta / FlxG.updateFramerate / dpiScale;
           _moveLength += Math.abs(moveLength);
@@ -1903,7 +1903,7 @@ class FreeplayState extends MusicBeatSubState
         _flickEnded = false;
         var dpiScale = FlxG.stage.window.display.dpi / 160;
 
-        dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
+        dpiScale = dpiScale.clamp(0.5, #if android 1 #else 2 #end);
         var velocityMove = flickVelocity * elapsed / dpiScale;
         _moveLength += Math.abs(velocityMove);
         curSelectedFloat -= velocityMove;
@@ -1920,7 +1920,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
+    curSelectedFloat = curSelectedFloat.clamp(0, grpCapsules.countLiving() - 1);
     curSelected = Math.round(curSelectedFloat);
 
     for (i in 0...grpCapsules.members.length)

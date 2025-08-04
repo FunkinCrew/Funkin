@@ -3190,7 +3190,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemPlaybackSpeed.onChange = event -> {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
       pitch = Math.floor(pitch / 0.05) * 0.05; // Round to nearest 5%
-      pitch = Math.max(0.05, Math.min(2.0, pitch)); // Clamp to 5% to 200%
+      pitch = pitch.clamp(0.05, 2.0); // Clamp to 5% to 200%
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       audioVocalTrackGroup.pitch = pitch;
@@ -5898,7 +5898,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
-    playbackRate = FlxMath.clamp(playbackRate, 0.05, 2.0); // Clamp to 5% to 200%
+    playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
     var targetSong:Song;
     try
@@ -6376,7 +6376,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
-    playbackRate = FlxMath.clamp(playbackRate, 0.05, 2.0); // Clamp to 5% to 200%
+    playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
     if (audioInstTrack != null)
     {
@@ -6551,7 +6551,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var instTargetVolume:Float = ((menubarItemVolumeInstrumental.value / 100) ?? 1.0);
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
-    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+    playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
     if (audioInstTrack != null)
     {
       // Prevent the time from skipping back to 0 when the song ends.
@@ -6591,7 +6591,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
     playbackRate = Math.floor(playbackRate / 0.05) * 0.05; // Round to nearest 5%
-    playbackRate = Math.max(0.05, Math.min(2.0, playbackRate)); // Clamp to 5% to 200%
+    playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
     if (audioVocalTrackGroup != null)
     {
