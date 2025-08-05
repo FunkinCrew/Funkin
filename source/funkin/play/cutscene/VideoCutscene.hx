@@ -10,7 +10,7 @@ import funkin.play.PlayState;
 import funkin.graphics.video.FlxVideo;
 #end
 #if hxvlc
-import hxvlc.flixel.FlxVideoSprite;
+import funkin.graphics.video.FunkinVideoSprite;
 #end
 
 /**
@@ -32,7 +32,7 @@ class VideoCutscene
   #end
 
   #if hxvlc
-  static var vid:FlxVideoSprite;
+  static var vid:FunkinVideoSprite;
   #end
 
   /**
@@ -152,7 +152,7 @@ class VideoCutscene
   static function playVideoNative(filePath:String):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FlxVideoSprite(0, 0);
+    vid = new FunkinVideoSprite(0, 0);
 
     if (vid != null)
     {
@@ -170,7 +170,11 @@ class VideoCutscene
             {
               if (spuTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
               {
-                if (vid.bitmap.spuTrack != spuTrack.i_id) vid.bitmap.spuTrack = spuTrack.i_id;
+                if (vid.bitmap.spuTrack != spuTrack.i_id)
+                {
+                  vid.bitmap.spuTrack = spuTrack.i_id;
+                  vid.bitmap.time = 0;
+                }
 
                 break;
               }
@@ -184,8 +188,12 @@ class VideoCutscene
             // {
             //   if (audioTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
             //   {
-            //     if (vid.bitmap.audioTrack != audioTrack.i_id) vid.bitmap.audioTrack = audioTrack.i_id;
-            //
+            //     if (vid.bitmap.audioTrack != audioTrack.i_id)
+            //     {
+            //       vid.bitmap.audioTrack = audioTrack.i_id;
+            //       vid.bitmap.time = 0;
+            //     }
+
             //     break;
             //   }
             // }
