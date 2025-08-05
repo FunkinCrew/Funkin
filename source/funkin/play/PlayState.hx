@@ -1082,13 +1082,6 @@ class PlayState extends MusicBeatSubState
       // And it was frame dependant which we don't like!!
       final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
       Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
-
-      // If, after updating the conductor, the instrumental has finished, end the song immediately.
-      // This helps prevent a major bug where the level suddenly loops back to the start or middle.
-      // if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
-      // {
-      //   if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
-      // }
     }
 
     var pauseButtonCheck:Bool = false;
@@ -2728,8 +2721,8 @@ class PlayState extends MusicBeatSubState
             // Play the miss sound.
             if (event.playSound)
             {
-              if (vocals != null)   vocals.playerVolume = 0;
-            FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+              if (vocals != null) vocals.playerVolume = 0;
+              FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
             }
           }
           else
