@@ -403,6 +403,7 @@ class MainMenuState extends MusicBeatState
   {
     super.finishTransIn();
     canInteract = true;
+    FlxG.keys.enabled = true;
     if (menuItems != null)
     {
       menuItems.busy = false;
