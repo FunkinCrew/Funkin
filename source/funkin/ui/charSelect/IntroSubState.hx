@@ -4,7 +4,7 @@ package funkin.ui.charSelect;
 import funkin.graphics.video.FlxVideo;
 #end
 #if hxvlc
-import hxvlc.flixel.FlxVideoSprite;
+import funkin.graphics.video.FunkinVideoSprite;
 #end
 import funkin.ui.MusicBeatSubState;
 import funkin.save.Save;
@@ -77,12 +77,12 @@ class IntroSubState extends MusicBeatSubState
   #end
 
   #if hxvlc
-  var vid:FlxVideoSprite;
+  var vid:FunkinVideoSprite;
 
   function playVideoNative(filePath:String):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FlxVideoSprite(0, 0);
+    vid = new FunkinVideoSprite(0, 0);
 
     vid.scrollFactor.set();
 
