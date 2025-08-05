@@ -68,11 +68,12 @@ class SongMetadata implements ICloneable<SongMetadata>
   @:jignored
   public var variation:String;
 
-  public function new(songName:String, artist:String, ?variation:String)
+  public function new(songName:String, artist:String, ?charter:String, ?variation:String)
   {
     this.version = SongRegistry.SONG_METADATA_VERSION;
     this.songName = songName;
     this.artist = artist;
+    this.charter = (charter == null) ? null : charter;
     this.timeFormat = 'ms';
     this.divisions = null;
     this.offsets = new SongOffsets();
@@ -96,7 +97,7 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public function clone():SongMetadata
   {
-    var result:SongMetadata = new SongMetadata(this.songName, this.artist, this.variation);
+    var result:SongMetadata = new SongMetadata(this.songName, this.artist, this.charter, this.variation);
     result.version = this.version;
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
@@ -139,7 +140,7 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public function toString():String
   {
-    return 'SongMetadata(${this.songName} by ${this.artist}, variation ${this.variation})';
+    return 'SongMetadata(${this.songName} by ${this.artist}, charted by ${this.charter}, variation ${this.variation})';
   }
 }
 
@@ -1115,6 +1116,23 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   {
     return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
       + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+  }
+
+  public function buildTooltip():String
+  {
+    if ((this.kind?.length ?? 0) == 0) return "";
+
+    var result:String = 'Kind: ${this.kind}';
+    if (this.params.length == 0) return result;
+
+    result += "\nParams:";
+
+    for (param in params)
+    {
+      result += '\n- ${param.name}: ${param.value}';
+    }
+
+    return result;
   }
 }
 

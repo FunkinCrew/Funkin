@@ -11,6 +11,7 @@ package funkin.util;
  * @see https://github.com/HaxeFoundation/hxcpp/blob/master/docs/build_xml/Defines.md
  * @see cpp.vm.Gc
  */
+@:nullSafety
 class MemoryUtil
 {
   public static function buildGCInfo():String

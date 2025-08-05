@@ -34,7 +34,7 @@ class Page<T:PageName> extends FlxGroup
     onSwitch.dispatch(name);
   }
 
-  inline function exit()
+  function exit()
   {
     onExit.dispatch();
   }

@@ -10,6 +10,9 @@ class NoteSprite extends FunkinSprite
 {
   static final DIRECTION_COLORS:Array<String> = ['purple', 'blue', 'green', 'red'];
 
+  /**
+   * The hold note sprite for this note.
+   */
   public var holdNoteSprite:SustainTrail;
 
   var hsvShader:HSVShader;
@@ -95,8 +98,23 @@ class NoteSprite extends FunkinSprite
     return this.direction;
   }
 
+  /**
+   * The note data associated with this note sprite.
+   * This is used to store the strum time, length, and other properties.
+   */
   public var noteData:SongNoteData;
 
+  /**
+   * If this note kind is scoreable (i.e., counted towards score and accuracy)
+   * Only accessible in scripts
+   * Defaults to true
+   */
+  public var scoreable:Bool = true;
+
+  /**
+   * Whether this note is a hold note.
+   * This is true if the length is greater than 0.
+   */
   public var isHoldNote(get, never):Bool;
 
   function get_isHoldNote():Bool
@@ -153,6 +171,8 @@ class NoteSprite extends FunkinSprite
     this.direction = direction;
 
     this.hsvShader = new HSVShader();
+
+    this.alpha = 1;
 
     setupNoteGraphic(noteStyle);
   }

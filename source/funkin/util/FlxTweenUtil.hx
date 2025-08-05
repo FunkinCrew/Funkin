@@ -2,6 +2,7 @@ package funkin.util;
 
 import flixel.tweens.FlxTween;
 
+@:nullSafety
 class FlxTweenUtil
 {
   public static function pauseTween(tween:FlxTween):Void

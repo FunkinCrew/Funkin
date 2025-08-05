@@ -82,7 +82,7 @@ class ModMenu extends Page<OptionsState.OptionsMenuPageName>
       grpMods.remove(grpMods.members[0], true);
     }
 
-    #if desktop
+    #if sys
     detectedMods = PolymodHandler.getAllMods();
 
     trace('ModMenu: Detected ${detectedMods.length} mods');

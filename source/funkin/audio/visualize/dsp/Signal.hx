@@ -5,12 +5,13 @@ using Lambda;
 /**
   Signal processing miscellaneous utilities.
 **/
+@:nullSafety
 class Signal
 {
   /**
     Returns a smoothed version of the input array using a moving average.
   **/
-  public static function smooth(y:Array<Float>, n:Int):Array<Float>
+  public static function smooth(y:Array<Float>, n:Int):Null<Array<Float>>
   {
     if (n <= 0)
     {

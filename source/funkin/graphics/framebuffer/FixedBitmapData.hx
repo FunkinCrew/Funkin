@@ -10,6 +10,7 @@ import openfl.display3D.textures.TextureBase;
 /**
  * `BitmapData` is kinda broken so I fixed it.
  */
+@:nullSafety
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display.OpenGLRenderer)
 class FixedBitmapData extends BitmapData
@@ -29,7 +30,7 @@ class FixedBitmapData extends BitmapData
    * @param texture the texture
    * @return the bitmap data
    */
-  public static function fromTexture(texture:TextureBase):FixedBitmapData
+  public static function fromTexture(texture:Null<TextureBase>):Null<FixedBitmapData>
   {
     if (texture == null) return null;
     final bitmapData:FixedBitmapData = new FixedBitmapData(texture.__width, texture.__height, true, 0);

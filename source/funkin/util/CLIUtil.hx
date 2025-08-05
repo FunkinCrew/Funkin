@@ -15,19 +15,27 @@ class CLIUtil
   public static function resetWorkingDir():Void
   {
     #if sys
-    var exeDir:String = Path.addTrailingSlash(Path.directory(Sys.programPath()));
-    #if mac
-    exeDir = Path.addTrailingSlash(Path.join([exeDir, '../Resources/']));
-    #end
     var cwd:String = Path.addTrailingSlash(Sys.getCwd());
-    if (cwd == exeDir)
+    var gameDir:String = '';
+    #if android
+    gameDir = Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir());
+    #elseif ios
+    // Why? Because for some reason lime.system.System.documentsDirectory is returning a directory that's different and we're unable to read or write from, so it's disabled and no solution is found...
+    trace('[WARN]: Reseting the Current Working Directory is unavailable on iOS targets');
+    gameDir = cwd;
+    #elseif mac
+    gameDir = Path.addTrailingSlash(Path.join([Path.directory(Sys.programPath()), '../Resources/']));
+    #else
+    gameDir = Path.addTrailingSlash(Path.directory(Sys.programPath()));
+    #end
+    if (cwd == gameDir)
     {
       trace('Working directory is already correct.');
     }
     else
     {
-      trace('Changing working directory from ${Sys.getCwd()} to ${exeDir}');
-      Sys.setCwd(exeDir);
+      trace('Changing working directory from ${Sys.getCwd()} to ${gameDir}');
+      Sys.setCwd(gameDir);
     }
     #end
   }
@@ -72,6 +80,17 @@ class CLIUtil
               result.chart.shouldLoadChart = true;
               result.chart.chartPath = args.shift();
             }
+          case "--stage":
+            if (args.length == 0)
+            {
+              trace('No stage path provided.');
+              printUsage();
+            }
+            else
+            {
+              result.stage.shouldLoadStage = true;
+              result.stage.stagePath = args.shift();
+            }
         }
       }
       else
@@ -82,6 +101,11 @@ class CLIUtil
         {
           result.chart.shouldLoadChart = true;
           result.chart.chartPath = arg;
+        }
+        else if (arg.endsWith(Constants.EXT_STAGE))
+        {
+          result.stage.shouldLoadStage = true;
+          result.stage.stagePath = arg;
         }
         else
         {
@@ -96,7 +120,7 @@ class CLIUtil
 
   static function printUsage():Void
   {
-    trace('Usage: Funkin.exe [--chart <chart>] [--help] [--version]');
+    trace('Usage: Funkin.exe [--chart <chart>] [--stage <stage>] [--help] [--version]');
   }
 
   static function buildDefaultParams():CLIParams
@@ -108,6 +132,11 @@ class CLIUtil
         {
           shouldLoadChart: false,
           chartPath: null
+        },
+      stage:
+        {
+          shouldLoadStage: false,
+          stagePath: null
         }
     };
   }
@@ -138,10 +167,17 @@ typedef CLIParams =
   var args:Array<String>;
 
   var chart:CLIChartParams;
+  var stage:CLIStageParams;
 }
 
 typedef CLIChartParams =
 {
   var shouldLoadChart:Bool;
   var chartPath:Null<String>;
+};
+
+typedef CLIStageParams =
+{
+  var shouldLoadStage:Bool;
+  var stagePath:Null<String>;
 };
