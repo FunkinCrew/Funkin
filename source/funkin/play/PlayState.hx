@@ -639,7 +639,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The ratio for easing the song positon for smoother notes scrolling.
    */
-  static final MUSIC_EASE_RATIO:Float = 33.5;
+  static final MUSIC_EASE_RATIO:Float = 40;
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
@@ -1080,7 +1080,7 @@ class PlayState extends MusicBeatSubState
       // The previous method where it "guessed" the song position based on the elapsed time had some flaws
       // Somtimes the songPosition would exceed the music length causing issues in other places
       // And it was frame dependant which we don't like!!
-      final easeRatio:Float = 1.0 - Math.exp(-MUSIC_EASE_RATIO * elapsed);
+      final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
       Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
 
       // If, after updating the conductor, the instrumental has finished, end the song immediately.
