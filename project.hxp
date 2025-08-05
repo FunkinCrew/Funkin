@@ -60,6 +60,11 @@ class Project extends HXProject
   static final SOURCE_DIR:String = "source";
 
   /**
+   * The relative location of the templates folder.
+   */
+  static final TEMPLATES_DIR:String = "templates";
+
+  /**
    * The fully qualified class path for the game's preloader.
    * Particularly important on HTML5 but we use it on all platforms.
    */
@@ -560,6 +565,9 @@ class Project extends HXProject
     // Tell Lime where to look for the game's source code.
     // If for some reason we have multiple source directories, we can add more entries here.
     this.sources.push(SOURCE_DIR);
+
+    // Templates stuff
+    this.templatePaths.push(TEMPLATES_DIR);
 
     // Tell Lime to run some prebuild and postbuild scripts.
     this.preBuildCallbacks.push(buildHaxeCLICommand(PREBUILD_HX));

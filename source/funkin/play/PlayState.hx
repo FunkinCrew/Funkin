@@ -636,6 +636,11 @@ class PlayState extends MusicBeatSubState
    */
   static final RESYNC_THRESHOLD:Float = 40;
 
+  /**
+   * The ratio for easing the song positon for smoother notes scrolling.
+   */
+  static final MUSIC_EASE_RATIO:Float = 40;
+
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
 
@@ -916,7 +921,7 @@ class PlayState extends MusicBeatSubState
       }
 
       // Display a popup. This blocks the application until the user clicks OK.
-      lime.app.Application.current.window.alert(message, 'Error loading PlayState');
+      funkin.util.WindowUtil.showError('Error loading PlayState', message);
 
       // Force the user back to the main menu.
       if (isSubState)
@@ -1069,19 +1074,14 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      #if mobile
-      // Note scrolling is less smooth on mobile without these arguments!!!
-      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000 * playbackRate, false);
-      #else
-      Conductor.instance.update(); // Normal conductor update.
-      #end
-
-      // If, after updating the conductor, the instrumental has finished, end the song immediately.
-      // This helps prevent a major bug where the level suddenly loops back to the start or middle.
-      // if (Conductor.instance.songPosition >= (FlxG.sound.music.endTime ?? FlxG.sound.music.length))
-      // {
-      //   if (mayPauseGame && !isSongEnd) endSong(skipEndingTransition);
-      // }
+      // Lime has some precision loss when getting the sound current position
+      // Since the notes scrolling is dependant on the sound time that caused it to appear "stuttery" for some people
+      // As a workaround for that, we lerp the conductor position to the music time to fill the gap in this lost precision making the scrolling smoother
+      // The previous method where it "guessed" the song position based on the elapsed time had some flaws
+      // Somtimes the songPosition would exceed the music length causing issues in other places
+      // And it was frame dependant which we don't like!!
+      final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
+      Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
     }
 
     var pauseButtonCheck:Bool = false;
@@ -1912,7 +1912,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       // lolol
-      lime.app.Application.current.window.alert('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
+      funkin.util.WindowUtil.showError('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
     }
   }
 
@@ -2712,12 +2712,18 @@ class PlayState extends MusicBeatSubState
             var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true, Highscore.tallies.combo);
             dispatchEvent(event);
 
+            // Calling event.cancelEvent() skips all the other logic! Neat!
+            if (event.eventCanceled) continue;
+
             trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
             applyScore(event.score, '', event.healthChange, event.isComboBreak);
 
             // Play the miss sound.
-            if (vocals != null) vocals.playerVolume = 0;
-            FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+            if (event.playSound)
+            {
+              if (vocals != null) vocals.playerVolume = 0;
+              FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+            }
           }
           else
           {
@@ -2925,7 +2931,6 @@ class PlayState extends MusicBeatSubState
         if (pressArray[i]) indices.push(i);
       }
     }
-    if (vocals != null) vocals.playerVolume = 0;
 
     applyScore(Scoring.getMissScore(), 'miss', healthChange, true);
 
