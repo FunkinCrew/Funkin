@@ -38,6 +38,7 @@ import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
 
+@:nullSafety
 class TitleState extends MusicBeatState
 {
   /**
@@ -45,19 +46,18 @@ class TitleState extends MusicBeatState
    */
   public static var initialized:Bool = false;
 
-  var blackScreen:FlxSprite;
-  var credGroup:FlxGroup;
-  var textGroup:FlxGroup;
-  var ngSpr:FlxSprite;
+  var blackScreen:Null<FlxSprite>;
+  var credGroup:Null<FlxGroup>;
+  var textGroup:Null<FlxGroup>;
+  var ngSpr:FlxSprite = new FlxSprite(0, FlxG.height * 0.52);
 
   var curWacky:Array<String> = [];
   var lastBeat:Int = 0;
-  var swagShader:ColorSwap;
+  var swagShader:ColorSwap = new ColorSwap();
 
   override public function create():Void
   {
     super.create();
-    swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
     funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
@@ -71,12 +71,12 @@ class TitleState extends MusicBeatState
       startIntro();
   }
 
-  var logoBl:FlxSprite;
-  var outlineShaderShit:TitleOutline;
+  var logoBl:Null<FlxSprite>;
+  var outlineShaderShit:Null<TitleOutline>;
 
-  var gfDance:FlxSpriteOverlay;
+  var gfDance:Null<FlxSpriteOverlay>;
   var danceLeft:Bool = false;
-  var titleText:FlxSprite;
+  var titleText:FlxSprite = new FlxSprite();
   var maskShader = new LeftMaskShader();
 
   function startIntro():Void
@@ -146,8 +146,6 @@ class TitleState extends MusicBeatState
       credGroup.add(blackScreen);
       credGroup.add(textGroup);
     }
-
-    ngSpr = new FlxSprite(0, FlxG.height * 0.52);
 
     if (FlxG.random.bool(1))
     {
@@ -282,7 +280,7 @@ class TitleState extends MusicBeatState
 
     if (gamepad != null)
     {
-      if (gamepad.justPressed.START || gamepad.justPressed.ACCEPT) pressedEnter = true;
+      if (gamepad.justPressed.START) pressedEnter = true;
     }
 
     // If you spam Enter, we should skip the transition.
@@ -294,7 +292,6 @@ class TitleState extends MusicBeatState
 
     if (pressedEnter && !transitioning && skippedIntro)
     {
-      if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
