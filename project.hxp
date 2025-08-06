@@ -109,29 +109,10 @@ class Project extends HXProject
 
   static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil"];
 
-  //
-  // ASTC COMPRESSION
-  //
-
-  /**
-   * The quality of the compression process.
-   * This doesn't exactly reduce the quality of the outputted texture..
-   * But it changes how hard the CPU gotta work to maintin the quality and details of the image while compressing.
-   * possible values: fastest, fast, medium, thorough, exhaustive.
-   */
-  static var ASTC_QUALITY:String = "medium";
-
   /**
    * The team ID to use for the iOS app. Configured in XCode.
    */
   static var IOS_TEAM_ID:String = "Z7G7AVNGSH";
-
-  /**
-   * The block size of the ASTC compressed textures.
-   * Higher block size means lower quality and lighter file size for the generated compressed textures.
-   * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
-   */
-  static var ASTC_BLOCKSIZE:String = "10x10";
 
   /**
    * A list of asset file globs to exclude from ASTC compression when creating optimized mobile builds.
@@ -1774,7 +1755,8 @@ class Project extends HXProject
 
   public function readASTCExclusion():Void
   {
-    astcExcludes = File.getContent('./compression-excludes.txt').trim().split('\n');
+    @:nullSafety(Off)
+    astcExcludes = haxe.Json.parse(File.getContent('./astc-compression-data.json')).excludes;
 
     for (i in 0...astcExcludes.length)
       astcExcludes[i] = astcExcludes[i].trim();
@@ -1784,14 +1766,14 @@ class Project extends HXProject
   {
     for (exclusion in astcExcludes)
     {
-      if (exclusion.endsWith("/*"))
+      if (exclusion.endsWith("/"))
       {
         var normalizedFilePath = Path.normalize(filePath);
         var normalizedExclusion = Path.normalize(exclusion.substr(0, exclusion.length - 2));
 
         if (normalizedFilePath.startsWith(normalizedExclusion)) return true;
       }
-      else if (exclusion.endsWith("/"))
+      else if (exclusion.endsWith("/*"))
       {
         var normalizedExclusion = Path.normalize(exclusion);
         var fileDirectory = Path.directory(Path.normalize(filePath));
@@ -1811,12 +1793,8 @@ class Project extends HXProject
   {
     info('Compressing ASTC textures...');
 
-    var args:Array<String> = ['run', 'astc-compressor'];
-    args = args.concat(['-i', './assets']);
-    args = args.concat(['-o', './astc-textures/assets/']);
-    args = args.concat(['-blocksize', ASTC_BLOCKSIZE]);
-    args = args.concat(['-quality', ASTC_QUALITY]);
-    args = args.concat(['-excludes', './compression-excludes.txt']);
+    var args:Array<String> = ['run', 'astc-compressor', 'compress-from-json'];
+    args = args.concat(['-json', './astc-compression-data.json']);
 
     Sys.command('haxelib', args);
 
