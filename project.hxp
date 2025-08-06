@@ -485,9 +485,9 @@ class Project extends HXProject
     configureOutputDir();
     configurePolymod();
     configureHaxelibs();
+    configureASTCTextures();
     configureAssets();
     configureIcons();
-    configureASTCTextures();
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
     {
