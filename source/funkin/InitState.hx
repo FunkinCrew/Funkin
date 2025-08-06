@@ -257,7 +257,7 @@ class InitState extends FlxState
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();
-    ModuleHandler.callOnCreate();
+    ModuleHandler.callOnGameInit();
 
     funkin.input.Cursor.hide();
 
