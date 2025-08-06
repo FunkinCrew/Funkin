@@ -406,7 +406,6 @@ class MainMenuState extends MusicBeatState
     FlxG.keys.enabled = true;
     if (menuItems != null)
     {
-      menuItems.busy = false;
       menuItems.enabled = true;
     }
   }
