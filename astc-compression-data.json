@@ -4,7 +4,6 @@
   "quality": "medium",
   "blocksize": "10x10",
   "colorprofile": "cl",
-  "clean": false,
   "custom": [
     {
       "asset": "assets/shared/images/resultScreen/",

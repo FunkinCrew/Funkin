@@ -1762,27 +1762,27 @@ class Project extends HXProject
       astcExcludes[i] = astcExcludes[i].trim();
   }
 
-  public function isASTCExcluded(filePath:String):Bool
+  public function isASTCExcluded(file:String):Bool
   {
     for (exclusion in astcExcludes)
     {
       if (exclusion.endsWith("/"))
       {
-        var normalizedFilePath = Path.normalize(filePath);
-        var normalizedExclusion = Path.normalize(exclusion.substr(0, exclusion.length - 2));
+        var normalizedFilePath = Path.normalize(file);
+        var normalizedExclusion = Path.normalize(exclusion);
 
         if (normalizedFilePath.startsWith(normalizedExclusion)) return true;
       }
       else if (exclusion.endsWith("/*"))
       {
-        var normalizedExclusion = Path.normalize(exclusion);
-        var fileDirectory = Path.directory(Path.normalize(filePath));
+        var normalizedExclusion = Path.normalize(exclusion.substr(0, exclusion.length - 2));
+        var fileDirectory = Path.directory(Path.normalize(file));
 
         if (fileDirectory == normalizedExclusion) return true;
       }
       else
       {
-        if (filePath == exclusion) return true;
+        if (file == exclusion) return true;
       }
     }
 
