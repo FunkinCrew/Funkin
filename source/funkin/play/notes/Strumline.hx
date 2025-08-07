@@ -643,8 +643,6 @@ class Strumline extends FlxSpriteGroup
         if (holdNote.cover != null && isPlayer)
         {
           holdNote.cover.playEnd();
-
-          trace("Sustain Note Splash Vibration");
         }
         else if (holdNote.cover != null)
         {
