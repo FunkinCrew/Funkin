@@ -54,7 +54,7 @@ body:
     attributes:
       label: Mobile OS Version
       description: (Mobile users only) What version is your Operating System?
-      placeholder: ex. iOS 18.5, Android 15, iPadOS 18.5
+      placeholder: ex. iOS 18.6, Android 15, iPadOS 18.6
 
   - type: input
     attributes:
