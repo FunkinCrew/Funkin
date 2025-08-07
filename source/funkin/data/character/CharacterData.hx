@@ -1,4 +1,4 @@
-package funkin.play.character;
+package funkin.data.character;
 
 import funkin.data.animation.AnimationData;
 import funkin.modding.events.ScriptEvent;
@@ -8,6 +8,11 @@ import funkin.play.character.ScriptedCharacter.ScriptedBaseCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedMultiSparrowCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedPackerCharacter;
 import funkin.play.character.ScriptedCharacter.ScriptedSparrowCharacter;
+import funkin.play.character.AnimateAtlasCharacter;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.MultiSparrowCharacter;
+import funkin.play.character.PackerCharacter;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import haxe.Json;

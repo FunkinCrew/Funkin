@@ -2,7 +2,7 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;

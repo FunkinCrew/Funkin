@@ -1,7 +1,7 @@
 package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
