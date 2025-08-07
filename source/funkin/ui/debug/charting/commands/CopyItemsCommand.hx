@@ -42,6 +42,8 @@ class CopyItemsCommand implements ChartEditorCommand
       });
 
     performVisuals(state);
+    state.clipboardDirty = true;
+    state.clipboardValid = true;
   }
 
   function performVisuals(state:ChartEditorState):Void
