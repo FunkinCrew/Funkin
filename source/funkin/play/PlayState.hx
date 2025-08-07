@@ -78,6 +78,9 @@ import funkin.api.discord.DiscordClient;
 import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
 #end
+#if (target.threaded)
+import sys.thread.Thread;
+#end
 
 /**
  * Parameters used to initialize the PlayState.
@@ -421,6 +424,29 @@ class PlayState extends MusicBeatSubState
    * Disabled during the ending of a song.
    */
   var mayPauseGame:Bool = true;
+
+  #if (target.threaded)
+  /**
+   * A variable used to close the thread that checks for any lagspikes.
+   */
+  var shutdownThread:Bool = false;
+
+  /**
+   * If true, the game has gone through a lagspike!
+   * It stays true only for a bit and gets reset back to false after resyncing the song.
+   */
+  var gameFroze:Bool = false;
+
+  /**
+   * Wether the song requires resyncing after going through a lagspike
+   */
+  var requiresSyncing:Bool = false;
+
+  /**
+   * The song position we were at BEFORE going through a lagspike.
+   */
+  var lastCorrectSongPos:Float = 0.0;
+  #end
 
   /**
    * The displayed value of the player's health.
@@ -1431,6 +1457,9 @@ class PlayState extends MusicBeatSubState
         {
           FlxG.sound.music.pause();
           musicPausedBySubState = true;
+          #if (target.threaded)
+          shutdownThread = true;
+          #end
         }
 
         // Pause any sounds that are playing and keep track of them.
@@ -1513,6 +1542,10 @@ class PlayState extends MusicBeatSubState
       {
         FlxG.sound.music.play();
         musicPausedBySubState = false;
+        #if (target.threaded)
+        shutdownThread = false;
+        runSongSyncThread();
+        #end
       }
 
       // The logic here is that if this sound doesn't auto-destroy
@@ -1784,6 +1817,11 @@ class PlayState extends MusicBeatSubState
 
     #if !mobile
     FlxG.autoPause = Preferences.autoPause;
+    #end
+
+    #if (target.threaded)
+    shutdownThread = true;
+    FlxG.signals.preUpdate.remove(checkForResync);
     #end
 
     super.destroy();
@@ -2469,6 +2507,10 @@ class PlayState extends MusicBeatSubState
     #end
 
     resyncVocals();
+
+    #if (target.threaded)
+    runSongSyncThread();
+    #end
   }
 
   /**
@@ -3863,6 +3905,49 @@ class PlayState extends MusicBeatSubState
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 
     resyncVocals();
+  }
+  #end
+
+  #if (target.threaded)
+  function checkForResync()
+  {
+    if (isSongEnd || shutdownThread) return;
+
+    if (requiresSyncing)
+    {
+      PreciseInputManager.instance.enabled = true;
+      requiresSyncing = false;
+      Conductor.instance.update(lastCorrectSongPos, false);
+      resyncVocals();
+    }
+
+    gameFroze = false;
+  }
+
+  public function runSongSyncThread()
+  {
+    Thread.create(function() {
+      while (!isSongEnd && !shutdownThread)
+      {
+        if (requiresSyncing) continue;
+
+        if (gameFroze)
+        {
+          // Players seem to be able to smash their keys and the input would register  at once when the game updates again
+          // Should prevent that from happening
+          PreciseInputManager.instance.enabled = false;
+
+          lastCorrectSongPos = Conductor.instance.songPosition;
+          requiresSyncing = true;
+          continue;
+        }
+
+        gameFroze = true;
+        Sys.sleep(0.25);
+      }
+    });
+
+    if (!FlxG.signals.preUpdate.has(checkForResync)) FlxG.signals.preUpdate.add(checkForResync);
   }
   #end
 }
