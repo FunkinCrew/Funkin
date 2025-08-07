@@ -6,7 +6,27 @@
   "colorprofile": "cl",
   "custom": [
     {
-      "asset": "assets/shared/images/resultScreen/",
+      "asset": "assets/week1/images/erect/server.png",
+      "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/week1/images/erect/crowd.png",
+      "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/week1/image/erect/bg.png",
+      "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/week1/image/erect/lights.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/week2/images/erect/stairsDark.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/week2/images/erect/stairsLight.png",
       "blocksize": "6x6"
     }
   ],
@@ -14,6 +34,7 @@
     "assets/preload/images/cursor/",
     "assets/preload/images/freeplay/",
     "assets/preload/images/icons/",
+    "assets/preload/images/fonts/",
     "assets/preload/images/titleEnter.png",
     "assets/preload/images/titleEnter_mobile.png",
     "assets/preload/images/soundtray/",
@@ -29,7 +50,15 @@
     "assets/shared/images/characters/spirit.png",
     "assets/shared/images/ui/chart-editor/",
     "assets/shared/images/ui/countdown/pixel/*",
+    "assets/shared/images/resultScreen/*",
+    "assets/shared/images/resultScreen/clearPercent/",
+    "assets/shared/images/resultScreen/rankText/",
     "assets/week1/*",
+    "assets/week1/images/erect/brightLightSmall.png",
+    "assets/week1/images/erect/lightAbove.png",
+    "assets/week1/images/erect/lightgreen.png",
+    "assets/week1/images/erect/lightred.png",
+    "assets/week1/images/erect/orangeLight.png",
     "assets/week6/"
   ]
 }
