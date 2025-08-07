@@ -4747,11 +4747,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               dragLengthCurrent = dragLengthSteps;
             }
 
-            gridGhostHoldNote.visible = true;
-            gridGhostHoldNote.noteData = currentPlaceNoteData;
-            gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
+            if (!gridGhostHoldNote.visible)
+            {
+              gridGhostHoldNote.visible = true;
+              gridGhostHoldNote.noteData = currentPlaceNoteData;
+              gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
+              gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
+            }
+
             gridGhostHoldNote.setHeightDirectly(dragLengthPixels, true);
-            gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
             gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
           }
           else
