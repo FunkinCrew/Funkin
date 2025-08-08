@@ -46,34 +46,29 @@ class FlxAtlasSprite extends FlxAnimate
   var canPlayOtherAnims:Bool = true;
 
   @:nullSafety(Off) // null safety HATES new classes atm, it'll be fixed in haxe 4.0.0?
-  public function new(x:Float, y:Float, ?path:String, ?settings:Settings)
+  public function new(x:Float, y:Float, ?path:String, ?settings:Settings, ?pathSafety:Bool = true)
   {
     if (settings == null) settings = SETTINGS;
 
-    if (path == null)
-    {
-      throw 'Null path specified for FlxAtlasSprite!';
-    }
+    if (path == null && pathSafety) throw 'Null path specified for FlxAtlasSprite!';
 
     // Validate asset path.
-    if (!Assets.exists('${path}/Animation.json'))
-    {
-      throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
-    }
+    if (!Assets.exists('${path}/Animation.json')
+      && pathSafety) throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
 
     super(x, y, path, settings);
 
-    if (this.anim.stageInstance == null)
-    {
-      throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
-    }
+    if (this.anim.stageInstance == null && pathSafety) throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
 
     onAnimationComplete.add(cleanupAnimation);
 
     // This defaults the sprite to play the first animation in the atlas,
-    // then pauses it. This ensures symbols are initialized properly.
-    this.anim.play('');
-    this.anim.pause();
+    // then pauses it. This ensures symbols are intialized properly.
+    if (this.anim.curInstance != null)
+    {
+      this.anim.play('');
+      this.anim.pause();
+    }
 
     this.anim.onComplete.add(_onAnimationComplete);
     this.anim.onFrame.add(_onAnimationFrame);
