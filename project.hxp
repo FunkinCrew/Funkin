@@ -858,18 +858,30 @@ class Project extends HXProject
     var disabledWidth:Int = 0;
     var enabledFlags:Array<String> = [];
     var disabledFlags:Array<String> = [];
+    var unicodeCheck:String = "✓ ";
+    var unicodeCross:String = "× ";
+
+    #if windows && !target.unicode
+    // lime build tools uses neko (unless compiling with `-eval`), and neko on windows doesn't support UTF8/unicode characters
+    // so we need to remove our cute emoji!
+    unicodeCheck = "";
+    unicodeCross = "";
+
+    #end
+
+
     for (flagStr in this.haxedefs.keys())
     {
       if (!flagStr.startsWith(FeatureFlag.INVERSE_PREFIX))
       {
-        // we do k.length + 3 to accomodate for adding the "✓ " at the beginning
+        // we do flagStr.length + 3 to accomodate for adding the "✓ " at the beginning
         enabledWidth = Std.int(Math.max(flagStr.length + 3, enabledWidth));
-        enabledFlags.push("✓ " + flagStr);
+        enabledFlags.push(unicodeCheck + flagStr);
       }
       else
       {
         disabledWidth = Std.int(Math.max(flagStr.length, disabledWidth));
-        disabledFlags.push("× " + flagStr.substring(FeatureFlag.INVERSE_PREFIX.length));
+        disabledFlags.push(unicodeCross + flagStr.substring(FeatureFlag.INVERSE_PREFIX.length));
       }
     }
 
@@ -882,7 +894,7 @@ class Project extends HXProject
     info(horizontalDivider);
     // Header
     info("FEATURE FLAGS");
-    info("Enabled Flags ✓".rpad(" ", enabledWidth + 5) + "Disabled Flags ×");
+    info('Enabled Flags $unicodeCheck'.rpad(" ", enabledWidth + 5) + 'Disabled Flags $unicodeCross');
     info(horizontalDivider);
 
 
