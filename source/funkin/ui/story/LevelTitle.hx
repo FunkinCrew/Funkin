@@ -5,16 +5,17 @@ import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import funkin.util.MathUtil;
 
+@:nullSafety
 class LevelTitle extends FlxSpriteGroup
 {
   static final LOCK_PAD:Int = 4;
 
-  public final level:Level;
+  public final level:Null<Level>;
 
-  public var targetY:Float;
+  public var targetY:Float = 0.00;
 
-  var title:FlxSprite;
-  var lock:FlxSprite;
+  var title:FlxSprite = new FlxSprite();
+  var lock:Null<FlxSprite>;
 
   public function new(x:Int, y:Int, level:Level)
   {
@@ -32,13 +33,18 @@ class LevelTitle extends FlxSpriteGroup
   {
     if (length == 0) return 0;
 
-    if (lock.visible)
+    if (lock != null && lock.visible)
     {
       return title.width + lock.width + LOCK_PAD;
     }
     else
     {
-      return title.width;
+      if (title != null)
+      {
+        return title.width;
+      } else {
+        return 0;
+      }
     }
   }
 
@@ -57,27 +63,36 @@ class LevelTitle extends FlxSpriteGroup
       if (flashTick >= 1 / flashFramerate)
       {
         flashTick %= 1 / flashFramerate;
-        title.color = (title.color == FlxColor.WHITE) ? 0xFF33ffff : FlxColor.WHITE;
+        title.color = (title?.color == FlxColor.WHITE) ? 0xFF33ffff : FlxColor.WHITE;
       }
     }
   }
 
   public function showLock():Void
   {
-    lock.visible = true;
-    this.x -= (lock.width + LOCK_PAD) / 2;
+    if (lock != null)
+    {
+      lock.visible = true;
+      this.x -= (lock.width + LOCK_PAD) / 2;
+    } 
   }
 
   public function hideLock():Void
   {
-    lock.visible = false;
-    this.x += (lock.width + LOCK_PAD) / 2;
+    if (lock != null) 
+    {
+      lock.visible = false;
+      this.x += (lock.width + LOCK_PAD) / 2;
+    }
   }
 
   function buildLevelTitle():Void
   {
-    title = level.buildTitleGraphic();
-    add(title);
+    if (title != null && level != null) 
+    {
+      title = level.buildTitleGraphic();
+      add(title);
+    }
   }
 
   function buildLevelLock():Void
