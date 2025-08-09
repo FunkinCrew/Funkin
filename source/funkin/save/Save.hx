@@ -1368,9 +1368,14 @@ class Save
     this.data.version = Save.SAVE_DATA_VERSION;
   }
 
-  public function debug_dumpSave():Void
+  public function debug_dumpSaveJsonSave():Void
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+  }
+
+  public function debug_dumpSaveJsonPrint():Void
+  {
+    trace(this.serialize());
   }
 
   #if FEATURE_NEWGROUNDS
