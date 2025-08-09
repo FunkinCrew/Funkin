@@ -293,6 +293,7 @@ class CreditsState extends MusicBeatState
 
   function exit():Void
   {
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
   }
 
