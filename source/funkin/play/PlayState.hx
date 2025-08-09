@@ -1515,6 +1515,8 @@ class PlayState extends MusicBeatSubState
           cameraTweensPausedBySubState.add(tween);
         }
       }
+      FlxTween.globalManager.forEach((tween:FlxTween) -> tween.active = false);
+      FlxTimer.globalManager.forEach((timer:FlxTimer) -> timer.active = false);
     }
 
     super.openSubState(subState);
@@ -1601,6 +1603,8 @@ class PlayState extends MusicBeatSubState
       #end
 
       justUnpaused = true;
+      FlxTween.globalManager.forEach((tween:FlxTween) -> tween.active = true);
+      FlxTimer.globalManager.forEach((timer:FlxTimer) -> timer.active = true);
     }
     else if (Std.isOfType(subState, Transition))
     {
