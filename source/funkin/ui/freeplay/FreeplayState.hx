@@ -3046,8 +3046,13 @@ class FreeplaySongData
 
   function get_data():Song
   {
+    // This looks jank but the haxe compiler is on crack or something so 2 `privateAccess` lines are needed for some reason
     @:privateAccess
-    return SongRegistry.instance.fetchEntry(songId, {variation: instance.currentVariation});
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: instance.currentVariation});
+    @:privateAccess
+    if (song == null) throw 'Song entry not found for id: $songId with variation: ${instance.currentVariation}';
+
+    return song;
   }
 
   /**
