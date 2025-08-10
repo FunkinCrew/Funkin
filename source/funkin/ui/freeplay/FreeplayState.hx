@@ -490,6 +490,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     albumRoll.albumId = null;
+    albumRoll.visible = false;
     albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
     add(albumRoll);
 
@@ -756,6 +757,10 @@ class FreeplayState extends MusicBeatSubState
       if (prepForNewRank && fromResultsParams != null)
       {
         rankAnimStart(fromResultsParams, currentCapsule);
+        albumRoll.skipIntro();
+        albumRoll.showStars();
+      } else if (fromCharSelect)
+      {
         albumRoll.skipIntro();
         albumRoll.showStars();
       }
@@ -2362,7 +2367,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Set the album graphic and play the animation if relevant.
     var newAlbumId:Null<String> = daSong?.data.getAlbumId(currentDifficulty, currentVariation);
-    if (albumRoll.albumId != newAlbumId)
+    if (albumRoll.albumId != newAlbumId && controls.active)
     {
       albumRoll.albumId = newAlbumId;
       albumRoll.skipIntro();
