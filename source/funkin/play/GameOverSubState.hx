@@ -440,7 +440,7 @@ class GameOverSubState extends MusicBeatSubState
             #else
             resetPlaying();
             #end
-          });
+          }, true);
         }
       });
     }
