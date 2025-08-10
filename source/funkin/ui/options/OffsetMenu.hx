@@ -975,4 +975,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     preferenceItems.add(item.lefthandText);
     return item;
   }
+
+  override public function destroy()
+  {
+    MenuTypedList.pauseInput = false;
+    super.destroy();
+  }
 }
