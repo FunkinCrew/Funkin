@@ -14,11 +14,12 @@ typedef EntryConstructorFunction = (String, ?Dynamic) -> Void;
  *
  * @param T The type to construct. Must implement `IRegistryEntry`.
  * @param J The type of the JSON data used when constructing.
+ * @param P The type of the parameters used for `fetchEntry()`.
  */
 @:nullSafety
 @:generic
 @:autoBuild(funkin.util.macro.DataRegistryMacro.buildRegistry())
-abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J>
+abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J, P>
 {
   /**
    * The ID of the registry. Used when logging.
@@ -186,7 +187,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry to fetch.
    * @return The entry, or `null` if it does not exist.
    */
-  public function fetchEntry(id:String, ?params:Null<Dynamic>):Null<T>
+  public function fetchEntry(id:String, ?params:Null<P>):Null<T>
   {
     return entries.get(id);
   }
