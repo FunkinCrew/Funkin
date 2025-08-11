@@ -379,7 +379,7 @@ class FreeplayState extends MusicBeatSubState
           continue;
         }
 
-        songs.push(new FreeplaySongData(song, level));
+        songs.push(new FreeplaySongData(songId, level, this));
       }
     }
 
@@ -2535,8 +2535,9 @@ class FreeplayState extends MusicBeatSubState
 
     PlayStatePlaylist.isStoryMode = false;
 
+    var targetVariation:Null<String> = currentVariation;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
-    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: targetVariation});
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
@@ -2545,8 +2546,11 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetSong:Song = targetSongNullable;
-    var targetVariation:Null<String> = currentVariation;
+    var targetDifficultyId:String = currentDifficulty;
     var targetLevelId:Null<String> = cap?.freeplayData?.levelId;
+
+    trace('target song: ${targetSongId} (${targetVariation})');
+
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
 
     var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(currentDifficulty, currentVariation);
@@ -3018,7 +3022,18 @@ class FreeplaySongData
    *
    * @see Song
    */
-  public var data:Song;
+  public var data(get, never):Song;
+
+  function get_data():Song
+  {
+    // This looks jank but the haxe compiler is on crack or something so 2 `privateAccess` lines are needed for some reason
+    @:privateAccess
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: instance.currentVariation});
+    @:privateAccess
+    if (song == null) throw 'Song entry not found for id: $songId with variation: ${instance.currentVariation}';
+
+    return song;
+  }
 
   /**
    * The level id of the song, useful for sorting from week1 -> week 7 + weekend1
@@ -3032,6 +3047,8 @@ class FreeplaySongData
   }
 
   var _levelId:String;
+
+  final songId:String;
 
   /**
    * Whether or not the song has been favorited.
@@ -3063,10 +3080,13 @@ class FreeplaySongData
 
   public var scoringRank(get, never):Null<ScoringRank>;
 
-  public function new(data:Song, levelData:Level)
+  public var instance:FreeplayState;
+
+  public function new(songId:String, levelData:Level, instance:FreeplayState)
   {
-    this.data = data;
+    this.songId = songId;
     _levelId = levelData.id;
+    this.instance = instance;
     this.isFav = Save.instance.isSongFavorited(data.songName);
   }
 

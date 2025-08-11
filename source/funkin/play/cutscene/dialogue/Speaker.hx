@@ -86,7 +86,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     return FullScreenScaleMode.wideScale.x - 0.05;
   }
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 
