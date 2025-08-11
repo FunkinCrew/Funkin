@@ -6,7 +6,7 @@ import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class ConversationRegistry extends BaseRegistry<Conversation, ConversationData> implements ISingleton implements DefaultRegistryImpl
+class ConversationRegistry extends BaseRegistry<Conversation, ConversationData, ConversationEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the dialogue box data format.
@@ -22,3 +22,5 @@ class ConversationRegistry extends BaseRegistry<Conversation, ConversationData> 
     super('CONVERSATION', 'dialogue/conversations', CONVERSATION_DATA_VERSION_RULE);
   }
 }
+
+typedef ConversationEntryParams = {}
