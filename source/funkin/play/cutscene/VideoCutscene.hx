@@ -20,7 +20,7 @@ class VideoCutscene
 {
   #if hxvlc
   @:noCompletion
-  static final DEFAULT_LANGUAGE:String = 'english';
+  static final DEFAULT_LANGUAGE:String = 'English';
   #end
 
   static var blackScreen:FlxSprite;
@@ -160,54 +160,6 @@ class VideoCutscene
 
       vid.active = false;
 
-      #if FEATURE_VIDEO_SUBTITLES
-      vid.bitmap.onPlaying.add(function():Void {
-        if (Preferences.videoSubtitles)
-        {
-          if (vid.bitmap != null)
-          {
-            for (spuTrack in vid.bitmap.getSpuDescription())
-            {
-              if (spuTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
-              {
-                if (vid.bitmap.spuTrack != spuTrack.i_id)
-                {
-                  vid.bitmap.spuTrack = spuTrack.i_id;
-                  vid.bitmap.time = 0;
-                }
-
-                break;
-              }
-            }
-
-            // Just as a note, the audio tracks by default are labeled as `Track 1` etc.
-            //
-            // For multiple langauges, we would need `ffmpeg` to rename these tracks a little so its easier to mess with.
-            //
-            // for (audioTrack in vid.bitmap.getAudioDescription())
-            // {
-            //   if (audioTrack.psz_name.toLowerCase().contains(DEFAULT_LANGUAGE))
-            //   {
-            //     if (vid.bitmap.audioTrack != audioTrack.i_id)
-            //     {
-            //       vid.bitmap.audioTrack = audioTrack.i_id;
-            //       vid.bitmap.time = 0;
-            //     }
-
-            //     break;
-            //   }
-            // }
-          }
-        }
-      });
-      #end
-
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
-        finishVideo(0.5);
-      });
-
-      vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
-
       vid.bitmap.onFormatSetup.add(function():Void {
         if (vid.bitmap != null && vid.bitmap.bitmapData != null)
         {
@@ -219,13 +171,30 @@ class VideoCutscene
         }
       });
 
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+        finishVideo(0.5);
+      });
+
+      vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
+
       vid.cameras = [PlayState.instance.camCutscene];
 
       PlayState.instance.add(vid);
 
       PlayState.instance.refresh();
 
-      if (vid.load(filePath) && vid.play())
+      final fileOptions:Array<String> = [];
+
+      #if FEATURE_VIDEO_SUBTITLES
+      if (Preferences.videoSubtitles)
+      {
+        fileOptions.push(':sub-language=$DEFAULT_LANGUAGE');
+      }
+
+      fileOptions.push(':audio-language=$DEFAULT_LANGUAGE');
+      #end
+
+      if (vid.load(filePath, fileOptions) && vid.play())
       {
         onVideoStarted.dispatch();
       }
