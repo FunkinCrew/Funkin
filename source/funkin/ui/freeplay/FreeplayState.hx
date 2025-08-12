@@ -503,7 +503,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (fromCharSelect)
     {
-      blackOverlayBullshitLOLXD.x = backingImage.x;
+      blackOverlayBullshitLOLXD.visible = false;
       overhangStuff.y = -100;
       backingCard.skipIntroTween();
     }
@@ -703,6 +703,9 @@ class FreeplayState extends MusicBeatSubState
             ease: FlxEase.expoOut,
             onUpdate: function(_) {
               angleMaskShader.extraColor = backingImage.color;
+            },
+            onComplete: function(_) {
+              blackOverlayBullshitLOLXD.visible = false;
             }
           });
       }
