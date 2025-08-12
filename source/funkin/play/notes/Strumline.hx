@@ -47,6 +47,27 @@ class Strumline extends FlxSpriteGroup
 
   // Positional fixes for new strumline graphics.
   static final INITIAL_OFFSET:Float = -0.275 * STRUMLINE_SIZE;
+
+  /**
+   * Returns a dynamic offset for the strumline center based on FPS.
+   * The lower the FPS, the higher the hit window is offset.
+   */
+  function getDynamicOffset():Float {
+    var baseOffset:Float;
+    if (noteStyle != null && noteStyle.id != null && noteStyle.id.toLowerCase() == 'pixel') 
+    {
+      baseOffset = INITIAL_OFFSET + 5.0;
+    } 
+    else 
+    {
+      baseOffset = INITIAL_OFFSET + 10.0;
+    }
+    var fps = Preferences.framerate;
+    var maxOffset = (500 - 30) * 0.025;
+    var t = (500 - fps) / (500 - 30);
+    return baseOffset + maxOffset * t;
+  }
+  
   static final NUDGE:Float = 2.0;
 
   static final KEY_COUNT:Int = 4;
@@ -584,7 +605,7 @@ class Strumline extends FlxSpriteGroup
       if (note == null || !note.alive) continue;
       // Set the note's position.
       if (!customPositionData) note.y = this.y
-        - INITIAL_OFFSET
+        - getDynamicOffset()
         + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
         + note.yOffset;
 
@@ -666,7 +687,7 @@ class Strumline extends FlxSpriteGroup
           if (isDownscroll)
           {
             holdNote.y = this.y
-              - INITIAL_OFFSET
+              - getDynamicOffset()
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
               + STRUMLINE_SIZE / 2
@@ -675,7 +696,7 @@ class Strumline extends FlxSpriteGroup
           else
           {
             holdNote.y = this.y
-              - INITIAL_OFFSET
+              - getDynamicOffset()
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               + yOffset
               + STRUMLINE_SIZE / 2
@@ -707,11 +728,18 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
+            holdNote.y = this.y
+              - getDynamicOffset()
+              - holdNote.height
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
+            holdNote.y = this.y
+              - getDynamicOffset()
+              + STRUMLINE_SIZE / 2
+              + holdNote.yOffset;
           }
         }
       }
@@ -725,7 +753,7 @@ class Strumline extends FlxSpriteGroup
           if (isDownscroll)
           {
             holdNote.y = this.y
-              - INITIAL_OFFSET
+              - getDynamicOffset()
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
               + STRUMLINE_SIZE / 2
@@ -734,7 +762,7 @@ class Strumline extends FlxSpriteGroup
           else
           {
             holdNote.y = this.y
-              - INITIAL_OFFSET
+              - getDynamicOffset()
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               + STRUMLINE_SIZE / 2
               + holdNote.yOffset;
