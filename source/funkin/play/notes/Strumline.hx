@@ -946,7 +946,6 @@ class Strumline extends FlxSpriteGroup
   {
     if (note == null) return;
     note.visible = false;
-    notes.remove(note, false);
     note.kill();
 
     if (note.holdNoteSprite != null)
@@ -1120,6 +1119,7 @@ class Strumline extends FlxSpriteGroup
 
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
+      noteSprite.holdNoteSprite = null;
 
       noteSprite.x = this.x;
       noteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
