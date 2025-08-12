@@ -190,6 +190,10 @@ class VideoCutscene
       {
         fileOptions.push(':sub-language=$DEFAULT_LANGUAGE');
       }
+      else
+      {
+        fileOptions.push(':sub-language=none');
+      }
 
       fileOptions.push(':audio-language=$DEFAULT_LANGUAGE');
       #end
