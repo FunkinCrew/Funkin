@@ -979,6 +979,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   override public function destroy()
   {
     MenuTypedList.pauseInput = false;
+    exitCalibration(true);
     super.destroy();
   }
 }
