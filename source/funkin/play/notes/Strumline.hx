@@ -1119,7 +1119,6 @@ class Strumline extends FlxSpriteGroup
 
       noteSprite.direction = note.getDirection();
       noteSprite.noteData = note;
-      noteSprite.holdNoteSprite = null;
 
       noteSprite.x = this.x;
       noteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
