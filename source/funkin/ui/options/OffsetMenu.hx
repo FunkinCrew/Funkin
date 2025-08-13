@@ -736,12 +736,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, _lastDirection, 0, null, null);
         testStrumline.addNoteData(data, false);
 
-        if (Math.floor(arrowBeat % 8) == 0)
-        {
-          var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, 2, 0, null, null);
-          testStrumline.addNoteData(data, false);
-        }
-
         _lastDirection = (_lastDirection + 1) % 4; // Cycle through directions 0-3
       }
       if (b >= 124 && _lastDirection != 0) _lastDirection = 0; // reset direction on loop
