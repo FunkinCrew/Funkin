@@ -32,9 +32,9 @@ class AttractState extends MusicBeatState
    *   A video with a weight of `2` will be picked twice as often as a video with a weight of `1`.
    */
   static final VIDEO_PATHS:Array<{path:String, weight:Float}> = [
-    {path: Paths.videos('toyCommercial'), weight: 1},
-    {path: Paths.videos('boyfriendEverywhere'), weight: 10},
-    // {path: Paths.videos('mobileRelease'), weight: 1},
+    {path: Paths.videos('mobileRelease'), weight: 5},
+    {path: Paths.videos('toyCommercial'), weight: 5},
+    {path: Paths.videos('boyfriendEverywhere'), weight: 1},
   ];
 
   /**
