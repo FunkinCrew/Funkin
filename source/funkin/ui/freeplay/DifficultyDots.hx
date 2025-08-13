@@ -92,14 +92,14 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 
       curDotSpr.important = false;
 
-      // I could "oneline" this condition too, but i dont wanna hurt your eyes :troll:
+      // I could "oneline" this condition too, but i dont wanna hurt your eyes :rolling_eyes:
       if (i == index)
       {
         targetState = SELECTED;
       }
       else
       {
-        targetState = (i == prevIndex) ? DESELECTING : DESELECTED
+        targetState = (i == prevIndex) ? DESELECTING : DESELECTED;
       }
 
       curDotSpr.visible = true;
