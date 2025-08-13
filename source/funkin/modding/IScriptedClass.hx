@@ -113,6 +113,16 @@ interface IBPMSyncedScriptedClass extends IScriptedClass
 interface IPlayStateScriptedClass extends INoteScriptedClass extends IBPMSyncedScriptedClass
 {
   /**
+   * Called after `PlayState` creation, right before the countdown starts.
+   */
+  public function onPlayStateCreate(event:ScriptEvent):Void;
+
+  /**
+   * Called immediately before `PlayState` cleanup.
+   */
+  public function onPlayStateClose(event:ScriptEvent):Void;
+
+  /**
    * Called when the game is paused.
    * Has properties to set whether the pause easter egg will happen,
    * and can be cancelled by scripts.
@@ -190,4 +200,22 @@ interface IDialogueScriptedClass extends IScriptedClass
   public function onDialogueLine(event:DialogueScriptEvent):Void;
   public function onDialogueSkip(event:DialogueScriptEvent):Void;
   public function onDialogueEnd(event:DialogueScriptEvent):Void;
+}
+
+/**
+ * Defines a set of callbacks available to scripted classes which are global and not tied to a specific state.
+ */
+interface IGlobalScriptedClass extends IPlayStateScriptedClass extends IStateChangingScriptedClass
+{
+  /**
+   * Called when the game is first initialized, before the title screen appears.
+   * This event is only called once.
+   */
+  public function onGameInit(event:ScriptEvent):Void;
+
+  /**
+   * Called when the game is closed for any reason.
+   * This event is only called once.
+   */
+  public function onGameClose(event:GameCloseScriptEvent):Void;
 }

@@ -865,6 +865,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
+  public function onPlayStateCreate(event:ScriptEvent) {}
+
+  public function onPlayStateClose(event:ScriptEvent) {}
+
   public function onPause(event:PauseScriptEvent) {}
 
   public function onResume(event:ScriptEvent) {}

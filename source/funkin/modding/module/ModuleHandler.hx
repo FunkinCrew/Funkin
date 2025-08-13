@@ -6,6 +6,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.Module;
 import funkin.modding.module.ScriptedModule;
+import funkin.util.WindowUtil;
 
 /**
  * Utility functions for loading and manipulating active modules.
@@ -47,11 +48,15 @@ class ModuleHandler
     reorderModuleCache();
 
     trace("[MODULEHANDLER] Module cache loaded.");
+
+    callEvent(new ScriptEvent(CREATE, false), true);
   }
 
   public static function buildModuleCallbacks():Void
   {
     FlxG.signals.postStateSwitch.add(onStateSwitchComplete);
+
+    WindowUtil.windowExit.add(callOnGameClose);
   }
 
   static function onStateSwitchComplete():Void
@@ -127,9 +132,14 @@ class ModuleHandler
       var event = new ScriptEvent(DESTROY, false);
 
       // Note: Ignore stopPropagation()
-      for (key => value in moduleCache)
+      for (i in 0...modulePriorityOrder.length)
       {
-        ScriptEventDispatcher.callEvent(value, event);
+        final moduleId:String = modulePriorityOrder[modulePriorityOrder.length - 1 - i];
+        final module:Module = moduleCache.get(moduleId);
+        if (module != null)
+        {
+          ScriptEventDispatcher.callEvent(module, event);
+        }
       }
 
       moduleCache.clear();
@@ -137,21 +147,26 @@ class ModuleHandler
     }
   }
 
-  public static function callEvent(event:ScriptEvent):Void
+  public static function callEvent(event:ScriptEvent, force:Bool = false):Void
   {
     for (moduleId in modulePriorityOrder)
     {
       var module:Null<Module> = moduleCache.get(moduleId);
       // The module needs to be active to receive events.
-      if (module != null && module.active)
+      if (module != null && (module.active || force))
       {
         ScriptEventDispatcher.callEvent(module, event);
       }
     }
   }
 
-  public static inline function callOnCreate():Void
+  public static inline function callOnGameInit():Void
   {
-    callEvent(new ScriptEvent(CREATE, false));
+    callEvent(new ScriptEvent(GAME_INIT, false));
+  }
+
+  public static inline function callOnGameClose(exitCode:Int):Void
+  {
+    callEvent(new GameCloseScriptEvent(exitCode));
   }
 }
