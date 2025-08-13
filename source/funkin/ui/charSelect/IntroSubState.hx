@@ -91,7 +91,18 @@ class IntroSubState extends MusicBeatSubState
     if (vid != null)
     {
       vid.zIndex = 0;
+      vid.active = false;
+      vid.bitmap?.onEncounteredError.add(function(msg:String):Void {
+        trace('[VLC] Encountered an error: $msg');
+
+        onLightsEnd();
+      });
       vid.bitmap?.onEndReached.add(onLightsEnd);
+      vid.bitmap?.onFormatSetup.add(() -> {
+        vid?.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid?.updateHitbox();
+        vid.screenCenter();
+      });
 
       add(vid);
       if (vid.load(filePath)) vid.play();
