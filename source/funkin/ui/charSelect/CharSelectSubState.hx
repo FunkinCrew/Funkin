@@ -71,7 +71,7 @@ class CharSelectSubState extends MusicBeatSubState
   var transitionGradient:FlxSprite = new FlxSprite(0, 0);
   var curChar(default, set):String = Constants.DEFAULT_CHARACTER;
   var rememberedChar:String;
-  var nametag:Nametag = new Nametag();
+  var nametag:Nametag = new Nametag(Constants.DEFAULT_CHARACTER);
   var camFollow:FlxObject = new FlxObject(0, 0, 1, 1);
   var autoFollow:Bool = false;
   var availableChars:Map<Int, String> = new Map<Int, String>();
@@ -95,14 +95,14 @@ class CharSelectSubState extends MusicBeatSubState
   var bopInfo:Null<Null<FramesJSFLInfo>>;
   // var blackScreen:FunkinSprite;
 
-  var charHitbox:FlxObject;
+  var charHitbox:FlxObject = new FlxObject();
 
   var cutoutSize:Float = 0;
 
   public function new(?params:CharSelectSubStateParams)
   {
     super();
-    rememberedChar = params?.character;
+    rememberedChar = params?.character ?? Constants.DEFAULT_CHARACTER;
     loadAvailableCharacters();
   }
 
@@ -133,8 +133,6 @@ class CharSelectSubState extends MusicBeatSubState
   override public function create():Void
   {
     super.create();
-
-    loadAvailableCharacters();
 
     cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
 
@@ -496,7 +494,7 @@ class CharSelectSubState extends MusicBeatSubState
   }
 
   var grpIcons:FlxSpriteGroup = new FlxSpriteGroup();
-  var grpHitboxes:FlxTypedGroup<FlxObject>;
+  var grpHitboxes:FlxTypedGroup<FlxObject> = new FlxTypedGroup<FlxObject>();
   var grpXSpread(default, set):Float = 107;
   var grpYSpread(default, set):Float = 127;
   var nonLocks = [];
@@ -504,7 +502,6 @@ class CharSelectSubState extends MusicBeatSubState
   function initLocks():Void
   {
     add(grpIcons);
-    grpHitboxes = new FlxTypedGroup<FlxObject>();
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSpriteGroup, ["x", "y"]));
     // FlxG.debugger.track(grpIcons, "iconGrp");
@@ -923,7 +920,8 @@ class CharSelectSubState extends MusicBeatSubState
       cursorY = -1;
     }
 
-    if (availableChars.exists(getCurrentSelected()) && Save.instance.charactersSeen.contains(availableChars[getCurrentSelected()]))
+    if (availableChars.exists(getCurrentSelected())
+      && PlayerRegistry.instance.isCharacterSeen(availableChars[getCurrentSelected()] ?? Constants.DEFAULT_CHARACTER))
     {
       var charId = availableChars.get(getCurrentSelected());
       if (charId != null) curChar = charId;
@@ -1172,6 +1170,7 @@ class CharSelectSubState extends MusicBeatSubState
             if (autoFollow && !pressedSelect && memb.animation.curAnim.name != 'idle')
             {
               memb.animation.play("confirm", false, true);
+              @:nullSafety(Off)
               var onFinish:String->Void = null;
               onFinish = (_) -> {
                 member.animation.play('idle');
