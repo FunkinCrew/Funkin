@@ -15,6 +15,7 @@ import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
 import funkin.util.SwipeUtil;
+import funkin.util.InputUtil;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
 import funkin.ui.UIStateMachine;
@@ -510,12 +511,12 @@ class MainMenuState extends MusicBeatState
     // Ctrl+Alt+Shift+E = Dump save data
     // Ctrl+Alt+Shift+L = Force crash and create a log dump
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.P)
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, P]))
     {
       FlxG.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState('pico'));
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.W)
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, W]))
     {
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
       // Give the user a score of 1 point on Weekend 1 story mode (Easy difficulty).
@@ -538,7 +539,7 @@ class MainMenuState extends MusicBeatState
         });
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, M]))
     {
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
       // Give the user a score of 0 points on Weekend 1 story mode (all difficulties).
@@ -564,7 +565,7 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.R)
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, R]))
     {
       // Give the user a hypothetical overridden score,
       // and see if we can maintain that golden P rank.
@@ -586,7 +587,7 @@ class MainMenuState extends MusicBeatState
         });
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.N)
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, N]))
     {
       @:privateAccess
       {
@@ -595,7 +596,7 @@ class MainMenuState extends MusicBeatState
       }
     }
 
-    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.E)
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, E]))
     {
       funkin.save.Save.instance.debug_dumpSave();
     }
