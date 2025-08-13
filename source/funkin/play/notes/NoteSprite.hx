@@ -167,8 +167,6 @@ class NoteSprite extends FunkinSprite
   {
     noteStyle.buildNoteSprite(this);
 
-    this.shader = hsvShader;
-
     // `false` disables the update() function for performance.
     this.active = noteStyle.isNoteAnimated();
   }
@@ -221,11 +219,13 @@ class NoteSprite extends FunkinSprite
   public function desaturate():Void
   {
     this.hsvShader.saturation = 0.2;
+    this.shader = this.hsvShader;
   }
 
   public function setHue(hue:Float):Void
   {
     this.hsvShader.hue = hue;
+    this.shader = (hue != 1.0) ? this.hsvShader : null;
   }
 
   public override function revive():Void
@@ -239,6 +239,9 @@ class NoteSprite extends FunkinSprite
     this.mayHit = false;
     this.hasMissed = false;
 
+    // The hsvShader should only be applied when it's necessary.
+    // Otherwise, it should be turned off to keep note batching.
+    this.shader = null;
     this.hsvShader.hue = 1.0;
     this.hsvShader.saturation = 1.0;
     this.hsvShader.value = 1.0;
