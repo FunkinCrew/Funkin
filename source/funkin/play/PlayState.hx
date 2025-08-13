@@ -1082,12 +1082,19 @@ class PlayState extends MusicBeatSubState
       // And it was frame dependant which we don't like!!
       if (FlxG.sound.music.playing)
       {
-        final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
-        Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
-      }
-      else
-      {
-        Conductor.instance.update();
+        final audioDiff:Float = Math.round(Math.abs(Conductor.instance.songPosition - FlxG.sound.music.time));
+        if (audioDiff <= RESYNC_THRESHOLD)
+        {
+          // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
+          final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
+          Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
+        }
+        else
+        {
+          // Fallback to properly update the conductor incase the lerp messed up
+          // Shouldn't be fallen back to unless you're lagging alot
+          Conductor.instance.update();
+        }
       }
     }
 
