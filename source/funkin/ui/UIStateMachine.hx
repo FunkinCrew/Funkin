@@ -95,6 +95,6 @@ class UIStateMachine
   public function canInteract():Bool
   {
     // Entering is an enabled state since we want to be able to interact even during the screen fade wipe thing
-    return currentState == Idle || currentState == Interacting || currentState == Entering;
+    return currentState == Idle || currentState == Entering;
   }
 }
