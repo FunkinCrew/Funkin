@@ -3045,7 +3045,7 @@ class FreeplaySongData
   /**
    * Whether or not the song has been favorited.
    */
-  public var isFav:Bool = false;
+  public var isFav(get, never):Bool;
 
   /**
    * Whether the player has seen/played this song before within freeplay
@@ -3064,6 +3064,11 @@ class FreeplaySongData
   public var fullSongName(get, never):String;
 
   /**
+   * The song's id and variation, combined with a colon. Dynamically generated depending on your current (or rather, rememberd) variation and difficulty.
+   */
+  public var idAndVariation(get, never):String;
+
+  /**
    * The starting BPM of the song, dynamically generated depending on your current (or rather, rememberd) variation and difficulty.
    */
   public var songStartingBpm(get, never):Float;
@@ -3076,7 +3081,6 @@ class FreeplaySongData
   {
     this.data = data;
     _levelId = levelData.id;
-    this.isFav = Save.instance.isSongFavorited(data.songName);
   }
 
   /**
@@ -3085,14 +3089,13 @@ class FreeplaySongData
    */
   public function toggleFavorite():Bool
   {
-    isFav = !isFav;
     if (isFav)
     {
-      Save.instance.favoriteSong(data.songName);
+      Save.instance.unfavoriteSong(idAndVariation);
     }
     else
     {
-      Save.instance.unfavoriteSong(data.songName);
+      Save.instance.favoriteSong(idAndVariation);
     }
     return isFav;
   }
@@ -3102,6 +3105,19 @@ class FreeplaySongData
     // this.isNew = song.isSongNew(suffixedDifficulty);
   }
 
+  function get_idAndVariation()
+  {
+    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
+    var variation:Null<String> = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+    return '${data.id}:${variation}';
+  }
+
+  function get_isFav():Bool
+  {
+    return Save.instance.isSongFavorited(idAndVariation);
+  }
+  
   public function isDifficultyNew(difficulty:String):Bool
   {
     // grabs a specific difficulty's new status. used for the difficulty dots.
