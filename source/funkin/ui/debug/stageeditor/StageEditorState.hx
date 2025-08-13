@@ -1331,7 +1331,9 @@ class StageEditorState extends UIState
           this.unpackShitFromZip(FileUtil.readBytesFromPath(currentFile));
 
           reloadRecentFiles();
-        }, null, null, "Open Stage Data");
+        }, function() {
+          // This function does nothing, it's there for crash prevention.
+        });
 
       case "preferences":
 
@@ -1363,7 +1365,7 @@ class StageEditorState extends UIState
         CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
         Cursor.hide();
-        FlxG.switchState(() -> new DebugMenuSubState());
+        FlxG.switchState(() -> new MainMenuState());
         FlxG.sound.music.stop();
 
       case "switch mode":
