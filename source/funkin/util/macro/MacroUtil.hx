@@ -7,6 +7,7 @@ import haxe.macro.Type;
 /**
  * A collection of utility functions for Haxe macros.
  */
+@:nullSafety
 class MacroUtil
 {
   /**

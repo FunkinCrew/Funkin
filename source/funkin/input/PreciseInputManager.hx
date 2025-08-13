@@ -294,11 +294,11 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     // TODO: Remove this line with SDL3 when timestamps change meaning.
     // This is because SDL3's timestamps are measured in nanoseconds, not milliseconds.
     timestamp *= Constants.NS_PER_MS; // 18126000000 38367000000
-    timestamp -= Conductor.instance.inputOffset * Constants.NS_PER_MS;
+    // timestamp -= globalOffset * Constants.NS_PER_MS;
     // trace(timestamp);
     updateKeyStates(key, true);
 
-    if (getInputByKey(key)?.justPressed ?? false)
+    if (getInputByKey(key)?.justPressed ?? false && enabled)
     {
       onInputPressed.dispatch(
         {
@@ -320,7 +320,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateKeyStates(key, false);
 
-    if (getInputByKey(key)?.justReleased ?? false)
+    if (getInputByKey(key)?.justReleased ?? false && enabled)
     {
       onInputReleased.dispatch(
         {
@@ -344,7 +344,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateButtonStates(gamepad, buttonId, true);
 
-    if (getInputByButton(gamepad, buttonId)?.justPressed ?? false)
+    if (getInputByButton(gamepad, buttonId)?.justPressed ?? false && enabled)
     {
       onInputPressed.dispatch(
         {
@@ -368,7 +368,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateButtonStates(gamepad, buttonId, false);
 
-    if (getInputByButton(gamepad, buttonId)?.justReleased ?? false)
+    if (getInputByButton(gamepad, buttonId)?.justReleased ?? false && enabled)
     {
       onInputReleased.dispatch(
         {

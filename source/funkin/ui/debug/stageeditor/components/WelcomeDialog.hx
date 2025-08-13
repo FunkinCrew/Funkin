@@ -11,8 +11,6 @@ import funkin.data.stage.StageData;
 import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorDialogType;
 
-using funkin.util.tools.FloatTools;
-
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/welcome.xml"))
 class WelcomeDialog extends Dialog
 {
@@ -42,7 +40,10 @@ class WelcomeDialog extends Dialog
       var fileText = new Link();
       fileText.percentWidth = 100;
       fileText.text = patj.file + "." + patj.ext;
-      fileText.onClick = function(_) loadFromFilePath(file);
+      fileText.onClick = function(_) {
+        fileText.hide();
+        loadFromFilePath(file);
+      };
 
       #if sys
       var stat = sys.FileSystem.stat(file);
@@ -132,7 +133,8 @@ class WelcomeDialog extends Dialog
 
   function killDaDialog()
   {
-    stageEditorState.updateDialog(StageEditorDialogType.OBJECT);
+    stageEditorState.updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+    stageEditorState.updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
     stageEditorState.updateDialog(StageEditorDialogType.CHARACTER);
     stageEditorState.updateDialog(StageEditorDialogType.STAGE);
 
