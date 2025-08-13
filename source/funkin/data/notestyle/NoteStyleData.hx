@@ -244,6 +244,8 @@ typedef NoteStyleData_NoteStrumline =
   var rightPress:UnnamedAnimationData;
   var rightConfirm:UnnamedAnimationData;
   var rightConfirmHold:UnnamedAnimationData;
+  // Special FPS dependent Y offset for the strumline notes, for ensuring the visual hit window matches the calculated one.
+  var FPSYOffset:Float;
 }
 
 typedef NoteStyleData_NoteSplash =
