@@ -1288,7 +1288,7 @@ class FreeplayState extends MusicBeatSubState
 
   function refreshDots(index:Int, prevIndex:Int):Void
   {
-    difficultyDots.refreshDots(index, prevIndex);
+    difficultyDots.refreshDots(index, prevIndex, currentCapsule?.freeplayData);
   }
 
   function tryOpenCharSelect():Void

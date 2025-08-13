@@ -24,7 +24,6 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   public function new(x:Float, y:Float)
   {
     super(x, y);
-    trace("Created DIFF DOTS");
   }
 
   /**
@@ -57,10 +56,9 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
     for (dot in members)
     {
       dot.visible = false;
+      trace(dot);
       if (currentDifficultyList.contains(dot.difficultyId)) usedDots.push(dot);
     }
-
-    // trace(usedDots);
 
     for (dot in usedDots)
       dot.visible = true;
@@ -68,8 +66,11 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 
   var prevDotAmount:Int = 0;
 
-  public function refreshDots(index:Int, prevIndex:Int):Void
+  public function refreshDots(index:Int, prevIndex:Int, ?daSongData:funkin.ui.freeplay.FreeplayState.FreeplaySongData):Void
   {
+    trace(usedDots);
+    trace(daSongData);
+
     shiftAmt = (distance * usedDots.length) / 2;
     trace('index: $index, prevIndex: $prevIndex');
 
@@ -86,68 +87,58 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       var curDotSpr:DifficultyDot = usedDots[i];
       var targetState:DotState = SELECTED;
       var targetType:DotType = NORMAL;
+      if (curDotSpr.erected) targetType = ERECT;
       var diffId:String = curDotSpr.difficultyId;
 
       curDotSpr.important = false;
 
+      // I could "oneline" this condition too, but i dont wanna hurt your eyes :troll:
       if (i == index)
       {
         targetState = SELECTED;
       }
       else
       {
-        if (i == prevIndex)
-        {
-          targetState = DESELECTING;
-        }
-        else
-        {
-          targetState = DESELECTED;
-        }
+        targetState = (i == prevIndex) ? DESELECTING : DESELECTED
       }
+
       curDotSpr.visible = true;
       curDotSpr.x = (funkin.ui.freeplay.FreeplayState.CUTOUT_WIDTH * funkin.ui.freeplay.FreeplayState.DJ_POS_MULTI)
         + ((this.x + (distance * curDot)) - shiftAmt);
       curDotSpr.y = funkin.ui.freeplay.FreeplayState.DEFAULT_DOTS_GROUP_POS[1] + distance * curRow;
 
       curDot++;
-    }
 
-    /*for (i in 0...difficultyDots.group.members.length)
+      if (curDot >= Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW)
       {
-        if (curDot >= maxDotsPerRow)
-        {
-          curDot = 0;
-          curRow++;
-        }
+        curDot = 0;
+        curRow++;
+      }
 
-        if (daSong?.data.hasDifficulty(diffId, daSong?.data.getFirstValidVariation(diffId, currentCharacter)) == false)
+      /*if (daSong?.data.hasDifficulty(diffId, daSong?.data.getFirstValidVariation(diffId, currentCharacter)) == false)
         {
           targetType = INACTIVE;
         }
         else
         {
-          if (daSong?.isDifficultyNew(diffId) == true)
-          {
-            // at the moment, we don't want the other difficulties to show the pulse, cause the
-            // feature only works on new songs at the moment and its not particularly hard to find a new song on easy/normal/hard.
-            // eventually this will probably be moved to affect all types.
+          if (daSongData?.isDifficultyNew(diffId) == true)
             if (targetType == ERECT)
-            {
               difficultyDots.group.members[i].important = true;
-            }
-          }
-        }
+      }*/
 
-        // originally was gonna hide the dots if erect/nightmare wasnt present, leaving this functionality just in case
-        // mods (or we) need to display a different amount
-        if (i > amount - 1 && amount != 5)
+      if (daSongData?.isDifficultyNew(diffId) && targetType == ERECT)
+      {
+        curDotSpr.important = true;
+      }
+      // originally was gonna hide the dots if erect/nightmare wasnt present, leaving this functionality just in case
+      // mods (or we) need to display a different amount
+      /*if (i > usedDots.length - 1 && usedDots.length != 5)
         {
-          difficultyDots.group.members[i].visible = false;
-        }
+          members[i].visible = false;
+      }*/
 
-        difficultyDots.group.members[i].updateState(targetType, targetState);
-    }*/
+      curDotSpr.updateState(targetType, targetState);
+    }
 
     prevDotAmount = usedDots.length;
   }
@@ -208,6 +199,7 @@ class DifficultyDot extends FlxSpriteGroup
 
     difficultyId = id;
     this.erected = erected;
+    type = this.erected ? ERECT : NORMAL;
 
     dotSpr = new FlxSprite().loadGraphic(Paths.image('freeplay/seperator'));
     add(dotSpr);
