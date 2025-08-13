@@ -157,14 +157,14 @@ class AttractState extends MusicBeatState
       || TouchUtil.touch != null && TouchUtil.touch.pressed #end)
     {
       holdDelta += elapsed;
-      holdDelta = FlxMath.clamp(holdDelta, 0, HOLD_TIME);
+      holdDelta = holdDelta.clamp(0, HOLD_TIME);
 
       pie.scale.x = pie.scale.y = FlxMath.lerp(pie.scale.x, 1.3, Math.exp(-elapsed * 140.0));
     }
     else
     {
       holdDelta = FlxMath.lerp(holdDelta, -0.1, (elapsed * 3).clamp(0, 1));
-      holdDelta = FlxMath.clamp(holdDelta, 0, HOLD_TIME);
+      holdDelta = holdDelta.clamp(0, HOLD_TIME);
       pie.scale.x = pie.scale.y = FlxMath.lerp(pie.scale.x, 1, Math.exp(-elapsed * 160.0));
     }
 
