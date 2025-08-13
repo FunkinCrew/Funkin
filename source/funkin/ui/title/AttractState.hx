@@ -17,25 +17,25 @@ import flixel.util.FlxColor;
 import flixel.addons.display.FlxPieDial;
 
 /**
- * After about 2 minutes of inactivity on the title screen,
+ * After 40 seconds of inactivity on the title screen,
  * the game will enter the Attract state, as a reference to physical arcade machines.
  *
- * In the current version, this just plays the ~~Kickstarter trailer~~ Erect teaser, but this can be changed to
- * gameplay footage, a generic game trailer, or something more elaborate.
+ * In the current version, this just plays generic game/merch trailers,
+ * but this can be updated to include gameplay footage, or something more elaborate.
  */
 class AttractState extends MusicBeatState
 {
   /**
    * The videos that can be played by the Attract state.
    * @param path The path to the video to play.
-   * @param weight The weight of the video.
-   *   A video with a weight of `2` will be picked twice as often as a video with a weight of `1`.
+   * This used
    */
-  static final VIDEO_PATHS:Array<{path:String, weight:Float}> = [
-    {path: Paths.videos('mobileRelease'), weight: 5},
-    {path: Paths.videos('toyCommercial'), weight: 5},
-    {path: Paths.videos('boyfriendEverywhere'), weight: 1},
+  static final VIDEO_PATHS:Array<{path:String}> = [
+    {path: Paths.videos('mobileRelease')},
+    {path: Paths.videos('boyfriendEverywhere')},
   ];
+
+  static var nextVideoToPlay:Int = 0;
 
   /**
    * Duration you need to touch for to skip the video.
@@ -80,10 +80,9 @@ class AttractState extends MusicBeatState
    */
   function getVideoPath():String
   {
-    var videoPaths:Array<String> = VIDEO_PATHS.map((video) -> video.path);
-    var videoWeights:Array<Float> = VIDEO_PATHS.map((video) -> video.weight);
+    var result:String = VIDEO_PATHS[nextVideoToPlay].path;
 
-    var result:String = FlxG.random.getObject(videoPaths, videoWeights);
+    nextVideoToPlay = (nextVideoToPlay + 1) % VIDEO_PATHS.length;
 
     #if html5
     result = Paths.stripLibrary(result);
