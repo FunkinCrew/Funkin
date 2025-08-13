@@ -72,7 +72,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   override function set_volume(value:Float):Float
   {
     // Uncap the volume.
-    _volume = FlxMath.bound(value, 0.0, MAX_VOLUME);
+    _volume = value.clamp(0.0, MAX_VOLUME);
     updateTransform();
     return _volume;
   }
@@ -568,8 +568,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (_sound == null) return;
 
     // Create a channel manually if the sound is considered important.
-    var pan:Float = FlxMath.bound(SoundMixer.__soundTransform.pan + _transform.pan, -1, 1);
-    var volume:Float = FlxMath.bound(SoundMixer.__soundTransform.volume * _transform.volume, 0, MAX_VOLUME);
+    var pan:Float = (SoundMixer.__soundTransform.pan + _transform.pan).clamp(-1, 1);
+    var volume:Float = (SoundMixer.__soundTransform.volume * _transform.volume).clamp(0, MAX_VOLUME);
 
     var audioSource:AudioSource = new AudioSource(_sound.__buffer);
     audioSource.offset = Std.int(startTime);

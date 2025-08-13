@@ -207,7 +207,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
       {
         // Move the playhead if it would go out of view.
         var prevPlayheadRelativePos = playheadRelativePos;
-        playheadRelativePos = FlxMath.bound(playheadRelativePos, 0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
+        playheadRelativePos = playheadRelativePos.clamp(0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
         trace('newPos: ${playheadRelativePos}');
         var diff = playheadRelativePos - prevPlayheadRelativePos;
 

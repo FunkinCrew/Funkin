@@ -80,7 +80,7 @@
     {
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
+        "format": "^?:_[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
         "tokens": ["INLINE", "NOTINLINE"]
       },
       "type": "ConstantName"

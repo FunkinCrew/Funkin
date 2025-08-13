@@ -18,9 +18,9 @@ class GitarooPause extends MusicBeatState
 
   var replaySelect:Bool = false;
 
-  var previousParams:PlayStateParams;
+  var previousParams:Null<PlayStateParams>;
 
-  public function new(previousParams:PlayStateParams):Void
+  public function new(?previousParams:PlayStateParams):Void
   {
     super();
 

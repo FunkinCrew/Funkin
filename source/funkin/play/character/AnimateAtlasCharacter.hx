@@ -580,7 +580,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   override function set_alpha(value:Float):Float
   {
-    value = FlxMath.bound(value, 0, 1);
+    value = value.clamp(0, 1);
 
     if (exists && alpha != value)
     {

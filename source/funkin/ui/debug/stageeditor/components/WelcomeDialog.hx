@@ -11,8 +11,6 @@ import funkin.data.stage.StageData;
 import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorDialogType;
 
-using funkin.util.tools.FloatTools;
-
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/welcome.xml"))
 class WelcomeDialog extends Dialog
 {

@@ -10,6 +10,7 @@ import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.modding.module.ModuleHandler;
 import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
+import funkin.util.WindowUtil;
 import flixel.util.FlxSort;
 import funkin.input.Controls;
 #if mobile
@@ -140,7 +141,11 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     super.update(elapsed);
 
     // Emergency exit button.
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
+    if (FlxG.keys.justPressed.F4)
+    {
+      FlxG.switchState(() -> new MainMenuState());
+      WindowUtil.setWindowTitle('Friday Night Funkin\'');
+    }
 
     // Display Conductor info in the watch window.
     FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);

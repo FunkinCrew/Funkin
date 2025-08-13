@@ -151,10 +151,12 @@ class HealthIcon extends FunkinSprite
    */
   public function toggleOldIcon():Void
   {
+    final playState:Null<PlayState> = PlayState.instance;
+    if (playState == null || playState.currentStage == null) return;
     if (characterId == 'bf-old')
     {
-      isPixel = PlayState.instance.currentStage.getBoyfriend().isPixel;
-      PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
+      isPixel = playState.currentStage.getBoyfriend()?.isPixel ?? false;
+      playState.currentStage.getBoyfriend()?.initHealthIcon(false);
     }
     else
     {

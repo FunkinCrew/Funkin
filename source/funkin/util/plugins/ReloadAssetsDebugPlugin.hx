@@ -5,7 +5,7 @@ import flixel.FlxBasic;
 import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
 #if android
-import funkin.mobile.external.android.CallbackUtil;
+import funkin.external.android.CallbackUtil;
 #end
 
 /**

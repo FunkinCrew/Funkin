@@ -138,6 +138,7 @@ class OptionsState extends MusicBeatState
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
   }
 }
@@ -198,7 +199,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #end
     #if android
     createItem("OPEN DATA FOLDER", function() {
-      funkin.mobile.external.android.DataFolderUtil.openDataFolder();
+      funkin.external.android.DataFolderUtil.openDataFolder();
     });
     #end
     #if FEATURE_NEWGROUNDS

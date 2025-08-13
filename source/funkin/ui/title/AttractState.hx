@@ -133,7 +133,7 @@ class AttractState extends MusicBeatState
     }
     else
     {
-      holdDelta = Math.max(0, FlxMath.lerp(holdDelta, -0.1, FlxMath.bound(elapsed * 3, 0, 1)));
+      holdDelta = Math.max(0, FlxMath.lerp(holdDelta, -0.1, (elapsed * 3).clamp(0, 1)));
       pie.scale.x = pie.scale.y = FlxMath.lerp(pie.scale.x, 1, Math.exp(-elapsed * 160.0));
     }
 

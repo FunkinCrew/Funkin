@@ -1,9 +1,9 @@
 package funkin.mobile.util;
 
 #if ios
-import funkin.mobile.external.ios.ScreenUtil as NativeScreenUtil;
+import funkin.external.ios.ScreenUtil as NativeScreenUtil;
 #elseif android
-import funkin.mobile.external.android.ScreenUtil as NativeScreenUtil;
+import funkin.external.android.ScreenUtil as NativeScreenUtil;
 #end
 import lime.math.Rectangle;
 import lime.system.System;

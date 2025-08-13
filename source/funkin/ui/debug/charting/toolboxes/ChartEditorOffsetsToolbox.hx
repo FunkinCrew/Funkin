@@ -184,7 +184,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
       {
         // Move the playhead if it would go out of view.
         var prevPlayheadRelativePos = playheadRelativePos;
-        playheadRelativePos = FlxMath.bound(playheadRelativePos, 0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
+        playheadRelativePos = playheadRelativePos.clamp(0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
         var diff = playheadRelativePos - prevPlayheadRelativePos;
 
         if (diff != 0)
