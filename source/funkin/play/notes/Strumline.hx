@@ -49,19 +49,35 @@ class Strumline extends FlxSpriteGroup
   static final INITIAL_OFFSET:Float = -0.275 * STRUMLINE_SIZE;
 
   /**
-   * Returns a dynamic offset for the strumline center based on FPS.
-   * The lower the FPS, the higher the hit window is offset.
-   * Additional offset when downscroll because it needs it for whatever reason????
+   * Calculates the Y offset for the strumline hit window based on framerate cap and note style.
+   * The lower the FPS, the more the hit window is offset upwards on the y-axis.
    */
   function getDynamicOffset():Float {
-    var baseOffset:Float;
-    baseOffset = INITIAL_OFFSET + (noteStyle?.getStrumlineFPSYOffset() ?? 10.0);
-    var fps = Preferences.framerate;
-    var maxOffset = (500 - 30) * 0.025;
-    var t = (500 - fps) / (500 - 30);
-    var offset = baseOffset + maxOffset * t;
-    if (isDownscroll) offset -= (500 / fps) * 4.26;
-    return offset;
+    // Base offset for the strumline, includes initial value and style-specific adjustment.
+    var initialOffset:Float = INITIAL_OFFSET + (noteStyle?.getStrumlineFPSYOffset() ?? 10.0);
+
+    // Current framerate value from preferences.
+    var framerate:Float = Preferences.framerate;
+
+    // Maximum and minimum framerate values used for offset calculation.
+    var maxFramerate:Float = 500.0;
+    var minFramerate:Float = 30.0;
+
+    // The largest possible dynamic offset based on framerate range.
+    var maxDynamicOffset:Float = (maxFramerate - minFramerate) * 0.025;
+
+    // Ratio representing how far the current framerate is from the maximum.
+    var framerateRatio:Float = (maxFramerate - framerate) / (maxFramerate - minFramerate);
+
+    // Final calculated offset, combining base and dynamic offsets.
+    var dynamicOffset:Float = initialOffset + maxDynamicOffset * framerateRatio;
+
+    // Extra offset applied when downscroll is enabled because for some reason it's not the same as upscroll.
+    if (isDownscroll) {
+      dynamicOffset -= (maxFramerate / framerate) * 4.26;
+    }
+
+    return dynamicOffset;
   }
 
   static final NUDGE:Float = 2.0;
