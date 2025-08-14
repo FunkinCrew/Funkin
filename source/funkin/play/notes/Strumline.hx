@@ -60,7 +60,7 @@ class Strumline extends FlxSpriteGroup
     var maxOffset = (500 - 30) * 0.025;
     var t = (500 - fps) / (500 - 30);
     var offset = baseOffset + maxOffset * t;
-    if (isDownscroll) offset -= (500 / fps) * 4.3;
+    if (isDownscroll) offset -= (500 / fps) * 4.26;
     return offset;
   }
 
