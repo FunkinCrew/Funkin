@@ -51,6 +51,7 @@ class Strumline extends FlxSpriteGroup
   /**
    * Returns a dynamic offset for the strumline center based on FPS.
    * The lower the FPS, the higher the hit window is offset.
+   * Additional offset when downscroll because it needs it for whatever reason????
    */
   function getDynamicOffset():Float {
     var baseOffset:Float;
@@ -58,7 +59,9 @@ class Strumline extends FlxSpriteGroup
     var fps = Preferences.framerate;
     var maxOffset = (500 - 30) * 0.025;
     var t = (500 - fps) / (500 - 30);
-    return baseOffset + maxOffset * t;
+    var offset = baseOffset + maxOffset * t;
+    if (isDownscroll) offset -= (500 / fps) * 4.3;
+    return offset;
   }
 
   static final NUDGE:Float = 2.0;
@@ -597,19 +600,10 @@ class Strumline extends FlxSpriteGroup
     {
       if (note == null || !note.alive) continue;
       // Set the note's position.
-      if (!customPositionData)
-      {
-        if (isDownscroll) note.y = this.y
-          - getDynamicOffset()
-          + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-          + 10 // ???????????????????? TODO: Figure out where this -10 offset when downscroll is from
-          + note.yOffset;
-        else
-          note.y = this.y
-            - getDynamicOffset()
-            + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-            + note.yOffset;
-      }
+      if (!customPositionData) note.y = this.y
+        - getDynamicOffset()
+        + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+        + note.yOffset;
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
