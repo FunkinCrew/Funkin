@@ -15,6 +15,8 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 
   public var currentDifficultyList:Array<String> = [];
 
+  var prevDifficulty:String;
+
   public var usedDots:Array<DifficultyDot> = [];
 
   public function new(x:Float, y:Float)
@@ -72,7 +74,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       }
       else
       {
-        targetState = (i == prevIndex) ? DESELECTING : DESELECTED;
+        targetState = (i == prevIndex || prevDifficulty == curDotSpr.difficultyId) ? DESELECTING : DESELECTED;
       }
 
       curDotSpr.visible = true;
@@ -92,6 +94,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 
       curDotSpr.updateState(curDotSpr.type, targetState);
     }
+    prevDifficulty = currDiffString;
   }
 
   public function fade(fadeIn:Bool):Void
@@ -295,25 +298,3 @@ class DifficultyDot extends FlxSpriteGroup
   override public inline function toString():String
     return 'DiffDot(diff=$difficultyId)';
 }
-/*
-  class DifficultyDotOLD extends FlxSpriteGroup
-  {
-
-
-  public function new(id:String, num:Int, erected:Bool)
-  {
-    updateState();
-  }
-
-
-
-
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-  }
-
-
-  }
- */
