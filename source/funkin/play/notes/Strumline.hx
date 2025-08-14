@@ -597,10 +597,19 @@ class Strumline extends FlxSpriteGroup
     {
       if (note == null || !note.alive) continue;
       // Set the note's position.
-      if (!customPositionData) note.y = this.y
-        - getDynamicOffset()
-        + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-        + note.yOffset;
+      if (!customPositionData)
+      {
+        if (isDownscroll) note.y = this.y
+          - getDynamicOffset()
+          + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+          + 10 // ???????????????????? TODO: Figure out where this -10 offset when downscroll is from
+          + note.yOffset;
+        else
+          note.y = this.y
+            - getDynamicOffset()
+            + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
+            + note.yOffset;
+      }
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
