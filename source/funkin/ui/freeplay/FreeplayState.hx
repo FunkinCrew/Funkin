@@ -771,8 +771,6 @@ class FreeplayState extends MusicBeatSubState
         albumRoll.showStars();
       }
 
-      // refreshDots(5, Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty), Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty));
-
       fadeDots(true);
 
       #if FEATURE_TOUCH_CONTROLS
@@ -1286,9 +1284,9 @@ class FreeplayState extends MusicBeatSubState
     difficultyDots.fade(fadeIn);
   }
 
-  function refreshDots(index:Int, prevIndex:Int):Void
+  function refreshDots(index:Int, prevIndex:Int, currentDiffId:String):Void
   {
-    difficultyDots.refreshDots(index, prevIndex, currentCapsule?.freeplayData);
+    difficultyDots.refreshDots(index, prevIndex, currentCapsule?.freeplayData, currentDiffId);
   }
 
   function tryOpenCharSelect():Void
@@ -2255,9 +2253,7 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    // refreshDots(songDifficulties.length, currentDifficultyIndex, prevDifficultyIndex);
-    // refreshDots(5, currentDifficultyIndex, prevDifficultyIndex);
-    refreshDots(currentDifficultyIndex, prevDifficultyIndex);
+    refreshDots(currentDifficultyIndex, prevDifficultyIndex, currentDifficulty);
 
     if (change != 0 || force)
     {

@@ -54,7 +54,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       dot.visible = true;
   }
 
-  public function refreshDots(index:Int, prevIndex:Int, ?daSongData:funkin.ui.freeplay.FreeplayState.FreeplaySongData):Void
+  public function refreshDots(index:Int, prevIndex:Int, ?daSongData:FreeplayState.FreeplaySongData, ?currDiffString:String):Void
   {
     final totalRows:Int = Math.ceil(usedDots.length / Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW);
 
@@ -66,7 +66,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       var targetState:DotState = SELECTED;
       curDotSpr.important = false;
 
-      if (i == index)
+      if (i == index || currDiffString == curDotSpr.difficultyId)
       {
         targetState = SELECTED;
       }
