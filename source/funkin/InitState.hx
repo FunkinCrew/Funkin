@@ -265,9 +265,6 @@ class InitState extends FlxState
     // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
     funkin.FunkinMemory.initialCache();
     #end
-
-    // Laginator for testing!!
-    FlxG.signals.preUpdate.add(() -> if (FlxG.keys.pressed.SPACE) Sys.sleep(0.1));
   }
 
   /**
