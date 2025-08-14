@@ -7,19 +7,15 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
+import funkin.ui.freeplay.FreeplayState;
 
 class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 {
-  public var groupOffset:Float = 14.7;
   public var distance:Int = 30;
-  public var shiftAmt:Float = 0; // (distance * amount) / 2;
 
-  // public var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
-  // final maxDotsPerRow:Int = 8;
   public var currentDifficultyList:Array<String> = [];
 
   public var usedDots:Array<DifficultyDot> = [];
-  public var isActive:Bool = true;
 
   public function new(x:Float, y:Float)
   {
@@ -40,23 +36,17 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       _erected = Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentDifficultyList[i]);
       final dot:DifficultyDot = new DifficultyDot(currentDifficultyList[i], i, _erected);
       this.add(dot);
-      dot.x += FlxG.random.float(-150, 50);
-      // trace('Difficulty: ${currentDifficultyList[i]}, erected: $_erected, x: ${dot.x}');
     }
   }
 
-  public function regenDots(diffArray:Array<String>, ?active:Bool = true):Void
+  public function regenDots(diffArray:Array<String>):Void
   {
     currentDifficultyList = diffArray;
     usedDots = [];
 
-    isActive = active;
-    trace(isActive);
-
     for (dot in members)
     {
       dot.visible = false;
-      trace(dot);
       if (currentDifficultyList.contains(dot.difficultyId)) usedDots.push(dot);
     }
 
@@ -64,35 +54,18 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       dot.visible = true;
   }
 
-  var prevDotAmount:Int = 0;
-
   public function refreshDots(index:Int, prevIndex:Int, ?daSongData:funkin.ui.freeplay.FreeplayState.FreeplaySongData):Void
   {
-    trace(usedDots);
-    trace(daSongData);
+    final totalRows:Int = Math.ceil(usedDots.length / Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW);
 
-    shiftAmt = (distance * usedDots.length) / 2;
-    trace('index: $index, prevIndex: $prevIndex');
-
-    if (usedDots.length > Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW) this.x = funkin.ui.freeplay.FreeplayState.DEFAULT_DOTS_GROUP_POS[0]
-      - groupOffset * (Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW - 1);
-    else
-      this.x = funkin.ui.freeplay.FreeplayState.DEFAULT_DOTS_GROUP_POS[0] - groupOffset * (usedDots.length - 1);
-
-    var curRow:Int = 0;
-    var curDot:Int = 0;
-
+    var row:Int = 0;
+    var col:Float = 0;
     for (i in 0...usedDots.length)
     {
       var curDotSpr:DifficultyDot = usedDots[i];
       var targetState:DotState = SELECTED;
-      var targetType:DotType = NORMAL;
-      if (curDotSpr.erected) targetType = ERECT;
-      var diffId:String = curDotSpr.difficultyId;
-
       curDotSpr.important = false;
 
-      // I could "oneline" this condition too, but i dont wanna hurt your eyes :rolling_eyes:
       if (i == index)
       {
         targetState = SELECTED;
@@ -103,44 +76,22 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       }
 
       curDotSpr.visible = true;
-      curDotSpr.x = (funkin.ui.freeplay.FreeplayState.CUTOUT_WIDTH * funkin.ui.freeplay.FreeplayState.DJ_POS_MULTI)
-        + ((this.x + (distance * curDot)) - shiftAmt);
-      curDotSpr.y = funkin.ui.freeplay.FreeplayState.DEFAULT_DOTS_GROUP_POS[1] + distance * curRow;
 
-      curDot++;
+      row = Math.floor(i / Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW);
+      col = i % Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW;
 
-      if (curDot >= Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW)
-      {
-        curDot = 0;
-        curRow++;
-      }
+      final dotsInCurrentRow:Int = (row == totalRows - 1) ? (usedDots.length - row * Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW) : Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW;
 
-      /*if (daSong?.data.hasDifficulty(diffId, daSong?.data.getFirstValidVariation(diffId, currentCharacter)) == false)
-        {
-          targetType = INACTIVE;
-        }
-        else
-        {
-          if (daSongData?.isDifficultyNew(diffId) == true)
-            if (targetType == ERECT)
-              difficultyDots.group.members[i].important = true;
-      }*/
+      final rowOffset:Float = (dotsInCurrentRow - 1) * distance / 2;
+      final xPos:Float = FreeplayState.DEFAULT_DOTS_GROUP_POS[0] - rowOffset + col * distance;
 
-      if (daSongData?.isDifficultyNew(diffId) && targetType == ERECT)
-      {
-        curDotSpr.important = true;
-      }
-      // originally was gonna hide the dots if erect/nightmare wasnt present, leaving this functionality just in case
-      // mods (or we) need to display a different amount
-      /*if (i > usedDots.length - 1 && usedDots.length != 5)
-        {
-          members[i].visible = false;
-      }*/
+      curDotSpr.x = (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + xPos;
+      curDotSpr.y = FreeplayState.DEFAULT_DOTS_GROUP_POS[1] + distance * row;
 
-      curDotSpr.updateState(targetType, targetState);
+      if (daSongData?.isDifficultyNew(curDotSpr.difficultyId) && curDotSpr.erected) curDotSpr.important = true;
+
+      curDotSpr.updateState(curDotSpr.type, targetState);
     }
-
-    prevDotAmount = usedDots.length;
   }
 
   public function fade(fadeIn:Bool):Void
