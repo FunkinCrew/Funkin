@@ -256,6 +256,8 @@ class NoteSprite extends FunkinSprite
     this.hasBeenHit = false;
     this.mayHit = false;
     this.hasMissed = false;
+    this.handledMiss = false;
+    this.holdNoteSprite = null;
 
     this.hsvShader.hue = 1.0;
     this.hsvShader.saturation = 1.0;

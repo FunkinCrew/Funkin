@@ -94,6 +94,7 @@ class MultiSparrowCharacter extends BaseCharacter
       {
         trace('Concatenating multi-sparrow atlas: ${asset}');
         subTexture.parent.destroyOnNoUse = false;
+        FunkinMemory.cacheTexture(Paths.image(asset));
       }
 
       texture.addAtlas(subTexture);

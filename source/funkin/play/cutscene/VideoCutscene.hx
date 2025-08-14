@@ -66,7 +66,7 @@ class VideoCutscene
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
-      // lime.app.Application.current.window.alert('Video file does not exist: ${filePath}', 'Error playing video');
+      // funkin.util.WindowUtil.showError('Error playing video', 'Video file does not exist: ${filePath}');
       // return;
 
       // TODO: After moving videos to their own library,

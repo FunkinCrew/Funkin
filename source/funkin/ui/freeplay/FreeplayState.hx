@@ -490,6 +490,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     albumRoll.albumId = null;
+    albumRoll.visible = false;
     albumRoll.applyExitMovers(exitMovers, exitMoversCharSel);
     add(albumRoll);
 
@@ -498,7 +499,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (fromCharSelect)
     {
-      blackOverlayBullshitLOLXD.x = backingImage.x;
+      blackOverlayBullshitLOLXD.visible = false;
       overhangStuff.y = -100;
       backingCard.skipIntroTween();
     }
@@ -698,6 +699,9 @@ class FreeplayState extends MusicBeatSubState
             ease: FlxEase.expoOut,
             onUpdate: function(_) {
               angleMaskShader.extraColor = backingImage.color;
+            },
+            onComplete: function(_) {
+              blackOverlayBullshitLOLXD.visible = false;
             }
           });
       }
@@ -756,6 +760,11 @@ class FreeplayState extends MusicBeatSubState
       if (prepForNewRank && fromResultsParams != null)
       {
         rankAnimStart(fromResultsParams, currentCapsule);
+        albumRoll.skipIntro();
+        albumRoll.showStars();
+      }
+      else if (fromCharSelect)
+      {
         albumRoll.skipIntro();
         albumRoll.showStars();
       }
@@ -1631,7 +1640,7 @@ class FreeplayState extends MusicBeatSubState
     // sets the text of the completion percentage. Perhaps eventually we may want to generalize this,
     // but for now we can just clamp the values between 0 and 100.
     // Fixes issue where it rounds to negative integer overflow on Windows? Which occurs when switching to an unranked song?
-    txtCompletion.text = '${FlxMath.clamp(Math.floor(lerpCompletion * 100), 0, 100)}';
+    txtCompletion.text = '${Math.floor(lerpCompletion * 100).clamp(0, 100)}';
 
     // Right align the completion percentage
     switch (txtCompletion.text.length)
@@ -1876,7 +1885,7 @@ class FreeplayState extends MusicBeatSubState
         {
           var dpiScale = FlxG.stage.window.display.dpi / 160;
 
-          dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
+          dpiScale = dpiScale.clamp(0.5, #if android 1 #else 2 #end);
 
           var moveLength = delta / FlxG.updateFramerate / dpiScale;
           _moveLength += Math.abs(moveLength);
@@ -1903,7 +1912,7 @@ class FreeplayState extends MusicBeatSubState
         _flickEnded = false;
         var dpiScale = FlxG.stage.window.display.dpi / 160;
 
-        dpiScale = FlxMath.clamp(dpiScale, 0.5, #if android 1 #else 2 #end);
+        dpiScale = dpiScale.clamp(0.5, #if android 1 #else 2 #end);
         var velocityMove = flickVelocity * elapsed / dpiScale;
         _moveLength += Math.abs(velocityMove);
         curSelectedFloat -= velocityMove;
@@ -1920,7 +1929,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    curSelectedFloat = FlxMath.clamp(curSelectedFloat, 0, grpCapsules.countLiving() - 1);
+    curSelectedFloat = curSelectedFloat.clamp(0, grpCapsules.countLiving() - 1);
     curSelected = Math.round(curSelectedFloat);
 
     for (i in 0...grpCapsules.members.length)
@@ -2193,8 +2202,6 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
-    if (!controls.active && !force) return;
-
     if (capsuleAnim)
     {
       if (currentCapsule != null)
@@ -2364,7 +2371,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Set the album graphic and play the animation if relevant.
     var newAlbumId:Null<String> = daSong?.data.getAlbumId(currentDifficulty, currentVariation);
-    if (albumRoll.albumId != newAlbumId)
+    if (albumRoll.albumId != newAlbumId && (currentVariation != previousVariation || controls.active) && !fromCharSelect)
     {
       albumRoll.albumId = newAlbumId;
       albumRoll.skipIntro();
@@ -2716,7 +2723,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (currentCapsule.freeplayData == null) albumRoll.albumId = null;
 
-    changeDiff(0, true);
+    changeDiff();
     if (currentCapsule.freeplayData == null) currentCapsule.refreshDisplay();
     else
       currentCapsule.refreshDisplay(!prepForNewRank);
@@ -2758,7 +2765,7 @@ class FreeplayState extends MusicBeatSubState
           overrideExisting: true,
           restartTrack: false
         });
-      FlxG.sound.music.fadeIn(2, 0, 0.8);
+      FlxG.sound.music.fadeIn(2, 0, 0.7);
     }
     else
     {
@@ -2795,7 +2802,7 @@ class FreeplayState extends MusicBeatSubState
               end: 0.2
             },
           onLoad: function() {
-            FlxG.sound.music.fadeIn(2, 0, 0.4);
+            FlxG.sound.music.fadeIn(2, 0, 0.7);
           }
         });
       if (songDifficulty != null)
@@ -3038,7 +3045,7 @@ class FreeplaySongData
   /**
    * Whether or not the song has been favorited.
    */
-  public var isFav:Bool = false;
+  public var isFav(get, never):Bool;
 
   /**
    * Whether the player has seen/played this song before within freeplay
@@ -3057,6 +3064,11 @@ class FreeplaySongData
   public var fullSongName(get, never):String;
 
   /**
+   * The song's id and variation, combined with a colon. Dynamically generated depending on your current (or rather, rememberd) variation and difficulty.
+   */
+  public var idAndVariation(get, never):String;
+
+  /**
    * The starting BPM of the song, dynamically generated depending on your current (or rather, rememberd) variation and difficulty.
    */
   public var songStartingBpm(get, never):Float;
@@ -3069,7 +3081,6 @@ class FreeplaySongData
   {
     this.data = data;
     _levelId = levelData.id;
-    this.isFav = Save.instance.isSongFavorited(data.songName);
   }
 
   /**
@@ -3078,14 +3089,13 @@ class FreeplaySongData
    */
   public function toggleFavorite():Bool
   {
-    isFav = !isFav;
     if (isFav)
     {
-      Save.instance.favoriteSong(data.songName);
+      Save.instance.unfavoriteSong(idAndVariation);
     }
     else
     {
-      Save.instance.unfavoriteSong(data.songName);
+      Save.instance.favoriteSong(idAndVariation);
     }
     return isFav;
   }
@@ -3095,6 +3105,19 @@ class FreeplaySongData
     // this.isNew = song.isSongNew(suffixedDifficulty);
   }
 
+  function get_idAndVariation()
+  {
+    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
+    var variation:Null<String> = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+    return '${data.id}:${variation}';
+  }
+
+  function get_isFav():Bool
+  {
+    return Save.instance.isSongFavorited(idAndVariation);
+  }
+  
   public function isDifficultyNew(difficulty:String):Bool
   {
     // grabs a specific difficulty's new status. used for the difficulty dots.
