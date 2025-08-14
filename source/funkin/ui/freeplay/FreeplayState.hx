@@ -123,7 +123,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * For positioning the difficulty dots.
    */
-  public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [260, 170];
+  public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [200, 170];
 
   var songs:Array<Null<FreeplaySongData>> = [];
 
@@ -2157,7 +2157,7 @@ class FreeplayState extends MusicBeatSubState
     var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
     // Lowkey fun with Random capsule
-    difficultyDots.regenDots(daSong != null ? songDifficulties : difficultiesAvailable, daSong != null);
+    difficultyDots.regenDots(daSong != null ? songDifficulties : difficultiesAvailable);
 
     var currentDifficultyIndex:Int = difficultiesAvailable.indexOf(currentDifficulty);
     final prevDifficultyIndex:Int = currentDifficultyIndex;
