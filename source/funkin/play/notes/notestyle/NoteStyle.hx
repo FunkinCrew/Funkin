@@ -311,7 +311,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data?.assets?.noteStrumline?.data?.FPSYOffset ?? 5.0;
   }
 
-
   public function getStrumlineOffsets():Array<Float>
   {
     return _data?.assets?.noteStrumline?.offsets ?? fallback?.getStrumlineOffsets() ?? [0.0, 0.0];
