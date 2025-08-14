@@ -864,8 +864,8 @@ class Project extends HXProject
     #if windows && !target.unicode
     // lime build tools uses neko (unless compiling with `-eval`), and neko on windows doesn't support UTF8/unicode characters
     // so we need to remove our cute emoji!
-    unicodeCheck = "";
-    unicodeCross = "";
+    unicodeCheck = "o ";
+    unicodeCross = "x ";
 
     #end
 
