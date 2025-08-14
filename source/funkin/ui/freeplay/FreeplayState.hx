@@ -123,7 +123,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * For positioning the difficulty dots.
    */
-  public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [200, 170];
+  public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [190, 170];
 
   var songs:Array<Null<FreeplaySongData>> = [];
 
