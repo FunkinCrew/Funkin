@@ -205,6 +205,8 @@ class DifficultyDot extends FlxSpriteGroup
 
   public function interpolateColor():Void
   {
+    if (type == INACTIVE) return;
+
     if (state == DESELECTING)
     {
       if (colorTween?.finished && pulseSpr.animation.curAnim.curFrame == 0) pulseColor = true;
