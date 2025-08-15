@@ -262,7 +262,7 @@ class DifficultyDot extends FlxSpriteGroup
 
     pulseColor = false;
 
-    pulseSpr.visible = important;
+    pulseSpr.visible = type != INACTIVE && important;
 
     switch (type)
     {
