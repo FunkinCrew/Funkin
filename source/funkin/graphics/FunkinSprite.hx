@@ -72,7 +72,9 @@ class FunkinSprite extends FlxSprite
   public function new(?x:Float = 0, ?y:Float = 0)
   {
     super(x, y);
-    globalOffsets = [x, y];
+
+    // null-safety is on crack
+    globalOffsets = [x ?? 0, y ?? 0];
   }
 
   override function initVars():Void
@@ -300,8 +302,8 @@ class FunkinSprite extends FlxSprite
    */
   public function applyAnimationOffsets(animName:String):Void
   {
-    var offsets = animationOffsets.get(animName);
-    this.currentAnimationOffsets = offsets;
+    var offsets:Null<Array<Float>> = animationOffsets.get(animName);
+    this.currentAnimationOffsets = offsets ?? [0, 0];
   }
 
   /**
