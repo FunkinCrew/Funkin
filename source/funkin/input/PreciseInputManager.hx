@@ -298,7 +298,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     // trace(timestamp);
     updateKeyStates(key, true);
 
-    if (getInputByKey(key)?.justPressed ?? false && enabled)
+    if (getInputByKey(key)?.justPressed ?? false)
     {
       onInputPressed.dispatch(
         {
@@ -320,7 +320,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateKeyStates(key, false);
 
-    if (getInputByKey(key)?.justReleased ?? false && enabled)
+    if (getInputByKey(key)?.justReleased ?? false)
     {
       onInputReleased.dispatch(
         {
@@ -344,7 +344,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateButtonStates(gamepad, buttonId, true);
 
-    if (getInputByButton(gamepad, buttonId)?.justPressed ?? false && enabled)
+    if (getInputByButton(gamepad, buttonId)?.justPressed ?? false)
     {
       onInputPressed.dispatch(
         {
@@ -368,7 +368,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     updateButtonStates(gamepad, buttonId, false);
 
-    if (getInputByButton(gamepad, buttonId)?.justReleased ?? false && enabled)
+    if (getInputByButton(gamepad, buttonId)?.justReleased ?? false)
     {
       onInputReleased.dispatch(
         {

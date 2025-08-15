@@ -78,9 +78,6 @@ import funkin.api.discord.DiscordClient;
 import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
 #end
-#if (target.threaded)
-import sys.thread.Thread;
-#end
 
 /**
  * Parameters used to initialize the PlayState.
@@ -424,29 +421,6 @@ class PlayState extends MusicBeatSubState
    * Disabled during the ending of a song.
    */
   var mayPauseGame:Bool = true;
-
-  #if (target.threaded)
-  /**
-   * A variable used to close the thread that checks for any lagspikes.
-   */
-  var shutdownThread:Bool = false;
-
-  /**
-   * If true, the game has gone through a lagspike!
-   * It stays true only for a bit and gets reset back to false after resyncing the song.
-   */
-  var gameFroze:Bool = false;
-
-  /**
-   * Wether the song requires resyncing after going through a lagspike
-   */
-  var requiresSyncing:Bool = false;
-
-  /**
-   * The song position we were at BEFORE going through a lagspike.
-   */
-  var lastCorrectSongPos:Float = 0.0;
-  #end
 
   /**
    * The displayed value of the player's health.
@@ -1108,12 +1082,19 @@ class PlayState extends MusicBeatSubState
       // And it was frame dependant which we don't like!!
       if (FlxG.sound.music.playing)
       {
-        final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
-        Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
-      }
-      else
-      {
-        Conductor.instance.update();
+        final audioDiff:Float = Math.round(Math.abs(Conductor.instance.songPosition - FlxG.sound.music.time));
+        if (audioDiff <= RESYNC_THRESHOLD)
+        {
+          // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
+          final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
+          Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
+        }
+        else
+        {
+          // Fallback to properly update the conductor incase the lerp messed up
+          // Shouldn't be fallen back to unless you're lagging alot
+          Conductor.instance.update();
+        }
       }
     }
 
@@ -1464,9 +1445,6 @@ class PlayState extends MusicBeatSubState
         {
           FlxG.sound.music.pause();
           musicPausedBySubState = true;
-          #if (target.threaded)
-          shutdownThread = true;
-          #end
         }
 
         // Pause any sounds that are playing and keep track of them.
@@ -1549,10 +1527,6 @@ class PlayState extends MusicBeatSubState
       {
         FlxG.sound.music.play();
         musicPausedBySubState = false;
-        #if (target.threaded)
-        shutdownThread = false;
-        runSongSyncThread();
-        #end
       }
 
       // The logic here is that if this sound doesn't auto-destroy
@@ -1824,11 +1798,6 @@ class PlayState extends MusicBeatSubState
 
     #if !mobile
     FlxG.autoPause = Preferences.autoPause;
-    #end
-
-    #if (target.threaded)
-    shutdownThread = true;
-    FlxG.signals.preUpdate.remove(checkForResync);
     #end
 
     super.destroy();
@@ -2514,10 +2483,6 @@ class PlayState extends MusicBeatSubState
     #end
 
     resyncVocals();
-
-    #if (target.threaded)
-    runSongSyncThread();
-    #end
   }
 
   /**
@@ -3912,49 +3877,6 @@ class PlayState extends MusicBeatSubState
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 
     resyncVocals();
-  }
-  #end
-
-  #if (target.threaded)
-  function checkForResync()
-  {
-    if (isSongEnd || shutdownThread) return;
-
-    if (requiresSyncing)
-    {
-      PreciseInputManager.instance.enabled = true;
-      requiresSyncing = false;
-      Conductor.instance.update(lastCorrectSongPos, false);
-      resyncVocals();
-    }
-
-    gameFroze = false;
-  }
-
-  public function runSongSyncThread()
-  {
-    Thread.create(function() {
-      while (!isSongEnd && !shutdownThread)
-      {
-        if (requiresSyncing) continue;
-
-        if (gameFroze)
-        {
-          // Players seem to be able to smash their keys and the input would register  at once when the game updates again
-          // Should prevent that from happening
-          PreciseInputManager.instance.enabled = false;
-
-          lastCorrectSongPos = Conductor.instance.songPosition;
-          requiresSyncing = true;
-          continue;
-        }
-
-        gameFroze = true;
-        Sys.sleep(0.25);
-      }
-    });
-
-    if (!FlxG.signals.preUpdate.has(checkForResync)) FlxG.signals.preUpdate.add(checkForResync);
   }
   #end
 }

@@ -557,11 +557,9 @@ class PolymodHandler
     Polymod.clearScripts();
 
     // Forcibly reload Polymod so it finds any new files.
+    // This will also register all scripts.
     // TODO: Replace this with loadEnabledMods().
     funkin.modding.PolymodHandler.loadAllMods();
-
-    // Reload scripted classes so stages and modules will update.
-    Polymod.registerAllScriptClasses();
 
     // Reload everything that is cached.
     // Currently this freezes the game for a second but I guess that's tolerable?
