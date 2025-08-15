@@ -1284,11 +1284,6 @@ class FreeplayState extends MusicBeatSubState
     difficultyDots.fade(fadeIn);
   }
 
-  function refreshDots(index:Int, prevIndex:Int, currentDiffId:String):Void
-  {
-    difficultyDots.refreshDots(index, prevIndex, currentCapsule?.freeplayData, currentDiffId);
-  }
-
   function tryOpenCharSelect():Void
   {
     // Check if we have ACCESS to character select!
@@ -2253,7 +2248,7 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    refreshDots(currentDifficultyIndex, prevDifficultyIndex, currentDifficulty);
+    difficultyDots.refreshDots(currentCapsule?.freeplayData, currentDifficulty);
 
     if (change != 0 || force)
     {
@@ -3021,7 +3016,7 @@ class FreeplaySongData
   {
     return Save.instance.isSongFavorited(idAndVariation);
   }
-  
+
   public function isDifficultyNew(difficulty:String):Bool
   {
     // grabs a specific difficulty's new status. used for the difficulty dots.

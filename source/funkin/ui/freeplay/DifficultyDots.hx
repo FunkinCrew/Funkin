@@ -31,7 +31,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   public function loadDots(diffArray:Array<String>):Void
   {
     currentDifficultyList = diffArray;
-    // why we use indexes here um???
+
     var _erected:Bool = false;
     for (i in 0...currentDifficultyList.length)
     {
@@ -44,6 +44,11 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   public function regenDots(diffArray:Array<String>):Void
   {
     currentDifficultyList = diffArray;
+
+    for (dot in usedDots)
+      dot.type = (dot.erected ? ERECT : NORMAL);
+
+    // Clear array form previously used dots :steamhappy:
     usedDots = [];
 
     for (dot in members)
@@ -52,11 +57,38 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       if (currentDifficultyList.contains(dot.difficultyId)) usedDots.push(dot);
     }
 
+    // Rough check for inactive ERECT and NIGHTMARE dots
+    for (diff in Constants.DEFAULT_DIFFICULTY_LIST_ERECT)
+    {
+      // Angy >:(
+      if (!currentDifficultyList.contains(diff))
+      {
+        var existingDot:DifficultyDot = null;
+
+        for (dot in members)
+          if (dot.difficultyId == diff) existingDot = dot;
+
+        var dot:DifficultyDot = existingDot;
+
+        // In case smth happened with dot
+        if (dot == null)
+        {
+          dot = new DifficultyDot(diff, usedDots.length, false);
+          dot.type = INACTIVE;
+          add(dot);
+        }
+        else
+          dot.type = INACTIVE;
+
+        usedDots.push(dot);
+      }
+    }
+
     for (dot in usedDots)
       dot.visible = true;
   }
 
-  public function refreshDots(index:Int, prevIndex:Int, ?daSongData:FreeplayState.FreeplaySongData, ?currDiffString:String):Void
+  public function refreshDots(?daSongData:FreeplayState.FreeplaySongData, ?currDiffString:String):Void
   {
     final totalRows:Int = Math.ceil(usedDots.length / Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW);
 
@@ -68,13 +100,13 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       var targetState:DotState = SELECTED;
       curDotSpr.important = false;
 
-      if (i == index || currDiffString == curDotSpr.difficultyId)
+      if (currDiffString == curDotSpr.difficultyId)
       {
         targetState = SELECTED;
       }
       else
       {
-        targetState = (i == prevIndex || prevDifficulty == curDotSpr.difficultyId) ? DESELECTING : DESELECTED;
+        targetState = (prevDifficulty == curDotSpr.difficultyId) ? DESELECTING : DESELECTED;
       }
 
       curDotSpr.visible = true;
@@ -92,7 +124,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 
       if (daSongData?.isDifficultyNew(curDotSpr.difficultyId) && curDotSpr.erected) curDotSpr.important = true;
 
-      curDotSpr.updateState(curDotSpr.type, targetState);
+      curDotSpr.updateState(curDotSpr.type == INACTIVE ? INACTIVE : (curDotSpr.erected ? ERECT : NORMAL), targetState);
     }
     prevDifficulty = currDiffString;
   }
