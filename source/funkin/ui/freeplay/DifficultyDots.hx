@@ -41,6 +41,8 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
     }
   }
 
+  var _existingDots = new Map<String, DifficultyDot>();
+
   public function regenDots(diffArray:Array<String>):Void
   {
     currentDifficultyList = diffArray;
@@ -53,39 +55,38 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 
     for (dot in members)
     {
+      _existingDots.set(dot.difficultyId, dot);
       dot.visible = false;
-      if (currentDifficultyList.contains(dot.difficultyId)) usedDots.push(dot);
     }
 
-    // Rough check for inactive ERECT and NIGHTMARE dots
-    for (diff in Constants.DEFAULT_DIFFICULTY_LIST_ERECT)
+    // This prevents multiple dots for one difficulty
+    for (diff in currentDifficultyList)
     {
-      // Angy >:(
-      if (!currentDifficultyList.contains(diff))
+      var dot:DifficultyDot = _existingDots.get(diff);
+      if (dot != null)
       {
-        var existingDot:DifficultyDot = null;
-
-        for (dot in members)
-          if (dot.difficultyId == diff) existingDot = dot;
-
-        var dot:DifficultyDot = existingDot;
-
-        // In case smth happened with dot
-        if (dot == null)
-        {
-          dot = new DifficultyDot(diff, usedDots.length, false);
-          dot.type = INACTIVE;
-          add(dot);
-        }
-        else
-          dot.type = INACTIVE;
-
         usedDots.push(dot);
+        dot.visible = true;
       }
     }
 
-    for (dot in usedDots)
-      dot.visible = true;
+    // Add forced erected dots
+    for (diff in Constants.DEFAULT_DIFFICULTY_LIST_ERECT)
+    {
+      if (!currentDifficultyList.contains(diff))
+      {
+        var dot:DifficultyDot = _existingDots.get(diff);
+        if (dot == null)
+        {
+          dot = new DifficultyDot(diff, usedDots.length, true);
+          add(dot);
+        }
+        dot.type = INACTIVE;
+        dot.visible = true;
+        usedDots.push(dot);
+      }
+    }
+    _existingDots.clear();
   }
 
   public function refreshDots(?daSongData:FreeplayState.FreeplaySongData, ?currDiffString:String):Void
