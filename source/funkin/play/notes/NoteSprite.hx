@@ -225,7 +225,7 @@ class NoteSprite extends FunkinSprite
   public function setHue(hue:Float):Void
   {
     this.hsvShader.hue = hue;
-    this.shader = (hue != 1.0) ? this.hsvShader : null;
+    if (hue != 1.0) this.shader = this.hsvShader;
   }
 
   public override function revive():Void
