@@ -15,6 +15,7 @@ import openfl.events.KeyboardEvent;
  * This is a base class for all events that are issued to scripted classes.
  * It can be used to identify the type of event called, store data, and cancel event propagation.
  */
+@:nullSafety
 class ScriptEvent
 {
   /**
@@ -255,7 +256,8 @@ class HoldNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Int, isComboBreak:Bool, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Int, isComboBreak:Bool, comboCount:Int = 0,
+      cancelable:Bool = false):Void
   {
     super(type, null, healthChange, comboCount, true);
     this.holdNote = holdNote;

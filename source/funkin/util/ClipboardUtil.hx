@@ -5,6 +5,7 @@ package funkin.util;
  * On platforms that don't support interacting with the clipboard,
  * an internal clipboard is used (neat!).
  */
+@:nullSafety
 class ClipboardUtil
 {
   /**
@@ -14,7 +15,7 @@ class ClipboardUtil
    * @param	once If true, the callback will only execute once and then be deleted.
    * @param priority Set the priority at which the callback will be executed. Higher values execute first.
    */
-  public static function addListener(callback:Void->Void, once:Bool = false, ?priority:Int = 0):Void
+  public static function addListener(callback:Void->Void, once:Bool = false, priority:Int = 0):Void
   {
     lime.system.Clipboard.onUpdate.add(callback, once, priority);
   }

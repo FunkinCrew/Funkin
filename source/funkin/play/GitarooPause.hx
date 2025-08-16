@@ -6,6 +6,10 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.mainmenu.MainMenuState;
+#if mobile
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+#end
 
 class GitarooPause extends MusicBeatState
 {
@@ -14,9 +18,9 @@ class GitarooPause extends MusicBeatState
 
   var replaySelect:Bool = false;
 
-  var previousParams:PlayStateParams;
+  var previousParams:Null<PlayStateParams>;
 
-  public function new(previousParams:PlayStateParams):Void
+  public function new(?previousParams:PlayStateParams):Void
   {
     super();
 
@@ -32,15 +36,18 @@ class GitarooPause extends MusicBeatState
     }
 
     var bg:FunkinSprite = FunkinSprite.create('pauseAlt/pauseBG');
+    bg.setGraphicSize(Std.int(FlxG.width));
+    bg.updateHitbox();
+    bg.screenCenter();
     add(bg);
 
     var bf:FunkinSprite = FunkinSprite.createSparrow(0, 30, 'pauseAlt/bfLol');
     bf.animation.addByPrefix('lol', "funnyThing", 13);
     bf.animation.play('lol');
-    add(bf);
     bf.screenCenter(X);
+    add(bf);
 
-    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.28, FlxG.height * 0.7, 'pauseAlt/pauseUI');
+    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.25, FlxG.height * 0.7, 'pauseAlt/pauseUI');
     replayButton.animation.addByPrefix('selected', 'bluereplay', 0, false);
     replayButton.animation.appendByPrefix('selected', 'yellowreplay');
     replayButton.animation.play('selected');
@@ -57,11 +64,19 @@ class GitarooPause extends MusicBeatState
     super.create();
   }
 
+  #if mobile
+  function checkSelectionPress():Bool
+  {
+    var buttonAcceptCheck:Bool = replaySelect ? TouchUtil.pressAction(replayButton) : TouchUtil.pressAction(cancelButton);
+    return buttonAcceptCheck && !SwipeUtil.swipeAny;
+  }
+  #end
+
   override function update(elapsed:Float):Void
   {
-    if (controls.UI_LEFT_P || controls.UI_RIGHT_P) changeThing();
+    if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || SwipeUtil.justSwipedLeft || SwipeUtil.justSwipedRight #end) changeThing();
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT #if mobile || checkSelectionPress() #end)
     {
       if (replaySelect)
       {

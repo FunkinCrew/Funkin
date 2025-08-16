@@ -151,10 +151,12 @@ class HealthIcon extends FunkinSprite
    */
   public function toggleOldIcon():Void
   {
+    final playState:Null<PlayState> = PlayState.instance;
+    if (playState == null || playState.currentStage == null) return;
     if (characterId == 'bf-old')
     {
-      isPixel = PlayState.instance.currentStage.getBoyfriend().isPixel;
-      PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
+      isPixel = playState.currentStage.getBoyfriend()?.isPixel ?? false;
+      playState.currentStage.getBoyfriend()?.initHealthIcon(false);
     }
     else
     {
@@ -210,7 +212,7 @@ class HealthIcon extends FunkinSprite
       lerpIconSize();
 
       // Lerp the health icon back to its normal angle.
-      this.angle = MathUtil.coolLerp(this.angle, 0, 0.15);
+      this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, elapsed, 0.512);
     }
 
     this.updatePosition();
@@ -228,7 +230,7 @@ class HealthIcon extends FunkinSprite
     if (this.width > this.height)
     {
       // Apply linear interpolation while accounting for frame rate.
-      var targetSize:Int = Std.int(MathUtil.coolLerp(this.width, HEALTH_ICON_SIZE * this.size.x, 0.15));
+      var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.width, HEALTH_ICON_SIZE * this.size.x, FlxG.elapsed, 0.512));
 
       if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.x);
 
@@ -236,7 +238,7 @@ class HealthIcon extends FunkinSprite
     }
     else
     {
-      var targetSize:Int = Std.int(MathUtil.coolLerp(this.height, HEALTH_ICON_SIZE * this.size.y, 0.15));
+      var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.height, HEALTH_ICON_SIZE * this.size.y, FlxG.elapsed, 0.512));
 
       if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.y);
 
