@@ -50,8 +50,13 @@ import funkin.util.HapticUtil;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
-import funkin.ui.freeplay.DifficultyDot;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
+#if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
+#end
+#if FEATURE_STAGE_EDITOR
+import funkin.ui.debug.stageeditor.StageEditorState;
+#end
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -2139,26 +2144,153 @@ class FreeplayState extends MusicBeatSubState
       _parentState.persistentDraw = true;
     }
 
-    new FlxTimer().start(longestTimer, (_) -> {
-      FlxTransitionableState.skipNextTransIn = true;
-      FlxTransitionableState.skipNextTransOut = true;
-      if (Type.getClass(_parentState) == MainMenuState)
+      new FlxTimer().start(longestTimer, (_) -> {
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        if (Type.getClass(_parentState) == MainMenuState)
+        {
+          FunkinSound.playMusic('freakyMenu',
+            {
+              overrideExisting: true,
+              restartTrack: false,
+              // Continue playing this music between states, until a different music track gets played.
+              persist: true
+            });
+          FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+          close();
+        }
+        else
+        {
+          FlxG.switchState(() -> new MainMenuState());
+        }
+      });
+    }
+
+    if (accepted && !busy)
+    {
+      grpCapsules.members[curSelected].onConfirm();
+    }
+    #if FEATURE_CHART_EDITOR
+    if (controls.DEBUG_CHART && !busy)
+    {
+      busy = true;
+      var targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      if (targetSongID == 'unknown')
       {
-        FunkinSound.playMusic('freakyMenu',
-          {
-            overrideExisting: true,
-            restartTrack: false,
-            // Continue playing this music between states, until a different music track gets played.
-            persist: true
-          });
-        FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
-        close();
+        trace('CHART RANDOM SONG');
+        letterSort.inputEnabled = false;
+
+        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+          // Dead capsules are ones which were removed from the list when changing filters.
+          return cap.alive && cap.freeplayData != null;
+        });
+
+        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+          return cap?.freeplayData?.data.songName;
+        })}');
+
+        if (availableSongCapsules.length == 0)
+        {
+          trace('No songs available!');
+          busy = false;
+          letterSort.inputEnabled = true;
+          FunkinSound.playOnce(Paths.sound('cancelMenu'));
+          return;
+        }
+
+        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+        // Seeing if I can do an animation...
+        curSelected = grpCapsules.members.indexOf(targetSong);
+        changeSelection(0);
+        targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
       }
-      else
+      FlxG.switchState(() -> new ChartEditorState(
+        {
+          targetSongId: targetSongID,
+        }));
+    }
+    #end
+
+    #if FEATURE_STAGE_EDITOR
+    if (controls.DEBUG_STAGE && !busy)
+    {
+      busy = true;
+
+      var targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      if (targetSongID == 'unknown')
       {
-        FlxG.switchState(() -> new MainMenuState());
+        trace('CHART RANDOM SONG');
+        letterSort.inputEnabled = false;
+
+        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+          // Dead capsules are ones which were removed from the list when changing filters.
+          return cap.alive && cap.freeplayData != null;
+        });
+
+        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+            return cap?.freeplayData?.data.songName;
+          })}');
+
+        if (availableSongCapsules.length == 0)
+        {
+          trace('No songs available!');
+          busy = false;
+          letterSort.inputEnabled = true;
+          FunkinSound.playOnce(Paths.sound('cancelMenu'));
+          return;
+        }
+
+        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+        // Seeing if I can do an animation...
+        curSelected = grpCapsules.members.indexOf(targetSong);
+        changeSelection(0);
+        targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
       }
-    });
+
+      var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongID);
+      if (targetSongNullable == null)
+      {
+        FlxG.log.warn('WARN: could not find song with id (${targetSongID})');
+        busy = false;
+        letterSort.inputEnabled = true;
+        return;
+      }
+      var targetSong:Song = targetSongNullable;
+      var targetVariation:Null<String> = currentVariation;
+
+      var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(currentDifficulty, currentVariation);
+      if (targetDifficulty == null)
+      {
+        FlxG.log.warn('WARN: could not find difficulty with id (${currentDifficulty})');
+        busy = false;
+        letterSort.inputEnabled = true;
+        return;
+      }
+
+      FlxG.switchState(() -> new StageEditorState(
+        {
+          targetStageId: targetDifficulty.stage,
+          targetBfChar: targetDifficulty.characters.player,
+          targetGfChar: targetDifficulty.characters.girlfriend,
+          targetDadChar: targetDifficulty.characters.opponent
+        }));
+    }
+    #end
+  }
+
+  override function beatHit():Bool
+  {
+    backingCard?.beatHit();
+
+    return super.beatHit();
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+    FlxG.cameras.remove(funnyCam);
   }
 
   /**
