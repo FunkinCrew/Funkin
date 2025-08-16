@@ -799,9 +799,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     if (allowInput && !pressedSelect)
     {
-    
       handleInputs(elapsed);
-  
     }
 
     if (cursorX < -1)
