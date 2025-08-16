@@ -30,7 +30,7 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
     initialize();
   }
 
-  function initialize():Void
+  public function initialize():Void
   {
     contextmenuCut.onClick = (_) -> {
       chartEditorState.performCommand(new CutItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection));
