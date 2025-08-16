@@ -42,7 +42,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   }
 
   var _existingDots = new Map<String, DifficultyDot>();
-
+  // Man, this looks like this -> rewrite this group with diffDotsMap
   public function regenDots(diffArray:Array<String>):Void
   {
     currentDifficultyList = diffArray;
