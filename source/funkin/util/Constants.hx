@@ -398,7 +398,7 @@ class Constants
   /**
    * Time (in seconds) to wait on the Title Screen before entering the Attract State.
    */
-  public static final TITLE_ATTRACT_DELAY:Float = 40.0;
+  public static final TITLE_ATTRACT_DELAY:Float = 37.5;
 
   /**
    * HEALTH VALUES
