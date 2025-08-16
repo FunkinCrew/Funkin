@@ -14,10 +14,10 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   public var distance:Int = 30;
 
   public var currentDifficultyList:Array<String> = [];
+  public var currentDifficultyDots:Map<String, DifficultyDot> = new Map();
+  public var usedDots:Array<DifficultyDot> = [];
 
   var prevDifficulty:String;
-
-  public var usedDots:Array<DifficultyDot> = [];
 
   public function new(x:Float, y:Float)
   {
@@ -32,100 +32,77 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   {
     currentDifficultyList = diffArray;
 
-    var _erected:Bool = false;
     for (i in 0...currentDifficultyList.length)
     {
-      _erected = Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(currentDifficultyList[i]);
-      final dot:DifficultyDot = new DifficultyDot(currentDifficultyList[i], i, _erected);
-      this.add(dot);
+      if (!currentDifficultyDots.exists(currentDifficultyList[i]))
+      {
+        final dot:DifficultyDot = generateDifficultyDot(currentDifficultyList[i], i);
+        dot.visible = false;
+        this.add(dot);
+        currentDifficultyDots.set(currentDifficultyList[i], dot);
+      }
+      else
+        trace('[WARNING] Attemp creating double difficulty dot: ${currentDifficultyList[i]}');
     }
   }
 
-  var _existingDots = new Map<String, DifficultyDot>();
-  // Man, this looks like this -> rewrite this group with diffDotsMap
   public function regenDots(diffArray:Array<String>):Void
   {
     currentDifficultyList = diffArray;
 
     for (dot in usedDots)
+    {
+      dot.visible = false;
+      // In case we had to use one of ERECT dots as INACTIVE previously
       dot.type = (dot.erected ? ERECT : NORMAL);
-
+    }
     // Clear array form previously used dots :steamhappy:
     usedDots = [];
 
-    for (dot in members)
-    {
-      _existingDots.set(dot.difficultyId, dot);
-      dot.visible = false;
-    }
-
-    // This prevents multiple dots for one difficulty
     for (diff in currentDifficultyList)
     {
-      var dot:DifficultyDot = _existingDots.get(diff);
-      if (dot != null)
-      {
-        usedDots.push(dot);
-        dot.visible = true;
-      }
+      var dot:DifficultyDot = currentDifficultyDots.get(diff);
+      // If there's no dot for requierd difficulty (huh)
+      if (dot == null) add(dot = generateDifficultyDot(diff, usedDots.length));
+      usedDots.push(dot);
     }
 
-    // Add forced erected dots
-    for (diff in Constants.DEFAULT_DIFFICULTY_LIST_ERECT)
-    {
-      if (!currentDifficultyList.contains(diff))
-      {
-        var dot:DifficultyDot = _existingDots.get(diff);
-        if (dot == null)
-        {
-          dot = new DifficultyDot(diff, usedDots.length, true);
-          add(dot);
-        }
-        dot.type = INACTIVE;
-        dot.visible = true;
-        usedDots.push(dot);
-      }
-    }
-    _existingDots.clear();
+    // Add forced erected inactive dots
+    erectCheck();
   }
 
   public function refreshDots(?daSongData:FreeplayState.FreeplaySongData, ?currDiffString:String):Void
   {
     final totalRows:Int = Math.ceil(usedDots.length / Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW);
 
-    var row:Int = 0;
-    var col:Float = 0;
+    var _row:Int = 0;
+    var _col:Float = 0;
+    var _curDotSpr:DifficultyDot = null;
     for (i in 0...usedDots.length)
     {
-      var curDotSpr:DifficultyDot = usedDots[i];
-      var targetState:DotState = SELECTED;
-      curDotSpr.important = false;
+      _curDotSpr = usedDots[i];
 
-      if (currDiffString == curDotSpr.difficultyId)
-      {
-        targetState = SELECTED;
-      }
-      else
-      {
-        targetState = (prevDifficulty == curDotSpr.difficultyId) ? DESELECTING : DESELECTED;
-      }
+      // Escape plan F UCK
+      if (_curDotSpr == null) continue;
 
-      curDotSpr.visible = true;
+      _curDotSpr.important = false;
+      _curDotSpr.visible = true;
 
-      row = Math.floor(i / Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW);
-      col = i % Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW;
+      _row = Math.floor(i / Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW);
+      _col = i % Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW;
 
-      final dotsInCurrentRow:Int = (row == totalRows - 1) ? (usedDots.length - row * Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW) : Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW;
+      final dotsInCurrentRow:Int = (_row == totalRows - 1) ? (usedDots.length - _row * Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW) : Constants.DEFAULT_FREEPLAY_DOTS_IN_ROW;
 
       final rowOffset:Float = (dotsInCurrentRow - 1) * distance / 2;
-      final xPos:Float = FreeplayState.DEFAULT_DOTS_GROUP_POS[0] - rowOffset + col * distance;
+      final xPos:Float = FreeplayState.DEFAULT_DOTS_GROUP_POS[0] - rowOffset + _col * distance;
 
-      curDotSpr.x = (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + xPos;
-      curDotSpr.y = FreeplayState.DEFAULT_DOTS_GROUP_POS[1] + distance * row;
+      _curDotSpr.x = (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + xPos;
+      _curDotSpr.y = FreeplayState.DEFAULT_DOTS_GROUP_POS[1] + distance * _row;
 
-      if (daSongData?.isDifficultyNew(curDotSpr.difficultyId) && curDotSpr.erected) curDotSpr.important = true;
+      if (daSongData?.isDifficultyNew(_curDotSpr.difficultyId) && _curDotSpr.erected) _curDotSpr.important = true;
 
-      curDotSpr.updateState(curDotSpr.type == INACTIVE ? INACTIVE : (curDotSpr.erected ? ERECT : NORMAL), targetState);
+      _curDotSpr.updateState(_curDotSpr.type == INACTIVE ? INACTIVE : (_curDotSpr.erected ? ERECT : NORMAL),
+        (currDiffString == _curDotSpr.difficultyId) ? SELECTED : ((prevDifficulty == _curDotSpr.difficultyId) ? DESELECTING : DESELECTED));
     }
     prevDifficulty = currDiffString;
   }
@@ -134,6 +111,26 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   {
     for (i in 0...members.length)
       fadeIn ? members[i].fadeIn() : members[i].fadeOut();
+  }
+
+  // Generates new difficulty dot from given parameters.
+  private inline function generateDifficultyDot(diff:String, index:Int):DifficultyDot
+  {
+    return new DifficultyDot(diff, index, Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(diff));
+  }
+
+  private function erectCheck():Void // Bro...
+  {
+    for (diff in Constants.DEFAULT_DIFFICULTY_LIST_ERECT)
+    {
+      if (!currentDifficultyList.contains(diff) && !usedDots.contains(currentDifficultyDots.get(diff)))
+      {
+        var dot:DifficultyDot = currentDifficultyDots.get(diff);
+        if (dot == null) add(dot = generateDifficultyDot(diff, usedDots.length));
+        dot.type = INACTIVE;
+        usedDots.push(dot);
+      }
+    }
   }
 }
 
@@ -160,7 +157,7 @@ class DifficultyDot extends FlxSpriteGroup
   public var difficultyId:String;
 
   /**
-   * Erected or nit, dum dum.
+   * Erected or not, dum dum.
    */
   public var erected:Bool;
 
