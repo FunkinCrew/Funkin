@@ -14,6 +14,7 @@ import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.theme.ThemeRegistry;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
@@ -581,6 +582,7 @@ class PolymodHandler
     StageRegistry.instance.loadEntries();
     StickerRegistry.instance.loadEntries();
     FreeplayStyleRegistry.instance.loadEntries();
+    ThemeRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.loadScripts();

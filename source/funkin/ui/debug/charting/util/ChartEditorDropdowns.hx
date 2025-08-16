@@ -5,6 +5,8 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.event.SongEvent;
 import funkin.data.stage.StageRegistry;
 import funkin.play.character.CharacterData;
+import funkin.ui.debug.theme.EditorTheme;
+import funkin.data.theme.ThemeRegistry;
 import haxe.ui.components.DropDown;
 import funkin.play.stage.Stage;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -153,6 +155,46 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  public static function populateDropdownWithDifficulties(dropDown:DropDown, startingDifficultyId:String):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var returnValue:DropDownEntry = {id: Constants.DEFAULT_DIFFICULTY, text: Constants.DEFAULT_DIFFICULTY.toTitleCase()};
+
+    for (difficultyId in Constants.DEFAULT_DIFFICULTY_LIST_FULL)
+    {
+      var value = {id: difficultyId, text: difficultyId.toTitleCase()};
+      if (startingDifficultyId == difficultyId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    return returnValue;
+  }
+
+  public static function populateDropdownWithThemes(dropDown:DropDown, startingTheme:String):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var themeIds:Array<String> = ThemeRegistry.instance.listEntryIds();
+
+    var returnValue:DropDownEntry = {id: "light", text: "Light"};
+
+    for (themeId in themeIds)
+    {
+      var theme:Null<EditorTheme> = ThemeRegistry.instance.fetchEntry(themeId);
+      if (theme == null) continue;
+
+      var value = {id: themeId, text: theme.getThemeName()};
+      if (startingTheme == themeId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('text', ASCENDING);
+    return returnValue;
+  }
+
   public static final NOTE_KINDS:Map<String, String> = [
     // Base
     "" => "Default",
@@ -227,22 +269,24 @@ class ChartEditorDropdowns
   /**
    * Populate a dropdown with a list of song variations.
    */
-  public static function populateDropdownWithVariations(dropDown:DropDown, state:ChartEditorState, includeNone:Bool = true):DropDownEntry
+  public static function populateDropdownWithVariations(dropDown:DropDown, state:ChartEditorState, startingVariation:String, inPreference:Bool = false, includeNone:Bool = true):DropDownEntry
   {
     dropDown.dataSource.clear();
 
-    var variationIds:Array<String> = state.availableVariations;
+    var variationIds:Array<String>;
+    if (inPreference) variationIds = Constants.DEFAULT_VARIATION_LIST;
+    else variationIds = state.availableVariations;
 
-    if (includeNone)
-    {
-      dropDown.dataSource.add({id: "none", text: ""});
-    }
+    if (includeNone) dropDown.dataSource.add({id: "none", text: ""});
 
     var returnValue:DropDownEntry = includeNone ? ({id: "none", text: ""}) : ({id: "default", text: "Default"});
 
     for (variationId in variationIds)
     {
-      dropDown.dataSource.add({id: variationId, text: variationId.toTitleCase()});
+      var value = {id: variationId, text: variationId.toTitleCase()};
+      if (startingVariation == variationId) returnValue = value;
+
+      dropDown.dataSource.add(value);
     }
 
     dropDown.dataSource.sort('text', ASCENDING);
