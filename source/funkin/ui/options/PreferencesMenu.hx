@@ -248,7 +248,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool, available:Bool = true):Void
   {
-    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1),
+    var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(25 + funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * (items.length - 1 + 1) + 35),
       defaultValue, available);
 
     items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {

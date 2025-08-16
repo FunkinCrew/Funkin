@@ -1,6 +1,6 @@
 package funkin.play.cutscene.dialogue;
 
-import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.data.IRegistryEntry;
 import funkin.modding.events.ScriptEvent;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -15,7 +15,7 @@ import funkin.ui.FullScreenScaleMode;
  *
  * Most conversations have two speakers, with one being flipped.
  */
-class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRegistryEntry<SpeakerData>
+class Speaker extends FunkinSprite implements IDialogueScriptedClass implements IRegistryEntry<SpeakerData>
 {
   /**
    * A readable name for this speaker.
@@ -27,36 +27,21 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     return _data.name;
   }
 
-  /**
-   * Offset the speaker's sprite by this much when playing each animation.
-   */
-  var animationOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
-
-  /**
-   * The current animation offset being used.
-   */
-  var animOffsets(default, set):Array<Float> = [0, 0];
-
-  function set_animOffsets(value:Array<Float>):Array<Float>
+  override function set_currentAnimationOffsets(value:Array<Float>):Array<Float>
   {
-    if (animOffsets == null) animOffsets = [0, 0];
-    if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
+    if (currentAnimationOffsets == null) currentAnimationOffsets = [0, 0];
+    if ((currentAnimationOffsets[0] == value[0]) && (currentAnimationOffsets[1] == value[1])) return value;
 
-    var xDiff:Float = value[0] - animOffsets[0];
-    var yDiff:Float = value[1] - animOffsets[1];
+    var xDiff:Float = value[0] - currentAnimationOffsets[0];
+    var yDiff:Float = value[1] - currentAnimationOffsets[1];
 
     this.x += xDiff;
     this.y += yDiff;
 
-    return animOffsets = value;
+    return currentAnimationOffsets = value;
   }
 
-  /**
-   * The offset of the speaker overall.
-   */
-  public var globalOffsets(default, set):Array<Float> = [0, 0];
-
-  function set_globalOffsets(value:Array<Float>):Array<Float>
+  override function set_globalOffsets(value:Array<Float>):Array<Float>
   {
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
@@ -166,7 +151,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
    * Set the sprite scale to the appropriate value.
    * @param scale
    */
-  public function setScale(scale:Null<Float>):Void
+  public override function setScale(scale:Null<Float>):Void
   {
     if (scale == null) scale = 1.0;
 
@@ -190,7 +175,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     {
       if (anim.offsets == null)
       {
-        setAnimationOffsets(anim.name, 0, 0);
+        setAnimationOffsets(anim.name, 0.0, 0.0);
       }
       else
       {
@@ -212,14 +197,6 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     if (correctName == null) return;
 
     this.animation.play(correctName, restart, false, 0);
-
-    applyAnimationOffsets(correctName);
-  }
-
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
   }
 
   /**
@@ -253,37 +230,6 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
         FlxG.log.error('Speaker tried to play animation "idle" that does not exist! This is bad!');
         return null;
       }
-    }
-  }
-
-  public function hasAnimation(id:String):Bool
-  {
-    if (this.animation == null) return false;
-
-    return this.animation.getByName(id) != null;
-  }
-
-  /**
-   * Define the animation offsets for a specific animation.
-   */
-  public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
-  {
-    animationOffsets.set(name, [xOffset, yOffset]);
-  }
-
-  /**
-   * Retrieve an apply the animation offsets for a specific animation.
-   */
-  function applyAnimationOffsets(name:String):Void
-  {
-    var offsets:Array<Float> = animationOffsets.get(name);
-    if (offsets != null && !(offsets[0] == 0 && offsets[1] == 0))
-    {
-      this.animOffsets = offsets;
-    }
-    else
-    {
-      this.animOffsets = [0, 0];
     }
   }
 
