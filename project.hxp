@@ -861,14 +861,12 @@ class Project extends HXProject
     var unicodeCheck:String = "✓ ";
     var unicodeCross:String = "× ";
 
-    #if windows && !target.unicode
+    #if (!target.unicode)
     // lime build tools uses neko (unless compiling with `-eval`), and neko on windows doesn't support UTF8/unicode characters
     // so we need to remove our cute emoji!
     unicodeCheck = "o ";
     unicodeCross = "x ";
-
     #end
-
 
     for (flagStr in this.haxedefs.keys())
     {
