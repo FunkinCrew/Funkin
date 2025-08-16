@@ -115,6 +115,8 @@ class HealthIcon extends FunkinSprite
    */
   static final POSITION_OFFSET:Int = 26;
 
+  public var iconOffset:FlxPoint = FlxPoint.get();
+
   public function new(char:Null<String>, playerId:Int = 0)
   {
     super(0, 0);
@@ -182,8 +184,7 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(1.0, 1.0);
-      this.offset.x = 0.0;
-      this.offset.y = 0.0;
+      iconOffset = FlxPoint.get();
       this.flipX = false;
     }
     else
@@ -194,8 +195,7 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
-      this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;
+      iconOffset = FlxPoint.get((data.offsets != null) ? data.offsets[0] : 0.0, (data.offsets != null) ? data.offsets[1] : 0.0);
       this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
     }
   }
@@ -291,6 +291,8 @@ class HealthIcon extends FunkinSprite
 
       // Keep the icon centered vertically on the health bar.
       this.y = PlayState.instance.healthBar.y - (this.height / 2); // - (PlayState.instance.healthBar.height / 2)
+
+      offset += iconOffset;
     }
   }
 
