@@ -637,9 +637,15 @@ class PlayState extends MusicBeatSubState
   static final RESYNC_THRESHOLD:Float = 40;
 
   /**
+   * The threshold for how much the conductor lerp can drift from the music.
+   * If the conductor song position deviate from the music by more than this amount, then a normal conductor update is triggered.
+   */
+  static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
+
+  /**
    * The ratio for easing the song positon for smoother notes scrolling.
    */
-  static final MUSIC_EASE_RATIO:Float = 40;
+  static final MUSIC_EASE_RATIO:Float = 42;
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
@@ -1083,16 +1089,17 @@ class PlayState extends MusicBeatSubState
       if (FlxG.sound.music.playing)
       {
         final audioDiff:Float = Math.round(Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition - Conductor.instance.combinedOffset)));
-        if (audioDiff <= RESYNC_THRESHOLD)
+        if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
         {
           // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
-          final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
+          final easeRatio:Float = ((1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed)) * playbackRate);
           Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
         }
         else
         {
           // Fallback to properly update the conductor incase the lerp messed up
           // Shouldn't be fallen back to unless you're lagging alot
+          trace('[WARNING] Normal Conductor Update!! are you lagging?');
           Conductor.instance.update();
         }
       }
