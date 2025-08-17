@@ -453,7 +453,7 @@ class PauseSubState extends MusicBeatSubState
     offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
     offsetTextInfo.y = offsetText.y + offsetText.height + 4;
 
-    #if (!mobile && FEATURE_LAG_ADJUSTMENT)
+    #if !mobile
     metadata.add(offsetText);
     metadata.add(offsetTextInfo);
     #end
