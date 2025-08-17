@@ -378,8 +378,15 @@ class MainMenuState extends MusicBeatState
       optionsButton?.resetCallbacks();
     }
     #end
+
+    // when we are in Transition (fade in on new FlxState) we don't really care about substate closing
+    // this fixes issue when Entering w/ fade -> interacting -> fade ends, so it transitions to Idle on our substate end here
+    if (!(subState is flixel.addons.transition.Transition))
+    {
+      uiStateMachine.transition(Idle);
+    }
+
     super.closeSubState();
-    uiStateMachine.transition(Idle);
   }
 
   function onMenuItemChange(selected:MenuListItem)
