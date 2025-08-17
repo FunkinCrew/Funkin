@@ -1092,7 +1092,7 @@ class PlayState extends MusicBeatSubState
         if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
         {
           // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
-          final easeRatio:Float = ((1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed)) * playbackRate);
+          final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
           Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
         }
         else
