@@ -20,7 +20,6 @@ class Lock extends FlxAtlasSprite
         filterQuality: HIGH
       });
 
-    // TODO: Rework this to make it work with flixel-animate
     var tint:FlxColor = colors[index];
 
     var arr:Array<String> = ["lock", "lock top 1", "lock top 2", "lock top 3", "lock base fuck it"];
