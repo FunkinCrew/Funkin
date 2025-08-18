@@ -82,31 +82,31 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   {
     if (enableVisualizer)
     {
-      // flixel-animate: Not dealing with this shit lol
-      /* var levels = analyzer.getLevels();
+      var levels = analyzer.getLevels();
+      var frame = this.timeline.getLayer("VIZ_bars").getFrameAtIndex(anim.curAnim.curFrame);
+      var elements = frame.elements;
+      var len:Int = cast Math.min(elements.length, 7);
 
-        // TODO: aAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA something something flixel-animate timeline or whaetevr please just compile im going insane
-        var frame = 0;
-        var elements = frame.getList();
-        var len:Int = cast Math.min(elements.length, 7);
+      for (i in 0...len)
+      {
+        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 12);
 
-        for (i in 0...len)
-        {
-          var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 12);
+        #if sys
+        // Web version scales with the Flixel volume level.
+        // This line brings platform parity but looks worse.
+        // animFrame = Math.round(animFrame * FlxG.sound.volume);
+        #end
 
-          #if sys
-          // Web version scales with the Flixel volume level.
-          // This line brings platform parity but looks worse.
-          // animFrame = Math.round(animFrame * FlxG.sound.volume);
-          #end
+        animFrame = Math.floor(Math.min(12, animFrame));
+        animFrame = Math.floor(Math.max(0, animFrame));
 
-          animFrame = Math.floor(Math.min(12, animFrame));
-          animFrame = Math.floor(Math.max(0, animFrame));
+        animFrame = Std.int(Math.abs(animFrame - 12)); // shitty dumbass flip, cuz dave got da shit backwards lol!
 
-          animFrame = Std.int(Math.abs(animFrame - 12)); // shitty dumbass flip, cuz dave got da shit backwards lol!
+        var convertedSymbol = elements[i].toSymbolInstance();
+        convertedSymbol.firstFrame = animFrame;
 
-          elements[i].symbol.firstFrame = animFrame;
-      }*/
+        elements[i] = convertedSymbol;
+      }
     }
   }
 
