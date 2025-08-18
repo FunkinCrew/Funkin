@@ -51,6 +51,7 @@ class FlxAtlasSprite extends FlxAnimate
 
     this.anim.onFinish.add(_onAnimationComplete);
     this.anim.onFrameChange.add(_onAnimationFrame);
+    this.anim.onLoop.add(_onAnimationLoop);
   }
 
   /**
@@ -126,14 +127,12 @@ class FlxAtlasSprite extends FlxAnimate
       if (frameLabels.contains(id))
       {
         // Animation exists as a frame label but wasn't added, so we add it
-        trace('Adding animation ' + id + ' by frame label');
         anim.addByFrameLabel(id, id, 24, false);
         return true;
       }
       else if (symbols.contains(id))
       {
         // Animation exists as a symbol but wasn't added, so we add it
-        trace('Adding animation ' + id + ' by symbol');
         anim.addBySymbol(id, id, 24, false);
         return true;
       }
@@ -180,6 +179,18 @@ class FlxAtlasSprite extends FlxAnimate
     else
     {
       onAnimationComplete.dispatch('');
+    }
+  }
+
+  function _onAnimationLoop(animationName:String):Void
+  {
+    if (currentAnimation != null)
+    {
+      onAnimationLoop.dispatch(currentAnimation);
+    }
+    else
+    {
+      onAnimationLoop.dispatch('');
     }
   }
 

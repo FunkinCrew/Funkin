@@ -64,6 +64,7 @@ class FreeplayDJ extends FlxAtlasSprite
     FlxG.console.registerObject("dj", this);
 
     onAnimationComplete.add(onFinishAnim);
+    onAnimationLoop.add(onFinishAnim);
 
     FlxG.console.registerFunction("freeplayCartoon", function() {
       currentState = Cartoon;
