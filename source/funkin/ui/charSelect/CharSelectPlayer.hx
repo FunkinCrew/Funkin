@@ -15,7 +15,12 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     initialX = x;
     initialY = y;
 
-    super(x, y, Paths.animateAtlas("charSelect/bfChill"));
+    super(x, y, Paths.animateAtlas("charSelect/bfChill"),
+      {
+        swfMode: true,
+        cacheOnLoad: true,
+        filterQuality: HIGH
+      });
 
     onAnimationComplete.add(function(animLabel:String) {
       switch (animLabel)

@@ -78,6 +78,28 @@ class FlxAtlasSprite extends FlxAnimate
   }
 
   /**
+   * Gets a frame label by its name.
+   * @param name The name of the frame label to retrieve.
+   * @return The frame label, or null if it doesn't exist.
+   */
+  public function getFrameLabel(name:String):Null<Frame>
+  {
+    var mainTimeline = this.anim.getDefaultTimeline();
+    for (layer in mainTimeline.layers)
+    {
+      @:nullSafety(Off)
+      for (frame in layer.frames)
+      {
+        if (frame.name == name)
+        {
+          return frame;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * @return A list of all the animations this sprite has available.
    */
   public function listAnimations():Array<String>

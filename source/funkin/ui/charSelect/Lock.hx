@@ -16,18 +16,26 @@ class Lock extends FlxAtlasSprite
     super(x, y, Paths.animateAtlas("charSelect/lock"));
 
     // TODO: Rework this to make it work with flixel-animate
-    /* var tint:FlxTint = new FlxTint(colors[index], 1);
+    var tint:FlxColor = colors[index];
 
-      var arr:Array<String> = ["lock", "lock top 1", "lock top 2", "lock top 3", "lock base fuck it"];
+    var arr:Array<String> = ["lock", "lock top 1", "lock top 2", "lock top 3", "lock base fuck it"];
 
-      var func = function(name) {
-        var symbol = anim.symbolDictionary[name];
-        if (symbol != null && symbol.timeline.get("color") != null) symbol.timeline.get("color").get(0).colorEffect = tint;
-      }
-      for (symbol in arr)
+    var func = function(name) {
+      var color = FlxColor.fromInt(tint);
+      var symbol = library.getSymbol(name);
+      if (symbol != null && symbol.timeline.getLayer("color") != null)
       {
-        func(symbol);
-    }*/
+        var colorSymbol = symbol.timeline.getLayer("color").getFrameAtIndex(0).convertToSymbol(0, 0);
+
+        @:privateAccess
+        colorSymbol.transform.color = color;
+      }
+    }
+
+    for (symbol in arr)
+    {
+      func(symbol);
+    }
 
     playAnimation("idle");
   }

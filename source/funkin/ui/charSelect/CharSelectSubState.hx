@@ -1223,23 +1223,22 @@ class CharSelectSubState extends MusicBeatSubState
     playerChill.visible = false;
     playerChillOut.visible = true;
     playerChillOut.playAnimation("slideout");
-    // TODO: flixel-animate has no getFrameLabel() function
-    // hardcoded for now, taken from bf's fla
-    var index = 49;
-    playerChillOut.anim.onFrameChange.removeAll();
-    playerChillOut.anim.onFrameChange.add(function(animName:String, frameNumber:Int, frameIndex:Int) {
-      if (frameNumber >= index + 1)
+
+    playerChillOut.onAnimationFrame.removeAll();
+    playerChillOut.onAnimationFrame.add(function(animName:String, frameNumber:Int) {
+      if (frameNumber >= 0)
       {
         playerChill.visible = true;
         playerChill.switchChar(value);
         gfChill.switchGF(value);
         gfChill.visible = true;
       }
-      if (frameNumber >= index + 2)
+
+      if (frameNumber >= 1)
       {
         playerChillOut.switchChar(value);
         playerChillOut.visible = false;
-        playerChillOut.anim.onFrameChange.removeAll();
+        playerChillOut.onAnimationFrame.removeAll();
       }
     });
 
