@@ -1098,7 +1098,7 @@ class FreeplayState extends MusicBeatSubState
       capsuleToRank.ranking.playAnimationEach(fromResults.newRank.getFreeplayRankIconAsset(), true);
     }
 
-    FlxTween.tween(capsuleToRank.ranking, {"scale.x": 1, "scale.y": 1}, 0.1);
+    FlxTween.tween(capsuleToRank.ranking, {"scale.x": 0.9, "scale.y": 0.9}, 0.1);
 
     new FlxTimer().start(0.1, _ -> {
       capsuleToRank.ranking.visible = true;
@@ -3117,7 +3117,7 @@ class FreeplaySongData
   {
     return Save.instance.isSongFavorited(idAndVariation);
   }
-  
+
   public function isDifficultyNew(difficulty:String):Bool
   {
     // grabs a specific difficulty's new status. used for the difficulty dots.
