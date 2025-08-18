@@ -7,6 +7,7 @@ import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.math.FlxPoint;
 import animate.internal.Frame;
+import animate.FlxAnimateFrames.FlxAnimateSettings;
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
@@ -14,18 +15,6 @@ import animate.internal.Frame;
 @:nullSafety
 class FlxAtlasSprite extends FlxAnimate
 {
-  static final SETTINGS =
-    {
-      // ?ButtonSettings:Map<String, flxanimate.animate.FlxAnim.ButtonSettings>,
-      FrameRate: 24.0,
-      Reversed: false,
-      // ?OnComplete:Void -> Void,
-      ShowPivot: false,
-      Antialiasing: true,
-      ScrollFactor: null,
-      // Offset: new FlxPoint(0, 0), // This is just FlxSprite.offset
-    };
-
   /**
    * Signal dispatched when an animation advances to the next frame.
    */
@@ -45,8 +34,7 @@ class FlxAtlasSprite extends FlxAnimate
 
   var canPlayOtherAnims:Bool = true;
 
-  @:nullSafety(Off) // null safety HATES new classes atm, it'll be fixed in haxe 4.0.0?
-  public function new(x:Float, y:Float, ?path:String, ?settings)
+  public function new(x:Float, y:Float, ?path:String, ?settings:FlxAnimateSettings)
   {
     if (path == null)
     {
@@ -59,48 +47,7 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
     }
 
-    super(x, y, path);
-  }
-
-  /**
-   * Gets a list of frames that have a label of any kind.
-   * @param layer A specific layer to get the list. if set to `null`, it'll get a list from every layer.
-   */
-  public function getFrameLabels():Array<String>
-  {
-    var foundLabels:Array<String> = [];
-    var mainTimeline = this.anim.getDefaultTimeline();
-
-    for (layer in mainTimeline.layers)
-    {
-      @:nullSafety(Off)
-      for (frame in layer.frames)
-      {
-        if (frame.name.rtrim() != '')
-        {
-          foundLabels.push(frame.name);
-        }
-      }
-    }
-
-    return foundLabels;
-  }
-
-  /**
-   * @return A list of all the animations this sprite has available.
-   */
-  public function listAnimations():Array<String>
-  {
-    return getFrameLabels();
-  }
-
-  /**
-   * @param id A string ID of the animation.
-   * @return Whether the animation was found on this sprite.
-   */
-  public function hasAnimation(id:String):Bool
-  {
-    return listAnimations().contains(id);
+    super(x, y, path, settings);
   }
 
   public function cleanupAnimation(_:String):Void
