@@ -46,8 +46,6 @@ class FreeplayDJ extends FlxAtlasSprite
         filterQuality: HIGH
       });
 
-    initializeAnimations();
-
     onAnimationFrame.add(function(name, number) {
       if (name == playableCharData?.getAnimationPrefix('cartoon'))
       {
@@ -70,29 +68,6 @@ class FreeplayDJ extends FlxAtlasSprite
     FlxG.console.registerFunction("freeplayCartoon", function() {
       currentState = Cartoon;
     });
-  }
-
-  function initializeAnimations():Void
-  {
-    // Symbols
-    // null-safety on crack
-    @:nullSafety(Off)
-    for (animation in playableCharData.listAnimations())
-    {
-      var animationName:String = playableCharData?.getAnimationPrefix(animation);
-      trace("Adding animation: " + animationName);
-      anim.addBySymbol(animationName, animationName, 24, false);
-    }
-
-    // Frame labels
-    // null-safety on crack 2
-    @:nullSafety(Off)
-    for (animation in getFrameLabels())
-    {
-      var animationName:String = playableCharData?.getAnimationPrefix(animation);
-      trace("Adding animation: " + animationName);
-      anim.addByFrameLabel(animationName, animationName, 24, false);
-    }
   }
 
   var lowPumpLoopPoint:Int = 4;

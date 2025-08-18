@@ -178,13 +178,6 @@ class PlayerFreeplayDJData
     return anim.prefix;
   }
 
-  public function listAnimations():Array<String>
-  {
-    if (animationMap.size() == 0) mapAnimations();
-
-    return animationMap.keys().array();
-  }
-
   public function getAnimationOffsetsByPrefix(?prefix:String):Array<Float>
   {
     if (prefixToOffsetsMap.size() == 0) mapAnimations();

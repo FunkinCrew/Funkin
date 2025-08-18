@@ -108,29 +108,51 @@ class FlxAtlasSprite extends FlxAnimate
   }
 
   /**
+   * Checks if the atlas has a specific animation.
+   *
+   * If the animation exists as a symbol or frame label, but
+   * hasn't been added yet, it will be added automatically.
+   *
    * @param id A string ID of the animation.
    * @return Whether the animation was found on this sprite.
    */
   public function hasAnimation(id:String):Bool
   {
-    var animationList:Array<String> = listAnimations();
+    var frameLabels:Array<String> = listAnimations();
+    var symbols:Array<String> = this.library.dictionary.keys().array();
 
-    if (animationList.contains(id))
+    if (anim.getByName(id) == null)
     {
-      if (anim.getByName(id) == null)
+      if (frameLabels.contains(id))
       {
         // Animation exists as a frame label but wasn't added, so we add it
         anim.addByFrameLabel(id, id, 24, false);
+        return true;
       }
-
-      return true;
+      else if (symbols.contains(id))
+      {
+        // Animation exists as a symbol but wasn't added, so we add it
+        anim.addBySymbol(id, id, 24, false);
+        return true;
+      }
     }
-    else if (anim.getByName(id) != null)
+    else
     {
       return true;
     }
 
     return false;
+  }
+
+  /**
+   * Returns the first symbol in the atlas.
+   * @param
+   */
+  public function getFirstSymbol():String
+  {
+    var symbols:Array<String> = this.library.dictionary.keys().array();
+    if (symbols.length > 0) return symbols[0];
+    return '';
   }
 
   public function cleanupAnimation(_:String):Void
@@ -203,7 +225,8 @@ class FlxAtlasSprite extends FlxAnimate
 
     if (anim == null) return;
 
-    if (id == null || id == '') id = this.currentAnimation;
+    // Try to use the first symbol in the animation if one exists.
+    if (id == null || id == '') id = getFirstSymbol();
 
     if (!hasAnimation(id))
     {
