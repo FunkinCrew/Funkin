@@ -366,24 +366,23 @@ class MainMenuState extends MusicBeatState
   override function closeSubState():Void
   {
     magenta.visible = false;
-    #if FEATURE_TOUCH_CONTROLS
-    // we want to reset our backButton + optionsButton if we are returning to the main menu from a substate like freeplay
-    // however, we dont want to trigger these resets if we are entering the state
-    if (!uiStateMachine.is(Entering))
-    {
-      backButton?.animation.play('idle');
-      backButton?.resetCallbacks();
-
-      optionsButton?.animation.play('idle');
-      optionsButton?.resetCallbacks();
-    }
-    #end
 
     // when we are in Transition (fade in on new FlxState) we don't really care about substate closing
     // this fixes issue when Entering w/ fade -> interacting -> fade ends, so it transitions to Idle on our substate end here
     if (!(subState is flixel.addons.transition.Transition))
     {
       uiStateMachine.transition(Idle);
+
+      #if FEATURE_TOUCH_CONTROLS
+      // we want to reset our backButton + optionsButton if we are returning to the main menu from a substate like freeplay
+      // however, we dont want to trigger these resets if we are entering the state
+
+      backButton?.animation.play('idle');
+      backButton?.resetCallbacks();
+
+      optionsButton?.animation.play('idle');
+      optionsButton?.resetCallbacks();
+      #end
     }
 
     super.closeSubState();
