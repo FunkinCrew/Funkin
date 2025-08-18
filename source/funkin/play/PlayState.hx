@@ -722,7 +722,7 @@ class PlayState extends MusicBeatSubState
     // Healthbar
     healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
     healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
-    scoreText = new FlxText(0, 0, 0, '', 20);
+    scoreText = new FlxText(0, 0, FlxG.width, '', 20);
 
     // Combo & Pop Up
     comboPopUps = new PopUpStuff(noteStyle);
