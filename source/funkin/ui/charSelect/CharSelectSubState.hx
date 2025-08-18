@@ -579,6 +579,7 @@ class CharSelectSubState extends MusicBeatSubState
     var xThing = (copy - index - 2) * -1;
     // Look, I'd write better code but I had better aneurysms, my bad - Cheems
     // felt - Zack
+    // Krue - Abnormal
     cursorY = yThing;
     cursorX = xThing;
 
@@ -590,19 +591,17 @@ class CharSelectSubState extends MusicBeatSubState
       var lock:Lock = cast grpIcons.group.members[index];
 
       lock.playAnimation("unlock");
-      playerChillOut.playAnimation("death");
+      lock.onAnimationFrame.add(function(animName:String, frame:Int) {
+        if (frame == 45)
+        {
+          playerChillOut.playAnimation("death");
+        }
+      });
 
       unlockSound.volume = 0.7;
       unlockSound.play(true);
 
-      // Do not sync the lock, because otherwise the animation will be out of sync!
-
-      /*syncLock = lock;
-
-        sync = true; */
-
       lock.onAnimationComplete.addOnce(function(_) {
-        // syncLock = null;
         var char = availableChars.get(index);
         camera.flash(0xFFFFFFFF, 0.1);
         playerChill.playAnimation("unlock");
@@ -704,34 +703,6 @@ class CharSelectSubState extends MusicBeatSubState
     }
   }
 
-  var sync:Bool = false;
-  var syncLock:Lock = null;
-  var audioBizz:Float = 0;
-
-  function syncAudio(elapsed:Float):Void
-  {
-    @:privateAccess
-    if (sync && unlockSound.time > 0)
-    {
-      // if (playerChillOut.anim.framerate > 0)
-      // {
-      //   if (syncLock != null) syncLock.anim.framerate = 0;
-      //   playerChillOut.anim.framerate = 0;
-      // }
-
-      playerChillOut.anim.timeScale = 0;
-      if (syncLock != null) syncLock.anim.timeScale = 0;
-
-      if ((unlockSound.time - audioBizz) >= ((delay) * 100))
-      {
-        if (syncLock != null) syncLock.anim.timeScale = delay;
-
-        playerChillOut.anim.timeScale = delay;
-        audioBizz += delay * 100;
-      }
-    }
-  }
-
   function goToFreeplay():Void
   {
     allowInput = false;
@@ -792,8 +763,6 @@ class CharSelectSubState extends MusicBeatSubState
 
     if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R #if FEATURE_TOUCH_CONTROLS || TouchUtil.justReleased #end)
       selectSound.pitch = 1;
-
-    syncAudio(elapsed);
 
     if (allowInput && !pressedSelect)
     {
