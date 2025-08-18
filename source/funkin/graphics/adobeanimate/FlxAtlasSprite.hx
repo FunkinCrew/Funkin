@@ -113,7 +113,24 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function hasAnimation(id:String):Bool
   {
-    return listAnimations().contains(id);
+    var animationList:Array<String> = listAnimations();
+
+    if (animationList.contains(id))
+    {
+      if (anim.getByName(id) == null)
+      {
+        // Animation exists as a frame label but wasn't added, so we add it
+        anim.addByFrameLabel(id, id, 24, false);
+      }
+
+      return true;
+    }
+    else if (anim.getByName(id) != null)
+    {
+      return true;
+    }
+
+    return false;
   }
 
   public function cleanupAnimation(_:String):Void
@@ -188,16 +205,11 @@ class FlxAtlasSprite extends FlxAnimate
 
     if (id == null || id == '') id = this.currentAnimation;
 
-    if (!hasAnimation(id) && anim.getByName(id) == null)
+    if (!hasAnimation(id))
     {
       // Skip if the animation doesn't exist
       trace('Animation ' + id + ' not found');
       return;
-    }
-    else if (hasAnimation(id) && anim.getByName(id) == null)
-    {
-      // Animation exists as a frame label but wasn't added, so we add it
-      anim.addByFrameLabel(id, id, 24, loop);
     }
 
     // Prevent other animations from playing if `ignoreOther` is true.
