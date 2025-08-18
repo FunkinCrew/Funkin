@@ -13,7 +13,12 @@ class Lock extends FlxAtlasSprite
 
   public function new(x:Float = 0, y:Float = 0, index:Int)
   {
-    super(x, y, Paths.animateAtlas("charSelect/lock"));
+    super(x, y, Paths.animateAtlas("charSelect/lock"),
+      {
+        swfMode: true,
+        cacheOnLoad: true,
+        filterQuality: HIGH
+      });
 
     // TODO: Rework this to make it work with flixel-animate
     var tint:FlxColor = colors[index];

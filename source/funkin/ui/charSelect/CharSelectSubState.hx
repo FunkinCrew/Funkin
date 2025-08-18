@@ -189,9 +189,10 @@ class CharSelectSubState extends MusicBeatSubState
 
     function setupPlayerChill(character:String)
     {
-      gfChill = new CharSelectGF(0, 200);
+      gfChill = new CharSelectGF();
       gfChill.switchGF(character);
       gfChill.x += cutoutSize;
+      gfChill.y += 200;
       add(gfChill);
 
       playerChillOut = new CharSelectPlayer(cutoutSize + 600, 200);
