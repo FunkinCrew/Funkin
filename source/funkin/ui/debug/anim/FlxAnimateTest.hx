@@ -30,11 +30,6 @@ class FlxAnimateTest extends MusicBeatState
         filterQuality: MEDIUM // Level of quality used to render filters. (HIGH, MEDIUM, LOW, RUDY)
       });
 
-    sprite.anim.addByFrameLabel("slideout", "slideout");
-    sprite.anim.addByFrameLabel("slidein", "slidein");
-    sprite.anim.addByFrameLabel("death", "death");
-    sprite.anim.addByFrameLabel("cannot select label", "cannot select label");
-
     add(sprite);
   }
 
@@ -42,7 +37,7 @@ class FlxAnimateTest extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.SPACE) (!(sprite.anim.finished) ? sprite.anim.pause() : sprite.anim.resume());
+    if (FlxG.keys.justPressed.SPACE) (!(sprite.isAnimationFinished()) ? sprite.anim.pause() : sprite.anim.resume());
 
     if (FlxG.keys.anyJustPressed([A, LEFT])) sprite.anim.curAnim.curFrame--;
     if (FlxG.keys.anyJustPressed([D, RIGHT])) sprite.anim.curAnim.curFrame++;
@@ -50,6 +45,6 @@ class FlxAnimateTest extends MusicBeatState
     if (FlxG.keys.justPressed.Q) sprite.playAnimation("slideout", true, false, false);
     if (FlxG.keys.justPressed.W) sprite.playAnimation("slidein", true, false, false);
     if (FlxG.keys.justPressed.E) sprite.playAnimation("death", true, false, false);
-    if (FlxG.keys.justPressed.R) sprite.playAnimation("cannot select label", true, false, false);
+    if (FlxG.keys.justPressed.R) sprite.playAnimation("cannot select Label", true, false, false);
   }
 }

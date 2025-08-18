@@ -48,12 +48,76 @@ class FlxAtlasSprite extends FlxAnimate
     }
 
     super(x, y, path, settings);
+
+    this.anim.onFinish.add(_onAnimationComplete);
+    this.anim.onFrameChange.add(_onAnimationFrame);
+  }
+
+  /**
+   * Gets a list of frames that have a label of any kind.
+   * @param layer A specific layer to get the list. if set to `null`, it'll get a list from every layer.
+   */
+  public function getFrameLabels():Array<String>
+  {
+    var foundLabels:Array<String> = [];
+    var mainTimeline = this.anim.getDefaultTimeline();
+
+    for (layer in mainTimeline.layers)
+    {
+      @:nullSafety(Off)
+      for (frame in layer.frames)
+      {
+        if (frame.name.rtrim() != '')
+        {
+          foundLabels.push(frame.name);
+        }
+      }
+    }
+
+    return foundLabels;
+  }
+
+  /**
+   * @return A list of all the animations this sprite has available.
+   */
+  public function listAnimations():Array<String>
+  {
+    return getFrameLabels();
+  }
+
+  /**
+   * @param id A string ID of the animation.
+   * @return Whether the animation was found on this sprite.
+   */
+  public function hasAnimation(id:String):Bool
+  {
+    return listAnimations().contains(id);
   }
 
   public function cleanupAnimation(_:String):Void
   {
     canPlayOtherAnims = true;
     this.anim.pause();
+  }
+
+  function _onAnimationFrame(animName:String, frameNumber:Int, frameIndex:Int):Void
+  {
+    if (currentAnimation != null)
+    {
+      onAnimationFrame.dispatch(currentAnimation, frameNumber);
+    }
+  }
+
+  function _onAnimationComplete(animName:String):Void
+  {
+    if (currentAnimation != null)
+    {
+      onAnimationComplete.dispatch(currentAnimation);
+    }
+    else
+    {
+      onAnimationComplete.dispatch('');
+    }
   }
 
   /**
@@ -63,10 +127,6 @@ class FlxAtlasSprite extends FlxAnimate
   {
     return this.currentAnimation;
   }
-
-  var fr:Null<Frame> = null;
-
-  var looping:Bool = false;
 
   public var ignoreExclusionPref:Array<String> = [];
 
@@ -106,25 +166,25 @@ class FlxAtlasSprite extends FlxAnimate
 
     if (id == null || id == '') id = this.currentAnimation;
 
-    if (!hasAnimation(id))
+    if (!hasAnimation(id) && anim.getByName(id) == null)
     {
       // Skip if the animation doesn't exist
       trace('Animation ' + id + ' not found');
       return;
     }
-
-    this.currentAnimation = id;
-
-    looping = loop;
+    else if (hasAnimation(id) && anim.getByName(id) == null)
+    {
+      // Animation exists as a frame label but wasn't added, so we add it
+      anim.addByFrameLabel(id, id, 24, loop);
+    }
 
     // Prevent other animations from playing if `ignoreOther` is true.
     if (ignoreOther) canPlayOtherAnims = false;
 
+    this.currentAnimation = id;
+
     this.anim.play(id, restart, false, startFrame);
-
-    this.currentAnimation = anim?.curAnim?.name ?? '';
-
-    fr = null;
+    this.anim.curAnim.looped = loop;
   }
 
   /**
