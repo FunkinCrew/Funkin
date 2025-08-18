@@ -184,7 +184,7 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(1.0, 1.0);
-      iconOffset = FlxPoint.get();
+      this.iconOffset.set();
       this.flipX = false;
     }
     else
@@ -195,7 +195,15 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      iconOffset = FlxPoint.get((data.offsets != null) ? data.offsets[0] : 0.0, (data.offsets != null) ? data.offsets[1] : 0.0);
+      if (data.offsets != null && data.offsets.length == 2)
+      {
+        this.iconOffset.set(data.offsets[0], data.offsets[1]);
+      }
+      else
+      {
+        this.iconOffset.set(0, 0);
+      }
+
       this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
     }
   }
