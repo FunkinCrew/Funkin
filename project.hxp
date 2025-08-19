@@ -8,6 +8,7 @@ import sys.io.File;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ds.Map;
+import haxe.xml.Printer;
 
 using StringTools;
 
@@ -1057,23 +1058,31 @@ class Project extends HXProject
       }
     }
 
-    final modsFolderProvider = [
-      '<provider android:authorities="$PACKAGE_NAME.docprovider" android:name="funkin.provider.DataFolderProvider" android:grantUriPermissions="true" android:exported="true" android:permission="android.permission.MANAGE_DOCUMENTS">',
-      '  <intent-filter>',
-      '    <action android:name="android.content.action.DOCUMENTS_PROVIDER" />',
-      '  </intent-filter>',
-      '</provider>'
-    ];
+    final modsFolderProvider:Xml = Xml.createElement('provider');
+    modsFolderProvider.set('android:authorities', '$PACKAGE_NAME.docprovider');
+    modsFolderProvider.set('android:name', 'funkin.provider.DataFolderProvider');
+    modsFolderProvider.set('android:grantUriPermissions', 'true');
+    modsFolderProvider.set('android:exported', 'true');
+    modsFolderProvider.set('android:permission', 'android.permission.MANAGE_DOCUMENTS');
 
-    final xmlChildren:Null<Array<String>> = config.get('android.application').xmlChildren;
+    final intentFilter:Xml = Xml.createElement('intent-filter');
 
-    if (xmlChildren != null)
+    final action:Xml = Xml.createElement('action');
+    action.set('android:name', 'android.content.action.DOCUMENTS_PROVIDER');
+    intentFilter.addChild(action);
+
+    modsFolderProvider.addChild(intentFilter);
+
+    @:nullSafety(Off)
     {
-      config.get('android.application').xmlChildren = xmlChildren.concat(modsFolderProvider);
-    }
-    else
-    {
-      config.get('android.application').xmlChildren = modsFolderProvider;
+      if (config.get('android.application').xmlChildren != null)
+      {
+        config.get('android.application').xmlChildren.push(Printer.print(modsFolderProvider));
+      }
+      else
+      {
+        config.get('android.application').xmlChildren = [Printer.print(modsFolderProvider)];
+      }
     }
 
     final extensions:Null<Array<String>> = config.getArrayString('android.extension');
