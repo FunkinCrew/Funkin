@@ -475,6 +475,7 @@ class Project extends HXProject
     envConfig = readEnvironmentFile("./.env");
 
     flair();
+
     configureApp();
 
     displayTarget();
@@ -504,8 +505,6 @@ class Project extends HXProject
     {
       configureIOS();
     }
-
-    info("Done configuring project.");
   }
 
   /**
@@ -1285,7 +1284,14 @@ class Project extends HXProject
     addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
     addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
 
-    info('Done configuring assets.');
+    if (shouldEmbed)
+    {
+      info('Done embedding assets.');
+    }
+    else
+    {
+      info('Done including assets.');
+    }
   }
 
   /**
@@ -1876,7 +1882,7 @@ class Project extends HXProject
 
     Sys.command('haxelib', args);
 
-    info('Finished compressing ASTC textures!');
+    info('Done compressing ASTC textures.');
   }
 }
 

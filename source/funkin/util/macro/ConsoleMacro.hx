@@ -58,7 +58,7 @@ class ConsoleMacro
       };
 
     fields.push(initField);
-    trace("Generated console registration for: " + cl);
+    Sys.println('[INFO] Generated console registration for: $cl');
     return fields;
   }
   #end
