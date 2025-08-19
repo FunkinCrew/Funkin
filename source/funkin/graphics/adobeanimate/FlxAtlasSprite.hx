@@ -9,6 +9,60 @@ import flixel.math.FlxPoint;
 import animate.internal.Frame;
 import animate.FlxAnimateFrames.FlxAnimateSettings;
 
+typedef FlxAtlasSpriteSettings =
+{
+  /**
+   * If true, the texture atlas will behave as if it was exported as an SWF file.
+   * Notably, this allows MovieClip symbols to play.
+   */
+  @:optional
+  var swfMode:Bool;
+
+  /**
+   * If true, filters and masks will be cached when the atlas is loaded, instead of during runtime.
+   */
+  @:optional
+  var cacheOnLoad:Bool;
+
+  /**
+   * The filter quality.
+   * Available values are: HIGH, MEDIUM, LOW, and RUDY.
+   *
+   * If you're making an atlas sprite in HScript, you pass an Int instead:
+   *
+   * HIGH - 0
+   * MEDIUM - 1
+   * LOW - 2
+   * RUDY - 3
+   */
+  @:optional
+  var filterQuality:FilterQuality;
+
+  /**
+   * Optional, an array of spritemaps for the atlas to load.
+   */
+  @:optional
+  var spritemaps:Array<SpritemapInput>;
+
+  /**
+   * Optional, string of the metadata.json contents.
+   */
+  @:optional
+  var metadataJson:String;
+
+  /**
+   * Optional, force the cache to use a specific key to index the texture atlas.
+   */
+  @:optional
+  var cacheKey:String;
+
+  /**
+   * If true, the texture atlas will use a new slot in the cache.
+   */
+  @:optional
+  var uniqueInCache:Bool;
+}
+
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
  */
@@ -34,8 +88,19 @@ class FlxAtlasSprite extends FlxAnimate
 
   var canPlayOtherAnims:Bool = true;
 
-  public function new(x:Float, y:Float, ?path:String, ?settings:FlxAnimateSettings)
+  public function new(x:Float, y:Float, ?path:String, ?settings:FlxAtlasSpriteSettings)
   {
+    var validatedSettings:FlxAtlasSpriteSettings =
+      {
+        swfMode: settings?.swfMode ?? false,
+        cacheOnLoad: settings?.cacheOnLoad ?? false,
+        filterQuality: settings?.filterQuality ?? HIGH,
+        spritemaps: settings?.spritemaps ?? null,
+        metadataJson: settings?.metadataJson ?? null,
+        cacheKey: settings?.cacheKey ?? null,
+        uniqueInCache: settings?.uniqueInCache ?? false
+      };
+
     if (path == null)
     {
       throw 'Null path specified for FlxAtlasSprite!';
@@ -47,7 +112,14 @@ class FlxAtlasSprite extends FlxAnimate
       throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
     }
 
-    super(x, y, path, settings);
+    super(x, y);
+
+    frames = FlxAnimateFrames.fromAnimate(path, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
+      validatedSettings.uniqueInCache, {
+        swfMode: validatedSettings.swfMode,
+        cacheOnLoad: validatedSettings.cacheOnLoad,
+        filterQuality: validatedSettings.filterQuality
+      });
 
     this.anim.onFinish.add(_onAnimationComplete);
     this.anim.onFrameChange.add(_onAnimationFrame);
