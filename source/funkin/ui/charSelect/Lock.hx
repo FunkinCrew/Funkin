@@ -30,9 +30,7 @@ class Lock extends FlxAtlasSprite
       if (symbol != null && symbol.timeline.getLayer("color") != null)
       {
         var colorSymbol = symbol.timeline.getLayer("color").getFrameAtIndex(0).convertToSymbol(0, 1);
-
-        @:privateAccess
-        colorSymbol.transform.color = color;
+        colorSymbol.setColorTransform(color);
       }
     }
 
