@@ -33,7 +33,7 @@ class DifficultyStars extends FlxSpriteGroup
     flames = new FreeplayFlames(0, 0);
 
     stars = new FlxAtlasSprite(0, 0, Paths.animateAtlas("freeplay/freeplayStars"));
-    stars.anim.play("diff stars");
+    stars.playAnimation("diff stars");
 
     add(flames);
     add(stars);
@@ -56,12 +56,9 @@ class DifficultyStars extends FlxSpriteGroup
     // ......
     // 1300-1499: 15 stars
     // 1500 : 0 stars
-    if (stars.anim.curAnim != null)
+    if (curDifficulty < 15 && stars.anim.curAnim.curFrame >= (curDifficulty + 1) * 100)
     {
-      if (curDifficulty < 15 && stars.anim.curAnim.curFrame >= (curDifficulty + 1) * 100)
-      {
-        stars.anim.play("diff stars", true, false, curDifficulty * 100);
-      }
+      stars.playAnimation("diff stars", true, false, curDifficulty * 100);
     }
   }
 

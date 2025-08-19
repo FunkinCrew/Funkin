@@ -9,7 +9,7 @@ class Lock extends FlxAtlasSprite
     0xFF31F2A5, 0xFF20ECCD, 0xFF24D9E8,
     0xFF20ECCD, 0xFF20C8D4, 0xFF209BDD,
     0xFF209BDD, 0xFF2362C9, 0xFF243FB9
-  ]; // lock colors, in a nx3 matrix format
+  ];
 
   public function new(x:Float = 0, y:Float = 0, index:Int)
   {
@@ -17,7 +17,8 @@ class Lock extends FlxAtlasSprite
       {
         swfMode: true,
         cacheOnLoad: true,
-        filterQuality: HIGH
+        filterQuality: HIGH,
+        uniqueInCache: true
       });
 
     var tint:FlxColor = colors[index];
@@ -29,7 +30,7 @@ class Lock extends FlxAtlasSprite
       if (symbol != null && symbol.timeline.getLayer("color") != null)
       {
         var colorSymbol = symbol.timeline.getLayer("color").getFrameAtIndex(0).convertToSymbol(0, 1);
-        colorSymbol.setColorTransform(1, 1, 1, 1, tint.red, tint.green, tint.blue, 0);
+        colorSymbol.setColorTransform(0, 0, 0, 1, tint.red, tint.green, tint.blue, 0);
       }
     }
 
