@@ -2741,8 +2741,8 @@ class FreeplayState extends MusicBeatSubState
       var yOffset:Float = 0;
 
       // Small offset so edge capsules actually go offscreen enough to not require to be rendered.
-      if (capsuleIndex < 0) y += 50;
-      else if (capsuleIndex > 4) y -= 10;
+      if (capsuleIndex < 0) yOffset += 50;
+      else if (capsuleIndex > 4) yOffset -= 10;
 
       capsule.targetPos.y = capsule.intendedY(capsuleIndex) - yOffset;
       capsule.targetPos.x = capsule.intendedX(capsuleIndex) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
