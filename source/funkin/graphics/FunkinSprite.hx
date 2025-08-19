@@ -12,6 +12,7 @@ import flixel.math.FlxPoint;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
 import openfl.system.System;
+import funkin.FunkinMemory;
 
 using StringTools;
 
@@ -23,20 +24,6 @@ using StringTools;
 @:nullSafety
 class FunkinSprite extends FlxSprite
 {
-  /**
-   * An internal list of all the textures cached with `cacheTexture`.
-   * This excludes any temporary textures like those from `FlxText` or `makeSolidColor`.
-   */
-  static var currentCachedTextures:Map<String, FlxGraphic> = [];
-
-  /**
-   * An internal list of textures that were cached in the previous state.
-   * We don't know whether we want to keep them cached or not.
-   */
-  static var previousCachedTextures:Map<String, FlxGraphic> = [];
-
-  static var permanentCachedTextures:Map<String, FlxGraphic> = [];
-
   /**
    * @param x Starting X position
    * @param y Starting Y position
@@ -216,122 +203,40 @@ class FunkinSprite extends FlxSprite
     return FlxG.bitmap.get(key) != null;
   }
 
-  /**
-   * Ensure the texture with the given key is cached.
-   * @param key The key of the texture to cache.
-   */
+  @:deprecated("Use FunkinMemory.cacheTexture() instead")
   public static function cacheTexture(key:String):Void
   {
-    // We don't want to cache the same texture twice.
-    if (currentCachedTextures.exists(key)) return;
-
-    if (previousCachedTextures.exists(key))
-    {
-      // Move the graphic from the previous cache to the current cache.
-      var graphic = previousCachedTextures.get(key);
-      previousCachedTextures.remove(key);
-      if (graphic != null) currentCachedTextures.set(key, graphic);
-      return;
-    }
-
-    // Else, texture is currently uncached.
-    var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key, false, null, true);
-    if (graphic == null)
-    {
-      FlxG.log.warn('Failed to cache graphic: $key');
-    }
-    else
-    {
-      trace('Successfully cached graphic: $key');
-      graphic.persist = true;
-      currentCachedTextures.set(key, graphic);
-    }
+    FunkinMemory.cacheTexture(Paths.image(key));
   }
 
+  @:deprecated("Use FunkinMemory.permanentCacheTexture() instead")
   public static function permanentCacheTexture(key:String):Void
   {
-    // We don't want to cache the same texture twice.
-    if (permanentCachedTextures.exists(key)) return;
-
-    // Else, texture is currently uncached.
-    var graphic:FlxGraphic = FlxGraphic.fromAssetKey(key, false, null, true);
-    if (graphic == null)
-    {
-      FlxG.log.warn('Failed to cache graphic: $key');
-    }
-    else
-    {
-      trace('Successfully cached graphic: $key');
-      graphic.persist = true;
-      permanentCachedTextures.set(key, graphic);
-    }
-
-    currentCachedTextures = permanentCachedTextures;
+    @:privateAccess FunkinMemory.permanentCacheTexture(Paths.image(key));
   }
 
+  @:deprecated("Use FunkinMemory.cacheTexture() instead")
   public static function cacheSparrow(key:String):Void
   {
-    cacheTexture(Paths.image(key));
+    FunkinMemory.cacheTexture(Paths.image(key));
   }
 
+  @:deprecated("Use FunkinMemory.cacheTexture() instead")
   public static function cachePacker(key:String):Void
   {
-    cacheTexture(Paths.image(key));
+    FunkinMemory.cacheTexture(Paths.image(key));
   }
 
-  /**
-   * Call this, then `cacheTexture` to keep the textures we still need, then `purgeCache` to remove the textures that we won't be using anymore.
-   */
+  @:deprecated("Use FunkinMemory.preparePurgeTextureCache() instead")
   public static function preparePurgeCache():Void
   {
-    previousCachedTextures = currentCachedTextures;
-
-    for (graphicKey in previousCachedTextures.keys())
-    {
-      if (!permanentCachedTextures.exists(graphicKey)) continue;
-      previousCachedTextures.remove(graphicKey);
-    }
-
-    currentCachedTextures = permanentCachedTextures;
+    FunkinMemory.preparePurgeTextureCache();
   }
 
+  @:deprecated("Use FunkinMemory.purgeCache() instead")
   public static function purgeCache():Void
   {
-    // Everything that is in previousCachedTextures but not in currentCachedTextures should be destroyed.
-    for (graphicKey in previousCachedTextures.keys())
-    {
-      var graphic = previousCachedTextures.get(graphicKey);
-      if (graphic == null) continue;
-      FlxG.bitmap.remove(graphic);
-      graphic.destroy();
-      previousCachedTextures.remove(graphicKey);
-    }
-    @:privateAccess
-    if (FlxG.bitmap._cache == null)
-    {
-      @:privateAccess
-      FlxG.bitmap._cache = new Map();
-      System.gc();
-      return;
-    }
-
-    @:privateAccess
-    for (key in FlxG.bitmap._cache.keys())
-    {
-      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
-      if (obj == null) continue;
-      if (obj.persist) continue;
-      if (permanentCachedTextures.exists(key)) continue;
-      if (!(obj.useCount <= 0 || key.contains("characters") || key.contains("charSelect") || key.contains("results"))) continue;
-
-      FlxG.bitmap.removeKey(key);
-      obj.destroy();
-    }
-    openfl.Assets.cache.clear("songs");
-    openfl.Assets.cache.clear("sounds");
-    openfl.Assets.cache.clear("music");
-
-    System.gc();
+    FunkinMemory.purgeCache();
   }
 
   static function isGraphicCached(graphic:FlxGraphic):Bool

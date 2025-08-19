@@ -69,10 +69,11 @@ class OptionsState extends MusicBeatState
     optionsCodex = new Codex<OptionsMenuPageName>(Options);
     add(optionsCodex);
 
-    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
+    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(saveData));
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
-    #if FEATURE_INPUT_OFFSETS
+    #if FEATURE_LAG_ADJUSTMENT
     var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
     #end
 
@@ -81,9 +82,10 @@ class OptionsState extends MusicBeatState
       options.onExit.add(exitToMainMenu);
       controls.onExit.add(exitControls);
       preferences.onExit.add(optionsCodex.switchPage.bind(Options));
-      #if FEATURE_INPUT_OFFSETS
+      #if FEATURE_LAG_ADJUSTMENT
       offsets.onExit.add(exitOffsets);
       #end
+      saveData.onExit.add(optionsCodex.switchPage.bind(Options));
     }
     else
     {
@@ -136,6 +138,7 @@ class OptionsState extends MusicBeatState
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
   }
 }
@@ -159,7 +162,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   final CAMERA_MARGIN:Int = 150;
 
-  public function new()
+  public function new(saveDataMenu:SaveDataMenu)
   {
     super();
     add(items = new TextMenuList());
@@ -172,8 +175,8 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     // createItem("CONTROL SCHEMES", function() {
     //   FlxG.state.openSubState(new ControlsSchemeMenu());
     // });
-    #if FEATURE_INPUT_OFFSETS
-    createItem("INPUT OFFSETS", function() {
+    #if FEATURE_LAG_ADJUSTMENT
+    createItem("LAG ADJUSTMENT", function() {
       FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
         FunkinSound.playMusic('offsetsLoop',
           {
@@ -196,7 +199,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #end
     #if android
     createItem("OPEN DATA FOLDER", function() {
-      funkin.mobile.external.android.DataFolderUtil.openDataFolder();
+      funkin.external.android.DataFolderUtil.openDataFolder();
     });
     #end
     #if FEATURE_NEWGROUNDS
@@ -227,9 +230,19 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       });
     }
     #end
-    createItem("CLEAR SAVE DATA", function() {
-      promptClearSaveData();
-    });
+
+    // no need to show an entire new menu for just one option
+    if (saveDataMenu.hasMultipleOptions())
+    {
+      createItem("SAVE DATA OPTIONS", function() {
+        codex.switchPage(SaveData);
+      });
+    }
+    else
+    {
+      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
+    }
+
     #if NO_FEATURE_TOUCH_CONTROLS
     createItem("EXIT", exit);
     #else
@@ -277,7 +290,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   override function update(elapsed:Float):Void
   {
-    enabled = (prompt == null);
     #if FEATURE_TOUCH_CONTROLS
     backButton.active = (!goingBack) ? !items.busy : true;
     #end
@@ -298,31 +310,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   {
     return items.length > 2;
   }
-
-  var prompt:Prompt;
-
-  function promptClearSaveData():Void
-  {
-    if (prompt != null) return;
-    prompt = new Prompt("This will delete
-      \nALL your save data.
-      \nAre you sure?
-    ", Custom("Delete", "Cancel"));
-    prompt.create();
-    prompt.createBgFromMargin(100, 0xFFFAFD6D);
-    prompt.back.scrollFactor.set(0, 0);
-    add(prompt);
-    prompt.onYes = function() {
-      // Clear the save data.
-      funkin.save.Save.clearData();
-      FlxG.switchState(() -> new funkin.InitState());
-    };
-    prompt.onNo = function() {
-      prompt.close();
-      prompt.destroy();
-      prompt = null;
-    };
-  }
 }
 
 enum abstract OptionsMenuPageName(String) to PageName
@@ -333,4 +320,5 @@ enum abstract OptionsMenuPageName(String) to PageName
   var Mods = "mods";
   var Preferences = "preferences";
   var Offsets = "offsets";
+  var SaveData = "saveData";
 }

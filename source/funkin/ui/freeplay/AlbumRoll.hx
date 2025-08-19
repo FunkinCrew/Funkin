@@ -170,6 +170,8 @@ class AlbumRoll extends FlxSpriteGroup
    */
   public function playIntro():Void
   {
+    this.visible = true;
+
     if (albumTitle != null) albumTitle.visible = false;
     newAlbumArt.visible = true;
     newAlbumArt.playAnimation('intro', true);
@@ -186,6 +188,7 @@ class AlbumRoll extends FlxSpriteGroup
 
   public function skipIntro():Void
   {
+    this.visible = true;
     // Weird workaround
     newAlbumArt.playAnimation('switch', true);
     if (albumTitle != null) albumTitle.animation.play('switch');
@@ -210,7 +213,7 @@ class AlbumRoll extends FlxSpriteGroup
     }
 
     albumTitle = FunkinSprite.createSparrow((FlxG.width - 355) - FullScreenScaleMode.gameNotchSize.x, 500, assetKey);
-    albumTitle.visible = albumTitle.frames != null && newAlbumArt.visible;
+    albumTitle.visible = this.visible && (albumTitle.frames != null && newAlbumArt.visible) && difficultyStars.visible;
     albumTitle.animation.addByPrefix('idle', 'idle0', 24, true);
     albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);
     add(albumTitle);

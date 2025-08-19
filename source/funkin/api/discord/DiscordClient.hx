@@ -1,5 +1,6 @@
 package funkin.api.discord;
 
+import funkin.util.macro.EnvironmentConfigMacro;
 #if FEATURE_DISCORD_RPC
 import hxdiscord_rpc.Discord;
 import hxdiscord_rpc.Types.DiscordButton;
@@ -11,7 +12,7 @@ import sys.thread.Thread;
 @:nullSafety
 class DiscordClient
 {
-  static final CLIENT_ID:String = "816168432860790794";
+  static final CLIENT_ID:Null<String> = EnvironmentConfigMacro.environmentConfig?.get("DESKTOP_DISCORD_CLIENT_ID");
 
   public static var instance(get, never):DiscordClient;
   static var _instance:Null<DiscordClient> = null;
@@ -40,10 +41,26 @@ class DiscordClient
   {
     trace('[DISCORD] Initializing connection...');
 
-    // Discord.initialize(CLIENT_ID, handlers, true, null);
-    Discord.Initialize(CLIENT_ID, cpp.RawPointer.addressOf(handlers), 1, "");
+    if (!hasValidCredentials())
+    {
+      FlxG.log.warn("Tried to initialize Discord connection, but credentials are invalid!");
+      return;
+    }
+
+    @:nullSafety(Off)
+    {
+      Discord.Initialize(CLIENT_ID, cpp.RawPointer.addressOf(handlers), 1, "");
+    }
 
     createDaemon();
+  }
+
+  /**
+   * @returns `false` if the client ID is invalid.
+   */
+  static function hasValidCredentials():Bool
+  {
+    return !(CLIENT_ID == null || CLIENT_ID == "" || (CLIENT_ID != null && CLIENT_ID.contains(" ")));
   }
 
   var daemon:Null<Thread> = null;

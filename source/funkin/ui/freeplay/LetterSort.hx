@@ -149,18 +149,22 @@ class LetterSort extends FlxSpriteGroup
 
   public function changeSelection(diff:Int = 0, playSound:Bool = true):Void
   {
-    doLetterChangeAnims(diff);
+    @:privateAccess
+    if (instance.controls.active)
+    {
+      doLetterChangeAnims(diff);
 
-    var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
+      var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
 
-    // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
-    var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
-    arrowToMove.offset.x = 3 * multiPosOrNeg;
+      // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
+      var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
+      arrowToMove.offset.x = 3 * multiPosOrNeg;
 
-    new FlxTimer().start(2 / 24, function(_) {
-      arrowToMove.offset.x = 0;
-    });
-    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      new FlxTimer().start(2 / 24, function(_) {
+        arrowToMove.offset.x = 0;
+      });
+      if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    }
   }
 
   /**

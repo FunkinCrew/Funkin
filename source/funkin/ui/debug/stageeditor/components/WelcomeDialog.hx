@@ -11,8 +11,6 @@ import funkin.data.stage.StageData;
 import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorDialogType;
 
-using funkin.util.tools.FloatTools;
-
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/welcome.xml"))
 class WelcomeDialog extends Dialog
 {
@@ -59,7 +57,7 @@ class WelcomeDialog extends Dialog
 
     boxDrag.onClick = function(_) FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], loadFromFilePath, null, null, "Open Stage Data");
 
-    var defaultStages:Array<String> = StageRegistry.instance.listBaseGameEntryIds();
+    var defaultStages:Array<String> = StageRegistry.instance.listEntryIds();
     defaultStages.sort(funkin.util.SortUtil.alphabetically);
 
     for (stage in defaultStages)
