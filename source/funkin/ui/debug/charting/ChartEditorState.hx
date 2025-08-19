@@ -5675,7 +5675,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (saveDataDirty)
     {
-      Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
+      this.isHaxeUIDialogOpen = true;
+      var dialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
         function(button:DialogButton) {
           if (button == DialogButton.YES)
           {
@@ -5685,6 +5686,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         });
 
       return;
+
+      dialog.onDialogClosed = (_) -> this.isHaxeUIDialogOpen = false;
     }
 
     stopWelcomeMusic();
