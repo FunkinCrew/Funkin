@@ -2737,8 +2737,15 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.curSelected = curSelected;
 
-      capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = capsule.intendedX(index - curSelected) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
+      var capsuleIndex = index - curSelected;
+      var yOffset:Float = 0;
+
+      // Small offset so edge capsules actually go offscreen enough to not require to be rendered.
+      if (capsuleIndex < 0) y += 50;
+      else if (capsuleIndex > 4) y -= 10;
+
+      capsule.targetPos.y = capsule.intendedY(capsuleIndex) - yOffset;
+      capsule.targetPos.x = capsule.intendedX(capsuleIndex) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
