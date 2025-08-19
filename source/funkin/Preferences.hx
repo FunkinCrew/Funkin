@@ -252,7 +252,7 @@ class Preferences
   static function get_autoPause():Bool
   {
     #if mobile
-    return true;
+    return false;
     #end
     return Save?.instance?.options?.autoPause ?? true;
   }

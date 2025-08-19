@@ -1626,7 +1626,7 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocus():Void
   {
-    if (VideoCutscene.isPlaying() && Preferences.autoPause && isGamePaused) VideoCutscene.pauseVideo();
+    if (VideoCutscene.isPlaying() #if !mobile && Preferences.autoPause #end && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
     else if (Preferences.autoPause) VideoCutscene.resumeVideo();
     #end
@@ -1688,7 +1688,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
-    if (!isGamePaused && Preferences.autoPause)
+    if (!isGamePaused #if !mobile && Preferences.autoPause #end)
     {
       if (currentConversation != null)
       {
