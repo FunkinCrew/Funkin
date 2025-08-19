@@ -8,6 +8,7 @@ import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
+import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import funkin.util.MathUtil;
 import funkin.graphics.shaders.Grayscale;
@@ -698,12 +699,18 @@ class SongMenuItem extends FlxSpriteGroup
 
   public function intendedX(index:Float):Float
   {
-    return 270 + (60 * (Math.sin(index)));
+    return 270 + (60 * (FlxMath.fastSin(index)));
   }
 
   public function intendedY(index:Float):Float
   {
-    return (index * ((height * realScaled) + 10)) + 120;
+    var y:Float = (index * ((height * realScaled) + 10)) + 120;
+
+    // Small offset so edge capsules actually go offscreen enough to not require to be rendered.
+    if (index < 0) y -= 50;
+    else if (index > 4) y += 10;
+
+    return y;
   }
 
   function set_selected(value:Bool):Bool
@@ -724,15 +731,17 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateSelected():Void
   {
-    grayscaleShader.setAmount((this.selected || this.forceHighlight) ? 0 : 0.8);
-    songText.alpha = (this.selected || this.forceHighlight) ? 1 : 0.6;
-    songText.blurredText.visible = (this.selected || this.forceHighlight) ? true : false;
-    capsule.offset.x = (this.selected || this.forceHighlight) ? 0 : -5;
-    capsule.animation.play((this.selected || this.forceHighlight) ? "selected" : "unselected");
-    ranking.alpha = (this.selected || this.forceHighlight) ? 1 : 0.7;
-    favIcon.alpha = (this.selected || this.forceHighlight) ? 1 : 0.6;
-    favIconBlurred.alpha = (this.selected || this.forceHighlight) ? 1 : 0;
-    ranking.color = (this.selected || this.forceHighlight) ? 0xFFFFFFFF : 0xFFAAAAAA;
+    final isSelected:Bool = (this.selected || this.forceHighlight);
+
+    grayscaleShader.setAmount(isSelected ? 0 : 0.8);
+    songText.alpha = isSelected ? 1 : 0.6;
+    songText.blurredText.visible = isSelected ? true : false;
+    capsule.offset.x = isSelected ? 0 : -5;
+    capsule.animation.play(isSelected ? "selected" : "unselected");
+    ranking.alpha = isSelected ? 1 : 0.7;
+    favIcon.alpha = isSelected ? 1 : 0.6;
+    favIconBlurred.alpha = isSelected ? 1 : 0;
+    ranking.color = isSelected ? 0xFFFFFFFF : 0xFFAAAAAA;
 
     if (songText.tooLong) songText.resetText();
 

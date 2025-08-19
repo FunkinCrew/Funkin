@@ -1180,7 +1180,7 @@ class FreeplayState extends MusicBeatSubState
         FunkinSound.playOnce(Paths.sound('ranks/loss'));
     }
 
-    FlxTween.tween(capsuleToRank, {"targetPos.x": originalPos.x, "targetPos.y": originalPos.y}, 0.5, {ease: FlxEase.expoOut});
+    FlxTween.tween(capsuleToRank.targetPos, {x: originalPos.x, y: originalPos.y}, 0.5, {ease: FlxEase.expoOut});
     new FlxTimer().start(0.5, _ -> {
       // Capsule slam vibration.
       HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
@@ -2838,56 +2838,56 @@ class FreeplayState extends MusicBeatSubState
 
   function favoriteSong():Void
   {
-    var targetSong = currentCapsule?.freeplayData;
+    var selectedCapsule = currentCapsule;
+    var targetSong = selectedCapsule?.freeplayData;
     if (targetSong != null)
     {
-      var realShit:Int = curSelected;
       var isFav = targetSong.toggleFavorite();
       if (isFav)
       {
-        grpCapsules.members[realShit].favIcon.visible = true;
-        grpCapsules.members[realShit].favIconBlurred.visible = true;
-        grpCapsules.members[realShit].favIcon.animation.play('fav');
-        grpCapsules.members[realShit].favIconBlurred.animation.play('fav');
+        selectedCapsule.favIcon.visible = true;
+        selectedCapsule.favIconBlurred.visible = true;
+        selectedCapsule.favIcon.animation.play('fav');
+        selectedCapsule.favIconBlurred.animation.play('fav');
         FunkinSound.playOnce(Paths.sound('fav'), 1);
-        grpCapsules.members[realShit].checkClip();
-        grpCapsules.members[realShit].selected = true; // set selected again, so it can run its getter function to initialize movement
+        selectedCapsule.checkClip();
+        selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
         controls.active = false;
 
-        grpCapsules.members[realShit].doLerp = false;
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1, {ease: FlxEase.expoOut});
+        selectedCapsule.doLerp = false;
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y - 5}, 0.1, {ease: FlxEase.expoOut});
 
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1,
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y + 5}, 0.1,
           {
             ease: FlxEase.expoIn,
             startDelay: 0.1,
             onComplete: function(_) {
-              grpCapsules.members[realShit].doLerp = true;
+              selectedCapsule.doLerp = true;
               controls.active = true;
             }
           });
       }
       else
       {
-        grpCapsules.members[realShit].favIcon.animation.play('fav', true, true, 9);
-        grpCapsules.members[realShit].favIconBlurred.animation.play('fav', true, true, 9);
+        selectedCapsule.favIcon.animation.play('fav', true, true, 9);
+        selectedCapsule.favIconBlurred.animation.play('fav', true, true, 9);
         FunkinSound.playOnce(Paths.sound('unfav'), 1);
         new FlxTimer().start(0.2, _ -> {
-          grpCapsules.members[realShit].favIcon.visible = false;
-          grpCapsules.members[realShit].favIconBlurred.visible = false;
-          grpCapsules.members[realShit].checkClip();
-          grpCapsules.members[realShit].selected = true; // set selected again, so it can run its getter function to initialize movement
+          selectedCapsule.favIcon.visible = false;
+          selectedCapsule.favIconBlurred.visible = false;
+          selectedCapsule.checkClip();
+          selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
         });
 
         controls.active = false;
-        grpCapsules.members[realShit].doLerp = false;
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1, {ease: FlxEase.expoOut});
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1,
+        selectedCapsule.doLerp = false;
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y + 5}, 0.1, {ease: FlxEase.expoOut});
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y - 5}, 0.1,
           {
             ease: FlxEase.expoIn,
             startDelay: 0.1,
             onComplete: function(_) {
-              grpCapsules.members[realShit].doLerp = true;
+              selectedCapsule.doLerp = true;
               controls.active = true;
             }
           });
@@ -2914,12 +2914,13 @@ class DifficultySelector extends FlxSprite
     super(x, y);
     this.controls = controls;
     this.whiteShader = new PureColor(FlxColor.WHITE);
+    this.whiteShader.colorSet = true;
 
     this.frames = Paths.getSparrowAtlas(styleData?.getSelectorAssetKey() ?? "freeplay/freeplaySelector");
     animation.addByPrefix('shine', 'arrow pointer loop', 24);
     animation.play('shine');
 
-    this.shader = whiteShader;
+    @:nullSafety(Off) this.shader = null;
     this.flipX = flipped;
   }
 
@@ -2938,13 +2939,13 @@ class DifficultySelector extends FlxSprite
     if (!press)
     {
       scale.x = scale.y = 1;
-      whiteShader.colorSet = false;
+      @:nullSafety(Off) this.shader = null;
       updateHitbox();
     }
     else
     {
       offset.y = -5;
-      whiteShader.colorSet = true;
+      this.shader = whiteShader;
       scale.x = scale.y = 0.5;
     }
 
@@ -2962,14 +2963,13 @@ class DifficultySelector extends FlxSprite
   function moveShitDown():Void
   {
     offset.y -= 5;
-
-    whiteShader.colorSet = true;
-
     scale.x = scale.y = 0.5;
+
+    this.shader = whiteShader;
 
     new FlxTimer().start(2 / 24, function(tmr) {
       scale.x = scale.y = 1;
-      whiteShader.colorSet = false;
+      @:nullSafety(Off) this.shader = null;
       updateHitbox();
     });
   }
