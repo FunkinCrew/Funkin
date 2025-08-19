@@ -337,6 +337,7 @@ class FreeplayState extends MusicBeatSubState
 
     var fadeShaderFilter:ShaderFilter = new ShaderFilter(fadeShader);
     funnyCam.filters = [fadeShaderFilter];
+    funnyCam.filtersEnabled = false;
 
     if (stickerSubState != null)
     {
@@ -1456,6 +1457,7 @@ class FreeplayState extends MusicBeatSubState
     FlxTween.tween(backButton, {alpha: 0.0001}, 0.4, {ease: FlxEase.quadOut});
     #end
 
+    funnyCam.filtersEnabled = true;
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
 
@@ -1512,7 +1514,9 @@ class FreeplayState extends MusicBeatSubState
     //       });
     //   }
     // }
-    fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn});
+    funnyCam.filtersEnabled = true;
+    fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn, onComplete: (twn) -> funnyCam.filtersEnabled = false});
+
     for (grpSpr in exitMoversCharSel.keys())
     {
       if (exitMoversCharSel.get(grpSpr) == null) continue;
