@@ -709,13 +709,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   public function intendedY(index:Float):Float
   {
-    var y:Float = (index * ((height * realScaled) + 10)) + 120;
-
-    // Small offset so edge capsules actually go offscreen enough to not require to be rendered.
-    if (index < 0) y -= 50;
-    else if (index > 4) y += 10;
-
-    return y;
+    return (index * ((height * realScaled) + 10)) + 120;
   }
 
   function set_selected(value:Bool):Bool
