@@ -13,17 +13,16 @@ import funkin.api.newgrounds.Medals;
 @:nullSafety
 class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 {
+  public static var instance:Null<NewgroundsMedalPlugin> = null;
+
   var medal:FlxAtlasSprite;
   var points:FlxText;
   var name:FlxText;
 
-  public static var instance:Null<NewgroundsMedalPlugin> = null;
+  var moveText:Bool = false;
+  var medalQueue:Array<Void->Void> = [];
 
-  var tween:Bool = false;
-
-  var am:Float = 20;
-
-  var funcs:Array<Void->Void> = [];
+  var textSpeed:Float = 20;
 
   final MEDAL_X = (FlxG.width - 250) * 0.5;
   final MEDAL_Y = FlxG.height - 100;
@@ -78,8 +77,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
         if (name.width > name.clipRect.width)
         {
           @:nullSafety(Off)
-          am = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
-          tween = true;
+          textSpeed = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
+          moveText = true;
         }
       }
 
@@ -92,7 +91,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
       {
         points.visible = false;
         name.visible = false;
-        tween = false;
+        moveText = false;
         name.offset.x = 0;
         name.clipRect.x = 0;
         name.resetFrame();
@@ -119,11 +118,12 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
   override public function update(elapsed:Float)
   {
     super.update(elapsed);
-    if (tween)
+    if (moveText)
     {
-      var val = am * elapsed;
-      name.offset.x += val;
-      name.clipRect.x += val;
+      var textX:Float = textSpeed * elapsed;
+
+      name.offset.x += textX;
+      name.clipRect.x += textX;
       name.resetFrame();
     }
   }
@@ -137,9 +137,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     // instance is defined above so there's no need to worry about null safety here
     @:nullSafety(Off)
     instance.medal.onAnimationComplete.add(function(name:String) {
-      if (instance.funcs.length > 0)
+      if (instance.medalQueue.length > 0)
       {
-        instance.funcs.shift()();
+        instance.medalQueue.shift()();
       }
     });
   }
@@ -147,7 +147,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
   public static function play(points:Int = 100, name:String = "I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM", ?graphic:FlxGraphic)
   {
     if (instance == null) return;
-    var func = function() {
+
+    var playMedal:Void->Void = function() {
       instance.points.visible = false;
       instance.name.visible = false;
       instance.points.text = Std.string(points);
@@ -160,9 +161,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
     }
 
-    if (instance.medal.isAnimationFinished() && instance.funcs.length == 0) func();
+    if (instance.medal.isAnimationFinished() && instance.medalQueue.length == 0) playMedal();
     else
-      instance.funcs.push(func);
+      instance.medalQueue.push(playMedal);
   }
 }
 #end
