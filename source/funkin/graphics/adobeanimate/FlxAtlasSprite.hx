@@ -70,6 +70,11 @@ typedef FlxAtlasSpriteSettings =
 class FlxAtlasSprite extends FlxAnimate
 {
   /**
+   * Signal dispatched when an animation begins playing.
+   */
+  public var onAnimationPlay:FlxTypedSignal<String->Bool->Void> = new FlxTypedSignal();
+
+  /**
    * Signal dispatched when an animation advances to the next frame.
    */
   public var onAnimationFrame:FlxTypedSignal<String->Int->Void> = new FlxTypedSignal();
@@ -285,7 +290,7 @@ class FlxAtlasSprite extends FlxAnimate
    * @param startFrame The frame to start the animation on
    * NOTE: `loop` and `ignoreOther` are not compatible with each other!
    */
-  public function playAnimation(id:String, restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
+  public function playAnimation(id:String = '', restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
   {
     // Skip if not allowed to play animations.
     if ((!canPlayOtherAnims))
@@ -327,6 +332,8 @@ class FlxAtlasSprite extends FlxAnimate
 
     this.anim.play(id, restart, false, startFrame);
     this.anim.curAnim.looped = loop;
+
+    onAnimationPlay.dispatch(id, loop);
   }
 
   /**
