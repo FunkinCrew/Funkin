@@ -121,7 +121,7 @@ class DataParse
     }
   }
 
-  public static function backdropData(json:Json, name:String):funkin.data.dialogue.conversation.ConversationData.BackdropData
+  public static function backdropData(json:Json, name:String):funkin.data.dialogue.ConversationData.BackdropData
   {
     switch (json.value)
     {
@@ -152,7 +152,7 @@ class DataParse
     }
   }
 
-  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.conversation.ConversationData.OutroData>
+  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.ConversationData.OutroData>
   {
     switch (json.value)
     {

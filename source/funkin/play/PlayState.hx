@@ -19,7 +19,7 @@ import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
-import funkin.data.dialogue.conversation.ConversationRegistry;
+import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;

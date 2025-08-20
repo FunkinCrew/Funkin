@@ -1,4 +1,4 @@
-package funkin.data.dialogue.conversation;
+package funkin.data.dialogue;
 
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.dialogue.ScriptedConversation;
@@ -23,4 +23,7 @@ class ConversationRegistry extends BaseRegistry<Conversation, ConversationData, 
   }
 }
 
-typedef ConversationEntryParams = {}
+typedef ConversationEntryParams =
+{
+  var placeholder:String;
+}

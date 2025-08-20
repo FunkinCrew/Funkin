@@ -132,13 +132,15 @@ using funkin.data.song.migrator.SongDataMigrator;
   /**
    * We override `fetchEntry` to handle song variations!
    */
-  public override function fetchEntry(id:String, ?params:Null<SongEntryParams>):Null<Song>
+  public override function fetchEntry(id:String, ?params:SongEntryParams):Null<Song>
   {
-    if (params != null && params.variation != null)
+    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
+
+    if (variation != Constants.DEFAULT_VARIATION)
     {
-      if (scriptedSongVariations.exists('${id}:${params.variation}'))
+      if (scriptedSongVariations.exists('${id}:${variation}'))
       {
-        var variationSongScript:Null<Song> = scriptedSongVariations.get('${id}:${params.variation}');
+        var variationSongScript:Null<Song> = scriptedSongVariations.get('${id}:${variation}');
         if (variationSongScript != null)
         {
           return variationSongScript;
