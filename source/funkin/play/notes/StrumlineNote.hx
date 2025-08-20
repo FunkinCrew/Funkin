@@ -4,12 +4,18 @@ import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.graphics.FunkinSprite;
 import funkin.play.notes.NoteSprite;
+import funkin.input.PreciseInputManager;
 
 /**
  * The actual receptor that you see on screen.
  */
 class StrumlineNote extends FunkinSprite
 {
+  /**
+   * The parent strumline that this strumline note belongs to.
+   */
+  public var parentStrumline:Strumline;
+
   /**
    * Whether this strumline note is on the player's side or the opponent's side.
    */
@@ -36,6 +42,36 @@ class StrumlineNote extends FunkinSprite
    * the Strumline note sprite to ignore `velocity` and `acceleration`.
    */
   public var forceActive:Bool = false;
+
+  /**
+   * Whether or not this specific lane is able to be used.
+   * Different from `PlayState.instance.disableKeys` in that this only applies to this lane of this strumline.
+   * This will also work if this strumline is controlled by a bot.
+   */
+  public var disableInput(default, set):Bool = false;
+
+  function set_disableInput(value:Bool):Bool
+  {
+    disableInput = value;
+    // If this strumline note is currently pressed, tell the game it was released.
+    if (!value && PreciseInputManager.instance != null && parentStrumline != null)
+    {
+      @:privateAccess
+      var noteIndex:Int = parentStrumline.strumlineNotes.members.indexOf(this);
+      if (parentStrumline.isKeyHeld(noteIndex))
+      {
+        var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
+        PreciseInputManager.instance.onInputReleased.dispatch(
+          {
+            noteDirection: direction,
+            timestamp: timestamp
+          });
+        @:privateAccess
+        PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
+      }
+    }
+    return value;
+  }
 
   /**
    * How long to continue the hold note animation after a note is pressed.

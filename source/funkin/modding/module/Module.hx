@@ -130,26 +130,31 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   /**
    * Called when a note on the strumline has been rendered and is now onscreen.
-   * This gets dispatched for both the player and opponent strumlines.
+   * This gets dispatched for all strumlines.
    */
   public function onNoteIncoming(event:NoteScriptEvent) {}
 
   /**
    * Called when a note has been hit.
-   * This gets dispatched for both the player and opponent strumlines.
+   * This gets dispatched for all strumlines.
    */
   public function onNoteHit(event:HitNoteScriptEvent) {}
 
   /**
    * Called when a note has been missed.
-   * This gets dispatched for both the player and opponent strumlines.
+   * This gets dispatched for all strumlines.
    */
   public function onNoteMiss(event:NoteScriptEvent) {}
 
+  /**
+   * Called when a hold note has been dropped.
+   * This gets dispatched for all strumlines.
+   */
   public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 
   /**
    * Called when the player presses a key without any notes present.
+   * This gets dispatched for all strumlines.
    */
   public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
 

@@ -2,6 +2,7 @@ package funkin.play.notes;
 
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.NoteParamData;
+import funkin.play.notes.Strumline;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
@@ -16,6 +17,11 @@ class NoteSprite extends FunkinSprite
   public var holdNoteSprite:SustainTrail;
 
   var hsvShader:HSVShader;
+
+  /**
+   * The parent strumline this note is attached to.
+   */
+  public var parentStrumline:Null<Strumline>;
 
   /**
    * The strum time at which the note should be hit, in milliseconds.

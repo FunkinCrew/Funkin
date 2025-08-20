@@ -9,12 +9,14 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
 import funkin.graphics.FunkinSprite;
+import funkin.play.character.BaseCharacter;
 import funkin.play.notes.NoteHoldCover;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.SustainTrail;
 import funkin.play.notes.NoteVibrationsHandler;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.input.PreciseInputManager;
 import funkin.util.SortUtil;
 import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKind;
@@ -84,7 +86,18 @@ class Strumline extends FlxSpriteGroup
    * Whether this strumline is controlled by the player's inputs.
    * False means it's controlled by the opponent or Bot Play.
    */
-  public var isPlayer:Bool;
+  public var isPlayer(default, set):Bool;
+
+  function set_isPlayer(value:Bool):Bool
+  {
+    isPlayer = value;
+    for (note in strumlineNotes)
+    {
+      @:privateAccess
+      note.isPlayer = value;
+    }
+    return value;
+  }
 
   /**
    * Usually you want to keep this as is, but if you are using a Strumline and
@@ -139,6 +152,43 @@ class Strumline extends FlxSpriteGroup
    * A signal that is dispatched when a note is spawned and heading towards the strumline.
    */
   public var onNoteIncoming:FlxTypedSignal<NoteSprite->Void>;
+
+  /**
+   * A list of characters that this strumline controls.
+   */
+  public var characters:Array<BaseCharacter> = [];
+
+  /**
+   * Whether or not this strumline is able to be used.
+   * Different from `PlayState.instance.disableKeys` in that this only applies to this strumline.
+   * This will also work if this strumline is controlled by a bot.
+   */
+  public var disableInput(default, set):Bool = false;
+
+  function set_disableInput(value:Bool):Bool
+  {
+    disableInput = value;
+    // For every strumline note that is currently pressed, tell the game it was released.
+    if (!value && PreciseInputManager.instance != null)
+    {
+      for (i in 0...strumlineNotes.members.length)
+      {
+        if (isKeyHeld(i))
+        {
+          var direction:NoteDirection = strumlineNotes.members[i].direction;
+          var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
+          PreciseInputManager.instance.onInputReleased.dispatch(
+            {
+              noteDirection: direction,
+              timestamp: timestamp
+            });
+          @:privateAccess
+          PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
+        }
+      }
+    }
+    return value;
+  }
 
   var background:FunkinSprite;
 
@@ -195,12 +245,13 @@ class Strumline extends FlxSpriteGroup
   {
     super();
 
-    this.isPlayer = isPlayer;
     this.noteStyle = noteStyle;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
     this.strumlineNotes.zIndex = 10;
     this.add(this.strumlineNotes);
+
+    this.isPlayer = isPlayer;
 
     // Hold notes are added first so they render behind regular notes.
     this.holdNotes = new FlxTypedSpriteGroup<SustainTrail>();
@@ -254,6 +305,7 @@ class Strumline extends FlxSpriteGroup
     for (i in 0...KEY_COUNT)
     {
       var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
+      child.parentStrumline = this;
       child.x = getXPos(DIRECTIONS[i]);
       child.x += INITIAL_OFFSET;
       child.y = 0;
@@ -1037,6 +1089,16 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Check if a given direction is disabled, meaning it is unable to be pressed.
+   * @param direction The direction of the note to check.
+   * @return `true` if the direction is disabled, `false` otherwise.
+   */
+  public function isLaneDisabled(direction:NoteDirection):Bool
+  {
+    return disableInput || getByDirection(direction).disableInput;
+  }
+
+  /**
    * Play a note splash for a given direction.
    * @param direction The direction of the note to play the splash animation for.
    */
@@ -1264,6 +1326,7 @@ class Strumline extends FlxSpriteGroup
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
       result = new NoteSprite(noteStyle);
+      result.parentStrumline = this;
       this.notes.add(result);
     }
 
