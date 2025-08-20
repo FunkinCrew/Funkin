@@ -32,6 +32,7 @@ import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.containers.Form;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.core.Component;
@@ -1311,6 +1312,37 @@ class ChartEditorDialogHandler
 
       dialog.hideDialog(DialogButton.APPLY);
     }
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog where the user can confirm to leave the chart editor if they have unsaved changes.
+   * @param state The current chart editor state.
+   * @return The dialog that was opened.
+   */
+  public static function openLeaveConfirmationDialog(state:ChartEditorState):Dialog
+  {
+    var dialog:Null<Dialog> = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
+      function(button:DialogButton)
+      {
+        state.isHaxeUIDialogOpen = false;
+        if (button == DialogButton.YES)
+        {
+          state.autoSave();
+          state.quitChartEditor();
+        }
+      }
+    );
+
+    dialog.destroyOnClose = true;
+    state.isHaxeUIDialogOpen = true;
+
+    dialog.onDialogClosed = function(event:UIEvent) {
+      state.isHaxeUIDialogOpen = false;
+    };
+
+    dialog.zIndex = 1000;
 
     return dialog;
   }
