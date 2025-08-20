@@ -13,6 +13,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.ui.debug.charting.dialogs.ChartEditorAboutDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorCharacterIconSelectorMenu;
+import funkin.ui.debug.charting.dialogs.ChartEditorPreferencesDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadChartDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
@@ -29,6 +30,8 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
+import haxe.ui.components.CheckBox;
+import haxe.ui.components.OptionStepper;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
@@ -38,6 +41,7 @@ import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import thx.semver.Version;
+import funkin.save.Save;
 
 using Lambda;
 
@@ -140,6 +144,90 @@ class ChartEditorDialogHandler
     menu.zIndex = 1000;
 
     return menu;
+  }
+
+  /**
+   * Builds and opens a dialog where the user can change the chart editor preferences.
+   */
+  public static function openPreferencesDialog(state:ChartEditorState, closable:Bool):Null<Dialog>
+  {
+    var dialog = ChartEditorPreferencesDialog.build(state, closable);
+    var save:Save = Save.instance;
+
+    var themeMusic:Null<CheckBox> = dialog.findComponent('optionsThemeMusic', CheckBox);
+    if (themeMusic == null) throw 'Could not locate themeMusic CheckBox in Preferences dialog';
+    themeMusic.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      state.welcomeMusic.active = event.value;
+      state.fadeInWelcomeMusic(ChartEditorState.WELCOME_MUSIC_FADE_IN_DELAY, ChartEditorState.WELCOME_MUSIC_FADE_IN_DURATION);
+    };
+    themeMusic.selected = state.welcomeMusic.active;
+
+    var startingDifficulty:Null<DropDown> = dialog.findComponent('optionsStartingDifficulty', DropDown);
+    if (startingDifficulty == null) throw 'Could not locate startingDifficulty DropDown in Preferences dialog';
+    startingDifficulty.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      save.chartEditorStartingDifficulty = event.data.id;
+    };
+    var startingValue = ChartEditorDropdowns.populateDropdownWithDifficulties(startingDifficulty, save.chartEditorStartingDifficulty);
+    startingDifficulty.value = startingValue;
+
+    var startingVariation:Null<DropDown> = dialog.findComponent('optionsStartingVariation', DropDown);
+    if (startingVariation == null) throw 'Could not locate startingVariation DropDown in Preferences dialog';
+    startingVariation.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      save.chartEditorStartingVariation = event.data.id;
+    };
+    var startingValueVariation = ChartEditorDropdowns.populateDropdownWithVariations(startingVariation, state, save.chartEditorStartingVariation, true, false);
+    startingVariation.value = startingValueVariation;
+
+    var autoSaveExit:Null<CheckBox> = dialog.findComponent('optionsAutoSaveExit', CheckBox);
+    if (autoSaveExit == null) throw 'Could not locate autoSaveExit CheckBox in Preferences dialog';
+    autoSaveExit.onChange = function(event:UIEvent) {
+      if (event.value == null) return;
+      save.chartEditorAutoSaveExit = event.value;
+    };
+    autoSaveExit.selected = save.chartEditorAutoSaveExit;
+
+    var autoSaveTimer:Null<NumberStepper> = dialog.findComponent('optionsAutoSaveTimer', NumberStepper);
+    if (autoSaveTimer == null) throw 'Could not locate autoSaveTimer NumberStepper in Preferences dialog';
+    autoSaveTimer.onChange = function(event:UIEvent) {
+      if (event.value == null || event.value <= 0) return;
+      save.chartEditorAutoSaveTimer = event.value;
+    };
+    autoSaveTimer.value = save.chartEditorAutoSaveTimer;
+
+    var inputMode:Null<OptionStepper> = dialog.findComponent('optionsLiveInputMode', OptionStepper);
+    if (inputMode == null) throw 'Could not locate inputMode OptionStepper in Preferences dialog';
+    inputMode.onChange = function(event:UIEvent) {
+      if (event.value == null || event.value < 0) return;
+      state.currentLiveInputStyle = inputMode.dataSource.get(event.value).id;
+    };
+    // if someone finds a better way to do this, please let me know
+    var currentLiveInputStyleId:Int = -1;
+    for (i in 0...inputMode.dataSource.size)
+    {
+      if (inputMode.dataSource.get(i).id == state.currentLiveInputStyle)
+      {
+        currentLiveInputStyleId = i;
+        break;
+      }
+    }
+    inputMode.value = currentLiveInputStyleId;
+
+    var inputTheme:Null<DropDown> = dialog.findComponent('optionsThemeGroup', DropDown);
+    if (inputTheme == null) throw 'Could not locate inputTheme DropDown in Preferences dialog';
+    inputTheme.onChange = function(event:UIEvent) {
+      if (event.data?.id == null) return;
+      state.themeId = event.data.id;
+    };
+    var startingValueTheme = ChartEditorDropdowns.populateDropdownWithThemes(inputTheme, state.themeId);
+    inputTheme.value = startingValueTheme;
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
   }
 
   /**
@@ -1286,7 +1374,7 @@ class ChartEditorDialogHandler
 
     var dialogVariation:Null<DropDown> = dialog.findComponent('dialogVariation', DropDown);
     if (dialogVariation == null) throw 'Could not locate dialogVariation DropDown in Add Variation dialog';
-    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, true);
+    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, Constants.DEFAULT_VARIATION, false, true);
 
     var labelScrollSpeed:Null<Label> = dialog.findComponent('labelScrollSpeed', Label);
     if (labelScrollSpeed == null) throw 'Could not find labelScrollSpeed component.';
