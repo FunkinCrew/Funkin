@@ -70,50 +70,43 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     medal.scrollFactor.set();
     medal.visible = false;
 
-    medal.onAnimationPlay.add(function(animationName:String, loop:Bool) {
-      switch (animationName)
+    medal.onAnimationFrame.add(function(animationName:String, frame:Int) {
+      if (frame == 5 && !medal.anim.curAnim.reversed)
       {
-        case "show":
-          points.visible = true;
-          name.visible = true;
-          if (name.width > name.clipRect.width)
-          {
-            @:nullSafety(Off)
-            am = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
-            tween = true;
-          }
-        case "fade":
-          FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.0);
-        case "hide":
-          points.visible = false;
-          name.visible = false;
-          tween = false;
-          name.offset.x = 0;
-          name.clipRect.x = 0;
-          name.resetFrame();
-          medal.replaceFrameGraphic(3, null);
+        points.visible = true;
+        name.visible = true;
+        if (name.width > name.clipRect.width)
+        {
+          @:nullSafety(Off)
+          am = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
+          tween = true;
+        }
+      }
+
+      if (frame == 74)
+      {
+        FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.0);
+      }
+
+      if (frame == 88)
+      {
+        points.visible = false;
+        name.visible = false;
+        tween = false;
+        name.offset.x = 0;
+        name.clipRect.x = 0;
+        name.resetFrame();
+        medal.replaceFrameGraphic(3, null);
+      }
+
+      if (frame == 89)
+      {
+        medal.playAnimation("[NG-MEDAL]", false, false, false, 103, true);
       }
     });
 
     medal.onAnimationComplete.add(function(animationName:String) {
-      switch (animationName)
-      {
-        case "show":
-          medal.playAnimation("idle", false, false, true);
-        case "fade":
-          medal.playAnimation("hide");
-      }
-    });
-
-    medal.onAnimationLoop.add(function(animationName:String) {
-      if (animationName == "idle")
-      {
-        // check if the text has left the bounds of the atlas
-        if (name.offset.x > medal.width)
-        {
-          medal.playAnimation("fade", true);
-        }
-      }
+      medal.visible = false;
     });
 
     add(medal);
@@ -162,7 +155,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
       instance.medal.visible = true;
       instance.medal.replaceFrameGraphic(3, graphic);
-      instance.medal.playAnimation("show");
+      instance.medal.playAnimation("[NG-MEDAL]");
 
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
     }

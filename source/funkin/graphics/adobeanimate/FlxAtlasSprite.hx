@@ -288,9 +288,12 @@ class FlxAtlasSprite extends FlxAnimate
    * @param ignoreOther Whether to ignore all other animation inputs, until this one is done playing
    * @param loop Whether to loop the animation
    * @param startFrame The frame to start the animation on
+   * @param reversed Whether to play the animation in reverse
+   *
    * NOTE: `loop` and `ignoreOther` are not compatible with each other!
    */
-  public function playAnimation(id:String = '', restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0):Void
+  public function playAnimation(id:String = '', restart:Bool = false, ignoreOther:Bool = false, loop:Bool = false, startFrame:Int = 0,
+      reversed:Bool = false):Void
   {
     // Skip if not allowed to play animations.
     if ((!canPlayOtherAnims))
@@ -330,7 +333,7 @@ class FlxAtlasSprite extends FlxAnimate
 
     this.currentAnimation = id;
 
-    this.anim.play(id, restart, false, startFrame);
+    this.anim.play(id, restart, reversed, startFrame);
     this.anim.curAnim.looped = loop;
 
     onAnimationPlay.dispatch(id, loop);
