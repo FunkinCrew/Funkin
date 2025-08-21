@@ -4,7 +4,8 @@ import funkin.data.stickers.StickerData;
 import funkin.ui.transition.stickers.StickerPack;
 import funkin.ui.transition.stickers.ScriptedStickerPack;
 
-class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
+@:nullSafety
+class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntryParams>
 {
   /**
    * The current version string for the sticker pack data format.
@@ -24,7 +25,9 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
 
   public function fetchDefault():StickerPack
   {
-    return fetchEntry(Constants.DEFAULT_STICKER_PACK);
+    var stickerPack:Null<StickerPack> = fetchEntry(Constants.DEFAULT_STICKER_PACK);
+    if (stickerPack == null) throw 'Default sticker pack was null! This should not happen!';
+    return stickerPack;
   }
 
   /**
@@ -87,3 +90,5 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData>
     return ScriptedStickerPack.listScriptClasses();
   }
 }
+
+typedef StickerEntryParams = {}

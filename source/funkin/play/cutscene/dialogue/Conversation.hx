@@ -6,11 +6,11 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import funkin.audio.FunkinSound;
-import funkin.data.dialogue.conversation.ConversationData;
-import funkin.data.dialogue.conversation.ConversationData.DialogueEntryData;
-import funkin.data.dialogue.conversation.ConversationRegistry;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.ConversationData;
+import funkin.data.dialogue.ConversationData.DialogueEntryData;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.IRegistryEntry;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
@@ -89,7 +89,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   var currentDialogueBox:Null<DialogueBox>;
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 

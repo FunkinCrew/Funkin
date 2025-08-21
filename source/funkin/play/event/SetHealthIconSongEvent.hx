@@ -90,6 +90,7 @@ class SetHealthIconSongEvent extends SongEvent
         name: 'scale',
         title: 'Scale',
         defaultValue: 1.0,
+        min: 0,
         type: SongEventFieldType.FLOAT,
       },
       {

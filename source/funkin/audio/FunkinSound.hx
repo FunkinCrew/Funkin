@@ -20,9 +20,6 @@ import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundMixer;
 
-#if (openfl >= "8.0.0")
-#end
-
 /**
  * A FlxSound which adds additional functionality:
  * - Delayed playback via negative song position.
@@ -45,9 +42,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (_onVolumeChanged == null)
     {
       _onVolumeChanged = new FlxTypedSignal<Float->Void>();
-      FlxG.sound.volumeHandler = function(volume:Float) {
+      FlxG.sound.onVolumeChange.add(function(volume:Float) {
         _onVolumeChanged.dispatch(volume);
-      }
+      });
     }
     return _onVolumeChanged;
   }
@@ -75,7 +72,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   override function set_volume(value:Float):Float
   {
     // Uncap the volume.
-    _volume = FlxMath.bound(value, 0.0, MAX_VOLUME);
+    _volume = value.clamp(0.0, MAX_VOLUME);
     updateTransform();
     return _volume;
   }
@@ -478,7 +475,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (autoPlay) sound.play();
     sound.volume = volume;
-    sound.group = FlxG.sound.defaultSoundGroup;
+    FlxG.sound.defaultSoundGroup.add(sound);
     sound.persist = persist;
     sound.important = important;
 
@@ -551,6 +548,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     FlxTween.cancelTweensOf(this);
     this._label = 'unknown';
+    this._waveformData = null;
   }
 
   @:access(openfl.media.Sound)
@@ -570,8 +568,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (_sound == null) return;
 
     // Create a channel manually if the sound is considered important.
-    var pan:Float = FlxMath.bound(SoundMixer.__soundTransform.pan + _transform.pan, -1, 1);
-    var volume:Float = FlxMath.bound(SoundMixer.__soundTransform.volume * _transform.volume, 0, MAX_VOLUME);
+    var pan:Float = (SoundMixer.__soundTransform.pan + _transform.pan).clamp(-1, 1);
+    var volume:Float = (SoundMixer.__soundTransform.volume * _transform.volume).clamp(0, MAX_VOLUME);
 
     var audioSource:AudioSource = new AudioSource(_sound.__buffer);
     audioSource.offset = Std.int(startTime);

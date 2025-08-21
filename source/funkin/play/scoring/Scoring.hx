@@ -1,6 +1,7 @@
 package funkin.play.scoring;
 
 import funkin.save.Save.SaveScoreData;
+import funkin.save.Save.SaveScoreTallyData;
 
 /**
  * Which system to use when scoring and judging notes.
@@ -373,9 +374,8 @@ class Scoring
     // we can return null here, meaning that the player hasn't actually played and finished the song (thus has no data)
     if (scoreData.tallies.totalNotes == 0) return null;
 
-    // Perfect (Platinum) is a Sick Full Clear
-    var isPerfectGold = scoreData.tallies.sick == scoreData.tallies.totalNotes;
-    if (isPerfectGold)
+    // Perfect (Gold) is a Sick Full Clear
+    if (scoreData.tallies.sick == scoreData.tallies.totalNotes)
     {
       return ScoringRank.PERFECT_GOLD;
     }
@@ -384,21 +384,21 @@ class Scoring
 
     // Final Grade = (Sick + Good - Miss) / (Total Notes)
 
-    var grade = (scoreData.tallies.sick + scoreData.tallies.good - scoreData.tallies.missed) / scoreData.tallies.totalNotes;
+    var completionAmount:Float = Scoring.tallyCompletion(scoreData.tallies);
 
-    if (grade == Constants.RANK_PERFECT_THRESHOLD)
+    if (completionAmount == Constants.RANK_PERFECT_THRESHOLD)
     {
       return ScoringRank.PERFECT;
     }
-    else if (grade >= Constants.RANK_EXCELLENT_THRESHOLD)
+    else if (completionAmount >= Constants.RANK_EXCELLENT_THRESHOLD)
     {
       return ScoringRank.EXCELLENT;
     }
-    else if (grade >= Constants.RANK_GREAT_THRESHOLD)
+    else if (completionAmount >= Constants.RANK_GREAT_THRESHOLD)
     {
       return ScoringRank.GREAT;
     }
-    else if (grade >= Constants.RANK_GOOD_THRESHOLD)
+    else if (completionAmount >= Constants.RANK_GOOD_THRESHOLD)
     {
       return ScoringRank.GOOD;
     }
@@ -406,6 +406,21 @@ class Scoring
     {
       return ScoringRank.SHIT;
     }
+  }
+
+  /**
+   * Calculates the "completion" of a song, based on how many GOOD and SICK notes were hit, minus how many were missed
+   * Top secret funkin crew patented algorithm
+   * TODO: Could possibly move more of the "tallying" related handling here.
+   *       In FreeplayState we make sure it's clamped between 0 and 1, and we probably always want to assume that?
+   *
+   * @param tallies
+   * @return Float Completion, as a float value between 0 and 1. If `tallies` is `null`, we return 0;
+   */
+  public static function tallyCompletion(?tallies:SaveScoreTallyData):Float
+  {
+    if (tallies == null) return 0.0;
+    return ((tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes).clamp(0, 1); // Needs to be clamped to make sure Perfect ranks are saved properly
   }
 }
 
@@ -456,6 +471,7 @@ enum abstract ScoringRank(String)
     return temp1 > temp2;
   }
 
+  // Greater than or equal to comparison
   @:op(A >= B) static function compareGTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
@@ -467,6 +483,7 @@ enum abstract ScoringRank(String)
     return temp1 >= temp2;
   }
 
+  // Less than comparison
   @:op(A < B) static function compareLT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
@@ -478,6 +495,7 @@ enum abstract ScoringRank(String)
     return temp1 < temp2;
   }
 
+  // Less than or equal to comparison
   @:op(A <= B) static function compareLTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;

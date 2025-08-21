@@ -121,6 +121,7 @@ class ZoomCameraSongEvent extends SongEvent
         title: 'Zoom Level',
         defaultValue: 1.0,
         step: 0.01,
+        min: 0,
         type: SongEventFieldType.FLOAT,
         units: 'x'
       },
@@ -129,6 +130,7 @@ class ZoomCameraSongEvent extends SongEvent
         title: 'Duration',
         defaultValue: 4.0,
         step: 0.1,
+        min: 0,
         type: SongEventFieldType.FLOAT,
         units: 'steps'
       },
@@ -149,6 +151,9 @@ class ZoomCameraSongEvent extends SongEvent
           'Back In' => 'backIn',
           'Back Out' => 'backOut',
           'Back In/Out' => 'backInOut',
+          'Bounce In' => 'bounceIn',
+          'Bounce Out' => 'bounceOut',
+          'Bounce In/Out' => 'bounceInOut',
           'Circ In' => 'circIn',
           'Circ Out' => 'circOut',
           'Circ In/Out' => 'circInOut',

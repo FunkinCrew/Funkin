@@ -2,7 +2,10 @@ package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
+import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.ui.debug.charting.commands.ChangeStartingBPMCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
@@ -23,6 +26,7 @@ import haxe.ui.events.UIEvent;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/toolboxes/metadata.xml"))
 class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 {
+  var inputSongId:TextField;
   var inputSongName:TextField;
   var inputSongArtist:TextField;
   var inputSongCharter:TextField;
@@ -57,6 +61,20 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     // TODO: Save and load this.
     this.x = 150;
     this.y = 250;
+
+    inputSongId.onChange = function(event:UIEvent) {
+      var valid:Bool = event.target.text != null && event.target.text != '' && !ChartManifestData.invalidIdRegex.match(event.target.text);
+
+      if (valid)
+      {
+        inputSongId.removeClass('invalid-value');
+        chartEditorState.songManifestData.songId = event.target.text;
+      }
+      else
+      {
+        chartEditorState._songManifestData = null;
+      }
+    };
 
     inputSongName.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.text != null && event.target.text != '';
@@ -112,8 +130,12 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputStage.value = startingValueStage;
 
     inputNoteStyle.onChange = function(event:UIEvent) {
-      if (event.data?.id == null) return;
-      chartEditorState.currentSongNoteStyle = event.data.id;
+      var valid:Bool = event.data != null && event.data.id != null;
+
+      if (valid)
+      {
+        chartEditorState.currentSongNoteStyle = event.data.id;
+      }
     };
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
@@ -122,8 +144,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (event.value == null || event.value <= 0) return;
 
       // Use a command so we can undo/redo this action.
-      var startingBPM = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
-      if (event.value != startingBPM)
+      if (event.value != Conductor.instance.bpm)
       {
         chartEditorState.performCommand(new ChangeStartingBPMCommand(event.value));
       }
@@ -187,17 +208,23 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   {
     super.refresh();
 
+    inputSongId.value = chartEditorState.songManifestData.songId;
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
-    inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
+    inputNoteStyle.value = chartEditorState.currentSongNoteStyle;
     inputBPM.value = chartEditorState.currentSongMetadata.timeChanges[0].bpm;
     inputDifficultyRating.value = chartEditorState.currentSongChartDifficultyRating;
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     frameVariation.text = 'Variation: ${chartEditorState.selectedVariation.toTitleCase()}';
     frameDifficulty.text = 'Difficulty: ${chartEditorState.selectedDifficulty.toTitleCase()}';
+
+    if (chartEditorState.currentSongMetadata.timeChanges[0].bpm != Conductor.instance.bpm)
+    {
+      chartEditorState.performCommand(new ChangeStartingBPMCommand(chartEditorState.currentSongMetadata.timeChanges[0].bpm));
+    }
 
     var currentTimeSignature = '${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureNum}/${chartEditorState.currentSongMetadata.timeChanges[0].timeSignatureDen}';
     trace('Setting time signature to ${currentTimeSignature}');
@@ -210,6 +237,15 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       inputStage.value = (stage != null) ?
         {id: stage.id, text: stage.stageName} :
           {id: "mainStage", text: "Main Stage"};
+    }
+
+    var noteStyleId:String = chartEditorState.currentSongNoteStyle;
+    var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (inputNoteStyle != null)
+    {
+      inputNoteStyle.value = (noteStyle != null) ?
+        {id: noteStyle.id, text: noteStyle.getName()} :
+          {id: "Funkin", text: "Funkin'"};
     }
 
     var LIMIT = 6;
