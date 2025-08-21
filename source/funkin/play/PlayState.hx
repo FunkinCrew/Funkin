@@ -534,6 +534,11 @@ class PlayState extends MusicBeatSubState
   public var opponentStrumline:Strumline;
 
   /**
+   * Controls vibrations for all strumlines with `hasVibrations` enabled.
+   */
+  public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
+
+  /**
    * The camera which contains, and controls visibility of, the user interface elements.
    */
   public var camHUD:FlxCamera;
@@ -1737,7 +1742,7 @@ class PlayState extends MusicBeatSubState
     iconP2?.onStepHit(Std.int(Conductor.instance.currentStep));
 
     // Try to call hold note haptics each step hit. Works if atleast one note status is NoteStatus.isHoldNotePressed.
-    playerStrumline.noteVibrations.tryHoldNoteVibration();
+    noteVibrations.tryHoldNoteVibration();
 
     return true;
   }
@@ -2128,6 +2133,12 @@ class PlayState extends MusicBeatSubState
       initNoteHitbox();
     }
     #end
+
+    noteVibrations.strumlines.push(playerStrumline);
+    noteVibrations.strumlines.push(opponentStrumline);
+    playerStrumline.noteVibrations = noteVibrations;
+    opponentStrumline.noteVibrations = noteVibrations;
+    playerStrumline.hasVibrations = !isBotPlayMode;
 
     playerStrumline.fadeInArrows();
     opponentStrumline.fadeInArrows();
@@ -2683,6 +2694,9 @@ class PlayState extends MusicBeatSubState
           // Update strumline.heldKeys as a surprise tool to help us later.
           strumline.pressKey(note.direction);
 
+          // Try vibrations in case any botted strumlines have them enabled.
+          noteVibrations.tryNoteVibration();
+
           if (note.holdNoteSprite != null)
           {
             strumline.playNoteHoldCover(note.holdNoteSprite);
@@ -2969,7 +2983,7 @@ class PlayState extends MusicBeatSubState
     inputPressQueue = [];
     inputReleaseQueue = [];
 
-    playerStrumline.noteVibrations.tryNoteVibration();
+    noteVibrations.tryNoteVibration();
   }
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent, ?strumline:Strumline):Void
