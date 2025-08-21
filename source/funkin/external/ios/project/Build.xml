@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+	<pragma once="true" />
+
+	<files id="haxe">
+		<compilerflag value="-I${this_dir}/ios/include" if="iphoneos || iphonesim" />
+	</files>
+
+	<files id="__main__">
+		<compilerflag value="-I${this_dir}/ios/include" if="iphoneos || iphonesim" />
+	</files>
+
+	<files id="external-ios" dir="${this_dir}/ios" if="iphoneos || iphonesim">
+		<compilerflag value="-I${this_dir}/ios/include" />
+
+		<file name="src/ScreenUtil.mm" />
+		<file name="src/AudioSession.mm" />
+	</files>
+
+	<target id="haxe">
+		<section if="iphoneos || iphonesim">
+			<vflag name="-framework" value="UIKit" />
+			<vflag name="-framework" value="Foundation" />
+			<vflag name="-framework" value="AVFAudio" />
+		</section>
+
+		<files id="external-ios" if="iphoneos || iphonesim" />
+	</target>
+</xml>

@@ -10,6 +10,11 @@ import openfl.utils.Future;
 class Assets
 {
   /**
+   * The assets cache.
+   */
+  public static var cache:openfl.utils.IAssetCache = openfl.utils.Assets.cache;
+
+  /**
    * Get the file system path for an asset
    * @param path The asset path to load from, relative to the assets folder
    * @return The path to the asset on the file system

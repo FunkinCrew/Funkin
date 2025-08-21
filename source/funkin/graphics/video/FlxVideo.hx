@@ -11,8 +11,9 @@ import openfl.net.NetStream;
 /**
  * Plays a video via a NetStream. Only works on HTML5.
  * This does NOT replace hxvlc, nor does hxvlc replace this.
- * hxvlc only works on desktop and does not work on HTML5!
+ * hxvlc only works on native and does not work on HTML5!
  */
+@:nullSafety
 class FlxVideo extends FunkinSprite
 {
   var video:Video;
@@ -22,14 +23,16 @@ class FlxVideo extends FunkinSprite
   /**
    * A callback to execute when the video finishes.
    */
-  public var finishCallback:Void->Void;
+  public var finishCallback:Null<Void->Void> = null;
 
+  @:nullSafety(Off)
   public function new(videoPath:String)
   {
     super();
 
     this.videoPath = videoPath;
 
+    @:nullSafety(Off) // Why do I to do this here as well for this to build?
     makeGraphic(2, 2, FlxColor.TRANSPARENT);
 
     video = new Video();
@@ -72,7 +75,7 @@ class FlxVideo extends FunkinSprite
   }
 
   var videoAvailable:Bool = false;
-  var frameTimer:Float;
+  var frameTimer:Float = 0;
 
   static final FRAME_RATE:Float = 60;
 

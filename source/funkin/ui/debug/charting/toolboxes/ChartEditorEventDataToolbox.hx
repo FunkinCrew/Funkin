@@ -194,7 +194,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           numberStepper.id = field.name;
           numberStepper.step = field.step ?? 1.0;
           if (field.min != null) numberStepper.min = field.min;
-          if (field.min != null) numberStepper.max = field.max;
+          if (field.max != null) numberStepper.max = field.max;
           if (field.defaultValue != null) numberStepper.value = field.defaultValue;
           input = numberStepper;
         case FLOAT:

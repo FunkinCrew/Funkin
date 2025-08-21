@@ -90,6 +90,8 @@
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
 
+  "lime.projectFile": "project.hxp",
+
   "lime.targetConfigurations": [
     {
       "label": "Windows / Debug (Discord)",
@@ -151,6 +153,16 @@
       "args": ["-debug", "-DRESULTS"]
     },
     {
+      "label": "Windows / Debug (Straight to Stage Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DSTAGING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Windows / Debug (Straight to Stage Builder)",
+      "target": "windows",
+      "args": ["-debug", "-DSTAGEBUILD", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
       "label": "Windows / Debug (Straight to Animation Editor)",
       "target": "windows",
       "args": ["-debug", "-DANIMDEBUG", "-DFEATURE_DEBUG_FUNCTIONS"]
@@ -158,7 +170,7 @@
     {
       "label": "Windows / Debug (Debug hxvlc)",
       "target": "windows",
-      "args": ["-debug", "-DHXC_LIBVLC_LOGGING", "-DFEATURE_DEBUG_FUNCTIONS"]
+      "args": ["-debug", "-DHXVLC_LOGGING", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
       "label": "HashLink / Debug (Straight to Animation Editor)",
@@ -202,6 +214,10 @@
       "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
+      "label": "Debug (Unlock Everything)",
+      "args": ["-debug", "-DUNLOCK_EVERYTHING"]
+    },
+    {
       "label": "Debug (Tracy)",
       "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
@@ -225,5 +241,12 @@
     "coverage.xml",
     "jacoco.xml",
     "coverage.cobertura.xml"
+  ],
+  "vscord.app.privacyMode.enable": true,
+  "json.schemas": [
+    {
+      "fileMatch": ["/hmm.json"],
+      "url": "./.vscode/schema/hmm.json"
+    }
   ]
 }

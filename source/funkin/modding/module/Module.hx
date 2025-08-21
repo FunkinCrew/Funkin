@@ -5,9 +5,22 @@ import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 /**
+ * Parameters used to initialize a module.
+ */
+typedef ModuleParams =
+{
+  /**
+   * The state this module is associated with.
+   * If set, this module will only receive events when the game is in this state.
+   */
+  ?state:Class<Dynamic>
+}
+
+/**
  * A module is a scripted class which receives all events without requiring a specific context.
  * You may have the module active at all times, or only when another script enables it.
  */
+@:nullSafety
 class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass
 {
   /**
@@ -28,7 +41,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    *
    * Priority 1 is processed before Priority 1000, etc.
    */
-  public var priority(default, set):Int;
+  public var priority(default, set):Int = 1000;
 
   function set_priority(value:Int):Int
   {
@@ -39,15 +52,26 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   }
 
   /**
+   * The state this module is associated with.
+   * If set, this module will only receive events when the game is in this state.
+   */
+  public var state:Null<Class<Dynamic>> = null;
+
+  /**
    * Called when the module is initialized.
    * It may not be safe to reference other modules here since they may not be loaded yet.
    *
    * NOTE: To make the module start inactive, call `this.active = false` in the constructor.
    */
-  public function new(moduleId:String, priority:Int = 1000):Void
+  public function new(moduleId:String, priority:Int = 1000, ?params:ModuleParams):Void
   {
     this.moduleId = moduleId;
     this.priority = priority;
+
+    if (params != null)
+    {
+      this.state = params.state ?? null;
+    }
   }
 
   public function toString()
@@ -176,13 +200,13 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   /**
    * Called when the game regains focus.
-   * This does not get called if "Auto Pause" is disabled.
+   * This does not get called if "Pause on Unfocus" is disabled.
    */
   public function onFocusGained(event:FocusScriptEvent) {}
 
   /**
    * Called when the game loses focus.
-   * This does not get called if "Auto Pause" is disabled.
+   * This does not get called if "Pause on Unfocus" is disabled.
    */
   public function onFocusLost(event:FocusScriptEvent) {}
 

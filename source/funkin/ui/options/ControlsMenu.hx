@@ -14,6 +14,9 @@ import funkin.ui.AtlasText;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.TextMenuList;
 import funkin.ui.Page;
+#if FEATURE_TOUCH_CONTROLS
+import funkin.mobile.ui.FunkinBackButton;
+#end
 
 class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
 {
@@ -32,7 +35,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end],
     [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
     [
-      DEBUG_MENU,
+      #if FEATURE_DEBUG_MENU DEBUG_MENU, #end
       #if FEATURE_CHART_EDITOR DEBUG_CHART, #end
       #if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end
     ]
@@ -149,7 +152,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       if (currentHeader != null && name.indexOf(currentHeader) == 0) name = name.substr(currentHeader.length);
 
       var formatName = name.replace('_', ' ');
-      var label = labels.add(new AtlasText(CONTROL_BASE_X, y, formatName, AtlasFont.BOLD));
+      var label = labels.add(new AtlasText(Math.max(FullScreenScaleMode.gameNotchSize.x, CONTROL_BASE_X), y, formatName, AtlasFont.BOLD));
       label.alpha = 0.6;
       for (i in 0...COLUMNS)
         createItem(label.x + CONTROL_MARGIN_X + i * CONTROL_SPACING_X, y, control, i);
@@ -191,6 +194,20 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     popup.back.scrollFactor.set(0, 0);
     popup.exists = false;
     add(popup);
+
+    #if FEATURE_TOUCH_CONTROLS
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, function():Void {
+      if (controlGrid.enabled && deviceList != null && deviceListSelected == false)
+      {
+        goToDeviceList();
+      }
+      else if (canExit)
+      {
+        exit();
+      }
+    }, 1.0);
+    add(backButton);
+    #end
   }
 
   function createItem(x = 0.0, y = 0.0, control:Control, index:Int)

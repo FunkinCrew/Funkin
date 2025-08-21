@@ -11,6 +11,7 @@ package funkin.util;
  * @see https://github.com/HaxeFoundation/hxcpp/blob/master/docs/build_xml/Defines.md
  * @see cpp.vm.Gc
  */
+@:nullSafety
 class MemoryUtil
 {
   public static function buildGCInfo():String
@@ -46,16 +47,11 @@ class MemoryUtil
 
   /**
    * Calculate the total memory usage of the program, in bytes.
-   * @return Int
+   * @return Float
    */
-  public static function getMemoryUsed():#if cpp Float #else Int #end
+  public static function getMemoryUsed():Float
   {
-    #if cpp
-    // There is also Gc.MEM_INFO_RESERVED, MEM_INFO_CURRENT, and MEM_INFO_LARGE.
-    return cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE);
-    #else
-    return openfl.system.System.totalMemory;
-    #end
+    return openfl.system.System.totalMemoryNumber;
   }
 
   /**
