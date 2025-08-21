@@ -99,7 +99,7 @@ class DataParse
       case JArray(values):
         return Either.Left(legacyNoteSectionArray(json, name));
       case JObject(fields):
-        return Either.Right(cast Tools.getValue(json));
+        return Either.Right(legacyNoteData(json, name));
       default:
         throw 'Expected property $name to be note data, but it was ${json.value}.';
     }
