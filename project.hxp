@@ -814,10 +814,10 @@ class Project extends HXProject
 
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
-    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
+    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator() && !isHashLink());
 
     // Video subtitles only work via using hxvlc.
-    FEATURE_VIDEO_SUBTITLES.apply(this, isDesktop() || isMobile() && !isHashLink());
+    FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK && !isWeb());
 
     // Should be true on debug builds or if GITHUB_BUILD is enabled.
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
