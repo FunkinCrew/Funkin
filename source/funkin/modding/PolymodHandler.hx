@@ -268,11 +268,8 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
 
     // Backward compatibility for some classes that moved.
-    Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationData', funkin.data.dialogue.ConversationData);
     Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationRegistry', funkin.data.dialogue.ConversationRegistry);
-    Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxData', funkin.data.dialogue.DialogueBoxData);
     Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxRegistry', funkin.data.dialogue.DialogueBoxRegistry);
-    Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerData', funkin.data.dialogue.SpeakerData);
     Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
 
     // `funkin.util.FileUtil` has unrestricted access to the file system.
