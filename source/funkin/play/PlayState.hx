@@ -1941,7 +1941,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       // lolol
-      funkin.util.WindowUtil.showError('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
+      funkin.util.WindowUtil.showError('Stage Error', 'Unable to load stage $id, is its data corrupted?.');
     }
   }
 
