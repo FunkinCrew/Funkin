@@ -19,7 +19,21 @@ class StrumlineNote extends FunkinSprite
   /**
    * Whether this strumline note is on the player's side or the opponent's side.
    */
-  public var isPlayer(default, null):Bool;
+  public var isPlayer(get, set):Bool;
+
+  function get_isPlayer():Bool
+  {
+    if (parentStrumline == null) return false;
+    return parentStrumline.isPlayer;
+  }
+
+  function set_isPlayer(value:Bool):Bool
+  {
+    // isPlayer is now dependent on parentStrumline.isPlayer.
+    // However, some old scripts probably set this value to match that.
+    // So, we still include a setter that does nothing for backwards compatibility reasons.
+    return isPlayer;
+  }
 
   /**
    * The direction which this strumline note is facing.
@@ -47,6 +61,8 @@ class StrumlineNote extends FunkinSprite
    * Whether or not this specific lane is able to be used.
    * Different from `PlayState.instance.disableKeys` in that this only applies to this lane of this strumline.
    * This will also work if this strumline is controlled by a bot.
+   * Note that if you want to check if a lane is controllable, you should instead call `isLaneDisabled` on the parent.
+   * This is because that function actually considers the parent strumline's `disableInput` variable as well.
    */
   public var disableInput(default, set):Bool = false;
 
@@ -54,20 +70,28 @@ class StrumlineNote extends FunkinSprite
   {
     disableInput = value;
     // If this strumline note is currently pressed, tell the game it was released.
-    if (!value && PreciseInputManager.instance != null && parentStrumline != null)
+    if (value && parentStrumline != null)
     {
       @:privateAccess
       var noteIndex:Int = parentStrumline.strumlineNotes.members.indexOf(this);
       if (parentStrumline.isKeyHeld(noteIndex))
       {
-        var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
-        PreciseInputManager.instance.onInputReleased.dispatch(
-          {
-            noteDirection: direction,
-            timestamp: timestamp
-          });
-        @:privateAccess
-        PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
+        // Player input relies on PreciseInputManager, so we fake a button release with that.
+        if (isPlayer && PreciseInputManager.instance != null)
+        {
+          var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
+          PreciseInputManager.instance.onInputReleased.dispatch(
+            {
+              noteDirection: direction,
+              timestamp: timestamp
+            });
+          @:privateAccess
+          PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
+        }
+        // We also have to update heldKeys, which is read by PlayState.instance.processNotes.
+        parentStrumline.releaseKey(direction);
+        // We call the parent's version of playStatic because it has haptic code that isn't run in this class's version.
+        parentStrumline.playStatic(direction);
       }
     }
     return value;
@@ -83,11 +107,9 @@ class StrumlineNote extends FunkinSprite
    */
   var confirmHoldTimer:Float = -1;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool, direction:NoteDirection)
+  public function new(noteStyle:NoteStyle, direction:NoteDirection)
   {
     super(0, 0);
-
-    this.isPlayer = isPlayer;
 
     this.direction = direction;
 

@@ -86,18 +86,7 @@ class Strumline extends FlxSpriteGroup
    * Whether this strumline is controlled by the player's inputs.
    * False means it's controlled by the opponent or Bot Play.
    */
-  public var isPlayer(default, set):Bool;
-
-  function set_isPlayer(value:Bool):Bool
-  {
-    isPlayer = value;
-    for (note in strumlineNotes)
-    {
-      @:privateAccess
-      note.isPlayer = value;
-    }
-    return value;
-  }
+  public var isPlayer:Bool;
 
   /**
    * Usually you want to keep this as is, but if you are using a Strumline and
@@ -105,7 +94,9 @@ class Strumline extends FlxSpriteGroup
    */
   public var conductorInUse(get, set):Conductor;
 
-  // Used in-game to control the scroll speed within a song
+  /**
+   * Used in-game to control the scroll speed within a song.
+   */
   public var scrollSpeed:Float = 1.0;
 
   /**
@@ -169,21 +160,35 @@ class Strumline extends FlxSpriteGroup
   {
     disableInput = value;
     // For every strumline note that is currently pressed, tell the game it was released.
-    if (!value && PreciseInputManager.instance != null)
+    if (value)
     {
+      // Player input relies on PreciseInputManager, so we fake a button release with that.
+      if (isPlayer && PreciseInputManager.instance != null)
+      {
+        for (i in 0...strumlineNotes.members.length)
+        {
+          if (isKeyHeld(i))
+          {
+            var direction:NoteDirection = strumlineNotes.members[i].direction;
+            var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
+            PreciseInputManager.instance.onInputReleased.dispatch(
+              {
+                noteDirection: direction,
+                timestamp: timestamp
+              });
+            @:privateAccess
+            PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
+          }
+        }
+      }
+      // We also have to update heldKeys, which is read by PlayState.instance.processNotes.
       for (i in 0...strumlineNotes.members.length)
       {
         if (isKeyHeld(i))
         {
-          var direction:NoteDirection = strumlineNotes.members[i].direction;
-          var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
-          PreciseInputManager.instance.onInputReleased.dispatch(
-            {
-              noteDirection: direction,
-              timestamp: timestamp
-            });
-          @:privateAccess
-          PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
+          var note:StrumlineNote = strumlineNotes.members[i];
+          releaseKey(note.direction);
+          playStatic(note.direction);
         }
       }
     }
@@ -217,7 +222,7 @@ class Strumline extends FlxSpriteGroup
 
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
-  final inArrowContorlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+  final inArrowControlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice) #else false #end;
 
   public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
@@ -280,7 +285,7 @@ class Strumline extends FlxSpriteGroup
 
     var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer)
+    if (inArrowControlSchemeMode && isPlayer)
     {
       backgroundWidth = backgroundWidth * 1.84;
     }
@@ -291,7 +296,7 @@ class Strumline extends FlxSpriteGroup
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer) this.background.x -= 100;
+    if (inArrowControlSchemeMode && isPlayer) this.background.x -= 100;
     #end
     this.add(this.background);
 
@@ -304,17 +309,14 @@ class Strumline extends FlxSpriteGroup
 
     for (i in 0...KEY_COUNT)
     {
-      var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
+      var child:StrumlineNote = new StrumlineNote(noteStyle, DIRECTIONS[i]);
       child.parentStrumline = this;
       child.x = getXPos(DIRECTIONS[i]);
       child.x += INITIAL_OFFSET;
       child.y = 0;
       noteStyle.applyStrumlineOffsets(child);
       this.strumlineNotes.add(child);
-    }
 
-    for (i in 0...KEY_COUNT)
-    {
       heldKeys.push(false);
     }
 
@@ -662,7 +664,7 @@ class Strumline extends FlxSpriteGroup
 
       if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote && !holdNote.missedNote)
       {
-        if (isPlayer && !isKeyHeld(holdNote.noteDirection))
+        if (!isKeyHeld(holdNote.noteDirection))
         {
           // Stopped pressing the hold note.
           playStatic(holdNote.noteDirection);
@@ -683,14 +685,14 @@ class Strumline extends FlxSpriteGroup
       }
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
+        // Hold note is completed, kill it.
         if (isPlayer)
         {
           // Hold note's final vibration.
           noteVibrations.tryHoldNoteVibration(true);
         }
 
-        // Hold note is completed, kill it.
-        if (isKeyHeld(holdNote.noteDirection))
+        if (isKeyHeld(holdNote.noteDirection) && !isLaneDisabled(holdNote.noteDirection))
         {
           playPress(holdNote.noteDirection);
         }
@@ -804,7 +806,7 @@ class Strumline extends FlxSpriteGroup
 
     for (dir in DIRECTIONS)
     {
-      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
+      if (isKeyHeld(dir) && !isLaneDisabled(dir) && getByDirection(dir).getCurrentAnimation() == "static")
       {
         playPress(dir);
       }
@@ -921,7 +923,11 @@ class Strumline extends FlxSpriteGroup
       cover.kill();
     }
 
-    heldKeys = [false, false, false, false];
+    heldKeys = [];
+    for (_ in 0...KEY_COUNT)
+    {
+      heldKeys.push(false);
+    }
 
     for (dir in DIRECTIONS)
     {
@@ -1175,7 +1181,7 @@ class Strumline extends FlxSpriteGroup
 
       var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
       #if mobile
-      if (inArrowContorlSchemeMode)
+      if (inArrowControlSchemeMode)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
@@ -1363,7 +1369,7 @@ class Strumline extends FlxSpriteGroup
   {
     var pos:Float = 0;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+    if (inArrowControlSchemeMode && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
     #end
     return switch (direction)
     {
