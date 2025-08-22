@@ -29,6 +29,7 @@ class NumberPreferenceItem extends TextMenuItem
   public var max:Float;
   public var step:Float;
   public var precision:Int;
+  public var stepPrecise:Float;
   public var onChangeCallback:Null<Float->Void>;
   public var valueFormatter:Null<Float->String>;
   public var dragStepMultiplier:Float;
@@ -45,7 +46,8 @@ class NumberPreferenceItem extends TextMenuItem
    * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed string looks
    * @param dragStepMultiplier The multiplier for step value in case player does touch drag.
    */
-  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
+  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, stepPrecise:Float,
+      ?callback:Float->Void,
       ?valueFormatter:Float->String, dragStepMultiplier:Float = 1):Void
   {
     super(x, y, name, function() {
@@ -60,6 +62,7 @@ class NumberPreferenceItem extends TextMenuItem
     this.max = max;
     this.step = step;
     this.precision = precision;
+    this.stepPrecise = stepPrecise;
     this.onChangeCallback = callback;
     this.valueFormatter = valueFormatter;
     this.dragStepMultiplier = dragStepMultiplier;
@@ -120,13 +123,13 @@ class NumberPreferenceItem extends TextMenuItem
     if (shouldDecrease)
     {
       var isBelowMin:Bool = currentValue - step * valueChangeMultiplier < min;
-      currentValue = (currentValue - step * valueChangeMultiplier).clamp(min, max);
+      currentValue = (currentValue - (pressingControl() ? stepPrecise : step) * valueChangeMultiplier).clamp(min, max);
       if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
     }
     else if (shouldIncrease)
     {
       var isAboveMax:Bool = currentValue + step * valueChangeMultiplier > max;
-      currentValue = (currentValue + step * valueChangeMultiplier).clamp(min, max);
+      currentValue = (currentValue + (pressingControl() ? stepPrecise : step) * valueChangeMultiplier).clamp(min, max);
       if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
     }
   }
@@ -148,6 +151,15 @@ class NumberPreferenceItem extends TextMenuItem
   function toFixed(value:Float):Float
   {
     var multiplier:Float = Math.pow(10, precision);
-    return Math.round(value * multiplier) / multiplier;
+    return Math.floor(value * multiplier) / multiplier;
+  }
+  // Replace this with control key later
+  function pressingControl():Bool
+  {
+    #if mac
+    return FlxG.keys.pressed.WINDOWS;
+    #else
+    return FlxG.keys.pressed.CONTROL;
+    #end
   }
 }
