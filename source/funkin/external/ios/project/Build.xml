@@ -3,27 +3,25 @@
 	<pragma once="true" />
 
 	<files id="haxe">
-		<compilerflag value="-I${this_dir}/ios/include" if="iphoneos || iphonesim" />
+		<compilerflag value="-I${this_dir}/include" />
 	</files>
 
 	<files id="__main__">
-		<compilerflag value="-I${this_dir}/ios/include" if="iphoneos || iphonesim" />
+		<compilerflag value="-I${this_dir}/include" />
 	</files>
 
-	<files id="external-ios" dir="${this_dir}/ios" if="iphoneos || iphonesim">
-		<compilerflag value="-I${this_dir}/ios/include" />
+	<files id="external-ios">
+		<compilerflag value="-I${this_dir}/include" />
 
-		<file name="src/ScreenUtil.mm" />
-		<file name="src/AudioSession.mm" />
+		<file name="${this_dir}/src/ScreenUtil.mm" />
+		<file name="${this_dir}/src/AudioSession.mm" />
 	</files>
 
 	<target id="haxe">
-		<section if="iphoneos || iphonesim">
-			<vflag name="-framework" value="UIKit" />
-			<vflag name="-framework" value="Foundation" />
-			<vflag name="-framework" value="AVFAudio" />
-		</section>
+		<vflag name="-framework" value="UIKit" />
+		<vflag name="-framework" value="Foundation" />
+		<vflag name="-framework" value="AVFAudio" />
 
-		<files id="external-ios" if="iphoneos || iphonesim" />
+		<files id="external-ios" />
 	</target>
 </xml>
