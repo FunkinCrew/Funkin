@@ -14,6 +14,11 @@ class PlayStatePlaylist
   public static var isStoryMode:Bool = false;
 
   /**
+   * Whether the game is currently in the first song of the campaign.
+   */
+  public static var isFirstSongInCampaign:Bool = true;
+
+  /**
    * The loist of upcoming songs to be played.
    * When the user completes a song in Story Mode, the first entry in this list is played.
    * When this list is empty, move to the Results screen instead.

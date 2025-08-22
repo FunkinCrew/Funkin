@@ -234,4 +234,9 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    * Called when the song has been restarted.
    */
   public function onSongRetry(event:SongRetryEvent) {}
+
+  /**
+   * Called when the song's fade in transition starts.
+   */
+  public function onSongFadeIn(event:ScriptEvent) {}
 }

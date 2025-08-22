@@ -142,6 +142,9 @@ class ScriptEventDispatcher
         case SONG_EVENT:
           t.onSongEvent(cast event);
           return;
+        case SONG_FADE_IN:
+          t.onSongFadeIn(cast event);
+          return;
         case COUNTDOWN_START:
           t.onCountdownStart(cast event);
           return;
