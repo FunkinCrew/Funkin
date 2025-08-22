@@ -22,9 +22,9 @@ class NoteVibrationsHandler
   }
 
   /**
-   * Checks if any note status is equal to NoteStatus.isJustPressed.
-   * If yes, then vibration is triggered.
-   * Amplitude value is stacked depending on how many notes are pressed.
+   * Checks if any note statuses are equal to NoteStatus.isHoldNotePressed.
+   * If yes, then vibration occurrs.
+   * Amplitude stacks depending on how many hold notes are pressed.
    */
   public function tryNoteVibration():Void
   {
@@ -49,11 +49,12 @@ class NoteVibrationsHandler
   }
 
   /**
-   * Checks if any note status is equal to NoteStatus.isHoldNotePressed.
-   * If yes, then vibration is triggered.
-   * Amplitude value is stacked depending on how many hold notes are pressed.
+   * Checks if any note statuses are equal to NoteStatus.isHoldNotePressed.
+   * If yes, then vibration occurrs.
+   * Amplitude stacks depending on how many hold notes are pressed.
+   * @param holdNoteEnded The strumline that just had a hold note end, or null if not applicable.
    */
-  public function tryHoldNoteVibration(holdNoteEnded:Bool = false):Void
+  public function tryHoldNoteVibration(?holdNoteEnded:Int):Void
   {
     if (strumlines == null || !HapticUtil.hapticsAvailable) return;
 
@@ -61,12 +62,12 @@ class NoteVibrationsHandler
 
     for (strumline in strumlines)
     {
-      if (strumline.hasVibrations && strumline.noteStatuses != null) for (currentNoteStatus in strumline.noteStatuses)
+      if (strumline.hasVibrations && strumline.noteStatuses != null) for (i in 0...strumline.noteStatuses.length)
       {
-        if (currentNoteStatus != NoteStatus.holdConfirm) continue;
+        if (strumline.noteStatuses[i] != NoteStatus.holdConfirm && (holdNoteEnded == null || holdNoteEnded == i)) continue;
 
         @:privateAccess
-        final amplitudeDivider:Float = Strumline.KEY_COUNT * (holdNoteEnded ? 1 : 2.5);
+        final amplitudeDivider:Float = Strumline.KEY_COUNT * (holdNoteEnded == i ? 1 : 2.5);
         stackingAmplitude += Constants.MAX_VIBRATION_AMPLITUDE / amplitudeDivider;
       }
     }
@@ -77,9 +78,9 @@ class NoteVibrationsHandler
 
     for (strumline in strumlines)
     {
-      if (strumline.hasVibrations && strumline.noteStatuses != null) for (currentNoteStatus in strumline.noteStatuses)
+      if (strumline.hasVibrations && strumline.noteStatuses != null && holdNoteEnded != null) for (i in 0...strumline.noteStatuses.length)
       {
-        if (currentNoteStatus == NoteStatus.holdConfirm && holdNoteEnded) currentNoteStatus = NoteStatus.pressed;
+        if (strumline.noteStatuses[i] == NoteStatus.holdConfirm && holdNoteEnded == i) strumline.noteStatuses[i] = NoteStatus.pressed;
       }
     }
   }

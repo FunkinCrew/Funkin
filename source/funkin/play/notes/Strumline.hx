@@ -8,6 +8,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
+import funkin.audio.VoicesGroup.VoicesGroupEntry;
 import funkin.graphics.FunkinSprite;
 import funkin.play.character.BaseCharacter;
 import funkin.play.notes.NoteHoldCover;
@@ -147,8 +148,15 @@ class Strumline extends FlxSpriteGroup
 
   /**
    * A list of characters that this strumline controls.
+   * Should probably match up with the voice groups.
    */
   public var characters:Array<BaseCharacter> = [];
+
+  /**
+   * A list of voice groups that this character affects.
+   * Should probably match up with the characters.
+   */
+  public var vocals:Array<Null<VoicesGroupEntry>> = [];
 
   /**
    * Whether or not this strumline is able to be used.
@@ -707,7 +715,7 @@ class Strumline extends FlxSpriteGroup
         if (hasVibrations)
         {
           // Hold note's final vibration.
-          noteVibrations.tryHoldNoteVibration(true);
+          noteVibrations.tryHoldNoteVibration(holdNote.noteDirection);
         }
 
         if (isKeyHeld(holdNote.noteDirection) && !isLaneDisabled(holdNote.noteDirection))
