@@ -51,6 +51,14 @@ enum abstract ScriptEventType(String) from String to String
   var RESUME = 'RESUME';
 
   /**
+   * Called when a song fade in transition starts.
+   *
+   * This event IS cancelable! Canceling the event will skip the fade in
+   * transition from occurring.
+   */
+  var SONG_FADE_IN = 'SONG_FADE_IN';
+
+  /**
    * Called once per step in the song. This happens 4 times per measure.
    *
    * This event is not cancelable.

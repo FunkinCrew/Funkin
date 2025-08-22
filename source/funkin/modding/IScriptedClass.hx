@@ -151,6 +151,11 @@ interface IPlayStateScriptedClass extends INoteScriptedClass extends IBPMSyncedS
   public function onSongRetry(event:SongRetryEvent):Void;
 
   /**
+   * Called when the song's fade in transition starts.
+   */
+  public function onSongFadeIn(event:ScriptEvent):Void;
+
+  /**
    * Called when the player presses a key when no note is on the strumline.
    */
   public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void;

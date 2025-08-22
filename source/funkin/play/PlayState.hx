@@ -896,6 +896,9 @@ class PlayState extends MusicBeatSubState
     // This step ensures z-indexes are applied properly,
     // and it's important to call it last so all elements get affected.
     refresh();
+
+    // Fades the camera in
+    startCameraFadeIn();
   }
 
   public function togglePauseButton(visible:Bool = false):Void
@@ -1849,6 +1852,28 @@ class PlayState extends MusicBeatSubState
       previousCameraFollowPoint = null;
     }
     add(cameraFollowPoint);
+  }
+
+  /**
+     * Fades the camera in to give a nice transition.
+     */
+  function startCameraFadeIn():Void
+  {
+    var event = new ScriptEvent(SONG_FADE_IN, true);
+    dispatchEvent(event);
+
+    // Winter Horrorland's cutscene is hard coded so this has to be done
+    if ((currentSong.id ?? '').toLowerCase() == 'winter-horrorland')
+    {
+      event.cancel();
+    }
+
+    if (event.eventCanceled) return;
+
+    if (!isMinimalMode && !isChartingMode && (!PlayStatePlaylist.isStoryMode || PlayStatePlaylist.isFirstSongInCampaign))
+    {
+      FlxG.camera.fade(FlxColor.BLACK, 1, true);
+    }
   }
 
   /**
@@ -3337,6 +3362,7 @@ class PlayState extends MusicBeatSubState
       isNewHighscore = false;
 
       PlayStatePlaylist.campaignScore += songScore;
+      PlayStatePlaylist.isFirstSongInCampaign = false;
 
       // Pop the next song ID from the list.
       // Returns null if the list is empty.
