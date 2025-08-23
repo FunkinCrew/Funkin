@@ -5,6 +5,7 @@ import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
+import funkin.play.PlayState;
 import funkin.save.Save;
 import funkin.util.TimerUtil.SongSequence;
 import haxe.Timer;
@@ -112,6 +113,17 @@ class Conductor
     if (bpmOverride != null) return bpmOverride;
 
     if (currentTimeChange == null) return Constants.DEFAULT_BPM;
+
+    @:privateAccess
+    if (PlayState.instance != null && PlayState.instance.startingSong)
+    {
+      for (i in 0...timeChanges.length)
+      {
+        if (PlayState.instance.startTimestamp >= timeChanges[i].timeStamp) currentTimeChange = timeChanges[i];
+
+        if (PlayState.instance.startTimestamp < timeChanges[i].timeStamp) break;
+      }
+    }
 
     return currentTimeChange.bpm;
   }
@@ -417,7 +429,7 @@ class Conductor
     // If the song is playing, limit the song position to the length of the song or beginning of the song.
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
     {
-      this.songPosition = FlxMath.bound(Math.min(this.combinedOffset, 0), songPos, currentLength);
+      this.songPosition = Math.min(this.combinedOffset, 0).clamp(songPos, currentLength);
       this.songPositionDelta += FlxG.elapsed * 1000 * FlxG.sound.music.pitch;
     }
     else

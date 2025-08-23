@@ -131,13 +131,16 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return Constants.DEFAULT_CHARTER;
   }
 
+  public var variation:Null<String> = null;
+
   /**
    * @param id The ID of the song to load.
-   * @param ignoreErrors If false, an exception will be thrown if the song data could not be loaded.
+   * @param targetVariation The variation to load, optional.
    */
-  public function new(id:String)
+  public function new(id:String, ?params:SongParams)
   {
     this.id = id;
+    this.variation = params?.variation;
 
     difficulties = new Map<String, Map<String, SongDifficulty>>();
 
@@ -967,4 +970,12 @@ class SongDifficulty
 
     return result;
   }
+}
+
+typedef SongParams =
+{
+  /**
+   * The variation to use for this song.
+   */
+  variation:String
 }

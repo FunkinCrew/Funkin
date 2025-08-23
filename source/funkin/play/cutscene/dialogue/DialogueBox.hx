@@ -11,8 +11,8 @@ import funkin.audio.FunkinSound;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import flixel.util.FlxColor;
 import funkin.ui.FullScreenScaleMode;
-import funkin.data.dialogue.dialoguebox.DialogueBoxData;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
+import funkin.data.dialogue.DialogueBoxData;
+import funkin.data.dialogue.DialogueBoxRegistry;
 
 class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<DialogueBoxData>
 {
@@ -106,7 +106,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     return FullScreenScaleMode.wideScale.x - 0.05;
   }
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
     this.id = id;

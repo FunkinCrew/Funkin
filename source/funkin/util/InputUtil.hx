@@ -22,6 +22,38 @@ class InputUtil
     }
   }
 
+  /**
+   * Returns true if all of the keys in keyArray are being pressed,
+   * but also only fires once on the last key in the array being justPressed
+   * @param keyArray An array of FlxKeys
+   * @return Bool True if all of the keys in keyArray are being pressed, with at least one of them being in a JUST_PRESSED state
+   */
+  public static function allPressedWithDebounce(keyArray:Array<FlxKey>):Bool
+  {
+    return allPressed(keyArray) && FlxG.keys.anyJustPressed(keyArray);
+  }
+
+  /**
+   * Returns true if all of the keys in keyArray are being pressed
+   * @param keyArray An array of FlxKeys
+   * @return Bool True if all keys in keyArray are being pressed
+   */
+  public static function allPressed(keyArray:Array<FlxKey>):Bool
+  {
+    return !anyNotPressed(keyArray);
+  }
+
+  /**
+   * Returns if any key is not being pressed (or just pressed)
+   * @param keyArray An array of FlxKeys
+   * @return Bool True if there's any key in keyArray that isn't being pressed
+   */
+  public static function anyNotPressed(keyArray:Array<FlxKey>):Bool
+  {
+    var isKeyNotPressed:FlxKey->Bool = key -> return FlxG.keys.checkStatus(key, RELEASED) || FlxG.keys.checkStatus(key, JUST_RELEASED);
+    return keyArray.exists(isKeyNotPressed);
+  }
+
   public static function getKeyName(id:Int):String
   {
     return switch (id)

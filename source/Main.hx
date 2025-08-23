@@ -145,6 +145,7 @@ class Main extends Sprite
 
     #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+    funkin.util.macro.ConsoleMacro.init();
     #end
 
     #if !html5

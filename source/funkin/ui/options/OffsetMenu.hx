@@ -736,6 +736,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, _lastDirection, 0, null, null);
         testStrumline.addNoteData(data, false);
 
+        // Create a jump (double note) every 8 beats to visually indicate first beat - requested by Hundrec
         if (Math.floor(arrowBeat % 8) == 0)
         {
           var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, 2, 0, null, null);
@@ -974,5 +975,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     return item;
+  }
+
+  override public function destroy()
+  {
+    MenuTypedList.pauseInput = false;
+    exitCalibration(true);
+    super.destroy();
   }
 }

@@ -59,6 +59,7 @@ class EnvironmentConfigMacro
 
     for (line in envFile.split('\n'))
     {
+      line = line.trim();
       if (line.length <= 0 || line.startsWith("#") || shouldExcludeKey(line)) continue;
 
       var index:Int = line.indexOf('=');

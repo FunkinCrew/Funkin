@@ -11,6 +11,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
+import funkin.util.macro.ConsoleMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
@@ -20,7 +21,7 @@ import funkin.api.newgrounds.Leaderboards;
 #end
 
 @:nullSafety
-class Save
+class Save implements ConsoleClass
 {
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
@@ -1220,7 +1221,7 @@ class Save
   {
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
-    lime.app.Application.current.window.alert(msg, "Save Data Failure");
+    funkin.util.WindowUtil.showError("Save Data Failure", msg);
 
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
@@ -1368,9 +1369,14 @@ class Save
     this.data.version = Save.SAVE_DATA_VERSION;
   }
 
-  public function debug_dumpSave():Void
+  public function debug_dumpSaveJsonSave():Void
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+  }
+
+  public function debug_dumpSaveJsonPrint():Void
+  {
+    trace(this.serialize());
   }
 
   #if FEATURE_NEWGROUNDS
@@ -1407,7 +1413,7 @@ class Save
       var msg = 'There was an error loading your save data from Newgrounds.';
       msg += '\n${errorMsg}';
       msg += '\nAre you sure you are connected to the internet?';
-      lime.app.Application.current.window.alert(msg, "Newgrounds Save Slot Failure");
+      funkin.util.WindowUtil.showError("Newgrounds Save Slot Failure", msg);
     });
   }
   #end

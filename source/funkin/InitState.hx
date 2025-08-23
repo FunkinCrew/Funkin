@@ -11,9 +11,9 @@ import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
-import funkin.data.dialogue.conversation.ConversationRegistry;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
@@ -82,11 +82,8 @@ class InitState extends FlxState
     // GAME SETUP
     //
 
-    // Setup window events (like callbacks for onWindowClose)
-    // and fullscreen keybind setup
+    // Setup window events (like callbacks for onWindowClose) and fullscreen keybind setup
     WindowUtil.initWindowEvents();
-    // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
-    WindowUtil.disableCrashHandler();
 
     #if FEATURE_DEBUG_TRACY
     funkin.util.WindowUtil.initTracy();
@@ -114,7 +111,7 @@ class InitState extends FlxState
 
     #if ios
     // Setup Audio session
-    funkin.mobile.external.ios.AudioSession.initialize();
+    funkin.external.ios.AudioSession.initialize();
     #end
 
     // This ain't a pixel art game! (most of the time)
@@ -202,7 +199,7 @@ class InitState extends FlxState
     //
     #if android
     FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
-    funkin.mobile.external.android.CallbackUtil.init();
+    funkin.external.android.CallbackUtil.init();
     #end
 
     //

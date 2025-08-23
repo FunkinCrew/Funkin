@@ -7,13 +7,6 @@ using StringTools;
 /**
  * Utilities for operating on the current window, such as changing the title.
  */
-#if (cpp && windows)
-@:cppFileCode('
-#include <iostream>
-#include <windows.h>
-#include <psapi.h>
-')
-#end
 @:nullSafety
 class WindowUtil
 {
@@ -122,7 +115,7 @@ class WindowUtil
       windowExit.dispatch(exitCode);
     });
 
-    #if desktop
+    #if (desktop || html5)
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
@@ -148,24 +141,68 @@ class WindowUtil
   }
 
   /**
-   * Turns off that annoying "Report to Microsoft" dialog that pops up when the game crashes.
-   */
-  public static function disableCrashHandler():Void
-  {
-    #if (cpp && windows)
-    untyped __cpp__('SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);');
-    #else
-    // Do nothing.
-    #end
-  }
-
-  /**
    * Sets the title of the application window.
    * @param value The title to use.
    */
   public static function setWindowTitle(value:String):Void
   {
     lime.app.Application.current.window.title = value;
+  }
+
+  /**
+   * Shows an error dialog with an error icon.
+   * @param name The title of the dialog window.
+   * @param desc The error message to display.
+   */
+  public static function showError(name:String, desc:String):Void
+  {
+    #if (windows && cpp)
+    funkin.external.windows.WinAPI.showError(desc, name);
+    #else
+    lime.app.Application.current.window.alert(desc, name);
+    #end
+  }
+
+  /**
+   * Shows a warning dialog with a warning icon.
+   * @param name The title of the dialog window.
+   * @param desc The warning message to display.
+   */
+  public static function showWarning(name:String, desc:String):Void
+  {
+    #if (windows && cpp)
+    funkin.external.windows.WinAPI.showWarning(desc, name);
+    #else
+    lime.app.Application.current.window.alert(desc, name);
+    #end
+  }
+
+  /**
+   * Shows an information dialog with an information icon.
+   * @param name The title of the dialog window.
+   * @param desc The information message to display.
+   */
+  public static function showInformation(name:String, desc:String):Void
+  {
+    #if (windows && cpp)
+    funkin.external.windows.WinAPI.showInformation(desc, name);
+    #else
+    lime.app.Application.current.window.alert(desc, name);
+    #end
+  }
+
+  /**
+   * Shows a question dialog with a question icon and OK/Cancel buttons.
+   * @param name The title of the dialog window.
+   * @param desc The question message to display.
+   */
+  public static function showQuestion(name:String, desc:String):Void
+  {
+    #if (windows && cpp)
+    funkin.external.windows.WinAPI.showQuestion(desc, name);
+    #else
+    lime.app.Application.current.window.alert(desc, name);
+    #end
   }
 
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
