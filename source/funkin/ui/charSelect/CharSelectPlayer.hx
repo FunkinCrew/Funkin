@@ -79,7 +79,6 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
         frames = FlxAnimateFrames.fromAnimate(Paths.animateAtlas("charSelect/" + str + "Chill"), null, null, null, false,
           {
             swfMode: true,
-            cacheOnLoad: true,
             filterQuality: HIGH
           });
     }
