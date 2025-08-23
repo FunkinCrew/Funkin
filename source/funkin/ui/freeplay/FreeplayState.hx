@@ -50,7 +50,7 @@ import funkin.util.HapticUtil;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
-import funkin.ui.freeplay.DifficultyDot;
+import funkin.ui.freeplay.DifficultyDots;
 import funkin.ui.debug.charting.ChartEditorState;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -123,7 +123,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * For positioning the difficulty dots.
    */
-  public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [260, 170];
+  public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [190, 170];
 
   var songs:Array<Null<FreeplaySongData>> = [];
 
@@ -150,7 +150,7 @@ class FreeplayState extends MusicBeatSubState
   var intendedScore:Int = 0;
 
   var grpDifficulties:FlxTypedSpriteGroup<DifficultySprite>;
-  var difficultyDots:FlxTypedSpriteGroup<DifficultyDot>;
+  var difficultyDots:DifficultyDots;
 
   /**
    * Bit of a utility var to get the currently displayed DifficultySprite
@@ -310,7 +310,7 @@ class FreeplayState extends MusicBeatSubState
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
 
-    difficultyDots = new FlxTypedSpriteGroup<DifficultyDot>(DEFAULT_DOTS_GROUP_POS[0], DEFAULT_DOTS_GROUP_POS[1]);
+    difficultyDots = new DifficultyDots(DEFAULT_DOTS_GROUP_POS[0], DEFAULT_DOTS_GROUP_POS[1]);
     letterSort = new LetterSort((CUTOUT_WIDTH * SONGS_POS_MULTI) + 400, 75);
     rankBg = new FunkinSprite(0, 0);
     rankVignette = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/rankVignette'));
@@ -484,11 +484,13 @@ class FreeplayState extends MusicBeatSubState
       grpDifficulties.add(diffSprite);
     }
 
-    for (i in 0...Constants.DEFAULT_DIFFICULTY_LIST_FULL.length)
-    {
-      var dot:DifficultyDot = new DifficultyDot(Constants.DEFAULT_DIFFICULTY_LIST_FULL[i], i);
-      difficultyDots.add(dot);
-    }
+    /*for (i in 0...Constants.DEFAULT_DIFFICULTY_LIST_FULL.length)
+      {
+        var dot:DifficultyDot = new DifficultyDot(Constants.DEFAULT_DIFFICULTY_LIST_FULL[i], i);
+        difficultyDots.add(dot);
+    }*/
+
+    difficultyDots.loadDots(Constants.DEFAULT_DIFFICULTY_LIST_FULL);
 
     albumRoll.albumId = null;
     albumRoll.visible = false;
@@ -770,7 +772,6 @@ class FreeplayState extends MusicBeatSubState
         albumRoll.showStars();
       }
 
-      refreshDots(5, Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty), Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty));
       fadeDots(true);
 
       #if FEATURE_TOUCH_CONTROLS
@@ -1279,113 +1280,9 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  var prevDotAmount:Int = 0;
-
   function fadeDots(fadeIn:Bool):Void
   {
-    for (i in 0...difficultyDots.group.members.length)
-    {
-      if (fadeIn)
-      {
-        difficultyDots.group.members[i].fadeIn();
-      }
-      else
-      {
-        difficultyDots.group.members[i].fadeOut();
-      }
-    }
-  }
-
-  function refreshDots(amount:Int, index:Int, prevIndex:Int):Void
-  {
-    var distance:Int = 30;
-    var groupOffset:Float = 14.7;
-    var shiftAmt:Float = (distance * amount) / 2;
-    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
-    final maxDotsPerRow:Int = 8;
-
-    if (difficultyDots.group.members.length > maxDotsPerRow)
-    {
-      difficultyDots.x = DEFAULT_DOTS_GROUP_POS[0] - groupOffset * (maxDotsPerRow - 1);
-    }
-    else
-    {
-      difficultyDots.x = DEFAULT_DOTS_GROUP_POS[0] - groupOffset * (difficultyDots.group.members.length - 1);
-    }
-
-    var curRow:Int = 0;
-    var curDot:Int = 0;
-    for (i in 0...difficultyDots.group.members.length)
-    {
-      // if (difficultyDots.group.members[i] == null) continue;
-      var targetState:DotState = SELECTED;
-      var targetType:DotType = NORMAL;
-      var diffId:String = difficultyDots.group.members[i].difficultyId;
-
-      difficultyDots.group.members[i].important = false;
-
-      if (i == index)
-      {
-        targetState = SELECTED;
-      }
-      else
-      {
-        if (i == prevIndex)
-        {
-          targetState = DESELECTING;
-        }
-        else
-        {
-          targetState = DESELECTED;
-        }
-      }
-
-      if (diffId == 'erect' || diffId == 'nightmare')
-      {
-        targetType = ERECT;
-      }
-
-      difficultyDots.group.members[i].visible = true;
-      difficultyDots.group.members[i].x = (CUTOUT_WIDTH * DJ_POS_MULTI) + ((difficultyDots.x + (distance * curDot)) - shiftAmt);
-      difficultyDots.group.members[i].y = DEFAULT_DOTS_GROUP_POS[1] + distance * curRow;
-
-      curDot++;
-
-      if (curDot >= maxDotsPerRow)
-      {
-        curDot = 0;
-        curRow++;
-      }
-
-      if (daSong?.data.hasDifficulty(diffId, daSong?.data.getFirstValidVariation(diffId, currentCharacter)) == false)
-      {
-        targetType = INACTIVE;
-      }
-      else
-      {
-        if (daSong?.isDifficultyNew(diffId) == true)
-        {
-          // at the moment, we don't want the other difficulties to show the pulse, cause the
-          // feature only works on new songs at the moment and its not particularly hard to find a new song on easy/normal/hard.
-          // eventually this will probably be moved to affect all types.
-          if (targetType == ERECT)
-          {
-            difficultyDots.group.members[i].important = true;
-          }
-        }
-      }
-
-      // originally was gonna hide the dots if erect/nightmare wasnt present, leaving this functionality just in case
-      // mods (or we) need to display a different amount
-      if (i > amount - 1 && amount != 5)
-      {
-        difficultyDots.group.members[i].visible = false;
-      }
-
-      difficultyDots.group.members[i].updateState(targetType, targetState);
-    }
-
-    prevDotAmount = amount;
+    difficultyDots.fade(fadeIn);
   }
 
   function tryOpenCharSelect():Void
@@ -2256,8 +2153,11 @@ class FreeplayState extends MusicBeatSubState
     // Gets all available difficulties for our character, via our available variations
     var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
+    // Lowkey fun with Random capsule
+    difficultyDots.regenDots(daSong != null ? songDifficulties : difficultiesAvailable);
+
     var currentDifficultyIndex:Int = difficultiesAvailable.indexOf(currentDifficulty);
-    var prevDifficultyIndex:Int = currentDifficultyIndex;
+    final prevDifficultyIndex:Int = currentDifficultyIndex;
 
     if (currentDifficultyIndex == -1) currentDifficultyIndex = difficultiesAvailable.indexOf(Constants.DEFAULT_DIFFICULTY);
 
@@ -2352,8 +2252,7 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    // refreshDots(songDifficulties.length, currentDifficultyIndex, prevDifficultyIndex);
-    refreshDots(5, currentDifficultyIndex, prevDifficultyIndex);
+    difficultyDots.refreshDots(currentCapsule?.freeplayData, currentDifficulty);
 
     if (change != 0 || force)
     {

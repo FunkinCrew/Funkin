@@ -278,6 +278,11 @@ class Constants
   public static final DEFAULT_PIXEL_NOTE_STYLE:String = 'pixel';
 
   /**
+   * The default quantity of difficulty dots limit in a row.
+   */
+  public static final DEFAULT_FREEPLAY_DOTS_IN_ROW:Int = 8;
+
+  /**
    * The default album for songs in Freeplay.
    */
   public static final DEFAULT_ALBUM_ID:String = 'volume1';
