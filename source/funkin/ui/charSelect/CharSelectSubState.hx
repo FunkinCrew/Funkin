@@ -648,6 +648,7 @@ class CharSelectSubState extends MusicBeatSubState
   {
     grpIcons.x = cutoutSize + 450;
     grpIcons.y = 120;
+
     for (index => member in grpIcons.members)
     {
       var posX:Float = (index % 3);

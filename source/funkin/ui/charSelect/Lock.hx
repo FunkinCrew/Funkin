@@ -3,6 +3,8 @@ package funkin.ui.charSelect;
 import flixel.util.FlxColor;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.adobeanimate.FlxAtlasSprite.FlxAtlasSpriteSettings;
+import flixel.FlxCamera;
+import flixel.math.FlxPoint;
 
 class Lock extends FlxAtlasSprite
 {
@@ -35,5 +37,16 @@ class Lock extends FlxAtlasSprite
     }
 
     playAnimation("idle");
+  }
+
+  /**
+   * Offset the lock.
+   */
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= 320;
+    output.y -= 90;
+    return output;
   }
 }
