@@ -252,16 +252,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final BASE_QUANT_INDEX:Int = 3;
 
   /**
-   * The duration before the welcome music starts to fade back in after the user stops playing music in the chart editor.
-   */
-  public static final WELCOME_MUSIC_FADE_IN_DELAY:Float = 30.0;
-
-  /**
-   * The duration of the welcome music fade in.
-   */
-  public static final WELCOME_MUSIC_FADE_IN_DURATION:Float = 10.0;
-
-  /**
    * A map of the keys for every live input style.
    */
   public static final LIVE_INPUT_KEYS:Map<ChartEditorLiveInputStyle, Array<FlxKey>> = [
@@ -712,6 +702,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var uiCamera:FlxCamera;
 
   // Audio
+
+  /**
+   * Play the welcome music or not.
+   */
+  var isWelcomeMusic:Bool = false;
+
+  /**
+   * The duration before the welcome music starts to fade back in after the user stops playing music in the chart editor.
+   */
+  var welcomeMusicFadeInDelay:Float = 30;
+
+  /**
+   * The duration of the welcome music fade in.
+   */
+  var welcomeMusicFadeInDuration:Float = 10;
 
   /**
    * Whether to play a metronome sound while the playhead is moving, and what volume.
@@ -1938,6 +1943,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemThemeMusic:MenuCheckBox;
 
   /**
+   * The `Audio -> Theme Music Fade in Delay` number stepper.
+   */
+  var numberStepperItemThemeMusicFadeInDelay:NumberStepper;
+
+  /**
+   * The `Audio -> Theme Music Fade in Duration` number stepper.
+   */
+  var numberStepperItemThemeMusicFadeInDuration:NumberStepper;
+
+  /**
    * The `Audio -> Player Hitsound Volume` label.
    */
   var menubarLabelVolumeHitsoundPlayer:Label;
@@ -2406,7 +2421,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     metronomeVolume = save.chartEditorMetronomeVolume;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
     hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent;
-    this.welcomeMusic.active = save.chartEditorThemeMusic;
+    isWelcomeMusic = save.chartEditorThemeMusic;
+
+    welcomeMusicFadeInDelay = save.chartEditorThemeMusicFadeInDelay;
+    welcomeMusicFadeInDuration = save.chartEditorThemeMusicFadeInDuration;
 
     menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume * 100);
     menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume * 100);
@@ -2436,7 +2454,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorMetronomeVolume = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
-    save.chartEditorThemeMusic = this.welcomeMusic.active;
+    save.chartEditorThemeMusic = isWelcomeMusic;
+
+    save.chartEditorThemeMusicFadeInDelay = welcomeMusicFadeInDelay;
+    save.chartEditorThemeMusicFadeInDuration = welcomeMusicFadeInDuration;
 
     save.chartEditorInstVolume = menubarItemVolumeInstrumental.value / 100.0;
     save.chartEditorPlayerVoiceVolume = menubarItemVolumeVocalsPlayer.value / 100.0;
@@ -2498,15 +2519,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function fadeInWelcomeMusic(?extraWait:Float = 0, ?fadeInTime:Float = 5):Void
   {
-    if (!this.welcomeMusic.active)
+    if (!isWelcomeMusic)
     {
       stopWelcomeMusic();
       return;
     }
 
     bgMusicTimer = new FlxTimer().start(extraWait, (_) -> {
-      this.welcomeMusic.volume = 0;
-      if (this.welcomeMusic.active)
+      if (isWelcomeMusic)
       {
         this.welcomeMusic.play();
         this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
@@ -3180,10 +3200,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     previousAudioVolumes[0] = Std.int(metronomeVolume * 100);
 
     menubarItemThemeMusic.onChange = event -> {
-      this.welcomeMusic.active = event.value;
-      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+      isWelcomeMusic = event.value;
+      // Don't restart the music when the menu is opened for the first time
+      if (!welcomeMusic.active || !isWelcomeMusic) fadeInWelcomeMusic(welcomeMusicFadeInDelay, welcomeMusicFadeInDuration);
     };
-    menubarItemThemeMusic.selected = this.welcomeMusic.active;
+    menubarItemThemeMusic.selected = isWelcomeMusic;
+
+    numberStepperItemThemeMusicFadeInDelay.onChange = event -> {
+      welcomeMusicFadeInDelay = event.value;
+    };
+    numberStepperItemThemeMusicFadeInDelay.pos = welcomeMusicFadeInDelay;
+
+    numberStepperItemThemeMusicFadeInDuration.onChange = event -> {
+      welcomeMusicFadeInDuration = event.value;
+    };
+    numberStepperItemThemeMusicFadeInDuration.pos = welcomeMusicFadeInDuration;
+
 
     menubarItemVolumeHitsoundPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
@@ -4250,7 +4282,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     shouldEase = true;
-    if (shouldPause) stopAudioPlayback();
+    if (shouldPause && audioInstTrack.isPlaying) stopAudioPlayback(); // Only do this once, not every frame
 
     // Resync the conductor and audio tracks.
     if (playheadAmount != 0) this.playheadPositionInPixels += playheadAmount;
@@ -6190,6 +6222,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (audioInstTrack != null)
     {
+      stopWelcomeMusic();
       audioInstTrack.play(false, audioInstTrack.time);
       audioVocalTrackGroup.play(false, audioInstTrack.time);
     }
@@ -6482,7 +6515,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     moveSongToScrollPosition();
 
-    fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+    fadeInWelcomeMusic(welcomeMusicFadeInDelay, welcomeMusicFadeInDuration);
 
     // Reapply the volume and playback rate.
     var instTargetVolume:Float = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
@@ -6636,6 +6669,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (audioInstTrack != null) audioInstTrack.pause();
     audioVocalTrackGroup.pause();
+    fadeInWelcomeMusic(welcomeMusicFadeInDelay, welcomeMusicFadeInDuration);
 
     playbarPlay.text = '>';
   }
@@ -6650,13 +6684,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Pause
       stopAudioPlayback();
-      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     }
     else
     {
       // Play
       startAudioPlayback();
-      stopWelcomeMusic();
     }
   }
 
