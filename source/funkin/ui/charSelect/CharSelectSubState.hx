@@ -2,7 +2,6 @@ package funkin.ui.charSelect;
 
 import openfl.filters.BitmapFilter;
 import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
@@ -11,7 +10,6 @@ import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
-import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
@@ -44,13 +42,13 @@ class CharSelectSubState extends MusicBeatSubState
   // what the actual hell
   // having a hard time trying to make my changes work so i chose to be less stubborn and just remove them for now. - Zack
   // Left this here so somebody can remind me
-  var cursor:FlxSprite;
+  var cursor:FunkinSprite;
 
-  var cursorBlue:FlxSprite;
-  var cursorDarkBlue:FlxSprite;
-  var grpCursors:FlxTypedGroup<FlxSprite>;
-  var cursorConfirmed:FlxSprite;
-  var cursorDenied:FlxSprite;
+  var cursorBlue:FunkinSprite;
+  var cursorDarkBlue:FunkinSprite;
+  var grpCursors:FlxTypedGroup<FunkinSprite>;
+  var cursorConfirmed:FunkinSprite;
+  var cursorDenied:FunkinSprite;
   var cursorX:Int = 0;
   var cursorY:Int = 0;
   var cursorFactor:Float = 110;
@@ -64,10 +62,10 @@ class CharSelectSubState extends MusicBeatSubState
   var gfChill:CharSelectGF;
   var gfChillOut:CharSelectGF;
   var barthing:FlxAtlasSprite;
-  var dipshitBacking:FlxSprite;
-  var chooseDipshit:FlxSprite;
-  var dipshitBlur:FlxSprite;
-  var transitionGradient:FlxSprite;
+  var dipshitBacking:FunkinSprite;
+  var chooseDipshit:FunkinSprite;
+  var dipshitBlur:FunkinSprite;
+  var transitionGradient:FunkinSprite;
   var curChar(default, set):String = Constants.DEFAULT_CHARACTER;
   var rememberedChar:String;
   var nametag:Nametag;
@@ -141,36 +139,27 @@ class CharSelectSubState extends MusicBeatSubState
       trace("[ERROR] Failed to load data for bopInfo, is the path provided correct?");
     }
 
-    var bg:FlxSprite = new FlxSprite(cutoutSize + -153, -140);
+    var bg:FunkinSprite = new FunkinSprite(cutoutSize + -153, -140);
     bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
     var crowd:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize, 0, Paths.animateAtlas("charSelect/crowd"));
-    crowd.playAnimation("");
-    crowd.anim.onFinish.add(function(name:String) {
-      crowd.playAnimation("");
-    });
+    crowd.playAnimation(false, false, true);
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
     var stageSpr:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize + -2, 1, Paths.animateAtlas("charSelect/charSelectStage"));
-    stageSpr.playAnimation("");
-    stageSpr.anim.onFinish.add(function(name:String) {
-      stageSpr.playAnimation("");
-    });
+    stageSpr.playAnimation(false, false, true);
     add(stageSpr);
 
-    var curtains:FlxSprite = new FlxSprite(cutoutSize + (-47 - 165), -49 - 50);
+    var curtains:FunkinSprite = new FunkinSprite(cutoutSize + (-47 - 165), -49 - 50);
     curtains.loadGraphic(Paths.image('charSelect/curtains'));
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
 
     barthing = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/barThing"));
-    barthing.playAnimation("");
-    barthing.anim.onFinish.add(function(name:String) {
-      barthing.playAnimation("");
-    });
+    barthing.playAnimation(false, false, true);
     barthing.blend = BlendMode.MULTIPLY;
     barthing.scale.x = 2.5;
     barthing.scrollFactor.set(0, 0);
@@ -179,11 +168,11 @@ class CharSelectSubState extends MusicBeatSubState
     barthing.y += 80;
     FlxTween.tween(barthing, {y: barthing.y - 80}, 1.3, {ease: FlxEase.expoOut});
 
-    var charLight:FlxSprite = new FlxSprite(cutoutSize + 800, 250);
+    var charLight:FunkinSprite = new FunkinSprite(cutoutSize + 800, 250);
     charLight.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLight);
 
-    var charLightGF:FlxSprite = new FlxSprite(cutoutSize + 180, 240);
+    var charLightGF:FunkinSprite = new FunkinSprite(cutoutSize + 180, 240);
     charLightGF.loadGraphic(Paths.image('charSelect/charLight'));
     add(charLightGF);
 
@@ -224,27 +213,24 @@ class CharSelectSubState extends MusicBeatSubState
       setupPlayerChill(Constants.DEFAULT_CHARACTER);
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 10, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
-    speakers.playAnimation("");
-    speakers.anim.onFinish.add(function(name:String) {
-      speakers.playAnimation("");
-    });
+    speakers.playAnimation(false, false, true);
     speakers.scrollFactor.set(1.8, 1.8);
     speakers.scale.set(1.05, 1.05);
     add(speakers);
 
-    var fgBlur:FlxSprite = new FlxSprite(cutoutSize + -125, 170);
+    var fgBlur:FunkinSprite = new FunkinSprite(cutoutSize + -125, 170);
     fgBlur.loadGraphic(Paths.image('charSelect/foregroundBlur'));
-    fgBlur.blend = openfl.display.BlendMode.MULTIPLY;
+    fgBlur.blend = BlendMode.MULTIPLY;
     add(fgBlur);
 
-    dipshitBlur = new FlxSprite(cutoutSize + 419, -65);
+    dipshitBlur = new FunkinSprite(cutoutSize + 419, -65);
     dipshitBlur.frames = Paths.getSparrowAtlas("charSelect/dipshitBlur");
     dipshitBlur.animation.addByPrefix('idle', "CHOOSE vertical offset instance 1", 24, true);
     dipshitBlur.blend = BlendMode.ADD;
     dipshitBlur.animation.play("idle");
     add(dipshitBlur);
 
-    dipshitBacking = new FlxSprite(cutoutSize + 423, -17);
+    dipshitBacking = new FunkinSprite(cutoutSize + 423, -17);
     dipshitBacking.frames = Paths.getSparrowAtlas("charSelect/dipshitBacking");
     dipshitBacking.animation.addByPrefix('idle', "CHOOSE horizontal offset instance 1", 24, true);
     dipshitBacking.blend = BlendMode.ADD;
@@ -254,7 +240,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.y += 210;
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
 
-    chooseDipshit = new FlxSprite(cutoutSize + 426, -13);
+    chooseDipshit = new FunkinSprite(cutoutSize + 426, -13);
     chooseDipshit.loadGraphic(Paths.image('charSelect/chooseDipshit'));
     add(chooseDipshit);
 
@@ -280,52 +266,36 @@ class CharSelectSubState extends MusicBeatSubState
 
     nametag.scrollFactor.set();
 
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSprite, ["x", "y", "alpha", "scale", "blend"]));
+    FlxG.debugger.addTrackerProfile(new TrackerProfile(FunkinSprite, ["x", "y", "alpha", "scale", "blend"]));
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxAtlasSprite, ["x", "y"]));
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSound, ["pitch", "volume"]));
 
-    // FlxG.debugger.track(crowd);
-    // FlxG.debugger.track(stageSpr, "stageSpr");
-    // FlxG.debugger.track(bfChill, "bf chill");
-    // FlxG.debugger.track(playerChill, "player");
-    // FlxG.debugger.track(nametag, "nametag");
-    // FlxG.debugger.track(selectSound, "selectSound");
-    // FlxG.debugger.track(chooseDipshit, "choose dipshit");
-    // FlxG.debugger.track(barthing, "barthing");
-    // FlxG.debugger.track(fgBlur, "fgBlur");
-    // FlxG.debugger.track(dipshitBlur, "dipshitBlur");
-    // FlxG.debugger.track(dipshitBacking, "dipshitBacking");
-    // FlxG.debugger.track(charLightGF, "charLight");
-    // FlxG.debugger.track(gfChill, "gfChill");
-
-    grpCursors = new FlxTypedGroup<FlxSprite>();
+    grpCursors = new FlxTypedGroup<FunkinSprite>();
     add(grpCursors);
 
-    cursor = new FlxSprite(0, 0);
+    cursor = new FunkinSprite(0, 0);
     cursor.loadGraphic(Paths.image('charSelect/charSelector'));
     cursor.color = 0xFFFFFF00;
 
-    // FFCC00
-
-    cursorBlue = new FlxSprite(0, 0);
+    cursorBlue = new FunkinSprite(0, 0);
     cursorBlue.loadGraphic(Paths.image('charSelect/charSelector'));
     cursorBlue.color = 0xFF3EBBFF;
 
-    cursorDarkBlue = new FlxSprite(0, 0);
+    cursorDarkBlue = new FunkinSprite(0, 0);
     cursorDarkBlue.loadGraphic(Paths.image('charSelect/charSelector'));
     cursorDarkBlue.color = 0xFF3C74F7;
 
     cursorBlue.blend = BlendMode.SCREEN;
     cursorDarkBlue.blend = BlendMode.SCREEN;
 
-    cursorConfirmed = new FlxSprite(0, 0);
+    cursorConfirmed = new FunkinSprite(0, 0);
     cursorConfirmed.scrollFactor.set();
     cursorConfirmed.frames = Paths.getSparrowAtlas("charSelect/charSelectorConfirm");
     cursorConfirmed.animation.addByPrefix("idle", "cursor ACCEPTED instance 1", 24, true);
     cursorConfirmed.visible = false;
     add(cursorConfirmed);
 
-    cursorDenied = new FlxSprite(0, 0);
+    cursorDenied = new FunkinSprite(0, 0);
     cursorDenied.scrollFactor.set();
     cursorDenied.frames = Paths.getSparrowAtlas("charSelect/charSelectorDenied");
     cursorDenied.animation.addByPrefix("idle", "cursor DENIED instance 1", 24, false);
@@ -401,8 +371,6 @@ class CharSelectSubState extends MusicBeatSubState
 
     FlxTween.color(cursor, 0.2, 0xFFFFFF00, 0xFFFFCC00, {type: PINGPONG});
 
-    // FlxG.debugger.track(cursor);
-
     FlxG.debugger.addTrackerProfile(new TrackerProfile(CharSelectSubState, ["curChar", "grpXSpread", "grpYSpread"]));
     FlxG.debugger.track(this);
 
@@ -410,21 +378,20 @@ class CharSelectSubState extends MusicBeatSubState
     add(camFollow);
     camFollow.screenCenter();
 
-    // FlxG.camera.follow(camFollow, LOCKON, 0.01);
     FlxG.camera.follow(camFollow, LOCKON);
 
     var fadeShaderFilter:ShaderFilter = new ShaderFilter(fadeShader);
     FlxG.camera.filters = [fadeShaderFilter];
 
-    var temp:FlxSprite = new FlxSprite();
+    var temp:FunkinSprite = new FunkinSprite();
     temp.loadGraphic(Paths.image('charSelect/placement'));
     add(temp);
     temp.alpha = 0.0;
 
     Conductor.stepHit.add(spamOnStep);
-    // FlxG.debugger.track(temp, "tempBG");
 
-    transitionGradient = new FlxSprite(0, 0).loadGraphic(Paths.image('freeplay/transitionGradient'));
+    transitionGradient = new FunkinSprite(0, 0);
+    transitionGradient.loadGraphic(Paths.image('freeplay/transitionGradient'));
     transitionGradient.scale.set(1280, 1);
     transitionGradient.flipY = true;
     transitionGradient.updateHitbox();
@@ -457,6 +424,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxG.sound.list.add(introSound);
 
     openSubState(new IntroSubState());
+
     subStateClosed.addOnce((_) -> {
       remove(blackScreen);
       if (!Save.instance.oldChar)
@@ -518,7 +486,6 @@ class CharSelectSubState extends MusicBeatSubState
     grpHitboxes = new FlxTypedGroup<FlxObject>();
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSpriteGroup, ["x", "y"]));
-    // FlxG.debugger.track(grpIcons, "iconGrp");
 
     for (i in 0...9)
     {
@@ -539,12 +506,15 @@ class CharSelectSubState extends MusicBeatSubState
         var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
         if (availableChars.exists(i) && isPlayerUnlocked) nonLocks.push(i);
 
-        var temp:Lock = new Lock(0, 0, i);
-        temp.ID = 1;
+        var temp:Lock = new Lock(0, 0, i,
+          {
+            swfMode: true,
+            cacheOnLoad: isPlayerUnlocked,
+            filterQuality: HIGH,
+            uniqueInCache: true
+          });
 
-        // temp.onAnimationComplete.add(function(anim) {
-        //   if (anim == "unlock") playerChill.playAnimation("unlock", true);
-        // });
+        temp.ID = 1;
 
         grpIcons.add(temp);
       }
@@ -720,7 +690,6 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(dipshitBlur, {y: dipshitBlur.y + 220}, 0.8, {ease: FlxEase.backIn});
     for (index => member in grpIcons.members)
     {
-      // member.y += 300;
       FlxTween.tween(member, {y: member.y + 300}, 0.8, {ease: FlxEase.backIn});
     }
     FlxG.camera.follow(camFollow, LOCKON);
@@ -935,13 +904,6 @@ class CharSelectSubState extends MusicBeatSubState
         gfChill.playAnimation("confirm", true, false, true);
         pressedSelect = true;
         selectTimer.start(1.5, (_) -> {
-          // pressedSelect = false;
-          // FlxG.switchState(FreeplayState.build(
-          //   {
-          //     {
-          //       character: curChar
-          //     }
-          //   }));
           goToFreeplay();
         });
       }
@@ -1057,7 +1019,6 @@ class CharSelectSubState extends MusicBeatSubState
   {
     if (spamUp || spamDown || spamLeft || spamRight)
     {
-      // selectSound.changePitchBySemitone(1);
       if (selectSound.pitch > 5) selectSound.pitch = 5;
       selectSound.play(true);
 
@@ -1113,8 +1074,6 @@ class CharSelectSubState extends MusicBeatSubState
 
           if (index == getCurrentSelected())
           {
-            // memb.pixels = memb.withDropShadow.clone();
-
             if (bopPlay)
             {
               if (bopRefX == 0)
@@ -1143,7 +1102,6 @@ class CharSelectSubState extends MusicBeatSubState
           }
           else
           {
-            // memb.pixels = memb.noDropShadow.clone();
             memb.filters = null;
             memb.scale.set(2, 2);
           }
@@ -1235,5 +1193,5 @@ class CharSelectSubState extends MusicBeatSubState
  */
 typedef CharSelectSubStateParams =
 {
-  ?character:String, // ?fromFreeplaySelect:Bool,
+  ?character:String
 };

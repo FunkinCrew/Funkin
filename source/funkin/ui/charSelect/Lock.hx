@@ -2,6 +2,7 @@ package funkin.ui.charSelect;
 
 import flixel.util.FlxColor;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.adobeanimate.FlxAtlasSprite.FlxAtlasSpriteSettings;
 
 class Lock extends FlxAtlasSprite
 {
@@ -11,15 +12,9 @@ class Lock extends FlxAtlasSprite
     0xFF209BDD, 0xFF2362C9, 0xFF243FB9
   ];
 
-  public function new(x:Float = 0, y:Float = 0, index:Int)
+  public function new(x:Float = 0, y:Float = 0, index:Int, settings:FlxAtlasSpriteSettings)
   {
-    super(x, y, Paths.animateAtlas("charSelect/lock"),
-      {
-        swfMode: true,
-        cacheOnLoad: true,
-        filterQuality: HIGH,
-        uniqueInCache: true
-      });
+    super(x, y, Paths.animateAtlas("charSelect/lock"), settings);
 
     var tint:FlxColor = colors[index];
 
