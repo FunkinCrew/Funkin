@@ -453,7 +453,7 @@ class PauseSubState extends MusicBeatSubState
     offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
     offsetTextInfo.y = offsetText.y + offsetText.height + 4;
 
-    #if (!mobile && FEATURE_LAG_ADJUSTMENT)
+    #if !mobile
     metadata.add(offsetText);
     metadata.add(offsetTextInfo);
     #end
@@ -939,7 +939,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static function changeDifficulty(state:PauseSubState, difficulty:String):Void
   {
-    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
+    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase(),
+      {variation: PlayState.instance.currentChart.variation});
 
     // Reset campaign score when changing difficulty
     // So if you switch difficulty on the last song of a week you get a really low overall score.

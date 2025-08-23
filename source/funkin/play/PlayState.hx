@@ -19,7 +19,7 @@ import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
-import funkin.data.dialogue.conversation.ConversationRegistry;
+import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
@@ -319,6 +319,13 @@ class PlayState extends MusicBeatSubState
    * @default One camera zoom per measure (four beats).
    */
   public var cameraZoomRate:Int = Constants.DEFAULT_ZOOM_RATE;
+
+  /**
+   * How many beats (quarter notes) the zoom rate is offset.
+   * For if you want the zoom to happen off-beat.
+   * @default Zero beats (on-beat).
+   */
+  public var cameraZoomRateOffset:Int = Constants.DEFAULT_ZOOM_OFFSET;
 
   /**
    * Whether the game is currently in the countdown before the song resumes.
@@ -637,9 +644,15 @@ class PlayState extends MusicBeatSubState
   static final RESYNC_THRESHOLD:Float = 40;
 
   /**
+   * The threshold for how much the conductor lerp can drift from the music.
+   * If the conductor song position deviate from the music by more than this amount, then a normal conductor update is triggered.
+   */
+  static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
+
+  /**
    * The ratio for easing the song positon for smoother notes scrolling.
    */
-  static final MUSIC_EASE_RATIO:Float = 40;
+  static final MUSIC_EASE_RATIO:Float = 42;
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
@@ -1082,8 +1095,8 @@ class PlayState extends MusicBeatSubState
       // And it was frame dependant which we don't like!!
       if (FlxG.sound.music.playing)
       {
-        final audioDiff:Float = Math.round(Math.abs(Conductor.instance.songPosition - FlxG.sound.music.time));
-        if (audioDiff <= RESYNC_THRESHOLD)
+        final audioDiff:Float = Math.round(Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition - Conductor.instance.combinedOffset)));
+        if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
         {
           // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
           final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
@@ -1093,6 +1106,7 @@ class PlayState extends MusicBeatSubState
         {
           // Fallback to properly update the conductor incase the lerp messed up
           // Shouldn't be fallen back to unless you're lagging alot
+          trace('[WARNING] Normal Conductor Update!! are you lagging?');
           Conductor.instance.update();
         }
       }
@@ -1692,7 +1706,8 @@ class PlayState extends MusicBeatSubState
     {
       throw "No lastParams to refer to";
     }
-    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id) ?? throw "Could not load current song from ID. This shouldn't happen!";
+    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id,
+      {variation: currentVariation}) ?? throw "Could not load current song from ID. This shouldn't happen!";
     LoadingState.loadPlayState(lastParams);
   }
 
@@ -1772,7 +1787,7 @@ class PlayState extends MusicBeatSubState
     if (Preferences.zoomCamera
       && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
       && cameraZoomRate > 0
-      && Conductor.instance.currentBeat % cameraZoomRate == 0)
+      && (Conductor.instance.currentBeat + cameraZoomRateOffset) % cameraZoomRate == 0)
     {
       // Set zoom multiplier for camera bop.
       cameraBopMultiplier = cameraBopIntensity;
@@ -1926,7 +1941,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       // lolol
-      funkin.util.WindowUtil.showError('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
+      funkin.util.WindowUtil.showError('Stage Error', 'Unable to load stage $id, is its data corrupted?.');
     }
   }
 

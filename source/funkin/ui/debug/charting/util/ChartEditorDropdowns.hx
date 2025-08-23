@@ -158,10 +158,16 @@ class ChartEditorDropdowns
     "" => "Default",
     "~CUSTOM~" => "Custom",
     // Weeks 1-7
+    "censor" => "[UH-OH!] Censor Bar",
     "mom" => "Mom Sings (Week 5)",
-    "ugh" => "Ugh (Week 7)",
-    "hehPrettyGood" => "Heh, Pretty Good (Week 7)",
+    "ugh" => "Tankman Ugh (Week 7)",
+    "hehPrettyGood" => "Tankman Heh, Pretty Good (Week 7)",
     // Weekend 1
+    "weekend-1-lightcan" => "Darnell Light Can (2hot)",
+    "weekend-1-kneecan" => "Darnell Knee Can (2hot)",
+    "weekend-1-kickcan" => "Darnell Kick Can (2hot)",
+    "weekend-1-cockgun" => "Pico Cock Gun (2hot)",
+    "weekend-1-firegun" => "Pico Fire Gun (2hot)",
     "weekend-1-punchhigh" => "Punch High (Blazin')",
     "weekend-1-punchhighdodged" => "Punch High (Dodge) (Blazin')",
     "weekend-1-punchhighblocked" => "Punch High (Block) (Blazin')",

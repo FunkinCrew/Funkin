@@ -1,4 +1,4 @@
-package funkin.data.dialogue.conversation;
+package funkin.data.dialogue;
 
 /**
  * A type definition for the data for a specific conversation.

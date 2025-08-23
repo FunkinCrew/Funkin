@@ -6,8 +6,8 @@ import funkin.modding.events.ScriptEvent;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
-import funkin.data.dialogue.speaker.SpeakerData;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.SpeakerData;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.ui.FullScreenScaleMode;
 
 /**
@@ -86,7 +86,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     return FullScreenScaleMode.wideScale.x - 0.05;
   }
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 

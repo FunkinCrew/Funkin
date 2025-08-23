@@ -832,7 +832,10 @@ class ResultState extends MusicBeatSubState
 
       var stickerPackId:Null<String> = null;
 
-      var song:Null<Song> = params.songId == null ? null : SongRegistry.instance.fetchEntry(params.songId);
+      var song:Null<Song> = params.songId == null ? null : SongRegistry.instance.fetchEntry(params.songId,
+        {
+          variation: params?.variationId
+        });
 
       if (song != null)
       {

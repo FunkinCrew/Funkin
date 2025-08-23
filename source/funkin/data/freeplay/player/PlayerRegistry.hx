@@ -8,7 +8,7 @@ import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> implements ISingleton implements DefaultRegistryImpl
+class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
@@ -147,3 +147,5 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
     #end
   }
 }
+
+typedef PlayerEntryParams = {}

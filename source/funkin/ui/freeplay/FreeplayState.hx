@@ -337,6 +337,7 @@ class FreeplayState extends MusicBeatSubState
 
     var fadeShaderFilter:ShaderFilter = new ShaderFilter(fadeShader);
     funnyCam.filters = [fadeShaderFilter];
+    funnyCam.filtersEnabled = false;
 
     if (stickerSubState != null)
     {
@@ -379,7 +380,7 @@ class FreeplayState extends MusicBeatSubState
           continue;
         }
 
-        songs.push(new FreeplaySongData(song, level));
+        songs.push(new FreeplaySongData(songId, level, this));
       }
     }
 
@@ -1099,7 +1100,7 @@ class FreeplayState extends MusicBeatSubState
       capsuleToRank.ranking.playAnimationEach(fromResults.newRank.getFreeplayRankIconAsset(), true);
     }
 
-    FlxTween.tween(capsuleToRank.ranking, {"scale.x": 1, "scale.y": 1}, 0.1);
+    FlxTween.tween(capsuleToRank.ranking, {"scale.x": 0.9, "scale.y": 0.9}, 0.1);
 
     new FlxTimer().start(0.1, _ -> {
       capsuleToRank.ranking.visible = true;
@@ -1181,7 +1182,7 @@ class FreeplayState extends MusicBeatSubState
         FunkinSound.playOnce(Paths.sound('ranks/loss'));
     }
 
-    FlxTween.tween(capsuleToRank, {"targetPos.x": originalPos.x, "targetPos.y": originalPos.y}, 0.5, {ease: FlxEase.expoOut});
+    FlxTween.tween(capsuleToRank.targetPos, {x: originalPos.x, y: originalPos.y}, 0.5, {ease: FlxEase.expoOut});
     new FlxTimer().start(0.5, _ -> {
       // Capsule slam vibration.
       HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
@@ -1353,6 +1354,7 @@ class FreeplayState extends MusicBeatSubState
     FlxTween.tween(backButton, {alpha: 0.0001}, 0.4, {ease: FlxEase.quadOut});
     #end
 
+    funnyCam.filtersEnabled = true;
     fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
     FlxG.sound.music?.fadeOut(0.9, 0);
 
@@ -1409,7 +1411,9 @@ class FreeplayState extends MusicBeatSubState
     //       });
     //   }
     // }
-    fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn});
+    funnyCam.filtersEnabled = true;
+    fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn, onComplete: (twn) -> funnyCam.filtersEnabled = false});
+
     for (grpSpr in exitMoversCharSel.keys())
     {
       if (exitMoversCharSel.get(grpSpr) == null) continue;
@@ -2443,8 +2447,9 @@ class FreeplayState extends MusicBeatSubState
 
     PlayStatePlaylist.isStoryMode = false;
 
+    var targetVariation:Null<String> = currentVariation;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
-    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: targetVariation});
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
@@ -2453,8 +2458,11 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetSong:Song = targetSongNullable;
-    var targetVariation:Null<String> = currentVariation;
+    var targetDifficultyId:String = currentDifficulty;
     var targetLevelId:Null<String> = cap?.freeplayData?.levelId;
+
+    trace('target song: ${targetSongId} (${targetVariation})');
+
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
 
     var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(currentDifficulty, currentVariation);
@@ -2636,8 +2644,15 @@ class FreeplayState extends MusicBeatSubState
 
       capsule.curSelected = curSelected;
 
-      capsule.targetPos.y = capsule.intendedY(index - curSelected);
-      capsule.targetPos.x = capsule.intendedX(index - curSelected) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
+      var capsuleIndex = index - curSelected;
+      var yOffset:Float = 0;
+
+      // Small offset so edge capsules actually go offscreen enough to not require to be rendered.
+      if (capsuleIndex < 0) yOffset += 50;
+      else if (capsuleIndex > 4) yOffset -= 10;
+
+      capsule.targetPos.y = capsule.intendedY(capsuleIndex) - yOffset;
+      capsule.targetPos.x = capsule.intendedX(capsuleIndex) + (CUTOUT_WIDTH * SONGS_POS_MULTI);
       if (index < curSelected) capsule.targetPos.y -= 100; // another 100 for good measure
     }
 
@@ -2737,56 +2752,56 @@ class FreeplayState extends MusicBeatSubState
 
   function favoriteSong():Void
   {
-    var targetSong = currentCapsule?.freeplayData;
+    var selectedCapsule = currentCapsule;
+    var targetSong = selectedCapsule?.freeplayData;
     if (targetSong != null)
     {
-      var realShit:Int = curSelected;
       var isFav = targetSong.toggleFavorite();
       if (isFav)
       {
-        grpCapsules.members[realShit].favIcon.visible = true;
-        grpCapsules.members[realShit].favIconBlurred.visible = true;
-        grpCapsules.members[realShit].favIcon.animation.play('fav');
-        grpCapsules.members[realShit].favIconBlurred.animation.play('fav');
+        selectedCapsule.favIcon.visible = true;
+        selectedCapsule.favIconBlurred.visible = true;
+        selectedCapsule.favIcon.animation.play('fav');
+        selectedCapsule.favIconBlurred.animation.play('fav');
         FunkinSound.playOnce(Paths.sound('fav'), 1);
-        grpCapsules.members[realShit].checkClip();
-        grpCapsules.members[realShit].selected = true; // set selected again, so it can run its getter function to initialize movement
+        selectedCapsule.checkClip();
+        selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
         controls.active = false;
 
-        grpCapsules.members[realShit].doLerp = false;
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1, {ease: FlxEase.expoOut});
+        selectedCapsule.doLerp = false;
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y - 5}, 0.1, {ease: FlxEase.expoOut});
 
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1,
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y + 5}, 0.1,
           {
             ease: FlxEase.expoIn,
             startDelay: 0.1,
             onComplete: function(_) {
-              grpCapsules.members[realShit].doLerp = true;
+              selectedCapsule.doLerp = true;
               controls.active = true;
             }
           });
       }
       else
       {
-        grpCapsules.members[realShit].favIcon.animation.play('fav', true, true, 9);
-        grpCapsules.members[realShit].favIconBlurred.animation.play('fav', true, true, 9);
+        selectedCapsule.favIcon.animation.play('fav', true, true, 9);
+        selectedCapsule.favIconBlurred.animation.play('fav', true, true, 9);
         FunkinSound.playOnce(Paths.sound('unfav'), 1);
         new FlxTimer().start(0.2, _ -> {
-          grpCapsules.members[realShit].favIcon.visible = false;
-          grpCapsules.members[realShit].favIconBlurred.visible = false;
-          grpCapsules.members[realShit].checkClip();
-          grpCapsules.members[realShit].selected = true; // set selected again, so it can run its getter function to initialize movement
+          selectedCapsule.favIcon.visible = false;
+          selectedCapsule.favIconBlurred.visible = false;
+          selectedCapsule.checkClip();
+          selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
         });
 
         controls.active = false;
-        grpCapsules.members[realShit].doLerp = false;
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y + 5}, 0.1, {ease: FlxEase.expoOut});
-        FlxTween.tween(grpCapsules.members[realShit], {y: grpCapsules.members[realShit].y - 5}, 0.1,
+        selectedCapsule.doLerp = false;
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y + 5}, 0.1, {ease: FlxEase.expoOut});
+        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y - 5}, 0.1,
           {
             ease: FlxEase.expoIn,
             startDelay: 0.1,
             onComplete: function(_) {
-              grpCapsules.members[realShit].doLerp = true;
+              selectedCapsule.doLerp = true;
               controls.active = true;
             }
           });
@@ -2813,12 +2828,13 @@ class DifficultySelector extends FlxSprite
     super(x, y);
     this.controls = controls;
     this.whiteShader = new PureColor(FlxColor.WHITE);
+    this.whiteShader.colorSet = true;
 
     this.frames = Paths.getSparrowAtlas(styleData?.getSelectorAssetKey() ?? "freeplay/freeplaySelector");
     animation.addByPrefix('shine', 'arrow pointer loop', 24);
     animation.play('shine');
 
-    this.shader = whiteShader;
+    @:nullSafety(Off) this.shader = null;
     this.flipX = flipped;
   }
 
@@ -2837,13 +2853,13 @@ class DifficultySelector extends FlxSprite
     if (!press)
     {
       scale.x = scale.y = 1;
-      whiteShader.colorSet = false;
+      @:nullSafety(Off) this.shader = null;
       updateHitbox();
     }
     else
     {
       offset.y = -5;
-      whiteShader.colorSet = true;
+      this.shader = whiteShader;
       scale.x = scale.y = 0.5;
     }
 
@@ -2861,14 +2877,13 @@ class DifficultySelector extends FlxSprite
   function moveShitDown():Void
   {
     offset.y -= 5;
-
-    whiteShader.colorSet = true;
-
     scale.x = scale.y = 0.5;
+
+    this.shader = whiteShader;
 
     new FlxTimer().start(2 / 24, function(tmr) {
       scale.x = scale.y = 1;
-      whiteShader.colorSet = false;
+      @:nullSafety(Off) this.shader = null;
       updateHitbox();
     });
   }
@@ -2926,7 +2941,18 @@ class FreeplaySongData
    *
    * @see Song
    */
-  public var data:Song;
+  public var data(get, never):Song;
+
+  function get_data():Song
+  {
+    // This looks jank but the haxe compiler is on crack or something so 2 `privateAccess` lines are needed for some reason
+    @:privateAccess
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: instance.currentVariation});
+    @:privateAccess
+    if (song == null) throw 'Song entry not found for id: $songId with variation: ${instance.currentVariation}';
+
+    return song;
+  }
 
   /**
    * The level id of the song, useful for sorting from week1 -> week 7 + weekend1
@@ -2940,6 +2966,8 @@ class FreeplaySongData
   }
 
   var _levelId:String;
+
+  final songId:String;
 
   /**
    * Whether or not the song has been favorited.
@@ -2976,10 +3004,13 @@ class FreeplaySongData
 
   public var scoringRank(get, never):Null<ScoringRank>;
 
-  public function new(data:Song, levelData:Level)
+  public var instance:FreeplayState;
+
+  public function new(songId:String, levelData:Level, instance:FreeplayState)
   {
-    this.data = data;
+    this.songId = songId;
     _levelId = levelData.id;
+    this.instance = instance;
   }
 
   /**
