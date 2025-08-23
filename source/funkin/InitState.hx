@@ -118,11 +118,6 @@ class InitState extends FlxState
       funkin.mobile.util.InAppReviewUtil.init();
       #end
 
-      #if FEATURE_MOBILE_WEBVIEW
-      // Setup WebView
-      funkin.mobile.util.WebViewUtil.init();
-      #end
-
       #if ios
       // Setup Audio session
       funkin.external.ios.AudioSession.initialize();
