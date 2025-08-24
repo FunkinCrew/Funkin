@@ -139,7 +139,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
       this.boxSprite = null;
     }
 
-    this.boxSprite = new FunkinSprite(0, 0);
+    this.boxSprite = new FlxSprite(0, 0);
 
     trace('[DIALOGUE BOX] Loading spritesheet ${_data.assetPath} for ${id}');
 
