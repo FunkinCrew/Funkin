@@ -56,6 +56,11 @@ class Main extends Sprite
   {
     super();
 
+    #if (cpp && windows)
+    // Enable dark mode support for the title bar.
+    funkin.util.WindowUtil.setWindowDarkMode(true, true);
+    #end
+
     // Initialize custom logging.
     haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
     funkin.util.logging.AnsiTrace.traceBF();
