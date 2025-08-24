@@ -197,6 +197,8 @@ class FlxAtlasSprite extends FlxAnimate
   public function hasAnimation(id:String):Bool
   {
     var frameLabels:Array<String> = listAnimations();
+
+    @:privateAccess
     var symbols:Array<String> = this.library.dictionary.keys().array();
 
     if (anim.getByName(id) == null)
@@ -228,6 +230,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function getFirstSymbol():String
   {
+    @:privateAccess
     var symbols:Array<String> = this.library.dictionary.keys().array();
     if (symbols.length > 0) return symbols[0];
     return '';
