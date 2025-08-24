@@ -226,14 +226,14 @@ class FlxAtlasSprite extends FlxAnimate
 
   /**
    * Returns the first symbol in the atlas.
-   * @param
    */
   public function getFirstSymbol():String
   {
-    @:privateAccess
-    var symbols:Array<String> = this.library.dictionary.keys().array();
-    if (symbols.length > 0) return symbols[0];
-    return '';
+    // @:privateAccess
+    // var symbols:Array<String> = this.library.dictionary.keys().array();
+    // if (symbols.length > 0) return symbols[0];
+    // return '';
+    return library.timeline.name;
   }
 
   public function cleanupAnimation(_:String):Void

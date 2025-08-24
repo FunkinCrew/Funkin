@@ -13,6 +13,7 @@ import funkin.input.Controls;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import flixel.math.FlxPoint;
+import flixel.FlxCamera;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.audio.FunkinSound;
 
