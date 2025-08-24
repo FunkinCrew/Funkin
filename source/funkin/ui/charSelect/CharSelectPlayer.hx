@@ -84,6 +84,7 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
 
     if (frames != null) frames.parent.persist = true;
+    frames.parent.destroyOnNoUse = false;
 
     playAnimation("slidein", true, false, false);
 
