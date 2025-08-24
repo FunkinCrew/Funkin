@@ -146,6 +146,10 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    */
   public function onNoteMiss(event:NoteScriptEvent) {}
 
+  /**
+   * Called when a hold note has been dropped.
+   * This gets dispatched for both the player and opponent strumlines.
+   */
   public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 
   /**
@@ -234,4 +238,29 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    * Called when the song has been restarted.
    */
   public function onSongRetry(event:SongRetryEvent) {}
+
+  /**
+   * Called as the dialogue starts, and before the first dialogue text is displayed.
+   */
+  public function onDialogueStart(event:DialogueScriptEvent):Void {};
+
+  /**
+   * Called when a dialogue line has been completed.
+   */
+  public function onDialogueCompleteLine(event:DialogueScriptEvent):Void {};
+
+  /**
+   * Called when a dialogue line is displayed.
+   */
+  public function onDialogueLine(event:DialogueScriptEvent):Void {};
+
+  /**
+   * Called when the dialogue is skipped.
+   */
+  public function onDialogueSkip(event:DialogueScriptEvent):Void {};
+
+  /**
+   * Called when the dialogue ends.
+   */
+  public function onDialogueEnd(event:DialogueScriptEvent):Void {};
 }
