@@ -8,12 +8,87 @@ import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
 
+typedef PreferenceData =
+{
+  var name:String;
+  var desc:String;
+  var saveId:String;
+
+  //
+  @:optional
+  @:default("")
+  var script:String;
+}
+
+@:hscriptClass
+class ScriptedPreference extends Preference implements polymod.hscript.HScriptedClass {}
+
+class Preference
+{
+  public var data:PreferenceData;
+
+  public function new(data:PreferenceData)
+  {
+    this.data = data;
+    trace(this.data);
+  }
+
+  public function toString():String
+    return 'Preference(saveId: ${data.saveId})';
+}
+
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
  */
 @:nullSafety
 class Preferences
 {
+  public static var defaultPreferensecId:Array<String> = [];
+
+  public static var loadedPreferences:Array<Preference> = [];
+
+  public static function loadPreferences(?loadIds:Bool):Void
+  {
+    if (loadIds == null) loadIds = false;
+    final prefDataPath:String = Paths.json('preferences');
+    final prefData:String = Assets.getText(prefDataPath);
+
+    var parsedData:Array<PreferenceData>;
+    var parser = new json2object.JsonParser<Array<PreferenceData>>();
+    parser.ignoreUnknownVariables = false;
+    trace('[PREFERENCES] Parsing preferences data...');
+    parser.fromJson(prefData, prefDataPath);
+
+    if (parser.errors.length > 0)
+    {
+      trace('[PREFERENCES] Failed to parse preferences data!');
+      for (error in parser.errors)
+        funkin.data.DataError.printError(error);
+      parsedData = [];
+    }
+    else
+      parsedData = parser.value;
+
+    var _scriptName:Null<String> = null;
+    if (loadIds) for (prefData in parsedData)
+      defaultPreferensecId.push(prefData.saveId);
+    else
+    {
+      final scriptedClassesList:Array<String> = ScriptedPreference.listScriptClasses();
+      for (prefData in parsedData)
+      {
+        _scriptName = (prefData?.script ?? "").trim();
+        loadedPreferences.push((_scriptName != ""
+          && scriptedClassesList.contains(_scriptName)) ? (ScriptedPreference.init(_scriptName, prefData)) : (new Preference(prefData)));
+      }
+    }
+
+    _scriptName = null;
+    if (loadIds) trace(defaultPreferensecId);
+
+    trace(loadedPreferences);
+  }
+
   /**
    * FPS
    * Always the refresh rate of the display on mobile, or 60 on web.

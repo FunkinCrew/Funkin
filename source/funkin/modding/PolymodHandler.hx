@@ -566,6 +566,9 @@ class PolymodHandler
     // TODO: Replace this with loadEnabledMods().
     funkin.modding.PolymodHandler.loadAllMods();
 
+    Preferences.loadedPreferences = [];
+    Preferences.loadPreferences();
+
     // Reload everything that is cached.
     // Currently this freezes the game for a second but I guess that's tolerable?
 

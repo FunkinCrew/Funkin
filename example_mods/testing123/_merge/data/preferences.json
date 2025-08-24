@@ -1,0 +1,13 @@
+[
+  {
+    "op": "add",
+    "path": "/-",
+    "value": {
+      "name": "Test2",
+      "desc": "Desc2",
+      "saveId": "testPref2",
+
+      "script": "NullScript"
+    }
+  }
+]

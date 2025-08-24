@@ -232,7 +232,7 @@ class InitState extends FlxState
     //
     // GAME DATA PARSING
     //
-
+    Preferences.loadPreferences(false);
     // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
     trace('Parsing game data...');
