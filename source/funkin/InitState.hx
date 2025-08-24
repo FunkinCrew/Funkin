@@ -118,6 +118,11 @@ class InitState extends FlxState
       funkin.mobile.util.InAppReviewUtil.init();
       #end
 
+      #if android
+      // Setup Callback util.
+      funkin.external.android.CallbackUtil.init();
+      #end
+
       #if ios
       // Setup Audio session
       funkin.external.ios.AudioSession.initialize();
