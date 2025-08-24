@@ -97,18 +97,16 @@ class DifficultyStars extends FlxSpriteGroup
   function set_curDifficulty(value:Int):Int
   {
     curDifficulty = value;
-    if (stars.anim.curAnim != null)
+
+    if (curDifficulty == 15)
     {
-      if (curDifficulty == 15)
-      {
-        stars.anim.play("diff stars", true, false, 1500);
-        stars.anim.pause();
-      }
-      else
-      {
-        stars.anim.curAnim.curFrame = Std.int(curDifficulty * 100);
-        stars.anim.play("diff stars", true, false, curDifficulty * 100);
-      }
+      stars.playAnimation("diff stars", true, false, false, 1500);
+      stars.anim.pause();
+    }
+    else
+    {
+      stars.anim.curAnim.curFrame = Std.int(curDifficulty * 100);
+      stars.playAnimation("diff stars", true, false, false, curDifficulty * 100);
     }
 
     return curDifficulty;

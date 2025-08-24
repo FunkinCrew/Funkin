@@ -12,6 +12,7 @@ import flixel.util.FlxTimer;
 import funkin.input.Controls;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
+import flixel.math.FlxPoint;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.audio.FunkinSound;
 
@@ -328,5 +329,16 @@ class FreeplayLetter extends FlxAtlasSprite
     {
       this.anim.pause();
     }
+  }
+
+  /**
+   * Offset the letter.
+   */
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= 20;
+    output.y -= 50;
+    return output;
   }
 }
