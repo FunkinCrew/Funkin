@@ -181,9 +181,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
       this.visible = true;
       frames = FlxAnimateFrames.fromAnimate(currentGFPath);
 
-      if (frames != null) frames.parent.persist = true;
-      frames.parent.destroyOnNoUse = false;
-
       enableVisualizer = gfData?.visualizer ?? false;
 
       var animInfoPath = Paths.file('images/${gfData?.animInfoPath}');
