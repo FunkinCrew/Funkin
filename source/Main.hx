@@ -152,6 +152,11 @@ class Main extends Sprite
     FlxG.scaleMode = new FullScreenScaleMode();
     #end
 
+    #if linux
+    var icon = lime.utils.Assets.getImage("icon.png");
+    Lib.current.stage.window.setIcon(icon);
+    #end
+
     #if mobile
     // Reposition and resize the memory and fps counter without lerping.
     repositionCounters(false);

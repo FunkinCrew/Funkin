@@ -1239,6 +1239,7 @@ class Project extends HXProject
     var shouldPreloadDefault = true;
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
     addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
+    if (isLinux()) addAsset("art/icons/iconOG.png","icon.png","default",true);
 
     // Font assets
     var shouldEmbedFonts = true;
