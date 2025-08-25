@@ -81,6 +81,10 @@ class FreeplayDJ extends FlxAtlasSprite
       currentState = Confirm;
     });
 
+    FlxG.console.registerFunction("switchDJState_CharSelect", function() {
+      toCharSelect();
+    });
+
     FlxG.console.registerFunction("switchDJState_FistPump", function() {
       currentState = FistPump;
     });
