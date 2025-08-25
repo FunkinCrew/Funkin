@@ -451,6 +451,12 @@ class CharSelectSubState extends MusicBeatSubState
     });
   }
 
+  override public function destroy():Void
+  {
+    CharSelectAtlasHandler.clearAtlasCache();
+    super.destroy();
+  }
+
   function checkNewChar():Void
   {
     if (nonLocks.length > 0) selectTimer.start(2, (_) -> {
@@ -711,7 +717,6 @@ class CharSelectSubState extends MusicBeatSubState
       {
         ease: FlxEase.backIn,
         onComplete: function(_) {
-          CharSelectAtlasHandler.clearAtlasCache();
           FlxG.switchState(() -> FreeplayState.build(
             {
               {
