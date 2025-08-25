@@ -1,7 +1,6 @@
 package funkin.ui.charSelect;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import animate.FlxAnimateFrames;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
@@ -71,17 +70,9 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
   }
 
-  public function switchChar(str:String)
+  public function switchChar(str:String):Void
   {
-    switch (str)
-    {
-      default:
-        frames = FlxAnimateFrames.fromAnimate(Paths.animateAtlas("charSelect/" + str + "Chill"), null, null, null, false,
-          {
-            swfMode: true,
-            filterQuality: HIGH
-          });
-    }
+    frames = CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/${str}Chill'));
 
     playAnimation("slidein", true, false, false);
 

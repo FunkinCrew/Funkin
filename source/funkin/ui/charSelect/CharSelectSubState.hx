@@ -1,6 +1,5 @@
 package funkin.ui.charSelect;
 
-import openfl.filters.BitmapFilter;
 import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
@@ -11,31 +10,34 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import openfl.filters.DropShadowFilter;
 import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.BlueFade;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
-import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.PixelatedIcon;
+import funkin.util.FramesJSFLParser;
+import funkin.util.FramesJSFLParser.FramesJSFLInfo;
+import funkin.util.HapticUtil;
 import funkin.util.MathUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
 import openfl.display.BlendMode;
 import openfl.filters.ShaderFilter;
-import funkin.util.FramesJSFLParser;
-import funkin.util.FramesJSFLParser.FramesJSFLInfo;
-import funkin.graphics.FunkinSprite;
+import openfl.filters.BitmapFilter;
+import openfl.filters.DropShadowFilter;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
-import funkin.util.HapticUtil;
+#end
 
 class CharSelectSubState extends MusicBeatSubState
 {
@@ -96,6 +98,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   var cutoutSize:Float = 0;
 
+  var fadeShader:BlueFade = new BlueFade();
+
   public function new(?params:CharSelectSubStateParams)
   {
     super();
@@ -109,9 +113,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     for (playerId in playerIds)
     {
-      var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerId);
-      if (player == null) continue;
-      var playerData = player.getCharSelectData();
+      var playerData:Null<PlayerCharSelectData> = PlayerRegistry.instance.fetchEntry(playerId)?.getCharSelectData();
       if (playerData == null) continue;
 
       var targetPosition:Int = playerData.position ?? 0;
@@ -122,10 +124,20 @@ class CharSelectSubState extends MusicBeatSubState
 
       trace('Placing player ${playerId} at position ${targetPosition}');
       availableChars.set(targetPosition, playerId);
-    }
-  }
 
-  var fadeShader:BlueFade = new BlueFade();
+      CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/${playerId}Chill'));
+
+      var gfPath:Null<String> = playerData.gf?.assetPath;
+      gfPath = gfPath != null ? Paths.animateAtlas(gfPath) : null;
+      if (gfPath != null)
+      {
+        CharSelectAtlasHandler.loadAtlas(gfPath);
+      }
+    }
+
+    // Mr. Static also needs some caching...
+    CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/lockedChill'));
+  }
 
   override public function create():Void
   {
@@ -700,6 +712,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         ease: FlxEase.backIn,
         onComplete: function(_) {
+          CharSelectAtlasHandler.clearAtlasCache();
           FlxG.switchState(() -> FreeplayState.build(
             {
               {
