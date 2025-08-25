@@ -9,6 +9,7 @@ import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.Strumline;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -690,6 +691,27 @@ class BaseCharacter extends Bopper
   public function getDeathQuote():Null<String>
   {
     return null;
+  }
+
+  /**
+   * Creates a list of all strumlines that affect this character.
+   */
+  public function getStrumlines():Array<Strumline>
+  {
+    var result:Array<Strumline> = [];
+    if (PlayState.instance == null) return result;
+    for (strumline in PlayState.instance.strumlines)
+    {
+      for (character in strumline.characters)
+      {
+        if (character == this)
+        {
+          result.push(strumline);
+          break;
+        }
+      }
+    }
+    return result;
   }
 }
 
