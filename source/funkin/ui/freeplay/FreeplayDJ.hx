@@ -39,9 +39,13 @@ class FreeplayDJ extends FlxAtlasSprite
     var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
     playableCharData = playableChar?.getFreeplayDJData();
 
+    // TODO: dj boyfriend has some crazy fucking light effects that cause lagspikes if they're not cached
+    // bettertextureatlas can bake the filters, but they don't display properly in-game currently
+    // remove `cacheOnLoad` once bettertextureatlas filter baking is improved
     super(x, y, playableCharData?.getAtlasPath(),
       {
         swfMode: true,
+        cacheOnLoad: PlayerRegistry.instance.hasNewCharacter(),
         filterQuality: MEDIUM
       });
 
