@@ -128,10 +128,9 @@ class CharSelectSubState extends MusicBeatSubState
       CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/${playerId}Chill'));
 
       var gfPath:Null<String> = playerData.gf?.assetPath;
-      gfPath = gfPath != null ? Paths.animateAtlas(gfPath) : null;
       if (gfPath != null)
       {
-        CharSelectAtlasHandler.loadAtlas(gfPath);
+        CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas(gfPath));
       }
     }
 
