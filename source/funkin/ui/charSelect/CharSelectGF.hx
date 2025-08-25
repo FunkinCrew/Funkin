@@ -1,8 +1,6 @@
 package funkin.ui.charSelect;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import animate.FlxAnimateFrames;
-import flixel.math.FlxMath;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.util.FramesJSFLParser.FramesJSFLFrame;
@@ -179,7 +177,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     else if (previousGFPath != currentGFPath)
     {
       this.visible = true;
-      frames = FlxAnimateFrames.fromAnimate(currentGFPath);
+      frames = CharSelectAtlasHandler.loadAtlas(currentGFPath);
 
       enableVisualizer = gfData?.visualizer ?? false;
 
