@@ -489,7 +489,11 @@ class Project extends HXProject
     configureHaxelibs();
     configureASTCTextures();
     configureAssets();
-    configureIcons();
+
+    if (!isLinux())
+    {
+      configureIcons();
+    }
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
     {
