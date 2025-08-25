@@ -65,7 +65,35 @@ class FreeplayDJ extends FlxAtlasSprite
     onAnimationComplete.add(onFinishAnim);
     onAnimationLoop.add(onFinishAnim);
 
-    FlxG.console.registerFunction("freeplayCartoon", function() {
+    FlxG.console.registerFunction("switchDJState_Intro", function() {
+      currentState = Intro;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Idle", function() {
+      currentState = Idle;
+    });
+
+    FlxG.console.registerFunction("switchDJState_NewUnlock", function() {
+      currentState = NewUnlock;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Confirm", function() {
+      currentState = Confirm;
+    });
+
+    FlxG.console.registerFunction("switchDJState_FistPump", function() {
+      currentState = FistPump;
+    });
+
+    FlxG.console.registerFunction("switchDJState_FistPumpIntro", function() {
+      currentState = FistPumpIntro;
+    });
+
+    FlxG.console.registerFunction("switchDJState_IdleEasterEgg", function() {
+      currentState = IdleEasterEgg;
+    });
+
+    FlxG.console.registerFunction("switchDJState_Cartoon", function() {
       currentState = Cartoon;
     });
   }
