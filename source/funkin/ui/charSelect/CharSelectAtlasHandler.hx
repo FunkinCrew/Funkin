@@ -18,7 +18,7 @@ class CharSelectAtlasHandler
     var result:FlxAnimateFrames = FlxAnimateFrames.fromAnimate(path,
       {
         swfMode: settings?.swfMode ?? true,
-        filterQuality: settings?.filterQuality ?? HIGH,
+        filterQuality: settings?.filterQuality ?? MEDIUM,
         cacheOnLoad: settings?.cacheOnLoad ?? false
       });
 

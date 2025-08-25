@@ -42,7 +42,7 @@ class FreeplayDJ extends FlxAtlasSprite
     super(x, y, playableCharData?.getAtlasPath(),
       {
         swfMode: true,
-        filterQuality: HIGH
+        filterQuality: MEDIUM
       });
 
     onAnimationFrame.add(function(name, number) {

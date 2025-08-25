@@ -97,7 +97,7 @@ class FlxAtlasSprite extends FlxAnimate
       {
         swfMode: settings?.swfMode ?? false,
         cacheOnLoad: settings?.cacheOnLoad ?? false,
-        filterQuality: settings?.filterQuality ?? HIGH,
+        filterQuality: settings?.filterQuality ?? MEDIUM,
         spritemaps: settings?.spritemaps ?? null,
         metadataJson: settings?.metadataJson ?? null,
         cacheKey: settings?.cacheKey ?? null,
