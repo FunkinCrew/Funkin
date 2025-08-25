@@ -39,9 +39,11 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     FlxGraphic.defaultPersist = true;
 
-    medal = new FlxAtlasSprite(MEDAL_X, MEDAL_Y, Paths.animateAtlas("ui/medal"),
+    medal = new FlxAtlasSprite(MEDAL_X - 450, MEDAL_Y - 95, Paths.animateAtlas("ui/medal"),
       {
-        swfMode: true
+        swfMode: true,
+        cacheOnLoad: true,
+        filterQuality: HIGH
       });
 
     points = new FlxText(171 + MEDAL_X, 10 + MEDAL_Y, 50, 12, false);
