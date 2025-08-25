@@ -573,7 +573,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       lock.playAnimation("unlock");
       lock.onAnimationFrame.add(function(animName:String, frame:Int) {
-        if (frame == 45)
+        if (frame == 39)
         {
           playerChillOut.playAnimation("death");
         }
