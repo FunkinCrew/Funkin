@@ -338,8 +338,8 @@ class FreeplayLetter extends FlxAtlasSprite
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
-    output.x -= 20;
-    output.y -= 50;
+    output.x -= 50;
+    output.y -= 60;
     return output;
   }
 }
