@@ -135,7 +135,7 @@ class CharSelectSubState extends MusicBeatSubState
     }
 
     // Mr. Static also needs some caching...
-    CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/lockedChill'));
+    CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/lockedChill'), {filterQuality: LOW});
   }
 
   override public function create():Void
