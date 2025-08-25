@@ -14,7 +14,12 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     initialX = x;
     initialY = y;
 
-    super(x, y, Paths.animateAtlas("charSelect/bfChill"));
+    super(x, y, Paths.animateAtlas("charSelect/bfChill"),
+      {
+        swfMode: true,
+        cacheOnLoad: true,
+        filterQuality: HIGH
+      });
 
     onAnimationComplete.add(function(animLabel:String) {
       switch (animLabel)
@@ -65,13 +70,9 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
   }
 
-  public function switchChar(str:String)
+  public function switchChar(str:String):Void
   {
-    switch str
-    {
-      default:
-        loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
-    }
+    frames = CharSelectAtlasHandler.loadAtlas(Paths.animateAtlas('charSelect/${str}Chill'));
 
     playAnimation("slidein", true, false, false);
 

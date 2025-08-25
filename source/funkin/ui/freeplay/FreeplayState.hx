@@ -1605,7 +1605,8 @@ class FreeplayState extends MusicBeatSubState
 
     if ((controls.FREEPLAY_CHAR_SELECT #if FEATURE_TOUCH_CONTROLS
       || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
-      && controls.active)
+      && controls.active
+      && !FlxG.debugger.visible)
     {
       tryOpenCharSelect();
     }

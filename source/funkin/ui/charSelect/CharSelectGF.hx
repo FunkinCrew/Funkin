@@ -1,7 +1,6 @@
 package funkin.ui.charSelect;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.math.FlxMath;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.util.FramesJSFLParser.FramesJSFLFrame;
@@ -21,7 +20,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   var intendedYPos:Float = 0;
   var intendedAlpha:Float = 0;
-  var list:Array<String> = [];
 
   var analyzer:SpectralAnalyzer;
 
@@ -31,8 +29,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   public function new()
   {
     super(0, 0, Paths.animateAtlas("charSelect/gfChill"));
-
-    list = anim.curSymbol.getFrameLabelNames();
 
     switchGF("bf");
   }
@@ -85,8 +81,8 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     if (enableVisualizer)
     {
       var levels = analyzer.getLevels();
-      var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
-      var elements = frame.getList();
+      var frame = this.timeline.getLayer("VIZ_bars").getFrameAtIndex(anim.curAnim.curFrame);
+      var elements = frame.elements;
       var len:Int = cast Math.min(elements.length, 7);
 
       for (i in 0...len)
@@ -104,7 +100,10 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
         animFrame = Std.int(Math.abs(animFrame - 12)); // shitty dumbass flip, cuz dave got da shit backwards lol!
 
-        elements[i].symbol.firstFrame = animFrame;
+        var convertedSymbol = elements[i].toSymbolInstance();
+        convertedSymbol.firstFrame = animFrame;
+
+        elements[i] = convertedSymbol;
       }
     }
   }
@@ -178,7 +177,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     else if (previousGFPath != currentGFPath)
     {
       this.visible = true;
-      loadAtlas(currentGFPath);
+      frames = CharSelectAtlasHandler.loadAtlas(currentGFPath);
 
       enableVisualizer = gfData?.visualizer ?? false;
 

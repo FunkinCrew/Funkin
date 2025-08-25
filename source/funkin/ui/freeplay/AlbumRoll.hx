@@ -57,10 +57,10 @@ class AlbumRoll extends FlxSpriteGroup
   {
     super();
 
-    newAlbumArt = new FlxAtlasSprite((FlxG.width - 640) - FullScreenScaleMode.gameNotchSize.x, 360, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
+    newAlbumArt = new FlxAtlasSprite((FlxG.width + -360) - FullScreenScaleMode.gameNotchSize.x, 220, Paths.animateAtlas("freeplay/albumRoll/freeplayAlbum"));
     newAlbumArt.visible = false;
 
-    difficultyStars = new DifficultyStars((FlxG.width - 1140) - FullScreenScaleMode.gameNotchSize.x, 39);
+    difficultyStars = new DifficultyStars((FlxG.width - 330) - FullScreenScaleMode.gameNotchSize.x, 209);
     difficultyStars.visible = false;
 
     add(newAlbumArt);
