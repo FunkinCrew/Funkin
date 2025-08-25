@@ -89,8 +89,6 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public var onAnimationLoop:FlxTypedSignal<String->Void> = new FlxTypedSignal();
 
-  var currentAnimation:String = '';
-
   var canPlayOtherAnims:Bool = true;
 
   public function new(x:Float, y:Float, ?path:String, ?settings:FlxAtlasSpriteSettings)
@@ -229,10 +227,6 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function getFirstSymbol():String
   {
-    // @:privateAccess
-    // var symbols:Array<String> = this.library.dictionary.keys().array();
-    // if (symbols.length > 0) return symbols[0];
-    // return '';
     return library.timeline.name;
   }
 
@@ -244,34 +238,17 @@ class FlxAtlasSprite extends FlxAnimate
 
   function _onAnimationFrame(animName:String, frameNumber:Int, frameIndex:Int):Void
   {
-    if (currentAnimation != null)
-    {
-      onAnimationFrame.dispatch(currentAnimation, frameNumber);
-    }
+    onAnimationFrame.dispatch(animName, frameNumber);
   }
 
   function _onAnimationComplete(animName:String):Void
   {
-    if (currentAnimation != null)
-    {
-      onAnimationComplete.dispatch(currentAnimation);
-    }
-    else
-    {
-      onAnimationComplete.dispatch('');
-    }
+    onAnimationComplete.dispatch(animName);
   }
 
   function _onAnimationLoop(animationName:String):Void
   {
-    if (currentAnimation != null)
-    {
-      onAnimationLoop.dispatch(currentAnimation);
-    }
-    else
-    {
-      onAnimationLoop.dispatch('');
-    }
+    onAnimationLoop.dispatch(animationName);
   }
 
   /**
@@ -279,7 +256,7 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function getCurrentAnimation():String
   {
-    return this.currentAnimation;
+    return this.anim.curAnim?.name ?? '';
   }
 
   public var ignoreExclusionPref:Array<String> = [];
@@ -301,7 +278,7 @@ class FlxAtlasSprite extends FlxAnimate
     // Skip if not allowed to play animations.
     if ((!canPlayOtherAnims))
     {
-      if (this.currentAnimation == id && restart) {}
+      if (getCurrentAnimation() == id && restart) {}
       else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
       {
         var detected:Bool = false;
@@ -334,8 +311,6 @@ class FlxAtlasSprite extends FlxAnimate
     // Prevent other animations from playing if `ignoreOther` is true.
     if (ignoreOther) canPlayOtherAnims = false;
 
-    this.currentAnimation = id;
-
     this.anim.play(id, restart, reversed, startFrame);
     this.anim.curAnim.looped = loop;
 
@@ -356,8 +331,6 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public function stopAnimation():Void
   {
-    if (this.currentAnimation == null) return;
-
     this.anim.stop();
   }
 

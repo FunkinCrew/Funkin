@@ -9,9 +9,10 @@ import flixel.graphics.FlxGraphic;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import flixel.math.FlxRect;
 import funkin.api.newgrounds.Medals;
+import funkin.util.macro.ConsoleMacro;
 
 @:nullSafety
-class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
+class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements ConsoleClass
 {
   public static var instance:Null<NewgroundsMedalPlugin> = null;
 
@@ -40,8 +41,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
     medal = new FlxAtlasSprite(MEDAL_X, MEDAL_Y, Paths.animateAtlas("ui/medal"),
       {
-        swfMode: true,
-        cacheOnLoad: true
+        swfMode: true
       });
 
     points = new FlxText(171 + MEDAL_X, 10 + MEDAL_Y, 50, 12, false);
@@ -100,7 +100,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
       if (frame == 89)
       {
-        medal.playAnimation("[NG-MEDAL]", false, false, false, 103, true);
+        medal.playAnimation("", false, false, false, 103, true);
       }
     });
 
@@ -156,7 +156,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
       instance.medal.visible = true;
       instance.medal.replaceFrameGraphic(3, graphic);
-      instance.medal.playAnimation("[NG-MEDAL]");
+      instance.medal.playAnimation("");
 
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
     }

@@ -42,7 +42,6 @@ class FreeplayDJ extends FlxAtlasSprite
     super(x, y, playableCharData?.getAtlasPath(),
       {
         swfMode: true,
-        cacheOnLoad: true,
         filterQuality: HIGH
       });
 
