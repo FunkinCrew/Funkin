@@ -278,6 +278,8 @@ class ResultState extends MusicBeatSubState
               sound: (animData.sound ?? "")
             });
           // Add to the scene.
+
+          trace(animation.timeline.getBoundsOrigin());
           add(animation);
         case 'sparrow':
           @:nullSafety(Off)

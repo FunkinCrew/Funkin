@@ -67,6 +67,12 @@ typedef FlxAtlasSpriteSettings =
    */
   @:optional
   var onSymbolCreate:animate.internal.SymbolItem->Void;
+
+  /**
+   * Whether to apply the stage matrix, if it was exported from a symbol instance.
+   */
+  @:optional
+  var applyStageMatrix:Bool;
 }
 
 /**
@@ -108,7 +114,8 @@ class FlxAtlasSprite extends FlxAnimate
         metadataJson: settings?.metadataJson ?? null,
         cacheKey: settings?.cacheKey ?? null,
         uniqueInCache: settings?.uniqueInCache ?? false,
-        onSymbolCreate: settings?.onSymbolCreate ?? null
+        onSymbolCreate: settings?.onSymbolCreate ?? null,
+        applyStageMatrix: settings?.applyStageMatrix ?? true
       };
 
     if (path == null)
@@ -123,6 +130,8 @@ class FlxAtlasSprite extends FlxAnimate
     }
 
     super(x, y);
+
+    this.applyStageMatrix = validatedSettings.applyStageMatrix ?? true;
 
     frames = FlxAnimateFrames.fromAnimate(path, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
       validatedSettings.uniqueInCache, {
