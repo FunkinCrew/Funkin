@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.sound.FlxSound;
 import funkin.vis.dsp.SpectralAnalyzer;
+import funkin.audio.visualize.dsp.FlxSoundAnalyzer;
 
 using Lambda;
 
@@ -13,23 +14,19 @@ using Lambda;
 class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 {
   // public var vis:VisShit;
-  var analyzer:Null<SpectralAnalyzer> = null;
+  var analyzer:Null<FlxSoundAnalyzer> = null;
 
   var volumes:Array<Float> = [];
 
-  public var snd:Null<FlxSound> = null;
-
-  static final BAR_COUNT:Int = 7;
-
-  // TODO: Make the sprites easier to soft code.
-  public function new(snd:FlxSound, pixel:Bool)
+  public function new(pixel:Bool)
   {
     super();
 
-    this.snd = snd;
-
     var visCount = pixel ? (BAR_COUNT + 1) : (BAR_COUNT + 1);
     var visScale = pixel ? 6 : 1;
+
+    // vis = new VisShit(snd);
+    // vis.snd = snd;
 
     var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas(pixel ? 'characters/abotPixel/aBotVizPixel' : 'characters/abot/aBotViz');
 
@@ -59,18 +56,15 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
-  public function initAnalyzer():Void
+  public function initAnalyzer(snd:FlxSound)
   {
-    if (snd == null) return;
-
+    if (analyzer != null)
+    {
+      analyzer.snd = snd;
+      return;
+    }
     @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__audioSource, BAR_COUNT, 0.1, 40);
-    // A-Bot tuning...
-    analyzer.minDb = -65;
-    analyzer.maxDb = -25;
-    analyzer.maxFreq = 22000;
-    // we use a very low minFreq since some songs use low low subbass like a boss
-    analyzer.minFreq = 10;
+    analyzer = new FlxSoundAnalyzer(snd, 7, 0.1, 40);
 
     #if sys
     // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
