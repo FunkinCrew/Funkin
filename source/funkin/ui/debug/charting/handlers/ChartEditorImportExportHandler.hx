@@ -135,10 +135,16 @@ class ChartEditorImportExportHandler
       state.songManifestData = newSongManifestData;
     }
 
-    if (!state.songMetadata.exists(state.selectedVariation))
+    var variationMetadata:Null<SongMetadata> = state.songMetadata.get(state.selectedVariation);
+    if (variationMetadata == null)
     {
-      state.selectedVariation = Constants.DEFAULT_VARIATION;
+      // Use the default variation, or the first available variation if that doesn't exist for some reason.
+      if (state.availableDifficulties.indexOf(Constants.DEFAULT_VARIATION) < 0) state.selectedVariation = state.availableVariations[0];
+      else state.selectedVariation = Constants.DEFAULT_VARIATION;
+
+      variationMetadata = state.songMetadata.get(state.selectedVariation);
     }
+
     // Use the first available difficulty as a fallback if the currently selected one cannot be found.
     if (state.availableDifficulties.indexOf(state.selectedDifficulty) < 0) state.selectedDifficulty = state.availableDifficulties[0];
 
