@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import flixel.tweens.FlxTween;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.graphics.FunkinSprite;
@@ -96,6 +97,24 @@ class StrumlineNote extends FunkinSprite
     }
     return value;
   }
+
+  /**
+   * The tween used in Freeplay songs to fade the arrows in and out.
+   * Stored here so it can be cancelled.
+   */
+  public var fadeTween:FlxTween = null;
+
+  /**
+   * The target Y position for `Strumline.fadeInArrow()` and `Strumline.fadeOutArrow()`.
+   * Used to immediately finish the tweens because they don't have a `complete()` function for some reason.
+   */
+  public var fadeTargetY:Float = 0;
+
+  /**
+   * The target alpha value for `Strumline.fadeInArrow()` and `Strumline.fadeOutArrow()`.
+   * Used to immediately finish the tweens because they don't have a `complete()` function for some reason.
+   */
+  public var fadeTargetAlpha:Float = 1;
 
   /**
    * How long to continue the hold note animation after a note is pressed.

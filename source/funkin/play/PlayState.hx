@@ -524,14 +524,34 @@ class PlayState extends MusicBeatSubState
   public var strumlines:Array<Strumline> = [];
 
   /**
-   * The sprite group containing active player's strumline notes.
+   * The sprite group containing active players' strumline notes.
    */
-  public var playerStrumline:Strumline;
+  public var playerStrumline(get, set):Strumline;
+
+  function get_playerStrumline():Strumline
+  {
+    return strumlines[0];
+  }
+
+  function set_playerStrumline(value:Strumline):Strumline
+  {
+    return strumlines[0] = value;
+  }
 
   /**
-   * The sprite group containing opponent's strumline notes.
+   * The sprite group containing opponents' strumline notes.
    */
-  public var opponentStrumline:Strumline;
+  public var opponentStrumline(get, set):Strumline;
+
+  function get_opponentStrumline():Strumline
+  {
+    return strumlines[1];
+  }
+
+  function set_opponentStrumline(value:Strumline):Strumline
+  {
+    return strumlines[1] = value;
+  }
 
   /**
    * Controls vibrations for all strumlines with `hasVibrations` enabled.
@@ -734,7 +754,9 @@ class PlayState extends MusicBeatSubState
     noteStyle = nulNoteStyle;
 
     // Strumlines
+    @:nullSafety(Off)
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
+    @:nullSafety(Off)
     opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
 
     // Healthbar
@@ -2111,8 +2133,6 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     add(playerStrumline);
     add(opponentStrumline);
-    strumlines.push(playerStrumline);
-    strumlines.push(opponentStrumline);
     var boyfriend:Null<BaseCharacter> = currentStage?.getBoyfriend();
     if (boyfriend != null) playerStrumline.characters.push(boyfriend);
     var dad:Null<BaseCharacter> = currentStage?.getDad();
@@ -2148,8 +2168,11 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.noteVibrations = noteVibrations;
     playerStrumline.hasVibrations = !isBotPlayMode;
 
-    playerStrumline.fadeInArrows();
-    opponentStrumline.fadeInArrows();
+    if (!PlayStatePlaylist.isStoryMode)
+    {
+      playerStrumline.fadeInArrows();
+      opponentStrumline.fadeInArrows();
+    }
   }
 
   /**
@@ -3612,6 +3635,11 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
+          for (strumline in strumlines)
+          {
+            strumline.fadeOutArrows();
+          }
+
           zoomIntoResultsScreen(isNewHighscore, prevScoreData);
         }
       }
@@ -3649,6 +3677,12 @@ class PlayState extends MusicBeatSubState
 
     // Prevent vwoosh timer from running outside PlayState (e.g Chart Editor)
     vwooshTimer.cancel();
+
+    // Cancel strumline tweens.
+    for (strumline in strumlines)
+    {
+      strumline.skipFadingArrows();
+    }
 
     if (overrideMusic)
     {

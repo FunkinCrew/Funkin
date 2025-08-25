@@ -1420,9 +1420,11 @@ class Strumline extends FlxSpriteGroup
    */
   function fadeInArrow(index:Int, arrow:StrumlineNote):Void
   {
+    arrow.fadeTargetY = arrow.y; // The arrow returns to its usual position.
+    arrow.fadeTargetAlpha = 1.0;
     arrow.y -= 10;
     arrow.alpha = 0.0;
-    FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
+    arrow.fadeTween = FlxTween.tween(arrow, {y: arrow.fadeTargetY, alpha: arrow.fadeTargetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
   }
 
   /**
@@ -1434,7 +1436,22 @@ class Strumline extends FlxSpriteGroup
    */
   public function fadeOutArrow(index:Int, arrow:StrumlineNote):Void
   {
-    FlxTween.tween(arrow, {y: arrow.y - 10, alpha: 0}, 0.5, {ease: FlxEase.circIn});
+    arrow.fadeTargetY = arrow.y - 10;
+    arrow.fadeTargetAlpha = 0.0;
+    arrow.fadeTween = FlxTween.tween(arrow, {y: arrow.fadeTargetY, alpha: arrow.fadeTargetAlpha}, 0.5, {ease: FlxEase.circIn});
+  }
+
+  /**
+   * Immediately finish an arrow's fade tween found in Freeplay mode.
+   * Useful for scripts that set individual arrow positions.
+   *
+   * @param arrow The arrow to skip the tween of.
+   */
+  public function skipFadingArrow(arrow:StrumlineNote):Void
+  {
+    if (arrow.fadeTween != null) arrow.fadeTween.cancel();
+    arrow.y = arrow.fadeTargetY;
+    arrow.alpha = arrow.fadeTargetAlpha;
   }
 
   /**
@@ -1458,6 +1475,18 @@ class Strumline extends FlxSpriteGroup
     for (index => arrow in this.strumlineNotes.members.keyValueIterator())
     {
       fadeOutArrow(index, arrow);
+    }
+  }
+
+  /**
+   * Immediately finish the arrows' fade tweens found in Freeplay mode.
+   * Useful for scripts that set individual arrow positions.
+   */
+  public function skipFadingArrows():Void
+  {
+    for (arrow in this.strumlineNotes.members)
+    {
+      skipFadingArrow(arrow);
     }
   }
 
