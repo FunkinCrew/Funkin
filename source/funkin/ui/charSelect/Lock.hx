@@ -16,25 +16,22 @@ class Lock extends FlxAtlasSprite
 
   public function new(x:Float = 0, y:Float = 0, index:Int, settings:FlxAtlasSpriteSettings)
   {
-    super(x, y, Paths.animateAtlas("charSelect/lock"), settings);
-
     var tint:FlxColor = colors[index];
 
-    var arr:Array<String> = ["lock", "lock top 1", "lock top 2", "lock top 3", "lock base fuck it"];
-
-    var func = function(name) {
-      var symbol = library.getSymbol(name);
-      if (symbol != null && symbol.timeline.getLayer("color") != null)
+    super(x, y, Paths.animateAtlas("charSelect/lock"),
       {
-        var colorSymbol = symbol.timeline.getLayer("color").getFrameAtIndex(0).convertToSymbol(0, 1);
-        colorSymbol.setColorTransform(0, 0, 0, 1, tint.red, tint.green, tint.blue, 0);
-      }
-    }
-
-    for (symbol in arr)
-    {
-      func(symbol);
-    }
+        swfMode: settings.swfMode,
+        cacheOnLoad: settings.cacheOnLoad,
+        filterQuality: settings.filterQuality,
+        uniqueInCache: settings.uniqueInCache,
+        onSymbolCreate: (symbol) -> {
+          if (symbol.timeline.getLayer("color") != null)
+          {
+            var colorSymbol = symbol.timeline.getLayer("color").getFrameAtIndex(0).convertToSymbol(0, 1);
+            colorSymbol.setColorTransform(0, 0, 0, 1, tint.red, tint.green, tint.blue, 0);
+          }
+        }
+      });
 
     playAnimation("idle");
   }

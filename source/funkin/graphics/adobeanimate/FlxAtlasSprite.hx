@@ -61,6 +61,12 @@ typedef FlxAtlasSpriteSettings =
    */
   @:optional
   var uniqueInCache:Bool;
+
+  /**
+   * Optional callback for when a symbol is created.
+   */
+  @:optional
+  var onSymbolCreate:animate.internal.SymbolItem->Void;
 }
 
 /**
@@ -101,7 +107,8 @@ class FlxAtlasSprite extends FlxAnimate
         spritemaps: settings?.spritemaps ?? null,
         metadataJson: settings?.metadataJson ?? null,
         cacheKey: settings?.cacheKey ?? null,
-        uniqueInCache: settings?.uniqueInCache ?? false
+        uniqueInCache: settings?.uniqueInCache ?? false,
+        onSymbolCreate: settings?.onSymbolCreate ?? null
       };
 
     if (path == null)
@@ -121,7 +128,8 @@ class FlxAtlasSprite extends FlxAnimate
       validatedSettings.uniqueInCache, {
         swfMode: validatedSettings.swfMode,
         cacheOnLoad: validatedSettings.cacheOnLoad,
-        filterQuality: validatedSettings.filterQuality
+        filterQuality: validatedSettings.filterQuality,
+        onSymbolCreate: validatedSettings.onSymbolCreate
       });
 
     this.anim.onFinish.add(_onAnimationComplete);
