@@ -666,6 +666,7 @@ class PlayState extends MusicBeatSubState
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
+  var generatedNoteData:Bool = false;
 
   var skipEndingTransition:Bool = false;
 
@@ -2341,15 +2342,17 @@ class PlayState extends MusicBeatSubState
 
   /**
      * Read note data from the chart and generate the notes.
-     * @param startTime The song time to ignore all notes before.
+     * @param startTime The song time to ignore all notes before, inclusive.
+     * @param endTime The song time to ignore all notes after, exclusive. If `null`, then there is no end limit used.
+     * @param timeOffset An amount of time to offset all new notes by. Notes are offset after the check for if they're between `startTime` and `endTime`.
      * @param chart The chart to load.
      * @param strumline A singular strumline to load notes onto. If neither this nor the array are provided, the default strumlines will be used.
      * @param strumlines An array of strumlines to load notes onto. If this is not provided, the singular one will be used instead.
-     * @param isFirstCallSinceSongLoad Should be true for only the first call to this function until the song is reloaded.
      * @param forceSide A side of the chart to force onto all provided strumlines instead of making it depend on who controls each strumline. 0 for Player and 1 for Opponent.
+     * @param clearNotes Whether this function will either add to or overwrite existing notes.
      */
-  function regenNoteData(startTime:Float = 0, ?chart:SongDifficulty, ?strumline:Strumline, ?strumlines:Array<Strumline>,
-      ?isFirstCallSinceSongLoad:Bool = true, ?forceSide:Int):Void
+  function regenNoteData(startTime:Float = 0, ?endTime:Float, timeOffset:Float = 0, ?chart:SongDifficulty, ?strumline:Strumline, ?strumlines:Array<Strumline>,
+      ?forceSide:Int, clearNotes:Bool = true):Void
   {
     // If a chart was not provided, use the current chart.
     if (chart == null) chart = currentChart;
@@ -2368,11 +2371,8 @@ class PlayState extends MusicBeatSubState
         strumlines = [strumline];
     }
 
-    // Normally, this variable is not provided on the first call, so it's set to true by default here.
-    if (isFirstCallSinceSongLoad == null) isFirstCallSinceSongLoad = true;
-
     var builtNoteData = chart.notes.copy();
-    if (isFirstCallSinceSongLoad)
+    if (!generatedNoteData)
     {
       Highscore.tallies.combo = 0;
       Highscore.tallies = new Tallies();
@@ -2390,22 +2390,31 @@ class PlayState extends MusicBeatSubState
 
     for (strumline in strumlines)
     {
-      // If this is a player strumline that's having its notes overwritten, subtract the previous amount of scoreable notes from the total note tally.
-      if (strumline.isPlayer && !isFirstCallSinceSongLoad)
+      var strumlineNoteData:Array<SongNoteData>;
+      if (clearNotes)
       {
-        for (songNote in strumline.noteData)
+        // If this is a player strumline that's having its notes overwritten, subtract the previous amount of scoreable notes from the total note tally.
+        if (strumline.isPlayer && generatedNoteData)
         {
-          var scoreable:Bool = true;
-          if (songNote.kind != null)
+          for (songNote in strumline.noteData)
           {
-            var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(songNote.kind ?? '');
-            if (noteKind != null) scoreable = noteKind.scoreable;
+            var scoreable:Bool = true;
+            if (songNote.kind != null)
+            {
+              var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(songNote.kind ?? '');
+              if (noteKind != null) scoreable = noteKind.scoreable;
+            }
+            if (scoreable) Highscore.tallies.totalNotes--;
           }
-          if (scoreable) Highscore.tallies.totalNotes--;
         }
+        // Reset the notes for the strumline.
+        strumlineNoteData = [];
       }
-      // Reset the notes for the strumline.
-      var strumlineNoteData:Array<SongNoteData> = [];
+      else
+      {
+        // Keep the existing notes.
+        strumlineNoteData = strumline.noteData.copy();
+      }
 
       for (songNote in builtNoteData)
       {
@@ -2419,7 +2428,8 @@ class PlayState extends MusicBeatSubState
           || isForcedNote)
         {
           var strumTime:Float = songNote.time;
-          if (strumTime < startTime) continue; // Skip notes that are before the start time.
+          if (strumTime < startTime
+            || (endTime != null && strumTime >= endTime)) continue; // Skip notes that are outside the provided time range.
 
           var note:SongNoteData = songNote;
           // If this note is being forced from a different side, clone it and set it to the correct strumline index.
@@ -2439,6 +2449,9 @@ class PlayState extends MusicBeatSubState
             if (noteKind != null) scoreable = noteKind.scoreable;
           }
 
+          // Offset the strum time of each note by timeOffset.
+          note.time += timeOffset;
+
           strumlineNoteData.push(note);
           // Increment totalNotes for total possible notes able to be hit by the player.
           if (playerNote && scoreable) Highscore.tallies.totalNotes++;
@@ -2447,6 +2460,8 @@ class PlayState extends MusicBeatSubState
 
       strumline.applyNoteData(strumlineNoteData);
     }
+
+    generatedNoteData = true;
   }
 
   function onStrumlineNoteIncoming(noteSprite:NoteSprite):Void
