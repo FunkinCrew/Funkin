@@ -14,6 +14,12 @@ typedef PreferenceData =
   var desc:String;
   var saveId:String;
 
+  @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  var defaultVale:Dynamic;
+
+  var type:String; // checkbox, number, percent, enum
+
   //
   @:optional
   @:default("")
@@ -25,16 +31,56 @@ class ScriptedPreference extends Preference implements polymod.hscript.HScripted
 
 class Preference
 {
-  public var data:PreferenceData;
+  // public var data:PreferenceData;
+  public var name:String;
+  public var desc:String;
 
-  public function new(data:PreferenceData)
+  public var defaultVale:Dynamic;
+
+  public var type:String;
+
+  public var saveId:String;
+
+  public var isMod:Bool;
+
+  public function new(data:PreferenceData, ?modded:Bool)
   {
-    this.data = data;
-    trace(this.data);
+    // this.data = data;
+    // trace(this.data);
+
+    name = data.name;
+    desc = data.desc;
+
+    defaultVale = data.defaultVale;
+
+    type = data.type;
+    saveId = data.saveId;
+
+    isMod = modded;
+  }
+
+  // Override this function with your script.
+  public function allowThisPreference():Bool
+  {
+    return true;
+  }
+
+  public function loadDefaultValue()
+  {
+    if ((isMod ? Save.instance.preferences : Save.instance.modOptions)[saveId] == null) updatePreference(defaultVale);
+  }
+
+  public function updatePreference(newVal:Dynamic)
+  {
+    final saveInstance = isMod ? Save.instance.preferences : Save.instance.modOptions;
+    saveInstance[saveId] = newVal;
+    Save.instance.flush();
+
+    return saveInstance[saveId];
   }
 
   public function toString():String
-    return 'Preference(saveId: ${data.saveId})';
+    return 'Preference(saveId: $saveId)';
 }
 
 /**
@@ -69,25 +115,55 @@ class Preferences
     else
       parsedData = parser.value;
 
-    var _scriptName:Null<String> = null;
-    if (loadIds) for (prefData in parsedData)
-      defaultPreferensecId.push(prefData.saveId);
+    if (loadIds)
+    {
+      if (loadIds) for (prefData in parsedData)
+        defaultPreferensecId.push(prefData.saveId);
+    }
     else
     {
+      if (parsedData.length < defaultPreferensecId.length) trace('WARNING: Modded preferensec length is LESS than default.');
+
+      var _scriptName:Null<String> = null;
       final scriptedClassesList:Array<String> = ScriptedPreference.listScriptClasses();
       for (prefData in parsedData)
       {
         _scriptName = (prefData?.script ?? "").trim();
-        loadedPreferences.push((_scriptName != ""
-          && scriptedClassesList.contains(_scriptName)) ? (ScriptedPreference.init(_scriptName, prefData)) : (new Preference(prefData)));
+        var preferenceItem:Null<Preference> = (_scriptName != ""
+          && scriptedClassesList.contains(_scriptName)) ? (ScriptedPreference.init(_scriptName, prefData,
+            !defaultPreferensecId.contains(prefData.saveId))) : (new Preference(prefData, !defaultPreferensecId.contains(prefData.saveId)));
+
+        if (preferenceItem.allowThisPreference())
+        {
+          preferenceItem.loadDefaultValue();
+          loadedPreferences.push(preferenceItem);
+        }
+        else
+          preferenceItem = null;
       }
+      _scriptName = null;
+    }
+  }
+
+  // Shortcut
+  public static inline function getPref(id:String, ?defVal:Dynamic)
+  {
+    return getPreference(id, defVal);
+  }
+
+  public static function getPreference(id:String, ?defVal:Dynamic)
+  {
+    final saveInstance = !defaultPreferensecId.contains(id) ? Save.instance.preferences : Save.instance.modOptions;
+    if (saveInstance[id] == null)
+    {
+      saveInstance[id] = defVal;
+      Save.instance.flush();
     }
 
-    _scriptName = null;
-    if (loadIds) trace(defaultPreferensecId);
-
-    trace(loadedPreferences);
+    return saveInstance[id];
   }
+
+  ////////////////////
 
   /**
    * FPS

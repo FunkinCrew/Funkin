@@ -196,6 +196,17 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
     #end
+
+    for (pref in Preferences.loadedPreferences)
+    {
+      switch (pref.type)
+      {
+        case "checkbox":
+          createPrefItemCheckbox(pref.name, pref.desc, (value:Bool) -> pref.updatePreference(value), Preferences.getPref(pref.saveId));
+        default:
+          trace('UNKNOWN PREFERENCE TYPE: ${pref.type}');
+      }
+    }
   }
 
   override function update(elapsed:Float):Void

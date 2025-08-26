@@ -3,11 +3,24 @@
     "op": "add",
     "path": "/-",
     "value": {
-      "name": "Test2",
+      "name": "Test Two",
       "desc": "Desc2",
+      "defaultVale": true,
       "saveId": "testPref2",
+      "type": "checkbox",
 
       "script": "NullScript"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/-",
+    "value": {
+      "name": "Test Three",
+      "desc": "Desc3",
+      "defaultVale": false,
+      "saveId": "testPref3",
+      "type": "checkbox"
     }
   }
 ]

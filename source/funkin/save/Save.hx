@@ -113,6 +113,7 @@ class Save implements ConsoleClass
         },
 
       favoriteSongs: [],
+      preferences: [],
 
       options:
         {
@@ -220,6 +221,13 @@ class Save implements ConsoleClass
   function get_options():SaveDataOptions
   {
     return data.options;
+  }
+
+  public var preferences(get, never):Map<String, Dynamic>;
+
+  function get_preferences():Map<String, Dynamic>
+  {
+    return data.preferences;
   }
 
   #if mobile
@@ -1445,6 +1453,9 @@ typedef RawSaveData =
    * The user's preferences.
    */
   var options:SaveDataOptions;
+
+  @:jignored
+  var preferences:Map<String, Dynamic>;
 
   var unlocks:SaveDataUnlocks;
 
