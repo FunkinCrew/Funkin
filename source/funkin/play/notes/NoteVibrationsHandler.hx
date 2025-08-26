@@ -9,6 +9,12 @@ import funkin.util.HapticUtil.HapticsMode;
 class NoteVibrationsHandler
 {
   /**
+   * Controls vibrations for all strumlines with `hasVibrations` enabled.
+   * There should be only one of these.
+   */
+  public static var instance:NoteVibrationsHandler = new NoteVibrationsHandler();
+
+  /**
    * An array of each strumline this NoteVibrationsHandler reads from.
    */
   public var strumlines:Array<Strumline>;

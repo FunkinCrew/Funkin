@@ -231,9 +231,18 @@ class Strumline extends FlxSpriteGroup
 
   /**
    * The `NoteVibrationsHandler` reading from all the strumlines.
-   * There should be only one of these.
    */
-  public var noteVibrations:NoteVibrationsHandler;
+  public var noteVibrations(get, set):Null<NoteVibrationsHandler>;
+
+  function get_noteVibrations():Null<NoteVibrationsHandler>
+  {
+    return NoteVibrationsHandler.instance;
+  }
+
+  function set_noteVibrations(value:Null<NoteVibrationsHandler>):Null<NoteVibrationsHandler>
+  {
+    return NoteVibrationsHandler.instance = value;
+  }
 
   /**
    * An array of each note status.
@@ -712,7 +721,7 @@ class Strumline extends FlxSpriteGroup
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
         // Hold note is completed, kill it.
-        if (hasVibrations)
+        if (hasVibrations && noteVibrations != null)
         {
           // Hold note's final vibration.
           noteVibrations.tryHoldNoteVibration(holdNote.noteDirection);
