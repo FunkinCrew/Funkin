@@ -17,7 +17,7 @@ typedef PreferenceData =
 
   @:jcustomparse(funkin.data.DataParse.dynamicValue)
   @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
-  var defaultVale:Dynamic;
+  var defaultValue:Dynamic;
 
   var type:String; // checkbox, number, percent, enum
 
@@ -53,7 +53,7 @@ class Preference
   public var name:String;
   public var desc:String;
 
-  public var defaultVale:Dynamic;
+  public var defaultValue:Dynamic;
 
   // number
   // Can be set up via script.
@@ -81,7 +81,7 @@ class Preference
     name = data.name;
     desc = data.desc;
 
-    defaultVale = data.defaultVale;
+    defaultValue = data.defaultValue;
 
     min = data.min;
     max = data.max;
@@ -100,9 +100,15 @@ class Preference
     return true;
   }
 
+  // Override this function with your script.
+  public function isAvailable():Bool
+  {
+    return true;
+  }
+
   public function loadDefaultValue()
   {
-    if ((!isMod ? Save.instance.preferences : Save.instance.modOptions)[saveId] == null) updatePreference(defaultVale);
+    if ((!isMod ? Save.instance.preferences : Save.instance.modOptions)[saveId] == null) updatePreference(defaultValue);
   }
 
   public function updatePreference(newVal:Dynamic)
@@ -119,12 +125,12 @@ class Preference
    */
   public function getValue()
   {
-    if (!allowThisPreference()) return defaultVale;
+    if (!allowThisPreference()) return defaultValue;
 
     final saveInstance = !isMod ? Save.instance.preferences : Save.instance.modOptions;
     if (saveInstance[saveId] == null)
     {
-      saveInstance[saveId] = defaultVale;
+      saveInstance[saveId] = defaultValue;
       Save.instance.flush();
     }
 
@@ -197,12 +203,12 @@ class Preferences
   }
 
   // Shortcut
-  public static inline function getPref(id:String, ?defVal:Dynamic)
+  public static inline function getPref(id:String, ?defVal:Dynamic):Null<Dynamic>
   {
     return getPreference(id, defVal);
   }
 
-  public static function getPreference(id:String, ?defVal:Dynamic)
+  public static function getPreference(id:String, ?defVal:Dynamic):Null<Dynamic>
   {
     return loadedPreferences.exists(id) ? loadedPreferences.get(id)?.getValue() ?? defVal : defVal;
   }
@@ -243,25 +249,6 @@ class Preferences
     FlxG.drawFramerate = value;
     return value;
     #end
-  }
-
-  /**
-   * If enabled, the strumline is at the bottom of the screen rather than the top.
-   * @default `false`
-   */
-  public static var downscroll(get, set):Bool;
-
-  static function get_downscroll():Bool
-  {
-    return Save?.instance?.options?.downscroll #if mobile ?? true #else ?? false #end;
-  }
-
-  static function set_downscroll(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.downscroll = value;
-    save.flush();
-    return value;
   }
 
   /**

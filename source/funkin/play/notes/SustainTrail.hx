@@ -208,9 +208,9 @@ class SustainTrail extends FlxSprite
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
-    flipY = Preferences.downscroll #if mobile
-    || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !funkin.mobile.input.ControlsHandler.usingExternalInputDevice) #end;
+    flipY = Preferences.getPref("downscroll") #if mobile
+      || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+        && !funkin.mobile.input.ControlsHandler.usingExternalInputDevice) #end;
 
     // alpha = 0.6;
     alpha = 1.0;

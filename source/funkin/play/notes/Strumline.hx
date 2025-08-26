@@ -166,7 +166,7 @@ class Strumline extends FlxSpriteGroup
 
   public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice)
-    || #end Preferences.downscroll;
+    || #end Preferences.getPref("downscroll", false);
 
   /**
    * The note data for the song. Should NOT be altered after the song starts (but we alter it in OffsetState :DDD),

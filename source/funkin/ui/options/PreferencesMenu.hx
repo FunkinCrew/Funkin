@@ -107,11 +107,12 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
-      Preferences.downscroll = value;
-    },
-      Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
-      || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
+    /*createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+        Preferences.getPref("downscroll") = value;
+      },
+        Preferences.getPref("downscroll"), #if mobile ControlsHandler.hasExternalInputDevice
+        || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end); */
+
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
@@ -202,7 +203,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       switch (pref.type)
       {
         case "checkbox":
-          createPrefItemCheckbox(pref.name, pref.desc, (value:Bool) -> pref.updatePreference(value), pref.getValue());
+          createPrefItemCheckbox(pref.name, pref.desc, (value:Bool) -> pref.updatePreference(value), pref.getValue(), pref.isAvailable());
 
         case "number":
           createPrefItemNumber(pref.name, pref.desc, (value:Float) -> pref.updatePreference(value), pref.valueFormatter, pref.getValue(), pref.min, pref.max,
@@ -273,7 +274,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1),
       defaultValue, available);
 
-    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
+    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, () -> {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
