@@ -122,7 +122,7 @@ class Preferences
     }
     else
     {
-      // if (parsedData.length < defaultPreferensecId.length) trace('WARNING: Modded preferensec length is LESS than default.');
+      if (parsedData.length < defaultPreferensecId.length) trace('WARNING: Modded preferensec length is LESS than default.');
 
       var _scriptName:Null<String> = null;
       final scriptedClassesList:Array<String> = ScriptedPreference.listScriptClasses();
