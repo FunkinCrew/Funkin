@@ -17,11 +17,58 @@ class MacroUtil
    * @param defaultValue The value to return if the define is not set.
    * @return An expression containing the value of the define.
    */
-  public static macro function getDefine(key:String, ?defaultValue:String):haxe.macro.Expr
+  public static macro function getDefineString(key:String, ?defaultValue:String):Expr
   {
-    var value:Null<String> = haxe.macro.Context.definedValue(key);
-    if (value == null) value = defaultValue;
-    return macro $v{value};
+    return macro $v{Context.definedValue(key) ?? defaultValue};
+  }
+
+  public static macro function getDefineInt(key:String, ?defaultValue:Int):Expr
+  {
+    final valueStr:String = Context.definedValue(key);
+
+    if (valueStr != null)
+    {
+      final value:Null<Int> = Std.parseInt(valueStr);
+
+      if (value != null) return macro $v{value};
+    }
+
+    return macro $v{defaultValue ?? 0};
+  }
+
+  public static macro function getDefineFloat(key:String, ?defaultValue:Float):Expr
+  {
+    final valueStr:String = Context.definedValue(key);
+
+    if (valueStr != null)
+    {
+      final value:Null<Float> = Std.parseFloat(valueStr);
+
+      if (value != null) return macro $v{value};
+    }
+
+    return macro $v{defaultValue ?? 0.0};
+  }
+
+  public static macro function getDefineBool(key:String, ?defaultValue:Bool):Expr
+  {
+    var valueStr:String = Context.definedValue(key);
+
+    if (valueStr != null)
+    {
+      valueStr = valueStr.toLowerCase();
+      return macro $v
+      {
+        valueStr == "true"
+        || valueStr == "1"};
+    }
+
+    return macro $v{defaultValue ?? false};
+  }
+
+  public static macro function defined(key:String):Expr
+  {
+    return macro $v{Context.defined(key)};
   }
 
   /**

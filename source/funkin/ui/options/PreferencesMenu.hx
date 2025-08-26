@@ -107,11 +107,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    #if FEATURE_NAUGHTYNESS
-    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
-      Preferences.naughtyness = value;
-    }, Preferences.naughtyness);
-    #end
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     },
@@ -197,16 +192,32 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.previewOnSave);
     #end
 
-    for (pref in Preferences.loadedPreferences)
+    for (prefSaveId in Preferences.loadedPreferencesArrayIds)
     {
+      if (!Preferences.loadedPreferences.exists(prefSaveId)) continue;
+
+      final pref:Preference = Preferences.loadedPreferences.get(prefSaveId);
+      if (!pref.allowThisPreference()) continue;
+
       switch (pref.type)
       {
         case "checkbox":
-          createPrefItemCheckbox(pref.name, pref.desc, (value:Bool) -> pref.updatePreference(value), Preferences.getPref(pref.saveId));
+          createPrefItemCheckbox(pref.name, pref.desc, (value:Bool) -> pref.updatePreference(value), pref.getValue());
+
+        case "number":
+          createPrefItemNumber(pref.name, pref.desc, (value:Float) -> pref.updatePreference(value), pref.valueFormatter, pref.getValue(), pref.min, pref.max,
+            pref.step, pref.precision);
+
+        case "percent" | "percentage":
+          createPrefItemPercentage(pref.name, pref.desc, (value:Int) -> pref.updatePreference(value), pref.getValue(), pref.min, pref.max);
+
         default:
           trace('UNKNOWN PREFERENCE TYPE: ${pref.type}');
       }
     }
+
+    trace('Prefs: ' + funkin.save.Save.instance.preferences);
+    trace('ModPrefs: ' + funkin.save.Save.instance.modOptions);
   }
 
   override function update(elapsed:Float):Void

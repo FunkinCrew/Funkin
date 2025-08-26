@@ -7,6 +7,7 @@ import funkin.mobile.util.InAppPurchasesUtil;
 import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
+import haxe.ds.Either;
 
 typedef PreferenceData =
 {
@@ -20,7 +21,24 @@ typedef PreferenceData =
 
   var type:String; // checkbox, number, percent, enum
 
-  //
+  // number / percent
+  @:optional
+  @:default(0)
+  var min:Float;
+
+  @:optional
+  @:default(100)
+  var max:Float;
+
+  // percent
+  @:optional
+  @:default(1)
+  var step:Float;
+
+  @:optional
+  @:default(1)
+  var precision:Int;
+
   @:optional
   @:default("")
   var script:String;
@@ -36,6 +54,18 @@ class Preference
   public var desc:String;
 
   public var defaultVale:Dynamic;
+
+  // number
+  // Can be set up via script.
+  public var valueFormatter:Float->String = null;
+
+  // number / precent
+  // Using Dynamic cuz Either doesnt work 🙄
+  public var min:Dynamic;
+  public var max:Dynamic;
+
+  public var step:Float;
+  public var precision:Int;
 
   public var type:String;
 
@@ -53,6 +83,11 @@ class Preference
 
     defaultVale = data.defaultVale;
 
+    min = data.min;
+    max = data.max;
+    step = data.step;
+    precision = data.precision;
+
     type = data.type;
     saveId = data.saveId;
 
@@ -67,17 +102,36 @@ class Preference
 
   public function loadDefaultValue()
   {
-    if ((isMod ? Save.instance.preferences : Save.instance.modOptions)[saveId] == null) updatePreference(defaultVale);
+    if ((!isMod ? Save.instance.preferences : Save.instance.modOptions)[saveId] == null) updatePreference(defaultVale);
   }
 
   public function updatePreference(newVal:Dynamic)
   {
-    final saveInstance = isMod ? Save.instance.preferences : Save.instance.modOptions;
+    final saveInstance = !isMod ? Save.instance.preferences : Save.instance.modOptions;
     saveInstance[saveId] = newVal;
     Save.instance.flush();
 
     return saveInstance[saveId];
   }
+
+  /**
+   * Returns value of current pref.
+   */
+  public function getValue()
+  {
+    if (!allowThisPreference()) return defaultVale;
+
+    final saveInstance = !isMod ? Save.instance.preferences : Save.instance.modOptions;
+    if (saveInstance[saveId] == null)
+    {
+      saveInstance[saveId] = defaultVale;
+      Save.instance.flush();
+    }
+
+    return saveInstance[saveId];
+  }
+
+  public function onInit() {}
 
   public function toString():String
     return 'Preference(saveId: $saveId)';
@@ -89,9 +143,10 @@ class Preference
 @:nullSafety
 class Preferences
 {
-  public static var defaultPreferensecId:Array<String> = [];
+  public static var defaultPreferencesIds:Array<String> = [];
 
-  public static var loadedPreferences:Array<Preference> = [];
+  public static var loadedPreferencesArrayIds:Array<String> = [];
+  public static var loadedPreferences:Map<String, Preference> = [];
 
   public static function loadPreferences(?loadIds:Bool):Void
   {
@@ -118,11 +173,11 @@ class Preferences
     if (loadIds)
     {
       if (loadIds) for (prefData in parsedData)
-        defaultPreferensecId.push(prefData.saveId);
+        defaultPreferencesIds.push(prefData.saveId);
     }
     else
     {
-      if (parsedData.length < defaultPreferensecId.length) trace('WARNING: Modded preferensec length is LESS than default.');
+      if (parsedData.length < defaultPreferencesIds.length) trace('WARNING: Adter-Modded preferences length is LESS than default.');
 
       var _scriptName:Null<String> = null;
       final scriptedClassesList:Array<String> = ScriptedPreference.listScriptClasses();
@@ -131,15 +186,11 @@ class Preferences
         _scriptName = (prefData?.script ?? "").trim();
         var preferenceItem:Null<Preference> = (_scriptName != ""
           && scriptedClassesList.contains(_scriptName)) ? (ScriptedPreference.init(_scriptName, prefData,
-            !defaultPreferensecId.contains(prefData.saveId))) : (new Preference(prefData, !defaultPreferensecId.contains(prefData.saveId)));
+            !defaultPreferencesIds.contains(prefData.saveId))) : (new Preference(prefData, !defaultPreferencesIds.contains(prefData.saveId)));
 
-        if (preferenceItem.allowThisPreference())
-        {
-          preferenceItem.loadDefaultValue();
-          loadedPreferences.push(preferenceItem);
-        }
-        else
-          preferenceItem = null;
+        preferenceItem.loadDefaultValue();
+        loadedPreferencesArrayIds.push(preferenceItem.saveId);
+        loadedPreferences.set(preferenceItem.saveId, preferenceItem);
       }
       _scriptName = null;
     }
@@ -153,14 +204,7 @@ class Preferences
 
   public static function getPreference(id:String, ?defVal:Dynamic)
   {
-    final saveInstance = !defaultPreferensecId.contains(id) ? Save.instance.preferences : Save.instance.modOptions;
-    if (saveInstance[id] == null)
-    {
-      saveInstance[id] = defVal;
-      Save.instance.flush();
-    }
-
-    return saveInstance[id];
+    return loadedPreferences.exists(id) ? loadedPreferences.get(id)?.getValue() ?? defVal : defVal;
   }
 
   ////////////////////
@@ -199,33 +243,6 @@ class Preferences
     FlxG.drawFramerate = value;
     return value;
     #end
-  }
-
-  /**
-   * Whether some particularly foul language is displayed.
-   * @default `true`
-   */
-  public static var naughtyness(get, set):Bool;
-
-  static function get_naughtyness():Bool
-  {
-    #if NO_FEATURE_NAUGHTYNESS
-    return false;
-    #else
-    return Save?.instance?.options?.naughtyness ?? true;
-    #end
-  }
-
-  static function set_naughtyness(value:Bool):Bool
-  {
-    #if NO_FEATURE_NAUGHTYNESS
-    value = false;
-    #end
-
-    var save:Save = Save.instance;
-    save.options.naughtyness = value;
-    save.flush();
-    return value;
   }
 
   /**
@@ -626,6 +643,9 @@ class Preferences
     // Apply the allowScreenTimeout setting.
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
     #end
+
+    for (pref in loadedPreferences)
+      pref.onInit();
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void

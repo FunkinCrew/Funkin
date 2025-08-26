@@ -566,7 +566,9 @@ class PolymodHandler
     // TODO: Replace this with loadEnabledMods().
     funkin.modding.PolymodHandler.loadAllMods();
 
-    Preferences.loadedPreferences = [];
+    Preferences.loadedPreferencesArrayIds = [];
+    Preferences.loadedPreferences.clear();
+
     Preferences.loadPreferences();
 
     // Reload everything that is cached.
