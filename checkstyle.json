@@ -40,12 +40,6 @@
       "type": "AvoidStarImport"
     },
     {
-      "props": {
-        "severity": "IGNORE"
-      },
-      "type": "AvoidTernaryOperator"
-    },
-    {
       "props": {},
       "type": "BlockBreakingConditional"
     },
@@ -70,7 +64,6 @@
     {
       "props": {
         "severity": "IGNORE",
-
         "policy": "aligned",
         "allowSingleline": true
       },
@@ -107,8 +100,7 @@
     {
       "props": {
         "lineStyle": "onestar",
-        "startStyle": "twostars",
-        "severity": "IGNORE"
+        "startStyle": "ignore"
       },
       "type": "DocCommentStyle"
     },
@@ -627,8 +619,9 @@
     {
       "type": "VarTypeHint",
       "props": {
-        "typeHintPolicy": "infer_new_or_const",
-        "ignoreEnumAbstractValues": true
+        "typeHintPolicy": "enforce_all",
+        "ignoreEnumAbstractValues": true,
+        "severity": "IGNORE"
       }
     },
     {
