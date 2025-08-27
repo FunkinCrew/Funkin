@@ -35,7 +35,7 @@ class DifficultySprite extends FlxSprite
     {
       this.frames = Paths.getSparrowAtlas('freeplay/freeplay${assetDiffId}');
       this.animation.addByPrefix('idle', 'idle0', 24, true);
-      if (Preferences.flashingLights) this.animation.play('idle');
+      if (Preferences.getPref("flashingLights") ?? true) this.animation.play('idle');
     }
     else
     {

@@ -107,41 +107,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    #if FEATURE_HAPTICS
-    createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
-      "All" => HapticsMode.ALL,
-      "Notes Only" => HapticsMode.NOTES_ONLY,
-      "None" => HapticsMode.NONE,
-    ], function(key:String, value:HapticsMode):Void {
-      Preferences.hapticsMode = value;
-    }, switch (Preferences.hapticsMode)
-      {
-        case HapticsMode.NOTES_ONLY: "Notes Only";
-        case HapticsMode.NONE: "None";
-        default: "All";
-      });
-    createPrefItemNumber('Haptics Intensity', 'Multiplier of intensity for all the haptic feedback effects.', function(value:Float) {
-      Preferences.hapticsIntensityMultiplier = value;
-    }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
-    #end
-    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
-      function(value:Bool):Void {
-        Preferences.flashingLights = value;
-      }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
-      Preferences.zoomCamera = value;
-    }, Preferences.zoomCamera);
-    #if !mobile
-    createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
-      Preferences.debugDisplay = value;
-    }, Preferences.debugDisplay);
-    createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
-      Preferences.autoPause = value;
-    }, Preferences.autoPause);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
-      Preferences.autoFullscreen = value;
-    }, Preferences.autoFullscreen);
-    #end
+    /* #if !mobile
+      createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
+        Preferences.debugDisplay = value;
+      }, Preferences.debugDisplay);
+      #end */
 
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {

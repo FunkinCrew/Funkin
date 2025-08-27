@@ -1266,7 +1266,7 @@ class PlayState extends MusicBeatSubState
 
     justUnpaused = false;
     #if !mobile
-    if (Preferences.autoPause) FlxG.autoPause = !mayPauseGame;
+    if (Preferences.getPref("autoPause") ?? true) FlxG.autoPause = !mayPauseGame;
     #end
   }
 
@@ -1610,13 +1610,13 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocus():Void
   {
-    if (VideoCutscene.isPlaying() && Preferences.autoPause && isGamePaused) VideoCutscene.pauseVideo();
+    if (VideoCutscene.isPlaying() && Preferences.getPref("autoPause") && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
-    else if (Preferences.autoPause) VideoCutscene.resumeVideo();
+    else if (Preferences.getPref("autoPause")) VideoCutscene.resumeVideo();
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.autoPause)
+    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.getPref("autoPause"))
     {
       if (Conductor.instance.songPosition > 0.0)
       {
@@ -1654,11 +1654,11 @@ class PlayState extends MusicBeatSubState
   public override function onFocusLost():Void
   {
     #if html5
-    if (Preferences.autoPause) VideoCutscene.pauseVideo();
+    if (Preferences.getPref("autoPause")) VideoCutscene.pauseVideo();
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.autoPause)
+    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.getPref("autoPause"))
     {
       DiscordClient.instance.setPresence(
         {
@@ -1672,7 +1672,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
-    if (!isGamePaused && Preferences.autoPause)
+    if (!isGamePaused && Preferences.getPref("autoPause"))
     {
       if (currentConversation != null)
       {
@@ -1784,7 +1784,7 @@ class PlayState extends MusicBeatSubState
     }
 
     // Only bop camera if zoom level is below 135%
-    if (Preferences.zoomCamera
+    if (Preferences.getPref("zoomCamera")
       && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
       && cameraZoomRate > 0
       && (Conductor.instance.currentBeat + cameraZoomRateOffset) % cameraZoomRate == 0)
@@ -1812,7 +1812,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if !mobile
-    FlxG.autoPause = Preferences.autoPause;
+    FlxG.autoPause = (Preferences.getPref("autoPause") ?? true);
     #end
 
     super.destroy();

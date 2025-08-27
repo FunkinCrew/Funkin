@@ -119,16 +119,10 @@ class Save implements ConsoleClass
         {
           // Reasonable defaults.
           framerate: #if mobile refreshRate #else 60 #end,
-          naughtyness: true,
-          downscroll: false,
-          flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
-          hapticsMode: 'All',
-          hapticsIntensityMultiplier: 1,
           autoPause: true,
           vsyncMode: 'Off',
-          strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
           globalOffset: 0,
           audioVisualOffset: 0,
@@ -1592,24 +1586,6 @@ typedef SaveDataOptions =
   var framerate:Int;
 
   /**
-   * Whether some particularly foul language is displayed.
-   * @default `true`
-   */
-  var naughtyness:Bool;
-
-  /**
-   * If enabled, the strumline is at the bottom of the screen rather than the top.
-   * @default `false`
-   */
-  var downscroll:Bool;
-
-  /**
-   * If disabled, flashing lights in the main menu and other areas will be less intense.
-   * @default `true`
-   */
-  var flashingLights:Bool;
-
-  /**
    * If disabled, the camera bump synchronized to the beat.
    * @default `false`
    */
@@ -1622,18 +1598,6 @@ typedef SaveDataOptions =
   var debugDisplay:Bool;
 
   /**
-   * If enabled, haptic feedback will be enabled.
-   * @default `All`
-   */
-  var hapticsMode:String;
-
-  /**
-   * Multiplier of intensity for all the haptic feedback effects.
-   * @default `1`
-   */
-  var hapticsIntensityMultiplier:Float;
-
-  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
@@ -1644,13 +1608,6 @@ typedef SaveDataOptions =
    * @default `Off`
    */
   var vsyncMode:String;
-
-  /**
-   * If >0, the game will display a semi-opaque background under the notes.
-   * `0` for no background, `100` for solid black if you're freaky like that
-   * @default `0`
-   */
-  var strumlineBackgroundOpacity:Int;
 
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.

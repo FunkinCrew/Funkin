@@ -42,9 +42,9 @@ class HapticUtil
     if (!HapticUtil.hapticsAvailable) return;
 
     final hapticsModes:Array<HapticsMode> = targetHapticsModes ?? [HapticsMode.ALL];
-    if (!hapticsModes.contains(Preferences.hapticsMode)) return;
+    if (!hapticsModes.contains(Preferences.getPref("hapticsMode"))) return;
 
-    final amplitudeValue = (amplitude * Preferences.hapticsIntensityMultiplier).clamp(0, Constants.MAX_VIBRATION_AMPLITUDE);
+    final amplitudeValue = (amplitude * Preferences.getPref("hapticsIntensityMultiplier")).clamp(0, Constants.MAX_VIBRATION_AMPLITUDE);
 
     if (period > 0)
     {
@@ -122,7 +122,7 @@ class HapticUtil
   static function get_hapticsAvailable():Bool
   {
     #if FEATURE_HAPTICS
-    if (Preferences.hapticsMode != HapticsMode.NONE) return true;
+    if (Preferences.getPref("hapticsMode") != HapticsMode.NONE) return true;
     #end
 
     return false;

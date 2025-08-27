@@ -274,44 +274,6 @@ class Preferences
   }
 
   /**
-   * If disabled, flashing lights in the main menu and other areas will be less intense.
-   * @default `true`
-   */
-  public static var flashingLights(get, set):Bool;
-
-  static function get_flashingLights():Bool
-  {
-    return Save?.instance?.options?.flashingLights ?? true;
-  }
-
-  static function set_flashingLights(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.flashingLights = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If disabled, the camera bump synchronized to the beat.
-   * @default `false`
-   */
-  public static var zoomCamera(get, set):Bool;
-
-  static function get_zoomCamera():Bool
-  {
-    return Save?.instance?.options?.zoomCamera ?? true;
-  }
-
-  static function set_zoomCamera(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.zoomCamera = value;
-    save.flush();
-    return value;
-  }
-
-  /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
    * Always disabled on mobile.
    * @default `false`
@@ -335,110 +297,6 @@ class Preferences
 
     var save = Save.instance;
     save.options.debugDisplay = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, haptic feedback will be enabled.
-   * @default `All`
-   */
-  public static var hapticsMode(get, set):HapticsMode;
-
-  static function get_hapticsMode():HapticsMode
-  {
-    var value = Save?.instance?.options?.hapticsMode ?? "All";
-
-    return switch (value)
-    {
-      case "None":
-        HapticsMode.NONE;
-      case "Notes Only":
-        HapticsMode.NOTES_ONLY;
-      default:
-        HapticsMode.ALL;
-    };
-  }
-
-  static function set_hapticsMode(value:HapticsMode):HapticsMode
-  {
-    var string;
-
-    switch (value)
-    {
-      case HapticsMode.NONE:
-        string = "None";
-      case HapticsMode.NOTES_ONLY:
-        string = "Notes Only";
-      default:
-        string = "All";
-    };
-
-    var save:Save = Save.instance;
-    save.options.hapticsMode = string;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * Multiplier of intensity for all the haptic feedback effects.
-   * @default `2.5`
-   */
-  public static var hapticsIntensityMultiplier(get, set):Float;
-
-  static function get_hapticsIntensityMultiplier():Float
-  {
-    return Save?.instance?.options?.hapticsIntensityMultiplier ?? 1;
-  }
-
-  static function set_hapticsIntensityMultiplier(value:Float):Float
-  {
-    var save:Save = Save.instance;
-    save.options.hapticsIntensityMultiplier = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, the game will automatically pause when tabbing out.
-   * Always enabled on mobile.
-   * @default `true`
-   */
-  public static var autoPause(get, set):Bool;
-
-  static function get_autoPause():Bool
-  {
-    #if mobile
-    return true;
-    #end
-    return Save?.instance?.options?.autoPause ?? true;
-  }
-
-  static function set_autoPause(value:Bool):Bool
-  {
-    if (value != Save.instance.options.autoPause) FlxG.autoPause = value;
-
-    var save:Save = Save.instance;
-    save.options.autoPause = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, the game will automatically launch in fullscreen on startup.
-   * @default `true`
-   */
-  public static var autoFullscreen(get, set):Bool;
-
-  static function get_autoFullscreen():Bool
-  {
-    return Save?.instance?.options?.autoFullscreen ?? true;
-  }
-
-  static function set_autoFullscreen(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.autoFullscreen = value;
     save.flush();
     return value;
   }
@@ -614,18 +472,11 @@ class Preferences
    */
   public static function init():Void
   {
-    // Apply the autoPause setting (enables automatic pausing on focus lost).
-    FlxG.autoPause = Preferences.autoPause;
     // WindowUtil.setVSyncMode(Preferences.vsyncMode);
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
-    #end
-
-    #if desktop
-    // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
-    FlxG.fullscreen = Preferences.autoFullscreen;
     #end
 
     #if mobile

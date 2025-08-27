@@ -135,7 +135,7 @@ class MainMenuState extends MusicBeatState
     magenta.y = bg.y;
     magenta.visible = false;
 
-    if (Preferences.flashingLights) add(magenta);
+    if (Preferences.getPref("flashingLights") ?? true) add(magenta);
 
     menuItems = new MenuTypedList<AtlasMenuItem>();
     add(menuItems);

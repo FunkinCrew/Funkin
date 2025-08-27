@@ -276,7 +276,7 @@ class StoryMenuState extends MusicBeatState
       {
         difficultySprite.frames = Paths.getSparrowAtlas('storymenu/difficulties/${diff}');
         difficultySprite.animation.addByPrefix('idle', 'idle0', 24, true);
-        if (Preferences.flashingLights) difficultySprite.animation.play('idle');
+        if (Preferences.getPref("flashingLights")) difficultySprite.animation.play('idle');
       }
       else
       {
@@ -362,7 +362,7 @@ class StoryMenuState extends MusicBeatState
           changeLevel(-levelList.length);
           changeDifficulty(0);
         }
-        
+
         #if !html5
         if (FlxG.mouse.wheel != 0)
         {
