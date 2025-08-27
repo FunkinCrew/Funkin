@@ -39,9 +39,20 @@ typedef PreferenceData =
   @:default(1)
   var precision:Int;
 
+  // enum
+  @:optional
+  @:default([])
+  var options:Map<String, String>;
+
   @:optional
   @:default("")
   var script:String;
+}
+
+typedef EnumPreferenceData =
+{
+  var key:String;
+  var value:Dynamic;
 }
 
 @:hscriptClass
@@ -67,6 +78,8 @@ class Preference
   public var step:Float;
   public var precision:Int;
 
+  public var options:Map<String, String>;
+
   public var type:String;
 
   public var saveId:String;
@@ -75,9 +88,6 @@ class Preference
 
   public function new(data:PreferenceData, ?modded:Bool)
   {
-    // this.data = data;
-    // trace(this.data);
-
     name = data.name;
     desc = data.desc;
 
@@ -87,6 +97,8 @@ class Preference
     max = data.max;
     step = data.step;
     precision = data.precision;
+
+    options = data.options;
 
     type = data.type;
     saveId = data.saveId;
@@ -135,6 +147,16 @@ class Preference
     }
 
     return saveInstance[saveId];
+  }
+
+  public function getEnumKeyFromValue():String
+  {
+    var key:String = defaultValue;
+    final currentValue = getValue();
+    if (defaultValue != currentValue) for (mKey => mValue in options)
+      if (mValue == currentValue) return mKey;
+
+    return key;
   }
 
   public function onInit() {}

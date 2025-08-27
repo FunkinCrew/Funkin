@@ -40,8 +40,25 @@
       "min": 0,
       "max": 200,
 
-      "saveId": "testpref5",
+      "saveId": "testpref4",
       "type": "percent"
+    }
+  },
+  {
+    "op": "add",
+    "path": "/-",
+    "value": {
+      "name": "Test Enum",
+      "desc": "Desc Enum",
+      "defaultValue": "None",
+      "options": {
+        "None": "NOTHING FUCK",
+        "one": "Ass",
+        "two": "boob",
+        "three": "funk"
+      },
+      "saveId": "testpref5",
+      "type": "enum"
     }
   }
 ]

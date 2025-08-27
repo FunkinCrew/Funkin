@@ -191,7 +191,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       final pref:Preference = Preferences.loadedPreferences.get(prefSaveId);
       if (!pref.allowThisPreference()) continue;
 
-      switch (pref.type)
+      switch (pref.type.toLowerCase())
       {
         case "checkbox":
           createPrefItemCheckbox(pref.name, pref.desc, (value:Bool) -> pref.updatePreference(value), pref.getValue(), pref.isAvailable());
@@ -202,6 +202,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
         case "percent" | "percentage":
           createPrefItemPercentage(pref.name, pref.desc, (value:Int) -> pref.updatePreference(value), pref.getValue(), pref.min, pref.max);
+
+        case "enum":
+          createPrefItemEnum(pref.name, pref.desc, pref.options, (key:String, value:String) -> pref.updatePreference(value), pref.getEnumKeyFromValue());
 
         default:
           trace('UNKNOWN PREFERENCE TYPE: ${pref.type}');
