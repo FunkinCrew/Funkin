@@ -204,6 +204,12 @@ class Strumline extends FlxSpriteGroup
     return value;
   }
 
+  /**
+   * Whether or not notes on this strumline will be counted as missed.
+   * Disabled for bots so that they don't miss during a lag spike.
+   */
+  public var canMiss:Bool = true;
+
   var background:FunkinSprite;
 
   /**

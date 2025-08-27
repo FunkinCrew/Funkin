@@ -2161,10 +2161,12 @@ class PlayState extends MusicBeatSubState
     NoteVibrationsHandler.instance.strumlines.push(opponentStrumline);
     playerStrumline.hasVibrations = !isBotPlayMode;
 
-    if (!PlayStatePlaylist.isStoryMode)
+    playerStrumline.canMiss = !isBotPlayMode;
+    opponentStrumline.canMiss = false;
+
+    if (!PlayStatePlaylist.isStoryMode) for (strumline in strumlines)
     {
-      playerStrumline.fadeInArrows();
-      opponentStrumline.fadeInArrows();
+      strumline.fadeInArrows();
     }
   }
 
@@ -2764,30 +2766,33 @@ class PlayState extends MusicBeatSubState
         // It might still be on screen.
         if (note.hasMissed && !note.handledMiss)
         {
-          // Call an event to allow canceling the note miss.
-          // NOTE: This is what handles the character animations!
-          var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Constants.HEALTH_MISS_PENALTY, Highscore.tallies.combo, true);
-          dispatchEvent(event);
-
-          // Calling event.cancelEvent() skips all the other logic! Neat!
-          if (event.eventCanceled) continue;
-
-          // Skip scoring the miss for bots!
-          if (strumline.isPlayer)
+          if (strumline.canMiss)
           {
-            // Judge the miss.
-            // NOTE: This is what handles the scoring.
-            // trace('Missed note! ${note.noteData}');
-            onNoteMiss(event);
-          }
-          // Mute vocals if not taken care of already by onNoteMiss.
-          if (event.playSound)
-          {
-            if (vocals != null) for (track in strumline.vocals)
+            // Call an event to allow canceling the note miss.
+            // NOTE: This is what handles the character animations!
+            var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Constants.HEALTH_MISS_PENALTY, Highscore.tallies.combo, true);
+            dispatchEvent(event);
+
+            // Calling event.cancelEvent() skips all the other logic! Neat!
+            if (event.eventCanceled) continue;
+
+            // Skip scoring the miss for bots!
+            if (strumline.isPlayer)
             {
-              if (track != null) track.volume = 0;
+              // Judge the miss.
+              // NOTE: This is what handles the scoring.
+              // trace('Missed note! ${note.noteData}');
+              onNoteMiss(event);
             }
-            FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+            // Mute vocals if not taken care of already by onNoteMiss.
+            if (event.playSound)
+            {
+              if (vocals != null) for (track in strumline.vocals)
+              {
+                if (track != null) track.volume = 0;
+              }
+              FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+            }
           }
 
           note.handledMiss = true;
@@ -2835,56 +2840,59 @@ class PlayState extends MusicBeatSubState
           // We dropped a hold note.
           holdNote.handledMiss = true;
 
-          if (holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
+          if (strumline.canMiss)
           {
-            // The hold note wasn't dropped late enough to be forgivable.
-
-            var healthChange:Float = 0;
-            var scoreChange:Int = 0;
-            if (strumline.isPlayer)
+            if (holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
             {
-              // Penalize the player for letting go of a hold note too early.
-              trace('Player dropped a hold note, penalizing... (has hit: ${holdNote.hitNote})');
+              // The hold note wasn't dropped late enough to be forgivable.
 
-              // Different penalty based on whether the note itself was missed,
-              // or the note was hit and then the hold was dropped.
-              var remainingLengthSec:Float = holdNote.sustainLength / Constants.MS_PER_SEC;
-              var healthChangeUncapped:Float = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
-              // If the base note of the hold was missed, don't penalize them more on top of that.
-              var healthChangeMax:Float = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
-              healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
-              scoreChange = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec);
-            }
-
-            // Call an event to allow cancelling the penalties.
-            // NOTE: This is what handles the character animations!
-            var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, strumline.isPlayer,
-              Highscore.tallies.combo);
-            dispatchEvent(event);
-
-            // Calling event.cancelEvent() skips all the other logic! Neat!
-            if (event.eventCanceled) continue;
-
-            if (strumline.isPlayer)
-            {
-              trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
-              applyScore(event.score, '', event.healthChange, event.isComboBreak);
-            }
-
-            // Play the miss sound.
-            if (event.playSound)
-            {
-              // Mute vocals.
-              if (vocals != null) for (track in strumline.vocals)
+              var healthChange:Float = 0;
+              var scoreChange:Int = 0;
+              if (strumline.isPlayer)
               {
-                if (track != null) track.volume = 0;
+                // Penalize the player for letting go of a hold note too early.
+                trace('Player dropped a hold note, penalizing... (has hit: ${holdNote.hitNote})');
+
+                // Different penalty based on whether the note itself was missed,
+                // or the note was hit and then the hold was dropped.
+                var remainingLengthSec:Float = holdNote.sustainLength / Constants.MS_PER_SEC;
+                var healthChangeUncapped:Float = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
+                // If the base note of the hold was missed, don't penalize them more on top of that.
+                var healthChangeMax:Float = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
+                healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
+                scoreChange = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec);
               }
-              FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+
+              // Call an event to allow cancelling the penalties.
+              // NOTE: This is what handles the character animations!
+              var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, strumline.isPlayer,
+                Highscore.tallies.combo);
+              dispatchEvent(event);
+
+              // Calling event.cancelEvent() skips all the other logic! Neat!
+              if (event.eventCanceled) continue;
+
+              if (strumline.isPlayer)
+              {
+                trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
+                applyScore(event.score, '', event.healthChange, event.isComboBreak);
+              }
+
+              // Play the miss sound.
+              if (event.playSound)
+              {
+                // Mute vocals.
+                if (vocals != null) for (track in strumline.vocals)
+                {
+                  if (track != null) track.volume = 0;
+                }
+                FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+              }
             }
-          }
-          else
-          {
-            trace('Hold note too short, not penalizing...');
+            else
+            {
+              trace('Hold note too short, not penalizing...');
+            }
           }
         }
       }
@@ -3088,6 +3096,8 @@ class PlayState extends MusicBeatSubState
   {
     // If we are here, we already CALLED the onNoteMiss script hook!
 
+    if (!(event.note.parentStrumline?.canMiss ?? true)) return;
+
     if (!isPracticeMode)
     {
       // messy copy paste rn lol
@@ -3121,6 +3131,8 @@ class PlayState extends MusicBeatSubState
   function ghostNoteMiss(direction:NoteDirection, hasPossibleNotes:Bool = true, ?strumline:Strumline):Void
   {
     if (strumline == null) strumline = playerStrumline;
+    if (!strumline.canMiss) return;
+
     var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
       hasPossibleNotes, // Whether there was a note you could have hit.
       Constants.HEALTH_GHOST_MISS_PENALTY, // How much health to add (negative).
