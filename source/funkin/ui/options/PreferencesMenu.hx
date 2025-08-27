@@ -107,25 +107,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    /*#if !web
-      #if !mobile
-      createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
-        Preferences.framerate = Std.int(value);
-      }, null, Preferences.framerate, 30, 500, 5, 0);
-      #end
-      #end */
-    /*#if FEATURE_SCREENSHOTS
-      createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
-        Preferences.shouldHideMouse = value;
-      }, Preferences.shouldHideMouse);
-      createPrefItemCheckbox('Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
-        Preferences.fancyPreview = value;
-      }, Preferences.fancyPreview);
-      createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
-        Preferences.previewOnSave = value;
-      }, Preferences.previewOnSave);
-      #end */
-
     for (prefSaveId in Preferences.loadedPreferencesArrayIds)
     {
       if (!Preferences.loadedPreferences.exists(prefSaveId)) continue;
@@ -152,9 +133,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
           trace('UNKNOWN PREFERENCE TYPE: ${pref.type}');
       }
     }
-
-    trace('Prefs: ' + funkin.save.Save.instance.preferences);
-    trace('ModPrefs: ' + funkin.save.Save.instance.modOptions);
   }
 
   override function update(elapsed:Float):Void

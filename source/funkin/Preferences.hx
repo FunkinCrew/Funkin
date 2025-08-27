@@ -205,7 +205,7 @@ class Preferences
     }
     else
     {
-      if (parsedData.length < defaultPreferencesIds.length) trace('WARNING: Adter-Modded preferences length is LESS than default.');
+      if (parsedData.length < defaultPreferencesIds.length) trace('WARNING: After-Modded preferences length is LESS than default.');
 
       var _scriptName:Null<String> = null;
       final scriptedClassesList:Array<String> = ScriptedPreference.listScriptClasses();
@@ -235,7 +235,19 @@ class Preferences
     return loadedPreferences.exists(id) ? loadedPreferences.get(id)?.getValue() ?? defVal : defVal;
   }
 
-  ////////////////////
+  /**
+   * Loads the user's preferences from the save data and apply them.
+   */
+  public static function init():Void
+  {
+    #if mobile
+    // Apply the allowScreenTimeout setting.
+    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    #end
+
+    for (pref in loadedPreferences)
+      pref.onInit();
+  }
 
   /**
    * A global audio offset in milliseconds.
@@ -276,79 +288,6 @@ class Preferences
   // This also gets set in the init function in Main.hx, since we need to definitely override it
   public static var lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
   #end
-
-  /**
-   * If enabled, the game will hide the mouse when taking a screenshot.
-   * @default `true`
-   */
-  public static var shouldHideMouse(get, set):Bool;
-
-  static function get_shouldHideMouse():Bool
-  {
-    return Save?.instance?.options?.screenshot?.shouldHideMouse ?? true;
-  }
-
-  static function set_shouldHideMouse(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.screenshot.shouldHideMouse = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, the game will show a preview after taking a screenshot.
-   * @default `true`
-   */
-  public static var fancyPreview(get, set):Bool;
-
-  static function get_fancyPreview():Bool
-  {
-    return Save?.instance?.options?.screenshot?.fancyPreview ?? true;
-  }
-
-  static function set_fancyPreview(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.screenshot.fancyPreview = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, the game will show the preview only after a screenshot is saved.
-   * @default `true`
-   */
-  public static var previewOnSave(get, set):Bool;
-
-  static function get_previewOnSave():Bool
-  {
-    return Save?.instance?.options?.screenshot?.previewOnSave ?? true;
-  }
-
-  static function set_previewOnSave(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.screenshot.previewOnSave = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * Loads the user's preferences from the save data and apply them.
-   */
-  public static function init():Void
-  {
-    // WindowUtil.setVSyncMode(Preferences.vsyncMode);
-
-    #if mobile
-    // Apply the allowScreenTimeout setting.
-    lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
-    #end
-
-    for (pref in loadedPreferences)
-      pref.onInit();
-  }
 
   static function toggleFramerateCap(unlocked:Bool):Void
   {

@@ -189,7 +189,7 @@ class ScreenshotPlugin extends FlxBasic
         openScreenshotsFolder();
         return; // We're only opening the screenshots folder (we don't want to accidentally take a screenshot after this)
       }
-      if (Preferences.shouldHideMouse && !wasMouseHidden && FlxG.mouse.visible)
+      if (Preferences.getPref("shouldHideMouse") && !wasMouseHidden && FlxG.mouse.visible)
       {
         wasMouseHidden = true;
         Cursor.hide();
@@ -206,7 +206,7 @@ class ScreenshotPlugin extends FlxBasic
           // The player's stopped spamming shots, so we can stop the screenshot spam mode too
           screenshotBeingSpammed = false;
           if (screenshotBuffer[0] != null) saveBufferedScreenshots(screenshotBuffer, screenshotNameBuffer);
-          if (!Preferences.fancyPreview && wasMouseHidden && !FlxG.mouse.visible)
+          if (!Preferences.getPref("fancyPreview") && wasMouseHidden && !FlxG.mouse.visible)
           {
             wasMouseHidden = false;
             Cursor.show();
@@ -256,7 +256,6 @@ class ScreenshotPlugin extends FlxBasic
   {
     lastWidth = width;
     lastHeight = height;
-    trace(Preferences.getPref("flashingLights"));
     flashBitmap.bitmapData = new BitmapData(lastWidth, lastHeight, true, Preferences.getPref("flashingLights") ? FlxColor.WHITE : FlxColor.TRANSPARENT);
     outlineBitmap.bitmapData = new BitmapData(Std.int(lastWidth / 5) + 10, Std.int(lastHeight / 5) + 10, true, 0xFFFFFFFF);
   }
@@ -291,7 +290,7 @@ class ScreenshotPlugin extends FlxBasic
         wasMouseHidden = false;
         Cursor.show();
       }
-      if (!Preferences.previewOnSave) showFancyPreview(shot);
+      if (!Preferences.getPref("previewOnSave")) showFancyPreview(shot);
     }
     else
     {
@@ -304,7 +303,7 @@ class ScreenshotPlugin extends FlxBasic
         wasMouseHidden = false;
         Cursor.show();
       }
-      if (!Preferences.previewOnSave) showFancyPreview(shot);
+      if (!Preferences.getPref("previewOnSave")) showFancyPreview(shot);
     }
     onPostScreenshot.dispatch(shot);
   }
@@ -333,7 +332,7 @@ class ScreenshotPlugin extends FlxBasic
    */
   function showFancyPreview(shot:Bitmap):Void
   {
-    if (!Preferences.fancyPreview
+    if (!Preferences.getPref("fancyPreview")
       || screenshotBeingSpammed
       && !Preferences.getPref("flashingLights", true)
       || stateChanging) return; // Sorry, the previews' been cancelled
@@ -539,7 +538,7 @@ class ScreenshotPlugin extends FlxBasic
           // Remove the screenshot from the unsaved buffer because we literally just saved it
           unsavedScreenshotBuffer.shift();
           unsavedScreenshotNameBuffer.shift();
-          if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
+          if (Preferences.getPref("previewOnSave")) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
         }
       });
     }
@@ -557,7 +556,7 @@ class ScreenshotPlugin extends FlxBasic
       {
         trace('Saving screenshot to: ' + targetPath);
         FileUtil.writeBytesToPath(targetPath, pngData);
-        if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
+        if (Preferences.getPref("previewOnSave")) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
       }
     }
   }
@@ -576,7 +575,7 @@ class ScreenshotPlugin extends FlxBasic
       i++;
     }, 1);
     getCurrentState().add(asyncLoop);
-    if (!Preferences.getPref("flashingLights") && !Preferences.previewOnSave)
+    if (!Preferences.getPref("flashingLights") && !Preferences.getPref("previewOnSave"))
     {
       showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
     }

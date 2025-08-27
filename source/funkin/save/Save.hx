@@ -84,12 +84,6 @@ class Save implements ConsoleClass
 
   public static function getDefault():RawSaveData
   {
-    #if mobile
-    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
-
-    if (refreshRate < 60) refreshRate = 60;
-    #end
-
     return {
       // Version number is an abstract(Array) internally.
       // This means it copies by reference, so merging save data overides the version number lol.
@@ -117,20 +111,8 @@ class Save implements ConsoleClass
 
       options:
         {
-          // Reasonable defaults.
-          framerate: #if mobile refreshRate #else 60 #end,
-          vsyncMode: 'Off',
           globalOffset: 0,
           audioVisualOffset: 0,
-          unlockedFramerate: false,
-
-          screenshot:
-            {
-              shouldHideMouse: true,
-              fancyPreview: true,
-              previewOnSave: true,
-            },
-
           controls:
             {
               // Leave controls blank so defaults are loaded.
@@ -1576,18 +1558,6 @@ typedef SaveScoreTallyData =
 typedef SaveDataOptions =
 {
   /**
-   * FPS
-   * @default `60`
-   */
-  var framerate:Int;
-
-  /**
-   * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
-   * @default `Off`
-   */
-  var vsyncMode:String;
-
-  /**
    * Offset the user's inputs by this many ms.
    * @default `0`
    */
@@ -1599,25 +1569,6 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var audioVisualOffset:Int;
-
-  /**
-   * If we want the framerate to be unlocked on HTML5.
-   * @default `false`
-   */
-  var unlockedFramerate:Bool;
-
-  /**
-   * Screenshot options
-   * @param shouldHideMouse Should the mouse be hidden when taking a screenshot? Default: `true`
-   * @param fancyPreview Show a fancy preview? Default: `true`
-   * @param previewOnSave Only show the fancy preview after a screenshot is saved? Default: `true`
-   */
-  var screenshot:
-    {
-      var shouldHideMouse:Bool;
-      var fancyPreview:Bool;
-      var previewOnSave:Bool;
-    };
 
   var controls:
     {
