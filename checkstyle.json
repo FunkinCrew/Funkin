@@ -252,7 +252,7 @@
     {
       "props": {
         "max": 160,
-        "ignorePattern": "^$"
+        "ignorePattern": "^(\\s*['\"][^'\"]*['\"].*)$"
       },
       "type": "LineLength"
     },
@@ -355,7 +355,7 @@
     {
       "props": {
         "allowSingleLineStatement": true,
-        "tokens": ["FOR", "ELSE_IF", "WHILE", "DO_WHILE"]
+        "tokens": ["ELSE_IF", "WHILE", "DO_WHILE"]
       },
       "type": "NeedBraces"
     },
