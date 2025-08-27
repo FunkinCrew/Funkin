@@ -17,5 +17,6 @@ assets/shared/images/characters/spirit.png
 assets/shared/images/resultScreen/*
 assets/shared/images/ui/chart-editor/*
 assets/shared/images/ui/countdown/pixel/
+assets/shared/images/healthBar.png
 assets/week1/
 assets/week6/*
