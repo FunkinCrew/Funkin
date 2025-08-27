@@ -7,6 +7,141 @@ import funkin.mobile.util.InAppPurchasesUtil;
 import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
+import haxe.ds.Either;
+
+typedef PreferenceData =
+{
+  var name:String;
+  var desc:String;
+  var saveId:String;
+
+  @:jcustomparse(funkin.data.DataParse.dynamicValue)
+  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  var defaultValue:Dynamic;
+
+  var type:String; // checkbox, number, percent, enum
+
+  // number / percent
+  @:optional
+  @:default(0)
+  var min:Float;
+
+  @:optional
+  @:default(100)
+  var max:Float;
+
+  // percent
+  @:optional
+  @:default(1)
+  var step:Float;
+
+  @:optional
+  @:default(1)
+  var precision:Int;
+
+  @:optional
+  @:default("")
+  var script:String;
+}
+
+@:hscriptClass
+class ScriptedPreference extends Preference implements polymod.hscript.HScriptedClass {}
+
+class Preference
+{
+  // public var data:PreferenceData;
+  public var name:String;
+  public var desc:String;
+
+  public var defaultValue:Dynamic;
+
+  // number
+  // Can be set up via script.
+  public var valueFormatter:Float->String = null;
+
+  // number / precent
+  // Using Dynamic cuz Either doesnt work 🙄
+  public var min:Dynamic;
+  public var max:Dynamic;
+
+  public var step:Float;
+  public var precision:Int;
+
+  public var type:String;
+
+  public var saveId:String;
+
+  public var isMod:Bool;
+
+  public function new(data:PreferenceData, ?modded:Bool)
+  {
+    // this.data = data;
+    // trace(this.data);
+
+    name = data.name;
+    desc = data.desc;
+
+    defaultValue = data.defaultValue;
+
+    min = data.min;
+    max = data.max;
+    step = data.step;
+    precision = data.precision;
+
+    type = data.type;
+    saveId = data.saveId;
+
+    isMod = modded;
+  }
+
+  // Override this function with your script.
+  public function allowThisPreference():Bool
+  {
+    return true;
+  }
+
+  // Override this function with your script.
+  public function isAvailable():Bool
+  {
+    return true;
+  }
+
+  public function loadDefaultValue()
+  {
+    if ((!isMod ? Save.instance.preferences : Save.instance.modOptions)[saveId] == null) updatePreference(defaultValue);
+  }
+
+  public function updatePreference(newVal:Dynamic)
+  {
+    final saveInstance = !isMod ? Save.instance.preferences : Save.instance.modOptions;
+    saveInstance[saveId] = newVal;
+    Save.instance.flush();
+
+    return saveInstance[saveId];
+  }
+
+  /**
+   * Returns value of current pref.
+   */
+  public function getValue()
+  {
+    if (!allowThisPreference()) return defaultValue;
+
+    final saveInstance = !isMod ? Save.instance.preferences : Save.instance.modOptions;
+    if (saveInstance[saveId] == null)
+    {
+      saveInstance[saveId] = defaultValue;
+      Save.instance.flush();
+    }
+
+    return saveInstance[saveId];
+  }
+
+  public function onInit() {}
+
+  public function toString():String
+    return 'Preference(saveId: $saveId)';
+}
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -14,6 +149,72 @@ import funkin.util.HapticUtil.HapticsMode;
 @:nullSafety
 class Preferences
 {
+  public static var defaultPreferencesIds:Array<String> = [];
+
+  public static var loadedPreferencesArrayIds:Array<String> = [];
+  public static var loadedPreferences:Map<String, Preference> = [];
+
+  public static function loadPreferences(?loadIds:Bool):Void
+  {
+    if (loadIds == null) loadIds = false;
+    final prefDataPath:String = Paths.json('preferences');
+    final prefData:String = Assets.getText(prefDataPath);
+
+    var parsedData:Array<PreferenceData>;
+    var parser = new json2object.JsonParser<Array<PreferenceData>>();
+    parser.ignoreUnknownVariables = false;
+    trace('[PREFERENCES] Parsing preferences data...');
+    parser.fromJson(prefData, prefDataPath);
+
+    if (parser.errors.length > 0)
+    {
+      trace('[PREFERENCES] Failed to parse preferences data!');
+      for (error in parser.errors)
+        funkin.data.DataError.printError(error);
+      parsedData = [];
+    }
+    else
+      parsedData = parser.value;
+
+    if (loadIds)
+    {
+      if (loadIds) for (prefData in parsedData)
+        defaultPreferencesIds.push(prefData.saveId);
+    }
+    else
+    {
+      if (parsedData.length < defaultPreferencesIds.length) trace('WARNING: Adter-Modded preferences length is LESS than default.');
+
+      var _scriptName:Null<String> = null;
+      final scriptedClassesList:Array<String> = ScriptedPreference.listScriptClasses();
+      for (prefData in parsedData)
+      {
+        _scriptName = (prefData?.script ?? "").trim();
+        var preferenceItem:Null<Preference> = (_scriptName != ""
+          && scriptedClassesList.contains(_scriptName)) ? (ScriptedPreference.init(_scriptName, prefData,
+            !defaultPreferencesIds.contains(prefData.saveId))) : (new Preference(prefData, !defaultPreferencesIds.contains(prefData.saveId)));
+
+        preferenceItem.loadDefaultValue();
+        loadedPreferencesArrayIds.push(preferenceItem.saveId);
+        loadedPreferences.set(preferenceItem.saveId, preferenceItem);
+      }
+      _scriptName = null;
+    }
+  }
+
+  // Shortcut
+  public static inline function getPref(id:String, ?defVal:Dynamic):Null<Dynamic>
+  {
+    return getPreference(id, defVal);
+  }
+
+  public static function getPreference(id:String, ?defVal:Dynamic):Null<Dynamic>
+  {
+    return loadedPreferences.exists(id) ? loadedPreferences.get(id)?.getValue() ?? defVal : defVal;
+  }
+
+  ////////////////////
+
   /**
    * FPS
    * Always the refresh rate of the display on mobile, or 60 on web.
@@ -48,52 +249,6 @@ class Preferences
     FlxG.drawFramerate = value;
     return value;
     #end
-  }
-
-  /**
-   * Whether some particularly foul language is displayed.
-   * @default `true`
-   */
-  public static var naughtyness(get, set):Bool;
-
-  static function get_naughtyness():Bool
-  {
-    #if NO_FEATURE_NAUGHTYNESS
-    return false;
-    #else
-    return Save?.instance?.options?.naughtyness ?? true;
-    #end
-  }
-
-  static function set_naughtyness(value:Bool):Bool
-  {
-    #if NO_FEATURE_NAUGHTYNESS
-    value = false;
-    #end
-
-    var save:Save = Save.instance;
-    save.options.naughtyness = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, the strumline is at the bottom of the screen rather than the top.
-   * @default `false`
-   */
-  public static var downscroll(get, set):Bool;
-
-  static function get_downscroll():Bool
-  {
-    return Save?.instance?.options?.downscroll #if mobile ?? true #else ?? false #end;
-  }
-
-  static function set_downscroll(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.downscroll = value;
-    save.flush();
-    return value;
   }
 
   /**
@@ -376,26 +531,6 @@ class Preferences
   #end
 
   /**
-   * If >0, the game will display a semi-opaque background under the notes.
-   * `0` for no background, `100` for solid black if you're freaky like that
-   * @default `0`
-   */
-  public static var strumlineBackgroundOpacity(get, set):Int;
-
-  static function get_strumlineBackgroundOpacity():Int
-  {
-    return (Save?.instance?.options?.strumlineBackgroundOpacity ?? 0);
-  }
-
-  static function set_strumlineBackgroundOpacity(value:Int):Int
-  {
-    var save:Save = Save.instance;
-    save.options.strumlineBackgroundOpacity = value;
-    save.flush();
-    return value;
-  }
-
-  /**
    * If enabled, the game will hide the mouse when taking a screenshot.
    * @default `true`
    */
@@ -475,6 +610,9 @@ class Preferences
     // Apply the allowScreenTimeout setting.
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
     #end
+
+    for (pref in loadedPreferences)
+      pref.onInit();
   }
 
   static function toggleFramerateCap(unlocked:Bool):Void

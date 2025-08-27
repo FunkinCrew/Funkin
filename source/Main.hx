@@ -60,6 +60,11 @@ class Main extends Sprite
     haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
     funkin.util.logging.AnsiTrace.traceBF();
 
+    // George recommends binding the save before FlxGame is created.
+    Save.load();
+    // Load default list of preferences
+    Preferences.loadPreferences(true);
+
     // Load mods to override assets.
     // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
     funkin.modding.PolymodHandler.loadAllMods();
@@ -116,11 +121,7 @@ class Main extends Sprite
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
     #end
 
-    // George recommends binding the save before FlxGame is created.
-    Save.load();
-
-    #if hxvlc
-    // Initialize hxvlc's Handle here so the videos are loading faster.
+    #if hxvlc // Initialize hxvlc's Handle here so the videos are loading faster.
     Handle.init();
     #end
 

@@ -1856,7 +1856,8 @@ class PlayState extends MusicBeatSubState
      */
   function initHealthBar():Void
   {
-    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
+    // Silly nullSafety
+    var healthBarYPos:Float = (Preferences.getPref("downscroll", false) ?? false) ? FlxG.height * 0.1 : FlxG.height * 0.9;
     #if mobile
     if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
       && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
@@ -2089,14 +2090,20 @@ class PlayState extends MusicBeatSubState
     playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
 
-    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
+    playerStrumline.y = (Preferences.getPref("downscroll", false) ?? false) ? FlxG.height
+      - playerStrumline.height
+      - Constants.STRUMLINE_Y_OFFSET
+      - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
 
     playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
     opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
-    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
+    opponentStrumline.y = (Preferences.getPref("downscroll", false) ?? false) ? FlxG.height
+      - opponentStrumline.height
+      - Constants.STRUMLINE_Y_OFFSET
+      - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
 
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];

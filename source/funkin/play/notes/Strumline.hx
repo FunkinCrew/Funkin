@@ -166,7 +166,7 @@ class Strumline extends FlxSpriteGroup
 
   public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice)
-    || #end Preferences.downscroll;
+    || #end Preferences.getPref("downscroll", false);
 
   /**
    * The note data for the song. Should NOT be altered after the song starts (but we alter it in OffsetState :DDD),
@@ -230,7 +230,7 @@ class Strumline extends FlxSpriteGroup
     #end
     this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(backgroundWidth), FlxG.height, 0xFF000000);
     // Convert the percent to a number between 0 and 1.
-    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
+    this.background.alpha = Preferences.getPref("strumlineBackgroundOpacity") / 100.0;
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
     #if mobile
@@ -280,7 +280,7 @@ class Strumline extends FlxSpriteGroup
   {
     super.set_alpha(value);
 
-    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0 * alpha;
+    this.background.alpha = Preferences.getPref("strumlineBackgroundOpacity") / 100.0 * alpha;
 
     return value;
   }

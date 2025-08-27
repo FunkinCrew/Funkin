@@ -394,10 +394,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (ControlsHandler.usingExternalInputDevice)
       {
       #end
-        testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
-        - Constants.STRUMLINE_Y_OFFSET;
-        if (Preferences.downscroll) jumpInText.y = FlxG.height - 425;
-        testStrumline.isDownscroll = Preferences.downscroll;
+        testStrumline.y = Preferences.getPref("downscroll") ? FlxG.height - (testStrumline.height +
+          45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
+          - Constants.STRUMLINE_Y_OFFSET;
+        if (Preferences.getPref("downscroll")) jumpInText.y = FlxG.height - 425;
+        testStrumline.isDownscroll = Preferences.getPref("downscroll");
       #if mobile
       }
       else
@@ -427,8 +428,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   /**
-   * Callback executed when one of the note keys is pressed.
-   */
+     * Callback executed when one of the note keys is pressed.
+     */
   function onKeyPress(event:PreciseInputEvent):Void
   {
     // Do the minimal possible work here.
@@ -436,8 +437,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   /**
-   * Callback executed when one of the note keys is released.
-   */
+     * Callback executed when one of the note keys is released.
+     */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
     // Do the minimal possible work here.
@@ -513,11 +514,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   var _lastDirection:Int = 0;
 
   /* Adds a difference in milliseconds to the list.
-    If there are more than 4 differences, it calculates the average and sets the global offset.
-    This is used for calibrating the offset based on user input.
-    @param ms The difference in milliseconds to add.
-    @see Preferences.globalOffset
-   */
+      If there are more than 4 differences, it calculates the average and sets the global offset.
+      This is used for calibrating the offset based on user input.
+      @param ms The difference in milliseconds to add.
+      @see Preferences.globalOffset
+     */
   public function addDifference(ms:Float):Void
   {
     differences.push(ms);
@@ -840,9 +841,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
 
     /*debugBeatText.x = receptor.x + receptor.width * 2;
-      debugBeatText.y = receptor.y - 20;
-
-          debugBeatText.text = 'Beat: ' + b; */
+        debugBeatText.y = receptor.y - 20;
+  
+            debugBeatText.text = 'Beat: ' + b; */
 
     // receptor.angle += angleVel * elapsed;
 
@@ -903,9 +904,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   /**
-   * PreciseInputEvents are put into a queue between update() calls,
-   * and then processed here.
-   */
+     * PreciseInputEvents are put into a queue between update() calls,
+     * and then processed here.
+     */
   function processInputQueue():Void
   {
     if (inputPressQueue.length + inputReleaseQueue.length == 0 || shouldOffset != 1) return;

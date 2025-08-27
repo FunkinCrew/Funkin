@@ -246,7 +246,7 @@ class InitState extends FlxState
     //
     // GAME DATA PARSING
     //
-
+    Preferences.loadPreferences(false);
     // NOTE: Registries must be imported and not referenced with fully qualified names,
     // to ensure build macros work properly.
     trace('Parsing game data...');
@@ -570,16 +570,16 @@ class InitState extends FlxState
 
   function defineSong():Null<String>
   {
-    return MacroUtil.getDefine('SONG');
+    return MacroUtil.getDefineString('SONG');
   }
 
   function defineLevel():Null<String>
   {
-    return MacroUtil.getDefine('LEVEL');
+    return MacroUtil.getDefineString('LEVEL');
   }
 
   function defineDifficulty():Null<String>
   {
-    return MacroUtil.getDefine('DIFFICULTY');
+    return MacroUtil.getDefineString('DIFFICULTY');
   }
 }

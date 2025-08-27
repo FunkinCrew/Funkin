@@ -206,7 +206,10 @@ class ResultState extends MusicBeatSubState
 
       if (animData.filter != "both")
       {
-        if (Preferences.naughtyness && animData.filter != "naughty" || !Preferences.naughtyness && animData.filter != "safe") continue;
+        if (Preferences.getPref("naughtyness", true)
+          && animData.filter != "naughty"
+          || !(Preferences.getPref("naughtyness", true) ?? true) // dummy null safety :rolling_eyes:
+          && animData.filter != "safe") continue;
       }
 
       var animPath:String = "";

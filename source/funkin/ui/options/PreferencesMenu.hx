@@ -107,19 +107,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    #if FEATURE_NAUGHTYNESS
-    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
-      Preferences.naughtyness = value;
-    }, Preferences.naughtyness);
-    #end
-    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
-      Preferences.downscroll = value;
-    },
-      Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
-      || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
-    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
-      Preferences.strumlineBackgroundOpacity = value;
-    }, Preferences.strumlineBackgroundOpacity);
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
       "All" => HapticsMode.ALL,
@@ -196,6 +183,33 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
     #end
+
+    for (prefSaveId in Preferences.loadedPreferencesArrayIds)
+    {
+      if (!Preferences.loadedPreferences.exists(prefSaveId)) continue;
+
+      final pref:Preference = Preferences.loadedPreferences.get(prefSaveId);
+      if (!pref.allowThisPreference()) continue;
+
+      switch (pref.type)
+      {
+        case "checkbox":
+          createPrefItemCheckbox(pref.name, pref.desc, (value:Bool) -> pref.updatePreference(value), pref.getValue(), pref.isAvailable());
+
+        case "number":
+          createPrefItemNumber(pref.name, pref.desc, (value:Float) -> pref.updatePreference(value), pref.valueFormatter, pref.getValue(), pref.min, pref.max,
+            pref.step, pref.precision);
+
+        case "percent" | "percentage":
+          createPrefItemPercentage(pref.name, pref.desc, (value:Int) -> pref.updatePreference(value), pref.getValue(), pref.min, pref.max);
+
+        default:
+          trace('UNKNOWN PREFERENCE TYPE: ${pref.type}');
+      }
+    }
+
+    trace('Prefs: ' + funkin.save.Save.instance.preferences);
+    trace('ModPrefs: ' + funkin.save.Save.instance.modOptions);
   }
 
   override function update(elapsed:Float):Void
@@ -251,7 +265,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1),
       defaultValue, available);
 
-    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
+    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, () -> {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
