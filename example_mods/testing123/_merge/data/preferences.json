@@ -40,7 +40,7 @@
       "min": 0,
       "max": 200,
 
-      "saveId": "testPref4",
+      "saveId": "testpref5",
       "type": "percent"
     }
   }

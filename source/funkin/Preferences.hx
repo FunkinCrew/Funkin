@@ -531,26 +531,6 @@ class Preferences
   #end
 
   /**
-   * If >0, the game will display a semi-opaque background under the notes.
-   * `0` for no background, `100` for solid black if you're freaky like that
-   * @default `0`
-   */
-  public static var strumlineBackgroundOpacity(get, set):Int;
-
-  static function get_strumlineBackgroundOpacity():Int
-  {
-    return (Save?.instance?.options?.strumlineBackgroundOpacity ?? 0);
-  }
-
-  static function set_strumlineBackgroundOpacity(value:Int):Int
-  {
-    var save:Save = Save.instance;
-    save.options.strumlineBackgroundOpacity = value;
-    save.flush();
-    return value;
-  }
-
-  /**
    * If enabled, the game will hide the mouse when taking a screenshot.
    * @default `true`
    */

@@ -107,15 +107,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    /*createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
-        Preferences.getPref("downscroll") = value;
-      },
-        Preferences.getPref("downscroll"), #if mobile ControlsHandler.hasExternalInputDevice
-        || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end); */
-
-    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
-      Preferences.strumlineBackgroundOpacity = value;
-    }, Preferences.strumlineBackgroundOpacity);
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
       "All" => HapticsMode.ALL,
