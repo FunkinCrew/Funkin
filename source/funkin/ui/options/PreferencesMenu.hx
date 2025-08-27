@@ -108,21 +108,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   function createPrefItems():Void
   {
     /*#if !web
-      #if !(mac || mobile)
-      createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
-        "Off" => WindowVSyncMode.OFF,
-        "On" => WindowVSyncMode.ON,
-        "Adaptive" => WindowVSyncMode.ADAPTIVE,
-      ], function(key:String, value:WindowVSyncMode):Void {
-        trace("Setting vsync mode to " + key);
-        Preferences.vsyncMode = value;
-      }, switch (Preferences.vsyncMode)
-        {
-          case WindowVSyncMode.OFF: "Off";
-          case WindowVSyncMode.ON: "On";
-          case WindowVSyncMode.ADAPTIVE: "Adaptive";
-        });
-      #end
       #if !mobile
       createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
         Preferences.framerate = Std.int(value);

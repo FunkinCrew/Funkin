@@ -238,42 +238,6 @@ class Preferences
   ////////////////////
 
   /**
-   * FPS
-   * Always the refresh rate of the display on mobile, or 60 on web.
-   * @default `60`
-   */
-  public static var framerate(get, set):Int;
-
-  static function get_framerate():Int
-  {
-    #if web
-    return 60;
-    #elseif mobile
-    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
-
-    if (refreshRate < 60) refreshRate = 60;
-
-    return refreshRate;
-    #else
-    return Save?.instance?.options?.framerate ?? 60;
-    #end
-  }
-
-  static function set_framerate(value:Int):Int
-  {
-    #if web
-    return 60;
-    #else
-    var save:Save = Save.instance;
-    save.options.framerate = value;
-    save.flush();
-    FlxG.updateFramerate = value;
-    FlxG.drawFramerate = value;
-    return value;
-    #end
-  }
-
-  /**
    * A global audio offset in milliseconds.
    * This is used to sync the audio.
    * @default `0`
@@ -289,53 +253,6 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.globalOffset = value;
-    save.flush();
-    return value;
-  }
-
-  /**
-   * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
-   * @default `OFF`
-   */
-  public static var vsyncMode(get, set):lime.ui.WindowVSyncMode;
-
-  static function get_vsyncMode():lime.ui.WindowVSyncMode
-  {
-    var value = Save?.instance?.options?.vsyncMode ?? "Off";
-
-    return switch (value)
-    {
-      case "Off":
-        lime.ui.WindowVSyncMode.OFF;
-      case "On":
-        lime.ui.WindowVSyncMode.ON;
-      case "Adaptive":
-        lime.ui.WindowVSyncMode.ADAPTIVE;
-      default:
-        lime.ui.WindowVSyncMode.OFF;
-    };
-  }
-
-  static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
-  {
-    var string;
-
-    switch (value)
-    {
-      case lime.ui.WindowVSyncMode.OFF:
-        string = "Off";
-      case lime.ui.WindowVSyncMode.ON:
-        string = "On";
-      case lime.ui.WindowVSyncMode.ADAPTIVE:
-        string = "Adaptive";
-      default:
-        string = "Off";
-    };
-
-    WindowUtil.setVSyncMode(value);
-
-    var save:Save = Save.instance;
-    save.options.vsyncMode = string;
     save.flush();
     return value;
   }

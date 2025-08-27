@@ -69,6 +69,8 @@ class Main extends Sprite
     // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
     funkin.modding.PolymodHandler.loadAllMods();
 
+    Preferences.loadPreferences(false);
+
     if (stage != null)
     {
       init();
@@ -132,9 +134,8 @@ class Main extends Sprite
     funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
     #end
 
-    WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
-
-    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
+    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.getPref("framerate", 160), Preferences.getPref("framerate", 160),
+      skipSplash, startFullscreen);
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
     // create() in there, which gets called when it's added to the stage
