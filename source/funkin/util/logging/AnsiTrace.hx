@@ -1,5 +1,8 @@
 package funkin.util.logging;
 
+/**
+ * Class that helps with some Ansi related logging functionality like some terminal color checking
+ */
 @:nullSafety
 class AnsiTrace
 {
@@ -10,7 +13,7 @@ class AnsiTrace
    */
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
-    var str = formatOutput(v, info);
+    var str:String = formatOutput(v, info);
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.message(str, flixel.util.FlxColor.WHITE);
     #end
@@ -25,24 +28,27 @@ class AnsiTrace
     #end
   }
 
+  /**
+   * Returns our terminals support for color output
+   */
   public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM")?.startsWith('xterm')
     || Sys.getEnv("ANSICON") != null) #else false #end;
 
   // ansi stuff
-  public static inline var RED = "\x1b[31m";
-  public static inline var YELLOW = "\x1b[33m";
-  public static inline var WHITE = "\x1b[37m";
-  public static inline var NORMAL = "\x1b[0m";
-  public static inline var BOLD = "\x1b[1m";
-  public static inline var ITALIC = "\x1b[3m";
+  static inline var RED = "\x1b[31m";
+  static inline var YELLOW = "\x1b[33m";
+  static inline var WHITE = "\x1b[37m";
+  static inline var NORMAL = "\x1b[0m";
+  static inline var BOLD = "\x1b[1m";
+  static inline var ITALIC = "\x1b[3m";
 
   /**
    * Format the output to use ANSI colors.
    * Edited from the standard `trace()` implementation.
    */
-  public static function formatOutput(v:Dynamic, ?infos:haxe.PosInfos):String
+  static function formatOutput(v:Dynamic, ?infos:haxe.PosInfos):String
   {
-    var str = Std.string(v);
+    var str:String = Std.string(v);
     if (infos == null) return str;
 
     if (colorSupported)
@@ -54,7 +60,7 @@ class AnsiTrace
       infos.fileName = dirs.join("/");
     }
 
-    var pstr = infos.fileName + ":" + ansiWrap(infos.lineNumber, BOLD);
+    var pstr:String = infos.fileName + ":" + ansiWrap(infos.lineNumber, BOLD);
     if (infos.customParams != null) for (v in infos.customParams)
       str += ", " + Std.string(v);
     return pstr + ": " + str;
@@ -75,12 +81,12 @@ class AnsiTrace
     #end
   }
 
-  public static function ansiWrap(str:Dynamic, ansiCol:String)
+  static function ansiWrap(str:Dynamic, ansiCol:String)
   {
     return ansify(ansiCol) + str + ansify(NORMAL);
   }
 
-  public static function ansify(ansiCol:String)
+  static function ansify(ansiCol:String)
   {
     return (colorSupported ? ansiCol : "");
   }
