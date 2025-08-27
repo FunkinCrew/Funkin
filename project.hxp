@@ -37,7 +37,7 @@ class Project extends HXProject
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 2;
+  static final BUILD_NUMBER:Int = 51;
 
   /**
    * The game's name. Used as the default window title.
