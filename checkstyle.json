@@ -1,10 +1,9 @@
 {
-  "extendsConfigPath": "",
-  "defineCombinations": [],
   "defaultSeverity": "INFO",
+  "extendsConfigPath": "",
+  "numberOfCheckerThreads": 5,
   "baseDefines": [],
-  "version": 1,
-  "exclude": {},
+  "defineCombinations": [],
   "checks": [
     {
       "props": {},
@@ -114,7 +113,7 @@
       "type": "DocCommentStyle"
     },
     {
-      "props": {},
+      "props": { "severity": "IGNORE" },
       "type": "Dynamic"
     },
     {
@@ -192,6 +191,14 @@
         "severity": "IGNORE"
       },
       "type": "FileLength"
+    },
+    {
+      "type": "FileNameCase",
+      "props": {}
+    },
+    {
+      "type": "Final",
+      "props": {}
     },
     {
       "props": {
@@ -581,6 +588,12 @@
       "type": "TrailingWhitespace"
     },
     {
+      "type": "Type",
+      "props": {
+        "ignoreEnumAbstractValues": true
+      }
+    },
+    {
       "props": {
         "tokens": ["CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF", "TYPEDEF_DEF"]
       },
@@ -612,11 +625,17 @@
       "type": "UnusedLocalVar"
     },
     {
+      "type": "VarTypeHint",
       "props": {
-        "typeHintPolicy": "enforce_all",
+        "typeHintPolicy": "infer_new_or_const",
         "ignoreEnumAbstractValues": true
-      },
-      "type": "VarTypeHint"
+      }
+    },
+    {
+      "type": "VariableInitialisation",
+      "props": {
+        "allowFinal": false
+      }
     },
     {
       "props": {
@@ -665,5 +684,6 @@
       "type": "WhitespaceAround"
     }
   ],
-  "numberOfCheckerThreads": 5
+  "exclude": {},
+  "version": 1
 }
