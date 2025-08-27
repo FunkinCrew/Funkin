@@ -10,6 +10,18 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsGREAT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsGOOD/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsSHIT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/preload/images/NOTE_assets.png",
       "blocksize": "4x4"
     },
