@@ -525,6 +525,7 @@ class PlayState extends MusicBeatSubState
 
   /**
    * The sprite group containing active players' strumline notes.
+   * Setting this will automatically try to add the stage's player character to the start of `playerStrumline.characters`.
    */
   public var playerStrumline(get, set):Strumline;
 
@@ -535,11 +536,30 @@ class PlayState extends MusicBeatSubState
 
   function set_playerStrumline(value:Strumline):Strumline
   {
-    return strumlines[0] = value;
+    strumlines[0] = value;
+    // Add the player character to the strumline's list of characters.
+    var boyfriend:Null<BaseCharacter> = currentStage?.getBoyfriend();
+    if (boyfriend != null)
+    {
+      // Remove the character if they were in the array already.
+      value.characters.remove(boyfriend);
+      // Add the character to the start of the array just in case a script references the first entry expecting this character.
+      value.characters.unshift(boyfriend);
+    }
+    // Add the player vocals to the strumline's list of vocals.
+    if (vocals?.playerVoices != null) @:nullSafety(Off)
+    {
+      // Remove the vocals if they were in the array already.
+      value.vocals.remove(vocals.playerVoices);
+      // Add the vocals to the start of the array just in case a script references the first entry expecting these vocals.
+      value.vocals.unshift(vocals.playerVoices);
+    }
+    return value;
   }
 
   /**
    * The sprite group containing opponents' strumline notes.
+   * Setting this will automatically try to add the stage's opponent character to the start of `opponentStrumline.characters`.
    */
   public var opponentStrumline(get, set):Strumline;
 
@@ -550,7 +570,25 @@ class PlayState extends MusicBeatSubState
 
   function set_opponentStrumline(value:Strumline):Strumline
   {
-    return strumlines[1] = value;
+    strumlines[1] = value;
+    // Add the opponent character to the strumline's list of characters.
+    var dad:Null<BaseCharacter> = currentStage?.getDad();
+    if (dad != null)
+    {
+      // Remove the character if they were in the array already.
+      value.characters.remove(dad);
+      // Add the character to the start of the array just in case a script references the first entry expecting this character.
+      value.characters.unshift(dad);
+    }
+    // Add the opponent vocals to the strumline's list of vocals.
+    if (vocals?.opponentVoices != null) @:nullSafety(Off)
+    {
+      // Remove the vocals if they were in the array already.
+      value.vocals.remove(vocals.opponentVoices);
+      // Add the vocals to the start of the array just in case a script references the first entry expecting these vocals.
+      value.vocals.unshift(vocals.opponentVoices);
+    }
+    return value;
   }
 
   /**
@@ -747,12 +785,6 @@ class PlayState extends MusicBeatSubState
     var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId ?? Constants.DEFAULT_NOTE_STYLE);
     if (nulNoteStyle == null) throw "Failed to retrieve both note style and default note style. This shouldn't happen!";
     noteStyle = nulNoteStyle;
-
-    // Strumlines
-    @:nullSafety(Off)
-    playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
-    @:nullSafety(Off)
-    opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
 
     // Healthbar
     healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
@@ -2124,14 +2156,14 @@ class PlayState extends MusicBeatSubState
      */
   function initStrumlines():Void
   {
-    playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
-    opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
+    // Create strumlines here so that their constructors can reference this instance.
+    @:nullSafety(Off)
+    playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
+    @:nullSafety(Off)
+    opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
+
     add(playerStrumline);
     add(opponentStrumline);
-    var boyfriend:Null<BaseCharacter> = currentStage?.getBoyfriend();
-    if (boyfriend != null) playerStrumline.characters.push(boyfriend);
-    var dad:Null<BaseCharacter> = currentStage?.getDad();
-    if (dad != null) opponentStrumline.characters.push(dad);
 
     final cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2.5;
     // Position the player strumline on the right half of the screen
@@ -2157,23 +2189,16 @@ class PlayState extends MusicBeatSubState
     }
     #end
 
-    NoteVibrationsHandler.instance.strumlines.push(playerStrumline);
-    NoteVibrationsHandler.instance.strumlines.push(opponentStrumline);
-    playerStrumline.hasVibrations = !isBotPlayMode;
-
-    playerStrumline.canMiss = !isBotPlayMode;
-    opponentStrumline.canMiss = false;
-
     if (!PlayStatePlaylist.isStoryMode) for (strumline in strumlines)
     {
       strumline.fadeInArrows();
     }
   }
 
+  #if mobile
   /**
      * Configures the position of strumline for the default control scheme
      */
-  #if mobile
   function initNoteHitbox()
   {
     final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);

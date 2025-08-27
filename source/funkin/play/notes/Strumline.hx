@@ -207,6 +207,7 @@ class Strumline extends FlxSpriteGroup
   /**
    * Whether or not notes on this strumline will be counted as missed.
    * Disabled for bots so that they don't miss during a lag spike.
+   * Feel free to temporarily set this to `false` to re-enable functionality for missing.
    */
   public var canMiss:Bool = true;
 
@@ -285,7 +286,16 @@ class Strumline extends FlxSpriteGroup
 
   static final BACKGROUND_PAD:Int = 16;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float)
+  /**
+   * Create a new strumline.
+   * If you want to add notes from a chart, use `PlayState.instance.regenNoteData()`.
+   * @param noteStyle The note style to use when creating sprites.
+   * @param isPlayer Whether or not this strumline is controlled by the player's inputs. Should be `false` for bots.
+   * @param scrollSpeed The speed that the notes will scroll at. Defaults to the current chart's scroll speed.
+   * @param characters A list of characters that this strumline controls. The setters in `PlayState` will add the defaults.
+   * @param vocals A list of vocals that this strumline controls. The setters in `PlayState` will add the defaults.
+   */
+  public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float, ?characters:Array<BaseCharacter>, ?vocals:Array<Null<VoicesGroupEntry>>)
   {
     super();
 
@@ -365,6 +375,20 @@ class Strumline extends FlxSpriteGroup
 
     // This MUST be true for children to update!
     this.active = true;
+
+    if (PlayState.instance != null) @:privateAccess onNoteIncoming.add(PlayState.instance.onStrumlineNoteIncoming);
+
+    NoteVibrationsHandler.instance.strumlines.push(this);
+    if (isPlayer) hasVibrations = true;
+
+    canMiss = isPlayer;
+
+    // Add the characters and vocals if provided.
+    // Note that the setters in PlayState will handle adding any default characters and vocals.
+    // This is because, if Bot Play is enabled, we don't actually have any way here to tell which side this is for.
+    // At least, not without sacrificing some backwards compatibility by adding a required parameter.
+    if (characters != null) this.characters = characters;
+    if (vocals != null) this.vocals = vocals;
   }
 
   override function set_y(value:Float):Float
