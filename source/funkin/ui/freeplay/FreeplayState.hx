@@ -2313,7 +2313,7 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = Math.max(0, Scoring.tallyCompletion(songScore?.tallies));
       rememberedDifficulty = currentDifficulty;
       if (!capsuleAnim) generateSongList(currentFilter, false, true, true);
-      currentCapsule.refreshDisplay(!prepForNewRank);
+      if (change != 0) currentCapsule.refreshDisplay(!prepForNewRank);
     }
     else
     {
@@ -2817,7 +2817,7 @@ class FreeplayState extends MusicBeatSubState
     changeDiff();
     if (currentCapsule.freeplayData == null) currentCapsule.refreshDisplay();
     else
-      currentCapsule.refreshDisplay(!prepForNewRank);
+      currentCapsule.refreshDisplay(false);
 
     for (index => capsule in grpCapsules.members)
     {
