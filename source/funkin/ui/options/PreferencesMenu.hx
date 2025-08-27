@@ -107,12 +107,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    /* #if !mobile
-      createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
-        Preferences.debugDisplay = value;
-      }, Preferences.debugDisplay);
-      #end */
-
     #if web
     createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;

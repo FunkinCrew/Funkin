@@ -274,34 +274,6 @@ class Preferences
   }
 
   /**
-   * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * Always disabled on mobile.
-   * @default `false`
-   */
-  public static var debugDisplay(get, set):Bool;
-
-  static function get_debugDisplay():Bool
-  {
-    #if mobile
-    return false;
-    #end
-    return Save?.instance?.options?.debugDisplay ?? false;
-  }
-
-  static function set_debugDisplay(value:Bool):Bool
-  {
-    if (value != Save.instance.options.debugDisplay)
-    {
-      toggleDebugDisplay(value);
-    }
-
-    var save = Save.instance;
-    save.options.debugDisplay = value;
-    save.flush();
-    return value;
-  }
-
-  /**
    * A global audio offset in milliseconds.
    * This is used to sync the audio.
    * @default `0`
@@ -473,8 +445,6 @@ class Preferences
   public static function init():Void
   {
     // WindowUtil.setVSyncMode(Preferences.vsyncMode);
-    // Apply the debugDisplay setting (enables the FPS and RAM display).
-    toggleDebugDisplay(Preferences.debugDisplay);
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
     #end

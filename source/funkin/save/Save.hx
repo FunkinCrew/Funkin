@@ -119,11 +119,7 @@ class Save implements ConsoleClass
         {
           // Reasonable defaults.
           framerate: #if mobile refreshRate #else 60 #end,
-          zoomCamera: true,
-          debugDisplay: false,
-          autoPause: true,
           vsyncMode: 'Off',
-          autoFullscreen: false,
           globalOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
@@ -1586,34 +1582,10 @@ typedef SaveDataOptions =
   var framerate:Int;
 
   /**
-   * If disabled, the camera bump synchronized to the beat.
-   * @default `false`
-   */
-  var zoomCamera:Bool;
-
-  /**
-   * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * @default `false`
-   */
-  var debugDisplay:Bool;
-
-  /**
-   * If enabled, the game will automatically pause when tabbing out.
-   * @default `true`
-   */
-  var autoPause:Bool;
-
-  /**
    * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
    * @default `Off`
    */
   var vsyncMode:String;
-
-  /**
-   * If enabled, the game will automatically launch in fullscreen on startup.
-   * @default `true`
-   */
-  var autoFullscreen:Bool;
 
   /**
    * Offset the user's inputs by this many ms.
