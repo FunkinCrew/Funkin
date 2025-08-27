@@ -1612,7 +1612,7 @@ class PlayState extends MusicBeatSubState
   {
     if (VideoCutscene.isPlaying() && Preferences.getPref("autoPause") && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
-    else if (Preferences.getPref("autoPause")) VideoCutscene.resumeVideo();
+    else if ((Preferences.getPref("autoPause") ?? true)) VideoCutscene.resumeVideo();
     #end
 
     #if FEATURE_DISCORD_RPC
@@ -1654,11 +1654,11 @@ class PlayState extends MusicBeatSubState
   public override function onFocusLost():Void
   {
     #if html5
-    if (Preferences.getPref("autoPause")) VideoCutscene.pauseVideo();
+    if (Preferences.getPref("autoPause") ?? true) VideoCutscene.pauseVideo();
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && (Preferences.getPref("autoPause") ?? true))
+    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.getPref("autoPause"))
     {
       DiscordClient.instance.setPresence(
         {
@@ -1672,7 +1672,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
-    if (!isGamePaused && (Preferences.getPref("autoPause") ?? true))
+    if (!isGamePaused && Preferences.getPref("autoPause"))
     {
       if (currentConversation != null)
       {
