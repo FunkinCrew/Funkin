@@ -34,7 +34,8 @@ typedef ScreenshotPluginParams =
  * A Flixel plugin, which renders on top of the game, and provides the functionality
  * and visual feedback for taking screenshots.
  */
-@:nullSafety
+// Im disabeling this, because everything here is safe from NOR, AND nullSafety hits Preferences
+// @:nullSafety
 class ScreenshotPlugin extends FlxBasic
 {
   /**
@@ -113,8 +114,7 @@ class ScreenshotPlugin extends FlxBasic
 
     flashSprite = new Sprite();
     flashSprite.alpha = 0;
-    flashBitmap = new Bitmap(new BitmapData(lastWidth, lastHeight, true,
-      (Preferences.getPref("flashingLights") ?? true) ? FlxColor.WHITE : FlxColor.TRANSPARENT));
+    flashBitmap = new Bitmap(new BitmapData(lastWidth, lastHeight, true, Preferences.getPref("flashingLights") ? FlxColor.WHITE : FlxColor.TRANSPARENT));
     flashSprite.addChild(flashBitmap);
 
     previewSprite = new Sprite();
@@ -256,8 +256,8 @@ class ScreenshotPlugin extends FlxBasic
   {
     lastWidth = width;
     lastHeight = height;
-    flashBitmap.bitmapData = new BitmapData(lastWidth, lastHeight, true,
-      (Preferences.getPref("flashingLights") ?? true) ? FlxColor.WHITE : FlxColor.TRANSPARENT);
+    trace(Preferences.getPref("flashingLights"));
+    flashBitmap.bitmapData = new BitmapData(lastWidth, lastHeight, true, Preferences.getPref("flashingLights") ? FlxColor.WHITE : FlxColor.TRANSPARENT);
     outlineBitmap.bitmapData = new BitmapData(Std.int(lastWidth / 5) + 10, Std.int(lastHeight / 5) + 10, true, 0xFFFFFFFF);
   }
 
@@ -286,7 +286,7 @@ class ScreenshotPlugin extends FlxBasic
         throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez. If you wanted those screenshots, well too bad!";
       }
       showCaptureFeedback();
-      if (wasMouseHidden && !FlxG.mouse.visible && Preferences.getPref("flashingLights")) // Just in case
+      if (wasMouseHidden && !FlxG.mouse.visible && Preferences.getPref("flashingLights", true)) // Just in case
       {
         wasMouseHidden = false;
         Cursor.show();
@@ -335,7 +335,7 @@ class ScreenshotPlugin extends FlxBasic
   {
     if (!Preferences.fancyPreview
       || screenshotBeingSpammed
-      && !Preferences.getPref("flashingLights")
+      && !Preferences.getPref("flashingLights", true)
       || stateChanging) return; // Sorry, the previews' been cancelled
     shotPreviewBitmap.bitmapData = shot.bitmapData;
     shotPreviewBitmap.x = outlineBitmap.x + 5;
@@ -576,7 +576,7 @@ class ScreenshotPlugin extends FlxBasic
       i++;
     }, 1);
     getCurrentState().add(asyncLoop);
-    if (!(Preferences.getPref("flashingLights") ?? true) && !Preferences.previewOnSave)
+    if (!Preferences.getPref("flashingLights") && !Preferences.previewOnSave)
     {
       showFancyPreview(screenshots[screenshots.length - 1]); // show the preview for the last screenshot
     }

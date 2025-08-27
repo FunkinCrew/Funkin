@@ -71,7 +71,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     menuCamera.minScrollY = 0;
 
-    items.onChange.add(function(selected) {
+    items.onChange.add((selected) -> {
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
@@ -107,46 +107,39 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
-    #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
-      Preferences.unlockedFramerate = value;
-    }, Preferences.unlockedFramerate);
-    #else
-    // disabled on macos due to "error: Late swap tearing currently unsupported"
-    // disable on mobile since it barely has any effect
-    #if !(mac || mobile)
-    createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
-      "Off" => WindowVSyncMode.OFF,
-      "On" => WindowVSyncMode.ON,
-      "Adaptive" => WindowVSyncMode.ADAPTIVE,
-    ], function(key:String, value:WindowVSyncMode):Void {
-      trace("Setting vsync mode to " + key);
-      Preferences.vsyncMode = value;
-    }, switch (Preferences.vsyncMode)
-      {
-        case WindowVSyncMode.OFF: "Off";
-        case WindowVSyncMode.ON: "On";
-        case WindowVSyncMode.ADAPTIVE: "Adaptive";
-      });
-    #end
-    #if !mobile
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
-      Preferences.framerate = Std.int(value);
-    }, null, Preferences.framerate, 30, 500, 5, 0);
-    #end
-    #end
-
-    #if FEATURE_SCREENSHOTS
-    createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
-      Preferences.shouldHideMouse = value;
-    }, Preferences.shouldHideMouse);
-    createPrefItemCheckbox('Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
-      Preferences.fancyPreview = value;
-    }, Preferences.fancyPreview);
-    createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
-      Preferences.previewOnSave = value;
-    }, Preferences.previewOnSave);
-    #end
+    /*#if !web
+      #if !(mac || mobile)
+      createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
+        "Off" => WindowVSyncMode.OFF,
+        "On" => WindowVSyncMode.ON,
+        "Adaptive" => WindowVSyncMode.ADAPTIVE,
+      ], function(key:String, value:WindowVSyncMode):Void {
+        trace("Setting vsync mode to " + key);
+        Preferences.vsyncMode = value;
+      }, switch (Preferences.vsyncMode)
+        {
+          case WindowVSyncMode.OFF: "Off";
+          case WindowVSyncMode.ON: "On";
+          case WindowVSyncMode.ADAPTIVE: "Adaptive";
+        });
+      #end
+      #if !mobile
+      createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
+        Preferences.framerate = Std.int(value);
+      }, null, Preferences.framerate, 30, 500, 5, 0);
+      #end
+      #end */
+    /*#if FEATURE_SCREENSHOTS
+      createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
+        Preferences.shouldHideMouse = value;
+      }, Preferences.shouldHideMouse);
+      createPrefItemCheckbox('Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
+        Preferences.fancyPreview = value;
+      }, Preferences.fancyPreview);
+      createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
+        Preferences.previewOnSave = value;
+      }, Preferences.previewOnSave);
+      #end */
 
     for (prefSaveId in Preferences.loadedPreferencesArrayIds)
     {

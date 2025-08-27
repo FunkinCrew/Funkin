@@ -180,12 +180,8 @@ class InitState extends FlxState
       // Since we don't really need VSync on Android we're gonna forcefully disable it on these signals for now
       // This is fixed on SDL3 from what I've heared but that doodoo isn't working poperly for Android
       #if android
-      FlxG.signals.focusLost.add(function() {
-        WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
-      });
-      FlxG.signals.focusGained.add(function() {
-        WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
-      });
+      FlxG.signals.focusLost.add(() -> WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF));
+      FlxG.signals.focusGained.add(() -> WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF));
       #end
 
       //
