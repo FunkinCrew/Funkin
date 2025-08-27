@@ -1658,7 +1658,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if FEATURE_DISCORD_RPC
-    if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.getPref("autoPause"))
+    if (health > Constants.HEALTH_MIN && !isGamePaused && (Preferences.getPref("autoPause") ?? true))
     {
       DiscordClient.instance.setPresence(
         {
@@ -1672,7 +1672,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
-    if (!isGamePaused && Preferences.getPref("autoPause"))
+    if (!isGamePaused && (Preferences.getPref("autoPause") ?? true))
     {
       if (currentConversation != null)
       {
