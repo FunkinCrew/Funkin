@@ -400,7 +400,7 @@ class InitState extends FlxState
    */
   function startSong(songId:String, difficultyId:String = 'normal'):Void
   {
-    var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId);
+    var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
 
     if (songData == null)
     {
@@ -472,7 +472,7 @@ class InitState extends FlxState
 
     var targetSong:Null<funkin.play.song.Song> = null;
 
-    if (targetSongId != null) targetSong = SongRegistry.instance.fetchEntry(targetSongId);
+    if (targetSongId != null) targetSong = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
 
     if (targetSongId == null)
     {

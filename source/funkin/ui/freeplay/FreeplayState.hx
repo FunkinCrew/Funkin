@@ -372,7 +372,7 @@ class FreeplayState extends MusicBeatSubState
 
       for (songId in level.getSongs())
       {
-        var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+        var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: currentVariation});
 
         if (song == null)
         {
@@ -2291,7 +2291,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (daSong != null)
     {
-      var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id);
+      var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id, {variation: currentVariation});
       if (targetSong == null)
       {
         FlxG.log.warn('WARN: could not find song with id (${daSong.data.id})');
@@ -2455,8 +2455,10 @@ class FreeplayState extends MusicBeatSubState
   {
     controls.active = false;
     letterSort.inputEnabled = false;
+    var targetDifficultyId:String = currentDifficulty;
+    var targetVariation:Null<String> = currentVariation;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
-    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: targetVariation});
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
@@ -2465,8 +2467,6 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetSong:Song = targetSongNullable;
-    var targetDifficultyId:String = currentDifficulty;
-    var targetVariation:Null<String> = currentVariation;
     trace('target song: ${targetSongId} (${targetVariation})');
     var targetLevelId:Null<String> = cap?.freeplayData?.levelId;
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
