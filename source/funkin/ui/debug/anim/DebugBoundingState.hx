@@ -489,8 +489,8 @@ class DebugBoundingState extends FlxState
     }
 
     swagChar = CharacterDataParser.fetchCharacter(char);
-    swagChar.x = 100;
-    swagChar.y = 100;
+    swagChar.x = onionSkinChar.x = 100;
+    swagChar.y = onionSkinChar.y = 100;
     swagChar.debug = true;
     offsetView.add(swagChar);
 
@@ -547,11 +547,12 @@ class DebugBoundingState extends FlxState
   {
     if (setOnionSkin)
     {
-      // clears the canvas
-      onionSkinChar.pixels.fillRect(new Rectangle(0, 0, FlxG.width * 2, FlxG.height * 2), 0x00000000);
-
-      onionSkinChar.stamp(swagChar, Std.int(swagChar.x), Std.int(swagChar.y));
+      onionSkinChar.loadGraphicFromSprite(swagChar);
+      onionSkinChar.frame = swagChar.frame;
       onionSkinChar.alpha = 0.6;
+      onionSkinChar.flipX = swagChar.flipX;
+      onionSkinChar.offset.x = swagChar.animOffsets[0];
+      onionSkinChar.offset.y = swagChar.animOffsets[1];
     }
 
     // var animName = characterAnimNames[Std.parseInt(str)];
