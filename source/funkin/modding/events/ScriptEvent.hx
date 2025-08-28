@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongEventData;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import funkin.play.notes.NoteSprite;
+import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
@@ -202,6 +203,13 @@ class GhostMissNoteScriptEvent extends ScriptEvent
   public var scoreChange(default, default):Int;
 
   /**
+   * What strumline this event is related to.
+   * Always `PlayState.instance.playerStrumline` in regular gameplay.
+   * Note that this event is sent for each strumline that makes a ghost miss.
+   */
+  public var strumline:Strumline;
+
+  /**
    * Whether to play the record scratch sound.
    */
   public var playSound(default, default):Bool;
@@ -211,13 +219,14 @@ class GhostMissNoteScriptEvent extends ScriptEvent
    */
   public var playAnim(default, default):Bool;
 
-  public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int):Void
+  public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int, strumline:Strumline):Void
   {
     super(NOTE_GHOST_MISS, true);
     this.dir = dir;
     this.hasPossibleNotes = hasPossibleNotes;
     this.healthChange = healthChange;
     this.scoreChange = scoreChange;
+    this.strumline = strumline;
     this.playSound = true;
     this.playAnim = true;
   }
