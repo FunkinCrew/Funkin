@@ -6,7 +6,7 @@ import flixel.group.FlxContainer.FlxTypedContainer;
 import flixel.text.FlxText;
 import funkin.audio.FunkinSound;
 import flixel.graphics.FlxGraphic;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import flixel.math.FlxRect;
 import funkin.api.newgrounds.Medals;
 import funkin.util.macro.ConsoleMacro;
@@ -17,7 +17,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 {
   public static var instance:Null<NewgroundsMedalPlugin> = null;
 
-  var medal:FlxAtlasSprite;
+  var medal:FunkinSprite;
   var points:FlxText;
   var name:FlxText;
 
@@ -40,7 +40,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     FlxGraphic.defaultPersist = true;
 
-    medal = new FlxAtlasSprite((MEDAL_X - 450) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y - 95, Paths.animateAtlas("ui/medal"),
+    medal = FunkinSprite.createTextureAtlas((MEDAL_X - 450) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y - 95, "ui/medal",
       {
         swfMode: true,
         cacheOnLoad: true,
@@ -72,7 +72,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     medal.scrollFactor.set();
     medal.visible = false;
 
-    medal.onAnimationFrame.add(function(animationName:String, frame:Int) {
+    medal.anim.onFrameChange.add(function(animationName:String, frame:Int, index:Int) {
       if (frame == 5 && !medal.anim.curAnim.reversed)
       {
         points.visible = true;
@@ -98,16 +98,15 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
         name.offset.x = 0;
         name.clipRect.x = 0;
         name.resetFrame();
-        medal.replaceFrameGraphic(3, null);
       }
 
       if (frame == 89)
       {
-        medal.playAnimation("", false, false, false, 103, true);
+        medal.anim.play("", false, true, 103);
       }
     });
 
-    medal.onAnimationComplete.add(function(animationName:String) {
+    medal.anim.onFinish.add(function(animationName:String) {
       medal.visible = false;
     });
 
@@ -149,7 +148,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     // instance is defined above so there's no need to worry about null safety here
     @:nullSafety(Off)
-    instance.medal.onAnimationComplete.add(function(name:String) {
+    instance.medal.anim.onFinish.add(function(name:String) {
       if (instance.medalQueue.length > 0)
       {
         instance.medalQueue.shift()();
@@ -169,8 +168,13 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.updatePositions();
 
       instance.medal.visible = true;
-      instance.medal.replaceFrameGraphic(3, graphic);
-      instance.medal.playAnimation("");
+
+      if (graphic != null)
+      {
+        instance.medal.replaceSymbolGraphic("[NG-MEDAL]_MEDAL", graphic);
+      }
+
+      instance.medal.anim.play("");
 
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
     }

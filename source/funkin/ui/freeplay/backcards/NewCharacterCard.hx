@@ -6,15 +6,12 @@ import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import openfl.display.BlendMode;
 import funkin.util.BitmapUtil;
 
 class NewCharacterCard extends BackingCard
 {
-  var confirmAtlas:FlxAtlasSprite;
-
   var darkBg:FlxSprite;
   var lightLayer:FlxSprite;
   var multiply1:FlxSprite;
@@ -260,11 +257,5 @@ class NewCharacterCard extends BackingCard
     cardGlow.alpha = 1;
     cardGlow.scale.set(1, 1);
     FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
-  }
-
-  override public function confirm():Void
-  {
-    // confirmAtlas.visible = true;
-    // confirmAtlas.anim.play("");
   }
 }

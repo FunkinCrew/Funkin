@@ -14,7 +14,7 @@ import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import flixel.math.FlxPoint;
 import flixel.FlxCamera;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 
 class LetterSort extends FlxSpriteGroup
@@ -249,9 +249,9 @@ class LetterSort extends FlxSpriteGroup
 }
 
 /**
- * The actual FlxAtlasSprite for the letters, with their animation code stuff and regex stuff
+ * The actual FunkinSprite for the letters, with their animation code stuff and regex stuff
  */
-class FreeplayLetter extends FlxAtlasSprite
+class FreeplayLetter extends FunkinSprite
 {
   /**
    * A preformatted array of letter strings, for use when doing regex
@@ -272,7 +272,9 @@ class FreeplayLetter extends FlxAtlasSprite
 
   public function new(x:Float, y:Float, ?letterInd:Int)
   {
-    super(x, y, Paths.animateAtlas("freeplay/sortedLetters"));
+    super(x, y);
+
+    loadTextureAtlas("freeplay/sortedLetters");
 
     // this is used for the regex
     // /^[OR].*/gi doesn't work for showing the song Pico, so now it's
@@ -292,11 +294,11 @@ class FreeplayLetter extends FlxAtlasSprite
 
     if (letterInd != null)
     {
-      this.playAnimation(animLetters[letterInd] + " move", true);
+      this.anim.play(animLetters[letterInd] + " move", true);
       this.anim.pause();
       curLetter = letterInd;
-      this.onAnimationComplete.add(function(name:String) {
-        this.playAnimation(animLetters[curLetter] + " move", true);
+      this.anim.onFinish.add(function(name:String) {
+        this.anim.play(animLetters[curLetter] + " move", true);
       });
     }
   }
@@ -325,7 +327,7 @@ class FreeplayLetter extends FlxAtlasSprite
         animName = "T move";
     }
 
-    this.playAnimation(animName, true);
+    this.anim.play(animName, true);
     if (curSelection != curLetter)
     {
       this.anim.pause();

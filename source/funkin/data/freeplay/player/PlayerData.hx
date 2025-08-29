@@ -151,7 +151,7 @@ class PlayerFreeplayDJData
 
   public function getAtlasPath():String
   {
-    return Paths.animateAtlas(assetPath);
+    return assetPath;
   }
 
   public function getFreeplayDJText(index:Int):String
