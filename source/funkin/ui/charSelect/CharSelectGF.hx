@@ -1,6 +1,6 @@
 package funkin.ui.charSelect;
 
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.vis.dsp.SpectralAnalyzer;
@@ -8,7 +8,7 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.FullScreenScaleMode;
 import flixel.math.FlxPoint;
 
-class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
+class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
 {
   var analyzer:SpectralAnalyzer;
 
@@ -19,11 +19,8 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   public function new()
   {
-    super(0, 0, Paths.animateAtlas("charSelect/gfChill"),
-      {
-        applyStageMatrix: true
-      });
-
+    super();
+    this.applyStageMatrix = true;
     switchGF("bf");
   }
 
@@ -39,7 +36,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     if (getCurrentAnimation() == "idle" && (event.beat % danceEvery == 0))
     {
       trace('GF beat hit');
-      playAnimation("idle", true, false, false);
+      anim.play("idle", true);
     }
   };
 
@@ -99,7 +96,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
     var bfObj = PlayerRegistry.instance.fetchEntry(bf);
     var gfData = bfObj?.getCharSelectData()?.gf;
-    currentGFPath = gfData?.assetPath != null ? Paths.animateAtlas(gfData?.assetPath) : null;
+    currentGFPath = gfData?.assetPath ?? null;
 
     // We don't need to update any anims if we didn't change GF
     trace('currentGFPath(${currentGFPath})');
@@ -116,7 +113,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
       enableVisualizer = gfData?.visualizer ?? false;
     }
 
-    playAnimation("idle", true, false, false);
+    anim.play("idle", true);
 
     updateHitbox();
 

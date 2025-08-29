@@ -1,13 +1,13 @@
 package funkin.ui.freeplay;
 
 import flixel.util.FlxSignal;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 
 @:nullSafety
-class FreeplayDJ extends FlxAtlasSprite
+class FreeplayDJ extends FunkinSprite
 {
   // Represents the sprite's current status.
   // Without state machines I would have driven myself crazy years ago.
@@ -39,17 +39,19 @@ class FreeplayDJ extends FlxAtlasSprite
     var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
     playableCharData = playableChar?.getFreeplayDJData();
 
+    super(x, y);
+
     // TODO: dj boyfriend has some crazy fucking light effects that cause lagspikes if they're not cached
     // bettertextureatlas can bake the filters, but they don't display properly in-game currently
     // remove `cacheOnLoad` once bettertextureatlas filter baking is improved
-    super(x, y, playableCharData?.getAtlasPath(),
+    loadTextureAtlas(playableCharData?.getAtlasPath(),
       {
         swfMode: true,
-        cacheOnLoad: PlayerRegistry.instance.hasNewCharacter(),
-        filterQuality: MEDIUM
+        cacheOnLoad: true,
+        filterQuality: HIGH
       });
 
-    onAnimationFrame.add(function(name, number) {
+    anim.onFrameChange.add(function(name, number, index) {
       if (name == playableCharData?.getAnimationPrefix('cartoon'))
       {
         if (number == playableCharData?.getCartoonSoundClickFrame())
@@ -66,8 +68,8 @@ class FreeplayDJ extends FlxAtlasSprite
     FlxG.debugger.track(this);
     FlxG.console.registerObject("dj", this);
 
-    onAnimationComplete.add(onFinishAnim);
-    onAnimationLoop.add(onFinishAnim);
+    anim.onFinish.add(onFinishAnim);
+    anim.onLoop.add(onFinishAnim);
 
     FlxG.console.registerFunction("switchDJState_Intro", function() {
       currentState = Intro;
@@ -457,7 +459,8 @@ class FreeplayDJ extends FlxAtlasSprite
 
   public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
   {
-    playAnimation(id, Force, Reverse, Loop, Frame);
+    this.anim.play(id, Force, Reverse, Frame);
+    this.anim.curAnim.looped = Loop;
     applyAnimOffset();
   }
 
