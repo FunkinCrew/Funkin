@@ -47,7 +47,7 @@ class FreeplayDJ extends FunkinSprite
     loadTextureAtlas(playableCharData?.getAtlasPath(),
       {
         swfMode: true,
-        cacheOnLoad: true,
+        cacheOnLoad: PlayerRegistry.instance.hasNewCharacter(),
         filterQuality: HIGH
       });
 
