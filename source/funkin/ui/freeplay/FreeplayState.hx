@@ -2070,6 +2070,8 @@ class FreeplayState extends MusicBeatSubState
   {
     backingCard.beatHit();
 
+    grpCapsules?.members[0]?.randomiseDisplay();
+
     return super.beatHit();
   }
 
@@ -2941,10 +2943,13 @@ class DifficultySelector extends FlxSprite
 
   override function update(elapsed:Float):Void
   {
+    Conductor.instance.update();
+
     if (!controls.active) return;
 
     if (flipX && controls.UI_RIGHT_P) moveShitDown();
     if (!flipX && controls.UI_LEFT_P) moveShitDown();
+
     super.update(elapsed);
   }
 
