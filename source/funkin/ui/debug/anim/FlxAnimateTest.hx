@@ -1,7 +1,7 @@
 package funkin.ui.debug.anim;
 
 import flixel.FlxG;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.Paths;
 
@@ -11,7 +11,7 @@ import funkin.Paths;
  */
 class FlxAnimateTest extends MusicBeatState
 {
-  var sprite:FlxAtlasSprite;
+  var sprite:FunkinSprite;
 
   public function new()
   {
@@ -23,7 +23,7 @@ class FlxAnimateTest extends MusicBeatState
   {
     super.create();
 
-    sprite = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/lockedChill"),
+    sprite = FunkinSprite.createTextureAtlas(0, 0, "charSelect/bfChill",
       {
         swfMode: false, // If to render like in a SWF file, rather than the Animate editor.
         cacheOnLoad: true, // If to precache all animation filters and masks at once, rather than at runtime.
@@ -42,9 +42,10 @@ class FlxAnimateTest extends MusicBeatState
     if (FlxG.keys.anyJustPressed([A, LEFT])) sprite.anim.curAnim.curFrame--;
     if (FlxG.keys.anyJustPressed([D, RIGHT])) sprite.anim.curAnim.curFrame++;
 
-    if (FlxG.keys.justPressed.Q) sprite.playAnimation("slideout", true, false, false);
-    if (FlxG.keys.justPressed.W) sprite.playAnimation("slidein", true, false, false);
-    if (FlxG.keys.justPressed.E) sprite.playAnimation("death", true, false, false);
-    if (FlxG.keys.justPressed.R) sprite.playAnimation("cannot select Label", true, false, false);
+    if (FlxG.keys.justPressed.Q) sprite.anim.play("slidein idle point", true);
+    if (FlxG.keys.justPressed.W) sprite.anim.play("slidein", true);
+    if (FlxG.keys.justPressed.E) sprite.anim.play("death", true);
+    if (FlxG.keys.justPressed.R) sprite.anim.play("cannot select Label", true);
+    if (FlxG.keys.justPressed.T) sprite.anim.play("idle", true);
   }
 }
