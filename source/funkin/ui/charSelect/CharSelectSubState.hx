@@ -1192,11 +1192,13 @@ class CharSelectSubState extends MusicBeatSubState
         playerChill.switchChar(value);
         gfChill.switchGF(value);
         gfChill.visible = true;
-
-        playerChillOut.switchChar(value);
-        playerChillOut.visible = false;
-        playerChillOut.anim.onFrameChange.removeAll();
       }
+    });
+
+    playerChillOut.anim.onFinish.addOnce(function(animName:String) {
+      playerChillOut.switchChar(value);
+      playerChillOut.visible = false;
+      playerChillOut.anim.onFrameChange.removeAll();
     });
 
     return value;
