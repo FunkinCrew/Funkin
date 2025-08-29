@@ -53,7 +53,11 @@ class AnimateAtlasCharacter extends BaseCharacter
     var assetLibrary:String = Paths.getLibrary(_data.assetPath);
     var assetPath:String = Paths.stripLibrary(_data.assetPath);
 
-    loadTextureAtlas(assetPath, assetLibrary);
+    loadTextureAtlas(assetPath, assetLibrary,
+      {
+        swfMode: true,
+        cacheOnLoad: true
+      });
 
     if (_data.isPixel)
     {
