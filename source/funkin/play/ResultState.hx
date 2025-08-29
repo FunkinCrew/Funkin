@@ -191,7 +191,7 @@ class ResultState extends MusicBeatSubState
     add(soundSystem);
 
     // Fetch playable character data. Default to BF on the results screen if we can't find it.
-    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId);
+    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId) ?? params.characterId;
     playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? 'bf');
 
     trace('Got playable character: ${playerCharacter?.getName()}');
