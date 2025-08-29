@@ -305,8 +305,8 @@ class FunkinSprite extends FlxAnimate
 
     this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
 
-    frames = FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
-      validatedSettings.uniqueInCache, {
+    frames = FlxAnimateFrames.fromAnimate(funkin.Assets.getPath(graphicKey), validatedSettings.spritemaps, validatedSettings.metadataJson,
+      validatedSettings.cacheKey, validatedSettings.uniqueInCache, {
         swfMode: validatedSettings.swfMode,
         cacheOnLoad: validatedSettings.cacheOnLoad,
         filterQuality: validatedSettings.filterQuality,
