@@ -5,6 +5,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
+import funkin.ui.freeplay.FreeplayState;
 
 @:nullSafety
 class FreeplayDJ extends FunkinSprite
@@ -471,7 +472,7 @@ class FreeplayDJ extends FunkinSprite
     var daGlobalOffset = [this.x, this.y];
     if (daOffset != null)
     {
-      var xValue = daGlobalOffset[0] - daOffset[0];
+      var xValue = daGlobalOffset[0] - daOffset[0] - (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI);
       var yValue = daGlobalOffset[1] - daOffset[1];
 
       trace('Successfully applied offset ($AnimName): ' + daOffset[0] + ', ' + daOffset[1]);
