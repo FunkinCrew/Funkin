@@ -5,6 +5,7 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.events.ScriptEvent;
 import funkin.data.animation.AnimationData;
 import funkin.play.character.CharacterData.CharacterRenderType;
+import flixel.math.FlxPoint;
 
 /**
  * An AnimateAtlasCharacter is a Character which is rendered by
@@ -15,6 +16,8 @@ import funkin.play.character.CharacterData.CharacterRenderType;
  */
 class AnimateAtlasCharacter extends BaseCharacter
 {
+  var originalSizes(default, never):FlxPoint = new FlxPoint(0, 0);
+
   public function new(id:String)
   {
     super(id, CharacterRenderType.AnimateAtlas);
@@ -40,6 +43,8 @@ class AnimateAtlasCharacter extends BaseCharacter
 
     trace('[ATLASCHAR] Successfully loaded texture atlas for ${characterId} with ${_data.animations.length} animations.');
     super.onCreate(event);
+
+    originalSizes.set(this.width, this.height);
   }
 
   function loadAtlas()
@@ -101,5 +106,15 @@ class AnimateAtlasCharacter extends BaseCharacter
     var flipY:Bool = anim.flipY ?? false;
 
     this.addAnimationIfMissing(anim.name, anim.prefix, frameRate, looped, flipX, flipY);
+  }
+
+  override function get_width():Float
+  {
+    return originalSizes.x;
+  }
+
+  override function get_height():Float
+  {
+    return originalSizes.y;
   }
 }
