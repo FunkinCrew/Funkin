@@ -1530,6 +1530,10 @@ class FreeplayState extends MusicBeatSubState
           });
       }
     }
+
+    // TODO: i have no fucking idea why the dj position is shitty when entering from char select
+    // the easiest way is to just snap them back into place
+    if (dj != null) dj.setPosition((CUTOUT_WIDTH * DJ_POS_MULTI) + 640, 366);
   }
 
   var spamTimer:Float = 0;
