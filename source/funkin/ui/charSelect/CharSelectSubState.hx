@@ -170,7 +170,7 @@ class CharSelectSubState extends MusicBeatSubState
     stageSpr.anim.curAnim.looped = true;
     add(stageSpr);
 
-    var curtains:FunkinSprite = new FunkinSprite(cutoutSize + (-47 - 165), -49 - 50);
+    var curtains:FunkinSprite = new FunkinSprite(cutoutSize + -212, -99);
     curtains.loadGraphic(Paths.image('charSelect/curtains'));
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
@@ -231,10 +231,11 @@ class CharSelectSubState extends MusicBeatSubState
     else
       setupPlayerChill(Constants.DEFAULT_CHARACTER);
 
-    var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, "charSelect/charSelectSpeakers",
+    var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(0, 0, "charSelect/charSelectSpeakers",
       {
         applyStageMatrix: true
       });
+    speakers.x = cutoutSize - 10 + speakers.timeline.getBoundsOrigin().x;
     speakers.anim.play('');
     speakers.anim.curAnim.looped = true;
     speakers.scrollFactor.set(1.8, 1.8);
