@@ -6,8 +6,9 @@ import funkin.modding.events.ScriptEvent;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
-import funkin.data.dialogue.speaker.SpeakerData;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.SpeakerData;
+import funkin.data.dialogue.SpeakerRegistry;
+import funkin.ui.FullScreenScaleMode;
 
 /**
  * The character sprite which displays during dialogue.
@@ -16,16 +17,6 @@ import funkin.data.dialogue.speaker.SpeakerRegistry;
  */
 class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRegistryEntry<SpeakerData>
 {
-  /**
-   * The internal ID for this speaker.
-   */
-  public final id:String;
-
-  /**
-   * The full data for a speaker.
-   */
-  public final _data:SpeakerData;
-
   /**
    * A readable name for this speaker.
    */
@@ -75,10 +66,27 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
 
     this.x += xDiff;
     this.y += yDiff;
+
+    if (FullScreenScaleMode.wideScale.x != 1)
+    {
+      this.x *= fullscreenScale;
+      this.y = this.y * fullscreenScale + (-100 * fullscreenScale);
+    }
+
     return globalOffsets = value;
   }
 
-  public function new(id:String)
+  /**
+   * A value used for scaling object's parameters on mobile.
+   */
+  var fullscreenScale(get, never):Float;
+
+  function get_fullscreenScale():Float
+  {
+    return FullScreenScaleMode.wideScale.x - 0.05;
+  }
+
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 
@@ -161,6 +169,12 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   public function setScale(scale:Null<Float>):Void
   {
     if (scale == null) scale = 1.0;
+
+    if (FullScreenScaleMode.wideScale.x != 1)
+    {
+      scale *= fullscreenScale;
+    }
+
     this.scale.x = scale;
     this.scale.y = scale;
     this.updateHitbox();
@@ -298,14 +312,4 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {}
-
-  public override function toString():String
-  {
-    return 'Speaker($id)';
-  }
-
-  static function _fetchData(id:String):Null<SpeakerData>
-  {
-    return SpeakerRegistry.instance.parseEntryDataWithMigration(id, SpeakerRegistry.instance.fetchEntryVersion(id));
-  }
 }

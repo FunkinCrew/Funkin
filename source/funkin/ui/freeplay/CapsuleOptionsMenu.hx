@@ -8,6 +8,9 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
 import flixel.text.FlxText.FlxTextAlign;
+#if mobile
+import funkin.util.TouchUtil;
+#end
 
 @:nullSafety
 class CapsuleOptionsMenu extends FlxSpriteGroup
@@ -23,6 +26,8 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
   var currentInstrumental:FlxText;
 
   var busy:Bool = false;
+  var leftArrow:InstrumentalSelector;
+  var rightArrow:InstrumentalSelector;
 
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
   {
@@ -41,8 +46,8 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     currentInstrumental.setFormat('VCR OSD Mono', 40, FlxTextAlign.CENTER, true);
 
     final PAD = 4;
-    var leftArrow = new InstrumentalSelector(parent, PAD, 30, false, parent.getControls());
-    var rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.getControls());
+    leftArrow = new InstrumentalSelector(parent, PAD, 30, false, parent.getControls());
+    rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.getControls());
 
     var label:FlxText = new FlxText(0, 5, capsuleMenuBG.width, 'INSTRUMENTAL');
     label.setFormat('VCR OSD Mono', 24, FlxTextAlign.CENTER, true);
@@ -53,9 +58,9 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     add(label);
     add(currentInstrumental);
 
-    capsuleMenuBG.animation.finishCallback = function(_) {
+    capsuleMenuBG.animation.onFinish.add(function(_) {
       capsuleMenuBG.animation.play('idle', true);
-    };
+    });
     capsuleMenuBG.animation.play('open', true);
   }
 
@@ -68,28 +73,31 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       destroy();
       return;
     }
-    var changedInst = false;
+    var changedInst:Bool = false;
 
     if (!busy)
     {
       @:privateAccess
-      if (parent.controls.BACK)
+      if (parent.controls.BACK #if mobile || TouchUtil.pressAction(parent.backButton) #end)
       {
         close();
         return;
       }
 
-      if (parent.getControls().UI_LEFT_P)
+      if (parent.getControls().UI_LEFT_P #if mobile || TouchUtil.pressAction(leftArrow) #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls().UI_RIGHT_P)
+      if (parent.getControls().UI_RIGHT_P #if mobile || TouchUtil.pressAction(rightArrow) #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls().ACCEPT)
+      if (parent.getControls()
+        .ACCEPT #if mobile
+        || ((TouchUtil.pressAction(currentInstrumental))
+          && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
       {
         busy = true;
         onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
@@ -109,10 +117,12 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
   {
     // Play in reverse.
     capsuleMenuBG.animation.play('open', true, true);
-    capsuleMenuBG.animation.finishCallback = function(_) {
+    if (leftArrow.moveShitDownTimer != null) leftArrow.moveShitDownTimer.cancel();
+    if (rightArrow.moveShitDownTimer != null) rightArrow.moveShitDownTimer.cancel();
+    capsuleMenuBG.animation.onFinish.add(function(_) {
       parent.cleanupCapsuleOptionsMenu();
       queueDestroy = true;
-    };
+    });
   }
 
   /**
@@ -127,6 +137,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
 /**
  * The difficulty selector arrows to the left and right of the difficulty.
  */
+@:nullSafety
 class InstrumentalSelector extends FunkinSprite
 {
   var controls:Controls;
@@ -136,19 +147,20 @@ class InstrumentalSelector extends FunkinSprite
 
   var baseScale:Float = 0.6;
 
+  public var moveShitDownTimer:Null<FlxTimer> = null;
+
   public function new(parent:FreeplayState, x:Float, y:Float, flipped:Bool, controls:Controls)
   {
     super(x, y);
 
     this.parent = parent;
-
     this.controls = controls;
+
+    whiteShader = new PureColor(FlxColor.WHITE);
 
     frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
     animation.addByPrefix('shine', 'arrow pointer loop', 24);
     animation.play('shine');
-
-    whiteShader = new PureColor(FlxColor.WHITE);
 
     shader = whiteShader;
 
@@ -174,7 +186,7 @@ class InstrumentalSelector extends FunkinSprite
 
     scale.x = scale.y = 0.5 * baseScale;
 
-    new FlxTimer().start(2 / 24, function(tmr) {
+    moveShitDownTimer = new FlxTimer().start(2 / 24, function(tmr) {
       scale.x = scale.y = 1 * baseScale;
       whiteShader.colorSet = false;
       updateHitbox();

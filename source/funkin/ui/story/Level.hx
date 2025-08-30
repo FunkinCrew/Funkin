@@ -16,19 +16,9 @@ import funkin.data.story.level.LevelData;
 class Level implements IRegistryEntry<LevelData>
 {
   /**
-   * The ID of the story mode level.
-   */
-  public final id:String;
-
-  /**
-   * Level data as parsed from the JSON file.
-   */
-  public final _data:LevelData;
-
-  /**
    * @param id The ID of the JSON file to parse.
    */
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
     _data = _fetchData(id);
@@ -86,7 +76,7 @@ class Level implements IRegistryEntry<LevelData>
 
   static function getSongDisplayName(songId:String, difficulty:String):String
   {
-    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
     if (song == null) return 'Unknown';
 
     return song.songName;
@@ -164,7 +154,7 @@ class Level implements IRegistryEntry<LevelData>
     var songList:Array<String> = getSongs();
 
     var firstSongId:String = songList[0];
-    var firstSong:Song = SongRegistry.instance.fetchEntry(firstSongId);
+    var firstSong:Song = SongRegistry.instance.fetchEntry(firstSongId, {variation: Constants.DEFAULT_VARIATION});
 
     if (firstSong != null)
     {
@@ -182,7 +172,7 @@ class Level implements IRegistryEntry<LevelData>
     for (songIndex in 1...songList.length)
     {
       var songId:String = songList[songIndex];
-      var song:Song = SongRegistry.instance.fetchEntry(songId);
+      var song:Song = SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
 
       if (song == null) continue;
 
@@ -248,26 +238,5 @@ class Level implements IRegistryEntry<LevelData>
     }
 
     return props;
-  }
-
-  /**
-   * Called when the level is destroyed.
-   * TODO: Document when this gets called
-   */
-  public function destroy():Void {}
-
-  public function toString():String
-  {
-    return 'Level($id)';
-  }
-
-  /**
-   * Retrieve and parse the JSON data for a level by ID.
-   * @param id The ID of the level
-   * @return The parsed level data, or null if not found or invalid
-   */
-  static function _fetchData(id:String):Null<LevelData>
-  {
-    return LevelRegistry.instance.parseEntryDataWithMigration(id, LevelRegistry.instance.fetchEntryVersion(id));
   }
 }

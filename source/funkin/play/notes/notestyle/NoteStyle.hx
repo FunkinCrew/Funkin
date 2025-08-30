@@ -20,11 +20,6 @@ using funkin.data.animation.AnimationData.AnimationDataUtil;
 class NoteStyle implements IRegistryEntry<NoteStyleData>
 {
   /**
-   * The ID of the note style.
-   */
-  public final id:String;
-
-  /**
    * Note style data as parsed from the JSON file.
    */
   public final _data:NoteStyleData;
@@ -44,7 +39,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   /**
    * @param id The ID of the JSON file to parse.
    */
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
     _data = _fetchData(id);
@@ -143,7 +138,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return noteFrames;
   }
 
-  function getNoteAssetPath(raw:Bool = false):Null<String>
+  public function getNoteAssetPath(raw:Bool = false):Null<String>
   {
     if (raw)
     {
@@ -246,7 +241,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     target.antialiasing = !(_data.assets.noteStrumline?.isPixel ?? false);
   }
 
-  function getStrumlineAssetPath(raw:Bool = false):Null<String>
+  public function getStrumlineAssetPath(raw:Bool = false):Null<String>
   {
     if (raw)
     {
@@ -389,7 +384,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return result;
   }
 
-  function buildCountdownSpritePath(step:Countdown.CountdownStep):Null<String>
+  public function buildCountdownSpritePath(step:Countdown.CountdownStep):Null<String>
   {
     var basePath:Null<String> = null;
     switch (step)
@@ -592,9 +587,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
   }
 
-  function buildJudgementSpritePath(rating:String):Null<String>
+  public function buildJudgementSpritePath(rating:String):Null<String>
   {
     var basePath:Null<String> = null;
+
     switch (rating)
     {
       case "sick":
@@ -608,13 +604,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       default:
         basePath = null;
     }
-
     if (basePath == null) return fallback?.buildJudgementSpritePath(rating);
-
     var parts = basePath?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+
     if (parts.length < 1) return null;
     if (parts.length == 1) return parts[0];
-
     return parts[1];
   }
 
@@ -781,7 +775,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
   }
 
-  function buildComboNumSpritePath(digit:Int):Null<String>
+  public function buildComboNumSpritePath(digit:Int):Null<String>
   {
     var basePath:Null<String> = null;
     switch (digit)
@@ -923,7 +917,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return splashFrames;
   }
 
-  function getSplashAssetPath(raw:Bool = false):Null<String>
+  public function getSplashAssetPath(raw:Bool = false):Null<String>
   {
     if (raw)
     {
@@ -1135,7 +1129,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return parts[1];
   }
 
-  function getHoldCoverDirectionAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
+  public function getHoldCoverDirectionAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
   {
     if (raw)
     {

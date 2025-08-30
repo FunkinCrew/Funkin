@@ -6,11 +6,11 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import funkin.audio.FunkinSound;
-import funkin.data.dialogue.conversation.ConversationData;
-import funkin.data.dialogue.conversation.ConversationData.DialogueEntryData;
-import funkin.data.dialogue.conversation.ConversationRegistry;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.ConversationData;
+import funkin.data.dialogue.ConversationData.DialogueEntryData;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.IRegistryEntry;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
@@ -29,20 +29,9 @@ import funkin.util.EaseUtil;
 class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
   /**
-   * The ID of the conversation.
-   */
-  public final id:String;
-
-  /**
    * The current state of the conversation.
    */
   var state:ConversationState = ConversationState.Start;
-
-  /**
-   * Conversation data as parsed from the JSON file.
-   * `null` if the data could not be parsed or loaded.
-   */
-  public final _data:Null<ConversationData>;
 
   /**
    * The current entry in the dialogue.
@@ -100,7 +89,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   var currentDialogueBox:Null<DialogueBox>;
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 
@@ -658,16 +647,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       outroTween.cancel();
       outroTween = null;
     }
-  }
-
-  public override function toString():String
-  {
-    return 'Conversation($id)';
-  }
-
-  static function _fetchData(id:String):Null<ConversationData>
-  {
-    return ConversationRegistry.instance.parseEntryDataWithMigration(id, ConversationRegistry.instance.fetchEntryVersion(id));
   }
 }
 

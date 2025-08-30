@@ -91,6 +91,8 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     #end
 
     linkRecentChart.onClick = function(_event) {
+      linkRecentChart.hide();
+
       this.hideDialog(DialogButton.CANCEL);
 
       // Load chart from file
@@ -106,7 +108,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       }
     }
 
-    if (!FileUtil.doesFileExist(chartPath))
+    if (!FileUtil.fileExists(chartPath))
     {
       trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
       linkRecentChart.disabled = true;
@@ -137,7 +139,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 
     for (targetSongId in songList)
     {
-      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
       if (songData == null) continue;
 
       var songName:Null<String> = songData.getDifficulty('normal')?.songName;

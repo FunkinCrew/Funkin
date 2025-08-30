@@ -198,7 +198,7 @@ class DropShadowShader extends FlxShader
 
   /*
     Loads an image for the mask.
-    While you *could* directly set the value of the mask, this function works for both HTML5 and desktop targets.
+    While you *could* directly set the value of the mask, this function works for both HTML5 and native targets.
    */
   public function loadAltMask(path:String)
   {
@@ -362,6 +362,9 @@ class DropShadowShader extends FlxShader
       // essentially just stole this from the AngleMask shader but repurposed it to smooth
       // the threshold because without any sort of smoothing it produces horrible edges
       float antialias(vec2 fragCoord, float curThreshold, bool useMask) {
+        if (AA_STAGES == 0.0) {
+          return intensityPass(fragCoord, curThreshold, useMask);
+        }
 
         // In GLSL 100, we need to use constant loop bounds
         // Well assume a reasonable maximum for AA_STAGES and use a fixed loop

@@ -10,11 +10,12 @@ import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
+import funkin.util.tools.ISingleton;
+import funkin.data.DefaultRegistryImpl;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
-@:nullSafety
-class SongRegistry extends BaseRegistry<Song, SongMetadata>
+@:nullSafety class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
@@ -35,22 +36,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
   public static var DEFAULT_GENERATEDBY(get, never):String;
 
+  public var scriptedSongVariations:Map<String, Song> = new Map<String, Song>();
+
   static function get_DEFAULT_GENERATEDBY():String
   {
     return '${Constants.TITLE} - ${Constants.VERSION}';
-  }
-
-  /**
-   * TODO: What if there was a Singleton macro which automatically created the property for us?
-   */
-  public static var instance(get, never):SongRegistry;
-
-  static var _instance:Null<SongRegistry> = null;
-
-  static function get_instance():SongRegistry
-  {
-    if (_instance == null) _instance = new SongRegistry();
-    return _instance;
   }
 
   public function new()
@@ -74,9 +64,17 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
       if (entry != null)
       {
-        log('Successfully created scripted entry (${entryCls} = ${entry.id})');
-        entries.set(entry.id, entry);
-        scriptedEntryIds.set(entry.id, entryCls);
+        if (entry.variation != null)
+        {
+          scriptedSongVariations.set('${entry.id}:${entry.variation}', entry);
+          log('Successfully created scripted entry (${entryCls} = ${entry.id}, ${entry.variation})');
+        }
+        else
+        {
+          entries.set(entry.id, entry);
+          scriptedEntryIds.set(entry.id, entryCls);
+          log('Successfully created scripted entry (${entryCls} = ${entry.id})');
+        }
       }
       else
       {
@@ -129,6 +127,28 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   public function parseEntryDataRaw(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
     return parseEntryMetadataRaw(contents);
+  }
+
+  /**
+   * We override `fetchEntry` to handle song variations!
+   */
+  public override function fetchEntry(id:String, ?params:SongEntryParams):Null<Song>
+  {
+    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
+
+    if (variation != Constants.DEFAULT_VARIATION)
+    {
+      if (scriptedSongVariations.exists('${id}:${variation}'))
+      {
+        var variationSongScript:Null<Song> = scriptedSongVariations.get('${id}:${variation}');
+        if (variationSongScript != null)
+        {
+          return variationSongScript;
+        }
+      }
+    }
+
+    return super.fetchEntry(id, params);
   }
 
   public function parseEntryMetadata(id:String, ?variation:String):Null<SongMetadata>
@@ -335,7 +355,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
     else
     {
-      throw '[${registryId}] Chart entry ${id}:${variation} does not support migration to version ${SONG_CHART_DATA_VERSION_RULE}.';
+      throw '[${registryId}] Chart entry ${id}:${variation} does not support migration to version ${SONG_MUSIC_DATA_VERSION_RULE}.';
     }
   }
 
@@ -348,7 +368,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     }
     else
     {
-      throw '[${registryId}] Chart entry "$fileName" does not support migration to version ${SONG_CHART_DATA_VERSION_RULE}.';
+      throw '[${registryId}] Chart entry "$fileName" does not support migration to version ${SONG_MUSIC_DATA_VERSION_RULE}.';
     }
   }
 
@@ -417,16 +437,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
     {
       throw '[${registryId}] Chart entry "${fileName}" does not support migration to version ${SONG_CHART_DATA_VERSION_RULE}.';
     }
-  }
-
-  function createScriptedEntry(clsName:String):Song
-  {
-    return ScriptedSong.init(clsName, "unknown");
-  }
-
-  function getScriptedClassNames():Array<String>
-  {
-    return ScriptedSong.listScriptClasses();
   }
 
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>
@@ -504,52 +514,6 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
   }
 
   /**
-   * A list of all the story weeks from the base game, in order.
-   * TODO: Should this be hardcoded?
-   */
-  public function listBaseGameSongIds():Array<String>
-  {
-    return [
-      "tutorial",
-      "bopeebo",
-      "fresh",
-      "dadbattle",
-      "spookeez",
-      "south",
-      "monster",
-      "pico",
-      "philly-nice",
-      "blammed",
-      "satin-panties",
-      "high",
-      "milf",
-      "cocoa",
-      "eggnog",
-      "winter-horrorland",
-      "senpai",
-      "roses",
-      "thorns",
-      "ugh",
-      "guns",
-      "stress",
-      "darnell",
-      "lit-up",
-      "2hot",
-      "blazin"
-    ];
-  }
-
-  /**
-   * A list of all installed story weeks that are not from the base game.
-   */
-  public function listModdedSongIds():Array<String>
-  {
-    return listEntryIds().filter(function(id:String):Bool {
-      return listBaseGameSongIds().indexOf(id) == -1;
-    });
-  }
-
-  /**
    * A list of all difficulties for a specific character.
    */
   public function listAllDifficulties(characterId:String):Array<String>
@@ -583,4 +547,12 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata>
 
     return allDifficulties;
   }
+}
+
+typedef SongEntryParams =
+{
+  /**
+   * The variation ID for the song.
+   */
+  var variation:String;
 }

@@ -51,9 +51,16 @@ class CrashHandler
     {
       errorSignal.dispatch(generateErrorMessage(error));
 
-      #if sys
-      logError(error);
-      #end
+      try
+      {
+        #if sys
+        logError(error);
+        #end
+      }
+      catch (e:Dynamic)
+      {
+        trace('Error while logging error: ' + e);
+      }
 
       displayError(error);
     }
@@ -102,7 +109,7 @@ class CrashHandler
 
   static function displayErrorMessage(message:String):Void
   {
-    lime.app.Application.current.window.alert(message, "Fatal Uncaught Exception");
+    funkin.util.WindowUtil.showError("Fatal Uncaught Exception", message);
   }
 
   #if sys

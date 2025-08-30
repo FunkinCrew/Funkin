@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+import funkin.data.song.SongNoteDataUtils;
 import funkin.util.VersionUtil;
 import funkin.util.DateUtil;
 import haxe.io.Path;
@@ -26,11 +27,11 @@ class ChartEditorImportExportHandler
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
    */
-  public static function loadSongAsTemplate(state:ChartEditorState, songId:String):Void
+  public static function loadSongAsTemplate(state:ChartEditorState, songId:String, targetSongDifficulty:String = null, targetSongVariation:String = null):Void
   {
     trace('===============START');
 
-    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: targetSongVariation});
 
     if (song == null) return;
 
@@ -53,7 +54,7 @@ class ChartEditorImportExportHandler
       if (chartData != null) songChartData.set(variation, chartData);
     }
 
-    loadSong(state, songMetadata, songChartData);
+    loadSong(state, songMetadata, songChartData, new ChartManifestData(songId));
 
     state.sortChartData();
 
@@ -92,6 +93,14 @@ class ChartEditorImportExportHandler
         {
           trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
         }
+        // Set the difficulty of the song if one was passed in the params, and it isn't the default
+        if (targetSongDifficulty != null
+          && targetSongDifficulty != state.selectedDifficulty
+          && targetSongDifficulty == diff.difficulty) state.selectedDifficulty = targetSongDifficulty;
+        // Set the variation of the song if one was passed in the params, and it isn't the default
+        if (targetSongVariation != null
+          && targetSongVariation != state.selectedVariation
+          && targetSongVariation == diff.variation) state.selectedVariation = targetSongVariation;
       }
     }
 
@@ -103,7 +112,11 @@ class ChartEditorImportExportHandler
 
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
-    state.success('Success', 'Loaded song (${rawSongMetadata[0].songName})');
+    // Actually state the correct variation loaded
+    for (metadata in rawSongMetadata)
+    {
+      if (metadata.variation == state.selectedVariation) state.success('Success', 'Loaded song (${metadata.songName})');
+    }
 
     trace('===============END');
   }
@@ -113,10 +126,57 @@ class ChartEditorImportExportHandler
    * @param newSongMetadata The song metadata to load.
    * @param newSongChartData The song chart data to load.
    */
-  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>):Void
+  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>,
+      ?newSongManifestData:ChartManifestData):Void
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
+    if (newSongManifestData != null)
+    {
+      state.songManifestData = newSongManifestData;
+    }
+
+    if (!state.songMetadata.exists(state.selectedVariation))
+    {
+      state.selectedVariation = Constants.DEFAULT_VARIATION;
+    }
+    // Use the first available difficulty as a fallback if the currently selected one cannot be found.
+    if (state.availableDifficulties.indexOf(state.selectedDifficulty) < 0) state.selectedDifficulty = state.availableDifficulties[0];
+
+    var delay:Float = 0.5;
+    for (variation => chart in state.songChartData)
+    {
+      var metadata:SongMetadata = state.songMetadata[variation] ?? continue;
+      var stackedNotesCount:Int = 0;
+      var affectedDiffs:Array<String> = [];
+
+      for (diff => notes in chart.notes)
+      {
+        if (!metadata.playData.difficulties.contains(diff)) continue;
+
+        var count:Int = SongNoteDataUtils.listStackedNotes(notes, 0, false).length;
+
+        if (count > 0)
+        {
+          affectedDiffs.push(diff.toTitleCase());
+          stackedNotesCount += count;
+        }
+      }
+
+      if (stackedNotesCount > 0)
+      {
+        // Difficulty names might be out of order due to how maps work
+        affectedDiffs.sort(SortUtil.defaultsThenAlphabetically.bind(['Easy', 'Normal', 'Hard', 'Erect', 'Nightmare']));
+
+        // Delay it so it doesn't overlap other notifications
+        flixel.util.FlxTimer.wait(delay, () -> {
+          state.warning('Stacked Notes Detected',
+            'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, ' +
+            'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
+        });
+        delay *= 1.5;
+      }
+    }
 
     Conductor.instance.forceBPM(null); // Disable the forced BPM.
     Conductor.instance.instrumentalOffset = state.currentInstrumentalOffset; // Loads from the metadata.
@@ -137,6 +197,11 @@ class ChartEditorImportExportHandler
     }
     state.audioVocalTrackGroup.stop();
     state.audioVocalTrackGroup.clear();
+
+    // Clear the undo and redo history
+    state.undoHistory = [];
+    state.redoHistory = [];
+    state.commandHistoryDirty = true;
   }
 
   /**
@@ -217,7 +282,7 @@ class ChartEditorImportExportHandler
 
       songChartDatas.set(variation, variChartData);
     }
-    loadSong(state, songMetadatas, songChartDatas);
+    loadSong(state, songMetadatas, songChartDatas, manifest);
 
     state.sortChartData();
 
@@ -289,7 +354,7 @@ class ChartEditorImportExportHandler
   public static function getLatestBackupPath():Null<String>
   {
     #if sys
-    if (!sys.FileSystem.exists(BACKUPS_PATH)) sys.FileSystem.createDirectory(BACKUPS_PATH);
+    FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
     entries.sort(SortUtil.alphabetically);
@@ -343,6 +408,12 @@ class ChartEditorImportExportHandler
 
     var variations = state.availableVariations;
 
+    if (state.currentSongMetadata.playData.difficulties.pushUnique(state.selectedDifficulty))
+    {
+      // Just in case the user deleted all or didn't add a difficulty
+      state.difficultySelectDirty = true;
+    }
+
     for (variation in variations)
     {
       var variationId:String = variation;
@@ -388,8 +459,7 @@ class ChartEditorImportExportHandler
     if (state.audioInstTrackData != null) zipEntries = zipEntries.concat(state.makeZIPEntriesFromInstrumentals());
     if (state.audioVocalTrackData != null) zipEntries = zipEntries.concat(state.makeZIPEntriesFromVocals());
 
-    var manifest:ChartManifestData = new ChartManifestData(state.currentSongId);
-    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', manifest.serialize()));
+    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', state.songManifestData.serialize()));
 
     trace('Exporting ${zipEntries.length} files to ZIP...');
 

@@ -13,19 +13,20 @@
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
 5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
 6. Run `hmm install` to install all haxelibs of the current branch
-7. Run `haxelib run lime setup` to set up Lime
-8. Perform additional platform setup
+    - If you have issues installing Lime, try utilizing Funkin's patched libraries for hmm and haxelib: `haxelib --global git haxelib https://github.com/FunkinCrew/haxelib.git` and `haxelib --global git hmm  https://github.com/FunkinCrew/hmm.git`
+8. Run `haxelib run lime setup` to set up Lime
+9. Perform additional platform setup
    - For Windows, download the [Visual Studio Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe)
         - When prompted, select "Individual Components" and make sure to download the following:
         - MSVC v143 VS 2022 C++ x64/x86 build tools
         - Windows 10/11 SDK
     - Mac: [`lime setup mac` Documentation](https://lime.openfl.org/docs/advanced-setup/macos/)
     - Linux: [`lime setup linux` Documentation](https://lime.openfl.org/docs/advanced-setup/linux/)
-        - Note: Funkin's fork currently doesn't come with the necessary binaries so you'll have to rebuild Lime. See [Troubleshooting](TROUBLESHOOTING.md#lime-related-issues).
-        - One of Funkin's dependencies uses libVLC, which requires you to install some packages to be able to compile: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`
+        - One of Funkin's dependencies uses libVLC, which requires you to install some development packages to be able to compile.
+          Command for Ubuntu/Debian based systems: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`, and for other distros, please refer to [hxvlc's documentation](https://github.com/MAJigsaw77/hxvlc?tab=readme-ov-file#dependencies)
     - HTML5: Compiles without any extra setup
-9. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
-10. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
+10. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
+11. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
 
 ## Build Flags
 
@@ -39,8 +40,8 @@ There are several useful build flags you can add to a build to affect how it wor
     - This feature causes the game to load exported assets from the project's assets folder rather than the exported one. Great for fast iteration, but the game will break if you try to zip it up and send it to someone, so it's disabled for release builds.
 - `-DFEATURE_DISCORD_RPC` or `-DNO_FEATURE_DISCORD_RPC` to forcibly enable or disable support for Discord Rich Presence.
 - `-DFEATURE_VIDEO_PLAYBACK` or `-DNO_FEATURE_VIDEO_PLAYBACK` to forcibly enable or disable video cutscene support.
-- `-DFEATURE_CHART_EDITOR` or `-DNO_FEATURE_CHART_EDITOR` to forcibly enable or disable the chart editor in the Debug menu.
 - `-DFEATURE_SCREENSHOTS` or `-DNO_FEATURE_SCREENSHOTS` to forcibly enable or disable the screenshots feature.
+- `-DFEATURE_CHART_EDITOR` or `-DNO_FEATURE_CHART_EDITOR` to forcibly enable or disable the chart editor in the Debug menu.
 - `-DFEATURE_STAGE_EDITOR` to forcibly enable the experimental stage editor.
 - `-DFEATURE_GHOST_TAPPING` to forcibly enable an experimental gameplay change to the anti-mash system.
 

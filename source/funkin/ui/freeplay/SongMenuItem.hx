@@ -1,5 +1,6 @@
 package funkin.ui.freeplay;
 
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.GaussianBlurShader;
@@ -7,10 +8,12 @@ import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
+import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import funkin.util.MathUtil;
 import funkin.graphics.shaders.Grayscale;
 import openfl.display.BlendMode;
+import flixel.FlxObject;
 import funkin.graphics.FunkinSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -18,6 +21,10 @@ import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
 import funkin.ui.PixelatedIcon;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+
+using StringTools;
 
 class SongMenuItem extends FlxSpriteGroup
 {
@@ -32,16 +39,16 @@ class SongMenuItem extends FlxSpriteGroup
   public var freeplayData(default, null):Null<FreeplaySongData> = null;
 
   public var selected(default, set):Bool;
+  public var forceHighlight(default, set):Bool;
 
-  public var songText:CapsuleText;
+  var songText:CapsuleText;
+
   public var favIconBlurred:FlxSprite;
   public var favIcon:FlxSprite;
 
   public var ranking:FreeplayRank;
 
   public var fakeRanking:FreeplayRank;
-
-  var ranks:Array<String> = ["fail", "average", "great", "excellent", "perfect", "perfectsick"];
 
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
@@ -61,18 +68,21 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var newText:FlxSprite;
 
-  // public var weekType:FlxSprite;
-  public var bigNumbers:Array<CapsuleNumber> = [];
-
-  public var smallNumbers:Array<CapsuleNumber> = [];
-
-  public var weekNumbers:Array<CapsuleNumber> = [];
+  var difficultyNumbers:Array<CapsuleNumber> = []; // referred to as "bignumbers" in the .fla file!
+  var bpmNumbers:Array<CapsuleNumber> = []; // referred to as "smallnumbers" in the .fla file!
+  var weekNumbers:Array<CapsuleNumber> = [];
 
   var impactThing:FunkinSprite;
 
   public var sparkle:FlxSprite;
 
   var sparkleTimer:FlxTimer;
+
+  public var theActualHitbox:FlxObject;
+
+  var index:Int;
+
+  public var curSelected:Int;
 
   public function new(x:Float, y:Float)
   {
@@ -117,18 +127,18 @@ class SongMenuItem extends FlxSpriteGroup
 
     for (i in 0...2)
     {
-      var bigNumber:CapsuleNumber = new CapsuleNumber(466 + (i * 30), 32, true, 0);
-      add(bigNumber);
+      var num:CapsuleNumber = new CapsuleNumber(466 + (i * 30), 32, true, 0);
+      add(num);
 
-      bigNumbers.push(bigNumber);
+      difficultyNumbers.push(num);
     }
 
     for (i in 0...3)
     {
-      var smallNumber:CapsuleNumber = new CapsuleNumber(185 + (i * 11), 88.5, false, 0);
-      add(smallNumber);
+      var num:CapsuleNumber = new CapsuleNumber(185 + (i * 11), 88.5, false, 0);
+      add(num);
 
-      smallNumbers.push(smallNumber);
+      bpmNumbers.push(num);
     }
 
     // doesn't get added, simply is here to help with visibility of things for the pop in!
@@ -214,6 +224,10 @@ class SongMenuItem extends FlxSpriteGroup
     weekNumbers.push(weekNumber);
 
     setVisibleGrp(false);
+
+    theActualHitbox = new FlxObject(capsule.x + 160, capsule.y - 20, Math.round(capsule.width / 1.4), Math.round(capsule.height / 1.4));
+    theActualHitbox.cameras = cameras;
+    theActualHitbox.active = false;
   }
 
   function sparkleEffect(timer:FlxTimer):Void
@@ -283,7 +297,7 @@ class SongMenuItem extends FlxSpriteGroup
     var clipSize:Int = 290;
     var clipType:Int = 0;
 
-    if (ranking.visible)
+    if (ranking.visible || fakeRanking.visible)
     {
       favIconBlurred.x = this.x + 370;
       favIcon.x = favIconBlurred.x;
@@ -316,38 +330,38 @@ class SongMenuItem extends FlxSpriteGroup
       shiftX = 186;
     }
 
-    for (i in 0...smallNumbers.length)
+    for (i in 0...bpmNumbers.length)
     {
-      smallNumbers[i].x = this.x + (shiftX + (i * 11));
+      bpmNumbers[i].x = this.x + (shiftX + (i * 11));
       switch (i)
       {
         case 0:
           if (newBPM < 100)
           {
-            smallNumbers[i].digit = 0;
+            bpmNumbers[i].digit = 0;
           }
           else
           {
-            smallNumbers[i].digit = Math.floor(newBPM / 100) % 10;
+            bpmNumbers[i].digit = Math.floor(newBPM / 100) % 10;
           }
 
         case 1:
           if (newBPM < 10)
           {
-            smallNumbers[i].digit = 0;
+            bpmNumbers[i].digit = 0;
           }
           else
           {
-            smallNumbers[i].digit = Math.floor(newBPM / 10) % 10;
+            bpmNumbers[i].digit = Math.floor(newBPM / 10) % 10;
 
             if (Math.floor(newBPM / 10) % 10 == 1) tempShift = -4;
           }
         case 2:
-          smallNumbers[i].digit = newBPM % 10;
+          bpmNumbers[i].digit = newBPM % 10;
         default:
           trace('why the fuck is this being called');
       }
-      smallNumbers[i].x += tempShift;
+      bpmNumbers[i].x += tempShift;
     }
     // diffRatingSprite.loadGraphic(Paths.image('freeplay/diffRatings/diff${ratingPadded}'));
     // diffRatingSprite.visible = false;
@@ -390,7 +404,7 @@ class SongMenuItem extends FlxSpriteGroup
     return evilTrail.color;
   }
 
-  public function refreshDisplay():Void
+  public function refreshDisplay(updateRank:Bool = true):Void
   {
     if (freeplayData == null)
     {
@@ -408,7 +422,7 @@ class SongMenuItem extends FlxSpriteGroup
       pixelIcon.visible = true;
       updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
       updateDifficultyRating(freeplayData.difficultyRating ?? 0);
-      updateScoringRank(freeplayData.scoringRank);
+      if (updateRank) updateScoringRank(freeplayData.scoringRank);
       newText.visible = freeplayData.isNew;
       favIcon.visible = freeplayData.isFav;
       favIconBlurred.visible = freeplayData.isFav;
@@ -421,21 +435,21 @@ class SongMenuItem extends FlxSpriteGroup
   {
     var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
 
-    for (i in 0...bigNumbers.length)
+    for (i in 0...difficultyNumbers.length)
     {
       switch (i)
       {
         case 0:
           if (newRating < 10)
           {
-            bigNumbers[i].digit = 0;
+            difficultyNumbers[i].digit = 0;
           }
           else
           {
-            bigNumbers[i].digit = Math.floor(newRating / 10);
+            difficultyNumbers[i].digit = Math.floor(newRating / 10);
           }
         case 1:
-          bigNumbers[i].digit = newRating % 10;
+          difficultyNumbers[i].digit = newRating % 10;
         default:
           trace('why the fuck is this being called');
       }
@@ -489,16 +503,20 @@ class SongMenuItem extends FlxSpriteGroup
       spr.visible = value;
     }
 
-    if (value) textAppear();
-
     updateSelected();
   }
 
-  public function init(?x:Float, ?y:Float, freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null):Void
+  public function initPosition(x:Float, y:Float):Void
   {
-    if (x != null) this.x = x;
-    if (y != null) this.y = y;
+    this.x = x;
+    this.y = y;
+  }
+
+  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, index:Int = null):Void
+  {
     this.freeplayData = freeplayData;
+
+    if (index != null) this.index = index;
 
     // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
     // if thats possible someone Please change the new function to be something like
@@ -520,6 +538,19 @@ class SongMenuItem extends FlxSpriteGroup
     checkWeek(freeplayData?.data.id);
   }
 
+  public function initRandom(?styleData:FreeplayStyle = null):Void
+  {
+    initPosition(FlxG.width, 0);
+    initData(null, styleData, 1);
+    y = intendedY(0) + 10;
+    targetPos.x = x;
+    alpha = 0.5;
+    songText.visible = false;
+    favIcon.visible = false;
+    favIconBlurred.visible = false;
+    ranking.visible = false;
+  }
+
   var frameInTicker:Float = 0;
   var frameInTypeBeat:Int = 0;
 
@@ -527,7 +558,7 @@ class SongMenuItem extends FlxSpriteGroup
   var frameOutTypeBeat:Int = 0;
 
   var xFrames:Array<Float> = [1.7, 1.8, 0.85, 0.85, 0.97, 0.97, 1];
-  var xPosLerpLol:Array<Float> = [0.9, 0.4, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
+  var xPosLerpLol:Array<Float> = [0, 0, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
   var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
   public var realScaled:Float = 0.8;
@@ -538,9 +569,6 @@ class SongMenuItem extends FlxSpriteGroup
 
     new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
       doJumpIn = true;
-    });
-
-    new FlxTimer().start((0.09 * maxTimer) + 0.85, function(lerpTmr) {
       doLerp = true;
     });
 
@@ -601,12 +629,20 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
-
+        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
         frameInTypeBeat += 1;
+        final shiftx:Float = FullScreenScaleMode.wideScale.x * 320;
+        final widescreenMult:Float = (FullScreenScaleMode.gameCutoutSize.x / 1.5) * 0.75;
+        // Move the targetPos set to the if statement below if you want them to shift to their target positions after jumping in instead
+        // I have no idea why this if instead of frameInTypeBeat == xFrames.length works even though they're the same thing
+        if (targetPos.x <= shiftx) targetPos.x = intendedX(index - curSelected) + widescreenMult;
+      }
+      else if (frameInTypeBeat == xFrames.length)
+      {
+        doJumpIn = false;
       }
     }
 
@@ -620,20 +656,27 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameOutTypeBeat];
         capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
-        x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+        this.x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
         frameOutTypeBeat += 1;
       }
+      else if (frameOutTypeBeat == xFrames.length)
+      {
+        doJumpOut = false;
+      }
     }
 
     if (doLerp)
     {
-      x = MathUtil.coolLerp(x, targetPos.x, 0.3);
-      y = MathUtil.coolLerp(y, targetPos.y, 0.4);
+      x = MathUtil.smoothLerpPrecision(x, targetPos.x, elapsed, 0.256);
+      y = MathUtil.smoothLerpPrecision(y, targetPos.y, elapsed, 0.192);
     }
+
+    theActualHitbox.x = x + 100;
+    theActualHitbox.y = y + 20;
 
     super.update(elapsed);
   }
@@ -643,14 +686,23 @@ class SongMenuItem extends FlxSpriteGroup
    */
   public function confirm():Void
   {
-    if (songText != null) songText.flickerText();
+    if (songText != null)
+    {
+      textAppear();
+      songText.flickerText();
+    }
     if (pixelIcon != null && pixelIcon.visible)
     {
       pixelIcon.animation.play('confirm');
     }
   }
 
-  public function intendedY(index:Int):Float
+  public function intendedX(index:Float):Float
+  {
+    return 270 + (60 * (FlxMath.fastSin(index)));
+  }
+
+  public function intendedY(index:Float):Float
   {
     return (index * ((height * realScaled) + 10)) + 120;
   }
@@ -663,21 +715,42 @@ class SongMenuItem extends FlxSpriteGroup
     return selected;
   }
 
+  function set_forceHighlight(value:Bool):Bool
+  {
+    // cute one liners, lol!
+    forceHighlight = value;
+    updateSelected();
+    return forceHighlight;
+  }
+
   function updateSelected():Void
   {
-    grayscaleShader.setAmount(this.selected ? 0 : 0.8);
-    songText.alpha = this.selected ? 1 : 0.6;
-    songText.blurredText.visible = this.selected ? true : false;
-    capsule.offset.x = this.selected ? 0 : -5;
-    capsule.animation.play(this.selected ? "selected" : "unselected");
-    ranking.alpha = this.selected ? 1 : 0.7;
-    favIcon.alpha = this.selected ? 1 : 0.6;
-    favIconBlurred.alpha = this.selected ? 1 : 0;
-    ranking.color = this.selected ? 0xFFFFFFFF : 0xFFAAAAAA;
+    final isSelected:Bool = (this.selected || this.forceHighlight);
+
+    grayscaleShader.setAmount(isSelected ? 0 : 0.8);
+    songText.alpha = isSelected ? 1 : 0.6;
+    songText.blurredText.visible = isSelected ? true : false;
+    capsule.offset.x = isSelected ? 0 : -5;
+    capsule.animation.play(isSelected ? "selected" : "unselected");
+    ranking.alpha = isSelected ? 1 : 0.7;
+    favIcon.alpha = isSelected ? 1 : 0.6;
+    favIconBlurred.alpha = isSelected ? 1 : 0;
+    ranking.color = isSelected ? 0xFFFFFFFF : 0xFFAAAAAA;
 
     if (songText.tooLong) songText.resetText();
 
     if (selected && songText.tooLong) songText.initMove();
+  }
+
+  public override function kill():Void
+  {
+    super.kill();
+
+    visible = true;
+    capsule.alpha = 1;
+    doLerp = false;
+    doJumpIn = false;
+    doJumpOut = false;
   }
 }
 

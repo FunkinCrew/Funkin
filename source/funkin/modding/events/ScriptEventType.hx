@@ -1,5 +1,6 @@
 package funkin.modding.events;
 
+@:nullSafety
 enum abstract ScriptEventType(String) from String to String
 {
   /**
@@ -87,6 +88,14 @@ enum abstract ScriptEventType(String) from String to String
    *   avoiding a combo break and lost health.
    */
   var NOTE_MISS = 'NOTE_MISS';
+
+  /**
+   * Called when a character lets go of a hold note.
+   * Important information such as note data, player/opponent, etc. are all provided.
+   *
+   * This event is not cancelable.
+   */
+  var NOTE_HOLD_DROP = 'NOTE_HOLD_DROP';
 
   /**
    * Called when a character presses a note when there was none there, causing them to lose health.

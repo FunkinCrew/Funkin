@@ -1,6 +1,6 @@
 # Contributing
 Welcome to the Contributing Guide!
-You can contribute to the Funkin' repository by opening issues or pull requests. 
+You can contribute to the Funkin' repository by opening issues or pull requests.
 
 This guide will cover best practices for each type of contribution.
 
@@ -11,7 +11,7 @@ This guide will cover best practices for each type of contribution.
 [Part 1: Etiquette](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-1-etiquette)
 
 <details>
-<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-2-issues">Part 2: Issues</a></summary> 
+<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-2-issues">Part 2: Issues</a></summary>
 
 * [Requirements](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#requirements)
 
@@ -24,8 +24,8 @@ This guide will cover best practices for each type of contribution.
 </details>
 
 <details>
-  
-<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-3-pull-requests">Part 3: Pull Requests</a></summary> 
+
+<summary><a href="https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#part-3-pull-requests">Part 3: Pull Requests</a></summary>
 
 * [Choosing a base branch](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#choosing-a-base-branch)
 
@@ -38,6 +38,8 @@ This guide will cover best practices for each type of contribution.
 * [GitHub PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#github-prs)
 
 * [funkin.assets PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#funkinassets-prs)
+
+  * [Charting PRs](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md#charting-prs)
 
 </details>
 
@@ -54,11 +56,11 @@ This guide will cover best practices for each type of contribution.
 
 # Part 2: Issues
 Issues serve many purposes, from reporting bugs to suggesting new features.
-This section provides guidelines to follow when [opening an issue](https://github.com/FunkinCrew/Funkin/issues). 
+This section provides guidelines to follow when [opening an issue](https://github.com/FunkinCrew/Funkin/issues).
 
 ## Requirements
 Make sure you're playing:
-- the latest version of the game (currently v0.5.3)
+- the latest version of the game (currently v0.7.4)
 - without any mods
 - on [Newgrounds](https://www.newgrounds.com/portal/view/770371) or downloaded from [itch.io](https://ninja-muffin24.itch.io/funkin)
 
@@ -72,20 +74,18 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Toggleable Ghost Tapping | https://github.com/FunkinCrew/Funkin/pull/2564#issuecomment-2119701802 |
 | Perfectly Centered Strumlines | _same as above^_ |
 | MultiKey, 9k, More than 4 keys, etc. | https://github.com/FunkinCrew/Funkin/issues/4243#issuecomment-2692371969 |
+| Flashy Combo Milestones | https://github.com/FunkinCrew/Funkin/pull/4700#issuecomment-2798916579 |
 | Losing Icons for DD and Parents | https://github.com/FunkinCrew/Funkin/issues/3048#issuecomment-2243491536 |
 | Playable GF / Speaker BF / Speaker Pico | https://github.com/FunkinCrew/Funkin/issues/2953#issuecomment-2216985230 |
+| New Intro Text Lines | https://github.com/FunkinCrew/Funkin/issues/5031#issuecomment-2855593376 |
 | Fresh (Chill Mix) as Title Screen Music | https://github.com/FunkinCrew/Funkin/pull/4282#issuecomment-2709334718 |
-| Adjusted Difficulty Ratings | https://github.com/FunkinCrew/Funkin/issues/2781#issuecomment-2172053144 |
 | Difficulty Ratings above 20 | https://github.com/FunkinCrew/Funkin/issues/3075#issuecomment-2368984497 |
-| Ability to Reset a Song's Score | https://github.com/FunkinCrew/Funkin/issues/3916#issuecomment-2525408261 |
 | Quick Restart Keybind (not R) | https://github.com/FunkinCrew/Funkin/issues/3268#issuecomment-2351095232 |
 | Countdown after Unpausing Song | https://github.com/FunkinCrew/Funkin/issues/2721#issuecomment-2159330106 |
-| 4:3 Aspect Ratio for Week 6 | https://github.com/FunkinCrew/Funkin/issues/3840#issuecomment-2689158438 |
 | "Philly Glow" Effect from Psych Engine | https://github.com/FunkinCrew/Funkin/issues/3788#issuecomment-2688966982 |
 | Importing Charts from Psych Engine (and other mod content) | https://github.com/FunkinCrew/Funkin/issues/2586#issuecomment-2125733327 |
 | Backwards Compatibility for Modding | https://github.com/FunkinCrew/Funkin/issues/3949#issuecomment-2608391329 |
-| Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 | 
-
+| Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 |
 
 ## Issue Types
 Choose the issue template that best suits your needs!
@@ -122,6 +122,9 @@ Also only report one issue or enhancement at a time! If you have multiple bug re
 
 Once you're sure your issue is unique and specific, feel free to submit it.
 
+> [!IMPORTANT]
+> **DO NOT CLOSE YOUR ISSUE FOR ANY REASON!** Your issue will be taken care of by a moderator!
+
 **Thank you for opening issues!**
 
 # Part 3: Pull Requests
@@ -133,6 +136,7 @@ When creating a branch in your fork, base your branch on either the `main` or `d
 
 > [!CAUTION]
 > Avoid using your fork's default branch (`main` in this case) for your PR. This is considered an [anti-pattern](https://jmeridth.com/posts/do-not-issue-pull-requests-from-your-master-branch/) by GitHub themselves!
+> Instead, make a separate branch for your additions (ex. `docs/fix-typo` or `minor-bugfix`).
 
 Choose the `main` branch if you modify:
 - Documentation (`.md` files)
@@ -148,11 +152,23 @@ Choose the `develop` branch if you modify:
 Choosing the right base branch helps keep your commit history clean and avoid merge conflicts.
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
-## Merge conflicts and rebasing
+## Maintaining your pull request
+Keeping your pull request clean and easy to review increases the chance that it will be accepted!
+
+Our maintenance policy is as follows:
+- If we require changes to your PR, we will label your PR `status: needs revision`.
+- We may also leave a comment under your PR specifying what changes you should make.
+- If you receive a comment, you have 90 days to implement the requested changes.
+- After this period, your PR will be closed due to inactivity and labeled `status: stale`.
+- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!
+
+This policy ensures that PRs awaiting review are up to date and ready to merge.
+
+### Merge conflicts and rebasing
 Some game updates introduce significant breaking changes that may create merge conflicts in your PR. To resolve them, you will need to update or rebase your PR.
 
 Most merge conflicts are small and will only require you to modify a few files to resolve them.
-However, some changes are so big that your commit history will look like a mess!
+However, some changes are so big that your commit history will be a total mess!
 In this case, you will have to perform a [**rebase**](https://docs.github.com/en/get-started/using-git/about-git-rebase).
 This process reapplies your changes on top of the updated branch and cleanly resolves the merge conflicts.
 
@@ -165,85 +181,173 @@ This process reapplies your changes on top of the updated branch and cleanly res
 > This guide does not cover compiling. If you have trouble compiling the game, refer to the [Compilation Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/COMPILING.md).
 
 Code-based PRs make changes such as **fixing bugs** or **implementing new features** in the game.
+
 This involves modifying one or several of the repository’s `.hx` files, found within the `source/` folder.
 
 ### Codestyle
-Before submitting your PR, check that your code follows the [Style Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/style-guide.md).
+Before submitting your PR, check that your code follows the [Style Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/style-guide.md). This keeps your code consistent with the rest of the codebase!
 
+### Code comments
+Code comments help others understand your changes, so the way you write them is important!
 Here are some guidelines for writing comments in your code:
-- Leave comments only when you believe a piece of code warrants explanation.
+- Leave comments only when you believe a piece of code warrants explanation. If a piece of code is self-explanatory, it does not need a comment.
 - Ensure that your comments provide meaningful insight into the function or purpose of the code.
 - Write your comments in a clear and concise manner.
 - Only sign your comments with your name when your changes are complex and may require further explanation.
 
-### Example Comments
+### Example code comments
 #### DO NOT:
+Below are examples of what you SHOULD NOT do when writing code comments.
 ```haxe
-  /**
-    * jumps around the song
-    * works with bpm changes but skipped notes still hurt
-    * @param sections how many sections to jump, negative = backwards
-    */
-  function changeSection(sections:Int):Void
+/**
+  * jumps around the song
+  * works with bpm changes but skipped notes still hurt
+  * @param sections how many sections to jump, negative = backwards
+  */
+function changeSection(sections:Int):Void
+{
+  // Pause the music, as you probably guessed
+  // FlxG.sound.music.pause();
+
+  // Set the target time in steps, I don’t really get how this works though lol - [GitHub username]
+  var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.stepsPerMeasure * sections);
+  var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
+
+  // Don't go back in time to before the song started, that would probably break a lot of things and cause a bunch of problems!
+  targetTimeMs = Math.max(0, targetTimeMs);
+
+  if (FlxG.sound.music != null) // If the music is not null, set the time to the target time
   {
-    // Pause the music, as you probably guessed
-    // FlxG.sound.music.pause();
-
-    // Set the target time in steps, I don’t really get how this works though lol - [GitHub username]
-    var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.stepsPerMeasure * sections);
-    var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
-
-    // Don't go back in time to before the song started, that would probably break a lot of things and cause a whole bunch of problems!
-    targetTimeMs = Math.max(0, targetTimeMs);
-
-    if (FlxG.sound.music != null) // If the music is not null, set the time to the target time
-    {
-      FlxG.sound.music.time = targetTimeMs;
-    }
-
-    // Handle skipped notes and events and all that jazz
-    handleSkippedNotes();
-    SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-    // regenNoteData(FlxG.sound.music.time);
-
-    Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
-
-    // I hate this function - [GitHub username]
-    resyncVocals();
+    FlxG.sound.music.time = targetTimeMs;
   }
+
+  // Handle skipped notes and events and all that jazz
+  handleSkippedNotes();
+  SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
+  // regenNoteData(FlxG.sound.music.time);
+
+  Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
+
+  // I hate this function - [GitHub username]
+  resyncVocals();
+}
+```
+
+```haxe
+// End the song when the music is complete.
+FlxG.sound.music.onComplete = function() {
+  endSong(skipEndingTransition);
+};
+// A negative instrumental offset means the song skips the first few milliseconds of the track.
+// This just gets added into the startTimestamp behavior so we don't need to do anything extra.
+FlxG.sound.music.play(true, Math.max(0, startTimestamp - Conductor.instance.combinedOffset));
+FlxG.sound.music.pitch = playbackRate;
+
+// Prevent the volume from being wrong.
+FlxG.sound.music.volume = 1.0;
+// IF fadetween is not null we cancel it
+if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
+
+// Play the vocals
+trace('Playing vocals...');
+// Add the vocals
+add(vocals);
+// Play the vocals for real this time lol
+vocals.play();
+// Set the vocals volume
+vocals.volume = 1.0;
+// Set the vocals pitch
+vocals.pitch = playbackRate;
+// Set the vocals time to the music time
+vocals.time = FlxG.sound.music.time;
+// trace('${FlxG.sound.music.time}');
+// trace('${vocals.time}');
+// functionThatWasntHereBeforeThisPRorSomethingIdKLOL();
+/* testsprite = new FlxSprite(0, 0);
+testsprite.loadGraphic(Paths.image('test'));
+testsprite.screenCenter();
+add(testsprite); */
+
+// Me too [GitHub username] I hate this function it gave me pain and suffering - Girlfriend
+resyncVocals();
+```
+
+```haxe
+#if FEATURE_DEBUG_FUNCTIONS
+// PAGEUP: who knows what this does
+// SHIFT+PAGEUP: There will be dire consequences.
+if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
+// PAGEUP: who knows what this does
+// SHIFT+PAGEUP: There will be dire consequences.
+if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
+#end
 ```
 
 #### DO:
+Below are examples on what you SHOULD do when writing code comments.
 ```haxe
-  /**
-    * Jumps forward or backward a number of sections in the song.
-    * Accounts for BPM changes, does not prevent death from skipped notes.
-    * @param sections The number of sections to jump, negative to go backwards.
-    */
-  function changeSection(sections:Int):Void
+/**
+  * Jumps forward or backward a number of sections in the song.
+  * Accounts for BPM changes, does not prevent death from skipped notes.
+  * @param sections The number of sections to jump, negative to go backwards.
+  */
+function changeSection(sections:Int):Void
+{
+  var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.stepsPerMeasure * sections);
+  var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
+
+  // Don't go back in time to before the song started.
+  targetTimeMs = Math.max(0, targetTimeMs);
+
+  if (FlxG.sound.music != null)
   {
-    var targetTimeSteps:Float = Conductor.instance.currentStepTime + (Conductor.instance.stepsPerMeasure * sections);
-    var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
-
-    // Don't go back in time to before the song started.
-    targetTimeMs = Math.max(0, targetTimeMs);
-
-    if (FlxG.sound.music != null)
-    {
-      FlxG.sound.music.time = targetTimeMs;
-    }
-
-    handleSkippedNotes();
-    SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-
-    Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
-
-    resyncVocals();
+    FlxG.sound.music.time = targetTimeMs;
   }
+
+  handleSkippedNotes();
+  SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
+
+  Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
+
+  resyncVocals();
+}
+```
+
+```haxe
+FlxG.sound.music.onComplete = function() {
+  endSong(skipEndingTransition);
+};
+// A negative instrumental offset means the song skips the first few milliseconds of the track.
+// This just gets added into the startTimestamp behavior so we don't need to do anything extra.
+FlxG.sound.music.play(true, Math.max(0, startTimestamp - Conductor.instance.combinedOffset));
+FlxG.sound.music.pitch = playbackRate;
+
+// Prevent the volume from being wrong.
+FlxG.sound.music.volume = 1.0;
+if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
+
+trace('Playing vocals...');
+add(vocals);
+vocals.play();
+vocals.volume = 1.0;
+vocals.pitch = playbackRate;
+vocals.time = FlxG.sound.music.time;
+resyncVocals();
+```
+
+```haxe
+#if FEATURE_DEBUG_FUNCTIONS
+// PAGEUP: Skip forward two sections.
+// SHIFT+PAGEUP: Skip forward twenty sections.
+if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
+// PAGEDOWN: Skip backward two section. Doesn't replace notes.
+// SHIFT+PAGEDOWN: Skip backward twenty sections.
+if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
+#end
 ```
 
 ## Documentation PRs
-Documentation-based PRs make changes such as **fixing typos** or **adding new information** in documentation files. 
+Documentation-based PRs make changes such as **fixing typos** or **adding new information** in documentation files.
 
 This involves modifying one or several of the repository’s `.md` files, found throughout the repository.
 
@@ -296,6 +400,17 @@ If you only modify files in the `assets` folder, open a PR in the `funkin.assets
 If you simultaneously modify files from both repositories, then open two separate PRs and explain the connection in your PR descriptions.
 
 Be sure to choose `main` as the base branch for `funkin.assets` PRs, as no `develop` branch exists for that repository.
+
+### Charting PRs
+Charting PRs make changes such as **adjusting chart metadata**.
+
+This involves modifying one or several of the `funkin.assets` repository's `*-metadata.json` files, found in the `preload/data/songs/` directory.
+
+> [!CAUTION]
+> We **do not** accept changes to the chart `.json` file itself.
+> If you find an error in the game's charts, please open an issue in the `Funkin` repo, and the Funkin' Crew will review it and make tweaks themselves as necessary.
+
+These PRs should only be opened in the `funkin.assets` repository.
 
 # Closing
 Thank you for reading the Contributing Guide.

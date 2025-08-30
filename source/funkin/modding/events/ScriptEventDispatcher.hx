@@ -6,6 +6,7 @@ import funkin.modding.IScriptedClass;
 /**
  * Utility functions to assist with handling scripted classes.
  */
+@:nullSafety
 class ScriptEventDispatcher
 {
   /**
@@ -89,6 +90,9 @@ class ScriptEventDispatcher
           return;
         case NOTE_MISS:
           t.onNoteMiss(cast event);
+          return;
+        case NOTE_HOLD_DROP:
+          t.onNoteHoldDrop(cast event);
           return;
         default: // Continue;
       }
