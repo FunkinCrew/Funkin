@@ -231,6 +231,11 @@ class ResultState extends MusicBeatSubState
 
           if (animation == null) continue;
 
+          if (animData?.legacyBoundsPosition ?? false)
+          {
+            animation.legacyBoundsPosition = true;
+          }
+
           animation.zIndex = animData.zIndex ?? 500;
 
           animation.scale.set(animData.scale ?? 1.0, animData.scale ?? 1.0);

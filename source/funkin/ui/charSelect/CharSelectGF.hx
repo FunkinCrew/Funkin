@@ -108,7 +108,10 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     else if (previousGFPath != currentGFPath)
     {
       this.visible = true;
-      frames = CharSelectAtlasHandler.loadAtlas(currentGFPath);
+      frames = CharSelectAtlasHandler.loadAtlas(currentGFPath,
+        {
+          swfMode: true
+        });
 
       enableVisualizer = gfData?.visualizer ?? false;
     }
