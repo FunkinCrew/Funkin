@@ -104,6 +104,10 @@ class PlayerFreeplayDJData
   var animations:Array<AnimationData>;
 
   @:optional
+  @:default(false)
+  var legacyBoundsPosition:Bool;
+
+  @:optional
   @:default("BOYFRIEND")
   var text1:String;
 
@@ -151,7 +155,12 @@ class PlayerFreeplayDJData
 
   public function getAtlasPath():String
   {
-    return Paths.animateAtlas(assetPath);
+    return assetPath;
+  }
+
+  public function useLegacyBoundsPosition():Bool
+  {
+    return legacyBoundsPosition;
   }
 
   public function getFreeplayDJText(index:Int):String
@@ -333,6 +342,10 @@ typedef PlayerResultsAnimationData =
    * `sparrow` or `animate` or whatever
    */
   var renderType:String;
+
+  @:optional
+  @:default(false)
+  var legacyBoundsPosition:Bool;
 
   @:optional
   var assetPath:Null<String>;
