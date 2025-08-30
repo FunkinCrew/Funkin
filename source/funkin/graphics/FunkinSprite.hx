@@ -86,6 +86,12 @@ typedef AtlasSpriteSettings =
    */
   @:optional
   var applyStageMatrix:Bool;
+
+  /**
+   * Whether to use legacy bounds positioning.
+   */
+  @:optional
+  var legacyBoundsPosition:Bool;
 }
 
 /**
@@ -96,6 +102,25 @@ typedef AtlasSpriteSettings =
 @:nullSafety
 class FunkinSprite extends FlxAnimate
 {
+  /**
+   * NOTE: This will only work on texture atlases.
+   *
+   * If enabled, the sprite will be offset using the bounds origin.
+   * This imitates the behavior of the legacy bounds FlxAnimate had.
+   * Turning this on is not recommended, only use this if you know what you're doing.
+   * It's also worth noting that not all atlases will react correctly, some may need position tweaks.
+   */
+  public var legacyBoundsPosition(default, set):Bool = false;
+
+  public function set_legacyBoundsPosition(value:Bool):Bool
+  {
+    if (!this.isAnimate) return false;
+
+    this.legacyBoundsPosition = value;
+    this.applyStageMatrix = value;
+    return value;
+  }
+
   /**
    * @param x Starting X position
    * @param y Starting Y position
@@ -282,7 +307,8 @@ class FunkinSprite extends FlxAnimate
         cacheKey: settings?.cacheKey ?? null,
         uniqueInCache: settings?.uniqueInCache ?? false,
         onSymbolCreate: settings?.onSymbolCreate ?? null,
-        applyStageMatrix: settings?.applyStageMatrix ?? false
+        legacyBoundsPosition: settings?.legacyBoundsPosition ?? false,
+        applyStageMatrix: (settings?.applyStageMatrix ?? false || settings?.legacyBoundsPosition ?? false)
       };
 
     var assetLibrary:String = assetLibrary ?? "";
@@ -304,6 +330,7 @@ class FunkinSprite extends FlxAnimate
     }
 
     this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
+    this.legacyBoundsPosition = validatedSettings.legacyBoundsPosition ?? false;
 
     frames = FlxAnimateFrames.fromAnimate(funkin.Assets.getPath(graphicKey), validatedSettings.spritemaps, validatedSettings.metadataJson,
       validatedSettings.cacheKey, validatedSettings.uniqueInCache, {
@@ -614,6 +641,12 @@ class FunkinSprite extends FlxAnimate
       _rect.y = _rect.y * this.scale.y;
       _rect.width = _rect.width * this.scale.x;
       _rect.height = _rect.height * this.scale.y;
+    }
+
+    if (legacyBoundsPosition && this.isAnimate)
+    {
+      result.x += this.timeline.getBoundsOrigin().x;
+      result.y += this.timeline.getBoundsOrigin().y;
     }
 
     return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);

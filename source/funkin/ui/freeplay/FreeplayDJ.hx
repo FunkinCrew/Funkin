@@ -52,6 +52,11 @@ class FreeplayDJ extends FunkinSprite
         filterQuality: HIGH
       });
 
+    if (playableCharData?.useLegacyBoundsPosition() ?? false)
+    {
+      this.legacyBoundsPosition = true;
+    }
+
     anim.onFrameChange.add(function(name, number, index) {
       if (name == playableCharData?.getAnimationPrefix('cartoon'))
       {
@@ -462,25 +467,37 @@ class FreeplayDJ extends FunkinSprite
   {
     this.anim.play(id, Force, Reverse, Frame);
     this.anim.curAnim.looped = Loop;
-    applyAnimOffset();
+    applyAnimationOffset();
   }
 
-  function applyAnimOffset()
+  function applyAnimationOffset():Void
   {
-    var AnimName = getCurrentAnimation();
-    var daOffset = playableCharData?.getAnimationOffsetsByPrefix(AnimName);
-    var daGlobalOffset = [this.x, this.y];
-    if (daOffset != null)
-    {
-      var xValue = daGlobalOffset[0] - daOffset[0] - (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI);
-      var yValue = daGlobalOffset[1] - daOffset[1];
+    var animationName:String = getCurrentAnimation();
+    var animationOffsets:Null<Array<Float>> = playableCharData?.getAnimationOffsetsByPrefix(animationName);
+    var globalOffsets:Array<Float> = [this.x, this.y];
 
-      trace('Successfully applied offset ($AnimName): ' + daOffset[0] + ', ' + daOffset[1]);
-      offset.set(xValue, yValue);
+    if (animationOffsets != null)
+    {
+      var finalOffsetX:Float = 0;
+      var finalOffsetY:Float = 0;
+
+      if (this.legacyBoundsPosition)
+      {
+        finalOffsetX = animationOffsets[0];
+        finalOffsetY = animationOffsets[1];
+      }
+      else
+      {
+        finalOffsetX = globalOffsets[0] - animationOffsets[0] - (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI);
+        finalOffsetY = globalOffsets[1] - animationOffsets[1];
+      }
+
+      trace('Successfully applied offset ($animationName): ' + animationOffsets[0] + ', ' + animationOffsets[1]);
+      offset.set(finalOffsetX, finalOffsetY);
     }
     else
     {
-      trace('No offset found ($AnimName), defaulting to: 0, 0');
+      trace('No offset found ($animationName), defaulting to: 0, 0');
       offset.set(0, 0);
     }
   }
