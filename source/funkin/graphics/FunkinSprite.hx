@@ -329,13 +329,10 @@ class FunkinSprite extends FlxAnimate
       throw 'No Animation.json file exists at the specified path (${graphicKey})';
     }
 
-    var kruePath:String = funkin.Assets.getPath('${graphicKey}/Animation.json');
-    kruePath = kruePath.substring(0, kruePath.lastIndexOf('/'));
-
     this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
     this.legacyBoundsPosition = validatedSettings.legacyBoundsPosition ?? false;
 
-    frames = FlxAnimateFrames.fromAnimate(kruePath, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
+    frames = FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
       validatedSettings.uniqueInCache, {
         swfMode: validatedSettings.swfMode,
         cacheOnLoad: validatedSettings.cacheOnLoad,
