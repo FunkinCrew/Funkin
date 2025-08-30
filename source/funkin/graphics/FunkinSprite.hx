@@ -133,7 +133,7 @@ class FunkinSprite extends FlxAnimate
   override function initVars():Void
   {
     super.initVars();
-    // TODO: Make `animation` a stub that redirects calls to `mainSprite`?
+
     var newController:FunkinAnimationController = new FunkinAnimationController(this);
 
     animation = newController;
