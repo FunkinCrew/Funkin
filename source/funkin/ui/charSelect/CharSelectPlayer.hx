@@ -66,7 +66,7 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
   public function updatePosition():Void
   {
     // offset the position such that it's positioned exactly like in Adobe Animate
-    var bounds:FlxPoint = this.timeline.getBoundsOrigin();
+    var bounds:FlxPoint = this.timeline.getBoundsOrigin(true);
 
     x = initialX + bounds.x;
     y = initialY + bounds.y;
