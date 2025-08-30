@@ -20,7 +20,8 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 
     loadTextureAtlas("charSelect/bfChill",
       {
-        applyStageMatrix: true
+        applyStageMatrix: true,
+        swfMode: true
       });
 
     anim.onFinish.add(function(animLabel:String) {
