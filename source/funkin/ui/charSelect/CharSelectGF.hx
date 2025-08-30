@@ -80,7 +80,7 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
 
   public function updatePosition():Void
   {
-    var bounds:FlxPoint = this.timeline.getBoundsOrigin();
+    var bounds:FlxPoint = this.timeline.getBoundsOrigin(true);
 
     x = bounds.x + FullScreenScaleMode.gameCutoutSize.x / 2;
     y = bounds.y;

@@ -648,8 +648,8 @@ class FunkinSprite extends FlxAnimate
 
     if (legacyBoundsPosition && this.isAnimate)
     {
-      result.x += this.timeline.getBoundsOrigin().x;
-      result.y += this.timeline.getBoundsOrigin().y;
+      result.x += this.timeline.getBoundsOrigin(this.applyStageMatrix).x;
+      result.y += this.timeline.getBoundsOrigin(this.applyStageMatrix).y;
     }
 
     return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
