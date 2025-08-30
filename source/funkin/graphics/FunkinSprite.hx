@@ -110,16 +110,7 @@ class FunkinSprite extends FlxAnimate
    * Turning this on is not recommended, only use this if you know what you're doing.
    * It's also worth noting that not all atlases will react correctly, some may need position tweaks.
    */
-  public var legacyBoundsPosition(default, set):Bool = false;
-
-  public function set_legacyBoundsPosition(value:Bool):Bool
-  {
-    if (!this.isAnimate) return false;
-
-    this.legacyBoundsPosition = value;
-    this.applyStageMatrix = value;
-    return value;
-  }
+  public var legacyBoundsPosition:Bool = false;
 
   /**
    * @param x Starting X position
@@ -643,10 +634,19 @@ class FunkinSprite extends FlxAnimate
       _rect.height = _rect.height * this.scale.y;
     }
 
-    if (legacyBoundsPosition && this.isAnimate)
+    if (this.isAnimate)
     {
-      result.x += this.timeline.getBoundsOrigin(this.applyStageMatrix).x;
-      result.y += this.timeline.getBoundsOrigin(this.applyStageMatrix).y;
+      if (this.applyStageMatrix || legacyBoundsPosition)
+      {
+        result.add(this.library.matrix.tx, this.library.matrix.ty);
+      }
+
+      if (legacyBoundsPosition)
+      {
+        var point = this.timeline.getBoundsOrigin(FlxPoint.get(), true);
+        result.add(point.x, point.y);
+        point.put();
+      }
     }
 
     return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
