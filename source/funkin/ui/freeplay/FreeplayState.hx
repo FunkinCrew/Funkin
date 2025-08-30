@@ -1571,6 +1571,8 @@ class FreeplayState extends MusicBeatSubState
   {
     super.update(elapsed);
 
+    Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
+
     #if FEATURE_TOUCH_CONTROLS
     if (backButton != null && !backTransitioning)
     {
@@ -2906,7 +2908,6 @@ class FreeplayState extends MusicBeatSubState
       if (songDifficulty != null)
       {
         Conductor.instance.mapTimeChanges(songDifficulty.timeChanges);
-        Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
       }
     }
   }
