@@ -153,7 +153,7 @@ class CharSelectSubState extends MusicBeatSubState
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize, 0, "charSelect/crowd",
+    var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize + -9, -5, "charSelect/crowd",
       {
         applyStageMatrix: true
       });
@@ -162,7 +162,7 @@ class CharSelectSubState extends MusicBeatSubState
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize + -2, 1, "charSelect/charSelectStage",
+    var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize + -2, -27, "charSelect/charSelectStage",
       {
         applyStageMatrix: true
       });
@@ -186,8 +186,8 @@ class CharSelectSubState extends MusicBeatSubState
     barthing.scrollFactor.set(0, 0);
     add(barthing);
 
-    barthing.y += 80;
-    FlxTween.tween(barthing, {y: barthing.y - 80}, 1.3, {ease: FlxEase.expoOut});
+    barthing.y += 79;
+    FlxTween.tween(barthing, {y: barthing.y - 79}, 1.3, {ease: FlxEase.expoOut});
 
     var charLight:FunkinSprite = new FunkinSprite(cutoutSize + 800, 250);
     charLight.loadGraphic(Paths.image('charSelect/charLight'));
@@ -235,7 +235,8 @@ class CharSelectSubState extends MusicBeatSubState
       {
         applyStageMatrix: true
       });
-    speakers.x = cutoutSize - 10 + speakers.timeline.getBoundsOrigin().x;
+    speakers.x = cutoutSize - 11 + speakers.timeline.getBoundsOrigin().x;
+    speakers.y += 7;
     speakers.anim.play('');
     speakers.anim.curAnim.looped = true;
     speakers.scrollFactor.set(1.8, 1.8);
