@@ -1188,7 +1188,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     playerChillOut.anim.onFrameChange.removeAll();
     playerChillOut.anim.onFrameChange.add(function(animName:String, frameNumber:Int, index:Int) {
-      if (frameNumber >= 1)
+      if (frameNumber == 1)
       {
         playerChill.visible = true;
         playerChill.switchChar(value);
