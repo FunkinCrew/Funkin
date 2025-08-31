@@ -536,8 +536,9 @@ class FunkinSprite extends FlxAnimate
    * Replaces the graphic of a symbol in the atlas.
    * @param symbol The symbol to replace.
    * @param graphic The new graphic to use.
+   * @param adjustScale Whether to adjust the scale of new frame to match the old one.
    */
-  public function replaceSymbolGraphic(symbol:String, graphic:FlxGraphicAsset):Void
+  public function replaceSymbolGraphic(symbol:String, graphic:FlxGraphicAsset, ?adjustScale:Bool = true):Void
   {
     if (!this.isAnimate) return;
 
