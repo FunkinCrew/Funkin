@@ -113,7 +113,10 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
-  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil"];
+  static final ANDROID_EXTENSIONS:Array<String> = [
+    "funkin.extensions.CallbackUtil",
+    "funkin.extensions.FNFCExtension"
+  ];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
@@ -1088,6 +1091,7 @@ class Project extends HXProject
       }
     }
 
+    // Custom android.application XML Children for the AndroidManifest
     final modsFolderProvider:Xml = Xml.createElement('provider');
     modsFolderProvider.set('android:authorities', '$PACKAGE_NAME.docprovider');
     modsFolderProvider.set('android:name', 'funkin.provider.DataFolderProvider');
@@ -1107,13 +1111,68 @@ class Project extends HXProject
     {
       if (config.get('android.application').xmlChildren != null)
       {
-        config.get('android.application').xmlChildren.push(Printer.print(modsFolderProvider));
+        config.get('android.application').xmlChildren.push(Printer.print(modsFolderProvider, true));
       }
       else
       {
-        config.get('android.application').xmlChildren = [Printer.print(modsFolderProvider)];
+        config.get('android.application').xmlChildren = [Printer.print(modsFolderProvider, true)];
       }
     }
+
+    // Custom android.activity XML Children for the AndroidManifest
+    final intentFilter:Xml = Xml.createElement('intent-filter');
+
+    final action:Xml = Xml.createElement('action');
+    action.set('android:name', 'android.intent.action.VIEW');
+    intentFilter.addChild(action);
+
+    final intentFilterCategories:Array<String> = [
+      "android.intent.category.DEFAULT",
+      "android.intent.category.BROWSABLE"
+    ];
+
+    for (categoryName in intentFilterCategories)
+    {
+      final category:Xml = Xml.createElement('category');
+      category.set('android:name', categoryName);
+      intentFilter.addChild(category);
+    }
+
+    final intentFilterDatas:Map<String, Array<String>> = [
+      "android:mimeType"    => ["application/zip"],
+      // When this is added, it makes the game show up only when it's a FNFC file.
+      // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
+      // "android:host"        => ["*"],
+      "android:scheme"      => ["file", "content"],
+      // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
+      "android:pathPattern" => [
+        ".*\\.fnfc", ".*\\..*\\.fnfc",
+        ".*\\..*\\..*\\.fnfc",
+        ".*\\..*\\..*\\..*\\.fnfc",
+        ".*\\..*\\..*\\..*\\..*\\.fnfc"
+      ]
+    ];
+
+    for (key => values in intentFilterDatas) {
+      for (value in values) {
+        final data:Xml = Xml.createElement("data");
+        data.set(key, value);
+        intentFilter.addChild(data);
+      }
+    }
+
+    @:nullSafety(Off)
+    {
+      if (config.get('android.activity').xmlChildren != null)
+      {
+        config.get('android.activity').xmlChildren.push(Printer.print(intentFilter, true));
+      }
+      else
+      {
+        config.get('android.activity').xmlChildren = [Printer.print(intentFilter, true)];
+      }
+    }
+
 
     final extensions:Null<Array<String>> = config.getArrayString('android.extension');
 

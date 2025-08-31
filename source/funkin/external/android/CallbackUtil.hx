@@ -31,6 +31,13 @@ class CallbackUtil
   public static var onActivityResult:FlxTypedSignal<Int->Int->Void> = new FlxTypedSignal<Int->Int->Void>();
 
   /**
+   * Signal triggered when the user opens a FNFC file with the game in runtime.
+   *
+   * First argument is the FNFC file path.
+   */
+  public static var onOpenFNFC:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+  /**
    * Initializes the callback utility.
    */
   public static function init():Void
@@ -65,6 +72,20 @@ class CallbackHandler #if (lime >= "8.0.0") implements JNISafety #end
   public function onActivityResult(requestCode:Int, resultCode:Int):Void
   {
     if (CallbackUtil.onActivityResult != null) CallbackUtil.onActivityResult.dispatch(requestCode, resultCode);
+  }
+
+  /**
+   * Handles the onOpenFNFC callback from native code.
+   *
+   * @param file Path to the FNFC file that was opened.
+   */
+  @:keep
+  #if (lime >= "8.0.0")
+  @:runOnMainThread
+  #end
+  public function onOpenFNFC(file:String):Void
+  {
+    if (CallbackUtil.onOpenFNFC != null) CallbackUtil.onOpenFNFC.dispatch(file);
   }
 }
 #end
