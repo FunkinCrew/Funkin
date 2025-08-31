@@ -509,8 +509,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate) return null;
 
-    var mainTimeline = this.anim.getDefaultTimeline();
-    for (layer in mainTimeline.layers)
+    for (layer in this.timeline.layers)
     {
       @:nullSafety(Off)
       for (frame in layer.frames)
