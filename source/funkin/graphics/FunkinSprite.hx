@@ -548,24 +548,46 @@ class FunkinSprite extends FlxAnimate
       return;
     }
 
-    var symbolInstance:Null<SymbolItem> = this.library.getSymbol(symbol);
-
-    if (symbolInstance == null)
-    {
-      throw 'Symbol not found in atlas: ${symbol}';
-      return;
-    }
-
-    var elements:Array<Element> = symbolInstance.timeline.getElementsAtIndex(0);
+    var elements:Array<Element> = getSymbolElements(symbol);
 
     for (element in elements)
     {
       var atlasInstance:AtlasInstance = element.toAtlasInstance();
       var frame:FlxFrame = FlxG.bitmap.add(graphic).imageFrame.frame;
-      atlasInstance.replaceFrame(frame);
 
+      atlasInstance.replaceFrame(frame, adjustScale);
       element = atlasInstance;
     }
+  }
+
+  /**
+   * Returns the elements of a symbol in the atlas.
+   * @param symbol The symbol to get elements from.
+   */
+  public function getSymbolElements(symbol:String):Array<Element>
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: This function only works on texture atlases!');
+      return [];
+    }
+
+    var symbolInstance:Null<SymbolItem> = this.library.getSymbol(symbol);
+
+    if (symbolInstance == null)
+    {
+      throw 'Symbol not found in atlas: ${symbol}';
+      return [];
+    }
+
+    var elements:Array<Element> = symbolInstance.timeline.getElementsAtIndex(0);
+
+    if (elements?.length == 0)
+    {
+      trace('WARNING: No Atlas Elements found for "$symbol" symbol.');
+    }
+
+    return elements ?? [];
   }
 
   /**

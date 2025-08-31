@@ -32,6 +32,9 @@ class AlbumRoll extends FlxSpriteGroup
     return value;
   }
 
+  final ALBUM_ART_FRAME_SIZE:Int = 262;
+  final ALBUM_ART_SYMBOL:String = "album art placeholder";
+
   var newAlbumArt:FunkinSprite;
   var albumTitle:Null<FunkinSprite> = null;
 
@@ -93,11 +96,31 @@ class AlbumRoll extends FlxSpriteGroup
 
     // Update the album art.
     var albumGraphic = Paths.image(albumData.getAlbumArtAssetKey());
-    newAlbumArt.replaceSymbolGraphic("album art placeholder", albumGraphic);
+    newAlbumArt.replaceSymbolGraphic(ALBUM_ART_SYMBOL, albumGraphic);
+    adjustAlbumSize();
 
     buildAlbumTitle(albumData.getAlbumTitleAssetKey(), albumData.getAlbumTitleOffsets());
     applyExitMovers();
     refresh();
+  }
+
+  /**
+   * Adjusts the size of the album art frame.
+   */
+  public function adjustAlbumSize():Void
+  {
+    var _atlasInstance:Null<animate.internal.elements.AtlasInstance> = null;
+    for (element in newAlbumArt.getSymbolElements(ALBUM_ART_SYMBOL))
+    {
+      _atlasInstance = element.toAtlasInstance();
+
+      @:privateAccess {
+        _atlasInstance.tileMatrix.a = ALBUM_ART_FRAME_SIZE / _atlasInstance.frame.frame.width;
+        _atlasInstance.tileMatrix.d = ALBUM_ART_FRAME_SIZE / _atlasInstance.frame.frame.width;
+      }
+
+      element = _atlasInstance;
+    }
   }
 
   public function refresh():Void
