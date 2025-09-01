@@ -37,6 +37,7 @@ import funkin.util.macro.MacroUtil;
 import funkin.util.TrackerUtil;
 import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
+import funkin.ui.debug.ChartPlaytestState;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -388,7 +389,10 @@ class InitState extends FlxState
     }
     else if (params.song.shouldLoadSong && params.song.songPath != null)
     {
-      startSongFromFNFC(params.song.songPath);
+      FlxG.switchState(() -> new ChartPlaytestState(
+        {
+          fnfcFilePath: params.song.songPath,
+        }));
     }
     else
     {
@@ -447,15 +451,6 @@ class InitState extends FlxState
         targetSong: songData,
         targetDifficulty: difficultyId,
       });
-  }
-
-  function startSongFromFNFC(filePath:String):Void
-  {
-    // var difficultyId = Constants.DEFAULT_DIFFICULTY;
-    // var variationId = Constants.DEFAULT_VARIATION;
-    var difficultyId = "nightmare";
-    var variationId = "erect";
-    funkin.util.file.FNFCUtil.playSongFromFNFCPath(filePath, difficultyId, variationId);
   }
 
   /**

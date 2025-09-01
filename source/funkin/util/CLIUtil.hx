@@ -151,10 +151,8 @@ class CLIUtil
         },
       song:
         {
-          // shouldLoadSong: false,
-          // songPath: null
-          shouldLoadSong: true,
-          songPath: "E:/Programming/Funkin'/SECRET/Chart v0.8/milf.fnfc"
+          shouldLoadSong: false,
+          songPath: null
         }
     };
   }
