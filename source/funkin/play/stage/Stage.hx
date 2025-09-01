@@ -159,6 +159,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     this.debugIconGroup = new FlxSpriteGroup();
 
+    if (PlayState.instance?.strumlines != null) for (strumline in PlayState.instance.strumlines)
+      strumline.characters = [];
+
     for (dataProp in _data.props)
     {
       trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
@@ -417,7 +420,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         if (PlayState.instance != null
           && PlayState.instance.playerStrumline != null
           && (PlayState.instance.playerStrumline.characters[0] == null
-            || Std.isOfType(PlayState.instance.playerStrumline.characters[0], BaseCharacter)))
+            || !this.members.contains(PlayState.instance.playerStrumline.characters[0])))
         {
           PlayState.instance.playerStrumline.characters[0] = character;
         }
@@ -437,7 +440,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         if (PlayState.instance != null
           && PlayState.instance.opponentStrumline != null
           && (PlayState.instance.opponentStrumline.characters[0] == null
-            || Std.isOfType(PlayState.instance.opponentStrumline.characters[0], BaseCharacter)))
+            || !this.members.contains(PlayState.instance.opponentStrumline.characters[0])))
         {
           PlayState.instance.opponentStrumline.characters[0] = character;
         }
