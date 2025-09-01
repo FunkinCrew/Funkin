@@ -177,10 +177,10 @@ class CharacterPlayer extends Box
     character.y = this.cachedScreenY;
 
     // Apply animation offsets, so the character is positioned correctly based on the animation.
-    @:privateAccess var animOffsets:Array<Float> = character.animOffsets;
+    @:privateAccess var currentAnimationOffsets:Array<Float> = character.currentAnimationOffsets;
 
-    character.x -= animOffsets[0] * targetScale * (flip ? -1 : 1);
-    character.y -= animOffsets[1] * targetScale;
+    character.x -= currentAnimationOffsets[0] * targetScale * (flip ? -1 : 1);
+    character.y -= currentAnimationOffsets[1] * targetScale;
   }
 
   /**

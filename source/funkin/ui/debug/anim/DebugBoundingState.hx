@@ -215,18 +215,18 @@ class DebugBoundingState extends FlxState
       if (FlxG.mouse.justPressed && !haxeUIFocused)
       {
         movingCharacter = true;
-        mouseOffset.set(FlxG.mouse.x - -swagChar.animOffsets[0], FlxG.mouse.y - -swagChar.animOffsets[1]);
+        mouseOffset.set(FlxG.mouse.x - -swagChar.currentAnimationOffsets[0], FlxG.mouse.y - -swagChar.currentAnimationOffsets[1]);
       }
 
       if (!movingCharacter) return;
 
       if (FlxG.mouse.pressed)
       {
-        swagChar.animOffsets = [(FlxG.mouse.x - mouseOffset.x) * -1, (FlxG.mouse.y - mouseOffset.y) * -1];
+        swagChar.currentAnimationOffsets = [(FlxG.mouse.x - mouseOffset.x) * -1, (FlxG.mouse.y - mouseOffset.y) * -1];
 
-        swagChar.animationOffsets.set(offsetAnimationDropdown.value.id, swagChar.animOffsets);
+        swagChar.animationOffsets.set(offsetAnimationDropdown.value.id, swagChar.currentAnimationOffsets);
 
-        txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
+        txtOffsetShit.text = 'Offset: ' + swagChar.currentAnimationOffsets;
         txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
       }
 
@@ -536,7 +536,7 @@ class DebugBoundingState extends FlxState
       }
     }
 
-    txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
+    txtOffsetShit.text = 'Offset: ' + swagChar.currentAnimationOffsets;
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
     dropDownSetup = true;
   }
@@ -559,7 +559,7 @@ class DebugBoundingState extends FlxState
     swagChar.playAnimation(animName, true); // trace();
     trace(swagChar.animationOffsets.get(animName));
 
-    txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
+    txtOffsetShit.text = 'Offset: ' + swagChar.currentAnimationOffsets;
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
   }
 
