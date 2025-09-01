@@ -538,7 +538,7 @@ class FunkinSprite extends FlxAnimate
    * @param graphic The new graphic to use.
    * @param adjustScale Whether to adjust the scale of new frame to match the old one.
    */
-  public function replaceSymbolGraphic(symbol:String, graphic:FlxGraphicAsset, ?adjustScale:Bool = true):Void
+  public function replaceSymbolGraphic(symbol:String, graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
   {
     if (!this.isAnimate) return;
 

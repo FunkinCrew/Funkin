@@ -40,10 +40,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     FlxGraphic.defaultPersist = true;
 
-    medal = FunkinSprite.createTextureAtlas((MEDAL_X - 450) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y - 95, "ui/medal",
+    medal = FunkinSprite.createTextureAtlas((MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y, "ui/medal",
       {
         swfMode: true,
-        cacheOnLoad: true,
         filterQuality: HIGH
       });
 
@@ -122,7 +121,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
    */
   function updatePositions():Void
   {
-    medal.x = (MEDAL_X - 450) + (FullScreenScaleMode.gameCutoutSize.x / 2);
+    medal.x = MEDAL_X + (FullScreenScaleMode.gameCutoutSize.x / 2);
     points.x = (171 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2);
     name.x = (73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2);
   }
@@ -175,7 +174,6 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       }
 
       instance.medal.anim.play("");
-
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
     }
 
