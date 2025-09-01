@@ -330,6 +330,11 @@ class StoryMenuState extends MusicBeatState
 
     handleKeyPresses();
 
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+
     super.update(elapsed);
   }
 
