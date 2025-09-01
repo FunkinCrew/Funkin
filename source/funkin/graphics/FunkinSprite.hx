@@ -110,7 +110,14 @@ class FunkinSprite extends FlxAnimate
    * Turning this on is not recommended, only use this if you know what you're doing.
    * It's also worth noting that not all atlases will react correctly, some may need position tweaks.
    */
-  public var legacyBoundsPosition:Bool = false;
+  public var legacyBoundsPosition(default, set):Bool = false;
+
+  function set_legacyBoundsPosition(v:Bool):Bool
+  {
+    if (!isAnimate) return false;
+    if (v) applyStageMatrix = true;
+    return this.legacyBoundsPosition = v;
+  }
 
   /**
    * @param x Starting X position
@@ -658,12 +665,12 @@ class FunkinSprite extends FlxAnimate
 
     if (this.isAnimate)
     {
-      if (this.applyStageMatrix || legacyBoundsPosition)
+      if (this.applyStageMatrix)
       {
         result.add(this.library.matrix.tx, this.library.matrix.ty);
       }
 
-      if (legacyBoundsPosition)
+      if (this.legacyBoundsPosition)
       {
         var point = this.timeline.getBoundsOrigin(FlxPoint.get(), true);
         result.add(point.x, point.y);
@@ -672,6 +679,24 @@ class FunkinSprite extends FlxAnimate
     }
 
     return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
+  }
+
+  override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
+  {
+    var bounds = super.getScreenBounds(newRect, camera);
+
+    if (this.isAnimate)
+    {
+      if (this.legacyBoundsPosition)
+      {
+        var point = this.timeline.getBoundsOrigin(FlxPoint.get(), true);
+        bounds.x += point.x;
+        bounds.y += point.y;
+        point.put();
+      }
+    }
+
+    return bounds;
   }
 
   override function drawSimple(camera:FlxCamera):Void
