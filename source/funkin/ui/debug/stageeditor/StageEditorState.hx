@@ -638,7 +638,7 @@ class StageEditorState extends UIState
         if (FlxG.keys.justPressed.S) FlxG.keys.pressed.SHIFT ? onMenuItemClick("save stage as") : onMenuItemClick("save stage");
         if (FlxG.keys.justPressed.F) onMenuItemClick("find object");
         if (FlxG.keys.justPressed.O) onMenuItemClick("open stage");
-        if (FlxG.keys.justPressed.N) onMenuItemClick("new stage");
+        if (FlxG.keys.justPressed.N && welcomeDialog == null && userGuideDialog == null) onMenuItemClick("new stage");
         if (FlxG.keys.justPressed.Q) onMenuItemClick("exit");
       }
 
