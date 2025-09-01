@@ -386,6 +386,10 @@ class InitState extends FlxState
           fnfsTargetPath: params.stage.stagePath,
         }));
     }
+    else if (params.song.shouldLoadSong && params.song.songPath != null)
+    {
+      startSongFromFNFC(params.song.songPath);
+    }
     else
     {
       // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
@@ -443,6 +447,15 @@ class InitState extends FlxState
         targetSong: songData,
         targetDifficulty: difficultyId,
       });
+  }
+
+  function startSongFromFNFC(filePath:String):Void
+  {
+    // var difficultyId = Constants.DEFAULT_DIFFICULTY;
+    // var variationId = Constants.DEFAULT_VARIATION;
+    var difficultyId = "nightmare";
+    var variationId = "erect";
+    funkin.util.file.FNFCUtil.playSongFromFNFCPath(filePath, difficultyId, variationId);
   }
 
   /**

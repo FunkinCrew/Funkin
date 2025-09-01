@@ -238,6 +238,8 @@ class ChartEditorImportExportHandler
   {
     var output:Array<String> = [];
 
+    // TODO: Combine with code in FNFCUtil.hx
+
     // Read the ZIP/.FNFC file, and create a map of entries.
     var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
     var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
