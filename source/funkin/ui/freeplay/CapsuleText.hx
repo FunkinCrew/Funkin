@@ -111,6 +111,7 @@ class CapsuleText extends FlxSpriteGroup
       trace('WARN: Capsule not initialized properly');
       return text = value;
     }
+    if (text == value) return text = value;
 
     blurredText.text = value;
     whiteText.text = value;
