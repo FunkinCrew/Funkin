@@ -417,7 +417,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         if (PlayState.instance != null
           && PlayState.instance.playerStrumline != null
           && (PlayState.instance.playerStrumline.characters[0] == null
-            || !this.members.contains(PlayState.instance.playerStrumline.characters[0])))
+            || Std.isOfType(PlayState.instance.playerStrumline.characters[0], BaseCharacter)))
         {
           PlayState.instance.playerStrumline.characters[0] = character;
         }
@@ -437,7 +437,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         if (PlayState.instance != null
           && PlayState.instance.opponentStrumline != null
           && (PlayState.instance.opponentStrumline.characters[0] == null
-            || !this.members.contains(PlayState.instance.opponentStrumline.characters[0])))
+            || Std.isOfType(PlayState.instance.opponentStrumline.characters[0], BaseCharacter)))
         {
           PlayState.instance.opponentStrumline.characters[0] = character;
         }
