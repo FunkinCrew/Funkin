@@ -2437,8 +2437,10 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
 
-    busy = true;
+    controls.active = false;
+    #if NO_FEATURE_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
+    #end
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
     capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.targetPos.x + 175, randomCapsule.targetPos.y + 115, instrumentalChoices);
@@ -2457,8 +2459,10 @@ class FreeplayState extends MusicBeatSubState
     function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
   {
     cleanupCapsuleOptionsMenu();
-    busy = true;
+    controls.active = false;
+    #if NO_FEATURE_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
+    #end
 
     var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
     // Seeing if I can do an animation...
@@ -2470,8 +2474,10 @@ class FreeplayState extends MusicBeatSubState
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
-      busy = false;
+      controls.active = true;
+      #if NO_FEATURE_TOUCH_CONTROLS
       letterSort.inputEnabled = true;
+      #end
       return;
     }
     var targetSong:Song = targetSongNullable;
@@ -2482,18 +2488,12 @@ class FreeplayState extends MusicBeatSubState
     if (targetDifficulty == null)
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
-      busy = false;
+      controls.active = true;
+      #if NO_FEATURE_TOUCH_CONTROLS
       letterSort.inputEnabled = true;
+      #end
       return;
     }
-
-    // Seeing if I can do an animation...
-    curSelected = grpCapsules.members.indexOf(targetSongCap);
-    changeSelection(0); // Trigger an update.
-    controls.active = false;
-    #if NO_FEATURE_TOUCH_CONTROLS
-    letterSort.inputEnabled = false;
-    #end
 
     if (instChoice == 'random')
     {
