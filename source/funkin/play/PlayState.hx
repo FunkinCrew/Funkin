@@ -3534,6 +3534,8 @@ class PlayState extends MusicBeatSubState
 
     forEachPausedSound((s) -> s.destroy());
 
+    if (VideoCutscene.isPlaying()) VideoCutscene.destroyVideo();
+
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
 
