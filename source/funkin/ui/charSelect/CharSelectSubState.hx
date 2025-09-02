@@ -755,6 +755,10 @@ class CharSelectSubState extends MusicBeatSubState
       FlxTween.tween(member, {y: member.y + 300}, 0.8, {ease: FlxEase.backIn});
     }
     FlxG.camera.follow(camFollow, LOCKON);
+    FlxTween.cancelTweensOf(transitionGradient);
+    FlxTween.cancelTweensOf(fadeShader);
+    FlxTween.cancelTweensOf(camFollow);
+
     FlxTween.tween(transitionGradient, {y: -150}, 0.8, {ease: FlxEase.backIn});
     fadeShader.fade(1.0, 0, 0.8, {ease: FlxEase.quadIn});
     FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8,
@@ -916,6 +920,13 @@ class CharSelectSubState extends MusicBeatSubState
     if (cursorY > 1)
     {
       cursorY = -1;
+    }
+
+    if (controls.BACK && !pressedSelect && allowInput)
+    {
+      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
+      goToFreeplay();
     }
 
     if (availableChars.exists(getCurrentSelected()) && PlayerRegistry.instance.isCharacterSeen(availableChars[getCurrentSelected()]))
