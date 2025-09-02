@@ -144,8 +144,8 @@ class RegistryMacro
 
     var dataFilePath:String = getRegistryDataFilePath(cls, fields);
 
-    #if ios
     var dataPath:String = DATA_FILE_BASE_PATH;
+    #if ios
     if (!sys.FileSystem.exists(dataPath)) dataPath = "../../../../../" + dataPath;
     #end
 
