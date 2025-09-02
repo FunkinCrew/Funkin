@@ -755,6 +755,7 @@ class CharSelectSubState extends MusicBeatSubState
       FlxTween.tween(member, {y: member.y + 300}, 0.8, {ease: FlxEase.backIn});
     }
     FlxG.camera.follow(camFollow, LOCKON);
+    // going to freeplay so fast makes the fade effects and the camera to bug, that's why we cancel the tweens
     FlxTween.cancelTweensOf(transitionGradient);
     FlxTween.cancelTweensOf(fadeShader);
     FlxTween.cancelTweensOf(camFollow);
