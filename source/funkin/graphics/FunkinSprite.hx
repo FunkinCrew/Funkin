@@ -554,7 +554,6 @@ class FunkinSprite extends FlxAnimate
     for (element in elements)
     {
       var atlasInstance:AtlasInstance = element.toAtlasInstance();
-      var graphic:Null<FlxGraphic> = graphic;
       var frame:Null<FlxFrame> = graphic != null ? FlxG.bitmap.add(graphic).imageFrame.frame : null;
 
       atlasInstance.replaceFrame(frame, adjustScale);
