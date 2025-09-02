@@ -545,22 +545,17 @@ class FunkinSprite extends FlxAnimate
    * @param graphic The new graphic to use.
    * @param adjustScale Whether to adjust the scale of new frame to match the old one.
    */
-  public function replaceSymbolGraphic(symbol:String, graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
+  public function replaceSymbolGraphic(symbol:String, ?graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
   {
     if (!this.isAnimate) return;
-
-    if (graphic == null)
-    {
-      throw 'Null graphic passed to replaceSymbolGraphic()!';
-      return;
-    }
 
     var elements:Array<Element> = getSymbolElements(symbol);
 
     for (element in elements)
     {
       var atlasInstance:AtlasInstance = element.toAtlasInstance();
-      var frame:FlxFrame = FlxG.bitmap.add(graphic).imageFrame.frame;
+      var graphic:Null<FlxGraphic> = graphic;
+      var frame:Null<FlxFrame> = graphic != null ? FlxG.bitmap.add(graphic).imageFrame.frame : null;
 
       atlasInstance.replaceFrame(frame, adjustScale);
       element = atlasInstance;

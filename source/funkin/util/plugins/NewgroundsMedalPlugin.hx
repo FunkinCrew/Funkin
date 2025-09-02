@@ -71,41 +71,36 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     medal.scrollFactor.set();
     medal.visible = false;
 
-    medal.anim.onFrameChange.add(function(animationName:String, frame:Int, index:Int) {
-      if (frame == 5 && !medal.anim.curAnim.reversed)
-      {
-        points.visible = true;
-        name.visible = true;
-        if (name.width > name.clipRect.width)
-        {
-          @:nullSafety(Off)
-          textSpeed = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
-          moveText = true;
-        }
-      }
+    medal.anim.onFrameLabel.add(function(label:String) {
+      if (medal.anim.curAnim.reversed) return;
 
-      if (frame == 74)
+      switch (label)
       {
-        FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.0);
-      }
+        case "show":
+          points.visible = true;
+          name.visible = true;
+          if (name.width > name.clipRect.width)
+          {
+            @:nullSafety(Off)
+            textSpeed = (name.text.length * (name.size + 2) * 1.25) / name.clipRect.width * 10;
+            moveText = true;
+          }
+        case "fade":
+          FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.0);
+        case "hide":
+          points.visible = false;
+          name.visible = false;
+          moveText = false;
+          name.offset.x = 0;
+          name.clipRect.x = 0;
+          name.resetFrame();
+          medal.replaceSymbolGraphic("[NG-MEDAL]_MEDAL", null);
 
-      if (frame == 88)
-      {
-        points.visible = false;
-        name.visible = false;
-        moveText = false;
-        name.offset.x = 0;
-        name.clipRect.x = 0;
-        name.resetFrame();
-      }
-
-      if (frame == 89)
-      {
-        medal.anim.play("", false, true, 103);
+          medal.anim.play("", false, true, 103);
       }
     });
 
-    medal.anim.onFinish.add(function(animationName:String) {
+    medal.anim.onFinish.add(function(name:String) {
       medal.visible = false;
     });
 
@@ -167,11 +162,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.updatePositions();
 
       instance.medal.visible = true;
-
-      if (graphic != null)
-      {
-        instance.medal.replaceSymbolGraphic("[NG-MEDAL]_MEDAL", graphic);
-      }
+      instance.medal.replaceSymbolGraphic("[NG-MEDAL]_MEDAL", graphic);
 
       instance.medal.anim.play("");
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
