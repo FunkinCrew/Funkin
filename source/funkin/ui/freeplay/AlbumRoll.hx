@@ -32,7 +32,6 @@ class AlbumRoll extends FlxSpriteGroup
     return value;
   }
 
-  final ALBUM_ART_FRAME_SIZE:Int = 262;
   final ALBUM_ART_SYMBOL:String = "album art placeholder";
 
   var newAlbumArt:FunkinSprite;

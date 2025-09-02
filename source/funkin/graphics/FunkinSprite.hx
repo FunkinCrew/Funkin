@@ -487,7 +487,11 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFrameLabelList():Array<String>
   {
-    if (!this.isAnimate) return [];
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getFrameLabelList() only works texture atlases!');
+      return [];
+    }
 
     var foundLabels:Array<String> = [];
     var mainTimeline = this.anim.getDefaultTimeline();
@@ -514,7 +518,11 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFrameLabel(name:String):Null<animate.internal.Frame>
   {
-    if (!this.isAnimate) return null;
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getFrameLabel() only works texture atlases!');
+      return null;
+    }
 
     for (layer in this.timeline.layers)
     {
@@ -535,7 +543,12 @@ class FunkinSprite extends FlxAnimate
    */
   public function getDefaultSymbol():String
   {
-    if (!this.isAnimate) return '';
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getDefaultSymbol() only works texture atlases!');
+      return '';
+    }
+
     return library.timeline.name;
   }
 
@@ -547,7 +560,11 @@ class FunkinSprite extends FlxAnimate
    */
   public function replaceSymbolGraphic(symbol:String, ?graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
   {
-    if (!this.isAnimate) return;
+    if (!this.isAnimate)
+    {
+      trace('WARNING: replaceSymbolGraphic() only works texture atlases!');
+      return;
+    }
 
     var elements:Array<Element> = getSymbolElements(symbol);
 
@@ -569,7 +586,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: This function only works on texture atlases!');
+      trace('WARNING: getSymbolElements() only works texture atlases!');
       return [];
     }
 
