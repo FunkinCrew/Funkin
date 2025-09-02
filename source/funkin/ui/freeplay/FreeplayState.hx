@@ -875,11 +875,8 @@ class FreeplayState extends MusicBeatSubState
       if (tempSongs.isEqualUnordered(currentFilteredSongs))
       {
         // If the song list is the same, we don't need to generate a new list.
-
         // Instead, we just apply the jump-in animation to the existing capsules.
-
         if (!noJumpIn) playJumpInAnimation(force);
-        // Stop processing.
         return;
       }
     }
@@ -890,7 +887,7 @@ class FreeplayState extends MusicBeatSubState
     currentFilteredSongs = tempSongs;
     curSelected = 0;
 
-    grpCapsules.generateFullSongList(tempSongs, currentDifficulty, fromCharSelect, noJumpIn, force);
+    grpCapsules.generateFullSongList(tempSongs, fromCharSelect || noJumpIn, force);
 
     FlxG.console.registerFunction('changeSelection', changeSelection);
 
@@ -899,7 +896,11 @@ class FreeplayState extends MusicBeatSubState
     refreshCapsuleDisplays();
   }
 
-  function playJumpInAnimation(force:Bool)
+  /**
+   * Plays the "jumpIn" animation on all active song cards
+   * @param force Used by the animation
+   */
+  function playJumpInAnimation(force:Bool):Void
   {
     for (capsule in grpCapsules.activeSongItems)
     {

@@ -5,17 +5,33 @@ import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
+/**
+ * The song card group taken from P-Slice 3.3 (with some tweaks)
+ *
+ * Let's you manage currently active song cards,
+ * while improving the recycling process for them
+ * (by assigning dead cards to a corresponding song whethever possible)
+ *
+ * **DO NOT use "members" property of this class!** Use 'activeSongItems' instead.
+ */
 @:access(funkin.ui.freeplay.SongMenuItem)
 class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
 {
+  /**
+   * Signal invoked when the "Random" song gets selected
+   */
   public final onRandomSelected:FlxTypedSignal<SongMenuItem->Void> = new FlxTypedSignal<SongMenuItem->Void>();
+
+  /**
+   * Signal called when the song is selected
+   */
   public final onSongSelected:FlxTypedSignal<SongMenuItem->Void> = new FlxTypedSignal<SongMenuItem->Void>();
 
   /**
    * A list of the song cards currently being displayed by the group.
    * Does not include any killed/dead cards and keeps track of their order.
    */
-  public final activeSongItems:Array<SongMenuItem> = new Array<SongMenuItem>();
+  public final activeSongItems:Array<SongMenuItem> = [];
 
   final randomCapsule:SongMenuItem;
   var styleData:Null<FreeplayStyle>;
@@ -34,14 +50,13 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
   /**
    * Rebuilds the song list with the songs provided.
    * Where possible, attempte to either reuse or recycle any dead song cards in the pool.
-   * @param songList
-   * @param currentDifficulty
-   * @param fromCharSelect
-   * @param noJumpIn
-   * @param force
+   *
+   * It also automatically animates them to "JumpIn"
+   * @param songList A list songs to generate cards for
+   * @param noJumpIn If true, disables the "JumpIn" animation
+   * @param force Used by the animation
    */
-  public function generateFullSongList(songList:Array<Null<FreeplaySongData>>, currentDifficulty:String, fromCharSelect:Bool = false, noJumpIn:Bool = false,
-      force:Bool = false):Void
+  public function generateFullSongList(songList:Array<Null<FreeplaySongData>>, noJumpIn:Bool = false, force:Bool = false):Void
   {
     for (cap in members)
     {
@@ -55,7 +70,7 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
 
     randomCapsule.initRandom(styleData);
     randomCapsule.hsvShader = hsvShader;
-    if (fromCharSelect || noJumpIn) randomCapsule.forcePosition();
+    if (noJumpIn) randomCapsule.forcePosition();
     else
     {
       randomCapsule.initJumpIn(0, force);
@@ -66,11 +81,8 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
 
     for (i in 0...songList.length)
     {
-      var tempSong = songList[i];
+      var tempSong:FreeplaySongData = songList[i];
       if (tempSong == null) continue;
-
-      // // ? Update difficulty as part of difficulty change action (when used by the ChangeDiff method)
-      // tempSong.currentDifficulty = currentDifficulty;
 
       var funnyMenu:SongMenuItem = recycledSongCards.get(tempSong);
       if (funnyMenu == null)
@@ -94,7 +106,7 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
       funnyMenu.initPosition(FlxG.width, 0);
       funnyMenu.index = i + 1;
 
-      funnyMenu.targetPos.x = funnyMenu.x; // This is target position on X
+      funnyMenu.targetPos.x = funnyMenu.x;
       funnyMenu.y = funnyMenu.intendedY(i + 1) + 10;
       funnyMenu.ID = i;
       funnyMenu.capsule.alpha = 0.5;
@@ -102,7 +114,7 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
       funnyMenu.checkClip();
 
-      if (fromCharSelect || noJumpIn) funnyMenu.forcePosition();
+      if (noJumpIn) funnyMenu.forcePosition();
       else
         funnyMenu.initJumpIn(0, force);
 
@@ -118,7 +130,7 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
    */
   function findSongItems(songData:Array<FreeplaySongData>):Map<FreeplaySongData, Null<SongMenuItem>>
   {
-    var foundSongItem = new Map<FreeplaySongData, Null<SongMenuItem>>();
+    var foundSongItem:Map<FreeplaySongData, Null<SongMenuItem>> = new Map<FreeplaySongData, Null<SongMenuItem>>();
     forEachDead(tomb -> {
       if (songData.contains(tomb.freeplayData) && !foundSongItem.exists(tomb.freeplayData))
       {
