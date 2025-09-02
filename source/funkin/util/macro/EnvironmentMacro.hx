@@ -23,7 +23,7 @@ class EnvironmentMacro
    */
   public static macro function build():Array<Field>
   {
-    final envFile:Map<String, String> = parseEnvFile(#if ios '../../../../../.env' #else '.env' #end);
+    final envFile:Map<String, String> = parseEnvFile('.env');
 
     final buildFields:Array<Field> = Context.getBuildFields();
 
@@ -94,6 +94,10 @@ class EnvironmentMacro
   static function parseEnvFile(envPath:String):Map<String, String>
   {
     final env:Map<String, String> = [];
+
+    #if ios
+    if (!FileSystem.exists(envPath)) envPath = "../../../../../" + envPath;
+    #end
 
     if (FileSystem.exists(envPath))
     {

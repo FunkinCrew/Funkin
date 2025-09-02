@@ -134,7 +134,8 @@ class AdMobUtil
     }
     #end
 
-    Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_BANNER_AD_UNIT_ID].join('/'), size, align);
+    if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.BANNER_AD_UNIT_ID != null)
+      Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.BANNER_AD_UNIT_ID].join('/'), size, align);
   }
 
   /**
@@ -186,7 +187,10 @@ class AdMobUtil
 
     Admob.onEvent.add(interstitialEvent);
 
-    Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/'));
+    if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.INTERSTITIAL_AD_UNIT_ID != null)
+    {
+      Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/'));
+    }
   }
 
   /**
