@@ -15,6 +15,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
  * **DO NOT use "members" property of this class!** Use 'activeSongItems' instead.
  */
 @:access(funkin.ui.freeplay.SongMenuItem)
+@:nullSafety
 class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
 {
   /**
@@ -81,10 +82,10 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
 
     for (i in 0...songList.length)
     {
-      var tempSong:FreeplaySongData = songList[i];
+      var tempSong:Null<FreeplaySongData> = songList[i];
       if (tempSong == null) continue;
 
-      var funnyMenu:SongMenuItem = recycledSongCards.get(tempSong);
+      var funnyMenu:Null<SongMenuItem> = recycledSongCards.get(tempSong);
       if (funnyMenu == null)
       {
         funnyMenu = recycle(SongMenuItem, () -> {
@@ -128,10 +129,12 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
    * but will need to be refreshed with to update difficulty data.
    * @return A map of found song cards. If a card for the given song wasn't found, then there won't be a corresponding key in the map!
    */
-  function findSongItems(songData:Array<FreeplaySongData>):Map<FreeplaySongData, Null<SongMenuItem>>
+  function findSongItems(songData:Array<Null<FreeplaySongData>>):Map<FreeplaySongData, Null<SongMenuItem>>
   {
     var foundSongItem:Map<FreeplaySongData, Null<SongMenuItem>> = new Map<FreeplaySongData, Null<SongMenuItem>>();
     forEachDead(tomb -> {
+      if (tomb.freeplayData == null) return;
+
       if (songData.contains(tomb.freeplayData) && !foundSongItem.exists(tomb.freeplayData))
       {
         tomb.revive();

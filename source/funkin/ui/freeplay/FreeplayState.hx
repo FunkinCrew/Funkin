@@ -1729,14 +1729,14 @@ class FreeplayState extends MusicBeatSubState
     {
       dj?.resetAFKTimer();
       changeDiff(-1);
-      generateSongList(currentFilter, true, false);
+      generateSongList(currentFilter, true);
     }
 
     if (rightPressed)
     {
       dj?.resetAFKTimer();
       changeDiff(1);
-      generateSongList(currentFilter, true, false);
+      generateSongList(currentFilter, true);
     }
   }
 
