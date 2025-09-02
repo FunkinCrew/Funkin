@@ -21,33 +21,24 @@ class PixelatedIcon extends FlxFilteredSprite
   {
     var charPath:String = "freeplay/icons/";
 
-    switch (char)
+    final charIDParts:Array<String> = char.split("-");
+    var iconName:String = "";
+    var lastValidIconName:String = "";
+    for (i in 0...charIDParts.length)
     {
-      case "bf-christmas" | "bf-car" | "bf-pixel" | "bf-holding-gf":
-        charPath += "bfpixel";
-      case "monster-christmas":
-        charPath += "monsterpixel";
-      case "mom" | "mom-car":
-        charPath += "mommypixel";
-      case "pico-blazin" | "pico-playable" | "pico-speaker" | "pico-pixel" | "pico-holding-nene":
-        charPath += "picopixel";
-      case "gf-christmas" | "gf-car" | "gf-pixel" | "gf-tankmen":
-        charPath += "gfpixel";
-      case "dad":
-        charPath += "dadpixel";
-      case "darnell-blazin":
-        charPath += "darnellpixel";
-      case "senpai-angry":
-        charPath += "senpaipixel";
-      case "spooky-dark":
-        charPath += "spookypixel";
-      case "tankman-atlas" | "tankman-bloody":
-        charPath += "tankmanpixel";
-      default:
-        charPath += '${char}pixel';
+      iconName += charIDParts[i];
+
+      if (Assets.exists(Paths.image(charPath + '${iconName}pixel')))
+      {
+        lastValidIconName = iconName;
+      }
+
+      if (i < charIDParts.length - 1) iconName += '-';
     }
 
-    if (!openfl.utils.Assets.exists(Paths.image(charPath)))
+    charPath += '${lastValidIconName}pixel';
+
+    if (!Assets.exists(Paths.image(charPath)))
     {
       trace('[WARN] Character ${char} has no freeplay icon.');
       this.visible = false;
@@ -58,7 +49,7 @@ class PixelatedIcon extends FlxFilteredSprite
       this.visible = true;
     }
 
-    var isAnimated = openfl.utils.Assets.exists(Paths.file('images/$charPath.xml'));
+    var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
 
     if (isAnimated)
     {

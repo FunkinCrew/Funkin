@@ -5,8 +5,10 @@ import hxp.*;
 import lime.tools.*;
 import sys.FileSystem;
 import sys.io.File;
+import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ds.Map;
+import haxe.xml.Printer;
 
 using StringTools;
 
@@ -29,13 +31,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.7.3";
+  static final VERSION:String = "0.7.4";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 2;
+  static final BUILD_NUMBER:Int = 53;
 
   /**
    * The game's name. Used as the default window title.
@@ -57,6 +59,11 @@ class Project extends HXProject
    * The relative location of the source code.
    */
   static final SOURCE_DIR:String = "source";
+
+  /**
+   * The relative location of the templates folder.
+   */
+  static final TEMPLATES_DIR:String = "templates";
 
   /**
    * The fully qualified class path for the game's preloader.
@@ -103,29 +110,10 @@ class Project extends HXProject
 
   static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil"];
 
-  //
-  // ASTC COMPRESSION
-  //
-
-  /**
-   * The quality of the compression process.
-   * This doesn't exactly reduce the quality of the outputted texture..
-   * But it changes how hard the CPU gotta work to maintin the quality and details of the image while compressing.
-   * possible values: fastest, fast, medium, thorough, exhaustive.
-   */
-  static var ASTC_QUALITY:String = "medium";
-
   /**
    * The team ID to use for the iOS app. Configured in XCode.
    */
   static var IOS_TEAM_ID:String = "Z7G7AVNGSH";
-
-  /**
-   * The block size of the ASTC compressed textures.
-   * Higher block size means lower quality and lighter file size for the generated compressed textures.
-   * possible block sizes: 4x4, 4x6, 6x6, 8x8 ... 12x12.
-   */
-  static var ASTC_BLOCKSIZE:String = "10x10";
 
   /**
    * A list of asset file globs to exclude from ASTC compression when creating optimized mobile builds.
@@ -330,10 +318,10 @@ class Project extends HXProject
   static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
   /**
-   * `-DFEATURE_INPUT_OFFSETS`
+   * `-DFEATURE_LAG_ADJUSTMENT`
    * If this flag is enabled, the input offsets menu will be available to configure your audio and visual offsets.
    */
-  static final FEATURE_INPUT_OFFSETS:FeatureFlag = "FEATURE_INPUT_OFFSETS";
+  static final FEATURE_LAG_ADJUSTMENT:FeatureFlag = "FEATURE_LAG_ADJUSTMENT";
 
   /**
    * `-DFEATURE_LOG_TRACE`
@@ -487,6 +475,7 @@ class Project extends HXProject
     envConfig = readEnvironmentFile("./.env");
 
     flair();
+
     configureApp();
 
     displayTarget();
@@ -498,14 +487,12 @@ class Project extends HXProject
     configureOutputDir();
     configurePolymod();
     configureHaxelibs();
+    configureASTCTextures();
     configureAssets();
-    configureIcons();
 
-    readASTCExclusion();
-
-    if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+    if (!isLinux())
     {
-      runASTCCompressor();
+      configureIcons();
     }
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
@@ -522,8 +509,6 @@ class Project extends HXProject
     {
       configureIOS();
     }
-
-    info("Done configuring project.");
   }
 
   /**
@@ -532,10 +517,9 @@ class Project extends HXProject
   function flair()
   {
     // TODO: Implement this.
-    info("Friday Night Funkin'");
+    info("Friday Night Funkin' - " + VERSION);
     info("Initializing build...");
 
-    info("Target Version: " + VERSION);
     info("Git Branch:     " + getGitBranch());
     info("Git Commit:     " + getGitCommit());
     info("Git Modified?   " + getGitModified());
@@ -565,6 +549,9 @@ class Project extends HXProject
     // Tell Lime where to look for the game's source code.
     // If for some reason we have multiple source directories, we can add more entries here.
     this.sources.push(SOURCE_DIR);
+
+    // Templates stuff
+    this.templatePaths.push(TEMPLATES_DIR);
 
     // Tell Lime to run some prebuild and postbuild scripts.
     this.preBuildCallbacks.push(buildHaxeCLICommand(PREBUILD_HX));
@@ -829,7 +816,7 @@ class Project extends HXProject
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
 
     // Should be true except on web builds (some asset stuff breaks it)
-    FEATURE_INPUT_OFFSETS.apply(this, !isWeb());
+    FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
 
     // Should be true except on web and mobile builds.
     // Screenshots doesn't work there, and mobile has its own screenshots anyway.
@@ -860,6 +847,79 @@ class Project extends HXProject
     // Since mobile is pretty memory safe (I'm looking at you Apple...) we need them BADLY to have the game run properly.
     // It's kept off for desktop due to the low ASTC support on desktop GPUs (which seem to be only among Intergrated Graphics).
     FEATURE_COMPRESSED_TEXTURES.apply(this, isMobile() && isRelease());
+
+    renderFlagsTable();
+
+
+  }
+
+  /**
+   * Renders a cute little table of which feature flags are enabled and which are disabled
+   */
+  function renderFlagsTable():Void
+  {
+    var enabledWidth:Int = 0;
+    var disabledWidth:Int = 0;
+    var enabledFlags:Array<String> = [];
+    var disabledFlags:Array<String> = [];
+    var unicodeCheck:String = "✓ ";
+    var unicodeCross:String = "× ";
+
+    if (isWindowsHost())
+    {
+      #if (!target.unicode)
+      // lime build tools uses neko (unless compiling with `-eval`), and neko on windows doesn't support UTF8/unicode characters
+      // so we need to remove our cute emoji!
+      unicodeCheck = "o ";
+      unicodeCross = "x ";
+      #end
+    }
+
+    for (flagStr in this.haxedefs.keys())
+    {
+      if (!flagStr.startsWith(FeatureFlag.INVERSE_PREFIX))
+      {
+        // we do flagStr.length + 3 to accomodate for adding the "✓ " at the beginning
+        enabledWidth = Std.int(Math.max(flagStr.length + 3, enabledWidth));
+        enabledFlags.push(unicodeCheck + flagStr);
+      }
+      else
+      {
+        disabledWidth = Std.int(Math.max(flagStr.length, disabledWidth));
+        disabledFlags.push(unicodeCross + flagStr.substring(FeatureFlag.INVERSE_PREFIX.length));
+      }
+    }
+
+    enabledFlags.sort(function(a, b) return a > b ? 1 : -1);
+    disabledFlags.sort(function(a, b) return a > b ? 1 : -1);
+
+
+    var horizontalDivider:String = "".rpad("-", enabledWidth + disabledWidth);
+
+    info(horizontalDivider);
+    // Header
+    info("FEATURE FLAGS");
+    info('Enabled Flags $unicodeCheck'.rpad(" ", enabledWidth + 5) + 'Disabled Flags $unicodeCross');
+    info(horizontalDivider);
+
+
+    while (enabledFlags.length > 0 || disabledFlags.length > 0)
+    {
+      var outputLine:String = "";
+
+      if (enabledFlags.length > 0)
+        outputLine += enabledFlags.shift();
+
+      outputLine = outputLine.rpad(" ", enabledWidth + 5);
+      outputLine += "| ";
+
+      if (disabledFlags.length > 0)
+        outputLine += disabledFlags.shift() ?? "";
+
+      info(outputLine);
+    }
+
+    info(horizontalDivider);
   }
 
   /**
@@ -890,7 +950,7 @@ class Project extends HXProject
 
     if (FEATURE_LOG_TRACE.isDisabled(this))
     {
-      addHaxeFlag("--no-traces");
+      setHaxedef("no-traces");
     }
 
     // Disable the built in pause screen when unfocusing the game.
@@ -973,17 +1033,17 @@ class Project extends HXProject
     // we use a dedicated 'tracy' folder, since it generally needs a recompile when in use
     if (FEATURE_DEBUG_TRACY.isEnabled(this)) buildDir += "-tracy";
 
+    info('Output directory: $buildDir');
+
     // trailing slash might not be needed, works fine on macOS without it, but I haven't tested on Windows!
     buildDir += "/";
 
-    info('Output directory: $buildDir');
-    // setenv('BUILD_DIR', buildDir);
     app.path = buildDir;
   }
 
   function configureAndroid()
   {
-    javaPaths.push(Path.join([SOURCE_DIR, 'funkin/mobile/external/android/java']));
+    javaPaths.push(Path.join([SOURCE_DIR, 'funkin/external/android/java']));
 
     if (isRelease())
     {
@@ -995,47 +1055,37 @@ class Project extends HXProject
         keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
       }
 
-      Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
-
-      final permissionsConfig:Array<String> = [
-        '<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />',
-        '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'
-      ];
-
-      final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
-
-      if (xmlChildren != null)
-      {
-        config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
-      }
-      else
-      {
-        config.get('android.manifest').xmlChildren = permissionsConfig;
-      }
-
       if (isBundle())
       {
         config.set("android.gradle-project-directory", "bin-bundle");
       }
     }
 
-    final modsFolderProvider = [
-      '<provider android:authorities="$PACKAGE_NAME.docprovider" android:name="funkin.provider.DataFolderProvider" android:grantUriPermissions="true" android:exported="true" android:permission="android.permission.MANAGE_DOCUMENTS">',
-      '  <intent-filter>',
-      '    <action android:name="android.content.action.DOCUMENTS_PROVIDER" />',
-      '  </intent-filter>',
-      '</provider>'
-    ];
+    final modsFolderProvider:Xml = Xml.createElement('provider');
+    modsFolderProvider.set('android:authorities', '$PACKAGE_NAME.docprovider');
+    modsFolderProvider.set('android:name', 'funkin.provider.DataFolderProvider');
+    modsFolderProvider.set('android:grantUriPermissions', 'true');
+    modsFolderProvider.set('android:exported', 'true');
+    modsFolderProvider.set('android:permission', 'android.permission.MANAGE_DOCUMENTS');
 
-    final xmlChildren:Null<Array<String>> = config.get('android.application').xmlChildren;
+    final intentFilter:Xml = Xml.createElement('intent-filter');
 
-    if (xmlChildren != null)
+    final action:Xml = Xml.createElement('action');
+    action.set('android:name', 'android.content.action.DOCUMENTS_PROVIDER');
+    intentFilter.addChild(action);
+
+    modsFolderProvider.addChild(intentFilter);
+
+    @:nullSafety(Off)
     {
-      config.get('android.application').xmlChildren = xmlChildren.concat(modsFolderProvider);
-    }
-    else
-    {
-      config.get('android.application').xmlChildren = modsFolderProvider;
+      if (config.get('android.application').xmlChildren != null)
+      {
+        config.get('android.application').xmlChildren.push(Printer.print(modsFolderProvider));
+      }
+      else
+      {
+        config.get('android.application').xmlChildren = [Printer.print(modsFolderProvider)];
+      }
     }
 
     final extensions:Null<Array<String>> = config.getArrayString('android.extension');
@@ -1238,7 +1288,14 @@ class Project extends HXProject
     addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
     addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
 
-    info('Done configuring assets.');
+    if (shouldEmbed)
+    {
+      info('Done embedding assets.');
+    }
+    else
+    {
+      info('Done including assets.');
+    }
   }
 
   /**
@@ -1251,27 +1308,7 @@ class Project extends HXProject
     if (isAndroid())
     {
       // Adaptive icons
-      // TODO: Add Adapative Icons in Lime
-      templatePaths.push("templates");
-
-      var androidTheme:String = "@style/LimeAppMainTheme";
-      if (window.fullscreen != null && window.fullscreen)
-      {
-        androidTheme += "Fullscreen";
-      }
-
-      final iconXmlChild:Dynamic = {
-        "android:label": meta.title,
-        "android:allowBackup": "true",
-        "android:theme": androidTheme,
-        "android:hardwareAccelerated": "true",
-        "android:allowNativeHeapPointerTagging": ANDROID_TARGET_SDK_VERSION >= 30 ? "false" : null,
-        "android:largeHeap": "true",
-        "android:icon": "@mipmap/ic_launcher",
-        "android:roundIcon": "@mipmap/ic_launcher_round"
-        };
-
-        config.set('android.application',  iconXmlChild);
+      adaptiveIcon = new AdaptiveIcon('art/icons/android/', true);
     }
     else if (isIOS())
     {
@@ -1303,7 +1340,24 @@ class Project extends HXProject
       addIcon("art/icons/icon64.png", 64);
       addIcon("art/icons/iconOG.png");
 
-      info('Done configuring icons.');
+    }
+
+    info('Done configuring icons.');
+  }
+
+  /**
+   * Configure the astc textures.
+   */
+  function configureASTCTextures()
+  {
+    if (command != "display")
+    {
+      readASTCExclusion();
+
+      if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
+      {
+        runASTCCompressor();
+      }
     }
   }
 
@@ -1358,6 +1412,21 @@ class Project extends HXProject
   public function is64Bit():Bool
   {
     return this.architectures.contains(Architecture.X64);
+  }
+
+  public function isWindowsHost():Bool
+  {
+    return System.hostPlatform == WINDOWS;
+  }
+
+  public function isMacHost():Bool
+  {
+    return System.hostPlatform == MAC;
+  }
+
+  public function isLinuxHost():Bool
+  {
+    return System.hostPlatform == LINUX;
   }
 
   public function isWindows():Bool
@@ -1703,7 +1772,8 @@ class Project extends HXProject
    */
   public function error(message:String):Void
   {
-    Log.error('${message}');
+    Sys.stderr().write(Bytes.ofString('[ERROR] ${message}'));
+    Sys.exit(1);
   }
 
   /**
@@ -1713,7 +1783,7 @@ class Project extends HXProject
   {
     if (command != "display")
     {
-      Log.info('[INFO] ${message}');
+      Sys.println('[INFO] ${message}');
     }
   }
 
@@ -1740,46 +1810,67 @@ class Project extends HXProject
     var env = new Map<String, Dynamic>();
     for (line in envFile.split('\n'))
     {
-      if (line == "" || line.startsWith("#")) continue;
+      if (line.length <= 0 || line.startsWith("#") || shouldExcludeEnvKey(line)) continue;
 
-      var parts = line.split('=');
-      if (parts.length != 2) continue;
+      var index:Int = line.indexOf('=');
 
-      env.set(parts[0], parts[1]);
+      if (index == -1) continue;
+
+      var field:String = line.substr(0, index);
+      var value:String = line.substr(index + 1);
+
+      env.set(field, value);
     }
 
     return env;
   }
 
+  private function shouldExcludeEnvKey(key:String):Bool
+  {
+    final android:Bool = key.startsWith('ANDROID_');
+    final ios:Bool = key.startsWith('IOS_');
+    final mobile:Bool = key.startsWith('MOBILE_') || ios || android;
+    final web:Bool = key.startsWith('WEB_');
+    final desktop:Bool = key.startsWith('DESKTOP_');
+
+    if (isWeb() && (mobile || desktop)) return true;
+    if (isDesktop() && (mobile || web)) return true;
+    if (isAndroid() && (ios || web || desktop)) return true;
+    if (isIOS() && (android || web || desktop)) return true;
+
+    return false;
+  }
+
   public function readASTCExclusion():Void
   {
-    astcExcludes = File.getContent('./compression-excludes.txt').trim().split('\n');
+    @:nullSafety(Off)
+    astcExcludes = haxe.Json.parse(File.getContent('./astc-compression-data.json')).excludes;
 
     for (i in 0...astcExcludes.length)
       astcExcludes[i] = astcExcludes[i].trim();
   }
 
-  public function isASTCExcluded(filePath:String):Bool
+  public function isASTCExcluded(file:String):Bool
   {
     for (exclusion in astcExcludes)
     {
-      if (exclusion.endsWith("/*"))
+      if (exclusion.endsWith("/"))
       {
-        var normalizedFilePath = Path.normalize(filePath);
-        var normalizedExclusion = Path.normalize(exclusion.substr(0, exclusion.length - 2));
+        var normalizedFilePath = Path.normalize(file);
+        var normalizedExclusion = Path.normalize(exclusion);
 
         if (normalizedFilePath.startsWith(normalizedExclusion)) return true;
       }
-      else if (exclusion.endsWith("/"))
+      else if (exclusion.endsWith("/*"))
       {
-        var normalizedExclusion = Path.normalize(exclusion);
-        var fileDirectory = Path.directory(Path.normalize(filePath));
+        var normalizedExclusion = Path.normalize(exclusion.substr(0, exclusion.length - 2));
+        var fileDirectory = Path.directory(Path.normalize(file));
 
         if (fileDirectory == normalizedExclusion) return true;
       }
       else
       {
-        if (filePath == exclusion) return true;
+        if (file == exclusion) return true;
       }
     }
 
@@ -1790,16 +1881,12 @@ class Project extends HXProject
   {
     info('Compressing ASTC textures...');
 
-    var args:Array<String> = ['run', 'astc-compressor'];
-    args = args.concat(['-i', './assets']);
-    args = args.concat(['-o', './astc-textures/assets/']);
-    args = args.concat(['-blocksize', ASTC_BLOCKSIZE]);
-    args = args.concat(['-quality', ASTC_QUALITY]);
-    args = args.concat(['-excludes', './compression-excludes.txt']);
+    var args:Array<String> = ['run', 'astc-compressor', 'compress-from-json'];
+    args = args.concat(['-json', './astc-compression-data.json']);
 
     Sys.command('haxelib', args);
 
-    info('Finished compressing ASTC textures!');
+    info('Done compressing ASTC textures.');
   }
 }
 
@@ -1807,9 +1894,9 @@ class Project extends HXProject
  * An object representing a feature flag, which can be enabled or disabled.
  * Includes features such as automatic generation of compile defines and inversion.
  */
-abstract FeatureFlag(String)
+abstract FeatureFlag(String) from String to String
 {
-  static final INVERSE_PREFIX:String = "NO_";
+  public static final INVERSE_PREFIX:String = "NO_";
 
   public function new(input:String)
   {
@@ -1834,13 +1921,11 @@ abstract FeatureFlag(String)
     if (isEnabled(project))
     {
       // If this flag was already enabled, disable the inverse.
-      project.info('Enabling feature flag ${this}');
       getInverse().disable(project, false);
     }
     else if (getInverse().isEnabled(project))
     {
       // If the inverse flag was already enabled, disable this flag.
-      project.info('Disabling feature flag ${this}');
       disable(project, false);
     }
     else
@@ -1848,13 +1933,11 @@ abstract FeatureFlag(String)
       if (enableByDefault)
       {
         // Enable this flag if it was unset, and disable the inverse.
-        project.info('Enabling feature flag ${this}');
         enable(project, true);
       }
       else
       {
         // Disable this flag if it was unset, and enable the inverse.
-        project.info('Disabling feature flag ${this}');
         disable(project, true);
       }
     }

@@ -27,7 +27,7 @@ class LetterSort extends FlxSpriteGroup
 
   var leftArrow:FlxSprite;
   var rightArrow:FlxSprite;
-  var grpSeperators:Array<FlxSprite> = [];
+  var grpSeperators:FlxSpriteGroup;
 
   public var inputEnabled:Bool = true;
 
@@ -39,10 +39,17 @@ class LetterSort extends FlxSpriteGroup
   {
     super(x, y);
 
+    grpSeperators = new FlxSpriteGroup();
+    add(grpSeperators);
+
     leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
     // leftArrow.animation.play("arrow");
     leftArrow.flipX = true;
     add(leftArrow);
+
+    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+    // rightArrow.animation.play("arrow");
+    add(rightArrow);
 
     for (i in 0...5)
     {
@@ -61,7 +68,7 @@ class LetterSort extends FlxSpriteGroup
 
       if (i != 2) letter.scale.x = letter.scale.y = 0.8;
 
-      var darkness:Float = Math.abs(i - 2) / 6;
+      var darkness:Float = Math.max(Math.abs(i - 2) / 6, 0.01);
 
       letter.color = letter.color.getDarkened(darkness);
 
@@ -71,19 +78,13 @@ class LetterSort extends FlxSpriteGroup
       var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image("freeplay/seperator"));
       // sep.animation.play("seperator");
       sep.color = letter.color.getDarkened(darkness);
-      add(sep);
-
-      grpSeperators.push(sep);
+      grpSeperators.add(sep);
     }
 
     var letterHitbox:FlxObject = new FlxObject(0, 0, 1, 1);
     letterHitbox.cameras = cameras;
     letterHitbox.active = false;
     letterHitboxes.push(letterHitbox);
-
-    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
-    // rightArrow.animation.play("arrow");
-    add(rightArrow);
 
     swipeBounds = new FlxObject(440, 60, 460, 80);
     swipeBounds.cameras = cameras;
@@ -148,18 +149,22 @@ class LetterSort extends FlxSpriteGroup
 
   public function changeSelection(diff:Int = 0, playSound:Bool = true):Void
   {
-    doLetterChangeAnims(diff);
+    @:privateAccess
+    if (instance.controls.active)
+    {
+      doLetterChangeAnims(diff);
 
-    var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
+      var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
 
-    // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
-    var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
-    arrowToMove.offset.x = 3 * multiPosOrNeg;
+      // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
+      var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
+      arrowToMove.offset.x = 3 * multiPosOrNeg;
 
-    new FlxTimer().start(2 / 24, function(_) {
-      arrowToMove.offset.x = 0;
-    });
-    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      new FlxTimer().start(2 / 24, function(_) {
+        arrowToMove.offset.x = 0;
+      });
+      if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    }
   }
 
   /**
@@ -180,7 +185,7 @@ class LetterSort extends FlxSpriteGroup
     // if we're moving left, we want to move the positions the same amount, but negative direciton
     var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
 
-    for (sep in grpSeperators)
+    for (sep in grpSeperators.members)
     {
       ezTimer(0, sep, positions[0] * multiPosOrNeg);
       ezTimer(1, sep, positions[1] * multiPosOrNeg);

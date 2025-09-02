@@ -11,6 +11,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
+import funkin.util.macro.ConsoleMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
@@ -20,7 +21,7 @@ import funkin.api.newgrounds.Leaderboards;
 #end
 
 @:nullSafety
-class Save
+class Save implements ConsoleClass
 {
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
@@ -187,6 +188,7 @@ class Save
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
           downscroll: false,
+          showNoteKinds: true,
           metronomeVolume: 1.0,
           hitsoundVolumePlayer: 1.0,
           hitsoundVolumeOpponent: 1.0,
@@ -356,6 +358,23 @@ class Save
     data.optionsChartEditor.downscroll = value;
     flush();
     return data.optionsChartEditor.downscroll;
+  }
+
+  public var chartEditorShowNoteKinds(get, set):Bool;
+
+  function get_chartEditorShowNoteKinds():Bool
+  {
+    if (data.optionsChartEditor.showNoteKinds == null) data.optionsChartEditor.showNoteKinds = true;
+
+    return data.optionsChartEditor.showNoteKinds;
+  }
+
+  function set_chartEditorShowNoteKinds(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.showNoteKinds = value;
+    flush();
+    return data.optionsChartEditor.showNoteKinds;
   }
 
   public var chartEditorPlaytestStartTime(get, set):Bool;
@@ -882,14 +901,12 @@ class Save
       return;
     }
 
-    var newCompletion = (newScoreData.tallies.sick + newScoreData.tallies.good) / newScoreData.tallies.totalNotes;
-    var previousCompletion = (previousScoreData.tallies.sick + previousScoreData.tallies.good) / previousScoreData.tallies.totalNotes;
-
     // Set the high score and the high rank separately.
     var newScore:SaveScoreData =
       {
         score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
-        tallies: (previousRank > newRank || previousCompletion > newCompletion) ? previousScoreData.tallies : newScoreData.tallies
+        tallies: (previousRank > newRank
+          || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies)) ? previousScoreData.tallies : newScoreData.tallies
       };
 
     song.set(difficultyId, newScore);
@@ -1204,7 +1221,7 @@ class Save
   {
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
-    lime.app.Application.current.window.alert(msg, "Save Data Failure");
+    funkin.util.WindowUtil.showError("Save Data Failure", msg);
 
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
@@ -1352,10 +1369,54 @@ class Save
     this.data.version = Save.SAVE_DATA_VERSION;
   }
 
-  public function debug_dumpSave():Void
+  public function debug_dumpSaveJsonSave():Void
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
   }
+
+  public function debug_dumpSaveJsonPrint():Void
+  {
+    trace(this.serialize());
+  }
+
+  #if FEATURE_NEWGROUNDS
+  public static function saveToNewgrounds():Void
+  {
+    if (_instance == null) return;
+    trace('[SAVE] Saving Save Data to Newgrounds...');
+    funkin.api.newgrounds.NGSaveSlot.instance.save(_instance.data);
+  }
+
+  public static function loadFromNewgrounds(onFinish:Void->Void):Void
+  {
+    trace('[SAVE] Loading Save Data from Newgrounds...');
+    funkin.api.newgrounds.NGSaveSlot.instance.load(function(data:Dynamic) {
+      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH);
+
+      if (FlxG.save.status != EMPTY)
+      {
+        // best i can do in case the NG file is corrupted or something along those lines
+        var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+        trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
+      }
+
+      FlxG.save.erase();
+      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH); // forces regeneration of the file as erase deletes it
+
+      var gameSave = SaveDataMigrator.migrate(data);
+      FlxG.save.mergeData(gameSave.data, true);
+      _instance = gameSave;
+      onFinish();
+    }, function(error:io.newgrounds.Call.CallError) {
+      var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
+
+      var msg = 'There was an error loading your save data from Newgrounds.';
+      msg += '\n${errorMsg}';
+      msg += '\nAre you sure you are connected to the internet?';
+      funkin.util.WindowUtil.showError("Newgrounds Save Slot Failure", msg);
+    });
+  }
+  #end
 }
 
 /**
@@ -1804,6 +1865,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?downscroll:Bool;
+
+  /**
+   * Show Note Kind Indicator in the Chart Editor.
+   * @default `true`
+   */
+  var ?showNoteKinds:Bool;
 
   /**
    * Metronome volume in the Chart Editor.

@@ -140,7 +140,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
       alphaDiff /= 100; // flash exports alpha as a whole number
 
       alpha += alphaDiff;
-      alpha = FlxMath.bound(alpha, 0, 1);
+      alpha = alpha.clamp(0, 1);
       x += xDiff;
       y += yDiff;
 

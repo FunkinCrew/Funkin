@@ -11,9 +11,9 @@ import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
-import funkin.data.dialogue.conversation.ConversationRegistry;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
@@ -56,6 +56,13 @@ import funkin.api.newgrounds.NewgroundsClient;
 class InitState extends FlxState
 {
   /**
+   * Simply states whether the "core stuff" is ready or not.
+   * This is used to prevent re-initialization of specific core features.
+   */
+  @:noCompletion
+  static var _coreInitialized:Bool = false;
+
+  /**
    * Perform a bunch of game setup, then immediately transition to the title screen.
    */
   public override function create():Void
@@ -78,159 +85,163 @@ class InitState extends FlxState
    */
   function setupShit():Void
   {
-    //
-    // GAME SETUP
-    //
+    if (!_coreInitialized)
+    {
+      //
+      // GAME SETUP
+      //
 
-    // Setup window events (like callbacks for onWindowClose)
-    // and fullscreen keybind setup
-    WindowUtil.initWindowEvents();
-    // Disable the thing on Windows where it tries to send a bug report to Microsoft because why do they care?
-    WindowUtil.disableCrashHandler();
+      // Setup window events (like callbacks for onWindowClose) and fullscreen keybind setup
+      WindowUtil.initWindowEvents();
 
-    #if FEATURE_DEBUG_TRACY
-    funkin.util.WindowUtil.initTracy();
-    #end
+      #if FEATURE_DEBUG_TRACY
+      funkin.util.WindowUtil.initTracy();
+      #end
 
-    #if FEATURE_HAPTICS
-    // Setup Haptic feedback
-    extension.haptics.Haptic.initialize();
-    #end
+      #if FEATURE_HAPTICS
+      // Setup Haptic feedback
+      extension.haptics.Haptic.initialize();
+      #end
 
-    #if FEATURE_MOBILE_ADVERTISEMENTS
-    // Setup Admob
-    funkin.mobile.util.AdMobUtil.init();
-    #end
+      #if FEATURE_MOBILE_ADVERTISEMENTS
+      // Setup Admob
+      funkin.mobile.util.AdMobUtil.init();
+      #end
 
-    #if FEATURE_MOBILE_IAP
-    // Setup In-App purchases
-    funkin.mobile.util.InAppPurchasesUtil.init();
-    #end
+      #if FEATURE_MOBILE_IAP
+      // Setup In-App purchases
+      funkin.mobile.util.InAppPurchasesUtil.init();
+      #end
 
-    #if FEATURE_MOBILE_IAR
-    // Setup In-App purchases
-    funkin.mobile.util.InAppReviewUtil.init();
-    #end
+      #if FEATURE_MOBILE_IAR
+      // Setup In-App reviews
+      funkin.mobile.util.InAppReviewUtil.init();
+      #end
 
-    #if ios
-    // Setup Audio session
-    funkin.mobile.external.ios.AudioSession.initialize();
-    #end
+      #if android
+      // Setup Callback util.
+      funkin.external.android.CallbackUtil.init();
+      #end
 
-    // This ain't a pixel art game! (most of the time)
-    FlxSprite.defaultAntialiasing = true;
+      #if ios
+      // Setup Audio session
+      funkin.external.ios.AudioSession.initialize();
+      #end
 
-    // Disable default keybinds for volume (we manually control volume in MusicBeatState with custom binds)
-    FlxG.sound.volumeUpKeys = [];
-    FlxG.sound.volumeDownKeys = [];
-    FlxG.sound.muteKeys = [];
+      // This ain't a pixel art game! (most of the time)
+      FlxSprite.defaultAntialiasing = true;
 
-    // A small jumpstart to the soundtray, it usually sets itself to inactive (somewhere...)
-    // but that makes our soundtray not show up on init if we have the game muted.
-    // We set it to active so it at least calls it's update function once (see FlxGame.onEnterFrame(), it's called there)
-    // and also see FunkinSoundTray.update() to see what we do and how we check if we are muted or not
-    #if !mobile
-    FlxG.game.soundTray.active = true;
-    #end
+      // Disable default keybinds for volume (we manually control volume in MusicBeatState with custom binds)
+      FlxG.sound.volumeUpKeys = [];
+      FlxG.sound.volumeDownKeys = [];
+      FlxG.sound.muteKeys = [];
 
-    // Set the game to a lower frame rate while it is in the background.
-    FlxG.game.focusLostFramerate = 30;
+      // A small jumpstart to the soundtray, it usually sets itself to inactive (somewhere...)
+      // but that makes our soundtray not show up on init if we have the game muted.
+      // We set it to active so it at least calls it's update function once (see FlxGame.onEnterFrame(), it's called there)
+      // and also see FunkinSoundTray.update() to see what we do and how we check if we are muted or not
+      #if !mobile
+      FlxG.game.soundTray.active = true;
+      #end
 
-    // Makes Flixel use frame times instead of locked movements per frame for things like tweens
-    FlxG.fixedTimestep = false;
+      // Set the game to a lower frame rate while it is in the background.
+      FlxG.game.focusLostFramerate = 30;
 
-    setupFlixelDebug();
+      // Makes Flixel use frame times instead of locked movements per frame for things like tweens
+      FlxG.fixedTimestep = false;
 
-    //
-    // FLIXEL TRANSITIONS
-    //
+      setupFlixelDebug();
 
-    // Diamond Transition
-    var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-    diamond.persist = true;
-    diamond.destroyOnNoUse = false;
+      //
+      // FLIXEL TRANSITIONS
+      //
 
-    // NOTE: tileData is ignored if TransitionData.type is FADE instead of TILES.
-    var tileData:TransitionTileData = {asset: diamond, width: 32, height: 32};
+      // Diamond Transition
+      var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
+      diamond.persist = true;
+      diamond.destroyOnNoUse = false;
 
-    FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
-      new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-    FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
-      new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-    // Don't play transition in when entering the title state.
-    FlxTransitionableState.skipNextTransIn = true;
+      // NOTE: tileData is ignored if TransitionData.type is FADE instead of TILES.
+      var tileData:TransitionTileData = {asset: diamond, width: 32, height: 32};
 
-    FlxG.signals.gameResized.add(function(width:Int, height:Int) {
       FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
         new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
       FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
         new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-    });
 
-    // SDL for some reason enables VSync on focus lost/gained in Android
-    // Since we don't really need VSync on Android we're gonna forcefully disable it on these signals for now
-    // This is fixed on SDL3 from what I've heared but that doodoo isn't working poperly for Android
-    #if android
-    FlxG.signals.focusLost.add(function() {
-      WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
-    });
-    FlxG.signals.focusGained.add(function() {
-      WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
-    });
-    #end
+      FlxG.signals.gameResized.add(function(width:Int, height:Int) {
+        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
+          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+        FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
+          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+      });
 
-    //
-    // NEWGROUNDS API SETUP
-    //
-    #if FEATURE_NEWGROUNDS
-    NewgroundsClient.instance.init();
-    #end
+      // SDL for some reason enables VSync on focus lost/gained in Android
+      // Since we don't really need VSync on Android we're gonna forcefully disable it on these signals for now
+      // This is fixed on SDL3 from what I've heared but that doodoo isn't working poperly for Android
+      #if android
+      FlxG.signals.focusLost.add(function() {
+        WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+      });
+      FlxG.signals.focusGained.add(function() {
+        WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+      });
+      #end
 
-    //
-    // DISCORD API SETUP
-    //
-    #if FEATURE_DISCORD_RPC
-    DiscordClient.instance.init();
+      //
+      // NEWGROUNDS API SETUP
+      //
+      #if FEATURE_NEWGROUNDS
+      NewgroundsClient.instance.init();
+      #end
 
-    lime.app.Application.current.onExit.add(function(exitCode) {
-      DiscordClient.instance.shutdown();
-    });
-    #end
+      //
+      // DISCORD API SETUP
+      //
+      #if FEATURE_DISCORD_RPC
+      DiscordClient.instance.init();
 
-    //
-    // ANDROID SETUP
-    //
-    #if android
-    FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
-    funkin.mobile.external.android.CallbackUtil.init();
-    #end
+      lime.app.Application.current.onExit.add(function(exitCode) {
+        DiscordClient.instance.shutdown();
+      });
+      #end
 
-    //
-    // FLIXEL PLUGINS
-    //
-    // Plugins provide a useful interface for globally active Flixel objects,
-    // that receive update events regardless of the current state.
-    // TODO: Move scripted Module behavior to a Flixel plugin.
-    #if FEATURE_DEBUG_FUNCTIONS
-    funkin.util.plugins.MemoryGCPlugin.initialize();
-    #end
-    #if FEATURE_SCREENSHOTS
-    funkin.util.plugins.ScreenshotPlugin.initialize();
-    #end
-    #if FEATURE_NEWGROUNDS
-    funkin.util.plugins.NewgroundsMedalPlugin.initialize();
-    #end
-    funkin.util.plugins.EvacuateDebugPlugin.initialize();
-    funkin.util.plugins.ForceCrashPlugin.initialize();
-    funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
-    #if !mobile
-    funkin.util.plugins.VolumePlugin.initialize();
-    #end
-    funkin.util.plugins.WatchPlugin.initialize();
-    #if mobile
-    funkin.util.plugins.TouchPointerPlugin.initialize();
-    funkin.mobile.input.ControlsHandler.initInputTrackers();
-    #end
+      //
+      // ANDROID SETUP
+      //
+      #if android
+      FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
+      #end
+
+      //
+      // FLIXEL PLUGINS
+      //
+      // Plugins provide a useful interface for globally active Flixel objects,
+      // that receive update events regardless of the current state.
+      // TODO: Move scripted Module behavior to a Flixel plugin.
+      #if FEATURE_DEBUG_FUNCTIONS
+      funkin.util.plugins.MemoryGCPlugin.initialize();
+      #end
+      #if FEATURE_SCREENSHOTS
+      funkin.util.plugins.ScreenshotPlugin.initialize();
+      #end
+      #if FEATURE_NEWGROUNDS
+      funkin.util.plugins.NewgroundsMedalPlugin.initialize();
+      #end
+      funkin.util.plugins.EvacuateDebugPlugin.initialize();
+      funkin.util.plugins.ForceCrashPlugin.initialize();
+      funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
+      #if !mobile
+      funkin.util.plugins.VolumePlugin.initialize();
+      #end
+      funkin.util.plugins.WatchPlugin.initialize();
+      #if mobile
+      funkin.util.plugins.TouchPointerPlugin.initialize();
+      funkin.mobile.input.ControlsHandler.initInputTrackers();
+      #end
+
+      _coreInitialized = true;
+    }
 
     //
     // GAME DATA PARSING
@@ -279,6 +290,9 @@ class InitState extends FlxState
    */
   function startGame():Void
   {
+    // Don't play transition in when entering the title state.
+    FlxTransitionableState.skipNextTransIn = true;
+
     #if SONG
     // -DSONG=bopeebo
     startSong(defineSong(), defineDifficulty());
@@ -386,7 +400,7 @@ class InitState extends FlxState
    */
   function startSong(songId:String, difficultyId:String = 'normal'):Void
   {
-    var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId);
+    var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
 
     if (songData == null)
     {
@@ -458,7 +472,7 @@ class InitState extends FlxState
 
     var targetSong:Null<funkin.play.song.Song> = null;
 
-    if (targetSongId != null) targetSong = SongRegistry.instance.fetchEntry(targetSongId);
+    if (targetSongId != null) targetSong = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
 
     if (targetSongId == null)
     {

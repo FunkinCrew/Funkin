@@ -15,7 +15,7 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
   /**
    * @param id The ID of the JSON file to parse.
    */
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     this.id = id;
     _data = _fetchData(id);

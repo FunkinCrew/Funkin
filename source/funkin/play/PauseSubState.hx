@@ -213,6 +213,11 @@ class PauseSubState extends MusicBeatSubState
    */
   var menuEntryText:FlxTypedSpriteGroup<AtlasText>;
 
+  /**
+   * Callback that gets called once substate gets open.
+   */
+  var onPause:Void->Void;
+
   // ===============
   // Audio Variables
   // ===============
@@ -222,10 +227,11 @@ class PauseSubState extends MusicBeatSubState
   // Constructor
   // ===============
 
-  public function new(?params:PauseSubStateParams)
+  public function new(?params:PauseSubStateParams, ?onPause:Void->Void)
   {
     super();
     this.currentMode = params?.mode ?? Standard;
+    this.onPause = onPause;
   }
 
   // ===============
@@ -243,6 +249,8 @@ class PauseSubState extends MusicBeatSubState
 
     AdMobUtil.addBanner(extension.admob.AdmobBannerSize.BANNER, extension.admob.AdmobBannerAlign.TOP_LEFT);
     #end
+
+    if (onPause != null) onPause();
 
     super.create();
 
@@ -286,6 +294,7 @@ class PauseSubState extends MusicBeatSubState
     hapticTimer.cancel();
     hapticTimer = null;
     pauseMusic.stop();
+    onPause = null;
   }
 
   // ===============
@@ -930,7 +939,8 @@ class PauseSubState extends MusicBeatSubState
    */
   static function changeDifficulty(state:PauseSubState, difficulty:String):Void
   {
-    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase());
+    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase(),
+      {variation: PlayState.instance.currentChart.variation});
 
     // Reset campaign score when changing difficulty
     // So if you switch difficulty on the last song of a week you get a really low overall score.
