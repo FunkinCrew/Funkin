@@ -23,13 +23,13 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
   public final onRandomSelected:FlxTypedSignal<SongMenuItem->Void> = new FlxTypedSignal<SongMenuItem->Void>();
 
   /**
-   * Signal called when the song is selected
+   * Signal called when a song is selected
    */
   public final onSongSelected:FlxTypedSignal<SongMenuItem->Void> = new FlxTypedSignal<SongMenuItem->Void>();
 
   /**
    * A list of the song cards currently being displayed by the group.
-   * Does not include any killed/dead cards and keeps track of their order.
+   * Does not include any killed/dead cards and also keeps track of the song card order.
    */
   public final activeSongItems:Array<SongMenuItem> = [];
 
@@ -48,10 +48,10 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
   }
 
   /**
-   * Rebuilds the song list with the songs provided.
-   * Where possible, attempte to either reuse or recycle any dead song cards in the pool.
+   * Rebuilds the song list with provided songList.
+   * Where possible, attempts to either reuse, or recycle any dead song cards in the pool.
    *
-   * It also automatically animates them to "JumpIn"
+   * It also automatically animates them to "JumpIn" into the freeplay.
    * @param songList A list songs to generate cards for
    * @param noJumpIn If true, disables the "JumpIn" animation
    * @param force Used by the animation
@@ -124,9 +124,9 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
 
   /**
    * Given the song data list, searches for corresponding dead cards.
-   * Such cards will have most elements reads (like song name and charIcon),
-   * but will need to be refreshed with "refreshDisplayDifficulty" to update difficulty data.
-   * @return A map of found song cards. If a cord for a given song wasn't found, there won't be a corresponding key in the map!
+   * Such cards will have most elements already set (like song name and charIcon),
+   * but will need to be refreshed with to update difficulty data.
+   * @return A map of found song cards. If a card for the given song wasn't found, then there won't be a corresponding key in the map!
    */
   function findSongItems(songData:Array<FreeplaySongData>):Map<FreeplaySongData, Null<SongMenuItem>>
   {
