@@ -155,6 +155,7 @@ class SongMenuItem extends FlxSpriteGroup
     sparkle = new FlxSprite(ranking.x, ranking.y);
     sparkle.frames = Paths.getSparrowAtlas('freeplay/sparkle');
     sparkle.animation.addByPrefix('sparkle', 'sparkle Export0', 24, false);
+    sparkle.offset.set(-20, -26);
     sparkle.animation.play('sparkle', true);
     sparkle.scale.set(0.8, 0.8);
     sparkle.blend = BlendMode.ADD;
@@ -704,7 +705,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   public function intendedY(index:Float):Float
   {
-    return (index * ((height * realScaled) + 10)) + 120;
+    return (index * ((capsule.height * realScaled) + 10)) + 120;
   }
 
   function set_selected(value:Bool):Bool
