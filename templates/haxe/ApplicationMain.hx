@@ -6,6 +6,11 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
 
+#if (linux && !macro)
+@:image('art/icons/iconOG.png')
+class ApplicationIcon extends lime.graphics.Image {}
+#end
+
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
@@ -30,6 +35,13 @@ class ApplicationMain
   public static function create(config):Void
   {
     var app = new openfl.display.Application();
+
+    #if linux
+    app.onCreateWindow.add(function(window:lime.ui.Window):Void
+    {
+      window.setIcon(new ApplicationIcon());
+    });
+    #end
 
     #if !disable_preloader_assets
     ManifestResources.init(config);

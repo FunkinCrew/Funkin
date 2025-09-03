@@ -1255,9 +1255,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The song manifest data.
-   * If none already exists, it's intialized with the current song name in lower-kebab-case.
+   * If none already exists, it's initialized with the current song name in lower-kebab-case.
    */
   var _songManifestData:Null<ChartManifestData> = null;
+
   var songManifestData(get, set):ChartManifestData;
 
   function get_songManifestData():ChartManifestData
