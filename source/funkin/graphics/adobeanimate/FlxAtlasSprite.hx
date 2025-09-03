@@ -71,7 +71,7 @@ class FlxAtlasSprite extends FlxAnimate
     onAnimationComplete.add(cleanupAnimation);
 
     // This defaults the sprite to play the first animation in the atlas,
-    // then pauses it. This ensures symbols are intialized properly.
+    // then pauses it. This ensures symbols are initialized properly.
     this.anim.play('');
     this.anim.pause();
 

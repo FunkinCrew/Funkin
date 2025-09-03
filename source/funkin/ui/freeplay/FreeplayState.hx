@@ -372,7 +372,7 @@ class FreeplayState extends MusicBeatSubState
 
       for (songId in level.getSongs())
       {
-        var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+        var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: currentVariation});
 
         if (song == null)
         {
@@ -2291,7 +2291,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (daSong != null)
     {
-      var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id);
+      var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id, {variation: currentVariation});
       if (targetSong == null)
       {
         FlxG.log.warn('WARN: could not find song with id (${daSong.data.id})');
@@ -2360,7 +2360,7 @@ class FreeplayState extends MusicBeatSubState
       // Update the song capsules to reflect the new difficulty info.
       for (songCapsule in grpCapsules.members)
       {
-        if (songCapsule == null) continue;
+        if (songCapsule == null || !songCapsule.alive) continue;
 
         if (songCapsule.freeplayData != null)
         {
@@ -2455,8 +2455,10 @@ class FreeplayState extends MusicBeatSubState
   {
     controls.active = false;
     letterSort.inputEnabled = false;
+    var targetDifficultyId:String = currentDifficulty;
+    var targetVariation:Null<String> = currentVariation;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
-    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: targetVariation});
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
@@ -2465,8 +2467,6 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetSong:Song = targetSongNullable;
-    var targetDifficultyId:String = currentDifficulty;
-    var targetVariation:Null<String> = currentVariation;
     trace('target song: ${targetSongId} (${targetVariation})');
     var targetLevelId:Null<String> = cap?.freeplayData?.levelId;
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
@@ -3048,12 +3048,17 @@ class FreeplaySongData
   {
     // This looks jank but the haxe compiler is on crack or something so 2 `privateAccess` lines are needed for some reason
     @:privateAccess
-    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: instance.currentVariation});
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: curVariation});
     @:privateAccess
-    if (song == null) throw 'Song entry not found for id: $songId with variation: ${instance.currentVariation}';
+    if (song == null) throw 'Song entry not found for id: $songId with variation: ${curVariation}';
 
     return song;
   }
+
+  /**
+   * The current variation to use in various property functions.
+   */
+  var curVariation(get, never):String;
 
   /**
    * The level id of the song, useful for sorting from week1 -> week 7 + weekend1
@@ -3138,10 +3143,7 @@ class FreeplaySongData
 
   function get_idAndVariation()
   {
-    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
-    var variation:Null<String> = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
-    if (variation == null) variation = Constants.DEFAULT_VARIATION;
-    return '${data.id}:${variation}';
+    return '${data.id}:${curVariation}';
   }
 
   function get_isFav():Bool
@@ -3153,10 +3155,7 @@ class FreeplaySongData
   {
     // grabs a specific difficulty's new status. used for the difficulty dots.
 
-    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
-    var variation:Null<String> = data.getFirstValidVariation(difficulty, null, variations);
-    if (variation == null) variation = Constants.DEFAULT_VARIATION;
-    return data.isSongNew(difficulty, variation);
+    return data.isSongNew(difficulty, curVariation);
   }
 
   function get_isNew():Bool
@@ -3166,10 +3165,7 @@ class FreeplaySongData
     // it's stored in the song .hxc script in a function that overrides `isSongNew()`
     // and is only accessible with the correct valid variation inputs
 
-    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
-    var variation:Null<String> = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
-    if (variation == null) variation = Constants.DEFAULT_VARIATION;
-    return data.isSongNew(FreeplayState.rememberedDifficulty, variation);
+    return data.isSongNew(FreeplayState.rememberedDifficulty, curVariation);
   }
 
   function get_songCharacter():String
@@ -3200,10 +3196,21 @@ class FreeplaySongData
 
   function get_scoringRank():Null<ScoringRank>
   {
-    var variations:Array<String> = data.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
-    var variation:Null<String> = data.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    return Save.instance.getSongRank(data.id, FreeplayState.rememberedDifficulty, curVariation);
+  }
 
-    return Save.instance.getSongRank(data.id, FreeplayState.rememberedDifficulty, variation);
+  function get_curVariation()
+  {
+    // Temporarily fetch the song to check for the first valid variation of it.
+    // For example if the current character is bf, for songs such as darnell we want to use the 'bf' variation instead of 'normal'.
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+    if (song == null) throw 'Song entry not found for id: $songId';
+
+    var variations:Array<String> = song.getVariationsByCharacterId(FreeplayState.rememberedCharacterId);
+    var variation:Null<String> = song.getFirstValidVariation(FreeplayState.rememberedDifficulty, null, variations);
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+
+    return variation;
   }
 }
 

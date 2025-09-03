@@ -459,16 +459,12 @@ class Preferences
   {
     // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
-    // WindowUtil.setVSyncMode(Preferences.vsyncMode);
+
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     toggleDebugDisplay(Preferences.debugDisplay);
+
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
-    #end
-
-    #if desktop
-    // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
-    FlxG.fullscreen = Preferences.autoFullscreen;
     #end
 
     #if mobile
