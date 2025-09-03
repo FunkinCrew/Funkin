@@ -231,9 +231,9 @@ class ResultState extends MusicBeatSubState
 
           if (animation == null) continue;
 
-          if (animData?.legacyBoundsPosition ?? false)
+          if (animData?.applyStageMatrix ?? false)
           {
-            animation.legacyBoundsPosition = true;
+            animation.applyStageMatrix = true;
           }
 
           animation.zIndex = animData.zIndex ?? 500;

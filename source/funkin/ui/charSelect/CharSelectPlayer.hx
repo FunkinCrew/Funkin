@@ -63,15 +63,6 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
     }
   };
 
-  public function updatePosition():Void
-  {
-    // offset the position such that it's positioned exactly like in Adobe Animate
-    var bounds:FlxPoint = this.timeline.getBoundsOrigin(true);
-
-    x = initialX + bounds.x;
-    y = initialY + bounds.y;
-  }
-
   public function switchChar(str:String):Void
   {
     frames = CharSelectAtlasHandler.loadAtlas('charSelect/${str}Chill');
@@ -79,8 +70,6 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
     anim.play("slidein", true);
 
     updateHitbox();
-
-    updatePosition();
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {};

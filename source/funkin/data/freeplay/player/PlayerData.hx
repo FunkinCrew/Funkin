@@ -105,7 +105,7 @@ class PlayerFreeplayDJData
 
   @:optional
   @:default(false)
-  var legacyBoundsPosition:Bool;
+  var applyStageMatrix:Bool;
 
   @:optional
   @:default("BOYFRIEND")
@@ -158,9 +158,9 @@ class PlayerFreeplayDJData
     return assetPath;
   }
 
-  public function useLegacyBoundsPosition():Bool
+  public function useApplyStageMatrix():Bool
   {
-    return legacyBoundsPosition;
+    return applyStageMatrix;
   }
 
   public function getFreeplayDJText(index:Int):String
@@ -345,7 +345,7 @@ typedef PlayerResultsAnimationData =
 
   @:optional
   @:default(false)
-  var legacyBoundsPosition:Bool;
+  var applyStageMatrix:Bool;
 
   @:optional
   var assetPath:Null<String>;
