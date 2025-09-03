@@ -17,10 +17,11 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
 
   var danceEvery:Int = 2;
 
-  public function new()
+  public function new(x:Float, y:Float)
   {
-    super();
+    super(x, y);
     this.applyStageMatrix = true;
+
     switchGF("bf");
   }
 
