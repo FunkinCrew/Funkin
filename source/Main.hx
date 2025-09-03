@@ -103,6 +103,7 @@ class Main extends flixel.FlxGame
     super(1280, 720, funkin.InitState, funkin.Preferences.framerate, funkin.Preferences.framerate, true, false);
     _customSoundTray = funkin.ui.options.FunkinSoundTray;
 
+
     scrollRect = new openfl.geom.Rectangle();
     __scrollRect.setTo(0, 0, FlxG.scaleMode.gameSize.x, FlxG.scaleMode.gameSize.y);
 
