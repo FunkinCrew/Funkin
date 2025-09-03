@@ -56,7 +56,8 @@ class AnimateAtlasCharacter extends BaseCharacter
     loadTextureAtlas(assetPath, assetLibrary,
       {
         swfMode: true,
-        cacheOnLoad: true
+        cacheOnLoad: true,
+        applyStageMatrix: _data.applyStageMatrix
       });
 
     if (_data.isPixel)

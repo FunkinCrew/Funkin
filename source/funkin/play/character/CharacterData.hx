@@ -426,6 +426,7 @@ class CharacterDataParser
   public static final DEFAULT_SCALE:Float = 1;
   public static final DEFAULT_SCROLL:Array<Float> = [0, 0];
   public static final DEFAULT_STARTINGANIM:String = 'idle';
+  public static final DEFAULT_APPLYSTAGEMATRIX:Bool = false;
 
   /**
    * Set unspecified parameters to their defaults.
@@ -554,6 +555,11 @@ class CharacterDataParser
       input.flipX = DEFAULT_FLIPX;
     }
 
+    if (input.applyStageMatrix == null)
+    {
+      input.applyStageMatrix = DEFAULT_APPLYSTAGEMATRIX;
+    }
+
     if (input.animations.length == 0 && input.startingAnimation != null)
     {
       return null;
@@ -669,6 +675,9 @@ typedef CharacterData =
    */
   var healthIcon:Null<HealthIconData>;
 
+  /**
+   * Optional data about the death animation for the character.
+   */
   var death:Null<DeathData>;
 
   /**
@@ -729,6 +738,16 @@ typedef CharacterData =
    * @default false
    */
   var flipX:Null<Bool>;
+
+  /**
+   * NOTE: This only applies to animate atlas characters.
+   *
+   * Whether to apply the stage matrix, if it was exported from a symbol instance.
+   * Also positions the Texture Atlas as it displays in Animate.
+   * Turning this on is only recommended if you prepositioned the character in Animate.
+   * For other cases, it should be turned off to act similarly to a normal FlxSprite.
+   */
+  var applyStageMatrix:Null<Bool>;
 };
 
 /**
