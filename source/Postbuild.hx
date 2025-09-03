@@ -3,6 +3,8 @@ package source; // Yeah, I know...
 import sys.FileSystem;
 import sys.io.File;
 
+using StringTools;
+
 /**
  * A script which executes after the game is built.
  */
@@ -27,14 +29,38 @@ class Postbuild
 
       sys.FileSystem.deleteFile(BUILD_TIME_FILE);
 
-      var buildTime:Float = roundToTwoDecimals(end - start);
-
-      Sys.println('[INFO] Build took: ${buildTime} seconds');
+      Sys.println('[INFO] Build took: ${format(end - start)}');
     }
   }
 
-  static function roundToTwoDecimals(value:Float):Float
+  static function format(time:Float, decimals:Int = 1):String
   {
-    return Math.round(value * 100) / 100;
+    var parts:Array<String> = [];
+    var days:Int = Math.floor(time / 86400);
+    var hours:Int = Math.floor((time % 86400) / 3600);
+    var minutes:Int = Math.floor((time % 3600) / 60);
+    var secs:Float = time % 60;
+
+    if (days > 0)
+    {
+      parts.push('$days ${(days == 1 ? "day" : "days")}');
+    }
+
+    if (hours > 0)
+    {
+      parts.push('$hours ${(hours == 1 ? "hour" : "hours")}');
+    }
+
+    if (minutes > 0)
+    {
+      parts.push('$minutes ${(minutes == 1 ? "minute" : "minutes")}');
+    }
+
+    if (secs > 0 || parts.length == 0)
+    {
+      parts.push('${Std.string(Math.round(secs * Math.pow(10, decimals)) / Math.pow(10, decimals)).trim()} ${(secs == 1.0 ? "second" : "seconds")}');
+    }
+
+    return parts.join(' ');
   }
 }
