@@ -35,16 +35,6 @@ class Lock extends FunkinSprite
       });
 
     anim.play("idle");
-  }
-
-  /**
-   * Offset the lock.
-   */
-  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
-  {
-    var output:FlxPoint = super.getScreenPosition(result, camera);
-    output.x -= 320;
-    output.y -= 90;
-    return output;
+    offset.set(320, 90);
   }
 }
