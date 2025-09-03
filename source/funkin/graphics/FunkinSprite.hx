@@ -9,6 +9,7 @@ import funkin.graphics.framebuffer.FixedBitmapData;
 import openfl.display.BitmapData;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
+import flixel.math.FlxMatrix;
 import flixel.graphics.frames.FlxFrame;
 import flixel.FlxCamera;
 import openfl.system.System;
@@ -83,15 +84,12 @@ typedef AtlasSpriteSettings =
 
   /**
    * Whether to apply the stage matrix, if it was exported from a symbol instance.
+   * Also positions the Texture Atlas as it displays in Animate.
+   * Turning this on is only recommended if you prepositioned the character in Animate.
+   * For other cases, it should be turned off to act similarly to a normal FlxSprite.
    */
   @:optional
   var applyStageMatrix:Bool;
-
-  /**
-   * Whether to use legacy bounds positioning.
-   */
-  @:optional
-  var legacyBoundsPosition:Bool;
 }
 
 /**
@@ -102,23 +100,6 @@ typedef AtlasSpriteSettings =
 @:nullSafety
 class FunkinSprite extends FlxAnimate
 {
-  /**
-   * NOTE: This will only work on texture atlases.
-   *
-   * If enabled, the sprite will be offset using the bounds origin.
-   * This imitates the behavior of the legacy bounds FlxAnimate had.
-   * Turning this on is not recommended, only use this if you know what you're doing.
-   * It's also worth noting that not all atlases will react correctly, some may need position tweaks.
-   */
-  public var legacyBoundsPosition(default, set):Bool = false;
-
-  function set_legacyBoundsPosition(v:Bool):Bool
-  {
-    if (!isAnimate) return false;
-    if (v) applyStageMatrix = true;
-    return this.legacyBoundsPosition = v;
-  }
-
   /**
    * @param x Starting X position
    * @param y Starting Y position
@@ -305,8 +286,7 @@ class FunkinSprite extends FlxAnimate
         cacheKey: settings?.cacheKey ?? null,
         uniqueInCache: settings?.uniqueInCache ?? false,
         onSymbolCreate: settings?.onSymbolCreate ?? null,
-        legacyBoundsPosition: settings?.legacyBoundsPosition ?? false,
-        applyStageMatrix: (settings?.applyStageMatrix ?? false || settings?.legacyBoundsPosition ?? false)
+        applyStageMatrix: settings?.applyStageMatrix ?? false
       };
 
     var assetLibrary:String = assetLibrary ?? "";
@@ -328,7 +308,6 @@ class FunkinSprite extends FlxAnimate
     }
 
     this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
-    this.legacyBoundsPosition = validatedSettings.legacyBoundsPosition ?? false;
 
     frames = FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
       validatedSettings.uniqueInCache, {
@@ -647,110 +626,10 @@ class FunkinSprite extends FlxAnimate
     return _rect;
   }
 
-  /**
-   * Returns the screen position of this object.
-   *
-   * @param   result  Optional arg for the returning point
-   * @param   camera  The desired "screen" coordinate space. If `null`, `FlxG.camera` is used.
-   * @return  The screen position of this object.
-   */
-  public override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  override function preparePixelPerfectMatrix(matrix:FlxMatrix)
   {
-    if (result == null) result = FlxPoint.get();
-
-    if (camera == null) camera = FlxG.camera;
-
-    result.set(x, y);
-    if (pixelPerfectPosition)
-    {
-      _rect.width = _rect.width / this.scale.x;
-      _rect.height = _rect.height / this.scale.y;
-      _rect.x = _rect.x / this.scale.x;
-      _rect.y = _rect.y / this.scale.y;
-      _rect.round();
-      _rect.x = _rect.x * this.scale.x;
-      _rect.y = _rect.y * this.scale.y;
-      _rect.width = _rect.width * this.scale.x;
-      _rect.height = _rect.height * this.scale.y;
-    }
-
-    if (this.isAnimate)
-    {
-      if (this.applyStageMatrix)
-      {
-        result.add(this.library.matrix.tx, this.library.matrix.ty);
-      }
-
-      if (this.legacyBoundsPosition)
-      {
-        var point = this.timeline.getBoundsOrigin(FlxPoint.get(), true);
-        result.add(point.x, point.y);
-        point.put();
-      }
-    }
-
-    return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
-  }
-
-  override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
-  {
-    var bounds = super.getScreenBounds(newRect, camera);
-
-    if (this.isAnimate)
-    {
-      if (this.legacyBoundsPosition)
-      {
-        var point = this.timeline.getBoundsOrigin(FlxPoint.get(), true);
-        bounds.x += point.x;
-        bounds.y += point.y;
-        point.put();
-      }
-    }
-
-    return bounds;
-  }
-
-  override function drawSimple(camera:FlxCamera):Void
-  {
-    getScreenPosition(_point, camera).subtractPoint(offset);
-    if (isPixelPerfectRender(camera))
-    {
-      _point.x = _point.x / this.scale.x;
-      _point.y = _point.y / this.scale.y;
-      _point.round();
-
-      _point.x = _point.x * this.scale.x;
-      _point.y = _point.y * this.scale.y;
-    }
-
-    _point.copyToFlash(_flashPoint);
-    camera.copyPixels(_frame, framePixels, _flashRect, _flashPoint, colorTransform, blend, antialiasing);
-  }
-
-  override function drawComplex(camera:FlxCamera):Void
-  {
-    _frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
-    _matrix.translate(-origin.x, -origin.y);
-    _matrix.scale(scale.x, scale.y);
-
-    if (bakedRotationAngle <= 0)
-    {
-      updateTrig();
-
-      if (angle != 0) _matrix.rotateWithTrig(_cosAngle, _sinAngle);
-    }
-
-    getScreenPosition(_point, camera).subtractPoint(offset);
-    _point.add(origin.x, origin.y);
-    _matrix.translate(_point.x, _point.y);
-
-    if (isPixelPerfectRender(camera))
-    {
-      _matrix.tx = Math.round(_matrix.tx / this.scale.x) * this.scale.x;
-      _matrix.ty = Math.round(_matrix.ty / this.scale.y) * this.scale.y;
-    }
-
-    camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
+    matrix.tx = Math.round(matrix.tx / this.scale.x) * this.scale.x;
+    matrix.ty = Math.round(matrix.ty / this.scale.y) * this.scale.y;
   }
 
   public override function destroy():Void

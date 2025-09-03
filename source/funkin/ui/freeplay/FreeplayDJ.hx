@@ -52,9 +52,9 @@ class FreeplayDJ extends FunkinSprite
         filterQuality: HIGH
       });
 
-    if (playableCharData?.useLegacyBoundsPosition() ?? false)
+    if (playableCharData?.useApplyStageMatrix() ?? false)
     {
-      this.legacyBoundsPosition = true;
+      this.applyStageMatrix = true;
     }
 
     anim.onFrameChange.add(function(name, number, index) {
@@ -481,7 +481,7 @@ class FreeplayDJ extends FunkinSprite
       var finalOffsetX:Float = 0;
       var finalOffsetY:Float = 0;
 
-      if (this.legacyBoundsPosition)
+      if (this.applyStageMatrix)
       {
         finalOffsetX = animationOffsets[0];
         finalOffsetY = animationOffsets[1];

@@ -78,14 +78,6 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     }
   }
 
-  public function updatePosition():Void
-  {
-    var bounds:FlxPoint = this.timeline.getBoundsOrigin(true);
-
-    x = bounds.x + FullScreenScaleMode.gameCutoutSize.x / 2;
-    y = bounds.y;
-  }
-
   /**
    * For switching between "GFs" such as gf, nene, etc
    * @param bf Which BF we are selecting, so that we know the accompyaning GF
@@ -119,8 +111,6 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     anim.play("idle", true);
 
     updateHitbox();
-
-    updatePosition();
   }
 
   public function onScriptEvent(event:ScriptEvent):Void {};
