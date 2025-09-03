@@ -1454,7 +1454,8 @@ class FreeplayState extends MusicBeatSubState
     fadeDots(false);
 
     #if FEATURE_TOUCH_CONTROLS
-    FlxTween.tween(backButton, {alpha: 0.0001}, 0.4, {ease: FlxEase.quadOut});
+    backTransitioning = true;
+    FlxTween.tween(backButton, {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
     #end
 
     funnyCam.filtersEnabled = true;
@@ -1569,7 +1570,7 @@ class FreeplayState extends MusicBeatSubState
         backButton.animation.play("idle");
         backButton.alpha = backButton.restingOpacity;
       }
-      backButton.active = controls.active;
+      backButton.enabled = controls.active;
     }
     #end
 
@@ -2127,7 +2128,7 @@ class FreeplayState extends MusicBeatSubState
 
     #if FEATURE_TOUCH_CONTROLS
     FlxTween.tween(backButton, {x: FlxG.width + 300}, 0.45, {ease: FlxEase.expoIn});
-    FlxTween.tween(backButton, {alpha: 0.0001}, 0.3, {ease: FlxEase.quadOut, startDelay: 0.15});
+    FlxTween.tween(backButton, {alpha: 0}, 0.3, {ease: FlxEase.quadOut, startDelay: 0.15});
     #end
 
     for (caps in grpCapsules.members)
@@ -2456,7 +2457,7 @@ class FreeplayState extends MusicBeatSubState
   /**
    * Called when hitting ENTER on an instrumental choice for random capsule
    */
-    function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
+  function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
   {
     cleanupCapsuleOptionsMenu();
     controls.active = false;
@@ -2680,6 +2681,13 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
       FunkinSound.emptyPartialQueue();
 
+      #if FEATURE_TOUCH_CONTROLS
+      if (backButton != null)
+      {
+        backTransitioning = true;
+        FlxTween.tween(backButton, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+      }
+      #end
       funnyCam.fade(FlxColor.BLACK, 0.2, false, function() {
         Paths.setCurrentLevel(cap?.freeplayData?.levelId);
         LoadingState.loadPlayState(
