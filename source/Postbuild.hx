@@ -35,32 +35,37 @@ class Postbuild
 
   static function format(time:Float, decimals:Int = 1):String
   {
+    var units = [
+      {name: "day", secs: 86400},
+      {name: "hour", secs: 3600},
+      {name: "minute", secs: 60},
+      {name: "second", secs: 1}
+    ];
+
     var parts:Array<String> = [];
-    var days:Int = Math.floor(time / 86400);
-    var hours:Int = Math.floor((time % 86400) / 3600);
-    var minutes:Int = Math.floor((time % 3600) / 60);
-    var secs:Float = time % 60;
+    var remaining:Float = time;
 
-    if (days > 0)
+    for (unit in units)
     {
-      parts.push('$days ${(days == 1 ? "day" : "days")}');
+      var value:Float;
+      if (unit.name == "second")
+      {
+        // handle seconds with decimals
+        value = Math.round(remaining * Math.pow(10, decimals)) / Math.pow(10, decimals);
+      }
+      else
+      {
+        value = Math.floor(remaining / unit.secs);
+        remaining %= unit.secs;
+      }
+
+      //
+      if (value > 0 || (unit.name == "second" && parts.length == 0))
+      {
+        parts.push('${value} ${unit.name}${value == 1 ? "" : "s"}');
+      }
     }
 
-    if (hours > 0)
-    {
-      parts.push('$hours ${(hours == 1 ? "hour" : "hours")}');
-    }
-
-    if (minutes > 0)
-    {
-      parts.push('$minutes ${(minutes == 1 ? "minute" : "minutes")}');
-    }
-
-    if (secs > 0 || parts.length == 0)
-    {
-      parts.push('${Std.string(Math.round(secs * Math.pow(10, decimals)) / Math.pow(10, decimals)).trim()} ${(secs == 1.0 ? "second" : "seconds")}');
-    }
-
-    return parts.join(' ');
+    return parts.join(" ");
   }
 }
