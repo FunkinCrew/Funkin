@@ -220,7 +220,7 @@ class ChartEditorDropdowns
   public static function lookupNoteKind(noteKindId:Null<String>):DropDownEntry
   {
     if (noteKindId == null) return lookupNoteKind('');
-    if (!NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
+    if (noteKindId != '' && !NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
     return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Unknown'};
   }
 
