@@ -769,7 +769,7 @@ class CharSelectSubState extends MusicBeatSubState
           FlxG.switchState(() -> FreeplayState.build(
             {
               {
-                character: curChar,
+                character: wentBackToFreeplay ? rememberedChar : curChar,
                 fromCharSelect: true
               }
             }));
@@ -788,6 +788,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   var mobileDeny:Bool = false;
   var mobileAccept:Bool = false;
+
+  var wentBackToFreeplay:Bool = false;
 
   override public function update(elapsed:Float):Void
   {
@@ -925,6 +927,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     if (controls.BACK && !pressedSelect && allowInput)
     {
+      wentBackToFreeplay = true;
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
       goToFreeplay();
