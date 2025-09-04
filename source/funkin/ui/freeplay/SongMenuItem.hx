@@ -47,8 +47,10 @@ class SongMenuItem extends FlxSpriteGroup
   public var favIcon:FlxSprite;
 
   public var ranking:FreeplayRank;
+  public var blurredRanking:FreeplayRank;
 
   public var fakeRanking:FreeplayRank;
+  public var fakeBlurredRanking:FreeplayRank;
 
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
@@ -144,18 +146,28 @@ class SongMenuItem extends FlxSpriteGroup
     // doesn't get added, simply is here to help with visibility of things for the pop in!
     grpHide = new FlxGroup();
 
-    fakeRanking = new FreeplayRank(400, 15);
+    fakeRanking = new FreeplayRank(420, 41);
     add(fakeRanking);
+
+    fakeBlurredRanking = new FreeplayRank(fakeRanking.x, fakeRanking.y);
+    fakeBlurredRanking.shader = new GaussianBlurShader(1);
+    add(fakeBlurredRanking);
+
+    fakeRanking.visible = false;
+    fakeBlurredRanking.visible = false;
 
     fakeRanking.visible = false;
 
-    ranking = new FreeplayRank(400, 15);
+    ranking = new FreeplayRank(420, 41);
     add(ranking);
+
+    blurredRanking = new FreeplayRank(ranking.x, ranking.y);
+    blurredRanking.shader = new GaussianBlurShader(1);
+    add(blurredRanking);
 
     sparkle = new FlxSprite(ranking.x, ranking.y);
     sparkle.frames = Paths.getSparrowAtlas('freeplay/sparkle');
     sparkle.animation.addByPrefix('sparkle', 'sparkle Export0', 24, false);
-    sparkle.offset.set(-20, -26);
     sparkle.animation.play('sparkle', true);
     sparkle.scale.set(0.8, 0.8);
     sparkle.blend = BlendMode.ADD;
@@ -465,6 +477,7 @@ class SongMenuItem extends FlxSpriteGroup
     sparkle.visible = false;
 
     this.ranking.rank = newRank;
+    this.blurredRanking.rank = newRank;
 
     if (newRank == PERFECT_GOLD)
     {
@@ -755,15 +768,9 @@ class SongMenuItem extends FlxSpriteGroup
   }
 }
 
-/**
- * Holds blurred and unblurred versions of the rank icon
- */
-class FreeplayRank extends FlxSpriteGroup
+class FreeplayRank extends FlxSprite
 {
   public var rank(default, set):Null<ScoringRank> = null;
-
-  var spr:FlxSprite;
-  var blur:FlxSprite;
 
   function set_rank(val:Null<ScoringRank>):Null<ScoringRank>
   {
@@ -777,8 +784,7 @@ class FreeplayRank extends FlxSpriteGroup
     {
       this.visible = true;
 
-      spr.animation.play(val.getFreeplayRankIconAsset(), true, false);
-      blur.animation.play(val.getFreeplayRankIconAsset(), true, false);
+      animation.play(val.getFreeplayRankIconAsset(), true, false);
 
       centerOffsets(false);
 
@@ -815,24 +821,14 @@ class FreeplayRank extends FlxSpriteGroup
   {
     super(x, y);
 
-    blur = new FlxSprite();
-    blur.frames = Paths.getSparrowAtlas('freeplay/rankbadges');
-    blur.shader = new GaussianBlurShader(1);
-    add(blur);
+    frames = Paths.getSparrowAtlas('freeplay/rankbadges');
 
-    spr = new FlxSprite();
-    spr.frames = Paths.getSparrowAtlas('freeplay/rankbadges');
-    add(spr);
-
-    for (i in members)
-    {
-      i.animation.addByPrefix('PERFECT', 'PERFECT rank0', 24, false);
-      i.animation.addByPrefix('EXCELLENT', 'EXCELLENT rank0', 24, false);
-      i.animation.addByPrefix('GOOD', 'GOOD rank0', 24, false);
-      i.animation.addByPrefix('PERFECTSICK', 'PERFECT rank GOLD', 24, false);
-      i.animation.addByPrefix('GREAT', 'GREAT rank0', 24, false);
-      i.animation.addByPrefix('LOSS', 'LOSS rank0', 24, false);
-    }
+    animation.addByPrefix('PERFECT', 'PERFECT rank0', 24, false);
+    animation.addByPrefix('EXCELLENT', 'EXCELLENT rank0', 24, false);
+    animation.addByPrefix('GOOD', 'GOOD rank0', 24, false);
+    animation.addByPrefix('PERFECTSICK', 'PERFECT rank GOLD', 24, false);
+    animation.addByPrefix('GREAT', 'GREAT rank0', 24, false);
+    animation.addByPrefix('LOSS', 'LOSS rank0', 24, false);
 
     blend = BlendMode.ADD;
 
@@ -841,22 +837,6 @@ class FreeplayRank extends FlxSpriteGroup
     // setGraphicSize(Std.int(width * 0.9));
     scale.set(0.9, 0.9);
     updateHitbox();
-  }
-
-  /**
-   * Plays an animation for each member of the group
-   * Just passes the arguments to `animation.play`, since that's not available in FlxGroups
-   * @param animName The name of the animation to play
-   * @param force false
-   * @param reversed false
-   * @param frame 0
-   */
-  public function playAnimationEach(animName:String, force = false, reversed = false, frame = 0):Void
-  {
-    for (i in members)
-    {
-      i.animation.play(animName, force, reversed, frame);
-    }
   }
 }
 

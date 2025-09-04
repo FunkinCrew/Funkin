@@ -1034,6 +1034,7 @@ class FreeplayState extends MusicBeatSubState
     if (fromResults.oldRank != null)
     {
       capsuleToRank.fakeRanking.rank = fromResults.oldRank;
+      capsuleToRank.fakeBlurredRanking.rank = fromResults.oldRank;
 
       sparks.frames = Paths.getSparrowAtlas('freeplay/sparks');
       sparks.animation.addByPrefix('sparks', 'sparks', 24, false);
@@ -1067,6 +1068,7 @@ class FreeplayState extends MusicBeatSubState
     trace(originalPos);
 
     capsuleToRank.ranking.visible = false;
+    capsuleToRank.blurredRanking.visible = false;
 
     // Rank animation vibrations.
     HapticUtil.increasingVibrate(Constants.MIN_VIBRATION_AMPLITUDE, Constants.MAX_VIBRATION_AMPLITUDE, 0.6);
@@ -1090,23 +1092,30 @@ class FreeplayState extends MusicBeatSubState
 
   function rankDisplayNew(fromResults:Null<FromResultsParams>, capsuleToRank:SongMenuItem):Void
   {
-    capsuleToRank.ranking.visible = false;
-    capsuleToRank.fakeRanking.visible = false;
+    capsuleToRank.ranking.visible = true;
+    capsuleToRank.blurredRanking.visible = true;
     capsuleToRank.ranking.scale.set(20, 20);
+    capsuleToRank.blurredRanking.scale.set(20, 20);
 
     if (fromResults != null && fromResults.newRank != null)
     {
-      capsuleToRank.ranking.playAnimationEach(fromResults.newRank.getFreeplayRankIconAsset(), true);
+      capsuleToRank.ranking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
     }
 
     FlxTween.tween(capsuleToRank.ranking, {"scale.x": 0.9, "scale.y": 0.9}, 0.1);
 
+    if (fromResults != null && fromResults.newRank != null)
+    {
+      capsuleToRank.blurredRanking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
+    }
+    FlxTween.tween(capsuleToRank.blurredRanking, {"scale.x": 0.9, "scale.y": 0.9}, 0.1);
+
     new FlxTimer().start(0.1, _ -> {
-      capsuleToRank.ranking.visible = true;
 
       if (fromResults?.oldRank != null)
       {
         capsuleToRank.fakeRanking.visible = false;
+        capsuleToRank.fakeBlurredRanking.visible = false;
 
         sparks.visible = true;
         sparksADD.visible = true;
