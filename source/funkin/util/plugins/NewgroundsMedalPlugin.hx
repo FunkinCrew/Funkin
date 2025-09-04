@@ -46,7 +46,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
         filterQuality: HIGH
       });
 
-    points = new FlxText((171 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 10 + MEDAL_Y, 50, 12, false);
+    points = new FlxText((171 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 17 + MEDAL_Y, 50, 12, false);
     points.fieldHeight = 18;
     points.systemFont = "Arial";
     points.bold = true;
@@ -57,12 +57,11 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     points.visible = false;
     points.scrollFactor.set();
 
-    name = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 34 + MEDAL_Y, 0, 26);
+    name = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 37 + MEDAL_Y, 0, 26);
     name.font = Paths.font("ShareTechMono-Regular.ttf");
     name.letterSpacing = -2;
 
     name.text = "Ono Boners Deluxe";
-
     name.clipRect = FlxRect.get(0, 0, 164, 35.2);
 
     name.visible = false;
@@ -72,8 +71,6 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     medal.visible = false;
 
     medal.anim.onFrameLabel.add(function(label:String) {
-      if (medal.anim.curAnim.reversed) return;
-
       switch (label)
       {
         case "show":
@@ -94,9 +91,6 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
           name.offset.x = 0;
           name.clipRect.x = 0;
           name.resetFrame();
-          medal.replaceSymbolGraphic("[NG-MEDAL]_MEDAL", null);
-
-          medal.anim.play("", false, true, 103);
       }
     });
 
@@ -117,8 +111,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
   function updatePositions():Void
   {
     medal.x = MEDAL_X + (FullScreenScaleMode.gameCutoutSize.x / 2);
-    points.x = (171 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2);
-    name.x = (73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2);
+    points.x = (175 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2);
+    name.x = (79 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2);
   }
 
   override public function update(elapsed:Float)
@@ -161,11 +155,11 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.name.text = name;
       instance.updatePositions();
 
-      instance.medal.visible = true;
-      instance.medal.replaceSymbolGraphic("[NG-MEDAL]_MEDAL", graphic);
-
-      instance.medal.anim.play("");
       FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
+      instance.medal.anim.play("");
+
+      instance.medal.visible = true;
+      instance.medal.replaceSymbolGraphic("NGMEDAL", graphic);
     }
 
     if (instance.medal.isAnimationFinished() && instance.medalQueue.length == 0) playMedal();
