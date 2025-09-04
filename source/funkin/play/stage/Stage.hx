@@ -457,9 +457,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.setScale(finalScale); // Don't use scale.set for characters!
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
-
-      if (stageCharData.stageCamera != null) character._stageCamPos = FlxPoint.get(stageCharData.stageCamera[0] + stageCharData.cameraOffsets[0],
-        stageCharData.stageCamera[1] + stageCharData.cameraOffsets[1]);
+      @:privateAccess
+      if (stageCharData.stageCamPos != null) character._stageCamPos = FlxPoint.get(stageCharData.stageCamPos[0] + character.characterCameraOffsets[0],
+        stageCharData.stageCamPos[1] + character.characterCameraOffsets[1]);
 
       character.scrollFactor.x = stageCharData.scroll[0];
       character.scrollFactor.y = stageCharData.scroll[1];

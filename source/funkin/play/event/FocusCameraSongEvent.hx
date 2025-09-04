@@ -96,12 +96,12 @@ class FocusCameraSongEvent extends SongEvent
     applyCameraTween(targetX, targetY, duration, ease);
   }
 
-  function getCharacterPoint(char:Int):Null<FlxPoint>
+  function getCharacterPoint(char:Int):Null<flixel.math.FlxPoint>
   {
     final currentStage = PlayState.instance.currentStage;
     return switch (char)
     {
-      case -1: FlxPoint.get(); // Manual position
+      case -1: flixel.math.FlxPoint.get(); // Manual position
       case 0: currentStage.getBoyfriend()?.requiredCameraPos;
       case 1: currentStage.getDad()?.requiredCameraPos;
       case 2: currentStage.getGirlfriend()?.requiredCameraPos;
@@ -145,7 +145,9 @@ class FocusCameraSongEvent extends SongEvent
     var cameraPoints:Map<String, String> = new Map();
     cameraPoints.set("NONE", "NONE");
     @:privateAccess
-    if (ChartEditorState.instance != null) for (point in StageRegistry.instance.fetchEntry(ChartEditorState.instance.currentSongStage)._data.cameraPoints)
+    if (funkin.ui.debug.charting.ChartEditorState.instance != null)
+      for (point in funkin.data.stage.StageRegistry.instance.fetchEntry(funkin.ui.debug.charting.ChartEditorState.instance.currentSongStage)
+      ._data.cameraPoints)
       cameraPoints.set(point.name, point.name);
 
     return cameraPoints;
