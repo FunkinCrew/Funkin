@@ -1,0 +1,36 @@
+<head>
+	<meta charset='utf-8'/>
+	<link href="::api.config.rootPath::bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="::api.config.rootPath::bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+	<link href="::api.config.rootPath::bootstrap/css/bootstrap-select.min.css" rel="stylesheet" />
+
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic' rel='stylesheet' type='text/css'/>
+	<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,600,600italic,400' rel='stylesheet' type='text/css'/>
+	<link href='https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css' rel='stylesheet' type='text/css' />
+
+	<script src="::api.config.rootPath::jquery-3.6.0.min.js"></script>
+	<script src="::api.config.rootPath::bootstrap/js/bootstrap.min.js"></script>
+	<script src="::api.config.rootPath::bootstrap/js/bootstrap-select.min.js"></script>
+	<link href="::api.config.rootPath::styles.css" rel="stylesheet" />
+	<link href="::api.config.rootPath::extra-styles.css" rel="stylesheet" />
+	<link href="::api.config.rootPath::haxe-nav.css" rel="stylesheet" />
+	<link href="::api.config.rootPath::dark-mode.css" rel="stylesheet" />
+	<script>var dox = {
+		rootPath: "::api.config.rootPath::",
+		platforms: [
+			::foreach pf api.config.platforms::
+				"::pf::"
+				::if !repeat.pf.last::,::end::
+			::end::
+		]
+	};</script>
+	<script src="::api.config.rootPath::nav.js"></script>
+	<script src="::api.config.rootPath::index.js"></script>
+	<link rel="icon" href="::api.config.rootPath::favicon.ico" type="image/x-icon"/>
+	<title>::api.currentPageName::::if api.config.pageTitle !=null:: - ::api.config.pageTitle::::end::</title>
+
+	::set description = api.getShortDesc(type)::
+	::set description = description.substr(3, description.length-7)::
+	<meta name="description" ::cond type.doc!=null && description.length>0:: content="::description::"/>
+	::use "extra-headers.mtt"::::end::
+</head>

@@ -27,6 +27,11 @@
       "version": "2.2.2"
     },
     {
+      "name": "dox",
+      "type": "haxelib",
+      "version": "1.6.0"
+    },
+    {
       "name": "extension-haptics",
       "type": "haxelib",
       "version": "1.0.4"

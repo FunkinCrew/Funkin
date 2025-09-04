@@ -1,0 +1,10 @@
+<footer class="section site-footer" style="background:$$getHexValue(::themeColor::)">
+	<div class="container">
+		<div class="copyright">
+			<p ::cond api.isDefined("version"):: style="color:$$getHexValue(::textColor::)">This documentation is generated for version ::api.getValue('version')::</p>
+			<p style="color:$$getHexValue(::textColor::)">&copy; ::api.config.date.getFullYear():: &nbsp;
+				<a ::cond api.isDefined("website"):: ::attr href api.getValue("website"):: style="color:$$getHexValue(::textColor::)">The Funkin' Crew Inc</a>
+			</p>
+		</div>
+	</div>
+</footer>
