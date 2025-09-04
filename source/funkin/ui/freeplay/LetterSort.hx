@@ -55,7 +55,7 @@ class LetterSort extends FlxSpriteGroup
 
     for (i in 0...5)
     {
-      var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i);
+      var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i, curSelection);
       letter.x += 50;
       letter.y += 50;
       // letter.visible = false;
@@ -270,7 +270,7 @@ class FreeplayLetter extends FunkinSprite
    */
   public var curLetter:Int = 0;
 
-  public function new(x:Float, y:Float, ?letterInd:Int)
+  public function new(x:Float, y:Float, ?letterInd:Int, ?curSelected:Int = 0)
   {
     super(x, y);
 
@@ -295,8 +295,13 @@ class FreeplayLetter extends FunkinSprite
     if (letterInd != null)
     {
       this.anim.play(animLetters[letterInd] + " move", true);
-      this.anim.pause();
       curLetter = letterInd;
+
+      if (curSelected != curLetter)
+      {
+        this.anim.pause();
+      }
+
       this.anim.onFinish.add(function(name:String) {
         this.anim.play(animLetters[curLetter] + " move", true);
       });
