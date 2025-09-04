@@ -1090,9 +1090,10 @@ class FreeplayState extends MusicBeatSubState
 
   function rankDisplayNew(fromResults:Null<FromResultsParams>, capsuleToRank:SongMenuItem):Void
   {
-    capsuleToRank.ranking.visible = false;
-    capsuleToRank.fakeRanking.visible = false;
+    capsuleToRank.ranking.visible = true;
+    capsuleToRank.fakeRanking.visible = true;
     capsuleToRank.ranking.scale.set(20, 20);
+    capsuleToRank.ranking.updateHitbox();
 
     if (fromResults != null && fromResults.newRank != null)
     {
