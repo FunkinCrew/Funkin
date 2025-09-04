@@ -1350,7 +1350,7 @@ class Project extends HXProject
    */
   function configureASTCTextures()
   {
-    if (command != "display")
+    if (!(isDisplay() || isClean()))
     {
       readASTCExclusion();
 
@@ -1487,6 +1487,11 @@ class Project extends HXProject
   public function isDisplay():Bool
   {
     return this.command == "display";
+  }
+
+  public function isClean():Bool
+  {
+    return this.command == "clean";
   }
 
   public function isDebug():Bool
@@ -1781,7 +1786,7 @@ class Project extends HXProject
    */
   public function info(message:String):Void
   {
-    if (command != "display")
+    if (!(isDisplay() || isClean()))
     {
       Sys.println('[INFO] ${message}');
     }
