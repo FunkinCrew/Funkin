@@ -154,6 +154,17 @@ class BaseCharacter extends Bopper
     return super.set_y(value);
   }
 
+  // Returns _stageCamPos or cameraFocusPoint for FocusCamera event.
+  public var requiredCameraPos(get, never):FlxPoint;
+
+  inline function get_requiredCameraPos():FlxPoint
+  {
+    return (_stageCamPos ?? cameraFocusPoint);
+  }
+
+  // Forced stage-specific camera position.
+  public var _stageCamPos:FlxPoint = null;
+
   public function new(id:String, renderType:CharacterRenderType)
   {
     super(CharacterDataParser.DEFAULT_DANCEEVERY);
