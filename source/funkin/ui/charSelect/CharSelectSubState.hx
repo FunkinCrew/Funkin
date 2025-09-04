@@ -906,6 +906,14 @@ class CharSelectSubState extends MusicBeatSubState
         holdTmrRight = 0;
         selectSound.play(true);
       }
+
+      if (controls.BACK)
+      {
+        wentBackToFreeplay = true;
+        FunkinSound.playOnce(Paths.sound('cancelMenu'));
+        FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
+        goToFreeplay();
+      }
     }
 
     if (cursorX < -1)
@@ -923,14 +931,6 @@ class CharSelectSubState extends MusicBeatSubState
     if (cursorY > 1)
     {
       cursorY = -1;
-    }
-
-    if (controls.BACK && !pressedSelect && allowInput)
-    {
-      wentBackToFreeplay = true;
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-      FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
-      goToFreeplay();
     }
 
     if (availableChars.exists(getCurrentSelected()) && PlayerRegistry.instance.isCharacterSeen(availableChars[getCurrentSelected()]))
