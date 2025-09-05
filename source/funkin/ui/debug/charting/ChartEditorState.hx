@@ -2804,7 +2804,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.playbarHead.styleString = 'padding-left: 0px; padding-right: 0px; border-left: 0px; border-right: 0px;';
     playbarHeadLayout.playbarHead.min = 0;
 
-
     playbarHeadLayout.playbarHead.onDragStart = function(_:DragEvent) {
       playbarHeadDragging = true;
 
