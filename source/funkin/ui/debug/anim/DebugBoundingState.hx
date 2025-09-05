@@ -549,6 +549,7 @@ class DebugBoundingState extends FlxState
     {
       onionSkinChar.loadGraphicFromSprite(swagChar);
       onionSkinChar.frame = swagChar.frame;
+      onionSkinChar.animation.stop();
       onionSkinChar.alpha = 0.6;
       onionSkinChar.flipX = swagChar.flipX;
       onionSkinChar.offset.x = swagChar.animOffsets[0];
