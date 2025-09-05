@@ -171,6 +171,21 @@ class DebugBoundingState extends FlxState
     }
   }
 
+  function updateOnionSkin():Void
+  {
+    if (swagChar == null) return;
+    if (swagChar.hasAnimation("idle")) swagChar.playAnimation("idle", true);
+
+    onionSkinChar.loadGraphicFromSprite(swagChar);
+    onionSkinChar.frame = swagChar.frame;
+    onionSkinChar.alpha = 0.6;
+    onionSkinChar.flipX = swagChar.flipX;
+    onionSkinChar.offset.x = swagChar.animOffsets[0];
+    onionSkinChar.offset.y = swagChar.animOffsets[1];
+
+    swagChar.playAnimation(currentAnimationName, true); // reset animation to the one it should be
+  }
+
   function initOffsetView():Void
   {
     offsetView = new FlxGroup();
@@ -395,11 +410,13 @@ class DebugBoundingState extends FlxState
     if (FlxG.keys.justPressed.F)
     {
       onionSkinChar.visible = !onionSkinChar.visible;
+      if (onionSkinChar.visible) updateOnionSkin();
     }
 
     if (FlxG.keys.justPressed.G)
     {
       swagChar.flipX = !swagChar.flipX;
+      if (onionSkinChar.visible) updateOnionSkin();
     }
 
     // Plays the idle animation
@@ -545,15 +562,7 @@ class DebugBoundingState extends FlxState
 
   function playCharacterAnimation(str:String, setOnionSkin:Bool = true)
   {
-    if (setOnionSkin)
-    {
-      onionSkinChar.loadGraphicFromSprite(swagChar);
-      onionSkinChar.frame = swagChar.frame;
-      onionSkinChar.alpha = 0.6;
-      onionSkinChar.flipX = swagChar.flipX;
-      onionSkinChar.offset.x = swagChar.animOffsets[0];
-      onionSkinChar.offset.y = swagChar.animOffsets[1];
-    }
+    if (setOnionSkin) updateOnionSkin();
 
     // var animName = characterAnimNames[Std.parseInt(str)];
     var animName = str;
