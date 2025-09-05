@@ -37,10 +37,7 @@ class Leaderboards
 
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      var leaderboardList = NewgroundsClient.instance.leaderboards;
-      if (leaderboardList == null) return;
-
-      var leaderboardData:Null<LeaderboardData> = leaderboardList.get(leaderboard.getId());
+      var leaderboardData:Null<LeaderboardData> = listLeaderboardData().get(leaderboard.getId());
       if (leaderboardData != null)
       {
         leaderboardData.postScore(score, function(outcome:Outcome<CallError>):Void {
@@ -67,10 +64,7 @@ class Leaderboards
     // Silently reject retrieving scores from unknown leaderboards.
     if (leaderboard == Leaderboard.Unknown) return;
 
-    var leaderboardList = NewgroundsClient.instance.leaderboards;
-    if (leaderboardList == null) return;
-
-    var leaderboardData:Null<LeaderboardData> = leaderboardList.get(leaderboard.getId());
+    var leaderboardData:Null<LeaderboardData> = listLeaderboardData().get(leaderboard.getId());
     if (leaderboardData == null) return;
 
     var user:Null<User> = null;
