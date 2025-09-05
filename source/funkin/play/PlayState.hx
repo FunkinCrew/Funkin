@@ -3174,7 +3174,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if mobile
-    pauseButtonCheck = TouchUtil.pressAction(pauseButton);
+    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton);
     #end
 
     if (currentConversation != null)
