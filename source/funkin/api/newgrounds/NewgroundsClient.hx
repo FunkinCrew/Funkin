@@ -102,6 +102,12 @@ class NewgroundsClient
       return;
     }
 
+    if (NG.core.attemptingLogin)
+    {
+      trace("[NEWGROUNDS] Login attempt ongoing, will not login until finished.");
+      return;
+    }
+
     if (onSuccess != null && onError != null)
     {
       NG.core.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError));
