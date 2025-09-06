@@ -1,10 +1,8 @@
 package funkin.ui.debug;
 
-#if FLX_DEBUG
-import flixel.system.debug.stats.StatsGraph;
-#end
 import flixel.util.FlxStringUtil;
 import funkin.util.MemoryUtil;
+import funkin.ui.debug.stats.FunkinStatsGraph;
 import haxe.Timer;
 import openfl.display.Sprite;
 import openfl.text.TextField;
@@ -30,7 +28,7 @@ class FunkinDebugDisplay extends Sprite
 
   var textDisplay:TextField;
 
-  var fpsGraph:StatsGraph;
+  var fpsGraph:FunkinStatsGraph;
 
   public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
   {
@@ -54,12 +52,10 @@ class FunkinDebugDisplay extends Sprite
     textDisplay.multiline = true;
     addChild(textDisplay);
 
-    #if FLX_DEBUG
-    fpsGraph = new StatsGraph(0, 80, 75, 25, color, "FPS");
+    fpsGraph = new FunkinStatsGraph(0, 110, 100, 25, color, "FPS Graph:");
     fpsGraph.maxValue = FlxG.drawFramerate;
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
-    #end
 
     FlxG.signals.focusGained.add(function():Void {
       canUpdate = true;
