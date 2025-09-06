@@ -1,12 +1,11 @@
 package funkin.ui.debug;
 
 import flixel.util.FlxStringUtil;
-import funkin.util.MemoryUtil;
 import funkin.ui.debug.stats.FunkinStatsGraph;
+import funkin.util.MemoryUtil;
 import haxe.Timer;
-import openfl.display.Sprite;
-import openfl.display.Graphics;
 import openfl.display.Shape;
+import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
@@ -18,8 +17,10 @@ class FunkinDebugDisplay extends Sprite
   static final FPS_UPDATE_DELAY:Int = 200;
   static final INNER_RECT_DIFF:Int = 3;
   static final OUTER_RECT_DIMENSIONS:Array<Int> = [215, 150];
+  static final OTHERS_OFFSET:Int = 8;
 
   var deltaTimeout:Float;
+
   var times:Array<Float>;
 
   #if !html5
@@ -44,7 +45,7 @@ class FunkinDebugDisplay extends Sprite
     this.taskMemPeak = 0.0;
     this.times = [];
 
-    final background:Shape = new Shape();
+    background = new Shape();
     background.graphics.beginFill(0x3d3f41, 0.5);
     background.graphics.drawRect(0, 0, OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2), OUTER_RECT_DIMENSIONS[1] + (INNER_RECT_DIFF * 2));
     background.graphics.endFill();
@@ -53,21 +54,19 @@ class FunkinDebugDisplay extends Sprite
     background.graphics.endFill();
     addChild(background);
 
-    final othersOffset:Int = 8;
-
     textDisplay = new TextField();
-    textDisplay.x += othersOffset;
-    textDisplay.y += othersOffset;
+    textDisplay.x += OTHERS_OFFSET;
+    textDisplay.y += OTHERS_OFFSET;
     textDisplay.width = 500;
     textDisplay.selectable = false;
     textDisplay.mouseEnabled = false;
-    textDisplay.defaultTextFormat = new TextFormat("Monsterrat", 12, color, JUSTIFY);
+    textDisplay.defaultTextFormat = new TextFormat('Monsterrat', 12, color, JUSTIFY);
     textDisplay.antiAliasType = NORMAL;
     textDisplay.sharpness = 100;
     textDisplay.multiline = true;
     addChild(textDisplay);
 
-    fpsGraph = new FunkinStatsGraph(othersOffset, 110 + othersOffset, 100, 25, color, "FPS Graph:");
+    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, 110 + OTHERS_OFFSET, 100, 25, color, 'FPS Graph:');
     fpsGraph.maxValue = FlxG.drawFramerate;
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
