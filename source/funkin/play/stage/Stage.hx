@@ -159,6 +159,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     this.debugIconGroup = new FlxSpriteGroup();
 
+    if (PlayState.instance?.strumlines != null) for (strumline in PlayState.instance.strumlines)
+      strumline.characters = [];
+
     for (dataProp in _data.props)
     {
       trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
@@ -412,6 +415,15 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         character.flipX = !character.getDataFlipX();
         character.name = 'bf';
         character.initHealthIcon(false);
+
+        // Try to add the character to the appropriate strumline if its first character is not valid.
+        if (PlayState.instance != null
+          && PlayState.instance.playerStrumline != null
+          && (PlayState.instance.playerStrumline.characters[0] == null
+            || !this.members.contains(PlayState.instance.playerStrumline.characters[0])))
+        {
+          PlayState.instance.playerStrumline.characters[0] = character;
+        }
       case GF:
         this.characters.set('gf', character);
         stageCharData = _data.characters.gf;
@@ -423,6 +435,15 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         character.flipX = character.getDataFlipX();
         character.name = 'dad';
         character.initHealthIcon(true);
+
+        // Try to add the character to the appropriate strumline if its first character is not valid.
+        if (PlayState.instance != null
+          && PlayState.instance.opponentStrumline != null
+          && (PlayState.instance.opponentStrumline.characters[0] == null
+            || !this.members.contains(PlayState.instance.opponentStrumline.characters[0])))
+        {
+          PlayState.instance.opponentStrumline.characters[0] = character;
+        }
       default:
         this.characters.set(character.characterId, character);
     }
