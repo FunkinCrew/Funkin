@@ -972,6 +972,8 @@ class PlayState extends MusicBeatSubState
 
       previousDifficulty = currentDifficulty;
 
+      currentStage?.resetStage();
+
       dispatchEvent(retryEvent);
 
       resetCamera();
@@ -1015,8 +1017,6 @@ class PlayState extends MusicBeatSubState
         vocals.playerVolume = 1;
         vocals.opponentVolume = 1;
       }
-
-      currentStage?.resetStage();
 
       if (!fromDeathState)
       {
