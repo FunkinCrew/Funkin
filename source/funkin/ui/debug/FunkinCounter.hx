@@ -4,13 +4,12 @@ import haxe.Timer;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import flixel.util.FlxStringUtil;
 import funkin.util.MemoryUtil;
 
 class FunkinCounter extends Sprite
 {
   static final FPS_UPDATE_DELAY:Int = 200;
-  static final BYTES_PER_MEG:Float = 1024 * 1024;
-  static final ROUND_TO:Float = 1 / 100;
 
   /**
     The current frame rate, expressed using frames-per-second.
@@ -48,7 +47,12 @@ class FunkinCounter extends Sprite
   @:noCompletion
   private var frameCount:Int = 0;
 
+  /**
+   * The text which displays all the fps and memory info.
+   */
   public var textDisplay:TextField;
+
+  private var canUpdateFPS:Bool = true;
 
   public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
   {
@@ -61,9 +65,12 @@ class FunkinCounter extends Sprite
     textDisplay.width = 500;
     textDisplay.selectable = false;
     textDisplay.mouseEnabled = false;
-    textDisplay.defaultTextFormat = new TextFormat("_sans", 12, color);
+    textDisplay.defaultTextFormat = new TextFormat("Monsterrat", 12, color);
     textDisplay.text = "";
     addChild(textDisplay);
+
+    FlxG.signals.focusGained.add(() -> canUpdateFPS = true);
+    FlxG.signals.focusLost.add(() -> canUpdateFPS = false);
   }
 
   @:noCompletion
@@ -78,6 +85,8 @@ class FunkinCounter extends Sprite
     while (times[0] < currentTime - 1000)
       times.shift();
 
+    if (!canUpdateFPS) return;
+
     if (deltaTimeout < FPS_UPDATE_DELAY)
     {
       deltaTimeout += deltaTime;
@@ -88,7 +97,7 @@ class FunkinCounter extends Sprite
 
     averageFPS = Math.floor(frameCount / currentTime * 1000);
 
-    if (onePercFPS < times.length / 10)
+    if (onePercFPS < currentFPS - averageFPS)
     {
       onePercFPS = currentFPS;
     }
@@ -109,11 +118,11 @@ class FunkinCounter extends Sprite
     textDisplay.text += "\n1% LOW FPS: " + onePercFPS;
 
     #if !html5
-    var mem:Float = Math.fround(MemoryUtil.getMemoryUsed() / BYTES_PER_MEG / ROUND_TO) * ROUND_TO;
+    var mem:Float = MemoryUtil.getMemoryUsed();
 
     if (mem > memPeak) memPeak = mem;
 
-    textDisplay.text += '\nRAM: ${mem}mb / ${memPeak}mb';
+    textDisplay.text += '\nRAM: ${FlxStringUtil.formatBytes(mem)} / ${FlxStringUtil.formatBytes(memPeak)}';
     #end
   }
 }
