@@ -4,6 +4,7 @@ import haxe.Timer;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import flixel.system.debug.stats.StatsGraph;
 import flixel.util.FlxStringUtil;
 import funkin.util.MemoryUtil;
 
@@ -52,6 +53,11 @@ class FunkinCounter extends Sprite
    */
   public var textDisplay:TextField;
 
+  /**
+   * A graph which outputs fps info.
+   */
+  public var fpsGraph:StatsGraph;
+
   private var canUpdateFPS:Bool = true;
 
   public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
@@ -68,6 +74,11 @@ class FunkinCounter extends Sprite
     textDisplay.defaultTextFormat = new TextFormat("Monsterrat", 12, color);
     textDisplay.text = "";
     addChild(textDisplay);
+
+    fpsGraph = new StatsGraph(0, 80, 75, 25, color, "FPS");
+    fpsGraph.maxValue = FlxG.drawFramerate;
+    fpsGraph.minValue = 0;
+    addChild(fpsGraph);
 
     FlxG.signals.focusGained.add(() -> canUpdateFPS = true);
     FlxG.signals.focusLost.add(() -> canUpdateFPS = false);
@@ -95,7 +106,9 @@ class FunkinCounter extends Sprite
 
     currentFPS = times.length;
 
-    averageFPS = Math.floor(frameCount / currentTime * 1000);
+    fpsGraph.update(currentFPS);
+
+    averageFPS = Math.floor(fpsGraph.average());
 
     if (onePercFPS < currentFPS - averageFPS)
     {
