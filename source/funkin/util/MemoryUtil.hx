@@ -47,7 +47,7 @@ class MemoryUtil
 
   public static function supportsTaskMem():Bool
   {
-    #if ((windows && cpp) || linux || android)
+    #if ((cpp && (windows || ios || macos)) || linux || android)
     return true;
     #else
     return false;
@@ -58,6 +58,8 @@ class MemoryUtil
   {
     #if (windows && cpp)
     return funkin.external.windows.WinAPI.getProcessMemoryWorkingSetSize();
+    #elseif ((ios || macos) && cpp)
+    return funkin.external.apple.MemoryUtil.getCurrentProcessRss();
     #elseif (linux || android)
     try
     {

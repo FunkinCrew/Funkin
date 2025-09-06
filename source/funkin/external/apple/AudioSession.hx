@@ -1,6 +1,6 @@
 package funkin.external.apple;
 
-#if (ios || macos)
+#if ((ios || macos) && cpp)
 /**
  * A utility class to manage the audio session on apple devices.
  */
