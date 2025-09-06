@@ -10,7 +10,7 @@
 		<compilerflag value="-I${this_dir}/include" />
 	</files>
 
-	<files id="external-ios">
+	<files id="external-apple">
 		<compilerflag value="-I${this_dir}/include" />
 
 		<file name="${this_dir}/src/ScreenUtil.mm" />
@@ -22,6 +22,6 @@
 		<vflag name="-framework" value="Foundation" />
 		<vflag name="-framework" value="AVFAudio" />
 
-		<files id="external-ios" />
+		<files id="external-apple" />
 	</target>
 </xml>

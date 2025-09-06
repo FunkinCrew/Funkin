@@ -67,7 +67,7 @@ extern class WinAPI
   /**
    * Sets the dark mode for the active window.
    *
-   * @param enable A boolean value indicating whether to enable (true) or disable (false) dark mode.
+   * @param enable Whether to enable or disable dark mode.
    */
   @:native('WINAPI_SetDarkMode')
   static function setDarkMode(enable:Bool):Void;

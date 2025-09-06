@@ -10,7 +10,7 @@
     <compilerflag value="-I${this_dir}/include" />
   </files>
 
-  <files id="winapi">
+  <files id="external-windows">
     <compilerflag value="-I${this_dir}/include" />
 
     <file name="${this_dir}/src/winapi.cpp" />
@@ -31,6 +31,6 @@
         <lib name="advapi32.lib" />
     </section>
 
-    <files id="winapi" />
+    <files id="external-windows" />
   </target>
 </xml>
