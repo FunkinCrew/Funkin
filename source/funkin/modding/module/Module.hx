@@ -234,4 +234,8 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    * Called when the song has been restarted.
    */
   public function onSongRetry(event:SongRetryEvent) {}
+  /**
+   * Called when any state is created.
+   */
+  public function onStateCreate(event:ScriptEvent) {}
 }
