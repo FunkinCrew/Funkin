@@ -33,7 +33,7 @@ class ScriptEventDispatcher
       case CREATE:
         target.onCreate(event);
         return;
-      case STATECREATE:
+      case STATE_CREATE:
         if (Std.isOfType(target, Module))
         {
           var t:Module = cast(target, Module);

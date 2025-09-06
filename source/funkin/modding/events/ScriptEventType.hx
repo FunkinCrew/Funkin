@@ -18,7 +18,7 @@ enum abstract ScriptEventType(String) from String to String
    *
    * This event is not cancelable.
    */
-  var STATECREATE = 'STATECREATE';
+  var STATE_CREATE = 'STATE_CREATE';
 
   /**
    * Called when the relevant object is destroyed.

@@ -140,7 +140,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     Conductor.beatHit.add(this.beatHit);
     Conductor.stepHit.add(this.stepHit);
-    dispatchEvent(new ScriptEvent(STATECREATE));
+    dispatchEvent(new ScriptEvent(STATE_CREATE));
   }
 
   public override function destroy():Void
