@@ -57,6 +57,14 @@ extern class WinAPI
   static function disableWindowsGhosting():Void;
 
   /**
+   * Retrieves the current working set size (in bytes) of the process.
+   *
+   * @return The size of the working set memory used by the process.
+   */
+  @:native('WINAPI_GetProcessMemoryWorkingSetSize')
+  static function getProcessMemoryWorkingSetSize():cpp.SizeT;
+
+  /**
    * Sets the dark mode for the active window.
    *
    * @param enable A boolean value indicating whether to enable (true) or disable (false) dark mode.

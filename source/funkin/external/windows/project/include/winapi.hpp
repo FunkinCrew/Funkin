@@ -39,6 +39,15 @@ void WINAPI_DisableErrorReporting();
 void WINAPI_DisableWindowsGhosting();
 
 /**
+ * @brief Retrieves the current working set size (in bytes) of the calling process.
+ *
+ * This function queries the operating system for the amount of physical memory currently allocated to the process (its working set).
+ *
+ * @return The working set size in bytes. Returns 0 if the query fails.
+ */
+size_t WINAPI_GetProcessMemoryWorkingSetSize();
+
+/**
  * @brief Sets dark mode for the active window
  * @param enable True to enable dark mode, false to disable
  */

@@ -6,7 +6,7 @@ import flixel.FlxState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.util.logging.CrashHandler;
-import funkin.ui.debug.FunkinCounter;
+import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
 #if hxvlc
@@ -82,21 +82,17 @@ class Main extends Sprite
     setupGame();
   }
 
-  var video:Video;
-  var netStream:NetStream;
-  var overlay:Sprite;
-
   /**
-   * A frame counter displayed at the top left.
+   * The debug display at the top left.
    */
-  public static var funkinCounter:FunkinCounter;
+  public static var funkinCounter:FunkinDebugDisplay;
 
   function setupGame():Void
   {
     initHaxeUI();
 
     // addChild gets called by the user settings code.
-    funkinCounter = new FunkinCounter(10, 3, 0xFFFFFF);
+    funkinCounter = new FunkinDebugDisplay(10, 3, 0xFFFFFF);
 
     #if mobile
     // Add this signal so we can reposition and resize the memory and fps counter.
