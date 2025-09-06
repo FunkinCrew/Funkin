@@ -5,6 +5,8 @@ import funkin.util.MemoryUtil;
 import funkin.ui.debug.stats.FunkinStatsGraph;
 import haxe.Timer;
 import openfl.display.Sprite;
+import openfl.display.Graphics;
+import openfl.display.Shape;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
@@ -14,8 +16,9 @@ import openfl.text.TextFormat;
 class FunkinDebugDisplay extends Sprite
 {
   static final FPS_UPDATE_DELAY:Int = 200;
+  static final INNER_RECT_DIFF:Int = 3;
+  static final OUTER_RECT_DIMENSIONS:Array<Int> = [215, 150];
 
-  var canUpdate:Bool;
   var deltaTimeout:Float;
   var times:Array<Float>;
 
@@ -24,7 +27,7 @@ class FunkinDebugDisplay extends Sprite
   var taskMemPeak:Float;
   #end
 
-  var onePercFPS:Int;
+  var background:Shape;
 
   var textDisplay:TextField;
 
@@ -36,13 +39,25 @@ class FunkinDebugDisplay extends Sprite
 
     this.x = x;
     this.y = y;
-    this.canUpdate = true;
     this.deltaTimeout = 0.0;
     this.gcMemPeak = 0.0;
     this.taskMemPeak = 0.0;
     this.times = [];
 
+    final background:Shape = new Shape();
+    background.graphics.beginFill(0x3d3f41, 0.5);
+    background.graphics.drawRect(0, 0, OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2), OUTER_RECT_DIMENSIONS[1] + (INNER_RECT_DIFF * 2));
+    background.graphics.endFill();
+    background.graphics.beginFill(0x2c2f30, 0.5);
+    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0], OUTER_RECT_DIMENSIONS[1]);
+    background.graphics.endFill();
+    addChild(background);
+
+    final othersOffset:Int = 8;
+
     textDisplay = new TextField();
+    textDisplay.x += othersOffset;
+    textDisplay.y += othersOffset;
     textDisplay.width = 500;
     textDisplay.selectable = false;
     textDisplay.mouseEnabled = false;
@@ -52,26 +67,16 @@ class FunkinDebugDisplay extends Sprite
     textDisplay.multiline = true;
     addChild(textDisplay);
 
-    fpsGraph = new FunkinStatsGraph(0, 110, 100, 25, color, "FPS Graph:");
+    fpsGraph = new FunkinStatsGraph(othersOffset, 110 + othersOffset, 100, 25, color, "FPS Graph:");
     fpsGraph.maxValue = FlxG.drawFramerate;
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
-
-    FlxG.signals.focusGained.add(function():Void {
-      canUpdate = true;
-    });
-
-    FlxG.signals.focusLost.add(function():Void {
-      canUpdate = false;
-    });
 
     updateDisplay();
   }
 
   override function __enterFrame(deltaTime:Float):Void
   {
-    if (!canUpdate) return;
-
     final currentTime:Float = Timer.stamp() * 1000;
 
     times.push(currentTime);
@@ -89,12 +94,12 @@ class FunkinDebugDisplay extends Sprite
 
     fpsGraph.update(times.length);
 
-    updateDisplay(times.length, Math.floor(fpsGraph.average()));
+    updateDisplay(times.length, Math.floor(fpsGraph.average()), Math.floor(fpsGraph.lowest()));
 
     deltaTimeout = 0.0;
   }
 
-  function updateDisplay(?currentFPS:Int = 0, ?averageFPS:Int = 0):Void
+  function updateDisplay(?currentFPS:Int = 0, ?averageFPS:Int = 0, ?lowestFPS:Int = 0):Void
   {
     final info:Array<String> = [];
 
@@ -102,10 +107,7 @@ class FunkinDebugDisplay extends Sprite
 
     info.push('AVG FPS: $averageFPS');
 
-    if (onePercFPS < currentFPS - averageFPS) onePercFPS = currentFPS;
-    else if (onePercFPS > currentFPS) onePercFPS = currentFPS;
-
-    info.push('1% LOW FPS: $onePercFPS');
+    info.push('1% LOW FPS: $lowestFPS');
 
     #if !html5
     final gcMem:Float = MemoryUtil.getGCMemory();

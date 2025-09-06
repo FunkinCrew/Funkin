@@ -85,14 +85,14 @@ class Main extends Sprite
   /**
    * The debug display at the top left.
    */
-  public static var funkinCounter:FunkinDebugDisplay;
+  public static var debugDisplay:FunkinDebugDisplay;
 
   function setupGame():Void
   {
     initHaxeUI();
 
     // addChild gets called by the user settings code.
-    funkinCounter = new FunkinDebugDisplay(10, 3, 0xFFFFFF);
+    debugDisplay = new FunkinDebugDisplay(10, 10, 0xFFFFFF);
 
     #if mobile
     // Add this signal so we can reposition and resize the memory and fps counter.
@@ -185,22 +185,22 @@ class Main extends Sprite
     #end
     final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
 
-    if (funkinCounter != null)
+    if (debugDisplay != null)
     {
-      funkinCounter.scaleX = funkinCounter.scaleY = scale;
+      debugDisplay.scaleX = debugDisplay.scaleY = scale;
 
       if (FlxG.game != null)
       {
         if (lerp)
         {
-          funkinCounter.x = flixel.math.FlxMath.lerp(funkinCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+          debugDisplay.x = flixel.math.FlxMath.lerp(debugDisplay.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
         }
         else
         {
-          funkinCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+          debugDisplay.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
         }
 
-        funkinCounter.y = FlxG.game.y + (3 * scale);
+        debugDisplay.y = FlxG.game.y + (3 * scale);
       }
     }
   }

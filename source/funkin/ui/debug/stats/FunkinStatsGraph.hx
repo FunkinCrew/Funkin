@@ -16,7 +16,7 @@ class FunkinStatsGraph extends Sprite
 {
   static inline var AXIS_COLOR:FlxColor = 0xffffff;
   static inline var AXIS_ALPHA:Float = 0.5;
-  static inline var HISTORY_MAX:Int = 30;
+  static inline var HISTORY_MAX:Int = 100;
 
   public var minValue:Float = FlxMath.MAX_VALUE_FLOAT;
   public var maxValue:Float = FlxMath.MIN_VALUE_FLOAT;

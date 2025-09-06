@@ -486,12 +486,12 @@ class Preferences
     if (show)
     {
       // Enable the debug display.
-      FlxG.game.parent.addChild(Main.funkinCounter);
+      FlxG.game.parent.addChild(Main.debugDisplay);
     }
     else
     {
       // Disable the debug display.
-      FlxG.game.parent.removeChild(Main.funkinCounter);
+      FlxG.game.parent.removeChild(Main.debugDisplay);
     }
   }
 
