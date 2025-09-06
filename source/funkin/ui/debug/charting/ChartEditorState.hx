@@ -6302,10 +6302,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (songMetadata.size() > 1)
     {
-      if (variationMetadata.playData.difficulties.length == 0)
+      if (variation != Constants.DEFAULT_VARIATION && variationMetadata.playData.difficulties.length == 0)
       {
         songMetadata.remove(variation);
         songChartData.remove(variation);
+        songMetadata.get(Constants.DEFAULT_VARIATION).playData.songVariations.remove(variation);
       }
 
       if (variation == selectedVariation)
