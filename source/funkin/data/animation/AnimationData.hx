@@ -138,4 +138,13 @@ typedef UnnamedAnimationData =
   @:default([])
   @:optional
   var frameIndices:Null<Array<Int>>;
+
+  /**
+   * The type of animation to use.
+   * Only available for texture atlases.
+   * Options: "framelabel", "symbol"
+   */
+  @:default("framelabel")
+  @:optional
+  var animType:String;
 }

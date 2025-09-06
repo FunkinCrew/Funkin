@@ -1,13 +1,14 @@
 package funkin;
 
 import openfl.utils.Future;
+import funkin.util.macro.ConsoleMacro;
 
 /**
  * A wrapper around `openfl.utils.Assets` which disallows access to the harmful functions.
  * Later we'll add Funkin-specific caching to this.
  */
 @:nullSafety
-class Assets
+class Assets implements ConsoleClass
 {
   /**
    * The assets cache.

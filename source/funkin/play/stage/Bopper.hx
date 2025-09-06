@@ -203,13 +203,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     }
   }
 
-  public function hasAnimation(id:String):Bool
-  {
-    if (this.animation == null) return false;
-
-    return this.animation.getByName(id) != null;
-  }
-
   /**
    * Ensure that a given animation exists before playing it.
    * Will gracefully check for name, then name with stripped suffixes, then fail to play.
@@ -327,25 +320,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     this.animOffsets = offsets;
   }
 
-  public function isAnimationFinished():Bool
-  {
-    return this.animation?.finished ?? false;
-  }
-
   public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
   {
     animationOffsets.set(name, [xOffset, yOffset]);
-  }
-
-  /**
-   * Returns the name of the animation that is currently playing.
-   * If no animation is playing (usually this means the character is BROKEN!),
-   *   returns an empty string to prevent NPEs.
-   */
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
   }
 
   // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
