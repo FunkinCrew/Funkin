@@ -16,6 +16,11 @@ import openfl.filters.ShaderFilter;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.ui.freeplay.dj.BaseFreeplayDJ;
+import funkin.ui.freeplay.dj.AnimateAtlasFreeplayDJ;
+import funkin.ui.freeplay.dj.SparrowFreeplayDJ;
+import funkin.ui.freeplay.dj.MultiSparrowFreeplayDJ;
+import funkin.ui.freeplay.dj.PackerFreeplayDJ;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.story.level.LevelRegistry;
@@ -177,7 +182,7 @@ class FreeplayState extends MusicBeatSubState
 
   var grpCapsules:FlxTypedGroup<SongMenuItem>;
 
-  var dj:Null<FreeplayDJ> = null;
+  var dj:Null<BaseFreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
   // For proper hitbox detection, flxanimate doesn't work with touch overlap!!
   var djHitbox:FlxObject = new FlxObject((CUTOUT_WIDTH * DJ_POS_MULTI), 320, 400, 400);
@@ -400,19 +405,23 @@ class FreeplayState extends MusicBeatSubState
 
     if (currentCharacter?.getFreeplayDJData() != null)
     {
-      dj = new FreeplayDJ((CUTOUT_WIDTH * DJ_POS_MULTI) + 640, 366, currentCharacterId);
-      exitMovers.set([dj],
-        {
-          x: -dj.width * 1.6,
-          speed: 0.5
-        });
-      add(dj);
-      exitMoversCharSel.set([dj],
-        {
-          y: -175,
-          speed: 0.8,
-          wait: 0.1
-        });
+      createFreeplayDJ((CUTOUT_WIDTH * DJ_POS_MULTI) + 640, 366, currentCharacterId);
+
+      if (dj != null)
+      {
+        exitMovers.set([dj],
+          {
+            x: -dj.width * 1.6,
+            speed: 0.5
+          });
+        add(dj);
+        exitMoversCharSel.set([dj],
+          {
+            y: -175,
+            speed: 0.8,
+            wait: 0.1
+          });
+      }
     }
 
     backingImage.shader = angleMaskShader;
@@ -682,7 +691,7 @@ class FreeplayState extends MusicBeatSubState
 
     // be careful not to "add()" things in here unless it's to a group that's already added to the state
     // otherwise it won't be properly attatched to funnyCamera (relavent code should be at the bottom of create())
-    var onDJIntroDone:Void->Void = function() {
+    var onDJIntroDone:Void->Void = () -> {
       controls.active = true;
 
       // when boyfriend hits dat shiii
@@ -835,6 +844,31 @@ class FreeplayState extends MusicBeatSubState
   {
     super.dispatchEvent(event);
     if (backingCard != null) ScriptEventDispatcher.callEvent(backingCard, event);
+  }
+
+  /**
+   * Create a FreeplayDJ for the current character.
+   * @param x The X position.
+   * @param y The Y position.
+   * @param characterId The character ID to use.
+   */
+  @:privateAccess
+  public function createFreeplayDJ(x:Float, y:Float, characterId:String):Void
+  {
+    final renderType:String = (currentCharacter?.getFreeplayDJData()?.renderType ?? "animateatlas").trim().toLowerCase();
+    final scriptClass:String = (currentCharacter?.getFreeplayDJData()?.scriptClass ?? "").trim();
+
+    switch (renderType)
+    {
+      case "animateatlas":
+        dj = (scriptClass != "") ? (ScriptedAnimateAtlasFreeplayDJ.init(scriptClass, x, y, characterId)) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
+      case "sparrow":
+        dj = (scriptClass != "") ? (ScriptedSparrowFreeplayDJ.init(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
+      case 'multisparrow':
+        dj = (scriptClass != "") ? (ScriptedMultiSparrowFreeplayDJ.init(scriptClass, x, y, characterId)) : (new MultiSparrowFreeplayDJ(x, y, characterId));
+      case 'packer':
+        dj = (scriptClass != "") ? (ScriptedPackerFreeplayDJ.init(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
+    }
   }
 
   var currentFilter:Null<SongFilter> = null;
@@ -1017,14 +1051,7 @@ class FreeplayState extends MusicBeatSubState
     changeSelection();
     changeDiff();
 
-    if (fromResultsParams?.newRank == SHIT)
-    {
-      dj?.fistPumpLossIntro();
-    }
-    else
-    {
-      dj?.fistPumpIntro();
-    }
+    (fromResultsParams?.newRank == SHIT) ? dj?.fistPumpLossIntro() : dj?.fistPumpIntro();
 
     // rankCamera.fade(FlxColor.BLACK, 0.5, true);
     rankCamera.fade(0xFF000000, 0.5, true, null, true);
@@ -1197,14 +1224,7 @@ class FreeplayState extends MusicBeatSubState
 
       funnyCam.shake(0.0045, 0.35);
 
-      if (fromResultsParams?.newRank == SHIT)
-      {
-        if (dj != null) dj.fistPumpLoss();
-      }
-      else
-      {
-        if (dj != null) dj.fistPump();
-      }
+      (fromResultsParams?.newRank == SHIT) ? dj?.fistPumpLoss() : dj?.fistPump();
 
       rankCamera.zoom = 0.8;
       funnyCam.zoom = 0.8;
@@ -1418,10 +1438,7 @@ class FreeplayState extends MusicBeatSubState
 
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
 
-    if (dj != null)
-    {
-      dj.toCharSelect();
-    }
+    dj?.toCharSelect();
 
     // Get this character's transition delay, with a reasonable default.
     var transitionDelay:Float = currentCharacter.getFreeplayDJData()?.getCharSelectTransitionDelay() ?? 0.25;
@@ -1630,7 +1647,7 @@ class FreeplayState extends MusicBeatSubState
 
     handleInputs(elapsed);
 
-    if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
+    // if (dj != null) FlxG.watch.addQuick('dj-anim', dj.getCurrentAnimation());
 
     // If the allowPicoBulletsVibration is true, trigger vibration each update (for pico shooting bullets animation).
     if (allowPicoBulletsVibration) HapticUtil.vibrate(0, 0.01, (Constants.MAX_VIBRATION_AMPLITUDE / 3) * 2.5);
@@ -1700,7 +1717,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (wheelAmount != 0)
     {
-      dj?.resetAFKTimer();
+      dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeSelection(-Math.round(wheelAmount));
     }
 
@@ -1757,7 +1774,7 @@ class FreeplayState extends MusicBeatSubState
       }
 
       spamTimer += elapsed;
-      dj?.resetAFKTimer();
+      dj?.onPlayerAction(); // dj?.resetAFKTimer();
     }
     else
     {
@@ -1778,14 +1795,14 @@ class FreeplayState extends MusicBeatSubState
 
     if (leftPressed)
     {
-      dj?.resetAFKTimer();
+      dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true, false);
     }
 
     if (rightPressed)
     {
-      dj?.resetAFKTimer();
+      dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(1);
       generateSongList(currentFilter, true, false);
     }
@@ -1831,7 +1848,8 @@ class FreeplayState extends MusicBeatSubState
     }
     // Play the confirm animation so the user knows they actually did something.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
-    if (dj != null) dj.confirm();
+    // if (dj != null) dj.confirm();
+    dj?.onConfirm();
     new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
       FlxG.switchState(() -> new ChartEditorState(
         {
@@ -1976,7 +1994,7 @@ class FreeplayState extends MusicBeatSubState
         if (SwipeUtil.swipeLeft)
         {
           draggingDifficulty = true;
-          dj?.resetAFKTimer();
+          dj?.onPlayerAction(); // dj?.resetAFKTimer();
           changeDiff(-1, false, true);
           _pressedOnSelected = false;
           FlxG.touches.flickManager.destroy();
@@ -1995,7 +2013,7 @@ class FreeplayState extends MusicBeatSubState
         else if (SwipeUtil.swipeRight)
         {
           draggingDifficulty = true;
-          dj?.resetAFKTimer();
+          dj?.onPlayerAction(); // dj?.resetAFKTimer();
           changeDiff(1, false, true);
           _pressedOnSelected = false;
           FlxG.touches.flickManager.destroy();
@@ -2106,7 +2124,7 @@ class FreeplayState extends MusicBeatSubState
     controls.active = false;
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();
-    if (dj != null) dj.onIntroDone.removeAll();
+    dj?.onIntroDone.removeAll();
 
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
@@ -2412,7 +2430,7 @@ class FreeplayState extends MusicBeatSubState
   function handleDiffBoundaryChange(change:Int):Void
   {
     if (!controls.active) return;
-    dj?.resetAFKTimer();
+    dj?.onPlayerAction(); // dj?.resetAFKTimer();
     changeDiff(change);
     generateSongList(currentFilter, true, false);
     FlxG.touches.flickManager.destroy();
@@ -2661,7 +2679,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Visual and audio effects.
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
-    if (dj != null) dj.confirm();
+    dj?.onConfirm();
 
     currentCapsule.forcePosition();
     currentCapsule.confirm();
@@ -2775,7 +2793,7 @@ class FreeplayState extends MusicBeatSubState
     {
       FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
       HapticUtil.vibrate(0, 0.01, 0.5);
-      dj?.resetAFKTimer();
+      dj?.onPlayerAction(); // dj?.resetAFKTimer();
       _pressedOnSelected = false;
     }
   }
@@ -2857,6 +2875,10 @@ class FreeplayState extends MusicBeatSubState
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void
   {
     if (daSongCapsule == null) daSongCapsule = currentCapsule;
+
+    var previewVolume:Float = 0.7;
+    if (dj != null) previewVolume *= dj.getMusicPreviewMult();
+
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -2865,7 +2887,7 @@ class FreeplayState extends MusicBeatSubState
           overrideExisting: true,
           restartTrack: false
         });
-      FlxG.sound.music.fadeIn(2, 0, 0.7);
+      FlxG.sound.music.fadeIn(2, 0, previewVolume);
     }
     else
     {
@@ -2901,8 +2923,8 @@ class FreeplayState extends MusicBeatSubState
               start: 0,
               end: 0.2
             },
-          onLoad: function() {
-            FlxG.sound.music.fadeIn(2, 0, 0.7);
+          onLoad: () -> {
+            FlxG.sound.music.fadeIn(2, 0, previewVolume);
           }
         });
       if (songDifficulty != null)
