@@ -1,7 +1,8 @@
 package funkin.ui.debug.charting.toolboxes;
 
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
+import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
@@ -25,6 +26,7 @@ import haxe.ui.events.UIEvent;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/toolboxes/metadata.xml"))
 class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 {
+  var inputSongId:TextField;
   var inputSongName:TextField;
   var inputSongArtist:TextField;
   var inputSongCharter:TextField;
@@ -59,6 +61,20 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     // TODO: Save and load this.
     this.x = 150;
     this.y = 250;
+
+    inputSongId.onChange = function(event:UIEvent) {
+      var valid:Bool = event.target.text != null && event.target.text != '' && !ChartManifestData.invalidIdRegex.match(event.target.text);
+
+      if (valid)
+      {
+        inputSongId.removeClass('invalid-value');
+        chartEditorState.songManifestData.songId = event.target.text;
+      }
+      else
+      {
+        chartEditorState._songManifestData = null;
+      }
+    };
 
     inputSongName.onChange = function(event:UIEvent) {
       var valid:Bool = event.target.text != null && event.target.text != '';
@@ -192,6 +208,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   {
     super.refresh();
 
+    inputSongId.value = chartEditorState.songManifestData.songId;
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;

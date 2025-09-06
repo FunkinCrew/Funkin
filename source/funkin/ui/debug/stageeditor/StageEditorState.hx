@@ -13,7 +13,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.display.FlxGridOverlay;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
 import funkin.input.Cursor;
 import haxe.ui.backend.flixel.UIState;

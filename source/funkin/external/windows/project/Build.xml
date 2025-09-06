@@ -24,7 +24,7 @@
         <lib name="-ladvapi32" />
     </section>
 
-    <section if="windows" unless="mingw">
+    <section unless="mingw">
         <lib name="user32.lib" />
         <lib name="kernel32.lib" />
         <lib name="dwmapi.lib" />

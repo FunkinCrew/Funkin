@@ -139,7 +139,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 
     for (targetSongId in songList)
     {
-      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
       if (songData == null) continue;
 
       var songName:Null<String> = songData.getDifficulty('normal')?.songName;

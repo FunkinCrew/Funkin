@@ -362,7 +362,7 @@ class StoryMenuState extends MusicBeatState
           changeLevel(-levelList.length);
           changeDifficulty(0);
         }
-        
+
         #if !html5
         if (FlxG.mouse.wheel != 0)
         {
@@ -602,7 +602,7 @@ class StoryMenuState extends MusicBeatState
 
     var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
 
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();

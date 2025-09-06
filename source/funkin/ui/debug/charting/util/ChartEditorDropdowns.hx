@@ -4,12 +4,12 @@ import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.event.SongEvent;
 import funkin.data.stage.StageRegistry;
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
 import haxe.ui.components.DropDown;
 import funkin.play.stage.Stage;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.event.SongEventRegistry;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 
 /**
  * Functions for populating dropdowns based on game data.

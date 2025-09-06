@@ -8,6 +8,7 @@ import sys.io.File;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ds.Map;
+import haxe.xml.Printer;
 
 using StringTools;
 
@@ -30,13 +31,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.7.3";
+  static final VERSION:String = "0.7.4";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 2;
+  static final BUILD_NUMBER:Int = 53;
 
   /**
    * The game's name. Used as the default window title.
@@ -474,6 +475,7 @@ class Project extends HXProject
     envConfig = readEnvironmentFile("./.env");
 
     flair();
+
     configureApp();
 
     displayTarget();
@@ -487,7 +489,11 @@ class Project extends HXProject
     configureHaxelibs();
     configureASTCTextures();
     configureAssets();
-    configureIcons();
+
+    if (!isLinux())
+    {
+      configureIcons();
+    }
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
     {
@@ -503,8 +509,6 @@ class Project extends HXProject
     {
       configureIOS();
     }
-
-    info("Done configuring project.");
   }
 
   /**
@@ -861,14 +865,15 @@ class Project extends HXProject
     var unicodeCheck:String = "✓ ";
     var unicodeCross:String = "× ";
 
-    #if windows && !target.unicode
-    // lime build tools uses neko (unless compiling with `-eval`), and neko on windows doesn't support UTF8/unicode characters
-    // so we need to remove our cute emoji!
-    unicodeCheck = "o ";
-    unicodeCross = "x ";
-
-    #end
-
+    if (isWindowsHost())
+    {
+      #if (!target.unicode)
+      // lime build tools uses neko (unless compiling with `-eval`), and neko on windows doesn't support UTF8/unicode characters
+      // so we need to remove our cute emoji!
+      unicodeCheck = "o ";
+      unicodeCross = "x ";
+      #end
+    }
 
     for (flagStr in this.haxedefs.keys())
     {
@@ -1028,11 +1033,11 @@ class Project extends HXProject
     // we use a dedicated 'tracy' folder, since it generally needs a recompile when in use
     if (FEATURE_DEBUG_TRACY.isEnabled(this)) buildDir += "-tracy";
 
+    info('Output directory: $buildDir');
+
     // trailing slash might not be needed, works fine on macOS without it, but I haven't tested on Windows!
     buildDir += "/";
 
-    info('Output directory: $buildDir');
-    // setenv('BUILD_DIR', buildDir);
     app.path = buildDir;
   }
 
@@ -1050,47 +1055,37 @@ class Project extends HXProject
         keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
       }
 
-      Reflect.setField(config.get('android.manifest'), 'xmlns:tools', 'http://schemas.android.com/tools');
-
-      final permissionsConfig:Array<String> = [
-        '<uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />',
-        '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />'
-      ];
-
-      final xmlChildren:Null<Array<String>> = config.get('android.manifest').xmlChildren;
-
-      if (xmlChildren != null)
-      {
-        config.get('android.manifest').xmlChildren = xmlChildren.concat(permissionsConfig);
-      }
-      else
-      {
-        config.get('android.manifest').xmlChildren = permissionsConfig;
-      }
-
       if (isBundle())
       {
         config.set("android.gradle-project-directory", "bin-bundle");
       }
     }
 
-    final modsFolderProvider = [
-      '<provider android:authorities="$PACKAGE_NAME.docprovider" android:name="funkin.provider.DataFolderProvider" android:grantUriPermissions="true" android:exported="true" android:permission="android.permission.MANAGE_DOCUMENTS">',
-      '  <intent-filter>',
-      '    <action android:name="android.content.action.DOCUMENTS_PROVIDER" />',
-      '  </intent-filter>',
-      '</provider>'
-    ];
+    final modsFolderProvider:Xml = Xml.createElement('provider');
+    modsFolderProvider.set('android:authorities', '$PACKAGE_NAME.docprovider');
+    modsFolderProvider.set('android:name', 'funkin.provider.DataFolderProvider');
+    modsFolderProvider.set('android:grantUriPermissions', 'true');
+    modsFolderProvider.set('android:exported', 'true');
+    modsFolderProvider.set('android:permission', 'android.permission.MANAGE_DOCUMENTS');
 
-    final xmlChildren:Null<Array<String>> = config.get('android.application').xmlChildren;
+    final intentFilter:Xml = Xml.createElement('intent-filter');
 
-    if (xmlChildren != null)
+    final action:Xml = Xml.createElement('action');
+    action.set('android:name', 'android.content.action.DOCUMENTS_PROVIDER');
+    intentFilter.addChild(action);
+
+    modsFolderProvider.addChild(intentFilter);
+
+    @:nullSafety(Off)
     {
-      config.get('android.application').xmlChildren = xmlChildren.concat(modsFolderProvider);
-    }
-    else
-    {
-      config.get('android.application').xmlChildren = modsFolderProvider;
+      if (config.get('android.application').xmlChildren != null)
+      {
+        config.get('android.application').xmlChildren.push(Printer.print(modsFolderProvider));
+      }
+      else
+      {
+        config.get('android.application').xmlChildren = [Printer.print(modsFolderProvider)];
+      }
     }
 
     final extensions:Null<Array<String>> = config.getArrayString('android.extension');
@@ -1293,7 +1288,14 @@ class Project extends HXProject
     addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
     addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
 
-    info('Done configuring assets.');
+    if (shouldEmbed)
+    {
+      info('Done embedding assets.');
+    }
+    else
+    {
+      info('Done including assets.');
+    }
   }
 
   /**
@@ -1348,7 +1350,7 @@ class Project extends HXProject
    */
   function configureASTCTextures()
   {
-    if (command != "display")
+    if (!(isDisplay() || isClean()))
     {
       readASTCExclusion();
 
@@ -1412,6 +1414,21 @@ class Project extends HXProject
     return this.architectures.contains(Architecture.X64);
   }
 
+  public function isWindowsHost():Bool
+  {
+    return System.hostPlatform == WINDOWS;
+  }
+
+  public function isMacHost():Bool
+  {
+    return System.hostPlatform == MAC;
+  }
+
+  public function isLinuxHost():Bool
+  {
+    return System.hostPlatform == LINUX;
+  }
+
   public function isWindows():Bool
   {
     return this.target == Platform.WINDOWS;
@@ -1470,6 +1487,11 @@ class Project extends HXProject
   public function isDisplay():Bool
   {
     return this.command == "display";
+  }
+
+  public function isClean():Bool
+  {
+    return this.command == "clean";
   }
 
   public function isDebug():Bool
@@ -1764,7 +1786,7 @@ class Project extends HXProject
    */
   public function info(message:String):Void
   {
-    if (command != "display")
+    if (!(isDisplay() || isClean()))
     {
       Sys.println('[INFO] ${message}');
     }
@@ -1869,7 +1891,7 @@ class Project extends HXProject
 
     Sys.command('haxelib', args);
 
-    info('Finished compressing ASTC textures!');
+    info('Done compressing ASTC textures.');
   }
 }
 

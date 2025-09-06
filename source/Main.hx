@@ -30,7 +30,6 @@ class Main extends Sprite
   var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
   var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
   var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-  var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
   // You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -121,7 +120,16 @@ class Main extends Sprite
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.init();
+    Handle.initAsync(function(success:Bool):Void {
+      if (success)
+      {
+        trace('[HXVLC] LibVLC instance initialized!');
+      }
+      else
+      {
+        trace('[HXVLC] LibVLC instance failed to initialize!');
+      }
+    });
     #end
 
     // Don't call anything from the preferences until the save is loaded!
@@ -133,7 +141,8 @@ class Main extends Sprite
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
-    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
+    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
+      (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
     // create() in there, which gets called when it's added to the stage
@@ -145,6 +154,7 @@ class Main extends Sprite
 
     #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+    funkin.util.macro.ConsoleMacro.init();
     #end
 
     #if !html5

@@ -99,7 +99,7 @@ class DataParse
       case JArray(values):
         return Either.Left(legacyNoteSectionArray(json, name));
       case JObject(fields):
-        return Either.Right(cast Tools.getValue(json));
+        return Either.Right(legacyNoteData(json, name));
       default:
         throw 'Expected property $name to be note data, but it was ${json.value}.';
     }
@@ -121,7 +121,7 @@ class DataParse
     }
   }
 
-  public static function backdropData(json:Json, name:String):funkin.data.dialogue.conversation.ConversationData.BackdropData
+  public static function backdropData(json:Json, name:String):funkin.data.dialogue.ConversationData.BackdropData
   {
     switch (json.value)
     {
@@ -152,7 +152,7 @@ class DataParse
     }
   }
 
-  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.conversation.ConversationData.OutroData>
+  public static function outroData(json:Json, name:String):Null<funkin.data.dialogue.ConversationData.OutroData>
   {
     switch (json.value)
     {

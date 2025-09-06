@@ -4,7 +4,7 @@ import funkin.input.Cursor;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.FileUtil;
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
 import haxe.io.Path;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
