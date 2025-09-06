@@ -1424,9 +1424,6 @@ class PlayState extends MusicBeatSubState
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);
 
-    // Dispatch event to note kind scripts
-    NoteKindManager.callEvent(event);
-
     // Dispatch event to stage script.
     ScriptEventDispatcher.callEvent(currentStage, event);
 
@@ -1438,6 +1435,9 @@ class PlayState extends MusicBeatSubState
 
     // Dispatch event to conversation script.
     ScriptEventDispatcher.callEvent(currentConversation, event);
+
+    // Dispatch event to note kind scripts
+    NoteKindManager.callEvent(event);
   }
 
   /**
