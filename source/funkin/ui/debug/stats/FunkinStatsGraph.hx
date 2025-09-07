@@ -60,18 +60,22 @@ class FunkinStatsGraph extends Sprite
   function drawAxes():Void
   {
     axis.graphics.clear();
+
     axis.graphics.lineStyle(1, AXIS_COLOR, AXIS_ALPHA, false, null, null, MITER, 255);
 
     axis.graphics.moveTo(0, 0);
+
     axis.graphics.lineTo(0, axisHeight);
 
     axis.graphics.moveTo(0, axisHeight);
+
     axis.graphics.lineTo(axisWidth, axisHeight);
   }
 
   function drawGraph():Void
   {
     graphics.clear();
+
     graphics.lineStyle(1, graphColor, 1, false, null, null, MITER, 255);
 
     if (history.length == 0)
@@ -87,9 +91,9 @@ class FunkinStatsGraph extends Sprite
     {
       final pointY:Float = axisHeight - ((history[i] - minValue) * scale) - 1;
 
-      if (i == 0) graphics.moveTo(axis.x + 1, pointY);
+      if (i == 0) graphics.moveTo(axis.x, pointY);
 
-      graphics.lineTo(axis.x + 1 + (i * inc), pointY);
+      graphics.lineTo(axis.x + (i * inc), pointY);
     }
   }
 

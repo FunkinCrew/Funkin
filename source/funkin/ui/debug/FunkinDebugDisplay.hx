@@ -62,18 +62,22 @@ class FunkinDebugDisplay extends Sprite
     background.graphics.endFill();
     addChild(background);
 
-    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + 22, 100, 25, color);
+    final graphsWidth:Int = OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2) - (OTHERS_OFFSET * 3);
+    final graphsHeight:Int = 25;
+
+    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + 22, graphsWidth, graphsHeight, color);
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
 
     #if !html5
-    gcMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (fpsGraph.y + fpsGraph.axisHeight) + 22), 100, 25, color);
+    gcMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (fpsGraph.y + fpsGraph.axisHeight) + 22), graphsWidth, graphsHeight, color);
     gcMemGraph.minValue = 0;
     addChild(gcMemGraph);
 
     if (MemoryUtil.supportsTaskMem())
     {
-      taskMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (gcMemGraph.y + gcMemGraph.axisHeight) + 22), 100, 25, color);
+      taskMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (gcMemGraph.y + gcMemGraph.axisHeight) + 22), graphsWidth, graphsHeight,
+        color);
       taskMemGraph.minValue = 0;
       addChild(taskMemGraph);
     }
