@@ -246,6 +246,7 @@ class FreeplayState extends MusicBeatSubState
   var prepForNewRank:Bool = false;
   var styleData:Null<FreeplayStyle> = null;
   var fromCharSelect:Bool = false;
+  var forceSkipIntro:Bool = false;
 
   public var freeplayArrow:Null<FlxText>;
 
@@ -277,7 +278,11 @@ class FreeplayState extends MusicBeatSubState
 
     super(FlxColor.TRANSPARENT);
 
-    if (stickers?.members != null) stickerSubState = stickers;
+    if (stickers?.members != null)
+    {
+      stickerSubState = stickers;
+      forceSkipIntro = true;
+    }
 
     var backingCardPrep:Null<BackingCard> = null;
 
@@ -498,7 +503,7 @@ class FreeplayState extends MusicBeatSubState
     var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 164, FlxColor.BLACK);
     overhangStuff.y -= overhangStuff.height;
 
-    if (fromCharSelect)
+    if (fromCharSelect || forceSkipIntro)
     {
       blackOverlayBullshitLOLXD.visible = false;
       overhangStuff.y = -100;
@@ -764,7 +769,7 @@ class FreeplayState extends MusicBeatSubState
         albumRoll.skipIntro();
         albumRoll.showStars();
       }
-      else if (fromCharSelect)
+      else if (fromCharSelect || forceSkipIntro)
       {
         albumRoll.skipIntro();
         albumRoll.showStars();
@@ -813,9 +818,9 @@ class FreeplayState extends MusicBeatSubState
       rankCamera.fade(0xFF000000, 0, false, null, true);
     }
 
-    if (fromCharSelect)
+    if (fromCharSelect || forceSkipIntro)
     {
-      enterFromCharSel();
+      if (fromCharSelect) enterFromCharSel();
       onDJIntroDone();
     }
     else
@@ -903,7 +908,7 @@ class FreeplayState extends MusicBeatSubState
       capsuleOnOpenRandom(randomCapsule);
     };
 
-    if (fromCharSelect || noJumpIn) randomCapsule.forcePosition();
+    if (fromCharSelect || forceSkipIntro || noJumpIn) randomCapsule.forcePosition();
     else
     {
       randomCapsule.initJumpIn(0, force);
@@ -933,7 +938,7 @@ class FreeplayState extends MusicBeatSubState
       funnyMenu.newText.animation.curAnim.curFrame = 45 - ((i * 4) % 45);
 
       // Stop the bounce-in animation when returning to freeplay from the character selection screen, or if noJumpIn is set to true
-      if (fromCharSelect || noJumpIn) funnyMenu.forcePosition();
+      if (fromCharSelect || forceSkipIntro || noJumpIn) funnyMenu.forcePosition();
       else
         funnyMenu.initJumpIn(0, force);
 
@@ -1111,7 +1116,6 @@ class FreeplayState extends MusicBeatSubState
     FlxTween.tween(capsuleToRank.blurredRanking, {"scale.x": 0.9, "scale.y": 0.9}, 0.1);
 
     new FlxTimer().start(0.1, _ -> {
-
       if (fromResults?.oldRank != null)
       {
         capsuleToRank.fakeRanking.visible = false;
