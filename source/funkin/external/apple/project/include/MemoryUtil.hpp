@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 /**
  * Retrieves the current process's resident set size (RSS) in bytes on Apple platforms.
  *

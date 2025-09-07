@@ -5,11 +5,12 @@
 
 void Apple_AudioSession_Initialize()
 {
+  #if TARGET_OS_IOS
   AVAudioSession *session = [AVAudioSession sharedInstance];
 
   NSError *error;
 
-  [session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeDefault options:AVAudioSessionCategoryOptionAllowBluetoothA2DP|AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers error:&error];
+  [session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeDefault options:AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers error:&error];
 
   if (@available(iOS 17.0, *))
   {
@@ -23,16 +24,19 @@ void Apple_AudioSession_Initialize()
 
   if (error)
     NSLog(@"Unable to set category of audio session: %@", error);
+  #endif
 }
 
 void Apple_AudioSession_SetActive(bool active)
 {
+  #if TARGET_OS_IOS
   AVAudioSession *session = [AVAudioSession sharedInstance];
 
   NSError *error;
 
-  [session setActive:YES error:&error];
+  [session setActive:active error:&error];
 
   if (error)
     NSLog(@"Unable to set active of audio session: %@", error);
+  #endif
 }

@@ -19,7 +19,7 @@
 	</files>
 
 	<target id="haxe">
-		<vflag name="-framework" value="UIKit" />
+		<vflag name="-framework" value="UIKit" unless="macos" />
 		<vflag name="-framework" value="Foundation" />
 		<vflag name="-framework" value="AVFAudio" />
 
