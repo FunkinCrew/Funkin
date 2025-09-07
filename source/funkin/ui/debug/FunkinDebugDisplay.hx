@@ -16,12 +16,13 @@ class FunkinDebugDisplay extends Sprite
 {
   static final UPDATE_DELAY:Int = 100;
   static final INNER_RECT_DIFF:Int = 3;
-  static final OUTER_RECT_DIMENSIONS:Array<Int> = [225, 200];
+  static final OUTER_RECT_DIMENSIONS:Array<Int> = [234, 201];
   static final OTHERS_OFFSET:Int = 8;
 
   var currentFPS:Int;
   var deltaTimeout:Float;
   var times:Array<Float>;
+  var color:Int;
 
   #if !html5
   var gcMem:Float;
@@ -39,6 +40,8 @@ class FunkinDebugDisplay extends Sprite
 
   var infoDisplay:TextField;
 
+  public var isAdvanced(default, set):Bool = false;
+
   public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
   {
     super();
@@ -52,20 +55,55 @@ class FunkinDebugDisplay extends Sprite
     this.taskMem = 0.0;
     this.taskMemPeak = 0.0;
     this.times = [];
+    this.color = color;
+    this.isAdvanced = false;
+  }
 
+  public function set_isAdvanced(value:Bool):Bool
+  {
+    buildDebugDisplay(value);
+
+    return isAdvanced = value;
+  }
+
+  public function buildDebugDisplay(advanced:Bool):Void
+  {
+    removeChildren(0, numChildren);
+
+    final BG_HEIGHT_MULTIPLIER:Float = advanced ? 1 : (MemoryUtil.supportsTaskMem()) ? 0.3 : 0.2;
     background = new Shape();
     background.graphics.beginFill(0x3d3f41, 0.5);
-    background.graphics.drawRect(0, 0, OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2), OUTER_RECT_DIMENSIONS[1] + (INNER_RECT_DIFF * 2));
+    background.graphics.drawRect(0, 0, OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2),
+      (OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER) + (INNER_RECT_DIFF * 2));
     background.graphics.endFill();
     background.graphics.beginFill(0x2c2f30, 0.5);
-    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0], OUTER_RECT_DIMENSIONS[1]);
+    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0], OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER);
     background.graphics.endFill();
     addChild(background);
 
+    if (advanced)
+    {
+      createAdvancedElements();
+
+      updateFPSGraph();
+      updateGcMemGraph();
+      updateTaskMemGraph();
+      updateAdvancedDisplay();
+    }
+    else
+    {
+      createSimpleElements();
+      updateSimpleDisplay();
+    }
+  }
+
+  function createAdvancedElements():Void
+  {
     final graphsWidth:Int = OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2) - (OTHERS_OFFSET * 3);
     final graphsHeight:Int = 25;
 
-    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + 22, graphsWidth, graphsHeight, color);
+    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + 49, graphsWidth, graphsHeight, color);
+    fpsGraph.textDisplay.y = -49;
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
 
@@ -82,22 +120,13 @@ class FunkinDebugDisplay extends Sprite
       addChild(taskMemGraph);
     }
     #end
+  }
 
+  function createSimpleElements():Void
+  {
     infoDisplay = new TextField();
-
     infoDisplay.x = OTHERS_OFFSET;
-
-    if (taskMemGraph != null)
-    {
-      infoDisplay.y = taskMemGraph.y + taskMemGraph.axisHeight;
-    }
-    else if (gcMemGraph != null)
-    {
-      infoDisplay.y = gcMemGraph.y + gcMemGraph.axisHeight;
-    }
-    else
-      infoDisplay.y = fpsGraph.y + fpsGraph.axisHeight;
-
+    infoDisplay.y = OTHERS_OFFSET;
     infoDisplay.width = 500;
     infoDisplay.selectable = false;
     infoDisplay.mouseEnabled = false;
@@ -107,11 +136,6 @@ class FunkinDebugDisplay extends Sprite
     infoDisplay.multiline = true;
 
     addChild(infoDisplay);
-
-    updateFPSGraph();
-    updateGcMemGraph();
-    updateTaskMemGraph();
-    updateDisplay();
   }
 
   override function __enterFrame(deltaTime:Float):Void
@@ -133,17 +157,28 @@ class FunkinDebugDisplay extends Sprite
 
     currentFPS = times.length;
 
-    updateFPSGraph();
-    updateGcMemGraph();
-    updateTaskMemGraph();
-    updateDisplay();
+    if (isAdvanced)
+    {
+      updateFPSGraph();
+      updateGcMemGraph();
+      updateTaskMemGraph();
+      updateAdvancedDisplay();
+    }
+    else
+    {
+      updateSimpleDisplay();
+    }
 
     deltaTimeout = 0.0;
   }
 
-  function updateDisplay():Void
+  function updateAdvancedDisplay():Void
   {
-    fpsGraph.textDisplay.text = 'FPS: $currentFPS';
+    final info:Array<String> = [];
+    info.push('FPS: $currentFPS');
+    info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
+    info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
+    fpsGraph.textDisplay.text = info.join('\n');
 
     #if !html5
     gcMemGraph.textDisplay.text = 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}';
@@ -153,10 +188,39 @@ class FunkinDebugDisplay extends Sprite
       taskMemGraph.textDisplay.text = 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}';
     }
     #end
+  }
+
+  function updateSimpleDisplay():Void
+  {
+    if (infoDisplay == null) return;
 
     final info:Array<String> = [];
-    info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
-    info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
+
+    info.push('FPS: $currentFPS');
+
+    #if !html5
+    gcMem = MemoryUtil.getGCMemory();
+
+    if (gcMem > gcMemPeak)
+    {
+      gcMemPeak = gcMem;
+    }
+
+    info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
+
+    if (MemoryUtil.supportsTaskMem())
+    {
+      taskMem = MemoryUtil.getTaskMemory();
+
+      if (taskMem > taskMemPeak)
+      {
+        taskMemPeak = taskMem;
+      }
+
+      info.push('TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
+    }
+    #end
+
     infoDisplay.text = info.join('\n');
   }
 
@@ -194,4 +258,24 @@ class FunkinDebugDisplay extends Sprite
     }
   }
   #end
+}
+
+enum abstract DebugDisplayMode(Int) from Int to Int
+{
+  /**
+   * Debug display is disabled.
+   */
+  var OFF = 0;
+
+  /**
+   * Simple debug display.
+   * FPS and Memory counters only.
+   */
+  var SIMPLE = 1;
+
+  /**
+   * Advanced debug display.
+   * Full FPS and Memory info.
+   */
+  var ADVANCED = 2;
 }

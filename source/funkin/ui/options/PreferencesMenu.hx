@@ -16,6 +16,7 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 #if mobile
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
@@ -145,9 +146,18 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
     #if !mobile
-    createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
+    createPrefItemEnum('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', [
+      "Advanced" => DebugDisplayMode.ADVANCED,
+      "Simple" => DebugDisplayMode.SIMPLE,
+      "Off" => DebugDisplayMode.OFF
+    ], function(key:String, value:DebugDisplayMode):Void {
       Preferences.debugDisplay = value;
-    }, Preferences.debugDisplay);
+    }, switch (Preferences.debugDisplay)
+      {
+        case DebugDisplayMode.SIMPLE: "Simple";
+        case DebugDisplayMode.ADVANCED: "Advanced";
+        default: "Off";
+      });
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
