@@ -14,25 +14,30 @@ import openfl.text.TextFormat;
  */
 class FunkinDebugDisplay extends Sprite
 {
-  static final FPS_UPDATE_DELAY:Int = 200;
+  static final UPDATE_DELAY:Int = 100;
   static final INNER_RECT_DIFF:Int = 3;
-  static final OUTER_RECT_DIMENSIONS:Array<Int> = [215, 150];
+  static final OUTER_RECT_DIMENSIONS:Array<Int> = [225, 200];
   static final OTHERS_OFFSET:Int = 8;
 
+  var currentFPS:Int;
   var deltaTimeout:Float;
-
   var times:Array<Float>;
 
   #if !html5
+  var gcMem:Float;
   var gcMemPeak:Float;
+
+  var taskMem:Float;
   var taskMemPeak:Float;
   #end
 
   var background:Shape;
 
-  var textDisplay:TextField;
-
   var fpsGraph:FunkinStatsGraph;
+  var gcMemGraph:FunkinStatsGraph;
+  var taskMemGraph:FunkinStatsGraph;
+
+  var infoDisplay:TextField;
 
   public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
   {
@@ -40,8 +45,11 @@ class FunkinDebugDisplay extends Sprite
 
     this.x = x;
     this.y = y;
+    this.currentFPS = 0;
     this.deltaTimeout = 0.0;
+    this.gcMem = 0.0;
     this.gcMemPeak = 0.0;
+    this.taskMem = 0.0;
     this.taskMemPeak = 0.0;
     this.times = [];
 
@@ -54,23 +62,51 @@ class FunkinDebugDisplay extends Sprite
     background.graphics.endFill();
     addChild(background);
 
-    textDisplay = new TextField();
-    textDisplay.x += OTHERS_OFFSET;
-    textDisplay.y += OTHERS_OFFSET;
-    textDisplay.width = 500;
-    textDisplay.selectable = false;
-    textDisplay.mouseEnabled = false;
-    textDisplay.defaultTextFormat = new TextFormat('Monsterrat', 12, color, JUSTIFY);
-    textDisplay.antiAliasType = NORMAL;
-    textDisplay.sharpness = 100;
-    textDisplay.multiline = true;
-    addChild(textDisplay);
-
-    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, 110 + OTHERS_OFFSET, 100, 25, color, 'FPS Graph:');
-    fpsGraph.maxValue = FlxG.drawFramerate;
+    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + 22, 100, 25, color);
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
 
+    #if !html5
+    gcMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (fpsGraph.y + fpsGraph.axisHeight) + 22), 100, 25, color);
+    gcMemGraph.minValue = 0;
+    addChild(gcMemGraph);
+
+    if (MemoryUtil.supportsTaskMem())
+    {
+      taskMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (gcMemGraph.y + gcMemGraph.axisHeight) + 22), 100, 25, color);
+      taskMemGraph.minValue = 0;
+      addChild(taskMemGraph);
+    }
+    #end
+
+    infoDisplay = new TextField();
+
+    infoDisplay.x = OTHERS_OFFSET;
+
+    if (taskMemGraph != null)
+    {
+      infoDisplay.y = taskMemGraph.y + taskMemGraph.axisHeight;
+    }
+    else if (gcMemGraph != null)
+    {
+      infoDisplay.y = gcMemGraph.y + gcMemGraph.axisHeight;
+    }
+    else
+      infoDisplay.y = fpsGraph.y + fpsGraph.axisHeight;
+
+    infoDisplay.width = 500;
+    infoDisplay.selectable = false;
+    infoDisplay.mouseEnabled = false;
+    infoDisplay.defaultTextFormat = new TextFormat('Monsterrat', 12, color, JUSTIFY);
+    infoDisplay.antiAliasType = NORMAL;
+    infoDisplay.sharpness = 100;
+    infoDisplay.multiline = true;
+
+    addChild(infoDisplay);
+
+    updateFPSGraph();
+    updateGcMemGraph();
+    updateTaskMemGraph();
     updateDisplay();
   }
 
@@ -85,52 +121,73 @@ class FunkinDebugDisplay extends Sprite
       times.shift();
     }
 
-    if (deltaTimeout < FPS_UPDATE_DELAY)
+    if (deltaTimeout < UPDATE_DELAY)
     {
       deltaTimeout += deltaTime;
       return;
     }
 
-    fpsGraph.update(times.length);
+    currentFPS = times.length;
 
-    updateDisplay(times.length, Math.floor(fpsGraph.average()), Math.floor(fpsGraph.lowest()));
+    updateFPSGraph();
+    updateGcMemGraph();
+    updateTaskMemGraph();
+    updateDisplay();
 
     deltaTimeout = 0.0;
   }
 
-  function updateDisplay(?currentFPS:Int = 0, ?averageFPS:Int = 0, ?lowestFPS:Int = 0):Void
+  function updateDisplay():Void
   {
-    final info:Array<String> = [];
-
-    info.push('FPS: $currentFPS');
-
-    info.push('AVG FPS: $averageFPS');
-
-    info.push('1% LOW FPS: $lowestFPS');
+    fpsGraph.textDisplay.text = 'FPS: $currentFPS';
 
     #if !html5
-    final gcMem:Float = MemoryUtil.getGCMemory();
+    gcMemGraph.textDisplay.text = 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}';
 
-    if (gcMem > gcMemPeak)
+    if (taskMemGraph != null)
     {
-      gcMemPeak = gcMem;
-    }
-
-    info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
-
-    if (MemoryUtil.supportsTaskMem())
-    {
-      final taskMem:Float = MemoryUtil.getTaskMemory();
-
-      if (taskMem > taskMemPeak)
-      {
-        taskMemPeak = taskMem;
-      }
-
-      info.push('TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
+      taskMemGraph.textDisplay.text = 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}';
     }
     #end
 
-    textDisplay.text = info.join('\n');
+    final info:Array<String> = [];
+    info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
+    info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
+    infoDisplay.text = info.join('\n');
   }
+
+  function updateFPSGraph(?currentFPS:Int = 0):Void
+  {
+    fpsGraph.maxValue = FlxG.drawFramerate;
+    fpsGraph.update(times.length);
+  }
+
+  #if !html5
+  function updateGcMemGraph(?currentFPS:Int = 0):Void
+  {
+    gcMem = MemoryUtil.getGCMemory();
+
+    if (gcMem > gcMemPeak)
+    {
+      gcMemGraph.maxValue = gcMemPeak = gcMem;
+    }
+
+    gcMemGraph.update(gcMem);
+  }
+
+  function updateTaskMemGraph(?currentFPS:Int = 0):Void
+  {
+    if (taskMemGraph != null)
+    {
+      taskMem = MemoryUtil.getTaskMemory();
+
+      if (taskMem > taskMemPeak)
+      {
+        taskMemGraph.maxValue = taskMemPeak = taskMem;
+      }
+
+      taskMemGraph.update(taskMem);
+    }
+  }
+  #end
 }

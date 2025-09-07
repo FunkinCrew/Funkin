@@ -1,17 +1,12 @@
 package funkin.ui.debug.stats;
 
-import openfl.display.Graphics;
+import flixel.math.FlxMath;
+import flixel.util.FlxColor;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
-import flixel.math.FlxMath;
-import flixel.util.FlxColor;
-import flixel.util.FlxDestroyUtil;
 
-/**
- * This is a modified StatsGraph class for Funkin.
- */
 class FunkinStatsGraph extends Sprite
 {
   static inline var AXIS_COLOR:FlxColor = 0xffffff;
@@ -19,122 +14,145 @@ class FunkinStatsGraph extends Sprite
   static inline var HISTORY_MAX:Int = 100;
 
   public var minValue:Float = FlxMath.MAX_VALUE_FLOAT;
+
   public var maxValue:Float = FlxMath.MIN_VALUE_FLOAT;
 
   public var graphColor:FlxColor;
 
   public var history:Array<Float> = [];
 
-  var textDisplay:TextField;
+  public var textDisplay:TextField;
 
-  var _axis:Shape;
-  var _width:Int;
-  var _height:Int;
+  public var axis:Shape;
 
-  public function new(X:Int, Y:Int, Width:Int, Height:Int, GraphColor:FlxColor, name:String)
+  public var axisWidth:Int;
+
+  public var axisHeight:Int;
+
+  public function new(x:Int, y:Int, width:Int, height:Int, graphColor:FlxColor):Void
   {
     super();
-    x = X;
-    y = Y;
-    _width = Width;
-    _height = Height;
-    graphColor = GraphColor;
+
+    this.x = x;
+    this.y = y;
+    this.graphColor = graphColor;
+    this.axisWidth = width;
+    this.axisHeight = height;
 
     textDisplay = new TextField();
-    textDisplay.y -= 22;
     textDisplay.width = 500;
+    textDisplay.y -= 22;
     textDisplay.selectable = false;
     textDisplay.mouseEnabled = false;
     textDisplay.defaultTextFormat = new TextFormat('Monsterrat', 12, graphColor, JUSTIFY);
     textDisplay.antiAliasType = NORMAL;
     textDisplay.sharpness = 100;
     textDisplay.multiline = true;
-    textDisplay.text = name;
     addChild(textDisplay);
 
-    _axis = new Shape();
-    _axis.x += 4;
-
-    addChild(_axis);
+    axis = new Shape();
+    axis.x += 4;
+    addChild(axis);
 
     drawAxes();
   }
 
-  /**
-   * Redraws the axes of the graph.
-   */
   function drawAxes():Void
   {
-    var gfx = _axis.graphics;
-    gfx.clear();
-    gfx.lineStyle(1, AXIS_COLOR, AXIS_ALPHA);
+    axis.graphics.clear();
+    axis.graphics.lineStyle(1, AXIS_COLOR, AXIS_ALPHA, false, null, null, MITER, 255);
 
-    // y-Axis
-    gfx.moveTo(0, 0);
-    gfx.lineTo(0, _height);
+    axis.graphics.moveTo(0, 0);
+    axis.graphics.lineTo(0, axisHeight);
 
-    // x-Axis
-    gfx.moveTo(0, _height);
-    gfx.lineTo(_width, _height);
+    axis.graphics.moveTo(0, axisHeight);
+    axis.graphics.lineTo(axisWidth, axisHeight);
   }
 
-  /**
-   * Redraws the graph based on the values stored in the history.
-   */
   function drawGraph():Void
   {
-    var gfx:Graphics = graphics;
-    gfx.clear();
-    gfx.lineStyle(1, graphColor, 1);
+    graphics.clear();
+    graphics.lineStyle(1, graphColor, 1, false, null, null, MITER, 255);
 
-    var inc:Float = _width / (HISTORY_MAX - 1);
+    if (history.length == 0)
+    {
+      return;
+    }
+
+    var inc:Float = axisWidth / (HISTORY_MAX - 1);
     var range:Float = Math.max(maxValue - minValue, maxValue * 0.1);
-    var graphX = _axis.x + 1;
+    var scale:Float = axisHeight / range;
 
     for (i in 0...history.length)
     {
-      var value = (history[i] - minValue) / range;
+      final pointY:Float = axisHeight - ((history[i] - minValue) * scale) - 1;
 
-      var pointY = (-value * _height - 1) + _height;
-      if (i == 0) gfx.moveTo(graphX, _axis.y + pointY);
-      gfx.lineTo(graphX + (i * inc), pointY);
+      if (i == 0) graphics.moveTo(axis.x + 1, pointY);
+
+      graphics.lineTo(axis.x + 1 + (i * inc), pointY);
     }
   }
 
-  public function update(Value:Float):Void
+  public function update(value:Float):Void
   {
-    history.unshift(Value);
-    if (history.length > HISTORY_MAX) history.pop();
+    history.push(value);
 
-    // Update range
-    maxValue = Math.max(maxValue, Value);
-    minValue = Math.min(minValue, Value);
+    if (history.length > HISTORY_MAX)
+    {
+      history.shift();
+    }
+
+    maxValue = Math.max(maxValue, value);
+    minValue = Math.min(minValue, value);
 
     drawGraph();
   }
 
   public function average():Float
   {
+    if (history.length == 0)
+    {
+      return 0;
+    }
+
     var sum:Float = 0;
-    for (value in history)
-      sum += value;
+
+    for (v in history)
+    {
+      sum += v;
+    }
+
     return sum / history.length;
   }
 
   public function lowest():Float
   {
-    var val:Float = history[0] ?? 0;
-    for (value in history)
+    if (history.length == 0)
     {
-      if (value < val) val = value;
+      return 0;
     }
+
+    var val:Float = history[0];
+
+    for (v in history)
+    {
+      if (v < val)
+      {
+        val = v;
+      }
+    }
+
     return val;
   }
 
   public function destroy():Void
   {
-    _axis = FlxDestroyUtil.removeChild(this, _axis);
-    textDisplay = FlxDestroyUtil.removeChild(this, textDisplay);
+    if (axis != null)
+    {
+      removeChild(axis);
+      axis = null;
+    }
+
     history = null;
   }
 }
