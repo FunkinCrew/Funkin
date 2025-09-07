@@ -1,5 +1,6 @@
 #import "AudioSession.hpp"
 
+#import <TargetConditionals.h>
 #import <Foundation/Foundation.h>
 #import <AVFAudio/AVFAudio.h>
 
