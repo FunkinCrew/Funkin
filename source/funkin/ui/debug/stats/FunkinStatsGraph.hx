@@ -83,7 +83,7 @@ class FunkinStatsGraph extends Sprite
       return;
     }
 
-    var inc:Float = (axisWidth - 1) / (HISTORY_MAX - 1);
+    var inc:Float = (axisWidth - 2) / (HISTORY_MAX - 1);
     var range:Float = Math.max(maxValue - minValue, maxValue * 0.1);
     var scale:Float = axisHeight / range;
 

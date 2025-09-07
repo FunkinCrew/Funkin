@@ -3,7 +3,6 @@ package funkin.ui.debug;
 import flixel.util.FlxStringUtil;
 import funkin.ui.debug.stats.FunkinStatsGraph;
 import funkin.util.MemoryUtil;
-import haxe.Timer;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.text.TextField;
@@ -12,12 +11,25 @@ import openfl.text.TextFormat;
 /**
  * A debug overlay showing useful info.
  */
+#if cpp
+@:access(lime._internal.backend.native.NativeCFFI)
+#end
 class FunkinDebugDisplay extends Sprite
 {
   static final UPDATE_DELAY:Int = 100;
   static final INNER_RECT_DIFF:Int = 3;
   static final OUTER_RECT_DIMENSIONS:Array<Int> = [234, 201];
   static final OTHERS_OFFSET:Int = 8;
+
+  /**
+   * Indicates whether the debug display is in advanced mode.
+   */
+  public var isAdvanced(default, set):Bool = false;
+
+  /**
+   * The opacity of the debug display's background.
+   */
+  public var backgroundOpacity(default, set):Float = 0.5;
 
   var currentFPS:Int;
   var deltaTimeout:Float;
@@ -40,11 +52,7 @@ class FunkinDebugDisplay extends Sprite
 
   var infoDisplay:TextField;
 
-  public var isAdvanced(default, set):Bool = false;
-
-  public var backgroundOpacity(default, set):Float = 0;
-
-  public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
+  public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000):Void
   {
     super();
 
@@ -52,38 +60,24 @@ class FunkinDebugDisplay extends Sprite
     this.y = y;
     this.currentFPS = 0;
     this.deltaTimeout = 0.0;
+    #if !html5
     this.gcMem = 0.0;
     this.gcMemPeak = 0.0;
     this.taskMem = 0.0;
     this.taskMemPeak = 0.0;
+    #end
     this.times = [];
     this.color = color;
     this.backgroundOpacity = 0;
     this.isAdvanced = false;
   }
 
-  public function set_isAdvanced(value:Bool):Bool
-  {
-    buildDebugDisplay(value);
-
-    return isAdvanced = value;
-  }
-
-  public function set_backgroundOpacity(value:Float):Float
-  {
-    if (background != null)
-    {
-      background.alpha = value;
-    }
-
-    return backgroundOpacity = value;
-  }
-
-  public function buildDebugDisplay(advanced:Bool):Void
+  function buildDebugDisplay(advanced:Bool):Void
   {
     removeChildren(0, numChildren);
 
     final BG_HEIGHT_MULTIPLIER:Float = advanced ? 1 : (MemoryUtil.supportsTaskMem()) ? 0.3 : 0.2;
+
     background = new Shape();
     background.graphics.beginFill(0x3d3f41, 1);
     background.graphics.drawRect(0, 0, OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2),
@@ -98,10 +92,6 @@ class FunkinDebugDisplay extends Sprite
     if (advanced)
     {
       createAdvancedElements();
-
-      updateFPSGraph();
-      updateGcMemGraph();
-      updateTaskMemGraph();
       updateAdvancedDisplay();
     }
     else
@@ -148,13 +138,18 @@ class FunkinDebugDisplay extends Sprite
     infoDisplay.antiAliasType = NORMAL;
     infoDisplay.sharpness = 100;
     infoDisplay.multiline = true;
-
     addChild(infoDisplay);
   }
 
-  override function __enterFrame(deltaTime:Float):Void
+  override function __enterFrame(deltaTime:Int):Void
   {
-    final currentTime:Float = Timer.stamp() * 1000;
+    #if cpp
+    final currentTime:Float = lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks();
+    #elseif html5
+    final currentTime:Float = js.Browser.window.performance.now();
+    #else
+    final currentTime:Float = haxe.Timer.stamp() * 1000;
+    #end
 
     times.push(currentTime);
 
@@ -171,11 +166,21 @@ class FunkinDebugDisplay extends Sprite
 
     currentFPS = times.length;
 
+    #if !html5
+    gcMem = MemoryUtil.getGCMemory();
+
+    if (gcMem > gcMemPeak) gcMemPeak = gcMem;
+
+    if (MemoryUtil.supportsTaskMem())
+    {
+      taskMem = MemoryUtil.getTaskMemory();
+
+      if (taskMem > taskMemPeak) taskMemPeak = taskMem;
+    }
+    #end
+
     if (isAdvanced)
     {
-      updateFPSGraph();
-      updateGcMemGraph();
-      updateTaskMemGraph();
       updateAdvancedDisplay();
     }
     else
@@ -188,6 +193,12 @@ class FunkinDebugDisplay extends Sprite
 
   function updateAdvancedDisplay():Void
   {
+    updateFPSGraph();
+    #if !html5
+    updateGcMemGraph();
+    updateTaskMemGraph();
+    #end
+
     final info:Array<String> = [];
     info.push('FPS: $currentFPS');
     info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
@@ -206,36 +217,21 @@ class FunkinDebugDisplay extends Sprite
 
   function updateSimpleDisplay():Void
   {
-    if (infoDisplay == null) return;
-
-    final info:Array<String> = [];
-
-    info.push('FPS: $currentFPS');
-
-    #if !html5
-    gcMem = MemoryUtil.getGCMemory();
-
-    if (gcMem > gcMemPeak)
+    if (infoDisplay != null)
     {
-      gcMemPeak = gcMem;
+      final info:Array<String> = [];
+
+      info.push('FPS: $currentFPS');
+
+      #if !html5
+      info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
+
+      if (MemoryUtil.supportsTaskMem())
+        info.push('TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
+      #end
+
+      infoDisplay.text = info.join('\n');
     }
-
-    info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
-
-    if (MemoryUtil.supportsTaskMem())
-    {
-      taskMem = MemoryUtil.getTaskMemory();
-
-      if (taskMem > taskMemPeak)
-      {
-        taskMemPeak = taskMem;
-      }
-
-      info.push('TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
-    }
-    #end
-
-    infoDisplay.text = info.join('\n');
   }
 
   function updateFPSGraph(?currentFPS:Int = 0):Void
@@ -247,13 +243,7 @@ class FunkinDebugDisplay extends Sprite
   #if !html5
   function updateGcMemGraph(?currentFPS:Int = 0):Void
   {
-    gcMem = MemoryUtil.getGCMemory();
-
-    if (gcMem > gcMemPeak)
-    {
-      gcMemGraph.maxValue = gcMemPeak = gcMem;
-    }
-
+    gcMemGraph.maxValue = gcMemPeak;
     gcMemGraph.update(gcMem);
   }
 
@@ -261,17 +251,25 @@ class FunkinDebugDisplay extends Sprite
   {
     if (taskMemGraph != null)
     {
-      taskMem = MemoryUtil.getTaskMemory();
-
-      if (taskMem > taskMemPeak)
-      {
-        taskMemGraph.maxValue = taskMemPeak = taskMem;
-      }
-
+      taskMemGraph.maxValue = taskMemPeak;
       taskMemGraph.update(taskMem);
     }
   }
   #end
+
+  function set_isAdvanced(value:Bool):Bool
+  {
+    buildDebugDisplay(value);
+
+    return isAdvanced = value;
+  }
+
+  function set_backgroundOpacity(value:Float):Float
+  {
+    if (background != null) background.alpha = value;
+
+    return backgroundOpacity = value;
+  }
 }
 
 enum abstract DebugDisplayMode(Int) from Int to Int
