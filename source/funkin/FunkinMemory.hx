@@ -177,6 +177,7 @@ class FunkinMemory
     var sprite = new flixel.FlxSprite();
     sprite.loadGraphic(graphic);
     sprite.draw(); // Draw sprite and load it into game's memory.
+    graphic.bitmap?.getTexture(FlxG.stage.context3D); // Just in case that didn't work...
     sprite.destroy();
   }
 
