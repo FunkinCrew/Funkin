@@ -186,6 +186,27 @@ class Preferences
   }
 
   /**
+   * Opacity of the debug display's background.
+   * @default `50`
+   */
+  public static var debugDisplayBGOpacity(get, set):Int;
+
+  static function get_debugDisplayBGOpacity():Int
+  {
+    return Save?.instance?.options?.debugDisplayBGOpacity ?? 50;
+  }
+
+  static function set_debugDisplayBGOpacity(value:Int):Int
+  {
+    setDebugDisplayBGOpacity(value / 100);
+
+    var save:Save = Save.instance;
+    save.options.debugDisplayBGOpacity = value;
+    save.flush();
+    return value;
+  }
+
+  /**
    * If enabled, haptic feedback will be enabled.
    * @default `All`
    */
@@ -485,6 +506,7 @@ class Preferences
 
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     setDebugDisplayMode(Preferences.debugDisplay);
+    setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
 
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
@@ -516,6 +538,13 @@ class Preferences
     Main.debugDisplay.isAdvanced = (mode == DebugDisplayMode.ADVANCED);
 
     FlxG.game.parent.addChild(Main.debugDisplay);
+  }
+
+  static function setDebugDisplayBGOpacity(value:Float):Void
+  {
+    if (Main.debugDisplay == null) return;
+
+    Main.debugDisplay.backgroundOpacity = value;
   }
 
   #if mobile

@@ -42,6 +42,8 @@ class FunkinDebugDisplay extends Sprite
 
   public var isAdvanced(default, set):Bool = false;
 
+  public var backgroundOpacity(default, set):Float = 0;
+
   public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
   {
     super();
@@ -56,6 +58,7 @@ class FunkinDebugDisplay extends Sprite
     this.taskMemPeak = 0.0;
     this.times = [];
     this.color = color;
+    this.backgroundOpacity = 0;
     this.isAdvanced = false;
   }
 
@@ -66,19 +69,30 @@ class FunkinDebugDisplay extends Sprite
     return isAdvanced = value;
   }
 
+  public function set_backgroundOpacity(value:Float):Float
+  {
+    if (background != null)
+    {
+      background.alpha = value;
+    }
+
+    return backgroundOpacity = value;
+  }
+
   public function buildDebugDisplay(advanced:Bool):Void
   {
     removeChildren(0, numChildren);
 
     final BG_HEIGHT_MULTIPLIER:Float = advanced ? 1 : (MemoryUtil.supportsTaskMem()) ? 0.3 : 0.2;
     background = new Shape();
-    background.graphics.beginFill(0x3d3f41, 0.5);
+    background.graphics.beginFill(0x3d3f41, 1);
     background.graphics.drawRect(0, 0, OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2),
       (OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER) + (INNER_RECT_DIFF * 2));
     background.graphics.endFill();
-    background.graphics.beginFill(0x2c2f30, 0.5);
+    background.graphics.beginFill(0x2c2f30, 1);
     background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0], OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER);
     background.graphics.endFill();
+    background.alpha = backgroundOpacity;
     addChild(background);
 
     if (advanced)

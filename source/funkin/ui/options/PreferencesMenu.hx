@@ -158,6 +158,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case DebugDisplayMode.ADVANCED: "Advanced";
         default: "Off";
       });
+    createPrefItemPercentage('Debug Display BG', "Change debug display's background opacity", function(value:Int):Void {
+      Preferences.debugDisplayBGOpacity = value;
+    }, Preferences.debugDisplayBGOpacity);
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
