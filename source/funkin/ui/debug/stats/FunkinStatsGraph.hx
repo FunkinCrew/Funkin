@@ -83,7 +83,7 @@ class FunkinStatsGraph extends Sprite
       return;
     }
 
-    var inc:Float = axisWidth / (HISTORY_MAX - 1);
+    var inc:Float = (axisWidth - 1) / (HISTORY_MAX - 1);
     var range:Float = Math.max(maxValue - minValue, maxValue * 0.1);
     var scale:Float = axisHeight / range;
 
@@ -93,7 +93,7 @@ class FunkinStatsGraph extends Sprite
 
       if (i == 0) graphics.moveTo(axis.x, pointY);
 
-      graphics.lineTo(axis.x + (i * inc), pointY);
+      graphics.lineTo(axis.x + 1 + (i * inc), pointY);
     }
   }
 
