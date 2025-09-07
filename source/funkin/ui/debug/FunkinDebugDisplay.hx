@@ -76,15 +76,22 @@ class FunkinDebugDisplay extends Sprite
   {
     removeChildren(0, numChildren);
 
+    final BG_WIDTH_MULTIPLIER:Float = #if html5 advanced ? 1 : 0.3 #else 1 #end;
+
+    #if html5
+    final BG_HEIGHT_MULTIPLIER:Float = advanced ? 0.45 : 0.15;
+    #else
     final BG_HEIGHT_MULTIPLIER:Float = advanced ? 1 : (MemoryUtil.supportsTaskMem()) ? 0.3 : 0.2;
+    #end
 
     background = new Shape();
     background.graphics.beginFill(0x3d3f41, 1);
-    background.graphics.drawRect(0, 0, OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2),
+    background.graphics.drawRect(0, 0, (OUTER_RECT_DIMENSIONS[0] * BG_WIDTH_MULTIPLIER) + (INNER_RECT_DIFF * 2),
       (OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER) + (INNER_RECT_DIFF * 2));
     background.graphics.endFill();
     background.graphics.beginFill(0x2c2f30, 1);
-    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0], OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER);
+    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0] * BG_WIDTH_MULTIPLIER,
+      OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER);
     background.graphics.endFill();
     background.alpha = backgroundOpacity;
     addChild(background);
