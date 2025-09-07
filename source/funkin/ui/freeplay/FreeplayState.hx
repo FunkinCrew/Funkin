@@ -695,7 +695,7 @@ class FreeplayState extends MusicBeatSubState
       albumRoll.playIntro();
       albumRoll.albumId = currentCapsule.freeplayData?.data.getAlbumId(currentDifficulty, currentVariation);
 
-      if (!(fromCharSelect || forceSkipIntro))
+      if (!fromCharSelect)
       {
         // render optimisation
         if (_parentState != null) _parentState.persistentDraw = false;
