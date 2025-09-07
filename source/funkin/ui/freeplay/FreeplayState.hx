@@ -490,7 +490,7 @@ class FreeplayState extends MusicBeatSubState
         difficultyDots.add(dot);
     }*/
 
-    difficultyDots.loadDots(SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL);
+    difficultyDots.loadDots(Constants.DEFAULT_DIFFICULTY_LIST_FULL);
 
     albumRoll.albumId = null;
     albumRoll.visible = false;

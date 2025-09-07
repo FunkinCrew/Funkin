@@ -44,9 +44,6 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
       else
         trace('[WARNING] Attemp creating double difficulty dot: ${currentDifficultyList[i]}');
     }
-
-    // Add forced erected inactive dots
-    erectCheck();
   }
 
   public function regenDots(diffArray:Array<String>):Void
@@ -55,7 +52,7 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
 
     for (dot in usedDots)
     {
-      dot.visible = dot.erected;
+      dot.visible = false;
       // In case we had to use one of ERECT dots as INACTIVE previously
       dot.type = (dot.erected ? ERECT : NORMAL);
     }
@@ -126,10 +123,8 @@ class DifficultyDots extends FlxTypedSpriteGroup<DifficultyDot>
   {
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST_ERECT)
     {
-      if (!currentDifficultyList.contains(diff))
+      if (!currentDifficultyList.contains(diff) && !usedDots.contains(currentDifficultyDots.get(diff)))
       {
-        currentDifficultyList.push(diff);
-
         var dot:DifficultyDot = currentDifficultyDots.get(diff);
         if (dot == null) add(dot = generateDifficultyDot(diff, usedDots.length));
         dot.type = INACTIVE;
