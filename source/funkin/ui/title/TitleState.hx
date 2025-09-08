@@ -317,6 +317,11 @@ class TitleState extends MusicBeatState
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
 
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8 && initialized)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+
     // TODO: Maybe use the dxdy method for swiping instead.
     if (controls.UI_LEFT #if mobile || SwipeUtil.justSwipedLeft #end) swagShader.update(-elapsed * 0.1);
     if (controls.UI_RIGHT #if mobile || SwipeUtil.justSwipedRight #end) swagShader.update(elapsed * 0.1);

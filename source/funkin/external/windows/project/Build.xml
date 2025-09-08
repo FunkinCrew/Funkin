@@ -10,7 +10,7 @@
     <compilerflag value="-I${this_dir}/include" />
   </files>
 
-  <files id="winapi">
+  <files id="external-windows">
     <compilerflag value="-I${this_dir}/include" />
 
     <file name="${this_dir}/src/winapi.cpp" />
@@ -24,13 +24,13 @@
         <lib name="-ladvapi32" />
     </section>
 
-    <section if="windows" unless="mingw">
+    <section unless="mingw">
         <lib name="user32.lib" />
         <lib name="kernel32.lib" />
         <lib name="dwmapi.lib" />
         <lib name="advapi32.lib" />
     </section>
 
-    <files id="winapi" />
+    <files id="external-windows" />
   </target>
 </xml>

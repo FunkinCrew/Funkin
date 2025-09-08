@@ -122,9 +122,6 @@ Also only report one issue or enhancement at a time! If you have multiple bug re
 
 Once you're sure your issue is unique and specific, feel free to submit it.
 
-> [!IMPORTANT]
-> **DO NOT CLOSE YOUR ISSUE FOR ANY REASON!** Your issue will be taken care of by a moderator!
-
 **Thank you for opening issues!**
 
 # Part 3: Pull Requests
@@ -132,19 +129,19 @@ Community members are welcome to contribute their changes by [opening pull reque
 This section covers guidelines for opening and managing pull requests (PRs).
 
 ## Choosing a base branch
-When creating a branch in your fork, base your branch on either the `main` or `develop` branch depending on the types of changes you want to make.
+When creating a branch in your fork, base your branch on either the `develop` or `main` branch depending on the types of changes you want to make.
 
 > [!CAUTION]
 > Avoid using your fork's default branch (`main` in this case) for your PR. This is considered an [anti-pattern](https://jmeridth.com/posts/do-not-issue-pull-requests-from-your-master-branch/) by GitHub themselves!
 > Instead, make a separate branch for your additions (ex. `docs/fix-typo` or `minor-bugfix`).
 
-Choose the `main` branch if you modify:
-- Documentation (`.md` files)
-- GitHub files (`.yml` files or anything in the `.github` folder)
-
 Choose the `develop` branch if you modify:
 - Game code (`.hx` files)
 - Any other type of file
+
+Choose the `main` branch if you modify:
+- Documentation (`.md` files)
+- GitHub files (`.yml` files or anything in the `.github` folder)
 
 > [!TIP]
 > When in doubt, base your branch on the `develop` branch.
@@ -399,7 +396,7 @@ If you only modify files in the `assets` folder, open a PR in the `funkin.assets
 
 If you simultaneously modify files from both repositories, then open two separate PRs and explain the connection in your PR descriptions.
 
-Be sure to choose `main` as the base branch for `funkin.assets` PRs, as no `develop` branch exists for that repository.
+Be sure to choose `develop` as the base branch for `funkin.assets` PRs, just as you would in the `Funkin` repository.
 
 ### Charting PRs
 Charting PRs make changes such as **adjusting chart metadata**.

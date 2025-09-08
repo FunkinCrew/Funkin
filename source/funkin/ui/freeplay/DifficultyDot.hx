@@ -18,7 +18,6 @@ enum DotType
 enum DotState
 {
   DESELECTING;
-
   DESELECTED;
   SELECTED;
 }
@@ -34,7 +33,7 @@ class DifficultyDot extends FlxSpriteGroup
   public var state:DotState = DESELECTED;
 
   // 0 - deselected, 1 - selected, 2 - pulse color
-  var normalColors:Array<FlxColor> = [0xFF484848, 0xFFFFFFFF, 0xFF919191, 0xFFC9C9C9];
+  var normalColors:Array<FlxColor> = [0xFF484848, 0xFFFAFAFA, 0xFF919191, 0xFFC9C9C9];
   var nightColors:Array<FlxColor> = [0xFF34296A, 0xFFC28AFF, 0xFF8A58D0, 0xFFFFB1DC];
 
   public var important:Bool = false;

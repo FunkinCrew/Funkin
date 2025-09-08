@@ -12,8 +12,8 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.MouseUtil;
 import funkin.util.SerializerUtil;
@@ -169,6 +169,21 @@ class DebugBoundingState extends FlxState
       // swagGraphic.setPosition(, );
       // trace(uvH);
     }
+  }
+
+  function updateOnionSkin():Void
+  {
+    if (swagChar == null) return;
+    if (swagChar.hasAnimation("idle")) swagChar.playAnimation("idle", true);
+
+    onionSkinChar.loadGraphicFromSprite(swagChar);
+    onionSkinChar.frame = swagChar.frame;
+    onionSkinChar.alpha = 0.6;
+    onionSkinChar.flipX = swagChar.flipX;
+    onionSkinChar.offset.x = swagChar.animOffsets[0];
+    onionSkinChar.offset.y = swagChar.animOffsets[1];
+
+    swagChar.playAnimation(currentAnimationName, true); // reset animation to the one it should be
   }
 
   function initOffsetView():Void
@@ -395,11 +410,13 @@ class DebugBoundingState extends FlxState
     if (FlxG.keys.justPressed.F)
     {
       onionSkinChar.visible = !onionSkinChar.visible;
+      if (onionSkinChar.visible) updateOnionSkin();
     }
 
     if (FlxG.keys.justPressed.G)
     {
       swagChar.flipX = !swagChar.flipX;
+      if (onionSkinChar.visible) updateOnionSkin();
     }
 
     // Plays the idle animation
@@ -489,8 +506,8 @@ class DebugBoundingState extends FlxState
     }
 
     swagChar = CharacterDataParser.fetchCharacter(char);
-    swagChar.x = 100;
-    swagChar.y = 100;
+    swagChar.x = onionSkinChar.x = 100;
+    swagChar.y = onionSkinChar.y = 100;
     swagChar.debug = true;
     offsetView.add(swagChar);
 
@@ -545,14 +562,7 @@ class DebugBoundingState extends FlxState
 
   function playCharacterAnimation(str:String, setOnionSkin:Bool = true)
   {
-    if (setOnionSkin)
-    {
-      // clears the canvas
-      onionSkinChar.pixels.fillRect(new Rectangle(0, 0, FlxG.width * 2, FlxG.height * 2), 0x00000000);
-
-      onionSkinChar.stamp(swagChar, Std.int(swagChar.x), Std.int(swagChar.y));
-      onionSkinChar.alpha = 0.6;
-    }
+    if (setOnionSkin) updateOnionSkin();
 
     // var animName = characterAnimNames[Std.parseInt(str)];
     var animName = str;

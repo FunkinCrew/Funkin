@@ -31,7 +31,7 @@ class ChartEditorImportExportHandler
   {
     trace('===============START');
 
-    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: targetSongVariation});
 
     if (song == null) return;
 
@@ -126,7 +126,8 @@ class ChartEditorImportExportHandler
    * @param newSongMetadata The song metadata to load.
    * @param newSongChartData The song chart data to load.
    */
-  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>, ?newSongManifestData:ChartManifestData):Void
+  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>,
+      ?newSongManifestData:ChartManifestData):Void
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;

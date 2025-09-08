@@ -2,7 +2,7 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -11,6 +11,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
+import funkin.util.macro.ConsoleMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
@@ -20,7 +21,7 @@ import funkin.api.newgrounds.Leaderboards;
 #end
 
 @:nullSafety
-class Save
+class Save implements ConsoleClass
 {
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
@@ -121,7 +122,8 @@ class Save
           downscroll: false,
           flashingLights: true,
           zoomCamera: true,
-          debugDisplay: false,
+          debugDisplay: 'Off',
+          debugDisplayBGOpacity: 50,
           hapticsMode: 'All',
           hapticsIntensityMultiplier: 1,
           autoPause: true,
@@ -1368,9 +1370,14 @@ class Save
     this.data.version = Save.SAVE_DATA_VERSION;
   }
 
-  public function debug_dumpSave():Void
+  public function debug_dumpSaveJsonSave():Void
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+  }
+
+  public function debug_dumpSaveJsonPrint():Void
+  {
+    trace(this.serialize());
   }
 
   #if FEATURE_NEWGROUNDS
@@ -1600,9 +1607,15 @@ typedef SaveDataOptions =
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * @default `false`
+   * @default `Off`
    */
-  var debugDisplay:Bool;
+  var debugDisplay:String;
+
+  /**
+   * Opacity of the debug display's background.
+   * @default `50`
+   */
+  var debugDisplayBGOpacity:Int;
 
   /**
    * If enabled, haptic feedback will be enabled.

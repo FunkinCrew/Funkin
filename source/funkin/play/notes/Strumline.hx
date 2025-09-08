@@ -73,7 +73,8 @@ class Strumline extends FlxSpriteGroup
   function get_renderDistanceMs():Float
   {
     if (useCustomRenderDistance) return customRenderDistanceMs;
-    return FlxG.height / Constants.PIXELS_PER_MS / scrollSpeed;
+    // Only divide by lower scroll speeds to fix renderDistance being too short. Dividing by higher scroll speeds breaks the input system by hitting later notes first!
+    return FlxG.height / Constants.PIXELS_PER_MS / (scrollSpeed < 1 ? scrollSpeed : 1);
   }
 
   /**
@@ -212,9 +213,15 @@ class Strumline extends FlxSpriteGroup
 
   var background:FunkinSprite;
 
-  var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
+  /**
+   * The strumline notes (the receptors) themselves.
+   */
+  public var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
-  var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
+  /**
+   * Hold note covers.
+   */
+  public var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
 
   var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;

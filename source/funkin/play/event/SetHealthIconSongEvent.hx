@@ -1,7 +1,7 @@
 package funkin.play.event;
 
 import funkin.data.event.SongEventSchema;
-import funkin.play.character.CharacterData.HealthIconData;
+import funkin.data.character.CharacterData.HealthIconData;
 import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
 

@@ -1,13 +1,13 @@
-package funkin.data.dialogue.dialoguebox;
+package funkin.data.dialogue;
 
 import funkin.play.cutscene.dialogue.DialogueBox;
-import funkin.data.dialogue.dialoguebox.DialogueBoxData;
+import funkin.data.dialogue.DialogueBoxData;
 import funkin.play.cutscene.dialogue.ScriptedDialogueBox;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData> implements ISingleton implements DefaultRegistryImpl
+class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData, DialogueBoxEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the dialogue box data format.
@@ -23,3 +23,5 @@ class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData> imp
     super('DIALOGUEBOX', 'dialogue/boxes', DIALOGUEBOX_DATA_VERSION_RULE);
   }
 }
+
+typedef DialogueBoxEntryParams = Dynamic;

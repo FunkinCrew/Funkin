@@ -19,7 +19,7 @@ import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
-import funkin.data.dialogue.conversation.ConversationRegistry;
+import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongCharacterData;
@@ -35,7 +35,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.api.newgrounds.Events;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
@@ -319,6 +319,13 @@ class PlayState extends MusicBeatSubState
    * @default One camera zoom per measure (four beats).
    */
   public var cameraZoomRate:Int = Constants.DEFAULT_ZOOM_RATE;
+
+  /**
+   * How many beats (quarter notes) the zoom rate is offset.
+   * For if you want the zoom to happen off-beat.
+   * @default Zero beats (on-beat).
+   */
+  public var cameraZoomRateOffset:Int = Constants.DEFAULT_ZOOM_OFFSET;
 
   /**
    * Whether the game is currently in the countdown before the song resumes.
@@ -1025,6 +1032,8 @@ class PlayState extends MusicBeatSubState
 
       previousDifficulty = currentDifficulty;
 
+      currentStage?.resetStage();
+
       dispatchEvent(retryEvent);
 
       resetCamera();
@@ -1078,8 +1087,6 @@ class PlayState extends MusicBeatSubState
             if (track != null) track.volume = 1;
           }
       }
-
-      currentStage?.resetStage();
 
       if (!fromDeathState)
       {
@@ -1495,9 +1502,6 @@ class PlayState extends MusicBeatSubState
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);
 
-    // Dispatch event to note kind scripts
-    NoteKindManager.callEvent(event);
-
     // Dispatch event to stage script.
     ScriptEventDispatcher.callEvent(currentStage, event);
 
@@ -1509,6 +1513,9 @@ class PlayState extends MusicBeatSubState
 
     // Dispatch event to conversation script.
     ScriptEventDispatcher.callEvent(currentConversation, event);
+
+    // Dispatch event to note kind scripts
+    NoteKindManager.callEvent(event);
   }
 
   /**
@@ -1777,7 +1784,8 @@ class PlayState extends MusicBeatSubState
     {
       throw "No lastParams to refer to";
     }
-    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id) ?? throw "Could not load current song from ID. This shouldn't happen!";
+    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id,
+      {variation: currentVariation}) ?? throw "Could not load current song from ID. This shouldn't happen!";
     LoadingState.loadPlayState(lastParams);
   }
 
@@ -1854,7 +1862,7 @@ class PlayState extends MusicBeatSubState
     if (Preferences.zoomCamera
       && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
       && cameraZoomRate > 0
-      && Conductor.instance.currentBeat % cameraZoomRate == 0)
+      && (Conductor.instance.currentBeat + cameraZoomRateOffset) % cameraZoomRate == 0)
     {
       // Set zoom multiplier for camera bop.
       cameraBopMultiplier = cameraBopIntensity;
@@ -2010,7 +2018,7 @@ class PlayState extends MusicBeatSubState
     else
     {
       // lolol
-      funkin.util.WindowUtil.showError('Unable to load stage ${id}, is its data corrupted?.', 'Stage Error');
+      funkin.util.WindowUtil.showError('Stage Error', 'Unable to load stage $id, is its data corrupted?.');
     }
   }
 
@@ -3358,7 +3366,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     #if mobile
-    pauseButtonCheck = TouchUtil.pressAction(pauseButton);
+    pauseButtonCheck = TouchUtil.overlapsComplex(pauseButton);
     #end
 
     if (currentConversation != null)
@@ -3729,6 +3737,8 @@ class PlayState extends MusicBeatSubState
     }
 
     forEachPausedSound((s) -> s.destroy());
+
+    if (VideoCutscene.isPlaying()) VideoCutscene.destroyVideo();
 
     FlxTween.globalManager.clear();
     FlxTimer.globalManager.clear();

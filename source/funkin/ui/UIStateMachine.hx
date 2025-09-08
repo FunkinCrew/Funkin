@@ -32,8 +32,8 @@ class UIStateMachine
     // Default valid transitions if none provided
     validTransitions = transitions != null ? transitions : [
       Idle => [Interacting, Entering, Exiting, Disabled],
+      Entering => [Idle, Exiting, Disabled, Interacting],
       Interacting => [Idle, Entering, Exiting, Disabled],
-      Entering => [Idle, Exiting, Disabled],
       Exiting => [Idle],
       Disabled => [Idle]
     ];

@@ -1,4 +1,4 @@
-package funkin.data.dialogue.speaker;
+package funkin.data.dialogue;
 
 import funkin.play.cutscene.dialogue.Speaker;
 import funkin.play.cutscene.dialogue.ScriptedSpeaker;
@@ -6,7 +6,7 @@ import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData> implements ISingleton implements DefaultRegistryImpl
+class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, SpeakerEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the speaker data format.
@@ -22,3 +22,5 @@ class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData> implements ISin
     super('SPEAKER', 'dialogue/speakers', SPEAKER_DATA_VERSION_RULE);
   }
 }
+
+typedef SpeakerEntryParams = {}

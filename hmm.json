@@ -4,21 +4,21 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "3c9f63e3501c20c0b60442089dc05306f5a87968",
-      "url": "https://github.com/FunkinDroidTeam/FlxPartialSound.git"
+      "ref": "4e86b724ca43489a59ea465a46ffc12598e5df15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "astc-compressor",
       "type": "git",
       "dir": null,
-      "ref": "9b0819150b67bf0d49145f250099b75d21be5839",
+      "ref": "b7a91b3072dc16e785a9bde847f17ba0ef15dd47",
       "url": "https://github.com/KarimAkra/astc-compressor"
     },
     {
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "02334589ff9603a5f483077a44395009644f6274",
+      "ref": "96385202f6f951b2bde0cbe836c5da21dde1f36e",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -111,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "5a0dc3f644dc676a4a092b7e6c8edc8be941f024",
+      "ref": "363d3d0a8d3ac450f5ba1b4c3357353656b71e82",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -143,7 +143,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.2"
+      "version": "2.2.3"
     },
     {
       "name": "json2object",
@@ -191,7 +191,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "db5dcf3ac4cb59197188a4442d75d4e76b350f40",
+      "ref": "47d9a2775e3fd8f6dd17d6f4b99b8798709da435",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

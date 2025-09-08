@@ -41,7 +41,7 @@ import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayStatePlaylist;
@@ -78,6 +78,7 @@ import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
@@ -95,9 +96,6 @@ import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
-import haxe.ui.containers.dialogs.Dialogs;
-import haxe.ui.containers.dialogs.Dialog.DialogButton;
-import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
@@ -1258,9 +1256,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The song manifest data.
-   * If none already exists, it's intialized with the current song name in lower-kebab-case.
+   * If none already exists, it's initialized with the current song name in lower-kebab-case.
    */
   var _songManifestData:Null<ChartManifestData> = null;
+
   var songManifestData(get, set):ChartManifestData;
 
   function get_songManifestData():ChartManifestData
@@ -2175,6 +2174,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var notePreviewPlayhead:Null<FlxSprite> = null;
 
   /**
+   * Whether the note preview playhead is currently being dragged with the mouse by the user.
+   */
+  var notePreviewPlayHeadDragging:Bool = false;
+
+  /**
    * The rectangular sprite used for rendering the selection box.
    * Uses a 9-slice to stretch the selection box to the correct size without warping.
    */
@@ -2847,7 +2851,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     txtCopyNotif.zIndex = 120;
     add(txtCopyNotif);
 
-    if (!Preferences.debugDisplay) menubar.paddingLeft = null;
+    if (Preferences.debugDisplay == DebugDisplayMode.OFF) menubar.paddingLeft = null;
 
     this.setupNotifications();
 
@@ -4352,6 +4356,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else if (measureTicks != null && FlxG.mouse.overlaps(measureTicks) && !isCursorOverHaxeUI)
         {
           gridPlayheadScrollAreaPressed = true;
+          // Stop audio playback while dragging on the grid playhead.
+          if (audioInstTrack != null && audioInstTrack.isPlaying)
+          {
+            playbarHeadDraggingWasPlaying = true;
+            stopAudioPlayback();
+          }
         }
         else if (notePreview != null && FlxG.mouse.overlaps(notePreview) && !isCursorOverHaxeUI)
         {
@@ -4374,11 +4384,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (gridPlayheadScrollAreaPressed && FlxG.mouse.released)
       {
         gridPlayheadScrollAreaPressed = false;
+        // If we were dragging the playhead while the song was playing, resume playing.
+        if (playbarHeadDraggingWasPlaying)
+        {
+          playbarHeadDraggingWasPlaying = false;
+          startAudioPlayback();
+        }
       }
 
       if (notePreviewScrollAreaStartPos != null && FlxG.mouse.released)
       {
         notePreviewScrollAreaStartPos = null;
+        notePreviewPlayHeadDragging = false;
+
+        if (playbarHeadDraggingWasPlaying)
+        {
+          playbarHeadDraggingWasPlaying = false;
+          startAudioPlayback();
+        }
       }
 
       if (gridPlayheadScrollAreaPressed)
@@ -4653,6 +4676,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       else if (notePreviewScrollAreaStartPos != null)
       {
+        notePreviewPlayHeadDragging = true;
+        // Stop audio playback while dragging on the note preview playhead.
+        if (audioInstTrack != null && audioInstTrack.isPlaying)
+        {
+          playbarHeadDraggingWasPlaying = true;
+          stopAudioPlayback();
+        }
+
         // Player is clicking and holding on note preview to scrub around.
         targetCursorMode = Grabbing;
 
@@ -5675,15 +5706,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (saveDataDirty)
     {
-      Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
-        function(button:DialogButton) {
-          if (button == DialogButton.YES)
-          {
-            autoSave();
-            quitChartEditor();
-          }
-        });
-
+      this.openLeaveConfirmationDialog();
       return;
     }
 
@@ -6201,6 +6224,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (audioInstTrack != null)
     {
+      // Don't allow the audio to be played while we're dragging any of the playheads
+      if (playbarHeadDragging || gridPlayheadScrollAreaPressed || notePreviewPlayHeadDragging) return;
       audioInstTrack.play(false, audioInstTrack.time);
       audioVocalTrackGroup.play(false, audioInstTrack.time);
     }
@@ -6665,6 +6690,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else
     {
+      // Don't allow the audio to be played while we're dragging any of the playheads
+      if (playbarHeadDragging || gridPlayheadScrollAreaPressed || notePreviewPlayHeadDragging) return;
       // Play
       startAudioPlayback();
       stopWelcomeMusic();
