@@ -14,24 +14,30 @@ import hxvlc.util.Handle;
 #end
 import openfl.display.FPS;
 import openfl.display.Sprite;
-import openfl.events.Event;
+import openfl.display.MovieClip;
 import openfl.Lib;
-import openfl.media.Video;
-import openfl.net.NetStream;
 import funkin.util.WindowUtil;
 
 /**
  * The main class which initializes HaxeFlixel and starts the game in its initial state.
  */
-class Main extends Sprite
+class Main extends flixel.FlxGame
 {
-  var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-  var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-  var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
-  var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-  var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
+  public static var mainInstance(default, null):Sprite;
+  public static var applicationScreen(get, never):MovieClip;
 
-  // You can pretty much ignore everything from here on - your code should go in your states.
+  /**
+   * A frame counter displayed at the top left.
+   */
+  public static var fpsCounter:FPS;
+
+  /**
+   * A RAM counter displayed at the top left.
+   */
+  public static var memoryCounter:MemoryCounter;
+
+  @:noCompletion inline static function get_applicationScreen()
+    return Lib.current;
 
   public static function main():Void
   {
@@ -48,12 +54,12 @@ class Main extends Sprite
     CrashHandler.initialize();
     CrashHandler.queryStatus();
 
-    Lib.current.addChild(new Main());
+    mainInstance = new Main();
   }
 
   public function new()
   {
-    super();
+    initHaxeUI();
 
     // Initialize custom logging.
     haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
@@ -62,44 +68,6 @@ class Main extends Sprite
     // Load mods to override assets.
     // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
     funkin.modding.PolymodHandler.loadAllMods();
-
-    if (stage != null)
-    {
-      init();
-    }
-    else
-    {
-      addEventListener(Event.ADDED_TO_STAGE, init);
-    }
-  }
-
-  function init(?event:Event):Void
-  {
-    if (hasEventListener(Event.ADDED_TO_STAGE))
-    {
-      removeEventListener(Event.ADDED_TO_STAGE, init);
-    }
-
-    setupGame();
-  }
-
-  var video:Video;
-  var netStream:NetStream;
-  var overlay:Sprite;
-
-  /**
-   * A frame counter displayed at the top left.
-   */
-  public static var fpsCounter:FPS;
-
-  /**
-   * A RAM counter displayed at the top left.
-   */
-  public static var memoryCounter:MemoryCounter;
-
-  function setupGame():Void
-  {
-    initHaxeUI();
 
     // addChild gets called by the user settings code.
     fpsCounter = new FPS(10, 3, 0xFFFFFF);
@@ -141,19 +109,20 @@ class Main extends Sprite
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
-    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
-      (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));
+    super(1280, 720, funkin.InitState, funkin.Preferences.framerate, funkin.Preferences.framerate, true, false);
+    _customSoundTray = funkin.ui.options.FunkinSoundTray;
 
-    // FlxG.game._customSoundTray wants just the class, it calls new from
-    // create() in there, which gets called when it's added to the stage
-    // which is why it needs to be added before addChild(game) here
-    @:privateAccess
-    game._customSoundTray = funkin.ui.options.FunkinSoundTray;
 
-    addChild(game);
+    scrollRect = new openfl.geom.Rectangle();
+    __scrollRect.setTo(0, 0, FlxG.scaleMode.gameSize.x, FlxG.scaleMode.gameSize.y);
+
+    applicationScreen.addChild(this);
+    applicationScreen.stage.scaleMode = openfl.display.StageScaleMode.NO_SCALE;
+
+    FlxG.signals.gameResized.add((w, h) -> __scrollRect.setTo(0, 0, FlxG.scaleMode.gameSize.x, FlxG.scaleMode.gameSize.y));
 
     #if FEATURE_DEBUG_FUNCTIONS
-    game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+    debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     funkin.util.macro.ConsoleMacro.init();
     #end
 
@@ -173,6 +142,22 @@ class Main extends Sprite
     #end
   }
 
+  var skipNextTickUpdate:Bool = false;
+
+  public override function switchState()
+  {
+    super.switchState();
+    draw();
+    _total = ticks = getTicks();
+    skipNextTickUpdate = true;
+  }
+
+  public override function onEnterFrame(t)
+  {
+    if (skipNextTickUpdate != (skipNextTickUpdate = false)) _total = ticks = getTicks();
+    super.onEnterFrame(t);
+  }
+
   function initHaxeUI():Void
   {
     // Calling this before any HaxeUI components get used is important:
@@ -180,7 +165,6 @@ class Main extends Sprite
     // - It scans the class path and registers any HaxeUI components.
     Toolkit.init();
     Toolkit.theme = 'dark'; // don't be cringe
-    // Toolkit.theme = 'light'; // embrace cringe
     Toolkit.autoScale = false;
     // Don't focus on UI elements when they first appear.
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
