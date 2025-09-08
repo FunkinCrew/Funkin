@@ -1,9 +1,5 @@
 package funkin.util.plugins;
 
-import funkin.util.ReflectUtil;
-import polymod.hscript._internal.PolymodClassDeclEx;
-import polymod.hscript._internal.PolymodAbstractScriptClass;
-import polymod.hscript._internal.PolymodScriptClass;
 import funkin.ui.ScriptedMusicBeatState;
 import flixel.FlxG;
 import flixel.FlxBasic;
