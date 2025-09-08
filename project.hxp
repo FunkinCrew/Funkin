@@ -510,7 +510,10 @@ class Project extends HXProject
       configureIOS();
     }
 
-    checkLibraries();
+    if (!isDisplay())
+    {
+      checkLibraries();
+    }
   }
 
   /**
