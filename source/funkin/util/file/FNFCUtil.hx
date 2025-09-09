@@ -46,7 +46,7 @@ class FNFCUtil
     var playerVocalList:Array<String> = targetDifficulty.characters.playerVocals ?? [];
     for (playerVocalId in playerVocalList)
     {
-      var audioVocalTrackName:String = manifest.getVocalsFileName(playerVocalId);
+      var audioVocalTrackName:String = manifest.getVocalsFileName(playerVocalId, variation);
       var audioVocalTrack = loadSoundFromFNFCZipEntries(mappedFileEntries, audioVocalTrackName);
       audioVocalTrackGroup.addPlayerVoice(audioVocalTrack);
     }
@@ -55,7 +55,7 @@ class FNFCUtil
     var opponentVocalList:Array<String> = targetDifficulty.characters.opponentVocals ?? [];
     for (opponentVocalId in opponentVocalList)
     {
-      var audioVocalTrackName:String = manifest.getVocalsFileName(opponentVocalId);
+      var audioVocalTrackName:String = manifest.getVocalsFileName(opponentVocalId, variation);
       var audioVocalTrack = loadSoundFromFNFCZipEntries(mappedFileEntries, audioVocalTrackName);
       audioVocalTrackGroup.addOpponentVoice(audioVocalTrack);
     }
