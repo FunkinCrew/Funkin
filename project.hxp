@@ -1759,7 +1759,7 @@ class Project extends HXProject
     if (Lambda.count(outdatedLibraries) > 0)
     {
       Sys.println("\x1b[1;33m\nWARNING: The following haxelibs diverge from the versions set in hmm.json."
-        + "\nThey may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library."
+        + "\n\nThey may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library."
         + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n\x1b[0m");
 
       for (libraryName in outdatedLibraries.keys())
