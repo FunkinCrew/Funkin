@@ -32,7 +32,7 @@ class PopUpStuff extends FlxSpriteGroup
     this.noteStyle = noteStyle;
 
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
-    ratingGroup.zIndex = 1000;
+
     add(ratingGroup);
   }
 
@@ -46,15 +46,9 @@ class PopUpStuff extends FlxSpriteGroup
 
     var rating:Null<FunkinSprite> = null;
 
-    rating = ratingGroup.getFirstDead();
-
     if (rating != null)
     {
       rating.revive();
-      rating.alpha = 1;
-      rating.acceleration.y = 0;
-      rating.velocity.y = 0;
-      rating.velocity.x = 0;
     }
     else
     {
@@ -78,6 +72,12 @@ class PopUpStuff extends FlxSpriteGroup
     rating.pixelPerfectRender = ratingInfo.isPixel;
     rating.pixelPerfectPosition = ratingInfo.isPixel;
     rating.updateHitbox();
+
+    rating.alpha = 1;
+    rating.zIndex = 1000;
+    rating.acceleration.y = 0;
+    rating.velocity.y = 0;
+    rating.velocity.x = 0;
 
     trace(ratingGroup.length);
     rating.x = (FlxG.width * 0.474);
