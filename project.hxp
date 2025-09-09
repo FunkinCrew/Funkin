@@ -1719,25 +1719,39 @@ class Project extends HXProject
     var outdatedLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
     var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent(#if ios '../../../../../' + #end 'hmm.json'));
+
     var dependencies:Array<Dynamic> = cast hmmData.dependencies;
+
     for (library in dependencies)
     {
       var libraryName:String = cast(library.name, String).replace(".", ",");
 
+      var libraryDev:String = readLibraryDev(libraryName);
+
+      var libraryCurrentVersion:String = readLibraryCurrentVersion(libraryName);
+
       switch (library.type)
       {
         case 'haxelib':
-          if (library.version != readLibraryCurrentVersion(libraryName))
+          if (libraryDev != "")
           {
-            outdatedLibraries.set(libraryName, [readLibraryCurrentVersion(libraryName), library.version]);
+            outdatedLibraries.set(libraryName, [libraryDev, library.version]);
+          }
+          else if (library.version != libraryCurrentVersion)
+          {
+            outdatedLibraries.set(libraryName, [libraryCurrentVersion, library.version]);
           }
         case 'git':
-          var libraryPath = ".haxelib/" + libraryName + "/git";
-          var commitHash = new sys.io.Process("git", ["-C", libraryPath, "rev-parse", "HEAD"]).stdout.readAll().toString().trim();
-
-          if (commitHash != library.ref && commitHash != "")
+          if (libraryDev != "")
           {
-            outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            outdatedLibraries.set(libraryName, [libraryDev, library.ref]);
+          }
+          else
+          {
+            var commitHash:String = readLibraryGitCommitHash(libraryName);
+
+            if (commitHash != library.ref && commitHash != "")
+              outdatedLibraries.set(libraryName, [commitHash, library.ref]);
           }
       }
     }
@@ -1766,10 +1780,30 @@ class Project extends HXProject
   static function readLibraryCurrentVersion(libraryName:String):String
   {
     var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
-    // This is compile time so we should always have Sys available.
-    var result = sys.io.File.getContent(path);
 
-    return result;
+    if (sys.FileSystem.exists(path))
+      return sys.io.File.getContent(path);
+
+    return '';
+  }
+
+  static function readLibraryDev(libraryName:String):String
+  {
+    var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+
+    if (sys.FileSystem.exists(path))
+      return sys.io.File.getContent(path);
+
+    return '';
+  }
+
+  static function readLibraryGitCommitHash(libraryName:String):String
+  {
+    var gitProccess = new sys.io.Process("git", ["-C", ".haxelib/" + libraryName + "/git", "rev-parse", "HEAD"]);
+
+    gitProccess.exitCode(true);
+
+    return gitProccess.stdout.readAll().toString().trim();
   }
 
   public function getGitBranch():String
