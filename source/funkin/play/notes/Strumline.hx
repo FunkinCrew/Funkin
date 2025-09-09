@@ -217,7 +217,9 @@ class Strumline extends FlxSpriteGroup
    * The strumline notes (the receptors) themselves.
    */
   public var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
+
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
+
   /**
    * Hold note covers.
    */
@@ -484,6 +486,18 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Return hold notes that are being held in the given direction.
+   * @param direction The direction of hold notes to return.
+   * @return An array of `SustainTrail` objects.
+   */
+  public function getHoldNotesBeingHeld(direction:NoteDirection):Array<SustainTrail>
+  {
+    return holdNotes.members.filter(function(holdNote:SustainTrail) {
+      return holdNote != null && holdNote.alive && holdNote.hitNote && holdNote.noteDirection == direction;
+    });
+  }
+
+  /**
    * Get a note sprite corresponding to the given note data.
    * @param target The note data for the note sprite.
    * @return The note sprite.
@@ -732,8 +746,8 @@ class Strumline extends FlxSpriteGroup
         if (!isKeyHeld(holdNote.noteDirection))
         {
           // Stopped pressing the hold note.
-          playStatic(holdNote.noteDirection);
-          holdNote.missedNote = true;
+          if (!isPlayer || isLaneDisabled(holdNote.noteDirection)) playStatic(holdNote.noteDirection);
+          if (canMiss) holdNote.missedNote = true;
           holdNote.visible = true;
           holdNote.alpha = 0.0; // Completely hide the dropped hold note.
         }
@@ -761,7 +775,7 @@ class Strumline extends FlxSpriteGroup
         {
           playPress(holdNote.noteDirection);
         }
-        else
+        else if (!isPlayer || isLaneDisabled(holdNote.noteDirection))
         {
           playStatic(holdNote.noteDirection);
         }
@@ -1047,7 +1061,7 @@ class Strumline extends FlxSpriteGroup
 
     if (removeNote)
     {
-      killNote(note);
+      killNote(note, false);
     }
     else
     {
@@ -1071,14 +1085,15 @@ class Strumline extends FlxSpriteGroup
   /**
    * Kill a note heading towards the strumline.
    * @param note The note to kill. Gets recycled and reused for performance.
+   * @param removeSustain Whether or not to remove the sustain trail if `note` is a hold note.
    */
-  public function killNote(note:NoteSprite):Void
+  public function killNote(note:NoteSprite, removeSustain:Bool = true):Void
   {
     if (note == null) return;
     note.visible = false;
     note.kill();
 
-    if (note.holdNoteSprite != null)
+    if (note.holdNoteSprite != null && removeSustain)
     {
       note.holdNoteSprite.missedNote = true;
       note.holdNoteSprite.visible = false;
