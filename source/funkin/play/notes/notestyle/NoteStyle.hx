@@ -9,6 +9,8 @@ import funkin.graphics.FunkinSprite;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.util.assets.FlxAnimationUtil;
+import funkin.play.components.PopUpStuff.JudgementSpriteInfo;
+import flixel.math.FlxPoint;
 
 using funkin.data.animation.AnimationData.AnimationDataUtil;
 
@@ -514,38 +516,44 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return Paths.sound(parts[1], parts[0]);
   }
 
-  public function buildJudgementSprite(rating:String):Null<FunkinSprite>
+  /*
+    @param rating String
+    @return JudgementSpriteInfo
+   */
+  public function buildJudgementSprite(rating:String):Null<JudgementSpriteInfo>
   {
-    var result = new FunkinSprite();
+    var result:JudgementSpriteInfo =
+      {
+        assetPath: null,
+        scale: new FlxPoint(1.0, 1.0),
+        scrollFactor: new FlxPoint(1.0, 1.0),
+        isPixel: false,
+      }; // = new JudgementSpriteInfo(null, new FlxPoint(1.0, 1.0), new FlxPoint(1.0, 1.0), true);
 
     switch (rating)
     {
       case "sick":
         if (_data.assets.judgementSick == null) return fallback?.buildJudgementSprite(rating);
-        var assetPath = buildJudgementSpritePath(rating);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildJudgementSpritePath(rating);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.judgementSick?.scale ?? 1.0;
         result.scale.y = _data.assets.judgementSick?.scale ?? 1.0;
       case "good":
         if (_data.assets.judgementGood == null) return fallback?.buildJudgementSprite(rating);
-        var assetPath = buildJudgementSpritePath(rating);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildJudgementSpritePath(rating);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.judgementGood?.scale ?? 1.0;
         result.scale.y = _data.assets.judgementGood?.scale ?? 1.0;
       case "bad":
         if (_data.assets.judgementBad == null) return fallback?.buildJudgementSprite(rating);
-        var assetPath = buildJudgementSpritePath(rating);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildJudgementSpritePath(rating);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.judgementBad?.scale ?? 1.0;
         result.scale.y = _data.assets.judgementBad?.scale ?? 1.0;
       case "shit":
         if (_data.assets.judgementShit == null) return fallback?.buildJudgementSprite(rating);
-        var assetPath = buildJudgementSpritePath(rating);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildJudgementSpritePath(rating);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.judgementShit?.scale ?? 1.0;
         result.scale.y = _data.assets.judgementShit?.scale ?? 1.0;
       default:
@@ -553,11 +561,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
 
     result.scrollFactor.set(0.2, 0.2);
-    var isPixel = isJudgementSpritePixel(rating);
-    result.antialiasing = !isPixel;
-    result.pixelPerfectRender = isPixel;
-    result.pixelPerfectPosition = isPixel;
-    result.updateHitbox();
+    result.isPixel = isJudgementSpritePixel(rating);
+    // result.antialiasing = !isPixel;
+    // result.pixelPerfectRender = isPixel;
+    // result.pixelPerfectPosition = isPixel;
+    // result.updateHitbox();
 
     return result;
   }

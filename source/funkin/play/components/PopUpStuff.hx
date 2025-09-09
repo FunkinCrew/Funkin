@@ -1,10 +1,12 @@
 package funkin.play.components;
 
 import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinSprite;
 import funkin.util.EaseUtil;
 import funkin.play.notes.notestyle.NoteStyle;
+import flixel.math.FlxPoint;
 
 @:nullSafety
 class PopUpStuff extends FlxSpriteGroup
@@ -21,7 +23,7 @@ class PopUpStuff extends FlxSpriteGroup
    */
   var offsets:Array<Int> = [0, 0];
 
-  var ratingGroup:FlxSpriteGroup;
+  var ratingGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
 
   override public function new(noteStyle:NoteStyle)
   {
@@ -29,42 +31,71 @@ class PopUpStuff extends FlxSpriteGroup
 
     this.noteStyle = noteStyle;
 
-    ratingGroup = new FlxSpriteGroup();
+    ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
     ratingGroup.zIndex = 1000;
     add(ratingGroup);
   }
 
+  /*
+    @param daRating Null<String>
+    @return Null<String>
+   */
   public function displayRating(daRating:Null<String>)
   {
     if (daRating == null) daRating = "good";
 
-    var rating:Null<FunkinSprite> = noteStyle.buildJudgementSprite(daRating);
+    var rating:Null<FunkinSprite> = null;
+
+    // rating = ratingGroup.getFirstAvailable();
+
+    // if (rating != null)
+    // {
+    //   rating.revive();
+    // }
+    // else
+    // {
+    rating = new FunkinSprite();
+    // }
+
     if (rating == null) return;
+    var ratingInfo = noteStyle.buildJudgementSprite(daRating) ??
+      {
+        assetPath: null,
+        scale: new FlxPoint(1.0, 1.0),
+        scrollFactor: new FlxPoint(1.0, 1.0),
+        isPixel: false,
+      };
+
+    rating.loadTexture(ratingInfo.assetPath);
+    rating.scale = ratingInfo.scale;
+    rating.scrollFactor = ratingInfo.scrollFactor;
+
+    rating.antialiasing = !ratingInfo.isPixel;
+    rating.pixelPerfectRender = ratingInfo.isPixel;
+    rating.pixelPerfectPosition = ratingInfo.isPixel;
+    rating.updateHitbox();
 
     rating.x = (FlxG.width * 0.474);
     rating.x -= rating.width / 2;
     rating.y = (FlxG.camera.height * 0.45 - 60);
     rating.y -= rating.height / 2;
-
     rating.x += offsets[0];
     rating.y += offsets[1];
     var styleOffsets = noteStyle.getJudgementSpriteOffsets(daRating);
+
     rating.x += styleOffsets[0];
     rating.y += styleOffsets[1];
-
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
-
     ratingGroup.add(rating);
-
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
 
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
         onComplete: function(tween:FlxTween) {
-          ratingGroup.remove(rating, true);
-          rating.destroy();
+          // ratingGroup.remove(rating, true);
+          rating.kill();
         },
         startDelay: Conductor.instance.beatLengthMs * 0.001,
         ease: fadeEase
@@ -122,4 +153,12 @@ class PopUpStuff extends FlxSpriteGroup
       daLoop++;
     }
   }
+}
+
+typedef JudgementSpriteInfo =
+{
+  var assetPath:Null<String>;
+  var scale:FlxPoint;
+  var scrollFactor:FlxPoint;
+  var isPixel:Bool;
 }
