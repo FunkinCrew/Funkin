@@ -46,18 +46,22 @@ class PopUpStuff extends FlxSpriteGroup
 
     var rating:Null<FunkinSprite> = null;
 
-    // rating = ratingGroup.getFirstAvailable();
+    rating = ratingGroup.getFirstDead();
 
-    // if (rating != null)
-    // {
-    //   rating.revive();
-    // }
-    // else
-    // {
-    rating = new FunkinSprite();
-    // }
+    if (rating != null)
+    {
+      rating.revive();
+      rating.alpha = 1;
+      rating.acceleration.y = 0;
+      rating.velocity.y = 0;
+      rating.velocity.x = 0;
+    }
+    else
+    {
+      rating = new FunkinSprite();
+    }
 
-    if (rating == null) return;
+    // if (rating == null) return;
     var ratingInfo = noteStyle.buildJudgementSprite(daRating) ??
       {
         assetPath: null,
@@ -75,6 +79,7 @@ class PopUpStuff extends FlxSpriteGroup
     rating.pixelPerfectPosition = ratingInfo.isPixel;
     rating.updateHitbox();
 
+    trace(ratingGroup.length);
     rating.x = (FlxG.width * 0.474);
     rating.x -= rating.width / 2;
     rating.y = (FlxG.camera.height * 0.45 - 60);
