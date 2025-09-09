@@ -2779,7 +2779,8 @@ class PlayState extends MusicBeatSubState
           {
             strumline.playNoteHoldCover(note.holdNoteSprite);
           }
-          else
+          // Don't release if the bot is in the middle of a hold note.
+          else if (strumline.getHoldNotesBeingHeld(note.direction).length == 0)
           {
             // Update strumline.heldKeys again.
             strumline.releaseKey(note.direction);
@@ -2854,7 +2855,9 @@ class PlayState extends MusicBeatSubState
         }
         else if ((strumline.isLaneDisabled(holdNote.noteDirection) || holdNote.missedNote || holdNote.sustainLength <= 0)
           && !holdNote.handledMiss
-          && Conductor.instance.songPosition >= holdNote.strumTime - Constants.HIT_WINDOW_MS)
+          && Conductor.instance.songPosition >= holdNote.strumTime - Constants.HIT_WINDOW_MS
+          && !strumline.isPlayer
+          && strumline.getHoldNotesBeingHeld(holdNote.noteDirection).length <= 1)
         {
           // The hold note is complete, update strumline.heldKeys again.
           strumline.releaseKey(holdNote.noteDirection);
