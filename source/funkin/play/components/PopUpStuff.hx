@@ -1,13 +1,13 @@
 package funkin.play.components;
 
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinSprite;
 import funkin.util.EaseUtil;
 import funkin.play.notes.notestyle.NoteStyle;
 
 @:nullSafety
-class PopUpStuff extends FlxTypedSpriteGroup<FunkinSprite>
+class PopUpStuff extends FlxSpriteGroup
 {
   /**
    * The current note style to use. This determines which graphics to display.
@@ -21,11 +21,17 @@ class PopUpStuff extends FlxTypedSpriteGroup<FunkinSprite>
    */
   var offsets:Array<Int> = [0, 0];
 
+  var ratingGroup:FlxSpriteGroup;
+
   override public function new(noteStyle:NoteStyle)
   {
     super();
 
     this.noteStyle = noteStyle;
+
+    ratingGroup = new FlxSpriteGroup();
+    ratingGroup.zIndex = 1000;
+    add(ratingGroup);
   }
 
   public function displayRating(daRating:Null<String>)
@@ -34,8 +40,6 @@ class PopUpStuff extends FlxTypedSpriteGroup<FunkinSprite>
 
     var rating:Null<FunkinSprite> = noteStyle.buildJudgementSprite(daRating);
     if (rating == null) return;
-
-    rating.zIndex = 1000;
 
     rating.x = (FlxG.width * 0.474);
     rating.x -= rating.width / 2;
@@ -52,14 +56,14 @@ class PopUpStuff extends FlxTypedSpriteGroup<FunkinSprite>
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
 
-    add(rating);
+    ratingGroup.add(rating);
 
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
 
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
         onComplete: function(tween:FlxTween) {
-          remove(rating, true);
+          ratingGroup.remove(rating, true);
           rating.destroy();
         },
         startDelay: Conductor.instance.beatLengthMs * 0.001,
