@@ -1770,7 +1770,9 @@ class Project extends HXProject
         var outdatedVersion:String = versions[0];
         var expectedVersion:String = versions[1];
 
-        Sys.println("- " + libraryName.replace(",", "."));
+        var isDev:Bool = outdatedVersion.contains("/");
+
+        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? "\x1b[1;34m (Development Build)\x1b[0m" : ""));
         Sys.println("   \x1b[38;5;203mCurrent version: " + outdatedVersion + "\x1b[0m");
         Sys.println("   \x1b[38;5;82mExpected version: " + expectedVersion + "\x1b[0m");
       }
