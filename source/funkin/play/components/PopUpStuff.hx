@@ -23,6 +23,8 @@ class PopUpStuff extends FlxSpriteGroup
    */
   var offsets:Array<Int> = [0, 0];
 
+  var numberGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
+
   var ratingGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
 
   override public function new(noteStyle:NoteStyle)
@@ -31,20 +33,25 @@ class PopUpStuff extends FlxSpriteGroup
 
     this.noteStyle = noteStyle;
 
+    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
 
+    add(numberGroup);
     add(ratingGroup);
   }
 
   /*
+    * Display the player's rating when hitting a note.
     @param daRating Null<String>
-    @return Null<String>
+    @return
    */
   public function displayRating(daRating:Null<String>)
   {
     if (daRating == null) daRating = "good";
 
     var rating:Null<FunkinSprite> = null;
+
+    rating = ratingGroup.getFirstDead();
 
     if (rating != null)
     {
@@ -55,7 +62,7 @@ class PopUpStuff extends FlxSpriteGroup
       rating = new FunkinSprite();
     }
 
-    // if (rating == null) return;
+    if (rating == null) return;
     var ratingInfo = noteStyle.buildJudgementSprite(daRating) ??
       {
         assetPath: null,
@@ -99,7 +106,6 @@ class PopUpStuff extends FlxSpriteGroup
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
         onComplete: function(tween:FlxTween) {
-          // ratingGroup.remove(rating, true);
           rating.kill();
         },
         startDelay: Conductor.instance.beatLengthMs * 0.001,
@@ -120,8 +126,6 @@ class PopUpStuff extends FlxSpriteGroup
     while (seperatedScore.length < 3)
       seperatedScore.push(0);
 
-    // seperatedScore.reverse();
-
     var daLoop:Int = 1;
     for (digit in seperatedScore)
     {
@@ -141,14 +145,14 @@ class PopUpStuff extends FlxSpriteGroup
       numScore.velocity.y -= FlxG.random.int(130, 150);
       numScore.velocity.x = FlxG.random.float(-5, 5);
 
-      add(numScore);
+      numberGroup.add(numScore);
 
       var fadeEase = noteStyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
 
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
         {
           onComplete: function(tween:FlxTween) {
-            remove(numScore, true);
+            numberGroup.remove(numScore, true);
             numScore.destroy();
           },
           startDelay: Conductor.instance.beatLengthMs * 0.002,
