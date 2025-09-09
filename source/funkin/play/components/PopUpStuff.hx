@@ -7,8 +7,10 @@ import funkin.graphics.FunkinSprite;
 import funkin.util.EaseUtil;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.math.FlxPoint;
+import funkin.util.SortUtil;
+import flixel.util.FlxSort;
 
-@:nullSafety
+// @:nullSafety
 class PopUpStuff extends FlxSpriteGroup
 {
   /**
@@ -23,9 +25,10 @@ class PopUpStuff extends FlxSpriteGroup
    */
   var offsets:Array<Int> = [0, 0];
 
-  var numberGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
-
   var ratingGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
+  var latestZIndex:Int = 0;
+
+  var numberGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
 
   override public function new(noteStyle:NoteStyle)
   {
@@ -33,15 +36,16 @@ class PopUpStuff extends FlxSpriteGroup
 
     this.noteStyle = noteStyle;
 
-    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
+    // ratingGroup.zIndex = 1000;
+    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
 
     add(numberGroup);
     add(ratingGroup);
   }
 
   /*
-    * Display the player's rating when hitting a note.
+    * Display the player's rating when hitting a note
     @param daRating Null<String>
     @return
    */
@@ -55,14 +59,20 @@ class PopUpStuff extends FlxSpriteGroup
 
     if (rating != null)
     {
+      rating.acceleration.y = 0;
+      rating.velocity.y = 0;
+      rating.velocity.x = 0;
+      // rating.zIndex = 0;
+      rating.alpha = 1;
       rating.revive();
     }
     else
     {
       rating = new FunkinSprite();
+      ratingGroup.add(rating);
     }
 
-    if (rating == null) return;
+    // if (rating == null) return;
     var ratingInfo = noteStyle.buildJudgementSprite(daRating) ??
       {
         assetPath: null,
@@ -71,7 +81,12 @@ class PopUpStuff extends FlxSpriteGroup
         isPixel: false,
       };
 
+    rating.zIndex = latestZIndex;
+    latestZIndex--;
+    ratingGroup.sort(SortUtil.byZIndex, FlxSort.DESCENDING);
+    trace("rating Z index: " + rating.zIndex);
     rating.loadTexture(ratingInfo.assetPath);
+
     rating.scale = ratingInfo.scale;
     rating.scrollFactor = ratingInfo.scrollFactor;
 
@@ -79,12 +94,6 @@ class PopUpStuff extends FlxSpriteGroup
     rating.pixelPerfectRender = ratingInfo.isPixel;
     rating.pixelPerfectPosition = ratingInfo.isPixel;
     rating.updateHitbox();
-
-    rating.alpha = 1;
-    rating.zIndex = 1000;
-    rating.acceleration.y = 0;
-    rating.velocity.y = 0;
-    rating.velocity.x = 0;
 
     trace(ratingGroup.length);
     rating.x = (FlxG.width * 0.474);
@@ -100,13 +109,15 @@ class PopUpStuff extends FlxSpriteGroup
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
-    ratingGroup.add(rating);
+
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
 
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
         onComplete: function(tween:FlxTween) {
+          // rating.zIndex = 1000;
           rating.kill();
+          trace("Killed Rating!");
         },
         startDelay: Conductor.instance.beatLengthMs * 0.001,
         ease: fadeEase
@@ -125,6 +136,8 @@ class PopUpStuff extends FlxSpriteGroup
     }
     while (seperatedScore.length < 3)
       seperatedScore.push(0);
+
+    // seperatedScore.reverse();
 
     var daLoop:Int = 1;
     for (digit in seperatedScore)
@@ -145,14 +158,14 @@ class PopUpStuff extends FlxSpriteGroup
       numScore.velocity.y -= FlxG.random.int(130, 150);
       numScore.velocity.x = FlxG.random.float(-5, 5);
 
-      numberGroup.add(numScore);
+      add(numScore);
 
       var fadeEase = noteStyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
 
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
         {
           onComplete: function(tween:FlxTween) {
-            numberGroup.remove(numScore, true);
+            remove(numScore, true);
             numScore.destroy();
           },
           startDelay: Conductor.instance.beatLengthMs * 0.002,
