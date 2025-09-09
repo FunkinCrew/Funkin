@@ -134,27 +134,27 @@ class NewCharacterCard extends BackingCard
     darkBg = new FlxSprite(0, 0).loadGraphic(bitmap);
     add(darkBg);
 
-    friendFoe.funnyColor = 0xFF139376;
+    friendFoe.color = 0xFF139376;
     friendFoe.speed = -4;
     add(friendFoe);
 
-    newUnlock1.funnyColor = 0xFF99BDF2;
+    newUnlock1.color = 0xFF99BDF2;
     newUnlock1.speed = 2;
     add(newUnlock1);
 
-    waiting.funnyColor = 0xFF40EA84;
+    waiting.color = 0xFF40EA84;
     waiting.speed = -2;
     add(waiting);
 
-    newUnlock2.funnyColor = 0xFF99BDF2;
+    newUnlock2.color = 0xFF99BDF2;
     newUnlock2.speed = 2;
     add(newUnlock2);
 
-    friendFoe2.funnyColor = 0xFF139376;
+    friendFoe2.color = 0xFF139376;
     friendFoe2.speed = -4;
     add(friendFoe2);
 
-    newUnlock3.funnyColor = 0xFF99BDF2;
+    newUnlock3.color = 0xFF99BDF2;
     newUnlock3.speed = 2;
     add(newUnlock3);
 
