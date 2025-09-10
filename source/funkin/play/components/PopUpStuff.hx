@@ -45,11 +45,11 @@ class PopUpStuff extends FlxSpriteGroup
   }
 
   /*
-    * Display the player's rating when hitting a note
+    * Display the player's rating when hitting a note.
     @param daRating Null<String>
     @return
    */
-  public function displayRating(daRating:Null<String>)
+  public function displayRating(daRating:Null<String>):Void
   {
     if (daRating == null) daRating = "good";
 
@@ -72,7 +72,7 @@ class PopUpStuff extends FlxSpriteGroup
       ratingGroup.add(rating);
     }
 
-    // if (rating == null) return;
+    if (rating == null) return;
     var ratingInfo = noteStyle.buildJudgementSprite(daRating) ??
       {
         assetPath: null,
@@ -124,6 +124,10 @@ class PopUpStuff extends FlxSpriteGroup
       });
   }
 
+  /*
+    * Display the player's combo when hitting a note.
+     @param combo Int
+   */
   public function displayCombo(combo:Int = 0):Void
   {
     var seperatedScore:Array<Int> = [];
@@ -137,35 +141,38 @@ class PopUpStuff extends FlxSpriteGroup
     while (seperatedScore.length < 3)
       seperatedScore.push(0);
 
-    // seperatedScore.reverse();
-
     var daLoop:Int = 1;
     for (digit in seperatedScore)
     {
-      var numScore:Null<FunkinSprite> = noteStyle.buildComboNumSprite(digit);
-      if (numScore == null) continue;
+      var numScore:Null<FunkinSprite> = null;
 
-      numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65;
-      numScore.y = (FlxG.camera.height * 0.44);
+      numScore = new FunkinSprite();
+      var comboInfo = noteStyle.buildComboNumSprite(digit);
 
-      numScore.x += offsets[0];
-      numScore.y += offsets[1];
-      var styleOffsets = noteStyle.getComboNumSpriteOffsets(digit);
-      numScore.x += styleOffsets[0];
-      numScore.y += styleOffsets[1];
+      numScore.loadTexture(comboInfo.assetPath);
+      // if (numScore == null) continue;
 
-      numScore.acceleration.y = FlxG.random.int(250, 300);
-      numScore.velocity.y -= FlxG.random.int(130, 150);
-      numScore.velocity.x = FlxG.random.float(-5, 5);
+      // numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65;
+      // numScore.y = (FlxG.camera.height * 0.44);
 
-      add(numScore);
+      // numScore.x += offsets[0];
+      // numScore.y += offsets[1];
+      // var styleOffsets = noteStyle.getComboNumSpriteOffsets(digit);
+      // numScore.x += styleOffsets[0];
+      // numScore.y += styleOffsets[1];
+
+      // numScore.acceleration.y = FlxG.random.int(250, 300);
+      // numScore.velocity.y -= FlxG.random.int(130, 150);
+      // numScore.velocity.x = FlxG.random.float(-5, 5);
+
+      numberGroup.add(numScore);
 
       var fadeEase = noteStyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
 
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
         {
           onComplete: function(tween:FlxTween) {
-            remove(numScore, true);
+            numberGroup.remove(numScore, true);
             numScore.destroy();
           },
           startDelay: Conductor.instance.beatLengthMs * 0.002,

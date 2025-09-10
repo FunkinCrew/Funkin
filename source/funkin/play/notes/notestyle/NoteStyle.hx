@@ -517,6 +517,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   }
 
   /*
+    * Fetches the information for a judgement sprite.
     @param rating String
     @return JudgementSpriteInfo
    */
@@ -562,10 +563,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     result.scrollFactor.set(0.2, 0.2);
     result.isPixel = isJudgementSpritePixel(rating);
-    // result.antialiasing = !isPixel;
-    // result.pixelPerfectRender = isPixel;
-    // result.pixelPerfectPosition = isPixel;
-    // result.updateHitbox();
 
     return result;
   }
@@ -645,91 +642,88 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
   }
 
-  public function buildComboNumSprite(digit:Int):Null<FunkinSprite>
+  /*
+    * Fetches the information for a combo number sprite.
+    @param digit Int
+    @return JudgementSpriteInfo
+   */
+  public function buildComboNumSprite(digit:Int):Null<JudgementSpriteInfo>
   {
-    var result = new FunkinSprite();
+    var result:JudgementSpriteInfo =
+      {
+        assetPath: null,
+        scale: new FlxPoint(1.0, 1.0),
+        scrollFactor: new FlxPoint(0, 0),
+        isPixel: false,
+      };
 
     switch (digit)
     {
       case 0:
         if (_data.assets.comboNumber0 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber0?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber0?.scale ?? 1.0;
       case 1:
         if (_data.assets.comboNumber1 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber1?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber1?.scale ?? 1.0;
       case 2:
         if (_data.assets.comboNumber2 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber2?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber2?.scale ?? 1.0;
       case 3:
         if (_data.assets.comboNumber3 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber3?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber3?.scale ?? 1.0;
       case 4:
         if (_data.assets.comboNumber4 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber4?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber4?.scale ?? 1.0;
       case 5:
         if (_data.assets.comboNumber5 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber5?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber5?.scale ?? 1.0;
       case 6:
         if (_data.assets.comboNumber6 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber6?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber6?.scale ?? 1.0;
       case 7:
         if (_data.assets.comboNumber7 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber7?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber7?.scale ?? 1.0;
       case 8:
         if (_data.assets.comboNumber8 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber8?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber8?.scale ?? 1.0;
       case 9:
         if (_data.assets.comboNumber9 == null) return fallback?.buildComboNumSprite(digit);
-        var assetPath = buildComboNumSpritePath(digit);
-        if (assetPath == null) return null;
-        result.loadTexture(assetPath);
+        result.assetPath = buildComboNumSpritePath(digit);
+        if (result.assetPath == null) return null;
         result.scale.x = _data.assets.comboNumber9?.scale ?? 1.0;
         result.scale.y = _data.assets.comboNumber9?.scale ?? 1.0;
       default:
         return null;
     }
 
-    var isPixel = isComboNumSpritePixel(digit);
-    result.antialiasing = !isPixel;
-    result.pixelPerfectRender = isPixel;
-    result.pixelPerfectPosition = isPixel;
-    result.updateHitbox();
+    result.isPixel = isComboNumSpritePixel(digit);
 
     return result;
   }
