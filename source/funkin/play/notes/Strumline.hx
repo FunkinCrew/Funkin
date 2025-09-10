@@ -11,6 +11,7 @@ import flixel.util.FlxSort;
 import funkin.audio.VoicesGroup.VoicesGroupEntry;
 import funkin.graphics.FunkinSprite;
 import funkin.play.character.BaseCharacter;
+import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.notes.NoteHoldCover;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
@@ -147,16 +148,22 @@ class Strumline extends FlxSpriteGroup
   public var onNoteIncoming:FlxTypedSignal<NoteSprite->Void>;
 
   /**
-   * A list of characters that this strumline controls.
-   * Should probably match up with the voice groups.
+   * The type of character that this strumline controls.
    */
-  public var characters:Array<BaseCharacter> = [];
+  public var characterType:CharacterType;
 
   /**
-   * A list of voice groups that this character affects.
+   * A list of characters that this strumline controls.
+   * The characters must be of the same type as `characterType`.
+   * Should probably match up with the voice groups.
+   */
+  public var characters:Array<BaseCharacter>;
+
+  /**
+   * A list of voice groups that this strumline affects.
    * Should probably match up with the characters.
    */
-  public var vocals:Array<Null<VoicesGroupEntry>> = [];
+  public var vocals:Array<Null<VoicesGroupEntry>>;
 
   /**
    * Whether or not this strumline is able to be used.
@@ -385,12 +392,13 @@ class Strumline extends FlxSpriteGroup
 
     canMiss = isPlayer;
 
-    // Add the characters and vocals if provided.
-    // Note that the setters in PlayState will handle adding any default characters and vocals.
-    // This is because, if Bot Play is enabled, we don't actually have any way here to tell which side this is for.
-    // At least, not without sacrificing some backwards compatibility by adding a required parameter.
-    if (characters != null) this.characters = characters;
-    if (vocals != null) this.vocals = vocals;
+    // Add any characters and vocals if provided.
+    this.characters = characters ?? [];
+    this.vocals = vocals ?? [];
+
+    if (isPlayer) characterType = CharacterType.BF;
+    else
+      characterType = CharacterType.DAD;
   }
 
   override function set_y(value:Float):Float
