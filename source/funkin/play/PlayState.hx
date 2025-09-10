@@ -3202,7 +3202,7 @@ class PlayState extends MusicBeatSubState
     {
       if (vocals != null) for (track in strumline.vocals)
       {
-        if (track != null) track.volume = 1;
+        if (track != null) track.volume = 0;
       }
       FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
     }
