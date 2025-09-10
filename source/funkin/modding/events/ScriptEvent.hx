@@ -110,6 +110,11 @@ class NoteScriptEvent extends ScriptEvent
   public var playSound(default, default):Bool;
 
   /**
+   * Whether to play the corresponding animation on the character, if applicable.
+   */
+  public var playAnim(default, default):Bool;
+
+  /**
    * The health gained or lost from this note.
    * This affects both hits and misses. Remember that max health is 2.00.
    */
@@ -121,6 +126,7 @@ class NoteScriptEvent extends ScriptEvent
     this.note = note;
     this.comboCount = comboCount;
     this.playSound = true;
+    this.playAnim = true;
     this.healthChange = healthChange;
   }
 
@@ -215,7 +221,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
   public var playSound(default, default):Bool;
 
   /**
-   * Whether to play the miss animation on the player.
+   * Whether to play the miss animation on the character.
    */
   public var playAnim(default, default):Bool;
 

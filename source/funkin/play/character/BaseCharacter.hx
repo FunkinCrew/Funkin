@@ -518,14 +518,16 @@ class BaseCharacter extends Bopper
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteHit(event:HitNoteScriptEvent)
+  public override function onNoteHit(event:HitNoteScriptEvent):Void
   {
     super.onNoteHit(event);
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
     curNoteKind = NoteKindManager.getNoteKind(event.note.noteData.kind);
 
-    if (event.note.parentStrumline.characters.contains(this))
+    if (event.playAnim
+      && event.note.parentStrumline.characterType == this.characterType
+      && event.note.parentStrumline.characters.contains(this))
     {
       if (curNoteKind != null)
       {
@@ -573,14 +575,16 @@ class BaseCharacter extends Bopper
    * Every time a note is missed, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteMiss(event:NoteScriptEvent)
+  public override function onNoteMiss(event:NoteScriptEvent):Void
   {
     super.onNoteMiss(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.note.parentStrumline.characters.contains(this))
+    if (event.playAnim
+      && event.note.parentStrumline.characterType == this.characterType
+      && event.note.parentStrumline.characters.contains(this))
     {
       // If the strumline controls this character, play the miss animation.
       this.playSingAnimation(event.note.noteData.getDirection(), true);
@@ -591,14 +595,16 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  public override function onNoteHoldDrop(event:HoldNoteScriptEvent):Void
   {
     super.onNoteHoldDrop(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.holdNote.parentStrumline.characters.contains(this))
+    if (event.playAnim
+      && event.holdNote.parentStrumline.characterType == this.characterType
+      && event.holdNote.parentStrumline.characters.contains(this))
     {
       // If the strumline controls this character, play the miss animation.
       this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
@@ -654,7 +660,7 @@ class BaseCharacter extends Bopper
       return;
     }
 
-    if (event.strumline?.characters.contains(this))
+    if (event.strumline != null && event.strumline.characterType == this.characterType && event.strumline.characters.contains(this))
     {
       // If the strumline controls this character, play the miss animation.
       // trace('Playing ghost miss animation...');

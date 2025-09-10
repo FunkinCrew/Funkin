@@ -526,6 +526,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The sprite group containing active players' strumline notes.
    * Setting this will automatically try to add the stage's player character to the start of `playerStrumline.characters`.
+   * This will also try to add `vocals.playerVoices` to the start of `playerStrumline.vocals`.
    */
   public var playerStrumline(get, set):Strumline;
 
@@ -560,6 +561,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The sprite group containing opponents' strumline notes.
    * Setting this will automatically try to add the stage's opponent character to the start of `opponentStrumline.characters`.
+   * This will also try to add `vocals.opponentVoices` to the start of `opponentStrumline.vocals`.
    */
   public var opponentStrumline(get, set):Strumline;
 
