@@ -6796,6 +6796,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return note != null && curStackedNotes.contains(note);
   }
 
+  public override function openSubState(subState:FlxSubState):Void
+  {
+    // Force stops audio preview from OffsetsToolbox, if it exists.
+    cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.stopAudioPreview();
+
+    super.openSubState(subState);
+  }
+
   override function destroy():Void
   {
     super.destroy();
