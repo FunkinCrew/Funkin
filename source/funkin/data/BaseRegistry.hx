@@ -9,6 +9,9 @@ import haxe.Constraints.Constructible;
  */
 typedef EntryConstructorFunction = (String, ?Dynamic) -> Void;
 
+@:genericBuild(funkin.util.macro.RegistryMacro.buildRegistry())
+class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J, P, Const> {}
+
 /**
  * A base type for a Registry, which is an object which handles loading scriptable objects.
  *
@@ -18,15 +21,17 @@ typedef EntryConstructorFunction = (String, ?Dynamic) -> Void;
  */
 @:nullSafety
 @:generic
-@:autoBuild(funkin.util.macro.DataRegistryMacro.buildRegistry())
-abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J, P>
+abstract class BaseRegistryImpl<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J, P, Const>
 {
   /**
    * The ID of the registry. Used when logging.
    */
   public final registryId:String;
 
-  final dataFilePath:String;
+  /**
+   * The path to the data files.
+   */
+  var dataFilePath(get, never):String;
 
   /**
    * A map of entry IDs to entries.
@@ -50,10 +55,9 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param registryId A readable ID for this registry, used when logging.
    * @param dataFilePath The path (relative to `assets/data`) to search for JSON files.
    */
-  public function new(registryId:String, dataFilePath:String, ?versionRule:thx.semver.VersionRule)
+  public function new(registryId:String, ?versionRule:thx.semver.VersionRule)
   {
     this.registryId = registryId;
-    this.dataFilePath = dataFilePath;
     this.versionRule = versionRule == null ? '1.0.x' : versionRule;
 
     this.entries = new Map<String, T>();
@@ -109,9 +113,17 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // UNSCRIPTED ENTRIES
     //
     var entryIdList:Array<String> = DataAssets.listDataFilesInPath('${dataFilePath}/');
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
-      return !entries.exists(entryId);
-    });
+
+    // this leads to a crash (null object reference)
+    // var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
+    //   return !entries.exists(entryId);
+    // });
+
+    var unscriptedEntryIds:Array<String> = [];
+    for (entryId in entryIdList)
+    {
+      if (!entries.exists(entryId)) unscriptedEntryIds.push(entryId);
+    }
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
     for (entryId in unscriptedEntryIds)
     {
@@ -250,6 +262,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   //
   // FUNCTIONS TO IMPLEMENT
   //
+
+  abstract function get_dataFilePath():String;
 
   /**
    * Read, parse, and validate the JSON data and produce the corresponding data object.

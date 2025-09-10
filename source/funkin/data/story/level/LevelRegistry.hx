@@ -4,10 +4,9 @@ import funkin.util.SortUtil;
 import funkin.ui.story.Level;
 import funkin.ui.story.ScriptedLevel;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> implements ISingleton implements DefaultRegistryImpl
+class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams, 'levels'> implements ISingleton
 {
   /**
    * The current version string for the level data format.
@@ -20,14 +19,14 @@ class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> imp
 
   public function new()
   {
-    super('LEVEL', 'levels', LEVEL_DATA_VERSION_RULE);
+    super('LEVEL', LEVEL_DATA_VERSION_RULE);
   }
 
   /**
    * A list of all the story weeks from the base game, in order.
    * @return Array<String>
    */
-  public function listBaseGameEntryIds():Array<String>
+  public override function listBaseGameEntryIds():Array<String>
   {
     // This MUST be hard-coded (overriding the auto-generated method)
     // because the auto-generated method spits out values in alphabetical order.
