@@ -38,6 +38,8 @@ class AddEventsCommand implements ChartEditorCommand
 
     state.playSound(Paths.sound('chartingSounds/noteLay'));
 
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
@@ -51,6 +53,8 @@ class AddEventsCommand implements ChartEditorCommand
 
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
