@@ -477,10 +477,6 @@ class ChartEditorDialogHandler
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Upload Instrumental dialog';
 
-    buttonCancel.onClick = function(_) {
-      dialog.hideDialog(DialogButton.CANCEL);
-    }
-
     var instrumentalBox:Null<Box> = dialog.findComponent('instrumentalBox', Box);
     if (instrumentalBox == null) throw 'Could not locate instrumentalBox in Upload Instrumental dialog';
 
@@ -494,9 +490,14 @@ class ChartEditorDialogHandler
       Cursor.cursorMode = Default;
     }
 
-    var instId:String = state.currentInstrumentalId;
-
     var dropHandler:DialogDropTarget = {component: instrumentalBox, handler: null};
+
+    buttonCancel.onClick = function(_) {
+      dialog.hideDialog(DialogButton.CANCEL);
+      state.removeDropHandler(dropHandler);
+    }
+
+    var instId:String = state.currentInstrumentalId;
 
     instrumentalBox.onClick = function(_) {
       Dialogs.openBinaryFile('Open Instrumental', [
@@ -542,14 +543,18 @@ class ChartEditorDialogHandler
           'Failed to load instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})';
         }
 
-        // Tell the user the load was successful.
+        trace('Failed to load instrumental track (${path.file}.${path.ext})');
+
+        // Tell the user the load was unsuccessful.
         state.error('Failed to Load Instrumental', message);
       }
     };
 
     dropHandler.handler = onDropFile;
 
+    #if FEATURE_FILE_DROP
     state.addDropHandler(dropHandler);
+    #end
 
     return dialog;
   }
@@ -746,6 +751,7 @@ class ChartEditorDialogHandler
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Open Chart dialog';
     buttonCancel.onClick = function(_) {
       dialog.hideDialog(DialogButton.CANCEL);
+      state.clearDropHandlers();
     }
 
     var chartContainerA:Null<Component> = dialog.findComponent('chartContainerA');
@@ -762,6 +768,7 @@ class ChartEditorDialogHandler
       state.loadSong(songMetadata, songChartData);
 
       dialog.hideDialog(DialogButton.APPLY);
+      state.clearDropHandlers();
     }
 
     var onDropFileMetadataVariation:String->Label->String->Void;
@@ -780,18 +787,20 @@ class ChartEditorDialogHandler
       var songDefaultChartDataEntry:Component = RuntimeComponentBuilder.fromAsset(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
       var songDefaultChartDataEntryLabel:Null<Label> = songDefaultChartDataEntry.findComponent('chartEntryLabel', Label);
       if (songDefaultChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
-      #if FILE_DROP_SUPPORTED
+      #if FEATURE_FILE_DROP
       songDefaultChartDataEntryLabel.text = 'Drag and drop <song>-chart.json file, or click to browse.';
       #else
       songDefaultChartDataEntryLabel.text = 'Click to browse for <song>-chart.json file.';
       #end
 
       songDefaultChartDataEntry.onClick = onClickChartDataVariation.bind(Constants.DEFAULT_VARIATION).bind(songDefaultChartDataEntryLabel);
+      #if FEATURE_FILE_DROP
       state.addDropHandler(
         {
           component: songDefaultChartDataEntry,
           handler: onDropFileChartDataVariation.bind(Constants.DEFAULT_VARIATION).bind(songDefaultChartDataEntryLabel)
         });
+      #end
       chartContainerB.addComponent(songDefaultChartDataEntry);
 
       for (variation in variations)
@@ -800,7 +809,7 @@ class ChartEditorDialogHandler
         var songVariationMetadataEntry:Component = RuntimeComponentBuilder.fromAsset(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
         var songVariationMetadataEntryLabel:Null<Label> = songVariationMetadataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationMetadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         songVariationMetadataEntryLabel.text = 'Drag and drop <song>-metadata-${variation}.json file, or click to browse.';
         #else
         songVariationMetadataEntryLabel.text = 'Click to browse for <song>-metadata-${variation}.json file.';
@@ -815,7 +824,7 @@ class ChartEditorDialogHandler
           Cursor.cursorMode = Default;
         }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         state.addDropHandler(
           {
             component: songVariationMetadataEntry,
@@ -828,7 +837,7 @@ class ChartEditorDialogHandler
         var songVariationChartDataEntry:Component = RuntimeComponentBuilder.fromAsset(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
         var songVariationChartDataEntryLabel:Null<Label> = songVariationChartDataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         songVariationChartDataEntryLabel.text = 'Drag and drop <song>-chart-${variation}.json file, or click to browse.';
         #else
         songVariationChartDataEntryLabel.text = 'Click to browse for <song>-chart-${variation}.json file.';
@@ -843,7 +852,7 @@ class ChartEditorDialogHandler
           Cursor.cursorMode = Default;
         }
         songVariationChartDataEntry.onClick = onClickChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel);
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         state.addDropHandler(
           {
             component: songVariationChartDataEntry,
@@ -883,7 +892,7 @@ class ChartEditorDialogHandler
       // Tell the user the load was successful.
       state.success('Loaded Metadata', 'Loaded metadata file (${path.file}.${path.ext})');
 
-      #if FILE_DROP_SUPPORTED
+      #if FEATURE_FILE_DROP
       label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
       #else
       label.text = 'Metadata file (click to browse)\n${path.file}.${path.ext}';
@@ -919,7 +928,7 @@ class ChartEditorDialogHandler
               // Tell the user the load was successful.
               state.success('Loaded Metadata', 'Loaded metadata file (${selectedFile.name})');
 
-              #if FILE_DROP_SUPPORTED
+              #if FEATURE_FILE_DROP
               label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
               #else
               label.text = 'Metadata file (click to browse)\n${selectedFile.name}';
@@ -963,7 +972,7 @@ class ChartEditorDialogHandler
         // Tell the user the load was successful.
         state.success('Loaded Chart Data', 'Loaded chart data file (${path.file}.${path.ext})');
 
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
         #else
         label.text = 'Chart data file (click to browse)\n${path.file}.${path.ext}';
@@ -1006,7 +1015,7 @@ class ChartEditorDialogHandler
               // Tell the user the load was successful.
               state.success('Loaded Chart Data', 'Loaded chart data file (${selectedFile.name})');
 
-              #if FILE_DROP_SUPPORTED
+              #if FEATURE_FILE_DROP
               label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
               #else
               label.text = 'Chart data file (click to browse)\n${selectedFile.name}';
@@ -1020,14 +1029,20 @@ class ChartEditorDialogHandler
     var metadataEntryLabel:Null<Label> = metadataEntry.findComponent('chartEntryLabel', Label);
     if (metadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
 
-    #if FILE_DROP_SUPPORTED
+    #if FEATURE_FILE_DROP
     metadataEntryLabel.text = 'Drag and drop <song>-metadata.json file, or click to browse.';
     #else
     metadataEntryLabel.text = 'Click to browse for <song>-metadata.json file.';
     #end
 
     metadataEntry.onClick = onClickMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel);
-    state.addDropHandler({component: metadataEntry, handler: onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel)});
+    #if FEATURE_FILE_DROP
+    state.addDropHandler(
+      {
+        component: metadataEntry,
+        handler: onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel)
+      });
+    #end
     metadataEntry.onMouseOver = function(_event) {
       metadataEntry.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
@@ -1053,6 +1068,20 @@ class ChartEditorDialogHandler
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT, true, closable);
     if (dialog == null) return null;
+
+    var importBox:Null<Box> = dialog.findComponent('importBox', Box);
+    if (importBox == null) throw 'Could not locate importBox in Import Chart dialog';
+
+    importBox.onMouseOver = function(_) {
+      importBox.swapClass('upload-bg', 'upload-bg-hover');
+      Cursor.cursorMode = Pointer;
+    }
+    importBox.onMouseOut = function(_) {
+      importBox.swapClass('upload-bg-hover', 'upload-bg');
+      Cursor.cursorMode = Default;
+    }
+
+    var dropHandler:DialogDropTarget = {component: importBox, handler: null};
 
     var prettyFormat:String = switch (format)
     {
@@ -1082,18 +1111,7 @@ class ChartEditorDialogHandler
     buttonCancel.onClick = function(_) {
       state.isHaxeUIDialogOpen = false;
       dialog.hideDialog(DialogButton.CANCEL);
-    }
-
-    var importBox:Null<Box> = dialog.findComponent('importBox', Box);
-    if (importBox == null) throw 'Could not locate importBox in Import Chart dialog';
-
-    importBox.onMouseOver = function(_) {
-      importBox.swapClass('upload-bg', 'upload-bg-hover');
-      Cursor.cursorMode = Pointer;
-    }
-    importBox.onMouseOut = function(_) {
-      importBox.swapClass('upload-bg-hover', 'upload-bg');
-      Cursor.cursorMode = Default;
+      state.removeDropHandler(dropHandler);
     }
 
     var onDropFile:String->Void;
@@ -1118,6 +1136,7 @@ class ChartEditorDialogHandler
           state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
           dialog.hideDialog(DialogButton.APPLY);
+          state.removeDropHandler(dropHandler);
           state.success('Success', 'Loaded chart file (${selectedFile.name})');
         }
       });
@@ -1140,10 +1159,15 @@ class ChartEditorDialogHandler
       state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
 
       dialog.hideDialog(DialogButton.APPLY);
+      state.removeDropHandler(dropHandler);
       state.success('Success', 'Loaded chart file (${path.file}.${path.ext})');
     };
 
-    state.addDropHandler({component: importBox, handler: onDropFile});
+    dropHandler.handler = onDropFile;
+
+    #if FEATURE_FILE_DROP
+    state.addDropHandler(dropHandler);
+    #end
 
     return dialog;
   }
