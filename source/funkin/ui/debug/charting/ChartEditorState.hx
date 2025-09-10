@@ -124,6 +124,8 @@ using Lambda;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/main-view.xml"))
 class ChartEditorState extends UIState // UIState derives from MusicBeatState
 {
+  public static var instance:ChartEditorState = null;
+
   /**
    * CONSTANTS
    */
@@ -2283,6 +2285,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   override function create():Void
   {
+    instance = this;
     // super.create() must be called first, the HaxeUI components get created here.
     super.create();
     // Set the z-index of the HaxeUI.
@@ -6796,6 +6799,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   override function destroy():Void
   {
+    instance = null;
+
     super.destroy();
 
     cleanupAutoSave();
