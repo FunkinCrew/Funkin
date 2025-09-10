@@ -48,7 +48,7 @@ body:
     attributes:
       label: Mobile Device Model
       description: (Mobile users only) What mobile device are you playing on?
-      placeholder: ex. iPhone 16, Galaxy S25, iPad 11th Gen
+      placeholder: ex. iPhone 17, Galaxy S25, iPad 11th Gen
 
   - type: input
     attributes:
