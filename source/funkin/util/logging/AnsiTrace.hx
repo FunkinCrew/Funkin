@@ -1,11 +1,22 @@
 package funkin.util.logging;
 
+#if (sys && FEATURE_LOG_TRACE_FILE)
+import sys.FileSystem;
+import sys.io.FileOutput;
+import sys.io.File;
+#end
+
 /**
  * Class that helps with some Ansi related logging functionality like some terminal color checking
  */
 @:nullSafety
 class AnsiTrace
 {
+  #if (sys && FEATURE_LOG_TRACE_FILE)
+  private static final logFileName:String = "logs.txt";
+  private static var logFile:Null<FileOutput> = null;
+  #end
+
   /**
    * Output a message to the log.
    * Called when using `trace()`, and modified from the default to support ANSI colors.
@@ -13,6 +24,11 @@ class AnsiTrace
    */
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
+    #if (sys && FEATURE_LOG_TRACE_FILE)
+    @:nullSafety(Off)
+    var logStr:String = haxe.Log.formatOutput(v, info) + "\n";
+    #end
+
     var str:String = formatOutput(v, info);
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.message(str, flixel.util.FlxColor.WHITE);
@@ -22,6 +38,17 @@ class AnsiTrace
     #elseif lua
     untyped __define_feature__("use._hx_print", _hx_print(str));
     #elseif sys
+    #if (sys && FEATURE_LOG_TRACE_FILE)
+    if (logFile == null)
+    {
+      if (FileSystem.exists(logFileName)) FileSystem.deleteFile(logFileName);
+
+      logFile = File.write(logFileName);
+
+      lime.app.Application.current.onExit.add((_) -> logFile.close());
+    }
+    if (logFile != null) logFile.writeString(logStr);
+    #end
     Sys.println(str);
     #else
     throw new haxe.exceptions.NotImplementedException()

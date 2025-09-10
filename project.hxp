@@ -331,6 +331,13 @@ class Project extends HXProject
   static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
 
   /**
+   * `-DFEATURE_LOG_TRACE`
+   * If this flag is enabled, the game will print debug traces to a log file near the game's executable.
+   * Disable to improve performance a bunch.
+   */
+  static final FEATURE_LOG_TRACE_FILE:FeatureFlag = "FEATURE_LOG_TRACE_FILE";
+
+  /**
    * `-DFEATURE_MOBILE_ADVERTISEMENTS`
    * If this flag is enabled, Google AdMob will be enabled.
    * Banner and interstitial ads will sometimes appear.
@@ -786,8 +793,13 @@ class Project extends HXProject
     // FEATURE FLAGS
     //
 
+    // Should be true on debug builds or if GITHUB_BUILD is enabled.
+    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_LOG_TRACE.apply(this, true);
+    FEATURE_LOG_TRACE_FILE.apply(this, FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
     FEATURE_NAUGHTYNESS.apply(this, true);
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
@@ -796,10 +808,6 @@ class Project extends HXProject
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
     FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
-
-    // Should be true on debug builds or if GITHUB_BUILD is enabled.
-    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
