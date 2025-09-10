@@ -129,6 +129,11 @@ class InitState extends FlxState
       funkin.external.apple.AudioSession.initialize();
       #end
 
+      #if mobile
+      // Setup In-App reviews
+      funkin.mobile.util.FNFCUtil.init();
+      #end
+
       // This ain't a pixel art game! (most of the time)
       FlxSprite.defaultAntialiasing = true;
 
