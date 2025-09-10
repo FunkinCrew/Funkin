@@ -176,36 +176,13 @@ class Strumline extends FlxSpriteGroup
   {
     disableInput = value;
     // For every strumline note that is currently pressed, tell the game it was released.
-    if (value)
+    if (value && canMiss) for (i in 0...strumlineNotes.members.length)
     {
-      // Player input relies on PreciseInputManager, so we fake a button release with that.
-      if (isPlayer && PreciseInputManager.instance != null)
+      if (isKeyHeld(i))
       {
-        for (i in 0...strumlineNotes.members.length)
-        {
-          if (isKeyHeld(i))
-          {
-            var direction:NoteDirection = strumlineNotes.members[i].direction;
-            var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
-            PreciseInputManager.instance.onInputReleased.dispatch(
-              {
-                noteDirection: direction,
-                timestamp: timestamp
-              });
-            @:privateAccess
-            PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
-          }
-        }
-      }
-      // We also have to update heldKeys, which is read by PlayState.instance.processNotes.
-      for (i in 0...strumlineNotes.members.length)
-      {
-        if (isKeyHeld(i))
-        {
-          var note:StrumlineNote = strumlineNotes.members[i];
-          releaseKey(note.direction);
-          playStatic(note.direction);
-        }
+        var note:StrumlineNote = strumlineNotes.members[i];
+        releaseKey(note.direction);
+        playStatic(note.direction);
       }
     }
     return value;
@@ -755,9 +732,12 @@ class Strumline extends FlxSpriteGroup
         {
           // Stopped pressing the hold note.
           if (!isPlayer || isLaneDisabled(holdNote.noteDirection)) playStatic(holdNote.noteDirection);
-          if (canMiss) holdNote.missedNote = true;
           holdNote.visible = true;
-          holdNote.alpha = 0.0; // Completely hide the dropped hold note.
+          if (canMiss)
+          {
+            holdNote.missedNote = true;
+            holdNote.alpha = 0.0; // Completely hide the dropped hold note.
+          }
         }
       }
 

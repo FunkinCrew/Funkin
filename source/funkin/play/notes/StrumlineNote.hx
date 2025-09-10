@@ -71,25 +71,13 @@ class StrumlineNote extends FunkinSprite
   {
     disableInput = value;
     // If this strumline note is currently pressed, tell the game it was released.
-    if (value && parentStrumline != null)
+    if (value && parentStrumline != null && parentStrumline.canMiss)
     {
       @:privateAccess
       var noteIndex:Int = parentStrumline.strumlineNotes.members.indexOf(this);
       if (parentStrumline.isKeyHeld(noteIndex))
       {
-        // Player input relies on PreciseInputManager, so we fake a button release with that.
-        if (isPlayer && PreciseInputManager.instance != null)
-        {
-          var timestamp:haxe.Int64 = PreciseInputManager.getCurrentTimestamp();
-          PreciseInputManager.instance.onInputReleased.dispatch(
-            {
-              noteDirection: direction,
-              timestamp: timestamp
-            });
-          @:privateAccess
-          PreciseInputManager.instance._dirReleaseTimestamps.set(direction, timestamp);
-        }
-        // We also have to update heldKeys, which is read by PlayState.instance.processNotes.
+        // Update parentStrumline.heldKeys, which is read by PlayState.instance.processNotes.
         parentStrumline.releaseKey(direction);
         // We call the parent's version of playStatic because it has haptic code that isn't run in this class's version.
         parentStrumline.playStatic(direction);
