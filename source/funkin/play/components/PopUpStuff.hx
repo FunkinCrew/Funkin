@@ -26,9 +26,10 @@ class PopUpStuff extends FlxSpriteGroup
   var offsets:Array<Int> = [0, 0];
 
   var ratingGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
-  var latestZIndex:Int = 0;
+  var latestRatingZIndex:Int = 0;
 
   var numberGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
+  var latestComboZIndex:Int = 0;
 
   override public function new(noteStyle:NoteStyle)
   {
@@ -38,7 +39,7 @@ class PopUpStuff extends FlxSpriteGroup
 
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
     // ratingGroup.zIndex = 1000;
-    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
+    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.507, FlxG.camera.height * 0.44);
 
     add(numberGroup);
     add(ratingGroup);
@@ -81,8 +82,8 @@ class PopUpStuff extends FlxSpriteGroup
         isPixel: false,
       };
 
-    rating.zIndex = latestZIndex;
-    latestZIndex--;
+    rating.zIndex = latestRatingZIndex;
+    latestRatingZIndex--;
     ratingGroup.sort(SortUtil.byZIndex, FlxSort.DESCENDING);
     trace("rating Z index: " + rating.zIndex);
     rating.loadTexture(ratingInfo.assetPath);
@@ -141,8 +142,7 @@ class PopUpStuff extends FlxSpriteGroup
     while (seperatedScore.length < 3)
       seperatedScore.push(0);
 
-    var daLoop:Int = 1;
-    for (digit in seperatedScore)
+    for (i in 0...seperatedScore.length)
     {
       var numScore:Null<FunkinSprite> = null;
 
@@ -151,9 +151,9 @@ class PopUpStuff extends FlxSpriteGroup
       if (numScore != null)
       {
         numScore.acceleration.y = 0;
-        numScore.velocity.y = 0;
-        numScore.velocity.x = 0;
+        numScore.velocity.set(0, 0);
         numScore.alpha = 1;
+        numScore.setPosition(numberGroup.x, numberGroup.y);
         numScore.revive();
       }
       else
@@ -162,26 +162,36 @@ class PopUpStuff extends FlxSpriteGroup
         numberGroup.add(numScore);
       }
 
-      var comboInfo = noteStyle.buildComboNumSprite(digit);
+      var comboInfo = noteStyle.buildComboNumSprite(seperatedScore[i]);
+
+      numScore.zIndex = latestComboZIndex;
+      latestComboZIndex--;
+      numberGroup.sort(SortUtil.byZIndex, FlxSort.DESCENDING);
       numScore.loadTexture(comboInfo.assetPath);
+
+      numScore.scale = comboInfo.scale;
+
+      numScore.antialiasing = !comboInfo.isPixel;
+      numScore.pixelPerfectRender = comboInfo.isPixel;
+      numScore.pixelPerfectPosition = comboInfo.isPixel;
+      numScore.updateHitbox();
       // if (numScore == null) continue;
 
       trace("Num Scores: " + numberGroup.length);
 
-      // numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65;
-      // numScore.y = (FlxG.camera.height * 0.44);
+      numScore.x = numberGroup.x - (36 * (i + 1)) - 65;
 
-      // numScore.x += offsets[0];
-      // numScore.y += offsets[1];
-      // var styleOffsets = noteStyle.getComboNumSpriteOffsets(digit);
-      // numScore.x += styleOffsets[0];
-      // numScore.y += styleOffsets[1];
+      numScore.x += offsets[0];
+      numScore.y += offsets[1];
+      var styleOffsets = noteStyle.getComboNumSpriteOffsets(seperatedScore[i]);
+      numScore.x += styleOffsets[0];
+      numScore.y += styleOffsets[1];
 
-      // numScore.acceleration.y = FlxG.random.int(250, 300);
-      // numScore.velocity.y -= FlxG.random.int(130, 150);
-      // numScore.velocity.x = FlxG.random.float(-5, 5);
+      numScore.acceleration.y = FlxG.random.int(250, 300);
+      numScore.velocity.y -= FlxG.random.int(130, 150);
+      numScore.velocity.x = FlxG.random.float(-5, 5);
 
-      var fadeEase = noteStyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
+      var fadeEase = noteStyle.isComboNumSpritePixel(seperatedScore[i]) ? EaseUtil.stepped(2) : null;
 
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
         {
@@ -191,8 +201,6 @@ class PopUpStuff extends FlxSpriteGroup
           startDelay: Conductor.instance.beatLengthMs * 0.002,
           ease: fadeEase
         });
-
-      daLoop++;
     }
   }
 }
