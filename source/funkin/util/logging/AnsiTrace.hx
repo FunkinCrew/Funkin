@@ -1,6 +1,6 @@
 package funkin.util.logging;
 
-#if (sys && FEATURE_LOG_TRACE_FILE)
+#if (sys && FEATURE_DEBUG_FILE_LOGGING)
 import sys.FileSystem;
 import sys.io.FileOutput;
 import sys.io.File;
@@ -12,7 +12,7 @@ import sys.io.File;
 @:nullSafety
 class AnsiTrace
 {
-  #if (sys && FEATURE_LOG_TRACE_FILE)
+  #if (sys && FEATURE_DEBUG_FILE_LOGGING)
   private static final logFileName:String = "logs.txt";
   private static var logFile:Null<FileOutput> = null;
   #end
@@ -24,7 +24,7 @@ class AnsiTrace
    */
   public static function trace(v:Dynamic, ?info:haxe.PosInfos)
   {
-    #if (sys && FEATURE_LOG_TRACE_FILE)
+    #if (sys && FEATURE_DEBUG_FILE_LOGGING)
     @:nullSafety(Off)
     var logStr:String = haxe.Log.formatOutput(v, info) + "\n";
     #end
@@ -38,7 +38,7 @@ class AnsiTrace
     #elseif lua
     untyped __define_feature__("use._hx_print", _hx_print(str));
     #elseif sys
-    #if (sys && FEATURE_LOG_TRACE_FILE)
+    #if FEATURE_DEBUG_FILE_LOGGING
     if (logFile == null)
     {
       if (FileSystem.exists(logFileName)) FileSystem.deleteFile(logFileName);
