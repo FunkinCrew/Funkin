@@ -146,11 +146,27 @@ class PopUpStuff extends FlxSpriteGroup
     {
       var numScore:Null<FunkinSprite> = null;
 
-      numScore = new FunkinSprite();
-      var comboInfo = noteStyle.buildComboNumSprite(digit);
+      numScore = numberGroup.getFirstDead();
 
+      if (numScore != null)
+      {
+        numScore.acceleration.y = 0;
+        numScore.velocity.y = 0;
+        numScore.velocity.x = 0;
+        numScore.alpha = 1;
+        numScore.revive();
+      }
+      else
+      {
+        numScore = new FunkinSprite();
+        numberGroup.add(numScore);
+      }
+
+      var comboInfo = noteStyle.buildComboNumSprite(digit);
       numScore.loadTexture(comboInfo.assetPath);
       // if (numScore == null) continue;
+
+      trace("Num Scores: " + numberGroup.length);
 
       // numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65;
       // numScore.y = (FlxG.camera.height * 0.44);
@@ -165,15 +181,12 @@ class PopUpStuff extends FlxSpriteGroup
       // numScore.velocity.y -= FlxG.random.int(130, 150);
       // numScore.velocity.x = FlxG.random.float(-5, 5);
 
-      numberGroup.add(numScore);
-
       var fadeEase = noteStyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
 
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
         {
           onComplete: function(tween:FlxTween) {
-            numberGroup.remove(numScore, true);
-            numScore.destroy();
+            numScore.kill();
           },
           startDelay: Conductor.instance.beatLengthMs * 0.002,
           ease: fadeEase
