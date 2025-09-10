@@ -353,6 +353,14 @@ class FreeplayState extends MusicBeatSubState
       stickerSubState.degenStickers();
     }
 
+    if (fromResultsParams != null)
+    {
+      @:privateAccess
+      this._parentState._constructor = () -> {
+        return FreeplayState.build(null, null);
+      }
+    }
+
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
     DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
