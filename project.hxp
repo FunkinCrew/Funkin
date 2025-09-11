@@ -1385,6 +1385,11 @@ class Project extends HXProject
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
     addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
 
+    if (!HARDCODED_CREDITS.isEnabled(this))
+    {
+      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
+    }
+
     if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
       removeAssetPath('assets/preload/data/ui/animation-editor', "default");
 
