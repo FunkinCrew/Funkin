@@ -1,0 +1,208 @@
+{
+  "version": "1.0.0",
+  "name": "Boyfriend (Multidir)",
+  "renderType": "multisparrow",
+  "assetPath": "characters/BOYFRIEND",
+  "flipX": true,
+  "singTime": 8.0,
+  "healthIcon": {
+    "id": "bf"
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "BF idle dance",
+      "offsets": [-5, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "BF NOTE LEFT0",
+      "offsets": [12, -6]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "BF NOTE DOWN0",
+      "offsets": [-10, -50]
+    },
+    {
+      "name": "singUP",
+      "prefix": "BF NOTE UP0",
+      "offsets": [-29, 27]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "BF NOTE RIGHT0",
+      "offsets": [-38, -7]
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "BF NOTE LEFT MISS",
+      "offsets": [12, 24]
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "BF NOTE DOWN MISS",
+      "offsets": [-11, -19]
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "BF NOTE UP MISS",
+      "offsets": [-29, 27]
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "BF NOTE RIGHT MISS",
+      "offsets": [-30, 21]
+    },
+    {
+      "name": "preAttack",
+      "prefix": "bf pre attack",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "attack",
+      "prefix": "boyfriend attack",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "dodge",
+      "prefix": "boyfriend dodge",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "dodge-hold",
+      "prefix": "boyfriend dodge",
+      "frameIndices": [10, 11, 12],
+      "looped": true,
+      "assetPath": "characters/BOYFRIEND",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "hey",
+      "prefix": "BF HEY!!",
+      "offsets": [7, 4]
+    },
+    {
+      "name": "cheer",
+      "prefix": "Cheer",
+      "assetPath": "characters/BFCheer",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "hit",
+      "prefix": "BF hit",
+      "assetPath": "characters/BOYFRIEND",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "hit-hold",
+      "prefix": "BF hit",
+      "frameIndices": [10, 11],
+      "looped": true,
+      "assetPath": "characters/BOYFRIEND",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "BF dies",
+      "offsets": [-37, 11]
+    },
+    {
+      "name": "fakeoutDeath",
+      "prefix": "BF dies",
+      "offsets": [-37, 11]
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "BF Dead Loop",
+      "looped": true,
+      "offsets": [-37, 5]
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "BF Dead confirm",
+      "offsets": [-37, 69]
+    },
+    {
+      "name": "scared",
+      "prefix": "BF idle shaking",
+      "offsets": [-4, 0]
+    },
+
+    {
+      "name": "singLEFTRIGHT",
+      "prefix": "BF NOTE LEFT RIGHT0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [12, -6]
+    },
+    {
+      "name": "singDOWNRIGHT",
+      "prefix": "BF NOTE DOWN RIGHT0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-10, -50]
+    },
+    {
+      "name": "singUPRIGHT",
+      "prefix": "BF NOTE UP RIGHT0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-29, 27]
+    },
+
+    {
+      "name": "singLEFTUP",
+      "prefix": "BF NOTE LEFT UP0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [12, -6]
+    },
+    {
+      "name": "singDOWNUP",
+      "prefix": "BF NOTE DOWN UP0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-10, -50]
+    },
+    {
+      "name": "singRIGHTUP",
+      "prefix": "BF NOTE RIGHT UP0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-38, -7]
+    },
+
+    {
+      "name": "singLEFTDOWN",
+      "prefix": "BF NOTE LEFT DOWN0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [12, -6]
+    },
+    {
+      "name": "singUPDOWN",
+      "prefix": "BF NOTE UP DOWN0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-29, 27]
+    },
+    {
+      "name": "singRIGHTDOWN",
+      "prefix": "BF NOTE RIGHT DOWN0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-38, -7]
+    },
+
+    {
+      "name": "singDOWNLEFT",
+      "prefix": "BF NOTE DOWN UP0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-10, -50]
+    },
+    {
+      "name": "singUPLEFT",
+      "prefix": "BF NOTE UP LEFT0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-29, 27]
+    },
+    {
+      "name": "singRIGHTLEFT",
+      "prefix": "BF NOTE RIGHT LEFT0",
+      "assetPath": "characters/bf-multidir",
+      "offsets": [-38, -7]
+    }
+  ]
+}
