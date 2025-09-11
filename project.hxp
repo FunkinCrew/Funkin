@@ -1244,7 +1244,7 @@ class Project extends HXProject
 
     if (!HARDCODED_CREDITS.isEnabled(this))
     {
-      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbedArt);
+      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
     }
 
     // Font assets
