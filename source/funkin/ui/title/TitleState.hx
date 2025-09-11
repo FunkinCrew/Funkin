@@ -298,7 +298,10 @@ class TitleState extends MusicBeatState
     return swagGoodArray;
   }
 
-  var transitioning:Bool = false;
+  /**
+   * This variable answers the question: "Are we going to the main menu"?
+   */
+  public var transitioning:Bool = false;
 
   override function update(elapsed:Float):Void
   {
@@ -412,14 +415,20 @@ class TitleState extends MusicBeatState
     FlxG.switchState(() -> new MainMenuState());
   }
 
-  override function draw()
-  {
-    super.draw();
-  }
+  /**
+   * This is the array of inputs (in binary...?) for the cheat code
+   */
+  public var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
 
-  var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
-  var curCheatPos:Int = 0;
-  var cheatActive:Bool = false;
+  /**
+   * This is the current position in the cheat code
+   */
+  public var curCheatPos:Int = 0;
+
+  /**
+   * This is the boolean for if the cheat is active
+   */
+  public var cheatActive:Bool = false;
 
   function cheatCodeShit():Void
   {
@@ -498,8 +507,15 @@ class TitleState extends MusicBeatState
     }
   }
 
-  var isRainbow:Bool = false;
-  var skippedIntro:Bool = false;
+  /**
+   * Unused variable: most likely an old version of the `cheatActive` variable
+   */
+  public var isRainbow:Bool = false;
+
+  /**
+   * This is the variable telling the game to hide the `credGroup` group
+   */
+  public var skippedIntro:Bool = false;
 
   override function beatHit():Bool
   {
