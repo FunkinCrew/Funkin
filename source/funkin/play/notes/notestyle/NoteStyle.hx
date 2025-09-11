@@ -379,7 +379,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         return null;
     }
 
-    result.scrollFactor.set(0, 0);
     result.antialiasing = !isCountdownSpritePixel(step);
     result.updateHitbox();
 
@@ -527,7 +526,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       {
         assetPath: null,
         scale: new FlxPoint(1.0, 1.0),
-        scrollFactor: new FlxPoint(1.0, 1.0),
         isPixel: false,
       }; // = new JudgementSpriteInfo(null, new FlxPoint(1.0, 1.0), new FlxPoint(1.0, 1.0), true);
 
@@ -561,7 +559,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
         return null;
     }
 
-    result.scrollFactor.set(0.2, 0.2);
     result.isPixel = isJudgementSpritePixel(rating);
 
     return result;
@@ -653,7 +650,6 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       {
         assetPath: null,
         scale: new FlxPoint(1.0, 1.0),
-        scrollFactor: new FlxPoint(0, 0),
         isPixel: false,
       };
 

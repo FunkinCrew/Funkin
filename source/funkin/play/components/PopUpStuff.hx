@@ -38,6 +38,7 @@ class PopUpStuff extends FlxSpriteGroup
     this.noteStyle = noteStyle;
 
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(0, -60);
+    ratingGroup.scrollFactor.set(0.2, 0.2);
     numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.033, 0);
 
     add(ratingGroup);
@@ -75,18 +76,18 @@ class PopUpStuff extends FlxSpriteGroup
       {
         assetPath: null,
         scale: new FlxPoint(1.0, 1.0),
-        scrollFactor: new FlxPoint(1.0, 1.0),
         isPixel: false,
       };
 
+    // Can't think of a better way to do this.
     rating.zIndex = latestRatingZIndex;
     latestRatingZIndex--;
     ratingGroup.sort(SortUtil.byZIndex, FlxSort.DESCENDING);
     trace("rating Z index: " + rating.zIndex);
+
     rating.loadTexture(ratingInfo.assetPath);
 
     rating.scale = ratingInfo.scale;
-    rating.scrollFactor = ratingInfo.scrollFactor;
 
     rating.antialiasing = !ratingInfo.isPixel;
     rating.pixelPerfectRender = ratingInfo.isPixel;
@@ -206,6 +207,5 @@ typedef JudgementSpriteInfo =
 {
   var assetPath:Null<String>;
   var scale:FlxPoint;
-  var scrollFactor:FlxPoint;
   var isPixel:Bool;
 }
