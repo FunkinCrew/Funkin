@@ -49,19 +49,53 @@ import funkin.mobile.util.InAppPurchasesUtil;
 @:nullSafety
 class MainMenuState extends MusicBeatState
 {
-  var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
+  /**
+   * The currently active MainMenuState.
+   * There should be only one MainMenuState in existance at a time, we can use a singleton.
+   */
+  public static var instance:MainMenuState = null;
 
-  var bg:Null<FlxSprite>;
-  var magenta:FlxSprite;
-  var camFollow:FlxObject;
+  /**
+   * This is a list/group of the menu items
+   */
+  public var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
+
+  /**
+   * This is the background of the menu
+   */
+  public var bg:Null<FlxSprite>;
+
+  /**
+   * This is the magenta/alternate version of the menubackground
+   */
+  public var magenta:FlxSprite;
+  /**
+   * This is the object the camera follows to create
+   * the effect that you are actually moving through the menu
+   */
+  public var camFollow:FlxObject;
 
   #if mobile
+  /**
+   * A literal mobile-only variable
+   */
   var gyroPan:Null<FlxPoint>;
   #end
 
-  var overrideMusic:Bool = false;
-  var uiStateMachine:UIStateMachine = new UIStateMachine();
-  var canInteract(get, never):Bool;
+  /**
+   * This controls if the main menu music plays or not
+   */
+  public var overrideMusic:Bool = false;
+
+  /**
+   * A controller of if you can interact with the menu elements
+   */
+  public var uiStateMachine:UIStateMachine = new UIStateMachine();
+
+  /**
+   * This answers the question "Can I select something?"
+   */
+  public var canInteract(get, never):Bool;
 
   function get_canInteract():Bool
   {
@@ -70,9 +104,18 @@ class MainMenuState extends MusicBeatState
 
   static var rememberedSelectedIndex:Int = 0;
 
-  // this should never be false on non-mobile targets.
-  var hasUpgraded:Bool = false;
-  var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
+  /**
+   * This is a mobile variable.
+   * Telling the game if you've upgraded to the no-ads version
+   * This should never be false on non-mobile targets.
+   */
+  public var hasUpgraded:Bool = false;
+
+  /**
+   * This is a mobile variable.
+   * This is a group of sparkles around the "Upgrade menu item"
+   */
+  public var upgradeSparkles:FlxTypedSpriteGroup<UpgradeSparkle>;
 
   public function new(_overrideMusic:Bool = false)
   {
@@ -93,6 +136,13 @@ class MainMenuState extends MusicBeatState
 
   override function create():Void
   {
+    if (instance != null)
+    {
+      trace('WARNING: MainMenuState instance already exists. This should not happen.');
+      instance = null;
+    }
+    instance = this;
+
     #if FEATURE_DISCORD_RPC
     DiscordClient.instance.setPresence({state: "In the Menus", details: null});
     #end
@@ -353,7 +403,12 @@ class MainMenuState extends MusicBeatState
     menuItems.addItem(name, item);
   }
 
-  var buttonGrp:Array<FlxSprite> = [];
+  /**
+   * Unused, probably an early version of the `menuItems` group
+   *
+   * Maybe from the old week 7 (and older) engine if I'm remembering the code from that correctly...
+   */
+  public var buttonGrp:Array<FlxSprite> = [];
 
   function createMenuButtion(name:String, atlas:String, callback:Void->Void):Void
   {
