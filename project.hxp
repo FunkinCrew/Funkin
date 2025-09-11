@@ -1242,6 +1242,11 @@ class Project extends HXProject
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
     addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
 
+    if (!HARDCODED_CREDITS.isEnabled(this))
+    {
+      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
+    }
+
     // Font assets
     var shouldEmbedFonts = true;
     addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts, "assets");
