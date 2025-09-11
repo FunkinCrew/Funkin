@@ -1,5 +1,4 @@
 # Exclude any experimental mods that my have been added.
 /*
 !introMod
-!multi-dir-testing
 !testing123
