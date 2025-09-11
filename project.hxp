@@ -1242,6 +1242,11 @@ class Project extends HXProject
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
     addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
 
+    if (!HARDCODED_CREDITS.isEnabled(this))
+    {
+      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbedArt);
+    }
+
     // Font assets
     var shouldEmbedFonts = true;
     addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts, "assets");
@@ -1282,10 +1287,6 @@ class Project extends HXProject
     var shouldEmbedArt = false;
     var shouldPreloadArt = false;
     addAssetLibrary("art", shouldEmbedArt, shouldPreloadArt);
-    if (!HARDCODED_CREDITS.isEnabled(this))
-    {
-      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbedArt);
-    }
     addAsset("art/readme.txt", "do NOT readme.txt", "art", shouldEmbedArt);
     addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
     addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
