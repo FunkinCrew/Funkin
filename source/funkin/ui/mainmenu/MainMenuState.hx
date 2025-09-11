@@ -76,6 +76,9 @@ class MainMenuState extends MusicBeatState
   public var camFollow:FlxObject;
 
   #if mobile
+  /**
+   * A literal mobile-only variable
+   */
   var gyroPan:Null<FlxPoint>;
   #end
 
