@@ -1,4 +1,4 @@
-<div align='center'><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Friday_Night_Funkin%27_logo.svg/2560px-Friday_Night_Funkin%27_logo.svg.png" width="800">
+<div align='center'><img src="https://fridaynightfunkin.wiki.gg/images/FNF_logo.png" width="800">
 
 <h2>Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for <a href="https://ldjam.com/events/ludum-dare/47">Ludum Dare 47.</a></h2>
 
