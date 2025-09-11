@@ -525,8 +525,6 @@ class PlayState extends MusicBeatSubState
 
   /**
    * The sprite group containing active players' strumline notes.
-   * Setting this will automatically try to add the stage's player character to the start of `playerStrumline.characters`.
-   * This will also try to add `vocals.playerVoices` to the start of `playerStrumline.vocals`.
    */
   public var playerStrumline(get, set):Strumline;
 
@@ -537,31 +535,11 @@ class PlayState extends MusicBeatSubState
 
   function set_playerStrumline(value:Strumline):Strumline
   {
-    strumlines[0] = value;
-    // Add the player character to the strumline's list of characters.
-    var boyfriend:Null<BaseCharacter> = currentStage?.getBoyfriend();
-    if (boyfriend != null)
-    {
-      // Remove the character if they were in the array already.
-      value.characters.remove(boyfriend);
-      // Add the character to the start of the array just in case a script references the first entry expecting this character.
-      value.characters.unshift(boyfriend);
-    }
-    // Add the player vocals to the strumline's list of vocals.
-    if (vocals?.playerVoices != null) @:nullSafety(Off)
-    {
-      // Remove the vocals if they were in the array already.
-      value.vocals.remove(vocals.playerVoices);
-      // Add the vocals to the start of the array just in case a script references the first entry expecting these vocals.
-      value.vocals.unshift(vocals.playerVoices);
-    }
-    return value;
+    return strumlines[0] = value;
   }
 
   /**
    * The sprite group containing opponents' strumline notes.
-   * Setting this will automatically try to add the stage's opponent character to the start of `opponentStrumline.characters`.
-   * This will also try to add `vocals.opponentVoices` to the start of `opponentStrumline.vocals`.
    */
   public var opponentStrumline(get, set):Strumline;
 
@@ -572,25 +550,7 @@ class PlayState extends MusicBeatSubState
 
   function set_opponentStrumline(value:Strumline):Strumline
   {
-    strumlines[1] = value;
-    // Add the opponent character to the strumline's list of characters.
-    var dad:Null<BaseCharacter> = currentStage?.getDad();
-    if (dad != null)
-    {
-      // Remove the character if they were in the array already.
-      value.characters.remove(dad);
-      // Add the character to the start of the array just in case a script references the first entry expecting this character.
-      value.characters.unshift(dad);
-    }
-    // Add the opponent vocals to the strumline's list of vocals.
-    if (vocals?.opponentVoices != null) @:nullSafety(Off)
-    {
-      // Remove the vocals if they were in the array already.
-      value.vocals.remove(vocals.opponentVoices);
-      // Add the vocals to the start of the array just in case a script references the first entry expecting these vocals.
-      value.vocals.unshift(vocals.opponentVoices);
-    }
-    return value;
+    return strumlines[1] = value;
   }
 
   /**
@@ -862,6 +822,7 @@ class PlayState extends MusicBeatSubState
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
     initHealthBar();
+    initStrumlines();
     if (!isMinimalMode)
     {
       initStage();
@@ -871,7 +832,6 @@ class PlayState extends MusicBeatSubState
     {
       initMinimalMode();
     }
-    initStrumlines();
     initPopups();
 
     #if mobile
@@ -1063,10 +1023,10 @@ class PlayState extends MusicBeatSubState
         vocals = currentChart?.buildVocals(currentInstrumental);
 
         // Add the vocals to their strumlines.
-        if (vocals != null)
+        if (vocals != null && currentStage != null)
         {
-          playerStrumline.vocals[0] = vocals.playerVoices;
-          opponentStrumline.vocals[0] = vocals.opponentVoices;
+          if (currentStage.getBoyfriend() != null) currentStage.getBoyfriend().vocals[0] = vocals.playerVoices;
+          if (currentStage.getDad() != null) currentStage.getDad().vocals[0] = vocals.opponentVoices;
         }
 
         if (vocals?.members?.length == 0)
@@ -2088,6 +2048,8 @@ class PlayState extends MusicBeatSubState
       add(iconP2);
       iconP2.cameras = [camHUD];
 
+      dad.strumlines.push(opponentStrumline);
+
       #if FEATURE_DISCORD_RPC
       discordRPCAlbum = 'album-${currentChart?.album}';
       discordRPCIcon = 'icon-${currentCharacterData.opponent}';
@@ -2110,6 +2072,8 @@ class PlayState extends MusicBeatSubState
       iconP1.zIndex = 850;
       add(iconP1);
       iconP1.cameras = [camHUD];
+
+      boyfriend.strumlines.push(playerStrumline);
     }
 
     //
@@ -2158,10 +2122,7 @@ class PlayState extends MusicBeatSubState
      */
   function initStrumlines():Void
   {
-    // Create strumlines here so that their constructors can reference this instance.
-    @:nullSafety(Off)
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
-    @:nullSafety(Off)
     opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
 
     add(playerStrumline);
@@ -2365,10 +2326,10 @@ class PlayState extends MusicBeatSubState
       vocals = currentChart?.buildVocals(currentInstrumental);
 
       // Add the vocals to their strumlines.
-      if (vocals != null)
+      if (vocals != null && currentStage != null)
       {
-        playerStrumline.vocals[0] = vocals.playerVoices;
-        opponentStrumline.vocals[0] = vocals.opponentVoices;
+        if (currentStage.getBoyfriend() != null) currentStage.getBoyfriend().vocals[0] = vocals.playerVoices;
+        if (currentStage.getDad() != null) currentStage.getDad().vocals[0] = vocals.opponentVoices;
       }
 
       if (vocals?.members?.length == 0)
@@ -2763,10 +2724,11 @@ class PlayState extends MusicBeatSubState
           // Calling event.cancelEvent() skips all the other logic! Neat!
           if (event.eventCanceled) continue;
 
-          if (vocals != null) for (track in strumline.vocals)
-          {
-            if (track != null) track.volume = 1;
-          }
+          if (vocals != null) for (character in strumline.getControlledCharacters())
+            for (track in character.vocals)
+            {
+              if (track != null) track.volume = 1;
+            }
 
           // Command the bot to hit the note on time.
           // NOTE: This is what handles the strumline and cleaning up the note itself!
@@ -2815,10 +2777,11 @@ class PlayState extends MusicBeatSubState
             // Mute vocals if not taken care of already by onNoteMiss.
             if (event.playSound)
             {
-              if (vocals != null) for (track in strumline.vocals)
-              {
-                if (track != null) track.volume = 0;
-              }
+              if (vocals != null) for (character in strumline.getControlledCharacters())
+                for (track in character.vocals)
+                {
+                  if (track != null) track.volume = 0;
+                }
               FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
             }
           }
@@ -2847,7 +2810,7 @@ class PlayState extends MusicBeatSubState
 
           // Make sure the character keeps singing while the note is held by the bot.
           // Except for if the key was released. (This is where strumline.heldKeys comes in!)
-          if (!strumline.isPlayer && strumline.isKeyHeld(holdNote.noteDirection)) for (character in strumline.characters)
+          if (!strumline.isPlayer && strumline.isKeyHeld(holdNote.noteDirection)) for (character in strumline.getControlledCharacters())
           {
             if (character != null && character.isSinging())
             {
@@ -2912,10 +2875,11 @@ class PlayState extends MusicBeatSubState
               if (event.playSound)
               {
                 // Mute vocals.
-                if (vocals != null) for (track in strumline.vocals)
-                {
-                  if (track != null) track.volume = 0;
-                }
+                if (vocals != null) for (character in strumline.getControlledCharacters())
+                  for (track in character.vocals)
+                  {
+                    if (track != null) track.volume = 0;
+                  }
                 FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
               }
             }
@@ -3105,10 +3069,11 @@ class PlayState extends MusicBeatSubState
     strumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) strumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) strumline.playNoteHoldCover(note.holdNoteSprite);
-    if (vocals != null) for (track in strumline.vocals)
-    {
-      if (track != null) track.volume = 1;
-    }
+    if (vocals != null) for (character in strumline.getControlledCharacters())
+      for (track in character.vocals)
+      {
+        if (track != null) track.volume = 1;
+      }
 
     // Display the combo meter and add the calculation to the score.
     if (note.scoreable)
@@ -3200,10 +3165,11 @@ class PlayState extends MusicBeatSubState
 
     if (event.playSound)
     {
-      if (vocals != null) for (track in strumline.vocals)
-      {
-        if (track != null) track.volume = 0;
-      }
+      if (vocals != null) for (character in strumline.getControlledCharacters())
+        for (track in character.vocals)
+        {
+          if (track != null) track.volume = 0;
+        }
       FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }
