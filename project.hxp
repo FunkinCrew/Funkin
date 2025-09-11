@@ -1282,6 +1282,10 @@ class Project extends HXProject
     var shouldEmbedArt = false;
     var shouldPreloadArt = false;
     addAssetLibrary("art", shouldEmbedArt, shouldPreloadArt);
+    if (!HARDCODED_CREDITS.isEnabled(this))
+    {
+      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbedArt);
+    }
     addAsset("art/readme.txt", "do NOT readme.txt", "art", shouldEmbedArt);
     addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
     addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
