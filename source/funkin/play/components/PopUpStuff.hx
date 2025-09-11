@@ -10,7 +10,9 @@ import flixel.math.FlxPoint;
 import funkin.util.SortUtil;
 import flixel.util.FlxSort;
 
-// @:nullSafety
+/*
+ * The class which is responsible for managing in-game Pop-ups.
+ */
 class PopUpStuff extends FlxSpriteGroup
 {
   /**
@@ -25,10 +27,20 @@ class PopUpStuff extends FlxSpriteGroup
    */
   var offsets:Array<Int> = [0, 0];
 
+  /*
+   * A group that contains all of the rating Pop-ups.
+   * Used to easily recycle previous ratings.
+   */
   var ratingGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
+
   var latestRatingZIndex:Int = 0;
 
+  /*
+   * A group that contains all of the combo number Pop-ups
+   * Used to easily recycle previous combo numbers.
+   */
   var numberGroup:FlxTypedSpriteGroup<Null<FunkinSprite>>;
+
   var latestComboZIndex:Int = 0;
 
   override public function new(noteStyle:NoteStyle)
@@ -39,14 +51,14 @@ class PopUpStuff extends FlxSpriteGroup
 
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(0, -60);
     ratingGroup.scrollFactor.set(0.2, 0.2);
-    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.033, 0);
+    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.033, FlxG.camera.height * 0.01);
 
-    add(ratingGroup);
     add(numberGroup);
+    add(ratingGroup);
   }
 
   /*
-    * Display the player's rating when hitting a note.
+    * Creates a Rating Pop-up and displays it when the player hits a note.
     @param daRating Null<String>
     @return Void
    */
@@ -73,7 +85,7 @@ class PopUpStuff extends FlxSpriteGroup
       ratingGroup.add(rating);
     }
 
-    var ratingInfo = noteStyle.buildJudgementSprite(daRating) ??
+    var ratingInfo:JudgementSpriteInfo = noteStyle.buildJudgementSprite(daRating) ??
       {
         assetPath: null,
         scale: new FlxPoint(1.0, 1.0),
@@ -82,8 +94,8 @@ class PopUpStuff extends FlxSpriteGroup
 
     // Can't think of a better way to do this.
     rating.zIndex = latestRatingZIndex;
-    latestRatingZIndex--;
-    ratingGroup.sort(SortUtil.byZIndex, FlxSort.DESCENDING);
+    latestRatingZIndex++;
+    ratingGroup.sort(SortUtil.byZIndex, FlxSort.ASCENDING);
     trace("rating Z index: " + rating.zIndex);
 
     rating.loadTexture(ratingInfo.assetPath);
@@ -124,7 +136,7 @@ class PopUpStuff extends FlxSpriteGroup
   }
 
   /*
-    * Display the player's combo when hitting a note.
+    * Creates a Combo Pop-up to display the player's combo when hitting a note.
      @param combo Int
    */
   public function displayCombo(combo:Int = 0):Void
@@ -160,11 +172,11 @@ class PopUpStuff extends FlxSpriteGroup
         numberGroup.add(numScore);
       }
 
-      var comboInfo = noteStyle.buildComboNumSprite(seperatedScore[i]);
+      var comboInfo:JudgementSpriteInfo = noteStyle.buildComboNumSprite(seperatedScore[i]);
 
       numScore.zIndex = latestComboZIndex;
-      latestComboZIndex--;
-      numberGroup.sort(SortUtil.byZIndex, FlxSort.DESCENDING);
+      latestComboZIndex++;
+      numberGroup.sort(SortUtil.byZIndex, FlxSort.ASCENDING);
       numScore.loadTexture(comboInfo.assetPath);
 
       numScore.scale = comboInfo.scale;
