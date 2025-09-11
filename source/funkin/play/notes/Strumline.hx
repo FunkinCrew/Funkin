@@ -153,19 +153,6 @@ class Strumline extends FlxSpriteGroup
   public var characterType:CharacterType;
 
   /**
-   * A list of characters that this strumline controls.
-   * The characters must be of the same type as `characterType`.
-   * Should probably match up with the voice groups.
-   */
-  public var characters:Array<BaseCharacter>;
-
-  /**
-   * A list of voice groups that this strumline affects.
-   * Should probably match up with the characters.
-   */
-  public var vocals:Array<Null<VoicesGroupEntry>>;
-
-  /**
    * Whether or not this strumline is able to be used.
    * Different from `PlayState.instance.disableKeys` in that this only applies to this strumline.
    * This will also work if this strumline is controlled by a bot.
@@ -278,10 +265,8 @@ class Strumline extends FlxSpriteGroup
    * @param noteStyle The note style to use when creating sprites.
    * @param isPlayer Whether or not this strumline is controlled by the player's inputs. Should be `false` for bots.
    * @param scrollSpeed The speed that the notes will scroll at. Defaults to the current chart's scroll speed.
-   * @param characters A list of characters that this strumline controls. The setters in `PlayState` will add the defaults.
-   * @param vocals A list of vocals that this strumline controls. The setters in `PlayState` will add the defaults.
    */
-  public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float, ?characters:Array<BaseCharacter>, ?vocals:Array<Null<VoicesGroupEntry>>)
+  public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float)
   {
     super();
 
@@ -369,10 +354,6 @@ class Strumline extends FlxSpriteGroup
 
     canMiss = isPlayer;
 
-    // Add any characters and vocals if provided.
-    this.characters = characters ?? [];
-    this.vocals = vocals ?? [];
-
     if (isPlayer) characterType = CharacterType.BF;
     else
       characterType = CharacterType.DAD;
@@ -447,6 +428,21 @@ class Strumline extends FlxSpriteGroup
     return true;
   }
   #end
+
+  /**
+   * Creates an array of all characters this strumline controls.
+   * @return An array of `BaseCharacter`s.
+   */
+  public function getControlledCharacters():Array<BaseCharacter>
+  {
+    if (PlayState.instance?.currentStage == null) return [];
+
+    var characters:Array<BaseCharacter> = [];
+    @:privateAccess
+    for (character in PlayState.instance.currentStage.characters.iterator())
+      if (character.strumlines.contains(this)) characters.push(character);
+    return characters;
+  }
 
   /**
    * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.

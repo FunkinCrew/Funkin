@@ -1,6 +1,7 @@
 package funkin.play.character;
 
 import flixel.math.FlxPoint;
+import funkin.audio.VoicesGroup.VoicesGroupEntry;
 import funkin.modding.events.ScriptEvent;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -29,6 +30,17 @@ class BaseCharacter extends Bopper
   {
     return this.characterType = value;
   }
+
+  /**
+   * A list of strumlines that control this character.
+   * The strumlines must be of the same type as `characterType`.
+   */
+  public var strumlines:Array<Strumline>;
+
+  /**
+   * A list of voice groups that this strumline affects.
+   */
+  public var vocals:Array<Null<VoicesGroupEntry>>;
 
   /**
    * Tracks how long, in seconds, the character has been playing the current `sing` animation.
@@ -176,6 +188,9 @@ class BaseCharacter extends Bopper
     }
 
     shouldBop = false;
+
+    strumlines = [];
+    vocals = [];
   }
 
   public function getDeathCameraOffsets():Array<Float>
@@ -519,8 +534,9 @@ class BaseCharacter extends Bopper
     if (event.eventCanceled) return;
 
     if (event.playAnim
-      && event.note.parentStrumline.characterType == this.characterType
-      && event.note.parentStrumline.characters.contains(this))
+      && event.note.parentStrumline != null
+      && this.characterType == event.note.parentStrumline.characterType
+      && strumlines.contains(event.note.parentStrumline))
     {
       // If the strumline controls this character, play the sing animation.
       this.playSingAnimation(event.note.noteData.getDirection(), false);
@@ -550,8 +566,9 @@ class BaseCharacter extends Bopper
     if (event.eventCanceled) return;
 
     if (event.playAnim
-      && event.note.parentStrumline.characterType == this.characterType
-      && event.note.parentStrumline.characters.contains(this))
+      && event.note.parentStrumline != null
+      && this.characterType == event.note.parentStrumline.characterType
+      && strumlines.contains(event.note.parentStrumline))
     {
       // If the strumline controls this character, play the miss animation.
       this.playSingAnimation(event.note.noteData.getDirection(), true);
@@ -570,8 +587,9 @@ class BaseCharacter extends Bopper
     if (event.eventCanceled) return;
 
     if (event.playAnim
-      && event.holdNote.parentStrumline.characterType == this.characterType
-      && event.holdNote.parentStrumline.characters.contains(this))
+      && event.holdNote.parentStrumline != null
+      && this.characterType == event.holdNote.parentStrumline.characterType
+      && strumlines.contains(event.holdNote.parentStrumline))
     {
       // If the strumline controls this character, play the miss animation.
       this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
@@ -627,7 +645,7 @@ class BaseCharacter extends Bopper
       return;
     }
 
-    if (event.strumline != null && event.strumline.characterType == this.characterType && event.strumline.characters.contains(this))
+    if (event.strumline != null && this.characterType == event.strumline.characterType && strumlines.contains(event.strumline))
     {
       // If the strumline controls this character, play the miss animation.
       // trace('Playing ghost miss animation...');
@@ -663,27 +681,6 @@ class BaseCharacter extends Bopper
   public function getDeathQuote():Null<String>
   {
     return null;
-  }
-
-  /**
-   * Creates a list of all strumlines that affect this character.
-   */
-  public function getStrumlines():Array<Strumline>
-  {
-    var result:Array<Strumline> = [];
-    if (PlayState.instance == null) return result;
-    for (strumline in PlayState.instance.strumlines)
-    {
-      for (character in strumline.characters)
-      {
-        if (character == this)
-        {
-          result.push(strumline);
-          break;
-        }
-      }
-    }
-    return result;
   }
 }
 
