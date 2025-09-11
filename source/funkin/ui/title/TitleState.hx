@@ -107,7 +107,7 @@ class TitleState extends MusicBeatState
     });
     else
       startIntro();
-    if (innstance != null)
+    if (instance != null)
     {
       trace('WARNING: TitleState instance already exists. This should not happen.');
       instance = null;
