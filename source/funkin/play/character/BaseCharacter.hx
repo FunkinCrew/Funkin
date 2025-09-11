@@ -672,7 +672,7 @@ class BaseCharacter extends Bopper
       if (hasAnimation(anim + splitAnimName + '-${suffix}') && !miss && suffix != '') multiDirAnimExists = true;
       if (hasAnimation(anim + splitAnimName + 'miss-${suffix}') && miss && suffix == '') multiDirAnimExists = true;
 
-      if (multiDirAnimExists) anim += splitAnimName;
+      if (multiDirAnimExists) anim += splitAnimName.toUpperCase();
     }
 
     if (miss) anim += 'miss';
