@@ -93,6 +93,13 @@ class TitleState extends MusicBeatState
   override public function create():Void
   {
     super.create();
+    if (instance != null)
+    {
+      trace('WARNING: TitleState instance already exists. This should not happen.');
+      instance = null;
+    }
+    instance = this;
+
     lastBeat = 0;
 
     girlfriendShader = new ColorSwap();
@@ -107,12 +114,6 @@ class TitleState extends MusicBeatState
     });
     else
       startIntro();
-    if (instance != null)
-    {
-      trace('WARNING: TitleState instance already exists. This should not happen.');
-      instance = null;
-    }
-    instance = this;
   }
 
   /**
