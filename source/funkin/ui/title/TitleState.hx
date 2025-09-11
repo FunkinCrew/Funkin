@@ -45,21 +45,66 @@ class TitleState extends MusicBeatState
    */
   public static var initialized:Bool = false;
 
-  var blackScreen:FlxSprite;
-  var credGroup:FlxGroup;
-  var textGroup:FlxGroup;
-  var ngSpr:FlxSprite;
+  /**
+   * The currently active TitleState.
+   * There should be only one TitleState in existance at a time, we can use a singleton.
+   */
+  public static var instance:TitleState = null;
 
-  var curWacky:Array<String> = [];
-  var lastBeat:Int = 0;
-  var swagShader:ColorSwap;
+  /**
+   * This is a group holding the `blackScreen` sprite and `textGroup` group.
+   *
+   * This allows for both to disappear when needed
+   */
+  public var credGroup:FlxGroup;
+
+  /**
+   * This is a black screen covering up gf and the "press enter to play" text
+   */
+  public var blackScreen:FlxSprite;
+
+  /**
+   * This is a group containing the text that displays all the intro messages
+   */
+  public var textGroup:FlxGroup;
+
+  /**
+   * This is the sprite that displays after the
+   * "In association with" text alongside the "newgrounds" text
+   */
+  public var ngSpr:FlxSprite;
+
+  /**
+   * An array of all the intro text strings from `introText.txt`
+   */
+  public var introTextList:Array<String>;
+
+  /**
+   * This is obviously the previous beat, used to help incase some beats are missed
+   * not a public var to avoid absolutely any softlocks caused by scripts
+   */
+  var lastBeat:Int;
+
+  /**
+   * This is the shader that enables after inputing the secret code (hint: what does girlfriend say in the tutorial?)
+   */
+  public var girlfriendShader:ColorSwap;
 
   override public function create():Void
   {
     super.create();
-    swagShader = new ColorSwap();
+    if (instance != null)
+    {
+      trace('WARNING: TitleState instance already exists. This should not happen.');
+      instance = null;
+    }
+    instance = this;
 
-    curWacky = FlxG.random.getObject(getIntroTextShit());
+    lastBeat = 0;
+
+    girlfriendShader = new ColorSwap();
+
+    introTextList = FlxG.random.getObject(getIntroTextShit());
     funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
 
     // DEBUG BULLSHIT
@@ -71,15 +116,39 @@ class TitleState extends MusicBeatState
       startIntro();
   }
 
-  var logoBl:FlxSprite;
-  var outlineShaderShit:TitleOutline;
+  /**
+   * This is the game logo sprite
+   */
+  public var logoBl:FlxSprite;
 
-  var gfDance:FlxSpriteOverlay;
-  var danceLeft:Bool = false;
+  /**
+   * Interactable color shader via the `D` key
+   */
+  public var InteractableColorShader:TitleOutline;
+
+  /**
+   * The girlfriend sprite
+   */
+  public var gfDance:FlxSpriteOverlay;
+
+  /**
+   * This controls what dance animation girlfriend plays
+   */
+  public var danceLeft:Bool = false;
+
+  /**
+   * This is the sprite for the "Press Enter to Begin" text
+   */
   var titleText:FlxSprite;
+  /**
+   * Unused shader
+   */
   var maskShader = new LeftMaskShader();
 
-  var attractTimer:FlxTimer;
+  /**
+   * This is the timer for the `AttractState` activation / the idle timer
+   */
+  public var attractTimer:FlxTimer;
 
   function startIntro():Void
   {
@@ -95,10 +164,10 @@ class TitleState extends MusicBeatState
     logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
     logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
-    logoBl.shader = swagShader.shader;
+    logoBl.shader = girlfriendShader.shader;
     logoBl.updateHitbox();
 
-    outlineShaderShit = new TitleOutline();
+    InteractableColorShader = new TitleOutline();
 
     gfDance = new FlxSpriteOverlay((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
     gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
@@ -110,7 +179,7 @@ class TitleState extends MusicBeatState
     // maskShader.frameUV = gfDance.frame.uv;
     // gfDance.shader = maskShader;
 
-    gfDance.shader = swagShader.shader;
+    gfDance.shader = girlfriendShader.shader;
 
     // gfDance.shader = new TitleOutline();
 
@@ -130,7 +199,7 @@ class TitleState extends MusicBeatState
     titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
     titleText.animation.play('idle');
     titleText.updateHitbox();
-    titleText.shader = swagShader.shader;
+    titleText.shader = girlfriendShader.shader;
     // titleText.screenCenter(X);
     add(titleText);
 
@@ -192,6 +261,7 @@ class TitleState extends MusicBeatState
   {
     FlxG.sound.music.fadeOut(2.0, 0);
     FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function() {
+      instance = null;
       FlxG.switchState(() -> new AttractState());
     });
   }
@@ -228,7 +298,10 @@ class TitleState extends MusicBeatState
     return swagGoodArray;
   }
 
-  var transitioning:Bool = false;
+  /**
+   * This variable answers the question: "Are we going to the main menu"?
+   */
+  public var transitioning:Bool = false;
 
   override function update(elapsed:Float):Void
   {
@@ -257,19 +330,19 @@ class TitleState extends MusicBeatState
       }
           }
      */
-    if (outlineShaderShit != null)
+    if (InteractableColorShader != null)
     {
       if (FlxG.keys.justPressed.I)
       {
-        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+        FlxTween.tween(InteractableColorShader, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
       }
 
       if (FlxG.keys.pressed.D)
       {
-        outlineShaderShit.funnyX += 1;
+        InteractableColorShader.funnyX += 1;
       }
 
-      // outlineShaderShit.xPos.value[0] += 1;
+      // InteractableColorShader.xPos.value[0] += 1;
     }
 
     if (FlxG.keys.justPressed.Y)
@@ -323,8 +396,8 @@ class TitleState extends MusicBeatState
     }
 
     // TODO: Maybe use the dxdy method for swiping instead.
-    if (controls.UI_LEFT #if mobile || SwipeUtil.justSwipedLeft #end) swagShader.update(-elapsed * 0.1);
-    if (controls.UI_RIGHT #if mobile || SwipeUtil.justSwipedRight #end) swagShader.update(elapsed * 0.1);
+    if (controls.UI_LEFT #if mobile || SwipeUtil.justSwipedLeft #end) girlfriendShader.update(-elapsed * 0.1);
+    if (controls.UI_RIGHT #if mobile || SwipeUtil.justSwipedRight #end) girlfriendShader.update(elapsed * 0.1);
     if (!cheatActive && skippedIntro) cheatCodeShit();
     super.update(elapsed);
   }
@@ -338,17 +411,24 @@ class TitleState extends MusicBeatState
     }
 
     funkin.FunkinMemory.purgeCache();
+    instance = null;
     FlxG.switchState(() -> new MainMenuState());
   }
 
-  override function draw()
-  {
-    super.draw();
-  }
+  /**
+   * This is the array of inputs (in binary...?) for the cheat code
+   */
+  public var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
 
-  var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
-  var curCheatPos:Int = 0;
-  var cheatActive:Bool = false;
+  /**
+   * This is the current position in the cheat code
+   */
+  public var curCheatPos:Int = 0;
+
+  /**
+   * This is the boolean for if the cheat is active
+   */
+  public var cheatActive:Bool = false;
 
   function cheatCodeShit():Void
   {
@@ -427,8 +507,15 @@ class TitleState extends MusicBeatState
     }
   }
 
-  var isRainbow:Bool = false;
-  var skippedIntro:Bool = false;
+  /**
+   * Unused variable: most likely an old version of the `cheatActive` variable
+   */
+  public var isRainbow:Bool = false;
+
+  /**
+   * This is the variable telling the game to hide the `credGroup` group
+   */
+  public var skippedIntro:Bool = false;
 
   override function beatHit():Bool
   {
@@ -462,9 +549,9 @@ class TitleState extends MusicBeatState
               deleteCoolText();
               if (ngSpr != null) ngSpr.visible = false;
             case 9:
-              createCoolText([curWacky[0]]);
+              createCoolText([introTextList[0]]);
             case 11:
-              addMoreText(curWacky[1]);
+              addMoreText(introTextList[1]);
             case 12:
               deleteCoolText();
             case 13:
@@ -473,7 +560,7 @@ class TitleState extends MusicBeatState
               // easter egg for when the game is trending with the wrong spelling
               // the random intro text would be "trending--only on x"
 
-              if (curWacky[0] == "trending") addMoreText('Nigth');
+              if (introTextList[0] == "trending") addMoreText('Nigth');
               else
                 addMoreText('Night');
             case 15:
@@ -487,7 +574,7 @@ class TitleState extends MusicBeatState
     }
     if (skippedIntro)
     {
-      if (cheatActive && Conductor.instance.currentBeat % 2 == 0) swagShader.update(0.125);
+      if (cheatActive && Conductor.instance.currentBeat % 2 == 0) girlfriendShader.update(0.125);
 
       if (logoBl != null && logoBl.animation != null) logoBl.animation.play('bump', true);
 
