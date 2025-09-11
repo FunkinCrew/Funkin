@@ -37,8 +37,8 @@ class PopUpStuff extends FlxSpriteGroup
 
     this.noteStyle = noteStyle;
 
-    ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
-    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.033, (FlxG.camera.height * 0.01) + 50);
+    ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(0, -60);
+    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.033, 0);
 
     add(ratingGroup);
     add(numberGroup);
@@ -47,7 +47,7 @@ class PopUpStuff extends FlxSpriteGroup
   /*
     * Display the player's rating when hitting a note.
     @param daRating Null<String>
-    @return
+    @return Void
    */
   public function displayRating(daRating:Null<String>):Void
   {
@@ -62,7 +62,6 @@ class PopUpStuff extends FlxSpriteGroup
       rating.acceleration.y = 0;
       rating.velocity.y = 0;
       rating.velocity.x = 0;
-      // rating.zIndex = 0;
       rating.alpha = 1;
       rating.revive();
     }
