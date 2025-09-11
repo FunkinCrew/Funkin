@@ -64,6 +64,7 @@ class PopUpStuff extends FlxSpriteGroup
       rating.velocity.y = 0;
       rating.velocity.x = 0;
       rating.alpha = 1;
+      rating.setPosition(ratingGroup.x, ratingGroup.y);
       rating.revive();
     }
     else
@@ -95,18 +96,16 @@ class PopUpStuff extends FlxSpriteGroup
     rating.updateHitbox();
 
     trace(ratingGroup.length);
-    // rating.x = (FlxG.width * 0.474);
-    rating.x = ratingGroup.x;
     rating.x -= rating.width / 2;
-    // rating.y = (FlxG.camera.height * 0.45 - 60);
-    rating.y = ratingGroup.y;
     rating.y -= rating.height / 2;
+
     rating.x += offsets[0];
     rating.y += offsets[1];
-    var styleOffsets = noteStyle.getJudgementSpriteOffsets(daRating);
 
+    var styleOffsets = noteStyle.getJudgementSpriteOffsets(daRating);
     rating.x += styleOffsets[0];
     rating.y += styleOffsets[1];
+
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
@@ -178,7 +177,6 @@ class PopUpStuff extends FlxSpriteGroup
       trace("Num Scores: " + numberGroup.length);
 
       numScore.x = numberGroup.x - (36 * (i + 1)) - 65;
-
       numScore.x += offsets[0];
       numScore.y += offsets[1];
       var styleOffsets = noteStyle.getComboNumSpriteOffsets(seperatedScore[i]);
