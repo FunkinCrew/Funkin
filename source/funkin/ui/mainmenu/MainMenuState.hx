@@ -49,6 +49,12 @@ import funkin.mobile.util.InAppPurchasesUtil;
 @:nullSafety
 class MainMenuState extends MusicBeatState
 {
+  /**
+   * The currently active MainMenuState.
+   * There should be only one MainMenuState in existance at a time, we can use a singleton.
+   */
+  public static var instance:MainMenuState = null;
+
   var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
 
   var bg:Null<FlxSprite>;
@@ -93,6 +99,13 @@ class MainMenuState extends MusicBeatState
 
   override function create():Void
   {
+    if (instance != null)
+    {
+      trace('WARNING: MainMenuState instance already exists. This should not happen.');
+      instance = null;
+    }
+    instance = this;
+
     #if FEATURE_DISCORD_RPC
     DiscordClient.instance.setPresence({state: "In the Menus", details: null});
     #end
