@@ -38,11 +38,10 @@ class PopUpStuff extends FlxSpriteGroup
     this.noteStyle = noteStyle;
 
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
-    // ratingGroup.zIndex = 1000;
     numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.507, FlxG.camera.height * 0.44);
 
-    add(numberGroup);
     add(ratingGroup);
+    // add(numberGroup);
   }
 
   /*
@@ -73,7 +72,6 @@ class PopUpStuff extends FlxSpriteGroup
       ratingGroup.add(rating);
     }
 
-    if (rating == null) return;
     var ratingInfo = noteStyle.buildJudgementSprite(daRating) ??
       {
         assetPath: null,
@@ -97,26 +95,27 @@ class PopUpStuff extends FlxSpriteGroup
     rating.updateHitbox();
 
     trace(ratingGroup.length);
-    rating.x = (FlxG.width * 0.474);
+    // rating.x = (FlxG.width * 0.474);
+    rating.x = ratingGroup.x;
     rating.x -= rating.width / 2;
-    rating.y = (FlxG.camera.height * 0.45 - 60);
+    // rating.y = (FlxG.camera.height * 0.45 - 60);
+    rating.y = ratingGroup.y;
     rating.y -= rating.height / 2;
     rating.x += offsets[0];
     rating.y += offsets[1];
     var styleOffsets = noteStyle.getJudgementSpriteOffsets(daRating);
 
-    rating.x += styleOffsets[0];
-    rating.y += styleOffsets[1];
-    rating.acceleration.y = 550;
-    rating.velocity.y -= FlxG.random.int(140, 175);
-    rating.velocity.x -= FlxG.random.int(0, 10);
+    // rating.x += styleOffsets[0];
+    // rating.y += styleOffsets[1];
+    // rating.acceleration.y = 550;
+    // rating.velocity.y -= FlxG.random.int(140, 175);
+    // rating.velocity.x -= FlxG.random.int(0, 10);
 
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
 
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
         onComplete: function(tween:FlxTween) {
-          // rating.zIndex = 1000;
           rating.kill();
           trace("Killed Rating!");
         },
@@ -175,7 +174,6 @@ class PopUpStuff extends FlxSpriteGroup
       numScore.pixelPerfectRender = comboInfo.isPixel;
       numScore.pixelPerfectPosition = comboInfo.isPixel;
       numScore.updateHitbox();
-      // if (numScore == null) continue;
 
       trace("Num Scores: " + numberGroup.length);
 
