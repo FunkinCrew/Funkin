@@ -59,7 +59,7 @@ class TitleState extends MusicBeatState
   public var credGroup:FlxGroup;
 
   /**
-   * This is a black screen covering up gf and the "press start to play" text
+   * This is a black screen covering up gf and the "press enter to play" text
    */
   public var blackScreen:FlxSprite;
 
@@ -121,14 +121,34 @@ class TitleState extends MusicBeatState
    */
   public var logoBl:FlxSprite;
 
-  var outlineShaderShit:TitleOutline;
+  /**
+   * Interactable color shader via the `D` key
+   */
+  public var InteractableColorShader:TitleOutline;
 
-  var gfDance:FlxSpriteOverlay;
-  var danceLeft:Bool = false;
+  /**
+   * The girlfriend sprite
+   */
+  public var gfDance:FlxSpriteOverlay;
+
+  /**
+   * This controls what dance animation girlfriend plays
+   */
+  public var danceLeft:Bool = false;
+
+  /**
+   * This is the sprite for the "Press Enter to Begin" text
+   */
   var titleText:FlxSprite;
+  /**
+   * Unused shader
+   */
   var maskShader = new LeftMaskShader();
 
-  var attractTimer:FlxTimer;
+  /**
+   * This is the timer for the `AttractState` activation / the idle timer
+   */
+  public var attractTimer:FlxTimer;
 
   function startIntro():Void
   {
@@ -147,7 +167,7 @@ class TitleState extends MusicBeatState
     logoBl.shader = girlfriendShader.shader;
     logoBl.updateHitbox();
 
-    outlineShaderShit = new TitleOutline();
+    InteractableColorShader = new TitleOutline();
 
     gfDance = new FlxSpriteOverlay((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
     gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
@@ -307,19 +327,19 @@ class TitleState extends MusicBeatState
       }
           }
      */
-    if (outlineShaderShit != null)
+    if (InteractableColorShader != null)
     {
       if (FlxG.keys.justPressed.I)
       {
-        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+        FlxTween.tween(InteractableColorShader, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
       }
 
       if (FlxG.keys.pressed.D)
       {
-        outlineShaderShit.funnyX += 1;
+        InteractableColorShader.funnyX += 1;
       }
 
-      // outlineShaderShit.xPos.value[0] += 1;
+      // InteractableColorShader.xPos.value[0] += 1;
     }
 
     if (FlxG.keys.justPressed.Y)
