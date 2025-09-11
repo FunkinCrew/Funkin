@@ -2829,9 +2829,7 @@ class FreeplayState extends MusicBeatSubState
     if (currentCapsule.freeplayData == null) albumRoll.albumId = null;
 
     changeDiff();
-    if (currentCapsule.freeplayData == null) currentCapsule.refreshDisplay();
-    else
-      currentCapsule.refreshDisplay(false);
+    currentCapsule.refreshDisplay(currentCapsule.freeplayData == null);
 
     for (index => capsule in grpCapsules.members)
     {
