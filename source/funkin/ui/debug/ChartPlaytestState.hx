@@ -1,5 +1,6 @@
 package funkin.ui.debug;
 
+import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
@@ -22,6 +23,8 @@ class ChartPlaytestState extends MusicBeatState
 
   var items:MenuTypedList<MenuTypedItem<FlxText>>;
 
+  var justClosedSubstate:Bool = false;
+
   public function new(params:ChartPlaytestStateParams)
   {
     super();
@@ -33,6 +36,20 @@ class ChartPlaytestState extends MusicBeatState
     add(items);
 
     createItems();
+
+    // Try to force the camera not to move
+    this.camera.follow(null);
+    this.camera.x = 0;
+    this.camera.y = 0;
+    this.camera.scroll.x = 0;
+    this.camera.scroll.y = 0;
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (this.subState == null) {}
   }
 
   function createItems():Void
@@ -55,6 +72,7 @@ class ChartPlaytestState extends MusicBeatState
     var txt:FlxText = new FlxText(0, 0, name);
     txt.antialiasing = false;
     txt.setFormat(Paths.font('vcr.ttf'), 32);
+    txt.scrollFactor.set(0, 0);
 
     var menuItem:MenuTypedItem<FlxText> = new MenuTypedItem<FlxText>(10, 36 * items.length, txt, name, onChange);
     menuItem.setEmptyBackground();
@@ -98,6 +116,20 @@ class ChartPlaytestState extends MusicBeatState
     };
 
     return menuItem;
+  }
+
+  override function onCloseSubStateComplete(targetState:FlxSubState):Void
+  {
+    super.onCloseSubStateComplete(targetState);
+
+    justClosedSubstate = true;
+
+    // Try to force the camera not to move
+    this.camera.follow(null);
+    this.camera.x = 0;
+    this.camera.y = 0;
+    this.camera.scroll.x = 0;
+    this.camera.scroll.y = 0;
   }
 }
 
