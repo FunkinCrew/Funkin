@@ -396,7 +396,12 @@ class MainMenuState extends MusicBeatState
     menuItems.addItem(name, item);
   }
 
-  var buttonGrp:Array<FlxSprite> = [];
+  /**
+   * Unused, probably an early version of the `menuItems` group
+   *
+   * Maybe from the old week 7 (and older) engine if I'm remembering the code from that correctly...
+   */
+  public var buttonGrp:Array<FlxSprite> = [];
 
   function createMenuButtion(name:String, atlas:String, callback:Void->Void):Void
   {
