@@ -830,6 +830,7 @@ class FreeplayState extends MusicBeatSubState
     {
       if (fromCharSelect) enterFromCharSel();
       onDJIntroDone();
+      forceSkipIntro = false;
     }
     else
     {
