@@ -38,10 +38,10 @@ class PopUpStuff extends FlxSpriteGroup
     this.noteStyle = noteStyle;
 
     ratingGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>();
-    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.507, FlxG.camera.height * 0.44);
+    numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.033, (FlxG.camera.height * 0.01) + 50);
 
     add(ratingGroup);
-    // add(numberGroup);
+    add(numberGroup);
   }
 
   /*
@@ -105,11 +105,11 @@ class PopUpStuff extends FlxSpriteGroup
     rating.y += offsets[1];
     var styleOffsets = noteStyle.getJudgementSpriteOffsets(daRating);
 
-    // rating.x += styleOffsets[0];
-    // rating.y += styleOffsets[1];
-    // rating.acceleration.y = 550;
-    // rating.velocity.y -= FlxG.random.int(140, 175);
-    // rating.velocity.x -= FlxG.random.int(0, 10);
+    rating.x += styleOffsets[0];
+    rating.y += styleOffsets[1];
+    rating.acceleration.y = 550;
+    rating.velocity.y -= FlxG.random.int(140, 175);
+    rating.velocity.x -= FlxG.random.int(0, 10);
 
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
 

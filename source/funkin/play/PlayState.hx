@@ -733,7 +733,7 @@ class PlayState extends MusicBeatSubState
 
     // Combo & Pop Up
     comboPopUps = new PopUpStuff(noteStyle);
-    comboPopUps.setPosition(FlxG.width * 0.474, FlxG.camera.height * 0.45 - 60);
+    comboPopUps.setPosition(FlxG.width * 0.474, (FlxG.camera.height * 0.45) - 60);
 
     // Pause sprites
     #if mobile
