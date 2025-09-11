@@ -69,7 +69,11 @@ class MainMenuState extends MusicBeatState
    * This is the magenta/alternate version of the menubackground
    */
   public var magenta:FlxSprite;
-  var camFollow:FlxObject;
+  /**
+   * This is the object the camera follows to create
+   * the effect that you are actually moving through the menu
+   */
+  public var camFollow:FlxObject;
 
   #if mobile
   var gyroPan:Null<FlxPoint>;
