@@ -84,7 +84,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     target.frames = atlas;
 
-    target.antialiasing = !(_data.assets?.note?.isPixel ?? false);
+    target.antialiasing = !(_data.assets?.note?.isPixel ?? false) && Preferences.useGlobalAntialiasing;
 
     // Apply the animations.
     buildNoteAnimations(target);
@@ -238,7 +238,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     target.frames = atlas;
 
     target.scale.set(_data.assets.noteStrumline?.scale ?? 1.0);
-    target.antialiasing = !(_data.assets.noteStrumline?.isPixel ?? false);
+    target.antialiasing = !(_data.assets.noteStrumline?.isPixel ?? false) && Preferences.useGlobalAntialiasing;
   }
 
   public function getStrumlineAssetPath(raw:Bool = false):Null<String>
@@ -378,7 +378,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
 
     result.scrollFactor.set(0, 0);
-    result.antialiasing = !isCountdownSpritePixel(step);
+    result.antialiasing = !isCountdownSpritePixel(step) && Preferences.useGlobalAntialiasing;
     result.updateHitbox();
 
     return result;
@@ -554,7 +554,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     result.scrollFactor.set(0.2, 0.2);
     var isPixel = isJudgementSpritePixel(rating);
-    result.antialiasing = !isPixel;
+    result.antialiasing = !isPixel && Preferences.useGlobalAntialiasing;
     result.pixelPerfectRender = isPixel;
     result.pixelPerfectPosition = isPixel;
     result.updateHitbox();
@@ -718,7 +718,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
 
     var isPixel = isComboNumSpritePixel(digit);
-    result.antialiasing = !isPixel;
+    result.antialiasing = !isPixel && Preferences.useGlobalAntialiasing;
     result.pixelPerfectRender = isPixel;
     result.pixelPerfectPosition = isPixel;
     result.updateHitbox();
@@ -871,7 +871,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       throw 'Could not load spritesheet for note style: $id';
     }
     target.frames = atlas;
-    target.antialiasing = !(_data.assets.noteSplash?.isPixel ?? false);
+    target.antialiasing = !(_data.assets.noteSplash?.isPixel ?? false) && Preferences.useGlobalAntialiasing;
 
     buildSplashAnimations(target);
 
@@ -997,8 +997,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     }
     target.glow.frames = glowAtlas;
 
-    target.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
-    target.glow.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false);
+    target.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false) && Preferences.useGlobalAntialiasing;
+    target.glow.antialiasing = !(_data.assets.holdNoteCover?.isPixel ?? false) && Preferences.useGlobalAntialiasing;
     target.scale.set(_data.assets.holdNoteCover?.scale ?? 1.0, _data.assets.holdNoteCover?.scale ?? 1.0);
     target.updateHitbox();
     target.glow.updateHitbox();
