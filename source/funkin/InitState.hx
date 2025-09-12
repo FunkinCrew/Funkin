@@ -128,9 +128,6 @@ class InitState extends FlxState
       funkin.external.apple.AudioSession.initialize();
       #end
 
-      // This ain't a pixel art game! (most of the time)
-      FlxSprite.defaultAntialiasing = true;
-
       // Disable default keybinds for volume (we manually control volume in MusicBeatState with custom binds)
       FlxG.sound.volumeUpKeys = [];
       FlxG.sound.volumeDownKeys = [];

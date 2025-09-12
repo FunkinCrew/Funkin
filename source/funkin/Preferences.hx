@@ -8,6 +8,7 @@ import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
+import flixel.FlxSprite;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -504,6 +505,9 @@ class Preferences
     // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
 
+    // This ain't a pixel art game! (most of the time)
+    FlxSprite.defaultAntialiasing = Preferences.useGlobalAntialiasing;
+
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     setDebugDisplayMode(Preferences.debugDisplay);
     setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
@@ -545,6 +549,26 @@ class Preferences
     if (Main.debugDisplay == null) return;
 
     Main.debugDisplay.backgroundOpacity = value;
+  }
+
+  /**
+   * If disabled, turns off anti-aliasing on most sprites.
+   * @default `true`
+   */
+  public static var useGlobalAntialiasing(get, set):Bool;
+
+  static function get_useGlobalAntialiasing():Bool
+  {
+    return Save?.instance?.options?.useGlobalAntialiasing ?? true;
+  }
+
+  static function set_useGlobalAntialiasing(value:Bool):Bool
+  {
+    if (value != Save.instance.options.useGlobalAntialiasing) FlxSprite.defaultAntialiasing = value;
+    var save:Save = Save.instance;
+    save.options.useGlobalAntialiasing = value;
+    save.flush();
+    return value;
   }
 
   #if mobile

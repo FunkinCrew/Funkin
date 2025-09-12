@@ -197,6 +197,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, null, Preferences.framerate, 30, 500, 5, 0);
     #end
     #end
+    createPrefItemCheckbox('Anti-aliasing', 'If disabled, turns off anti-aliasing, making sprites look jagged, slightly improving performance.',
+      function(value:Bool):Void {
+        Preferences.useGlobalAntialiasing = value;
+      }, Preferences.useGlobalAntialiasing);
 
     #if FEATURE_SCREENSHOTS
     createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {

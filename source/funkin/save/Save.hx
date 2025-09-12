@@ -133,7 +133,7 @@ class Save implements ConsoleClass
           globalOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
-
+          useGlobalAntialiasing: true,
           screenshot:
             {
               shouldHideMouse: true,
@@ -1672,6 +1672,12 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var unlockedFramerate:Bool;
+
+  /**
+   * If disabled, will turn off anti-aliasing.
+   * @default `true`
+   */
+  var useGlobalAntialiasing:Bool;
 
   /**
    * Screenshot options
