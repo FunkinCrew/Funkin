@@ -238,7 +238,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       propSprite.alpha = dataProp.alpha;
 
       // If pixel, disable antialiasing.
-      propSprite.antialiasing = !dataProp.isPixel;
+      propSprite.antialiasing = !dataProp.isPixel && Preferences.useGlobalAntialiasing;
 
       // If pixel, we render it pixel perfect so there's less "mixels"
       // propSprite.pixelPerfectRender = dataProp.isPixel;

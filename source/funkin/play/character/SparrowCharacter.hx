@@ -55,7 +55,7 @@ class SparrowCharacter extends BaseCharacter
     else
     {
       this.isPixel = false;
-      this.antialiasing = true;
+      this.antialiasing = Preferences.useGlobalAntialiasing;
     }
 
     this.setScale(_data.scale);

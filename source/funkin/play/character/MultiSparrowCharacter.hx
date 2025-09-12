@@ -50,7 +50,7 @@ class MultiSparrowCharacter extends BaseCharacter
     else
     {
       this.isPixel = false;
-      this.antialiasing = true;
+      this.antialiasing = Preferences.useGlobalAntialiasing;
     }
   }
 
