@@ -5710,6 +5710,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
+    this.hideAllToolboxes();
+
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
