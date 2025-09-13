@@ -6042,6 +6042,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     stopWelcomeMusic();
     stopAudioPlayback();
 
+    // Force pauses audio preview from OffsetsToolbox, if it exists.
+    cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
+
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
@@ -6226,6 +6229,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Don't allow the audio to be played while we're dragging any of the playheads
       if (playbarHeadDragging || gridPlayheadScrollAreaPressed || notePreviewPlayHeadDragging) return;
+      cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
       audioInstTrack.play(false, audioInstTrack.time);
       audioVocalTrackGroup.play(false, audioInstTrack.time);
     }
@@ -6792,14 +6796,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function doesNoteStack(note:Null<SongNoteData>, curStackedNotes:Array<SongNoteData>):Bool
   {
     return note != null && curStackedNotes.contains(note);
-  }
-
-  public override function openSubState(subState:FlxSubState):Void
-  {
-    // Force stops audio preview from OffsetsToolbox, if it exists.
-    cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.stopAudioPreview();
-
-    super.openSubState(subState);
   }
 
   override function destroy():Void
