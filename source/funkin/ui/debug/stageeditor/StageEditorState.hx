@@ -290,7 +290,10 @@ class StageEditorState extends UIState
     this.showChars = value;
 
     for (cooldude in getCharacters())
+    {
+      if (cooldude == null) continue;
       cooldude.visible = showChars;
+    }
 
     return value;
   }
@@ -342,20 +345,20 @@ class StageEditorState extends UIState
     Screen.instance.addComponent(root);
 
     // Characters setup.
-    var gf = CharacterDataParser.fetchCharacter(Save.instance.stageGirlfriendChar, true);
-    gf.characterType = CharacterType.GF;
-    var dad = CharacterDataParser.fetchCharacter(Save.instance.stageDadChar, true);
-    dad.characterType = CharacterType.DAD;
-    var bf = CharacterDataParser.fetchCharacter(Save.instance.stageBoyfriendChar, true);
-    bf.characterType = CharacterType.BF;
+    var gf = CharacterDataParser.fetchCharacter(params?.targetGfChar ?? Save.instance.stageGirlfriendChar, true);
+    if (gf != null) gf.characterType = CharacterType.GF;
+    var dad = CharacterDataParser.fetchCharacter(params?.targetDadChar ?? Save.instance.stageDadChar, true);
+    if (dad != null) dad.characterType = CharacterType.DAD;
+    var bf = CharacterDataParser.fetchCharacter(params?.targetBfChar ?? Save.instance.stageBoyfriendChar, true);
+    if (bf != null) bf.characterType = CharacterType.BF;
 
-    bf.flipX = !bf.getDataFlipX();
-    gf.flipX = gf.getDataFlipX();
-    dad.flipX = dad.getDataFlipX();
+    if (bf != null) bf.flipX = !bf.getDataFlipX();
+    if (gf != null) gf.flipX = gf.getDataFlipX();
+    if (dad != null) dad.flipX = dad.getDataFlipX();
 
-    gf.updateHitbox();
-    dad.updateHitbox();
-    bf.updateHitbox();
+    gf?.updateHitbox();
+    dad?.updateHitbox();
+    bf?.updateHitbox();
 
     // Only one character per group allowed.
     charGroups = [
@@ -364,12 +367,21 @@ class StageEditorState extends UIState
       CharacterType.DAD => new FlxTypedGroup<BaseCharacter>(1)
     ];
 
-    gf.x = charPos[CharacterType.GF][0] - gf.characterOrigin.x + gf.globalOffsets[0];
-    gf.y = charPos[CharacterType.GF][1] - gf.characterOrigin.y + gf.globalOffsets[1];
-    dad.x = charPos[CharacterType.DAD][0] - dad.characterOrigin.x + dad.globalOffsets[0];
-    dad.y = charPos[CharacterType.DAD][1] - dad.characterOrigin.y + dad.globalOffsets[1];
-    bf.x = charPos[CharacterType.BF][0] - bf.characterOrigin.x + bf.globalOffsets[0];
-    bf.y = charPos[CharacterType.BF][1] - bf.characterOrigin.y + bf.globalOffsets[1];
+    if (gf != null)
+    {
+      gf.x = charPos[CharacterType.GF][0] - gf.characterOrigin.x + gf.globalOffsets[0];
+      gf.y = charPos[CharacterType.GF][1] - gf.characterOrigin.y + gf.globalOffsets[1];
+    }
+    if (dad != null)
+    {
+      dad.x = charPos[CharacterType.DAD][0] - dad.characterOrigin.x + dad.globalOffsets[0];
+      dad.y = charPos[CharacterType.DAD][1] - dad.characterOrigin.y + dad.globalOffsets[1];
+    }
+    if (bf != null)
+    {
+      bf.x = charPos[CharacterType.BF][0] - bf.characterOrigin.x + bf.globalOffsets[0];
+      bf.y = charPos[CharacterType.BF][1] - bf.characterOrigin.y + bf.globalOffsets[1];
+    }
 
     selectedChar = bf;
 
@@ -537,7 +549,7 @@ class StageEditorState extends UIState
       if (conductorInUse.currentBeat % 2 == 0)
       {
         for (char in getCharacters())
-          char.dance(true);
+          char?.dance(true);
       }
 
       for (asset in spriteArray)
@@ -584,7 +596,10 @@ class StageEditorState extends UIState
     if (testingMode)
     {
       for (char in getCharacters())
+      {
+        if (char == null) continue;
         char.shader = null;
+      }
 
       // spriteMarker.visible = camMarker.visible = false;
       findObjDialog.hideDialog(DialogButton.CANCEL);
@@ -597,11 +612,15 @@ class StageEditorState extends UIState
 
       if (curTestChar >= getCharacters().length) curTestChar = 0;
 
-      bottomBarSelectText.text = Std.string(getCharacters()[curTestChar].characterType);
+      var text = Std.string(getCharacters()[curTestChar]?.characterType);
+      bottomBarSelectText.text = (text == 'null') ? 'None' : text;
 
       var char = getCharacters()[curTestChar];
-      camFollow.x = char.cameraFocusPoint.x + charCamOffsets.get(char.characterType)[0];
-      camFollow.y = char.cameraFocusPoint.y + charCamOffsets.get(char.characterType)[1];
+      if (char != null)
+      {
+        camFollow.x = char.cameraFocusPoint.x + charCamOffsets.get(char.characterType)[0];
+        camFollow.y = char.cameraFocusPoint.y + charCamOffsets.get(char.characterType)[1];
+      }
 
       // EXIT
       if (FlxG.keys.justPressed.ENTER) // so we dont accidentally get stuck (happened to me once, terrible experience)
@@ -740,14 +759,18 @@ class StageEditorState extends UIState
       arrowMovement(selectedSprite);
 
       for (char in getCharacters())
+      {
+        if (char == null) continue;
         char.shader = null;
+      }
     }
     else
     {
-      selectedChar.shader = null;
+      if (selectedChar != null) selectedChar.shader = null;
 
       for (char in getCharacters())
       {
+        if (char == null) continue;
         if (char != selectedChar) char.shader = charDeselectShader;
 
         if (char != null && checkCharOverlaps(char)) // flxg.mouse.overlaps crashes the game
@@ -860,6 +883,7 @@ class StageEditorState extends UIState
     for (i in 0...getCharacters().length)
     {
       var char = getCharacters()[i];
+      if (char == null) continue;
       var type = char.characterType;
 
       charPos.set(type, [
@@ -890,6 +914,7 @@ class StageEditorState extends UIState
   // it comes from some flxobject/polymod error apparently and I have no idea why
   function checkCharOverlaps(char:BaseCharacter)
   {
+    if (char == null) return false;
     var mouseX = FlxG.mouse.x >= char.x && FlxG.mouse.x <= char.x + char.width;
     var mouseY = FlxG.mouse.y >= char.y && FlxG.mouse.y <= char.y + char.height;
 
@@ -1303,7 +1328,6 @@ class StageEditorState extends UIState
             index++;
 
             if (index >= chars.length) index = 0;
-
             selectedChar = chars[index];
           }
           else
@@ -1599,4 +1623,18 @@ typedef StageEditorParams =
    * If non-null, load this stage immediately instead of the welcome screen.
    */
   var ?targetStageId:String;
+  /**
+   * If non-null, load this character as Boyfriend.
+   */
+  var ?targetBfChar:String;
+
+  /**
+   * If non-null, load this character as Girlfriend.
+   */
+  var ?targetGfChar:String;
+
+  /**
+   * If non-null, load this character as Dad.
+   */
+  var ?targetDadChar:String;
 };
