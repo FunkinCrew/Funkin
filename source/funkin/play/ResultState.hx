@@ -20,11 +20,9 @@ import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerResultsAnimationData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.song.SongRegistry;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.LeftMaskShader;
-import funkin.modding.base.ScriptedFlxAtlasSprite;
 import funkin.play.components.ClearPercentCounter;
 import funkin.play.components.TallyCounter;
 import funkin.play.scoring.Scoring;
@@ -78,7 +76,7 @@ class ResultState extends MusicBeatSubState
 
   var characterAtlasAnimations:Array<
     {
-      sprite:FlxAtlasSprite,
+      sprite:FunkinSprite,
       delay:Float,
       forceLoop:Bool,
       startFrameLabel:String,
@@ -193,7 +191,7 @@ class ResultState extends MusicBeatSubState
     add(soundSystem);
 
     // Fetch playable character data. Default to BF on the results screen if we can't find it.
-    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId);
+    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId) ?? params.characterId;
     playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? 'bf');
 
     trace('Got playable character: ${playerCharacter?.getName()}');
@@ -222,16 +220,21 @@ class ResultState extends MusicBeatSubState
       {
         case 'animateatlas':
           @:nullSafety(Off)
-          var animation:FlxAtlasSprite = null;
+          var animation:FunkinSprite = null;
 
           var xPos = offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2);
           var yPos = offsets[1];
 
-          if (animData.scriptClass != null) animation = ScriptedFlxAtlasSprite.init(animData.scriptClass, xPos, yPos);
+          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.init(animData.scriptClass, xPos, yPos);
           else
-            animation = new FlxAtlasSprite(xPos, yPos, Paths.animateAtlas(animPath, animLibrary));
+            animation = FunkinSprite.createTextureAtlas(xPos, yPos, animPath, animLibrary);
 
           if (animation == null) continue;
+
+          if (animData?.applyStageMatrix ?? false)
+          {
+            animation.applyStageMatrix = true;
+          }
 
           animation.zIndex = animData.zIndex ?? 500;
 
@@ -240,7 +243,7 @@ class ResultState extends MusicBeatSubState
           if (!(animData.looped ?? true))
           {
             // Animation is not looped.
-            animation.onAnimationComplete.add((_name:String) -> {
+            animation.anim.onFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.anim.pause();
@@ -249,23 +252,24 @@ class ResultState extends MusicBeatSubState
           }
           else if (animData.loopFrameLabel != null)
           {
-            animation.onAnimationComplete.add((_name:String) -> {
+            animation.anim.onFinish.add((_name:String) -> {
               if (animation != null)
               {
-                animation.playAnimation(animData.loopFrameLabel ?? '', true, false, true); // unpauses this anim, since it's on PlayOnce!
+                animation.anim.play(animData.loopFrameLabel ?? '', true); // unpauses this anim, since it's on PlayOnce!
+                animation.anim.curAnim.looped = true;
               }
             });
           }
           else if (animData.loopFrame != null)
           {
-            animation.onAnimationComplete.add((_name:String) -> {
+            animation.anim.onFinish.add((_name:String) -> {
               if (animation != null)
               {
-                animation.anim.curFrame = animData.loopFrame ?? 0;
-                animation.anim.play(); // unpauses this anim, since it's on PlayOnce!
+                animation.anim.play("", true, false, animData.loopFrame ?? 0); // unpauses this anim, since it's on PlayOnce!
               }
             });
           }
+
           // Hide until ready to play.
           animation.visible = false;
           // Queue to play.
@@ -660,7 +664,7 @@ class ResultState extends MusicBeatSubState
       new FlxTimer().start(atlas.delay, _ -> {
         if (atlas.sprite == null) return;
         atlas.sprite.visible = true;
-        atlas.sprite.playAnimation(atlas.startFrameLabel);
+        atlas.sprite.anim.play(atlas.startFrameLabel);
         if (atlas.sound != "")
         {
           var sndPath:String = Paths.stripLibrary(atlas.sound);

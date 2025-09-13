@@ -183,6 +183,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         {
           case 'packer':
             propSprite.loadPacker(dataProp.assetPath);
+          case 'animateatlas':
+            propSprite.loadTextureAtlas(dataProp.assetPath, _data.directory, cast dataProp.atlasSettings);
           default: // 'sparrow'
             propSprite.loadSparrow(dataProp.assetPath);
         }
@@ -268,6 +270,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
               cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
             }
           }
+        case 'animateatlas':
+          FlxAnimationUtil.addTextureAtlasAnimations(propSprite, dataProp.animations);
         default: // 'sparrow'
           FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
           if (Std.isOfType(propSprite, Bopper))

@@ -463,35 +463,6 @@ class HealthIcon extends FunkinSprite
   }
 
   /**
-   * @return Name of the current animation being played by this health icon.
-   */
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
-  }
-
-  /**
-   * @param id The name of the animation to check for.
-   * @return Whether this sprite posesses the given animation.
-   *   Only true if the animation was successfully loaded from the XML.
-   */
-  public function hasAnimation(id:String):Bool
-  {
-    if (this.animation == null) return false;
-
-    return this.animation.getByName(id) != null;
-  }
-
-  /**
-   * @return Whether the current animation is in the finished state.
-   */
-  public function isAnimationFinished():Bool
-  {
-    return this.animation.finished;
-  }
-
-  /**
    * Plays the animation with the given name.
    * @param name The name of the animation to play.
    * @param fallback The fallback animation to play if the given animation is not found.
