@@ -39,6 +39,7 @@ class ChartPlaytestState extends MusicBeatState
 
     // Try to force the camera not to move
     this.camera.follow(null);
+    this.camera.zoom = 1;
     this.camera.x = 0;
     this.camera.y = 0;
     this.camera.scroll.x = 0;
@@ -126,6 +127,7 @@ class ChartPlaytestState extends MusicBeatState
 
     // Try to force the camera not to move
     this.camera.follow(null);
+    this.camera.zoom = 1;
     this.camera.x = 0;
     this.camera.y = 0;
     this.camera.scroll.x = 0;
