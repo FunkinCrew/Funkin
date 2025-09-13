@@ -96,7 +96,6 @@ class PopUpStuff extends FlxSpriteGroup
     rating.zIndex = latestRatingZIndex;
     latestRatingZIndex++;
     ratingGroup.sort(SortUtil.byZIndex, FlxSort.ASCENDING);
-    trace("rating Z index: " + rating.zIndex);
 
     rating.loadTexture(ratingInfo.assetPath);
 
@@ -107,7 +106,6 @@ class PopUpStuff extends FlxSpriteGroup
     rating.pixelPerfectPosition = ratingInfo.isPixel;
     rating.updateHitbox();
 
-    trace(ratingGroup.length);
     rating.x -= rating.width / 2;
     rating.y -= rating.height / 2;
 
@@ -128,7 +126,6 @@ class PopUpStuff extends FlxSpriteGroup
       {
         onComplete: function(tween:FlxTween) {
           rating.kill();
-          trace("Killed Rating!");
         },
         startDelay: Conductor.instance.beatLengthMs * 0.001,
         ease: fadeEase
@@ -185,8 +182,6 @@ class PopUpStuff extends FlxSpriteGroup
       numScore.pixelPerfectRender = comboInfo.isPixel;
       numScore.pixelPerfectPosition = comboInfo.isPixel;
       numScore.updateHitbox();
-
-      trace("Num Scores: " + numberGroup.length);
 
       numScore.x = numberGroup.x - (36 * (i + 1)) - 65;
       numScore.x += offsets[0];
