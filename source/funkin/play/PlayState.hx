@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.play.components.hud.HudStyle;
 import funkin.play.PauseSubState.PauseMode;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
@@ -488,6 +489,8 @@ class PlayState extends MusicBeatSubState
   var discordRPCIcon:String = '';
   #end
 
+  public var hud:HudStyle;
+
   /**
    * RENDER OBJECTS
    */
@@ -521,12 +524,22 @@ class PlayState extends MusicBeatSubState
   /**
    * The sprite group containing active player's strumline notes.
    */
-  public var playerStrumline:Strumline;
+  public var playerStrumline(get, never):Strumline;
+
+  private function get_playerStrumline():Strumline
+  {
+    return hud.playerStrumline;
+  }
 
   /**
    * The sprite group containing opponent's strumline notes.
    */
-  public var opponentStrumline:Strumline;
+  public var opponentStrumline(get, never):Strumline;
+
+  private function get_opponentStrumline():Strumline
+  {
+    return hud.opponentStrumline;
+  }
 
   /**
    * The camera which contains, and controls visibility of, the user interface elements.
@@ -722,9 +735,7 @@ class PlayState extends MusicBeatSubState
     if (nulNoteStyle == null) throw "Failed to retrieve both note style and default note style. This shouldn't happen!";
     noteStyle = nulNoteStyle;
 
-    // Strumlines
-    playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
-    opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
+    hud = noteStyle.getHudStyle();
 
     // Healthbar
     healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
@@ -809,6 +820,8 @@ class PlayState extends MusicBeatSubState
     {
       initMinimalMode();
     }
+    initHud();
+
     initStrumlines();
     initPopups();
 
@@ -2081,25 +2094,14 @@ class PlayState extends MusicBeatSubState
   {
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
-    add(playerStrumline);
-    add(opponentStrumline);
-
-    final cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2.5;
-    // Position the player strumline on the right half of the screen
-    playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
-    // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
-
-    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
+    // add(playerStrumline);
+    // add(opponentStrumline);
 
     playerStrumline.zIndex = 1001;
-    playerStrumline.cameras = [camHUD];
-
-    // Position the opponent strumline on the left half of the screen
-    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
-    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
+    // playerStrumline.cameras = [camHUD];
 
     opponentStrumline.zIndex = 1000;
-    opponentStrumline.cameras = [camHUD];
+    // opponentStrumline.cameras = [camHUD];
 
     #if mobile
     if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
@@ -2174,6 +2176,18 @@ class PlayState extends MusicBeatSubState
     });
   }
   #end
+
+  @:nullSafety(Off) // i hate you
+  function initHud():Void
+  {
+    hud.gameInstance = PlayState.instance; // huh
+
+    hud.createStrumlines();
+    hud.zIndex = 1000;
+    add(hud);
+
+    hud.cameras = [camHUD];
+  }
 
   /**
      * Configures the judgement and combo popups.
