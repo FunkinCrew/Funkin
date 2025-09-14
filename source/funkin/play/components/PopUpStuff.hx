@@ -53,8 +53,8 @@ class PopUpStuff extends FlxSpriteGroup
     ratingGroup.scrollFactor.set(0.2, 0.2);
     numberGroup = new FlxTypedSpriteGroup<Null<FunkinSprite>>(FlxG.width * 0.033, FlxG.camera.height * 0.01);
 
-    add(numberGroup);
     add(ratingGroup);
+    add(numberGroup);
   }
 
   /*
