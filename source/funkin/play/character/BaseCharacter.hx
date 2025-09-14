@@ -324,27 +324,23 @@ class BaseCharacter extends Bopper
     return _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
   }
 
-  public function initHealthIcon(isOpponent:Bool):Void
+  public function initHealthIcon(icon:Null<funkin.play.components.HealthIcon>, isOpponent:Bool):funkin.play.components.HealthIcon
   {
+    if (icon == null)
+    {
+      trace('[WARN] Error on loading ${isOpponent ? 'Opponent' : 'Player'}\'s icon!');
+      return icon;
+    }
+
     if (!isOpponent)
     {
-      if (PlayState.instance.iconP1 == null)
-      {
-        trace('[WARN] Player 1 health icon not found!');
-        return;
-      }
-      PlayState.instance.iconP1.configure(_data?.healthIcon);
-      PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
+      icon.configure(_data?.healthIcon);
+      icon.flipX = !icon.flipX; // BF is looking the other way.
     }
     else
-    {
-      if (PlayState.instance.iconP2 == null)
-      {
-        trace('[WARN] Player 2 health icon not found!');
-        return;
-      }
-      PlayState.instance.iconP2.configure(_data?.healthIcon);
-    }
+      icon.configure(_data?.healthIcon);
+
+    return icon;
   }
 
   public override function onUpdate(event:UpdateScriptEvent):Void

@@ -56,10 +56,10 @@ class SetHealthIconSongEvent extends SongEvent
     {
       case 0:
         trace('Applying Player health icon via song event: ${healthIconData.id}');
-        PlayState.instance.iconP1.configure(healthIconData);
+        PlayState.instance.hud.iconP1.configure(healthIconData);
       case 1:
         trace('Applying Opponent health icon via song event: ${healthIconData.id}');
-        PlayState.instance.iconP2.configure(healthIconData);
+        PlayState.instance.hud.iconP2.configure(healthIconData);
       default:
         trace('[WARN] Unknown character index: ' + data.value.char);
     }

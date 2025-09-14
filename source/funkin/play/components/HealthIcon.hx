@@ -158,7 +158,7 @@ class HealthIcon extends FunkinSprite
     if (characterId == 'bf-old')
     {
       isPixel = playState.currentStage.getBoyfriend()?.isPixel ?? false;
-      playState.currentStage.getBoyfriend()?.initHealthIcon(false);
+      playState.currentStage.getBoyfriend()?.initHealthIcon(this, false);
     }
     else
     {
@@ -286,19 +286,19 @@ class HealthIcon extends FunkinSprite
           // Update the animation based on the current state.
           updateHealthIcon(PlayState.instance.health);
           // Update the position to match the health bar.
-          this.x = PlayState.instance.healthBar.x
-            + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01) - POSITION_OFFSET);
+          this.x = PlayState.instance.hud.healthBar.x
+            + (PlayState.instance.hud.healthBar.width * (FlxMath.remapToRange(PlayState.instance.hud.healthBar.value, 0, 2, 100, 0) * 0.01) - POSITION_OFFSET);
         case 1: // Dad
           // Update the animation based on the current state.
           updateHealthIcon(MAXIMUM_HEALTH - PlayState.instance.health);
           // Update the position to match the health bar.
-          this.x = PlayState.instance.healthBar.x
-            + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01))
+          this.x = PlayState.instance.hud.healthBar.x
+            + (PlayState.instance.hud.healthBar.width * (FlxMath.remapToRange(PlayState.instance.hud.healthBar.value, 0, 2, 100, 0) * 0.01))
             - (this.width - POSITION_OFFSET);
       }
 
       // Keep the icon centered vertically on the health bar.
-      this.y = PlayState.instance.healthBar.y - (this.height / 2); // - (PlayState.instance.healthBar.height / 2)
+      this.y = PlayState.instance.hud.healthBar.y - (this.height / 2); // - (PlayState.instance.healthBar.height / 2)
 
       offset += iconOffset;
     }

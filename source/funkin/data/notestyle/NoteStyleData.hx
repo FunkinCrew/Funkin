@@ -34,6 +34,9 @@ typedef NoteStyleData =
   @:optional
   var fallback:Null<String>;
 
+  @:optional
+  var hudStyle:Null<String>;
+
   /**
    * Data for each of the assets in the note style.
    */
