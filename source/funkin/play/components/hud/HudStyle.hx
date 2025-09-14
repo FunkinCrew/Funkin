@@ -9,12 +9,17 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.ui.SimpleFunkinBar;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.FullScreenScaleMode;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.components.*;
 import funkin.util.EaseUtil;
+import polymod.hscript.HScriptedClass;
+
+@:hscriptClass
+class ScriptedHudStyle extends HudStyle implements HScriptedClass {}
 
 class HudStyle extends FlxSpriteGroup
 {
@@ -30,8 +35,7 @@ class HudStyle extends FlxSpriteGroup
 
   var scoreText:FlxText;
 
-  public var healthBar:FlxBar;
-  public var healthBarBG:FunkinSprite;
+  public var healthBar:SimpleFunkinBar;
 
   public var iconP1:Null<HealthIcon>;
   public var iconP2:Null<HealthIcon>;
@@ -51,9 +55,6 @@ class HudStyle extends FlxSpriteGroup
 
   public function initHealthBar():Void
   {
-    // Healthbar
-    healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
-    healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
     scoreText = new FlxText(0, 0, 0, '', 20);
 
     var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
@@ -62,26 +63,36 @@ class HudStyle extends FlxSpriteGroup
       && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
     #end
 
-    healthBarBG.y = healthBarYPos;
-    healthBarBG.screenCenter(X);
-    healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
-    add(healthBarBG);
-
-    healthBar.x = healthBarBG.x + 4;
-    healthBar.y = healthBarBG.y + 4;
+    healthBar = new SimpleFunkinBar(0, healthBarYPos, 'healthBar', () -> return gameInstance.health, Constants.HEALTH_MIN, Constants.HEALTH_MAX);
+    healthBar.smoothFactor = .85;
     healthBar.scrollFactor.set();
-    healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
+    healthBar.screenCenter(X);
     healthBar.zIndex = 801;
+    healthBar.setColors(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
     add(healthBar);
 
     // The score text below the health bar.
-    scoreText.x = healthBarBG.x + healthBarBG.width - 190;
-    scoreText.y = healthBarBG.y + 30;
+    scoreText.x = healthBar.bg.x + healthBar.bg.width - 190;
+    scoreText.y = healthBar.bg.y + 30;
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
+  }
+
+  public function initHealthIcons()
+  {
+    if (gameInstance?.currentStage == null) return;
+
+    iconP1 = new HealthIcon('bf', 0);
+    gameInstance?.currentStage.getBoyfriend().initHealthIcon(iconP1, false);
+    iconP1.zIndex = 850;
+    add(iconP1);
+
+    iconP2 = new HealthIcon('dad', 1);
+    gameInstance?.currentStage.getDad().initHealthIcon(iconP2, true);
+    iconP2.zIndex = 850;
+    add(iconP2);
   }
 
   public function createStrumlines()
@@ -95,8 +106,6 @@ class HudStyle extends FlxSpriteGroup
     final strumline:Strumline = new Strumline(currentNotestyle, player, gameInstance?.currentChart?.scrollSpeed);
     final pos = getStrumlinePosition(strumline, player);
     strumline.setPosition(pos.x, pos.y);
-    // mobile specific stuff here
-    // mobile specific stuff here
     add(strumline);
     return strumline;
   }
@@ -126,25 +135,15 @@ class HudStyle extends FlxSpriteGroup
 
     rating.zIndex = 1000;
 
-    rating.x = (FlxG.width * 0.474);
-    rating.x -= rating.width / 2;
-    rating.y = (FlxG.camera.height * 0.45 - 60);
-    rating.y -= rating.height / 2;
-
-    rating.x += comboPopUpsOffset.x;
-    rating.y += comboPopUpsOffset.y;
     final styleOffsets = currentNotestyle.getJudgementSpriteOffsets(daRating);
-    rating.x += styleOffsets[0];
-    rating.y += styleOffsets[1];
-
+    rating.x = (FlxG.width * 0.474) - (rating.width / 2) + comboPopUpsOffset.x + styleOffsets[0];
+    rating.y = (FlxG.camera.height * 0.45 - 60) - (rating.height / 2) + comboPopUpsOffset.y + styleOffsets[1];
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
-
     comboPopUps.add(rating);
 
     final fadeEase = currentNotestyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
-
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
         onComplete: tween -> {
@@ -170,20 +169,16 @@ class HudStyle extends FlxSpriteGroup
       seperatedScore.push(0);
 
     var daLoop:Int = 1;
+
+    var _styleOffsets:Array<Float> = [0, 0];
     for (digit in seperatedScore)
     {
       var numScore:Null<FunkinSprite> = currentNotestyle.buildComboNumSprite(digit);
       if (numScore == null) continue;
 
-      numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65;
-      numScore.y = (FlxG.camera.height * 0.44);
-
-      numScore.x += comboPopUpsOffset.x;
-      numScore.y += comboPopUpsOffset.y;
-      var styleOffsets = currentNotestyle.getComboNumSpriteOffsets(digit);
-      numScore.x += styleOffsets[0];
-      numScore.y += styleOffsets[1];
-
+      _styleOffsets = currentNotestyle.getComboNumSpriteOffsets(digit);
+      numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65 + comboPopUpsOffset.x + _styleOffsets[0];
+      numScore.y = (FlxG.camera.height * 0.44) + comboPopUpsOffset.y + _styleOffsets[1];
       numScore.acceleration.y = FlxG.random.int(250, 300);
       numScore.velocity.y -= FlxG.random.int(130, 150);
       numScore.velocity.x = FlxG.random.float(-5, 5);
@@ -191,7 +186,6 @@ class HudStyle extends FlxSpriteGroup
       comboPopUps.add(numScore);
 
       var fadeEase = currentNotestyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
-
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
         {
           onComplete: tween -> {
@@ -204,6 +198,7 @@ class HudStyle extends FlxSpriteGroup
 
       daLoop++;
     }
+    _styleOffsets = null;
   }
 
   override function update(dt:Float)
@@ -239,10 +234,65 @@ class HudStyle extends FlxSpriteGroup
   {
     iconP1?.updatePosition();
     iconP2?.updatePosition();
+
+    healthBar?.snapPercent();
+  }
+
+  function initNoteHitbox()
+  {
+    #if mobile
+    final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+    final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
+    final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
+
+    playerStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
+    playerStrumline.setNoteSpacing(playerNoteSpacing);
+    for (strum in playerStrumline)
+      strum.width *= 2;
+
+    opponentStrumline.enterMiniMode(0.4 * amplification);
+
+    playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
+    playerStrumline.y = (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
+    if (currentChart?.noteStyle != "pixel")
+    {
+      #if android playerStrumline.y += 10; #end
+    }
+    else
+    {
+      playerStrumline.y -= 10;
+    }
+    opponentStrumline.y = Constants.STRUMLINE_Y_OFFSET * 0.3;
+    opponentStrumline.x -= 30;
+    #end
+  }
+
+  public function refresh():Void
+  {
+    sort(funkin.util.SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
   }
 
   public static function getHudStyle(name:Null<String>):HudStyle
   {
-    return new FunkinHudStyle();
+    name = name.trim();
+    // final scriptedHudStyles:Array<String> = ScriptedHudStyle.listScriptClasses();
+    final scriptedHudStyles:Array<String> = [];
+    trace(scriptedHudStyles.length, scriptedHudStyles);
+
+    if (!scriptedHudStyles.contains(name) && name != "")
+    {
+      trace('Cant find "$name" HudStlye! Falling back on default.');
+      return new HudStyle();
+    }
+    else
+      try
+      {
+        // return ScriptedHudStyle.init(name);
+        return new HudStyle();
+      }
+      catch (e) {}
+
+    // fallback on default HudStyle
+    return new HudStyle();
   }
 }

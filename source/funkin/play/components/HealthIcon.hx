@@ -91,7 +91,7 @@ class HealthIcon extends FunkinSprite
   /**
    * The maximum health of the player.
    */
-  static final MAXIMUM_HEALTH:Float = 2;
+  static final MAXIMUM_HEALTH:Float = Constants.HEALTH_MAX;
 
   /**
    * The size of a non-pixel icon when using the legacy format.
@@ -239,7 +239,6 @@ class HealthIcon extends FunkinSprite
     {
       // Apply linear interpolation while accounting for frame rate.
       var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.width, HEALTH_ICON_SIZE * this.size.x, FlxG.elapsed, 0.512));
-
       if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.x);
 
       setGraphicSize(targetSize, 0);
@@ -247,7 +246,6 @@ class HealthIcon extends FunkinSprite
     else
     {
       var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.height, HEALTH_ICON_SIZE * this.size.y, FlxG.elapsed, 0.512));
-
       if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.y);
 
       setGraphicSize(0, targetSize);
@@ -286,19 +284,15 @@ class HealthIcon extends FunkinSprite
           // Update the animation based on the current state.
           updateHealthIcon(PlayState.instance.health);
           // Update the position to match the health bar.
-          this.x = PlayState.instance.hud.healthBar.x
-            + (PlayState.instance.hud.healthBar.width * (FlxMath.remapToRange(PlayState.instance.hud.healthBar.value, 0, 2, 100, 0) * 0.01) - POSITION_OFFSET);
+          this.x = PlayState.instance.hud.healthBar.centerPoint.x - POSITION_OFFSET;
         case 1: // Dad
           // Update the animation based on the current state.
           updateHealthIcon(MAXIMUM_HEALTH - PlayState.instance.health);
           // Update the position to match the health bar.
-          this.x = PlayState.instance.hud.healthBar.x
-            + (PlayState.instance.hud.healthBar.width * (FlxMath.remapToRange(PlayState.instance.hud.healthBar.value, 0, 2, 100, 0) * 0.01))
-            - (this.width - POSITION_OFFSET);
+          this.x = PlayState.instance.hud.healthBar.centerPoint.x - (this.width - POSITION_OFFSET);
       }
 
-      // Keep the icon centered vertically on the health bar.
-      this.y = PlayState.instance.hud.healthBar.y - (this.height / 2); // - (PlayState.instance.healthBar.height / 2)
+      this.y = PlayState.instance.hud.healthBar.centerPoint.y - (this.height / 2);
 
       offset += iconOffset;
     }

@@ -216,7 +216,12 @@ class PlayState extends MusicBeatSubState
   /**
    * The player's current health.
    */
-  public var health:Float = Constants.HEALTH_STARTING;
+  public var health(default, set):Float = Constants.HEALTH_STARTING;
+
+  private inline function set_health(newHealth:Float):Float
+  {
+    return health = FlxMath.bound(newHealth, Constants.HEALTH_MIN, Constants.HEALTH_MAX);
+  }
 
   /**
    * The player's current score.
@@ -429,12 +434,6 @@ class PlayState extends MusicBeatSubState
   var mayPauseGame:Bool = true;
 
   /**
-   * The displayed value of the player's health.
-   * Used to provide smooth animations based on linear interpolation of the player's health.
-   */
-  var healthLerp:Float = Constants.HEALTH_STARTING;
-
-  /**
    * How long the user has held the "Skip Video Cutscene" button for.
    */
   var skipHeldTimer:Float = 0;
@@ -489,25 +488,15 @@ class PlayState extends MusicBeatSubState
 
   public var hud:HudStyle;
 
-  /**
-   * The sprite group containing active player's strumline notes.
-   */
   public var playerStrumline(get, never):Strumline;
 
-  private function get_playerStrumline():Strumline
-  {
+  private inline function get_playerStrumline():Strumline
     return hud.playerStrumline;
-  }
 
-  /**
-   * The sprite group containing opponent's strumline notes.
-   */
   public var opponentStrumline(get, never):Strumline;
 
-  private function get_opponentStrumline():Strumline
-  {
+  private inline function get_opponentStrumline():Strumline
     return hud.opponentStrumline;
-  }
 
   /**
    * The camera which contains, and controls visibility of, the user interface elements.
@@ -750,10 +739,7 @@ class PlayState extends MusicBeatSubState
     // Prepare the Conductor.
     Conductor.instance.forceBPM(null);
 
-    if (currentChart.offsets != null)
-    {
-      Conductor.instance.instrumentalOffset = currentChart.offsets.getInstrumentalOffset(currentInstrumental);
-    }
+    if (currentChart.offsets != null) Conductor.instance.instrumentalOffset = currentChart.offsets.getInstrumentalOffset(currentInstrumental);
 
     Conductor.instance.mapTimeChanges(currentChart.timeChanges);
     var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
@@ -770,14 +756,12 @@ class PlayState extends MusicBeatSubState
     {
       initStage();
       initCharacters();
+      hud.initHealthIcons();
     }
     else
-    {
       initMinimalMode();
-    }
 
-    initStrumlines();
-
+    hud.refresh();
     #if mobile
     if (!ControlsHandler.usingExternalInputDevice)
     {
@@ -924,7 +908,6 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    updateHealthLerp();
     updateScoreText();
 
     // Handle restarting the song when needed (player death or pressing Retry)
@@ -1107,10 +1090,6 @@ class PlayState extends MusicBeatSubState
       if (!startingSong && hitbox != null) hitbox.visible = true;
     }
     #end
-
-    // Cap health.
-    if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
-    if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
     // Apply camera zoom + multipliers.
     if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
@@ -1328,11 +1307,8 @@ class PlayState extends MusicBeatSubState
     updateScoreText();
 
     health = Constants.HEALTH_STARTING;
-    healthLerp = health;
 
-    // hud?.healthBar?.value = healthLerp;
     hud.onGameOver();
-    hud.setHealth(healthLerp);
 
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
@@ -1782,9 +1758,7 @@ class PlayState extends MusicBeatSubState
 
   public override function initConsoleHelpers():Void
   {
-    FlxG.console.registerFunction("debugUnbindCameraZoom", () -> {
-      debugUnbindCameraZoom = !debugUnbindCameraZoom;
-    });
+    FlxG.console.registerFunction("debugUnbindCameraZoom", () -> debugUnbindCameraZoom = !debugUnbindCameraZoom);
   };
 
   /**
@@ -1921,42 +1895,13 @@ class PlayState extends MusicBeatSubState
 
     if (dad != null)
     {
-      //
-      // OPPONENT HEALTH ICON
-      //
-      hud.iconP2 = new HealthIcon('dad', 1);
-      hud.iconP2.y = hud.healthBar.y - (hud.iconP2.height / 2);
-      dad.initHealthIcon(hud?.iconP2, true); // Apply the character ID here
-      hud.iconP2.zIndex = 850;
-      hud.add(hud.iconP2);
-
       #if FEATURE_DISCORD_RPC
       discordRPCAlbum = 'album-${currentChart?.album}';
       discordRPCIcon = 'icon-${currentCharacterData.opponent}';
       #end
     }
 
-    //
-    // BOYFRIEND
-    //
     var boyfriend:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(currentCharacterData.player);
-
-    if (boyfriend != null)
-    {
-      //
-      // PLAYER HEALTH ICON
-      //
-      hud.iconP1 = new HealthIcon('bf', 0);
-      hud.iconP1.y = hud.healthBar.y - (hud.iconP1.height / 2);
-      boyfriend.initHealthIcon(hud?.iconP1, false); // Apply the character ID here
-      hud.iconP1.zIndex = 850;
-      hud.add(hud.iconP1);
-    }
-
-    //
-    // ADD CHARACTERS TO SCENE
-    //
-
     if (currentStage != null)
     {
       // Characters get added to the stage, not the main scene.
@@ -1994,27 +1939,17 @@ class PlayState extends MusicBeatSubState
     }
   }
 
-  /**
-     * Constructs the strumlines for each player.
-     */
+  // Helper function for initializing Strumlines.
   function initStrumlines():Void
   {
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
     opponentStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
-    // add(playerStrumline);
-    // add(opponentStrumline);
 
     playerStrumline.zIndex = 1001;
-    // playerStrumline.cameras = [camHUD];
-
     opponentStrumline.zIndex = 1000;
-    // opponentStrumline.cameras = [camHUD];
 
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
-    {
-      initNoteHitbox();
-    }
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice) hud.initNoteHitbox();
     #end
 
     playerStrumline.fadeInArrows();
@@ -2025,35 +1960,6 @@ class PlayState extends MusicBeatSubState
      * Configures the position of strumline for the default control scheme
      */
   #if mobile
-  function initNoteHitbox()
-  {
-    final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-    final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
-    final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
-
-    playerStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
-    playerStrumline.setNoteSpacing(playerNoteSpacing);
-    @:nullSafety(Off) // Who thought it'd be a good idea to make the iterator nullable?
-    for (strum in playerStrumline)
-    {
-      strum.width *= 2;
-    }
-    opponentStrumline.enterMiniMode(0.4 * amplification);
-
-    playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
-    playerStrumline.y = (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
-    if (currentChart?.noteStyle != "pixel")
-    {
-      #if android playerStrumline.y += 10; #end
-    }
-    else
-    {
-      playerStrumline.y -= 10;
-    }
-    opponentStrumline.y = Constants.STRUMLINE_Y_OFFSET * 0.3;
-    opponentStrumline.x -= 30;
-  }
-
   function initPauseSprites()
   {
     pauseButton.animation.addByIndices('idle', 'back', [0], "", 24, false);
@@ -2091,6 +1997,7 @@ class PlayState extends MusicBeatSubState
 
     hud.initHealthBar();
     hud.createStrumlines();
+    initStrumlines();
     hud.initPopUps();
 
     hud.zIndex = 1000;
@@ -2443,15 +2350,6 @@ class PlayState extends MusicBeatSubState
   function updateScoreText():Void
   {
     hud.setScore(songScore);
-  }
-
-  /**
-     * Updates the values of the health bar.
-     */
-  function updateHealthLerp():Void
-  {
-    healthLerp = isBotPlayMode ? Constants.HEALTH_MAX : FlxMath.lerp(healthLerp, health, 0.15);
-    hud.setHealth(healthLerp);
   }
 
   /**
@@ -3341,10 +3239,9 @@ class PlayState extends MusicBeatSubState
         {
           var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with ID $targetSongId';
           var targetVariation:String = currentVariation;
-          if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
-          {
-            targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
-          }
+          if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty,
+            currentVariation)) targetVariation = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty) ?? Constants.DEFAULT_VARIATION;
+
           if (currentStage != null) this.remove(currentStage);
           LoadingState.loadPlayState(
             {
@@ -3499,9 +3396,7 @@ class PlayState extends MusicBeatSubState
 
     FlxTween.tween(camHUD, {alpha: 0}, 0.6,
       {
-        onComplete: function(_) {
-          moveToResultsScreen(isNewHighscore, prevScoreData);
-        }
+        onComplete: _ -> moveToResultsScreen(isNewHighscore, prevScoreData)
       });
 
     // Zoom in on Girlfriend (or BF if no GF)
@@ -3594,18 +3489,12 @@ class PlayState extends MusicBeatSubState
   public function resetCamera(resetZoom:Bool = true, cancelTweens:Bool = true, snap:Bool = true):Void
   {
     // Cancel camera tweens if any are active.
-    if (cancelTweens)
-    {
-      cancelAllCameraTweens();
-    }
+    if (cancelTweens) cancelAllCameraTweens();
 
     FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
     FlxG.camera.targetOffset.set();
 
-    if (resetZoom)
-    {
-      resetCameraZoom();
-    }
+    if (resetZoom) resetCameraZoom();
 
     // Snap the camera to the follow point immediately.
     if (snap) FlxG.camera.focusOn(cameraFollowPoint.getPosition());
@@ -3644,19 +3533,14 @@ class PlayState extends MusicBeatSubState
       cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, duration,
         {
           ease: ease,
-          onComplete: function(_) {
-            resetCamera(false, false); // Re-enable camera following when the tween is complete.
-          }
+          onComplete: _ -> resetCamera(false, false) // Re-enable camera following when the tween is complete.
         });
     }
   }
 
   public function cancelCameraFollowTween()
   {
-    if (cameraFollowTween != null)
-    {
-      cameraFollowTween.cancel();
-    }
+    if (cameraFollowTween != null) cameraFollowTween.cancel();
   }
 
   /**
@@ -3685,10 +3569,7 @@ class PlayState extends MusicBeatSubState
 
   public function cancelCameraZoomTween():Void
   {
-    if (cameraZoomTween != null)
-    {
-      cameraZoomTween.cancel();
-    }
+    if (cameraZoomTween != null) cameraZoomTween.cancel();
   }
 
   /**

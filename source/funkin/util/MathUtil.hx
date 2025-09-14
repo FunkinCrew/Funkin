@@ -65,13 +65,13 @@ class MathUtil
 
   /**
    * Performs a modulo operation to calculate the remainder of `a` divided by `b`.
-   * 
+   *
    * The definition of "remainder" varies by implementation;
    * this one is similar to GLSL or Python in that it uses Euclidean division, which always returns positive,
    * while Haxe's `%` operator uses signed truncated division.
-   * 
+   *
    * For example, `-5 % 3` returns `-2` while `FlxMath.mod(-5, 3)` returns `1`.
-   * 
+   *
    * @param a The dividend.
    * @param b The divisor.
    * @return `a mod b`.
