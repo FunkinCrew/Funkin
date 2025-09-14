@@ -2091,13 +2091,6 @@ class FreeplayState extends MusicBeatSubState
   }
   #end
 
-  override function beatHit():Bool
-  {
-    backingCard.beatHit();
-
-    return super.beatHit();
-  }
-
   public override function destroy():Void
   {
     super.destroy();
