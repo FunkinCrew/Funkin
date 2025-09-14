@@ -9,12 +9,12 @@ package funkin.play;
 class PlayStatePlaylist
 {
   /**
-   * Whether the game is currently in Story Mode. If false, we are in Free Play Mode.
+   * Whether the game is currently in Story Mode. If false, we are in Freeplay Mode.
    */
   public static var isStoryMode:Bool = false;
 
   /**
-   * The loist of upcoming songs to be played.
+   * The list of upcoming songs to be played.
    * When the user completes a song in Story Mode, the first entry in this list is played.
    * When this list is empty, move to the Results screen instead.
    */
@@ -26,13 +26,13 @@ class PlayStatePlaylist
   public static var campaignScore:Int = 0;
 
   /**
-   * The title of this playlist, for example `Week 4` or `Weekend 1`
+   * The title of this playlist, for example `Week 4` or `Weekend 1`.
    */
   public static var campaignTitle:String = 'UNKNOWN';
 
   /**
    * The internal ID of the current playlist, for example `week4` or `weekend-1`.
-   * @default `null`, used when no playlist is loaded
+   * @default `null`, used when no playlist is loaded.
    */
   public static var campaignId:Null<String> = null;
 
