@@ -14,7 +14,6 @@ import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
-import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
@@ -38,7 +37,6 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
-import funkin.play.components.PopUpStuff;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
@@ -492,36 +490,6 @@ class PlayState extends MusicBeatSubState
   public var hud:HudStyle;
 
   /**
-   * RENDER OBJECTS
-   */
-  /**
-   * The FlxText which displays the current score.
-   */
-  var scoreText:FlxText;
-
-  /**
-   * The bar which displays the player's health.
-   * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
-   */
-  public var healthBar:FlxBar;
-
-  /**
-   * The background image used for the health bar.
-   * Emma says the image is slightly skewed so I'm leaving it as an image instead of a `createGraphic`.
-   */
-  public var healthBarBG:FunkinSprite;
-
-  /**
-   * The health icon representing the player.
-   */
-  public var iconP1:Null<HealthIcon>;
-
-  /**
-   * The health icon representing the opponent.
-   */
-  public var iconP2:Null<HealthIcon>;
-
-  /**
    * The sprite group containing active player's strumline notes.
    */
   public var playerStrumline(get, never):Strumline;
@@ -566,11 +534,6 @@ class PlayState extends MusicBeatSubState
    * The camera which contains, and controls visibility of menus when there are fake cutouts added.
    */
   public var camCutouts:FlxCamera;
-
-  /**
-   * The combo popups. Includes the real-time combo counter and the rating.
-   */
-  public var comboPopUps:PopUpStuff;
 
   public var isSongEnd:Bool = false;
 
@@ -736,15 +699,6 @@ class PlayState extends MusicBeatSubState
     noteStyle = nulNoteStyle;
 
     hud = noteStyle.getHudStyle();
-
-    // Healthbar
-    healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
-    healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
-    scoreText = new FlxText(0, 0, 0, '', 20);
-
-    // Combo & Pop Up
-    comboPopUps = new PopUpStuff(noteStyle);
-
     // Pause sprites
     #if mobile
     pauseButton = FunkinSprite.createSparrow(0, 0, "pauseButton");
@@ -810,7 +764,8 @@ class PlayState extends MusicBeatSubState
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
-    initHealthBar();
+
+    initHud();
     if (!isMinimalMode)
     {
       initStage();
@@ -820,10 +775,8 @@ class PlayState extends MusicBeatSubState
     {
       initMinimalMode();
     }
-    initHud();
 
     initStrumlines();
-    initPopups();
 
     #if mobile
     if (!ControlsHandler.usingExternalInputDevice)
@@ -971,7 +924,7 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    updateHealthBar();
+    updateHealthLerp();
     updateScoreText();
 
     // Handle restarting the song when needed (player death or pressing Retry)
@@ -1069,8 +1022,8 @@ class PlayState extends MusicBeatSubState
       Countdown.stopCountdown();
 
       // Reset the health icons.
-      currentStage?.getBoyfriend()?.initHealthIcon(false);
-      currentStage?.getDad()?.initHealthIcon(true);
+      currentStage?.getBoyfriend()?.initHealthIcon(hud?.iconP1, false);
+      currentStage?.getDad()?.initHealthIcon(hud?.iconP2, true);
 
       needsReset = false;
     }
@@ -1377,13 +1330,9 @@ class PlayState extends MusicBeatSubState
     health = Constants.HEALTH_STARTING;
     healthLerp = health;
 
-    healthBar.value = healthLerp;
-
-    if (!isMinimalMode)
-    {
-      iconP1?.updatePosition();
-      iconP2?.updatePosition();
-    }
+    // hud?.healthBar?.value = healthLerp;
+    hud.onGameOver();
+    hud.setHealth(healthLerp);
 
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
@@ -1733,9 +1682,7 @@ class PlayState extends MusicBeatSubState
 
     if (isGamePaused) return false;
 
-    iconP1?.onStepHit(Std.int(Conductor.instance.currentStep));
-    iconP2?.onStepHit(Std.int(Conductor.instance.currentStep));
-
+    hud.onStepHit(Std.int(Conductor.instance.currentStep));
     // Try to call hold note haptics each step hit. Works if atleast one note status is NoteStatus.isHoldNotePressed.
     playerStrumline.noteVibrations.tryHoldNoteVibration();
 
@@ -1750,6 +1697,8 @@ class PlayState extends MusicBeatSubState
     if (!super.beatHit()) return false;
 
     if (isGamePaused) return false;
+
+    hud.onBeatHit(Std.int(Conductor.instance.currentBeat));
 
     if (generatedMusic)
     {
@@ -1865,46 +1814,6 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Initializes the health bar on the HUD.
-     */
-  function initHealthBar():Void
-  {
-    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
-    #end
-
-    healthBarBG.y = healthBarYPos;
-    healthBarBG.screenCenter(X);
-    healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
-    add(healthBarBG);
-
-    healthBar.x = healthBarBG.x + 4;
-    healthBar.y = healthBarBG.y + 4;
-    healthBar.parent = this;
-    healthBar.parentVariable = 'healthLerp';
-    healthBar.scrollFactor.set();
-    healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    healthBar.zIndex = 801;
-    add(healthBar);
-
-    // The score text below the health bar.
-    scoreText.x = healthBarBG.x + healthBarBG.width - 190;
-    scoreText.y = healthBarBG.y + 30;
-    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    scoreText.scrollFactor.set();
-    scoreText.zIndex = 802;
-    add(scoreText);
-
-    // Move the health bar to the HUD camera.
-    healthBar.cameras = [camHUD];
-    healthBarBG.cameras = [camHUD];
-    scoreText.cameras = [camHUD];
-  }
-
-  /**
      * Generates the stage and all its props.
      */
   function initStage():Void
@@ -2015,12 +1924,11 @@ class PlayState extends MusicBeatSubState
       //
       // OPPONENT HEALTH ICON
       //
-      iconP2 = new HealthIcon('dad', 1);
-      iconP2.y = healthBar.y - (iconP2.height / 2);
-      dad.initHealthIcon(true); // Apply the character ID here
-      iconP2.zIndex = 850;
-      add(iconP2);
-      iconP2.cameras = [camHUD];
+      hud.iconP2 = new HealthIcon('dad', 1);
+      hud.iconP2.y = hud.healthBar.y - (hud.iconP2.height / 2);
+      dad.initHealthIcon(hud?.iconP2, true); // Apply the character ID here
+      hud.iconP2.zIndex = 850;
+      hud.add(hud.iconP2);
 
       #if FEATURE_DISCORD_RPC
       discordRPCAlbum = 'album-${currentChart?.album}';
@@ -2038,12 +1946,11 @@ class PlayState extends MusicBeatSubState
       //
       // PLAYER HEALTH ICON
       //
-      iconP1 = new HealthIcon('bf', 0);
-      iconP1.y = healthBar.y - (iconP1.height / 2);
-      boyfriend.initHealthIcon(false); // Apply the character ID here
-      iconP1.zIndex = 850;
-      add(iconP1);
-      iconP1.cameras = [camHUD];
+      hud.iconP1 = new HealthIcon('bf', 0);
+      hud.iconP1.y = hud.healthBar.y - (hud.iconP1.height / 2);
+      boyfriend.initHealthIcon(hud?.iconP1, false); // Apply the character ID here
+      hud.iconP1.zIndex = 850;
+      hud.add(hud.iconP1);
     }
 
     //
@@ -2180,24 +2087,16 @@ class PlayState extends MusicBeatSubState
   @:nullSafety(Off) // i hate you
   function initHud():Void
   {
-    hud.gameInstance = PlayState.instance; // huh
+    hud.gameInstance = this; // huh
 
+    hud.initHealthBar();
     hud.createStrumlines();
+    hud.initPopUps();
+
     hud.zIndex = 1000;
     add(hud);
 
     hud.cameras = [camHUD];
-  }
-
-  /**
-     * Configures the judgement and combo popups.
-     */
-  function initPopups():Void
-  {
-    // Initialize the judgements and combo meter.
-    comboPopUps.zIndex = 900;
-    add(comboPopUps);
-    comboPopUps.cameras = [camHUD];
   }
 
   /**
@@ -2543,32 +2442,16 @@ class PlayState extends MusicBeatSubState
      */
   function updateScoreText():Void
   {
-    // TODO: Add functionality for modules to update the score text.
-    if (isBotPlayMode)
-    {
-      scoreText.text = 'Bot Play Enabled';
-    }
-    else
-    {
-      // TODO: Add an option for this maybe?
-      var commaSeparated:Bool = true;
-      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
-    }
+    hud.setScore(songScore);
   }
 
   /**
      * Updates the values of the health bar.
      */
-  function updateHealthBar():Void
+  function updateHealthLerp():Void
   {
-    if (isBotPlayMode)
-    {
-      healthLerp = Constants.HEALTH_MAX;
-    }
-    else
-    {
-      healthLerp = FlxMath.lerp(healthLerp, health, 0.15);
-    }
+    healthLerp = isBotPlayMode ? Constants.HEALTH_MAX : FlxMath.lerp(healthLerp, health, 0.15);
+    hud.setHealth(healthLerp);
   }
 
   /**
@@ -3086,8 +2969,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     // 9: Toggle the old icon.
-    if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
-      && iconP1 != null) iconP1.toggleOldIcon();
+    if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(hud.iconP1)) #end)
+      && hud.iconP1 != null) hud.iconP1.toggleOldIcon();
 
     #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
@@ -3123,7 +3006,7 @@ class PlayState extends MusicBeatSubState
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
-      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 10) hud.displayCombo(0);
       Highscore.tallies.combo = 0;
     }
     else
@@ -3144,7 +3027,7 @@ class PlayState extends MusicBeatSubState
       // If daRating is 'miss', that means we made a mistake and should not continue.
       FlxG.log.warn('popUpScore judged a note as a miss!');
       // TODO: Remove this.
-      // comboPopUps.displayRating('miss');
+      // hud.displayRating('miss');
       return;
     }
     if (combo == null) combo = Highscore.tallies.combo;
@@ -3165,8 +3048,8 @@ class PlayState extends MusicBeatSubState
         if (pressArray[i]) indices.push(i);
       }
     }
-    comboPopUps.displayRating(daRating);
-    if (combo >= 10) comboPopUps.displayCombo(combo);
+    hud.displayRating(daRating);
+    if (combo >= 10) hud.displayCombo(combo);
 
     if (vocals != null) vocals.playerVolume = 1;
   }
