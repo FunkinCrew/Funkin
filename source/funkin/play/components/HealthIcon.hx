@@ -241,6 +241,12 @@ class HealthIcon extends FunkinSprite
     updateHitbox();
   }
 
+  override public function updateHitbox():Void
+  {
+    super.updateHitbox();
+    offset += iconOffset;
+  }
+
   /**
    * Update the position (and status) of the health icon.
    */
@@ -264,8 +270,6 @@ class HealthIcon extends FunkinSprite
       }
 
       this.y = PlayState.instance.hud.healthBar.centerPoint.y - (this.height / 2);
-
-      offset += iconOffset;
     }
   }
 
