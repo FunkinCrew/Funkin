@@ -80,14 +80,15 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function getHudStyle():HudStyle
   {
-    final hudStyle = NoteStyleRegistry.instance.getHudStyle(getHudStyleID());
+    // final hudStyle = NoteStyleRegistry.instance.getHudStyle(getHudStyleID());
+    final hudStyle = new HudStyle();
     hudStyle.currentNotestyle = this;
     return hudStyle;
   }
 
   function initHudStyle()
   {
-    trace('HudStyles: ' + funkin.play.components.HudStyle.ScriptedHudStyle.listScriptClasses());
+    // trace('HudStyles: ' + funkin.play.components.HudStyle.ScriptedHudStyle.listScriptClasses());
   }
 
   public function buildNoteSprite(target:NoteSprite):Void

@@ -259,6 +259,13 @@ class Project extends HXProject
    */
   static final FEATURE_COMPRESSED_TEXTURES:FeatureFlag = "FEATURE_COMPRESSED_TEXTURES";
 
+    /**
+   * `-DHIDE_WATERMARKS`
+   * If this flag is enabled, there's will be no watermark text.
+   * By default, disabled.
+   */
+  static final HIDE_WATERMARKS:FeatureFlag = "HIDE_WATERMARKS";
+
   /**
    * `-DFEATURE_DEBUG_FUNCTIONS`
    * If this flag is enabled, the game will have all playtester-only debugging functionality enabled.
@@ -796,6 +803,8 @@ class Project extends HXProject
     // Should be true on debug builds or if GITHUB_BUILD is enabled.
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
     FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+
+    HIDE_WATERMARKS.apply(this, false);
 
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_LOG_TRACE.apply(this, true);

@@ -1427,6 +1427,7 @@ class PlayState extends MusicBeatSubState
         }
       }
 
+      hud?.onGamePause();
       if (!vwooshTimer.finished) vwooshTimer.active = false;
 
       // Pause camera tweening, and keep track of which tweens we pause.
@@ -1469,6 +1470,7 @@ class PlayState extends MusicBeatSubState
       var event:ScriptEvent = new ScriptEvent(RESUME, true);
 
       dispatchEvent(event);
+      hud?.onGameResume();
 
       if (event.eventCanceled) return;
 
@@ -2868,8 +2870,8 @@ class PlayState extends MusicBeatSubState
     #end
 
     // 9: Toggle the old icon.
-    if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(hud.iconP1)) #end)
-      && hud.iconP1 != null) hud.iconP1.toggleOldIcon();
+    if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(hud?.iconP1)) #end)
+      && hud?.iconP1 != null) hud?.iconP1?.toggleOldIcon();
 
     #if FEATURE_DEBUG_FUNCTIONS
     // PAGEUP: Skip forward two sections.
@@ -2947,8 +2949,8 @@ class PlayState extends MusicBeatSubState
         if (pressArray[i]) indices.push(i);
       }
     }
-    hud.displayRating(daRating);
-    if (combo >= 10) hud.displayCombo(combo);
+    hud?.displayRating(daRating);
+    if (combo >= 10) hud?.displayCombo(combo);
 
     if (vocals != null) vocals.playerVolume = 1;
   }

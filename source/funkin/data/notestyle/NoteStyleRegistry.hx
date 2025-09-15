@@ -5,7 +5,6 @@ import funkin.play.notes.notestyle.ScriptedNoteStyle;
 import funkin.data.notestyle.NoteStyleData;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
-import funkin.play.components.HudStyle;
 
 @:nullSafety
 class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, NoteStyleEntryParams> implements ISingleton implements DefaultRegistryImpl
@@ -29,19 +28,6 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, NoteStyle
     var notestyle:Null<NoteStyle> = fetchEntry(Constants.DEFAULT_NOTE_STYLE);
     if (notestyle == null) throw 'Default notestyle was null! This should not happen!';
     return notestyle;
-  }
-
-  public function getHudStyle(name:Null<String>):HudStyle
-  {
-    // name = name.trim();
-    // final scriptedHudStyles:Array<String> = ScriptedHudStyle.listScriptClasses();
-
-    try
-    {
-      // return ScriptedHudStyle.init(name);
-    }
-    catch (e) {}
-    return new HudStyle();
   }
 }
 

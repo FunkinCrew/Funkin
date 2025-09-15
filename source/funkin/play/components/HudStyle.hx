@@ -16,17 +16,21 @@ import funkin.play.notes.Strumline;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.util.EaseUtil;
 
-@:hscriptClass
-class ScriptedAssClass extends AssClass implements polymod.hscript.HScriptedClass {}
-
-class AssClass
+class ClearHudStyle extends HudStyle
 {
-  public function new() {}
+  override public function initHealthBar() {}
 
-  public function toString():String
-  {
-    return "Ass()";
-  }
+  override public function initHealthIcons() {}
+
+  override public function setHealth(health:Float) {}
+
+  override public function setScore(score:Int) {}
+
+  override public function initPopUps() {}
+
+  override public function displayRating(daRating:Null<String>) {}
+
+  override public function displayCombo(combo:Int = 0) {}
 }
 
 class HudStyle extends flixel.group.FlxSpriteGroup
@@ -46,13 +50,15 @@ class HudStyle extends flixel.group.FlxSpriteGroup
   public var iconP1:Null<HealthIcon>;
   public var iconP2:Null<HealthIcon>;
 
-  // public var downscroll(get, never):Bool;
-  // inline private function get_downscroll():Bool
-  // return Preferences.downscroll;
-  // public var currentNotestyle(get, default):NoteStyle;
-  // inline private function get_currentNotestyle():NoteStyle
-  // return currentNotestyle ?? funkin.data.notestyle.NoteStyleRegistry.instance.fetchDefault();
-  public var currentNotestyle:NoteStyle = null;
+  public var downscroll(get, never):Bool;
+
+  inline private function get_downscroll():Bool
+    return Preferences.downscroll;
+
+  public var currentNotestyle(get, default):NoteStyle;
+
+  inline private function get_currentNotestyle():NoteStyle
+    return currentNotestyle ?? funkin.data.notestyle.NoteStyleRegistry.instance.fetchDefault();
 
   public function new()
   {
@@ -147,7 +153,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     rating.acceleration.y = 550;
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
-    comboPopUps.add(rating);
+    comboPopUps?.add(rating);
 
     final fadeEase = currentNotestyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
     FlxTween.tween(rating, {alpha: 0}, 0.2,
@@ -189,7 +195,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
       numScore.velocity.y -= FlxG.random.int(130, 150);
       numScore.velocity.x = FlxG.random.float(-5, 5);
 
-      comboPopUps.add(numScore);
+      comboPopUps?.add(numScore);
 
       var fadeEase = currentNotestyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
@@ -219,8 +225,6 @@ class HudStyle extends flixel.group.FlxSpriteGroup
   }
 
   public function onBeatHit(beat:Int) {}
-
-  public function onMeasureHit(measure:Int) {}
 
   /*public function onSongEventExecution(event:SongEventData)
     {
@@ -271,6 +275,18 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     opponentStrumline.y = Constants.STRUMLINE_Y_OFFSET * 0.3;
     opponentStrumline.x -= 30;
     #end
+  }
+
+  public function onGamePause()
+  {
+    if (iconP1?.bopTween != null) iconP1.bopTween.active = false;
+    if (iconP2?.bopTween != null) iconP2.bopTween.active = false;
+  }
+
+  public function onGameResume()
+  {
+    if (iconP1?.bopTween != null) iconP1.bopTween.active = true;
+    if (iconP2?.bopTween != null) iconP2.bopTween.active = true;
   }
 
   public function refresh():Void

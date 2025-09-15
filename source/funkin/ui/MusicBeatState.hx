@@ -202,8 +202,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     leftWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     rightWatermarkText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
+    #if !HIDE_WATERMARK
     add(leftWatermarkText);
     add(rightWatermarkText);
+    #end
   }
 
   public function dispatchEvent(event:ScriptEvent)
