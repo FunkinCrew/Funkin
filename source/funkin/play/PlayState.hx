@@ -1,6 +1,5 @@
 package funkin.play;
 
-import funkin.play.components.hud.HudStyle;
 import funkin.play.PauseSubState.PauseMode;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
@@ -37,6 +36,8 @@ import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
+import funkin.play.components.HudStyle;
+import funkin.play.components.HudStyle.ScriptedHudStyle;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;

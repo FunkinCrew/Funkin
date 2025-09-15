@@ -1,6 +1,6 @@
 package funkin.play.notes.notestyle;
 
-import funkin.play.components.hud.HudStyle;
+import funkin.play.components.HudStyle;
 import funkin.play.Countdown;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -80,9 +80,14 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function getHudStyle():HudStyle
   {
-    final hudStyle = HudStyle.getHudStyle(getHudStyleID());
+    final hudStyle = NoteStyleRegistry.instance.getHudStyle(getHudStyleID());
     hudStyle.currentNotestyle = this;
     return hudStyle;
+  }
+
+  function initHudStyle()
+  {
+    trace('HudStyles: ' + funkin.play.components.HudStyle.ScriptedHudStyle.listScriptClasses());
   }
 
   public function buildNoteSprite(target:NoteSprite):Void

@@ -233,6 +233,7 @@ class HealthIcon extends FunkinSprite
    */
   function lerpIconSize(force:Bool = false):Void
   {
+    return;
     // Lerp the health icon back to its normal size,
     // while maintaining aspect ratio.
     if (this.width > this.height)
@@ -304,6 +305,8 @@ class HealthIcon extends FunkinSprite
    */
   public function onStepHit(curStep:Int):Void
   {
+    return;
+
     // Make the icons bop.
     if (bopEvery != 0 && curStep % bopEvery == 0 && isLegacyStyle)
     {

@@ -1,4 +1,4 @@
-package funkin.play.components.hud;
+package funkin.play.components;
 
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
@@ -14,39 +14,45 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.FullScreenScaleMode;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.components.*;
 import funkin.util.EaseUtil;
-import polymod.hscript.HScriptedClass;
 
 @:hscriptClass
-class ScriptedHudStyle extends HudStyle implements HScriptedClass {}
+class ScriptedAssClass extends AssClass implements polymod.hscript.HScriptedClass {}
 
-class HudStyle extends FlxSpriteGroup
+class AssClass
+{
+  public function new() {}
+
+  public function toString():String
+  {
+    return "Ass()";
+  }
+}
+
+class HudStyle extends flixel.group.FlxSpriteGroup
 {
   public var gameInstance:PlayState;
 
   public var playerStrumline:Strumline;
   public var opponentStrumline:Strumline;
 
-  public var downscroll(get, never):Bool;
-
   public var comboPopUps:FlxSpriteGroup;
   public var comboPopUpsOffset:FlxPoint = FlxPoint.get();
 
-  var scoreText:FlxText;
+  public var scoreText:FlxText;
 
   public var healthBar:SimpleFunkinBar;
 
   public var iconP1:Null<HealthIcon>;
   public var iconP2:Null<HealthIcon>;
 
-  inline private function get_downscroll():Bool
-    return Preferences.downscroll;
-
-  public var currentNotestyle(get, default):NoteStyle;
-
-  inline private function get_currentNotestyle():NoteStyle
-    return currentNotestyle ?? funkin.data.notestyle.NoteStyleRegistry.instance.fetchDefault();
+  // public var downscroll(get, never):Bool;
+  // inline private function get_downscroll():Bool
+  // return Preferences.downscroll;
+  // public var currentNotestyle(get, default):NoteStyle;
+  // inline private function get_currentNotestyle():NoteStyle
+  // return currentNotestyle ?? funkin.data.notestyle.NoteStyleRegistry.instance.fetchDefault();
+  public var currentNotestyle:NoteStyle = null;
 
   public function new()
   {
@@ -271,28 +277,38 @@ class HudStyle extends FlxSpriteGroup
   {
     sort(funkin.util.SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
   }
-
-  public static function getHudStyle(name:Null<String>):HudStyle
-  {
-    name = name.trim();
-    // final scriptedHudStyles:Array<String> = ScriptedHudStyle.listScriptClasses();
-    final scriptedHudStyles:Array<String> = [];
-    trace(scriptedHudStyles.length, scriptedHudStyles);
-
-    if (!scriptedHudStyles.contains(name) && name != "")
+  /*public static function getHudStyle(name:Null<String>):HudStyle
     {
-      trace('Cant find "$name" HudStlye! Falling back on default.');
-      return new HudStyle();
-    }
-    else
-      try
-      {
-        // return ScriptedHudStyle.init(name);
-        return new HudStyle();
-      }
-      catch (e) {}
+      name = name.trim();
 
-    // fallback on default HudStyle
-    return new HudStyle();
-  }
+      /*
+        // final scriptedHudStyles:Array<String> = polymod.hscript._internal.PolymodScriptClass.listScriptClassesExtending("funkin.play.components.HudStyle");
+        // var scriptedHudStyles:Array<String> = ScriptedHudStyle.listScriptClasses();
+        // final scriptedHudStyles:Array<String> = [];
+        trace(scriptedHudStyles.length, scriptedHudStyles);
+
+        if (!scriptedHudStyles.contains(name) || name == "" || name == null)
+        {
+          trace('Cant find "$name" HudStlye! Falling back on default.');
+          return new HudStyle();
+        }
+        else
+          try
+          {
+            return polymod.hscript._internal.PolymodClassDeclEx.PolymodStaticClassReference.tryBuild(name); // return ScriptedHudStyle.init(name);
+            // return new HudStyle();
+          }
+          catch (e) {}
+
+        // fallback on default HudStyle */
+  // }
 }
+
+/**
+ * A script that can be tied to a HudStyle.
+ * Create a scripted class that extends HudStyle to use this.
+ */
+@:hscriptClass
+class ScriptedHudStyle extends HudStyle implements polymod.hscript.HScriptedClass {}
+
+// WORK I BEG YOU PLEASE
