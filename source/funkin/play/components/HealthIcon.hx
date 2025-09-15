@@ -269,7 +269,7 @@ class HealthIcon extends FunkinSprite
           this.x = PlayState.instance.hud.healthBar.centerPoint.x - (this.width - POSITION_OFFSET);
       }
 
-      this.y = PlayState.instance.hud.healthBar.centerPoint.y - (this.height / 2);
+      this.y = PlayState.instance.hud.healthBar.y + PlayState.instance.hud.healthBar.barOffset.y  - (this.height / 2);
     }
   }
 
