@@ -269,7 +269,7 @@ class HealthIcon extends FunkinSprite
           this.x = PlayState.instance.hud.healthBar.centerPoint.x - (this.width - POSITION_OFFSET);
       }
 
-      this.y = PlayState.instance.hud.healthBar.y + PlayState.instance.hud.healthBar.barOffset.y  - (this.height / 2);
+      this.y = PlayState.instance.hud.healthBar.y + PlayState.instance.hud.healthBar.barOffset.y - (this.height / 2);
     }
   }
 
@@ -282,17 +282,17 @@ class HealthIcon extends FunkinSprite
     if (bopEvery != 0 && curStep % bopEvery == 0 && isLegacyStyle)
     {
       bopTween?.cancel();
-      bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x, .175,
-        {onComplete: _ -> bopTween = null}, value -> {
+      bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x,
+        Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {onComplete: _ -> bopTween = null}, value -> {
           setGraphicSize(Std.int(value), 0);
           this.updateHitbox();
           this.updatePosition();
         });
-    }
-    this.updateHitbox();
-    this.updatePosition();
+      this.updateHitbox();
+      this.updatePosition();
 
-    this.angle += bopAngle * (playerId == 0 ? 1 : -1);
+      this.angle += bopAngle * (playerId == 0 ? 1 : -1);
+    }
   }
 
   function updateHealthIcon(health:Float):Void

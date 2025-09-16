@@ -35,6 +35,7 @@ class ClearHudStyle extends HudStyle
 
 class HudStyle extends flixel.group.FlxSpriteGroup
 {
+  // Representaion of PlayState.instnce
   public var gameInstance:PlayState;
 
   public var playerStrumline:Strumline;
@@ -45,8 +46,10 @@ class HudStyle extends flixel.group.FlxSpriteGroup
 
   public var scoreText:FlxText;
 
+  // Healthbar object, represents player's health.
   public var healthBar:SimpleFunkinBar;
 
+  // Icons for Player and Opponent.
   public var iconP1:Null<HealthIcon>;
   public var iconP2:Null<HealthIcon>;
 
@@ -76,7 +79,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     #end
 
     healthBar = new SimpleFunkinBar(0, healthBarYPos, 'healthBar', () -> return gameInstance.health, Constants.HEALTH_MIN, Constants.HEALTH_MAX);
-    healthBar.smoothFactor = .85;
+    healthBar.smoothFactor = 1;
     healthBar.scrollFactor.set();
     healthBar.screenCenter(X);
     healthBar.zIndex = 801;

@@ -332,13 +332,8 @@ class BaseCharacter extends Bopper
       return icon;
     }
 
-    if (!isOpponent)
-    {
-      icon.configure(_data?.healthIcon);
-      icon.flipX = !icon.flipX; // BF is looking the other way.
-    }
-    else
-      icon.configure(_data?.healthIcon);
+    icon.configure(_data?.healthIcon);
+    if (!isOpponent) icon.flipX = !icon.flipX; // BF is looking the other way.
 
     return icon;
   }
