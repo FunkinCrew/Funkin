@@ -16,23 +16,6 @@ import funkin.play.notes.Strumline;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.util.EaseUtil;
 
-class ClearHudStyle extends HudStyle
-{
-  override public function initHealthBar() {}
-
-  override public function initHealthIcons() {}
-
-  override public function setHealth(health:Float) {}
-
-  override public function setScore(score:Int) {}
-
-  override public function initPopUps() {}
-
-  override public function displayRating(daRating:Null<String>) {}
-
-  override public function displayCombo(combo:Int = 0) {}
-}
-
 class HudStyle extends flixel.group.FlxSpriteGroup
 {
   // Representaion of PlayState.instnce
