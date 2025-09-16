@@ -129,7 +129,7 @@ class AdMobUtil
       }
       #end
 
-      trace(event.toString());
+      Sys.println(event.toString());
     });
 
     Admob.configureConsentMetadata(Admob.getTCFConsentForPurpose(0) == 1, StringTools.startsWith(Admob.getUSPrivacy(), '1Y'));
