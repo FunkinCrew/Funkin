@@ -221,7 +221,9 @@ class PlayState extends MusicBeatSubState
 
   private inline function set_health(newHealth:Float):Float
   {
-    return health = FlxMath.bound(newHealth, Constants.HEALTH_MIN, Constants.HEALTH_MAX);
+    newHealth = FlxMath.bound(newHealth, Constants.HEALTH_MIN, Constants.HEALTH_MAX);
+    hud?.setHealth(newHealth);
+    return health = newHealth;
   }
 
   /**
@@ -909,7 +911,7 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    updateScoreText();
+    hud?.setScore(songScore);
 
     // Handle restarting the song when needed (player death or pressing Retry)
     if (needsReset)
@@ -1008,8 +1010,6 @@ class PlayState extends MusicBeatSubState
       // Reset the health icons.
       currentStage?.getBoyfriend()?.initHealthIcon(hud?.iconP1, false);
       currentStage?.getDad()?.initHealthIcon(hud?.iconP2, true);
-
-      hud?.onReset();
 
       needsReset = false;
     }
@@ -1307,11 +1307,9 @@ class PlayState extends MusicBeatSubState
     vwooshTimer.cancel();
 
     songScore = 0;
-    updateScoreText();
+    hud?.setScore(0);
 
     health = Constants.HEALTH_STARTING;
-
-    hud.onGameOver();
 
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
@@ -1379,6 +1377,8 @@ class PlayState extends MusicBeatSubState
 
     // Dispatch event to note kind scripts
     NoteKindManager.callEvent(event);
+
+    ScriptEventDispatcher.callEvent(hud, event);
   }
 
   /**
@@ -1429,7 +1429,6 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      hud?.onGamePause();
       if (!vwooshTimer.finished) vwooshTimer.active = false;
 
       // Pause camera tweening, and keep track of which tweens we pause.
@@ -1472,7 +1471,6 @@ class PlayState extends MusicBeatSubState
       var event:ScriptEvent = new ScriptEvent(RESUME, true);
 
       dispatchEvent(event);
-      hud?.onGameResume();
 
       if (event.eventCanceled) return;
 
@@ -1663,7 +1661,6 @@ class PlayState extends MusicBeatSubState
 
     if (isGamePaused) return false;
 
-    hud.onStepHit(Std.int(Conductor.instance.currentStep));
     // Try to call hold note haptics each step hit. Works if atleast one note status is NoteStatus.isHoldNotePressed.
     playerStrumline.noteVibrations.tryHoldNoteVibration();
 
@@ -1678,8 +1675,6 @@ class PlayState extends MusicBeatSubState
     if (!super.beatHit()) return false;
 
     if (isGamePaused) return false;
-
-    hud.onBeatHit(Std.int(Conductor.instance.currentBeat));
 
     if (generatedMusic)
     {
@@ -1998,6 +1993,7 @@ class PlayState extends MusicBeatSubState
   @:nullSafety(Off) // i hate you
   function initHud():Void
   {
+    ScriptEventDispatcher.callEvent(hud, new ScriptEvent(CREATE, false));
     hud.gameInstance = this; // huh
 
     hud.initHealthBar();
@@ -2347,14 +2343,6 @@ class PlayState extends MusicBeatSubState
 
     vocals.time = timeToPlayAt;
     vocals.play(false, timeToPlayAt);
-  }
-
-  /**
-     * Updates the position and contents of the score display.
-     */
-  function updateScoreText():Void
-  {
-    hud.setScore(songScore);
   }
 
   /**

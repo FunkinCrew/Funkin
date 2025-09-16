@@ -5,7 +5,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.tweens.FlxTween;
 import flixel.text.FlxText;
 import flixel.math.FlxPoint;
-import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import funkin.Conductor;
 import funkin.Preferences;
@@ -15,10 +14,12 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.util.EaseUtil;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 
-class HudStyle extends flixel.group.FlxSpriteGroup
+class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScriptedClass
 {
-  // Representaion of PlayState.instnce
+  // Representaion of PlayState.instance
   public var gameInstance:PlayState;
 
   public var playerStrumline:Strumline;
@@ -126,6 +127,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
 
   public function displayRating(daRating:Null<String>):Void
   {
+    if (comboPopUps == null) return;
     if (daRating == null) daRating = "good";
 
     final rating:Null<FunkinSprite> = currentNotestyle.buildJudgementSprite(daRating);
@@ -155,6 +157,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
 
   public function displayCombo(combo:Int = 0):Void
   {
+    if (comboPopUps == null) return;
     var seperatedScore:Array<Int> = [];
     var tempCombo:Int = combo;
 
@@ -199,39 +202,12 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     _styleOffsets = null;
   }
 
-  override function update(dt:Float):Void
-  {
-    super.update(dt);
-  }
-
-  public function onStepHit(step:Int):Void
-  {
-    iconP1?.onStepHit(step);
-    iconP2?.onStepHit(step);
-  }
-
-  public function onBeatHit(beat:Int):Void {}
-
-  /*public function onSongEventExecution(event:SongEventData)
-    {
-
-  }*/
-  public function setHealth(value:Float):Void
-  {
-    healthBar.value = value;
-  }
+  // You can use this function for you'r custom complex healthbar.
+  public function setHealth(value:Float):Void {}
 
   public function setScore(score:Int):Void
   {
     scoreText.text = (gameInstance.isBotPlayMode ? 'Bot Play Enabled' : 'Score: ${flixel.util.FlxStringUtil.formatMoney(score, false, true)}');
-  }
-
-  public function onGameOver():Void
-  {
-    iconP1?.updatePosition();
-    iconP2?.updatePosition();
-
-    healthBar?.snapPercent();
   }
 
   function initNoteHitbox():Void
@@ -263,28 +239,11 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     #end
   }
 
-  public function onGamePause():Void
-  {
-    if (iconP1?.bopTween != null) iconP1.bopTween.active = false;
-    if (iconP2?.bopTween != null) iconP2.bopTween.active = false;
-  }
-
-  public function onGameResume():Void
-  {
-    if (iconP1?.bopTween != null) iconP1.bopTween.active = true;
-    if (iconP2?.bopTween != null) iconP2.bopTween.active = true;
-  }
-
-  public function onReset():Void
-  {
-    iconP1?.snapToTargetSize();
-    iconP2?.snapToTargetSize();
-  }
-
   public function refresh():Void
   {
     sort(funkin.util.SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
   }
+
   /*public static function getHudStyle(name:Null<String>):HudStyle
     {
       name = name.trim();
@@ -310,6 +269,72 @@ class HudStyle extends flixel.group.FlxSpriteGroup
 
         // fallback on default HudStyle */
   // }
+
+  public function onScriptEvent(event:ScriptEvent):Void {};
+
+  public function onCreate(event:ScriptEvent):Void {};
+
+  public function onDestroy(event:ScriptEvent):Void {};
+
+  public function onUpdate(event:UpdateScriptEvent):Void {};
+
+  public function onNoteIncoming(event:NoteScriptEvent):Void {};
+
+  public function onNoteHit(event:HitNoteScriptEvent):Void {};
+
+  public function onNoteMiss(event:NoteScriptEvent):Void {};
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent):Void {};
+
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    iconP1?.onStepHit(event.step);
+    iconP2?.onStepHit(event.step);
+  }
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void {};
+
+  public function onPause(event:PauseScriptEvent):Void
+  {
+    if (iconP1?.bopTween != null) iconP1.bopTween.active = false;
+    if (iconP2?.bopTween != null) iconP2.bopTween.active = false;
+  };
+
+  public function onResume(event:ScriptEvent):Void
+  {
+    if (iconP1?.bopTween != null) iconP1.bopTween.active = true;
+    if (iconP2?.bopTween != null) iconP2.bopTween.active = true;
+  };
+
+  public function onSongLoaded(event:SongLoadScriptEvent):Void {};
+
+  public function onSongStart(event:ScriptEvent):Void {};
+
+  public function onSongEnd(event:ScriptEvent):Void {};
+
+  public function onGameOver(event:ScriptEvent):Void
+  {
+    iconP1?.updatePosition();
+    iconP2?.updatePosition();
+
+    healthBar?.snapPercent();
+  }
+
+  public function onSongRetry(event:SongRetryEvent):Void
+  {
+    iconP1?.snapToTargetSize();
+    iconP2?.snapToTargetSize();
+  };
+
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {};
+
+  public function onSongEvent(event:SongEventScriptEvent):Void {};
+
+  public function onCountdownStart(event:CountdownScriptEvent):Void {};
+
+  public function onCountdownStep(event:CountdownScriptEvent):Void {};
+
+  public function onCountdownEnd(event:CountdownScriptEvent):Void {};
 }
 
 /**
