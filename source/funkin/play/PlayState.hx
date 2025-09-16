@@ -2873,7 +2873,7 @@ class PlayState extends MusicBeatSubState
 
     #if FEATURE_DEBUG_FUNCTIONS
     // H: Hide the HUD.
-    if (FlxG.keys.justPressed.H) camHUD.visible = !camHUD.visible;
+    if (FlxG.keys.justPressed.H && hud != null) hud.visible = !hud.visible;
 
     // 1: End the song immediately.
     if (FlxG.keys.justPressed.ONE) endSong(true);

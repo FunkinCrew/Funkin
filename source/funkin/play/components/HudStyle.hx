@@ -23,6 +23,13 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #end
 
+/**
+ * A script that can be tied to a HudStyle.
+ * Create a scripted class that extends HudStyle to use this.
+ */
+@:hscriptClass
+class ScriptedHudStyle extends HudStyle implements polymod.hscript.HScriptedClass {}
+
 class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScriptedClass
 {
   // Representaion of PlayState.instance
@@ -316,12 +323,3 @@ class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScripted
 
   public function onCountdownEnd(event:CountdownScriptEvent):Void {};
 }
-
-/**
- * A script that can be tied to a HudStyle.
- * Create a scripted class that extends HudStyle to use this.
- */
-@:hscriptClass
-class ScriptedHudStyle extends HudStyle implements polymod.hscript.HScriptedClass {}
-
-// WORK I BEG YOU PLEASE
