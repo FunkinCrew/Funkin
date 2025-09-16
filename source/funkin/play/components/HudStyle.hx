@@ -95,7 +95,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     add(scoreText);
   }
 
-  public function initHealthIcons()
+  public function initHealthIcons():Void
   {
     if (gameInstance?.currentStage == null) return;
 
@@ -110,7 +110,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     add(iconP2);
   }
 
-  public function createStrumlines()
+  public function createStrumlines():Void
   {
     playerStrumline = createStrumline(!gameInstance.isBotPlayMode);
     opponentStrumline = createStrumline(false);
@@ -141,7 +141,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     add(comboPopUps);
   }
 
-  public function displayRating(daRating:Null<String>)
+  public function displayRating(daRating:Null<String>):Void
   {
     if (daRating == null) daRating = "good";
 
@@ -216,34 +216,34 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     _styleOffsets = null;
   }
 
-  override function update(dt:Float)
+  override function update(dt:Float):Void
   {
     super.update(dt);
   }
 
-  public function onStepHit(step:Int)
+  public function onStepHit(step:Int):Void
   {
     iconP1?.onStepHit(step);
     iconP2?.onStepHit(step);
   }
 
-  public function onBeatHit(beat:Int) {}
+  public function onBeatHit(beat:Int):Void {}
 
   /*public function onSongEventExecution(event:SongEventData)
     {
 
   }*/
-  public function setHealth(value:Float)
+  public function setHealth(value:Float):Void
   {
     healthBar.value = value;
   }
 
-  public function setScore(score:Int)
+  public function setScore(score:Int):Void
   {
     scoreText.text = (gameInstance.isBotPlayMode ? 'Bot Play Enabled' : 'Score: ${flixel.util.FlxStringUtil.formatMoney(score, false, true)}');
   }
 
-  public function onGameOver()
+  public function onGameOver():Void
   {
     iconP1?.updatePosition();
     iconP2?.updatePosition();
@@ -251,7 +251,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     healthBar?.snapPercent();
   }
 
-  function initNoteHitbox()
+  function initNoteHitbox():Void
   {
     #if mobile
     final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
@@ -280,16 +280,22 @@ class HudStyle extends flixel.group.FlxSpriteGroup
     #end
   }
 
-  public function onGamePause()
+  public function onGamePause():Void
   {
     if (iconP1?.bopTween != null) iconP1.bopTween.active = false;
     if (iconP2?.bopTween != null) iconP2.bopTween.active = false;
   }
 
-  public function onGameResume()
+  public function onGameResume():Void
   {
     if (iconP1?.bopTween != null) iconP1.bopTween.active = true;
     if (iconP2?.bopTween != null) iconP2.bopTween.active = true;
+  }
+
+  public function onReset():Void
+  {
+    iconP1?.snapToTargetSize();
+    iconP2?.snapToTargetSize();
   }
 
   public function refresh():Void

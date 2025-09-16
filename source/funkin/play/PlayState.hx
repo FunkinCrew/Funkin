@@ -1009,6 +1009,8 @@ class PlayState extends MusicBeatSubState
       currentStage?.getBoyfriend()?.initHealthIcon(hud?.iconP1, false);
       currentStage?.getDad()?.initHealthIcon(hud?.iconP2, true);
 
+      hud?.onReset();
+
       needsReset = false;
     }
 
