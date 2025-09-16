@@ -281,17 +281,9 @@ class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScripted
 
   public function onBeatHit(event:SongTimeScriptEvent):Void {};
 
-  public function onPause(event:PauseScriptEvent):Void
-  {
-    if (iconP1?.bopTween != null) iconP1.bopTween.active = false;
-    if (iconP2?.bopTween != null) iconP2.bopTween.active = false;
-  };
+  public function onPause(event:PauseScriptEvent):Void {};
 
-  public function onResume(event:ScriptEvent):Void
-  {
-    if (iconP1?.bopTween != null) iconP1.bopTween.active = true;
-    if (iconP2?.bopTween != null) iconP2.bopTween.active = true;
-  };
+  public function onResume(event:ScriptEvent):Void {};
 
   public function onSongLoaded(event:SongLoadScriptEvent):Void {};
 
