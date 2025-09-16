@@ -489,6 +489,7 @@ class PlayState extends MusicBeatSubState
   var discordRPCIcon:String = '';
   #end
 
+  @:nullSafety(Off)
   public var hud:HudStyle;
 
   public var playerStrumline(get, never):Strumline;
@@ -690,7 +691,6 @@ class PlayState extends MusicBeatSubState
     if (nulNoteStyle == null) throw "Failed to retrieve both note style and default note style. This shouldn't happen!";
     noteStyle = nulNoteStyle;
 
-    hud = noteStyle.getHudStyle();
     // Pause sprites
     #if mobile
     pauseButton = FunkinSprite.createSparrow(0, 0, "pauseButton");
@@ -698,6 +698,29 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
+  }
+
+  @:nullSafety(Off)
+  public function initHudStyle(name:Null<String> = "")
+  {
+    name = name.trim();
+
+    final scriptedHudStyles:Array<String> = ScriptedHudStyle.listScriptClasses();
+
+    if (!scriptedHudStyles.contains(name) || name == "" || name == null)
+    {
+      trace('Cant find "$name" HudStlye! Falling back on default.');
+      return hud = new HudStyle();
+    }
+    else
+      try
+      {
+        return hud = ScriptedHudStyle.init(name);
+      }
+      catch (e) {}
+
+    // fallback on default HudStyle
+    return hud = new HudStyle();
   }
 
   /**
@@ -712,6 +735,9 @@ class PlayState extends MusicBeatSubState
       trace('WARNING: PlayState instance already exists. This should not happen.');
     }
     instance = this;
+    initHudStyle(noteStyle.getHudStyleID());
+    hud.currentNotestyle = noteStyle;
+
     #if !mobile
     // TODO: Figure out how to do the flair for charting mode!! I can't figure it out for the love of god. -Zack
     if (!isChartingMode) FlxG.autoPause = false;

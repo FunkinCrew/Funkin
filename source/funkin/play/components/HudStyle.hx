@@ -16,6 +16,12 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.util.EaseUtil;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
+#if mobile
+import funkin.util.TouchUtil;
+import funkin.mobile.ui.FunkinHitbox;
+import funkin.mobile.input.ControlsHandler;
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+#end
 
 class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScriptedClass
 {
@@ -210,7 +216,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScripted
     scoreText.text = (gameInstance.isBotPlayMode ? 'Bot Play Enabled' : 'Score: ${flixel.util.FlxStringUtil.formatMoney(score, false, true)}');
   }
 
-  function initNoteHitbox():Void
+  public function initNoteHitbox():Void
   {
     #if mobile
     final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
@@ -226,7 +232,7 @@ class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScripted
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
-    if (currentChart?.noteStyle != "pixel")
+    if (gameInstance?.currentChart?.noteStyle != "pixel")
     {
       #if android playerStrumline.y += 10; #end
     }
@@ -243,32 +249,6 @@ class HudStyle extends flixel.group.FlxSpriteGroup implements IPlayStateScripted
   {
     sort(funkin.util.SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
   }
-
-  /*public static function getHudStyle(name:Null<String>):HudStyle
-    {
-      name = name.trim();
-
-      /*
-        // final scriptedHudStyles:Array<String> = polymod.hscript._internal.PolymodScriptClass.listScriptClassesExtending("funkin.play.components.HudStyle");
-        // var scriptedHudStyles:Array<String> = ScriptedHudStyle.listScriptClasses();
-        // final scriptedHudStyles:Array<String> = [];
-        trace(scriptedHudStyles.length, scriptedHudStyles);
-
-        if (!scriptedHudStyles.contains(name) || name == "" || name == null)
-        {
-          trace('Cant find "$name" HudStlye! Falling back on default.');
-          return new HudStyle();
-        }
-        else
-          try
-          {
-            return polymod.hscript._internal.PolymodClassDeclEx.PolymodStaticClassReference.tryBuild(name); // return ScriptedHudStyle.init(name);
-            // return new HudStyle();
-          }
-          catch (e) {}
-
-        // fallback on default HudStyle */
-  // }
 
   public function onScriptEvent(event:ScriptEvent):Void {};
 

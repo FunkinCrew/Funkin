@@ -279,9 +279,6 @@ class InitState extends FlxState
     // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
     funkin.FunkinMemory.initialCache();
     #end
-
-    // trace('HudStyles: ' + funkin.play.components.HudStyle.ScriptedHudStyle.listScriptClasses());
-    // funkin.play.components.HudStyle.ScriptedHudStyle.init("FunkinHudStyle");
   }
 
   /**
