@@ -1,6 +1,7 @@
 package funkin.util.logging;
 
 #if (sys && FEATURE_DEBUG_FILE_LOGGING)
+import flixel.math.FlxMath;
 import sys.FileSystem;
 import sys.io.FileOutput;
 import sys.io.File;
@@ -15,6 +16,7 @@ class AnsiTrace
   #if (sys && FEATURE_DEBUG_FILE_LOGGING)
   private static final logFileName:String = "logs.txt";
   private static var logFile:Null<FileOutput> = null;
+  private static var logFileClosed:Bool = false;
   #end
 
   /**
@@ -45,9 +47,12 @@ class AnsiTrace
 
       logFile = File.write(logFileName);
 
-      lime.app.Application.current.onExit.add((_) -> logFile.close());
+      lime.app.Application.current.onExit.add((_) -> {
+        logFile.close();
+        logFileClosed = true;
+      }, true, FlxMath.MIN_VALUE_INT);
     }
-    if (logFile != null) logFile.writeString(logStr);
+    if (logFile != null && !logFileClosed) logFile.writeString(logStr);
     #end
     Sys.println(str);
     #else
