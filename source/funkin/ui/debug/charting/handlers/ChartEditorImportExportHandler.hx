@@ -78,21 +78,19 @@ class ChartEditorImportExportHandler
         if (diff == null) continue;
 
         var instId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
-        var voiceList:Array<String> = diff.buildVoiceList(); // SongDifficulty accounts for variation already.
 
-        if (voiceList.length == 2)
+        var playerVoiceList:Array<String> = diff.buildPlayerVoiceList(); // SongDifficulty accounts for variation already.
+        for (voice in playerVoiceList)
         {
-          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
-          state.loadVocalsFromAsset(voiceList[1], diff.characters.opponent, instId);
+          state.loadVocalsFromAsset(voice, diff.characters.player, instId);
         }
-        else if (voiceList.length == 1)
+
+        var opponentVoiceList:Array<String> = diff.buildOpponentVoiceList();
+        for (voice in opponentVoiceList)
         {
-          state.loadVocalsFromAsset(voiceList[0], diff.characters.player, instId);
+          state.loadVocalsFromAsset(voice, diff.characters.opponent, instId);
         }
-        else
-        {
-          trace('[WARN] Strange quantity of voice paths for difficulty ${difficultyId}: ${voiceList.length}');
-        }
+
         // Set the difficulty of the song if one was passed in the params, and it isn't the default
         if (targetSongDifficulty != null
           && targetSongDifficulty != state.selectedDifficulty
@@ -303,40 +301,36 @@ class ChartEditorImportExportHandler
       if (!ChartEditorAudioHandler.loadInstFromBytes(state, instFileBytes, instId)) throw 'Could not load instrumental ($instFileName).';
 
       var playerCharId:String = variMetadata?.playData?.characters?.player ?? Constants.DEFAULT_CHARACTER;
-      var playerVocalsFileName:String = manifest.getVocalsFileName(playerCharId, variation);
-      var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
-      if (playerVocalsFileBytes != null)
+      var playerVoiceList:Array<String> = variMetadata?.playData.characters?.playerVocals ?? [playerCharId];
+      for (voice in playerVoiceList)
       {
-        if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, playerVocalsFileBytes, playerCharId, instId))
+        var playerVocalsFileName:String = manifest.getVocalsFileName(voice, variation);
+        var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
+        if (playerVocalsFileBytes == null)
+        {
+          output.push('Could not find vocals ($playerVocalsFileName).');
+          // throw 'Could not find vocals ($playerVocalsFileName).';
+        }
+        else if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, playerVocalsFileBytes, voice, instId))
         {
           output.push('Could not parse vocals ($playerCharId).');
           // throw 'Could not parse vocals ($playerCharId).';
         }
       }
-      else
-      {
-        output.push('Could not find vocals ($playerVocalsFileName).');
-        // throw 'Could not find vocals ($playerVocalsFileName).';
-      }
 
-      var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent;
-
-      if (opponentCharId != null)
+      var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent ?? "dad";
+      var opponentVoiceList:Array<String> = variMetadata?.playData.characters?.opponentVocals ?? [opponentCharId];
+      for (voice in opponentVoiceList)
       {
-        var opponentVocalsFileName:String = manifest.getVocalsFileName(opponentCharId, variation);
+        var opponentVocalsFileName:String = manifest.getVocalsFileName(voice, variation);
         var opponentVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(opponentVocalsFileName)?.data;
-        if (opponentVocalsFileBytes != null)
-        {
-          if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, opponentVocalsFileBytes, opponentCharId, instId))
-          {
-            output.push('Could not parse vocals ($opponentCharId).');
-            // throw 'Could not parse vocals ($opponentCharId).';
-          }
-        }
-        else
+        if (opponentVocalsFileBytes == null)
         {
           output.push('Could not find vocals ($opponentVocalsFileName).');
-          // throw 'Could not find vocals ($opponentVocalsFileName).';
+        }
+        else if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, opponentVocalsFileBytes, voice, instId))
+        {
+          output.push('Could not parse vocals ($opponentCharId).');
         }
       }
     }
@@ -465,7 +459,7 @@ class ChartEditorImportExportHandler
         if (state.currentSongId == '') state.currentSongName = 'New Chart'; // Hopefully no one notices this silliness
         targetPath = Path.join([
           BACKUPS_PATH,
-            'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
+          'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
         ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
