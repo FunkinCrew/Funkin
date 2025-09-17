@@ -5,6 +5,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import sys.FileSystem;
 import sys.io.File;
+import funkin.util.AnsiUtil;
+import funkin.util.AnsiUtil.AnsiCode;
 #end
 
 using StringTools;
@@ -72,7 +74,8 @@ class EnvironmentMacro
                   }
                   else
                   {
-                    Context.warning('Value for ${field.name} is not present in the ".env" file.', field.pos);
+                    warning('${AnsiUtil.apply('Value for ', [BRIGHT_RED])} ${AnsiUtil.apply(field.name, [BOLD, BRIGHT_RED])} ${AnsiUtil.apply(' not found in the ".env" file.', [BRIGHT_RED])}',
+                      field.pos);
                   }
 
                   buildFields[i].kind = FVar(t, e);
@@ -180,6 +183,41 @@ class EnvironmentMacro
       default:
         key;
     }
+  }
+
+  // MIGHT be able to repurpose this for custom context warnings hehe - Zack
+  static function warning(msg:String, pos:Position)
+  {
+    var infos:Dynamic = Context.getPosInfos(pos);
+
+    // file & position
+    var fileContent = File.getContent(infos.file);
+    var before = fileContent.substr(0, infos.min);
+    var line = before.split("\n").length;
+    var lastNewline = before.lastIndexOf("\n");
+    var col0 = (lastNewline == -1) ? infos.min : infos.min - (lastNewline + 1);
+    infos.line = line;
+    infos.column = col0 + 1; // 1-based
+
+    // line texts
+    var lines = (fileContent == "") ? [] : fileContent.split("\n");
+    var lineText = if (infos.line > 0 && infos.line <= lines.length) lines[Std.int(infos.line - 1)] else "";
+
+    // highlight code line
+    lineText = AnsiUtil.apply(lineText, [BOLD]);
+
+    // underline from min to max (at least one ^)
+    var underlineLen = Std.int(Math.max(1, infos.max - infos.min));
+    var underline = AnsiUtil.apply(StringTools.lpad("", " ", Std.int(infos.column - 1)) + StringTools.rpad("", "^", underlineLen), [BOLD, BRIGHT_RED]);
+
+    // header like Haxe diagnostics
+    var header_title = AnsiUtil.apply(" ENVIRONMENT ", [BOLD, BG_RED]);
+    var header = '${header_title} ${infos.file}:${infos.line}: characters ${infos.column}-${infos.column + underlineLen}\n';
+
+    // body with code + pointer + message
+    var body = '  ${infos.line} |   ${lineText}\n' + '     |   ${underline}\n' + '     |  ${msg}\n';
+
+    Sys.println(header + "\n" + body);
   }
   #end
 }
