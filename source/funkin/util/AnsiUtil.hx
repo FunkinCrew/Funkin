@@ -60,6 +60,7 @@ enum abstract AnsiCode(String) from String to String
 @:nullSafety
 class AnsiUtil
 {
+  #if sys
   @:noCompletion
   private static final REGEX_TEAMCITY_VERSION:EReg = ~/^9\.(0*[1-9]\d*)\.|\d{2,}\./;
 
@@ -68,12 +69,25 @@ class AnsiUtil
 
   @:noCompletion
   private static final REGEX_TERM_TYPES:EReg = ~/(?i)^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/;
+  #end
 
   @:noCompletion
   private static final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
 
   @:noCompletion
   private static var codesSupported:Null<Bool> = null;
+
+  /**
+   * Safe wrapper for Sys.getEnv (returns null on non-sys targets).
+   */
+  private static function getEnvSafe(name:String):Null<String>
+  {
+    #if sys
+    return Sys.getEnv(name);
+    #else
+    return null;
+    #end
+  }
 
   /**
    * Applies the specified ANSI codes to the input string.
@@ -93,54 +107,52 @@ class AnsiUtil
   @:noCompletion
   private static function stripCodes(output:String):String
   {
+    #if sys
     if (codesSupported == null)
     {
-      final term:String = Sys.getEnv('TERM');
+      final term:Null<String> = getEnvSafe('TERM');
 
       if (term == 'dumb') codesSupported = false;
       else
       {
         if (codesSupported != true && term != null) codesSupported = REGEX_TERM_256.match(term) || REGEX_TERM_TYPES.match(term);
 
-        if (Sys.getEnv('CI') != null)
+        if (getEnvSafe('CI') != null)
         {
           final ciEnvNames:Array<String> = [
-            "GITHUB_ACTIONS",
-            "GITEA_ACTIONS",
-            "TRAVIS",
-            "CIRCLECI",
-            "APPVEYOR",
-            "GITLAB_CI",
-            "BUILDKITE",
-            "DRONE"
+            "GITHUB_ACTIONS", "GITEA_ACTIONS",    "TRAVIS", "CIRCLECI",
+                  "APPVEYOR",     "GITLAB_CI", "BUILDKITE",    "DRONE"
           ];
 
           for (ci in ciEnvNames)
           {
-            if (Sys.getEnv(ci) != null)
+            if (getEnvSafe(ci) != null)
             {
               codesSupported = true;
               break;
             }
           }
 
-          if (codesSupported != true && Sys.getEnv("CI_NAME") == "codeship") codesSupported = true;
+          if (codesSupported != true && getEnvSafe("CI_NAME") == "codeship") codesSupported = true;
         }
 
-        if (codesSupported != true && Sys.getEnv("TEAMCITY_VERSION") != null) codesSupported = REGEX_TEAMCITY_VERSION.match(Sys.getEnv("TEAMCITY_VERSION"));
+        final teamCity:Null<String> = getEnvSafe("TEAMCITY_VERSION");
+        if (codesSupported != true && teamCity != null) codesSupported = REGEX_TEAMCITY_VERSION.match(teamCity);
 
         if (codesSupported != true)
         {
-          codesSupported = Sys.getEnv('TERM_PROGRAM') == 'iTerm.app'
-            || Sys.getEnv('TERM_PROGRAM') == 'Apple_Terminal'
-            || Sys.getEnv('COLORTERM') != null
-            || Sys.getEnv('ANSICON') != null
-            || Sys.getEnv('ConEmuANSI') != null
-            || Sys.getEnv('WT_SESSION') != null;
+          codesSupported = getEnvSafe('TERM_PROGRAM') == 'iTerm.app'
+            || getEnvSafe('TERM_PROGRAM') == 'Apple_Terminal'
+            || getEnvSafe('COLORTERM') != null
+            || getEnvSafe('ANSICON') != null
+            || getEnvSafe('ConEmuANSI') != null
+            || getEnvSafe('WT_SESSION') != null;
         }
       }
     }
-
+    #else
+    codesSupported = false;
+    #end
     return codesSupported == true ? output : REGEX_ANSI_CODES.replace(output, '');
   }
 }
