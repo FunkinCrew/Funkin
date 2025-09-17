@@ -56,7 +56,14 @@ class ChartPlaytestState extends MusicBeatState
   function createItems():Void
   {
     createTextItem("Playtest Song", function() {
-      FNFCUtil.playSongFromFNFCPath(fnfcFilePath, currentDifficulty, currentVariation);
+      try
+      {
+        FNFCUtil.playSongFromFNFCPath(fnfcFilePath, currentDifficulty, currentVariation);
+      }
+      catch (e)
+      {
+        lime.app.Application.current.window.alert('$e', 'Could Not Playtest Chart');
+      }
     });
 
     createToggleListItem("Variation", Constants.DEFAULT_VARIATION_LIST, function(value:String) {

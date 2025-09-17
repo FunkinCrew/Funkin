@@ -34,13 +34,23 @@ class FNFCUtil
     var targetSong:Song = loadSongFromFNFCZipEntries(mappedFileEntries, manifest);
     var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(difficulty, variation);
 
-    if (targetDifficulty == null) throw 'Could not find difficulty: $difficulty, variation: $variation';
+    if (targetDifficulty == null) throw 'Could not find chart: $difficulty-$variation';
+
+    var audioInstTrack:Null<FunkinSound> = null;
+    var audioVocalTrackGroup = new VoicesGroup();
 
     var instId:String = targetDifficulty.characters.instrumental ?? '';
     var audioInstTrackName:String = manifest.getInstFileName(instId);
-    var audioInstTrack = loadSoundFromFNFCZipEntries(mappedFileEntries, audioInstTrackName);
+    try
+    {
+      audioInstTrack = loadSoundFromFNFCZipEntries(mappedFileEntries, audioInstTrackName);
+    }
+    catch (e)
+    {
+      throw 'Could not load instrumental: $audioInstTrackName';
+    }
 
-    var audioVocalTrackGroup = new VoicesGroup();
+    if (audioInstTrack == null) throw 'Could not load instrumental: $audioInstTrackName';
 
     // Load the player vocals.
     var playerVocalList:Array<String> = targetDifficulty.characters.playerVocals ?? [];
@@ -48,7 +58,14 @@ class FNFCUtil
     {
       var audioVocalTrackName:String = manifest.getVocalsFileName(playerVocalId, variation);
       var audioVocalTrack = loadSoundFromFNFCZipEntries(mappedFileEntries, audioVocalTrackName);
-      audioVocalTrackGroup.addPlayerVoice(audioVocalTrack);
+      try
+      {
+        audioVocalTrackGroup.addPlayerVoice(audioVocalTrack);
+      }
+      catch (e)
+      {
+        throw 'Could not load vocals: $audioVocalTrackName';
+      }
     }
 
     // Load the opponent vocals.
@@ -57,7 +74,14 @@ class FNFCUtil
     {
       var audioVocalTrackName:String = manifest.getVocalsFileName(opponentVocalId, variation);
       var audioVocalTrack = loadSoundFromFNFCZipEntries(mappedFileEntries, audioVocalTrackName);
-      audioVocalTrackGroup.addOpponentVoice(audioVocalTrack);
+      try
+      {
+        audioVocalTrackGroup.addOpponentVoice(audioVocalTrack);
+      }
+      catch (e)
+      {
+        throw 'Could not load vocals: $audioVocalTrackName';
+      }
     }
 
     // Transition to the play state.
@@ -75,6 +99,7 @@ class FNFCUtil
       }, false, true, function(targetState) {
         // Apply the instrumental and the vocals manually after the state loads.
         // overrideMusic ensures that the game doesn't attempt to load music from the game's assets folder.
+        @:nullSafety(Off)
         FlxG.sound.music = audioInstTrack;
         targetState.vocals = audioVocalTrackGroup;
       });
