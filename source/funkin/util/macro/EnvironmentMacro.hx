@@ -74,7 +74,7 @@ class EnvironmentMacro
                   }
                   else
                   {
-                    warning('${AnsiUtil.apply('Value for ', [BRIGHT_RED])} ${AnsiUtil.apply(field.name, [BOLD, BRIGHT_RED])} ${AnsiUtil.apply(' not found in the ".env" file.', [BRIGHT_RED])}',
+                    warning('${AnsiUtil.apply('Value for ', [BRIGHT_RED])} ${AnsiUtil.apply(field.name, [BOLD, BRIGHT_RED])} ${AnsiUtil.apply(' not found in the environment file.', [BRIGHT_RED])}',
                       field.pos);
                   }
 
