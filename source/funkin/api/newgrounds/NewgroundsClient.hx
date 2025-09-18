@@ -42,11 +42,11 @@ class NewgroundsClient
 
   private function new()
   {
-    trace('[NEWGROUNDS] Initializing client...');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Initializing client...');
 
     #if FEATURE_NEWGROUNDS_DEBUG
-    trace('[NEWGROUNDS] App ID: ${API_NG_APP_ID}');
-    trace('[NEWGROUNDS] Encryption Key: ${API_NG_ENC_KEY}');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} App ID: ${API_NG_APP_ID}');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Encryption Key: ${API_NG_ENC_KEY}');
     #end
 
     if (!hasValidCredentials())
@@ -67,7 +67,7 @@ class NewgroundsClient
   {
     if (NG.core == null) return;
 
-    trace('[NEWGROUNDS] Setting up connection...');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Setting up connection...');
 
     #if FEATURE_NEWGROUNDS_DEBUG
     NG.core.verbose = true;
@@ -78,16 +78,16 @@ class NewgroundsClient
     if (NG.core.attemptingLogin)
     {
       // Session ID was valid and we should be logged in soon.
-      trace('[NEWGROUNDS] Waiting for existing login!');
+      trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Waiting for existing login!');
     }
     else
     {
       #if FEATURE_NEWGROUNDS_AUTOLOGIN
       // Attempt an automatic login.
-      trace('[NEWGROUNDS] Attempting new login immediately!');
+      trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Attempting new login immediately!');
       this.autoLogin();
       #else
-      trace('[NEWGROUNDS] Not logged in, you have to login manually!');
+      trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Not logged in, you have to login manually!');
       #end
     }
   }
@@ -107,7 +107,7 @@ class NewgroundsClient
 
     if (NG.core.attemptingLogin)
     {
-      trace("[NEWGROUNDS] Login attempt ongoing, will not login until finished.");
+      trace("${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login attempt ongoing, will not login until finished.");
       return;
     }
 
@@ -245,17 +245,17 @@ class NewgroundsClient
   {
     if (NG.core == null) return;
 
-    trace('[NEWGROUNDS] Login successful!');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login successful!');
 
     // Persist the session ID.
     Save.instance.ngSessionId = NG.core.sessionId;
 
-    trace('[NEWGROUNDS] Submitting medal request...');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Submitting medal request...');
     NG.core.requestMedals(onFetchedMedals);
 
-    trace('[NEWGROUNDS] Submitting leaderboard request...');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Submitting leaderboard request...');
     NG.core.scoreBoards.loadList(onFetchedLeaderboards);
-    trace('[NEWGROUNDS] Submitting save slot request...');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Submitting save slot request...');
     NG.core.saveSlots.loadList(onFetchedSaveSlots);
   }
 
@@ -267,32 +267,32 @@ class NewgroundsClient
         switch (type)
         {
           case PASSPORT:
-            trace('[NEWGROUNDS] Login cancelled by passport website.');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login cancelled by passport website.');
           case MANUAL:
-            trace('[NEWGROUNDS] Login cancelled by application.');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login cancelled by application.');
           default:
-            trace('[NEWGROUNDS] Login cancelled by unknown source.');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login cancelled by unknown source.');
         }
       case ERROR(error):
         switch (error)
         {
           case HTTP(error):
-            trace('[NEWGROUNDS] Login failed due to HTTP error: ${error}');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login failed due to HTTP error: ${error}');
           case RESPONSE(error):
-            trace('[NEWGROUNDS] Login failed due to response error: ${error.message} (${error.code})');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login failed due to response error: ${error.message} (${error.code})');
           case RESULT(error):
-            trace('[NEWGROUNDS] Login failed due to result error: ${error.message} (${error.code})');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login failed due to result error: ${error.message} (${error.code})');
           default:
-            trace('[NEWGROUNDS] Login failed due to unknown error: ${error}');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login failed due to unknown error: ${error}');
         }
       default:
-        trace('[NEWGROUNDS] Login failed due to unknown reason.');
+        trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Login failed due to unknown reason.');
     }
   }
 
   function onLogoutSuccessful():Void
   {
-    trace('[NEWGROUNDS] Logout successful!');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Logout successful!');
   }
 
   function onLogoutFailed(result:CallError):Void
@@ -300,31 +300,31 @@ class NewgroundsClient
     switch (result)
     {
       case HTTP(error):
-        trace('[NEWGROUNDS] Logout failed due to HTTP error: ${error}');
+        trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Logout failed due to HTTP error: ${error}');
       case RESPONSE(error):
-        trace('[NEWGROUNDS] Logout failed due to response error: ${error.message} (${error.code})');
+        trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Logout failed due to response error: ${error.message} (${error.code})');
       case RESULT(error):
-        trace('[NEWGROUNDS] Logout failed due to result error: ${error.message} (${error.code})');
+        trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Logout failed due to result error: ${error.message} (${error.code})');
       default:
-        trace('[NEWGROUNDS] Logout failed due to unknown error: ${result}');
+        trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Logout failed due to unknown error: ${result}');
     }
   }
 
   function onFetchedMedals(outcome:Outcome<CallError>):Void
   {
-    trace('[NEWGROUNDS] Fetched medals!');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Fetched medals!');
   }
 
   function onFetchedLeaderboards(outcome:Outcome<CallError>):Void
   {
-    trace('[NEWGROUNDS] Fetched leaderboards!');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Fetched leaderboards!');
 
     // trace(funkin.api.newgrounds.Leaderboards.listLeaderboardData());
   }
 
   function onFetchedSaveSlots(outcome:Outcome<CallError>):Void
   {
-    trace('[NEWGROUNDS] Fetched save slots!');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Fetched save slots!');
 
     NGSaveSlot.instance.checkSlot();
   }

@@ -17,7 +17,7 @@ class Leaderboards
     var leaderboardList:Null<ScoreBoardList> = NewgroundsClient.instance.leaderboards;
     if (leaderboardList == null)
     {
-      trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
+      trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Not logged in, cannot fetch medal data!');
       return [];
     }
 
@@ -44,9 +44,9 @@ class Leaderboards
           switch (outcome)
           {
             case SUCCESS:
-              trace('[NEWGROUNDS] Submitted score!');
+              trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Submitted score!');
             case FAIL(error):
-              trace('[NEWGROUNDS] Failed to submit score!');
+              trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to submit score!');
               trace(error);
           }
         });
@@ -75,11 +75,11 @@ class Leaderboards
         switch (outcome)
         {
           case SUCCESS:
-            trace('[NEWGROUNDS] Fetched scores!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Fetched scores!');
             if (params != null && params.onComplete != null) params.onComplete(leaderboardData.scores);
 
           case FAIL(error):
-            trace('[NEWGROUNDS] Failed to fetch scores!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to fetch scores!');
             trace(error);
             if (params != null && params.onFail != null) params.onFail();
         }

@@ -244,7 +244,7 @@ class CharacterDataParser
         case CharacterRenderType.Packer:
           char = new PackerCharacter(charId);
         default:
-          trace('[WARN] Creating character with undefined renderType ${charData.renderType}');
+          trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Creating character with undefined renderType ${charData.renderType}');
           char = new BaseCharacter(charId, CharacterRenderType.Custom);
       }
     }
@@ -312,7 +312,7 @@ class CharacterDataParser
 
     if (!Assets.exists(Paths.image(charPath)))
     {
-      trace('[WARN] Character ${char} has no freeplay icon.');
+      trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Character ${char} has no freeplay icon.');
       return null;
     }
 
@@ -329,7 +329,7 @@ class CharacterDataParser
 
       if (idleFrame == null)
       {
-        trace('[WARN] Character ${char} has no idle in their freeplay icon.');
+        trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Character ${char} has no idle in their freeplay icon.');
         return null;
       }
 

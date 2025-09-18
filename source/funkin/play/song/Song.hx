@@ -154,7 +154,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         if (!validateVariationId(vari))
         {
-          trace('  [WARN] Variation id "$vari" is invalid, skipping...');
+          trace('  ${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Variation id "$vari" is invalid, skipping...');
           continue;
         }
 
@@ -174,7 +174,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     if (_metadata.size() == 0)
     {
-      trace('[WARN] Could not find song data for songId: $id');
+      trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not find song data for songId: $id');
       return;
     }
 

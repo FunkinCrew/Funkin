@@ -389,7 +389,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (level == null)
       {
-        trace('[WARN] Could not find level with id (${levelId})');
+        trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not find level with id (${levelId})');
         continue;
       }
 
@@ -399,7 +399,7 @@ class FreeplayState extends MusicBeatSubState
 
         if (song == null)
         {
-          trace('[WARN] Could not find song with id (${songId})');
+          trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not find song with id (${songId})');
           continue;
         }
 

@@ -446,7 +446,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
     if (!openfl.Assets.exists(entryFilePath))
     {
-      trace('  [WARN] Could not locate file $entryFilePath');
+      trace('  ${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not locate file $entryFilePath');
       return null;
     }
     var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
@@ -524,7 +524,7 @@ using funkin.data.song.migrator.SongDataMigrator;
 
     if (character == null)
     {
-      trace('  [WARN] Could not locate character $characterId');
+      trace('  ${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not locate character $characterId');
       return allDifficulties;
     }
 
@@ -542,7 +542,7 @@ using funkin.data.song.migrator.SongDataMigrator;
 
     if (allDifficulties.length == 0)
     {
-      trace('  [WARN] No difficulties found. Returning default difficulty list.');
+      trace('  ${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} No difficulties found. Returning default difficulty list.');
       allDifficulties = Constants.DEFAULT_DIFFICULTY_LIST.copy();
     }
 

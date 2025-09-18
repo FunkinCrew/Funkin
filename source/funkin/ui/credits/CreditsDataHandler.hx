@@ -1,6 +1,8 @@
 package funkin.ui.credits;
 
 import funkin.data.JsonFile;
+import funkin.util.AnsiUtil;
+import funkin.util.AnsiUtil.AnsiCode;
 
 using StringTools;
 
@@ -20,13 +22,13 @@ class CreditsDataHandler
   {
     if (data == null)
     {
-      Sys.println('[INFO] CreditsData(NULL)');
+      Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} CreditsData(NULL)');
       return;
     }
 
     if (data.entries == null || data.entries.length == 0)
     {
-      Sys.println('[INFO] CreditsData(EMPTY)');
+      Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} CreditsData(EMPTY)');
       return;
     }
 
@@ -37,7 +39,7 @@ class CreditsDataHandler
       lineCount += entry?.body?.length ?? 0;
     }
 
-    Sys.println('[INFO] CreditsData($entryCount entries containing $lineCount lines)');
+    Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} CreditsData($entryCount entries containing $lineCount lines)');
   }
   #end
 

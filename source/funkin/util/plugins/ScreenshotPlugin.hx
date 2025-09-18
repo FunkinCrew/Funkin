@@ -521,7 +521,7 @@ class ScreenshotPlugin extends FlxBasic
 
         if (pngData == null)
         {
-          trace('[WARN] Failed to encode PNG data');
+          trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Failed to encode PNG data');
           previousScreenshotName = null;
           // Just in case
           unsavedScreenshotBuffer.shift();
@@ -545,7 +545,7 @@ class ScreenshotPlugin extends FlxBasic
 
       if (pngData == null)
       {
-        trace('[WARN] Failed to encode PNG data');
+        trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Failed to encode PNG data');
         previousScreenshotName = null;
         return;
       }

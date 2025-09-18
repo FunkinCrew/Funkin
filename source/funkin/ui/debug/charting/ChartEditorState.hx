@@ -2823,7 +2823,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (notePreviewViewport == null)
     {
-      trace('[WARN] Tried to set note preview viewport bounds, but notePreviewViewport is null!');
+      trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Tried to set note preview viewport bounds, but notePreviewViewport is null!');
       return;
     }
 

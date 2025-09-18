@@ -33,7 +33,7 @@ class NGSaveSlot
 
   static function loadSlot(slot:Int):NGSaveSlot
   {
-    trace('[NEWGROUNDS] Getting save slot from ID $slot');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Getting save slot from ID $slot');
 
     var saveSlot:Null<SaveSlot> = NewgroundsClient.instance.saveSlots?.getById(slot);
 
@@ -67,16 +67,16 @@ class NGSaveSlot
         switch (outcome)
         {
           case SUCCESS:
-            trace('[NEWGROUNDS] Successfully saved save data to save slot!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Successfully saved save data to save slot!');
           case FAIL(error):
-            trace('[NEWGROUNDS] Failed to save data to save slot!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to save data to save slot!');
             trace(error);
         }
       });
     }
     catch (error:String)
     {
-      trace('[NEWGROUNDS] Failed to save data to save slot!');
+      trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to save data to save slot!');
       trace(error);
     }
   }
@@ -89,7 +89,7 @@ class NGSaveSlot
         switch (outcome)
         {
           case SUCCESS(value):
-            trace('[NEWGROUNDS] Loaded save slot with the ID of ${ngSaveSlot?.id}!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Loaded save slot with the ID of ${ngSaveSlot?.id}!');
             #if FEATURE_DEBUG_FUNCTIONS
             trace('Save Slot Data:');
             trace(value);
@@ -101,7 +101,7 @@ class NGSaveSlot
               onComplete(decodedData);
             }
           case FAIL(error):
-            trace('[NEWGROUNDS] Failed to load save slot with the ID of ${ngSaveSlot?.id}!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to load save slot with the ID of ${ngSaveSlot?.id}!');
             trace(error);
 
             if (onError != null)
@@ -113,7 +113,7 @@ class NGSaveSlot
     }
     catch (error:String)
     {
-      trace('[NEWGROUNDS] Failed to load save slot with the ID of ${ngSaveSlot?.id}!');
+      trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to load save slot with the ID of ${ngSaveSlot?.id}!');
       trace(error);
 
       if (onError != null)
@@ -131,23 +131,23 @@ class NGSaveSlot
         switch (outcome)
         {
           case SUCCESS:
-            trace('[NEWGROUNDS] Successfully cleared save slot!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Successfully cleared save slot!');
           case FAIL(error):
-            trace('[NEWGROUNDS] Failed to clear save slot!');
+            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to clear save slot!');
             trace(error);
         }
       });
     }
     catch (error:String)
     {
-      trace('[NEWGROUNDS] Failed to clear save slot!');
+      trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Failed to clear save slot!');
       trace(error);
     }
   }
 
   public function checkSlot():Void
   {
-    trace('[NEWGROUNDS] Checking save slot with the ID of ${ngSaveSlot?.id}...');
+    trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Checking save slot with the ID of ${ngSaveSlot?.id}...');
 
     trace('  Is null? ${ngSaveSlot == null}');
     trace('  Is empty? ${ngSaveSlot?.isEmpty() ?? false}');
