@@ -2,6 +2,8 @@ package source; // Yeah, I know...
 
 import sys.FileSystem;
 import sys.io.File;
+import tools.AnsiUtil;
+import tools.AnsiUtil.AnsiCode;
 
 using StringTools;
 
@@ -29,7 +31,7 @@ class Postbuild
 
       sys.FileSystem.deleteFile(BUILD_TIME_FILE);
 
-      Sys.println('[INFO] Build took: ${format(end - start)}');
+      Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} Build took: ${format(end - start)}');
     }
   }
 

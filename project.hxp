@@ -9,6 +9,8 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ds.Map;
 import haxe.xml.Printer;
+import tools.AnsiUtil;
+import tools.AnsiUtil.AnsiCode;
 
 using StringTools;
 
@@ -2034,7 +2036,7 @@ class Project extends HXProject
   }
 
   @SuppressWarnings('checkstyle:Dynamic')
-  static function checkLibraries():Void
+  function checkLibraries():Void
   {
     var outdatedLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
@@ -2077,9 +2079,9 @@ class Project extends HXProject
 
     if (Lambda.count(outdatedLibraries) > 0)
     {
-      Sys.println("\x1b[1;33m\nWARNING: The following haxelibs diverge from the versions set in hmm.json."
+      warn(AnsiUtil.apply("The following haxelibs diverge from the versions set in hmm.json."
         + "\n\nThey may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library."
-        + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n\x1b[0m");
+        + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n", [BOLD,YELLOW]));
 
       for (libraryName in outdatedLibraries.keys())
       {
@@ -2091,9 +2093,9 @@ class Project extends HXProject
 
         var isDev:Bool = outdatedVersion.contains("/");
 
-        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? "\x1b[1;34m (Development Build)\x1b[0m" : ""));
-        Sys.println("   \x1b[38;5;203mCurrent version: " + outdatedVersion + "\x1b[0m");
-        Sys.println("   \x1b[38;5;82mExpected version: " + expectedVersion + "\x1b[0m\n");
+        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? AnsiUtil.apply(" (Development Build)", [BLUE, BOLD]) : ""));
+        Sys.println(AnsiUtil.apply("   Current version: " + outdatedVersion, [RED]));
+        Sys.println(AnsiUtil.apply("   Expected version: " + expectedVersion, [GREEN]));
       }
     }
   }
@@ -2203,7 +2205,7 @@ class Project extends HXProject
    */
   public function error(message:String):Void
   {
-    Sys.stderr().write(Bytes.ofString('[ERROR] ${message}'));
+    Sys.stderr().write(Bytes.ofString('${AnsiUtil.apply(' ERROR ', [BOLD, BG_RED])} ${message}'));
     Sys.exit(1);
   }
 
@@ -2214,7 +2216,18 @@ class Project extends HXProject
   {
     if (!(isDisplay() || isClean()))
     {
-      Sys.println('[INFO] ${message}');
+      Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} ${message}');
+    }
+  }
+
+  /**
+   * Display a warning message. This should not interfere with the build process.
+   */
+  public function warn(message:String):Void
+  {
+    if (!(isDisplay() || isClean()))
+    {
+      Sys.println('${AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} ${message}');
     }
   }
 
@@ -2226,7 +2239,7 @@ class Project extends HXProject
   {
     if (!FileSystem.exists(file))
     {
-      info('Environment file does not exist: ${file}');
+      warn('Environment file does not exist: ${file}');
       return null;
     }
 
@@ -2234,7 +2247,7 @@ class Project extends HXProject
 
     if (envFile == null)
     {
-      info('Failed to parse environment file: ${file}');
+      warn('Failed to parse environment file: ${file}');
       return null;
     }
 
