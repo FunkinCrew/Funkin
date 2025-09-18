@@ -3582,8 +3582,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         var oldStepTime:Float = Conductor.instance.currentStepTime;
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
+
         Conductor.instance.update(audioInstTrack.time, false);
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+        handleSongPosition(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+        
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -3602,6 +3605,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
         Conductor.instance.update(audioInstTrack.time, false);
         handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+        handleSongPosition(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -6647,26 +6652,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
-   * Handle the playback of hitsounds.
+   * Handle the song's position events.
    */
-  function handleHitsounds(oldSongPosition:Float, newSongPosition:Float):Void
+  function handleSongPosition(oldSongPosition:Float, newSongPosition:Float):Void
   {
-    if (!hitsoundsEnabled) return;
-
-    // Assume notes are sorted by time.
     for (noteData in currentSongChartNoteData)
     {
-      // Check for notes between the old and new song positions.
-
       if (noteData.time < oldSongPosition) // Note is in the past.
         continue;
 
       if (noteData.time > newSongPosition) // Note is in the future.
         return; // Assume all notes are also in the future.
-
-      // Note was just hit.
-
-      // Character preview.
 
       // NoteScriptEvent takes a sprite, ehe. Need to rework that.
       var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
@@ -6675,17 +6671,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', false, 0);
       dispatchEvent(event);
 
-      // Calling event.cancelEvent() skips all the other logic! Neat!
       if (event.eventCanceled) continue;
 
-      // Hitsounds.
-      switch (noteData.getStrumlineIndex())
-      {
-        case 0: // Player
-          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
-        case 1: // Opponent
-          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
-      }
+      handleHitsounds(noteData?.getStrumlineIndex());
+    }
+  }
+
+  /**
+   * Handle the playback of hitsounds.
+   */
+  function handleHitsounds(strumIndex:Int):Void
+  {
+    if (!hitsoundsEnabled) return;
+
+    // Hitsounds.
+    switch (strumIndex)
+    {
+      case 0: // Player
+        if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
+      case 1: // Opponent
+        if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
     }
   }
 
