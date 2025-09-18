@@ -31,13 +31,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.7.4";
+  static final VERSION:String = "0.7.5";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 53;
+  static final BUILD_NUMBER:Int = 56;
 
   /**
    * The game's name. Used as the default window title.
