@@ -2635,6 +2635,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playheadBlock.y = -PLAYHEAD_HEIGHT / 2;
     gridPlayhead.add(playheadBlock);
 
+    openfl.utils.Assets.allowGPU = false;
     // Character icons.
     healthIconDad = new HealthIcon(currentSongMetadata.playData.characters.opponent);
     healthIconDad.autoUpdate = false;
@@ -2649,6 +2650,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(healthIconBF);
     healthIconBF.zIndex = 30;
 
+    openfl.utils.Assets.allowGPU = FunkinMemory.allowVRAMCaching;
     add(audioWaveforms);
   }
 
@@ -5671,6 +5673,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (healthIconsDirty)
     {
+      openfl.utils.Assets.allowGPU = false;
       var charDataBF = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.player);
       var charDataDad = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
       if (healthIconBF != null)
@@ -5695,6 +5698,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       healthIconsDirty = false;
     }
 
+    openfl.utils.Assets.allowGPU = FunkinMemory.allowVRAMCaching;
     // Right align, and visibly center, the BF health icon.
     if (healthIconBF != null)
     {
