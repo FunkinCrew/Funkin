@@ -113,7 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved properties support, behaving more like regular Haxe. (Thanks NotHyper-474!)
   - Fixed a null object reference when evaluating static variables with no explicit values. (Thanks NotHyper-474!)
   - Fixed a null object reference when iterating over a null variable. (Thanks NotHyper-474!)
-  - Scripts are now automatically cleared when Polymod is initialized. (Thanks KoloInDaKrib!)
+  - Scripts are now automatically cleared when Polymod is initialized. (Thanks KoloInDaCrib!)
 - Polished every chart in the game!
   - The lengths of hold notes have been adjusted to match the vocals as closely as possible, across all variations and difficulties.
   - Easy and Normal charts from Week 1 to Week 3 have been adjusted for more consistency between the player and opponent.
