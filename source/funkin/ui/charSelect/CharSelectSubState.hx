@@ -801,119 +801,12 @@ class CharSelectSubState extends MusicBeatSubState
 
     if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R #if FEATURE_TOUCH_CONTROLS || TouchUtil.justReleased #end)
       selectSound.pitch = 1;
-
+    
     syncAudio(elapsed);
 
     if (allowInput && !pressedSelect)
     {
-      #if FEATURE_TOUCH_CONTROLS
-      if (TouchUtil.pressed || TouchUtil.justReleased)
-      {
-        for (i => hitbox in grpHitboxes.members)
-        {
-          if (hitbox == null || !TouchUtil.overlaps(hitbox)) continue;
-
-          final indexCX:Int = (i % 3) - 1;
-          final indexCY:Int = Math.floor(i / 3) - 1;
-
-          if (indexCY != cursorY || indexCX != cursorX)
-          {
-            cursorX = indexCX;
-            cursorY = indexCY;
-            cursorDenied.visible = false;
-            selectSound.play(true);
-          }
-          else if (TouchUtil.justPressed)
-          {
-            mobileAccept = true;
-          }
-
-          trace("Index: " + i + ", Row: " + cursorY + ", Column: " + cursorX);
-          break;
-        }
-      }
-
-      if (TouchUtil.pressAction(charHitbox, null, false))
-      {
-        mobileAccept = true;
-      }
-      #end
-
-      //
-      if (controls.UI_UP) holdTmrUp += elapsed;
-      if (controls.UI_UP_R)
-      {
-        holdTmrUp = 0;
-        spamUp = false;
-      }
-
-      if (controls.UI_DOWN) holdTmrDown += elapsed;
-      if (controls.UI_DOWN_R)
-      {
-        holdTmrDown = 0;
-        spamDown = false;
-      }
-
-      if (controls.UI_LEFT) holdTmrLeft += elapsed;
-      if (controls.UI_LEFT_R)
-      {
-        holdTmrLeft = 0;
-        spamLeft = false;
-      }
-
-      if (controls.UI_RIGHT) holdTmrRight += elapsed;
-      if (controls.UI_RIGHT_R)
-      {
-        holdTmrRight = 0;
-        spamRight = false;
-      }
-
-      var initSpam = 0.5;
-
-      if (holdTmrUp >= initSpam) spamUp = true;
-      if (holdTmrDown >= initSpam) spamDown = true;
-      if (holdTmrLeft >= initSpam) spamLeft = true;
-      if (holdTmrRight >= initSpam) spamRight = true;
-
-      if (controls.UI_UP_P)
-      {
-        cursorY -= 1;
-        cursorDenied.visible = false;
-
-        holdTmrUp = 0;
-
-        selectSound.play(true);
-      }
-      if (controls.UI_DOWN_P)
-      {
-        cursorY += 1;
-        cursorDenied.visible = false;
-        holdTmrDown = 0;
-        selectSound.play(true);
-      }
-      if (controls.UI_LEFT_P)
-      {
-        cursorX -= 1;
-        cursorDenied.visible = false;
-
-        holdTmrLeft = 0;
-        selectSound.play(true);
-      }
-      if (controls.UI_RIGHT_P)
-      {
-        cursorX += 1;
-        cursorDenied.visible = false;
-        holdTmrRight = 0;
-        selectSound.play(true);
-      }
-
-      if (controls.BACK)
-      {
-        wentBackToFreeplay = true;
-        FunkinSound.playOnce(Paths.sound('cancelMenu'));
-        FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
-        goToFreeplay();
-      }
+      handleInputs(elapsed);
     }
 
     if (cursorX < -1)
@@ -1052,7 +945,119 @@ class CharSelectSubState extends MusicBeatSubState
     cursorDenied.x = cursor.x - 2;
     cursorDenied.y = cursor.y - 4;
   }
+  function handleInputs(elapsed:Float):Void
+  {
+    var upP:Bool = controls.UI_UP_P;
+    var downP:Bool = controls.UI_DOWN_P;
+    var leftP:Bool = controls.UI_LEFT_P;
+    var rightP:Bool = controls.UI_RIGHT_P;
 
+     #if FEATURE_TOUCH_CONTROLS
+      if (TouchUtil.pressed || TouchUtil.justReleased)
+      {
+        for (i => hitbox in grpHitboxes.members)
+        {
+          if (hitbox == null || !TouchUtil.overlaps(hitbox)) continue;
+
+          final indexCX:Int = (i % 3) - 1;
+          final indexCY:Int = Math.floor(i / 3) - 1;
+
+          if (indexCY != cursorY || indexCX != cursorX)
+          {
+            cursorX = indexCX;
+            cursorY = indexCY;
+            cursorDenied.visible = false;
+            selectSound.play(true);
+          }
+          else if (TouchUtil.justPressed)
+          {
+            mobileAccept = true;
+          }
+
+          trace("Index: " + i + ", Row: " + cursorY + ", Column: " + cursorX);
+          break;
+        }
+      }
+
+      if (TouchUtil.pressAction(charHitbox, null, false))
+      {
+        mobileAccept = true;
+      }
+      #end
+
+    if (controls.UI_UP) holdTmrUp += elapsed;
+      if (controls.UI_UP_R)
+      {
+
+        holdTmrUp = 0;
+        spamUp = false;
+      }
+
+      if (controls.UI_DOWN) holdTmrDown += elapsed;
+      if (controls.UI_DOWN_R)
+      {
+        holdTmrDown = 0;
+        spamDown = false;
+      }
+
+      if (controls.UI_LEFT) holdTmrLeft += elapsed;
+      if (leftP)
+      {
+
+        holdTmrLeft = 0;
+        spamLeft = false;
+      }
+
+      if (controls.UI_RIGHT) holdTmrRight += elapsed;
+      if (rightP)
+      {
+
+        holdTmrRight = 0;
+        spamRight = false;
+      }
+
+      var initSpam = 0.5;
+
+      if (holdTmrUp >= initSpam) spamUp = true;
+      if (holdTmrDown >= initSpam) spamDown = true;
+      if (holdTmrLeft >= initSpam) spamLeft = true;
+      if (holdTmrRight >= initSpam) spamRight = true;
+
+      if (upP)
+      {
+        cursorY -= 1;
+        cursorDenied.visible = false;
+
+        holdTmrUp = 0;
+
+        selectSound.play(true);
+      }
+      if (downP)
+      {
+
+        cursorY += 1;
+        cursorDenied.visible = false;
+        holdTmrDown = 0;
+        selectSound.play(true);
+      }
+      if (leftP)
+      {
+
+        cursorX -= 1;
+        cursorDenied.visible = false;
+
+        holdTmrLeft = 0;
+        selectSound.play(true);
+      }
+      if (rightP)
+      {
+
+        cursorX += 1;
+        cursorDenied.visible = false;
+        holdTmrRight = 0;
+        selectSound.play(true);
+      }
+  }
   var bopTimer:Float = 0;
   var delay = 1 / 24;
   var bopFr = 0;
