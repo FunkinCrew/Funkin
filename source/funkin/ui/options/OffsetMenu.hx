@@ -978,6 +978,15 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     return item;
   }
 
+  override function exit():Void
+  {
+    lerped = 0;
+    shouldOffset = 0;
+    offsetLerp = 0;
+    scaleModifier = 1;
+    super.exit();
+  }
+
   override public function destroy()
   {
     MenuTypedList.pauseInput = false;
