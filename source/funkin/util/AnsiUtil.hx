@@ -4,7 +4,6 @@ package funkin.util;
  * Enum abstract representing ANSI codes for text colors, background colors, and text styles.
  */
 // TODO: Add more colors maybe?
-// TODO: Make this work WITH AnsiTrace.
 
 enum abstract AnsiCode(String) from String to String
 {
@@ -34,6 +33,7 @@ enum abstract AnsiCode(String) from String to String
   var BG_MAGENTA = '\x1b[45m';
   var BG_CYAN = '\x1b[46m';
   var BG_WHITE = '\x1b[47m';
+  var BG_ORANGE = '\x1b[48;5;208m';
 
   var BRIGHT_BLACK = '\x1b[90m';
   var BRIGHT_RED = '\x1b[91m';
