@@ -78,7 +78,8 @@ class SetCameraBopSongEvent extends SongEvent
         min: 0,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
-        units: 'x'
+        units: 'x',
+        tooltip: "The multiplier intensity to bop the camera",
       },
       {
         name: 'offset',
@@ -95,7 +96,8 @@ class SetCameraBopSongEvent extends SongEvent
         min: 0,
         step: 1,
         type: SongEventFieldType.INTEGER,
-        units: 'beats/zoom'
+        units: 'beats/zoom',
+        tooltip: "The rate the camera will bop at",
       }
     ]);
   }
