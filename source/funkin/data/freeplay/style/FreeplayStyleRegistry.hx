@@ -4,11 +4,9 @@ import funkin.ui.freeplay.FreeplayStyle;
 import funkin.data.freeplay.style.FreeplayStyleData;
 import funkin.ui.freeplay.ScriptedFreeplayStyle;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleData, FreeplayStyleEntryParams> implements ISingleton
-    implements DefaultRegistryImpl
+class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleData, FreeplayStyleEntryParams, 'ui/freeplay/styles'> implements ISingleton
 {
   /**
    * The current version string for the style data format.
@@ -21,7 +19,7 @@ class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleDat
 
   public function new()
   {
-    super('FREEPLAYSTYLE', 'ui/freeplay/styles', FREEPLAYSTYLE_DATA_VERSION_RULE);
+    super('FREEPLAYSTYLE', FREEPLAYSTYLE_DATA_VERSION_RULE);
   }
 }
 
