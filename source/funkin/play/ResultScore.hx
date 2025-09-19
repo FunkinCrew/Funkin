@@ -6,6 +6,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 
+@:nullSafety
 class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 {
   public var scoreShit(default, set):Int = 0;
@@ -16,7 +17,9 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
   {
     if (group == null || group.members == null) return val;
     var loopNum:Int = group.members.length - 1;
-    var dumbNumb = Std.parseInt(Std.string(val));
+    var dumbNumbNullable:Null<Int> = Std.parseInt(Std.string(val));
+    if (dumbNumbNullable == null) return val;
+    var dumbNumb:Int = dumbNumbNullable;
     var prevNum:ScoreNum;
 
     dumbNumb = Std.int(Math.min(dumbNumb, Math.pow(10, group.members.length) - 1));
@@ -82,6 +85,7 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
   }
 }
 
+@:nullSafety
 class ScoreNum extends FlxSprite
 {
   public var digit(default, set):Int = 10;
@@ -138,8 +142,8 @@ class ScoreNum extends FlxSprite
     animation.play(numToString[digit], true, false, 0);
   }
 
-  public var shuffleTimer:FlxTimer;
-  public var finalTween:FlxTween;
+  public var shuffleTimer:Null<FlxTimer>;
+  public var finalTween:Null<FlxTween>;
   public var finalDelay:Float = 0;
 
   public var baseY:Float = 0;
