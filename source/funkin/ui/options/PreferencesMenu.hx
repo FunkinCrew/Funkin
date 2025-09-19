@@ -138,6 +138,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.hapticsIntensityMultiplier = value;
     }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
     #end
+
+    #if desktop
+    createPrefItemCheckbox('VRAM Caching', 'If enabled, most sprites will be loaded into VRAM.', function(value:Bool):Void {
+      Preferences.vramCaching = value;
+    }, Preferences.vramCaching);
+    #end
+
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;
