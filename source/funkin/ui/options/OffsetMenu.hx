@@ -294,6 +294,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     createButtonItem('Offset Calibration', function() {
       // Reset calibration state and start another one.
 
+      testStrumline.clean();
+      testStrumline.noteData = [];
+      testStrumline.nextNoteIndex = 0;
+
       @:privateAccess
       if (OptionsState.instance.optionsCodex.currentPage != this) return;
 
