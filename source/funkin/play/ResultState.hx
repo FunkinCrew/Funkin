@@ -848,12 +848,12 @@ class ResultState extends MusicBeatSubState
 
       if (params.storyMode)
       {
-        if (PlayerRegistry.instance.hasNewCharacter())
+        if (PlayerRegistry.instance.hasNewCharacterUnlock())
         {
           // New character, display the notif.
           targetState = new StoryMenuState(null);
 
-          var newCharacters = PlayerRegistry.instance.listNewCharacters();
+          var newCharacters = PlayerRegistry.instance.listNewCharacterUnlocks();
 
           for (charId in newCharacters)
           {
