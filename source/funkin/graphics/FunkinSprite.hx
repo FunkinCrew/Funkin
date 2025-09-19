@@ -80,7 +80,7 @@ class FunkinSprite extends FlxSprite
    * @param key The key of the texture to load.
    * @return This sprite, for chaining.
    */
-  public function loadTexture(key:String):FunkinSprite
+  public function loadTexture(key:Null<String>):FunkinSprite
   {
     var graphicKey:String = Paths.image(key);
     if (!isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
