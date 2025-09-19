@@ -34,7 +34,7 @@ class Preferences
   {
     #if desktop
     Save.instance.options.vramCaching = value;
-    openfl.utils.Assets.allowGPU = FunkinMemory.allowVRAMCaching = value;
+    openfl.utils.Assets.allowUncompressedTextures = FunkinMemory.allowVRAMCaching = value;
     Save.instance.flush();
     return value;
     #else
@@ -542,7 +542,7 @@ class Preferences
     #end
 
     #if desktop
-    openfl.utils.Assets.allowGPU = FunkinMemory.allowVRAMCaching = Preferences.vramCaching;
+    openfl.utils.Assets.allowUncompressedTextures = FunkinMemory.allowVRAMCaching = Preferences.vramCaching;
     #end
   }
 
