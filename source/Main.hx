@@ -19,6 +19,14 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.util.WindowUtil;
 
+// Enables FeralGamemode automatically on Linux
+#if linux
+@:cppInclude('./external/gamemode_client.h')
+@:cppFileCode('
+	#define GAMEMODE_AUTO
+')
+#end
+
 /**
  * The main class which initializes HaxeFlixel and starts the game in its initial state.
  */
