@@ -1,12 +1,14 @@
 package funkin.play.character;
 
 import flixel.math.FlxPoint;
+import funkin.audio.VoicesGroup.VoicesGroupEntry;
 import funkin.modding.events.ScriptEvent;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.Strumline;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -28,6 +30,17 @@ class BaseCharacter extends Bopper
   {
     return this.characterType = value;
   }
+
+  /**
+   * A list of strumlines that control this character.
+   * The strumlines must be of the same type as `characterType`.
+   */
+  public var strumlines:Array<Strumline>;
+
+  /**
+   * A list of voice groups that this strumline affects.
+   */
+  public var vocals:Array<Null<VoicesGroupEntry>>;
 
   /**
    * Tracks how long, in seconds, the character has been playing the current `sing` animation.
@@ -175,6 +188,9 @@ class BaseCharacter extends Bopper
     }
 
     shouldBop = false;
+
+    strumlines = [];
+    vocals = [];
   }
 
   public function getDeathCameraOffsets():Array<Float>
@@ -510,22 +526,19 @@ class BaseCharacter extends Bopper
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteHit(event:HitNoteScriptEvent)
+  public override function onNoteHit(event:HitNoteScriptEvent):Void
   {
     super.onNoteHit(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.note.noteData.getMustHitNote() && characterType == BF)
+    if (event.playAnim
+      && event.note.parentStrumline != null
+      && this.characterType == event.note.parentStrumline.characterType
+      && strumlines.contains(event.note.parentStrumline))
     {
-      // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
-      holdTimer = 0;
-    }
-    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
-    {
-      // If the note is from the same strumline, play the sing animation.
+      // If the strumline controls this character, play the sing animation.
       this.playSingAnimation(event.note.noteData.getDirection(), false);
       holdTimer = 0;
     }
@@ -545,21 +558,19 @@ class BaseCharacter extends Bopper
    * Every time a note is missed, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteMiss(event:NoteScriptEvent)
+  public override function onNoteMiss(event:NoteScriptEvent):Void
   {
     super.onNoteMiss(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.note.noteData.getMustHitNote() && characterType == BF)
+    if (event.playAnim
+      && event.note.parentStrumline != null
+      && this.characterType == event.note.parentStrumline.characterType
+      && strumlines.contains(event.note.parentStrumline))
     {
-      // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), true);
-    }
-    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
-    {
-      // If the note is from the same strumline, play the miss animation.
+      // If the strumline controls this character, play the miss animation.
       this.playSingAnimation(event.note.noteData.getDirection(), true);
     }
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
@@ -568,21 +579,19 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  public override function onNoteHoldDrop(event:HoldNoteScriptEvent):Void
   {
     super.onNoteHoldDrop(event);
 
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
 
-    if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
+    if (event.playAnim
+      && event.holdNote.parentStrumline != null
+      && this.characterType == event.holdNote.parentStrumline.characterType
+      && strumlines.contains(event.holdNote.parentStrumline))
     {
-      // If the note is from the same strumline, play the miss animation.
-      this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
-    }
-    else if (!event.holdNote.noteData.getMustHitNote() && characterType == DAD)
-    {
-      // If the note is from the same strumline, play the miss animation.
+      // If the strumline controls this character, play the miss animation.
       this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
     }
     else if (event.holdNote.noteData.getMustHitNote() && event.isComboBreak && characterType == GF)
@@ -636,9 +645,9 @@ class BaseCharacter extends Bopper
       return;
     }
 
-    if (characterType == BF)
+    if (event.strumline != null && this.characterType == event.strumline.characterType && strumlines.contains(event.strumline))
     {
-      // If the note is from the same strumline, play the sing animation.
+      // If the strumline controls this character, play the miss animation.
       // trace('Playing ghost miss animation...');
       this.playSingAnimation(event.dir, true);
     }

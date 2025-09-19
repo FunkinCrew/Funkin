@@ -14,6 +14,7 @@ import funkin.input.PreciseInputManager;
 import funkin.audio.FunkinSound;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.NoteSprite;
+import funkin.play.notes.NoteVibrationsHandler;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.data.song.SongData.SongNoteData;
@@ -244,6 +245,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     testStrumline.conductorInUse = localConductor;
     testStrumline.zIndex = 1001;
+    NoteVibrationsHandler.instance.strumlines.push(testStrumline);
     for (strum in testStrumline)
     {
       strum.alpha = 0;
@@ -428,8 +430,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   /**
-   * Callback executed when one of the note keys is pressed.
-   */
+     * Callback executed when one of the note keys is pressed.
+     */
   function onKeyPress(event:PreciseInputEvent):Void
   {
     // Do the minimal possible work here.
@@ -437,8 +439,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   /**
-   * Callback executed when one of the note keys is released.
-   */
+     * Callback executed when one of the note keys is released.
+     */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
     // Do the minimal possible work here.
@@ -514,11 +516,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   var _lastDirection:Int = 0;
 
   /* Adds a difference in milliseconds to the list.
-    If there are more than 4 differences, it calculates the average and sets the global offset.
-    This is used for calibrating the offset based on user input.
-    @param ms The difference in milliseconds to add.
-    @see Preferences.globalOffset
-   */
+      If there are more than 4 differences, it calculates the average and sets the global offset.
+      This is used for calibrating the offset based on user input.
+      @param ms The difference in milliseconds to add.
+      @see Preferences.globalOffset
+     */
   public function addDifference(ms:Float):Void
   {
     differences.push(ms);
@@ -841,9 +843,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
 
     /*debugBeatText.x = receptor.x + receptor.width * 2;
-      debugBeatText.y = receptor.y - 20;
-
-          debugBeatText.text = 'Beat: ' + b; */
+        debugBeatText.y = receptor.y - 20;
+  
+            debugBeatText.text = 'Beat: ' + b; */
 
     // receptor.angle += angleVel * elapsed;
 
@@ -904,9 +906,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   /**
-   * PreciseInputEvents are put into a queue between update() calls,
-   * and then processed here.
-   */
+     * PreciseInputEvents are put into a queue between update() calls,
+     * and then processed here.
+     */
   function processInputQueue():Void
   {
     if (inputPressQueue.length + inputReleaseQueue.length == 0 || shouldOffset != 1) return;
@@ -957,7 +959,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.releaseKey(input.noteDirection);
     }
 
-    testStrumline.noteVibrations.tryNoteVibration();
+    NoteVibrationsHandler.instance.tryNoteVibration();
   }
 
   // Creates a button item with a callback.
@@ -982,6 +984,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   {
     MenuTypedList.pauseInput = false;
     exitCalibration(true);
+    NoteVibrationsHandler.instance.strumlines.remove(testStrumline);
     super.destroy();
   }
 }

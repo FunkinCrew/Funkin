@@ -8,13 +8,18 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
+import funkin.audio.VoicesGroup.VoicesGroupEntry;
 import funkin.graphics.FunkinSprite;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.notes.NoteHoldCover;
 import funkin.play.notes.NoteSplash;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.SustainTrail;
 import funkin.play.notes.NoteVibrationsHandler;
+import funkin.play.notes.NoteVibrationsHandler.NoteStatus;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.input.PreciseInputManager;
 import funkin.util.SortUtil;
 import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKind;
@@ -92,7 +97,9 @@ class Strumline extends FlxSpriteGroup
    */
   public var conductorInUse(get, set):Conductor;
 
-  // Used in-game to control the scroll speed within a song
+  /**
+   * Used in-game to control the scroll speed within a song.
+   */
   public var scrollSpeed:Float = 1.0;
 
   /**
@@ -140,13 +147,50 @@ class Strumline extends FlxSpriteGroup
    */
   public var onNoteIncoming:FlxTypedSignal<NoteSprite->Void>;
 
+  /**
+   * The type of character that this strumline controls.
+   */
+  public var characterType:CharacterType;
+
+  /**
+   * Whether or not this strumline is able to be used.
+   * Different from `PlayState.instance.disableKeys` in that this only applies to this strumline.
+   * This will also work if this strumline is controlled by a bot.
+   */
+  public var disableInput(default, set):Bool = false;
+
+  function set_disableInput(value:Bool):Bool
+  {
+    disableInput = value;
+    // For every strumline note that is currently pressed, tell the game it was released.
+    if (value && canMiss) for (i in 0...strumlineNotes.members.length)
+    {
+      if (isKeyHeld(i))
+      {
+        var note:StrumlineNote = strumlineNotes.members[i];
+        releaseKey(note.direction);
+        playStatic(note.direction);
+      }
+    }
+    return value;
+  }
+
+  /**
+   * Whether or not notes on this strumline will be counted as missed.
+   * Disabled for bots so that they don't miss during a lag spike.
+   * Feel free to temporarily set this to `false` to re-enable functionality for missing.
+   */
+  public var canMiss:Bool = true;
+
   var background:FunkinSprite;
 
   /**
    * The strumline notes (the receptors) themselves.
    */
   public var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
+
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
+
   /**
    * Hold note covers.
    */
@@ -165,9 +209,33 @@ class Strumline extends FlxSpriteGroup
   var ghostTapTimer:Float = 0.0;
   #end
 
-  public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
+  /**
+   * The `NoteVibrationsHandler` reading from all the strumlines.
+   */
+  public var noteVibrations(get, set):Null<NoteVibrationsHandler>;
 
-  final inArrowContorlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+  function get_noteVibrations():Null<NoteVibrationsHandler>
+  {
+    return NoteVibrationsHandler.instance;
+  }
+
+  function set_noteVibrations(value:Null<NoteVibrationsHandler>):Null<NoteVibrationsHandler>
+  {
+    return NoteVibrationsHandler.instance = value;
+  }
+
+  /**
+   * An array of each note status.
+   * Made for use with `NoteVibrationsHandler`.
+   */
+  public var noteStatuses:Array<NoteStatus> = [];
+
+  /**
+   * Whether or not this strumline has haptic feedback.
+   */
+  public var hasVibrations:Bool = false;
+
+  final inArrowControlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice) #else false #end;
 
   public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
@@ -191,16 +259,24 @@ class Strumline extends FlxSpriteGroup
 
   static final BACKGROUND_PAD:Int = 16;
 
+  /**
+   * Create a new strumline.
+   * If you want to add notes from a chart, use `PlayState.instance.regenNoteData()`.
+   * @param noteStyle The note style to use when creating sprites.
+   * @param isPlayer Whether or not this strumline is controlled by the player's inputs. Should be `false` for bots.
+   * @param scrollSpeed The speed that the notes will scroll at. Defaults to the current chart's scroll speed.
+   */
   public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float)
   {
     super();
 
-    this.isPlayer = isPlayer;
     this.noteStyle = noteStyle;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
     this.strumlineNotes.zIndex = 10;
     this.add(this.strumlineNotes);
+
+    this.isPlayer = isPlayer;
 
     // Hold notes are added first so they render behind regular notes.
     this.holdNotes = new FlxTypedSpriteGroup<SustainTrail>();
@@ -229,7 +305,7 @@ class Strumline extends FlxSpriteGroup
 
     var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer)
+    if (inArrowControlSchemeMode && isPlayer)
     {
       backgroundWidth = backgroundWidth * 1.84;
     }
@@ -240,7 +316,7 @@ class Strumline extends FlxSpriteGroup
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer) this.background.x -= 100;
+    if (inArrowControlSchemeMode && isPlayer) this.background.x -= 100;
     #end
     this.add(this.background);
 
@@ -253,23 +329,34 @@ class Strumline extends FlxSpriteGroup
 
     for (i in 0...KEY_COUNT)
     {
-      var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
+      var child:StrumlineNote = new StrumlineNote(noteStyle, DIRECTIONS[i]);
+      child.parentStrumline = this;
       child.x = getXPos(DIRECTIONS[i]);
       child.x += INITIAL_OFFSET;
       child.y = 0;
       noteStyle.applyStrumlineOffsets(child);
       this.strumlineNotes.add(child);
-    }
 
-    for (i in 0...KEY_COUNT)
-    {
       heldKeys.push(false);
+
+      noteStatuses.push(NoteStatus.idle);
     }
 
     strumlineScale.set(1, 1);
 
     // This MUST be true for children to update!
     this.active = true;
+
+    if (PlayState.instance != null) @:privateAccess onNoteIncoming.add(PlayState.instance.onStrumlineNoteIncoming);
+
+    NoteVibrationsHandler.instance.strumlines.push(this);
+    if (isPlayer) hasVibrations = true;
+
+    canMiss = isPlayer;
+
+    if (isPlayer) characterType = CharacterType.BF;
+    else
+      characterType = CharacterType.DAD;
   }
 
   override function set_y(value:Float):Float
@@ -343,6 +430,21 @@ class Strumline extends FlxSpriteGroup
   #end
 
   /**
+   * Creates an array of all characters this strumline controls.
+   * @return An array of `BaseCharacter`s.
+   */
+  public function getControlledCharacters():Array<BaseCharacter>
+  {
+    if (PlayState.instance?.currentStage == null) return [];
+
+    var characters:Array<BaseCharacter> = [];
+    @:privateAccess
+    for (character in PlayState.instance.currentStage.characters.iterator())
+      if (character.strumlines.contains(this)) characters.push(character);
+    return characters;
+  }
+
+  /**
    * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
    * @return An array of `NoteSprite` objects.
    */
@@ -361,6 +463,18 @@ class Strumline extends FlxSpriteGroup
   {
     return holdNotes.members.filter(function(holdNote:SustainTrail) {
       return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
+    });
+  }
+
+  /**
+   * Return hold notes that are being held in the given direction.
+   * @param direction The direction of hold notes to return.
+   * @return An array of `SustainTrail` objects.
+   */
+  public function getHoldNotesBeingHeld(direction:NoteDirection):Array<SustainTrail>
+  {
+    return holdNotes.members.filter(function(holdNote:SustainTrail) {
+      return holdNote != null && holdNote.alive && holdNote.hitNote && holdNote.noteDirection == direction;
     });
   }
 
@@ -610,13 +724,16 @@ class Strumline extends FlxSpriteGroup
 
       if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote && !holdNote.missedNote)
       {
-        if (isPlayer && !isKeyHeld(holdNote.noteDirection))
+        if (!isKeyHeld(holdNote.noteDirection))
         {
           // Stopped pressing the hold note.
-          playStatic(holdNote.noteDirection);
-          holdNote.missedNote = true;
+          if (!isPlayer || isLaneDisabled(holdNote.noteDirection)) playStatic(holdNote.noteDirection);
           holdNote.visible = true;
-          holdNote.alpha = 0.0; // Completely hide the dropped hold note.
+          if (canMiss)
+          {
+            holdNote.missedNote = true;
+            holdNote.alpha = 0.0; // Completely hide the dropped hold note.
+          }
         }
       }
 
@@ -631,18 +748,18 @@ class Strumline extends FlxSpriteGroup
       }
       else if (holdNote.hitNote && holdNote.sustainLength <= 0)
       {
-        if (isPlayer)
+        // Hold note is completed, kill it.
+        if (hasVibrations && noteVibrations != null)
         {
           // Hold note's final vibration.
-          noteVibrations.tryHoldNoteVibration(true);
+          noteVibrations.tryHoldNoteVibration(holdNote.noteDirection);
         }
 
-        // Hold note is completed, kill it.
-        if (isKeyHeld(holdNote.noteDirection))
+        if (isKeyHeld(holdNote.noteDirection) && !isLaneDisabled(holdNote.noteDirection))
         {
           playPress(holdNote.noteDirection);
         }
-        else
+        else if (!isPlayer || isLaneDisabled(holdNote.noteDirection))
         {
           playStatic(holdNote.noteDirection);
         }
@@ -752,13 +869,13 @@ class Strumline extends FlxSpriteGroup
 
     for (dir in DIRECTIONS)
     {
-      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
+      if (isKeyHeld(dir) && !isLaneDisabled(dir) && getByDirection(dir).getCurrentAnimation() == "static")
       {
         playPress(dir);
       }
 
       // Added this to prevent sustained vibrations not ending issue.
-      if (!isKeyHeld(dir) && isPlayer) noteVibrations.noteStatuses[dir] = NoteStatus.idle;
+      if (!isKeyHeld(dir) && hasVibrations) noteStatuses[dir] = NoteStatus.idle;
     }
   }
 
@@ -869,7 +986,11 @@ class Strumline extends FlxSpriteGroup
       cover.kill();
     }
 
-    heldKeys = [false, false, false, false];
+    heldKeys = [];
+    for (_ in 0...KEY_COUNT)
+    {
+      heldKeys.push(false);
+    }
 
     for (dir in DIRECTIONS)
     {
@@ -924,7 +1045,7 @@ class Strumline extends FlxSpriteGroup
 
     if (removeNote)
     {
-      killNote(note);
+      killNote(note, false);
     }
     else
     {
@@ -948,14 +1069,15 @@ class Strumline extends FlxSpriteGroup
   /**
    * Kill a note heading towards the strumline.
    * @param note The note to kill. Gets recycled and reused for performance.
+   * @param removeSustain Whether or not to remove the sustain trail if `note` is a hold note.
    */
-  public function killNote(note:NoteSprite):Void
+  public function killNote(note:NoteSprite, removeSustain:Bool = true):Void
   {
     if (note == null) return;
     note.visible = false;
     note.kill();
 
-    if (note.holdNoteSprite != null)
+    if (note.holdNoteSprite != null && removeSustain)
     {
       note.holdNoteSprite.missedNote = true;
       note.holdNoteSprite.visible = false;
@@ -990,7 +1112,7 @@ class Strumline extends FlxSpriteGroup
   {
     getByDirection(direction).playStatic();
 
-    if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.idle;
+    if (hasVibrations) noteStatuses[direction] = NoteStatus.idle;
   }
 
   /**
@@ -1001,7 +1123,7 @@ class Strumline extends FlxSpriteGroup
   {
     getByDirection(direction).playPress();
 
-    if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.pressed;
+    if (hasVibrations) noteStatuses[direction] = NoteStatus.pressed;
   }
 
   /**
@@ -1012,7 +1134,7 @@ class Strumline extends FlxSpriteGroup
   {
     getByDirection(direction).playConfirm();
 
-    if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.confirm;
+    if (hasVibrations) noteStatuses[direction] = NoteStatus.confirm;
   }
 
   /**
@@ -1023,7 +1145,7 @@ class Strumline extends FlxSpriteGroup
   {
     getByDirection(direction).holdConfirm();
 
-    if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.holdConfirm;
+    if (hasVibrations) noteStatuses[direction] = NoteStatus.holdConfirm;
   }
 
   /**
@@ -1034,6 +1156,16 @@ class Strumline extends FlxSpriteGroup
   public function isConfirm(direction:NoteDirection):Bool
   {
     return getByDirection(direction).isConfirm();
+  }
+
+  /**
+   * Check if a given direction is disabled, meaning it is unable to be pressed.
+   * @param direction The direction of the note to check.
+   * @return `true` if the direction is disabled, `false` otherwise.
+   */
+  public function isLaneDisabled(direction:NoteDirection):Bool
+  {
+    return disableInput || getByDirection(direction).disableInput;
   }
 
   /**
@@ -1113,7 +1245,7 @@ class Strumline extends FlxSpriteGroup
 
       var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
       #if mobile
-      if (inArrowContorlSchemeMode)
+      if (inArrowControlSchemeMode)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
@@ -1264,6 +1396,7 @@ class Strumline extends FlxSpriteGroup
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
       result = new NoteSprite(noteStyle);
+      result.parentStrumline = this;
       this.notes.add(result);
     }
 
@@ -1300,7 +1433,7 @@ class Strumline extends FlxSpriteGroup
   {
     var pos:Float = 0;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+    if (inArrowControlSchemeMode && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
     #end
     return switch (direction)
     {
@@ -1325,9 +1458,11 @@ class Strumline extends FlxSpriteGroup
    */
   function fadeInArrow(index:Int, arrow:StrumlineNote):Void
   {
+    arrow.fadeTargetY = arrow.y; // The arrow returns to its usual position.
+    arrow.fadeTargetAlpha = 1.0;
     arrow.y -= 10;
     arrow.alpha = 0.0;
-    FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
+    arrow.fadeTween = FlxTween.tween(arrow, {y: arrow.fadeTargetY, alpha: arrow.fadeTargetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
   }
 
   /**
@@ -1339,7 +1474,22 @@ class Strumline extends FlxSpriteGroup
    */
   public function fadeOutArrow(index:Int, arrow:StrumlineNote):Void
   {
-    FlxTween.tween(arrow, {y: arrow.y - 10, alpha: 0}, 0.5, {ease: FlxEase.circIn});
+    arrow.fadeTargetY = arrow.y - 10;
+    arrow.fadeTargetAlpha = 0.0;
+    arrow.fadeTween = FlxTween.tween(arrow, {y: arrow.fadeTargetY, alpha: arrow.fadeTargetAlpha}, 0.5, {ease: FlxEase.circIn});
+  }
+
+  /**
+   * Immediately finish an arrow's fade tween found in Freeplay mode.
+   * Useful for scripts that set individual arrow positions.
+   *
+   * @param arrow The arrow to skip the tween of.
+   */
+  public function skipFadingArrow(arrow:StrumlineNote):Void
+  {
+    if (arrow.fadeTween != null) arrow.fadeTween.cancel();
+    arrow.y = arrow.fadeTargetY;
+    arrow.alpha = arrow.fadeTargetAlpha;
   }
 
   /**
@@ -1363,6 +1513,18 @@ class Strumline extends FlxSpriteGroup
     for (index => arrow in this.strumlineNotes.members.keyValueIterator())
     {
       fadeOutArrow(index, arrow);
+    }
+  }
+
+  /**
+   * Immediately finish the arrows' fade tweens found in Freeplay mode.
+   * Useful for scripts that set individual arrow positions.
+   */
+  public function skipFadingArrows():Void
+  {
+    for (arrow in this.strumlineNotes.members)
+    {
+      skipFadingArrow(arrow);
     }
   }
 
