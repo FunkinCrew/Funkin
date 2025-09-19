@@ -948,10 +948,10 @@ class Project extends HXProject
 
     setHaxedef("safeMode");
 
-    // If we aren't using the Flixel debugger, strip it out.
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
     {
-      setHaxedef("FLX_NO_DEBUG");
+      setHaxedef("FLX_NO_DEBUG"); // If we aren't using the Flixel debugger, strip it out.
+      setHaxedef("analyzer-optimize"); // Optimize haxe code when not in debug to improve performance.
     }
 
     if (FEATURE_LOG_TRACE.isDisabled(this))
