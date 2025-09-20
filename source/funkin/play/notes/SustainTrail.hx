@@ -414,6 +414,7 @@ class SustainTrail extends FlxSprite
     sustainLength = 0;
     fullSustainLength = 0;
     noteData = null;
+    if (!((cover?.animation?.name ?? "").startsWith("holdCoverEnd"))) cover?.playEnd();
 
     hitNote = false;
     missedNote = false;
