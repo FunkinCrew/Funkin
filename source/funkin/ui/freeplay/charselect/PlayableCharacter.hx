@@ -79,6 +79,11 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     return _data?.freeplayStyle ?? Constants.DEFAULT_FREEPLAY_STYLE;
   }
 
+  public function getFreeplayRandomTheme():String
+  {
+    return _data?.freeplayDJ?.freeplayRandomTheme ?? Constants.DEFAULT_FREEPLAY_RANDOM_THEME;
+  }
+
   public function getFreeplayDJData():Null<PlayerFreeplayDJData>
   {
     return _data?.freeplayDJ;
@@ -88,6 +93,11 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
   {
     // Silly little placeholder
     return _data?.freeplayDJ?.getFreeplayDJText(index) ?? 'GET FREAKY ON A FRIDAY';
+  }
+
+  public function getCharSelectTheme():String
+  {
+    return _data?.charSelect?.charSelectTheme ?? Constants.DEFAULT_CHAR_SELECT_THEME;
   }
 
   public function getCharSelectData():Null<PlayerCharSelectData>

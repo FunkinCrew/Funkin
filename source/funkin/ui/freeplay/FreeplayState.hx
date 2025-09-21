@@ -2255,7 +2255,7 @@ class FreeplayState extends MusicBeatSubState
       FlxTransitionableState.skipNextTransOut = true;
       if (Type.getClass(_parentState) == MainMenuState)
       {
-        FunkinSound.playMusic('freakyMenu',
+        FunkinSound.playMusic(Constants.DEFAULT_GAME_THEME,
           {
             overrideExisting: true,
             restartTrack: false,
@@ -2944,12 +2944,11 @@ class FreeplayState extends MusicBeatSubState
 
     if (curSelected == 0)
     {
-      FunkinSound.playMusic('freeplayRandom',
-        {
-          startingVolume: 0.0,
-          overrideExisting: true,
-          restartTrack: false
-        });
+      FunkinSound.playMusic(currentCharacter?.getFreeplayRandomTheme() ?? Constants.DEFAULT_FREEPLAY_RANDOM_THEME, {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: false
+      });
       FlxG.sound.music.fadeIn(2, 0, previewVolume);
     }
     else

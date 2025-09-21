@@ -197,6 +197,11 @@ class Constants
   public static final DEFAULT_CHARACTER:String = 'bf';
 
   /**
+   * The default theme, that plays in Character Select.
+   */
+  public static final DEFAULT_CHAR_SELECT_THEME:String = 'stayFunky';
+
+  /**
    * Default player character for health icons.
    */
   public static final DEFAULT_HEALTH_ICON:String = 'face';
@@ -243,6 +248,11 @@ class Constants
   public static final DEFAULT_ZOOM_OFFSET:Int = 0;
 
   /**
+   * The default game music theme.
+   */
+  public static final DEFAULT_GAME_THEME:String = "freakyMenu";
+
+  /**
    * The default BPM for charts, so things don't break if none is specified.
    */
   public static final DEFAULT_BPM:Float = 100.0;
@@ -271,6 +281,11 @@ class Constants
    * The default freeplay style for characters.
    */
   public static final DEFAULT_FREEPLAY_STYLE:String = 'bf';
+
+  /**
+   * The default random capsule theme in freeplay.
+   */
+  public static final DEFAULT_FREEPLAY_RANDOM_THEME:String = 'freeplayRandom';
 
   /**
    * The default pixel note style for songs.

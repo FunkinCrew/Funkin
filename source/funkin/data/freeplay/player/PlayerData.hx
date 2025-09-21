@@ -103,6 +103,13 @@ class PlayerFreeplayDJData
   var assetPath:String;
   var animations:Array<AnimationData>;
 
+  /**
+   * Music, that will play, when you select Random! capsule in freeplay.
+   */
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_FREEPLAY_RANDOM_THEME)
+  public var freeplayRandomTheme:String = Constants.DEFAULT_FREEPLAY_RANDOM_THEME;
+
   @:optional
   @:default(false)
   var applyStageMatrix:Bool;
@@ -283,6 +290,10 @@ class PlayerFreeplayDJData
 
 class PlayerCharSelectData
 {
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_CHAR_SELECT_THEME)
+  public var charSelectTheme:String = Constants.DEFAULT_CHAR_SELECT_THEME;
+
   /**
    * A zero-indexed number for the character's preferred position in the grid.
    * 0 = top left, 4 = center, 8 = bottom right
