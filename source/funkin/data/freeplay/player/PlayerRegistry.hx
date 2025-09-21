@@ -5,10 +5,9 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
 import funkin.save.Save;
 import funkin.util.tools.ISingleton;
-import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerEntryParams> implements ISingleton implements DefaultRegistryImpl
+class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerEntryParams, 'players'> implements ISingleton
 {
   /**
    * The current version string for the stage data format.
@@ -26,7 +25,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
 
   public function new()
   {
-    super('PLAYER', 'players', PLAYER_DATA_VERSION_RULE);
+    super('PLAYER', PLAYER_DATA_VERSION_RULE);
   }
 
   public override function loadEntries():Void
