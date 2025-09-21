@@ -1373,7 +1373,15 @@ class Project extends HXProject
   {
     if (envConfig == null) return;
 
-    setenv("ADMOB_APPID", Std.string(envConfig.get('ADMOB_APP_ID')));
+    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this)) {
+      var appId:Null<String> = Std.string(envConfig.get('ADMOB_APP_ID'));
+
+      if (appId != null && appId != "null") {
+        setenv("ADMOB_APPID", appId);
+      } else {
+        error("ADMOB_APP_ID is not defined in the environment. Populate the .env file in your project root or build with -DNO_FEATURE_MOBILE_ADVERTISEMENTS");
+      }
+    }
   }
 
   //
