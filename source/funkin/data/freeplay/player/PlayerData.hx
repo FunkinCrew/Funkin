@@ -31,6 +31,10 @@ class PlayerData
   @:default(false)
   public var showUnownedChars:Bool = false;
 
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_GAME_THEME)
+  public var gameTheme:String = Constants.DEFAULT_FREEPLAY_RANDOM_THEME;
+
   /**
    * The default sticker pack to use for songs featuring this playable character.
    * Can be overridden by specific songs.
@@ -48,6 +52,13 @@ class PlayerData
   public var freeplayStyle:String = Constants.DEFAULT_FREEPLAY_STYLE;
 
   /**
+   * Music, that will play, when you select Random! capsule in freeplay.
+   */
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_FREEPLAY_RANDOM_THEME)
+  public var freeplayRandomTheme:String = Constants.DEFAULT_FREEPLAY_RANDOM_THEME;
+
+  /**
    * Data for displaying this character in the Freeplay menu.
    * If null, display no DJ.
    */
@@ -60,6 +71,10 @@ class PlayerData
    */
   @:optional
   public var charSelect:Null<PlayerCharSelectData> = null;
+
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_CHAR_SELECT_THEME)
+  public var charSelectTheme:String = Constants.DEFAULT_CHAR_SELECT_THEME;
 
   /**
    * Data for displaying this character in the results screen.

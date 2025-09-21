@@ -19,6 +19,20 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
 
   public static final PLAYER_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
+  public static var lastPlayedCharacter(get, never):Null<PlayableCharacter>;
+
+  static function get_lastPlayedCharacter():Null<PlayableCharacter>
+  {
+    return PlayerRegistry.instance.fetchEntry(getLastPlayerCharacterID());
+  }
+
+  public static function getLastPlayerCharacterID():String
+  {
+    final playersListIDs:Array<String> = PlayerRegistry.instance.listEntryIds();
+    final lastPlayerID:String = Save.instance.lastPlayedCharacter;
+    return (playersListIDs.contains(lastPlayerID) ? lastPlayerID : Constants.DEFAULT_CHARACTER);
+  }
+
   /**
    * A mapping between stage character IDs and Freeplay playable character IDs.
    */
@@ -145,6 +159,11 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
     #else
     return Save.instance.charactersSeen.contains(characterId);
     #end
+  }
+
+  public static function getGameTheme():String
+  {
+    return lastPlayedCharacter?.getGameTheme() ?? Constants.DEFAULT_GAME_THEME;
   }
 }
 

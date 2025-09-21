@@ -87,7 +87,7 @@ class FunkinMemory
     permanentCacheSound(Paths.sound("soundtray/Voldown"));
     permanentCacheSound(Paths.sound("soundtray/VolMAX"));
     permanentCacheSound(Paths.sound("soundtray/Volup"));
-    permanentCacheSound(Paths.music("freakyMenu/freakyMenu"));
+    permanentCacheSound(Paths.music(Constants.DEFAULT_GAME_THEME + "/" + Constants.DEFAULT_GAME_THEME));
     permanentCacheSound(Paths.music("offsetsLoop/offsetsLoop"));
     permanentCacheSound(Paths.music("offsetsLoop/drumsLoop"));
     permanentCacheSound(Paths.sound("missnote1", "shared"));
@@ -382,7 +382,7 @@ class FunkinMemory
     Assets.cache.clear("songs");
     Assets.cache.clear("music");
     // Felt lazy.
-    var key = Paths.music("freakyMenu/freakyMenu");
+    var key = Paths.music(Constants.DEFAULT_GAME_THEME + "/" + Constants.DEFAULT_GAME_THEME);
     var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound != null)
     {

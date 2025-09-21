@@ -279,6 +279,8 @@ class InitState extends FlxState
     // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
     funkin.FunkinMemory.initialCache();
     #end
+
+    funkin.ui.freeplay.FreeplayState.rememberedCharacterId = funkin.data.freeplay.player.PlayerRegistry.getLastPlayerCharacterID();
   }
 
   /**

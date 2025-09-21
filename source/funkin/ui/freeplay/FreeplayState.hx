@@ -213,7 +213,8 @@ class FreeplayState extends MusicBeatSubState
   /**
    * The character we were on when this menu was last accessed.
    */
-  public static var rememberedCharacterId:String = Constants.DEFAULT_CHARACTER;
+  // todo: move this this into PlayerRegistry
+  public static var rememberedCharacterId:String = Constants.DEFAULT_CHARACTER; // Save.instance.lastPlayedCharacter; // lastPlayedCharacter
 
   /**
    * The remembered variation we were on when this menu was last accessed.
@@ -331,6 +332,8 @@ class FreeplayState extends MusicBeatSubState
     // TODO: refactor DifficultySelector to *not* use `this` as input? Handle it's animations and style data in different manner
     diffSelLeft = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData);
     diffSelRight = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 325, grpDifficulties.y - 10, true, controls, styleData);
+
+    trace(Save.instance.lastPlayedCharacter);
   }
 
   override function create():Void
@@ -2166,7 +2169,7 @@ class FreeplayState extends MusicBeatSubState
       FlxTransitionableState.skipNextTransOut = true;
       if (Type.getClass(_parentState) == MainMenuState)
       {
-        FunkinSound.playMusic('freakyMenu',
+        FunkinSound.playMusic(PlayerRegistry.getGameTheme(),
           {
             overrideExisting: true,
             restartTrack: false,
@@ -2863,12 +2866,11 @@ class FreeplayState extends MusicBeatSubState
     if (daSongCapsule == null) daSongCapsule = currentCapsule;
     if (curSelected == 0)
     {
-      FunkinSound.playMusic('freeplayRandom',
-        {
-          startingVolume: 0.0,
-          overrideExisting: true,
-          restartTrack: false
-        });
+      FunkinSound.playMusic(currentCharacter?.getFreeplayRandomTheme() ?? Constants.DEFAULT_FREEPLAY_RANDOM_THEME, {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: false
+      });
       FlxG.sound.music.fadeIn(2, 0, 0.7);
     }
     else

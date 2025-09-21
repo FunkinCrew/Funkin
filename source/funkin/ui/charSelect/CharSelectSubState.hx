@@ -377,15 +377,6 @@ class CharSelectSubState extends MusicBeatSubState
     FlxG.sound.defaultSoundGroup.add(staticSound);
     FlxG.sound.list.add(staticSound);
 
-    // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
-    // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
-    FunkinSound.playMusic('stayFunky',
-      {
-        startingVolume: 0,
-        overrideExisting: true,
-        restartTrack: true,
-      });
-
     initLocks();
 
     for (index => member in grpIcons.members)
@@ -455,6 +446,14 @@ class CharSelectSubState extends MusicBeatSubState
     FlxG.sound.defaultSoundGroup.add(introSound);
     FlxG.sound.list.add(introSound);
 
+    // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
+    // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
+    FunkinSound.playMusic(getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME, {
+      startingVolume: 0,
+      overrideExisting: true,
+      restartTrack: true,
+    });
+
     openSubState(new IntroSubState());
     subStateClosed.addOnce((_) -> {
       remove(blackScreen);
@@ -483,24 +482,24 @@ class CharSelectSubState extends MusicBeatSubState
       if (availableChars.size() > 1) Medals.award(CharSelect);
       #end
 
-      FunkinSound.playMusic('stayFunky',
-        {
-          startingVolume: 1,
-          overrideExisting: true,
-          restartTrack: true,
-          onLoad: function() {
-            allowInput = true;
+      loadPlayerSelectTheme();
+      /*FunkinSound.playMusic(getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME, {
+        startingVolume: 1,
+        overrideExisting: true,
+        restartTrack: true,
+        onLoad: () -> {
+          allowInput = true;
 
-            @:privateAccess
-            gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-            #if sys
-            // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-            // So we want to manually change it!
-            @:privateAccess
-            gfChill.analyzer.fftN = 512;
-            #end
-          }
-        });
+          @:privateAccess
+          gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+          #if sys
+          // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+          // So we want to manually change it!
+          @:privateAccess
+          gfChill.analyzer.fftN = 512;
+          #end
+        }
+      });*/
     }
   }
 
@@ -536,7 +535,12 @@ class CharSelectSubState extends MusicBeatSubState
         var playableCharacterId:String = availableChars.get(i);
         var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playableCharacterId);
         var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
-        if (availableChars.exists(i) && isPlayerUnlocked) nonLocks.push(i);
+        if (availableChars.exists(i) && isPlayerUnlocked)
+        {
+          nonLocks.push(i);
+          final playerTheme:String = player?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME;
+          FunkinMemory.cacheSound(Paths.music(playerTheme + "/" + playerTheme));
+        }
 
         var temp:Lock = new Lock(0, 0, i);
         temp.ID = 1;
@@ -647,24 +651,24 @@ class CharSelectSubState extends MusicBeatSubState
 
           staticSound.stop();
 
-          FunkinSound.playMusic('stayFunky',
-            {
-              startingVolume: 1,
-              overrideExisting: true,
-              restartTrack: true,
-              onLoad: function() {
-                allowInput = true;
+          loadPlayerSelectTheme();
+          /*FunkinSound.playMusic(getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME, {
+            startingVolume: 1,
+            overrideExisting: true,
+            restartTrack: true,
+            onLoad: () -> {
+              allowInput = true;
 
-                @:privateAccess
-                gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-                #if sys
-                // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-                // So we want to manually change it!
-                @:privateAccess
-                gfChill.analyzer.fftN = 512;
-                #end
-              }
-            });
+              @:privateAccess
+              gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+              #if sys
+              // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+              // So we want to manually change it!
+              @:privateAccess
+              gfChill.analyzer.fftN = 512;
+              #end
+            }
+          });*/
         }
         else
           playerChill.onAnimationComplete.addOnce((_) -> unLock());
@@ -775,6 +779,8 @@ class CharSelectSubState extends MusicBeatSubState
             }));
         }
       });
+
+    Save.instance.lastPlayedCharacter = wentBackToFreeplay ? rememberedChar : curChar;
   }
 
   var holdTmrUp:Float = 0;
@@ -1207,6 +1213,12 @@ class CharSelectSubState extends MusicBeatSubState
     return gridPosition;
   }
 
+  function getCurrentCharacter():Null<PlayableCharacter>
+  {
+    final index:Int = getCurrentSelected();
+    return availableChars.exists(index) ? PlayerRegistry.instance.fetchEntry(availableChars.get(index)) : null;
+  }
+
   // Moved this code into a function because is now used twice
   function setCursorPosition(index:Int)
   {
@@ -1236,6 +1248,7 @@ class CharSelectSubState extends MusicBeatSubState
     else
       staticSound.stop();
 
+    loadPlayerSelectTheme();
     nametag.switchChar(value);
     gfChill.visible = false;
     playerChill.visible = false;
@@ -1260,6 +1273,38 @@ class CharSelectSubState extends MusicBeatSubState
     });
 
     return value;
+  }
+
+  var currentSelectTheme:String = null;
+
+  function loadPlayerSelectTheme()
+  {
+    // TODO: IMPLEMENT блять ну сделать что бы трек продолжался с той же точки
+    final requierdTheme:String = getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME;
+
+    if (currentSelectTheme == requierdTheme) return;
+    trace('PLAYING "$requierdTheme"');
+
+    FunkinSound.playMusic(requierdTheme,
+      {
+        startingVolume: 1,
+        overrideExisting: true,
+        restartTrack: true,
+        onLoad: () -> {
+          allowInput = true;
+
+          @:privateAccess
+          gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+          #if sys
+          // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+          // So we want to manually change it!
+          @:privateAccess
+          gfChill.analyzer.fftN = 512;
+          #end
+        }
+      });
+
+    currentSelectTheme = requierdTheme;
   }
 
   function set_grpXSpread(value:Float):Float

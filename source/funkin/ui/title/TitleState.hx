@@ -200,7 +200,7 @@ class TitleState extends MusicBeatState
   {
     var shouldFadeIn:Bool = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
-    FunkinSound.playMusic('freakyMenu',
+    FunkinSound.playMusic(funkin.data.freeplay.player.PlayerRegistry.getGameTheme(),
       {
         startingVolume: 0.0,
         overrideExisting: true,

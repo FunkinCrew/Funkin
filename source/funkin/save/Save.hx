@@ -177,6 +177,7 @@ class Save implements ConsoleClass
         {
           // Default to having seen the default character.
           charactersSeen: ["bf"],
+          lastPlayedCharacter: "bf",
           oldChar: false
         },
 
@@ -570,6 +571,24 @@ class Save implements ConsoleClass
     data.unlocks.oldChar = value;
     flush();
     return data.unlocks.oldChar;
+  }
+
+  /**
+   *
+   */
+  public var lastPlayedCharacter(get, set):String;
+
+  function get_lastPlayedCharacter():String
+  {
+    // todo: IMPLEMENT SAFETY IF CHARACTER DOESNT EXIST
+    return data.unlocks.lastPlayedCharacter;
+  }
+
+  function set_lastPlayedCharacter(value:String):String
+  {
+    data.unlocks.lastPlayedCharacter = value;
+    flush();
+    return data.unlocks.lastPlayedCharacter;
   }
 
   public var stageEditorPreviousFiles(get, set):Array<String>;
@@ -1498,6 +1517,11 @@ typedef SaveDataUnlocks =
    * For the first time ever
    */
   var oldChar:Bool;
+
+  /**
+   *
+   */
+  var lastPlayedCharacter:String;
 }
 
 /**
