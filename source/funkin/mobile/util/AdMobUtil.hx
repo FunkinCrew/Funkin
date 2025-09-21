@@ -29,19 +29,28 @@ class AdMobUtil
   /**
    * AdMob publisher ID used for the application.
    */
-  @:envField
+  @:envField(
+    {
+      mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"
+    })
   static final ADMOB_PUBLISHER:Null<String>;
 
   /**
    * Ad unit ID for displaying banner ads.
    */
-  @:envField
+  @:envField(
+    {
+      mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"
+    })
   static final ADMOB_BANNER_AD_UNIT_ID:Null<String>;
 
   /**
    * Ad unit ID for displaying interstitial ads.
    */
-  @:envField
+  @:envField(
+    {
+      mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"
+    })
   static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String>;
   #else
 

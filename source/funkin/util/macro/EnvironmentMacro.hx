@@ -7,6 +7,7 @@ import sys.FileSystem;
 import sys.io.File;
 import funkin.util.AnsiUtil;
 import funkin.util.AnsiUtil.AnsiCode;
+import funkin.util.macro.MacroUtil;
 #end
 
 using StringTools;
@@ -40,8 +41,23 @@ class EnvironmentMacro
             {
               if (meta.name == ':envField')
               {
-                var isNullString:Bool = false;
+                // Retrieve the parameters of the metadata, if any.
+                var mandatoryIfDefined:Null<String> = null;
 
+                if (meta.params != null && meta.params.length >= 1)
+                {
+                  var params:Expr = meta.params[0];
+
+                  var mandatoryIfDefinedExpr:Null<Expr> = MacroUtil.extractObjectField(params, 'mandatoryIfDefined');
+
+                  if (mandatoryIfDefinedExpr != null)
+                  {
+                    mandatoryIfDefined = MacroUtil.extractStringConstant(mandatoryIfDefinedExpr);
+                  }
+                }
+
+                // Validate that the field is of type Null<String> to ensure the macro works.
+                var isNullString:Bool = false;
                 switch (t)
                 {
                   case TPath(tp):
@@ -71,6 +87,17 @@ class EnvironmentMacro
                   if (envFile.exists(field.name))
                   {
                     e = macro $v{envFile.get(field.name)};
+                  }
+                  else if (mandatoryIfDefined != null)
+                  {
+                    var inverseDefine = (mandatoryIfDefined.startsWith('NO_')) ? mandatoryIfDefined.substr(4) : 'NO_$mandatoryIfDefined';
+
+                    var errorMessage:String = 'Value for ${field.name} not found in the environment file.';
+
+                    errorMessage += '\nThis field is flagged as MANDATORY; populate the `.env` file in the project root,';
+                    errorMessage += ' or compile with -D${inverseDefine} to skip this check.';
+
+                    Context.fatalError(errorMessage, field.pos);
                   }
                   else
                   {
