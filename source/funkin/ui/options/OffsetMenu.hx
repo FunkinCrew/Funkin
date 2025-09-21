@@ -294,6 +294,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     createButtonItem('Offset Calibration', function() {
       // Reset calibration state and start another one.
 
+      @:privateAccess
+      if (OptionsState.instance.optionsCodex.currentPage != this) return;
+
       jumpInText.text = 'Press any key to the beat!\nThe arrow will start to sync to the receptor.';
       #if mobile
       jumpInText.text = 'Tap to the beat!\nThe arrow will start to sync to the receptor.';
@@ -326,6 +329,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     createButtonItem('Test', function() {
       // Reset testing state and start another one.
       // We do not reset the offset here, so the player can test their current offset.
+
+      @:privateAccess
+      if (OptionsState.instance.optionsCodex.currentPage != this) return;
 
       shouldOffset = 1;
       testStrumline.clean();
