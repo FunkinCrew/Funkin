@@ -1275,16 +1275,16 @@ class CharSelectSubState extends MusicBeatSubState
 
   var currentSelectTheme:String = null;
 
-  function loadCharacterSelectTheme()
+  function loadCharacterSelectTheme():Void
   {
-    final requierdTheme:String = getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME;
+    final requiredTheme:String = getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME;
 
-    if (currentSelectTheme == requierdTheme) return;
-    trace('PLAYING "$requierdTheme"');
+    if (currentSelectTheme == requiredTheme) return;
 
-    var trackTime:Float = Conductor.instance.songPosition;
+    trace('Switching to character theme: "$requiredTheme"');
+    final previousTime:Float = FlxG.sound?.music?.time ?? 0.0;
 
-    FunkinSound.playMusic(requierdTheme,
+    FunkinSound.playMusic(requiredTheme,
       {
         startingVolume: 1,
         overrideExisting: true,
@@ -1292,6 +1292,8 @@ class CharSelectSubState extends MusicBeatSubState
         onLoad: () -> {
           allowInput = true;
 
+          FlxG.sound.music.time = (previousTime >= FlxG.sound.music.length) ? 0 : previousTime;
+          Conductor.instance.update();
           @:privateAccess
           gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
           #if sys
@@ -1303,11 +1305,7 @@ class CharSelectSubState extends MusicBeatSubState
         }
       });
 
-    if (trackTime >= FlxG.sound.music.length) trackTime = 0;
-    FlxG.sound.music.time = trackTime;
-    Conductor.instance.update();
-
-    currentSelectTheme = requierdTheme;
+    currentSelectTheme = requiredTheme;
   }
 
   function set_grpXSpread(value:Float):Float
