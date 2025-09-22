@@ -779,8 +779,6 @@ class CharSelectSubState extends MusicBeatSubState
             }));
         }
       });
-
-    Save.instance.lastPlayedCharacter = wentBackToFreeplay ? rememberedChar : curChar;
   }
 
   var holdTmrUp:Float = 0;
