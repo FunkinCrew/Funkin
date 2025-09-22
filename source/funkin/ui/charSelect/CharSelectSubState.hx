@@ -482,7 +482,7 @@ class CharSelectSubState extends MusicBeatSubState
       if (availableChars.size() > 1) Medals.award(CharSelect);
       #end
 
-      loadPlayerSelectTheme();
+      loadCharacterSelectTheme();
       /*FunkinSound.playMusic(getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME, {
         startingVolume: 1,
         overrideExisting: true,
@@ -651,7 +651,7 @@ class CharSelectSubState extends MusicBeatSubState
 
           staticSound.stop();
 
-          loadPlayerSelectTheme();
+          loadCharacterSelectTheme();
           /*FunkinSound.playMusic(getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME, {
             startingVolume: 1,
             overrideExisting: true,
@@ -1246,7 +1246,7 @@ class CharSelectSubState extends MusicBeatSubState
     else
       staticSound.stop();
 
-    loadPlayerSelectTheme();
+    loadCharacterSelectTheme();
     nametag.switchChar(value);
     gfChill.visible = false;
     playerChill.visible = false;
@@ -1275,15 +1275,14 @@ class CharSelectSubState extends MusicBeatSubState
 
   var currentSelectTheme:String = null;
 
-  function loadPlayerSelectTheme()
+  function loadCharacterSelectTheme()
   {
-    // TODO: IMPLEMENT блять ну сделать что бы трек продолжался с той же точки
     final requierdTheme:String = getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME;
 
     if (currentSelectTheme == requierdTheme) return;
     trace('PLAYING "$requierdTheme"');
 
-    final trackTime:Float = Conductor.instance.songPosition;
+    var trackTime:Float = Conductor.instance.songPosition;
 
     FunkinSound.playMusic(requierdTheme,
       {
@@ -1304,6 +1303,7 @@ class CharSelectSubState extends MusicBeatSubState
         }
       });
 
+    if (trackTime >= FlxG.sound.music.length) trackTime = 0;
     FlxG.sound.music.time = trackTime;
     Conductor.instance.update();
 

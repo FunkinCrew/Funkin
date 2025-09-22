@@ -213,7 +213,6 @@ class FreeplayState extends MusicBeatSubState
   /**
    * The character we were on when this menu was last accessed.
    */
-  // todo: move this this into PlayerRegistry
   public static var rememberedCharacterId:String = Constants.DEFAULT_CHARACTER;
 
   /**
