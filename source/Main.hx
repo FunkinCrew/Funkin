@@ -1,7 +1,7 @@
 package;
 
 import flixel.FlxG;
-import flixel.FlxGame;
+import funkin.FunkinGame;
 import flixel.FlxState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
@@ -125,14 +125,8 @@ class Main extends Sprite
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
-    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
+    var game:FunkinGame = new FunkinGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
       (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));
-
-    // FlxG.game._customSoundTray wants just the class, it calls new from
-    // create() in there, which gets called when it's added to the stage
-    // which is why it needs to be added before addChild(game) here
-    @:privateAccess
-    game._customSoundTray = funkin.ui.options.FunkinSoundTray;
 
     addChild(game);
 

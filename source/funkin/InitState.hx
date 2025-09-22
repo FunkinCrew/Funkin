@@ -277,6 +277,7 @@ class InitState extends FlxState
 
     #if !html5
     // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
+    funkin.FunkinCache.initialize();
     funkin.FunkinMemory.initialCache();
     #end
   }
