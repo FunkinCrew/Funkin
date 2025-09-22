@@ -483,23 +483,6 @@ class CharSelectSubState extends MusicBeatSubState
       #end
 
       loadCharacterSelectTheme();
-      /*FunkinSound.playMusic(getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME, {
-        startingVolume: 1,
-        overrideExisting: true,
-        restartTrack: true,
-        onLoad: () -> {
-          allowInput = true;
-
-          @:privateAccess
-          gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-          #if sys
-          // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-          // So we want to manually change it!
-          @:privateAccess
-          gfChill.analyzer.fftN = 512;
-          #end
-        }
-      });*/
     }
   }
 
@@ -652,23 +635,6 @@ class CharSelectSubState extends MusicBeatSubState
           staticSound.stop();
 
           loadCharacterSelectTheme();
-          /*FunkinSound.playMusic(getCurrentCharacter()?.getCharSelectTheme() ?? Constants.DEFAULT_CHAR_SELECT_THEME, {
-            startingVolume: 1,
-            overrideExisting: true,
-            restartTrack: true,
-            onLoad: () -> {
-              allowInput = true;
-
-              @:privateAccess
-              gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-              #if sys
-              // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-              // So we want to manually change it!
-              @:privateAccess
-              gfChill.analyzer.fftN = 512;
-              #end
-            }
-          });*/
         }
         else
           playerChill.onAnimationComplete.addOnce((_) -> unLock());
