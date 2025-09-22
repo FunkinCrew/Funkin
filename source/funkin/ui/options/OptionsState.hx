@@ -113,7 +113,7 @@ class OptionsState extends MusicBeatState
       drumsBG.fadeOut(0.5, 0);
     }
     FlxG.sound.music.fadeOut(0.5, 0, tw -> {
-      FunkinSound.playMusic(funkin.data.freeplay.player.PlayerRegistry.getGameTheme(),
+      FunkinSound.playMusic(Constants.DEFAULT_GAME_THEME,
         {
           startingVolume: 0,
           overrideExisting: true,

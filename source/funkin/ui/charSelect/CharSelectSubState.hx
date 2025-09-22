@@ -1285,6 +1285,8 @@ class CharSelectSubState extends MusicBeatSubState
     if (currentSelectTheme == requierdTheme) return;
     trace('PLAYING "$requierdTheme"');
 
+    final trackTime:Float = Conductor.instance.songPosition;
+
     FunkinSound.playMusic(requierdTheme,
       {
         startingVolume: 1,
@@ -1303,6 +1305,9 @@ class CharSelectSubState extends MusicBeatSubState
           #end
         }
       });
+
+    FlxG.sound.music.time = trackTime;
+    Conductor.instance.update();
 
     currentSelectTheme = requierdTheme;
   }

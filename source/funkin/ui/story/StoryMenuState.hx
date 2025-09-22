@@ -247,7 +247,7 @@ class StoryMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic(funkin.data.freeplay.player.PlayerRegistry.getGameTheme(),
+    FunkinSound.playMusic(Constants.DEFAULT_GAME_THEME,
       {
         overrideExisting: true,
         restartTrack: false,

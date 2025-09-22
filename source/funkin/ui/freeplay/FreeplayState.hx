@@ -214,7 +214,7 @@ class FreeplayState extends MusicBeatSubState
    * The character we were on when this menu was last accessed.
    */
   // todo: move this this into PlayerRegistry
-  public static var rememberedCharacterId:String = Constants.DEFAULT_CHARACTER; // Save.instance.lastPlayedCharacter; // lastPlayedCharacter
+  public static var rememberedCharacterId:String = Constants.DEFAULT_CHARACTER;
 
   /**
    * The remembered variation we were on when this menu was last accessed.
@@ -332,8 +332,6 @@ class FreeplayState extends MusicBeatSubState
     // TODO: refactor DifficultySelector to *not* use `this` as input? Handle it's animations and style data in different manner
     diffSelLeft = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData);
     diffSelRight = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 325, grpDifficulties.y - 10, true, controls, styleData);
-
-    trace(Save.instance.lastPlayedCharacter);
   }
 
   override function create():Void
@@ -2169,7 +2167,7 @@ class FreeplayState extends MusicBeatSubState
       FlxTransitionableState.skipNextTransOut = true;
       if (Type.getClass(_parentState) == MainMenuState)
       {
-        FunkinSound.playMusic(PlayerRegistry.getGameTheme(),
+        FunkinSound.playMusic(Constants.DEFAULT_GAME_THEME,
           {
             overrideExisting: true,
             restartTrack: false,
