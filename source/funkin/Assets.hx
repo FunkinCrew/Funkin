@@ -13,7 +13,7 @@ class Assets implements ConsoleClass
   /**
    * The assets cache.
    */
-  public static var cache:openfl.utils.IAssetCache = openfl.utils.Assets.cache;
+  public static var cache:openfl.utils.IAssetCache = FunkinCache.instance;
 
   /**
    * Get the file system path for an asset
