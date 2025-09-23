@@ -146,7 +146,9 @@ class Strumline extends FlxSpriteGroup
    * The strumline notes (the receptors) themselves.
    */
   public var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
+
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
+
   /**
    * Hold note covers.
    */
@@ -1339,7 +1341,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function fadeOutArrow(index:Int, arrow:StrumlineNote):Void
   {
-    FlxTween.tween(arrow, {y: arrow.y - 10, alpha: 0}, 0.5, {ease: FlxEase.circIn});
+    FlxTween.tween(arrow, {y: arrow.y - 10, alpha: 0}, 0.16, {ease: FlxEase.circIn, startDelay: 0.05 * (DIRECTIONS.length - index)});
   }
 
   /**
