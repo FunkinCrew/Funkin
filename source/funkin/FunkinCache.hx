@@ -85,15 +85,15 @@ class FunkinCache extends AssetCache
   **/
   override public function getBitmapData(id:String):BitmapData
   {
-    var mainCacheFont = bitmapData.get(id);
-    if (mainCacheFont != null) return mainCacheFont;
+    var mainCacheBitmap = bitmapData.get(id);
+    if (mainCacheBitmap != null) return mainCacheBitmap;
 
-    var secondLayerFont = _secondBitmaps.get(id);
-    if (secondLayerFont != null)
+    var secondLayerBitmap = _secondBitmaps.get(id);
+    if (secondLayerBitmap != null)
     {
       _secondBitmaps.remove(id);
-      bitmapData.set(id, secondLayerFont);
-      return secondLayerFont;
+      bitmapData.set(id, secondLayerBitmap);
+      return secondLayerBitmap;
     }
     return null;
   }
