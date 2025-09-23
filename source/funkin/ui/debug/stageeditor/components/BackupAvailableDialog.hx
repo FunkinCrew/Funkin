@@ -9,7 +9,7 @@ import funkin.util.DateUtil;
 using StringTools;
 
 @:xml('
-<dialog id="backupAvailableDialog" width="475" height="150" title="Hey! Listen!">
+<dialog id="backupAvailableDialog" width="475" height="200" title="Hey! Listen!">
 	<vbox width="100%" height="100%">
 		<label text="There is a stage backup available, would you like to open it?\n" width="100%" textAlign="center" />
 		<spacer height="6" />
@@ -34,20 +34,14 @@ class BackupAvailableDialog extends Dialog
     if (!FileUtil.fileExists(filePath)) return;
 
     // time text
-    var fileDate = Path.withoutExtension(Path.withoutDirectory(filePath));
-    var dateParts = fileDate.split("-");
+    var file = Path.withoutExtension(Path.withoutDirectory(filePath));
 
-    while (dateParts.length < 8)
-      dateParts.push("0");
+    #if sys
+    var stat = sys.FileSystem.stat(filePath);
+    var sizeInMB = (stat.size / 1000000).round(3);
 
-    var year:Int = Std.parseInt(dateParts[2]) ?? 0; // copied parts from ChartEditorImportExportHandler.hx
-    var month:Int = Std.parseInt(dateParts[3]) ?? 1;
-    var day:Int = Std.parseInt(dateParts[4]) ?? 0;
-    var hour:Int = Std.parseInt(dateParts[5]) ?? 0;
-    var minute:Int = Std.parseInt(dateParts[6]) ?? 0;
-    var second:Int = Std.parseInt(dateParts[7]) ?? 0;
-
-    backupTimeLabel.text = DateUtil.generateCleanTimestamp(new Date(year, month - 1, day, hour, minute, second));
+    backupTimeLabel.text = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
+    #end
 
     // button callbacks
     dialogCancel.onClick = function(_) hideDialog(DialogButton.CANCEL);
