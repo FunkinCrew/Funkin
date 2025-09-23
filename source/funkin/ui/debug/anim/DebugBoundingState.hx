@@ -345,6 +345,14 @@ class DebugBoundingState extends FlxState
     super.update(elapsed);
   }
 
+  override function destroy()
+  {
+    super.destroy();
+
+    // Hide the mouse cursor on other states.
+    Cursor.hide();
+  }
+
   function offsetControls():Void
   {
     // CTRL + S = Save Character Data
