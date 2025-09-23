@@ -125,7 +125,7 @@ class ControlsHandler
   @:noCompletion
   private static function get_hasExternalInputDevice():Bool
   {
-    return FlxG.gamepads.numActiveGamepads > 0;
+    return FlxG.gamepads.numActiveGamepads > 0 #if android || extension.androidtools.Tools.isChromebook() #end;
   }
 
   @:noCompletion

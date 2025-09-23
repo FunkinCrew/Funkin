@@ -238,6 +238,11 @@ class Constants
   public static final DEFAULT_ZOOM_RATE:Int = 4;
 
   /**
+   * The default offset of camera zooms (in beats).
+   */
+  public static final DEFAULT_ZOOM_OFFSET:Int = 0;
+
+  /**
    * The default BPM for charts, so things don't break if none is specified.
    */
   public static final DEFAULT_BPM:Float = 100.0;
@@ -394,6 +399,11 @@ class Constants
    *     The progress bare is automatically rescaled to match.
    */
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
+
+  /**
+   * Time (in seconds) to wait on the Title Screen before entering the Attract State.
+   */
+  public static final TITLE_ATTRACT_DELAY:Float = 37.5;
 
   /**
    * HEALTH VALUES

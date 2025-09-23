@@ -31,7 +31,7 @@ class ChartEditorImportExportHandler
   {
     trace('===============START');
 
-    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: targetSongVariation});
 
     if (song == null) return;
 
@@ -54,7 +54,7 @@ class ChartEditorImportExportHandler
       if (chartData != null) songChartData.set(variation, chartData);
     }
 
-    loadSong(state, songMetadata, songChartData);
+    loadSong(state, songMetadata, songChartData, new ChartManifestData(songId));
 
     state.sortChartData();
 
@@ -126,10 +126,15 @@ class ChartEditorImportExportHandler
    * @param newSongMetadata The song metadata to load.
    * @param newSongChartData The song chart data to load.
    */
-  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>):Void
+  public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>,
+      ?newSongManifestData:ChartManifestData):Void
   {
     state.songMetadata = newSongMetadata;
     state.songChartData = newSongChartData;
+    if (newSongManifestData != null)
+    {
+      state.songManifestData = newSongManifestData;
+    }
 
     if (!state.songMetadata.exists(state.selectedVariation))
     {
@@ -273,11 +278,10 @@ class ChartEditorImportExportHandler
       var variChartDataString:String = mappedFileEntries.get(variChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data ($variation).';
       var variChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variChartDataString) ?? throw 'Could not read chart data version ($variation).';
       var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
-        variChartDataVersion) ?? throw 'Could not read chart data ($variation).';
-
+        variChartDataVersion, variation) ?? throw 'Could not read chart data ($variation).';
       songChartDatas.set(variation, variChartData);
     }
-    loadSong(state, songMetadatas, songChartDatas);
+    loadSong(state, songMetadatas, songChartDatas, manifest);
 
     state.sortChartData();
 
@@ -363,7 +367,7 @@ class ChartEditorImportExportHandler
     #end
   }
 
-  public static function getLatestBackupDate():Null<Date>
+  public static function getLatestBackupDate():Null<String>
   {
     #if sys
     var latestBackupPath:Null<String> = getLatestBackupPath();
@@ -372,19 +376,10 @@ class ChartEditorImportExportHandler
     var latestBackupName:String = haxe.io.Path.withoutDirectory(latestBackupPath);
     latestBackupName = haxe.io.Path.withoutExtension(latestBackupName);
 
-    var parts = latestBackupName.split('-');
+    var stat = sys.FileSystem.stat(latestBackupPath);
+    var sizeInMB = (stat.size / 1000000).round(3);
 
-    // var chart:String = parts[0];
-    // var editor:String = parts[1];
-    var year:Int = Std.parseInt(parts[2] ?? '0') ?? 0;
-    var month:Int = Std.parseInt(parts[3] ?? '1') ?? 1;
-    var day:Int = Std.parseInt(parts[4] ?? '0') ?? 0;
-    var hour:Int = Std.parseInt(parts[5] ?? '0') ?? 0;
-    var minute:Int = Std.parseInt(parts[6] ?? '0') ?? 0;
-    var second:Int = Std.parseInt(parts[7] ?? '0') ?? 0;
-
-    var date:Date = new Date(year, month - 1, day, hour, minute, second);
-    return date;
+    return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
     #else
     return null;
     #end
@@ -454,8 +449,7 @@ class ChartEditorImportExportHandler
     if (state.audioInstTrackData != null) zipEntries = zipEntries.concat(state.makeZIPEntriesFromInstrumentals());
     if (state.audioVocalTrackData != null) zipEntries = zipEntries.concat(state.makeZIPEntriesFromVocals());
 
-    var manifest:ChartManifestData = new ChartManifestData(state.currentSongId);
-    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', manifest.serialize()));
+    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', state.songManifestData.serialize()));
 
     trace('Exporting ${zipEntries.length} files to ZIP...');
 
@@ -466,9 +460,10 @@ class ChartEditorImportExportHandler
       {
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
+        if (state.currentSongId == '') state.currentSongName = 'New Chart'; // Hopefully no one notices this silliness
         targetPath = Path.join([
           BACKUPS_PATH,
-          'chart-editor-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
+            'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
         ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+  <pragma once="true" />
+
+  <files id="haxe">
+    <compilerflag value="-I${this_dir}/include" />
+  </files>
+
+  <files id="__main__">
+    <compilerflag value="-I${this_dir}/include" />
+  </files>
+
+  <files id="external-windows">
+    <compilerflag value="-I${this_dir}/include" />
+
+    <file name="${this_dir}/src/winapi.cpp" />
+  </files>
+
+  <target id="haxe">
+    <section if="mingw">
+        <lib name="-luser32" />
+        <lib name="-lkernel32" />
+        <lib name="-ldwmapi" />
+        <lib name="-ladvapi32" />
+    </section>
+
+    <section unless="mingw">
+        <lib name="user32.lib" />
+        <lib name="kernel32.lib" />
+        <lib name="dwmapi.lib" />
+        <lib name="advapi32.lib" />
+    </section>
+
+    <files id="external-windows" />
+  </target>
+</xml>

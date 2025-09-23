@@ -1,13 +1,24 @@
-# Friday Night Funkin'
+<div align='center'><img src="https://fridaynightfunkin.wiki.gg/images/FNF_logo.png" width="800">
 
-Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for Ludum Dare 47.
+<h2>Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for <a href="https://ldjam.com/events/ludum-dare/47">Ludum Dare 47.</a></h2>
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp.
+
+</div>
 
 - [Playable web demo on Newgrounds!](https://www.newgrounds.com/portal/view/770371)
 - [Demo download builds for Windows, Mac, and Linux from Itch.io!](https://ninja-muffin24.itch.io/funkin)
 - [Download Android builds from Google Play!](https://play.google.com/store/apps/details?id=me.funkin.fnf)
 - [Download iOS builds from the App Store!](https://apps.apple.com/app/id6740428530)
+
+<div align='center'>
+<table>
+  <tr>
+    <td><img src="https://fridaynightfunkin.wiki.gg/images/d/d7/Title_Card.gif" alt="Title Screen" width="350"/></td>
+    <td><img src="https://fridaynightfunkin.wiki.gg/images/9/99/Menu.png" alt="Main Menu" width="350"/></td>
+  </tr>
+</table>
+</div>
 
 # Getting Started
 

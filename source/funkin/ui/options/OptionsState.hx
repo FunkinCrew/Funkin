@@ -138,6 +138,7 @@ class OptionsState extends MusicBeatState
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
   }
 }
@@ -289,6 +290,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   override function update(elapsed:Float):Void
   {
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+
     #if FEATURE_TOUCH_CONTROLS
     backButton.active = (!goingBack) ? !items.busy : true;
     #end

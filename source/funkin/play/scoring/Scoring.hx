@@ -374,7 +374,7 @@ class Scoring
     // we can return null here, meaning that the player hasn't actually played and finished the song (thus has no data)
     if (scoreData.tallies.totalNotes == 0) return null;
 
-    // Perfect (Platinum) is a Sick Full Clear
+    // Perfect (Gold) is a Sick Full Clear
     if (scoreData.tallies.sick == scoreData.tallies.totalNotes)
     {
       return ScoringRank.PERFECT_GOLD;
@@ -420,7 +420,7 @@ class Scoring
   public static function tallyCompletion(?tallies:SaveScoreTallyData):Float
   {
     if (tallies == null) return 0.0;
-    return (tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes;
+    return ((tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes).clamp(0, 1); // Needs to be clamped to make sure Perfect ranks are saved properly
   }
 }
 

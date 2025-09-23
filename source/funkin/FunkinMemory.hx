@@ -117,10 +117,7 @@ class FunkinMemory
    */
   public static function cacheTexture(key:String):Void
   {
-    if (currentCachedTextures.exists(key))
-    {
-      return; // Already cached.
-    }
+    if (currentCachedTextures.exists(key)) return;
 
     if (previousCachedTextures.exists(key))
     {
@@ -135,13 +132,13 @@ class FunkinMemory
     if (graphic == null)
     {
       FlxG.log.warn('Failed to cache graphic: $key');
+      return;
     }
-    else
-    {
-      trace('Successfully cached graphic: $key');
-      graphic.persist = true;
-      currentCachedTextures.set(key, graphic);
-    }
+
+    trace('Successfully cached graphic: $key');
+    graphic.persist = true;
+    currentCachedTextures.set(key, graphic);
+    forceRender(graphic);
   }
 
   /**
@@ -150,24 +147,53 @@ class FunkinMemory
    */
   static function permanentCacheTexture(key:String):Void
   {
-    if (permanentCachedTextures.exists(key))
-    {
-      return; // Already cached.
-    }
+    if (permanentCachedTextures.exists(key)) return;
 
     var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
       FlxG.log.warn('Failed to cache graphic: $key');
-    }
-    else
-    {
-      trace('Successfully cached graphic: $key');
-      graphic.persist = true;
-      permanentCachedTextures.set(key, graphic);
+      return;
     }
 
+    trace('Successfully cached graphic: $key');
+    graphic.persist = true;
+    permanentCachedTextures.set(key, graphic);
+    forceRender(graphic);
     currentCachedTextures = permanentCachedTextures;
+  }
+
+  /**
+   * Forces the GPU to load and upload a FlxGraphic.
+   */
+  private static function forceRender(graphic:FlxGraphic):Void
+  {
+    if (graphic == null) return;
+
+    var bmp:Null<FlxGraphic> = FlxG.bitmap.get(graphic.key);
+    if (bmp != null && bmp.bitmap != null) var _:Int = bmp.bitmap.width; // Trigger
+
+    // Draws sprite and actually caches it.
+    var sprite = new flixel.FlxSprite();
+    sprite.loadGraphic(graphic);
+    sprite.draw(); // Draw sprite and load it into game's memory.
+    graphic.bitmap?.getTexture(FlxG.stage.context3D); // Just in case that didn't work...
+    sprite.destroy();
+  }
+
+  /**
+   * Checks, if graphic with given path cached in memory.
+   */
+  public static inline function isGraphicCached(path:String):Bool
+    return permanentCachedTextures.exists(path) || currentCachedTextures.exists(path) || previousCachedTextures.exists(path);
+
+  public static function getCachedGraphic(path:String):Null<FlxGraphic>
+  {
+    if (permanentCachedTextures.exists(path)) return permanentCachedTextures.get(path);
+    if (currentCachedTextures.exists(path)) return currentCachedTextures.get(path);
+    if (previousCachedTextures.exists(path)) return previousCachedTextures.get(path); // just in case
+
+    return null;
   }
 
   /**

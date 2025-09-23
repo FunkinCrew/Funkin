@@ -250,7 +250,7 @@ class FunkinPreloader extends FlxBasePreloader
     touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap) {
       // Scale and center the touch to start image.
       // We have to do this inside the async call, after the image size is known.
-      bmp.scaleX = bmp.scaleY = ratio;
+      bmp.scaleX = bmp.scaleY = ratio * 0.5;
       bmp.x = (this._width - bmp.width) / 2;
       bmp.y = (this._height - bmp.height) / 2;
     });
@@ -803,16 +803,12 @@ class FunkinPreloader extends FlxBasePreloader
   #if FEATURE_TOUCH_HERE_TO_PLAY
   function overTouchHereToPlay(e:MouseEvent):Void
   {
-    touchHereToPlay.scaleX = touchHereToPlay.scaleY = ratio * 1.1;
-    touchHereToPlay.x = (this._width - touchHereToPlay.width) / 2;
-    touchHereToPlay.y = (this._height - touchHereToPlay.height) / 2;
+    scaleAndCenter(touchHereToPlay, ratio * 1.1 * 0.5);
   }
 
   function outTouchHereToPlay(e:MouseEvent):Void
   {
-    touchHereToPlay.scaleX = touchHereToPlay.scaleY = ratio * 1;
-    touchHereToPlay.x = (this._width - touchHereToPlay.width) / 2;
-    touchHereToPlay.y = (this._height - touchHereToPlay.height) / 2;
+    scaleAndCenter(touchHereToPlay, ratio * 0.5);
   }
 
   function mouseDownTouchHereToPlay(e:MouseEvent):Void
@@ -822,8 +818,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   function onTouchHereToPlay(e:MouseEvent):Void
   {
-    touchHereToPlay.x = (this._width - touchHereToPlay.width) / 2;
-    touchHereToPlay.y = (this._height - touchHereToPlay.height) / 2;
+    scaleAndCenter(touchHereToPlay, ratio * 0.5);
 
     removeEventListener(MouseEvent.CLICK, onTouchHereToPlay);
     touchHereSprite.removeEventListener(MouseEvent.MOUSE_OVER, overTouchHereToPlay);
@@ -832,6 +827,13 @@ class FunkinPreloader extends FlxBasePreloader
 
     // This is the actual thing that makes the game load.
     immediatelyStartGame();
+  }
+
+  function scaleAndCenter(bmp:Bitmap, scale:Float)
+  {
+    bmp.scaleX = bmp.scaleY = scale;
+    bmp.x = (this._width - bmp.width) / 2;
+    bmp.y = (this._height - bmp.height) / 2;
   }
   #end
 

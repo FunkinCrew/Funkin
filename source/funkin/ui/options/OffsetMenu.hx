@@ -394,7 +394,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (ControlsHandler.usingExternalInputDevice)
       {
       #end
-        testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
+        var height = testStrumline.strumlineNotes.members[0].height;
+        testStrumline.y = Preferences.downscroll ? FlxG.height - (height + 45) - Constants.STRUMLINE_Y_OFFSET : (height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
         if (Preferences.downscroll) jumpInText.y = FlxG.height - 425;
         testStrumline.isDownscroll = Preferences.downscroll;
@@ -736,6 +737,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, _lastDirection, 0, null, null);
         testStrumline.addNoteData(data, false);
 
+        // Create a jump (double note) every 8 beats to visually indicate first beat - requested by Hundrec
         if (Math.floor(arrowBeat % 8) == 0)
         {
           var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, 2, 0, null, null);
@@ -974,5 +976,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     return item;
+  }
+
+  override public function destroy()
+  {
+    MenuTypedList.pauseInput = false;
+    exitCalibration(true);
+    super.destroy();
   }
 }

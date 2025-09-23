@@ -1,7 +1,7 @@
 package funkin.mobile.util;
 
 #if ios
-import funkin.external.ios.ScreenUtil as NativeScreenUtil;
+import funkin.external.apple.ScreenUtil as NativeScreenUtil;
 #elseif android
 import funkin.external.android.ScreenUtil as NativeScreenUtil;
 #end

@@ -7,7 +7,7 @@ import funkin.modding.events.ScriptEvent.HitNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.play.character.BaseCharacter;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
 import haxe.ui.events.AnimationEvent;

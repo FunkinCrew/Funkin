@@ -1,10 +1,9 @@
 {
-  "extendsConfigPath": "",
-  "defineCombinations": [],
   "defaultSeverity": "INFO",
+  "extendsConfigPath": "",
+  "numberOfCheckerThreads": 5,
   "baseDefines": [],
-  "version": 1,
-  "exclude": {},
+  "defineCombinations": [],
   "checks": [
     {
       "props": {},
@@ -41,12 +40,6 @@
       "type": "AvoidStarImport"
     },
     {
-      "props": {
-        "severity": "IGNORE"
-      },
-      "type": "AvoidTernaryOperator"
-    },
-    {
       "props": {},
       "type": "BlockBreakingConditional"
     },
@@ -71,7 +64,6 @@
     {
       "props": {
         "severity": "IGNORE",
-
         "policy": "aligned",
         "allowSingleline": true
       },
@@ -80,7 +72,7 @@
     {
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
+        "format": "^?:_[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
         "tokens": ["INLINE", "NOTINLINE"]
       },
       "type": "ConstantName"
@@ -108,13 +100,12 @@
     {
       "props": {
         "lineStyle": "onestar",
-        "startStyle": "twostars",
-        "severity": "IGNORE"
+        "startStyle": "ignore"
       },
       "type": "DocCommentStyle"
     },
     {
-      "props": {},
+      "props": { "severity": "IGNORE" },
       "type": "Dynamic"
     },
     {
@@ -194,6 +185,14 @@
       "type": "FileLength"
     },
     {
+      "type": "FileNameCase",
+      "props": {}
+    },
+    {
+      "type": "Final",
+      "props": {}
+    },
+    {
       "props": {
         "option": "upperCase"
       },
@@ -245,7 +244,7 @@
     {
       "props": {
         "max": 160,
-        "ignorePattern": "^$"
+        "ignorePattern": "^(\\s*['\"][^'\"]*['\"].*)$"
       },
       "type": "LineLength"
     },
@@ -348,7 +347,7 @@
     {
       "props": {
         "allowSingleLineStatement": true,
-        "tokens": ["FOR", "ELSE_IF", "WHILE", "DO_WHILE"]
+        "tokens": ["ELSE_IF", "WHILE", "DO_WHILE"]
       },
       "type": "NeedBraces"
     },
@@ -581,6 +580,12 @@
       "type": "TrailingWhitespace"
     },
     {
+      "type": "Type",
+      "props": {
+        "ignoreEnumAbstractValues": true
+      }
+    },
+    {
       "props": {
         "tokens": ["CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF", "TYPEDEF_DEF"]
       },
@@ -612,11 +617,18 @@
       "type": "UnusedLocalVar"
     },
     {
+      "type": "VarTypeHint",
       "props": {
         "typeHintPolicy": "enforce_all",
-        "ignoreEnumAbstractValues": true
-      },
-      "type": "VarTypeHint"
+        "ignoreEnumAbstractValues": true,
+        "severity": "IGNORE"
+      }
+    },
+    {
+      "type": "VariableInitialisation",
+      "props": {
+        "allowFinal": false
+      }
     },
     {
       "props": {
@@ -665,5 +677,6 @@
       "type": "WhitespaceAround"
     }
   ],
-  "numberOfCheckerThreads": 5
+  "exclude": {},
+  "version": 1
 }

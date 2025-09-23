@@ -6,13 +6,12 @@ import flixel.FlxState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.util.logging.CrashHandler;
-import funkin.ui.debug.MemoryCounter;
+import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
 #if hxvlc
 import hxvlc.util.Handle;
 #end
-import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
@@ -30,7 +29,6 @@ class Main extends Sprite
   var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
   var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
   var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-  var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
   // You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -84,32 +82,17 @@ class Main extends Sprite
     setupGame();
   }
 
-  var video:Video;
-  var netStream:NetStream;
-  var overlay:Sprite;
-
   /**
-   * A frame counter displayed at the top left.
+   * The debug display at the top left.
    */
-  public static var fpsCounter:FPS;
-
-  /**
-   * A RAM counter displayed at the top left.
-   */
-  public static var memoryCounter:MemoryCounter;
+  public static var debugDisplay:FunkinDebugDisplay;
 
   function setupGame():Void
   {
     initHaxeUI();
 
     // addChild gets called by the user settings code.
-    fpsCounter = new FPS(10, 3, 0xFFFFFF);
-
-    #if !html5
-    // addChild gets called by the user settings code.
-    // TODO: disabled on HTML5 (todo: find another method that works?)
-    memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
-    #end
+    debugDisplay = new FunkinDebugDisplay(10, 10, 0xFFFFFF);
 
     #if mobile
     // Add this signal so we can reposition and resize the memory and fps counter.
@@ -121,7 +104,16 @@ class Main extends Sprite
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.init();
+    Handle.initAsync(function(success:Bool):Void {
+      if (success)
+      {
+        trace('[HXVLC] LibVLC instance initialized!');
+      }
+      else
+      {
+        trace('[HXVLC] LibVLC instance failed to initialize!');
+      }
+    });
     #end
 
     // Don't call anything from the preferences until the save is loaded!
@@ -133,7 +125,8 @@ class Main extends Sprite
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
-    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash, startFullscreen);
+    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
+      (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
     // create() in there, which gets called when it's added to the stage
@@ -145,6 +138,7 @@ class Main extends Sprite
 
     #if FEATURE_DEBUG_FUNCTIONS
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
+    funkin.util.macro.ConsoleMacro.init();
     #end
 
     #if !html5
@@ -190,41 +184,23 @@ class Main extends Sprite
     scale = Math.min(scale, 1);
     #end
     final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
-    if (fpsCounter != null)
+
+    if (debugDisplay != null)
     {
-      fpsCounter.scaleX = fpsCounter.scaleY = scale;
+      debugDisplay.scaleX = debugDisplay.scaleY = scale;
 
       if (FlxG.game != null)
       {
         if (lerp)
         {
-          fpsCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+          debugDisplay.x = flixel.math.FlxMath.lerp(debugDisplay.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
         }
         else
         {
-          fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+          debugDisplay.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
         }
 
-        fpsCounter.y = FlxG.game.y + (3 * scale);
-      }
-    }
-
-    if (memoryCounter != null)
-    {
-      memoryCounter.scaleX = memoryCounter.scaleY = scale;
-
-      if (FlxG.game != null)
-      {
-        if (lerp)
-        {
-          memoryCounter.x = flixel.math.FlxMath.lerp(memoryCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
-        }
-        else
-        {
-          memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
-        }
-
-        memoryCounter.y = FlxG.game.y + (13 * scale);
+        debugDisplay.y = FlxG.game.y + (3 * scale);
       }
     }
   }

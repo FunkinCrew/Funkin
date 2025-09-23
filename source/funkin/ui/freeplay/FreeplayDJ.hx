@@ -184,6 +184,8 @@ class FreeplayDJ extends FlxAtlasSprite
         // I shit myself.
     }
 
+    // Call the superclass function AFTER updating the current state and playing the next animation.
+    // This ensures that FlxAnimate starts rendering the new animation immediately.
     super.update(elapsed);
   }
 

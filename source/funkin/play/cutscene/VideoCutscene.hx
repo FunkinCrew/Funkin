@@ -66,7 +66,7 @@ class VideoCutscene
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
-      // lime.app.Application.current.window.alert('Video file does not exist: ${filePath}', 'Error playing video');
+      // funkin.util.WindowUtil.showError('Error playing video', 'Video file does not exist: ${filePath}');
       // return;
 
       // TODO: After moving videos to their own library,
@@ -345,6 +345,38 @@ class VideoCutscene
       case CutsceneType.MIDSONG:
         // Do nothing.
         // throw "Not implemented!";
+    }
+  }
+
+  /**
+   * Destroy the active cutscene, if any. Separate from finishVideo() so that it doesn't trigger onCutsceneFinish().
+   */
+  public static function destroyVideo()
+  {
+    #if html5
+    if (vid != null) PlayState.instance.remove(vid);
+    #end
+
+    #if hxvlc
+    if (vid != null)
+    {
+      vid.stop();
+      PlayState.instance.remove(vid);
+    }
+    #end
+
+    #if (html5 || hxvlc)
+    if (vid != null)
+    {
+      vid?.destroy();
+      vid = null;
+    }
+    #end
+
+    if (blackScreen != null)
+    {
+      PlayState.instance.remove(blackScreen);
+      blackScreen = null;
     }
   }
 }
