@@ -9,6 +9,7 @@ import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
+import lime.app.Application;
 #if hxvlc
 import hxvlc.util.Handle;
 #end
@@ -90,6 +91,24 @@ class Main extends Sprite
   function setupGame():Void
   {
     initHaxeUI();
+
+    // Done to avoid game becoming a background process in Windows once closed
+    #if desktop
+    Application.current.window.onClose.add(() -> {
+      try
+      {
+        // Makes sure sound shit doesn't cause the game to start doing "Funkin.exe is not responding"
+        FlxG.sound.destroy(true);
+        trace("Sound destroyed...");
+        trace("Closing window...");
+        Sys.exit(0);
+      }
+      catch (e:Dynamic)
+      {
+        trace("Error during cleanup: " + e);
+      }
+    });
+    #end
 
     // addChild gets called by the user settings code.
     debugDisplay = new FunkinDebugDisplay(10, 10, 0xFFFFFF);
