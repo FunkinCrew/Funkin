@@ -697,7 +697,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var wasCursorOverHaxeUI:Bool = false;
 
   /**
-   * Set by ChartEditorDialogHandler, used to prevent background interaction while the dialog is open.
+   * Set by ChartEditorDialogHandler, used to prevent background interaction while a dialog is open.
    */
   var isHaxeUIDialogOpen:Bool = false;
 
@@ -3051,7 +3051,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
     menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null);
-    menubarItemExit.onClick = _ -> quitChartEditor();
+    menubarItemExit.onClick = _ -> quitChartEditor(true);
 
     // Edit
     menubarItemUndo.onClick = _ -> undoLastCommand();
@@ -5750,20 +5750,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // CTRL + Q = Quit to Menu
     if (pressingControl() && FlxG.keys.justPressed.Q)
     {
-      quitChartEditor();
+      quitChartEditor(true);
     }
   }
 
   @:nullSafety(Off)
-  function quitChartEditor():Void
+  function quitChartEditor(exitPrompt:Bool = false):Void
   {
-    if (saveDataDirty)
+    if (saveDataDirty && exitPrompt)
     {
       this.openLeaveConfirmationDialog();
       return;
     }
 
-    writePreferences(false);
+    autoSave();
 
     this.hideAllToolboxes();
 

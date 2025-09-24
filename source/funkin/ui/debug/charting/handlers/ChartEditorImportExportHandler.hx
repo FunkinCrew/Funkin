@@ -351,10 +351,32 @@ class ChartEditorImportExportHandler
     #if sys
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
-    entries.sort(SortUtil.alphabetically);
+    var files:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
+    var filestats:Array<sys.FileStat> = [];
+    if (files.length > 0)
+    {
+      while (!files[files.length - 1].endsWith(Constants.EXT_CHART) || !files[files.length - 1].startsWith("chart-editor-"))
+      {
+        if (files.length == 0) break;
+        files.pop();
+      }
+    }
 
-    var latestBackupPath:Null<String> = entries[(entries.length - 1)];
+    var latestBackupPath:Null<String> = files[0];
+    for (file in files)
+    {
+      filestats.push(sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH + file])));
+    }
+
+    var latestFileIndex:Int = 0;
+    for (index in 0...filestats.length)
+    {
+      if (filestats[latestFileIndex].mtime.getTime() < filestats[index].mtime.getTime())
+      {
+        latestFileIndex = index;
+        latestBackupPath = files[index];
+      }
+    }
 
     if (latestBackupPath == null) return null;
     return haxe.io.Path.join([BACKUPS_PATH, latestBackupPath]);
