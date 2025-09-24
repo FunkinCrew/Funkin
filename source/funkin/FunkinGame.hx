@@ -32,6 +32,7 @@ class FunkinGame extends FlxGame
       for (k => e in FlxG.bitmap._cache)
       {
         if (e == null) continue;
+        else if (e.persist) continue;
         else if (e.destroyOnNoUse)
         {
           FlxG.bitmap.removeByKey(k);
