@@ -587,7 +587,7 @@ class PolymodHandler
     FreeplayStyleRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
-    NoteKindManager.loadScripts();
+    NoteKindManager.initialize();
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
   }

@@ -7,6 +7,8 @@ import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.notes.notekind.NoteKindManager;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.

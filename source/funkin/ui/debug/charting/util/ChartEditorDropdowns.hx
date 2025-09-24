@@ -157,6 +157,7 @@ class ChartEditorDropdowns
     // Base
     "" => "Default",
     "~CUSTOM~" => "Custom",
+    "noanim" => "No Animation",
     // Weeks 1-7
     "censor" => "[UH-OH!] Censor Bar",
     "mom" => "Mom Sings (Week 5)",

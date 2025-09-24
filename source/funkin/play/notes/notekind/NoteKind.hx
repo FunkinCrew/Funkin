@@ -45,13 +45,13 @@ class NoteKind implements INoteScriptedClass
    */
   public var scoreable:Bool = true;
 
-  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?anim:Bool, ?suffix:String)
+  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?noanim:Bool, ?suffix:String)
   {
     this.noteKind = noteKind;
     this.description = description;
     this.noteStyleId = noteStyleId;
     this.params = params ?? [];
-    this.noanim = anim ?? false;
+    this.noanim = noanim ?? false;
     this.suffix = suffix ?? '';
   }
 
