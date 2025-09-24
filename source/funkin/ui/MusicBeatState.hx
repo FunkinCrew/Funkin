@@ -13,6 +13,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
+import funkin.util.ConsoleUtil;
 import funkin.input.Controls;
 #if mobile
 import funkin.graphics.FunkinCamera;
@@ -168,6 +169,18 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   override function update(elapsed:Float)
   {
     super.update(elapsed);
+
+    if (FlxG.keys.justPressed.F2)
+    {
+      if (FlxG.keys.pressed.SHIFT)
+      {
+        ConsoleUtil.disableConsole();
+      }
+      else
+      {
+        ConsoleUtil.enableConsole();
+      }
+    }
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
