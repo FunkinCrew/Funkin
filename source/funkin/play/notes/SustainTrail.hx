@@ -409,12 +409,12 @@ class SustainTrail extends FlxSprite
   {
     super.kill();
 
+    if (!((cover?.animation?.name ?? "").startsWith("holdCoverEnd"))) cover?.playEnd();
     strumTime = 0;
     noteDirection = 0;
     sustainLength = 0;
     fullSustainLength = 0;
     noteData = null;
-    if (!((cover?.animation?.name ?? "").startsWith("holdCoverEnd"))) cover?.playEnd();
 
     hitNote = false;
     missedNote = false;
