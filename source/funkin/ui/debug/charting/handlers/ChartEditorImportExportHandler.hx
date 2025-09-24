@@ -463,7 +463,7 @@ class ChartEditorImportExportHandler
         if (state.currentSongId == '') state.currentSongName = 'New Chart'; // Hopefully no one notices this silliness
         targetPath = Path.join([
           BACKUPS_PATH,
-            'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
+          '${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}-chart-editor-${state.currentSongId}'
         ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');

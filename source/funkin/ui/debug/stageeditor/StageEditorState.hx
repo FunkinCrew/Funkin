@@ -206,7 +206,7 @@ class StageEditorState extends UIState
         var data = this.packShitToZip();
         var path = haxe.io.Path.join([
           BACKUPS_PATH,
-          'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
+          '${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}-stage-editor-${stageName}'
         ]);
 
         FileUtil.writeBytesToPath(path, data);
