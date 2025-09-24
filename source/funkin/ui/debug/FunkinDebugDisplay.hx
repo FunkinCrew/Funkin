@@ -279,22 +279,25 @@ class FunkinDebugDisplay extends Sprite
   }
 }
 
-enum abstract DebugDisplayMode(Int) from Int to Int
+// Note: the string values here are deduced
+// so we dont need to do `Off = 'Off'` or nothin
+// https://haxe.org/manual/types-abstract-enum.html
+enum abstract DebugDisplayMode(String) from String to String
 {
   /**
    * Debug display is disabled.
    */
-  var OFF = 0;
+  var Off;
 
   /**
    * Simple debug display.
    * FPS and Memory counters only.
    */
-  var SIMPLE = 1;
+  var Simple;
 
   /**
    * Advanced debug display.
    * Full FPS and Memory info.
    */
-  var ADVANCED = 2;
+  var Advanced;
 }

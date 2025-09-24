@@ -2865,7 +2865,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     txtCopyNotif.zIndex = 120;
     add(txtCopyNotif);
 
-    if (Preferences.debugDisplay == DebugDisplayMode.OFF) menubar.paddingLeft = null;
+    if (Preferences.debugDisplay == DebugDisplayMode.Off) menubar.paddingLeft = null;
 
     this.setupNotifications();
 

@@ -145,42 +145,18 @@ class Preferences
   static function get_debugDisplay():DebugDisplayMode
   {
     #if mobile
-    return DebugDisplayMode.OFF;
+    return DebugDisplayMode.Off;
     #end
-    var value = Save?.instance?.options?.debugDisplay ?? 'Off';
 
-    return switch (value)
-    {
-      case "Simple":
-        DebugDisplayMode.SIMPLE;
-      case "Advanced":
-        DebugDisplayMode.ADVANCED;
-      default:
-        DebugDisplayMode.OFF;
-    };
+    return Save?.instance?.options?.debugDisplay ?? 'Off';
   }
 
   static function set_debugDisplay(value:DebugDisplayMode):DebugDisplayMode
   {
-    var string;
-
-    switch (value)
-    {
-      case DebugDisplayMode.SIMPLE:
-        string = "Simple";
-      case DebugDisplayMode.ADVANCED:
-        string = "Advanced";
-      default:
-        string = "Off";
-    };
-
-    if (string != Save.instance.options.debugDisplay)
-    {
-      setDebugDisplayMode(value);
-    }
+    if (value != Save.instance.options.debugDisplay) setDebugDisplayMode(value);
 
     var save = Save.instance;
-    save.options.debugDisplay = string;
+    save.options.debugDisplay = value;
     save.flush();
     return value;
   }
@@ -528,14 +504,11 @@ class Preferences
 
   static function setDebugDisplayMode(mode:DebugDisplayMode):Void
   {
-    if (FlxG.game.parent.contains(Main.debugDisplay))
-    {
-      FlxG.game.parent.removeChild(Main.debugDisplay);
-    }
+    if (FlxG.game.parent.contains(Main.debugDisplay)) FlxG.game.parent.removeChild(Main.debugDisplay);
 
-    if (mode == DebugDisplayMode.OFF) return;
+    if (mode == DebugDisplayMode.Off) return;
 
-    Main.debugDisplay.isAdvanced = (mode == DebugDisplayMode.ADVANCED);
+    Main.debugDisplay.isAdvanced = (mode == DebugDisplayMode.Advanced);
 
     FlxG.game.parent.addChild(Main.debugDisplay);
   }
