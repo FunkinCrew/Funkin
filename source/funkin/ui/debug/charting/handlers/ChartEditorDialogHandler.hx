@@ -1325,13 +1325,12 @@ class ChartEditorDialogHandler
   {
     var dialog:Null<Dialog> = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
       function(button:DialogButton)
-      {
-        state.isHaxeUIDialogOpen = false;
+    {
         if (button == DialogButton.YES)
         {
-          state.autoSave();
           state.quitChartEditor();
         }
+        state.isHaxeUIDialogOpen = false;
       }
     );
 
