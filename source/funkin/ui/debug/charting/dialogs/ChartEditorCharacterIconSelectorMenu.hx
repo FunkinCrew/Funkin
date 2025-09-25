@@ -46,6 +46,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 
   function initialize(charType:CharacterType, lockPosition:Bool)
   {
+    openfl.utils.Assets.allowUncompressedTextures = false;
     currentCharId = switch (charType)
     {
       case BF: chartEditorState.currentSongMetadata.playData.characters.player;
@@ -136,6 +137,7 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     }
 
     charIconName.text = defaultText;
+    openfl.utils.Assets.allowUncompressedTextures = FunkinMemory.allowVRAMCaching;
   }
 
   public static function build(chartEditorState:ChartEditorState, charType:CharacterType, lockPosition:Bool = false):ChartEditorCharacterIconSelectorMenu
