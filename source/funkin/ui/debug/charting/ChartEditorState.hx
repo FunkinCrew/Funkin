@@ -5763,6 +5763,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
+    writePreferences(false);
+
     this.hideAllToolboxes();
 
     stopWelcomeMusic();
