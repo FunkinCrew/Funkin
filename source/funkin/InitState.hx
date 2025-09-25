@@ -130,7 +130,7 @@ class InitState extends FlxState
       #end
 
       #if mobile
-      // Setup In-App reviews
+      // Setup Mobile FNFC launcher.
       funkin.mobile.util.FNFCUtil.init();
       #end
 
@@ -403,7 +403,23 @@ class InitState extends FlxState
     else
     {
       // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      #if mobile
+      final fnfcFile = funkin.mobile.util.FNFCUtil.queryFNFC();
+      if (fnfcFile != null)
+      {
+        trace('launching FNFC from $fnfcFile');
+        FlxG.switchState(() -> new ChartPlaytestState(
+          {
+            fnfcFilePath: fnfcFile,
+          }));
+      }
+      else
+      {
+        FlxG.switchState(() -> new TitleState());
+      }
+      #else
       FlxG.switchState(() -> new TitleState());
+      #end
     }
     #else
     else

@@ -3,6 +3,11 @@ package funkin.mobile.util;
 #if ios
 import funkin.external.apple.FNFCUtil as NativeFNFCUtil;
 #end
+#if android
+import funkin.external.android.JNIUtil;
+import funkin.external.android.CallbackUtil;
+#end
+import lime.system.System;
 import flixel.util.FlxSignal;
 
 /**
@@ -18,10 +23,30 @@ class FNFCUtil
 
     #if ios
     FlxG.stage.window.onDropFile.add(function(_) {
-      final url = lime.system.System.getHint("IOS_UIApplicationLaunchOptionsURLKey");
-      onFNCOpen.dispatch(getFNFCFromURL(url));
+      final url = queryFNFC();
+      if (url != null) onFNCOpen.dispatch(getFNFCFromURL(url));
     });
+    #elseif android
+    CallbackUtil.onFNCOpen.add(onFNCOpen.dispatch);
     #end
+
+    final fnfcFile:String = queryFNFC();
+
+    if (fnfcFile != null)
+    {
+      trace('Got FNFC File from $fnfcFile!');
+    }
+  }
+
+  public static function queryFNFC():Null<String>
+  {
+    #if ios
+    return System.getHint("IOS_UIApplicationLaunchOptionsURLKey");
+    #elseif android
+    final staticField = JNIUtil.createStaticField('funkin/extensions/FNFCExtension', 'lastFNFC', 'Ljava/lang/String;');
+    if (staticField != null) return staticField.get();
+    #end
+    return null;
   }
 
   #if ios
@@ -30,7 +55,8 @@ class FNFCUtil
    * @param url A iOS `file://` URL.
    * @return    The new path that the file the URL points at inside of the cache directory.
    */
-  public static function getFNFCFromURL(url:String):String
+  @:noCompletion
+  private static function getFNFCFromURL(url:String):String
   {
     var cURL:cpp.ConstCharStar = cast url;
 

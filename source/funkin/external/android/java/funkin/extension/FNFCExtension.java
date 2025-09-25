@@ -2,16 +2,18 @@ package funkin.extensions;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.os.Bundle;
 import android.util.Log;
 
 import funkin.extensions.CallbackUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 
 import org.haxe.extension.Extension;
 
@@ -19,7 +21,9 @@ import org.haxe.lime.HaxeObject;
 
 public class FNFCExtension extends Extension
 {
-  public static String launchedFile = null;
+  public static final String LOG_TAG = "FNFCExtension";
+
+  public static String lastFNFC = null;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -40,41 +44,86 @@ public class FNFCExtension extends Extension
     }
   }
 
-  public static String queryLaunchedFNFC()
-  {
-    return launchedFile;
-  }
-
-
   private static void handleIntent(Intent intent, boolean doCallback)
   {
-    if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+    if (Intent.ACTION_VIEW.equals(intent.getAction()))
+    {
       Uri uri = intent.getData();
-      if (uri != null) {
-        File output = new File(mainContext.getCacheDir(), new File("fnfc", uri.getPath()).getName());
+      if (uri != null)
+      {
+        try
+        {
+          lastFNFC = copyFNFCToCache(uri);
 
-        try {
-          InputStream in = mainContext.getContentResolver().openInputStream(uri);
-          OutputStream out = new FileOutputStream(output);
-          byte[] buffer = new byte[8192];
-          int len;
-          while ((len = in.read(buffer)) > 0) {
-            out.write(buffer, 0, len);
+          if (doCallback)
+          {
+            CallbackUtil.callMethod("onFNCOpen", lastFNFC);
           }
         }
-        catch (Exception e) {
-            Log.e("Exception", e.getMessage());
-        }
-
-        launchedFile = output.getAbsolutePath();
-
-        if (doCallback)
+        catch (IOException e)
         {
-          Object[] args = new Object[1];
-          args[0] = launchedFile;
-          CallbackUtil.callMethod("onOpenFNFC", args);
+         	Log.e(LOG_TAG, e.getMessage());
         }
       }
     }
   }
+
+  public static String copyFNFCToCache(Uri uri) throws IOException
+	{
+		if (uri != null)
+    {
+			String fileName = new File(uri.getPath()).getName();
+
+      // Clean some Uri leftovers
+			if (fileName.contains(":"))
+				fileName = fileName.split(":")[1];
+
+      File cacheFNFC = new File(mainContext.getCacheDir(), "fnfc");
+      File output = new File(cacheFNFC, fileName);
+
+      if (!cacheFNFC.exists())
+        cacheFNFC.mkdir();
+
+			if (output.exists())
+				output.delete();
+
+    	ParcelFileDescriptor parcelFileDescriptor = null;
+		  FileInputStream fileInputStream = null;
+			OutputStream out = null;
+
+      try
+      {
+	    	parcelFileDescriptor = mainContext.getContentResolver().openFileDescriptor(uri, "r");
+				fileInputStream = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
+
+				byte[] fileBytes = new byte[(int) parcelFileDescriptor.getStatSize()];
+	    	fileInputStream.read(fileBytes);
+
+				out = new FileOutputStream(output);
+				out.write(fileBytes);
+
+        if (output.exists())
+          output.deleteOnExit(); // makes the file get deleted when the app closes ig?
+      }
+      catch (IOException e)
+      {
+       	Log.e(LOG_TAG, e.getMessage());
+      }
+			finally
+			{
+	    	if (fileInputStream != null)
+    		  fileInputStream.close();
+
+    	  if (parcelFileDescriptor != null)
+    	   	parcelFileDescriptor.close();
+
+				if (out != null)
+					out.close();
+    	}
+
+    	return output.getAbsolutePath();
+		}
+
+		return null;
+	}
 }
