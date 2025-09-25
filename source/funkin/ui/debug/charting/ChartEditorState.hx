@@ -3516,7 +3516,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
-    Cursor.show();
+    if (this.subState == null) Cursor.show();
 
     return true;
   }
@@ -6136,6 +6136,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.persistentDraw = false;
     stopWelcomeMusic();
 
+    Cursor.hide();
+
     LoadingState.loadPlayState(targetStateParams, false, true, function(targetState) {
       targetState.vocals = audioVocalTrackGroup;
     });
@@ -6541,6 +6543,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     moveSongToScrollPosition();
 
     fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+
+    Cursor.show();
 
     // Reapply the volume and playback rate.
     var instTargetVolume:Float = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
