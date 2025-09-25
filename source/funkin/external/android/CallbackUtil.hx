@@ -3,6 +3,7 @@ package funkin.external.android;
 #if android
 import lime.system.JNI;
 import flixel.util.FlxSignal;
+import haxe.ds.Map;
 
 /**
  * A Utility class to handle Android API level callbacks and events.
@@ -13,14 +14,6 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
    * The result code for `DATA_FOLDER_CLOSED` activity.
    */
   public static var DATA_FOLDER_CLOSED(get, never):Int;
-
-  @:noCompletion
-  static function get_DATA_FOLDER_CLOSED():Int
-  {
-    final field:Null<Dynamic> = JNIUtil.createStaticField('funkin/extensions/CallbackUtil', 'DATA_FOLDER_CLOSED', 'I');
-
-    return field != null ? field.get() : 0;
-  }
 
   /**
    * Signal triggered when an activity result is received.
@@ -49,13 +42,27 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
     }
   }
 
-  /**
-   * Get an Array that contains every static field from this class
-   * @return Array<Dynamic>
-   */
+  @:noCompletion
+  static function get_DATA_FOLDER_CLOSED():Int
+  {
+    final field:Null<Dynamic> = JNIUtil.createStaticField('funkin/extensions/CallbackUtil', 'DATA_FOLDER_CLOSED', 'I');
+
+    return field != null ? field.get() : 0;
+  }
+
+  @:noCompletion
+  private static var __staticFields:Array<Dynamic> = null;
+
+  @:noCompletion
+  public static var __callbacksFields:Map<String, Dynamic> = new Map<String, Dynamic>();
+
+  @:noCompletion
   private static function listStaticFields():Array<Dynamic>
   {
-    return Type.getClassFields(CallbackUtil);
+    if (__staticFields != null) return __staticFields;
+    __staticFields = Type.getClassFields(CallbackUtil);
+    __staticFields = __staticFields.filter((field) -> Std.isOfType(Reflect.field(CallbackUtil, field), IFlxSignal));
+    return __staticFields;
   }
 
   @:noCompletion
@@ -68,13 +75,15 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
   #end
   private function dispatchCallback(callbackName:String, arguments:Array<Dynamic>)
   {
-    // TODO: Figure out a way to check if it's a FlxSignal? Don't know if it's possible due to how FlxTypedSignal works
     if (listStaticFields().contains(callbackName))
     {
-      // trace('[CALLBACK] Calling ${callbackName} with args ${arguments == null ? "[]" : '[${arguments.join(',')}]'}');
       final field = Reflect.field(CallbackUtil, callbackName);
-      final method = Reflect.field(field, "dispatch");
-      Reflect.callMethod(field, method, arguments);
+
+      if (!__callbacksFields.exists(callbackName))
+      {
+        __callbacksFields.set(callbackName, Reflect.field(field, "dispatch"));
+      }
+      Reflect.callMethod(field, __callbacksFields.get(callbackName), arguments);
     }
     else
     {
