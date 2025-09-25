@@ -182,8 +182,8 @@ class DebugBoundingState extends FlxState
     onionSkinChar.flipX = swagChar.flipX;
     onionSkinChar.scale.set(swagChar.scale.x, swagChar.scale.y);
     onionSkinChar.updateHitbox();
-    onionSkinChar.offset.x = swagChar.offset.x + swagChar.animOffsets[0] * swagChar.scale.x;
-    onionSkinChar.offset.y = swagChar.offset.y + swagChar.animOffsets[1] * swagChar.scale.y;
+    onionSkinChar.offset.x = swagChar.offset.x + (swagChar.animOffsets[0] - swagChar.globalOffsets[0]) * swagChar.scale.x;
+    onionSkinChar.offset.y = swagChar.offset.y + (swagChar.animOffsets[1] - swagChar.globalOffsets[1]) * swagChar.scale.y;
 
     swagChar.playAnimation(currentAnimationName, true); // reset animation to the one it should be
   }
@@ -241,7 +241,7 @@ class DebugBoundingState extends FlxState
       {
         swagChar.animOffsets = [(FlxG.mouse.x - mouseOffset.x) * -1, (FlxG.mouse.y - mouseOffset.y) * -1];
 
-        swagChar.animationOffsets.set(offsetAnimationDropdown.value.id, swagChar.animOffsets);
+        swagChar.animationOffsets.set(swagChar.getCurrentAnimation(), swagChar.animOffsets);
 
         txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
         txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
