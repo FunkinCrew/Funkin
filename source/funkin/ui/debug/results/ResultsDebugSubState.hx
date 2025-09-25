@@ -67,6 +67,11 @@ class ResultsDebugSubState extends MusicBeatSubState
     createToggleListItem("Difficulty", Constants.DEFAULT_DIFFICULTY_LIST_FULL, function(result:String) {
       resultsParams.difficultyId = result;
     });
+    createToggleListItem("New Highscore", ["True", "False"], function(result:String) {
+      var highscoreEnabled:Bool = true;
+      if (result == "False") highscoreEnabled = false;
+      resultsParams.isNewHighscore = highscoreEnabled;
+    });
   }
 
   function createTextItem(name:String, ?onChange:Void->Void):MenuTypedItem<FlxText>
