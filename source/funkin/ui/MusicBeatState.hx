@@ -170,11 +170,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     super.update(elapsed);
 
-    #if debug
-    if (FlxG.keys.justPressed.F1)
-    #else
-    if (FlxG.keys.justPressed.F2)
-    #end
+    if (FlxG.keys.justPressed.F7)
     {
       if (FlxG.keys.pressed.SHIFT)
       {
