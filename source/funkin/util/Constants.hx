@@ -8,6 +8,7 @@ import lime.app.Application;
 /**
  * A store of unchanging, globally relevant values.
  */
+@:nullSafety
 class Constants
 {
   /**
@@ -67,18 +68,9 @@ class Constants
 
   /**
    * Link to buy merch for the game.
+   * This is usually fetched from the Newgrounds API but we use this as a fallback.
    */
-  public static final URL_MERCH:String = 'https://www.makeship.com/shop/creator/friday-night-funkin';
-
-  /**
-   * Preloader sitelock.
-   * Matching is done by `FlxStringUtil.getDomain`, so any URL on the domain will work.
-   * The first link in this list is the one users will be redirected to if they try to access the game from a different URL.
-   */
-  public static final SITE_LOCK:Array<String> = [
-    "https://www.newgrounds.com/portal/view/770371", // Newgrounds, baybee!
-    FlxBasePreloader.LOCAL // localhost for dev stuff
-  ];
+  public static final URL_MERCH_FALLBACK:String = 'https://needlejuicerecords.com/en-ca/pages/friday-night-funkin';
 
   /**
    * Link to download the game on Itch.io.
@@ -173,14 +165,6 @@ class Constants
   public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = 0xEEB211;
 
   /**
-   * LANGUAGE
-   */
-  // ==============================
-  public static final SITE_LOCK_TITLE:String = "You Loser!";
-
-  public static final SITE_LOCK_DESC:String = "This isn't Newgrounds!\nGo play Friday Night Funkin' on Newgrounds:";
-
-  /**
    * GAME DEFAULTS
    */
   // ==============================
@@ -235,7 +219,12 @@ class Constants
   /**
    * Standardized variations for charts
    */
-  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico'];
+  public static final DEFAULT_VARIATION_LIST:Array<String> = ['default', 'erect', 'pico', 'bf'];
+
+  /**
+   * Default sticker pack for transitions
+   */
+  public static final DEFAULT_STICKER_PACK:String = 'default';
 
   /**
    * The default intensity multiplier for camera bops.
@@ -247,6 +236,11 @@ class Constants
    * The default rate for camera zooms (in beats per zoom).
    */
   public static final DEFAULT_ZOOM_RATE:Int = 4;
+
+  /**
+   * The default offset of camera zooms (in beats).
+   */
+  public static final DEFAULT_ZOOM_OFFSET:Int = 0;
 
   /**
    * The default BPM for charts, so things don't break if none is specified.
@@ -407,6 +401,11 @@ class Constants
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
 
   /**
+   * Time (in seconds) to wait on the Title Screen before entering the Attract State.
+   */
+  public static final TITLE_ATTRACT_DELAY:Float = 37.5;
+
+  /**
    * HEALTH VALUES
    */
   // ==============================
@@ -457,27 +456,32 @@ class Constants
   /**
    * The amount of health the player gains, while holding a hold note, per second.
    */
-  public static final HEALTH_HOLD_BONUS_PER_SECOND:Float = 7.5 / 100.0 * HEALTH_MAX; // +7.5% / second
+  public static final HEALTH_HOLD_BONUS_PER_SECOND:Float = 6.0 / 100.0 * HEALTH_MAX; // +6.0% / second
 
   /**
    * The amount of health the player loses upon missing a note.
    */
-  public static final HEALTH_MISS_PENALTY:Float = 4.0 / 100.0 * HEALTH_MAX; // 4.0%
+  public static final HEALTH_MISS_PENALTY:Float = -4.0 / 100.0 * HEALTH_MAX; // 4.0%
 
   /**
    * The amount of health the player loses upon pressing a key when no note is there.
    */
-  public static final HEALTH_GHOST_MISS_PENALTY:Float = 2.0 / 100.0 * HEALTH_MAX; // 2.0%
+  public static final HEALTH_GHOST_MISS_PENALTY:Float = -4.0 / 100.0 * HEALTH_MAX; // 2.0%
 
   /**
-   * The amount of health the player loses upon letting go of a hold note while it is still going.
+   * The amount of health the player loses upon letting go of a hold note, per second remaining.
    */
-  public static final HEALTH_HOLD_DROP_PENALTY:Float = 0.0; // 0.0%
+  public static final HEALTH_HOLD_DROP_PENALTY_PER_SECOND:Float = 0 / 100.0 * HEALTH_MAX; // -4.5% / second
+
+  /**
+   * The maximum amount of health the player can lose upon letting go of a hold note.
+   */
+  public static final HEALTH_HOLD_DROP_PENALTY_MAX:Float = 0 / 100.0 * HEALTH_MAX; // -10.0%
 
   /**
    * The amount of health the player loses upon hitting a mine.
    */
-  public static final HEALTH_MINE_PENALTY:Float = 15.0 / 100.0 * HEALTH_MAX; // 15.0%
+  public static final HEALTH_MINE_PENALTY:Float = -15.0 / 100.0 * HEALTH_MAX; // 15.0%
 
   /**
    * SCORE VALUES
@@ -485,10 +489,20 @@ class Constants
   // ==============================
 
   /**
-   * The amount of score the player gains for every send they hold a hold note.
+   * The amount of score the player gains for every second they hold a hold note.
    * A fraction of this value is granted every frame.
    */
   public static final SCORE_HOLD_BONUS_PER_SECOND:Float = 250.0;
+
+  /**
+   * The amount of score the player loses upon letting go of a hold note, per second remaining.
+   */
+  public static final SCORE_HOLD_DROP_PENALTY_PER_SECOND:Float = -125.0;
+
+  /**
+   * The minimum amount of the hold note, in milliseconds, before the player gets penalized for letting go of it early.
+   */
+  public static final HOLD_DROP_PENALTY_THRESHOLD_MS:Float = 160.0;
 
   public static final JUDGEMENT_KILLER_COMBO_BREAK:Bool = false;
   public static final JUDGEMENT_SICK_COMBO_BREAK:Bool = false;
@@ -515,6 +529,11 @@ class Constants
    * - "Actually new or just a renamed ZIP?"
    */
   public static final EXT_CHART = "fnfc";
+
+  /**
+   * The file extension used when exporting stage files.
+   */
+  public static final EXT_STAGE = "fnfs";
 
   /**
    * The file extension used when loading audio files.
@@ -552,6 +571,11 @@ class Constants
   #end
 
   /**
+   * Otherwise known as "The FuckCunt Variable"
+   */
+  public static final CENSOR_EXPLETIVES:Bool = #if CENSOR_EXPLETIVES true #else false #end;
+
+  /**
    * The maximum number of previous file paths for the Chart Editor to remember.
    */
   public static final MAX_PREVIOUS_WORKING_FILES:Int = 10;
@@ -586,4 +610,34 @@ class Constants
    * 0.04 = 4% of distance per frame.
    */
   public static final DEFAULT_CAMERA_FOLLOW_RATE:Float = 0.04;
+
+  /**
+   * Default period value for vibration.
+   */
+  public inline static final DEFAULT_VIBRATION_PERIOD:Float = 0.1;
+
+  /**
+   * Default duration value for vibration.
+   */
+  public inline static final DEFAULT_VIBRATION_DURATION:Float = 0.1;
+
+  /**
+   * Min vibration amplitude.
+   */
+  public inline static final MIN_VIBRATION_AMPLITUDE:Float = 0.25;
+
+  /**
+   * Default vibration amplitude.
+   */
+  public inline static final DEFAULT_VIBRATION_AMPLITUDE:Float = 0.5;
+
+  /**
+   * Max vibration amplitude.
+   */
+  public inline static final MAX_VIBRATION_AMPLITUDE:Float = 1;
+
+  /**
+   * Default vibration sharpness.
+   */
+  public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
 }

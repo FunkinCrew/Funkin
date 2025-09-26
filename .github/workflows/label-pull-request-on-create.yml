@@ -1,0 +1,23 @@
+# Applies the following labels to pull requests when created:
+#  - status: pending triage
+
+name: "Pull Request Labeler 2 (Runs on PR creation)"
+on:
+  pull_request_target:
+    types:
+      - opened
+
+
+jobs:
+  # Apply `status: pending triage` to newly created pull requests
+  apply-pending-triage:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply "status pending triage" to new pull requests
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          labels: "status: pending triage"

@@ -1,6 +1,10 @@
-<!-- Please check for duplicates or similar PRs before submitting this PR. -->
-## Does this PR close any issues? If so, link them below.
+<!-- Please read the Contributing Guide (https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md) before submitting this PR. -->
 
-## Briefly describe the issue(s) fixed.
+<!-- Does this PR close any issues? If so, link them below. -->
+## Linked Issues
 
-## Include any relevant screenshots or videos.
+<!-- Briefly describe the issue(s) fixed. -->
+## Description
+
+<!-- Include any relevant screenshots or videos. -->
+## Screenshots/Videos

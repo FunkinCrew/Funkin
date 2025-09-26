@@ -1,6 +1,7 @@
 package funkin.play.scoring;
 
 import funkin.save.Save.SaveScoreData;
+import funkin.save.Save.SaveScoreTallyData;
 
 /**
  * Which system to use when scoring and judging notes.
@@ -69,6 +70,19 @@ class Scoring
     }
   }
 
+  public static function getMissScore(scoringSystem:ScoringSystem = PBOT1):Int
+  {
+    return switch (scoringSystem)
+    {
+      case LEGACY: LEGACY_MISS_SCORE;
+      case WEEK7: WEEK7_MISS_SCORE;
+      case PBOT1: PBOT1_MISS_SCORE;
+      default:
+        FlxG.log.error('Unknown scoring system: ${scoringSystem}');
+        0;
+    }
+  }
+
   /**
    * The maximum score a note can receive.
    */
@@ -92,7 +106,7 @@ class Scoring
   /**
    * The score a note receives when it is missed.
    */
-  public static final PBOT1_MISS_SCORE:Int = 0;
+  public static final PBOT1_MISS_SCORE:Int = -100;
 
   /**
    * The threshold at which a note hit is considered perfect and always given the max score.
@@ -228,6 +242,11 @@ class Scoring
    */
   public static final LEGACY_SHIT_SCORE:Int = 50;
 
+  /**
+   * The score a note receives when missed.
+   */
+  public static final LEGACY_MISS_SCORE:Int = -10;
+
   static function scoreNoteLEGACY(msTiming:Float):Int
   {
     var absTiming:Float = Math.abs(msTiming);
@@ -276,6 +295,7 @@ class Scoring
   public static final WEEK7_BAD_THRESHOLD:Float = 0.8; // 80% of the hit window, or ~125ms
   public static final WEEK7_GOOD_THRESHOLD:Float = 0.55; // 55% of the hit window, or ~91ms
   public static final WEEK7_SICK_THRESHOLD:Float = 0.2; // 20% of the hit window, or ~33ms
+  public static final WEEK7_MISS_SCORE:Int = -10;
   public static final WEEK7_SHIT_SCORE:Int = 50;
   public static final WEEK7_BAD_SCORE:Int = 100;
   public static final WEEK7_GOOD_SCORE:Int = 200;
@@ -354,33 +374,31 @@ class Scoring
     // we can return null here, meaning that the player hasn't actually played and finished the song (thus has no data)
     if (scoreData.tallies.totalNotes == 0) return null;
 
-    // Perfect (Platinum) is a Sick Full Clear
-    var isPerfectGold = scoreData.tallies.sick == scoreData.tallies.totalNotes;
-    if (isPerfectGold)
+    // Perfect (Gold) is a Sick Full Clear
+    if (scoreData.tallies.sick == scoreData.tallies.totalNotes)
     {
       return ScoringRank.PERFECT_GOLD;
     }
 
     // Else, use the standard grades
 
-    // Grade % (only good and sick), 1.00 is a full combo
-    var grade = (scoreData.tallies.sick + scoreData.tallies.good) / scoreData.tallies.totalNotes;
-    // Clear % (including bad and shit). 1.00 is a full clear but not a full combo
-    var clear = (scoreData.tallies.totalNotesHit) / scoreData.tallies.totalNotes;
+    // Final Grade = (Sick + Good - Miss) / (Total Notes)
 
-    if (grade == Constants.RANK_PERFECT_THRESHOLD)
+    var completionAmount:Float = Scoring.tallyCompletion(scoreData.tallies);
+
+    if (completionAmount == Constants.RANK_PERFECT_THRESHOLD)
     {
       return ScoringRank.PERFECT;
     }
-    else if (grade >= Constants.RANK_EXCELLENT_THRESHOLD)
+    else if (completionAmount >= Constants.RANK_EXCELLENT_THRESHOLD)
     {
       return ScoringRank.EXCELLENT;
     }
-    else if (grade >= Constants.RANK_GREAT_THRESHOLD)
+    else if (completionAmount >= Constants.RANK_GREAT_THRESHOLD)
     {
       return ScoringRank.GREAT;
     }
-    else if (grade >= Constants.RANK_GOOD_THRESHOLD)
+    else if (completionAmount >= Constants.RANK_GOOD_THRESHOLD)
     {
       return ScoringRank.GOOD;
     }
@@ -388,6 +406,21 @@ class Scoring
     {
       return ScoringRank.SHIT;
     }
+  }
+
+  /**
+   * Calculates the "completion" of a song, based on how many GOOD and SICK notes were hit, minus how many were missed
+   * Top secret funkin crew patented algorithm
+   * TODO: Could possibly move more of the "tallying" related handling here.
+   *       In FreeplayState we make sure it's clamped between 0 and 1, and we probably always want to assume that?
+   *
+   * @param tallies
+   * @return Float Completion, as a float value between 0 and 1. If `tallies` is `null`, we return 0;
+   */
+  public static function tallyCompletion(?tallies:SaveScoreTallyData):Float
+  {
+    if (tallies == null) return 0.0;
+    return ((tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes).clamp(0, 1); // Needs to be clamped to make sure Perfect ranks are saved properly
   }
 }
 
@@ -438,6 +471,7 @@ enum abstract ScoringRank(String)
     return temp1 > temp2;
   }
 
+  // Greater than or equal to comparison
   @:op(A >= B) static function compareGTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
@@ -449,6 +483,7 @@ enum abstract ScoringRank(String)
     return temp1 >= temp2;
   }
 
+  // Less than comparison
   @:op(A < B) static function compareLT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
@@ -460,6 +495,7 @@ enum abstract ScoringRank(String)
     return temp1 < temp2;
   }
 
+  // Less than or equal to comparison
   @:op(A <= B) static function compareLTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
@@ -617,5 +653,29 @@ enum abstract ScoringRank(String)
       default:
         return 'resultScreen/rankText/rankTextGOOD';
     }
+  }
+
+  public function getRankingFreeplayColor()
+  {
+    return switch (abstract)
+    {
+      case SHIT:
+        0xFF6044FF;
+      case GOOD:
+        0xFFEF8764;
+      case GREAT:
+        0xFFEAF6FF;
+      case EXCELLENT:
+        0xFFFDCB42;
+      case PERFECT:
+        0xFFFF58B4;
+      case PERFECT_GOLD:
+        0xFFFFB619;
+    }
+  }
+
+  public function toString():String
+  {
+    return this;
   }
 }

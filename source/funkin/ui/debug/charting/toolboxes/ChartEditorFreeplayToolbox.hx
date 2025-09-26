@@ -3,23 +3,16 @@ package funkin.ui.debug.charting.toolboxes;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.math.FlxMath;
 import funkin.audio.SoundGroup;
-import funkin.audio.waveform.WaveformDataParser;
 import funkin.ui.debug.charting.commands.SetFreeplayPreviewCommand;
 import funkin.ui.haxeui.components.WaveformPlayer;
 import funkin.ui.freeplay.FreeplayState;
-import funkin.util.TimerUtil;
 import haxe.ui.backend.flixel.components.SpriteWrapper;
 import haxe.ui.components.Button;
-import haxe.ui.components.HorizontalSlider;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
-import haxe.ui.components.Slider;
-import haxe.ui.containers.VBox;
 import haxe.ui.containers.Absolute;
 import haxe.ui.containers.ScrollView;
-import haxe.ui.containers.Frame;
 import haxe.ui.core.Screen;
-import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
@@ -214,7 +207,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
       {
         // Move the playhead if it would go out of view.
         var prevPlayheadRelativePos = playheadRelativePos;
-        playheadRelativePos = FlxMath.bound(playheadRelativePos, 0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
+        playheadRelativePos = playheadRelativePos.clamp(0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
         trace('newPos: ${playheadRelativePos}');
         var diff = playheadRelativePos - prevPlayheadRelativePos;
 
@@ -289,12 +282,10 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     // Build player waveform.
     // waveformMusic.waveform.forceUpdate = true;
-    var perfStart:Float = TimerUtil.start();
     var waveformData1 = playerVoice?.waveformData;
     var waveformData2 = opponentVoice?.waveformData ?? playerVoice?.waveformData; // this null check is for songs that only have 1 vocals file!
     var waveformData3 = chartEditorState.audioInstTrack.waveformData;
     var waveformData = waveformData3.merge(waveformData1).merge(waveformData2);
-    trace('Waveform data merging took: ${TimerUtil.seconds(perfStart)}');
 
     waveformMusic.waveform.waveformData = waveformData;
     // Set the width and duration to render the full waveform, with the clipRect applied we only render a segment of it.
@@ -382,7 +373,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     // Determine the position of the mouse relative to the
     var mouseXPos = FlxG.mouse.x;
 
-    var relativeMouseXPos = mouseXPos - waveformScrollview.screenX;
+    var relativeMouseXPos = mouseXPos - waveformScrollview.cachedScreenX;
     var targetPlayheadPos = relativeMouseXPos + waveformScrollview.hscrollPos;
 
     // Move the playhead to the mouse position.
@@ -415,8 +406,8 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     var currentAbsMousePos = FlxG.mouse.x;
     var dragDiff = currentAbsMousePos - waveformDragStartPos;
 
-    var currentRelativeMousePos = currentAbsMousePos - waveformScrollview.screenX;
-    var relativeStartPos = waveformDragStartPos - waveformScrollview.screenX;
+    var currentRelativeMousePos = currentAbsMousePos - waveformScrollview.cachedScreenX;
+    var relativeStartPos = waveformDragStartPos - waveformScrollview.cachedScreenX;
 
     var isDraggingRight = dragDiff > 0;
     var hasDraggedEnough = Math.abs(dragDiff) > 10;

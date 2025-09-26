@@ -6,8 +6,14 @@ import openfl.utils.Future;
  * A wrapper around `openfl.utils.Assets` which disallows access to the harmful functions.
  * Later we'll add Funkin-specific caching to this.
  */
+@:nullSafety
 class Assets
 {
+  /**
+   * The assets cache.
+   */
+  public static var cache:openfl.utils.IAssetCache = openfl.utils.Assets.cache;
+
   /**
    * Get the file system path for an asset
    * @param path The asset path to load from, relative to the assets folder
@@ -144,16 +150,31 @@ class Assets
     return openfl.utils.Assets.list(type);
   }
 
+  /**
+   * Checks if a library with the given name exists.
+   * @param name The name to check.
+   * @return Whether or not the library exists.
+   */
   public static function hasLibrary(name:String):Bool
   {
     return openfl.utils.Assets.hasLibrary(name);
   }
 
+  /**
+   * Retrieves a library with the given name.
+   * @param name The name of the library to get.
+   * @return The library with the given name.
+   */
   public static function getLibrary(name:String):lime.utils.AssetLibrary
   {
     return openfl.utils.Assets.getLibrary(name);
   }
 
+  /**
+   * Loads a library with the given name.
+   * @param name The name of the library to load.
+   * @return An `AssetLibary` object.
+   */
   public static function loadLibrary(name:String):Future<openfl.utils.AssetLibrary>
   {
     return openfl.utils.Assets.loadLibrary(name);

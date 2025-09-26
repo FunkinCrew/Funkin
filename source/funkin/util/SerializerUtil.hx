@@ -2,7 +2,6 @@ package funkin.util;
 
 import haxe.Json;
 import haxe.io.Bytes;
-import thx.semver.Version;
 
 typedef ScoreInput =
 {
@@ -15,6 +14,7 @@ typedef ScoreInput =
  * Functions dedicated to serializing and deserializing data.
  * NOTE: Use `json2object` wherever possible, it's way more efficient.
  */
+@:nullSafety
 class SerializerUtil
 {
   static final INDENT_CHAR = "\t";
@@ -34,6 +34,8 @@ class SerializerUtil
    */
   public static function fromJSON(input:String):Dynamic
   {
+    input = input.substring(input.indexOf("{"), input.lastIndexOf("}") + 1);
+
     try
     {
       return Json.parse(input);
@@ -49,7 +51,7 @@ class SerializerUtil
   /**
    * Convert a JSON byte array to a Haxe object.
    */
-  public static function fromJSONBytes(input:Bytes):Dynamic
+  public static function fromJSONBytes(input:Bytes):Null<Dynamic>
   {
     try
     {

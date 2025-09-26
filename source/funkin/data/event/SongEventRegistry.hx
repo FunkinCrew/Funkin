@@ -1,7 +1,6 @@
 package funkin.data.event;
 
 import funkin.play.event.SongEvent;
-import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongData.SongEventData;
 import funkin.util.macro.ClassMacro;
 import funkin.play.event.ScriptedSongEvent;
@@ -11,11 +10,12 @@ import funkin.modding.events.ScriptEventDispatcher;
 /**
  * This class statically handles the parsing of internal and scripted song event handlers.
  */
+@:nullSafety
 class SongEventRegistry
 {
   /**
    * Every built-in event class must be added to this list.
-   * Thankfully, with the power of `SongEventMacro`, this is done automatically.
+   * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
   static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent);
 
@@ -90,14 +90,14 @@ class SongEventRegistry
     return eventCache.values();
   }
 
-  public static function getEvent(id:String):SongEvent
+  public static function getEvent(id:String):Null<SongEvent>
   {
     return eventCache.get(id);
   }
 
-  public static function getEventSchema(id:String):SongEventSchema
+  public static function getEventSchema(id:String):Null<SongEventSchema>
   {
-    var event:SongEvent = getEvent(id);
+    var event:Null<SongEvent> = getEvent(id);
     if (event == null) return null;
 
     return event.getEventSchema();
@@ -111,7 +111,7 @@ class SongEventRegistry
   public static function handleEvent(data:SongEventData):Void
   {
     var eventKind:String = data.eventKind;
-    var eventHandler:SongEvent = eventCache.get(eventKind);
+    var eventHandler:Null<SongEvent> = eventCache.get(eventKind);
 
     if (eventHandler != null)
     {

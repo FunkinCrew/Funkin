@@ -1,7 +1,6 @@
 package funkin.util;
 
-import thx.semver.Version;
-import thx.semver.VersionRule;
+import thx.semver.Version.Identifier.StringId;
 
 /**
  * Utility functions for operating on semantic versions.
@@ -10,6 +9,7 @@ import thx.semver.VersionRule;
  * increment the minor version (1.x.0) if you make a new feature (but previous content is still compatible),
  * and increment the major version (x.0.0) if you make a breaking change (e.g. new API or reorganized file format).
  */
+@:nullSafety
 class VersionUtil
 {
   /**
@@ -33,6 +33,7 @@ class VersionUtil
     }
   }
 
+  @:nullSafety(Off)
   public static function repairVersion(version:thx.semver.Version):thx.semver.Version
   {
     var versionData:thx.semver.Version.SemVer = version;
@@ -110,7 +111,7 @@ class VersionUtil
    * @param input The JSON string to parse.
    * @return The semantic version, or null if it could not be parsed.
    */
-  public static function parseVersion(input:Dynamic):Null<thx.semver.Version>
+  public static function parseVersion(input:Null<Dynamic>):Null<thx.semver.Version>
   {
     if (input == null) return null;
 

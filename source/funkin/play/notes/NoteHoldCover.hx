@@ -1,72 +1,40 @@
 package funkin.play.notes;
 
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import funkin.play.notes.NoteDirection;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
-import flixel.FlxG;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
+import funkin.play.notes.notestyle.NoteStyle;
 
 class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 {
   static final FRAMERATE_DEFAULT:Int = 24;
 
-  static var glowFrames:FlxFramesCollection;
-
   public var holdNote:SustainTrail;
 
-  var glow:FlxSprite;
+  public var glow:FlxSprite;
+
   var sparks:FlxSprite;
 
-  public function new()
+  public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
 
-    setup();
-  }
-
-  public static function preloadFrames():Void
-  {
-    glowFrames = null;
-    for (direction in Strumline.DIRECTIONS)
-    {
-      var directionName = direction.colorName.toTitleCase();
-
-      var atlas:FlxFramesCollection = Paths.getSparrowAtlas('holdCover${directionName}');
-      atlas.parent.persist = true;
-
-      if (glowFrames != null)
-      {
-        glowFrames = FlxAnimationUtil.combineFramesCollections(glowFrames, atlas);
-      }
-      else
-      {
-        glowFrames = atlas;
-      }
-    }
+    setupHoldNoteCover(noteStyle);
   }
 
   /**
    * Add ALL the animations to this sprite. We will recycle and reuse the FlxSprite multiple times.
    */
-  function setup():Void
+  function setupHoldNoteCover(noteStyle:NoteStyle):Void
   {
     glow = new FlxSprite();
     add(glow);
-    if (glowFrames == null) preloadFrames();
-    glow.frames = glowFrames;
 
-    for (direction in Strumline.DIRECTIONS)
-    {
-      var directionName = direction.colorName.toTitleCase();
+    // TODO: null check here like how NoteSplash does
+    noteStyle.buildHoldCoverSprite(this);
 
-      glow.animation.addByPrefix('holdCoverStart$directionName', 'holdCoverStart${directionName}0', FRAMERATE_DEFAULT, false, false, false);
-      glow.animation.addByPrefix('holdCover$directionName', 'holdCover${directionName}0', FRAMERATE_DEFAULT, true, false, false);
-      glow.animation.addByPrefix('holdCoverEnd$directionName', 'holdCoverEnd${directionName}0', FRAMERATE_DEFAULT, false, false, false);
-    }
-
-    glow.animation.finishCallback = this.onAnimationFinished;
+    glow.animation.onFinish.add(this.onAnimationFinished);
 
     if (glow.animation.getAnimationList().length < 3 * 4)
     {
@@ -102,6 +70,8 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     super.kill();
 
     this.visible = false;
+
+    holdNote.cover = null;
 
     if (glow != null) glow.visible = false;
     if (sparks != null) sparks.visible = false;

@@ -1,15 +1,16 @@
 package funkin.ui.options.items;
 
-import funkin.ui.TextMenuList;
+import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
-import funkin.ui.options.MenuItemEnums;
-import haxe.EnumTools;
+#if mobile
+import funkin.util.SwipeUtil;
+#end
 
 /**
  * Preference item that allows the player to pick a value from an enum (list of values)
  */
-class EnumPreferenceItem extends TextMenuItem
+class EnumPreferenceItem<T> extends TextMenuItem
 {
   function controls():Controls
   {
@@ -18,34 +19,37 @@ class EnumPreferenceItem extends TextMenuItem
 
   public var lefthandText:AtlasText;
 
-  public var currentValue:String;
-  public var onChangeCallback:Null<String->Void>;
-  public var map:Map<String, String>;
+  public var currentKey:String;
+  public var onChangeCallback:Null<String->T->Void>;
+  public var map:Map<String, T>;
   public var keys:Array<String> = [];
 
   var index = 0;
 
-  public function new(x:Float, y:Float, name:String, map:Map<String, String>, defaultValue:String, ?callback:String->Void)
+  public function new(x:Float, y:Float, name:String, map:Map<String, T>, defaultKey:String, ?callback:String->T->Void)
   {
     super(x, y, name, function() {
-      callback(this.currentValue);
+      var value = map.get(this.currentKey);
+      callback(this.currentKey, value);
     });
 
     updateHitbox();
 
     this.map = map;
-    this.currentValue = defaultValue;
+    this.currentKey = defaultKey;
     this.onChangeCallback = callback;
 
     var i:Int = 0;
     for (key in map.keys())
     {
+      var value:T = map[key];
+
       this.keys.push(key);
-      if (this.currentValue == key) index = i;
+      if (this.currentKey == key) index = i;
       i += 1;
     }
 
-    lefthandText = new AtlasText(15, y, formatted(defaultValue), AtlasFont.DEFAULT);
+    lefthandText = new AtlasText(x + 15, y, formatted(defaultKey), AtlasFont.DEFAULT);
 
     this.fireInstantly = true;
   }
@@ -57,8 +61,8 @@ class EnumPreferenceItem extends TextMenuItem
     // var fancyTextFancyColor:Color;
     if (selected)
     {
-      var shouldDecrease:Bool = controls().UI_LEFT_P;
-      var shouldIncrease:Bool = controls().UI_RIGHT_P;
+      var shouldDecrease:Bool = controls().UI_LEFT_P #if mobile || SwipeUtil.justSwipedLeft #end;
+      var shouldIncrease:Bool = controls().UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end;
 
       if (shouldDecrease) index -= 1;
       if (shouldIncrease) index += 1;
@@ -66,21 +70,22 @@ class EnumPreferenceItem extends TextMenuItem
       if (index > keys.length - 1) index = 0;
       if (index < 0) index = keys.length - 1;
 
-      currentValue = keys[index];
+      currentKey = keys[index];
       if (onChangeCallback != null && (shouldIncrease || shouldDecrease))
       {
-        onChangeCallback(currentValue);
+        var value = map.get(currentKey);
+        onChangeCallback(currentKey, value);
       }
     }
 
-    lefthandText.text = formatted(currentValue);
+    lefthandText.text = formatted(currentKey);
   }
 
-  function formatted(value:String):String
+  function formatted(key:String):String
   {
     // FIXME: Can't add arrows around the text because the font doesn't support < >
     // var leftArrow:String = selected ? '<' : '';
     // var rightArrow:String = selected ? '>' : '';
-    return '${map.get(value) ?? value}';
+    return '${key}';
   }
 }

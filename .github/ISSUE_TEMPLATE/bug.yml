@@ -3,24 +3,31 @@ description: Report a bug or an issue in the game.
 labels: ["type: minor bug", "status: pending triage"]
 title: "Bug Report: "
 body:
+  - type: markdown
+    attributes:
+      value: "# PLEASE READ THE [CONTRIBUTING GUIDE](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!"
   - type: checkboxes
     attributes:
       label: Issue Checklist
       description: Be sure to complete these steps to increase the chances of your issue being addressed!
       options:
-        - label: I have properly named my issue
+        - label: I have read the [Contributing Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md)
         - label: I have checked the Issues/Discussions pages to see if my issue has already been reported
+        - label: I have properly titled my issue
+        - label: I did not have any mods installed when I encountered this issue
 
   - type: dropdown
     attributes:
       label: Platform
       description: Which platform are you playing on?
       options:
+        - Android
+        - iOS/iPadOS
         - Newgrounds (Web/HTML5)
         - Itch.io (Web/HTML5)
-        - Itch.io (Downloadable Build) - Windows
-        - Itch.io (Downloadable Build) - MacOS
-        - Itch.io (Downloadable Build) - Linux
+        - Windows (Downloadable Build)
+        - MacOS (Downloadable Build)
+        - Linux (Downloadable Build)
         - Compiled from GitHub Source Code
     validations:
       required: true
@@ -39,12 +46,24 @@ body:
 
   - type: input
     attributes:
+      label: Mobile Device Model
+      description: (Mobile users only) What mobile device are you playing on?
+      placeholder: ex. iPhone 17, Galaxy S25, iPad 11th Gen
+
+  - type: input
+    attributes:
+      label: Mobile OS Version
+      description: (Mobile users only) What version is your Operating System?
+      placeholder: ex. iOS 26.0, Android 15, iPadOS 26.0
+
+  - type: input
+    attributes:
       label: Version
-      description: Which version are you playing on? The game version is in the bottom left corner of the main menu. 
-      placeholder: ex. 0.5.0
+      description: Which version are you playing on? The game version is in the bottom left corner of the main menu.
+      placeholder: ex. 0.7.5
     validations:
       required: true
-  
+
   - type: markdown
     attributes:
       value: "## Describe your bug."
@@ -56,11 +75,11 @@ body:
   - type: textarea
     attributes:
       label: Description (include any images, videos, errors, or crash logs)
-      description: Provide as much detail as you can. The better others understand your issue, the more they can help you!  
+      description: Provide as much detail as you can. The better others understand your issue, the more they can help you!
       placeholder: Describe your issue here...
     validations:
       required: true
-      
+
   - type: textarea
     attributes:
       label: Steps to Reproduce

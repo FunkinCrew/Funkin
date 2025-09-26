@@ -1,8 +1,8 @@
-FROM ubuntu:mantic
+FROM ubuntu:noble
 
-ARG haxe_version=4.3.4
+ARG haxe_version=4.3.6
 ARG haxelib_version=4.1.0
-ARG neko_version=2.3.0
+ARG neko_version=2.4.0
 
 # prepare runner
 ENV GITHUB_HOME="/github/home"
@@ -98,11 +98,12 @@ EOF
 # neko
 # https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-linux64.tar.gz
 RUN <<EOF
-neko_url=$(curl https://api.github.com/repos/HaxeFoundation/neko/releases -sfL \
-  | jq '.[] | select(.name == "'"$neko_version"'")' \
-  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
-  | jq -r '.browser_download_url')
-curl -sfL "$neko_url" | tar -xz -C /usr/local
+#neko_url=$(curl https://api.github.com/repos/HaxeFoundation/neko/releases -fL \
+#  | jq '.[] | select(.name == "'"$neko_version"'")' \
+#  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
+#  | jq -r '.browser_download_url')
+neko_url="https://geo.thei.rs/funkin/neko-2.4.1-linux64.tar.gz"
+curl -fL "$neko_url" | tar -xz -C /usr/local
 EOF
 
 RUN <<EOF
@@ -117,11 +118,12 @@ ENV PATH="$NEKOPATH:$PATH"
 # haxe
 # https://github.com/HaxeFoundation/haxe/releases/download/4.0.5/haxe-4.0.5-linux64.tar.gz
 RUN <<EOF
-haxe_url=$(curl https://api.github.com/repos/HaxeFoundation/haxe/releases -sfL \
-  | jq '.[] | select(.name == "'"$haxe_version"'")' \
-  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
-  | jq -r '.browser_download_url')
-curl -sfL "$haxe_url" | tar -xz -C /usr/local
+#haxe_url=$(curl https://api.github.com/repos/HaxeFoundation/haxe/releases -fL \
+#  | jq '.[] | select(.name == "'"$haxe_version"'")' \
+#  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
+#  | jq -r '.browser_download_url')
+haxe_url="https://geo.thei.rs/funkin/haxe-4.3.6-linux64.tar.gz"
+curl -fL "$haxe_url" | tar -xz -C /usr/local
 EOF
 
 RUN <<EOF

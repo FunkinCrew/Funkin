@@ -1,9 +1,8 @@
 package funkin.util;
 
-import flixel.addons.plugin.taskManager.FlxTask;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
 
+@:nullSafety
 class FlxTweenUtil
 {
   public static function pauseTween(tween:FlxTween):Void

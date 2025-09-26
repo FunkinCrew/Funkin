@@ -1,13 +1,9 @@
 package funkin.play.event;
 
-import flixel.tweens.FlxTween;
-import flixel.FlxCamera;
 import flixel.tweens.FlxEase;
 // Data from the chart
-import funkin.data.song.SongData;
 import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
-import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
@@ -114,6 +110,7 @@ class ZoomCameraSongEvent extends SongEvent
         name: 'zoom',
         title: 'Zoom Level',
         defaultValue: 1.0,
+        min: 0,
         step: 0.05,
         type: SongEventFieldType.FLOAT,
         units: 'x'
@@ -122,6 +119,7 @@ class ZoomCameraSongEvent extends SongEvent
         name: 'duration',
         title: 'Duration',
         defaultValue: 4.0,
+        min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
         units: 'steps'
@@ -162,9 +160,21 @@ class ZoomCameraSongEvent extends SongEvent
           'Smooth Step In' => 'smoothStepIn',
           'Smooth Step Out' => 'smoothStepOut',
           'Smooth Step In/Out' => 'smoothStepInOut',
+          'Smoother Step In' => 'smootherStepIn',
+          'Smoother Step Out' => 'smootherStepOut',
+          'Smoother Step In/Out' => 'smootherStepInOut',
           'Elastic In' => 'elasticIn',
           'Elastic Out' => 'elasticOut',
-          'Elastic In/Out' => 'elasticInOut'
+          'Elastic In/Out' => 'elasticInOut',
+          'Back In' => 'backIn',
+          'Back Out' => 'backOut',
+          'Back In/Out' => 'backInOut',
+          'Bounce In' => 'bounceIn',
+          'Bounce Out' => 'bounceOut',
+          'Bounce In/Out' => 'bounceInOut',
+          'Circ In' => 'circIn',
+          'Circ Out' => 'circOut',
+          'Circ In/Out' => 'circInOut'
         ]
       }
     ]);

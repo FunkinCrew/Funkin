@@ -1,14 +1,12 @@
 package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.notes.NoteDirection;
 import funkin.data.song.SongData.SongNoteData;
-import flixel.util.FlxDirectionFlags;
+import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.tile.FlxDrawTrianglesItem;
+import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
-import funkin.ui.options.PreferencesMenu;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -35,6 +33,11 @@ class SustainTrail extends FlxSprite
   public var parentStrumline:Strumline;
 
   public var cover:NoteHoldCover = null;
+
+  /**
+   * The Y Offset of the note.
+   */
+  public var yOffset:Float = 0.0;
 
   /**
    * Set to `true` if the user hit the note and is currently holding the sustain.
@@ -70,8 +73,6 @@ class SustainTrail extends FlxSprite
    */
   public var uvtData:DrawData<Float> = new DrawData<Float>();
 
-  private var processedGraphic:FlxGraphic;
-
   private var zoom:Float = 1;
 
   /**
@@ -90,7 +91,7 @@ class SustainTrail extends FlxSprite
    * Whether the note will recieve custom vertex data
    */
   public var customVertexData:Bool = false;
-  
+
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
 
@@ -176,7 +177,7 @@ class SustainTrail extends FlxSprite
       this.uvtData = new DrawData<Float>(uvtData.length, false, uvtData);
     }
   }
-  
+
   /**
    * Creates hold note graphic and applies correct zooming
    * @param noteStyle The note style
@@ -207,11 +208,12 @@ class SustainTrail extends FlxSprite
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
-    flipY = Preferences.downscroll;
+    flipY = Preferences.downscroll #if mobile
+    || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && !funkin.mobile.input.ControlsHandler.usingExternalInputDevice) #end;
 
     // alpha = 0.6;
     alpha = 1.0;
-    // calls updateColorTransform(), which initializes processedGraphic!
     updateColorTransform();
 
     updateClipping();
@@ -281,7 +283,7 @@ class SustainTrail extends FlxSprite
       return;
     }
 
-    var clipHeight:Float = FlxMath.bound(sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0), 0, graphicHeight);
+    var clipHeight:Float = sustainHeight(sustainLength - (songTime - strumTime), parentStrumline?.scrollSpeed ?? 1.0).clamp(0, graphicHeight);
     if (clipHeight <= 0.1)
     {
       visible = false;
@@ -395,7 +397,7 @@ class SustainTrail extends FlxSprite
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
       getScreenPosition(_point, camera).subtractPoint(offset);
-      camera.drawTriangles(processedGraphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing);
+      camera.drawTriangles(graphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing, colorTransform, shader);
     }
 
     #if FLX_DEBUG
@@ -407,6 +409,7 @@ class SustainTrail extends FlxSprite
   {
     super.kill();
 
+    if (!((cover?.animation?.name ?? "").startsWith("holdCoverEnd"))) cover?.playEnd();
     strumTime = 0;
     noteDirection = 0;
     sustainLength = 0;
@@ -437,16 +440,7 @@ class SustainTrail extends FlxSprite
     vertices = null;
     indices = null;
     uvtData = null;
-    processedGraphic.destroy();
 
     super.destroy();
-  }
-
-  override function updateColorTransform():Void
-  {
-    super.updateColorTransform();
-    if (processedGraphic != null) processedGraphic.destroy();
-    processedGraphic = FlxGraphic.fromGraphic(graphic, true);
-    processedGraphic.bitmap.colorTransform(processedGraphic.bitmap.rect, colorTransform);
   }
 }

@@ -70,7 +70,7 @@
   "files.eol": "\n",
 
   "haxe.displayPort": "auto",
-  "haxe.enableCompilationServer": false,
+  "haxe.enableCompilationServer": true,
   "haxe.enableServerView": true,
   "haxe.displayServer": {
     "arguments": ["-v"]
@@ -90,27 +90,9 @@
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
 
+  "lime.projectFile": "project.hxp",
+
   "lime.targetConfigurations": [
-    {
-      "label": "Windows / Debug",
-      "target": "windows",
-      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "Windows / Debug (Tracy)",
-      "target": "windows",
-      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "Linux / Debug",
-      "target": "linux",
-      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "HashLink / Debug",
-      "target": "hl",
-      "args": ["-debug"]
-    },
     {
       "label": "Windows / Debug (Discord)",
       "target": "windows",
@@ -171,14 +153,14 @@
       "args": ["-debug", "-DRESULTS"]
     },
     {
-      "label": "Windows / Debug (Straight to Chart Editor)",
+      "label": "Windows / Debug (Straight to Stage Editor)",
       "target": "windows",
-      "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
+      "args": ["-debug", "-DSTAGING", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "HashLink / Debug (Straight to Chart Editor)",
-      "target": "hl",
-      "args": ["-debug", "-DCHARTING"]
+      "label": "Windows / Debug (Straight to Stage Builder)",
+      "target": "windows",
+      "args": ["-debug", "-DSTAGEBUILD", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
       "label": "Windows / Debug (Straight to Animation Editor)",
@@ -186,9 +168,9 @@
       "args": ["-debug", "-DANIMDEBUG", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "Windows / Debug (Debug hxCodec)",
+      "label": "Windows / Debug (Debug hxvlc)",
       "target": "windows",
-      "args": ["-debug", "-DHXC_LIBVLC_LOGGING", "-DFEATURE_DEBUG_FUNCTIONS"]
+      "args": ["-debug", "-DHXVLC_LOGGING", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
       "label": "HashLink / Debug (Straight to Animation Editor)",
@@ -211,11 +193,6 @@
       "args": ["-debug", "-DWAVEFORM", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "Windows / Release",
-      "target": "windows",
-      "args": ["-release"]
-    },
-    {
       "label": "Windows / Release (GitHub Actions)",
       "target": "windows",
       "args": ["-release", "-DGITHUB_BUILD"]
@@ -226,28 +203,34 @@
       "args": ["-debug", "-DWAVEFORM"]
     },
     {
-      "label": "HTML5 / Debug",
-      "target": "html5",
-      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
       "label": "HTML5 / Debug (Watch)",
       "target": "html5",
       "args": ["-debug", "-watch", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
+    }
+  ],
+  "lime.buildTypes": [
     {
-      "label": "macOS / Debug",
-      "target": "mac",
+      "label": "Debug",
       "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "macOS / Release",
-      "target": "mac",
+      "label": "Debug (Unlock Everything)",
+      "args": ["-debug", "-DUNLOCK_EVERYTHING"]
+    },
+    {
+      "label": "Debug (Tracy)",
+      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Debug (Straight to Chart Editor)",
+      "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
+      "label": "Release",
       "args": ["-release"]
     },
     {
-      "label": "macOS / Release (GitHub Actions)",
-      "target": "mac",
+      "label": "Release (GitHub Actions)",
       "args": ["-release", "-DGITHUB_BUILD"]
     }
   ],
@@ -258,5 +241,12 @@
     "coverage.xml",
     "jacoco.xml",
     "coverage.cobertura.xml"
+  ],
+  "vscord.app.privacyMode.enable": true,
+  "json.schemas": [
+    {
+      "fileMatch": ["/hmm.json"],
+      "url": "./.vscode/schema/hmm.json"
+    }
   ]
 }

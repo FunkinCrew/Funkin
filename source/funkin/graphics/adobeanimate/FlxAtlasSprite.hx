@@ -3,16 +3,15 @@ package funkin.graphics.adobeanimate;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flxanimate.FlxAnimate;
 import flxanimate.FlxAnimate.Settings;
-import flxanimate.frames.FlxAnimateFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import openfl.display.BitmapData;
 import flixel.math.FlxPoint;
 import flxanimate.animate.FlxKeyFrame;
 
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
  */
+@:nullSafety
 class FlxAtlasSprite extends FlxAnimate
 {
   static final SETTINGS:Settings =
@@ -37,10 +36,16 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public var onAnimationComplete:FlxTypedSignal<String->Void> = new FlxTypedSignal();
 
-  var currentAnimation:String;
+  /**
+   * Signal dispatched when a looping animation finishes playing.
+   */
+  public var onAnimationLoop:FlxTypedSignal<String->Void> = new FlxTypedSignal();
+
+  var currentAnimation:String = '';
 
   var canPlayOtherAnims:Bool = true;
 
+  @:nullSafety(Off) // null safety HATES new classes atm, it'll be fixed in haxe 4.0.0?
   public function new(x:Float, y:Float, ?path:String, ?settings:Settings)
   {
     if (settings == null) settings = SETTINGS;
@@ -66,7 +71,7 @@ class FlxAtlasSprite extends FlxAnimate
     onAnimationComplete.add(cleanupAnimation);
 
     // This defaults the sprite to play the first animation in the atlas,
-    // then pauses it. This ensures symbols are intialized properly.
+    // then pauses it. This ensures symbols are initialized properly.
     this.anim.play('');
     this.anim.pause();
 
@@ -107,7 +112,7 @@ class FlxAtlasSprite extends FlxAnimate
 
   var _completeAnim:Bool = false;
 
-  var fr:FlxKeyFrame = null;
+  var fr:Null<FlxKeyFrame> = null;
 
   var looping:Bool = false;
 
@@ -192,39 +197,51 @@ class FlxAtlasSprite extends FlxAnimate
 
       fr = null;
     }
+    var frameLabelNames = getFrameLabelNames();
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
-    if (getFrameLabelNames().indexOf(id) != -1)
+    if (frameLabelNames != null && frameLabelNames.indexOf(id) != -1)
     {
       goToFrameLabel(id);
       fr = anim.getFrameLabel(id);
       anim.curFrame += startFrame;
+      // Resume animation if it's paused.
+      anim.resume();
     }
   }
 
-  override public function update(elapsed:Float)
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
   }
 
   /**
    * Returns true if the animation has finished playing.
-   * Never true if animation is configured to loop.
+   * @return Whether the animation has finished playing.
    */
   public function isAnimationFinished():Bool
   {
-    return this.anim.finished;
+    return isLoopComplete();
   }
 
   /**
    * Returns true if the animation has reached the last frame.
    * Can be true even if animation is configured to loop.
+   * @return Whether the animation has reached the last frame.
    */
   public function isLoopComplete():Bool
   {
     if (this.anim == null) return false;
     if (!this.anim.isPlaying) return false;
 
-    if (fr != null) return (anim.reversed && anim.curFrame < fr.index || !anim.reversed && anim.curFrame >= (fr.index + fr.duration));
+    if (fr != null)
+    {
+      var curFrame = anim.curFrame;
+
+      var startFrame = fr.index;
+      var endFrame = (fr.index + fr.duration);
+
+      return (anim.reversed) ? (curFrame < startFrame) : (curFrame >= endFrame);
+    }
 
     return (anim.reversed && anim.curFrame == 0 || !(anim.reversed) && (anim.curFrame) >= (anim.length - 1));
   }
@@ -252,7 +269,7 @@ class FlxAtlasSprite extends FlxAnimate
     this.anim.goToFrameLabel(label);
   }
 
-  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String> = null)
+  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String>):Null<Array<String>>
   {
     var labels = this.anim.getFrameLabels(layer);
     var array = [];
@@ -295,16 +312,17 @@ class FlxAtlasSprite extends FlxAnimate
       if (isLoopComplete())
       {
         anim.pause();
-        _onAnimationComplete();
 
         if (looping)
         {
           anim.curFrame = (fr != null) ? fr.index : 0;
           anim.resume();
+          _onAnimationLoop();
         }
         else if (fr != null && anim.curFrame != anim.length - 1)
         {
           anim.curFrame--;
+          _onAnimationComplete();
         }
       }
     }
@@ -322,11 +340,32 @@ class FlxAtlasSprite extends FlxAnimate
     }
   }
 
+  function _onAnimationLoop():Void
+  {
+    if (currentAnimation != null)
+    {
+      onAnimationLoop.dispatch(currentAnimation);
+    }
+    else
+    {
+      onAnimationLoop.dispatch('');
+    }
+  }
+
   var prevFrames:Map<Int, FlxFrame> = [];
 
   public function replaceFrameGraphic(index:Int, ?graphic:FlxGraphicAsset):Void
   {
-    if (graphic == null || !Assets.exists(graphic))
+    var cond = false;
+
+    if (graphic == null) cond = true;
+    else
+    {
+      if ((graphic is String)) cond = !Assets.exists(graphic)
+      else
+        cond = false;
+    }
+    if (cond)
     {
       var prevFrame:Null<FlxFrame> = prevFrames.get(index);
       if (prevFrame == null) return;
@@ -338,6 +377,7 @@ class FlxAtlasSprite extends FlxAnimate
     var prevFrame:FlxFrame = prevFrames.get(index) ?? frames.getByIndex(index).copyTo();
     prevFrames.set(index, prevFrame);
 
+    @:nullSafety(Off) // TODO: Remove this once flixel.system.frontEnds.BitmapFrontEnd has been null safed
     var frame = FlxG.bitmap.add(graphic).imageFrame.frame;
     frame.copyTo(frames.getByIndex(index));
 

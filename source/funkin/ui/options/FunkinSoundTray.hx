@@ -1,11 +1,7 @@
 package funkin.ui.options;
 
 import flixel.system.ui.FlxSoundTray;
-import flixel.tweens.FlxTween;
-import flixel.system.FlxAssets;
-import flixel.tweens.FlxEase;
 import openfl.display.Bitmap;
-import openfl.display.BitmapData;
 import funkin.util.MathUtil;
 
 /**
@@ -67,89 +63,102 @@ class FunkinSoundTray extends FlxSoundTray
       _bars.push(bar);
     }
 
-    y = -height;
     screenCenter();
 
     volumeUpSound = Paths.sound("soundtray/Volup");
     volumeDownSound = Paths.sound("soundtray/Voldown");
     volumeMaxSound = Paths.sound("soundtray/VolMAX");
-
-    trace("Custom tray added!");
   }
 
-  override public function update(MS:Float):Void
+  override public function update(ms:Float):Void
   {
-    y = MathUtil.coolLerp(y, lerpYPos, 0.1);
-    alpha = MathUtil.coolLerp(alpha, alphaTarget, 0.25);
+    y = MathUtil.smoothLerpPrecision(y, lerpYPos, ms / 1000, 0.768);
+    alpha = MathUtil.smoothLerpPrecision(alpha, alphaTarget, ms / 1000, 0.307);
 
-    var shouldHide = (FlxG.sound.muted == false && FlxG.sound.volume > 0);
+    // If it has volume, we want to auto-hide after 1 second (1000ms), we simply decrement a timer
+    var hasVolume:Bool = (!FlxG.sound.muted && FlxG.sound.volume > 0);
 
-    // Animate sound tray thing
-    if (_timer > 0)
+    if (hasVolume)
     {
-      if (shouldHide) _timer -= (MS / 1000);
-      alphaTarget = 1;
-    }
-    else if (y >= -height)
-    {
-      lerpYPos = -height - 10;
-      alphaTarget = 0;
-    }
-
-    if (y <= -height)
-    {
-      visible = false;
-      active = false;
-
-      #if FLX_SAVE
-      // Save sound preferences
-      if (FlxG.save.isBound)
+      // Animate sound tray thing
+      if (_timer > 0)
       {
-        FlxG.save.data.mute = FlxG.sound.muted;
-        FlxG.save.data.volume = FlxG.sound.volume;
-        FlxG.save.flush();
+        _timer -= (ms / 1000);
       }
-      #end
+      else if (y >= -height)
+      {
+        lerpYPos = -height - 10;
+        alphaTarget = 0;
+      }
+
+      if (y <= -height)
+      {
+        visible = false;
+        active = false;
+      }
     }
+    else if (!visible) moveTrayMakeVisible();
   }
 
   /**
    * Makes the little volume tray slide out.
+   * This is usually called by SoundFrontEnd, rather than being called by us explicitly
+   * (Which is why it's internals have been separated out a bit, for easier internal calling)
    *
    * @param	up Whether the volume is increasing.
    */
   override public function show(up:Bool = false):Void
   {
+    moveTrayMakeVisible(up);
+    saveVolumePreferences();
+  }
+
+  function moveTrayMakeVisible(up:Bool = false):Void
+  {
     _timer = 1;
     lerpYPos = 10;
     visible = true;
     active = true;
+    alphaTarget = 1;
+
+    for (i in 0..._bars.length)
+      _bars[i].visible = i < getGlobalVolume(up);
+  }
+
+  /**
+   * Calculates the volume with proper linear scaling, and returns it as an int.
+   * @param up Whether the volume is increasing.
+   * @return Int The volume as an int from 0 to 10.
+   */
+  function getGlobalVolume(up:Bool = false):Int
+  {
     var globalVolume:Int = Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
 
-    if (FlxG.sound.muted || FlxG.sound.volume == 0)
-    {
-      globalVolume = 0;
-    }
+    if (FlxG.sound.muted || FlxG.sound.volume == 0) globalVolume = 0;
 
     if (!silent)
     {
-      var sound = up ? volumeUpSound : volumeDownSound;
+      // This is a String currently, but there is or was a Flixel PR to change this to a FlxSound or a Sound bject
+      var sound:String = up ? volumeUpSound : volumeDownSound;
 
       if (globalVolume == 10) sound = volumeMaxSound;
-
-      if (sound != null) FlxG.sound.load(sound).play();
+      if (sound != null) FlxG.sound.load(sound).play().volume = 0.3;
     }
 
-    for (i in 0..._bars.length)
+    return globalVolume;
+  }
+
+  function saveVolumePreferences():Void
+  {
+    // Actually save when the volume is changed / modified
+    #if FLX_SAVE
+    // Save sound preferences
+    if (FlxG.save.isBound)
     {
-      if (i < globalVolume)
-      {
-        _bars[i].visible = true;
-      }
-      else
-      {
-        _bars[i].visible = false;
-      }
+      FlxG.save.data.mute = FlxG.sound.muted;
+      FlxG.save.data.volume = FlxG.sound.volume;
+      FlxG.save.flush();
     }
+    #end
   }
 }

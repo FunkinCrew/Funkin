@@ -3,7 +3,9 @@ package funkin.util.assets;
 import haxe.io.Bytes;
 import openfl.media.Sound as OpenFLSound;
 import funkin.audio.FunkinSound;
+import lime.media.AudioBuffer;
 
+@:nullSafety
 class SoundUtil
 {
   /**
@@ -16,9 +18,8 @@ class SoundUtil
   {
     if (input == null) return null;
 
-    var openflSound:OpenFLSound = new OpenFLSound();
-    openflSound.loadCompressedDataFromByteArray(openfl.utils.ByteArray.fromBytes(input), input.length);
-    var output:FunkinSound = FunkinSound.load(openflSound, 1.0, false);
-    return output;
+    var openflSound:OpenFLSound = OpenFLSound.fromAudioBuffer(AudioBuffer.fromBytes(input));
+    if (openflSound == null) return null;
+    return FunkinSound.load(openflSound, 1.0, false);
   }
 }

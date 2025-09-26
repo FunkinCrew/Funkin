@@ -11,12 +11,19 @@ class Prebuild
 
   static function main():Void
   {
+    var start:Float = Sys.time();
+    // Sys.println('[INFO] Performing pre-build tasks...');
+
     saveBuildTime();
-    trace('Building...');
+
+    var end:Float = Sys.time();
+    var duration:Float = end - start;
+    // Sys.println('[INFO] Finished pre-build tasks in $duration seconds.');
   }
 
   static function saveBuildTime():Void
   {
+    // PostBuild.hx reads this file and computes the total build duration.
     var fo:sys.io.FileOutput = File.write(BUILD_TIME_FILE);
     var now:Float = Sys.time();
     fo.writeDouble(now);
