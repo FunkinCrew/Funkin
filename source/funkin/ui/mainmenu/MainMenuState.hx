@@ -322,7 +322,7 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu',
+    FunkinSound.playMusic(Constants.DEFAULT_GAME_THEME,
       {
         overrideExisting: true,
         restartTrack: false,
