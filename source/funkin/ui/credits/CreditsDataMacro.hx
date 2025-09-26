@@ -40,7 +40,13 @@ class CreditsDataMacro
   #if macro
   static function fetchJSON():Null<String>
   {
-    return sys.io.File.getContent(#if ios '../../../../../' + #end CreditsDataHandler.CREDITS_DATA_PATH);
+    var creditsPath:String = CreditsDataHandler.CREDITS_DATA_PATH;
+
+    #if ios
+    if (!sys.FileSystem.exists(creditsPath)) creditsPath = "../../../../../" + creditsPath;
+    #end
+
+    return sys.io.File.getContent(creditsPath);
   }
 
   /**

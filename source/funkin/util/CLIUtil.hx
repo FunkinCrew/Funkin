@@ -91,6 +91,17 @@ class CLIUtil
               result.stage.shouldLoadStage = true;
               result.stage.stagePath = args.shift();
             }
+          case "--song":
+            if (args.length == 0)
+            {
+              trace('No chart path provided.');
+              printUsage();
+            }
+            else
+            {
+              result.song.shouldLoadSong = true;
+              result.song.songPath = args.shift();
+            }
         }
       }
       else
@@ -120,7 +131,7 @@ class CLIUtil
 
   static function printUsage():Void
   {
-    trace('Usage: Funkin.exe [--chart <chart>] [--stage <stage>] [--help] [--version]');
+    trace('Usage: Funkin.exe [--chart <chart>] [--stage <stage>] [--song <song>] [--help] [--version]');
   }
 
   static function buildDefaultParams():CLIParams
@@ -137,6 +148,11 @@ class CLIUtil
         {
           shouldLoadStage: false,
           stagePath: null
+        },
+      song:
+        {
+          shouldLoadSong: false,
+          songPath: null
         }
     };
   }
@@ -168,6 +184,7 @@ typedef CLIParams =
 
   var chart:CLIChartParams;
   var stage:CLIStageParams;
+  var song:CLISongParams;
 }
 
 typedef CLIChartParams =
@@ -180,4 +197,10 @@ typedef CLIStageParams =
 {
   var shouldLoadStage:Bool;
   var stagePath:Null<String>;
+};
+
+typedef CLISongParams =
+{
+  var shouldLoadSong:Bool;
+  var songPath:Null<String>;
 };

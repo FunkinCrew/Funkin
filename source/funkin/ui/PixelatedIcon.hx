@@ -23,21 +23,20 @@ class PixelatedIcon extends FlxFilteredSprite
 
     final charIDParts:Array<String> = char.split("-");
     var iconName:String = "";
+    var lastValidIconName:String = "";
     for (i in 0...charIDParts.length)
     {
       iconName += charIDParts[i];
 
       if (Assets.exists(Paths.image(charPath + '${iconName}pixel')))
       {
-        charPath += '${iconName}pixel';
-        break;
+        lastValidIconName = iconName;
       }
-      else
-      {
-        if (i < charIDParts.length - 1) iconName += '-';
-        continue;
-      }
+
+      if (i < charIDParts.length - 1) iconName += '-';
     }
+
+    charPath += '${lastValidIconName}pixel';
 
     if (!Assets.exists(Paths.image(charPath)))
     {

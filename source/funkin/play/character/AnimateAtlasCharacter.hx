@@ -15,7 +15,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData.CharacterRenderType;
 import flixel.util.FlxDirectionFlags;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -580,7 +580,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   override function set_alpha(value:Float):Float
   {
-    value = FlxMath.bound(value, 0, 1);
+    value = value.clamp(0, 1);
 
     if (exists && alpha != value)
     {

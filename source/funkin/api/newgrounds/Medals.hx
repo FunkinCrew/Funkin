@@ -30,11 +30,7 @@ class Medals
   {
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      var medalList = NewgroundsClient.instance.medals;
-      @:privateAccess
-      if (medalList == null || medalList._map == null) return;
-
-      var medalData:Null<MedalData> = medalList.get(medal.getId());
+      var medalData:Null<MedalData> = listMedalData().get(medal.getId());
       @:privateAccess
       if (medalData == null || medalData._data == null)
       {
@@ -120,11 +116,7 @@ class Medals
 
   public static function fetchMedalData(medal:Medal):Null<FetchedMedalData>
   {
-    var medalList = NewgroundsClient.instance.medals;
-    @:privateAccess
-    if (medalList == null || medalList._map == null) return null;
-
-    var medalData:Null<MedalData> = medalList.get(medal.getId());
+    var medalData:Null<MedalData> = listMedalData().get(medal.getId());
     @:privateAccess
     if (medalData == null || medalData._data == null)
     {

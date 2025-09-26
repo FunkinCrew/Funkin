@@ -13,7 +13,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.display.FlxGridOverlay;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
 import funkin.input.Cursor;
 import haxe.ui.backend.flixel.UIState;
@@ -206,7 +206,7 @@ class StageEditorState extends UIState
         var data = this.packShitToZip();
         var path = haxe.io.Path.join([
           BACKUPS_PATH,
-          'stage-editor-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
+          'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
         ]);
 
         FileUtil.writeBytesToPath(path, data);
@@ -638,7 +638,7 @@ class StageEditorState extends UIState
         if (FlxG.keys.justPressed.S) FlxG.keys.pressed.SHIFT ? onMenuItemClick("save stage as") : onMenuItemClick("save stage");
         if (FlxG.keys.justPressed.F) onMenuItemClick("find object");
         if (FlxG.keys.justPressed.O) onMenuItemClick("open stage");
-        if (FlxG.keys.justPressed.N) onMenuItemClick("new stage");
+        if (FlxG.keys.justPressed.N && welcomeDialog == null && userGuideDialog == null) onMenuItemClick("new stage");
         if (FlxG.keys.justPressed.Q) onMenuItemClick("exit");
       }
 
@@ -1259,7 +1259,7 @@ class StageEditorState extends UIState
         {
           if (exitConfirmDialog == null)
           {
-            exitConfirmDialog = Dialogs.messageBox("You are about to leave the Editor without Saving.\n\nAre you sure? ", "Leave Editor",
+            exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
               MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
                 exitConfirmDialog = null;
                 if (btn == DialogButton.YES)

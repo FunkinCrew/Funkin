@@ -1,0 +1,135 @@
+{
+  "input": "./assets",
+  "output": "./astc-textures/",
+  "quality": "medium",
+  "blocksize": "10x10",
+  "colorprofile": "cl",
+  "custom": [
+    {
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsPERFECT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsGREAT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsGOOD/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsSHIT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/preload/images/NOTE_assets.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/preload/images/NOTE_hold_assets.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/preload/images/StrumlineNotes.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/preload/images/alphabet.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/NOTE_hold_assets.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/holdCoverBlue.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/holdCoverGreen.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/holdCoverPurple.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/holdCoverRed.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/latencyArrow.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/latencyReceptor.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/noteSplashes.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/noteStrumline.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/notes.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/week1/image/erect/bg.png",
+      "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/week1/image/erect/lights.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/week1/images/erect/crowd.png",
+      "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/week1/images/erect/server.png",
+      "blocksize": "8x8"
+    }
+  ],
+  "excludes": [
+    "assets/preload/images/cursor/",
+    "assets/preload/images/fonts/",
+    "assets/preload/images/freeplay/",
+    "assets/preload/images/icons/",
+    "assets/preload/images/soundtray/",
+    "assets/preload/images/stageBuild/",
+    "assets/preload/images/titleEnter.png",
+    "assets/preload/images/titleEnter_mobile.png",
+    "assets/preload/images/ui/popup/pixel/*",
+    "assets/shared/images/characters/abotPixel/*",
+    "assets/shared/images/characters/bfPixel.png",
+    "assets/shared/images/characters/bfPixelsDEAD.png",
+    "assets/shared/images/characters/gfPixel.png",
+    "assets/shared/images/characters/nenePixel/*",
+    "assets/shared/images/characters/picoPixel/*",
+    "assets/shared/images/characters/senpai.png",
+    "assets/shared/images/characters/spirit.png",
+    "assets/shared/images/healthBar.png",
+    "assets/shared/images/resultScreen/*",
+    "assets/shared/images/resultScreen/clearPercent/",
+    "assets/shared/images/resultScreen/rankText/",
+    "assets/shared/images/ui/chart-editor/",
+    "assets/shared/images/ui/countdown/pixel/*",
+    "assets/week1/*",
+    "assets/week1/images/erect/brightLightSmall.png",
+    "assets/week1/images/erect/lightAbove.png",
+    "assets/week1/images/erect/lightgreen.png",
+    "assets/week1/images/erect/lightred.png",
+    "assets/week1/images/erect/orangeLight.png",
+    "assets/week2/images/erect/stairsDark.png",
+    "assets/week2/images/erect/stairsLight.png",
+    "assets/week6/"
+  ]
+}

@@ -1,10 +1,10 @@
 package funkin.play.components;
 
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.graphics.FunkinSprite;
 import funkin.util.MathUtil;
 
@@ -115,6 +115,8 @@ class HealthIcon extends FunkinSprite
    */
   static final POSITION_OFFSET:Int = 26;
 
+  public var iconOffset:FlxPoint = FlxPoint.get();
+
   public function new(char:Null<String>, playerId:Int = 0)
   {
     super(0, 0);
@@ -182,8 +184,7 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(1.0, 1.0);
-      this.offset.x = 0.0;
-      this.offset.y = 0.0;
+      this.iconOffset.set();
       this.flipX = false;
     }
     else
@@ -194,8 +195,15 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
-      this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;
+      if (data.offsets != null && data.offsets.length == 2)
+      {
+        this.iconOffset.set(data.offsets[0], data.offsets[1]);
+      }
+      else
+      {
+        this.iconOffset.set(0, 0);
+      }
+
       this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
     }
   }
@@ -291,6 +299,8 @@ class HealthIcon extends FunkinSprite
 
       // Keep the icon centered vertically on the health bar.
       this.y = PlayState.instance.healthBar.y - (this.height / 2); // - (PlayState.instance.healthBar.height / 2)
+
+      offset += iconOffset;
     }
   }
 

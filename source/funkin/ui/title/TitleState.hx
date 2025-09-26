@@ -79,6 +79,8 @@ class TitleState extends MusicBeatState
   var titleText:FlxSprite = new FlxSprite();
   var maskShader = new LeftMaskShader();
 
+  var attractTimer:FlxTimer;
+
   function startIntro():Void
   {
     if (!initialized || FlxG.sound.music == null) playMenuMusic();
@@ -177,7 +179,8 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
-    if (FlxG.sound.music != null) FlxG.sound.music.onComplete = moveToAttract;
+    trace('Starting attract timer');
+    attractTimer = new FlxTimer().start(Constants.TITLE_ATTRACT_DELAY, (_:FlxTimer) -> moveToAttract());
   }
 
   /**
@@ -185,7 +188,10 @@ class TitleState extends MusicBeatState
    */
   function moveToAttract():Void
   {
-    FlxG.switchState(() -> new AttractState());
+    FlxG.sound.music.fadeOut(2.0, 0);
+    FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function() {
+      FlxG.switchState(() -> new AttractState());
+    });
   }
 
   function playMenuMusic():Void
@@ -286,13 +292,12 @@ class TitleState extends MusicBeatState
     // If you spam Enter, we should skip the transition.
     if (pressedEnter && transitioning && skippedIntro)
     {
-      funkin.FunkinMemory.purgeCache();
-      FlxG.switchState(() -> new MainMenuState());
+      moveToMainMenu();
     }
 
     if (pressedEnter && !transitioning && skippedIntro)
     {
-      // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
+      if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
@@ -304,28 +309,34 @@ class TitleState extends MusicBeatState
       funkin.api.newgrounds.Events.logStartGame();
       #end
 
-      var targetState:NextState = () -> new MainMenuState();
-
       new FlxTimer().start(2, function(tmr:FlxTimer) {
-        // These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory
-        // Saves about 50mb of RAM or so???
-        // TODO: This BREAKS the title screen if you return back to it! Figure out how to fix that.
-        // Assets.cache.clear(Paths.image('gfDanceTitle'));
-        // Assets.cache.clear(Paths.image('logoBumpin'));
-        // Assets.cache.clear(Paths.image('titleEnter'));
-        // ngSpr??
-        funkin.FunkinMemory.purgeCache();
-        FlxG.switchState(targetState);
+        moveToMainMenu();
       });
-      // FunkinSound.playOnce(Paths.music('titleShoot'), 0.7);
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
+
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8 && initialized)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
 
     // TODO: Maybe use the dxdy method for swiping instead.
     if (controls.UI_LEFT #if mobile || SwipeUtil.justSwipedLeft #end) swagShader.update(-elapsed * 0.1);
     if (controls.UI_RIGHT #if mobile || SwipeUtil.justSwipedRight #end) swagShader.update(elapsed * 0.1);
     if (!cheatActive && skippedIntro) cheatCodeShit();
     super.update(elapsed);
+  }
+
+  function moveToMainMenu():Void
+  {
+    if (attractTimer != null)
+    {
+      attractTimer.cancel();
+      attractTimer = null;
+    }
+
+    funkin.FunkinMemory.purgeCache();
+    FlxG.switchState(() -> new MainMenuState());
   }
 
   override function draw()

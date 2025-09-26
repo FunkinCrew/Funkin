@@ -294,6 +294,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     createButtonItem('Offset Calibration', function() {
       // Reset calibration state and start another one.
 
+      @:privateAccess
+      if (OptionsState.instance.optionsCodex.currentPage != this) return;
+
       jumpInText.text = 'Press any key to the beat!\nThe arrow will start to sync to the receptor.';
       #if mobile
       jumpInText.text = 'Tap to the beat!\nThe arrow will start to sync to the receptor.';
@@ -326,6 +329,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     createButtonItem('Test', function() {
       // Reset testing state and start another one.
       // We do not reset the offset here, so the player can test their current offset.
+
+      @:privateAccess
+      if (OptionsState.instance.optionsCodex.currentPage != this) return;
 
       shouldOffset = 1;
       testStrumline.clean();
@@ -394,7 +400,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (ControlsHandler.usingExternalInputDevice)
       {
       #end
-        testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
+        var height = testStrumline.strumlineNotes.members[0].height;
+        testStrumline.y = Preferences.downscroll ? FlxG.height - (height + 45) - Constants.STRUMLINE_Y_OFFSET : (height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
         if (Preferences.downscroll) jumpInText.y = FlxG.height - 425;
         testStrumline.isDownscroll = Preferences.downscroll;
@@ -736,6 +743,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, _lastDirection, 0, null, null);
         testStrumline.addNoteData(data, false);
 
+        // Create a jump (double note) every 8 beats to visually indicate first beat - requested by Hundrec
         if (Math.floor(arrowBeat % 8) == 0)
         {
           var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, 2, 0, null, null);
@@ -974,5 +982,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     return item;
+  }
+
+  override public function destroy()
+  {
+    MenuTypedList.pauseInput = false;
+    exitCalibration(true);
+    super.destroy();
   }
 }

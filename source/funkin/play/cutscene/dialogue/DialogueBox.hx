@@ -10,9 +10,8 @@ import funkin.modding.events.ScriptEvent;
 import funkin.audio.FunkinSound;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
 import flixel.util.FlxColor;
-import funkin.ui.FullScreenScaleMode;
-import funkin.data.dialogue.dialoguebox.DialogueBoxData;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
+import funkin.data.dialogue.DialogueBoxData;
+import funkin.data.dialogue.DialogueBoxRegistry;
 
 class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<DialogueBoxData>
 {
@@ -29,6 +28,11 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   var animationOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
 
   /**
+   * The position without offsets applied.
+   */
+  var originalPosition:Array<Float> = [0, 0];
+
+  /**
    * The current animation offset being used.
    */
   var animOffsets(default, set):Array<Float> = [0, 0];
@@ -36,13 +40,10 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   function set_animOffsets(value:Array<Float>):Array<Float>
   {
     if (animOffsets == null) animOffsets = [0, 0];
-    if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
+    if (animOffsets == value) return value;
 
-    var xDiff:Float = value[0] - animOffsets[0];
-    var yDiff:Float = value[1] - animOffsets[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
+    this.x = globalOffsets[0] + originalPosition[0] + value[0];
+    this.y = globalOffsets[1] + originalPosition[1] + value[1];
 
     return animOffsets = value;
   }
@@ -57,17 +58,13 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
 
-    var xDiff:Float = value[0] - globalOffsets[0];
-    var yDiff:Float = value[1] - globalOffsets[1];
+    this.screenCenter();
 
-    this.x += xDiff;
-    this.y += yDiff;
+    originalPosition[0] = this.x;
+    originalPosition[1] = this.y;
 
-    if (FullScreenScaleMode.wideScale.x != 1)
-    {
-      this.x *= fullscreenScale;
-      this.y = this.y * fullscreenScale + (-100 * fullscreenScale);
-    }
+    this.x = value[0] + originalPosition[0] + animOffsets[0];
+    this.y = value[1] + originalPosition[1] + animOffsets[1];
 
     return globalOffsets = value;
   }
@@ -96,17 +93,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     return this.speed;
   }
 
-  /**
-   * A value used for scaling object's parameters on mobile.
-   */
-  var fullscreenScale(get, never):Float;
-
-  function get_fullscreenScale():Float
-  {
-    return FullScreenScaleMode.wideScale.x - 0.05;
-  }
-
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
     this.id = id;
@@ -120,9 +107,9 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
   public function onCreate(event:ScriptEvent):Void
   {
-    this.globalOffsets = [0, 0];
     this.x = 0;
     this.y = 0;
+    this.globalOffsets = [0, 0];
     this.alpha = 1;
 
     loadSpritesheet();
@@ -207,11 +194,6 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   {
     if (scale == null) scale = 1.0;
 
-    if (FullScreenScaleMode.wideScale.x != 1)
-    {
-      scale *= fullscreenScale;
-    }
-
     this.boxSprite.scale.x = scale;
     this.boxSprite.scale.y = scale;
     this.boxSprite.updateHitbox();
@@ -241,6 +223,9 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
   {
     super.revive();
 
+    this.x = 0;
+    this.y = 0;
+    this.globalOffsets = [0, 0];
     this.visible = true;
     this.alpha = 1.0;
   }
@@ -308,13 +293,6 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
     textDisplay.x += _data.text.offsets[0];
     textDisplay.y += _data.text.offsets[1];
-
-    if (FullScreenScaleMode.wideScale.x != 1)
-    {
-      textDisplay.fieldWidth *= fullscreenScale;
-      textDisplay.x *= fullscreenScale;
-      textDisplay.y *= fullscreenScale;
-    }
 
     add(textDisplay);
   }

@@ -6,6 +6,11 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
 
+#if (linux && !macro)
+@:image('art/icons/iconOG.png')
+class ApplicationIcon extends lime.graphics.Image {}
+#end
+
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
@@ -29,23 +34,32 @@ class ApplicationMain
 
   public static function create(config):Void
   {
-    var app = new openfl.display.Application();
+    final appMeta:Map<String, String> = [];
+
+    appMeta.set("build", "::meta.buildNumber::");
+    appMeta.set("company", "::meta.company::");
+    appMeta.set("file", "::APP_FILE::");
+    appMeta.set("name", "::meta.title::");
+    appMeta.set("packageName", "::meta.packageName::");
+    appMeta.set("version", "::meta.version::");
+
+    ::if (config.hxtelemetry != null)::#if hxtelemetry
+    appMeta.set("hxtelemetry-allocations", "::config.hxtelemetry.allocations::");
+    appMeta.set("hxtelemetry-host", "::config.hxtelemetry.host::");
+    #end::end::
+
+    var app = new openfl.display.Application(appMeta);
+
+    #if linux
+    app.onCreateWindow.add(function(window:lime.ui.Window):Void
+    {
+      window.setIcon(new ApplicationIcon());
+    });
+    #end
 
     #if !disable_preloader_assets
     ManifestResources.init(config);
     #end
-
-    app.meta["build"] = "::meta.buildNumber::";
-    app.meta["company"] = "::meta.company::";
-    app.meta["file"] = "::APP_FILE::";
-    app.meta["name"] = "::meta.title::";
-    app.meta["packageName"] = "::meta.packageName::";
-    app.meta["version"] = "::meta.version::";
-
-    ::if (config.hxtelemetry != null)::#if hxtelemetry
-    app.meta["hxtelemetry-allocations"] = "::config.hxtelemetry.allocations::";
-    app.meta["hxtelemetry-host"] = "::config.hxtelemetry.host::";
-    #end::end::
 
     #if !flash
     ::foreach windows::

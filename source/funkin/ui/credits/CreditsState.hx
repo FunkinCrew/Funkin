@@ -68,9 +68,14 @@ class CreditsState extends MusicBeatState
   static final CREDITS_SCROLL_BASE_SPEED = 100.0;
 
   /**
-   * The speed the credits scroll at while the button is held, in pixels per second.
+   * The speed the credits scroll at while accept keybind or spacebar is held, in pixels per second.
    */
   static final CREDITS_SCROLL_FAST_SPEED = CREDITS_SCROLL_BASE_SPEED * 4.0;
+
+  /**
+   * The speed the credits scroll at while the pause keybind is held, in pixels per second.
+   */
+  static final CREDITS_SCROLL_PAUSE_SPEED = 0.0;
 
   /**
    * The actual sprites and text used to display the credits.
@@ -266,23 +271,23 @@ class CreditsState extends MusicBeatState
       // TODO: Replace with whatever the special note button is.
       if (FlxG.keys.pressed.ENTER || FlxG.keys.pressed.SPACE #if mobile || TouchUtil.pressed && !TouchUtil.overlaps(backButton) #end)
       {
-        // Move the whole group.
+        // Move the whole group by the base scroll speed.
         creditsGroup.y -= CREDITS_SCROLL_FAST_SPEED * elapsed;
+      }
+      else if (controls.PAUSE || FlxG.keys.pressed.SHIFT)
+      {
+        // Stop the whole group from moving.
+        creditsGroup.y -= CREDITS_SCROLL_PAUSE_SPEED * elapsed;
       }
       else
       {
-        // Move the whole group.
+        // Move the whole group by the base scroll speed.
         creditsGroup.y -= CREDITS_SCROLL_BASE_SPEED * elapsed;
       }
     }
-
     if (controls.BACK || hasEnded())
     {
       exit();
-    }
-    else if (controls.PAUSE)
-    {
-      // scrollPaused = !scrollPaused;
     }
   }
 
@@ -293,6 +298,7 @@ class CreditsState extends MusicBeatState
 
   function exit():Void
   {
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
   }
 
