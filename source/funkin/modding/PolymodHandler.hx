@@ -381,9 +381,6 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
-    // Contains critical private environment variables.
-    Polymod.blacklistImport('funkin.util.macro.EnvironmentConfigMacro');
-
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))

@@ -1114,7 +1114,7 @@ class PlayState extends MusicBeatSubState
 
     var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
-    // So the player wouldn't miss when pressing the pause utton
+    // So the player wouldn't miss when pressing the pause button
     #if mobile
     pauseButtonCheck = TouchUtil.pressAction(pauseButton);
     #end

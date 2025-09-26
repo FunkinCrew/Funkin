@@ -1281,6 +1281,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var songMetadata:Map<String, SongMetadata> = [];
 
   /**
+   * Updates the current song's play data variations list.
+   */
+  function refreshPlayDataVariations():Void
+  {
+    var songVariations:Array<String> = songMetadata.get(Constants.DEFAULT_VARIATION).playData.songVariations;
+    songVariations.clear();
+    for (variation in availableVariations)
+    {
+      if (variation == Constants.DEFAULT_VARIATION) continue;
+      songVariations.push(variation);
+    }
+  }
+
+  /**
    * Retrieves the list of variations for the current song.
    */
   var availableVariations(get, never):Array<String>;
@@ -5710,6 +5724,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
+    this.hideAllToolboxes();
+
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
@@ -6042,6 +6058,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     stopWelcomeMusic();
     stopAudioPlayback();
 
+    // Force pauses audio preview from OffsetsToolbox, if it exists.
+    cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
+
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
@@ -6226,6 +6245,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Don't allow the audio to be played while we're dragging any of the playheads
       if (playbarHeadDragging || gridPlayheadScrollAreaPressed || notePreviewPlayHeadDragging) return;
+      cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
       audioInstTrack.play(false, audioInstTrack.time);
       audioVocalTrackGroup.play(false, audioInstTrack.time);
     }
@@ -6337,7 +6357,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (songMetadata.size() > 1)
     {
-      if (variationMetadata.playData.difficulties.length == 0)
+      if (variation != Constants.DEFAULT_VARIATION && variationMetadata.playData.difficulties.length == 0)
       {
         songMetadata.remove(variation);
         songChartData.remove(variation);
@@ -6354,6 +6374,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (selectedDifficulty == difficulty
       || !variationMetadata.playData.difficulties.contains(selectedDifficulty)) selectedDifficulty = variationMetadata.playData.difficulties[0];
 
+    refreshPlayDataVariations();
     difficultySelectDirty = true; // Force the Difficulty toolbox to update.
   }
 

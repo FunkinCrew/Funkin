@@ -103,6 +103,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
   function onClose(event:UIEvent)
   {
+    stopAudioPreview(); // Pause it instead, maybe?
     chartEditorState.menubarItemToggleToolboxOffsets.selected = false;
   }
 
@@ -458,6 +459,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
   public function playAudioPreview():Void
   {
+    chartEditorState.stopAudioPlayback();
     audioPreviewTracks.play(false, audioPreviewTracks.time);
   }
 

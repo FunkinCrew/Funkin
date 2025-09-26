@@ -353,6 +353,14 @@ class FreeplayState extends MusicBeatSubState
       stickerSubState.degenStickers();
     }
 
+    if (fromResultsParams != null)
+    {
+      @:privateAccess
+      this._parentState._constructor = () -> {
+        return FreeplayState.build(null, null);
+      }
+    }
+
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
     DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
@@ -822,6 +830,7 @@ class FreeplayState extends MusicBeatSubState
     {
       if (fromCharSelect) enterFromCharSel();
       onDJIntroDone();
+      forceSkipIntro = false;
     }
     else
     {
@@ -2082,13 +2091,6 @@ class FreeplayState extends MusicBeatSubState
   }
   #end
 
-  override function beatHit():Bool
-  {
-    backingCard.beatHit();
-
-    return super.beatHit();
-  }
-
   public override function destroy():Void
   {
     super.destroy();
@@ -2821,9 +2823,7 @@ class FreeplayState extends MusicBeatSubState
     if (currentCapsule.freeplayData == null) albumRoll.albumId = null;
 
     changeDiff();
-    if (currentCapsule.freeplayData == null) currentCapsule.refreshDisplay();
-    else
-      currentCapsule.refreshDisplay(false);
+    currentCapsule.refreshDisplay(currentCapsule.freeplayData == null);
 
     for (index => capsule in grpCapsules.members)
     {
