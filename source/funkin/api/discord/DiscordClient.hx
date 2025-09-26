@@ -1,6 +1,5 @@
 package funkin.api.discord;
 
-import funkin.util.macro.EnvironmentConfigMacro;
 #if FEATURE_DISCORD_RPC
 import hxdiscord_rpc.Discord;
 import hxdiscord_rpc.Types.DiscordButton;
@@ -9,10 +8,12 @@ import hxdiscord_rpc.Types.DiscordRichPresence;
 import hxdiscord_rpc.Types.DiscordUser;
 import sys.thread.Thread;
 
+@:build(funkin.util.macro.EnvironmentMacro.build())
 @:nullSafety
 class DiscordClient
 {
-  static final CLIENT_ID:Null<String> = EnvironmentConfigMacro.environmentConfig?.get("DESKTOP_DISCORD_CLIENT_ID");
+  @:envField
+  static final DISCORD_CLIENT_ID:Null<String>;
 
   public static var instance(get, never):DiscordClient;
   static var _instance:Null<DiscordClient> = null;
@@ -49,7 +50,7 @@ class DiscordClient
 
     @:nullSafety(Off)
     {
-      Discord.Initialize(CLIENT_ID, cpp.RawPointer.addressOf(handlers), 1, "");
+      Discord.Initialize(DISCORD_CLIENT_ID, cpp.RawPointer.addressOf(handlers), 1, "");
     }
 
     createDaemon();
@@ -60,7 +61,7 @@ class DiscordClient
    */
   static function hasValidCredentials():Bool
   {
-    return !(CLIENT_ID == null || CLIENT_ID == "" || (CLIENT_ID != null && CLIENT_ID.contains(" ")));
+    return !(DISCORD_CLIENT_ID == null || DISCORD_CLIENT_ID == "" || (DISCORD_CLIENT_ID != null && DISCORD_CLIENT_ID.contains(" ")));
   }
 
   var daemon:Null<Thread> = null;

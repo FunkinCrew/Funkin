@@ -92,7 +92,7 @@ class DebugBoundingState extends FlxState
     var viewDropdown:DropDown = offsetEditorDialog.findComponent("swapper", DropDown);
     viewDropdown.onChange = function(e:UIEvent) {
       trace(e.type);
-      curView = cast e.data.curView;
+      curView = cast e?.data?.curView;
       trace(e.data);
       // trace(e.data);
     };
@@ -345,8 +345,26 @@ class DebugBoundingState extends FlxState
     super.update(elapsed);
   }
 
+  override function destroy()
+  {
+    super.destroy();
+
+    // Hide the mouse cursor on other states.
+    Cursor.hide();
+  }
+
   function offsetControls():Void
   {
+    // CTRL + S = Save Character Data
+    // CTRL + SHIFT + S = Save Offsets
+    // "WINDOWS" key code is the same keycode as COMMAND on mac
+    if ((FlxG.keys.pressed.CONTROL || FlxG.keys.pressed.WINDOWS) && FlxG.keys.justPressed.S)
+    {
+      var outputString = FlxG.keys.pressed.SHIFT ? buildOutputStringOld() : buildOutputStringNew();
+      saveOffsets(outputString, FlxG.keys.pressed.SHIFT ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
+      return;
+    }
+
     if (FlxG.keys.justPressed.RBRACKET || FlxG.keys.justPressed.E)
     {
       if (offsetAnimationDropdown.selectedIndex + 1 <= offsetAnimationDropdown.dataSource.size)
@@ -456,12 +474,6 @@ class DebugBoundingState extends FlxState
       txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
 
       trace(animName);
-    }
-
-    if (FlxG.keys.justPressed.ESCAPE)
-    {
-      var outputString = FlxG.keys.pressed.CONTROL ? buildOutputStringOld() : buildOutputStringNew();
-      saveOffsets(outputString, FlxG.keys.pressed.CONTROL ? swagChar.characterId + "Offsets.txt" : swagChar.characterId + ".json");
     }
   }
 

@@ -23,7 +23,14 @@ class HaxelibVersions
   {
     var result:Array<String> = [];
 
-    var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent(#if ios '../../../../../' + #end 'hmm.json'));
+    var hmmFile:String = "hmm.json";
+
+    #if ios
+    if (!sys.FileSystem.exists(hmmFile)) hmmFile = "../../../../../" + hmmFile;
+    #end
+
+    var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent(hmmFile));
+
     var dependencies:Array<Dynamic> = cast hmmData.dependencies;
     for (library in dependencies)
     {

@@ -146,18 +146,15 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
     #if !mobile
+    // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
     createPrefItemEnum('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', [
-      "Advanced" => DebugDisplayMode.ADVANCED,
-      "Simple" => DebugDisplayMode.SIMPLE,
-      "Off" => DebugDisplayMode.OFF
-    ], function(key:String, value:DebugDisplayMode):Void {
+      "Advanced" => DebugDisplayMode.Advanced,
+      "Simple" => DebugDisplayMode.Simple,
+      "Off" => DebugDisplayMode.Off
+    ], (key:String, value:DebugDisplayMode) -> {
       Preferences.debugDisplay = value;
-    }, switch (Preferences.debugDisplay)
-      {
-        case DebugDisplayMode.SIMPLE: "Simple";
-        case DebugDisplayMode.ADVANCED: "Advanced";
-        default: "Off";
-      });
+    }, Preferences.debugDisplay);
+
     createPrefItemPercentage('Debug Display BG', "Change debug display's background opacity", function(value:Int):Void {
       Preferences.debugDisplayBGOpacity = value;
     }, Preferences.debugDisplayBGOpacity);

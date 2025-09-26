@@ -13,7 +13,7 @@ class SongEventRegistry
 {
   /**
    * Every built-in event class must be added to this list.
-   * Thankfully, with the power of `SongEventMacro`, this is done automatically.
+   * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
   static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent);
 

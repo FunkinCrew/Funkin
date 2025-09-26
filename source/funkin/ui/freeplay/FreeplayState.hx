@@ -153,6 +153,11 @@ class FreeplayState extends MusicBeatSubState
   var difficultyDots:FlxTypedSpriteGroup<DifficultyDot>;
 
   /**
+   *  An array of preview timers, so that we can prevent the timers from overlapping.
+   */
+  var previewTimers:Array<FlxTimer> = [];
+
+  /**
    * Bit of a utility var to get the currently displayed DifficultySprite
    *
    * The getter looks like this
@@ -351,6 +356,14 @@ class FreeplayState extends MusicBeatSubState
 
       openSubState(stickerSubState);
       stickerSubState.degenStickers();
+    }
+
+    if (fromResultsParams != null)
+    {
+      @:privateAccess
+      this._parentState._constructor = () -> {
+        return FreeplayState.build(null, null);
+      }
     }
 
     #if FEATURE_DISCORD_RPC
@@ -822,6 +835,7 @@ class FreeplayState extends MusicBeatSubState
     {
       if (fromCharSelect) enterFromCharSel();
       onDJIntroDone();
+      forceSkipIntro = false;
     }
     else
     {
@@ -2082,13 +2096,6 @@ class FreeplayState extends MusicBeatSubState
   }
   #end
 
-  override function beatHit():Bool
-  {
-    backingCard.beatHit();
-
-    return super.beatHit();
-  }
-
   public override function destroy():Void
   {
     super.destroy();
@@ -2821,9 +2828,7 @@ class FreeplayState extends MusicBeatSubState
     if (currentCapsule.freeplayData == null) albumRoll.albumId = null;
 
     changeDiff();
-    if (currentCapsule.freeplayData == null) currentCapsule.refreshDisplay();
-    else
-      currentCapsule.refreshDisplay(false);
+    currentCapsule.refreshDisplay(currentCapsule.freeplayData == null);
 
     for (index => capsule in grpCapsules.members)
     {
@@ -2891,6 +2896,9 @@ class FreeplayState extends MusicBeatSubState
       #end
       instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
       // trace('Attempting to play partial preview: ${previewSong.id}:${instSuffix}');
+
+      clearPreviews();
+
       FunkinSound.playMusic(previewSong.id,
         {
           startingVolume: 0.0,
@@ -2907,13 +2915,37 @@ class FreeplayState extends MusicBeatSubState
             },
           onLoad: function() {
             FlxG.sound.music.fadeIn(2, 0, 0.7);
-          }
+
+            var fadeStart:Float = (FlxG.sound.music.length / 1000) - 2;
+
+            previewTimers.push(new FlxTimer().start(fadeStart, function(_)
+            {
+              FlxG.sound.music.fadeOut(2, 0);
+            }));
+
+            previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / 1000, function(_)
+            {
+              playCurSongPreview();
+            }));
+          },
         });
       if (songDifficulty != null)
       {
         Conductor.instance.mapTimeChanges(songDifficulty.timeChanges);
       }
     }
+  }
+
+  public function clearPreviews()
+  {
+    for (timer in previewTimers)
+    {
+      if (timer != null) timer.cancel();
+    }
+
+    previewTimers = [];
+
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
   }
 
   public function switchBackingImage(?freeplaySongData:FreeplaySongData):Void

@@ -8,9 +8,16 @@ import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notekind.ScriptedNoteKind;
 import funkin.play.notes.notekind.NoteKind.NoteKindParam;
+import funkin.util.macro.ClassMacro;
 
 class NoteKindManager
 {
+  /**
+   * Every built-in note kind class must be added to this list.
+   * Thankfully, with the power of `ClassMacro`, this is done automatically.
+   */
+  static final BUILTIN_KINDS:List<Class<NoteKind>> = ClassMacro.listSubclassesOf(NoteKind);
+
   /**
    * A map of all note kinds, keyed by their name.
    * This is used to retrieve note kinds by their name.
@@ -22,12 +29,56 @@ class NoteKindManager
    * @param noteKind The name of the note kind.
    * @return The note kind, or null if it doesn't exist.
    */
-  public static function getNoteKind(noteKind:String):Null<NoteKind>
+  public static function getNoteKind(?noteKind:String):Null<NoteKind>
   {
+    if (noteKind == null) return null;
     return noteKinds.get(noteKind);
   }
 
-  public static function loadScripts():Void
+  /**
+   * Initialize custom behavior for note kinds.
+   */
+  public static function initialize():Void
+  {
+    clearNoteKindCache();
+
+    //
+    // BASE GAME EVENTS
+    //
+    registerBaseNoteKinds();
+    registerScriptedNoteKinds();
+  }
+
+  /**
+   * Register the hard-coded note kinds.
+   */
+  public static function registerBaseNoteKinds():Void
+  {
+    trace('Instantiating ${BUILTIN_KINDS.length} built-in note kinds...');
+    for (noteKindCls in BUILTIN_KINDS)
+    {
+      var noteKindClsName:String = Type.getClassName(noteKindCls);
+      if (noteKindClsName == 'funkin.play.notes.notekind.NoteKind'
+        || noteKindClsName == 'funkin.play.notes.notekind.ScriptedNoteKind') continue;
+
+      var kind:NoteKind = Type.createInstance(noteKindCls, ["UNKNOWN"]);
+
+      if (kind != null)
+      {
+        trace('  Loaded built-in note kind: ${kind.noteKind}');
+        noteKinds.set(kind.noteKind, kind);
+      }
+      else
+      {
+        trace('  Failed to load built-in note kind: ${noteKindClsName}');
+      }
+    }
+  }
+
+  /**
+   * Register the scripted note kinds provided by mods.
+   */
+  public static function registerScriptedNoteKinds():Void
   {
     var scriptedClassName:Array<String> = ScriptedNoteKind.listScriptClasses();
     if (scriptedClassName.length > 0)
@@ -97,12 +148,22 @@ class NoteKindManager
     return NoteStyleRegistry.instance.fetchEntry(noteStyleId);
   }
 
-  public static function listNoteStyles(songNoteDatas:Array<SongNoteData>):Array<NoteStyle>
+  /**
+   * Get a list of all the note styles used by the given notes.
+   * Great for preloading.
+   * @param songNoteDatas The notes to query for note styles.
+   * @return The note styles to load.
+   */
+  public static function listNoteStylesByNoteData(songNoteDatas:Array<SongNoteData>):Array<NoteStyle>
   {
     var results:Array<NoteStyle> = [];
     for (songNoteData in songNoteDatas)
     {
       var noteStyle:NoteStyle = getNoteStyle(songNoteData.kind, null);
+      if (noteStyle != null && !results.contains(noteStyle))
+      {
+        results.push(noteStyle);
+      }
     }
     return results;
   }
@@ -142,5 +203,14 @@ class NoteKindManager
     }
 
     return noteKinds.get(noteKind)?.params ?? [];
+  }
+
+  /**
+   * Clear the note kind cache.
+   * Be sure to register the note kinds again before trying to use them.
+   */
+  public static function clearNoteKindCache():Void
+  {
+    noteKinds.clear();
   }
 }
