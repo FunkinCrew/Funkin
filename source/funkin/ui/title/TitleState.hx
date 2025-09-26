@@ -79,7 +79,7 @@ class TitleState extends MusicBeatState
   var titleText:FlxSprite = new FlxSprite();
   var maskShader = new LeftMaskShader();
 
-  var attractTimer:FlxTimer;
+  var attractTimer:Null<FlxTimer>;
 
   function startIntro():Void
   {
@@ -297,7 +297,6 @@ class TitleState extends MusicBeatState
 
     if (pressedEnter && !transitioning && skippedIntro)
     {
-      if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
