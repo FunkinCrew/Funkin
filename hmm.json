@@ -45,7 +45,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "ac2a34fe4b3400bc04218f46320a65af0f337fc0",
+      "ref": "5cf3515e665812179a9b413629325b608b3a9815",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -118,7 +118,7 @@
       "name": "hxcpp-debug-server",
       "type": "git",
       "dir": "hxcpp-debug-server",
-      "ref": "147294123f983e35f50a966741474438069a7a8f",
+      "ref": "7459934666a473a4cc4d066ba4a93ef92f1ce94c",
       "url": "https://github.com/FunkinCrew/hxcpp-debugger"
     },
     {
@@ -170,7 +170,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "e5f8c27124598505917a001588b560244731adfb",
+      "ref": "f109a083023a9e5622342257993fc745d9bbb959",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -184,7 +184,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "a0df7c3afe360c9af59a76e45007dbf4e53b5131",
+      "ref": "e6296200292a76b5f7b8684a991ead6b05ae4507",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {

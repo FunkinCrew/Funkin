@@ -64,21 +64,31 @@ class MemoryUtil
     try
     {
       #if cpp
-      final content:String = sys.io.File.read('/proc/${cpp.NativeSys.sys_get_pid()}/status', false).readAll().toString();
+      final input:sys.io.FileInput = sys.io.File.read('/proc/${cpp.NativeSys.sys_get_pid()}/status', false);
       #else
-      final content:String = sys.io.File.read('/proc/self/status', false).readAll().toString();
+      final input:sys.io.FileInput = sys.io.File.read('/proc/self/status', false);
       #end
 
       final regex:EReg = ~/^VmRSS:\s+(\d+)\s+kB/m;
-
-      if (regex.match(content))
+      var line:String;
+      do
       {
-        final kb:Float = Std.parseFloat(regex.matched(1));
-
-        if (kb != Math.NaN)
+        if (input.eof())
         {
-          return kb * 1024.0;
+          input.close();
+          return 0.0;
         }
+        line = input.readLine();
+      }
+      while (!regex.match(line));
+
+      input.close();
+
+      final kb:Float = Std.parseFloat(regex.matched(1));
+
+      if (kb != Math.NaN)
+      {
+        return kb * 1024.0;
       }
     }
     catch (e:Dynamic) {}

@@ -31,13 +31,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.7.4";
+  static final VERSION:String = "0.7.5";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 53;
+  static final BUILD_NUMBER:Int = 56;
 
   /**
    * The game's name. Used as the default window title.
@@ -329,6 +329,13 @@ class Project extends HXProject
    * Disable to improve performance a bunch.
    */
   static final FEATURE_LOG_TRACE:FeatureFlag = "FEATURE_LOG_TRACE";
+
+  /**
+   * `-DFEATURE_DEBUG_FILE_LOGGING`
+   * If this flag is enabled, the game will print debug traces to a log file near the game's executable.
+   * Disable to improve performance a bunch.
+   */
+  static final FEATURE_DEBUG_FILE_LOGGING:FeatureFlag = "FEATURE_DEBUG_FILE_LOGGING";
 
   /**
    * `-DFEATURE_MOBILE_ADVERTISEMENTS`
@@ -786,8 +793,13 @@ class Project extends HXProject
     // FEATURE FLAGS
     //
 
+    // Should be true on debug builds or if GITHUB_BUILD is enabled.
+    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_LOG_TRACE.apply(this, true);
+    FEATURE_DEBUG_FILE_LOGGING.apply(this, FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
     FEATURE_NAUGHTYNESS.apply(this, true);
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
@@ -796,10 +808,6 @@ class Project extends HXProject
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
     FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
-
-    // Should be true on debug builds or if GITHUB_BUILD is enabled.
-    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
@@ -1048,9 +1056,9 @@ class Project extends HXProject
       if (envConfig != null)
       {
         keystore = new Keystore();
-        keystore.path = Std.string(envConfig.get('ANDROID_KEYSTORE_PATH'));
-        keystore.alias = Std.string(envConfig.get('ANDROID_KEYSTORE_ALIAS'));
-        keystore.password = Std.string(envConfig.get('ANDROID_KEYSTORE_PASSWORD'));
+        keystore.path = Std.string(envConfig.get('KEYSTORE_PATH'));
+        keystore.alias = Std.string(envConfig.get('KEYSTORE_ALIAS'));
+        keystore.password = Std.string(envConfig.get('KEYSTORE_PASSWORD'));
       }
 
       if (isBundle())
@@ -1365,15 +1373,7 @@ class Project extends HXProject
   {
     if (envConfig == null) return;
 
-    if (isAndroid())
-    {
-      setenv("ADMOB_APPID", Std.string(envConfig.get('ANDROID_ADMOB_APP_ID')));
-    }
-
-    if (isIOS())
-    {
-      setenv("ADMOB_APPID", Std.string(envConfig.get('IOS_ADMOB_APP_ID')));
-    }
+    setenv("ADMOB_APPID", Std.string(envConfig.get('ADMOB_APP_ID')));
   }
 
   //
@@ -1774,7 +1774,7 @@ class Project extends HXProject
 
         Sys.println("- " + libraryName.replace(",", ".") + (isDev ? "\x1b[1;34m (Development Build)\x1b[0m" : ""));
         Sys.println("   \x1b[38;5;203mCurrent version: " + outdatedVersion + "\x1b[0m");
-        Sys.println("   \x1b[38;5;82mExpected version: " + expectedVersion + "\x1b[0m");
+        Sys.println("   \x1b[38;5;82mExpected version: " + expectedVersion + "\x1b[0m\n");
       }
     }
   }
@@ -1905,24 +1905,37 @@ class Project extends HXProject
     }
 
     var env = new Map<String, Dynamic>();
+
     for (line in envFile.split('\n'))
     {
-      if (line.length <= 0 || line.startsWith("#") || shouldExcludeEnvKey(line)) continue;
+      line = line.trim();
 
-      var index:Int = line.indexOf('=');
+      if (line.length <= 0 || line.startsWith('#') || shouldExcludeEnvKey(line))
+      {
+        continue;
+      }
 
-      if (index == -1) continue;
+      final index:Int = line.indexOf('=');
 
-      var field:String = line.substr(0, index);
-      var value:String = line.substr(index + 1);
+      if (index == -1)
+      {
+        continue;
+      }
 
-      env.set(field, value);
+      final value:String = line.substr(index + 1);
+
+      if (value.length == 0)
+      {
+        continue;
+      }
+
+      env.set(stripEnvTargetPrefix(line.substr(0, index)), value);
     }
 
     return env;
   }
 
-  private function shouldExcludeEnvKey(key:String):Bool
+  public function shouldExcludeEnvKey(key:String):Bool
   {
     final android:Bool = key.startsWith('ANDROID_');
     final ios:Bool = key.startsWith('IOS_');
@@ -1936,6 +1949,38 @@ class Project extends HXProject
     if (isIOS() && (android || web || desktop)) return true;
 
     return false;
+  }
+
+  public function stripEnvTargetPrefix(key:String):String
+  {
+    final index:Int = key.indexOf('_');
+
+    if (index == -1)
+    {
+      return key;
+    }
+
+    final prefix:String = key.substr(0, index);
+    final rest:String = key.substr(index + 1);
+
+    if (isAndroid() && (prefix == 'ANDROID' || prefix == 'MOBILE'))
+    {
+      return rest;
+    }
+    else if (isIOS() && (prefix == 'IOS' || prefix == 'MOBILE'))
+    {
+      return rest;
+    }
+    else if (isWeb() && prefix == 'WEB')
+    {
+      return rest;
+    }
+    else if (isDesktop() && prefix == 'DESKTOP')
+    {
+      return rest;
+    }
+
+    return key;
   }
 
   public function readASTCExclusion():Void
