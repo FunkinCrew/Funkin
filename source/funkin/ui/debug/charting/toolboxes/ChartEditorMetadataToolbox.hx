@@ -215,8 +215,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (numerator == prevNumerator) return;
 
       chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.timeStamp, currentTimeChange.bpm,
-        numerator,
-        currentTimeChange.timeSignatureDen));
+        numerator, currentTimeChange.timeSignatureDen));
       inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${numerator}/${currentTimeChange.timeSignatureDen}';
       tcDropdownItemRenderer.data = inputTimeChange.value;
     }
