@@ -2595,21 +2595,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     gridGhostNote.noteData = new SongNoteData(0, 0, 0, "", []);
     gridGhostNote.visible = false;
     add(gridGhostNote);
-    gridGhostNote.zIndex = 11;
+    gridGhostNote.zIndex = 21;
 
     gridGhostHoldNote = new ChartEditorHoldNoteSprite(this);
     gridGhostHoldNote.alpha = 0.6;
     gridGhostHoldNote.noteData = null;
     gridGhostHoldNote.visible = false;
     add(gridGhostHoldNote);
-    gridGhostHoldNote.zIndex = 11;
+    gridGhostHoldNote.zIndex = 21;
 
     gridGhostEvent = new ChartEditorEventSprite(this, true);
     gridGhostEvent.alpha = 0.6;
     gridGhostEvent.eventData = new SongEventData(-1, '', {});
     gridGhostEvent.visible = false;
     add(gridGhostEvent);
-    gridGhostEvent.zIndex = 12;
+    gridGhostEvent.zIndex = 22;
 
     buildNoteGroup();
 
@@ -5554,7 +5554,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       ghost.alpha = 0.6;
       ghost.noteData = null;
       ghost.visible = false;
-      ghost.zIndex = 11;
+      ghost.zIndex = 21;
       add(ghost); // Don't add to `renderedHoldNotes` because then it will get killed every frame.
 
       gridPlayheadGhostHoldNotes.push(ghost);
