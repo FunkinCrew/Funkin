@@ -79,7 +79,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
           this.hasClearedVocals = true;
           // Tell the user the load was successful.
           chartEditorState.success('Loaded Vocals', 'Loaded vocals for $charName (${path.file}.${path.ext}), variation ${chartEditorState.selectedVariation}');
-          #if FILE_DROP_SUPPORTED
+          #if FEATURE_FILE_DROP
           vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
           #else
           vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${path.file}.${path.ext}';
@@ -95,7 +95,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
           chartEditorState.error('Failed to Load Vocals',
             'Failed to load vocal track (${path.file}.${path.ext}) for variation (${chartEditorState.selectedVariation})');
 
-          #if FILE_DROP_SUPPORTED
+          #if FEATURE_FILE_DROP
           vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
           #else
           vocalsEntry.vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
@@ -117,7 +117,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
                 chartEditorState.success('Loaded Vocals',
                   'Loaded vocals for $charName (${selectedFile.name}), variation ${chartEditorState.selectedVariation}');
 
-                #if FILE_DROP_SUPPORTED
+                #if FEATURE_FILE_DROP
                 vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
                 #else
                 vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${selectedFile.name}';
@@ -132,7 +132,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
                 chartEditorState.error('Failed to Load Vocals',
                   'Failed to load vocal track (${selectedFile.name}) for variation (${chartEditorState.selectedVariation})');
 
-                #if FILE_DROP_SUPPORTED
+                #if FEATURE_FILE_DROP
                 vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
                 #else
                 vocalsEntry.vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
@@ -145,7 +145,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
       dropHandler.handler = onDropFile;
 
       // onDropFile
-      #if FILE_DROP_SUPPORTED
+      #if FEATURE_FILE_DROP
       dropHandlers.push(dropHandler);
       #end
 
@@ -290,7 +290,7 @@ class ChartEditorUploadVocalsEntry extends Box
 
     this.charName = charName;
 
-    #if FILE_DROP_SUPPORTED
+    #if FEATURE_FILE_DROP
     vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
     #else
     vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';

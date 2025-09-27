@@ -4,6 +4,8 @@ package funkin.ui.debug.charting.handlers;
 import flixel.util.FlxTimer;
 import funkin.data.song.importer.FNFLegacyData;
 import funkin.data.song.importer.FNFLegacyImporter;
+import funkin.data.song.importer.OsuManiaData;
+import funkin.data.song.importer.OsuManiaImporter;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
@@ -780,7 +782,7 @@ class ChartEditorDialogHandler
       var songDefaultChartDataEntry:Component = RuntimeComponentBuilder.fromAsset(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
       var songDefaultChartDataEntryLabel:Null<Label> = songDefaultChartDataEntry.findComponent('chartEntryLabel', Label);
       if (songDefaultChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
-      #if FILE_DROP_SUPPORTED
+      #if FEATURE_FILE_DROP
       songDefaultChartDataEntryLabel.text = 'Drag and drop <song>-chart.json file, or click to browse.';
       #else
       songDefaultChartDataEntryLabel.text = 'Click to browse for <song>-chart.json file.';
@@ -800,7 +802,7 @@ class ChartEditorDialogHandler
         var songVariationMetadataEntry:Component = RuntimeComponentBuilder.fromAsset(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
         var songVariationMetadataEntryLabel:Null<Label> = songVariationMetadataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationMetadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         songVariationMetadataEntryLabel.text = 'Drag and drop <song>-metadata-${variation}.json file, or click to browse.';
         #else
         songVariationMetadataEntryLabel.text = 'Click to browse for <song>-metadata-${variation}.json file.';
@@ -815,7 +817,7 @@ class ChartEditorDialogHandler
           Cursor.cursorMode = Default;
         }
         songVariationMetadataEntry.onClick = onClickMetadataVariation.bind(variation).bind(songVariationMetadataEntryLabel);
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         state.addDropHandler(
           {
             component: songVariationMetadataEntry,
@@ -828,7 +830,7 @@ class ChartEditorDialogHandler
         var songVariationChartDataEntry:Component = RuntimeComponentBuilder.fromAsset(CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT);
         var songVariationChartDataEntryLabel:Null<Label> = songVariationChartDataEntry.findComponent('chartEntryLabel', Label);
         if (songVariationChartDataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         songVariationChartDataEntryLabel.text = 'Drag and drop <song>-chart-${variation}.json file, or click to browse.';
         #else
         songVariationChartDataEntryLabel.text = 'Click to browse for <song>-chart-${variation}.json file.';
@@ -843,7 +845,7 @@ class ChartEditorDialogHandler
           Cursor.cursorMode = Default;
         }
         songVariationChartDataEntry.onClick = onClickChartDataVariation.bind(variation).bind(songVariationChartDataEntryLabel);
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         state.addDropHandler(
           {
             component: songVariationChartDataEntry,
@@ -883,7 +885,7 @@ class ChartEditorDialogHandler
       // Tell the user the load was successful.
       state.success('Loaded Metadata', 'Loaded metadata file (${path.file}.${path.ext})');
 
-      #if FILE_DROP_SUPPORTED
+      #if FEATURE_FILE_DROP
       label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
       #else
       label.text = 'Metadata file (click to browse)\n${path.file}.${path.ext}';
@@ -919,7 +921,7 @@ class ChartEditorDialogHandler
               // Tell the user the load was successful.
               state.success('Loaded Metadata', 'Loaded metadata file (${selectedFile.name})');
 
-              #if FILE_DROP_SUPPORTED
+              #if FEATURE_FILE_DROP
               label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
               #else
               label.text = 'Metadata file (click to browse)\n${selectedFile.name}';
@@ -963,7 +965,7 @@ class ChartEditorDialogHandler
         // Tell the user the load was successful.
         state.success('Loaded Chart Data', 'Loaded chart data file (${path.file}.${path.ext})');
 
-        #if FILE_DROP_SUPPORTED
+        #if FEATURE_FILE_DROP
         label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
         #else
         label.text = 'Chart data file (click to browse)\n${path.file}.${path.ext}';
@@ -1006,7 +1008,7 @@ class ChartEditorDialogHandler
               // Tell the user the load was successful.
               state.success('Loaded Chart Data', 'Loaded chart data file (${selectedFile.name})');
 
-              #if FILE_DROP_SUPPORTED
+              #if FEATURE_FILE_DROP
               label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
               #else
               label.text = 'Chart data file (click to browse)\n${selectedFile.name}';
@@ -1020,7 +1022,7 @@ class ChartEditorDialogHandler
     var metadataEntryLabel:Null<Label> = metadataEntry.findComponent('chartEntryLabel', Label);
     if (metadataEntryLabel == null) throw 'Could not locate chartEntryLabel in Open Chart dialog';
 
-    #if FILE_DROP_SUPPORTED
+    #if FEATURE_FILE_DROP
     metadataEntryLabel.text = 'Drag and drop <song>-metadata.json file, or click to browse.';
     #else
     metadataEntryLabel.text = 'Click to browse for <song>-metadata.json file.';
@@ -1057,26 +1059,44 @@ class ChartEditorDialogHandler
     var prettyFormat:String = switch (format)
     {
       case 'legacy': 'FNF Legacy';
+      case 'osumania': 'Osu!Mania';
       default: 'Unknown';
     }
 
     var fileFilter = switch (format)
     {
       case 'legacy':
-        // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
-        #if !mac
         [
           {label: 'JSON Data File (.json)', extension: 'json'}];
-        #else
-        [];
-        #end
+      case 'osumania':
+        [
+          {label: 'OSU! Beatmap File (.osu)', extension: 'osu'}];
       default: null;
+    }
+
+    var fileExt = switch (format)
+    {
+      case 'osumania':
+        "osu";
+
+      default: "json";
     }
 
     dialog.title = 'Import Chart - ${prettyFormat}';
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Import Chart dialog';
+
+    var importExtLabel:Null<Label> = dialog.findComponent('importLabel', Label);
+
+    if (importExtLabel != null)
+    {
+      #if FEATURE_FILE_DROP
+      importExtLabel.text = 'Drag and drop a chart.$fileExt file, or click to browse.';
+      #else
+      importExtLabel.text = 'Click to browse for a chart.$fileExt file.';
+      #end
+    }
 
     state.isHaxeUIDialogOpen = true;
     buttonCancel.onClick = function(_) {
@@ -1098,49 +1118,76 @@ class ChartEditorDialogHandler
 
     var onDropFile:String->Void;
 
-    importBox.onClick = function(_) {
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileInfo) {
-        if (selectedFile != null && selectedFile.bytes != null)
-        {
-          trace('Selected file: ' + selectedFile.fullPath);
-          var selectedFileTxt:String = selectedFile.bytes.toString();
-          var fnfLegacyData:Null<FNFLegacyData> = FNFLegacyImporter.parseLegacyDataRaw(selectedFileTxt, selectedFile.fullPath);
+    var onFileSelected:String->String->Void = (pathStr:String, content:String) -> {
+      var path:Path = new Path(pathStr ?? "");
+      trace('Selected file: ' + path.toString());
+
+      var songMetadata:Null<SongMetadata> = null;
+      var songChartData:Null<SongChartData> = null;
+
+      if (path.ext != fileExt)
+      {
+        state.error('Failure', 'Given file extension ".${path.ext}" was not the requested extension ".$fileExt"');
+        return;
+      }
+
+      var loadedText = '';
+      switch (format)
+      {
+        case 'legacy':
+          var fnfLegacyData:Null<FNFLegacyData> = FNFLegacyImporter.parseLegacyDataRaw(content, path.toString());
 
           if (fnfLegacyData == null)
           {
-            state.error('Failure', 'Failed to parse FNF chart file (${selectedFile.name})');
+            state.error('Failure', 'Failed to parse FNF chart file (${path.file}.${path.ext})');
             return;
           }
 
-          var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(fnfLegacyData);
-          var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(fnfLegacyData);
+          songMetadata = FNFLegacyImporter.migrateMetadata(fnfLegacyData);
+          songChartData = FNFLegacyImporter.migrateChartData(fnfLegacyData);
 
-          state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
+          loadedText = 'Loaded chart file';
 
-          dialog.hideDialog(DialogButton.APPLY);
-          state.success('Success', 'Loaded chart file (${selectedFile.name})');
+        case 'osumania':
+          var osuManiaData:Null<OsuManiaData> = OsuManiaImporter.parseOsuFile(content);
+
+          if (osuManiaData == null)
+          {
+            state.error('Failure', 'Failed to parse Osu!Mania beatmap file (${path.file}.${path.ext})');
+            return;
+          }
+
+          songMetadata = OsuManiaImporter.migrateMetadata(osuManiaData);
+          songChartData = OsuManiaImporter.migrateChartData(osuManiaData);
+
+          loadedText = 'Loaded beatmap file';
+      }
+
+      if (songMetadata == null || songMetadata == null)
+      {
+        state.error('Failure', 'Failed to load song (${path.file}.${path.ext})');
+        return;
+      }
+      state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
+
+      dialog.hideDialog(DialogButton.APPLY);
+      state.success('Success', '$loadedText (${path.file}.${path.ext})');
+    };
+
+    importBox.onClick = function(_) {
+      // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
+      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', #if !mac fileFilter ?? [] #else [] #end, function(selectedFile:SelectedFileInfo) {
+        if (selectedFile != null && selectedFile.bytes != null)
+        {
+          @:nullSafety(Off)
+          onFileSelected(selectedFile.fullPath, selectedFile.bytes.toString());
         }
       });
     }
 
     onDropFile = function(pathStr:String) {
-      var path:Path = new Path(pathStr);
-      var selectedFileText:String = FileUtil.readStringFromPath(path.toString());
-      var selectedFileData:Null<FNFLegacyData> = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
-
-      if (selectedFileData == null)
-      {
-        state.error('Failure', 'Failed to parse FNF chart file (${path.file}.${path.ext})');
-        return;
-      }
-
-      var songMetadata:SongMetadata = FNFLegacyImporter.migrateMetadata(selectedFileData);
-      var songChartData:SongChartData = FNFLegacyImporter.migrateChartData(selectedFileData);
-
-      state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
-
-      dialog.hideDialog(DialogButton.APPLY);
-      state.success('Success', 'Loaded chart file (${path.file}.${path.ext})');
+      var selectedFileText:String = FileUtil.readStringFromPath(pathStr);
+      onFileSelected(pathStr, selectedFileText);
     };
 
     state.addDropHandler({component: importBox, handler: onDropFile});
@@ -1326,11 +1373,11 @@ class ChartEditorDialogHandler
   {
     var dialog:Null<Dialog> = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor",
       MessageBoxType.TYPE_YESNO, true, function(button:DialogButton) {
+        state.isHaxeUIDialogOpen = false;
         if (button == DialogButton.YES)
         {
           state.quitChartEditor();
         }
-        state.isHaxeUIDialogOpen = false;
     });
 
     dialog.destroyOnClose = true;
