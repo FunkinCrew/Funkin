@@ -1,5 +1,6 @@
 package funkin.ui;
 
+import flixel.addons.transition.FlxTransitionableSubState;
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import funkin.ui.mainmenu.MainMenuState;
@@ -25,7 +26,7 @@ import funkin.play.notes.NoteDirection;
  * MusicBeatSubState reincorporates the functionality of MusicBeatState into an FlxSubState.
  */
 @:nullSafety
-class MusicBeatSubState extends FlxSubState implements IEventHandler
+class MusicBeatSubState extends FlxTransitionableSubState implements IEventHandler
 {
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
@@ -252,6 +253,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     this._parentState.openSubState(substate);
   }
 
+  override public function transitionIn()
+  {
+    // If there is a SubState either open or pending, don't do the transition, as the transition itself is a SubState.
+    if (this._requestedSubState == null && this.subState == null)
+    {
+      super.transitionIn();
+    }
+  }
+
   @:nullSafety(Off)
   override function startOutro(onComplete:() -> Void):Void
   {
@@ -267,7 +277,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     {
       FunkinSound.stopAllAudio();
 
-      onComplete();
+      // If the SubState can fade out, make it use the transition instead.
+      if (Std.isOfType(this.subState, MusicBeatSubState))
+      {
+        cast(this.subState, MusicBeatSubState).startOutro(onComplete);
+      }
+      else
+      {
+        super.startOutro(onComplete);
+      }
     }
   }
 
