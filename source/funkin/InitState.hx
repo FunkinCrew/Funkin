@@ -406,7 +406,7 @@ class InitState extends FlxState
    * @param songId
    * @param difficultyId
    */
-  function startSong(songId:String, difficultyId:String = 'normal'):Void
+  function startSong(songId:String = '', difficultyId:String = 'normal'):Void
   {
     var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
 
