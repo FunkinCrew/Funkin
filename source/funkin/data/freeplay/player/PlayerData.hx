@@ -89,7 +89,7 @@ class PlayerData
     updateVersionToLatest();
 
     var writer = new json2object.JsonWriter<PlayerData>();
-    return writer.write(this, pretty ? '  ' : null);
+    return writer.write(this, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void

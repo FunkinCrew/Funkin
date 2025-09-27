@@ -161,7 +161,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     for (dataProp in _data.props)
     {
-      trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
+      trace(' Placing prop: ${dataProp.name} (${dataProp.assetPath})');
 
       var isSolidColor = dataProp.assetPath.startsWith('#');
       var isAnimated = dataProp.animations.length > 0;
@@ -215,7 +215,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       if (propSprite.frames == null || propSprite.frames.numFrames == 0)
       {
         @:privateAccess
-        trace('    ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
+        trace('   ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
         continue;
       }
 

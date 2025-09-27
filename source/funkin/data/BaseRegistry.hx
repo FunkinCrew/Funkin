@@ -120,14 +120,14 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         var entry:Null<T> = createEntry(entryId);
         if (entry != null)
         {
-          trace('  Loaded entry data: ${entry}');
+          trace(' Loaded entry data: ${entry}');
           entries.set(entry.id, entry);
         }
       }
       catch (e)
       {
         // Print the error.
-        trace('  Failed to load entry data: ${entryId}');
+        trace(' Failed to load entry data: ${entryId}');
         trace(e);
         continue;
       }

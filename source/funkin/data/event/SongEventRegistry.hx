@@ -46,12 +46,12 @@ class SongEventRegistry
 
       if (event != null)
       {
-        trace('  Loaded built-in song event: ${event.id}');
+        trace(' Loaded built-in song event: ${event.id}');
         eventCache.set(event.id, event);
       }
       else
       {
-        trace('  Failed to load built-in song event: ${Type.getClassName(eventCls)}');
+        trace(' Failed to load built-in song event: ${Type.getClassName(eventCls)}');
       }
     }
   }
@@ -68,12 +68,12 @@ class SongEventRegistry
 
       if (event != null)
       {
-        trace('  Loaded scripted song event: ${event.id}');
+        trace(' Loaded scripted song event: ${event.id}');
         eventCache.set(event.id, event);
       }
       else
       {
-        trace('  Failed to instantiate scripted song event class: ${eventCls}');
+        trace(' Failed to instantiate scripted song event class: ${eventCls}');
       }
     }
   }

@@ -39,21 +39,21 @@ class Events
     switch (outcome)
     {
       case SUCCESS(data):
-        trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Logged event: ${data.eventName}');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' Logged event: ${data.eventName}');
       case FAIL(outcome):
         switch (outcome)
         {
           case HTTP(error):
-            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} HTTP error while logging event: ${error}');
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' HTTP error while logging event: ${error}');
           case RESPONSE(error):
-            trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Response error (${error.code}) while logging event: ${error.message}');
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' Response error (${error.code}) while logging event: ${error.message}');
           case RESULT(error):
             switch (error.code)
             {
               case 103: // Invalid custom event name
-                trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Invalid custom event name: ${eventName}');
+                trace(' NEWGROUNDS '.bold().bg_orange() + ' Invalid custom event name: ${eventName}');
               default:
-                trace('${funkin.util.AnsiUtil.apply(' NEWGROUNDS ', [BOLD, BG_ORANGE])} Result error (${error.code}) while logging event: ${error.message}');
+                trace(' NEWGROUNDS '.bold().bg_orange() + ' Result error (${error.code}) while logging event: ${error.message}');
             }
         }
     }

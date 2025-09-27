@@ -523,7 +523,7 @@ class ChartEditorImportExportHandler
       var onSave:Array<String>->Void = function(paths:Array<String>) {
         if (paths.length != 1)
         {
-          trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not get save path.');
+          trace(' WARNING '.bold().bg_yellow() + ' Could not get save path.');
           state.applyWindowTitle();
         }
         else

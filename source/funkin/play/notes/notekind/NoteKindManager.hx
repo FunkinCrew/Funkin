@@ -65,12 +65,12 @@ class NoteKindManager
 
       if (kind != null)
       {
-        trace('  Loaded built-in note kind: ${kind.noteKind}');
+        trace(' Loaded built-in note kind: ${kind.noteKind}');
         noteKinds.set(kind.noteKind, kind);
       }
       else
       {
-        trace('  Failed to load built-in note kind: ${noteKindClsName}');
+        trace(' Failed to load built-in note kind: ${noteKindClsName}');
       }
     }
   }

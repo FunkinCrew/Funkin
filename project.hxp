@@ -9,10 +9,9 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ds.Map;
 import haxe.xml.Printer;
-import tools.AnsiUtil;
-import tools.AnsiUtil.AnsiCode;
 
 using StringTools;
+using tools.AnsiUtil;
 
 /**
  * This HXP performs the functions of a Lime `project.xml` file,
@@ -1917,7 +1916,7 @@ class Project extends HXProject
     }
     else
     {
-      // info('  Found asset path "${path}".');
+      // info(' Found asset path "${path}".');
     }
 
     for (file in sys.FileSystem.readDirectory(path))
@@ -2079,9 +2078,9 @@ class Project extends HXProject
 
     if (Lambda.count(outdatedLibraries) > 0)
     {
-      warn(AnsiUtil.apply("The following haxelibs diverge from the versions set in hmm.json."
+      warn(("The following haxelibs diverge from the versions set in hmm.json."
         + "\n\nThey may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library."
-        + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n", [BOLD,YELLOW]));
+        + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n").bold().yellow());
 
       for (libraryName in outdatedLibraries.keys())
       {
@@ -2093,9 +2092,9 @@ class Project extends HXProject
 
         var isDev:Bool = outdatedVersion.contains("/");
 
-        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? AnsiUtil.apply(" (Development Build)", [BLUE, BOLD]) : ""));
-        Sys.println(AnsiUtil.apply("   Current version: " + outdatedVersion, [RED]));
-        Sys.println(AnsiUtil.apply("   Expected version: " + expectedVersion, [GREEN]));
+        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? " (Development Build)".blue().bold() : ""));
+        Sys.println(("   Current version: " + outdatedVersion).red());
+        Sys.println(("   Expected version: " + expectedVersion).green());
       }
     }
   }
@@ -2205,7 +2204,7 @@ class Project extends HXProject
    */
   public function error(message:String):Void
   {
-    Sys.stderr().write(Bytes.ofString('${AnsiUtil.apply(' ERROR ', [BOLD, BG_RED])} ${message}'));
+    Sys.stderr().write(Bytes.ofString(' ERROR '.bold().bg_red() + " " + message));
     Sys.exit(1);
   }
 
@@ -2216,7 +2215,7 @@ class Project extends HXProject
   {
     if (!(isDisplay() || isClean()))
     {
-      Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} ${message}');
+      Sys.println(' INFO '.bold().bg_blue() + " " + message);
     }
   }
 
@@ -2227,7 +2226,7 @@ class Project extends HXProject
   {
     if (!(isDisplay() || isClean()))
     {
-      Sys.println('${AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} ${message}');
+      Sys.println(' WARNING '.bold().bg_yellow() + " " + message);
     }
   }
 

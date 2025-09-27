@@ -148,7 +148,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       if (songName == null) songName = songData.getDifficulty()?.songName;
       if (songName == null) // Still null?
       {
-        trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not fetch song name for ${targetSongId}');
+        trace(' WARNING '.bold().bg_yellow() + ' Could not fetch song name for ${targetSongId}');
         continue;
       }
 

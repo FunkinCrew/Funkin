@@ -66,7 +66,7 @@ class StageData
     updateVersionToLatest();
 
     var writer = new json2object.JsonWriter<StageData>();
-    return writer.write(this, pretty ? '  ' : null);
+    return writer.write(this, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void

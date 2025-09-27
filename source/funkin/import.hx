@@ -23,4 +23,5 @@ using funkin.util.tools.MapTools;
 using funkin.util.tools.SongEventDataArrayTools;
 using funkin.util.tools.SongNoteDataArrayTools;
 using funkin.util.tools.StringTools;
+using funkin.util.AnsiUtil;
 #end

@@ -94,13 +94,13 @@ class AnsiTrace
     if (colorSupported)
     {
       var dirs:Array<String> = infos.fileName.split("/");
-      dirs[dirs.length - 1] = AnsiUtil.apply(dirs[dirs.length - 1], [BOLD]);
+      dirs[dirs.length - 1] = dirs[dirs.length - 1].bold();
 
       // rejoin the dirs
       infos.fileName = dirs.join("/");
     }
 
-    var pstr:String = infos.fileName + ":" + AnsiUtil.apply(infos.lineNumber, [BOLD]);
+    var pstr:String = infos.fileName + ":" + '${infos.lineNumber}'.bold();
     if (infos.customParams != null) for (v in infos.customParams)
       str += ", " + Std.string(v);
 
@@ -113,7 +113,7 @@ class AnsiTrace
       body = HEADER_REGEX.matched(2);
     }
 
-    if (header.ltrim() != '') str = '${AnsiUtil.apply(header, [BG_WHITE, BOLD])} ${body}';
+    if (header.ltrim() != '') str = header.bg_white().bold() + ' ${body}';
     return pstr + ": " + str;
   }
 

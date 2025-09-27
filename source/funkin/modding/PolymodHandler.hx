@@ -194,7 +194,7 @@ class PolymodHandler
     loadedModIds = [];
     for (mod in loadedModList)
     {
-      trace('  * ${mod.title} v${mod.modVersion} [${mod.id}]');
+      trace(' * ${mod.title} v${mod.modVersion} [${mod.id}]');
       loadedModIds.push(mod.id);
     }
 
@@ -203,35 +203,35 @@ class PolymodHandler
     trace('Installed mods have replaced ${fileList.length} images.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.TEXT);
     trace('Installed mods have added/replaced ${fileList.length} text files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_MUSIC);
     trace('Installed mods have replaced ${fileList.length} music files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_SOUND);
     trace('Installed mods have replaced ${fileList.length} sound files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_GENERIC);
     trace('Installed mods have replaced ${fileList.length} generic audio files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
     #end
   }

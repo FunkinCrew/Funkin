@@ -40,7 +40,7 @@ class PixelatedIcon extends FlxFilteredSprite
 
     if (!Assets.exists(Paths.image(charPath)))
     {
-      trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Character ${char} has no freeplay icon.');
+      trace(' WARNING '.bold().bg_yellow() + ' Character ${char} has no freeplay icon.');
       this.visible = false;
       return;
     }

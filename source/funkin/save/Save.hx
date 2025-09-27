@@ -1380,7 +1380,7 @@ class Save implements ConsoleClass
   {
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
-    return writer.write(data, pretty ? '  ' : null);
+    return writer.write(data, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void

@@ -2,14 +2,13 @@ package funkin.util.macro;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import funkin.util.AnsiUtil;
-import funkin.util.AnsiUtil.AnsiCode;
 #if !macro
 import flixel.FlxG;
 #end
 
 using haxe.macro.TypeTools;
 using haxe.macro.ComplexTypeTools;
+using funkin.util.AnsiUtil;
 
 class ConsoleMacro
 {
@@ -60,7 +59,7 @@ class ConsoleMacro
       };
 
     fields.push(initField);
-    Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} Generated console registration for: $cl');
+    Sys.println(' INFO '.bold().bg_blue() + ' Generated console registration for: $cl');
     return fields;
   }
   #end

@@ -22,6 +22,7 @@ class ChartManifestData
    * The metadata and chart data file names are derived from this.
    */
   public var songId(default, set):String;
+
   public function set_songId(value:String):String
   {
     return songId = invalidIdRegex.replace(value.trim(), '');
@@ -71,7 +72,7 @@ class ChartManifestData
     updateVersionToLatest();
 
     var writer = new json2object.JsonWriter<ChartManifestData>();
-    return writer.write(this, pretty ? '  ' : null);
+    return writer.write(this, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void

@@ -58,7 +58,7 @@ class CharacterDataParser
     var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool {
       return !characterCache.exists(charId);
     });
-    trace('  Fetching data for ${unscriptedCharIds.length} characters...');
+    trace(' Fetching data for ${unscriptedCharIds.length} characters...');
     for (charId in unscriptedCharIds)
     {
       try
@@ -66,7 +66,7 @@ class CharacterDataParser
         var charData:Null<CharacterData> = parseCharacterData(charId);
         if (charData != null)
         {
-          trace('    Loaded character data: ${charId}');
+          trace('   Loaded character data: ${charId}');
           characterCache.set(charId, charData);
         }
       }
@@ -86,18 +86,18 @@ class CharacterDataParser
     var scriptedCharClassNames1:Array<String> = ScriptedSparrowCharacter.listScriptClasses();
     if (scriptedCharClassNames1.length > 0)
     {
-      trace('  Instantiating ${scriptedCharClassNames1.length} (Sparrow) scripted characters...');
+      trace(' Instantiating ${scriptedCharClassNames1.length} (Sparrow) scripted characters...');
       for (charCls in scriptedCharClassNames1)
       {
         try
         {
           var character:SparrowCharacter = ScriptedSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
-          trace('  Initialized character ${character.characterName}');
+          trace(' Initialized character ${character.characterName}');
           characterScriptedClass.set(character.characterId, charCls);
         }
         catch (e)
         {
-          trace('    FAILED to instantiate scripted Sparrow character: ${charCls}');
+          trace('   FAILED to instantiate scripted Sparrow character: ${charCls}');
           trace(e);
         }
       }
@@ -106,7 +106,7 @@ class CharacterDataParser
     var scriptedCharClassNames2:Array<String> = ScriptedPackerCharacter.listScriptClasses();
     if (scriptedCharClassNames2.length > 0)
     {
-      trace('  Instantiating ${scriptedCharClassNames2.length} (Packer) scripted characters...');
+      trace(' Instantiating ${scriptedCharClassNames2.length} (Packer) scripted characters...');
       for (charCls in scriptedCharClassNames2)
       {
         try
@@ -116,7 +116,7 @@ class CharacterDataParser
         }
         catch (e)
         {
-          trace('    FAILED to instantiate scripted Packer character: ${charCls}');
+          trace('   FAILED to instantiate scripted Packer character: ${charCls}');
           trace(e);
         }
       }
@@ -125,7 +125,7 @@ class CharacterDataParser
     var scriptedCharClassNames3:Array<String> = ScriptedMultiSparrowCharacter.listScriptClasses();
     if (scriptedCharClassNames3.length > 0)
     {
-      trace('  Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
+      trace(' Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
       for (charCls in scriptedCharClassNames3)
       {
         try
@@ -135,7 +135,7 @@ class CharacterDataParser
         }
         catch (e)
         {
-          trace('    FAILED to instantiate scripted Multi-Sparrow character: ${charCls}');
+          trace('   FAILED to instantiate scripted Multi-Sparrow character: ${charCls}');
           trace(e);
         }
       }
@@ -144,7 +144,7 @@ class CharacterDataParser
     var scriptedCharClassNames4:Array<String> = ScriptedAnimateAtlasCharacter.listScriptClasses();
     if (scriptedCharClassNames4.length > 0)
     {
-      trace('  Instantiating ${scriptedCharClassNames4.length} (Animate Atlas) scripted characters...');
+      trace(' Instantiating ${scriptedCharClassNames4.length} (Animate Atlas) scripted characters...');
       for (charCls in scriptedCharClassNames4)
       {
         try
@@ -154,7 +154,7 @@ class CharacterDataParser
         }
         catch (e)
         {
-          trace('    FAILED to instantiate scripted Animate Atlas character: ${charCls}');
+          trace('   FAILED to instantiate scripted Animate Atlas character: ${charCls}');
           trace(e);
         }
       }
@@ -172,24 +172,24 @@ class CharacterDataParser
 
     if (scriptedCharClassNames.length > 0)
     {
-      trace('  Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
+      trace(' Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
       for (charCls in scriptedCharClassNames)
       {
         var character:BaseCharacter = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID, Custom);
         if (character == null)
         {
-          trace('    Failed to instantiate scripted character: ${charCls}');
+          trace('   Failed to instantiate scripted character: ${charCls}');
           continue;
         }
         else
         {
-          trace('    Successfully instantiated scripted character: ${charCls}');
+          trace('   Successfully instantiated scripted character: ${charCls}');
           characterScriptedClass.set(character.characterId, charCls);
         }
       }
     }
 
-    trace('  Successfully loaded ${Lambda.count(characterCache)} stages.');
+    trace(' Successfully loaded ${Lambda.count(characterCache)} stages.');
   }
 
   /**
@@ -244,7 +244,7 @@ class CharacterDataParser
         case CharacterRenderType.Packer:
           char = new PackerCharacter(charId);
         default:
-          trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Creating character with undefined renderType ${charData.renderType}');
+          trace(' WARNING '.bold().bg_yellow() + ' Creating character with undefined renderType ${charData.renderType}');
           char = new BaseCharacter(charId, CharacterRenderType.Custom);
       }
     }
@@ -312,7 +312,7 @@ class CharacterDataParser
 
     if (!Assets.exists(Paths.image(charPath)))
     {
-      trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Character ${char} has no freeplay icon.');
+      trace(' WARNING '.bold().bg_yellow() + ' Character ${char} has no freeplay icon.');
       return null;
     }
 
@@ -329,7 +329,7 @@ class CharacterDataParser
 
       if (idleFrame == null)
       {
-        trace('${funkin.util.AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Character ${char} has no idle in their freeplay icon.');
+        trace(' WARNING '.bold().bg_yellow() + ' Character ${char} has no idle in their freeplay icon.');
         return null;
       }
 
@@ -404,8 +404,8 @@ class CharacterDataParser
     }
     catch (e)
     {
-      trace('  Error parsing data for character: ${charId}');
-      trace('    ${e}');
+      trace(' Error parsing data for character: ${charId}');
+      trace('   ${e}');
       return null;
     }
   }

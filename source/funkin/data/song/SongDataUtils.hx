@@ -212,7 +212,7 @@ class SongDataUtils
   {
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongClipboardItems>(ignoreNullOptionals);
-    var dataString:String = writer.write(data, '  ');
+    var dataString:String = writer.write(data, ' ');
 
     ClipboardUtil.setClipboard(dataString);
 

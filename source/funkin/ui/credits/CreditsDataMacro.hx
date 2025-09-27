@@ -2,9 +2,9 @@ package funkin.ui.credits;
 
 #if macro
 import haxe.macro.Context;
-import funkin.util.AnsiUtil;
-import funkin.util.AnsiUtil.AnsiCode;
 #end
+
+using funkin.util.AnsiUtil;
 
 @:access(funkin.ui.credits.CreditsDataHandler)
 class CreditsDataMacro
@@ -12,12 +12,12 @@ class CreditsDataMacro
   public static macro function loadCreditsData():haxe.macro.Expr.ExprOf<CreditsData>
   {
     #if !display
-    Sys.println('${AnsiUtil.apply(' INFO ', [BOLD, BG_BLUE])} Hardcoding credits data...');
+    Sys.println(' INFO '.bold().bg_blue() + ' Hardcoding credits data...');
     var json = CreditsDataMacro.fetchJSON();
 
     if (json == null)
     {
-      Context.info('${AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not fetch JSON data for credits.', Context.currentPos());
+      Context.info(' WARNING '.bold().bg_yellow() + ' Could not fetch JSON data for credits.', Context.currentPos());
       return macro $v{CreditsDataHandler.getFallback()};
     }
 
@@ -25,7 +25,7 @@ class CreditsDataMacro
 
     if (creditsData == null)
     {
-      Context.info('${AnsiUtil.apply(' WARNING ', [BOLD, BG_YELLOW])} Could not parse JSON data for credits.', Context.currentPos());
+      Context.info(' WARNING '.bold().bg_yellow() + ' Could not parse JSON data for credits.', Context.currentPos());
       return macro $v{CreditsDataHandler.getFallback()};
     }
 
