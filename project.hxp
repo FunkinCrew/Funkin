@@ -1179,6 +1179,11 @@ class Project extends HXProject
       addHaxelib('extension-androidtools'); // Android Functions
     }
 
+    if (isLinux())
+    {
+      addHaxelib('hxgamemode'); // FeralInteractive gamemode
+    }
+
     if (FEATURE_DISCORD_RPC.isEnabled(this))
     {
       addHaxelib('hxdiscord_rpc'); // Discord API
