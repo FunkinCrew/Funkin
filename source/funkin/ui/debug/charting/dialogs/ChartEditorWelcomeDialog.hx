@@ -34,6 +34,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     this.splashCreateFromSongErectOnly.onClick = _ -> onClickLinkCreateErectOnly();
     this.splashCreateFromSongBasicErect.onClick = _ -> onClickLinkCreateBasicErect();
     this.splashImportChartLegacy.onClick = _ -> onClickLinkImportChartLegacy();
+    this.splashImportChartOsuMania.onClick = _ -> onClickLinkImportOsuMania();
 
     // Add items to the Recent Charts list
     #if sys
@@ -241,6 +242,19 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 
     // Open the "Import Chart" dialog
     chartEditorState.openImportChartWizard('legacy', false);
+  }
+
+  /**
+   * Called when the user clicks the "Import Chart: Osu! Mania" link in the dialog.
+   * Reassign this function to change the behavior.
+   */
+  public function onClickLinkImportOsuMania():Void
+  {
+    // Hide the welcome dialog
+    this.hideDialog(DialogButton.CANCEL);
+
+    // Open the "Import Chart" dialog
+    chartEditorState.openImportChartWizard('osumania', false);
   }
 }
 #end
