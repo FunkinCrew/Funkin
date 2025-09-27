@@ -24,6 +24,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   var list:Array<String> = [];
 
   var analyzer:SpectralAnalyzer;
+  var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
 
   var currentGFPath:Null<String>;
   var enableVisualizer:Bool = false;
@@ -84,14 +85,14 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   {
     if (enableVisualizer)
     {
-      var levels = analyzer.getLevels();
+      analyzerLevelsCache = analyzer.getLevels(analyzerLevelsCache);
       var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
       var elements = frame.getList();
       var len:Int = cast Math.min(elements.length, 7);
 
       for (i in 0...len)
       {
-        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(levels[i].value * 12);
+        var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerLevelsCache[i].value * 12);
 
         #if sys
         // Web version scales with the Flixel volume level.

@@ -1719,10 +1719,6 @@ class FreeplayState extends MusicBeatSubState
   {
     if (!controls.active) return;
 
-    final upP:Bool = controls.UI_UP_P;
-    final downP:Bool = controls.UI_DOWN_P;
-    final accepted:Bool = controls.ACCEPT;
-
     #if FEATURE_TOUCH_CONTROLS
     handleTouchCapsuleClick();
     handleTouchFavoritesAndDifficulties();
@@ -1761,7 +1757,7 @@ class FreeplayState extends MusicBeatSubState
       goBack();
     }
 
-    if (accepted && controls.active)
+    if (controls.ACCEPT && controls.active)
     {
       currentCapsule.onConfirm();
     }
