@@ -42,7 +42,7 @@ jobs:
           script: |
             const { payload } = context
             const changes = ${{ steps.filter.outputs.changes }}
-            const manual = payload.commits
+            const manual = payload?.commits
               .some(c => c.message.toLowerCase().replace(/\W/g, " ").includes("docker rebuild"))
 
             console.log({ payload, changes, manual, commits: payload.commits })
