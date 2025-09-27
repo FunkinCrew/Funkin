@@ -6615,7 +6615,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     var oldTimeSignatureNum:Int = Conductor.instance.timeSignatureNumerator;
     var oldTimeSignatureDen:Int = Conductor.instance.timeSignatureDenominator;
-    Conductor.instance.update(audioInstTrack.time);
+    Conductor.instance.update(audioInstTrack.time, false);
     if (Conductor.instance.timeSignatureNumerator != oldTimeSignatureNum
       || Conductor.instance.timeSignatureDenominator != oldTimeSignatureDen)
     {
