@@ -79,6 +79,7 @@ import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorPlaybarHead;
 import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
+import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
@@ -5372,12 +5373,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function handleToolboxes():Void
   {
-    handleDifficultyToolbox();
+    handleToolboxDifficultyTrees();
     // handlePlayerPreviewToolbox();
     // handleOpponentPreviewToolbox();
   }
 
-  function handleDifficultyToolbox():Void
+  function handleToolboxDifficultyTrees():Void
   {
     if (difficultySelectDirty)
     {
@@ -5387,10 +5388,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (variationMetadata != null)
         variationMetadata.playData.difficulties.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
-      var difficultyToolbox:ChartEditorDifficultyToolbox = cast this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-      if (difficultyToolbox == null) return;
+      cast(this.getToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT), ChartEditorDifficultyToolbox)?.updateTree();
 
-      difficultyToolbox.updateTree();
+      cast(this.getToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT), ChartEditorMetadataToolbox)?.updateTree();
     }
   }
 
@@ -6429,37 +6429,46 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return event != null && currentEventSelection.indexOf(event) != -1;
   }
 
-  function createDifficulty(variation:String, difficulty:String, scrollSpeed:Float = 1.0):Void
+  function createDifficulty(variation:String, difficulty:String, scrollSpeed:Float = 1.0, difficultyRating:Int = 0, addtoMetadata:Bool = true,
+      addtoChartdata:Bool = true):Void
   {
     var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
     if (variationMetadata == null) return;
 
-    variationMetadata.playData.difficulties.push(difficulty);
+    if (addtoMetadata)
+    {
+      variationMetadata.playData.difficulties.push(difficulty);
+      variationMetadata.playData.ratings.set(difficulty, difficultyRating);
+    }
 
     var resultChartData = songChartData.get(variation);
-    if (resultChartData == null)
+    if (addtoChartdata)
     {
-      resultChartData = new SongChartData([difficulty => scrollSpeed], [], [difficulty => []]);
-      songChartData.set(variation, resultChartData);
-    }
-    else
-    {
-      resultChartData.scrollSpeed.set(difficulty, scrollSpeed);
-      resultChartData.notes.set(difficulty, []);
+      if (resultChartData == null)
+      {
+        resultChartData = new SongChartData([difficulty => scrollSpeed], [], [difficulty => []]);
+        songChartData.set(variation, resultChartData);
+      }
+      else
+      {
+        // Maybe there should be a warning for overriding a difficulty?
+        resultChartData.scrollSpeed.set(difficulty, scrollSpeed);
+        resultChartData.notes.set(difficulty, []);
+      }
     }
 
     difficultySelectDirty = true; // Force the Difficulty toolbox to update.
   }
 
-  function removeDifficulty(variation:String, difficulty:String):Void
+  function removeDifficulty(variation:String, difficulty:String, removeFromMetadata:Bool = true, removeFromChartdata:Bool = true):Void
   {
     var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
     if (variationMetadata == null) return;
 
-    variationMetadata.playData.difficulties.remove(difficulty);
+    if (removeFromMetadata) variationMetadata.playData.difficulties.remove(difficulty);
 
     var resultChartData = songChartData.get(variation);
-    if (resultChartData != null)
+    if (resultChartData != null && removeFromChartdata)
     {
       resultChartData.scrollSpeed.remove(difficulty);
       resultChartData.notes.remove(difficulty);
@@ -6485,7 +6494,35 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       || !variationMetadata.playData.difficulties.contains(selectedDifficulty)) selectedDifficulty = variationMetadata.playData.difficulties[0];
 
     refreshPlayDataVariations();
-    difficultySelectDirty = true; // Force the Difficulty toolbox to update.
+    difficultySelectDirty = true; // Force the difficulty trees to update.
+  }
+
+  // Same as the above function, but removes the variation and all it's difficulties instead of when it's the last one.
+  function removeVariation(variation:String):Void
+  {
+    var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
+    if (variationMetadata == null) return;
+
+    if (songMetadata.size() > 1)
+    {
+      if (variation != Constants.DEFAULT_VARIATION)
+      {
+        songMetadata.remove(variation);
+        songChartData.remove(variation);
+      }
+
+      if (variation == selectedVariation)
+      {
+        var firstVariation = songMetadata.keyValues()[0];
+        if (firstVariation != null) selectedVariation = firstVariation;
+        variationMetadata = songMetadata.get(selectedVariation);
+      }
+    }
+
+    if (availableDifficulties.indexOf(selectedDifficulty) < 0) selectedDifficulty = availableDifficulties[0];
+
+    refreshPlayDataVariations();
+    difficultySelectDirty = true; // Force the difficulty trees to update.
   }
 
   function incrementDifficulty(change:Int):Void
@@ -6687,7 +6724,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     var oldTimeSignatureNum:Int = Conductor.instance.timeSignatureNumerator;
     var oldTimeSignatureDen:Int = Conductor.instance.timeSignatureDenominator;
-    Conductor.instance.update(audioInstTrack.time, false);
+    if (audioInstTrack != null) Conductor.instance.update(audioInstTrack.time, false);
+    else if (audioVocalTrackGroup != null) Conductor.instance.update(audioVocalTrackGroup.time, false);
     if (Conductor.instance.timeSignatureNumerator != oldTimeSignatureNum
       || Conductor.instance.timeSignatureDenominator != oldTimeSignatureDen)
     {
