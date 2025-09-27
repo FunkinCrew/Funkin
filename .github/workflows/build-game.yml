@@ -35,7 +35,7 @@ jobs:
             docker:
               - '.github/workflows/build-game.yml'
               - '**/Dockerfile'
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v8
         id: should-trigger
         with:
           result-encoding: string
