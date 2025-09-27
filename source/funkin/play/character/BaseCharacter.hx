@@ -245,6 +245,9 @@ class BaseCharacter extends Bopper
     // Set the x and y to be their original values.
     this.resetPosition();
 
+    //resets danceEvery value to original one
+    this.danceEvery = _data.danceEvery;
+
     this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
     // Make sure we are playing the idle animation
     // ...then update the hitbox so that this.width and this.height are correct.
