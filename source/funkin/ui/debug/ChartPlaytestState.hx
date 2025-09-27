@@ -1,5 +1,6 @@
 package funkin.ui.debug;
 
+#if sys
 import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
@@ -146,3 +147,4 @@ typedef ChartPlaytestStateParams =
 {
   fnfcFilePath:Null<String>
 };
+#end

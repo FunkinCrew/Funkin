@@ -387,6 +387,7 @@ class InitState extends FlxState
           fnfsTargetPath: params.stage.stagePath,
         }));
     }
+    #if sys
     else if (params.song.shouldLoadSong && params.song.songPath != null)
     {
       FlxG.switchState(() -> new ChartPlaytestState(
@@ -399,6 +400,13 @@ class InitState extends FlxState
       // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       FlxG.switchState(() -> new TitleState());
     }
+    #else
+    else
+    {
+      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      FlxG.switchState(() -> new TitleState());
+    }
+    #end
   }
 
   /**

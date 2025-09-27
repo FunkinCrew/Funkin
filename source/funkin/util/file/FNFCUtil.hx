@@ -1,5 +1,6 @@
 package funkin.util.file;
 
+#if sys
 import funkin.data.song.SongData.SongChartData;
 import funkin.ui.transition.LoadingState;
 import funkin.audio.FunkinSound;
@@ -184,3 +185,4 @@ class FNFCUtil
     return song;
   }
 }
+#end
