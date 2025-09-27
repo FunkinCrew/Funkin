@@ -21,18 +21,27 @@ class PasteItemsCommand implements ChartEditorCommand
   var removedNotes:Array<SongNoteData> = [];
   var isRedo:Bool = false;
 
+  var currentClipboard:SongClipboardItems =
+    {
+      valid: false,
+      notes: [],
+      events: []
+    };
+
   public function new(targetTimestamp:Float)
   {
     this.targetTimestamp = targetTimestamp;
+    // Doing this here so that clearing or changing the clipboard doesn't break the redo and string.
+    this.currentClipboard = SongDataUtils.readItemsFromClipboard();
   }
 
   public function execute(state:ChartEditorState):Void
   {
-    var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
-
     if (currentClipboard.valid != true)
     {
       state.error('Failed to Paste', 'Could not parse clipboard contents.');
+      state.clipboardDirty = true;
+      state.clipboardValid = false;
       return;
     }
 
@@ -56,6 +65,7 @@ class PasteItemsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
 
@@ -92,6 +102,7 @@ class PasteItemsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
 
@@ -106,8 +117,6 @@ class PasteItemsCommand implements ChartEditorCommand
 
   public function toString():String
   {
-    var currentClipboard:SongClipboardItems = SongDataUtils.readItemsFromClipboard();
-
     var len:Int = currentClipboard.notes.length + currentClipboard.events.length;
 
     if (currentClipboard.notes.length == 0) return 'Paste $len Events';
