@@ -43,6 +43,9 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       add(measureNumber);
       measureNumbers.push(measureNumber);
     }
+    // Need these two lines or the ticks don't render before loading a chart!
+    chartEditorState.updateMeasureTicks(true);
+    reloadTickBitmap();
   }
 
   public function reloadTickBitmap():Void
