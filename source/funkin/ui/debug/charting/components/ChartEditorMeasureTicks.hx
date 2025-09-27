@@ -43,6 +43,8 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       add(measureNumber);
       measureNumbers.push(measureNumber);
     }
+    chartEditorState.updateMeasureTicks(true);
+    reloadTickBitmap();
   }
 
   public function reloadTickBitmap():Void
