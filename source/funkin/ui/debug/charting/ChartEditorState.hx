@@ -6356,12 +6356,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return event != null && currentEventSelection.indexOf(event) != -1;
   }
 
-  function createDifficulty(variation:String, difficulty:String, scrollSpeed:Float = 1.0):Void
+  function createDifficulty(variation:String, difficulty:String, scrollSpeed:Float = 1.0, difficultyRating:Int = 0):Void
   {
     var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
     if (variationMetadata == null) return;
 
     variationMetadata.playData.difficulties.push(difficulty);
+    variationMetadata.playData.ratings.set(difficulty, difficultyRating);
 
     var resultChartData = songChartData.get(variation);
     if (resultChartData == null)

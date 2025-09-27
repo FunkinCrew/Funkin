@@ -18,6 +18,8 @@ import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import funkin.play.stage.Stage;
 import haxe.ui.containers.Frame;
+import haxe.ui.containers.TreeView;
+import haxe.ui.containers.TreeViewNode;
 import haxe.ui.events.UIEvent;
 
 /**
@@ -37,6 +39,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var buttonCharacterPlayer:Button;
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
+  var buttonAddVariation:Button;
   var inputBPM:NumberStepper;
   var labelTimeStamp:Label;
   var inputTimeStamp:NumberStepper;
@@ -273,6 +276,10 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       chartEditorState.openCharacterDropdown(CharacterType.BF, false);
     };
 
+    buttonAddVariation.onClick = function(_:UIEvent) {
+      chartEditorState.openAddVariationDialog(true);
+    };
+
     refresh();
   }
 
@@ -306,6 +313,14 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     }
     return currentTimeChange;
   }
+
+  public function updateTree():Void {}
+
+  public function refreshTreeSelection():Void {}
+
+  function getCurrentTreeNode():TreeViewNode {}
+
+  function onTreeChange(event:UIEvent):Void {}
 
   public override function refresh():Void
   {
@@ -380,6 +395,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       buttonCharacterPlayer.icon = null;
       buttonCharacterPlayer.text = "None";
     }
+    refreshTreeSelection();
   }
 
   public static function build(chartEditorState:ChartEditorState):ChartEditorMetadataToolbox

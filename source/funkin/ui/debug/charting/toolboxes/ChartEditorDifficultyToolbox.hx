@@ -33,7 +33,6 @@ import haxe.ui.events.UIEvent;
 class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 {
   var difficultyToolboxTree:TreeView;
-  var difficultyToolboxAddVariation:Button;
   var difficultyToolboxAddDifficulty:Button;
   var difficultyToolboxRemoveDifficulty:Button;
   var difficultyToolboxSaveMetadata:Button;
@@ -61,10 +60,6 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     // TODO: Save and load this.
     this.x = 150;
     this.y = 250;
-
-    difficultyToolboxAddVariation.onClick = function(_:UIEvent) {
-      chartEditorState.openAddVariationDialog(true);
-    };
 
     difficultyToolboxAddDifficulty.onClick = function(_:UIEvent) {
       chartEditorState.openAddDifficultyDialog(true);
@@ -215,6 +210,16 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 
       var difficultyList:Array<String> = variationMetadata.playData.difficulties;
 
+      var variationChartdata:Null<SongChartData> = chartEditorState.songChartData.get(curVariation);
+      if (variationChartdata != null)
+      {
+        var keys:Array<String> = [for (x in variationChartdata.notes.keys()) x];
+        for (key in keys)
+        {
+          difficultyList.pushUnique(key);
+        }
+      }
+
       for (difficulty in difficultyList)
       {
         var _treeDifficulty:TreeViewNode = treeVariation.addNode(
@@ -237,7 +242,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
   public function refreshTreeSelection():Void
   {
     var targetNode = getCurrentTreeNode();
-    if (targetNode != null) difficultyToolboxTree.selectedNode = targetNode;
+    if (targetNode != null && this.visible)
+    {
+      difficultyToolboxTree.selectedNode = targetNode;
+      targetNode.selected = true;
+    }
   }
 
   /**
@@ -246,7 +255,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
   function getCurrentTreeNode():TreeViewNode
   {
     return
-      difficultyToolboxTree.findNodeByPath('stv_song/stv_variation_$chartEditorState.selectedVariation/stv_difficulty_${chartEditorState.selectedVariation}_$chartEditorState.selectedDifficulty',
+    difficultyToolboxTree.findNodeByPath('stv_song/stv_variation_${chartEditorState.selectedVariation}/stv_difficulty_${chartEditorState.selectedVariation}_${chartEditorState.selectedDifficulty}',
       'id');
   }
 
@@ -279,14 +288,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
           chartEditorState.selectedVariation = variation;
           chartEditorState.selectedDifficulty = difficulty;
           chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-          refreshTreeSelection();
         }
       // case 'song':
       // case 'variation':
       default:
         // Reset the user's selection.
         trace('Selected wrong node type, resetting selection.');
-        refreshTreeSelection();
         chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     }
   }
@@ -294,6 +301,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
   public override function refresh():Void
   {
     super.refresh();
+
+    if (chartEditorState.songMetadata.size() == 1
+      && chartEditorState.availableDifficulties.length == 1) difficultyToolboxRemoveDifficulty.disabled = true;
+    else
+      difficultyToolboxRemoveDifficulty.disabled = false;
 
     refreshTreeSelection();
   }

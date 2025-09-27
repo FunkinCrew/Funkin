@@ -1300,13 +1300,18 @@ class ChartEditorDialogHandler
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
 
+    var inputDifficultyRating:Null<NumberStepper> = dialog.findComponent('inputDifficultyRating', NumberStepper);
+    if (inputDifficultyRating == null) throw 'Could not find inputDifficultyRating component.';
+    inputDifficultyRating.value = state.currentSongChartDifficultyRating;
+
     difficultyForm.onSubmit = function(_) {
       trace('Add Difficulty dialog submitted, validation succeeded!');
 
       var dialogDifficultyName:Null<TextField> = dialog.findComponent('dialogDifficultyName', TextField);
       if (dialogDifficultyName == null) throw 'Could not locate dialogDifficultyName TextField in Add Difficulty dialog';
 
-      state.createDifficulty(dialogVariation.value.id, dialogDifficultyName.text.toLowerCase(), inputScrollSpeed.value ?? 1.0);
+      state.createDifficulty(dialogVariation.value.id, dialogDifficultyName.text.toLowerCase(), inputScrollSpeed.value ?? 1.0,
+        inputDifficultyRating.value ?? 1);
 
       state.success('Add Difficulty', 'Added new difficulty "${dialogDifficultyName.text.toLowerCase()}"');
 
