@@ -36,6 +36,8 @@
 
 	<!-- This macro allows addition of new functionality to existing Flixel. -->
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildBitmapFrontEnd())', 'flixel.system.frontEnds.BitmapFrontEnd')" />
+	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxGraphic())', 'flixel.graphics.FlxGraphic')" />
 	<!-- Macros to satisfy null safety (null safety can't check nested functions, so assertions must be inlined) -->
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.InlineMacro.makeInline(\'fail\', true))', 'massive.munit.Assert')" />
 	<haxeflag name="--macro" value="addMetadata('@:build(funkin.util.macro.InlineMacro.makeInline(\'isNotNull\', true))', 'massive.munit.Assert')" />

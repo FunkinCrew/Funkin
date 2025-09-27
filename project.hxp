@@ -1028,6 +1028,8 @@ class Project extends HXProject
   {
     // This macro allows addition of new functionality to existing Flixel. -->
     addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
+    addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildBitmapFrontEnd())', 'flixel.system.frontEnds.BitmapFrontEnd')");
+    addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxGraphic())', 'flixel.graphics.FlxGraphic')");
   }
 
   function configureOutputDir()
