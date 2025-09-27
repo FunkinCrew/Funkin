@@ -1,8 +1,9 @@
 package funkin.ui.freeplay;
 
-import flixel.text.FlxText;
-import flixel.util.FlxSort;
 import flixel.math.FlxPoint;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.util.FlxSort;
 
 // its kinda like marqeee html lol!
 @:nullSafety
@@ -14,6 +15,17 @@ class BGScrollingText extends FlxText
   public var widthShit:Float = FlxG.width;
   public var placementOffset:Float = 20;
   public var speed:Float = 1;
+
+  @:deprecated("Use color instead")
+  public var funnyColor(get, set):FlxColor;
+
+  function get_funnyColor():FlxColor
+    return color;
+
+  function set_funnyColor(c:FlxColor):FlxColor
+  {
+    return color = c;
+  }
 
   public function new(x:Float, y:Float, text:String, widthShit:Float = 100, ?bold:Bool = false, ?size:Int = 48)
   {
