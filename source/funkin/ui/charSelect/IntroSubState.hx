@@ -44,6 +44,8 @@ class IntroSubState extends MusicBeatSubState
     #if hxvlc
     trace('Playing native video ${LIGHTS_VIDEO_PATH}');
     playVideoNative(LIGHTS_VIDEO_PATH);
+    #else
+    onLightsEnd();
     #end
 
     // // Im TOO lazy to even care, so uh, yep

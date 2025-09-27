@@ -152,7 +152,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     // This is because of browser safeguards against timing attacks.
     // See https://web.dev/coop-coep to enable headers which allow for more precise timestamps.
     return haxe.Int64.fromFloat(js.Browser.window.performance.now()) * NS_PER_MS;
-    #elseif cpp
+    #elseif (cpp || hl)
     // NOTE: If the game hard crashes on this line, rebuild Lime!
     // `lime rebuild windows -clean`
     return lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks() * NS_PER_MS;

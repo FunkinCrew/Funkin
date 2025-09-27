@@ -807,7 +807,7 @@ class Project extends HXProject
 
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
-    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
+    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator() && !isHashLink());
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
@@ -1167,7 +1167,7 @@ class Project extends HXProject
       addHaxelib('hxcpp-debug-server'); // VSCode debug support
     }
 
-    if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    if ((isDesktop() || isMobile()) && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       // hxvlc doesn't function on HashLink or non-desktop platforms
       // It's also unnecessary if video playback is disabled

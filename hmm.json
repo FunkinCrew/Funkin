@@ -170,8 +170,8 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "f109a083023a9e5622342257993fc745d9bbb959",
-      "url": "https://github.com/FunkinCrew/lime"
+      "ref": "b49b751e2865ad9ef4543f37df89104843ba8661",
+      "url": "https://github.com/NotHyper-474/lime"
     },
     {
       "name": "newgrounds",
@@ -184,15 +184,15 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "e6296200292a76b5f7b8684a991ead6b05ae4507",
-      "url": "https://github.com/FunkinCrew/openfl"
+      "ref": "b99e085112a2cdea18843c4c91072c25b26fbb35",
+      "url": "https://github.com/NotHyper-474/openfl-contribute"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "47d9a2775e3fd8f6dd17d6f4b99b8798709da435",
-      "url": "https://github.com/larsiusprime/polymod"
+      "ref": "5c37370ad9aeb12fc0addf6f9e2a2bd00431df63",
+      "url": "https://github.com/NotHyper-474/polymod"
     },
     {
       "name": "thx.core",

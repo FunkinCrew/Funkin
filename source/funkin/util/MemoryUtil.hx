@@ -109,6 +109,8 @@ class MemoryUtil
   {
     #if cpp
     cpp.vm.Gc.enable(true);
+    #elseif hl
+    hl.Gc.enable(true);
     #else
     throw 'Not implemented!';
     #end
@@ -121,6 +123,8 @@ class MemoryUtil
   {
     #if cpp
     cpp.vm.Gc.enable(false);
+    #elseif hl
+    hl.Gc.enable(false);
     #else
     throw 'Not implemented!';
     #end
@@ -135,6 +139,9 @@ class MemoryUtil
   {
     #if cpp
     cpp.vm.Gc.run(major);
+    #elseif hl
+    // Doesn't seem to have just a collect function?
+    hl.Gc.major();
     #else
     throw 'Not implemented!';
     #end

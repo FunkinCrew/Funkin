@@ -3242,21 +3242,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
-    previousAudioVolumes[3] = menubarLabelVolumeInstrumental.value;
+    previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
 
     menubarItemVolumeVocalsPlayer.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.playerVolume = volume;
       menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
-    previousAudioVolumes[4] = menubarLabelVolumeVocalsPlayer.value;
+    previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
 
     menubarItemVolumeVocalsOpponent.onChange = event -> {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.opponentVolume = volume;
       menubarLabelVolumeVocalsOpponent.text = 'Enemy - ${Std.int(event.value)}%';
     };
-    previousAudioVolumes[5] = menubarLabelVolumeVocalsOpponent.value;
+    previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
 
     menubarItemPlaybackSpeed.onChange = event -> {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
