@@ -167,19 +167,18 @@ jobs:
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
+      - name: Populate .env
+        run: |
+          touch .env
+          grep API_NG_APP_ID .env || echo API_NG_APP_ID=${{ secrets.API_NG_APP_ID }} >> .env
+          grep API_NG_ENC_KEY .env || echo API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }} >> .env
       - name: Build game (windows)
         if: ${{ matrix.target == 'windows' }}
-        env:
-          API_NG_APP_ID: ${{ secrets.API_NG_APP_ID }}
-          API_NG_ENC_KEY: ${{ secrets.API_NG_ENC_KEY }}
         run: |
           haxelib run lime build windows -v -release $BUILD_DEFINES
         timeout-minutes: 120
       - name: Build game (unix)
         if: ${{ matrix.target != 'windows' }}
-        env:
-          API_NG_APP_ID: ${{ secrets.API_NG_APP_ID }}
-          API_NG_ENC_KEY: ${{ secrets.API_NG_ENC_KEY }}
         run: |
           haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
         timeout-minutes: 120
@@ -252,10 +251,12 @@ jobs:
           path: /usr/share/hxcpp
           key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
+      - name: Populate .env
+        run: |
+          touch .env
+          grep API_NG_APP_ID .env || echo API_NG_APP_ID=${{ secrets.API_NG_APP_ID }} >> .env
+          grep API_NG_ENC_KEY .env || echo API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }} >> .env
       - name: Build game
-        env:
-          API_NG_APP_ID: ${{ secrets.API_NG_APP_ID }}
-          API_NG_ENC_KEY: ${{ secrets.API_NG_ENC_KEY }}
         run: |
           haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
         timeout-minutes: 120
