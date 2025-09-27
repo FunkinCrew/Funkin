@@ -169,11 +169,17 @@ jobs:
           cd ../../../../..
       - name: Build game (windows)
         if: ${{ matrix.target == 'windows' }}
+        env:
+          API_NG_APP_ID: ${{ secrets.API_NG_APP_ID }}
+          API_NG_ENC_KEY: ${{ secrets.API_NG_ENC_KEY }}
         run: |
           haxelib run lime build windows -v -release $BUILD_DEFINES
         timeout-minutes: 120
       - name: Build game (unix)
         if: ${{ matrix.target != 'windows' }}
+        env:
+          API_NG_APP_ID: ${{ secrets.API_NG_APP_ID }}
+          API_NG_ENC_KEY: ${{ secrets.API_NG_ENC_KEY }}
         run: |
           haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
         timeout-minutes: 120
@@ -247,6 +253,9 @@ jobs:
           key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
       - name: Build game
+        env:
+          API_NG_APP_ID: ${{ secrets.API_NG_APP_ID }}
+          API_NG_ENC_KEY: ${{ secrets.API_NG_ENC_KEY }}
         run: |
           haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES
         timeout-minutes: 120
