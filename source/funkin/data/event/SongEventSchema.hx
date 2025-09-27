@@ -41,6 +41,12 @@ abstract SongEventSchema(SongEventSchemaRaw)
     return this[k] = v;
   }
 
+  @:arrayAccess
+  public inline function push(v:SongEventSchemaField)
+  {
+    this.push(v);
+  }
+
   public function stringifyFieldValue(name:String, value:Dynamic, addUnits:Bool = true):String
   {
     var field:SongEventSchemaField = getByName(name);
