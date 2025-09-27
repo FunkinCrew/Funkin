@@ -11,11 +11,12 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 import openfl.display.BlendMode;
 import flixel.util.FlxColor;
+import flixel.FlxSprite;
 
 @:nullSafety
 class CapsuleText extends FlxSpriteGroup
 {
-  public var blurredText:FlxText;
+  public var blurredText:FlxSprite;
 
   var whiteText:FlxText;
 
@@ -36,10 +37,14 @@ class CapsuleText extends FlxSpriteGroup
   {
     super(x, y);
 
-    blurredText = CapsuleText.initText(songTitle, size);
-    blurredText.shader = new GaussianBlurShader(1);
     whiteText = CapsuleText.initText(songTitle, size);
+    @:privateAccess
+    whiteText.regenGraphic();
     // whiteText.shader = new GaussianBlurShader(0.3);
+
+    blurredText = new FlxSprite().loadGraphic(whiteText.graphic);
+    CapsuleText.initText(songTitle, size);
+    blurredText.shader = new GaussianBlurShader(1);
     text = songTitle;
 
     blurredText.color = glowColor;
@@ -112,8 +117,10 @@ class CapsuleText extends FlxSpriteGroup
       return text = value;
     }
 
-    blurredText.text = value;
     whiteText.text = value;
+    @:privateAccess
+    whiteText.regenGraphic();
+    blurredText.loadGraphic(whiteText.graphic);
     checkClipWidth();
     whiteText.textField.filters = [
       new openfl.filters.GlowFilter(glowColor, 1, 5, 5, 210, BitmapFilterQuality.MEDIUM),
