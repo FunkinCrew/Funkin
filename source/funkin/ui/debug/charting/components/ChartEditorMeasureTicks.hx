@@ -33,6 +33,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
     measureTicksSprite = new FlxSprite(0, 0);
     add(measureTicksSprite);
+    reloadTickBitmap();
 
     for (i in 0...5)
     {
