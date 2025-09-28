@@ -2247,6 +2247,14 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
+    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
+    var difficultiesAvailable:Array<String> = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
+
+    if (change != 0 && difficultiesAvailable.length <= 1)
+    {
+      return;
+    }
+
     if (capsuleAnim)
     {
       if (currentCapsule != null)
@@ -2287,13 +2295,11 @@ class FreeplayState extends MusicBeatSubState
     }
 
     var previousVariation:String = currentVariation;
-    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
     currentCapsule.selected = false;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
     var characterVariations:Array<String> = daSong?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
-    var difficultiesAvailable:Array<String> = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
     // Gets all available difficulties for our character, via our available variations
     var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
@@ -2359,6 +2365,8 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0;
     }
 
+    var totalDiffs = grpDifficulties.group.members.filter(function(d) return d != null).length;
+
     for (diffSprite in grpDifficulties.group.members)
     {
       if (diffSprite == null) continue;
@@ -2369,28 +2377,31 @@ class FreeplayState extends MusicBeatSubState
 
       if (!isCurrentDiff || change == 0) continue;
 
-      diffSprite.x = (change > 0) ? 500 : -320;
-      diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
+      if (totalDiffs > 1)
+      {
+        diffSprite.x = (change > 0) ? 500 : -320;
+        diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
 
-      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2,
-        {
-          ease: FlxEase.circInOut,
-          onComplete: function(_) {
-            #if FEATURE_TOUCH_CONTROLS
-            FlxG.touches.flickManager.destroy();
-            _flickEnded = true;
-            #end
-          }
+        FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2,
+          {
+            ease: FlxEase.circInOut,
+            onComplete: function(_) {
+              #if FEATURE_TOUCH_CONTROLS
+              FlxG.touches.flickManager.destroy();
+              _flickEnded = true;
+              #end
+            }
+          });
+
+        diffSprite.offset.y += 5;
+        diffSprite.alpha = 0.5;
+        new FlxTimer().start(1 / 24, function(swag) {
+          diffSprite.alpha = 1;
+          diffSprite.updateHitbox();
+          diffSprite.visible = true;
+          diffSprite.height *= 2.5;
         });
-
-      diffSprite.offset.y += 5;
-      diffSprite.alpha = 0.5;
-      new FlxTimer().start(1 / 24, function(swag) {
-        diffSprite.alpha = 1;
-        diffSprite.updateHitbox();
-        diffSprite.visible = true;
-        diffSprite.height *= 2.5;
-      });
+      }
     }
 
     // refreshDots(songDifficulties.length, currentDifficultyIndex, prevDifficultyIndex);
@@ -2940,13 +2951,11 @@ class FreeplayState extends MusicBeatSubState
 
             var fadeStart:Float = (FlxG.sound.music.length / 1000) - 2;
 
-            previewTimers.push(new FlxTimer().start(fadeStart, function(_)
-            {
+            previewTimers.push(new FlxTimer().start(fadeStart, function(_) {
               FlxG.sound.music.fadeOut(2, 0);
             }));
 
-            previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / 1000, function(_)
-            {
+            previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / 1000, function(_) {
               playCurSongPreview();
             }));
           },
