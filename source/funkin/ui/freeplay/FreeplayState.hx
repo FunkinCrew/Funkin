@@ -2295,13 +2295,11 @@ class FreeplayState extends MusicBeatSubState
     }
 
     var previousVariation:String = currentVariation;
-    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
     currentCapsule.selected = false;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
     // but sometimes pico can be the default variation (weekend 1 songs), and bf can be `bf` variation (darnell)
     var characterVariations:Array<String> = daSong?.data.getVariationsByCharacter(currentCharacter) ?? Constants.DEFAULT_VARIATION_LIST;
-    var difficultiesAvailable:Array<String> = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
     // Gets all available difficulties for our character, via our available variations
     var songDifficulties:Array<String> = daSong?.data.listDifficulties(null, characterVariations) ?? Constants.DEFAULT_DIFFICULTY_LIST;
 
@@ -2953,13 +2951,11 @@ class FreeplayState extends MusicBeatSubState
 
             var fadeStart:Float = (FlxG.sound.music.length / 1000) - 2;
 
-            previewTimers.push(new FlxTimer().start(fadeStart, function(_)
-            {
+            previewTimers.push(new FlxTimer().start(fadeStart, function(_) {
               FlxG.sound.music.fadeOut(2, 0);
             }));
 
-            previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / 1000, function(_)
-            {
+            previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / 1000, function(_) {
               playCurSongPreview();
             }));
           },
