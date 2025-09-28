@@ -83,7 +83,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
   public function toString():String
   {
     if (removedTimeChange != null && removedTimeChange.length > 0) return
-      'TimeChange ${timeChangeIndex} : ${removedTimeChange[0].timeStamp} : BPM: ${removedTimeChange[0].bpm} in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed'
+    'TimeChange ${timeChangeIndex} : ${removedTimeChange[0].timeStamp} ms : BPM: ${removedTimeChange[0].bpm} in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed'
     else
       return 'huh?';
   }
