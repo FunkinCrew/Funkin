@@ -86,7 +86,18 @@ class Main extends Sprite
     var context = stage.window.context.type;
     if (context != WEBGL && context != OPENGL && context != WEBGL)
     {
-      WindowUtil.showError("Failed to initialize OpenGL", "Failed to initialize the OpenGL rendering context!\n\nMake sure your graphics card supports OpenGL 3.0 or newer, and that your graphics drivers are up to date.");
+      var tech:String = #if web "WebGL" #elseif desktop "OpenGL" #else "OpenGL ES" #end;
+      var requiredVersion:String = #if web '$tech 1.0 or newer' #elseif desktop '$tech 3.0 or newer' #else '$tech 2.0 or newer' #end;
+      var desc:String = 'Failed to initialize the $tech rendering context!\n\n';
+      #if web
+      desc += 'Make sure your graphics card supports $requiredVersion, your graphics drivers are up to date, and hardware acceleration is enabled on your browser.';
+      #elseif desktop
+      desc += 'Make sure your graphics card supports $requiredVersion, and your graphics drivers are up to date.';
+      #else
+      desc += 'Make sure your device supports $requiredVersion.';
+      #end
+
+      WindowUtil.showError('Failed to initialize $tech', desc);
       System.exit(1);
     }
 
