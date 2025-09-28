@@ -2247,6 +2247,14 @@ class FreeplayState extends MusicBeatSubState
    */
   function changeDiff(change:Int = 0, force:Bool = false, capsuleAnim:Bool = false):Void
   {
+    var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
+    var difficultiesAvailable:Array<String> = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
+
+    if (change != 0 && difficultiesAvailable.length <= 1)
+    {
+      return;
+    }
+
     if (capsuleAnim)
     {
       if (currentCapsule != null)
@@ -2359,6 +2367,8 @@ class FreeplayState extends MusicBeatSubState
       intendedCompletion = 0;
     }
 
+    var totalDiffs = grpDifficulties.group.members.filter(function(d) return d != null).length;
+
     for (diffSprite in grpDifficulties.group.members)
     {
       if (diffSprite == null) continue;
@@ -2369,28 +2379,31 @@ class FreeplayState extends MusicBeatSubState
 
       if (!isCurrentDiff || change == 0) continue;
 
-      diffSprite.x = (change > 0) ? 500 : -320;
-      diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
+      if (totalDiffs > 1)
+      {
+        diffSprite.x = (change > 0) ? 500 : -320;
+        diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
 
-      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2,
-        {
-          ease: FlxEase.circInOut,
-          onComplete: function(_) {
-            #if FEATURE_TOUCH_CONTROLS
-            FlxG.touches.flickManager.destroy();
-            _flickEnded = true;
-            #end
-          }
+        FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2,
+          {
+            ease: FlxEase.circInOut,
+            onComplete: function(_) {
+              #if FEATURE_TOUCH_CONTROLS
+              FlxG.touches.flickManager.destroy();
+              _flickEnded = true;
+              #end
+            }
+          });
+
+        diffSprite.offset.y += 5;
+        diffSprite.alpha = 0.5;
+        new FlxTimer().start(1 / 24, function(swag) {
+          diffSprite.alpha = 1;
+          diffSprite.updateHitbox();
+          diffSprite.visible = true;
+          diffSprite.height *= 2.5;
         });
-
-      diffSprite.offset.y += 5;
-      diffSprite.alpha = 0.5;
-      new FlxTimer().start(1 / 24, function(swag) {
-        diffSprite.alpha = 1;
-        diffSprite.updateHitbox();
-        diffSprite.visible = true;
-        diffSprite.height *= 2.5;
-      });
+      }
     }
 
     // refreshDots(songDifficulties.length, currentDifficultyIndex, prevDifficultyIndex);
