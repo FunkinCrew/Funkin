@@ -1,5 +1,6 @@
 package;
 
+import lime.system.System;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -79,6 +80,14 @@ class Main extends Sprite
     if (hasEventListener(Event.ADDED_TO_STAGE))
     {
       removeEventListener(Event.ADDED_TO_STAGE, init);
+    }
+
+    // Manually crash the game when using a software renderer in order to give a nicer error message.
+    var context = stage.window.context.type;
+    if (context != WEBGL && context != OPENGL && context != WEBGL)
+    {
+      WindowUtil.showError("Failed to initialize OpenGL", "Failed to initialize the OpenGL rendering context!\n\nMake sure your graphics card supports OpenGL 3.0 or newer, and that your graphics drivers are up to date.");
+      System.exit(1);
     }
 
     setupGame();
