@@ -38,7 +38,7 @@ class AdMobUtil
   /**
    * AdMob publisher ID used for the application.
    */
-  #if TESTING_ADS
+  #if NO_TESTING_ADS
   @:envField({mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"})
   static final ADMOB_PUBLISHER:Null<String>;
   #else
