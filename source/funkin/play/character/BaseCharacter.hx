@@ -2,10 +2,13 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.character.CharacterData.CharacterDataParser;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.notes.notekind.NoteKindManager;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -47,6 +50,11 @@ class BaseCharacter extends Bopper
    * Used by scripts to ensure that they don't try to run code to interact with the stage when the stage doesn't actually exist.
    */
   public var debug:Bool = false;
+
+  /**
+   * The current note kind.
+   */
+  public var curNoteKind:NoteKind;
 
   /**
    * This character plays a given animation when hitting these specific combo numbers.
@@ -512,21 +520,41 @@ class BaseCharacter extends Bopper
   public override function onNoteHit(event:HitNoteScriptEvent)
   {
     super.onNoteHit(event);
-
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
+    curNoteKind = NoteKindManager.getNoteKind(event.note.noteData.kind);
 
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
-      // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
-      holdTimer = 0;
+      if (curNoteKind != null)
+      {
+        if (!curNoteKind.noanim)
+        {
+          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
+          holdTimer = 0;
+        }
+      }
+      else
+      {
+        this.playSingAnimation(event.note.noteData.getDirection(), false);
+        holdTimer = 0;
+      }
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
-      // If the note is from the same strumline, play the sing animation.
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
-      holdTimer = 0;
+      if (curNoteKind != null)
+      {
+        if (!curNoteKind.noanim)
+        {
+          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
+          holdTimer = 0;
+        }
+      }
+      else
+      {
+        this.playSingAnimation(event.note.noteData.getDirection(), false);
+        holdTimer = 0;
+      }
     }
     else if (characterType == GF && event.note.noteData.getMustHitNote())
     {
@@ -660,6 +688,7 @@ class BaseCharacter extends Bopper
 
     // restart even if already playing, because the character might sing the same note twice.
     // trace('Playing ${anim}...');
+
     playAnimation(anim, true);
   }
 

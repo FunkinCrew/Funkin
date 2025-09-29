@@ -1,3 +1,6 @@
+# Builds the game on all platforms, to ensure it compiles on all target platforms.
+# This helps to ensure workers focus on the master branch.
+
 name: Build and Upload nightly game builds
 
 on:
@@ -21,7 +24,7 @@ jobs:
       trigger-build: ${{ steps.should-trigger.outputs.result }}
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: false
       - uses: dorny/paths-filter@v3
@@ -32,14 +35,14 @@ jobs:
             docker:
               - '.github/workflows/build-game.yml'
               - '**/Dockerfile'
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v8
         id: should-trigger
         with:
           result-encoding: string
           script: |
             const { payload } = context
             const changes = ${{ steps.filter.outputs.changes }}
-            const manual = payload.commits
+            const manual = payload?.commits
               .some(c => c.message.toLowerCase().replace(/\W/g, " ").includes("docker rebuild"))
 
             console.log({ payload, changes, manual, commits: payload.commits })
@@ -93,7 +96,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: false
       - name: Log into GitHub Container Registry
@@ -125,6 +128,9 @@ jobs:
             runs-on: windows
           - target: macos
             runs-on: macos
+          # TODO: Install XCode to build iOS
+          # - target: ios
+          #   runs-on: macos
     runs-on:
       - ${{ matrix.runs-on }}
     defaults:
@@ -144,11 +150,14 @@ jobs:
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
           persist-credentials: false
+          submodule-aliases: |
+            https://github.com/FunkinCrew/Funkin.assets > https://github.com/FunkinCrew/Funkin-assets-secret
+            https://github.com/FunkinCrew/Funkin.art > https://github.com/FunkinCrew/Funkin-art-secret
       - name: Setup build environment
         uses: ./.github/actions/setup-haxe
         with:
@@ -158,6 +167,11 @@ jobs:
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
+      - name: Populate .env
+        run: |
+          touch .env
+          grep API_NG_APP_ID .env || echo API_NG_APP_ID=${{ secrets.API_NG_APP_ID }} >> .env
+          grep API_NG_ENC_KEY .env || echo API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }} >> .env
       - name: Build game (windows)
         if: ${{ matrix.target == 'windows' }}
         run: |
@@ -190,6 +204,7 @@ jobs:
         include:
           - target: linux
           - target: html5
+          # - target: android
     defaults:
       run:
         shell: bash
@@ -204,11 +219,14 @@ jobs:
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v6
+        uses: funkincrew/ci-checkout@v7.3.3
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
           persist-credentials: false
+          submodule-aliases: |
+            https://github.com/FunkinCrew/Funkin.assets > https://github.com/FunkinCrew/Funkin-assets-secret
+            https://github.com/FunkinCrew/Funkin.art > https://github.com/FunkinCrew/Funkin-art-secret
       - name: Config haxelib
         run: |
           haxelib --never newrepo
@@ -233,6 +251,11 @@ jobs:
           path: /usr/share/hxcpp
           key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
+      - name: Populate .env
+        run: |
+          touch .env
+          grep API_NG_APP_ID .env || echo API_NG_APP_ID=${{ secrets.API_NG_APP_ID }} >> .env
+          grep API_NG_ENC_KEY .env || echo API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }} >> .env
       - name: Build game
         run: |
           haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES

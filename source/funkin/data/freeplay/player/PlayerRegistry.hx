@@ -7,7 +7,8 @@ import funkin.save.Save;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
-class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> implements ISingleton implements DefaultRegistryImpl
+@:nullSafety
+class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
@@ -56,7 +57,11 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
       var player = fetchEntry(charId);
       if (player == null) continue;
 
+      #if UNLOCK_EVERYTHING
+      count++;
+      #else
       if (player.isUnlocked()) count++;
+      #end
     }
 
     return count;
@@ -64,6 +69,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
 
   public function hasNewCharacter():Bool
   {
+    #if (!UNLOCK_EVERYTHING)
     var charactersSeen = Save.instance.charactersSeen.clone();
 
     for (charId in listEntryIds())
@@ -77,6 +83,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
       // This character is unlocked but we haven't seen them in Freeplay yet.
       return true;
     }
+    #end
 
     // Fallthrough case.
     return false;
@@ -84,9 +91,10 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
 
   public function listNewCharacters():Array<String>
   {
-    var charactersSeen = Save.instance.charactersSeen.clone();
     var result = [];
 
+    #if (!UNLOCK_EVERYTHING)
+    var charactersSeen = Save.instance.charactersSeen.clone();
     for (charId in listEntryIds())
     {
       var player = fetchEntry(charId);
@@ -98,6 +106,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
       // This character is unlocked but we haven't seen them in Freeplay yet.
       result.push(charId);
     }
+    #end
 
     return result;
   }
@@ -116,6 +125,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
   /**
    * Return true if the given stage character is associated with a specific playable character.
    * If so, the level should only appear if that character is selected in Freeplay.
+   * NOTE: This is NOT THE SAME as `player.isUnlocked()`!
    * @param characterId The stage character ID.
    * @return Whether the character is owned by any one character.
    */
@@ -123,4 +133,19 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData> impleme
   {
     return ownedCharacterIds.exists(characterId);
   }
+
+  /**
+   * @param characterId The character ID to check.
+   * @return Whether the player saw the character unlock animation in Character Select.
+   */
+  public function isCharacterSeen(characterId:String):Bool
+  {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #else
+    return Save.instance.charactersSeen.contains(characterId);
+    #end
+  }
 }
+
+typedef PlayerEntryParams = {}

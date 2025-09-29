@@ -10,13 +10,22 @@ import io.newgrounds.NGLite.LoginOutcome;
 import io.newgrounds.NGLite.LoginFail;
 import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.utils.MedalList;
+import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.utils.ScoreBoardList;
 import io.newgrounds.objects.User;
 
+@:build(funkin.util.macro.EnvironmentMacro.build())
 @:nullSafety
 class NewgroundsClient
 {
+  @:envField
+  static final API_NG_APP_ID:Null<String>;
+
+  @:envField
+  static final API_NG_ENC_KEY:Null<String>;
+
   public static var instance(get, never):NewgroundsClient;
+
   static var _instance:Null<NewgroundsClient> = null;
 
   static function get_instance():NewgroundsClient
@@ -29,14 +38,15 @@ class NewgroundsClient
   public var user(get, never):Null<User>;
   public var medals(get, never):Null<MedalList>;
   public var leaderboards(get, never):Null<ScoreBoardList>;
+  public var saveSlots(get, never):Null<SaveSlotList>;
 
   private function new()
   {
     trace('[NEWGROUNDS] Initializing client...');
 
     #if FEATURE_NEWGROUNDS_DEBUG
-    trace('[NEWGROUNDS] App ID: ${NewgroundsCredentials.APP_ID}');
-    trace('[NEWGROUNDS] Encryption Key: ${NewgroundsCredentials.ENCRYPTION_KEY}');
+    trace('[NEWGROUNDS] App ID: ${API_NG_APP_ID}');
+    trace('[NEWGROUNDS] Encryption Key: ${API_NG_ENC_KEY}');
     #end
 
     if (!hasValidCredentials())
@@ -45,9 +55,12 @@ class NewgroundsClient
       return;
     }
 
-    var debug = #if FEATURE_NEWGROUNDS_DEBUG true #else false #end;
-    NG.create(NewgroundsCredentials.APP_ID, getSessionId(), debug, onLoginResolved);
-    NG.core.setupEncryption(NewgroundsCredentials.ENCRYPTION_KEY);
+    @:nullSafety(Off)
+    {
+      NG.create(API_NG_APP_ID, getSessionId(), #if FEATURE_NEWGROUNDS_DEBUG true #else false #end, onLoginResolved);
+
+      NG.core.setupEncryption(API_NG_ENC_KEY);
+    }
   }
 
   public function init()
@@ -89,6 +102,12 @@ class NewgroundsClient
     if (NG.core == null)
     {
       FlxG.log.warn("No Newgrounds client initialized! Are your credentials invalid?");
+      return;
+    }
+
+    if (NG.core.attemptingLogin)
+    {
+      trace("[NEWGROUNDS] Login attempt ongoing, will not login until finished.");
       return;
     }
 
@@ -166,12 +185,12 @@ class NewgroundsClient
    */
   static function hasValidCredentials():Bool
   {
-    return !(NewgroundsCredentials.APP_ID == null
-      || NewgroundsCredentials.APP_ID == ""
-      || NewgroundsCredentials.APP_ID.contains(" ")
-      || NewgroundsCredentials.ENCRYPTION_KEY == null
-      || NewgroundsCredentials.ENCRYPTION_KEY == ""
-      || NewgroundsCredentials.ENCRYPTION_KEY.contains(" "));
+    return !(API_NG_APP_ID == null
+      || API_NG_APP_ID == ""
+      || (API_NG_APP_ID != null && API_NG_APP_ID.contains(" "))
+      || API_NG_ENC_KEY == null
+      || API_NG_ENC_KEY == ""
+      || (API_NG_ENC_KEY != null && API_NG_ENC_KEY.contains(" ")));
   }
 
   function onLoginResolved(outcome:LoginOutcome):Void
@@ -236,6 +255,8 @@ class NewgroundsClient
 
     trace('[NEWGROUNDS] Submitting leaderboard request...');
     NG.core.scoreBoards.loadList(onFetchedLeaderboards);
+    trace('[NEWGROUNDS] Submitting save slot request...');
+    NG.core.saveSlots.loadList(onFetchedSaveSlots);
   }
 
   function onLoginFailed(result:LoginFail):Void
@@ -301,6 +322,13 @@ class NewgroundsClient
     // trace(funkin.api.newgrounds.Leaderboards.listLeaderboardData());
   }
 
+  function onFetchedSaveSlots(outcome:Outcome<CallError>):Void
+  {
+    trace('[NEWGROUNDS] Fetched save slots!');
+
+    NGSaveSlot.instance.checkSlot();
+  }
+
   function get_user():Null<User>
   {
     if (NG.core == null || !this.isLoggedIn()) return null;
@@ -319,6 +347,12 @@ class NewgroundsClient
     return NG.core.scoreBoards;
   }
 
+  function get_saveSlots():Null<SaveSlotList>
+  {
+    if (NG.core == null || !this.isLoggedIn()) return null;
+    return NG.core.saveSlots;
+  }
+
   static function getSessionId():Null<String>
   {
     #if js
@@ -329,6 +363,24 @@ class NewgroundsClient
 
     // We have to fetch the session ID from the save file.
     return Save.instance.ngSessionId;
+  }
+}
+
+/**
+ * Wrapper for `NewgroundsClient` that prevents submitting cheated data.
+ */
+class NewgroundsClientSandboxed
+{
+  public static var user(get, never):Null<User>;
+
+  static function get_user()
+  {
+    return NewgroundsClient.instance.user;
+  }
+
+  public static function isLoggedIn()
+  {
+    return NewgroundsClient.instance.isLoggedIn();
   }
 }
 #end

@@ -5,7 +5,9 @@ import flixel.util.FlxSignal;
 import flixel.math.FlxMath;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongDataUtils;
+import funkin.play.PlayState;
 import funkin.save.Save;
+import funkin.util.TimerUtil.SongSequence;
 import haxe.Timer;
 import flixel.sound.FlxSound;
 
@@ -16,20 +18,32 @@ import flixel.sound.FlxSound;
 @:nullSafety
 class Conductor
 {
-  // onBeatHit is called every quarter note
-  // onStepHit is called every sixteenth note
+  // onBeatHit is called on every note determined by the denominator (4 = quarter, 8 = eighth, etc.)
+  // onStepHit is called on every note which is a quarter of a beat (4 = sixteenth, 8 = thirty-second, etc.)
   // 4/4 = 4 beats per measure = 16 steps per measure
   //   120 BPM = 120 quarter notes per minute = 2 onBeatHit per second
   //   120 BPM = 480 sixteenth notes per minute = 8 onStepHit per second
   //   60 BPM = 60 quarter notes per minute = 1 onBeatHit per second
   //   60 BPM = 240 sixteenth notes per minute = 4 onStepHit per second
   // 3/4 = 3 beats per measure = 12 steps per measure
-  //   (IDENTICAL TO 4/4 but shorter measure length)
+  //   (Identical to 4/4 but has a shorter measure length)
   //   120 BPM = 120 quarter notes per minute = 2 onBeatHit per second
   //   120 BPM = 480 sixteenth notes per minute = 8 onStepHit per second
   //   60 BPM = 60 quarter notes per minute = 1 onBeatHit per second
   //   60 BPM = 240 sixteenth notes per minute = 4 onStepHit per second
-  // 7/8 = 3.5 beats per measure = 14 steps per measure
+  // 7/8 = 7 beats per measure = 28 steps per measure
+  //   Beats are EIGHTH NOTES!!
+  //   (Identical to 7/4 but beats happen twice as fast)
+  //   120 BPM = 240 eighth notes per minute = 4 onBeatHit per second
+  //   120 BPM = 960 twenty-second notes per minute = 16 onStepHit per second
+  // 15/16 = 15 beats per measure = 60 steps per measure
+  //   Beats are SIXTEENTH NOTES!!
+  //   120 BPM = 480 sixteenth notes per minute = 8 onBeatHit per second
+  //   120 BPM = 1920 sixty-fourth notes per minute = 32 onStepHit per second
+  // 3/2 = 3 beats per measure = 12 steps per measure
+  //   Beats are HALF NOTES!!
+  //   120 BPM = 60 half notes per minute = 1 onBeatHit per second
+  //   120 BPM = 240 eighth notes per minute = 4 onStepHit per second
 
   /**
    * The current instance of the Conductor.
@@ -92,6 +106,12 @@ class Conductor
    */
   public var songPosition(default, null):Float = 0;
 
+  /**
+   * The offset between frame time and music time.
+   * Used in `getTimeWithDelta()` to get a more accurate music time when on higher framerates.
+   */
+  var songPositionDelta(default, null):Float = 0;
+
   var prevTimestamp:Float = 0;
   var prevTime:Float = 0;
 
@@ -105,6 +125,17 @@ class Conductor
     if (bpmOverride != null) return bpmOverride;
 
     if (currentTimeChange == null) return Constants.DEFAULT_BPM;
+
+    @:privateAccess
+    if (PlayState.instance != null && PlayState.instance.startingSong)
+    {
+      for (i in 0...timeChanges.length)
+      {
+        if (PlayState.instance.startTimestamp >= timeChanges[i].timeStamp) currentTimeChange = timeChanges[i];
+
+        if (PlayState.instance.startTimestamp < timeChanges[i].timeStamp) break;
+      }
+    }
 
     return currentTimeChange.bpm;
   }
@@ -141,24 +172,24 @@ class Conductor
   }
 
   /**
-   * Duration of a beat (quarter note) in milliseconds. Calculated based on bpm.
+   * Duration of a beat in milliseconds. Calculated based on bpm.
    */
   public var beatLengthMs(get, never):Float;
 
   function get_beatLengthMs():Float
   {
     // Tied directly to BPM.
-    return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC);
+    return ((Constants.SECS_PER_MIN / bpm) * Constants.MS_PER_SEC) * (4 / timeSignatureDenominator);
   }
 
   /**
-   * Duration of a step (sixtennth note) in milliseconds. Calculated based on bpm.
+   * Duration of a step in milliseconds. Calculated based on bpm.
    */
   public var stepLengthMs(get, never):Float;
 
   function get_stepLengthMs():Float
   {
-    return beatLengthMs / timeSignatureNumerator;
+    return beatLengthMs / Constants.STEPS_PER_BEAT;
   }
 
   /**
@@ -227,7 +258,7 @@ class Conductor
 
   function get_instrumentalOffsetSteps():Float
   {
-    var startingStepLengthMs:Float = ((Constants.SECS_PER_MIN / startingBPM) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+    var startingStepLengthMs:Float = (((Constants.SECS_PER_MIN / startingBPM) * Constants.MS_PER_SEC) * (4 / timeSignatureDenominator)) / Constants.STEPS_PER_BEAT;
 
     return instrumentalOffset / startingStepLengthMs;
   }
@@ -242,25 +273,18 @@ class Conductor
    * No matter if you're using a local conductor or not, this always loads
    * to/from the save file
    */
-  public var inputOffset(get, set):Int;
+  public var globalOffset(get, never):Int;
 
   /**
    * An offset set by the user to compensate for audio/visual lag
    * No matter if you're using a local conductor or not, this always loads
    * to/from the save file
    */
-  public var audioVisualOffset(get, set):Int;
+  public var audioVisualOffset(get, never):Int;
 
-  function get_inputOffset():Int
+  function get_globalOffset():Int
   {
-    return Save?.instance?.options?.inputOffset ?? 0;
-  }
-
-  function set_inputOffset(value:Int):Int
-  {
-    Save.instance.options.inputOffset = value;
-    Save.instance.flush();
-    return Save.instance.options.inputOffset;
+    return Preferences.globalOffset;
   }
 
   function get_audioVisualOffset():Int
@@ -268,41 +292,31 @@ class Conductor
     return Save?.instance?.options?.audioVisualOffset ?? 0;
   }
 
-  function set_audioVisualOffset(value:Int):Int
-  {
-    Save.instance.options.audioVisualOffset = value;
-    Save.instance.flush();
-    return Save.instance.options.audioVisualOffset;
-  }
-
   public var combinedOffset(get, never):Float;
 
   function get_combinedOffset():Float
   {
-    return instrumentalOffset + audioVisualOffset + inputOffset;
+    return instrumentalOffset + formatOffset + globalOffset;
   }
 
   /**
-   * The number of beats in a measure. May be fractional depending on the time signature.
+   * The number of beats in a measure.
    */
   public var beatsPerMeasure(get, never):Float;
 
   function get_beatsPerMeasure():Float
   {
-    // NOTE: Not always an integer, for example 7/8 is 3.5 beats per measure
-    return stepsPerMeasure / Constants.STEPS_PER_BEAT;
+    return timeSignatureNumerator;
   }
 
   /**
    * The number of steps in a measure.
-   * TODO: I don't think this can be fractional?
    */
   public var stepsPerMeasure(get, never):Int;
 
   function get_stepsPerMeasure():Int
   {
-    // TODO: Is this always an integer?
-    return Std.int(timeSignatureNumerator / timeSignatureDenominator * Constants.STEPS_PER_BEAT * Constants.STEPS_PER_BEAT);
+    return Std.int(timeSignatureNumerator * Constants.STEPS_PER_BEAT);
   }
 
   /**
@@ -401,8 +415,10 @@ class Conductor
    * @param	songPosition The current position in the song in milliseconds.
    *        Leave blank to use the FlxG.sound.music position.
    * @param applyOffsets If it should apply the instrumentalOffset + formatOffset + audioVisualOffset
+   * @param forceDispatch If it should force the dispatch of onStepHit, onBeatHit, and onMeasureHit
+   *        even if the current step, beat, or measure hasn't changed.
    */
-  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false)
+  public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false):Void
   {
     var currentTime:Float = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
     var currentLength:Float = (FlxG.sound.music != null) ? FlxG.sound.music.length : 0.0;
@@ -422,7 +438,8 @@ class Conductor
     // If the song is playing, limit the song position to the length of the song or beginning of the song.
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
     {
-      this.songPosition = Math.min(currentLength, Math.max(0, songPos));
+      this.songPosition = Math.min(this.combinedOffset, 0).clamp(songPos, currentLength);
+      this.songPositionDelta += FlxG.elapsed * 1000 * FlxG.sound.music.pitch;
     }
     else
     {
@@ -452,7 +469,7 @@ class Conductor
       this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)
         + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
-      this.currentMeasureTime = currentStepTime / stepsPerMeasure;
+      this.currentMeasureTime = getTimeInMeasures(this.songPosition);
       this.currentStep = Math.floor(currentStepTime);
       this.currentBeat = Math.floor(currentBeatTime);
       this.currentMeasure = Math.floor(currentMeasureTime);
@@ -488,10 +505,23 @@ class Conductor
     // which it doesn't do every frame!
     if (prevTime != this.songPosition)
     {
+      this.songPositionDelta = 0;
+
       // Update the timestamp for use in-between frames
       prevTime = this.songPosition;
       prevTimestamp = Std.int(Timer.stamp() * 1000);
     }
+
+    if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();
+  }
+
+  /**
+   * Returns a more accurate music time for higher framerates.
+   * @return Float
+   */
+  public function getTimeWithDelta():Float
+  {
+    return this.songPosition + this.songPositionDelta;
   }
 
   /**
@@ -545,7 +575,8 @@ class Conductor
         {
           var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
           songTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
-            + ((songTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC),
+            +
+            ((songTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC * (prevTimeChange.timeSignatureDen / 4)),
             4);
         }
       }
@@ -563,6 +594,101 @@ class Conductor
   }
 
   /**
+   * Given a time in milliseconds, return a time in measures.
+   * @param ms The time in milliseconds.
+   * @return The time in measures.
+   */
+  public function getTimeInMeasures(ms:Float):Float
+  {
+    if (timeChanges.length == 0)
+    {
+      // Assume a constant BPM equal to the forced value.
+      return ms / stepLengthMs / stepsPerMeasure;
+    }
+    else
+    {
+      var resultMeasureTime:Float = 0;
+      ms = ms < 0 ? 0 : ms;
+
+      var lastTimeChange:SongTimeChange = timeChanges[0];
+      var i:Int = -1;
+      for (timeChange in timeChanges)
+      {
+        if (ms >= timeChange.timeStamp)
+        {
+          // We do NOT want to add the current time change's MEASURE LENGTH to the result, same for if we're inside the song's last time change.
+          if (ms < timeChange.timeStamp || i == timeChanges.length - 1)
+          {
+            // However, we still want this for the ending calculation.
+            lastTimeChange = timeChange;
+            break;
+          }
+          var currentStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
+          var currentStepsPerMeasure:Int = lastTimeChange.timeSignatureNum * Constants.STEPS_PER_BEAT;
+          resultMeasureTime += (timeChange.timeStamp - lastTimeChange.timeStamp) / currentStepLengthMs / currentStepsPerMeasure;
+          lastTimeChange = timeChange;
+        }
+        i++;
+      }
+
+      var remainingStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
+      var remainingStepsPerMeasure:Int = lastTimeChange.timeSignatureNum * Constants.STEPS_PER_BEAT;
+      var remainingFractionalMeasure:Float = (ms - lastTimeChange.timeStamp) / remainingStepLengthMs / remainingStepsPerMeasure;
+      resultMeasureTime += remainingFractionalMeasure;
+
+      return resultMeasureTime;
+    }
+  }
+
+  /**
+   * Given a time in measures and fractional measures, return a time in milliseconds.
+   * @param measureTime The time in measures.
+   * @return The time in milliseconds.
+   */
+  public function getMeasureTimeInMs(measureTime:Float):Float
+  {
+    if (timeChanges.length == 0)
+    {
+      // Assume a constant BPM equal to the forced value.
+      return measureTime * stepLengthMs * stepsPerMeasure;
+    }
+    else
+    {
+      var resultMs:Float = 0;
+      measureTime = measureTime < 0 ? 0 : measureTime;
+
+      var lastTimeChange:SongTimeChange = timeChanges[0];
+      var i:Int = -1;
+      for (timeChange in timeChanges)
+      {
+        var currentTimeChangeMeasureTime:Float = getTimeInMeasures(timeChange.timeStamp);
+        if (measureTime >= currentTimeChangeMeasureTime)
+        {
+          // We do NOT want to add the current time change's MEASURE LENGTH to the result, same for if we're inside the song's last time change.
+          if (measureTime < currentTimeChangeMeasureTime || i == timeChanges.length - 1)
+          {
+            // However, we still want this for the ending calculation.
+            lastTimeChange = timeChange;
+            break;
+          }
+          var currentStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
+          var currentStepsPerMeasure:Int = lastTimeChange.timeSignatureNum * Constants.STEPS_PER_BEAT;
+          resultMs += (currentTimeChangeMeasureTime - getTimeInMeasures(lastTimeChange.timeStamp)) * currentStepLengthMs * currentStepsPerMeasure;
+          lastTimeChange = timeChange;
+        }
+        i++;
+      }
+
+      var remainingStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
+      var remainingStepsPerMeasure:Int = lastTimeChange.timeSignatureNum * Constants.STEPS_PER_BEAT;
+      var remainingFractionalMeasure:Float = (measureTime - getTimeInMeasures(lastTimeChange.timeStamp)) * remainingStepLengthMs * remainingStepsPerMeasure;
+      resultMs += remainingFractionalMeasure;
+
+      return resultMs;
+    }
+  }
+
+  /**
    * Given a time in milliseconds, return a time in steps.
    * @param ms The time in milliseconds.
    * @return The time in steps.
@@ -577,23 +703,28 @@ class Conductor
     else
     {
       var resultStep:Float = 0;
+      ms = ms < 0 ? 0 : ms;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
+      var i:Int = -1;
       for (timeChange in timeChanges)
       {
         if (ms >= timeChange.timeStamp)
         {
+          // We do NOT want to add the current time change's STEP LENGTH to the result, same for if we're inside the song's last time change.
+          if (ms < timeChange.timeStamp || i == timeChanges.length - 1)
+          {
+            // However, we still want this for the ending calculation.
+            lastTimeChange = timeChange;
+            break;
+          }
+          resultStep += (timeChange.beatTime - lastTimeChange.beatTime) * Constants.STEPS_PER_BEAT;
           lastTimeChange = timeChange;
-          resultStep = lastTimeChange.beatTime * Constants.STEPS_PER_BEAT;
         }
-        else
-        {
-          // This time change is after the requested time.
-          break;
-        }
+        i++;
       }
 
-      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
       var resultFractionalStep:Float = (ms - lastTimeChange.timeStamp) / lastStepLengthMs;
       resultStep += resultFractionalStep;
 
@@ -616,23 +747,28 @@ class Conductor
     else
     {
       var resultMs:Float = 0;
+      stepTime = stepTime < 0 ? 0 : stepTime;
 
       var lastTimeChange:SongTimeChange = timeChanges[0];
+      var i:Int = -1;
       for (timeChange in timeChanges)
       {
         if (stepTime >= timeChange.beatTime * Constants.STEPS_PER_BEAT)
         {
+          // We do NOT want to add the current time change's TIME LENGTH to the result, same for if we're inside the song's last time change.
+          if (stepTime < (timeChange.beatTime * Constants.STEPS_PER_BEAT) || i == timeChanges.length - 1)
+          {
+            // However, we still want this for the ending calculation.
+            lastTimeChange = timeChange;
+            break;
+          }
+          resultMs += timeChange.timeStamp - lastTimeChange.timeStamp;
           lastTimeChange = timeChange;
-          resultMs = lastTimeChange.timeStamp;
         }
-        else
-        {
-          // This time change is after the requested time.
-          break;
-        }
+        i++;
       }
 
-      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
       resultMs += (stepTime - lastTimeChange.beatTime * Constants.STEPS_PER_BEAT) * lastStepLengthMs;
 
       return resultMs;
@@ -670,10 +806,66 @@ class Conductor
         }
       }
 
-      var lastStepLengthMs:Float = ((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) / timeSignatureNumerator;
+      var lastStepLengthMs:Float = (((Constants.SECS_PER_MIN / lastTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / lastTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
       resultMs += (beatTime - lastTimeChange.beatTime) * lastStepLengthMs * Constants.STEPS_PER_BEAT;
 
       return resultMs;
+    }
+  }
+
+  /**
+   * Given a time in milliseconds, return the time change that time is inside of.
+   * @param ms The time in milliseconds.
+   * @return The resulting time change.
+   */
+  public function getTimeChange(ms:Float):SongTimeChange
+  {
+    if (timeChanges.length == 0)
+    {
+      return new SongTimeChange(0, 100);
+    }
+    var i:Int = 0;
+    ms = ms < 0 ? 0 : ms;
+    for (timeChange in timeChanges)
+    {
+      i++;
+      if ((i == timeChanges.length && ms >= timeChange.timeStamp) || (ms >= timeChange.timeStamp && ms < timeChanges[i].timeStamp))
+      {
+        return timeChange;
+      }
+    }
+    return new SongTimeChange(0, 100);
+  }
+
+  /**
+   * An all-in-one function for getting either a step, beat, or measure's length in milliseconds from a given time change.
+   * @param ms The time in milliseconds. The time change is determined by this.
+   * @param type The type of length to return. Either "step", "beat", or "measure" works, along with their first character.
+   * @return The length of a step/beat/measure in milliseconds.
+   */
+  public function getTypeLengthAtMs(ms:Float, type:String = "beat"):Float
+  {
+    if (timeChanges.length == 0) return 0;
+    var wantedTimeChange:SongTimeChange = timeChanges[0];
+    for (timeChange in timeChanges)
+    {
+      if (ms >= timeChange.timeStamp)
+      {
+        wantedTimeChange = timeChange;
+      }
+      else
+      {
+        // This time change is after the requested time.
+        break;
+      }
+    }
+    var wantedBeatLengthMs:Float = ((Constants.SECS_PER_MIN / wantedTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / wantedTimeChange.timeSignatureDen);
+    return switch (type.toLowerCase())
+    {
+      case "measure", "m": wantedBeatLengthMs * wantedTimeChange.timeSignatureNum;
+      case "beat", "b": wantedBeatLengthMs;
+      case "step", "s": wantedBeatLengthMs / Constants.STEPS_PER_BEAT;
+      default: wantedBeatLengthMs;
     }
   }
 

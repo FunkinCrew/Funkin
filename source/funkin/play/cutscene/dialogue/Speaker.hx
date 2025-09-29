@@ -6,8 +6,8 @@ import funkin.modding.events.ScriptEvent;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.IScriptedClass.IDialogueScriptedClass;
-import funkin.data.dialogue.speaker.SpeakerData;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.SpeakerData;
+import funkin.data.dialogue.SpeakerRegistry;
 
 /**
  * The character sprite which displays during dialogue.
@@ -32,6 +32,11 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   var animationOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
 
   /**
+   * The position without offsets applied.
+   */
+  var originalPosition:Array<Float> = [0, 0];
+
+  /**
    * The current animation offset being used.
    */
   var animOffsets(default, set):Array<Float> = [0, 0];
@@ -39,13 +44,10 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   function set_animOffsets(value:Array<Float>):Array<Float>
   {
     if (animOffsets == null) animOffsets = [0, 0];
-    if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
+    if (animOffsets == value) return value;
 
-    var xDiff:Float = value[0] - animOffsets[0];
-    var yDiff:Float = value[1] - animOffsets[1];
-
-    this.x += xDiff;
-    this.y += yDiff;
+    this.x = globalOffsets[0] + originalPosition[0] + value[0];
+    this.y = globalOffsets[1] + originalPosition[1] + value[1];
 
     return animOffsets = value;
   }
@@ -60,15 +62,13 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     if (globalOffsets == null) globalOffsets = [0, 0];
     if (globalOffsets == value) return value;
 
-    var xDiff:Float = value[0] - globalOffsets[0];
-    var yDiff:Float = value[1] - globalOffsets[1];
+    this.x = value[0] + originalPosition[0] + animOffsets[0];
+    this.y = value[1] + originalPosition[1] + animOffsets[1];
 
-    this.x += xDiff;
-    this.y += yDiff;
     return globalOffsets = value;
   }
 
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 
@@ -87,9 +87,9 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
    */
   public function onCreate(event:ScriptEvent):Void
   {
-    this.globalOffsets = [0, 0];
     this.x = 0;
     this.y = 0;
+    this.globalOffsets = [0, 0];
     this.alpha = 1;
 
     loadSpritesheet();
@@ -109,6 +109,9 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   {
     super.revive();
 
+    this.x = 0;
+    this.y = 0;
+    this.globalOffsets = [0, 0];
     this.visible = true;
     this.alpha = 1.0;
 
@@ -138,6 +141,11 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
       this.antialiasing = true;
     }
 
+    this.screenCenter();
+
+    originalPosition[0] = this.x;
+    originalPosition[1] = this.y;
+
     this.flipX = _data.flipX;
     this.flipY = _data.flipY;
     this.globalOffsets = _data.offsets;
@@ -151,6 +159,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   public function setScale(scale:Null<Float>):Void
   {
     if (scale == null) scale = 1.0;
+
     this.scale.x = scale;
     this.scale.y = scale;
     this.updateHitbox();

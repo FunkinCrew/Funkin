@@ -24,16 +24,35 @@ class NoteKind implements INoteScriptedClass
   public var noteStyleId:Null<String>;
 
   /**
+   * Whether or not the sing animation should play.
+   */
+  public var noanim:Bool;
+
+  /**
+   * The animation suffix to use.
+   */
+  public var suffix:String;
+
+  /**
    * Custom parameters for the chart editor
    */
   public var params:Array<NoteKindParam>;
 
-  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>)
+  /**
+   * If this note kind is scoreable (ie, counted towards score and accuracy)
+   * Only accessible in scripts
+   * Defaults to true
+   */
+  public var scoreable:Bool = true;
+
+  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?noanim:Bool, ?suffix:String)
   {
     this.noteKind = noteKind;
     this.description = description;
     this.noteStyleId = noteStyleId;
     this.params = params ?? [];
+    this.noanim = noanim ?? false;
+    this.suffix = suffix ?? '';
   }
 
   public function toString():String

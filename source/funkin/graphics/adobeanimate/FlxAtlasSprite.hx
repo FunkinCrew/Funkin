@@ -11,6 +11,7 @@ import flxanimate.animate.FlxKeyFrame;
 /**
  * A sprite which provides convenience functions for rendering a texture atlas with animations.
  */
+@:nullSafety
 class FlxAtlasSprite extends FlxAnimate
 {
   static final SETTINGS:Settings =
@@ -40,38 +41,34 @@ class FlxAtlasSprite extends FlxAnimate
    */
   public var onAnimationLoop:FlxTypedSignal<String->Void> = new FlxTypedSignal();
 
-  var currentAnimation:String;
+  var currentAnimation:String = '';
 
   var canPlayOtherAnims:Bool = true;
 
-  public function new(x:Float, y:Float, ?path:String, ?settings:Settings)
+  @:nullSafety(Off) // null safety HATES new classes atm, it'll be fixed in haxe 4.0.0?
+  public function new(x:Float, y:Float, ?path:String, ?settings:Settings, ?pathSafety:Bool = true)
   {
     if (settings == null) settings = SETTINGS;
 
-    if (path == null)
-    {
-      throw 'Null path specified for FlxAtlasSprite!';
-    }
+    if (path == null && pathSafety) throw 'Null path specified for FlxAtlasSprite!';
 
     // Validate asset path.
-    if (!Assets.exists('${path}/Animation.json'))
-    {
-      throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
-    }
+    if (!Assets.exists('${path}/Animation.json')
+      && pathSafety) throw 'FlxAtlasSprite does not have an Animation.json file at the specified path (${path})';
 
     super(x, y, path, settings);
 
-    if (this.anim.stageInstance == null)
-    {
-      throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
-    }
+    if (this.anim.stageInstance == null && pathSafety) throw 'FlxAtlasSprite not initialized properly. Are you sure the path (${path}) exists?';
 
     onAnimationComplete.add(cleanupAnimation);
 
     // This defaults the sprite to play the first animation in the atlas,
     // then pauses it. This ensures symbols are intialized properly.
-    this.anim.play('');
-    this.anim.pause();
+    if (this.anim.curInstance != null)
+    {
+      this.anim.play('');
+      this.anim.pause();
+    }
 
     this.anim.onComplete.add(_onAnimationComplete);
     this.anim.onFrame.add(_onAnimationFrame);
@@ -110,7 +107,7 @@ class FlxAtlasSprite extends FlxAnimate
 
   var _completeAnim:Bool = false;
 
-  var fr:FlxKeyFrame = null;
+  var fr:Null<FlxKeyFrame> = null;
 
   var looping:Bool = false;
 
@@ -195,8 +192,9 @@ class FlxAtlasSprite extends FlxAnimate
 
       fr = null;
     }
+    var frameLabelNames = getFrameLabelNames();
     // Only call goToFrameLabel if there is a frame label with that name. This prevents annoying warnings!
-    if (getFrameLabelNames().indexOf(id) != -1)
+    if (frameLabelNames != null && frameLabelNames.indexOf(id) != -1)
     {
       goToFrameLabel(id);
       fr = anim.getFrameLabel(id);
@@ -266,7 +264,7 @@ class FlxAtlasSprite extends FlxAnimate
     this.anim.goToFrameLabel(label);
   }
 
-  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String>):Array<String>
+  function getFrameLabelNames(?layer:haxe.extern.EitherType<Int, String>):Null<Array<String>>
   {
     var labels = this.anim.getFrameLabels(layer);
     var array = [];
@@ -374,6 +372,7 @@ class FlxAtlasSprite extends FlxAnimate
     var prevFrame:FlxFrame = prevFrames.get(index) ?? frames.getByIndex(index).copyTo();
     prevFrames.set(index, prevFrame);
 
+    @:nullSafety(Off) // TODO: Remove this once flixel.system.frontEnds.BitmapFrontEnd has been null safed
     var frame = FlxG.bitmap.add(graphic).imageFrame.frame;
     frame.copyTo(frames.getByIndex(index));
 

@@ -7,6 +7,7 @@ import haxe.macro.Type;
 /**
  * A collection of utility functions for Haxe macros.
  */
+@:nullSafety
 class MacroUtil
 {
   /**
@@ -226,6 +227,98 @@ class MacroUtil
     }
 
     return false;
+  }
+
+  /**
+   * If the expression is a string constant, return the value, else return null.
+   */
+  public static function extractStringConstant(?input:Expr):Null<String>
+  {
+    if (input == null) return null;
+
+    switch (input.expr)
+    {
+      case EConst(c):
+        switch (c)
+        {
+          case CString(s, kind):
+            // We sadly have to exclude template strings.
+            if (kind == SingleQuotes && StringTools.contains(s, "$"))
+            {
+              // Context.warning('[ASSET] "${input}" TEMPLATE STRING', input.pos);
+              return null;
+            }
+
+            return s;
+          default:
+            // Not a string constant.
+            // Context.warning('[ASSET] "${input}" NON-STRING', input.pos);
+            return null;
+        }
+      default:
+        // Not a constant (variable or expression maybe?)
+        // Context.warning('[ASSET] "${input}" NON-CONSTANT', input.pos);
+        return null;
+    }
+  }
+
+  /**
+   * If the expression is a string constant, return the value, else return null.
+   */
+  public static function extractBooleanConstant(?input:Expr):Null<Bool>
+  {
+    if (input == null) return null;
+
+    switch (input.expr)
+    {
+      case EConst(c):
+        switch (c)
+        {
+          case CIdent(s):
+            // Look if the value is a keyword "true" or "false"
+            if (s == "null") return null;
+            if (s == "true") return true;
+            if (s == "false") return false;
+
+            // Not a boolean constant.
+            Context.warning('[ASSET] "${input}" NON-BOOLEAN', input.pos);
+            return null;
+
+          default:
+            // Not an identifier constant.
+            Context.warning('[ASSET] "${input}" NON-IDENTIFIER', input.pos);
+            return null;
+        }
+      default:
+        // Not a constant (variable or expression maybe?)
+        // Context.warning('[ASSET] "${input}" NON-CONSTANT', input.pos);
+        return null;
+    }
+  }
+
+  /**
+   * If the expression is an object declaration, extract a field of the given name from it.
+   * @param input The expression to extract from. Should be a `{name: value, ...}` object.
+   * @param name The name of the field to extract.
+   * @return The expression, or `null` if not found.
+   */
+  public static function extractObjectField(?input:Expr, name:String):Null<Expr>
+  {
+    if (input == null) return null;
+    switch (input.expr)
+    {
+      case EObjectDecl(fields):
+        for (field in fields)
+        {
+          if (field.field == name)
+          {
+            return field.expr;
+          }
+        }
+        return null;
+      default:
+        return null;
+    }
   }
   #end
 }

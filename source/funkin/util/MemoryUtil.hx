@@ -11,6 +11,7 @@ package funkin.util;
  * @see https://github.com/HaxeFoundation/hxcpp/blob/master/docs/build_xml/Defines.md
  * @see cpp.vm.Gc
  */
+@:nullSafety
 class MemoryUtil
 {
   public static function buildGCInfo():String
@@ -36,7 +37,7 @@ class MemoryUtil
     result += '\n- Source Annotation: ${#if annotate_source 'Enabled' #else 'Disabled' #end}';
     #elseif js
     var result:String = 'JS-MNS:';
-    result += '\n- Memory Used: ${getMemoryUsed()} bytes';
+    result += '\n- Memory Used: ${getGCMemory()} bytes';
     #else
     var result:String = 'Unknown GC';
     #end
@@ -44,18 +45,61 @@ class MemoryUtil
     return result;
   }
 
-  /**
-   * Calculate the total memory usage of the program, in bytes.
-   * @return Int
-   */
-  public static function getMemoryUsed():#if cpp Float #else Int #end
+  public static function supportsTaskMem():Bool
   {
-    #if cpp
-    // There is also Gc.MEM_INFO_RESERVED, MEM_INFO_CURRENT, and MEM_INFO_LARGE.
-    return cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE);
+    #if ((cpp && (windows || ios || macos)) || linux || android)
+    return true;
     #else
-    return openfl.system.System.totalMemory;
+    return false;
     #end
+  }
+
+  public static function getTaskMemory():Float
+  {
+    #if (windows && cpp)
+    return funkin.external.windows.WinAPI.getProcessMemoryWorkingSetSize();
+    #elseif ((ios || macos) && cpp)
+    return funkin.external.apple.MemoryUtil.getCurrentProcessRss();
+    #elseif (linux || android)
+    try
+    {
+      #if cpp
+      final input:sys.io.FileInput = sys.io.File.read('/proc/${cpp.NativeSys.sys_get_pid()}/status', false);
+      #else
+      final input:sys.io.FileInput = sys.io.File.read('/proc/self/status', false);
+      #end
+
+      final regex:EReg = ~/^VmRSS:\s+(\d+)\s+kB/m;
+      var line:String;
+      do
+      {
+        if (input.eof())
+        {
+          input.close();
+          return 0.0;
+        }
+        line = input.readLine();
+      }
+      while (!regex.match(line));
+
+      input.close();
+
+      final kb:Float = Std.parseFloat(regex.matched(1));
+
+      if (kb != Math.NaN)
+      {
+        return kb * 1024.0;
+      }
+    }
+    catch (e:Dynamic) {}
+    #end
+
+    return 0.0;
+  }
+
+  public static function getGCMemory():Float
+  {
+    return openfl.system.System.totalMemoryNumber;
   }
 
   /**

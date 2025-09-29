@@ -60,7 +60,7 @@ This section provides guidelines to follow when [opening an issue](https://githu
 
 ## Requirements
 Make sure you're playing:
-- the latest version of the game (currently v0.6.3)
+- the latest version of the game (currently v0.7.5)
 - without any mods
 - on [Newgrounds](https://www.newgrounds.com/portal/view/770371) or downloaded from [itch.io](https://ninja-muffin24.itch.io/funkin)
 
@@ -77,18 +77,15 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Flashy Combo Milestones | https://github.com/FunkinCrew/Funkin/pull/4700#issuecomment-2798916579 |
 | Losing Icons for DD and Parents | https://github.com/FunkinCrew/Funkin/issues/3048#issuecomment-2243491536 |
 | Playable GF / Speaker BF / Speaker Pico | https://github.com/FunkinCrew/Funkin/issues/2953#issuecomment-2216985230 |
+| New Intro Text Lines | https://github.com/FunkinCrew/Funkin/issues/5031#issuecomment-2855593376 |
 | Fresh (Chill Mix) as Title Screen Music | https://github.com/FunkinCrew/Funkin/pull/4282#issuecomment-2709334718 |
-| Adjusted Difficulty Ratings | https://github.com/FunkinCrew/Funkin/issues/2781#issuecomment-2172053144 |
 | Difficulty Ratings above 20 | https://github.com/FunkinCrew/Funkin/issues/3075#issuecomment-2368984497 |
-| Ability to Reset a Song's Score | https://github.com/FunkinCrew/Funkin/issues/3916#issuecomment-2525408261 |
 | Quick Restart Keybind (not R) | https://github.com/FunkinCrew/Funkin/issues/3268#issuecomment-2351095232 |
 | Countdown after Unpausing Song | https://github.com/FunkinCrew/Funkin/issues/2721#issuecomment-2159330106 |
-| 4:3 Aspect Ratio for Week 6 | https://github.com/FunkinCrew/Funkin/issues/3840#issuecomment-2689158438 |
 | "Philly Glow" Effect from Psych Engine | https://github.com/FunkinCrew/Funkin/issues/3788#issuecomment-2688966982 |
 | Importing Charts from Psych Engine (and other mod content) | https://github.com/FunkinCrew/Funkin/issues/2586#issuecomment-2125733327 |
 | Backwards Compatibility for Modding | https://github.com/FunkinCrew/Funkin/issues/3949#issuecomment-2608391329 |
 | Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 |
-
 
 ## Issue Types
 Choose the issue template that best suits your needs!
@@ -125,9 +122,6 @@ Also only report one issue or enhancement at a time! If you have multiple bug re
 
 Once you're sure your issue is unique and specific, feel free to submit it.
 
-> [!IMPORTANT]
-> **DO NOT CLOSE YOUR ISSUE FOR ANY REASON!** Your issue will be taken care of by a moderator!
-
 **Thank you for opening issues!**
 
 # Part 3: Pull Requests
@@ -135,19 +129,19 @@ Community members are welcome to contribute their changes by [opening pull reque
 This section covers guidelines for opening and managing pull requests (PRs).
 
 ## Choosing a base branch
-When creating a branch in your fork, base your branch on either the `main` or `develop` branch depending on the types of changes you want to make.
+When creating a branch in your fork, base your branch on either the `develop` or `main` branch depending on the types of changes you want to make.
 
 > [!CAUTION]
 > Avoid using your fork's default branch (`main` in this case) for your PR. This is considered an [anti-pattern](https://jmeridth.com/posts/do-not-issue-pull-requests-from-your-master-branch/) by GitHub themselves!
 > Instead, make a separate branch for your additions (ex. `docs/fix-typo` or `minor-bugfix`).
 
-Choose the `main` branch if you modify:
-- Documentation (`.md` files)
-- GitHub files (`.yml` files or anything in the `.github` folder)
-
 Choose the `develop` branch if you modify:
 - Game code (`.hx` files)
 - Any other type of file
+
+Choose the `main` branch if you modify:
+- Documentation (`.md` files)
+- GitHub files (`.yml` files or anything in the `.github` folder)
 
 > [!TIP]
 > When in doubt, base your branch on the `develop` branch.
@@ -156,14 +150,14 @@ Choosing the right base branch helps keep your commit history clean and avoid me
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
 ## Maintaining your pull request
-Keeping your pull request clean and easy to review increases the chance that it will be accepted! 
+Keeping your pull request clean and easy to review increases the chance that it will be accepted!
 
 Our maintenance policy is as follows:
 - If we require changes to your PR, we will label your PR `status: needs revision`.
 - We may also leave a comment under your PR specifying what changes you should make.
 - If you receive a comment, you have 90 days to implement the requested changes.
 - After this period, your PR will be closed due to inactivity and labeled `status: stale`.
-- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!   
+- Even after your PR is closed, you may request for us to reopen it. Just be sure to address the issues!
 
 This policy ensures that PRs awaiting review are up to date and ready to merge.
 
@@ -402,7 +396,7 @@ If you only modify files in the `assets` folder, open a PR in the `funkin.assets
 
 If you simultaneously modify files from both repositories, then open two separate PRs and explain the connection in your PR descriptions.
 
-Be sure to choose `main` as the base branch for `funkin.assets` PRs, as no `develop` branch exists for that repository.
+Be sure to choose `develop` as the base branch for `funkin.assets` PRs, just as you would in the `Funkin` repository.
 
 ### Charting PRs
 Charting PRs make changes such as **adjusting chart metadata**.

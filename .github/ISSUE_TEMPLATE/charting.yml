@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: "# PLEASE READ THE [CONTRIBUTING GUIDE](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!"
-      
+
   - type: checkboxes
     attributes:
       label: Issue Checklist
@@ -21,35 +21,25 @@ body:
       label: Platform
       description: Which platform are you playing on?
       options:
+        - Android
+        - iOS/iPadOS
         - Newgrounds (Web/HTML5)
         - Itch.io (Web/HTML5)
-        - Itch.io (Downloadable Build) - Windows
-        - Itch.io (Downloadable Build) - MacOS
-        - Itch.io (Downloadable Build) - Linux
+        - Windows (Downloadable Build)
+        - MacOS (Downloadable Build)
+        - Linux (Downloadable Build)
         - Compiled from GitHub Source Code
     validations:
       required: true
 
-  - type: dropdown
-    attributes:
-      label: Browser
-      description: (Web/HTML5 users only) Which browser are you playing on?
-      options:
-        - Google Chrome
-        - Microsoft Edge
-        - Firefox
-        - Opera
-        - Safari
-        - Other (Specify in Description field)
-
   - type: input
     attributes:
       label: Version
-      description: Which version are you playing on? The game version is in the bottom left corner of the main menu. 
-      placeholder: ex. 0.6.3
+      description: Which version are you playing on? The game version is in the bottom left corner of the main menu.
+      placeholder: ex. 0.7.5
     validations:
       required: true
-  
+
   - type: markdown
     attributes:
       value: "## Describe the charting issue(s)."

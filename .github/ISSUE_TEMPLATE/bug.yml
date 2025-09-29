@@ -14,17 +14,20 @@ body:
         - label: I have read the [Contributing Guide](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md)
         - label: I have checked the Issues/Discussions pages to see if my issue has already been reported
         - label: I have properly titled my issue
+        - label: I did not have any mods installed when I encountered this issue
 
   - type: dropdown
     attributes:
       label: Platform
       description: Which platform are you playing on?
       options:
+        - Android
+        - iOS/iPadOS
         - Newgrounds (Web/HTML5)
         - Itch.io (Web/HTML5)
-        - Itch.io (Downloadable Build) - Windows
-        - Itch.io (Downloadable Build) - MacOS
-        - Itch.io (Downloadable Build) - Linux
+        - Windows (Downloadable Build)
+        - MacOS (Downloadable Build)
+        - Linux (Downloadable Build)
         - Compiled from GitHub Source Code
     validations:
       required: true
@@ -43,9 +46,21 @@ body:
 
   - type: input
     attributes:
+      label: Mobile Device Model
+      description: (Mobile users only) What mobile device are you playing on?
+      placeholder: ex. iPhone 17, Galaxy S25, iPad 11th Gen
+
+  - type: input
+    attributes:
+      label: Mobile OS Version
+      description: (Mobile users only) What version is your Operating System?
+      placeholder: ex. iOS 26.0, Android 15, iPadOS 26.0
+
+  - type: input
+    attributes:
       label: Version
       description: Which version are you playing on? The game version is in the bottom left corner of the main menu.
-      placeholder: ex. 0.6.3
+      placeholder: ex. 0.7.5
     validations:
       required: true
 

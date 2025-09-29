@@ -10,7 +10,7 @@ class CreditsDataMacro
   public static macro function loadCreditsData():haxe.macro.Expr.ExprOf<CreditsData>
   {
     #if !display
-    trace('Hardcoding credits data...');
+    Sys.println('[INFO] Hardcoding credits data...');
     var json = CreditsDataMacro.fetchJSON();
 
     if (json == null)
@@ -40,7 +40,13 @@ class CreditsDataMacro
   #if macro
   static function fetchJSON():Null<String>
   {
-    return sys.io.File.getContent(CreditsDataHandler.CREDITS_DATA_PATH);
+    var creditsPath:String = CreditsDataHandler.CREDITS_DATA_PATH;
+
+    #if ios
+    if (!sys.FileSystem.exists(creditsPath)) creditsPath = "../../../../../" + creditsPath;
+    #end
+
+    return sys.io.File.getContent(creditsPath);
   }
 
   /**

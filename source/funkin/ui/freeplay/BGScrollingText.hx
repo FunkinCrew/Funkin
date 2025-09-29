@@ -4,75 +4,87 @@ import flixel.FlxObject;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxSort;
+import flixel.FlxSprite;
+import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxColor;
 
 // its kinda like marqeee html lol!
+@:nullSafety
 class BGScrollingText extends FlxSpriteGroup
 {
-  var grpTexts:FlxTypedSpriteGroup<FlxText>;
+  var grpTexts:FlxTypedSpriteGroup<FlxSprite>;
+  var sourceText:FlxText;
 
   public var widthShit:Float = FlxG.width;
   public var placementOffset:Float = 20;
   public var speed:Float = 1;
   public var size(default, set):Int = 48;
 
-  public var funnyColor(default, set):Int = 0xFFFFFFFF;
+  public var funnyColor(default, set):FlxColor = 0xFFFFFFFF;
 
   public function new(x:Float, y:Float, text:String, widthShit:Float = 100, ?bold:Bool = false, ?size:Int = 48)
   {
     super(x, y);
 
+    grpTexts = new FlxTypedSpriteGroup<FlxSprite>();
+
     this.widthShit = widthShit;
-    if (size != null) this.size = size;
 
-    grpTexts = new FlxTypedSpriteGroup<FlxText>();
-    add(grpTexts);
+    // Only keep one FlxText graphic at a time for batching
+    sourceText = new FlxText(0, 0, 0, text, size ?? this.size);
+    sourceText.font = "5by7";
+    sourceText.bold = bold ?? false;
 
-    var testText:FlxText = new FlxText(0, 0, 0, text, this.size);
-    testText.font = "5by7";
-    testText.bold = bold;
-    testText.updateHitbox();
-    grpTexts.add(testText);
+    @:privateAccess
+    sourceText.regenGraphic();
 
-    var needed:Int = Math.ceil(widthShit / testText.frameWidth) + 1;
+    var needed:Int = Math.ceil(widthShit / sourceText.frameWidth) + 1;
 
     for (i in 0...needed)
     {
-      var lmfao:Int = i + 1;
-
-      var coolText:FlxText = new FlxText((lmfao * testText.frameWidth) + (lmfao * 20), 0, 0, text, this.size);
-
-      coolText.font = "5by7";
-      coolText.bold = bold;
-      coolText.updateHitbox();
+      var coolText = new FlxSprite((i * sourceText.frameWidth) + (i * 20), 0);
       grpTexts.add(coolText);
+    }
+
+    if (size != null) this.size = size;
+
+    add(grpTexts);
+  }
+
+  function reloadGraphics()
+  {
+    if (grpTexts != null)
+    {
+      @:privateAccess
+      sourceText.regenGraphic();
+      grpTexts.forEach(function(txt:FlxSprite) {
+        txt.loadGraphic(sourceText.graphic);
+        txt.updateHitbox();
+      });
     }
   }
 
   function set_size(value:Int):Int
   {
-    if (grpTexts != null)
-    {
-      grpTexts.forEach(function(txt:FlxText) {
-        txt.size = value;
-      });
-    }
+    sourceText.size = value;
+    reloadGraphics();
     this.size = value;
     return value;
   }
 
-  function set_funnyColor(col:Int):Int
+  function set_funnyColor(value:FlxColor):FlxColor
   {
-    grpTexts.forEach(function(txt) {
-      txt.color = col;
-    });
-
-    return col;
+    sourceText.color = value;
+    reloadGraphics();
+    this.funnyColor = value;
+    return value;
   }
 
   override public function update(elapsed:Float)
   {
     for (txt in grpTexts.group)
     {
+      if (txt == null) continue;
       txt.x -= 1 * (speed * (elapsed / (1 / 60)));
 
       if (speed > 0)
@@ -103,5 +115,11 @@ class BGScrollingText extends FlxSpriteGroup
     grpTexts.sort(function(Order:Int, Obj1:FlxObject, Obj2:FlxObject) {
       return FlxSort.byValues(Order, Obj1.x, Obj2.x);
     });
+  }
+
+  override function destroy():Void
+  {
+    super.destroy();
+    sourceText = FlxDestroyUtil.destroy(sourceText);
   }
 }

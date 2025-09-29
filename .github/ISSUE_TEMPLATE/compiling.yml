@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: "# PLEASE READ THE [CONTRIBUTING GUIDE](https://github.com/FunkinCrew/Funkin/blob/main/docs/CONTRIBUTING.md) BEFORE OPENING ISSUES!"
-      
+
   - type: checkboxes
     attributes:
       label: Issue Checklist
@@ -22,6 +22,8 @@ body:
       label: Platform
       description: Which platform are you compiling for?
       options:
+       - Android
+       - iOS/iPadOS
        - Web/HTML5
        - Desktop (Windows)
        - Desktop (Mac)
@@ -33,11 +35,11 @@ body:
   - type: input
     attributes:
       label: Version
-      description: Which version are you compiling? The game version is in the bottom left corner of the main menu or in the project.hxp file. 
-      placeholder: ex. 0.6.3
+      description: Which version are you compiling? The game version is in the bottom left corner of the main menu or in the project.hxp file.
+      placeholder: ex. 0.7.5
     validations:
       required: true
-  
+
   - type: markdown
     attributes:
       value: "## Describe your compiling issue."
