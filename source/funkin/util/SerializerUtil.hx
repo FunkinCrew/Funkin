@@ -93,12 +93,11 @@ class SerializerUtil
   }
 
   /**
-   * Trims garbage data that may accompany converted from bytes JSON strings
+   * Trims garbage data that may accompany JSON strings converted from bytes.
    */
   static function sanitizeJSON(data:String):String
   {
     var startIndex:Int = -1;
-    var endIndex:Int = -1;
     var closeChar:String = '';
     for (i => c in data)
     {
@@ -111,7 +110,7 @@ class SerializerUtil
     }
     if (startIndex == -1) return data;
 
-    endIndex = data.lastIndexOf(closeChar);
+    var endIndex = data.lastIndexOf(closeChar);
     if (endIndex == -1) endIndex = data.length - 1;
 
     return data.substring(startIndex, endIndex + 1);
