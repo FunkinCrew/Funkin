@@ -204,6 +204,51 @@ class ScriptEventDispatcher
       return;
     }
 
+    if (Std.isOfType(target, IFreeplayScriptedClass))
+    {
+      var t:IFreeplayScriptedClass = cast target;
+      switch (event.type)
+      {
+        case CAPSULE_SELECTED:
+          t.onCapsuleSelected(cast event);
+          return;
+        case DIFFICULTY_SWITCH:
+          t.onDifficultySwitch(cast event);
+          return;
+        case SONG_SELECTED:
+          t.onSongSelected(cast event);
+          return;
+        case FREEPLAY_INTRO:
+          t.onFreeplayIntroDone(cast event);
+          return;
+        case FREEPLAY_OUTRO:
+          t.onFreeplayOutro(cast event);
+          return;
+        case FREEPLAY_CLOSE:
+          t.onFreeplayClose(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+
+    if (Std.isOfType(target, ICharacterSelectScriptedClass))
+    {
+      var t:ICharacterSelectScriptedClass = cast target;
+      switch (event.type)
+      {
+        case CHARACTER_SELECTED:
+          t.onCharacterSelect(cast event);
+          return;
+        case CHARACTER_DESELECTED:
+          t.onCharacterDeselect(cast event);
+          return;
+        case CHARACTER_CONFIRMED:
+          t.onCharacterConfirm(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+
     // If you get a crash on this line, that means ERIC FUCKED UP!
     // throw 'No function called for event type: ${event.type}';
   }

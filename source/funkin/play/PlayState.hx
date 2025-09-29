@@ -1200,7 +1200,10 @@ class PlayState extends MusicBeatSubState
         Events.logFailSong(currentSong.id, currentVariation);
         #end
 
-        dispatchEvent(new ScriptEvent(GAME_OVER));
+        var event:ScriptEvent = new ScriptEvent(GAME_OVER);
+        dispatchEvent(event);
+
+        if (event.eventCanceled) return;
 
         // Disable updates, preventing animations in the background from playing.
         persistentUpdate = false;

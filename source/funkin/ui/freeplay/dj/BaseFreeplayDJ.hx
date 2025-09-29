@@ -9,6 +9,8 @@ import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 import funkin.util.assets.FlxAnimationUtil;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
 
 enum FreeplayDJState
 {
@@ -62,7 +64,7 @@ enum FreeplayDJState
 }
 
 @:nullSafety
-class BaseFreeplayDJ extends FlxAtlasSprite
+class BaseFreeplayDJ extends FlxAtlasSprite implements IFreeplayScriptedClass
 {
   public var IDLE_EGG_PERIOD:Float = 60.0;
   public var IDLE_CARTOON_PERIOD:Float = 120.0;
@@ -238,6 +240,64 @@ class BaseFreeplayDJ extends FlxAtlasSprite
     else
       offset.set(0, 0);
   }
+
+  public function onScriptEvent(event:ScriptEvent) {}
+
+  public function onCreate(event:ScriptEvent) {}
+
+  public function onDestroy(event:ScriptEvent):Void {}
+
+  public function onUpdate(event:UpdateScriptEvent):Void {}
+
+  public function onStepHit(event:SongTimeScriptEvent):Void {}
+
+  public function onBeatHit(event:SongTimeScriptEvent):Void {}
+
+  public function onStateChangeBegin(event:StateChangeScriptEvent):Void {}
+
+  public function onStateChangeEnd(event:StateChangeScriptEvent):Void {}
+
+  public function onSubStateOpenBegin(event:SubStateScriptEvent):Void {}
+
+  public function onSubStateOpenEnd(event:SubStateScriptEvent):Void {}
+
+  public function onSubStateCloseBegin(event:SubStateScriptEvent):Void {}
+
+  public function onSubStateCloseEnd(event:SubStateScriptEvent):Void {}
+
+  public function onFocusLost(event:FocusScriptEvent):Void {}
+
+  public function onFocusGained(event:FocusScriptEvent):Void {}
+
+  /**
+   * Called when a capsule is selected.
+   */
+  public function onCapsuleSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the current difficulty is changed.
+   */
+  public function onDifficultySwitch(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when a song is selected.
+   */
+  public function onSongSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the intro for Freeplay finishes.
+   */
+  public function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when the Freeplay outro begins.
+   */
+  public function onFreeplayOutro(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when Freeplay is closed.
+   */
+  public function onFreeplayClose(event:FreeplayScriptEvent):Void {}
 }
 
 // Class for all non-atalas DJ's

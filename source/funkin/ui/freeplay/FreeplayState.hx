@@ -712,6 +712,8 @@ class FreeplayState extends MusicBeatSubState
     var onDJIntroDone:Void->Void = () -> {
       controls.active = true;
 
+      dispatchEvent(new FreeplayScriptEvent(FREEPLAY_INTRO));
+
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
@@ -863,6 +865,7 @@ class FreeplayState extends MusicBeatSubState
   {
     super.dispatchEvent(event);
     if (backingCard != null) ScriptEventDispatcher.callEvent(backingCard, event);
+    if (dj != null) ScriptEventDispatcher.callEvent(dj, event);
   }
 
   /**
@@ -999,6 +1002,8 @@ class FreeplayState extends MusicBeatSubState
     rememberSelection();
     changeSelection();
     refreshCapsuleDisplays();
+
+    dispatchEvent(new CapsuleScriptEvent(DIFFICULTY_SWITCH, currentCapsule, currentDifficulty, currentVariation));
   }
 
   /**
@@ -2135,6 +2140,8 @@ class FreeplayState extends MusicBeatSubState
     FlxTimer.globalManager.clear();
     dj?.onIntroDone.removeAll();
 
+    dispatchEvent(new FreeplayScriptEvent(FREEPLAY_OUTRO));
+
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
     var longestTimer:Float = 0;
@@ -2195,6 +2202,7 @@ class FreeplayState extends MusicBeatSubState
             persist: true
           });
         FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+        dispatchEvent(new FreeplayScriptEvent(FREEPLAY_CLOSE));
         close();
       }
       else
@@ -2651,6 +2659,8 @@ class FreeplayState extends MusicBeatSubState
     letterSort.inputEnabled = false;
     #end
 
+    dispatchEvent(new CapsuleScriptEvent(SONG_SELECTED, currentCapsule, currentDifficulty, currentVariation));
+
     PlayStatePlaylist.isStoryMode = false;
 
     var targetVariation:Null<String> = currentVariation;
@@ -2877,6 +2887,8 @@ class FreeplayState extends MusicBeatSubState
 
     // Small vibrations every selection change.
     if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
+
+    dispatchEvent(new CapsuleScriptEvent(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation));
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

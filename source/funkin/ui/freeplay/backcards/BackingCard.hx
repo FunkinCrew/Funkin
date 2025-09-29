@@ -10,9 +10,11 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
+import funkin.modding.events.ScriptEvent;
 import flixel.group.FlxSpriteGroup;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
+import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
@@ -20,7 +22,7 @@ import funkin.util.BitmapUtil;
 /**
  * A class for the backing cards so they dont have to be part of freeplayState......
  */
-class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass implements IStateChangingScriptedClass
+class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass
 {
   public var backingTextYeah:FlxAtlasSprite;
   public var orangeBackShit:FunkinSprite;
@@ -274,6 +276,36 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
   public function onFocusLost(event:FocusScriptEvent):Void {}
 
   public function onFocusGained(event:FocusScriptEvent):Void {}
+
+  /**
+   * Called when a capsule is selected.
+   */
+  public function onCapsuleSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the current difficulty is changed.
+   */
+  public function onDifficultySwitch(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when a song is selected.
+   */
+  public function onSongSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the intro for Freeplay finishes.
+   */
+  public function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when the Freeplay outro begins.
+   */
+  public function onFreeplayOutro(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when Freeplay is closed.
+   */
+  public function onFreeplayClose(event:FreeplayScriptEvent):Void {}
 
   public function centerObjectOnCard(object:flixel.FlxObject)
   {
