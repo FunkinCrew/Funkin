@@ -290,6 +290,7 @@ class HealthIcon extends FunkinSprite
     if (bopEvery != 0 && curStep % bopEvery == 0 && isLegacyStyle)
     {
       bopTween?.cancel();
+      setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);
       bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x,
         Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {onComplete: _ -> bopTween = null}, value -> {
           setGraphicSize(Std.int(value), 0);

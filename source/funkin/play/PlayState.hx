@@ -1503,6 +1503,10 @@ class PlayState extends MusicBeatSubState
         cameraTweensPausedBySubState.add(cameraZoomTween);
       }
 
+      // Icons should not bop while the game is paused.
+      if (iconP1 != null && iconP1.bopTween != null) iconP1.bopTween.active = false;
+      if (iconP2 != null && iconP2.bopTween != null) iconP2.bopTween.active = false;
+
       // Pause camera follow
       FlxG.camera.followLerp = 0;
 
@@ -1553,6 +1557,9 @@ class PlayState extends MusicBeatSubState
         camTween.active = true;
       }
       cameraTweensPausedBySubState.clear();
+
+      if (iconP1 != null && iconP1.bopTween != null) iconP1.bopTween.active = true;
+      if (iconP2 != null && iconP2.bopTween != null) iconP2.bopTween.active = true;
 
       // Resume camera follow
       FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
