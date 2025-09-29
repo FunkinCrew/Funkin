@@ -1177,8 +1177,8 @@ class CharSelectSubState extends MusicBeatSubState
               memb.filters = selectedBizz;
               memb.scale.set(2.6, 2.6);
             }
-            if (pressedSelect && memb.animation.curAnim.name == 'idle') memb.animation.play('confirm');
-            if (autoFollow && !pressedSelect && memb.animation.curAnim.name != 'idle')
+            if (pressedSelect && memb.animation.curAnim?.name == 'idle') memb.animation.play('confirm');
+            if (autoFollow && !pressedSelect && memb.animation.curAnim?.name != 'idle')
             {
               memb.animation.play("confirm", false, true);
               var onFinish:String->Void = null;
