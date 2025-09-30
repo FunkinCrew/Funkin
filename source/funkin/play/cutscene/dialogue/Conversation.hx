@@ -648,6 +648,8 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       outroTween = null;
     }
   }
+
+  public function onReload(event:ScriptEvent):Void {}
 }
 
 // Managing things with a single enum is a lot easier than a multitude of flags.

@@ -12,6 +12,8 @@ enum abstract ScriptEventType(String) from String to String
    */
   var CREATE = 'CREATE';
 
+  var RELOAD = 'RELOAD';
+
   /**
    * Called when the relevant object is fully created and ready to be used.
    * This assumes all data is loaded and ready to go.

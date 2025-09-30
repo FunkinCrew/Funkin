@@ -403,6 +403,8 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
   public function onDialogueEnd(event:DialogueScriptEvent):Void {}
 
+  public function onReload(event:ScriptEvent):Void {}
+
   public function onUpdate(event:UpdateScriptEvent):Void {}
 
   public function onDestroy(event:ScriptEvent):Void

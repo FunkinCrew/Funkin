@@ -33,6 +33,9 @@ class ScriptEventDispatcher
       case CREATE:
         target.onCreate(event);
         return;
+      case RELOAD:
+        target.onReload(event);
+        return;
       case STATE_CREATE:
         if (Std.isOfType(target, Module))
         {

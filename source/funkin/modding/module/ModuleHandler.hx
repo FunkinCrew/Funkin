@@ -163,4 +163,9 @@ class ModuleHandler
   {
     callEvent(new ScriptEvent(CREATE, false));
   }
+
+  public static inline function callOnReload():Void
+  {
+      callEvent(new ScriptEvent(RELOAD, false));
+  }
 }

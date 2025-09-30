@@ -200,6 +200,8 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 
   public function onCreate(event:ScriptEvent):Void {};
 
+  public function onReload(event:ScriptEvent):Void {}
+
   public function onDestroy(event:ScriptEvent):Void {};
 
   public function onUpdate(event:UpdateScriptEvent):Void {};

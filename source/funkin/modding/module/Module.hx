@@ -93,6 +93,12 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   public function onCreate(event:ScriptEvent) {}
 
   /**
+   * Called after a hot reload.
+   * This happens after all modules cache loaded!
+   */
+  public function onReload(event:ScriptEvent) {}
+
+  /**
    * Called when a module is destroyed.
    * This currently only happens when reloading modules with F5.
    */

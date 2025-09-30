@@ -72,6 +72,8 @@ class NoteKind implements INoteScriptedClass
     });
   }
 
+  public function onReload(event:ScriptEvent):Void {}
+
   public function onScriptEvent(event:ScriptEvent):Void {}
 
   public function onCreate(event:ScriptEvent):Void {}

@@ -80,6 +80,8 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     updatePosition(str);
   }
 
+  public function onReload(event:ScriptEvent):Void {}
+
   public function onScriptEvent(event:ScriptEvent):Void {};
 
   public function onCreate(event:ScriptEvent):Void {};

@@ -251,6 +251,8 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     add(cardGlow);
   }
 
+  public function onReload(event:ScriptEvent):Void {}
+
   public function onDestroy(event:ScriptEvent):Void {}
 
   public function onUpdate(event:UpdateScriptEvent):Void {}

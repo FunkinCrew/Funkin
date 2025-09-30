@@ -622,6 +622,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
   }
 
+  public function onReload(event:ScriptEvent):Void {}
+
   public function onPause(event:PauseScriptEvent):Void {};
 
   public function onResume(event:ScriptEvent):Void {};
