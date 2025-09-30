@@ -1149,11 +1149,13 @@ class PlayState extends MusicBeatSubState
     // Apply camera zoom + multipliers.
     if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
     {
-      cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
+      var lerpBumpRatio = 0.95;
+      lerpBumpRatio = 1.0 - Math.pow(lerpBumpRatio, FlxG.elapsed * 60); //Adapt it to the current fps
+      cameraBopMultiplier = FlxMath.lerp(cameraBopMultiplier, 1.0, lerpBumpRatio); // Lerp bop multiplier back to 1.0x
       var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
       if (!debugUnbindCameraZoom) FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
 
-      camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
+      camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHUDCameraZoom, lerpBumpRatio);
     }
 
     if (currentStage != null && currentStage.getBoyfriend() != null)
