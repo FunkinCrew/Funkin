@@ -322,12 +322,12 @@ class DebugBoundingState extends FlxState
         spriteSheetView.visible = true;
         offsetView.visible = false;
         offsetView.active = false;
-        offsetAnimationDropdown.visible = false;
+        offsetAnimationDropdown.hide();
       case ANIMATIONS:
         spriteSheetView.visible = false;
         offsetView.visible = true;
         offsetView.active = true;
-        offsetAnimationDropdown.visible = true;
+        offsetAnimationDropdown.show();
         offsetControls();
         mouseOffsetMovement();
     }
