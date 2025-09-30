@@ -184,6 +184,8 @@ class Main extends Sprite
 
   function initHaxeUI():Void
   {
+    // This has to come before Toolkit.init since locales get initialized there
+    haxe.ui.locale.LocaleManager.instance.autoSetLocale = false;
     // Calling this before any HaxeUI components get used is important:
     // - It initializes the theme styles.
     // - It scans the class path and registers any HaxeUI components.
