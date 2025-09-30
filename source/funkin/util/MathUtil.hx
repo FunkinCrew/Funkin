@@ -129,7 +129,8 @@ class MathUtil
   {
     if (deltaTime == 0) return base;
     if (base == target) return target;
-    return lerp(target, base, exp2(-deltaTime / halfLife));
+    var decayFactor = Math.pow(0.5, deltaTime / halfLife);
+    return lerp(base, target, 1.0 - decayFactor);
   }
 
   /**
@@ -154,7 +155,15 @@ class MathUtil
   {
     if (deltaTime == 0) return base;
     if (base == target) return target;
-    return lerp(target, base, Math.pow(precision, deltaTime / duration));
+    
+    // Compute per-second decay ratio
+    var perSecondRatio = 1.0 - Math.pow(precision, 1.0 / duration);
+
+    // Convert to frame-independent ratio for this deltaTime
+    var frameRatio = 1.0 - Math.pow(1.0 - perSecondRatio, deltaTime);
+
+    // Lerp in the correct direction
+    return lerp(base, target, frameRatio);
   }
 
   /**
