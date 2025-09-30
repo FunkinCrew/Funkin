@@ -2888,6 +2888,8 @@ class FreeplayState extends MusicBeatSubState
     var previewVolume:Float = 0.7;
     if (dj != null) previewVolume *= dj.getMusicPreviewMult();
 
+    clearPreviews();
+
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -2919,8 +2921,6 @@ class FreeplayState extends MusicBeatSubState
       instSuffix = (instSuffix != '') ? '-$instSuffix' : '';
       // trace('Attempting to play partial preview: ${previewSong.id}:${instSuffix}');
 
-      clearPreviews();
-
       FunkinSound.playMusic(previewSong.id,
         {
           startingVolume: 0.0,
@@ -2940,13 +2940,11 @@ class FreeplayState extends MusicBeatSubState
 
             var fadeStart:Float = (FlxG.sound.music.length / 1000) - 2;
 
-            previewTimers.push(new FlxTimer().start(fadeStart, function(_)
-            {
+            previewTimers.push(new FlxTimer().start(fadeStart, function(_) {
               FlxG.sound.music.fadeOut(2, 0);
             }));
 
-            previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / 1000, function(_)
-            {
+            previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / 1000, function(_) {
               playCurSongPreview();
             }));
           },
