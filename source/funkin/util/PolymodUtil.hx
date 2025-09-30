@@ -73,7 +73,7 @@ class PolymodUtil {
   }
 
   /**
-   * Returns a new HScript Printer instance.
+   * Returns a new `hscript.Printer` instance.
    *
    * Can be used to convert scripted class expressions into a readable string representation,
    * which is useful for debugging or inspecting scripted classes.
