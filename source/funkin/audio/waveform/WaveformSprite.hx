@@ -13,6 +13,8 @@ class WaveformSprite extends MeshRender
   static final DEFAULT_WIDTH:Float = 100.0;
   static final DEFAULT_HEIGHT:Float = 100.0;
 
+  public var iconId:String;
+
   /**
    * Set this to true to tell the waveform to rebuild itself.
    * Do this any time the data or drawable area of the waveform changes.
