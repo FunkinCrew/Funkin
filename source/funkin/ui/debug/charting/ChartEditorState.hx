@@ -6125,6 +6125,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
+    PlayStatePlaylist.reset();
+    
     // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
