@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.contextmenus;
 
 import haxe.ui.containers.menus.MenuItem;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.ui.debug.charting.commands.SnapNotesCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
@@ -10,6 +11,7 @@ import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/note.xml"))
 class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
 {
+  var contextmenuSnap:MenuItem;
   var contextmenuFlip:MenuItem;
   var contextmenuDelete:MenuItem;
 
@@ -26,6 +28,10 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
   public function initialize():Void
   {
     // NOTE: Remember to use commands here to ensure undo/redo works properly
+    contextmenuSnap.onClick = function(_) {
+      chartEditorState.performCommand(new SnapNotesCommand([data]));
+    }
+
     contextmenuFlip.onClick = function(_) {
       chartEditorState.performCommand(new FlipNotesCommand([data]));
     }

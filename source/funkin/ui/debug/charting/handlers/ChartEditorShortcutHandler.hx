@@ -22,6 +22,9 @@ class ChartEditorShortcutHandler
     state.menubarItemCopy.shortcutText = ctrlOrCmd('C');
     state.menubarItemPaste.shortcutText = ctrlOrCmd('V');
 
+    state.menubarItemSnap.shortcutText = shift('N');
+    state.menubarItemFlipNotes.shortcutText = ctrlOrCmd('F');
+
     state.menubarItemSelectAllNotes.shortcutText = ctrlOrCmd('A');
     state.menubarItemSelectAllEvents.shortcutText = ctrlOrCmd(alt('A'));
     state.menubarItemSelectInverse.shortcutText = ctrlOrCmd('I');

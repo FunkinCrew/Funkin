@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.contextmenus;
 
 import haxe.ui.containers.menus.MenuItem;
 import funkin.data.song.SongData.SongEventData;
+import funkin.ui.debug.charting.commands.SnapEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -23,6 +24,10 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
 
   public function initialize()
   {
+    contextmenuSnap.onClick = function(_) {
+      chartEditorState.performCommand(new SnapEventsCommand([data]));
+    }
+
     contextmenuEdit.onClick = function(_) {
       chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
     }
