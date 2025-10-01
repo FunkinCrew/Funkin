@@ -14,12 +14,15 @@ class SnapEventsCommand implements ChartEditorCommand
   var events:Array<SongEventData>;
   var snappedEvents:Array<SongEventData>;
 
-  public function new(events:Array<SongEventData>)
+  var snapRatio:Float;
+
+  public function new(events:Array<SongEventData>, snapRatio:Float)
   {
     // Clone the events to prevent editing from affecting the history.
     this.events = [for (event in events) event.clone()];
 
     this.snappedEvents = [];
+    this.snapRatio = snapRatio;
   }
 
   public function execute(state:ChartEditorState):Void
@@ -36,7 +39,7 @@ class SnapEventsCommand implements ChartEditorCommand
       var resultEvent = event.clone();
 
       var targetStep:Float = Conductor.instance.getTimeInSteps(resultEvent.time);
-      var targetSnappedStep:Float = Math.round(targetStep / state.noteSnapRatio) * state.noteSnapRatio;
+      var targetSnappedStep:Float = Math.round(targetStep / snapRatio) * snapRatio;
       var targetSnappedMs:Float = Conductor.instance.getStepTimeInMs(targetSnappedStep);
 
       if (targetSnappedMs != resultEvent.time) resultEvent.time = targetSnappedMs.clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps));

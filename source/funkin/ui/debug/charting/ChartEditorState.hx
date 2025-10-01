@@ -2092,6 +2092,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemDelete:MenuItem;
 
   /**
+   * The `Edit -> Snap Selection` menu item.
+   */
+  var menubarItemSnap:MenuItem;
+
+  /**
    * The `Edit -> Delete Stacked Notes` menu item.
    */
   var menubarItemDeleteStacked:MenuItem;
@@ -3524,6 +3529,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         performCommand(new RemoveStackedNotesCommand(currentNoteSelection.length > 0 ? currentNoteSelection : null));
+      }
+    };
+
+    menubarItemSnap.onClick = _ -> {
+      if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
+      {
+        performCommand(new SnapItemsCommand(currentNoteSelection, currentEventSelection, noteSnapRatio));
+      }
+      else if (currentNoteSelection.length > 0)
+      {
+        performCommand(new SnapNotesCommand(currentNoteSelection, noteSnapRatio));
+      }
+      else if (currentEventSelection.length > 0)
+      {
+        performCommand(new SnapEventsCommand(currentEventSelection, noteSnapRatio));
       }
     };
 
@@ -6698,15 +6718,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
       {
-        performCommand(new SnapItemsCommand(currentNoteSelection, currentEventSelection));
+        performCommand(new SnapItemsCommand(currentNoteSelection, currentEventSelection, noteSnapRatio));
       }
       else if (currentNoteSelection.length > 0)
       {
-        performCommand(new SnapNotesCommand(currentNoteSelection));
+        performCommand(new SnapNotesCommand(currentNoteSelection, noteSnapRatio));
       }
       else if (currentEventSelection.length > 0)
       {
-        performCommand(new SnapEventsCommand(currentEventSelection));
+        performCommand(new SnapEventsCommand(currentEventSelection, noteSnapRatio));
       }
     }
 

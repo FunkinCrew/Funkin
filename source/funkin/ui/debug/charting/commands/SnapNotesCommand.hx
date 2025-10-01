@@ -13,12 +13,15 @@ class SnapNotesCommand implements ChartEditorCommand
   var notes:Array<SongNoteData>;
   var snappedNotes:Array<SongNoteData>;
 
-  public function new(notes:Array<SongNoteData>)
+  var snapRatio:Float;
+
+  public function new(notes:Array<SongNoteData>, snapRatio:Float)
   {
     // Clone the notes to prevent editing from affecting the history.
     this.notes = [for (note in notes) note.clone()];
 
     this.snappedNotes = [];
+    this.snapRatio = snapRatio;
   }
 
   public function execute(state:ChartEditorState):Void
@@ -33,7 +36,7 @@ class SnapNotesCommand implements ChartEditorCommand
       var resultNote = note.clone();
 
       var targetStep:Float = Conductor.instance.getTimeInSteps(resultNote.time);
-      var targetSnappedStep:Float = Math.round(targetStep / state.noteSnapRatio) * state.noteSnapRatio;
+      var targetSnappedStep:Float = Math.round(targetStep / snapRatio) * snapRatio;
       var targetSnappedMs:Float = Conductor.instance.getStepTimeInMs(targetSnappedStep);
 
       if (targetSnappedMs != resultNote.time) resultNote.time = targetSnappedMs.clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps));
