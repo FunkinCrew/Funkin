@@ -275,10 +275,21 @@ class PlayState extends MusicBeatSubState
   public var currentCameraZoom:Float = FlxCamera.defaultZoom;
 
   /**
+   * Zoom we need by using ZoomCameraSongEvent.
+   */
+  public var requiredZoom:Float = FlxCamera.defaultZoom;
+
+  /**
    * Multiplier for currentCameraZoom for camera bops.
    * Lerped back to 1.0x every frame.
    */
   public var cameraBopMultiplier:Float = 1.0;
+
+  /**
+   * Multiplier for cameras zooming speed.
+   * Used in zoom-connected lerps.
+   */
+  public var cameraZoomingDecay:Float = 1.0;
 
   /**
    * Default camera zoom for the current stage.
@@ -312,7 +323,7 @@ class PlayState extends MusicBeatSubState
    * Need to make this a multiplier later. Just shoving in 0.015 for now so it doesn't break.
    * @default `3.0%`
    */
-  public var hudCameraZoomIntensity:Float = 0.015 * 2.0;
+  public var hudCameraZoomIntensity:Float = Constants.DEFAULT_HUD_BOP_INTENSITY;
 
   /**
    * How many beats (quarter notes) between camera zooms.
@@ -1032,7 +1043,7 @@ class PlayState extends MusicBeatSubState
 
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
-      hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
+      hudCameraZoomIntensity = Constants.DEFAULT_HUD_BOP_INTENSITY;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
       health = Constants.HEALTH_STARTING;
@@ -1149,11 +1160,17 @@ class PlayState extends MusicBeatSubState
     // Apply camera zoom + multipliers.
     if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
     {
-      cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
+      cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, Math.exp(-elapsed * 4.6875 * cameraZoomingDecay)); // Lerp bop multiplier back to 1.0x
+      if (requiredZoom != currentCameraZoom
+        && (cameraZoomTween == null || !cameraZoomTween.active)) currentCameraZoom = FlxMath.lerp(requiredZoom, currentCameraZoom,
+          Math.exp(-elapsed * 4.6875 * cameraZoomingDecay)); // Lerp bop multiplier back to 1.0x
+      else
+        requiredZoom = currentCameraZoom;
+
       var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
       if (!debugUnbindCameraZoom) FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
 
-      camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
+      camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, Math.exp(-elapsed * 4.6875 * cameraZoomingDecay));
     }
 
     if (currentStage != null && currentStage.getBoyfriend() != null)
@@ -1789,7 +1806,6 @@ class PlayState extends MusicBeatSubState
         resyncVocals();
       }
     }
-
     // Only bop camera if zoom level is below 135%
     if (Preferences.zoomCamera
       && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
@@ -1797,9 +1813,10 @@ class PlayState extends MusicBeatSubState
       && (Conductor.instance.currentBeat + cameraZoomRateOffset) % cameraZoomRate == 0)
     {
       // Set zoom multiplier for camera bop.
-      cameraBopMultiplier = cameraBopIntensity;
+      // cameraBopMultiplier =	cameraBopIntensity;
+      cameraBopMultiplier += (cameraBopIntensity - 1.0);
       // HUD camera zoom still uses old system. To change. (+3%)
-      camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
+      camHUD.zoom += (hudCameraZoomIntensity - 1.0);
     }
     // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
 
@@ -1956,7 +1973,7 @@ class PlayState extends MusicBeatSubState
   {
     if (isMinimalMode) return;
     // Apply camera zoom level from stage data.
-    currentCameraZoom = stageZoom;
+    requiredZoom = currentCameraZoom = stageZoom;
     FlxG.camera.zoom = currentCameraZoom;
 
     // Reset bop multiplier.
