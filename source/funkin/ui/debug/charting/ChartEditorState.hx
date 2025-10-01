@@ -988,9 +988,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var noteTooltipsDirty:Bool = true;
 
   /**
-   * Whether the selected charactesr have been modified and the health icons need to be updated.
+   * Whether the selected characters have been modified and the health icons need to be updated.
    */
   var healthIconsDirty:Bool = true;
+
+  /**
+   * Whether the waveforms were modified and need to be updated.
+   */
+  var waveformsDirty:Bool = false;
 
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
@@ -3623,6 +3628,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handlePlaybar();
     handleNotePreview();
     handleHealthIcons();
+    handleWaveforms();
 
     handleFileKeybinds();
     handleViewKeybinds();
@@ -5855,6 +5861,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         buttonSelectOpponent.text = _charIconData?.name ?? 'Opponent';
       }
+      waveformsDirty = true;
       healthIconsDirty = false;
       _charIconData = null;
     }
@@ -5863,8 +5870,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (healthIconBF != null)
     {
       // Base X position to the right of the grid.
-      var xOffset = 45 - (healthIconBF.width / 2);
-      healthIconBF.x = (gridTiledSprite == null) ? (0) : (GRID_X_POS + gridTiledSprite.width + xOffset);
+      healthIconBF.x = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width);
       var yOffset = 30 - (healthIconBF.height / 2);
       healthIconBF.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset;
     }
@@ -5872,11 +5878,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Visibly center the Dad health icon.
     if (healthIconDad != null)
     {
-      var xOffset = 75 + (healthIconDad.width / 2);
-      healthIconDad.x = (gridTiledSprite == null) ? (0) : (GRID_X_POS - xOffset);
+      healthIconDad.x = (gridTiledSprite == null) ? (0) : (measureTicks.x - healthIconDad.width);
       var yOffset = 30 - (healthIconDad.height / 2);
       healthIconDad.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset;
     }
+  }
+
+  /**
+   * Handle waveforms aligning based on the health icons position.
+   */
+  function handleWaveforms()
+  {
+    if (!waveformsDirty) return;
+
+    for (waveform in audioWaveforms.members)
+    {
+      waveform.x = switch (waveform.iconId)
+      {
+        case BF: healthIconBF != null ? healthIconBF.x : 840 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+        case DAD: healthIconDad != null ? healthIconDad.x : 360 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+        default: 0;
+      }
+    }
+
+    waveformsDirty = false;
   }
 
   /**
