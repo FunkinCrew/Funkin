@@ -27,7 +27,7 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
    *
    * First argument is the FNFC file path.
    */
-  public static var onFNCOpen:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+  public static var onFNFCOpen:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
   /**
    * Initializes the callback utility.

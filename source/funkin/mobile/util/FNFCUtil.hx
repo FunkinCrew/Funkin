@@ -15,19 +15,19 @@ import flixel.util.FlxSignal;
  */
 class FNFCUtil
 {
-  public static var onFNCOpen:FlxTypedSignal<String->Void>;
+  public static var onFNFCOpen:FlxTypedSignal<String->Void>;
 
   public static function init():Void
   {
-    onFNCOpen = new FlxTypedSignal<String->Void>();
+    onFNFCOpen = new FlxTypedSignal<String->Void>();
 
     #if ios
     FlxG.stage.window.onDropFile.add(function(_) {
       final url = queryFNFC();
-      if (url != null) onFNCOpen.dispatch(getFNFCFromURL(url));
+      if (url != null) onFNFCOpen.dispatch(getFNFCFromURL(url));
     });
     #elseif android
-    CallbackUtil.onFNCOpen.add(onFNCOpen.dispatch);
+    CallbackUtil.onFNFCOpen.add(onFNFCOpen.dispatch);
     #end
 
     final fnfcFile:String = queryFNFC();

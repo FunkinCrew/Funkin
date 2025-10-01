@@ -57,7 +57,7 @@ public class FNFCExtension extends Extension
 
           if (doCallback)
           {
-            CallbackUtil.callMethod("onFNCOpen", lastFNFC);
+            CallbackUtil.callMethod("onFNFCOpen", lastFNFC);
           }
         }
         catch (IOException e)

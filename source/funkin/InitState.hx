@@ -37,7 +37,7 @@ import funkin.util.macro.MacroUtil;
 import funkin.util.TrackerUtil;
 import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
-import funkin.ui.debug.ChartPlaytestState;
+import funkin.ui.debug.playtest.ChartPlaytestMenu;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -392,26 +392,23 @@ class InitState extends FlxState
           fnfsTargetPath: params.stage.stagePath,
         }));
     }
-    #if sys
     else if (params.song.shouldLoadSong && params.song.songPath != null)
     {
-      FlxG.switchState(() -> new ChartPlaytestState(
-        {
-          fnfcFilePath: params.song.songPath,
-        }));
+      FlxG.switchState(() -> new ChartPlaytestMenu(params.song.songPath));
     }
     else
     {
       // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       #if mobile
+      funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(filePath:String) {
+        openSubState(new ChartPlaytestMenu(filePath));
+      });
+
       final fnfcFile = funkin.mobile.util.FNFCUtil.queryFNFC();
       if (fnfcFile != null)
       {
         trace('launching FNFC from $fnfcFile');
-        FlxG.switchState(() -> new ChartPlaytestState(
-          {
-            fnfcFilePath: fnfcFile,
-          }));
+        FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
       }
       else
       {
@@ -421,13 +418,6 @@ class InitState extends FlxState
       FlxG.switchState(() -> new TitleState());
       #end
     }
-    #else
-    else
-    {
-      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-      FlxG.switchState(() -> new TitleState());
-    }
-    #end
   }
 
   /**
