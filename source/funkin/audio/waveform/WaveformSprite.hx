@@ -2,6 +2,7 @@ package funkin.audio.waveform;
 
 import funkin.graphics.rendering.MeshRender;
 import flixel.util.FlxColor;
+import funkin.play.character.BaseCharacter.CharacterType;
 
 /**
  * A sprite which displays the waveform of audio data.
@@ -16,6 +17,8 @@ class WaveformSprite extends MeshRender
   static final DEFAULT_Y:Float = 0.0;
   static final DEFAULT_WIDTH:Float = 100.0;
   static final DEFAULT_HEIGHT:Float = 100.0;
+
+  public var iconId:CharacterType;
 
   /**
    * Set this to true to tell the waveform to rebuild itself.
