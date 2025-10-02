@@ -143,11 +143,6 @@ class TitleState extends MusicBeatState
     textGroup = new FlxGroup();
 
     blackScreen = bg.clone();
-    if (credGroup != null)
-    {
-      credGroup.add(blackScreen);
-      credGroup.add(textGroup);
-    }
 
     ngSpr = new FlxSprite(0, FlxG.height * 0.52);
 
@@ -169,8 +164,13 @@ class TitleState extends MusicBeatState
       ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
     }
 
-    add(ngSpr);
     ngSpr.visible = false;
+    if (credGroup != null)
+    {
+      credGroup.add(blackScreen);
+      credGroup.add(ngSpr);
+      credGroup.add(textGroup);
+    }
 
     ngSpr.updateHitbox();
     ngSpr.screenCenter(X);
