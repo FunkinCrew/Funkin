@@ -130,7 +130,16 @@ class Main extends Sprite
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.init();
+    Handle.initAsync(function(success:Bool):Void {
+      if (success)
+      {
+        trace('[HXVLC] LibVLC instance initialized!');
+      }
+      else
+      {
+        trace('[HXVLC] LibVLC instance failed to initialize!');
+      }
+    });
     #end
 
     // Don't call anything from the preferences until the save is loaded!
