@@ -38,6 +38,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
+import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
@@ -511,6 +512,11 @@ class PlayState extends MusicBeatSubState
    * Emma says the image is slightly skewed so I'm leaving it as an image instead of a `createGraphic`.
    */
   public var healthBarBG:FunkinSprite;
+
+  /**
+   * A sprite group for subtitle display.
+   */
+  public var subtitles:Null<Subtitles>;
 
   /**
    * The health icon representing the player.
@@ -1907,10 +1913,15 @@ class PlayState extends MusicBeatSubState
     scoreText.zIndex = 802;
     add(scoreText);
 
+    subtitles = new Subtitles(healthBarBG.y * 0.85);
+    subtitles.zIndex = 10000;
+    add(subtitles);
+
     // Move the health bar to the HUD camera.
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
+    subtitles.cameras = [camHUD];
   }
 
   /**
@@ -2471,6 +2482,13 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.pause();
     FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
+
+    var subtitlesFile = 'songs/${currentSong.id}/subtitles/song-lyrics';
+    if (currentVariation != Constants.DEFAULT_VARIATION)
+    {
+      subtitlesFile += '-${currentVariation}';
+    }
+    if (subtitles != null) subtitles.assignSubtitles(Paths.json(subtitlesFile), FlxG.sound.music);
 
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;
