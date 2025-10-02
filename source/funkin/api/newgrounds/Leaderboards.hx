@@ -121,7 +121,7 @@ class LeaderboardsSandboxed
     return Leaderboard.getLeaderboardByLevel(levelId);
   }
 
-  public function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
+  public static function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
   {
     Leaderboards.requestScores(leaderboard, params);
   }
