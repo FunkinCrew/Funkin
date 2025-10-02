@@ -1717,7 +1717,8 @@ class FreeplayState extends MusicBeatSubState
 
   function handleInputs(elapsed:Float):Void
   {
-    if (!controls.active) return;
+    @:privateAccess
+    if (!controls.active || (stickerSubState?.switchingState ?? false)) return;
 
     #if FEATURE_TOUCH_CONTROLS
     handleTouchCapsuleClick();
@@ -2119,7 +2120,8 @@ class FreeplayState extends MusicBeatSubState
 
   function goBack():Void
   {
-    if (!controls.active) return;
+    @:privateAccess
+    if (!controls.active || (stickerSubState?.switchingState ?? false)) return;
     backTransitioning = true;
     #if FEATURE_TOUCH_CONTROLS
     if (backButton != null)
