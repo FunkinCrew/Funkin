@@ -89,14 +89,6 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     analyzer = null;
   }
 
-  var visTimer:Float = -1;
-  var visTimeMax:Float = 1 / 30;
-
-  override function update(elapsed:Float)
-  {
-    super.update(elapsed);
-  }
-
   static inline function min(x:Int, y:Int):Int
   {
     return x > y ? y : x;

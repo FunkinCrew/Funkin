@@ -11,7 +11,6 @@ import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
-import openfl.system.System;
 import funkin.FunkinMemory;
 
 using StringTools;

@@ -224,9 +224,4 @@ class DifficultyDot extends FlxSpriteGroup
     fadeTween = FlxTween.tween(dot, {alpha: 0}, 0.25, {ease: FlxEase.quartOut});
     pulse.alpha = 0;
   }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-  }
 }

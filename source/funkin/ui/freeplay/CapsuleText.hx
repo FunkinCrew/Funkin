@@ -214,9 +214,4 @@ class CapsuleText extends FlxSpriteGroup
     }
     flickerState = !flickerState;
   }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-  }
 }

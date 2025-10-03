@@ -1,15 +1,11 @@
 package funkin.play.notes;
 
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.graphics.frames.FlxFramesCollection;
-import funkin.util.assets.FlxAnimationUtil;
 import flixel.FlxSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 
 class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 {
-  static final FRAMERATE_DEFAULT:Int = 24;
-
   public var holdNote:SustainTrail;
 
   public var glow:FlxSprite;
@@ -40,11 +36,6 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     {
       trace('WARNING: NoteHoldCover failed to initialize all animations.');
     }
-  }
-
-  public override function update(elapsed):Void
-  {
-    super.update(elapsed);
   }
 
   public function playStart():Void

@@ -17,7 +17,6 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.IRegistryEntry;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageData.StageDataCharacter;
-import funkin.data.stage.StageRegistry;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
 

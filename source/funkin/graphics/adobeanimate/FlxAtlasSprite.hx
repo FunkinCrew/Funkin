@@ -204,11 +204,6 @@ class FlxAtlasSprite extends FlxAnimate
     }
   }
 
-  override public function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-  }
-
   /**
    * Returns true if the animation has finished playing.
    * @return Whether the animation has finished playing.
