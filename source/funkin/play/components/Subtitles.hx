@@ -75,6 +75,8 @@ class Subtitles extends FlxSpriteGroup
   {
     visible = !hide;
 
+    if (subtitleText.text == text) return;
+
     subtitleText.text = text;
 
     background.makeGraphic(Math.ceil(subtitleText.width), Math.ceil(subtitleText.height), FlxColor.BLACK, true);
