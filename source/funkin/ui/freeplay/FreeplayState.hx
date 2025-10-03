@@ -511,7 +511,8 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
 
-    for (diffId in Constants.DEFAULT_DIFFICULTY_LIST_FULL)
+    var allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
+    for (diffId in allDifficulties)
     {
       var diffSprite:DifficultySprite = new DifficultySprite(diffId);
       diffSprite.visible = diffId == Constants.DEFAULT_DIFFICULTY;
@@ -519,9 +520,9 @@ class FreeplayState extends MusicBeatSubState
       grpDifficulties.add(diffSprite);
     }
 
-    for (i in 0...Constants.DEFAULT_DIFFICULTY_LIST_FULL.length)
+    for (i in 0...allDifficulties.length)
     {
-      var dot:DifficultyDot = new DifficultyDot(Constants.DEFAULT_DIFFICULTY_LIST_FULL[i], i);
+      var dot:DifficultyDot = new DifficultyDot(allDifficulties[i], i);
       difficultyDots.add(dot);
     }
 
@@ -806,8 +807,9 @@ class FreeplayState extends MusicBeatSubState
         albumRoll.skipIntro();
         albumRoll.showStars();
       }
+      var allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
 
-      refreshDots(5, Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty), Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty));
+      refreshDots(5, allDifficulties.indexOf(currentDifficulty), allDifficulties.indexOf(currentDifficulty));
       fadeDots(true);
 
       #if FEATURE_TOUCH_CONTROLS

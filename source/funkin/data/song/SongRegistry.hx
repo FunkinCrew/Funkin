@@ -563,6 +563,8 @@ using funkin.data.song.migrator.SongDataMigrator;
       }
     }
 
+    allDifficulties.sort(funkin.util.SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
+
     if (allDifficulties.length == 0)
     {
       trace('  WARNING '.bold().bg_yellow() + ' No difficulties found. Returning default difficulty list.');
