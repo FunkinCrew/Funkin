@@ -2488,7 +2488,7 @@ class PlayState extends MusicBeatSubState
     {
       subtitlesFile += '-${currentVariation}';
     }
-    if (subtitles != null) subtitles.assignSubtitles(Paths.json(subtitlesFile), FlxG.sound.music);
+    if (subtitles != null) subtitles.assignSubtitles(subtitlesFile, FlxG.sound.music);
 
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;

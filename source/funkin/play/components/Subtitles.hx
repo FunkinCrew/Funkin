@@ -5,33 +5,18 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.sound.FlxSound;
 import flixel.FlxSprite;
-import openfl.text.TextField;
-import openfl.text.TextFormat;
-import haxe.Json;
-
-typedef SubtitlesData =
-{
-  locales:Array<Map<String, Array<SubtitlesLineData>>>
-}
-
-typedef SubtitlesLineData =
-{
-  time:Float,
-  length:Float,
-  line:String
-}
+import funkin.util.SRTUtil.SubtitleEntry;
+import funkin.util.SRTUtil.SRTParser;
 
 /**
  * A Sprite Group for displaying in-game subtitles.
  */
 class Subtitles extends FlxSpriteGroup
 {
-  public static final curLocale:String = 'english';
-
   var subtitleText:SubtitlesText;
   var background:FlxSprite;
 
-  var subtitlesData:Array<SubtitlesLineData>;
+  var subtitlesData:Array<SubtitleEntry>;
   var assignedSound:FlxSound;
 
   public function new(y:Float = 0)
@@ -42,7 +27,7 @@ class Subtitles extends FlxSpriteGroup
     background.alpha = 0.5;
     add(background);
 
-    subtitleText = new SubtitlesText(0, 0, 20, Paths.font('vcr.ttf'));
+    subtitleText = new SubtitlesText(0, 0, 30, Paths.font('vcr.ttf'));
     add(subtitleText);
 
     setText('', true);
@@ -57,9 +42,9 @@ class Subtitles extends FlxSpriteGroup
     var foundValidLine:Bool = false;
     for (data in subtitlesData)
     {
-      if (assignedSound.time >= data.time && assignedSound.time <= data.time + data.length)
+      if (assignedSound.time >= data.start && assignedSound.time <= data.end)
       {
-        setText(data.line);
+        setText(data.text);
 
         foundValidLine = true;
       }
@@ -70,28 +55,18 @@ class Subtitles extends FlxSpriteGroup
 
   /**
    * A function which loads the subtitles.
-   * @param filePath A path to the subtitles data file.
+   * @param filePath A path to the srt file.
    * @param sound The sound to assign to the current subtitles.
    */
   public function assignSubtitles(filePath:String, sound:FlxSound):Void
   {
-    trace(filePath);
+    setText('', true);
 
-    if (!Assets.exists(filePath) || sound == null) return;
+    if (!Assets.exists(Paths.srt(filePath)) || sound == null) return;
 
-    final data:SubtitlesData = Json.parse(Assets.getText(filePath));
+    subtitlesData = SRTParser.parseFromFile(filePath);
 
-    if (data == null) return;
-
-    for (locale in data.locales)
-    {
-      final subtitlesLinesData = locale.get(curLocale);
-      if (subtitlesLinesData != null)
-      {
-        subtitlesData = subtitlesLinesData;
-        break;
-      }
-    }
+    if (subtitlesData == null) return;
 
     assignedSound = sound;
   }
@@ -113,9 +88,9 @@ class Subtitles extends FlxSpriteGroup
  */
 class SubtitlesText extends FlxText
 {
-  public function new(x:Float = 0, y:Float = 0, size:Float, font:String)
+  public function new(x:Float = 0, y:Float = 0, size:Int, font:String)
   {
-    super(x, y, 0, '', 20);
+    super(x, y, 0, '', size);
 
     this.font = font;
     this.size = size;
