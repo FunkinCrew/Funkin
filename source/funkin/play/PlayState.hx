@@ -3059,6 +3059,7 @@ class PlayState extends MusicBeatSubState
             targetSongId: currentSong.id,
             targetSongDifficulty: currentDifficulty,
             targetSongVariation: currentVariation,
+            targetSongPosition: Conductor.instance.songPosition
           }));
       }
     }
