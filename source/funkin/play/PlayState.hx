@@ -544,6 +544,11 @@ class PlayState extends MusicBeatSubState
   public var camHUD:FlxCamera;
 
   /**
+   * The camera which contains, and controls visibility of, the subtitles.
+   */
+  public var camSubtitles:FlxCamera;
+
+  /**
    * The camera which contains, and controls visibility of, the stage and characters.
    */
   public var camGame:FlxCamera;
@@ -728,6 +733,7 @@ class PlayState extends MusicBeatSubState
     // Cameras
     camGame = new FunkinCamera('playStateCamGame');
     camHUD = new FlxCamera();
+    camSubtitles = new FlxCamera();
     camCutscene = new FlxCamera();
     camCutouts = new FlxCamera();
     camPause = new FlxCamera();
@@ -1858,6 +1864,7 @@ class PlayState extends MusicBeatSubState
   {
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
+    camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutouts.setPosition((FlxG.width - FlxG.initialWidth) / 2, (FlxG.height - FlxG.initialHeight) / 2);
     camCutouts.setSize(FlxG.initialWidth, FlxG.initialHeight);
@@ -1866,6 +1873,7 @@ class PlayState extends MusicBeatSubState
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
+    FlxG.cameras.add(camSubtitles, false);
     FlxG.cameras.add(camCutscene, false);
     FlxG.cameras.add(camCutouts, false);
     FlxG.cameras.add(camPause, false);
@@ -1921,7 +1929,7 @@ class PlayState extends MusicBeatSubState
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
-    subtitles.cameras = [camHUD];
+    subtitles.cameras = [camSubtitles];
   }
 
   /**
