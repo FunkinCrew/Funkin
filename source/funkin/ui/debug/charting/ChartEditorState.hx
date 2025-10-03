@@ -2377,6 +2377,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
       this.loadSongAsTemplate(params.targetSongId, targetSongDifficulty, targetSongVariation);
+
+      // Set the scroll position to the current song time.
+      scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
+      currentScrollEase = scrollPositionInPixels;
+      moveSongToScrollPosition();
     }
     else
     {
@@ -6126,7 +6131,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     PlayStatePlaylist.reset();
-    
+
     // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
@@ -7060,6 +7065,11 @@ typedef ChartEditorParams =
    * If non-null, load this variation immediately instead of the default variation.
    */
   var ?targetSongVariation:String;
+
+  /**
+   * If non-null, set this as the song position immediately instead of the default song position.
+   */
+  var ?targetSongPosition:Float;
 };
 
 /**
