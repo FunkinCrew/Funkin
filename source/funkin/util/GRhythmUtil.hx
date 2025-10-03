@@ -44,7 +44,7 @@ class GRhythmUtil
       start: note.strumTime - Constants.HIT_WINDOW_MS,
       center: note.strumTime,
       end: note.strumTime + Constants.HIT_WINDOW_MS
-    };
+    }
   }
 
   /**
@@ -65,7 +65,7 @@ class GRhythmUtil
 
     if (note.hasMissed || note.hasBeenHit)
     {
-      return {botplayHit: false, cont: false };
+      return {botplayHit: false, cont: false }
     }
 
     // Treat notes as not in window if they are greater or less than the hit window
@@ -75,12 +75,12 @@ class GRhythmUtil
       note.hasMissed = true;
       note.mayHit = false;
       if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
-      return {botplayHit: false, cont: true};
+      return {botplayHit: false, cont: true}
     }
 
     // Check if we're not being controlled (ie, botplay/opponent)
     if (!isControlled && inUseConductor.songPosition >= windowCenter)
-      return {botplayHit: true, cont: true };
+      return {botplayHit: true, cont: true }
 
     if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
 
@@ -89,14 +89,14 @@ class GRhythmUtil
       note.tooEarly = false;
       note.hasMissed = false;
       note.mayHit = true;
-      return {botplayHit: false, cont: true };
+      return {botplayHit: false, cont: true }
     }
 
     note.tooEarly = true;
     note.mayHit = false;
     note.hasMissed = false;
 
-    return {botplayHit: false, cont: true };
+    return {botplayHit: false, cont: true }
   }
   /**
    * Get the y-position of a note based on its strum time.

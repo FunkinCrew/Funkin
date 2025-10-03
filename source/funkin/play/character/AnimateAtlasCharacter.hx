@@ -5,7 +5,6 @@ import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame;
 import flixel.graphics.frames.FlxFramesCollection;
-import flixel.math.FlxMath;
 import flixel.math.FlxPoint.FlxCallbackPoint;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;

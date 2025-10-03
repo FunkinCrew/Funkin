@@ -1,7 +1,6 @@
 package funkin.util;
 
 import flixel.tweens.FlxTween;
-import flixel.math.FlxMath;
 #if FEATURE_HAPTICS
 import extension.haptics.Haptic;
 #end
@@ -116,7 +115,7 @@ class HapticUtil
       duration: Constants.DEFAULT_VIBRATION_DURATION,
       amplitude: Constants.DEFAULT_VIBRATION_AMPLITUDE,
       sharpness: Constants.DEFAULT_VIBRATION_SHARPNESS
-    };
+    }
   }
 
   static function get_hapticsAvailable():Bool

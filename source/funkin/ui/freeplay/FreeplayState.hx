@@ -3358,7 +3358,7 @@ typedef FreeplayStateParams =
   ?character:String,
   ?fromCharSelect:Bool,
   ?fromResults:FromResultsParams,
-};
+}
 
 /**
  * A set of parameters for transitioning to the FreeplayState from the ResultsState.
@@ -3389,7 +3389,7 @@ typedef FromResultsParams =
    * The difficulty ID to play the animation on.
    */
   var difficultyId:String;
-};
+}
 
 /**
  * The map storing information about the exit movers.

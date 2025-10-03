@@ -13,7 +13,7 @@ class SaveDataMigrator
    */
   public static function migrate(inputData:Dynamic):Save
   {
-    var version:Null<thx.semver.Version> = VersionUtil.parseVersion(inputData?.version ?? null);
+    var version:Null<Version> = VersionUtil.parseVersion(inputData?.version ?? null);
 
     if (version == null)
     {

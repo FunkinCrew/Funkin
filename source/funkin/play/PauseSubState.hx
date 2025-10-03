@@ -37,7 +37,7 @@ typedef PauseSubStateParams =
    * Which mode to start in. Dictates what entries are displayed.
    */
   ?mode:PauseMode,
-};
+}
 
 /**
  * The menu displayed when the Play State is paused.
@@ -1204,4 +1204,4 @@ typedef PauseMenuEntry =
    * The text object currently displaying this entry.
    */
   var ?sprite:AtlasText;
-};
+}

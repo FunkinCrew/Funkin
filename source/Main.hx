@@ -7,6 +7,7 @@ import flixel.FlxState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.PlayerSettings;
+import funkin.modding.PolymodHandler;
 import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
@@ -18,8 +19,6 @@ import hxvlc.util.Handle;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
-import openfl.media.Video;
-import openfl.net.NetStream;
 import funkin.util.WindowUtil;
 
 /**
@@ -63,7 +62,7 @@ class Main extends Sprite
 
     // Load mods to override assets.
     // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
-    funkin.modding.PolymodHandler.loadAllMods();
+    PolymodHandler.loadAllMods();
 
     if (stage != null)
     {

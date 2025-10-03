@@ -15,7 +15,7 @@ class AnimationDataUtil
       flipY: data.flipY,
       frameRate: data.frameRate,
       frameIndices: data.frameIndices
-    };
+    }
   }
 
   /**
@@ -39,7 +39,7 @@ class AnimationDataUtil
       flipY: data.flipY,
       frameRate: data.frameRate,
       frameIndices: data.frameIndices
-    };
+    }
   }
 
   public static function toUnnamedArray(data:Array<AnimationData>):Array<UnnamedAnimationData>

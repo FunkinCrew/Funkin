@@ -11,7 +11,6 @@ import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
-import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
@@ -36,7 +35,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.api.newgrounds.Medals;
 #end
 import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
 import funkin.util.HapticUtil;
 
 class CharSelectSubState extends MusicBeatSubState
@@ -1283,4 +1281,4 @@ class CharSelectSubState extends MusicBeatSubState
 typedef CharSelectSubStateParams =
 {
   ?character:String, // ?fromFreeplaySelect:Bool,
-};
+}

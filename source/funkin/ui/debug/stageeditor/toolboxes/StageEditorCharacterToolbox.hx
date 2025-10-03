@@ -7,7 +7,6 @@ import funkin.data.character.CharacterData;
 import funkin.util.SortUtil;
 import funkin.save.Save;
 import haxe.ui.components.Button;
-import haxe.ui.components.Slider;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.core.Screen;
 import flixel.tweens.FlxTween;

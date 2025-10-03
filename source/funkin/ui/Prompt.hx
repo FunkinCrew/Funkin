@@ -85,7 +85,7 @@ class Prompt extends flixel.FlxSubState
         createButtonsHelper(yes, no);
       case None:
         buttons.exists = false;
-    };
+    }
   }
 
   function createButtonsHelper(yes:String, ?no:String)

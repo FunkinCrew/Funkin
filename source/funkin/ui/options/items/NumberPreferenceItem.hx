@@ -3,8 +3,10 @@ package funkin.ui.options.items;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
+#if mobile
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+#end
 
 /**
  * Preference item that allows the player to pick a value between min and max

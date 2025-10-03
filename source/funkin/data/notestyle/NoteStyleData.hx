@@ -1,6 +1,5 @@
 package funkin.data.notestyle;
 
-import haxe.DynamicAccess;
 import funkin.data.animation.AnimationData;
 
 /**
@@ -279,7 +278,7 @@ typedef NoteStyleData_NoteSplash =
 
   @:optional
   var rightSplashes:Array<UnnamedAnimationData>;
-};
+}
 
 typedef NoteStyleData_HoldNoteCover =
 {
@@ -302,7 +301,7 @@ typedef NoteStyleData_HoldNoteCover =
 
   @:optional
   var right:NoteStyleData_HoldNoteCoverDirectionData;
-};
+}
 
 typedef NoteStyleData_HoldNoteCoverDirectionData =
 {

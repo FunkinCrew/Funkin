@@ -452,7 +452,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
-    return {fileName: entryFilePath, contents: rawJson};
+    return {fileName: entryFilePath, contents: rawJson}
   }
 
   function loadMusicDataFile(id:String, ?variation:String):Null<JsonFile>
@@ -463,7 +463,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
-    return {fileName: entryFilePath, contents: rawJson};
+    return {fileName: entryFilePath, contents: rawJson}
   }
 
   function hasMusicDataFile(id:String, ?variation:String):Bool
@@ -481,7 +481,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
-    return {fileName: entryFilePath, contents: rawJson};
+    return {fileName: entryFilePath, contents: rawJson}
   }
 
   public function fetchEntryMetadataVersion(id:String, ?variation:String):Null<thx.semver.Version>

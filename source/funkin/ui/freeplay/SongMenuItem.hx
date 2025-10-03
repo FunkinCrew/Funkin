@@ -21,8 +21,6 @@ import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
 import funkin.ui.PixelatedIcon;
-import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
 
 using StringTools;
 

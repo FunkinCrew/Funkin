@@ -10,7 +10,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
-import flixel.util.typeLimit.NextState;
 import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
@@ -20,19 +19,10 @@ import funkin.graphics.shaders.TitleOutline;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 import openfl.Assets;
-import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
-import openfl.events.MouseEvent;
-import openfl.events.NetStatusEvent;
-import openfl.media.Video;
-import openfl.net.NetStream;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
-import funkin.ui.freeplay.FreeplayState;
-import openfl.display.BlendMode;
-import funkin.save.Save;
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;

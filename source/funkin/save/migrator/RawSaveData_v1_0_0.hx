@@ -1,7 +1,5 @@
 package funkin.save.migrator;
 
-import thx.semver.Version;
-
 typedef RawSaveData_v1_0_0 =
 {
   var seenVideo:Bool;

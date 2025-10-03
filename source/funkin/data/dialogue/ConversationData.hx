@@ -68,7 +68,7 @@ typedef BackdropData_Solid =
   @:optional
   @:default(0.0)
   var fadeTime:Float;
-};
+}
 
 enum OutroData
 {
@@ -117,7 +117,7 @@ typedef MusicData =
   @:optional
   @:default(false)
   var looped:Bool;
-};
+}
 
 /**
  * Data on a single line of dialogue in a conversation.
@@ -163,4 +163,4 @@ typedef DialogueEntryData =
   @:optional
   @:default(1.0)
   public var speed:Float;
-};
+}

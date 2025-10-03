@@ -1,7 +1,6 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
-import flixel.util.FlxColor;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;

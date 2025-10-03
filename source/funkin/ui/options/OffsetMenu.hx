@@ -27,7 +27,6 @@ import flixel.FlxObject;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 /*
@@ -41,7 +40,7 @@ typedef ArrowData =
   // var debugText:FlxText;
   var beat:Float;
   var direction:Int; // 0 = left, 1 = down, 2 = up, 3 = right
-};
+}
 
 class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 {

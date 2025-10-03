@@ -5,8 +5,6 @@ import io.newgrounds.objects.Medal as MedalData;
 import funkin.util.plugins.NewgroundsMedalPlugin;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
-import io.newgrounds.utils.MedalList;
-import haxe.Json;
 
 @:nullSafety
 class Medals

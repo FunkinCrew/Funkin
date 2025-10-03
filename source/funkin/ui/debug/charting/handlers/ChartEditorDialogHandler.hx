@@ -18,7 +18,6 @@ import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.util.Constants;
-import funkin.util.DateUtil;
 import funkin.util.FileUtil;
 import funkin.util.VersionUtil;
 import haxe.io.Path;

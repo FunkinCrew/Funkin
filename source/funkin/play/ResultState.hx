@@ -1081,4 +1081,4 @@ typedef ResultsStateParams =
    * The previous score data, used for rank comparision.
    */
   var ?prevScoreData:SaveScoreData;
-};
+}

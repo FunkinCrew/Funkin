@@ -19,7 +19,7 @@ typedef SequenceEvent =
    * The callback to run when the event is triggered.
    */
   callback:() -> Void
-};
+}
 
 /**
  * A timer-based event sequence.

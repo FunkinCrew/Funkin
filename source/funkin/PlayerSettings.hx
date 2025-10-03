@@ -48,7 +48,7 @@ class PlayerSettings
       case 1: player1;
       case 2: player2;
       default: null;
-    };
+    }
   }
 
   /**

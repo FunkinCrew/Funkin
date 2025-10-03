@@ -1,17 +1,10 @@
 package funkin.ui.options;
 
 import funkin.ui.Page.PageName;
-import funkin.ui.transition.LoadingState;
-import funkin.ui.TextMenuList;
-import funkin.ui.TextMenuList.TextMenuItem;
-import flixel.math.FlxPoint;
 import funkin.ui.TextMenuList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.FlxSprite;
 import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.group.FlxGroup;
-import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
@@ -29,7 +22,6 @@ import funkin.mobile.ui.options.ControlsSchemeMenu;
 #if FEATURE_MOBILE_IAP
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
-import flixel.util.FlxColor;
 
 /**
  * The main options menu

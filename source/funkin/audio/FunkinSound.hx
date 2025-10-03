@@ -1,7 +1,6 @@
 package funkin.audio;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import flixel.tweens.FlxTween;
@@ -301,7 +300,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // Clone the sound by creating one with the same data buffer.
     // Reusing the `Sound` object directly causes issues with playback.
     @:privateAccess
-    sound._sound = openfl.media.Sound.fromAudioBuffer(this._sound.__buffer);
+    sound._sound = Sound.fromAudioBuffer(this._sound.__buffer);
 
     // Call init to ensure the FlxSound is properly initialized.
     sound.init(this.looped, this.autoDestroy, this.onComplete);
@@ -327,7 +326,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
     {
-      if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
+      if (FlxG.sound.music != null && FlxG.sound.music is FunkinSound)
       {
         var existingSound:FunkinSound = cast FlxG.sound.music;
         // Stop here if we would play a matching music track.

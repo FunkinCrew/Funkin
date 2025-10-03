@@ -125,4 +125,4 @@ typedef DialogueBoxTextData =
   @:optional
   @:default(0)
   var shadowWidth:Int;
-};
+}

@@ -145,7 +145,7 @@ class ReflectUtil
     if (FIELD_NAME_BLACKLIST.contains(name))
     {
       throw 'Attempted to retrieve blacklisted field "${name}"';
-    };
+    }
 
     return Reflect.field(obj, name);
   }
@@ -196,7 +196,7 @@ class ReflectUtil
     if (FIELD_NAME_BLACKLIST.contains(name))
     {
       throw 'Attempted to retrieve blacklisted field "${name}"';
-    };
+    }
 
     return Reflect.getProperty(obj, name);
   }

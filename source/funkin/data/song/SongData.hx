@@ -1,11 +1,11 @@
 package funkin.data.song;
 
 import funkin.data.event.SongEventRegistry;
-import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
-import thx.semver.Version;
+import funkin.play.event.SongEvent;
 import funkin.util.tools.ICloneable;
+import thx.semver.Version;
 
 /**
  * Data containing information about a song.
@@ -35,7 +35,7 @@ class SongMetadata implements ICloneable<SongMetadata>
 
   @:optional
   @:default(96)
-  public var divisions:Null<Int>; // Optional field
+  public var divisions:Null<Int>;
 
   @:optional
   @:default(false)
@@ -365,7 +365,7 @@ class SongMusicData implements ICloneable<SongMusicData>
 
   @:optional
   @:default(96)
-  public var divisions:Null<Int>; // Optional field
+  public var divisions:Null<Int>;
 
   @:optional
   @:default(false)
@@ -764,10 +764,10 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
-    if (this.value == null) return {};
+    if (this.value == null) return {}
     if (Std.isOfType(this.value, Array))
     {
-      var result:haxe.DynamicAccess<Dynamic> = {};
+      var result:haxe.DynamicAccess<Dynamic> = {}
       result.set(defaultKey, this.value);
       return cast result;
     }
@@ -778,7 +778,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     }
     else
     {
-      var result:haxe.DynamicAccess<Dynamic> = {};
+      var result:haxe.DynamicAccess<Dynamic> = {}
       result.set(defaultKey, this.value);
       return cast result;
     }

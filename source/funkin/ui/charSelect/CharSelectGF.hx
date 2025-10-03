@@ -1,7 +1,6 @@
 package funkin.ui.charSelect;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.math.FlxMath;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.util.FramesJSFLParser.FramesJSFLFrame;

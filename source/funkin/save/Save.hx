@@ -12,13 +12,8 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.macro.ConsoleMacro;
-import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
-#if FEATURE_NEWGROUNDS
-import funkin.api.newgrounds.Medals;
-import funkin.api.newgrounds.Leaderboards;
-#end
 
 @:nullSafety
 class Save implements ConsoleClass
@@ -210,7 +205,7 @@ class Save implements ConsoleClass
           gfChar: "gf",
           dadChar: "dad"
         }
-    };
+    }
   }
 
   /**
@@ -1028,7 +1023,7 @@ class Save implements ConsoleClass
     {
       data.favoriteSongs = [];
       flush();
-    };
+    }
 
     return data.favoriteSongs.contains(id);
   }
@@ -1473,7 +1468,7 @@ typedef RawSaveData =
    * The user's preferences specific to the Stage Editor.
    */
   var optionsStageEditor:SaveDataStageEditorOptions;
-};
+}
 
 typedef SaveApiData =
 {
@@ -1514,7 +1509,7 @@ typedef SaveHighScoresData =
    * Scores for individual songs.
    */
   var songs:SaveScoreSongsData;
-};
+}
 
 typedef SaveDataMods =
 {
@@ -1684,7 +1679,7 @@ typedef SaveDataOptions =
       var shouldHideMouse:Bool;
       var fancyPreview:Bool;
       var previewOnSave:Bool;
-    };
+    }
 
   var controls:
     {
@@ -1692,14 +1687,14 @@ typedef SaveDataOptions =
         {
           var keyboard:SaveControlsData;
           var gamepad:SaveControlsData;
-        };
+        }
       var p2:
         {
           var keyboard:SaveControlsData;
           var gamepad:SaveControlsData;
-        };
-    };
-};
+        }
+    }
+}
 
 #if mobile
 typedef SaveDataMobileOptions =
@@ -1721,7 +1716,7 @@ typedef SaveDataMobileOptions =
    * @default `false`
    */
   var noAds:Bool;
-};
+}
 
 #end
 
@@ -1932,7 +1927,7 @@ typedef SaveDataChartEditorOptions =
    * @default `1.0`
    */
   var ?playbackSpeed:Float;
-};
+}
 
 typedef SaveDataStageEditorOptions =
 {
@@ -1986,4 +1981,4 @@ typedef SaveDataStageEditorOptions =
    * @default dad
    */
   var ?dadChar:String;
-};
+}

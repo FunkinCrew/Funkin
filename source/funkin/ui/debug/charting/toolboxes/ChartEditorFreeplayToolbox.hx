@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
 import flixel.addons.display.FlxTiledSprite;
-import flixel.math.FlxMath;
 import funkin.audio.SoundGroup;
 import funkin.ui.debug.charting.commands.SetFreeplayPreviewCommand;
 import funkin.ui.haxeui.components.WaveformPlayer;

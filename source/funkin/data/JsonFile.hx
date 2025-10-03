@@ -7,4 +7,4 @@ typedef JsonFile =
 {
   fileName:String,
   contents:String
-};
+}

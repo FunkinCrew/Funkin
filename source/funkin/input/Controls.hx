@@ -1217,7 +1217,7 @@ class Controls extends FlxActionSet
   public function createSaveData(device:Device):Dynamic
   {
     var isEmpty = true;
-    var data = {};
+    var data = {}
     for (control in Control.createAll())
     {
       var inputs = getInputsFor(control, device);
@@ -1257,7 +1257,7 @@ typedef SaveInputLists =
 {
   ?keys:Array<Int>,
   ?pad:Array<Int>
-};
+}
 
 typedef Swipes =
 {
@@ -1265,7 +1265,7 @@ typedef Swipes =
   ?touchAngle:Float,
   ?touchLength:Float,
   ?curTouchPos:FlxPoint
-};
+}
 
 /**
  * An FlxActionDigital with additional functionality, including:

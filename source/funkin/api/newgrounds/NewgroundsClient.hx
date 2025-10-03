@@ -1,7 +1,6 @@
 package funkin.api.newgrounds;
 
 import funkin.save.Save;
-import funkin.api.newgrounds.Medals.Medal;
 #if FEATURE_NEWGROUNDS
 import io.newgrounds.Call.CallError;
 import io.newgrounds.NG;

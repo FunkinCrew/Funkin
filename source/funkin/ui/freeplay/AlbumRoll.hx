@@ -104,7 +104,7 @@ class AlbumRoll extends FlxSpriteGroup
     {
       FlxG.log.warn('Could not find album data for album ID: ${albumId}');
       return;
-    };
+    }
 
     // Update the album art.
     var albumGraphic = Paths.image(albumData.getAlbumArtAssetKey());

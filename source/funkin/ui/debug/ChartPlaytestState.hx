@@ -3,13 +3,8 @@ package funkin.ui.debug;
 #if sys
 import flixel.FlxSubState;
 import flixel.text.FlxText;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.play.ResultState.ResultsStateParams;
 import funkin.ui.MenuList.MenuTypedItem;
 import funkin.ui.MenuList.MenuTypedList;
-import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.util.file.FNFCUtil;
 
 /**

@@ -5,7 +5,6 @@ import flixel.FlxCamera;
 import flixel.FlxBasic;
 import flixel.util.FlxSignal;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 import funkin.util.assets.FlxAnimationUtil;

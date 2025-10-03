@@ -200,7 +200,7 @@ class Preferences
         HapticsMode.NOTES_ONLY;
       default:
         HapticsMode.ALL;
-    };
+    }
   }
 
   static function set_hapticsMode(value:HapticsMode):HapticsMode
@@ -215,7 +215,7 @@ class Preferences
         string = "Notes Only";
       default:
         string = "All";
-    };
+    }
 
     var save:Save = Save.instance;
     save.options.hapticsMode = string;
@@ -326,7 +326,7 @@ class Preferences
         lime.ui.WindowVSyncMode.ADAPTIVE;
       default:
         lime.ui.WindowVSyncMode.OFF;
-    };
+    }
   }
 
   static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
@@ -343,7 +343,7 @@ class Preferences
         string = "Adaptive";
       default:
         string = "Off";
-    };
+    }
 
     WindowUtil.setVSyncMode(value);
 

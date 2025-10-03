@@ -154,7 +154,7 @@ class CLIUtil
           shouldLoadSong: false,
           songPath: null
         }
-    };
+    }
   }
 
   /**
@@ -191,16 +191,16 @@ typedef CLIChartParams =
 {
   var shouldLoadChart:Bool;
   var chartPath:Null<String>;
-};
+}
 
 typedef CLIStageParams =
 {
   var shouldLoadStage:Bool;
   var stagePath:Null<String>;
-};
+}
 
 typedef CLISongParams =
 {
   var shouldLoadSong:Bool;
   var songPath:Null<String>;
-};
+}

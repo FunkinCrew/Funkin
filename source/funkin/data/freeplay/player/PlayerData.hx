@@ -313,7 +313,7 @@ typedef PlayerResultsData =
   var great:Array<PlayerResultsAnimationData>;
   var good:Array<PlayerResultsAnimationData>;
   var loss:Array<PlayerResultsAnimationData>;
-};
+}
 
 typedef PlayerResultsMusicData =
 {
@@ -386,7 +386,7 @@ typedef PlayerResultsAnimationData =
 
   @:optional
   var loopFrameLabel:Null<String>;
-};
+}
 
 typedef PlayerFreeplayDJCharSelectData =
 {
@@ -427,4 +427,4 @@ typedef PlayerFreeplayDJFistPumpData =
 
   @:default(-1)
   var loopBadEndFrame:Int;
-};
+}

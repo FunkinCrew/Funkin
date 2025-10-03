@@ -52,20 +52,20 @@ class UIStateMachine
     // Allow same-state transitions (idempotent)
     if (currentState == newState)
     {
-      trace('State transition: ${currentState} -> ${newState} (no change)');
+      //trace('State transition: ${currentState} -> ${newState} (no change)');
       return true;
     }
 
     if (!canTransition(currentState, newState))
     {
-      trace('Invalid state transition: ${currentState} -> ${newState}');
+      //trace('Invalid state transition: ${currentState} -> ${newState}');
       return false;
     }
 
     previousState = currentState;
     currentState = newState;
 
-    trace('State transition: ${previousState} -> ${currentState}');
+    //trace('State transition: ${previousState} -> ${currentState}');
 
     // Notify listeners
     for (callback in onStateChange)

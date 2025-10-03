@@ -234,7 +234,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     return {
       fileName: entryFilePath,
       contents: rawJson
-    };
+    }
   }
 
   function clearEntries():Void

@@ -1,7 +1,5 @@
 package funkin.ui.freeplay.dj;
 
-import flixel.util.FlxSignal;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.data.freeplay.player.PlayerRegistry;
 
 /**

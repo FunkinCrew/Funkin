@@ -10,9 +10,6 @@ import funkin.audio.visualize.PolygonSpectogram.VISTYPE;
 import funkin.audio.visualize.VisShit.CurAudioInfo;
 import lime.utils.Int16Array;
 
-using Lambda;
-using flixel.util.FlxSpriteUtil;
-
 class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 {
   var sampleRate:Int;
@@ -248,17 +245,17 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
           i += 2;
 
-          var remappedSample:Float = FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1);
+          var remappedSample:Int = Std.int(FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1));
 
-          group.members[Std.int(remappedSample)].x = prevLine.x;
-          group.members[Std.int(remappedSample)].y = prevLine.y;
+          group.members[remappedSample].x = prevLine.x;
+          group.members[remappedSample].y = prevLine.y;
           prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
-          prevLine.y = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
+          prevLine.y = (remappedSample / lengthOfShit * daHeight) + y;
 
-          var line = FlxPoint.get(prevLine.x - group.members[Std.int(remappedSample)].x, prevLine.y - group.members[Std.int(remappedSample)].y);
+          var line = FlxPoint.get(prevLine.x - group.members[remappedSample].x, prevLine.y - group.members[remappedSample].y);
 
-          group.members[Std.int(remappedSample)].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
-          group.members[Std.int(remappedSample)].angle = line.degrees;
+          group.members[remappedSample].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
+          group.members[remappedSample].angle = line.degrees;
         }
       }
     }
