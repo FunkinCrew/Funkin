@@ -28,9 +28,4 @@ class EvacuateDebugPlugin extends FlxBasic
       FlxG.switchState(() -> new funkin.ui.mainmenu.MainMenuState());
     }
   }
-
-  public override function destroy():Void
-  {
-    super.destroy();
-  }
 }

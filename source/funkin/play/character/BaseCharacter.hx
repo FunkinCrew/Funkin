@@ -692,11 +692,6 @@ class BaseCharacter extends Bopper
     playAnimation(anim, true);
   }
 
-  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
-  {
-    super.playAnimation(name, restart, ignoreOther, reversed);
-  }
-
   public function getDeathQuote():Null<String>
   {
     return null;

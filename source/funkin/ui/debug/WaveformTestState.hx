@@ -182,9 +182,4 @@ class WaveformTestState extends MusicBeatState
 
     polygonSprite.add_tri(centerVertex, lastVertex, firstVertex);
   }
-
-  public override function destroy():Void
-  {
-    super.destroy();
-  }
 }

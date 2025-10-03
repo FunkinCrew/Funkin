@@ -30,9 +30,4 @@ class ForceCrashPlugin extends FlxBasic
       throw "DEBUG: Crashing the game via debug keybind!";
     }
   }
-
-  public override function destroy():Void
-  {
-    super.destroy();
-  }
 }

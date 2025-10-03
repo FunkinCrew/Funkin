@@ -66,11 +66,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     return dialog;
   }
 
-  public override function onClose(event:DialogEvent):Void
-  {
-    super.onClose(event);
-  }
-
   /**
    * Add a file path to the "Open Recent" scroll box on the left.
    * @param path

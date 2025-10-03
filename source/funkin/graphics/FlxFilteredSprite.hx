@@ -214,11 +214,6 @@ class FlxFilteredSprite extends FlxSprite
 
     return super.set_frame(value);
   }
-
-  override public function destroy()
-  {
-    super.destroy();
-  }
 }
 
 @:noCompletion

@@ -2706,14 +2706,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
-  /**
-   * Automatically goes through and calls render on everything you added.
-   */
-  override public function draw():Void
-  {
-    super.draw();
-  }
-
   function calculateNotePreviewViewportBounds():FlxRect
   {
     var bounds:FlxRect = new FlxRect();

@@ -267,11 +267,6 @@ class NoteSprite extends FunkinSprite
     this.hsvShader.value = 1.0;
   }
 
-  public override function kill():Void
-  {
-    super.kill();
-  }
-
   public override function destroy():Void
   {
     // This function should ONLY get called as you leave PlayState entirely.

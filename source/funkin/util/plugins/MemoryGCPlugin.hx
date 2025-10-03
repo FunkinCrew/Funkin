@@ -29,9 +29,4 @@ class MemoryGCPlugin extends FlxBasic
       perf.print();
     }
   }
-
-  public override function destroy():Void
-  {
-    super.destroy();
-  }
 }

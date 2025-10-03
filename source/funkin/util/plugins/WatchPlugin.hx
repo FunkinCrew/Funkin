@@ -44,9 +44,4 @@ class WatchPlugin extends FlxBasic
     FlxG.watch.addQuick("currentBeatTime", Conductor.instance.currentBeatTime);
     FlxG.watch.addQuick("currentStepTime", Conductor.instance.currentStepTime);
   }
-
-  public override function destroy():Void
-  {
-    super.destroy();
-  }
 }

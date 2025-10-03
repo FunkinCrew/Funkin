@@ -379,11 +379,6 @@ class Controls extends FlxActionSet
     setKeyboardScheme(scheme, false);
   }
 
-  override function update():Void
-  {
-    super.update();
-  }
-
   public function check(name:Action, trigger:FlxInputState = JUST_PRESSED, gamepadOnly:Bool = false):Bool
   {
     #if FEATURE_DEBUG_FUNCTIONS
