@@ -3,10 +3,12 @@ package funkin.ui.debug.stageeditor;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxObject;
+import flixel.addons.display.FlxTiledSprite;
 import flixel.addons.display.shapes.FlxShapeCircle;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.FlxGraphic;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -14,6 +16,8 @@ import funkin.input.Cursor;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.save.Save;
+import funkin.ui.debug.stageeditor.components.StageEditorObject;
+import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -34,6 +38,7 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.Toolkit;
+import openfl.display.BitmapData;
 
 /**
  * A state dedicated to allowing the user to create and edit stages.
@@ -54,8 +59,10 @@ class StageEditorState extends UIState
    * ==============================
    */
 
-  public static final LIGHT_MODE_COLORS:Array<FlxColor> = [0xFFE7E6E6, 0xFFF8F8F8];
-  public static final DARK_MODE_COLORS:Array<FlxColor> = [0xFF181919, 0xFF202020];
+  /**
+   * The base grid size for the stage editor.
+   */
+  public static final GRID_SIZE:Int = 10;
 
   /**
    * Default positions of characters when creating a blank new stage.
@@ -93,6 +100,61 @@ class StageEditorState extends UIState
    * Time before the animation stops being previewed.
    */
   public static final TIME_BEFORE_ANIM_STOP:Float = 3.0;
+
+  /**
+   * ==============================
+   * INSTANCE DATA
+   * ==============================
+   */
+
+  /**
+   * The current theme used by the editor.
+   * Dictates the appearance of many UI elements.
+   * Currently hardcoded to just Light and Dark.
+   */
+  var currentTheme(default, set):StageEditorTheme = StageEditorTheme.Light;
+
+  function set_currentTheme(value:StageEditorTheme):StageEditorTheme
+  {
+    if (value == null || value == currentTheme) return currentTheme;
+
+    currentTheme = value;
+    this.updateTheme();
+    return value;
+  }
+
+  public var selectedProp(default, set):StageEditorObject = null;
+
+  function set_selectedProp(value:StageEditorObject):StageEditorObject
+  {
+    selectedProp?.selectedShader.setAmount(0);
+    this.selectedProp = value;
+
+    // update dialogs
+
+    selectedProp?.selectedShader.setAmount(1);
+
+    return selectedProp;
+  }
+
+  public var selectedCharacter(default, set):BaseCharacter = null;
+
+  function set_selectedCharacter(value:BaseCharacter)
+  {
+    this.selectedCharacter = value;
+    // update dialog
+    return selectedCharacter;
+  }
+
+  /**
+   * The list of command previously performed. Used for undoing previous actions.
+   */
+  var undoHistory:Array<StageEditorCommand> = [];
+
+  /**
+   * The list of commands that have been undone. Used for redoing previous actions.
+   */
+  var redoHistory:Array<StageEditorCommand> = [];
 
   /**
    * ==============================
@@ -162,7 +224,7 @@ class StageEditorState extends UIState
    * It needs to be an object in the scene for the camera to be configured to follow it.
    * We optionally make this a sprite so we can draw a debug graphic with it.
    */
-  public var cameraFollowPoint:FlxObject;
+  var cameraFollowPoint:FlxObject;
 
   /**
    * ==============================
@@ -221,6 +283,16 @@ class StageEditorState extends UIState
   var menubarItemRedo:MenuItem;
 
   /**
+   * The `Edit -> New Object` menu item.
+   */
+  var menubarItemNewObj:MenuItem;
+
+  /**
+   * The `Edit -> Find Object` menu item.
+   */
+  var menubarItemFindObj:MenuItem;
+
+  /**
    * The `Edit -> Copy Object` menu item.
    */
   var menubarItemCopy:MenuItem;
@@ -239,16 +311,6 @@ class StageEditorState extends UIState
    * The `Edit -> Delete Object` menu item.
    */
   var menubarItemDelete:MenuItem;
-
-  /**
-   * The `Edit -> New Object` menu item.
-   */
-  var menubarItemNewObj:MenuItem;
-
-  /**
-   * The `Edit -> Find Object` menu item.
-   */
-  var menubarItemFindObj:MenuItem;
 
   /**
    * The `View -> View Characters` menu check box.
@@ -286,13 +348,28 @@ class StageEditorState extends UIState
    * ==============================
    */
 
-  var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
+  public var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
+
+  public var spriteArray:Array<StageEditorObject> = [];
 
   var cameraBounds:FlxTypedGroup<FlxSprite>;
 
   var characterPositionMarkers:Array<FlxShapeCircle> = [];
 
   var characterFloorLines:Array<FlxSprite> = [];
+
+  var objectNameText:FlxText;
+
+  /**
+   * The IMAGE used for the grid. Updated by StageEditorThemeHandler.
+   */
+  var gridBitmap:Null<BitmapData> = null;
+
+  /**
+   * The tiled sprite used to display the grid.
+   * The height is the length of the song, and scrolling is done by simply the sprite.
+   */
+  var gridTiledSprite:Null<FlxSprite> = null;
 
   /**
    * The params which were passed in when the Stage Editor was initialized.
@@ -312,6 +389,8 @@ class StageEditorState extends UIState
     if (FlxG.sound.music != null) FlxG.sound.music?.stop();
     // WindowUtil.setWindowTitle("Friday Night Funkin\' Stage Editor");
 
+    new StageEditorAssetDataHandler(this);
+
     // Show the mouse cursor.
     Cursor.show();
 
@@ -322,7 +401,11 @@ class StageEditorState extends UIState
     cameraFollowPoint.screenCenter();
 
     initCameras();
-    initCharacters();
+
+    this.updateTheme();
+    buildGrid();
+
+    // initCharacters();
     initVisuals();
 
     setupUIListeners();
@@ -330,6 +413,31 @@ class StageEditorState extends UIState
     stageCamera.follow(cameraFollowPoint);
 
     refresh();
+
+    if (params != null && params.fnfsTargetPath != null)
+    {
+      // var result:Null<Array<String>> = this.loadStageAsTemplate(params.targetStageId);
+      // if (result != null)
+      // {
+      //   if (result.length == 0)
+      //   {
+      //     this.success('Loaded Stage', 'Loaded stage (${params.fnfsTargetPath})');
+      //   }
+      //   else
+      //   {
+      //     this.warning('Loaded Stage', 'Loaded stage with issues (${params.fnfsTargetPath})\n${result.join("\n")}');
+      //   }
+      // }
+    }
+    else if (params != null && params.targetStageId != null)
+    {
+      // this.loadStageAsTemplate(params.targetStageId);
+    }
+    else
+    {
+      var welcomeDialog = this.openWelcomeDialog(false);
+      // if (shouldShowBackupAvailableDialog) this.openBackupAvailableDialog(welcomeDialog);
+    }
   }
 
   /**
@@ -348,6 +456,19 @@ class StageEditorState extends UIState
     root.height = FlxG.height;
 
     add(cameraFollowPoint);
+  }
+
+  /**
+   * Builds and displays the stage editor grid.
+   */
+  function buildGrid():Void
+  {
+    if (gridBitmap == null) throw 'ERROR: Tried to build grid, but gridBitmap is null! Check ChartEditorThemeHandler.updateTheme().';
+
+    gridTiledSprite = new FlxTiledSprite(gridBitmap, gridBitmap.width, gridBitmap.height, true, true);
+    gridTiledSprite.scrollFactor.set();
+    add(gridTiledSprite);
+    // gridTiledSprite.zIndex = 10;
   }
 
   function initCharacters():Void
@@ -426,13 +547,88 @@ class StageEditorState extends UIState
 
       add(cameraBounds);
     }
+
+    objectNameText = new FlxText(0, 0, 0, "", 24);
+    objectNameText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    objectNameText.cameras = [uiCamera];
+    add(objectNameText);
+  }
+
+  public override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
   }
 
   function setupUIListeners():Void
   {
     menubarItemNewStage.onClick = _ -> this.openWelcomeDialog();
     // other stuff here
+    menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
+  }
+
+  /**
+   * ==============================
+   * COMMAND FUNCTIONS
+   * ==============================
+   */
+
+  /**
+   * Perform (or redo) a command, then add it to the undo stack.
+   *
+   * @param command The command to perform.
+   * @param purgeRedoStack If `true`, the redo stack will be cleared after performing the command.
+   */
+  function performCommand(command:StageEditorCommand, purgeRedoStack:Bool = true):Void
+  {
+    command.execute(this);
+    if (command.shouldAddToHistory(this))
+    {
+      undoHistory.push(command);
+      // commandHistoryDirty = true;
+    }
+    if (purgeRedoStack) redoHistory = [];
+  }
+
+  /**
+   * Undo a command, then add it to the redo stack.
+   * @param command The command to undo.
+   */
+  function undoCommand(command:StageEditorCommand):Void
+  {
+    command.undo(this);
+    // Note, if we are undoing a command, it should already be in the history,
+    // therefore we don't need to check `shouldAddToHistory(state)`
+    redoHistory.push(command);
+    // commandHistoryDirty = true;
+  }
+
+  /**
+   * Undo the last command in the undo stack, then add it to the redo stack.
+   */
+  function undoLastCommand():Void
+  {
+    var command:Null<StageEditorCommand> = undoHistory.pop();
+    if (command == null)
+    {
+      trace('No actions to undo.');
+      return;
+    }
+    undoCommand(command);
+  }
+
+  /**
+   * Redo the last command in the redo stack, then add it to the undo stack.
+   */
+  function redoLastCommand():Void
+  {
+    var command:Null<StageEditorCommand> = redoHistory.pop();
+    if (command == null)
+    {
+      trace('No actions to redo.');
+      return;
+    }
+    performCommand(command, false);
   }
 
   function applyWindowTitle():Void
