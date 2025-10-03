@@ -4,7 +4,6 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import lime.utils.Bytes;
-import haxe.ui.components.TextField;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.events.Event;
@@ -50,8 +49,7 @@ class StageEditorURLObjectDialog extends StageEditorBaseDialog
       if (onFail != null) onFail();
     });
 
-    this.onDialogClosed = function(e:DialogEvent)
-    {
+    this.onDialogClosed = function(e:DialogEvent) {
       if (e.button.toString() == '{{Load}}')
       {
         e.cancel();

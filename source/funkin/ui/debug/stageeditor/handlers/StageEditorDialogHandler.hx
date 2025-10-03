@@ -2,9 +2,10 @@ package funkin.ui.debug.stageeditor.handlers;
 
 import lime.utils.Bytes;
 import flixel.util.FlxTimer;
-import funkin.ui.debug.stageeditor.dialogs.StageEditorWelcomeDialog;
 import funkin.ui.debug.stageeditor.dialogs.StageEditorAboutDialog;
+import funkin.ui.debug.stageeditor.dialogs.StageEditorNewObjectDialog;
 import funkin.ui.debug.stageeditor.dialogs.StageEditorURLObjectDialog;
+import funkin.ui.debug.stageeditor.dialogs.StageEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import haxe.io.Path;
 import haxe.ui.components.Button;
@@ -54,6 +55,15 @@ class StageEditorDialogHandler
   public static function openURLObjectDialog(state:StageEditorState, callback:Bytes->Void, onFail:Void->Void):Null<Dialog>
   {
     var dialog = StageEditorURLObjectDialog.build(state, callback, onFail);
+
+    dialog.zIndex = 1000;
+
+    return dialog;
+  }
+
+  public static function openNewObjectDialog(state:StageEditorState, ?bitmapData:openfl.display.BitmapData = null, ?closable:Bool, ?modal:Bool):Null<Dialog>
+  {
+    var dialog = StageEditorNewObjectDialog.build(state, bitmapData, closable, modal);
 
     dialog.zIndex = 1000;
 

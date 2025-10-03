@@ -47,7 +47,7 @@ class StageEditorBaseDialog extends Dialog
    */
   public function onClose(event:DialogEvent):Void
   {
-    // stageEditorState.isHaxeUIDialogOpen = false;
+    stageEditorState.isHaxeUIDialogOpen = false;
   }
 
   /**
