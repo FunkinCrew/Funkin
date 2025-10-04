@@ -17,12 +17,12 @@ using StringTools;
 @:nullSafety
 class StageEditorAssetDataHandler
 {
-  public var state:StageEditorState;
+  // public var state:StageEditorState;
 
-  public function new(state:StageEditorState)
-  {
-    this.state = state;
-  }
+  // public function new(state:StageEditorState)
+  // {
+  //   this.state = state;
+  // }
 
   /**
    * An array of all the props in the stage editor.
@@ -260,13 +260,34 @@ class StageEditorAssetDataHandler
 
     for (item in state.members)
     {
-      if (Std.is(item, StageEditorObject)) state.spriteArray.push(cast item);
+      if (Std.isOfType(item, StageEditorObject)) state.spriteArray.push(cast item);
     }
   }
 
   public static function sortAssets(state:StageEditorState):Void
   {
     state.sort(funkin.util.SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
+  }
+
+  public static function clearAssets(state:StageEditorState):Void
+  {
+    state.selectedProp = null;
+
+    while (state.spriteArray.length > 0)
+    {
+      var obj = state.spriteArray.pop();
+      if (obj == null) continue;
+
+      obj.kill();
+      state.remove(obj, true);
+      obj.destroy();
+      obj = null;
+    }
+
+    state.undoHistory = [];
+    state.redoHistory = [];
+    state.sortObjects();
+    state.removeUnusedBitmaps();
   }
 }
 

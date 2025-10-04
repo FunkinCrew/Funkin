@@ -26,7 +26,7 @@ class StageData
     this.characters = makeDefaultCharacters();
   }
 
-  function makeDefaultCharacters():StageDataCharacters
+  public function makeDefaultCharacters():StageDataCharacters
   {
     return {
       bf: {

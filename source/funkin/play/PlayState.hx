@@ -3247,7 +3247,7 @@ class PlayState extends MusicBeatSubState
   function debugKeyShit():Void
   {
     #if FEATURE_STAGE_EDITOR
-    // Open the stage editor overlaying the current state.
+    // Redirect to the stage editor with the current stage loaded.
     if (controls.DEBUG_STAGE)
     {
       // hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
