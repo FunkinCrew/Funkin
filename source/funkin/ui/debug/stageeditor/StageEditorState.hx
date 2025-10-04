@@ -12,6 +12,8 @@ import flixel.input.keyboard.FlxKey;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.system.FlxAssets.FlxSoundAsset;
+import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
@@ -24,6 +26,7 @@ import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.stage.StageData;
 import funkin.util.WindowUtil;
 import funkin.util.FileUtil;
 import haxe.ui.backend.flixel.UIState;
@@ -62,6 +65,12 @@ class StageEditorState extends UIState
    * CONSTANTS
    * ==============================
    */
+
+  public static final STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('stage-editor/toolboxes/stage-settings');
+  public static final STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-properties');
+  public static final STAGE_EDITOR_TOOLBOX_OBJECT_ANIMATIONS_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-anims');
+  public static final STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-graphic');
+  public static final STAGE_EDITOR_TOOLBOX_CHARACTER_PROPERTIES_LAYOUT:String = Paths.ui('stage-editor/toolboxes/character-properties');
 
   /**
    * The base grid size for the stage editor.
@@ -505,20 +514,131 @@ class StageEditorState extends UIState
 
   /**
    * ==============================
+   * STAGE DATA
+   * ==============================
+   */
+
+  /**
+   * The data representing the current stage.
+   */
+  var stageData:StageData = new StageData();
+
+  /**
+   * The name of the current stage.
+   */
+  var currentStageName(get, set):String;
+
+  function get_currentStageName():String
+  {
+    if (stageData.name == null) stageData.name = 'Unknown';
+    return stageData.name;
+  }
+
+  function set_currentStageName(value:String):String
+  {
+    return stageData.name = value;
+  }
+
+  /**
+   * The zoom level of the current stage.
+   */
+  var currentStageZoom(get, set):Float;
+
+  function get_currentStageZoom():Float
+  {
+    if (stageData.cameraZoom == null) stageData.cameraZoom = 1.0;
+    return stageData.cameraZoom;
+  }
+
+  function set_currentStageZoom(value:Float):Float
+  {
+    return stageData.cameraZoom = value;
+  }
+
+  /**
+   * The directory where assets for the current stage are stored.
+   * If `null`, defaults to `shared`.
+   */
+  var currentStageDirectory(get, set):String;
+
+  function get_currentStageDirectory():String
+  {
+    if (stageData.directory == null) stageData.directory = 'shared';
+    return stageData.directory;
+  }
+
+  function set_currentStageDirectory(value:String):String
+  {
+    return stageData.directory = value;
+  }
+
+  /**
+   * The characters data in the current stage.
+   */
+  var currentCharacters(get, set):StageDataCharacters;
+
+  function get_currentCharacters():StageDataCharacters
+  {
+    if (stageData.characters == null) stageData.characters = stageData.makeDefaultCharacters();
+    return stageData.characters;
+  }
+
+  function set_currentCharacters(value:StageDataCharacters):StageDataCharacters
+  {
+    return stageData.characters = value;
+  }
+
+  /**
+   * The list of props in the current stage.
+   */
+  var currentProps(get, set):Array<StageDataProp>;
+
+  function get_currentProps():Array<StageDataProp>
+  {
+    if (stageData.props == null) stageData.props = [];
+    return stageData.props;
+  }
+
+  function set_currentProps(value:Array<StageDataProp>):Array<StageDataProp>
+  {
+    return stageData.props = value;
+  }
+
+  /**
+   * ==============================
    * RENDERED OBJECTS
    * ==============================
    */
 
+  /**
+   * A map of all loaded characters.
+   */
   public var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
 
+  /**
+   * A list of all props currently in the scene.
+   * This is a separate list from `members` for easier management.
+   */
   public var spriteArray:Array<StageEditorObject> = [];
 
+  /**
+   * A group of showing camera bounds for each character.
+   */
   var cameraBounds:FlxTypedGroup<FlxSprite>;
 
+  /**
+   * A list of position markers for each character.
+   */
   var characterPositionMarkers:Array<FlxShapeCircle> = [];
 
+  /**
+   * A list of floor lines for each character.
+   */
   var characterFloorLines:Array<FlxSprite> = [];
 
+  /**
+   * Th text object used to display the name of the currently hovered/selected object.
+   */
   var objectNameText:FlxText;
 
   /**
@@ -550,7 +670,7 @@ class StageEditorState extends UIState
     if (FlxG.sound.music != null) FlxG.sound.music?.stop();
     // WindowUtil.setWindowTitle("Friday Night Funkin\' Stage Editor");
 
-    new StageEditorAssetDataHandler(this);
+    // new StageEditorAssetDataHandler(this);
 
     // Show the mouse cursor.
     Cursor.show();
@@ -564,6 +684,8 @@ class StageEditorState extends UIState
     cameraFollowPoint.screenCenter();
 
     initCameras();
+
+    buildDefaultStageData();
 
     this.updateTheme();
     buildGrid();
@@ -579,7 +701,7 @@ class StageEditorState extends UIState
 
     if (params != null && params.fnfsTargetPath != null)
     {
-      // var result:Null<Array<String>> = this.loadStageAsTemplate(params.targetStageId);
+      // var result:Null<Array<String>> = this.loadFromFNFSPath(params.fnfsTargetPath);
       // if (result != null)
       // {
       //   if (result.length == 0)
@@ -594,7 +716,9 @@ class StageEditorState extends UIState
     }
     else if (params != null && params.targetStageId != null)
     {
-      // this.loadStageAsTemplate(params.targetStageId);
+      trace(currentStageZoom);
+      this.loadStageAsTemplate(params.targetStageId);
+      trace(currentStageZoom);
     }
     else
     {
@@ -667,6 +791,11 @@ class StageEditorState extends UIState
     #else
     menubarItemOpenRecent.hide();
     #end
+  }
+
+  function buildDefaultStageData():Void
+  {
+    stageData = new StageData();
   }
 
   /**
@@ -796,7 +925,7 @@ class StageEditorState extends UIState
     }
 
     handleMenubar();
-    
+
     handleFileKeybinds();
     handleEditKeybinds();
   }
@@ -810,6 +939,7 @@ class StageEditorState extends UIState
       if (selectedProp != null) performCommand(new DeleteObjectCommand(selectedProp));
       else this.error('No Object Selected', 'Please select an object to delete.');
     };
+    menubarItemWindowStage.onChange = event -> this.setToolboxState(STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
   }
 
@@ -984,6 +1114,26 @@ class StageEditorState extends UIState
     {
       menubarItemSaveStage.disabled = false;
     }
+  }
+
+  /**
+   * Play a sound effect.
+   * Automatically cleans up after itself and recycles previous FlxSound instances if available, for performance.
+   * @param path The path to the sound effect. Use `Paths` to build this.
+   */
+  function playSound( path:String, volume:Float = 1.0):Void
+  {
+    var asset:Null<FlxSoundAsset> = FlxG.sound.cache(path);
+    if (asset == null)
+    {
+      trace('WARN: Failed to play sound $path, asset not found.');
+      return;
+    }
+    var snd:Null<FunkinSound> = FunkinSound.load(asset);
+    if (snd == null) return;
+    snd.autoDestroy = true;
+    snd.play(true);
+    snd.volume = volume;
   }
 
   function applyWindowTitle():Void

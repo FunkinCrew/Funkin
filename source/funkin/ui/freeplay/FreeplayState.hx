@@ -57,6 +57,7 @@ import funkin.util.SortUtil;
 import openfl.display.BlendMode;
 import funkin.ui.freeplay.DifficultyDot;
 import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.debug.stageeditor.StageEditorState;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -1876,6 +1877,25 @@ class FreeplayState extends MusicBeatSubState
           targetSongVariation: currentVariation,
         }));
     });
+    #elseif FEATURE_STAGE_EDITOR
+    if (!controls.active) return;
+    if (!controls.DEBUG_STAGE) return;
+
+    var targetStageID = currentCapsule?.freeplayData?.data.getDifficulty(currentDifficulty, currentVariation) ?? Constants.DEFAULT_STAGE;
+
+    trace(targetStageID);
+
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    // if (dj != null) dj.confirm();
+    dj?.onConfirm();
+    new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
+      FlxG.switchState(() -> new StageEditorState(
+        {
+          targetStageId: targetStageID,
+        }));
+    });
+
+    controls.active = false;
     #end
   }
 
