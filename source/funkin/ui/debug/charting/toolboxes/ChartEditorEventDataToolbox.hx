@@ -133,6 +133,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var value:Null<Dynamic> = pair.value;
 
       var field:Component = toolboxEventsDataGrid.findComponent(fieldId);
+      field.pauseEvent(UIEvent.CHANGE, true);
 
       if (field == null)
       {
@@ -158,6 +159,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
             throw 'ChartEditorEventDataToolbox - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
         }
       }
+      field.resumeEvent(UIEvent.CHANGE, true, true);
     }
 
     toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);
