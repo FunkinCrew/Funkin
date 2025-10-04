@@ -5,7 +5,7 @@ import openfl.display.BitmapData;
 
 @:nullSafety
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
-class StageEditorNewObjectCommand implements StageEditorCommand
+class AddObjectCommand implements StageEditorCommand
 {
   var objectID:String;
   var bitmap:Null<BitmapData> = null;
@@ -21,7 +21,8 @@ class StageEditorNewObjectCommand implements StageEditorCommand
     var sprite = new StageEditorObject();
 
     if (bitmap != null) {}
-    else sprite.loadGraphic(StageEditorAssetDataHandler.getDefaultGraphic());
+    else
+      sprite.loadGraphic(StageEditorAssetDataHandler.getDefaultGraphic());
 
     sprite.name = objectID;
     sprite.screenCenter();
@@ -32,13 +33,12 @@ class StageEditorNewObjectCommand implements StageEditorCommand
     state.selectedProp = sprite;
 
     state.add(sprite);
+    state.sortObjects();
 
     state.success('Object Creating Successfully', 'Successfully created an object with the name $objectID!');
   }
 
-  public function undo(state:StageEditorState):Void
-  {
-  }
+  public function undo(state:StageEditorState):Void {}
 
   public function shouldAddToHistory(state:StageEditorState):Bool
   {
@@ -47,6 +47,6 @@ class StageEditorNewObjectCommand implements StageEditorCommand
 
   public function toString():String
   {
-    return 'Addded Object with ID $objectID';
+    return 'Added Object with ID $objectID';
   }
 }

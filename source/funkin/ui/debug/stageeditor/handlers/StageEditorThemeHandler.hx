@@ -51,8 +51,9 @@ class StageEditorThemeHandler
   {
     if (state.gridTiledSprite != null)
     {
-      state.gridTiledSprite.scale.set(1 / FlxG.camera.zoom, 1 / FlxG.camera.zoom);
-      state.gridTiledSprite.updateHitbox();
+      state.gridTiledSprite.width = FlxG.width / FlxG.camera.zoom;
+      state.gridTiledSprite.height = FlxG.height / FlxG.camera.zoom;
+      state.gridTiledSprite.scrollFactor.set();
       state.gridTiledSprite.screenCenter();
     }
   }
