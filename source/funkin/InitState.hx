@@ -400,8 +400,17 @@ class InitState extends FlxState
     {
       // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       #if mobile
-      funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(filePath:String) {
-        openSubState(new ChartPlaytestMenu(filePath));
+      funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(fnfcFile:String) {
+        flixel.tweens.FlxTween.globalManager.clear();
+        flixel.util.FlxTimer.globalManager.clear();
+        @:nullSafety(Off)
+        if (FlxG.sound.music != null)
+        {
+          FlxG.sound.music.destroy();
+          FlxG.sound.music = null;
+        }
+
+        FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
       });
 
       final fnfcFile = funkin.mobile.util.FNFCUtil.queryFNFC();

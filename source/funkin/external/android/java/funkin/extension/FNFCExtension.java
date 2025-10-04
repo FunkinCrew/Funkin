@@ -40,7 +40,7 @@ public class FNFCExtension extends Extension
     super.onNewIntent(intent);
 
     if (intent != null && intent.getData() != null) {
-      handleIntent(mainActivity.getIntent(), true);
+      handleIntent(intent, true);
     }
   }
 

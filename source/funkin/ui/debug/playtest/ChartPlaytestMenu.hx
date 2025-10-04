@@ -16,7 +16,7 @@ import funkin.input.Cursor;
 /**
  * When playtesting from an FNFC file, we display a debug UI to choose a difficulty first.
  */
-class ChartPlaytestMenu extends MusicBeatSubState
+class ChartPlaytestMenu extends MusicBeatState
 {
   var filePath:String;
 
