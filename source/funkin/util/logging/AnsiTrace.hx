@@ -43,12 +43,19 @@ class AnsiTrace
     #if FEATURE_DEBUG_FILE_LOGGING
     if (logFile == null)
     {
-      if (FileSystem.exists(logFileName)) FileSystem.deleteFile(logFileName);
+      try
+      {
+        if (FileSystem.exists(logFileName)) FileSystem.deleteFile(logFileName);
+      }
+      catch (_)
+      {
+        logFileClosed = true;
+      }
 
-      logFile = File.write(logFileName);
+      if (!logFileClosed) logFile = File.write(logFileName);
 
       lime.app.Application.current.onExit.add((_) -> {
-        logFile.close();
+        if (logFile != null && !logFileClosed) logFile.close();
         logFileClosed = true;
       }, true, FlxMath.MIN_VALUE_INT);
     }
