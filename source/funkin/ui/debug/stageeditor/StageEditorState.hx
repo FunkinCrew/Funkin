@@ -8,6 +8,7 @@ import flixel.addons.display.shapes.FlxShapeCircle;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.FlxGraphic;
+import flixel.input.keyboard.FlxKey;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -24,6 +25,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.util.WindowUtil;
+import funkin.util.FileUtil;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -164,6 +166,34 @@ class StageEditorState extends UIState
   var redoHistory:Array<StageEditorCommand> = [];
 
   /**
+   * The step at which an object or character is moved.
+   * E.g., if `moveStep` is 5, pressing the arrow keys will move the object by 5 pixels.
+   */
+  var moveStep:Int = 1;
+
+  /**
+   * The step at which an object or character is rotated.
+   * E.g., if `angleStep` is 5, pressing the rotate buttons will rotate the object by 5 degrees.
+   */
+  var angleStep:Float = 5.0;
+
+  /**
+   * ==============================
+   * INPUT
+   * ==============================
+   */
+
+  /**
+   * Handler used to track how long the user has been holding the undo keybind.
+   */
+  var undoKeyHandler:TurboKeyHandler = TurboKeyHandler.build([FlxKey.CONTROL, FlxKey.Z]);
+
+  /**
+   * Variable used to track how long the user has been holding the redo keybind.
+   */
+  var redoKeyHandler:TurboKeyHandler = TurboKeyHandler.build([FlxKey.CONTROL, FlxKey.Y]);
+
+  /**
    * ==============================
    * DIRTY FLAGS
    * ==============================
@@ -224,7 +254,7 @@ class StageEditorState extends UIState
     // Called only when the WHOLE LIST is overridden.
     previousWorkingFilePaths = value;
     applyWindowTitle();
-    // populateOpenRecentMenu();
+    populateOpenRecentMenu();
     applyCanQuickSave();
     return value;
   }
@@ -270,7 +300,7 @@ class StageEditorState extends UIState
       previousWorkingFilePaths.pop();
     }
 
-    // populateOpenRecentMenu();
+    populateOpenRecentMenu();
     applyWindowTitle();
 
     return value;
@@ -525,6 +555,8 @@ class StageEditorState extends UIState
     // Show the mouse cursor.
     Cursor.show();
 
+    loadPreferences();
+
     uiCamera = new FunkinCamera('stageEditorUI');
     stageCamera = new FlxCamera();
 
@@ -569,6 +601,72 @@ class StageEditorState extends UIState
       var welcomeDialog = this.openWelcomeDialog(false);
       // if (shouldShowBackupAvailableDialog) this.openBackupAvailableDialog(welcomeDialog);
     }
+  }
+
+  public function loadPreferences():Void
+  {
+    var save:Save = Save.instance;
+
+    if (previousWorkingFilePaths[0] == null)
+    {
+      previousWorkingFilePaths = [null].concat(save.stageEditorPreviousFiles);
+    }
+    else
+    {
+      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.stageEditorPreviousFiles);
+    }
+    trace(previousWorkingFilePaths);
+    trace(currentWorkingFilePath);
+
+    moveStep = Std.parseInt(StringTools.replace(save.stageEditorMoveStep, "px", ""));
+    angleStep = save.stageEditorAngleStep;
+    currentTheme = save.stageEditorTheme;
+  }
+
+  public function writePreferences():Void
+  {
+    var save:Save = Save.instance;
+
+    var filteredWorkingFilePaths:Array<String> = [];
+    for (path in previousWorkingFilePaths)
+      if (path != null) filteredWorkingFilePaths.push(path);
+    save.stageEditorPreviousFiles = filteredWorkingFilePaths;
+
+    // if (hasBackup) trace('Queuing backup prompt for next time!');
+    // save.stageEditorHasBackup = hasBackup;
+
+    save.stageEditorMoveStep = '${moveStep}px';
+    save.stageEditorAngleStep = angleStep;
+    save.stageEditorTheme = currentTheme;
+  }
+
+  public function populateOpenRecentMenu():Void
+  {
+    if (menubarItemOpenRecent == null) return;
+
+    #if sys
+    menubarItemOpenRecent.removeAllComponents();
+
+    for (stagePath in previousWorkingFilePaths)
+    {
+      if (stagePath == null) continue;
+
+      var menuItemRecentStage:MenuItem = new MenuItem();
+      menuItemRecentStage.text = stagePath;
+      // menuItemRecentStage.onClick  add logic
+
+      if (!FileUtil.fileExists(stagePath))
+      {
+        trace('Previously loaded stage file (${stagePath.toString()}) does not exist, disabling link...');
+        menuItemRecentStage.disabled = true;
+      }
+      else menuItemRecentStage.disabled = false;
+
+      menubarItemOpenRecent.addComponent(menuItemRecentStage);
+    }
+    #else
+    menubarItemOpenRecent.hide();
+    #end
   }
 
   /**
@@ -698,15 +796,17 @@ class StageEditorState extends UIState
     }
 
     handleMenubar();
+    
+    handleFileKeybinds();
+    handleEditKeybinds();
   }
 
   function setupUIListeners():Void
   {
-    menubarItemNewStage.onClick = _ -> this.openWelcomeDialog();
+    menubarItemNewStage.onClick = _ -> this.openWelcomeDialog(true);
     // other stuff here
     menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
-    menubarItemDelete.onClick = _ ->
-    {
+    menubarItemDelete.onClick = _ -> {
       if (selectedProp != null) performCommand(new DeleteObjectCommand(selectedProp));
       else this.error('No Object Selected', 'Please select an object to delete.');
     };
@@ -819,6 +919,56 @@ class StageEditorState extends UIState
         menubarItemRedo.disabled = false;
         menubarItemRedo.text = 'Redo ${redoHistory[redoHistory.length - 1].toString()}';
       }
+    }
+  }
+
+  /**
+   * Small helper for MacOS, "WINDOWS" is keycode 15, which maps to "COMMAND" on Mac, which is more often used than "CONTROL"
+   * Everywhere else, it just returns `FlxG.keys.pressed.CONTROL`
+   * @return Bool
+   */
+  function pressingControl():Bool
+  {
+    #if mac
+    return FlxG.keys.pressed.WINDOWS;
+    #else
+    return FlxG.keys.pressed.CONTROL;
+    #end
+  }
+
+  /**
+   * Handle keybinds for File menu items.
+   */
+  function handleFileKeybinds():Void
+  {
+    // CTRL + N = New Stage
+    if (pressingControl() && FlxG.keys.justPressed.N && !isHaxeUIDialogOpen)
+    {
+      this.openWelcomeDialog(true);
+    }
+
+    // CTRL + O = Open Stage
+    //
+
+    // CTRL + Q = Quit to Menu
+    //
+  }
+
+  /**
+   * Handle keybinds for edit menu items.
+   */
+  function handleEditKeybinds():Void
+  {
+    // CTRL + Z = Undo
+    if (undoKeyHandler.activated)
+    {
+      undoLastCommand();
+    }
+
+    // CTRL + Y = Redo
+    if (redoKeyHandler.activated)
+    {
+      redoLastCommand();
     }
   }
 
