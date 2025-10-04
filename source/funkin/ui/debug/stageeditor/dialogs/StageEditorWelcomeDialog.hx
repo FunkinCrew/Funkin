@@ -24,15 +24,15 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
     this.boxDrag.onClick = _ -> onClickBoxDrag();
 
     // Add items to the Recent Stages list
-    // #if sys
-    // for (stageFilePath in stageEditorState.previousWorkingFilePaths)
-    // {
-    //   if (stageFilePath == null) continue;
-    //   this.addRecentFilePath(stageEditorState, stageFilePath);
-    // }
-    // #else
-    // // this.addHTML5RecentFileMessage();
-    // #end
+    #if sys
+    for (stageFilePath in stageEditorState.previousWorkingFilePaths)
+    {
+      if (stageFilePath == null) continue;
+      this.addRecentFilePath(stageEditorState, stageFilePath);
+    }
+    #else
+    this.addHTML5RecentFileMessage();
+    #end
 
     #if FILE_DROP_SUPPORTED
     state.addDropHandler(
@@ -103,8 +103,21 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
       linkRecentStage.disabled = true;
     }
 
-    contentRecent.addComponent(linkRecentStage);
+    splashRecentContainer.addComponent(linkRecentStage);
   }
+
+  /**
+   * Add a string message to the "Open Recent" scroll box on the left.
+   * Only displays on platforms which don't support direct file system access.
+   */
+  public function addHTML5RecentFileMessage():Void
+  {
+    var webLoadLabel:Label = new Label();
+    webLoadLabel.text = 'Click the button below to load a chart file (.fnfc) from your computer.';
+
+    splashRecentContainer.addComponent(webLoadLabel);
+  }
+
 
   public function onClickBoxDrag():Void
   {
