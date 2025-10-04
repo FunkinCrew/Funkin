@@ -215,7 +215,7 @@ class StageEditorAssetDataHandler
    * This removes any bitmaps that are not being used by any props.
    * This is useful for keeping the memory usage low, especially when there are a lot of props.
    */
-  public function removeUnusedBitmaps()
+  public static function removeUnusedBitmaps(state:StageEditorState):Void
   {
     var usedBitmaps:Array<String> = [];
 
@@ -251,6 +251,22 @@ class StageEditorAssetDataHandler
 
     bitmaps.set("image" + id, newBitmap);
     return "image" + id;
+  }
+
+  public static function sortObjects(state:StageEditorState):Void
+  {
+    state.sortAssets();
+    state.spriteArray = [];
+
+    for (item in state.members)
+    {
+      if (Std.is(item, StageEditorObject)) state.spriteArray.push(cast item);
+    }
+  }
+
+  public static function sortAssets(state:StageEditorState):Void
+  {
+    state.sort(funkin.util.SortUtil.byZIndex, flixel.util.FlxSort.ASCENDING);
   }
 }
 

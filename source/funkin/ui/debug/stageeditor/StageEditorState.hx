@@ -10,6 +10,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.graphics.FlxGraphic;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
@@ -17,6 +18,7 @@ import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.save.Save;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
+import funkin.ui.debug.stageeditor.commands.DeleteObjectCommand;
 import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -47,7 +49,7 @@ import openfl.display.BitmapData;
  * Some functionality is split into handler classes (just like in the Chart Editor) so that people would not go insane.
  *
  * @author KoloInDaCrib NEVER FORGET!!!
- * @author Code refractored by anysad
+ * @author anysad (refactored code)
  */
 // @:nullSafety // stupid haxe-ui having non-null safe macros
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/stage-editor/main-view.xml"))
@@ -108,6 +110,11 @@ class StageEditorState extends UIState
    */
 
   /**
+   * A timer used to auto-save the chart after a period of inactivity.
+   */
+  var autoSaveTimer:Null<FlxTimer> = null;
+
+  /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
    * Currently hardcoded to just Light and Dark.
@@ -123,9 +130,9 @@ class StageEditorState extends UIState
     return value;
   }
 
-  public var selectedProp(default, set):StageEditorObject = null;
+  public var selectedProp(default, set):Null<StageEditorObject> = null;
 
-  function set_selectedProp(value:StageEditorObject):StageEditorObject
+  function set_selectedProp(value:Null<StageEditorObject>):StageEditorObject
   {
     selectedProp?.selectedShader.setAmount(0);
     this.selectedProp = value;
@@ -155,6 +162,130 @@ class StageEditorState extends UIState
    * The list of commands that have been undone. Used for redoing previous actions.
    */
   var redoHistory:Array<StageEditorCommand> = [];
+
+  /**
+   * ==============================
+   * DIRTY FLAGS
+   * ==============================
+   */
+
+  /**
+   * Whether the stage has been modified since it was last saved.
+   * Used to determine whether to auto-save, etc.
+   */
+  var saveDataDirty(default, set):Bool = false;
+
+  function set_saveDataDirty(value:Bool):Bool
+  {
+    if (value == saveDataDirty) return value;
+
+    if (value)
+    {
+      // Start the auto-save timer.
+      // autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
+    }
+    else
+    {
+      if (autoSaveTimer != null)
+      {
+        // Stop the auto-save timer.
+        autoSaveTimer.cancel();
+        autoSaveTimer.destroy();
+        autoSaveTimer = null;
+      }
+    }
+
+    saveDataDirty = value;
+    applyWindowTitle();
+    return saveDataDirty;
+  }
+
+  // var shouldShowBackupAvailableDialog(get, set):Bool;
+
+  // function get_shouldShowBackupAvailableDialog():Bool
+  // {
+  //   return Save.instance.chartEditorHasBackup && ChartEditorImportExportHandler.getLatestBackupPath() != null;
+  // }
+
+  // function set_shouldShowBackupAvailableDialog(value:Bool):Bool
+  // {
+  //   return Save.instance.chartEditorHasBackup = value;
+  // }
+
+  /**
+   * A list of previous working file paths.
+   * Also known as the "recent files" list.
+   * The first element is [null] if the current working file has not been saved anywhere yet.
+   */
+  public var previousWorkingFilePaths(default, set):Array<Null<String>> = [null];
+
+  function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>>
+  {
+    // Called only when the WHOLE LIST is overridden.
+    previousWorkingFilePaths = value;
+    applyWindowTitle();
+    // populateOpenRecentMenu();
+    applyCanQuickSave();
+    return value;
+  }
+
+  /**
+   * The current file path which the stage editor is working with.
+   * If `null`, the current stage has not been saved yet.
+   */
+  public var currentWorkingFilePath(get, set):Null<String>;
+
+  function get_currentWorkingFilePath():Null<String>
+  {
+    return previousWorkingFilePaths[0];
+  }
+
+  function set_currentWorkingFilePath(value:Null<String>):Null<String>
+  {
+    if (value == previousWorkingFilePaths[0]) return value;
+
+    if (previousWorkingFilePaths.contains(null))
+    {
+      // Filter all instances of `null` from the array.
+      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
+        return x != null;
+      });
+    }
+
+    if (previousWorkingFilePaths.contains(value))
+    {
+      // Move the path to the front of the list.
+      previousWorkingFilePaths.remove(value);
+      previousWorkingFilePaths.unshift(value);
+    }
+    else
+    {
+      // Add the path to the front of the list.
+      previousWorkingFilePaths.unshift(value);
+    }
+
+    while (previousWorkingFilePaths.length > Constants.MAX_PREVIOUS_WORKING_FILES)
+    {
+      // Remove the last path in the list.
+      previousWorkingFilePaths.pop();
+    }
+
+    // populateOpenRecentMenu();
+    applyWindowTitle();
+
+    return value;
+  }
+
+  /**
+   * Whether the undo/redo histories have changed since the last time the UI was updated.
+   */
+  var commandHistoryDirty:Bool = true;
+
+  /**
+   * If true, we are currently in the process of quitting the stage editor.
+   * Skip any update functions as most of them will call a crash.
+   */
+  var criticalFailure:Bool = false;
 
   /**
    * ==============================
@@ -405,7 +536,7 @@ class StageEditorState extends UIState
     this.updateTheme();
     buildGrid();
 
-    // initCharacters();
+    initCharacters();
     initVisuals();
 
     setupUIListeners();
@@ -463,7 +594,7 @@ class StageEditorState extends UIState
    */
   function buildGrid():Void
   {
-    if (gridBitmap == null) throw 'ERROR: Tried to build grid, but gridBitmap is null! Check ChartEditorThemeHandler.updateTheme().';
+    if (gridBitmap == null) throw 'ERROR: Tried to build grid, but gridBitmap is null! Check StageEditorThemeHandler.updateTheme().';
 
     gridTiledSprite = new FlxTiledSprite(gridBitmap, gridBitmap.width, gridBitmap.height, true, true);
     gridTiledSprite.scrollFactor.set();
@@ -557,6 +688,16 @@ class StageEditorState extends UIState
   public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    stageCamera.follow(cameraFollowPoint);
+
+    if ((FlxG.mouse.wheel > 0 || (FlxG.mouse.wheel < 0 && stageCamera.zoom > 0.11)) && !isCursorOverHaxeUI)
+    {
+      stageCamera.zoom += FlxG.mouse.wheel / 10;
+      this.updateGridBitmapSize();
+    }
+
+    handleMenubar();
   }
 
   function setupUIListeners():Void
@@ -564,6 +705,11 @@ class StageEditorState extends UIState
     menubarItemNewStage.onClick = _ -> this.openWelcomeDialog();
     // other stuff here
     menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
+    menubarItemDelete.onClick = _ ->
+    {
+      if (selectedProp != null) performCommand(new DeleteObjectCommand(selectedProp));
+      else this.error('No Object Selected', 'Please select an object to delete.');
+    };
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
   }
 
@@ -585,7 +731,7 @@ class StageEditorState extends UIState
     if (command.shouldAddToHistory(this))
     {
       undoHistory.push(command);
-      // commandHistoryDirty = true;
+      commandHistoryDirty = true;
     }
     if (purgeRedoStack) redoHistory = [];
   }
@@ -600,7 +746,7 @@ class StageEditorState extends UIState
     // Note, if we are undoing a command, it should already be in the history,
     // therefore we don't need to check `shouldAddToHistory(state)`
     redoHistory.push(command);
-    // commandHistoryDirty = true;
+    commandHistoryDirty = true;
   }
 
   /**
@@ -629,6 +775,65 @@ class StageEditorState extends UIState
       return;
     }
     performCommand(command, false);
+  }
+
+  /**
+   * ==============================
+   * STATIC FUNCTIONS
+   * ==============================
+   */
+
+  /**
+   * Handles passive behavior of the menu bar, such as updating labels or enabled/disabled status.
+   * Does not handle onClick ACTIONS of the menubar.
+   */
+  function handleMenubar():Void
+  {
+    if (commandHistoryDirty)
+    {
+      commandHistoryDirty = false;
+
+      // Update the Undo and Redo buttons.
+      if (undoHistory.length == 0)
+      {
+        // Disable the Undo button.
+        menubarItemUndo.disabled = true;
+        menubarItemUndo.text = 'Undo';
+      }
+      else
+      {
+        // Change the label to the last command.
+        menubarItemUndo.disabled = false;
+        menubarItemUndo.text = 'Undo ${undoHistory[undoHistory.length - 1].toString()}';
+      }
+
+      if (redoHistory.length == 0)
+      {
+        // Disable the Redo button.
+        menubarItemRedo.disabled = true;
+        menubarItemRedo.text = 'Redo';
+      }
+      else
+      {
+        // Change the label to the last command.
+        menubarItemRedo.disabled = false;
+        menubarItemRedo.text = 'Redo ${redoHistory[redoHistory.length - 1].toString()}';
+      }
+    }
+  }
+
+  function applyCanQuickSave():Void
+  {
+    if (menubarItemSaveStage == null) return;
+
+    if (currentWorkingFilePath == null)
+    {
+      menubarItemSaveStage.disabled = true;
+    }
+    else
+    {
+      menubarItemSaveStage.disabled = false;
+    }
   }
 
   function applyWindowTitle():Void

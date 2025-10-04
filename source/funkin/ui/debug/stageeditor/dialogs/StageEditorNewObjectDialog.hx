@@ -1,7 +1,7 @@
 package funkin.ui.debug.stageeditor.dialogs;
 
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
-import funkin.ui.debug.stageeditor.commands.StageEditorNewObjectCommand;
+import funkin.ui.debug.stageeditor.commands.AddObjectCommand;
 import openfl.display.BitmapData;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
@@ -31,7 +31,7 @@ class StageEditorNewObjectDialog extends StageEditorBaseDialog
         }
         else
         {
-          stageEditorState.performCommand(new StageEditorNewObjectCommand(this.inputField.text, bitmapData));
+          stageEditorState.performCommand(new AddObjectCommand(this.inputField.text, bitmapData));
         }
       }
     }
