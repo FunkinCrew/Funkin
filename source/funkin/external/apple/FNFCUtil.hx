@@ -7,6 +7,6 @@ package funkin.external.apple;
 extern class FNFCUtil
 {
   @:native('copyFNFCIntoCache')
-  static function copyFNFCIntoCache(url:cpp.ConstCharStar):cpp.ConstCharStar;
+  static function copyFNFCIntoCache(url:cpp.ConstCharStar, callback:cpp.Callable<(event:cpp.ConstCharStar, value:cpp.ConstCharStar) -> Void>):Void;
 }
 #end

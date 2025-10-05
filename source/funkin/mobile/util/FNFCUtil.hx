@@ -24,24 +24,18 @@ class FNFCUtil
     #if ios
     FlxG.stage.window.onDropFile.add(function(_) {
       final url = queryFNFC();
-      if (url != null) onFNFCOpen.dispatch(getFNFCFromURL(url));
+      if (url != null) getFNFCFromURL(url);
     });
     #elseif android
     CallbackUtil.onFNFCOpen.add(onFNFCOpen.dispatch);
     #end
-
-    final fnfcFile:String = queryFNFC();
-
-    if (fnfcFile != null)
-    {
-      trace('Got FNFC File from $fnfcFile!');
-    }
   }
 
   public static function queryFNFC():Null<String>
   {
     #if ios
-    return System.getHint("IOS_UIApplicationLaunchOptionsURLKey");
+    final fileURL:Null<String> = System.getHint("IOS_UIApplicationLaunchOptionsURLKey");
+    if (fileURL != null && fileURL.length > 0) getFNFCFromURL(fileURL);
     #elseif android
     final staticField = JNIUtil.createStaticField('funkin/extensions/FNFCExtension', 'lastFNFC', 'Ljava/lang/String;');
     if (staticField != null) return staticField.get();
@@ -50,20 +44,32 @@ class FNFCUtil
   }
 
   #if ios
-  /**
-   * Copy a FNFC file from an iOS sandboxed URL into the cache directory and returns it's absolute path from there.
-   * @param url A iOS `file://` URL.
-   * @return    The new path that the file the URL points at inside of the cache directory.
-   */
   @:noCompletion
-  private static function getFNFCFromURL(url:String):String
+  private static var _lastFNFC:Null<String> = null;
+
+  @:noCompletion
+  private static function getFNFCFromURL(url:String):Void
   {
     var cURL:cpp.ConstCharStar = cast url;
+    NativeFNFCUtil.copyFNFCIntoCache(cURL, cpp.Callable.fromStaticFunction(fnfcCallback));
+  }
 
-    var cPath:cpp.ConstCharStar = NativeFNFCUtil.copyFNFCIntoCache(cURL);
+  @:noCompletion
+  private static function fnfcCallback(cEvent:cpp.ConstCharStar, cValue:cpp.ConstCharStar)
+  {
+    var event:String = cast cEvent;
+    var value:String = cast cValue;
 
-    var path:String = cast cPath;
-    return path;
+    if (event != null && value != null)
+    {
+      trace('[$event] $value');
+      switch (event)
+      {
+        case "FNFC_RESULTS":
+          onFNFCOpen.dispatch(value);
+        default:
+      }
+    }
   }
   #end
 }
