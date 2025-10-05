@@ -155,13 +155,16 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
         continue;
       }
 
-      this.addTemplateStage(stageName, (_) -> {
+      this.addTemplateStage(stageName, stageId, (_) -> {
         this.hideDialog(DialogButton.CANCEL);
+
+        // Load song from template
+        chartEditorState.loadSongAsTemplate(targetStageId);
       });
     }
   }
 
-  public function addTemplateStage(stageName:String, onClickCb:(MouseEvent) -> Void):Void
+  public function addTemplateStage(stageName:String, stageId:String, onClickCb:(MouseEvent) -> Void):Void
   {
     var linkTemplateStage:Link = new Link();
     linkTemplateStage.text = stageName;

@@ -21,7 +21,7 @@ import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.save.Save;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
-import funkin.ui.debug.stageeditor.commands.DeleteObjectCommand;
+import funkin.ui.debug.stageeditor.commands.RemoveObjectCommand;
 import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
@@ -155,9 +155,9 @@ class StageEditorState extends UIState
     return selectedProp;
   }
 
-  public var selectedCharacter(default, set):BaseCharacter = null;
+  public var selectedCharacter(default, set):Null<BaseCharacter> = null;
 
-  function set_selectedCharacter(value:BaseCharacter)
+  function set_selectedCharacter(value:Null<BaseCharacter>):BaseCharacter
   {
     this.selectedCharacter = value;
     // update dialog
@@ -239,17 +239,17 @@ class StageEditorState extends UIState
     return saveDataDirty;
   }
 
-  // var shouldShowBackupAvailableDialog(get, set):Bool;
+  var shouldShowBackupAvailableDialog(get, set):Bool;
 
-  // function get_shouldShowBackupAvailableDialog():Bool
-  // {
-  //   return Save.instance.chartEditorHasBackup && ChartEditorImportExportHandler.getLatestBackupPath() != null;
-  // }
+  function get_shouldShowBackupAvailableDialog():Bool
+  {
+    return Save.instance.stageEditorHasBackup && StageEditorImportExportHandler.getLatestBackupPath() != null;
+  }
 
-  // function set_shouldShowBackupAvailableDialog(value:Bool):Bool
-  // {
-  //   return Save.instance.chartEditorHasBackup = value;
-  // }
+  function set_shouldShowBackupAvailableDialog(value:Bool):Bool
+  {
+    return Save.instance.stageEditorHasBackup = value;
+  }
 
   /**
    * A list of previous working file paths.
@@ -716,9 +716,7 @@ class StageEditorState extends UIState
     }
     else if (params != null && params.targetStageId != null)
     {
-      trace(currentStageZoom);
       this.loadStageAsTemplate(params.targetStageId);
-      trace(currentStageZoom);
     }
     else
     {
@@ -747,7 +745,7 @@ class StageEditorState extends UIState
     currentTheme = save.stageEditorTheme;
   }
 
-  public function writePreferences():Void
+  public function writePreferences(hasBackup:Bool):Void
   {
     var save:Save = Save.instance;
 
@@ -756,8 +754,8 @@ class StageEditorState extends UIState
       if (path != null) filteredWorkingFilePaths.push(path);
     save.stageEditorPreviousFiles = filteredWorkingFilePaths;
 
-    // if (hasBackup) trace('Queuing backup prompt for next time!');
-    // save.stageEditorHasBackup = hasBackup;
+    if (hasBackup) trace('Queuing backup prompt for next time!');
+    save.stageEditorHasBackup = hasBackup;
 
     save.stageEditorMoveStep = '${moveStep}px';
     save.stageEditorAngleStep = angleStep;
@@ -826,7 +824,6 @@ class StageEditorState extends UIState
     gridTiledSprite = new FlxTiledSprite(gridBitmap, gridBitmap.width, gridBitmap.height, true, true);
     gridTiledSprite.scrollFactor.set();
     add(gridTiledSprite);
-    // gridTiledSprite.zIndex = 10;
   }
 
   function initCharacters():Void
@@ -936,7 +933,7 @@ class StageEditorState extends UIState
     // other stuff here
     menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
     menubarItemDelete.onClick = _ -> {
-      if (selectedProp != null) performCommand(new DeleteObjectCommand(selectedProp));
+      if (selectedProp != null) performCommand(new RemoveObjectCommand(selectedProp));
       else this.error('No Object Selected', 'Please select an object to delete.');
     };
     menubarItemWindowStage.onChange = event -> this.setToolboxState(STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
