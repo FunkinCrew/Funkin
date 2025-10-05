@@ -47,10 +47,7 @@ class HaxeUISubState extends MusicBeatSubState
     if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
 
     // Refresh the component.
-    if (FlxG.keys.justPressed.F5)
-    {
-      refreshComponent();
-    }
+    if (controls.HOT_RELOAD) refreshComponent();
   }
 
   function refreshComponent()
