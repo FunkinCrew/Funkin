@@ -3090,24 +3090,23 @@ class PlayState extends MusicBeatSubState
     if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
       && iconP1 != null) iconP1.toggleOldIcon();
 
-    #if FEATURE_DEBUG_FUNCTIONS
-    // PAGEUP: Skip forward two sections.
-    // SHIFT+PAGEUP: Skip forward twenty sections.
-    if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
-    // PAGEDOWN: Skip backward two section. Doesn't replace notes.
-    // SHIFT+PAGEDOWN: Skip backward twenty sections.
-    if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
-    #else
-    if (isChartingMode)
+    final isDebug:Bool = #if FEATURE_DEBUG_FUNCTIONS true #else false #end;
+    if (isChartingMode || isDebug)
     {
       // PAGEUP: Skip forward two sections.
       // SHIFT+PAGEUP: Skip forward twenty sections.
-      if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
+      if (FlxG.keys.justPressed.PAGEUP)
+      {
+        changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2, true);
+      }
+
       // PAGEDOWN: Skip backward two section. Doesn't replace notes.
       // SHIFT+PAGEDOWN: Skip backward twenty sections.
-      if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
+      if (FlxG.keys.justPressed.PAGEDOWN)
+      {
+        changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2, true);
+      }
     }
-    #end
   }
 
   /**
@@ -3896,7 +3895,7 @@ class PlayState extends MusicBeatSubState
      * Accounts for BPM changes, does not prevent death from skipped notes.
      * @param sections The number of sections to jump, negative to go backwards.
      */
-  function changeSection(sections:Int):Void
+  function changeSection(sections:Int, preventDeath:Bool = false):Void
   {
     // FlxG.sound.music.pause();
 
@@ -3913,7 +3912,7 @@ class PlayState extends MusicBeatSubState
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-    // regenNoteData(FlxG.sound.music.time);
+    if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 
