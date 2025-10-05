@@ -544,11 +544,6 @@ class PlayState extends MusicBeatSubState
   public var camHUD:FlxCamera;
 
   /**
-   * The camera which contains, and controls visibility of, the subtitles.
-   */
-  public var camSubtitles:FlxCamera;
-
-  /**
    * The camera which contains, and controls visibility of, the stage and characters.
    */
   public var camGame:FlxCamera;
@@ -568,6 +563,11 @@ class PlayState extends MusicBeatSubState
    * The camera which contains, and controls visibility of menus when there are fake cutouts added.
    */
   public var camCutouts:FlxCamera;
+
+  /**
+   * The camera which contains, and controls visibility of, the subtitles.
+   */
+  public var camSubtitles:FlxCamera;
 
   /**
    * The camera which contains, and controls visibility of, pause menu.
@@ -733,9 +733,9 @@ class PlayState extends MusicBeatSubState
     // Cameras
     camGame = new FunkinCamera('playStateCamGame');
     camHUD = new FlxCamera();
-    camSubtitles = new FlxCamera();
     camCutscene = new FlxCamera();
     camCutouts = new FlxCamera();
+    camSubtitles = new FlxCamera();
     camPause = new FlxCamera();
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
@@ -1864,18 +1864,18 @@ class PlayState extends MusicBeatSubState
   {
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
-    if (Preferences.subtitles) camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutouts.setPosition((FlxG.width - FlxG.initialWidth) / 2, (FlxG.height - FlxG.initialHeight) / 2);
     camCutouts.setSize(FlxG.initialWidth, FlxG.initialHeight);
     camCutouts.bgColor.alpha = 0; // Show the game scene behind the camera.
+    if (Preferences.subtitles) camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
     camPause.bgColor.alpha = 0; // Show the game scene behind the camera.
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
-    if (Preferences.subtitles) FlxG.cameras.add(camSubtitles, false);
     FlxG.cameras.add(camCutscene, false);
     FlxG.cameras.add(camCutouts, false);
+    if (Preferences.subtitles) FlxG.cameras.add(camSubtitles, false);
     FlxG.cameras.add(camPause, false);
 
     // Configure camera follow point.
