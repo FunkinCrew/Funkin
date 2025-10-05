@@ -40,7 +40,7 @@ import haxe.ui.containers.windows.WindowList;
 import haxe.ui.containers.windows.WindowManager;
 import flixel.FlxObject;
 import haxe.ui.components.Label;
-import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
+import funkin.ui.debug.GraphicCursorCross;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.core.Screen;
 import funkin.util.WindowUtil;
