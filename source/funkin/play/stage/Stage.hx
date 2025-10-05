@@ -167,7 +167,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       var isAnimated = dataProp.animations.length > 0;
 
       var propSprite:StageProp;
-      if (dataProp.danceEvery != 0)
+      if (dataProp.danceEvery != 0 || isAnimated)
       {
         propSprite = new Bopper(dataProp.danceEvery);
       }
@@ -293,9 +293,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         }
       }
 
-      if (dataProp.startingAnimation != null)
+      if (dataProp.startingAnimation != null && propSprite is Bopper)
       {
-        propSprite.animation.play(dataProp.startingAnimation);
+        cast(propSprite, Bopper).playAnimation(dataProp.startingAnimation);
       }
 
       if (Std.isOfType(propSprite, BaseCharacter))
