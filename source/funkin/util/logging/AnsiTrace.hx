@@ -1,7 +1,10 @@
 package funkin.util.logging;
 
 #if (sys && FEATURE_DEBUG_FILE_LOGGING)
+import funkin.util.DateUtil;
+import funkin.util.FileUtil;
 import flixel.math.FlxMath;
+import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.FileOutput;
 import sys.io.File;
@@ -14,7 +17,7 @@ import sys.io.File;
 class AnsiTrace
 {
   #if (sys && FEATURE_DEBUG_FILE_LOGGING)
-  private static final logFileName:String = "logs.txt";
+  private static final logFilePath:String = 'logs/log-${DateUtil.generateTimestamp()}.txt';
   private static var logFile:Null<FileOutput> = null;
   private static var logFileClosed:Bool = false;
   #end
@@ -41,18 +44,19 @@ class AnsiTrace
     untyped __define_feature__("use._hx_print", _hx_print(str));
     #elseif sys
     #if FEATURE_DEBUG_FILE_LOGGING
-    if (logFile == null)
+    if (logFile == null && !logFileClosed)
     {
       try
       {
-        if (FileSystem.exists(logFileName)) FileSystem.deleteFile(logFileName);
+        FileUtil.createDirIfNotExists(Path.directory(logFilePath));
+        if (FileSystem.exists(logFilePath)) FileSystem.deleteFile(logFilePath);
       }
       catch (_)
       {
         logFileClosed = true;
       }
 
-      if (!logFileClosed) logFile = File.write(logFileName);
+      if (!logFileClosed) logFile = File.write(logFilePath);
 
       lime.app.Application.current.onExit.add((_) -> {
         if (logFile != null && !logFileClosed) logFile.close();
