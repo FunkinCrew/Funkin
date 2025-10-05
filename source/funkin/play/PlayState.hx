@@ -3892,8 +3892,9 @@ class PlayState extends MusicBeatSubState
 
   /**
      * Jumps forward or backward a number of sections in the song.
-     * Accounts for BPM changes, does not prevent death from skipped notes.
+     * Accounts for BPM changes.
      * @param sections The number of sections to jump, negative to go backwards.
+     * @param preventDeath Decides if time skip should prevent player from dying.
      */
   function changeSection(sections:Int, preventDeath:Bool = false):Void
   {
