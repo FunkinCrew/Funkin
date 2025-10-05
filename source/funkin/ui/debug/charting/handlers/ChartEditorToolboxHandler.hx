@@ -204,14 +204,14 @@ class ChartEditorToolboxHandler
    * @param id The asset ID of the toolbox layout.
    * @return The toolbox.
    */
-  public static function getToolbox_OLD(state:ChartEditorState, id:String):Null<CollapsibleDialog>
+  public static function getToolboxUnCast(state:ChartEditorState, id:String):Null<CollapsibleDialog>
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     // Initialize the toolbox without showing it.
     if (toolbox == null) toolbox = initToolbox(state, id);
 
-    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolbox_OLD() - Could not retrieve or build toolbox: $id';
+    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolboxUnCast() - Could not retrieve or build toolbox: $id';
 
     return toolbox;
   }
@@ -346,8 +346,8 @@ class ChartEditorToolboxHandler
     if (toolbox == null) return null;
 
     // Starting position.
-    toolbox.x = 200;
-    toolbox.y = 350;
+    toolbox.x = 700;
+    toolbox.y = 150;
 
     toolbox.onDialogClosed = function(event:DialogEvent) {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
@@ -376,14 +376,14 @@ class ChartEditorToolboxHandler
 
     // Starting position.
     toolbox.x = 200;
-    toolbox.y = 350;
+    toolbox.y = 150;
 
     toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.menubarItemToggleToolboxOpponentPreview.selected = false;
     }
 
-    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charPlayer');
-    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxOpponentPreviewLayout() - Could not find charPlayer component.';
+    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charOpponent');
+    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxOpponentPreviewLayout() - Could not find charOpponent component.';
     // TODO: We need to implement character swapping in ChartEditorState.
     charPlayer.loadCharacter('dad');
     charPlayer.characterType = CharacterType.DAD;
