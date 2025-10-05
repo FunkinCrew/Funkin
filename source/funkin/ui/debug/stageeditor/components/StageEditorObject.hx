@@ -92,7 +92,8 @@ class StageEditorObject extends FunkinSprite
       var data = animData[name];
       if (data != null && data.offsets != null) offset.set(data.offsets[0], data.offsets[1]);
     }
-    else offset.set();
+    else
+      offset.set();
   }
 
   public function dance(restart:Bool = false):Void
@@ -107,17 +108,21 @@ class StageEditorObject extends FunkinSprite
     if (shouldAlternate)
     {
       if (hasDanced) playAnimation('danceRight', restart);
-      else playAnimation('danceLeft', restart);
+      else
+        playAnimation('danceLeft', restart);
 
       hasDanced = !hasDanced;
     }
-    else playAnimation('idle', restart);
+    else
+      playAnimation('idle', restart);
   }
 
-  public function addAnimation(name:String, prefix:String, offsets:Array<Float>, indices:Array<Int>, frameRate:Int = 24, looped:Bool = true, flipX:Bool = false, flipY:Bool = false):Void
+  public function addAnimation(name:String, prefix:String, offsets:Array<Float>, indices:Array<Int>, frameRate:Int = 24, looped:Bool = true,
+      flipX:Bool = false, flipY:Bool = false):Void
   {
     if (indices.length > 0) animation.addByIndices(name, prefix, indices, "", frameRate, looped, flipX, flipY);
-    else animation.addByPrefix(name, prefix, frameRate, looped, flipX, flipY);
+    else
+      animation.addByPrefix(name, prefix, frameRate, looped, flipX, flipY);
 
     if (animation.getNameList().contains(name))
     {

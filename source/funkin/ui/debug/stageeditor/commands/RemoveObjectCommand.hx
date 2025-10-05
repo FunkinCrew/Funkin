@@ -4,7 +4,7 @@ import funkin.ui.debug.stageeditor.components.StageEditorObject;
 
 @:nullSafety
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
-class DeleteObjectCommand implements StageEditorCommand
+class RemoveObjectCommand implements StageEditorCommand
 {
   var object:StageEditorObject;
 
@@ -16,7 +16,7 @@ class DeleteObjectCommand implements StageEditorCommand
   public function execute(state:StageEditorState):Void
   {
     if (object == null) return;
-    
+
     state.spriteArray.remove(object);
 
     state.remove(object, true);
@@ -36,6 +36,6 @@ class DeleteObjectCommand implements StageEditorCommand
   public function toString():String
   {
     var objectID = if (object != null) object.name else "Unknown";
-    return 'Removed Object with ID $objectID';
+    return 'Remove Object with ID $objectID';
   }
 }

@@ -25,9 +25,9 @@ class StageEditorAssetDataHandler
   // }
 
   /**
-   * An array of all the props in the stage editor.
+   * An array of all the prop bitmaps in the stage editor.
    * This is used to keep track of all the props, and to easily iterate over them,
-   * as well as making sure to optimize rendering by only rendering the props in this array.
+   * making sure to optimize saving files by not saving duplicate/unused bitmaps.
    */
   public static var bitmaps:Map<String, BitmapData> = [];
 

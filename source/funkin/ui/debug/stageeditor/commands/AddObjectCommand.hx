@@ -47,6 +47,6 @@ class AddObjectCommand implements StageEditorCommand
 
   public function toString():String
   {
-    return 'Added Object with ID $objectID';
+    return 'Add Object with ID $objectID';
   }
 }
