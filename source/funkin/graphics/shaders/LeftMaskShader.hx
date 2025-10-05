@@ -28,8 +28,8 @@ class LeftMaskShader extends FlxShader
     trace("SETTING FRAMEUV");
     trace(uv);
 
-    uvFrameX.value[0] = uv.x;
-    uvFrameY.value[0] = uv.y;
+    uvFrameX.value[0] = uv.left;
+    uvFrameY.value[0] = uv.top;
 
     return uv;
   }
