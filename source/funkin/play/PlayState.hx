@@ -1864,7 +1864,7 @@ class PlayState extends MusicBeatSubState
   {
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
     camHUD.bgColor.alpha = 0; // Show the game scene behind the camera.
-    camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
+    if (Preferences.subtitles) camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutscene.bgColor.alpha = 0; // Show the game scene behind the camera.
     camCutouts.setPosition((FlxG.width - FlxG.initialWidth) / 2, (FlxG.height - FlxG.initialHeight) / 2);
     camCutouts.setSize(FlxG.initialWidth, FlxG.initialHeight);
@@ -1873,7 +1873,7 @@ class PlayState extends MusicBeatSubState
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
-    FlxG.cameras.add(camSubtitles, false);
+    if (Preferences.subtitles) FlxG.cameras.add(camSubtitles, false);
     FlxG.cameras.add(camCutscene, false);
     FlxG.cameras.add(camCutouts, false);
     FlxG.cameras.add(camPause, false);
@@ -1921,15 +1921,20 @@ class PlayState extends MusicBeatSubState
     scoreText.zIndex = 802;
     add(scoreText);
 
-    subtitles = new Subtitles(healthBarBG.y * 0.85);
-    subtitles.zIndex = 10000;
-    add(subtitles);
-
     // Move the health bar to the HUD camera.
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
-    subtitles.cameras = [camSubtitles];
+
+    // Create subtitles if they are enabled.
+    if (Preferences.subtitles)
+    {
+      subtitles = new Subtitles(healthBarBG.y * 0.85);
+      subtitles.zIndex = 10000;
+      add(subtitles);
+
+      subtitles.cameras = [camSubtitles];
+    }
   }
 
   /**
@@ -2491,12 +2496,15 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
 
-    var subtitlesFile = 'songs/${currentSong.id}/subtitles/song-lyrics';
-    if (currentVariation != Constants.DEFAULT_VARIATION)
+    if (Preferences.subtitles)
     {
-      subtitlesFile += '-${currentVariation}';
+      var subtitlesFile = 'songs/${currentSong.id}/subtitles/song-lyrics';
+      if (currentVariation != Constants.DEFAULT_VARIATION)
+      {
+        subtitlesFile += '-${currentVariation}';
+      }
+      if (subtitles != null) subtitles.assignSubtitles(subtitlesFile, FlxG.sound.music);
     }
-    if (subtitles != null) subtitles.assignSubtitles(subtitlesFile, FlxG.sound.music);
 
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;

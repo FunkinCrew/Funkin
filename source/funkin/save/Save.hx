@@ -124,6 +124,7 @@ class Save implements ConsoleClass
           zoomCamera: true,
           debugDisplay: 'Off',
           debugDisplayBGOpacity: 50,
+          subtitles: true,
           hapticsMode: 'All',
           hapticsIntensityMultiplier: 1,
           autoPause: true,
@@ -1617,6 +1618,12 @@ typedef SaveDataOptions =
    * @default `50`
    */
   var debugDisplayBGOpacity:Int;
+
+  /**
+   * If enabled, subtitles will appear.
+   * @default `true`
+   */
+  var subtitles:Bool;
 
   /**
    * If enabled, haptic feedback will be enabled.

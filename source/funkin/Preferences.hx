@@ -541,6 +541,25 @@ class Preferences
     Main.debugDisplay.backgroundOpacity = value;
   }
 
+  /**
+   * If enabled, subtitles will appear.
+   * @default `true`
+   */
+  public static var subtitles(get, set):Bool;
+
+  static function get_subtitles():Bool
+  {
+    return Save?.instance?.options?.subtitles ?? true;
+  }
+
+  static function set_subtitles(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.subtitles = value;
+    save.flush();
+    return value;
+  }
+
   #if mobile
   /**
    * If enabled, device will be able to sleep on its own.
