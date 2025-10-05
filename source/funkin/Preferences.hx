@@ -267,27 +267,6 @@ class Preferences
     return value;
   }
 
-  #if FEATURE_VIDEO_SUBTITLES
-  /**
-   * If enabled, subtitles will be shown on video cutscenes.
-   * @default `true`
-   */
-  public static var videoSubtitles(get, set):Bool;
-
-  static function get_videoSubtitles():Bool
-  {
-    return Save?.instance?.options?.videoSubtitles ?? true;
-  }
-
-  static function set_videoSubtitles(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.videoSubtitles = value;
-    save.flush();
-    return value;
-  }
-  #end
-
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
