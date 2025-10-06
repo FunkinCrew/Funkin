@@ -13,6 +13,8 @@ import funkin.util.SRTUtil.SRTParser;
  */
 class Subtitles extends FlxSpriteGroup
 {
+  var yOrigin:Float;
+
   var subtitleText:SubtitlesText;
   var background:FlxSprite;
 
@@ -22,6 +24,8 @@ class Subtitles extends FlxSpriteGroup
   public function new(y:Float = 0)
   {
     super(0, y);
+
+    yOrigin = y;
 
     if (!Preferences.subtitles) return;
 
@@ -47,7 +51,7 @@ class Subtitles extends FlxSpriteGroup
     {
       if (assignedSound.time >= data.start && assignedSound.time <= data.end)
       {
-        currentLines.push(data.text);
+        currentLines.unshift(data.text);
 
         hasRefreshedText = true;
       }
@@ -102,6 +106,10 @@ class Subtitles extends FlxSpriteGroup
     subtitleText.text = targetText;
 
     background.makeGraphic(Math.ceil(subtitleText.width), Math.ceil(subtitleText.height), FlxColor.BLACK, true);
+
+    final yOffset:Float = yOrigin - (subtitleText.height / lines.length) * (lines.length - 1);
+    subtitleText.y = yOffset;
+    background.y = yOffset;
 
     screenCenter(X);
   }
