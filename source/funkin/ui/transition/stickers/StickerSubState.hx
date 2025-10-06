@@ -76,11 +76,11 @@ class StickerSubState extends MusicBeatSubState
     this.stickerPack = targetStickerPack ?? StickerRegistry.instance.fetchDefault();
     // TODO: Make this tied to the sticker pack more closely.
     var assetsInList = Assets.list();
-    var soundFilterFunc = function(a:String) {
+    var soundFilterFunc = (a:String) -> {
       return a.startsWith('assets/shared/sounds/stickersounds/');
     };
     soundSelections = assetsInList.filter(soundFilterFunc);
-    soundSelections = soundSelections.map(function(a:String) {
+    soundSelections = soundSelections.map((a:String) -> {
       return a.replace('assets/shared/sounds/stickersounds/', '').split('/')[0];
     });
     grpStickers = new FlxTypedGroup<StickerSprite>();
@@ -94,7 +94,7 @@ class StickerSubState extends MusicBeatSubState
       soundSelections.push(i);
     }
     soundSelection = FlxG.random.getObject(soundSelections);
-    var filterFunc = function(a:String) {
+    var filterFunc = (a:String) -> {
       return a.startsWith('assets/shared/sounds/stickersounds/' + soundSelection + '/');
     };
     var assetsInList3 = Assets.list();

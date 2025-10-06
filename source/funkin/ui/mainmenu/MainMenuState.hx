@@ -154,7 +154,7 @@ class MainMenuState extends MusicBeatState
       startExitState(() -> new StoryMenuState());
     });
 
-    createMenuItem('freeplay', 'mainmenu/freeplay', function() {
+    createMenuItem('freeplay', 'mainmenu/freeplay', () -> {
       persistentDraw = true;
       persistentUpdate = false;
       rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
@@ -200,7 +200,7 @@ class MainMenuState extends MusicBeatState
     {
       add(upgradeSparkles);
 
-      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
+      createMenuItem('upgrade', 'mainmenu/upgrade', () -> {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
         uiStateMachine.transition(Idle);
@@ -210,12 +210,12 @@ class MainMenuState extends MusicBeatState
 
     if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
     {
-      createMenuItem('options', 'mainmenu/options', function() {
+      createMenuItem('options', 'mainmenu/options', () -> {
         startExitState(() -> new funkin.ui.options.OptionsState());
       });
     }
 
-    createMenuItem('credits', 'mainmenu/credits', function() {
+    createMenuItem('credits', 'mainmenu/credits', () -> {
       startExitState(() -> new funkin.ui.credits.CreditsState());
     });
 
@@ -408,7 +408,7 @@ class MainMenuState extends MusicBeatState
     uiStateMachine.transition(Interacting);
     persistentUpdate = false;
 
-    prompt.closeCallback = function() {
+    prompt.closeCallback = () -> {
       // in our closeSubstate override, we set the uiStateMachine, so no need to set here
       if (onClose != null) onClose();
     }

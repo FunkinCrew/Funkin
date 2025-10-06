@@ -496,7 +496,7 @@ class ChartEditorImportExportHandler
     else
     {
       // Prompt and save.
-      var onSave:Array<String>->Void = function(paths:Array<String>) {
+      var onSave:Array<String>->Void = (paths:Array<String>) -> {
         if (paths.length != 1)
         {
           trace('[WARN] Could not get save path.');
@@ -511,7 +511,7 @@ class ChartEditorImportExportHandler
         }
       };
 
-      var onCancel:Void->Void = function() {
+      var onCancel:Void->Void = () -> {
         trace('Export cancelled.');
         if (onCancelCb != null) onCancelCb();
       };

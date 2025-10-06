@@ -151,7 +151,7 @@ class ScoreNum extends FlxSprite
 
   function finishShuffleTween():Void
   {
-    var tweenFunction = function(x) {
+    var tweenFunction = (x) -> {
       var digitRounded = Math.floor(x);
       // if(digitRounded == finalDigit) glow = true;
       digit = digitRounded;
@@ -160,7 +160,7 @@ class ScoreNum extends FlxSprite
     finalTween = FlxTween.num(0.0, finalDigit, 23 / 24,
       {
         ease: FlxEase.quadOut,
-        onComplete: function(input) {
+        onComplete: (input) -> {
           new FlxTimer().start((finalDelay) / 24, _ -> {
             animation.play(animation.curAnim.name, true, false, 0);
           });

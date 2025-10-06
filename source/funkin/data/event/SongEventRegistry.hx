@@ -137,7 +137,7 @@ class SongEventRegistry
    */
   public static function queryEvents(events:Array<SongEventData>, currentTime:Float):Array<SongEventData>
   {
-    return events.filter(function(event:SongEventData):Bool {
+    return events.filter((event:SongEventData) -> {
       // If the event is already activated, don't activate it again.
       if (event.activated) return false;
 

@@ -201,7 +201,7 @@ class ScreenshotPlugin extends FlxBasic
       // screenshot spamming timer
       if (screenshotSpammedTimer == null || screenshotSpammedTimer.finished)
       {
-        screenshotSpammedTimer = new FlxTimer().start(1, function(_) {
+        screenshotSpammedTimer = new FlxTimer().start(1, (_) -> {
           // The player's stopped spamming shots, so we can stop the screenshot spam mode too
           screenshotBeingSpammed = false;
           if (screenshotBuffer[0] != null) saveBufferedScreenshots(screenshotBuffer, screenshotNameBuffer);
@@ -356,12 +356,12 @@ class ScreenshotPlugin extends FlxBasic
 
     // fuck it, cursed locally scoped functions, purely because im lazy
     // (and so we can check changingAlpha, which is locally scoped.... because I'm lazy...)
-    var onHover:MouseEvent->Void = function(e:MouseEvent) {
+    var onHover:MouseEvent->Void = (e:MouseEvent) -> {
       if (!changingAlpha) e.target.alpha = 0.6;
       targetAlpha = 0.6;
     };
 
-    var onHoverOut:MouseEvent->Void = function(e:MouseEvent) {
+    var onHoverOut:MouseEvent->Void = (e:MouseEvent) -> {
       if (!changingAlpha) e.target.alpha = 1;
       targetAlpha = 1;
     }
@@ -379,22 +379,22 @@ class ScreenshotPlugin extends FlxBasic
     // set the alpha to 0.6 if the mouse is already over the preview sprite
     if (previewSprite.hitTestPoint(previewSprite.mouseX, previewSprite.mouseY)) targetAlpha = 0.6;
     // Wait to fade in.
-    new FlxTimer().start(PREVIEW_INITIAL_DELAY, function(_) {
+    new FlxTimer().start(PREVIEW_INITIAL_DELAY, (_) -> {
       // Fade in.
       changingAlpha = true;
       FlxTween.tween(previewSprite, {alpha: targetAlpha, y: 0}, PREVIEW_FADE_IN_DURATION,
         {
           ease: FlxEase.quartOut,
-          onComplete: function(_) {
+          onComplete: (_) -> {
             changingAlpha = false;
             // Wait to fade out.
-            new FlxTimer().start(PREVIEW_FADE_OUT_DELAY, function(_) {
+            new FlxTimer().start(PREVIEW_FADE_OUT_DELAY, (_) -> {
               changingAlpha = true;
               // Fade out.
               FlxTween.tween(previewSprite, {alpha: 0.0, y: 10}, PREVIEW_FADE_OUT_DURATION,
                 {
                   ease: FlxEase.quartInOut,
-                  onComplete: function(_) {
+                  onComplete: (_) -> {
                     if (wasMouseShown && FlxG.mouse.visible)
                     {
                       wasMouseShown = false;
@@ -515,7 +515,7 @@ class ScreenshotPlugin extends FlxBasic
 
     if (delaySave)
     { // Save the images with a delay (a timer)
-      new FlxTimer().start(screenShotNum, function(_) {
+      new FlxTimer().start(screenShotNum, (_) -> {
         var pngData:ByteArray = encode(bitmap);
 
         if (pngData == null)

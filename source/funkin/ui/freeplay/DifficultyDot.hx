@@ -62,7 +62,7 @@ class DifficultyDot extends FlxSpriteGroup
     pulse.visible = false;
     add(pulse);
 
-    pulse.animation.onFrameChange.add(function(animName:String, frameNumber:Int, frameIndex:Int) {
+    pulse.animation.onFrameChange.add((animName:String, frameNumber:Int, frameIndex:Int) -> {
       interpolateColor();
     });
   }

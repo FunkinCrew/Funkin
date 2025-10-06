@@ -17,7 +17,7 @@ class FunkinVideoSprite extends FlxVideoSprite
     // null safety fucking SUCKS
     if (bitmap != null)
     {
-      bitmap.onOpening.add(function():Void {
+      bitmap.onOpening.add(() -> {
         if (bitmap != null) bitmap.audioDelay = Preferences.globalOffset * 1000; // Microseconds
       });
     }

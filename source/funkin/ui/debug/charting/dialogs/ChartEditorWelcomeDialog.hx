@@ -85,7 +85,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     linkRecentChart.tooltip += "\n" + lastModified;
     #end
 
-    linkRecentChart.onClick = function(_event) {
+    linkRecentChart.onClick = (_event) -> {
       linkRecentChart.hide();
 
       this.hideDialog(DialogButton.CANCEL);

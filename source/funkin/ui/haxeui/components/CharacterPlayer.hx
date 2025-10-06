@@ -101,10 +101,10 @@ class CharacterPlayer extends Box
     if (flip) character.flipX = !character.flipX;
     if (targetScale != 1.0) character.setScale(targetScale);
 
-    character.animation.onFrameChange.add(function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
+    character.animation.onFrameChange.add((name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) -> {
       dispatch(new AnimationEvent(AnimationEvent.FRAME));
     });
-    character.animation.onFinish.add(function(name:String = '') {
+    character.animation.onFinish.add((name:String = '') -> {
       dispatch(new AnimationEvent(AnimationEvent.END));
     });
     add(character);

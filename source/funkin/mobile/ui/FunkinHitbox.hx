@@ -388,7 +388,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   public function getFirstHintByDirection(direction:NoteDirection):Null<FunkinHint>
   {
     var result:Null<FunkinHint> = null;
-    forEachOfType(FunkinHint, function(hint:FunkinHint):Void {
+    forEachOfType(FunkinHint, (hint:FunkinHint) -> {
       @:privateAccess
       if (hint.noteDirection == direction) result = hint;
     });
@@ -675,7 +675,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   function set_isPixel(value:Bool):Bool
   {
     isPixel = value;
-    forEachOfType(FunkinHint, function(hint:FunkinHint):Void {
+    forEachOfType(FunkinHint, (hint:FunkinHint) -> {
       hint.isPixel = value;
     });
     return value;

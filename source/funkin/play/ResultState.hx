@@ -949,7 +949,7 @@ class ResultState extends MusicBeatSubState
       FlxTween.tween(rankBg, {alpha: 1}, 0.5,
         {
           ease: FlxEase.expoOut,
-          onComplete: function(_) {
+          onComplete: (_) -> {
             requestReview();
 
             if (targetStateFactory != null)
@@ -963,7 +963,7 @@ class ResultState extends MusicBeatSubState
             }
             else
             {
-              FlxG.signals.preStateSwitch.addOnce(function() {
+              FlxG.signals.preStateSwitch.addOnce(() -> {
                 #if ios
                 trace(DeviceUtil.iPhoneNumber);
                 if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
@@ -993,7 +993,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        FlxG.signals.preStateSwitch.addOnce(function() {
+        FlxG.signals.preStateSwitch.addOnce(() -> {
           #if ios
           trace(DeviceUtil.iPhoneNumber);
           if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);

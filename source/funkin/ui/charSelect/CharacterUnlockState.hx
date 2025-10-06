@@ -95,7 +95,7 @@ class CharacterUnlockState extends MusicBeatState
     FlxTween.num(0.0, 1.0, 0.75,
       {
         ease: FlxEase.elasticOut,
-      }, function(curScale) {
+      }, (curScale) -> {
         dialogContainer.scale.set(curScale, curScale);
         healthIcon.size.set(0.5 * curScale, 0.5 * curScale);
       });

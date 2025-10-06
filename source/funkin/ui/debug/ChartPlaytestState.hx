@@ -51,7 +51,7 @@ class ChartPlaytestState extends MusicBeatState
 
   function createItems():Void
   {
-    createTextItem("Playtest Song", function() {
+    createTextItem("Playtest Song", () -> {
       try
       {
         FNFCUtil.playSongFromFNFCPath(fnfcFilePath, currentDifficulty, currentVariation);
@@ -62,11 +62,11 @@ class ChartPlaytestState extends MusicBeatState
       }
     });
 
-    createToggleListItem("Variation", Constants.DEFAULT_VARIATION_LIST, function(value:String) {
+    createToggleListItem("Variation", Constants.DEFAULT_VARIATION_LIST, (value:String) -> {
       currentVariation = value;
     });
 
-    createToggleListItem("Difficulty", Constants.DEFAULT_DIFFICULTY_LIST_FULL, function(value:String) {
+    createToggleListItem("Difficulty", Constants.DEFAULT_DIFFICULTY_LIST_FULL, (value:String) -> {
       currentDifficulty = value;
     });
   }
@@ -88,7 +88,7 @@ class ChartPlaytestState extends MusicBeatState
   {
     var toggle:Bool = false;
     var menuItem:MenuTypedItem<FlxText> = createTextItem(name);
-    menuItem.callback = function() {
+    menuItem.callback = () -> {
       menuItem.label.text = name + ": " + (toggle ? "on" : "off");
       toggle = !toggle;
       onChange(toggle);
@@ -108,13 +108,13 @@ class ChartPlaytestState extends MusicBeatState
     var menuItem:MenuTypedItem<FlxText> = createTextItem(name);
 
     // We create and call the labelCallback here to initalize it
-    var labelCallback:Void->Void = function() {
+    var labelCallback:Void->Void = () -> {
       menuItem.label.text = name + ":" + toggleList[toggleCounter];
       onChange(toggleList[toggleCounter]);
     };
     labelCallback();
 
-    menuItem.callback = function() {
+    menuItem.callback = () -> {
       toggleCounter = (toggleCounter + 1) % toggleList.length;
       labelCallback();
     };

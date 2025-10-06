@@ -48,7 +48,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
   function initialize():Void
   {
-    toolboxEventsEventKind.onChange = function(event:UIEvent) {
+    toolboxEventsEventKind.onChange = (event:UIEvent) -> {
       if (event.data == null)
       {
         trace('ChartEditorEventDataToolbox: Event data is null');
@@ -263,7 +263,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       target.addComponent(inputBox);
 
       // Update the value of the event data.
-      input.onChange = function(event:UIEvent) {
+      input.onChange = (event:UIEvent) -> {
         var value = event.target.value;
         if (field.type == ENUM)
         {

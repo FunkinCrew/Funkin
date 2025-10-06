@@ -36,13 +36,13 @@ class ResultsDebugSubState extends MusicBeatSubState
 
   function createItems():Void
   {
-    createTextItem("TEST RESULTS SCREEN", function() {
+    createTextItem("TEST RESULTS SCREEN", () -> {
       // I'm being lazy, and putting a timer here so that when you enter result screen you don't immediately press an input
-      new FlxTimer().start(0.5, function(_) {
+      new FlxTimer().start(0.5, (_) -> {
         if (returnToDebugScreen)
         {
           var resultState:funkin.play.ResultState = new funkin.play.ResultState(resultsParams);
-          resultState.closeCallback = function() {
+          resultState.closeCallback = () -> {
             FlxTimer.globalManager.clear();
             FlxTween.globalManager.clear();
             FlxG.sound.music?.stop();
@@ -54,14 +54,14 @@ class ResultsDebugSubState extends MusicBeatSubState
           FlxG.switchState(() -> new funkin.play.ResultState(resultsParams));
       });
     });
-    createToggleListItem("Character", PlayerRegistry.instance.listBaseGameEntryIds(), function(result:String) {
+    createToggleListItem("Character", PlayerRegistry.instance.listBaseGameEntryIds(), (result:String) -> {
       resultsParams.characterId = result;
     });
-    createToggleListItem("Results Mode", ["Debug", "Story", "Freeplay"], function(result:String) {
+    createToggleListItem("Results Mode", ["Debug", "Story", "Freeplay"], (result:String) -> {
       returnToDebugScreen = result == "Debug"; // We will create the ResultsState as a Substate, that we will just close and return back to here
       resultsParams.storyMode = result == "Story"; // Debug overrides this, but if not using Debug, we will return to either Freeplay or Story menus
     });
-    createToggleListItem("Ranking", DebugTallies.DEBUG_RANKS, function(result:String) {
+    createToggleListItem("Ranking", DebugTallies.DEBUG_RANKS, (result:String) -> {
       resultsParams.scoreData.tallies = DebugTallies.getTallyForRank(result);
     });
   }
@@ -82,7 +82,7 @@ class ResultsDebugSubState extends MusicBeatSubState
   {
     var toggle:Bool = false;
     var menuItem:MenuTypedItem<FlxText> = createTextItem(name);
-    menuItem.callback = function() {
+    menuItem.callback = () -> {
       menuItem.label.text = name + ": " + (toggle ? "on" : "off");
       toggle = !toggle;
       onChange(toggle);
@@ -102,13 +102,13 @@ class ResultsDebugSubState extends MusicBeatSubState
     var menuItem:MenuTypedItem<FlxText> = createTextItem(name);
 
     // We create and call the labelCallback here to initalize it
-    var labelCallback:Void->Void = function() {
+    var labelCallback:Void->Void = () -> {
       menuItem.label.text = name + ":" + toggleList[toggleCounter];
       onChange(toggleList[toggleCounter]);
     };
     labelCallback();
 
-    menuItem.callback = function() {
+    menuItem.callback = () -> {
       toggleCounter = (toggleCounter + 1) % toggleList.length;
       labelCallback();
     };

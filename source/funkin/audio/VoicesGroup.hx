@@ -47,7 +47,7 @@ class VoicesGroup extends SoundGroup
 
   function set_playerVolume(volume:Float):Float
   {
-    playerVoices?.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive((voice:FunkinSound) -> {
       voice.volume = volume;
     });
     return playerVolume = volume;
@@ -55,15 +55,15 @@ class VoicesGroup extends SoundGroup
 
   override function set_time(time:Float):Float
   {
-    forEachAlive(function(snd) {
+    forEachAlive((snd) -> {
       // account for different offsets per sound?
       snd.time = time;
     });
 
-    playerVoices?.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive((voice:FunkinSound) -> {
       voice.time -= playerVoicesOffset;
     });
-    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive((voice:FunkinSound) -> {
       voice.time -= opponentVoicesOffset;
     });
 
@@ -72,7 +72,7 @@ class VoicesGroup extends SoundGroup
 
   function set_playerVoicesOffset(offset:Float):Float
   {
-    playerVoices?.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive((voice:FunkinSound) -> {
       voice.time += playerVoicesOffset;
       voice.time -= offset;
     });
@@ -81,7 +81,7 @@ class VoicesGroup extends SoundGroup
 
   function set_opponentVoicesOffset(offset:Float):Float
   {
-    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive((voice:FunkinSound) -> {
       voice.time += opponentVoicesOffset;
       voice.time -= offset;
     });
@@ -99,7 +99,7 @@ class VoicesGroup extends SoundGroup
 
   function set_opponentVolume(volume:Float):Float
   {
-    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive((voice:FunkinSound) -> {
       voice.volume = volume;
     });
     return opponentVolume = volume;

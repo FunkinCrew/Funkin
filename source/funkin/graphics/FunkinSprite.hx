@@ -100,7 +100,7 @@ class FunkinSprite extends FlxSprite
     trace('[ASYNC] Start loading image (${key})');
     graphic.persist = true;
     openfl.Assets.loadBitmapData(key)
-      .onComplete(function(bitmapData:openfl.display.BitmapData) {
+      .onComplete((bitmapData:BitmapData) -> {
         trace('[ASYNC] Finished loading image');
         var cache:Bool = false;
         loadBitmapData(bitmapData, cache);
@@ -111,7 +111,7 @@ class FunkinSprite extends FlxSprite
           FlxTween.tween(this, {alpha: 1.0}, 0.25);
         }
       })
-      .onError(function(error:Dynamic) {
+      .onError((error:Dynamic) -> {
         trace('[ASYNC] Failed to load image: ${error}');
         if (fadeTween != null)
         {
@@ -119,7 +119,7 @@ class FunkinSprite extends FlxSprite
           this.alpha = 1.0;
         }
       })
-      .onProgress(function(progress:Int, total:Int) {
+      .onProgress((progress:Int, total:Int) -> {
         trace('[ASYNC] Loading image progress: ${progress}/${total}');
       });
   }

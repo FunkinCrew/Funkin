@@ -38,14 +38,14 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     super(state);
 
     // Callback for loading the image from the local hard drive.
-    objLoad.onClick = function(_) {
+    objLoad.onClick = (_) -> {
       if (linkedObj == null) return;
 
-      Dialogs.openBinaryFile("Open Image File", FileDialogTypes.IMAGES, function(selectedFile) {
+      Dialogs.openBinaryFile("Open Image File", FileDialogTypes.IMAGES, (selectedFile) -> {
         if (selectedFile == null) return;
         objImage.resource = null;
 
-        ToolkitAssets.instance.imageFromBytes(selectedFile.bytes, function(imageInfo) {
+        ToolkitAssets.instance.imageFromBytes(selectedFile.bytes, (imageInfo) -> {
           if (imageInfo == null) return;
 
           objImage.resource = imageInfo.data;
@@ -69,10 +69,10 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for loading the image from the internet.
-    objLoadNet.onClick = function(_) {
+    objLoadNet.onClick = (_) -> {
       if (linkedObj == null) return;
 
-      state.createURLDialog(function(bytes:lime.utils.Bytes) {
+      state.createURLDialog((bytes:lime.utils.Bytes) -> {
         var bitToLoad:String = state.addBitmap(BitmapData.fromBytes(bytes));
         linkedObj.loadGraphic(state.bitmaps[bitToLoad]);
         linkedObj.updateHitbox();
@@ -87,7 +87,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for resetting the image.
-    objReset.onClick = function(_) {
+    objReset.onClick = (_) -> {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(AssetDataHandler.getDefaultGraphic());
@@ -102,7 +102,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for resetting frames.
-    objResetFrames.onClick = function(_) {
+    objResetFrames.onClick = (_) -> {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(linkedObj.graphic);
@@ -111,8 +111,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for loading the text for the Frame Data.
-    objLoadFrames.onClick = function(_) {
-      Dialogs.openTextFile("Open Text File", FileDialogTypes.TEXTS, function(selectedFile) {
+    objLoadFrames.onClick = (_) -> {
+      Dialogs.openTextFile("Open Text File", FileDialogTypes.TEXTS, (selectedFile) -> {
         if (selectedFile.text == null || (!selectedFile.name.endsWith(".xml") && !selectedFile.name.endsWith(".txt"))) return;
 
         objFrameTxt.text = selectedFile.text;
@@ -122,13 +122,13 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for setting the frames as Sparrow.
-    objSetSparrow.onClick = function(_) setObjFrames(false);
+    objSetSparrow.onClick = (_) -> setObjFrames(false);
 
     // Callback for setting the frames as Packer.
-    objSetPacker.onClick = function(_) setObjFrames(true);
+    objSetPacker.onClick = (_) -> setObjFrames(true);
 
     // Callback for splitting the graphic into frames.
-    objSplit.onClick = function(_) {
+    objSplit.onClick = (_) -> {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(linkedObj.graphic, true, Std.int(objImageWidth.pos), Std.int(objImageHeight.pos));

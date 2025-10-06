@@ -594,10 +594,10 @@ class Controls extends FlxActionSet
     switch (device)
     {
       case Keys:
-        forEachBound(control, function(action, state) replaceKey(action, toAdd, toRemove, state));
+        forEachBound(control, (action, state) -> replaceKey(action, toAdd, toRemove, state));
 
       case Gamepad(id):
-        forEachBound(control, function(action, state) replaceButton(action, id, toAdd, toRemove, state));
+        forEachBound(control, (action, state) -> replaceButton(action, id, toAdd, toRemove, state));
     }
   }
 
@@ -732,7 +732,7 @@ class Controls extends FlxActionSet
    */
   public function bindKeys(control:Control, keys:Array<FlxKey>)
   {
-    forEachBound(control, function(action, state) addKeys(action, keys, state));
+    forEachBound(control, (action, state) -> addKeys(action, keys, state));
   }
 
   /**
@@ -741,7 +741,7 @@ class Controls extends FlxActionSet
    */
   public function unbindKeys(control:Control, keys:Array<FlxKey>)
   {
-    forEachBound(control, function(action, _) removeKeys(action, keys));
+    forEachBound(control, (action, _) -> removeKeys(action, keys));
   }
 
   static function addKeys(action:FlxActionDigital, keys:Array<FlxKey>, state:FlxInputState)
@@ -1089,7 +1089,7 @@ class Controls extends FlxActionSet
    */
   public function bindButtons(control:Control, id, buttons)
   {
-    forEachBound(control, function(action, state) addButtons(action, buttons, state, id));
+    forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
   }
 
   /**
@@ -1098,7 +1098,7 @@ class Controls extends FlxActionSet
    */
   public function unbindButtons(control:Control, gamepadID:Int, buttons)
   {
-    forEachBound(control, function(action, _) removeButtons(action, gamepadID, buttons));
+    forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
   }
 
   inline static function addButtons(action:FlxActionDigital, buttons:Array<FlxGamepadInputID>, state, id)

@@ -44,9 +44,9 @@ class BackupAvailableDialog extends Dialog
     #end
 
     // button callbacks
-    dialogCancel.onClick = function(_) hideDialog(DialogButton.CANCEL);
+    dialogCancel.onClick = (_) -> hideDialog(DialogButton.CANCEL);
 
-    buttonGoToFolder.onClick = function(_) {
+    buttonGoToFolder.onClick = (_) -> {
       // :[
       #if sys
       var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorState.BACKUPS_PATH]);
@@ -54,7 +54,7 @@ class BackupAvailableDialog extends Dialog
       #end
     }
 
-    buttonOpenBackup.onClick = function(_) {
+    buttonOpenBackup.onClick = (_) -> {
       if (FileUtil.fileExists(filePath) && state.welcomeDialog != null) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
       {
         state.welcomeDialog.loadFromFilePath(filePath);
@@ -63,7 +63,7 @@ class BackupAvailableDialog extends Dialog
     }
 
     // uhhh
-    onDialogClosed = function(event) {
+    onDialogClosed = (event) -> {
       if (event.button == DialogButton.APPLY)
       {
         if (state.welcomeDialog != null) state.welcomeDialog.hideDialog(DialogButton.APPLY);

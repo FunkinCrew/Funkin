@@ -129,7 +129,7 @@ class StoryMenuState extends MusicBeatState
     super.create();
 
     levelList = LevelRegistry.instance.listSortedLevelIds();
-    levelList = levelList.filter(function(id) {
+    levelList = levelList.filter((id) -> {
       var levelData = LevelRegistry.instance.fetchEntry(id);
       if (levelData == null) return false;
 
@@ -615,13 +615,13 @@ class StoryMenuState extends MusicBeatState
 
     Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
-    new FlxTimer().start(1, function(tmr:FlxTimer) {
+    new FlxTimer().start(1, (tmr:FlxTimer) -> {
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 
       var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
 
-      FlxG.camera.fade(FlxColor.BLACK, 0.2, false, function() {
+      FlxG.camera.fade(FlxColor.BLACK, 0.2, false, () -> {
         LoadingState.loadPlayState(
           {
             targetSong: targetSong,
@@ -675,7 +675,7 @@ class StoryMenuState extends MusicBeatState
         FlxTween.tween(oldBackground, {alpha: 0.0}, 0.6,
           {
             ease: FlxEase.linear,
-            onComplete: function(_) {
+            onComplete: (_) -> {
               remove(oldBackground);
             }
           });

@@ -23,11 +23,11 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
 
   public function initialize()
   {
-    contextmenuEdit.onClick = function(_) {
+    contextmenuEdit.onClick = (_) -> {
       chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
     }
 
-    contextmenuDelete.onClick = function(_) {
+    contextmenuDelete.onClick = (_) -> {
       chartEditorState.performCommand(new RemoveEventsCommand([data]));
     }
   }

@@ -51,7 +51,7 @@ class RegistryMacro
     var fields:Array<Field> = Context.getBuildFields();
 
     // Classes with the `@:funkinBase` meta or `@:funkinProcessed` meta should be ignored.
-    var baseMeta:Null<MetadataEntry> = cls.meta.get().find(function(m) return m.name == ':funkinBase');
+    var baseMeta:Null<MetadataEntry> = cls.meta.get().find((m) -> return m.name == ':funkinBase');
     if (baseMeta != null || alreadyProcessed(cls)) return fields;
 
     var typeParams:RegistryTypeParams = getTypeParams(cls);

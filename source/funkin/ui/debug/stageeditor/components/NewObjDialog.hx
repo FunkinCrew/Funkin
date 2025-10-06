@@ -19,7 +19,7 @@ class NewObjDialog extends Dialog
     stageEditorState = state;
     bitmap = img;
 
-    field.onChange = function(_) {
+    field.onChange = (_) -> {
       field.removeClasses(["invalid-value", "valid-value"]);
     }
 

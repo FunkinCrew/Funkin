@@ -155,7 +155,7 @@ class LetterSort extends FlxSpriteGroup
       var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
       arrowToMove.offset.x = 3 * multiPosOrNeg;
 
-      new FlxTimer().start(2 / 24, function(_) {
+      new FlxTimer().start(2 / 24, (_) -> {
         arrowToMove.offset.x = 0;
       });
       if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
@@ -169,8 +169,8 @@ class LetterSort extends FlxSpriteGroup
    */
   function doLetterChangeAnims(diff:Int):Void
   {
-    var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float) {
-      new FlxTimer().start(frameNum / 24, function(_) {
+    var ezTimer:Int->FlxSprite->Float->Void = (frameNum:Int, spr:FlxSprite, offsetNum:Float) -> {
+      new FlxTimer().start(frameNum / 24, (_) -> {
         spr.offset.x = offsetNum;
       });
     };
@@ -192,12 +192,12 @@ class LetterSort extends FlxSpriteGroup
     {
       letter.offset.x = positions[0] * multiPosOrNeg;
 
-      new FlxTimer().start(1 / 24, function(_) {
+      new FlxTimer().start(1 / 24, (_) -> {
         letter.offset.x = positions[1] * multiPosOrNeg;
         if (index == 0) letter.visible = false;
       });
 
-      new FlxTimer().start(2 / 24, function(_) {
+      new FlxTimer().start(2 / 24, (_) -> {
         letter.offset.x = positions[2] * multiPosOrNeg;
         if (index == 0.) letter.visible = true;
       });
@@ -288,7 +288,7 @@ class FreeplayLetter extends FlxAtlasSprite
       this.anim.play(animLetters[letterInd] + " move");
       this.anim.pause();
       curLetter = letterInd;
-      this.anim.onComplete.add(function() {
+      this.anim.onComplete.add(() -> {
         this.anim.play(animLetters[curLetter] + " move");
       });
     }

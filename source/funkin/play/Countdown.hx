@@ -67,7 +67,7 @@ class Countdown
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
-    countdownTimer.start(Conductor.instance.beatLengthMs / 1000, function(tmr:FlxTimer) {
+    countdownTimer.start(Conductor.instance.beatLengthMs / 1000, (tmr:FlxTimer) -> {
       if (PlayState.instance == null)
       {
         tmr.cancel();
@@ -232,7 +232,7 @@ class Countdown
     FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000,
       {
         ease: fadeEase,
-        onComplete: function(twn:FlxTween) {
+        onComplete: (twn:FlxTween) -> {
           countdownSprite.destroy();
         }
       });

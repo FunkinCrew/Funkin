@@ -98,12 +98,12 @@ class HapticUtil
 
     amplitudeTween = FlxTween.num(startAmplitude, targetAmplitude, tweenDuration,
       {
-        onComplete: function(_) {
+        onComplete: (_) -> {
           final finalAmplitude:Float = targetAmplitude * 2;
 
           vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, finalAmplitude);
         }
-      }, function(currentAmplitude:Float) {
+      }, (currentAmplitude:Float) -> {
         vibrate(0, Constants.DEFAULT_VIBRATION_DURATION / 10, currentAmplitude);
       });
   }

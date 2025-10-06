@@ -25,7 +25,7 @@ class AnimationDataUtil
    */
   public static function toNamedArray(data:Array<UnnamedAnimationData>, name:String = ""):Array<AnimationData>
   {
-    return data.mapi(function(animItem, ind) return toNamed(animItem, '$name$ind'));
+    return data.mapi((animItem, ind) -> return toNamed(animItem, '$name$ind'));
   }
 
   public static function toUnnamed(data:AnimationData):UnnamedAnimationData

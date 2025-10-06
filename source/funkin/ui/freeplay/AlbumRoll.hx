@@ -179,7 +179,7 @@ class AlbumRoll extends FlxSpriteGroup
     difficultyStars.visible = false;
     difficultyStars.flameCheck();
 
-    new FlxTimer().start(0.75, function(_) {
+    new FlxTimer().start(0.75, (_) -> {
       showTitle();
       showStars();
       if (albumTitle != null) albumTitle.animation.play('switch');
@@ -218,7 +218,7 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);
     add(albumTitle);
 
-    albumTitle.animation.onFinish.add(function(name) {
+    albumTitle.animation.onFinish.add((name) -> {
       if (name == 'switch' && albumTitle != null) albumTitle.animation.play('idle');
     });
     albumTitle.animation.play('idle');

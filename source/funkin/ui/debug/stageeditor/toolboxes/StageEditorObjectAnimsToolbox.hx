@@ -39,12 +39,12 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
   {
     super(state);
 
-    objFrameList.onChange = function(_) {
+    objFrameList.onChange = (_) -> {
       if (objFrameList.selectedIndex == -1) return;
       objAnimPrefix.text = objFrameList.selectedItem.name;
     }
 
-    objAnims.onChange = function(_) {
+    objAnims.onChange = (_) -> {
       var animData = linkedObj?.animDatas[objAnims.selectedItem?.text ?? ""];
 
       if (linkedObj == null || objAnims.selectedIndex == -1 || animData == null)
@@ -72,7 +72,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
       objAnimOffsetY.pos = (animData.offsets[1] ?? 0);
     }
 
-    objAnimSave.onClick = function(_) {
+    objAnimSave.onClick = (_) -> {
       if (linkedObj == null) return;
 
       if ((objAnimName.text ?? "") == "")
@@ -90,7 +90,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
       addAnimation();
     }
 
-    objAnimDelete.onClick = function(_) {
+    objAnimDelete.onClick = (_) -> {
       if (linkedObj == null || linkedObj.animation.getNameList().length <= 0 || objAnims.selectedIndex < 0) return;
 
       linkedObj.animation.pause();
@@ -211,7 +211,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
     updateAnimList();
 
     // Stop the animation after a certain time.
-    flixel.util.FlxTimer.wait(StageEditorState.TIME_BEFORE_ANIM_STOP, function() {
+    flixel.util.FlxTimer.wait(StageEditorState.TIME_BEFORE_ANIM_STOP, () -> {
       if (linkedObj?.animation?.curAnim != null) linkedObj.animation.stop();
     });
   }

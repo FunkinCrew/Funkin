@@ -103,7 +103,7 @@ class FunkinBackButton extends FunkinButton
 
     onConfirmStart.dispatch();
 
-    animation.onFinish.addOnce(function(name:String) {
+    animation.onFinish.addOnce((name:String) -> {
       if (name != 'confirm') return;
       _confirming = false;
       held = false;
@@ -122,7 +122,7 @@ class FunkinBackButton extends FunkinButton
     FlxTween.tween(this, {alpha: restingOpacity}, 0.5,
       {
         ease: FlxEase.expoOut,
-        onComplete: function(tween:FlxTween):Void {
+        onComplete: (tween:FlxTween) -> {
           held = false;
         }
       });

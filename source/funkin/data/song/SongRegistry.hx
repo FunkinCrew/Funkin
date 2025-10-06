@@ -85,10 +85,10 @@ using funkin.data.song.migrator.SongDataMigrator;
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('songs/', '-metadata.json').map(function(songDataPath:String):String {
+    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('songs/', '-metadata.json').map((songDataPath:String) -> {
       return songDataPath.split('/')[0];
     });
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
+    var unscriptedEntryIds:Array<String> = entryIdList.filter((entryId:String) -> {
       return !entries.exists(entryId);
     });
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');

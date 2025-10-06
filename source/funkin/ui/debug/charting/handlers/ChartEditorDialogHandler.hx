@@ -149,7 +149,7 @@ class ChartEditorDialogHandler
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT, true, true);
     if (dialog == null) throw 'Could not locate Backup Available dialog';
-    dialog.onDialogClosed = function(event) {
+    dialog.onDialogClosed = (event) -> {
       state.isHaxeUIDialogOpen = false;
       if (event.button == DialogButton.APPLY)
       {
@@ -175,14 +175,14 @@ class ChartEditorDialogHandler
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Backup Available dialog';
-    buttonCancel.onClick = function(_) {
+    buttonCancel.onClick = (_) -> {
       // Don't hide the welcome dialog behind this.
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
     var buttonGoToFolder:Null<Button> = dialog.findComponent('buttonGoToFolder', Button);
     if (buttonGoToFolder == null) throw 'Could not locate buttonGoToFolder button in Backup Available dialog';
-    buttonGoToFolder.onClick = function(_) {
+    buttonGoToFolder.onClick = (_) -> {
       state.openBackupsFolder();
       // Don't hide the welcome dialog behind this.
       // Don't close this dialog.
@@ -190,7 +190,7 @@ class ChartEditorDialogHandler
 
     var buttonOpenBackup:Null<Button> = dialog.findComponent('buttonOpenBackup', Button);
     if (buttonOpenBackup == null) throw 'Could not locate buttonOpenBackup button in Backup Available dialog';
-    buttonOpenBackup.onClick = function(_) {
+    buttonOpenBackup.onClick = (_) -> {
       var latestBackupPath:Null<String> = ChartEditorImportExportHandler.getLatestBackupPath();
 
       var result:Null<Array<String>> = (latestBackupPath != null) ? state.loadFromFNFCPath(latestBackupPath) : null;
@@ -232,20 +232,20 @@ class ChartEditorDialogHandler
     // Open the "Open Chart" wizard
     // Step 1. Open Chart
     var openChartDialog:Dialog = openChartDialog(state);
-    openChartDialog.onDialogClosed = function(event) {
+    openChartDialog.onDialogClosed = (event) -> {
       state.isHaxeUIDialogOpen = false;
       if (event.button == DialogButton.APPLY)
       {
         // Step 2. Upload instrumental
         var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
-        uploadInstDialog.onDialogClosed = function(event) {
+        uploadInstDialog.onDialogClosed = (event) -> {
           state.isHaxeUIDialogOpen = false;
           if (event.button == DialogButton.APPLY)
           {
             // Step 3. Upload Vocals
             // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
-            uploadVocalsDialog.onDialogClosed = function(event) {
+            uploadVocalsDialog.onDialogClosed = (event) -> {
               state.isHaxeUIDialogOpen = false;
               state.currentWorkingFilePath = null; // Built from parts, so no .fnfc to save to.
               state.switchToCurrentInstrumental();
@@ -273,20 +273,20 @@ class ChartEditorDialogHandler
     // Step 1. Open Chart
     var openChartDialog:Null<Dialog> = openImportChartDialog(state, format);
     if (openChartDialog == null) throw 'Could not locate Import Chart dialog';
-    openChartDialog.onDialogClosed = function(event) {
+    openChartDialog.onDialogClosed = (event) -> {
       state.isHaxeUIDialogOpen = false;
       if (event.button == DialogButton.APPLY)
       {
         // Step 2. Upload instrumental
         var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
-        uploadInstDialog.onDialogClosed = function(event) {
+        uploadInstDialog.onDialogClosed = (event) -> {
           state.isHaxeUIDialogOpen = false;
           if (event.button == DialogButton.APPLY)
           {
             // Step 3. Upload Vocals
             // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
-            uploadVocalsDialog.onDialogClosed = function(_) {
+            uploadVocalsDialog.onDialogClosed = (_) -> {
               state.isHaxeUIDialogOpen = false;
               state.currentWorkingFilePath = null; // New file, so no path.
               state.switchToCurrentInstrumental();
@@ -312,20 +312,20 @@ class ChartEditorDialogHandler
   {
     // Step 1. Song Metadata
     var songMetadataDialog:Dialog = openSongMetadataDialog(state, false, Constants.DEFAULT_VARIATION, true);
-    songMetadataDialog.onDialogClosed = function(event) {
+    songMetadataDialog.onDialogClosed = (event) -> {
       state.isHaxeUIDialogOpen = false;
       if (event.button == DialogButton.APPLY)
       {
         // Step 2. Upload Instrumental
         var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
-        uploadInstDialog.onDialogClosed = function(event) {
+        uploadInstDialog.onDialogClosed = (event) -> {
           state.isHaxeUIDialogOpen = false;
           if (event.button == DialogButton.APPLY)
           {
             // Step 3. Upload Vocals
             // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
-            uploadVocalsDialog.onDialogClosed = function(_) {
+            uploadVocalsDialog.onDialogClosed = (_) -> {
               state.isHaxeUIDialogOpen = false;
               state.currentWorkingFilePath = null; // New file, so no path.
               state.switchToCurrentInstrumental();
@@ -351,20 +351,20 @@ class ChartEditorDialogHandler
   {
     // Step 1. Song Metadata
     var songMetadataDialog:Dialog = openSongMetadataDialog(state, true, Constants.DEFAULT_VARIATION, true);
-    songMetadataDialog.onDialogClosed = function(event) {
+    songMetadataDialog.onDialogClosed = (event) -> {
       state.isHaxeUIDialogOpen = false;
       if (event.button == DialogButton.APPLY)
       {
         // Step 2. Upload Instrumental
         var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
-        uploadInstDialog.onDialogClosed = function(event) {
+        uploadInstDialog.onDialogClosed = (event) -> {
           state.isHaxeUIDialogOpen = false;
           if (event.button == DialogButton.APPLY)
           {
             // Step 3. Upload Vocals
             // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
-            uploadVocalsDialog.onDialogClosed = function(_) {
+            uploadVocalsDialog.onDialogClosed = (_) -> {
               state.isHaxeUIDialogOpen = false;
               state.currentWorkingFilePath = null; // New file, so no path.
               state.switchToCurrentInstrumental();
@@ -390,24 +390,24 @@ class ChartEditorDialogHandler
   {
     // Step 1. Song Metadata
     var songMetadataDialog:Dialog = openSongMetadataDialog(state, false, Constants.DEFAULT_VARIATION, true);
-    songMetadataDialog.onDialogClosed = function(event) {
+    songMetadataDialog.onDialogClosed = (event) -> {
       state.isHaxeUIDialogOpen = false;
       if (event.button == DialogButton.APPLY)
       {
         // Step 2. Upload Instrumental
         var uploadInstDialog:Dialog = openUploadInstDialog(state, closable);
-        uploadInstDialog.onDialogClosed = function(event) {
+        uploadInstDialog.onDialogClosed = (event) -> {
           state.isHaxeUIDialogOpen = false;
           if (event.button == DialogButton.APPLY)
           {
             // Step 3. Upload Vocals
             // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
             var uploadVocalsDialog:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
-            uploadVocalsDialog.onDialogClosed = function(_) {
+            uploadVocalsDialog.onDialogClosed = (_) -> {
               state.switchToCurrentInstrumental();
               // Step 4. Song Metadata (Erect)
               var songMetadataDialogErect:Dialog = openSongMetadataDialog(state, true, 'erect', false);
-              songMetadataDialogErect.onDialogClosed = function(event) {
+              songMetadataDialogErect.onDialogClosed = (event) -> {
                 state.isHaxeUIDialogOpen = false;
                 if (event.button == DialogButton.APPLY)
                 {
@@ -416,14 +416,14 @@ class ChartEditorDialogHandler
 
                   // Step 5. Upload Instrumental (Erect)
                   var uploadInstDialogErect:Dialog = openUploadInstDialog(state, closable);
-                  uploadInstDialogErect.onDialogClosed = function(event) {
+                  uploadInstDialogErect.onDialogClosed = (event) -> {
                     state.isHaxeUIDialogOpen = false;
                     if (event.button == DialogButton.APPLY)
                     {
                       // Step 6. Upload Vocals (Erect)
                       // NOTE: Uploading vocals is optional, so we don't need to check if the user cancelled the wizard.
                       var uploadVocalsDialogErect:Dialog = openUploadVocalsDialog(state, closable); // var uploadVocalsDialog:Dialog
-                      uploadVocalsDialogErect.onDialogClosed = function(_) {
+                      uploadVocalsDialogErect.onDialogClosed = (_) -> {
                         state.isHaxeUIDialogOpen = false;
                         state.currentWorkingFilePath = null; // New file, so no path.
                         state.switchToCurrentInstrumental();
@@ -475,19 +475,19 @@ class ChartEditorDialogHandler
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Upload Instrumental dialog';
 
-    buttonCancel.onClick = function(_) {
+    buttonCancel.onClick = (_) -> {
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
     var instrumentalBox:Null<Box> = dialog.findComponent('instrumentalBox', Box);
     if (instrumentalBox == null) throw 'Could not locate instrumentalBox in Upload Instrumental dialog';
 
-    instrumentalBox.onMouseOver = function(_) {
+    instrumentalBox.onMouseOver = (_) -> {
       instrumentalBox.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
     }
 
-    instrumentalBox.onMouseOut = function(_) {
+    instrumentalBox.onMouseOut = (_) -> {
       instrumentalBox.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
     }
@@ -496,9 +496,9 @@ class ChartEditorDialogHandler
 
     var dropHandler:DialogDropTarget = {component: instrumentalBox, handler: null};
 
-    instrumentalBox.onClick = function(_) {
+    instrumentalBox.onClick = (_) -> {
       Dialogs.openBinaryFile('Open Instrumental', [
-        {label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile:SelectedFileInfo) {
+        {label: 'Audio File (.ogg)', extension: 'ogg'}], (selectedFile:SelectedFileInfo) -> {
           if (selectedFile != null && selectedFile.bytes != null)
           {
             if (state.loadInstFromBytes(selectedFile.bytes, instId))
@@ -517,7 +517,7 @@ class ChartEditorDialogHandler
       });
     }
 
-    var onDropFile:String->Void = function(pathStr:String) {
+    var onDropFile:String->Void = (pathStr:String) -> {
       var path:Path = new Path(pathStr);
       trace('Dropped file (${path})');
       if (state.loadInstFromPath(path, instId))
@@ -574,7 +574,7 @@ class ChartEditorDialogHandler
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Song Metadata dialog';
     state.isHaxeUIDialogOpen = true;
-    buttonCancel.onClick = function(_) {
+    buttonCancel.onClick = (_) -> {
       state.isHaxeUIDialogOpen = false;
       dialog.hideDialog(DialogButton.CANCEL);
     }
@@ -586,7 +586,7 @@ class ChartEditorDialogHandler
 
     var inputSongName:Null<TextField> = dialog.findComponent('inputSongName', TextField);
     if (inputSongName == null) throw 'Could not locate inputSongName TextField in Song Metadata dialog';
-    inputSongName.onChange = function(event:UIEvent) {
+    inputSongName.onChange = (event:UIEvent) -> {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
       if (valid)
@@ -603,7 +603,7 @@ class ChartEditorDialogHandler
 
     var inputSongArtist:Null<TextField> = dialog.findComponent('inputSongArtist', TextField);
     if (inputSongArtist == null) throw 'Could not locate inputSongArtist TextField in Song Metadata dialog';
-    inputSongArtist.onChange = function(event:UIEvent) {
+    inputSongArtist.onChange = (event:UIEvent) -> {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
       if (valid)
@@ -620,7 +620,7 @@ class ChartEditorDialogHandler
 
     var inputSongCharter:Null<TextField> = dialog.findComponent('inputSongCharter', TextField);
     if (inputSongCharter == null) throw 'Could not locate inputSongCharter TextField in Song Metadata dialog';
-    inputSongCharter.onChange = function(event:UIEvent) {
+    inputSongCharter.onChange = (event:UIEvent) -> {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
       if (valid)
@@ -637,7 +637,7 @@ class ChartEditorDialogHandler
 
     var inputStage:Null<DropDown> = dialog.findComponent('inputStage', DropDown);
     if (inputStage == null) throw 'Could not locate inputStage DropDown in Song Metadata dialog';
-    inputStage.onChange = function(event:UIEvent) {
+    inputStage.onChange = (event:UIEvent) -> {
       if (event.data == null || event.data?.id == null) return;
       newSongMetadata.playData.stage = event.data.id;
     };
@@ -646,7 +646,7 @@ class ChartEditorDialogHandler
 
     var inputNoteStyle:Null<DropDown> = dialog.findComponent('inputNoteStyle', DropDown);
     if (inputNoteStyle == null) throw 'Could not locate inputNoteStyle DropDown in Song Metadata dialog';
-    inputNoteStyle.onChange = function(event:UIEvent) {
+    inputNoteStyle.onChange = (event:UIEvent) -> {
       if (event.data?.id == null) return;
       newSongMetadata.playData.noteStyle = event.data.id;
     };
@@ -655,7 +655,7 @@ class ChartEditorDialogHandler
 
     var inputCharacterPlayer:Null<DropDown> = dialog.findComponent('inputCharacterPlayer', DropDown);
     if (inputCharacterPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterPlayer component.';
-    inputCharacterPlayer.onChange = function(event:UIEvent) {
+    inputCharacterPlayer.onChange = (event:UIEvent) -> {
       if (event.data?.id == null) return;
       newSongMetadata.playData.characters.player = event.data.id;
     };
@@ -665,7 +665,7 @@ class ChartEditorDialogHandler
 
     var inputCharacterOpponent:Null<DropDown> = dialog.findComponent('inputCharacterOpponent', DropDown);
     if (inputCharacterOpponent == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterOpponent component.';
-    inputCharacterOpponent.onChange = function(event:UIEvent) {
+    inputCharacterOpponent.onChange = (event:UIEvent) -> {
       if (event.data?.id == null) return;
       newSongMetadata.playData.characters.opponent = event.data.id;
     };
@@ -675,7 +675,7 @@ class ChartEditorDialogHandler
 
     var inputCharacterGirlfriend:Null<DropDown> = dialog.findComponent('inputCharacterGirlfriend', DropDown);
     if (inputCharacterGirlfriend == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterGirlfriend component.';
-    inputCharacterGirlfriend.onChange = function(event:UIEvent) {
+    inputCharacterGirlfriend.onChange = (event:UIEvent) -> {
       if (event.data?.id == null) return;
       newSongMetadata.playData.characters.girlfriend = event.data.id == "none" ? "" : event.data.id;
     };
@@ -685,7 +685,7 @@ class ChartEditorDialogHandler
 
     var dialogBPM:Null<NumberStepper> = dialog.findComponent('dialogBPM', NumberStepper);
     if (dialogBPM == null) throw 'Could not locate dialogBPM NumberStepper in Song Metadata dialog';
-    dialogBPM.onChange = function(event:UIEvent) {
+    dialogBPM.onChange = (event:UIEvent) -> {
       if (event.value == null || event.value <= 0) return;
 
       var timeChanges:Array<SongTimeChange> = newSongMetadata.timeChanges;
@@ -742,7 +742,7 @@ class ChartEditorDialogHandler
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Open Chart dialog';
-    buttonCancel.onClick = function(_) {
+    buttonCancel.onClick = (_) -> {
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
@@ -756,7 +756,7 @@ class ChartEditorDialogHandler
 
     var buttonContinue:Null<Button> = dialog.findComponent('dialogContinue', Button);
     if (buttonContinue == null) throw 'Could not locate dialogContinue button in Open Chart dialog';
-    buttonContinue.onClick = function(_) {
+    buttonContinue.onClick = (_) -> {
       state.loadSong(songMetadata, songChartData);
 
       dialog.hideDialog(DialogButton.APPLY);
@@ -767,7 +767,7 @@ class ChartEditorDialogHandler
     var onDropFileChartDataVariation:String->Label->String->Void;
     var onClickChartDataVariation:String->Label->UIEvent->Void;
 
-    var constructVariationEntries:Array<String>->Void = function(variations:Array<String>) {
+    var constructVariationEntries:Array<String>->Void = (variations:Array<String>) -> {
       // Clear the chart container.
       while (chartContainerB.getComponentAt(0) != null)
       {
@@ -804,11 +804,11 @@ class ChartEditorDialogHandler
         songVariationMetadataEntryLabel.text = 'Click to browse for <song>-metadata-${variation}.json file.';
         #end
 
-        songVariationMetadataEntry.onMouseOver = function(_) {
+        songVariationMetadataEntry.onMouseOver = (_) -> {
           songVariationMetadataEntry.swapClass('upload-bg', 'upload-bg-hover');
           Cursor.cursorMode = Pointer;
         }
-        songVariationMetadataEntry.onMouseOut = function(_) {
+        songVariationMetadataEntry.onMouseOut = (_) -> {
           songVariationMetadataEntry.swapClass('upload-bg-hover', 'upload-bg');
           Cursor.cursorMode = Default;
         }
@@ -832,11 +832,11 @@ class ChartEditorDialogHandler
         songVariationChartDataEntryLabel.text = 'Click to browse for <song>-chart-${variation}.json file.';
         #end
 
-        songVariationChartDataEntry.onMouseOver = function(_) {
+        songVariationChartDataEntry.onMouseOver = (_) -> {
           songVariationChartDataEntry.swapClass('upload-bg', 'upload-bg-hover');
           Cursor.cursorMode = Pointer;
         }
-        songVariationChartDataEntry.onMouseOut = function(_) {
+        songVariationChartDataEntry.onMouseOut = (_) -> {
           songVariationChartDataEntry.swapClass('upload-bg-hover', 'upload-bg');
           Cursor.cursorMode = Default;
         }
@@ -852,7 +852,7 @@ class ChartEditorDialogHandler
       }
     }
 
-    onDropFileMetadataVariation = function(variation:String, label:Label, pathStr:String) {
+    onDropFileMetadataVariation = (variation:String, label:Label, pathStr:String) -> {
       var path:Path = new Path(pathStr);
       trace('Dropped JSON file (${path})');
 
@@ -890,9 +890,9 @@ class ChartEditorDialogHandler
       if (variation == Constants.DEFAULT_VARIATION) constructVariationEntries(songMetadataVariation.playData.songVariations);
     };
 
-    onClickMetadataVariation = function(variation:String, label:Label, _:UIEvent) {
+    onClickMetadataVariation = (variation:String, label:Label, _:UIEvent) -> {
       Dialogs.openBinaryFile('Open Chart ($variation) Metadata', [
-        {label: 'JSON File (.json)', extension: 'json'}], function(selectedFile) {
+        {label: 'JSON File (.json)', extension: 'json'}], (selectedFile) -> {
           if (selectedFile != null && selectedFile.bytes != null)
           {
             trace('Selected file: ' + selectedFile.name);
@@ -934,7 +934,7 @@ class ChartEditorDialogHandler
       });
     }
 
-    onDropFileChartDataVariation = function(variation:String, label:Label, pathStr:String) {
+    onDropFileChartDataVariation = (variation:String, label:Label, pathStr:String) -> {
       var path:Path = new Path(pathStr);
       trace('Dropped JSON file (${path})');
 
@@ -974,9 +974,9 @@ class ChartEditorDialogHandler
       }
     };
 
-    onClickChartDataVariation = function(variation:String, label:Label, _:UIEvent) {
+    onClickChartDataVariation = (variation:String, label:Label, _:UIEvent) -> {
       Dialogs.openBinaryFile('Open Chart ($variation) Metadata', [
-        {label: 'JSON File (.json)', extension: 'json'}], function(selectedFile) {
+        {label: 'JSON File (.json)', extension: 'json'}], (selectedFile) -> {
           if (selectedFile != null && selectedFile.bytes != null)
           {
             trace('Selected file: ' + selectedFile.name);
@@ -1026,11 +1026,11 @@ class ChartEditorDialogHandler
 
     metadataEntry.onClick = onClickMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel);
     state.addDropHandler({component: metadataEntry, handler: onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel)});
-    metadataEntry.onMouseOver = function(_event) {
+    metadataEntry.onMouseOver = (_event) -> {
       metadataEntry.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
     }
-    metadataEntry.onMouseOut = function(_) {
+    metadataEntry.onMouseOut = (_) -> {
       metadataEntry.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
     }
@@ -1077,7 +1077,7 @@ class ChartEditorDialogHandler
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Import Chart dialog';
 
     state.isHaxeUIDialogOpen = true;
-    buttonCancel.onClick = function(_) {
+    buttonCancel.onClick = (_) -> {
       state.isHaxeUIDialogOpen = false;
       dialog.hideDialog(DialogButton.CANCEL);
     }
@@ -1085,19 +1085,19 @@ class ChartEditorDialogHandler
     var importBox:Null<Box> = dialog.findComponent('importBox', Box);
     if (importBox == null) throw 'Could not locate importBox in Import Chart dialog';
 
-    importBox.onMouseOver = function(_) {
+    importBox.onMouseOver = (_) -> {
       importBox.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
     }
-    importBox.onMouseOut = function(_) {
+    importBox.onMouseOut = (_) -> {
       importBox.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
     }
 
     var onDropFile:String->Void;
 
-    importBox.onClick = function(_) {
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileInfo) {
+    importBox.onClick = (_) -> {
+      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], (selectedFile:SelectedFileInfo) -> {
         if (selectedFile != null && selectedFile.bytes != null)
         {
           trace('Selected file: ' + selectedFile.fullPath);
@@ -1121,7 +1121,7 @@ class ChartEditorDialogHandler
       });
     }
 
-    onDropFile = function(pathStr:String) {
+    onDropFile = (pathStr:String) -> {
       var path:Path = new Path(pathStr);
       var selectedFileText:String = FileUtil.readStringFromPath(path.toString());
       var selectedFileData:Null<FNFLegacyData> = FNFLegacyImporter.parseLegacyDataRaw(selectedFileText, path.toString());
@@ -1173,13 +1173,13 @@ class ChartEditorDialogHandler
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Add Variation dialog';
-    buttonCancel.onClick = function(_) {
+    buttonCancel.onClick = (_) -> {
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
     var buttonAdd:Null<Button> = dialog.findComponent('dialogAdd', Button);
     if (buttonAdd == null) throw 'Could not locate dialogAdd button in Add Variation dialog';
-    buttonAdd.onClick = function(_) {
+    buttonAdd.onClick = (_) -> {
       // This performs validation before the onSubmit callback is called.
       variationForm.submit();
     }
@@ -1229,7 +1229,7 @@ class ChartEditorDialogHandler
     // If all validators succeeded, this callback is called.
 
     state.isHaxeUIDialogOpen = true;
-    variationForm.onSubmit = function(_) {
+    variationForm.onSubmit = (_) -> {
       state.isHaxeUIDialogOpen = false;
       trace('Add Variation dialog submitted, validation succeeded!');
 
@@ -1273,13 +1273,13 @@ class ChartEditorDialogHandler
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
     if (buttonCancel == null) throw 'Could not locate dialogCancel button in Add Difficulty dialog';
-    buttonCancel.onClick = function(_) {
+    buttonCancel.onClick = (_) -> {
       dialog.hideDialog(DialogButton.CANCEL);
     }
 
     var buttonAdd:Null<Button> = dialog.findComponent('dialogAdd', Button);
     if (buttonAdd == null) throw 'Could not locate dialogAdd button in Add Difficulty dialog';
-    buttonAdd.onClick = function(_) {
+    buttonAdd.onClick = (_) -> {
       // This performs validation before the onSubmit callback is called.
       difficultyForm.submit();
     }
@@ -1293,13 +1293,13 @@ class ChartEditorDialogHandler
 
     var inputScrollSpeed:Null<Slider> = dialog.findComponent('inputScrollSpeed', Slider);
     if (inputScrollSpeed == null) throw 'Could not find inputScrollSpeed component.';
-    inputScrollSpeed.onChange = function(event:UIEvent) {
+    inputScrollSpeed.onChange = (event:UIEvent) -> {
       labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
     };
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
 
-    difficultyForm.onSubmit = function(_) {
+    difficultyForm.onSubmit = (_) -> {
       trace('Add Difficulty dialog submitted, validation succeeded!');
 
       var dialogDifficultyName:Null<TextField> = dialog.findComponent('dialogDifficultyName', TextField);
@@ -1323,8 +1323,7 @@ class ChartEditorDialogHandler
   public static function openLeaveConfirmationDialog(state:ChartEditorState):Dialog
   {
     var dialog:Null<Dialog> = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO, true,
-      function(button:DialogButton)
-      {
+      (button:DialogButton) -> {
         state.isHaxeUIDialogOpen = false;
         if (button == DialogButton.YES)
         {
@@ -1337,7 +1336,7 @@ class ChartEditorDialogHandler
     dialog.destroyOnClose = true;
     state.isHaxeUIDialogOpen = true;
 
-    dialog.onDialogClosed = function(event:UIEvent) {
+    dialog.onDialogClosed = (event:UIEvent) -> {
       state.isHaxeUIDialogOpen = false;
     };
 
@@ -1361,7 +1360,7 @@ class ChartEditorDialogHandler
     dialog.showDialog(modal);
 
     state.isHaxeUIDialogOpen = true;
-    dialog.onDialogClosed = function(event:UIEvent) {
+    dialog.onDialogClosed = (event:UIEvent) -> {
       state.isHaxeUIDialogOpen = false;
     };
 
@@ -1420,7 +1419,7 @@ class ChartEditorDialogHandler
   static function onDropFile(path:String):Void
   {
     // a VERY short timer to wait for the mouse position to update
-    new FlxTimer().start(EPSILON, function(_) {
+    new FlxTimer().start(EPSILON, (_) -> {
       for (handler in dropHandlers)
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))

@@ -81,13 +81,13 @@ class HaxeUIState extends MusicBeatState
   {
     if (target == null)
     {
-      Screen.instance.registerEvent(MouseEvent.RIGHT_CLICK, function(e:MouseEvent) {
+      Screen.instance.registerEvent(MouseEvent.RIGHT_CLICK, (e:MouseEvent) -> {
         showContextMenu(assetPath, e.screenX, e.screenY);
       });
     }
     else
     {
-      target.registerEvent(MouseEvent.RIGHT_CLICK, function(e:MouseEvent) {
+      target.registerEvent(MouseEvent.RIGHT_CLICK, (e:MouseEvent) -> {
         showContextMenu(assetPath, e.screenX, e.screenY);
       });
     }

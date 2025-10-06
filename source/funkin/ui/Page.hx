@@ -63,7 +63,7 @@ class Page<T:PageName> extends FlxGroup
   function openPrompt(prompt:Prompt, onClose:Void->Void)
   {
     enabled = false;
-    prompt.closeCallback = function() {
+    prompt.closeCallback = () -> {
       enabled = true;
       if (onClose != null) onClose();
     }

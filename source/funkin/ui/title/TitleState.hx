@@ -54,7 +54,7 @@ class TitleState extends MusicBeatState
 
     // DEBUG BULLSHIT
 
-    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
+    if (!initialized) new FlxTimer().start(1, (tmr:FlxTimer) -> {
       startIntro();
     });
     else
@@ -180,7 +180,7 @@ class TitleState extends MusicBeatState
   function moveToAttract():Void
   {
     FlxG.sound.music.fadeOut(2.0, 0);
-    FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function() {
+    FlxG.camera.fade(FlxColor.BLACK, 2.0, false, () -> {
       FlxG.switchState(() -> new AttractState());
     });
   }
@@ -206,7 +206,7 @@ class TitleState extends MusicBeatState
     var fullText:String = Assets.getText(Paths.txt('introText'));
 
     // Split into lines and remove empty lines
-    var firstArray:Array<String> = fullText.split('\n').filter(function(s:String) return s != '');
+    var firstArray:Array<String> = fullText.split('\n').filter((s:String) -> return s != '');
     var swagGoodArray:Array<Array<String>> = [];
 
     for (i in firstArray)
@@ -300,7 +300,7 @@ class TitleState extends MusicBeatState
       funkin.api.newgrounds.Events.logStartGame();
       #end
 
-      new FlxTimer().start(2, function(tmr:FlxTimer) {
+      new FlxTimer().start(2, (tmr:FlxTimer) -> {
         moveToMainMenu();
       });
     }

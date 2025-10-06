@@ -1044,7 +1044,7 @@ class PlayState extends MusicBeatSubState
       Conductor.instance.update(-vwooshDelay * 1000 + startTimestamp + Conductor.instance.beatLengthMs * -5);
 
       // timer for vwoosh
-      vwooshTimer.start(vwooshDelay, function(_) {
+      vwooshTimer.start(vwooshDelay, (_) -> {
         if (playerStrumline.notes.length == 0) playerStrumline.updateNotes();
         if (opponentStrumline.notes.length == 0) opponentStrumline.updateNotes();
         playerStrumline.vwooshInNotes();
@@ -1222,7 +1222,7 @@ class PlayState extends MusicBeatSubState
         var deathPreTransitionDelay = currentStage?.getBoyfriend()?.getDeathPreTransitionDelay() ?? 0.0;
         if (deathPreTransitionDelay > 0)
         {
-          new FlxTimer().start(deathPreTransitionDelay, function(_) {
+          new FlxTimer().start(deathPreTransitionDelay, (_) -> {
             moveToGameOver();
           });
         }
@@ -1465,7 +1465,7 @@ class PlayState extends MusicBeatSubState
         // Vocals are also paused here but are not included as they are handled separately.
         if (subState is PauseSubState)
         {
-          FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
+          FlxG.sound.list.forEachAlive((sound:FlxSound) -> {
             if (!sound.active || sound == FlxG.sound.music) return;
             // In case it's a scheduled sound
             if (sound is FunkinSound)
@@ -1478,7 +1478,7 @@ class PlayState extends MusicBeatSubState
             soundsPausedBySubState.add(sound);
           });
 
-          vocals?.forEach(function(voice:FunkinSound) {
+          vocals?.forEach((voice:FunkinSound) -> {
             soundsPausedBySubState.remove(voice);
           });
         }
@@ -1761,12 +1761,12 @@ class PlayState extends MusicBeatSubState
         @:nullSafety(Off)
         @:privateAccess // todo: maybe make the groups public :thinking:
         {
-          vocals.playerVoices?.forEachAlive(function(voice:FunkinSound) {
+          vocals.playerVoices?.forEachAlive((voice:FunkinSound) -> {
             var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset;
             if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError)) playerVoicesError = currentRawVoiceTime - correctSync;
           });
 
-          vocals.opponentVoices?.forEachAlive(function(voice:FunkinSound) {
+          vocals.opponentVoices?.forEachAlive((voice:FunkinSound) -> {
             var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset;
             if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError)) opponentVoicesError = currentRawVoiceTime - correctSync;
           });
@@ -2449,7 +2449,7 @@ class PlayState extends MusicBeatSubState
       return;
     }
 
-    FlxG.sound.music.onComplete = function() {
+    FlxG.sound.music.onComplete = () -> {
       if (mayPauseGame) endSong(skipEndingTransition);
     };
 
@@ -3439,7 +3439,7 @@ class PlayState extends MusicBeatSubState
           camHUD.visible = false;
           isInCutscene = true;
 
-          FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), function() {
+          FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), () -> {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with the ID $targetSongId';
             var targetVariation:String = currentVariation;
@@ -3619,13 +3619,13 @@ class PlayState extends MusicBeatSubState
 
     FlxTween.tween(camHUD, {alpha: 0}, 0.6,
       {
-        onComplete: function(_) {
+        onComplete: (_) -> {
           moveToResultsScreen(isNewHighscore, prevScoreData);
         }
       });
 
     // Zoom in on Girlfriend (or BF if no GF)
-    new FlxTimer().start(0.8, function(_) {
+    new FlxTimer().start(0.8, (_) -> {
       if (targetBF)
       {
         boyfriend?.animation.play('hey');
@@ -3764,7 +3764,7 @@ class PlayState extends MusicBeatSubState
       cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, duration,
         {
           ease: ease,
-          onComplete: function(_) {
+          onComplete: (_) -> {
             resetCamera(false, false); // Re-enable camera following when the tween is complete.
           }
         });

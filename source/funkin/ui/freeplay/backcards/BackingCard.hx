@@ -161,14 +161,14 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
 
     FlxTween.color(instance.backingImage, 0.5, 0xFFA8A8A8, 0xFF646464,
       {
-        onUpdate: function(_) {
+        onUpdate: (_) -> {
           instance.angleMaskShader.extraColor = instance.backingImage.color;
         }
       });
     FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
       {
         ease: FlxEase.quadOut,
-        onComplete: function(_) {
+        onComplete: (_) -> {
           confirmGlow2.alpha = 0.6;
           confirmGlow.alpha = 1;
           confirmTextGlow.visible = true;
@@ -178,7 +178,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
           FlxTween.color(instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555,
             {
               ease: FlxEase.expoOut,
-              onUpdate: function(_) {
+              onUpdate: (_) -> {
                 instance.angleMaskShader.extraColor = instance.backingImage.color;
               }
             });

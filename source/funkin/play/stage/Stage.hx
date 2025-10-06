@@ -353,7 +353,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function setShader(shader:FlxShader):Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive((prop:FlxSprite) -> {
       prop.shader = shader;
     });
   }
@@ -619,7 +619,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function pause():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive((prop:FlxSprite) -> {
       if (prop.animation != null) prop.animation.pause();
     });
   }
@@ -629,7 +629,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function resume():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive((prop:FlxSprite) -> {
       if (prop.animation != null) prop.animation.resume();
     });
   }

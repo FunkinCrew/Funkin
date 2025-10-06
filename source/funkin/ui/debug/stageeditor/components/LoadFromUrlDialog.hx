@@ -26,7 +26,7 @@ class LoadFromUrlDialog extends Dialog
 
     urlField.text = "";
 
-    loader.addEventListener(Event.COMPLETE, function(event:Event) {
+    loader.addEventListener(Event.COMPLETE, (event:Event) -> {
       var bytes:Bytes = cast(loader.data, ByteArray);
 
       if (successCallback != null) successCallback(bytes);
@@ -39,13 +39,13 @@ class LoadFromUrlDialog extends Dialog
       hideDialog(DialogButton.CANCEL);
     });
 
-    loader.addEventListener(IOErrorEvent.IO_ERROR, function(event:IOErrorEvent) {
+    loader.addEventListener(IOErrorEvent.IO_ERROR, (event:IOErrorEvent) -> {
       if (failCallback != null) failCallback(urlField.text);
 
       trace("error with this shit");
     });
 
-    loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, function(event:SecurityErrorEvent) {
+    loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, (event:SecurityErrorEvent) -> {
       if (failCallback != null) failCallback(urlField.text);
 
       trace("error with this shit");

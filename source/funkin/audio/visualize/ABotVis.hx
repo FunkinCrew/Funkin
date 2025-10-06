@@ -44,7 +44,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
       volumes.push(0.0);
 
       // Sum the offsets up to the current index
-      var sum = function(num:Float, total:Float) return total += num;
+      var sum = (num:Float, total:Float) -> return total += num;
       var posX:Float = positionX.slice(0, index).fold(sum, 0);
       var posY:Float = positionY.slice(0, index).fold(sum, 0);
 

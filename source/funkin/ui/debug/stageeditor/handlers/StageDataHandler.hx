@@ -293,7 +293,7 @@ class StageDataHandler
 
     if (OpenFLAssets.getLibrary(data.directory) == null)
     {
-      OpenFLAssets.loadLibrary(data.directory).onComplete(function(_) {
+      OpenFLAssets.loadLibrary(data.directory).onComplete((_) -> {
         loadFromDataRaw(state, data);
       });
       return;

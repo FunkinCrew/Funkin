@@ -200,7 +200,7 @@ class StageEditorState extends UIState
 
     if (!saved)
     {
-      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer) {
+      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (tmr:FlxTimer) -> {
         FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
         var data = this.packShitToZip();
@@ -435,7 +435,7 @@ class StageEditorState extends UIState
     // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? "" : selectedSprite.name);
 
-    FlxG.stage.window.onDropFile.add(function(path:String):Void {
+    FlxG.stage.window.onDropFile.add((path:String) -> {
       if (!allowInput || welcomeDialog != null) return;
 
       var data = BitmapData.fromFile(path);
@@ -445,7 +445,7 @@ class StageEditorState extends UIState
         objNameDialog = new NewObjDialog(this, data);
         objNameDialog.showDialog();
 
-        objNameDialog.onDialogClosed = function(_) {
+        objNameDialog.onDialogClosed = (_) -> {
           objNameDialog = null;
         }
 
@@ -1024,32 +1024,32 @@ class StageEditorState extends UIState
 
   function addUI():Void
   {
-    menubarItemNewStage.onClick = function(_) onMenuItemClick("new stage");
-    menubarItemOpenStage.onClick = function(_) onMenuItemClick("open stage");
-    menubarItemSaveStage.onClick = function(_) onMenuItemClick("save stage");
-    menubarItemSaveStageAs.onClick = function(_) onMenuItemClick("save stage as");
-    menubarItemClearAssets.onClick = function(_) onMenuItemClick("clear assets");
-    menubarItemExit.onClick = function(_) onMenuItemClick("exit");
-    menubarItemUndo.onClick = function(_) onMenuItemClick("undo");
-    menubarItemRedo.onClick = function(_) onMenuItemClick("redo");
-    menubarItemCopy.onClick = function(_) onMenuItemClick("copy object");
-    menubarItemCut.onClick = function(_) onMenuItemClick("cut object");
-    menubarItemPaste.onClick = function(_) onMenuItemClick("paste object");
-    menubarItemDelete.onClick = function(_) onMenuItemClick("delete object");
-    menubarItemNewObj.onClick = function(_) onMenuItemClick("new object");
-    menubarItemFindObj.onClick = function(_) onMenuItemClick("find object");
-    menubarButtonText.onClick = function(_) onMenuItemClick("test stage");
-    menubarItemUserGuide.onClick = function(_) onMenuItemClick("user guide");
-    menubarItemGoToBackupsFolder.onClick = function(_) onMenuItemClick("open folder");
-    menubarItemAbout.onClick = function(_) onMenuItemClick("about");
+    menubarItemNewStage.onClick = (_) -> onMenuItemClick("new stage");
+    menubarItemOpenStage.onClick = (_) -> onMenuItemClick("open stage");
+    menubarItemSaveStage.onClick = (_) -> onMenuItemClick("save stage");
+    menubarItemSaveStageAs.onClick = (_) -> onMenuItemClick("save stage as");
+    menubarItemClearAssets.onClick = (_) -> onMenuItemClick("clear assets");
+    menubarItemExit.onClick = (_) -> onMenuItemClick("exit");
+    menubarItemUndo.onClick = (_) -> onMenuItemClick("undo");
+    menubarItemRedo.onClick = (_) -> onMenuItemClick("redo");
+    menubarItemCopy.onClick = (_) -> onMenuItemClick("copy object");
+    menubarItemCut.onClick = (_) -> onMenuItemClick("cut object");
+    menubarItemPaste.onClick = (_) -> onMenuItemClick("paste object");
+    menubarItemDelete.onClick = (_) -> onMenuItemClick("delete object");
+    menubarItemNewObj.onClick = (_) -> onMenuItemClick("new object");
+    menubarItemFindObj.onClick = (_) -> onMenuItemClick("find object");
+    menubarButtonText.onClick = (_) -> onMenuItemClick("test stage");
+    menubarItemUserGuide.onClick = (_) -> onMenuItemClick("user guide");
+    menubarItemGoToBackupsFolder.onClick = (_) -> onMenuItemClick("open folder");
+    menubarItemAbout.onClick = (_) -> onMenuItemClick("about");
 
-    bottomBarModeText.onClick = function(_) onMenuItemClick("switch mode");
-    bottomBarSelectText.onClick = function(_) onMenuItemClick("switch focus");
+    bottomBarModeText.onClick = (_) -> onMenuItemClick("switch mode");
+    bottomBarSelectText.onClick = (_) -> onMenuItemClick("switch focus");
 
     var stepOptions = ["1px", "2px", "3px", "5px", "10px", "25px", "50px", "100px"];
     bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep) ? Save.instance.stageEditorMoveStep : "1px";
 
-    var changeStep = function(change:Int = 0) {
+    var changeStep = (change:Int = 0) -> {
       var id = stepOptions.indexOf(bottomBarMoveStepText.text);
       id += change;
 
@@ -1065,15 +1065,15 @@ class StageEditorState extends UIState
       updateDialog(StageEditorDialogType.STAGE);
     }
 
-    bottomBarMoveStepText.onClick = function(_) changeStep(1);
-    bottomBarMoveStepText.onRightClick = function(_) changeStep(-1);
+    bottomBarMoveStepText.onClick = (_) -> changeStep(1);
+    bottomBarMoveStepText.onRightClick = (_) -> changeStep(-1);
 
     changeStep(); // update
 
     var angleOptions = [0.5, 1, 2, 5, 10, 15, 45, 75, 90, 180];
     bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep) ? Save.instance.stageEditorAngleStep : 5) + "°";
 
-    var changeAngle = function(change:Int = 0) {
+    var changeAngle = (change:Int = 0) -> {
       var id = angleOptions.indexOf(Save.instance.stageEditorAngleStep);
       id += change;
 
@@ -1086,8 +1086,8 @@ class StageEditorState extends UIState
       updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
     }
 
-    bottomBarAngleStepText.onClick = function(_) changeAngle(1);
-    bottomBarAngleStepText.onRightClick = function(_) changeAngle(-1);
+    bottomBarAngleStepText.onClick = (_) -> changeAngle(1);
+    bottomBarAngleStepText.onRightClick = (_) -> changeAngle(-1);
 
     changeAngle(); // update
 
@@ -1097,18 +1097,18 @@ class StageEditorState extends UIState
     dialogs.set(StageEditorDialogType.CHARACTER, new StageEditorCharacterToolbox(this));
     dialogs.set(StageEditorDialogType.STAGE, new StageEditorStageToolbox(this));
 
-    menubarItemWindowObjectGraphic.onChange = function(_) toggleDialog(StageEditorDialogType.OBJECT_GRAPHIC, menubarItemWindowObjectGraphic.selected);
-    menubarItemWindowObjectAnims.onChange = function(_) toggleDialog(StageEditorDialogType.OBJECT_ANIMS, menubarItemWindowObjectAnims.selected);
-    menubarItemWindowObjectProps.onChange = function(_) toggleDialog(StageEditorDialogType.OBJECT_PROPERTIES, menubarItemWindowObjectProps.selected);
-    menubarItemWindowCharacter.onChange = function(_) toggleDialog(StageEditorDialogType.CHARACTER, menubarItemWindowCharacter.selected);
-    menubarItemWindowStage.onChange = function(_) toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
+    menubarItemWindowObjectGraphic.onChange = (_) -> toggleDialog(StageEditorDialogType.OBJECT_GRAPHIC, menubarItemWindowObjectGraphic.selected);
+    menubarItemWindowObjectAnims.onChange = (_) -> toggleDialog(StageEditorDialogType.OBJECT_ANIMS, menubarItemWindowObjectAnims.selected);
+    menubarItemWindowObjectProps.onChange = (_) -> toggleDialog(StageEditorDialogType.OBJECT_PROPERTIES, menubarItemWindowObjectProps.selected);
+    menubarItemWindowCharacter.onChange = (_) -> toggleDialog(StageEditorDialogType.CHARACTER, menubarItemWindowCharacter.selected);
+    menubarItemWindowStage.onChange = (_) -> toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
 
-    menubarItemThemeLight.onClick = function(_) {
+    menubarItemThemeLight.onClick = (_) -> {
       Save.instance.stageEditorTheme = StageEditorTheme.Light;
       updateBGColors();
     }
 
-    menubarItemThemeDark.onClick = function(_) {
+    menubarItemThemeDark.onClick = (_) -> {
       Save.instance.stageEditorTheme = StageEditorTheme.Dark;
       updateBGColors();
     }
@@ -1116,16 +1116,16 @@ class StageEditorState extends UIState
     menubarItemThemeDark.selected = Save.instance.stageEditorTheme == StageEditorTheme.Dark;
     menubarItemThemeLight.selected = Save.instance.stageEditorTheme == StageEditorTheme.Light;
 
-    menubarItemViewChars.onChange = function(_) showChars = menubarItemViewChars.selected;
-    menubarItemViewNameText.onChange = function(_) nameTxt.visible = menubarItemViewNameText.selected;
-    menubarItemViewCamBounds.onChange = function(_) camFields.visible = menubarItemViewCamBounds.selected;
+    menubarItemViewChars.onChange = (_) -> showChars = menubarItemViewChars.selected;
+    menubarItemViewNameText.onChange = (_) -> nameTxt.visible = menubarItemViewNameText.selected;
+    menubarItemViewCamBounds.onChange = (_) -> camFields.visible = menubarItemViewCamBounds.selected;
 
-    menubarItemViewFloorLines.onChange = function(_) {
+    menubarItemViewFloorLines.onChange = (_) -> {
       for (awesome in floorLines)
         awesome.visible = menubarItemViewFloorLines.selected;
     }
 
-    menubarItemViewPosMarkers.onChange = function(_) {
+    menubarItemViewPosMarkers.onChange = (_) -> {
       for (coolbeans in posCircles)
         coolbeans.visible = menubarItemViewPosMarkers.selected;
     }
@@ -1146,7 +1146,7 @@ class StageEditorState extends UIState
       item.text = filePath.file + "." + filePath.ext;
       item.disabled = !FileUtil.fileExists(file);
 
-      var load = function(file:String) {
+      var load = (file:String) -> {
         currentFile = file;
 
         this.unpackShitFromZip(FileUtil.readBytesFromPath(file));
@@ -1154,11 +1154,11 @@ class StageEditorState extends UIState
         reloadRecentFiles();
       }
 
-      item.onClick = function(_) {
+      item.onClick = (_) -> {
         if (!saved)
         {
           Dialogs.messageBox("Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?", "Open Stage",
-            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
+            MessageBoxType.TYPE_YESNO, true, (btn:DialogButton) -> {
               if (btn == DialogButton.YES)
               {
                 saved = true;
@@ -1200,7 +1200,7 @@ class StageEditorState extends UIState
           return;
         }
 
-        FileUtil.saveFile(bytes, [FileUtil.FILE_FILTER_FNFS], function(path:String) {
+        FileUtil.saveFile(bytes, [FileUtil.FILE_FILTER_FNFS], (path:String) -> {
           saved = true;
           currentFile = path;
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
@@ -1230,7 +1230,7 @@ class StageEditorState extends UIState
         if (!saved)
         {
           Dialogs.messageBox("Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?", "Open Stage",
-            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
+            MessageBoxType.TYPE_YESNO, true, (btn:DialogButton) -> {
               if (btn == DialogButton.YES)
               {
                 saved = true;
@@ -1241,7 +1241,7 @@ class StageEditorState extends UIState
           return;
         }
 
-        FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS], function(_) {
+        FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS], (_) -> {
           if (_?.fullPath == null) return;
 
           clearAssets();
@@ -1250,7 +1250,7 @@ class StageEditorState extends UIState
           this.unpackShitFromZip(FileUtil.readBytesFromPath(currentFile));
 
           reloadRecentFiles();
-        }, function() {
+        }, () -> {
           // This function does nothing, it's there for crash prevention.
         });
 
@@ -1260,7 +1260,7 @@ class StageEditorState extends UIState
           if (exitConfirmDialog == null)
           {
             exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
-              MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
+              MessageBoxType.TYPE_YESNO, true, (btn:DialogButton) -> {
                 exitConfirmDialog = null;
                 if (btn == DialogButton.YES)
                 {
@@ -1327,7 +1327,7 @@ class StageEditorState extends UIState
         objNameDialog = new NewObjDialog(this);
         objNameDialog.showDialog();
 
-        objNameDialog.onDialogClosed = function(_) {
+        objNameDialog.onDialogClosed = (_) -> {
           objNameDialog = null;
         }
 
@@ -1344,7 +1344,7 @@ class StageEditorState extends UIState
         userGuideDialog = new UserGuideDialog();
         userGuideDialog.showDialog();
 
-        userGuideDialog.onDialogClosed = function(_) {
+        userGuideDialog.onDialogClosed = (_) -> {
           userGuideDialog = null;
         }
 
@@ -1375,7 +1375,7 @@ class StageEditorState extends UIState
 
       case "clear assets":
         Dialogs.messageBox("This will destroy all Objects in this Stage.\n\nAre you sure? This cannot be undone.", "Clear Assets", MessageBoxType.TYPE_YESNO,
-          true, function(btn:DialogButton) {
+          true, (btn:DialogButton) -> {
             if (btn == DialogButton.YES)
             {
               clearAssets();
@@ -1456,7 +1456,7 @@ class StageEditorState extends UIState
         welcomeDialog = new WelcomeDialog(this);
         welcomeDialog.showDialog();
         welcomeDialog.closable = true;
-        welcomeDialog.onDialogClosed = function(_) {
+        welcomeDialog.onDialogClosed = (_) -> {
           updateWindowTitle();
           welcomeDialog = null;
 
@@ -1536,7 +1536,7 @@ class StageEditorState extends UIState
   public function createURLDialog(onComplete:lime.utils.Bytes->Void = null, onFail:String->Void = null)
   {
     loadUrlDialog = new LoadFromUrlDialog(onComplete, onFail);
-    loadUrlDialog.onDialogClosed = function(_) {
+    loadUrlDialog.onDialogClosed = (_) -> {
       loadUrlDialog = null;
     }
 

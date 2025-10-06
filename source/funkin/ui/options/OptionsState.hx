@@ -107,7 +107,7 @@ class OptionsState extends MusicBeatState
     {
       drumsBG.fadeOut(0.5, 0);
     }
-    FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
+    FlxG.sound.music.fadeOut(0.5, 0, (tw) -> {
       FunkinSound.playMusic('freakyMenu',
         {
           startingVolume: 0,
@@ -162,11 +162,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     super();
     add(items = new TextMenuList());
 
-    createItem("PREFERENCES", function() codex.switchPage(Preferences));
+    createItem("PREFERENCES", () -> codex.switchPage(Preferences));
     #if mobile
     if (ControlsHandler.hasExternalInputDevice)
     #end
-    createItem("CONTROLS", function() codex.switchPage(Controls));
+    createItem("CONTROLS", () -> codex.switchPage(Controls));
     // createItem("CONTROL SCHEMES", function() {
     //   FlxG.state.openSubState(new ControlsSchemeMenu());
     // });
@@ -200,26 +200,26 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      createItem("LOGOUT OF NG", function() {
-        NewgroundsClient.instance.logout(function() {
+      createItem("LOGOUT OF NG", () -> {
+        NewgroundsClient.instance.logout(() -> {
           // Reset the options menu when logout succeeds.
           // This means the login option will be displayed.
           FlxG.resetState();
-        }, function() {
+        }, () -> {
           FlxG.log.warn("Newgrounds logout failed!");
         });
       });
     }
     else
     {
-      createItem("LOGIN TO NG", function() {
-        NewgroundsClient.instance.login(function() {
+      createItem("LOGIN TO NG", () -> {
+        NewgroundsClient.instance.login(() -> {
           // Reset the options menu when login succeeds.
           // This means the logout option will be displayed.
           // NOTE: If the user presses login and opens the browser,
           // then navigates the UI
           FlxG.resetState();
-        }, function() {
+        }, () -> {
           FlxG.log.warn("Newgrounds login failed!");
         });
       });
@@ -251,7 +251,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     // no need to show an entire new menu for just one option
     if (saveDataMenu.hasMultipleOptions())
     {
-      createItem("SAVE DATA OPTIONS", function() {
+      createItem("SAVE DATA OPTIONS", () -> {
         codex.switchPage(SaveData);
       });
     }
@@ -267,7 +267,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     createItem("EXIT", exit);
     #else
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
-    backButton.onConfirmStart.add(function() {
+    backButton.onConfirmStart.add(() -> {
       items.busy = true;
       goingBack = true;
       backButton.active = true;

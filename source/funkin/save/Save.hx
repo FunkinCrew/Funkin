@@ -1386,7 +1386,7 @@ class Save implements ConsoleClass
   public static function loadFromNewgrounds(onFinish:Void->Void):Void
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
-    funkin.api.newgrounds.NGSaveSlot.instance.load(function(data:Dynamic) {
+    funkin.api.newgrounds.NGSaveSlot.instance.load((data:Dynamic) -> {
       FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH);
 
       if (FlxG.save.status != EMPTY)
@@ -1403,7 +1403,7 @@ class Save implements ConsoleClass
       FlxG.save.mergeData(gameSave.data, true);
       _instance = gameSave;
       onFinish();
-    }, function(error:io.newgrounds.Call.CallError) {
+    }, (error:io.newgrounds.Call.CallError) -> {
       var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
 
       var msg = 'There was an error loading your save data from Newgrounds.';

@@ -146,7 +146,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     var crowd:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize, 0, Paths.animateAtlas("charSelect/crowd"));
     crowd.anim.play();
-    crowd.anim.onComplete.add(function() {
+    crowd.anim.onComplete.add(() -> {
       crowd.anim.play();
     });
     crowd.scrollFactor.set(0.3, 0.3);
@@ -154,7 +154,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     var stageSpr:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize + -2, 1, Paths.animateAtlas("charSelect/charSelectStage"));
     stageSpr.anim.play("");
-    stageSpr.anim.onComplete.add(function() {
+    stageSpr.anim.onComplete.add(() -> {
       stageSpr.anim.play("");
     });
     add(stageSpr);
@@ -166,7 +166,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     barthing = new FlxAtlasSprite(0, 0, Paths.animateAtlas("charSelect/barThing"));
     barthing.anim.play("");
-    barthing.anim.onComplete.add(function() {
+    barthing.anim.onComplete.add(() -> {
       barthing.anim.play("");
     });
     barthing.blend = BlendMode.MULTIPLY;
@@ -222,7 +222,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     var speakers:FlxAtlasSprite = new FlxAtlasSprite(cutoutSize - 10, 0, Paths.animateAtlas("charSelect/charSelectSpeakers"));
     speakers.anim.play("");
-    speakers.anim.onComplete.add(function() {
+    speakers.anim.onComplete.add(() -> {
       speakers.anim.play("");
     });
     speakers.scrollFactor.set(1.8, 1.8);
@@ -434,7 +434,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(camFollow, {y: camFollow.y + 150}, 1.5,
       {
         ease: FlxEase.expoOut,
-        onComplete: function(_) {
+        onComplete: (_) -> {
           autoFollow = true;
           FlxG.camera.follow(camFollow, LOCKON, 0.01);
         }
@@ -486,7 +486,7 @@ class CharSelectSubState extends MusicBeatSubState
           startingVolume: 1,
           overrideExisting: true,
           restartTrack: true,
-          onLoad: function() {
+          onLoad: () -> {
             allowInput = true;
 
             @:privateAccess
@@ -583,10 +583,10 @@ class CharSelectSubState extends MusicBeatSubState
 
     nonLocks.shift();
 
-    selectTimer.start(0.5, function(_) {
+    selectTimer.start(0.5, (_) -> {
       var lock:Lock = cast grpIcons.group.members[index];
 
-      lock.anim.getFrameLabel("unlockAnim").add(function() {
+      lock.anim.getFrameLabel("unlockAnim").add(() -> {
         playerChillOut.playAnimation("death");
       });
 
@@ -601,7 +601,7 @@ class CharSelectSubState extends MusicBeatSubState
 
         sync = true; */
 
-      lock.onAnimationComplete.addOnce(function(_) {
+      lock.onAnimationComplete.addOnce((_) -> {
         // syncLock = null;
         var char = availableChars.get(index);
         camera.flash(0xFFFFFFFF, 0.1);
@@ -650,7 +650,7 @@ class CharSelectSubState extends MusicBeatSubState
               startingVolume: 1,
               overrideExisting: true,
               restartTrack: true,
-              onLoad: function() {
+              onLoad: () -> {
                 allowInput = true;
 
                 @:privateAccess
@@ -763,7 +763,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8,
       {
         ease: FlxEase.backIn,
-        onComplete: function(_) {
+        onComplete: (_) -> {
           FlxG.switchState(() -> FreeplayState.build(
             {
               {

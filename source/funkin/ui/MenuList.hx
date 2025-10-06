@@ -287,7 +287,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     {
       busy = true;
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_) {
+      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, _ -> {
         busy = false;
         menuItem.callback();
       });

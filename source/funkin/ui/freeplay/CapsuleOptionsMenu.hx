@@ -58,7 +58,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     add(label);
     add(currentInstrumental);
 
-    capsuleMenuBG.animation.onFinish.add(function(_) {
+    capsuleMenuBG.animation.onFinish.add((_) -> {
       capsuleMenuBG.animation.play('idle', true);
     });
     capsuleMenuBG.animation.play('open', true);
@@ -119,7 +119,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     capsuleMenuBG.animation.play('open', true, true);
     if (leftArrow.moveShitDownTimer != null) leftArrow.moveShitDownTimer.cancel();
     if (rightArrow.moveShitDownTimer != null) rightArrow.moveShitDownTimer.cancel();
-    capsuleMenuBG.animation.onFinish.add(function(_) {
+    capsuleMenuBG.animation.onFinish.add((_) -> {
       parent.cleanupCapsuleOptionsMenu();
       queueDestroy = true;
     });
@@ -186,7 +186,7 @@ class InstrumentalSelector extends FunkinSprite
 
     scale.x = scale.y = 0.5 * baseScale;
 
-    moveShitDownTimer = new FlxTimer().start(2 / 24, function(tmr) {
+    moveShitDownTimer = new FlxTimer().start(2 / 24, (tmr) -> {
       scale.x = scale.y = 1 * baseScale;
       whiteShader.colorSet = false;
       updateHitbox();

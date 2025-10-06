@@ -111,7 +111,7 @@ class WindowUtil
     // onUpdate is called every frame just before rendering.
 
     // onExit is called when the game window is closed.
-    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int) {
+    openfl.Lib.current.stage.application.onExit.add((exitCode:Int) -> {
       windowExit.dispatch(exitCode);
     });
 

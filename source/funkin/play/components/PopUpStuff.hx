@@ -58,7 +58,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     FlxTween.tween(rating, {alpha: 0}, 0.2,
       {
-        onComplete: function(tween:FlxTween) {
+        onComplete: (tween:FlxTween) -> {
           remove(rating, true);
           rating.destroy();
         },
@@ -107,7 +107,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
       FlxTween.tween(numScore, {alpha: 0}, 0.2,
         {
-          onComplete: function(tween:FlxTween) {
+          onComplete: (tween:FlxTween) -> {
             remove(numScore, true);
             numScore.destroy();
           },

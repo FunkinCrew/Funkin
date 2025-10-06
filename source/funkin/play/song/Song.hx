@@ -528,7 +528,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       .filterNull()
       .distinct();
 
-    diffFiltered = diffFiltered.filter(function(diffId:String):Bool {
+    diffFiltered = diffFiltered.filter((diffId:String) -> {
       if (showHidden) return true;
       for (targetVariation in variationIds)
       {
@@ -970,7 +970,7 @@ class SongDifficulty
     }
 
     // Sometimes the sounds don't set their important value to true, so we have to do this manually.
-    result.forEach(function(snd:FunkinSound) {
+    result.forEach((snd:FunkinSound) -> {
       snd.important = true;
     });
 

@@ -934,7 +934,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   function buildSplashAnimations(target:NoteSplash):Void
   {
-    final addSplashAnim:NoteDirection->Void = function(dir:NoteDirection) {
+    final addSplashAnim:NoteDirection->Void = (dir:NoteDirection) -> {
       var animData:Null<Array<AnimationData>> = fetchSplashAnimationData(dir);
       if (animData != null)
       {

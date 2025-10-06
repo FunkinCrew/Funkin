@@ -62,7 +62,7 @@ class LoadingState extends MusicBeatSubState
 
     add(loadBar);
 
-    initSongsManifest().onComplete(function(lib) {
+    initSongsManifest().onComplete((lib) -> {
       callbacks = new MultiCallback(onLoad);
       var introComplete = callbacks.add('introComplete');
 
@@ -100,7 +100,7 @@ class LoadingState extends MusicBeatSubState
 
       var fadeTime:Float = 0.5;
       FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-      new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
+      new FlxTimer().start(fadeTime + MIN_TIME, (_) -> introComplete());
     });
   }
 
@@ -115,7 +115,7 @@ class LoadingState extends MusicBeatSubState
       // @:privateAccess
       // library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
       var callback = callbacks?.add('song:' + path);
-      Assets.loadSound(path).onComplete(function(_) {
+      Assets.loadSound(path).onComplete((_) -> {
         if (callback != null) callback();
       });
     }
@@ -130,7 +130,7 @@ class LoadingState extends MusicBeatSubState
       if (!LimeAssets.libraryPaths.exists(library)) throw 'Missing library: ' + library;
 
       var callback = callbacks?.add('library:' + library);
-      Assets.loadLibrary(library).onComplete(function(_) {
+      Assets.loadLibrary(library).onComplete((_) -> {
         if (callback != null) callback();
       });
     }
@@ -228,13 +228,13 @@ class LoadingState extends MusicBeatSubState
     stageDirectory = daStage?._data?.directory ?? "shared";
     Paths.setCurrentLevel(stageDirectory);
 
-    var playStateCtor:() -> PlayState = function() {
+    var playStateCtor:() -> PlayState = () -> {
       return new PlayState(params);
     };
 
     if (onConstruct != null)
     {
-      playStateCtor = function() {
+      playStateCtor = () -> {
         var result = new PlayState(params);
         onConstruct(result);
         return result;
@@ -243,7 +243,7 @@ class LoadingState extends MusicBeatSubState
 
     #if NO_PRELOAD_ALL
     // Switch to loading state while we load assets (default on HTML5 target).
-    var loadStateCtor = function() {
+    var loadStateCtor = () -> {
       var result = new LoadingState(playStateCtor, shouldStopMusic, params);
       @:privateAccess
       result.asSubState = asSubState;
@@ -319,7 +319,7 @@ class LoadingState extends MusicBeatSubState
         for (sprite in spritesToCache)
         {
           trace('Queueing $sprite to preload.');
-          // new Future<String>(function() {
+          // new Future<String>(() -> {
           var path = Paths.image(sprite, "weekend1");
           funkin.FunkinMemory.cacheTexture(path);
           // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
@@ -336,7 +336,7 @@ class LoadingState extends MusicBeatSubState
         for (sound in soundsToCache)
         {
           trace('Queueing $sound to preload.');
-          new Future<String>(function() {
+          new Future<String>(() -> {
             var path = Paths.sound(sound, "weekend1");
             funkin.FunkinMemory.cacheSound(path);
             return '${path} successfuly loaded.';
@@ -352,7 +352,7 @@ class LoadingState extends MusicBeatSubState
     else
     {
       // funkin.FunkinMemory.clearFreeplay();
-      FlxG.signals.preStateSwitch.addOnce(function() {
+      FlxG.signals.preStateSwitch.addOnce(() -> {
         funkin.FunkinMemory.clearFreeplay();
         funkin.FunkinMemory.purgeCache(true);
       });
@@ -398,7 +398,7 @@ class LoadingState extends MusicBeatSubState
     //   // I will fix this properly later I swear -eric
     //   if (!path.endsWith('.png')) continue;
 
-    //   new Future<String>(function() {
+    //   new Future<String>(() -> {
     //     FunkinSprite.cacheTexture(path);
     //     // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
     //     // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
@@ -469,7 +469,7 @@ class LoadingState extends MusicBeatSubState
       path = LimeAssets.__cacheBreak(path);
     }
 
-    AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest) {
+    AssetManifest.loadFromFile(path, rootPath).onComplete((manifest) -> {
       if (manifest == null)
       {
         promise.error('Cannot parse asset manifest for library \'' + id + '\'');
@@ -489,7 +489,7 @@ class LoadingState extends MusicBeatSubState
         library.onChange.add(LimeAssets.onChange.dispatch);
         promise.completeWith(Future.withValue(library));
       }
-    }).onError(function(_) {
+    }).onError((_) -> {
       promise.error('There is no asset library with an ID of \'' + id + '\'');
     });
 
@@ -524,7 +524,7 @@ class MultiCallback
     id = '$length:$id';
     length++;
     numRemaining++;
-    var func:Void->Void = function() {
+    var func:Void->Void = () -> {
       if (unfired.exists(id))
       {
         unfired.remove(id);
@@ -572,7 +572,7 @@ class MultiCallback
     FlxTween.tween(screenWipeShit, {daAlphaShit: 1}, time,
       {
         ease: FlxEase.quadInOut,
-        onComplete: function(twn) {
+        onComplete: (twn) -> {
           screenShit.destroy();
           FlxG.switchState(state);
         }

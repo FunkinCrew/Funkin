@@ -67,7 +67,7 @@ class NoteKind implements INoteScriptedClass
   function getNotes():Array<NoteSprite>
   {
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
-    return allNotes.filter(function(note:NoteSprite) {
+    return allNotes.filter((note:NoteSprite) -> {
       return note != null && note.noteData.kind == this.noteKind;
     });
   }

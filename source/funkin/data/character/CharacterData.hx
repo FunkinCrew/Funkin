@@ -55,7 +55,7 @@ class CharacterDataParser
     // UNSCRIPTED CHARACTERS
     //
     var charIdList:Array<String> = DataAssets.listDataFilesInPath('characters/');
-    var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool {
+    var unscriptedCharIds:Array<String> = charIdList.filter((charId:String) -> {
       return !characterCache.exists(charId);
     });
     trace('  Fetching data for ${unscriptedCharIds.length} characters...');
@@ -163,7 +163,7 @@ class CharacterDataParser
     // NOTE: Only instantiate the ones not populated above.
     // ScriptedBaseCharacter.listScriptClasses() will pick up scripts extending the other classes.
     var scriptedCharClassNames:Array<String> = ScriptedBaseCharacter.listScriptClasses();
-    scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool {
+    scriptedCharClassNames = scriptedCharClassNames.filter((charCls:String) -> {
       return !(scriptedCharClassNames1.contains(charCls)
         || scriptedCharClassNames2.contains(charCls)
         || scriptedCharClassNames3.contains(charCls)
@@ -323,7 +323,7 @@ class CharacterDataParser
     {
       var frames = Paths.getSparrowAtlas(charPath);
 
-      var idleFrame:Null<FlxFrame> = frames.frames.find(function(frame:FlxFrame):Bool {
+      var idleFrame:Null<FlxFrame> = frames.frames.find((frame:FlxFrame) -> {
         return frame.name.startsWith('idle');
       });
 
