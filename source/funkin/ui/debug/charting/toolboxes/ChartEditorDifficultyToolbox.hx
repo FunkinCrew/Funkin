@@ -141,6 +141,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         {
           chartEditorState.currentSongMetadata = songMetadata;
           chartEditorState.healthIconsDirty = true;
+          chartEditorState.playerPreviewDirty = true;
+          chartEditorState.opponentPreviewDirty = true;
           chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
           chartEditorState.success('Replaced Metadata', 'Replaced metadata with file (${fileReference.name})');
         }

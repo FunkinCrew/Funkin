@@ -97,6 +97,7 @@ import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
 import haxe.ui.components.Slider;
+import haxe.ui.components.NumberStepper;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
@@ -629,6 +630,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.scrollPositionInPixels = this.scrollPositionInPixels;
     // Characters have probably changed too.
     healthIconsDirty = true;
+    playerPreviewDirty = true;
+    opponentPreviewDirty = true;
 
     return isViewDownscroll;
   }
@@ -665,6 +668,42 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * `null` until accessed.
    */
   var currentOpponentCharacterPlayer:Null<CharacterPlayer> = null;
+
+  /**
+   * The character scale in the Player Preview window.
+   * `null` until accessed.
+   */
+  var currentPlayerPreviewScale:Null<NumberStepper> = null;
+
+  /**
+   * The character scale in the Opponent Preview window.
+   * `null` until accessed.
+   */
+  var currentOpponentPreviewScale:Null<NumberStepper> = null;
+
+  /**
+   * The character X in the Player Preview window.
+   * `null` until accessed.
+   */
+  var currentPlayerPreviewX:Null<NumberStepper> = null;
+
+  /**
+   * The character X in the Opponent Preview window.
+   * `null` until accessed.
+   */
+  var currentOpponentPreviewX:Null<NumberStepper> = null;
+
+  /**
+   * The character Y in the Player Preview window.
+   * `null` until accessed.
+   */
+  var currentPlayerPreviewY:Null<NumberStepper> = null;
+
+  /**
+   * The character Y in the Opponent Preview window.
+   * `null` until accessed.
+   */
+  var currentOpponentPreviewY:Null<NumberStepper> = null;
 
   // HaxeUI
 
@@ -3277,8 +3316,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxFreeplay.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT, event.value);
     menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
-    menubarItemToggleToolboxPlayerPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
-    menubarItemToggleToolboxOpponentPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
+    menubarItemToggleToolboxPlayerPreview.onChange = event -> {
+      this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
+      playerPreviewDirty = event.value;
+    };
+    menubarItemToggleToolboxOpponentPreview.onChange = event -> {
+      this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
+      opponentPreviewDirty = event.value;
+    };
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     // registerContextMenu(null, Paths.ui('chart-editor/context/test'));
@@ -3601,7 +3646,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var oldStepTime:Float = Conductor.instance.currentStepTime;
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
         updateSongTime();
-        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+        handleHitNotes(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -3619,7 +3664,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Else, move the entire view.
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
         updateSongTime();
-        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+        handleHitNotes(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -5309,8 +5354,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleToolboxes():Void
   {
     handleDifficultyToolbox();
-    // handlePlayerPreviewToolbox();
-    // handleOpponentPreviewToolbox();
+    handlePlayerPreviewToolbox();
+    handleOpponentPreviewToolbox();
   }
 
   function handleDifficultyToolbox():Void
@@ -5337,14 +5382,42 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (charPreviewToolbox == null) return;
 
     // TODO: Re-enable the player preview once we figure out the performance issues.
-    var charPlayer:Null<CharacterPlayer> = null; // charPreviewToolbox.findComponent('charPlayer');
+    var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
     if (charPlayer == null) return;
 
-    currentPlayerCharacterPlayer = charPlayer;
+    var charPreviewScale:Null<NumberStepper> = charPreviewToolbox.findComponent('charPreviewScale');
+    if (charPreviewScale == null) return;
+
+    var charPreviewX:Null<NumberStepper> = charPreviewToolbox.findComponent('charPreviewX');
+    if (charPreviewX == null) return;
+
+    var charPreviewY:Null<NumberStepper> = charPreviewToolbox.findComponent('charPreviewY');
+    if (charPreviewY == null) return;
 
     if (playerPreviewDirty)
     {
       playerPreviewDirty = false;
+
+      charPreviewScale.onChange = event -> {
+        currentPlayerCharacterPlayer.targetScale = event.value;
+        playerPreviewDirty = true;
+      }
+
+      currentPlayerPreviewScale = charPreviewScale;
+
+      charPreviewX.onChange = event -> {
+        currentPlayerCharacterPlayer.xOffset = event.value;
+        playerPreviewDirty = true;
+      }
+
+      currentPlayerPreviewX = charPreviewX;
+
+      charPreviewY.onChange = event -> {
+        currentPlayerCharacterPlayer.yOffset = event.value;
+        playerPreviewDirty = true;
+      }
+
+      currentPlayerPreviewY = charPreviewY;
 
       if (currentSongMetadata.playData.characters.player != charPlayer.charId)
       {
@@ -5357,15 +5430,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         charPlayer.characterType = CharacterType.BF;
         charPlayer.flip = true;
         charPlayer.targetScale = 0.5;
+        currentPlayerPreviewScale.pos = 0.5;
+        charPlayer.xOffset = 0;
+        currentPlayerPreviewX.pos = 0;
+        charPlayer.yOffset = 0;
+        currentPlayerPreviewY.pos = 0;
+        charPreviewToolbox.invalidateComponentLayout();
 
         charPreviewToolbox.title = 'Player Preview - ${charPlayer.charName}';
       }
 
-      if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-      {
-        charPreviewToolbox.width = charPlayer.width + 32;
-        charPreviewToolbox.height = charPlayer.height + 64;
-      }
+      currentPlayerCharacterPlayer = charPlayer;
+    }
+
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
+    {
+      charPreviewToolbox.width = (currentPlayerCharacterPlayer.width > currentPlayerPreviewScale.width) ? currentPlayerCharacterPlayer.width
+        + 32 : currentPlayerPreviewScale.width
+        + 32;
+      charPreviewToolbox.height = currentPlayerCharacterPlayer.height + currentPlayerPreviewScale.height + currentPlayerPreviewX.height
+        + currentPlayerPreviewY.height + 64;
     }
   }
 
@@ -5376,14 +5460,42 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (charPreviewToolbox == null) return;
 
     // TODO: Re-enable the player preview once we figure out the performance issues.
-    var charPlayer:Null<CharacterPlayer> = null; // charPreviewToolbox.findComponent('charPlayer');
+    var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
     if (charPlayer == null) return;
 
-    currentOpponentCharacterPlayer = charPlayer;
+    var charPreviewScale:Null<NumberStepper> = charPreviewToolbox.findComponent('charPreviewScale');
+    if (charPreviewScale == null) return;
+
+    var charPreviewX:Null<NumberStepper> = charPreviewToolbox.findComponent('charPreviewX');
+    if (charPreviewX == null) return;
+
+    var charPreviewY:Null<NumberStepper> = charPreviewToolbox.findComponent('charPreviewY');
+    if (charPreviewY == null) return;
 
     if (opponentPreviewDirty)
     {
       opponentPreviewDirty = false;
+
+      charPreviewScale.onChange = event -> {
+        currentOpponentCharacterPlayer.targetScale = event.value;
+        opponentPreviewDirty = true;
+      }
+
+      currentOpponentPreviewScale = charPreviewScale;
+
+      charPreviewX.onChange = event -> {
+        currentOpponentCharacterPlayer.xOffset = event.value;
+        opponentPreviewDirty = true;
+      }
+
+      currentOpponentPreviewX = charPreviewX;
+
+      charPreviewY.onChange = event -> {
+        currentOpponentCharacterPlayer.yOffset = event.value;
+        opponentPreviewDirty = true;
+      }
+
+      currentOpponentPreviewY = charPreviewY;
 
       if (currentSongMetadata.playData.characters.opponent != charPlayer.charId)
       {
@@ -5396,15 +5508,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         charPlayer.characterType = CharacterType.DAD;
         charPlayer.flip = false;
         charPlayer.targetScale = 0.5;
+        currentOpponentPreviewScale.pos = 0.5;
+        charPlayer.xOffset = 0;
+        currentOpponentPreviewX.pos = 0;
+        charPlayer.yOffset = 0;
+        currentOpponentPreviewY.pos = 0;
+        charPreviewToolbox.invalidateComponentLayout();
 
         charPreviewToolbox.title = 'Opponent Preview - ${charPlayer.charName}';
       }
 
-      if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-      {
-        charPreviewToolbox.width = charPlayer.width + 32;
-        charPreviewToolbox.height = charPlayer.height + 64;
-      }
+      currentOpponentCharacterPlayer = charPlayer;
+    }
+
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
+    {
+      charPreviewToolbox.width = (currentOpponentCharacterPlayer.width > currentOpponentPreviewScale.width) ? currentOpponentCharacterPlayer.width
+        + 32 : currentOpponentPreviewScale.width
+        + 32;
+      charPreviewToolbox.height = currentOpponentCharacterPlayer.height + currentOpponentPreviewScale.height + currentOpponentPreviewX.height
+        + currentOpponentPreviewY.height + 64;
+      charPreviewToolbox.invalidateComponentLayout();
     }
   }
 
@@ -6126,7 +6250,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     PlayStatePlaylist.reset();
-    
+
     // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
@@ -6735,10 +6859,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Handle the playback of hitsounds.
    */
-  function handleHitsounds(oldSongPosition:Float, newSongPosition:Float):Void
+  function handleHitNotes(oldSongPosition:Float, newSongPosition:Float):Void
   {
-    if (!hitsoundsEnabled) return;
-
     // Assume notes are sorted by time.
     for (noteData in currentSongChartNoteData)
     {
@@ -6748,7 +6870,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         continue;
 
       if (noteData.time > newSongPosition) // Note is in the future.
-        return; // Assume all notes are also in the future.
+        break; // Assume all notes are also in the future.
 
       // Note was just hit.
 
@@ -6765,12 +6887,43 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (event.eventCanceled) continue;
 
       // Hitsounds.
-      switch (noteData.getStrumlineIndex())
+      if (hitsoundsEnabled) switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
           if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
         case 1: // Opponent
           if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
+      }
+    }
+
+    for (eventData in currentSongChartEventData)
+    {
+      // Check for events between the old and new song positions.
+
+      if (eventData.time < oldSongPosition) // Event is in the past.
+        continue;
+
+      if (eventData.time > newSongPosition) // Event is in the future.
+        break; // Assume all events are also in the future.
+
+      // Event was just hit.
+
+      // Character preview.
+
+      switch (eventData.eventKind)
+      {
+        case "PlayAnimation":
+          var target = null;
+          switch (eventData.getString("target"))
+          {
+            case 'boyfriend' | 'bf' | 'player':
+              target = currentPlayerCharacterPlayer;
+            case 'dad' | 'opponent':
+              target = currentOpponentCharacterPlayer;
+            default:
+          }
+          if (target.character != null) target.character.playAnimation(eventData.getString("anim") ?? "idle", eventData.getBool("force") ?? false);
+        default:
       }
     }
   }
@@ -6842,6 +6995,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
+    playerPreviewDirty = true;
+    opponentPreviewDirty = true;
   }
 
   public function postLoadVocals():Void

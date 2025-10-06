@@ -31,7 +31,7 @@ typedef AnimationInfo =
 @:composite(Layout)
 class CharacterPlayer extends Box
 {
-  var character:Null<BaseCharacter>;
+  public var character:Null<BaseCharacter>;
 
   public function new(defaultToBf:Bool = true)
   {
@@ -99,14 +99,10 @@ class CharacterPlayer extends Box
     // Set character properties.
     if (characterType != null) character.characterType = characterType;
     if (flip) character.flipX = !character.flipX;
-    if (targetScale != 1.0) character.setScale(targetScale);
+    if (targetScale != 1.0) character.setScale(character.isPixel ? targetScale * Constants.PIXEL_ART_SCALE : targetScale);
 
-    character.animation.onFrameChange.add(function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
-      dispatch(new AnimationEvent(AnimationEvent.FRAME));
-    });
-    character.animation.onFinish.add(function(name:String = '') {
-      dispatch(new AnimationEvent(AnimationEvent.END));
-    });
+    character.animation.onFrameChange.add(onFrame);
+    character.animation.onFinish.add(onFinish);
     add(character);
 
     invalidateComponentLayout();
@@ -154,10 +150,38 @@ class CharacterPlayer extends Box
 
     if (character != null)
     {
-      character.setScale(value);
+      character.setScale(character.isPixel ? value * Constants.PIXEL_ART_SCALE : value);
     }
 
     return targetScale = value;
+  }
+
+  public var xOffset(default, set):Float = 0;
+
+  function set_xOffset(value:Float):Float
+  {
+    if (value == xOffset) return value;
+
+    if (character != null)
+    {
+      character.x = this.cachedScreenX + xOffset;
+    }
+
+    return xOffset = value;
+  }
+
+  public var yOffset(default, set):Float = 0;
+
+  function set_yOffset(value:Float):Float
+  {
+    if (value == yOffset) return value;
+
+    if (character != null)
+    {
+      character.y = this.cachedScreenY + yOffset;
+    }
+
+    return yOffset = value;
   }
 
   function onFrame(name:String, frameNumber:Int, frameIndex:Int):Void
@@ -173,14 +197,9 @@ class CharacterPlayer extends Box
   override function repositionChildren():Void
   {
     super.repositionChildren();
-    character.x = this.cachedScreenX;
-    character.y = this.cachedScreenY;
 
-    // Apply animation offsets, so the character is positioned correctly based on the animation.
-    @:privateAccess var animOffsets:Array<Float> = character.animOffsets;
-
-    character.x -= animOffsets[0] * targetScale * (flip ? -1 : 1);
-    character.y -= animOffsets[1] * targetScale;
+    character.x = this.cachedScreenX + xOffset;
+    character.y = this.cachedScreenY + yOffset;
   }
 
   /**
@@ -225,7 +244,13 @@ class CharacterPlayer extends Box
    */
   public function onNoteHit(event:HitNoteScriptEvent):Void
   {
-    if (character != null) character.onNoteHit(event);
+    if (character != null)
+    {
+      character.onNoteHit(event);
+
+      if ((event.note.noteData.getMustHitNote() && characterType == BF)
+        || (!event.note.noteData.getMustHitNote() && characterType == DAD)) character.holdTimer = event.note.noteData.length / -1000;
+    }
   }
 
   /**
