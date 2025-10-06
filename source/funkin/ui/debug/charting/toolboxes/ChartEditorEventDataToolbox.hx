@@ -89,7 +89,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     toolboxEventsEventKind.pauseEvent(UIEvent.CHANGE, true);
 
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
-    trace('ChartEditorEventDataToolbox - Starting event kind: ${startingEventValue}');
     toolboxEventsEventKind.value = startingEventValue;
 
     toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);

@@ -3287,7 +3287,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function onContextMenu(xPos:Float, yPos:Float)
   {
-    trace('User right clicked to open menu at (${xPos}, ${yPos})');
     // this.openDefaultContextMenu(xPos, yPos);
   }
 
@@ -4422,7 +4421,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else if (overlapsSelection)
         {
           // Do nothing
-          trace('Clicked on a selected note!');
         }
       }
 
@@ -4844,7 +4842,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             // Play a sound as we drag.
             this.playSound(Paths.sound('chartingSounds/noteLay'));
 
-            trace('Dragged ${dragDistanceColumns} X and ${dragDistanceSteps} Y.');
             dragTargetCurrentStep = dragDistanceSteps;
             dragTargetCurrentColumn = dragDistanceColumns;
 

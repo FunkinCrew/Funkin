@@ -69,7 +69,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     // danceEvery isn't necessary if that gets fixed.
     if (getCurrentAnimation() == "idle" && (event.beat % danceEvery == 0))
     {
-      trace('GF beat hit');
       playAnimation("idle", true, false, false);
     }
   };
