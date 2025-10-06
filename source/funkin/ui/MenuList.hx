@@ -73,7 +73,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     }
 
     touchBuddy = new FlxSprite().makeGraphic(10, 10);
-    _isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
+    _isMainMenuState = FlxG.state is funkin.ui.mainmenu.MainMenuState;
 
     super();
   }

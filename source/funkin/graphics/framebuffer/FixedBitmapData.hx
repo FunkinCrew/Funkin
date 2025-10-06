@@ -17,7 +17,7 @@ class FixedBitmapData extends BitmapData
 {
   override function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
   {
-    if (Std.isOfType(source, DisplayObject))
+    if (source is DisplayObject)
     {
       final object:DisplayObjectContainer = cast source;
       renderer.__stage = object.stage;

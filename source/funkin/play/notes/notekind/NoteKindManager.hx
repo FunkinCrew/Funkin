@@ -110,7 +110,7 @@ class NoteKindManager
   {
     // if it is a note script event,
     // then only call the event for the specific note kind script
-    if (Std.isOfType(event, NoteScriptEvent))
+    if (event is NoteScriptEvent)
     {
       var noteEvent:NoteScriptEvent = cast(event, NoteScriptEvent);
 

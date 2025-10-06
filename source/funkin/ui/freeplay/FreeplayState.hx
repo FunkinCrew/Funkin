@@ -379,6 +379,8 @@ class FreeplayState extends MusicBeatSubState
     // Block input until the intro finishes.
     controls.active = false;
 
+    // LOAD MUSIC
+
     // Add a null entry that represents the RANDOM option
     songs.push(null);
 
@@ -407,14 +409,7 @@ class FreeplayState extends MusicBeatSubState
       }
     }
 
-    // LOAD MUSIC
-
     // LOAD CHARACTERS
-
-    trace(FlxG.width);
-    trace(FlxG.camera.zoom);
-    trace(FlxG.camera.initialZoom);
-    trace(FlxCamera.defaultZoom);
 
     backingCard.instance = this;
     add(backingCard);

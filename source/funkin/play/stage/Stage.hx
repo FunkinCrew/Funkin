@@ -262,14 +262,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
           {
             propSprite.animation.add(propAnim.name, propAnim.frameIndices);
 
-            if (Std.isOfType(propSprite, Bopper))
+            if (propSprite is Bopper)
             {
               cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
             }
           }
         default: // 'sparrow'
           FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
-          if (Std.isOfType(propSprite, Bopper))
+          if (propSprite is Bopper)
           {
             for (propAnim in dataProp.animations)
             {
@@ -278,14 +278,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
           }
       }
 
-      if (Std.isOfType(propSprite, Bopper))
+      if (propSprite is Bopper)
       {
         for (propAnim in dataProp.animations)
         {
           cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
         }
 
-        if (!Std.isOfType(propSprite, BaseCharacter))
+        if (!(propSprite is BaseCharacter))
         {
           cast(propSprite, Bopper).originalPosition.x = dataProp.position[0];
           cast(propSprite, Bopper).originalPosition.y = dataProp.position[1];
@@ -297,11 +297,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         propSprite.animation.play(dataProp.startingAnimation);
       }
 
-      if (Std.isOfType(propSprite, BaseCharacter))
+      if (propSprite is BaseCharacter)
       {
         // Character stuff.
       }
-      else if (Std.isOfType(propSprite, Bopper))
+      else if (propSprite is Bopper)
       {
         addBopper(cast propSprite, dataProp.name);
       }
@@ -842,7 +842,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   function grabScreen(applyFilters:Bool):BitmapData
   {
-    if (Std.isOfType(FlxG.camera, FunkinCamera))
+    if (FlxG.camera is FunkinCamera)
     {
       final cam:FunkinCamera = cast FlxG.camera;
       return cam.grabScreen(applyFilters);

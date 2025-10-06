@@ -29,7 +29,7 @@ class DataError
         trace('  Parsing error: ${message}');
         printPos(pos);
       case CustomFunctionException(e, pos):
-        if (Std.isOfType(e, String))
+        if (e is String)
         {
           trace('  ${e}');
         }

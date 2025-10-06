@@ -225,9 +225,7 @@ class BaseFreeplayDJ extends FlxAtlasSprite
   function applyAnimOffset()
   {
     var animName = getCurrentAnimation();
-    trace(animName);
     var daOffset = playableCharData?.getAnimationOffsetsByPrefix(animName);
-    trace(daOffset);
     if (daOffset != null)
     {
       final xValue = daOffset[0];

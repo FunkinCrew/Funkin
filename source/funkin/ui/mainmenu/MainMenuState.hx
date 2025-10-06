@@ -264,11 +264,9 @@ class MainMenuState extends MusicBeatState
     subStateClosed.add(_ -> resetCamStuff(false));
 
     subStateOpened.add((sub:FlxSubState) -> {
-      if (Std.isOfType(sub, FreeplayState))
+      if (sub is FreeplayState)
       {
-        FlxTimer.wait(0.5, () -> {
-          magenta.visible = false;
-        });
+        FlxTimer.wait(0.5, () -> magenta.visible = false);
       }
     });
 

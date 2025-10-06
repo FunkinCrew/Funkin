@@ -142,16 +142,16 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       {
         switch (field)
         {
-          case Std.isOfType(_, NumberStepper) => true:
+          case (_ is NumberStepper) => true:
             var numberStepper:NumberStepper = cast field;
             numberStepper.value = value;
-          case Std.isOfType(_, CheckBox) => true:
+          case (_ is CheckBox) => true:
             var checkBox:CheckBox = cast field;
             checkBox.selected = value;
-          case Std.isOfType(_, DropDown) => true:
+          case (_ is DropDown) => true:
             var dropDown:DropDown = cast field;
             dropDown.value = value;
-          case Std.isOfType(_, TextField) => true:
+          case (_ is TextField) => true:
             var textField:TextField = cast field;
             textField.text = value;
           default:

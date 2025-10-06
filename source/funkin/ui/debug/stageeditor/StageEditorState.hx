@@ -945,7 +945,7 @@ class StageEditorState extends UIState
 
     for (thing in members)
     {
-      if (Std.isOfType(thing, StageEditorObject)) spriteArray.push(cast thing); // characters do not extend stageeditorobject so we ball
+      if (thing is StageEditorObject) spriteArray.push(cast thing); // characters do not extend stageeditorobject so we ball
     }
 
     findObjDialog.updateIndicator();

@@ -765,7 +765,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
     if (this.value == null) return {}
-    if (Std.isOfType(this.value, Array))
+    if (this.value is Array)
     {
       var result:haxe.DynamicAccess<Dynamic> = {}
       result.set(defaultKey, this.value);
@@ -809,8 +809,8 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     if (this.value == null) return null;
     var result = Reflect.field(this.value, key);
     if (result == null) return null;
-    if (Std.isOfType(result, Int)) return result;
-    if (Std.isOfType(result, String)) return Std.parseInt(cast result);
+    if (result is Int) return result;
+    if (result is String) return Std.parseInt(cast result);
     return cast result;
   }
 
@@ -819,8 +819,8 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     if (this.value == null) return null;
     var result = Reflect.field(this.value, key);
     if (result == null) return null;
-    if (Std.isOfType(result, Float)) return result;
-    if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
+    if (result is Float) return result;
+    if (result is String) return Std.parseFloat(cast result);
     return cast result;
   }
 

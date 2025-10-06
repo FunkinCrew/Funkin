@@ -382,7 +382,7 @@ class PlayState extends MusicBeatSubState
 
   function get_isChartingMode():Bool
   {
-    return this._parentState != null && Std.isOfType(this._parentState, ChartEditorState);
+    return this._parentState != null && this._parentState is ChartEditorState;
   }
 
   /**
@@ -597,7 +597,7 @@ class PlayState extends MusicBeatSubState
   function get_isExitingViaPauseMenu():Bool
   {
     if (this.subState == null) return false;
-    if (!Std.isOfType(this.subState, PauseSubState)) return false;
+    if (!(this.subState is PauseSubState)) return false;
 
     var pauseSubState:PauseSubState = cast this.subState;
     return !pauseSubState.allowInput;
@@ -1448,7 +1448,7 @@ class PlayState extends MusicBeatSubState
   {
     // If there is a substate which requires the game to continue,
     // then make this a condition.
-    var shouldPause:Bool = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
+    var shouldPause:Bool = (subState is PauseSubState || subState is GameOverSubState);
 
     if (shouldPause)
     {
@@ -1463,12 +1463,12 @@ class PlayState extends MusicBeatSubState
 
         // Pause any sounds that are playing and keep track of them.
         // Vocals are also paused here but are not included as they are handled separately.
-        if (Std.isOfType(subState, PauseSubState))
+        if (subState is PauseSubState)
         {
           FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
             if (!sound.active || sound == FlxG.sound.music) return;
             // In case it's a scheduled sound
-            if (Std.isOfType(sound, FunkinSound))
+            if (sound is FunkinSound)
             {
               var funkinSound:FunkinSound = cast sound;
               if (funkinSound != null && !funkinSound.isPlaying) return;
@@ -1529,7 +1529,7 @@ class PlayState extends MusicBeatSubState
      */
   public override function closeSubState():Void
   {
-    if (Std.isOfType(subState, PauseSubState))
+    if (subState is PauseSubState)
     {
       var event:ScriptEvent = new ScriptEvent(RESUME, true);
 
@@ -1604,7 +1604,7 @@ class PlayState extends MusicBeatSubState
 
       justUnpaused = true;
     }
-    else if (Std.isOfType(subState, Transition))
+    else if (subState is Transition)
     {
       // Do nothing.
     }

@@ -121,7 +121,7 @@ class ChartEditorNotificationHandler
       // TODO: Tell Ian that this is REALLY dumb.
       var actionsContainer:HBox = notif.findComponent('actionsContainer', HBox);
       actionsContainer.walkComponents(function(component) {
-        if (Std.isOfType(component, Button))
+        if (component is Button)
         {
           var button:Button = cast component;
           var action:Null<NotificationActionData> = actions.find(action -> action.text == button.text);

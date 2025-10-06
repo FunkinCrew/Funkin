@@ -73,7 +73,7 @@ class SerializerUtil
     // Hacky because you can't use `isOfType` on a struct.
     if (key == "version")
     {
-      if (Std.isOfType(value, String)) return value;
+      if (value is String) return value;
 
       // Stringify Version objects.
       return serializeVersion(cast value);

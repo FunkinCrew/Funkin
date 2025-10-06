@@ -115,7 +115,7 @@ class VersionUtil
   {
     if (input == null) return null;
 
-    if (Std.isOfType(input, String))
+    if (input is String)
     {
       var inputStr:String = input;
       var version:thx.semver.Version = inputStr;

@@ -365,7 +365,7 @@ class Controls extends FlxActionSet
 
     for (action in digitalActions)
     {
-      if (Std.isOfType(action, FunkinAction))
+      if (action is FunkinAction)
       {
         var funkinAction:FunkinAction = cast action;
         byName[funkinAction.name] = funkinAction;
