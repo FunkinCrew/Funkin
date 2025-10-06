@@ -32,7 +32,7 @@ class Subtitles extends FlxSpriteGroup
     subtitleText = new SubtitlesText(0, 0, 30, Paths.font('vcr.ttf'));
     add(subtitleText);
 
-    setText('', true);
+    setText([], true);
   }
 
   override function update(elapsed:Float)
@@ -41,18 +41,26 @@ class Subtitles extends FlxSpriteGroup
 
     if (!Preferences.subtitles || assignedSound == null || subtitlesData == null) return;
 
-    var foundValidLine:Bool = false;
+    var currentLines:Array<String> = [];
+    var hasRefreshedText:Bool = false;
     for (data in subtitlesData)
     {
       if (assignedSound.time >= data.start && assignedSound.time <= data.end)
       {
-        setText(data.text);
+        currentLines.push(data.text);
 
-        foundValidLine = true;
+        hasRefreshedText = true;
       }
     }
 
-    if (!foundValidLine) setText('', true);
+    if (hasRefreshedText)
+    {
+      setText(currentLines);
+    }
+    else
+    {
+      setText([], true);
+    }
   }
 
   /**
@@ -64,7 +72,7 @@ class Subtitles extends FlxSpriteGroup
   {
     if (!Preferences.subtitles) return;
 
-    setText('', true);
+    setText([], true);
 
     if (!Assets.exists(Paths.srt(filePath)) || sound == null) return;
 
@@ -75,15 +83,23 @@ class Subtitles extends FlxSpriteGroup
     assignedSound = sound;
   }
 
-  function setText(text:String, hide:Bool = false):Void
+  function setText(lines:Array<String>, hide:Bool = false):Void
   {
     if (!Preferences.subtitles) return;
 
     visible = !hide;
 
-    if (subtitleText.text == text) return;
+    var targetText:String = '';
+    for (i in 0...lines.length)
+    {
+      if (i > 0) targetText += '\n';
 
-    subtitleText.text = text;
+      targetText += lines[i];
+    }
+
+    if (subtitleText.text == targetText) return;
+
+    subtitleText.text = targetText;
 
     background.makeGraphic(Math.ceil(subtitleText.width), Math.ceil(subtitleText.height), FlxColor.BLACK, true);
 
