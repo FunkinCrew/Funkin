@@ -81,6 +81,27 @@ class StringTools
   }
 
   /**
+   * Converts a string to lower camel case, aka camelCase. For example, "hello [world]" becomes "helloWorld".
+   * @param value The string to convert.
+   * @return The converted string.
+   */
+  public static function toLowerCamelCase(value:String):String
+  {
+    var sanitized:String = value.sanitize();
+    return sanitized.charAt(0).toLowerCase() + sanitized.substr(1);
+  }
+
+  /**
+   * Converts a string to upper camel case, aka PascalCase. For example, "hello [world]" becomes "HelloWorld".
+   * @param value The string to convert.
+   * @return The converted string.
+   */
+  public static function toUpperCamelCase(value:String):String
+  {
+    return value.sanitize();
+  }
+
+  /**
    * The regular expression to sanitize strings.
    */
   static final SANTIZE_REGEX:EReg = ~/[^-a-zA-Z0-9]/g;

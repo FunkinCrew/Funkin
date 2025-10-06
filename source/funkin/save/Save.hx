@@ -1936,8 +1936,6 @@ typedef SaveDataChartEditorOptions =
 
 typedef SaveDataStageEditorOptions =
 {
-  // a lot of these things were copied from savedatacharteditoroptions
-
   /**
    * Whether the Stage Editor created a backup the last time it closed.
    * Prompt the user to load it, then set this back to `false`.
