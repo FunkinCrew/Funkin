@@ -47,6 +47,8 @@ import haxe.ui.focus.FocusManager;
 import haxe.ui.Toolkit;
 import openfl.display.BitmapData;
 
+using StringTools;
+
 /**
  * A state dedicated to allowing the user to create and edit stages.
  * Built with HaxeUI for use by both developers and modders.
@@ -121,7 +123,7 @@ class StageEditorState extends UIState
    */
 
   /**
-   * A timer used to auto-save the chart after a period of inactivity.
+   * A timer used to auto-save the stage after a period of inactivity.
    */
   var autoSaveTimer:Null<FlxTimer> = null;
 
@@ -521,7 +523,7 @@ class StageEditorState extends UIState
   /**
    * The data representing the current stage.
    */
-  var stageData:StageData = new StageData();
+  var stageData:Null<StageData> = new StageData();
 
   /**
    * The name of the current stage.
@@ -537,6 +539,18 @@ class StageEditorState extends UIState
   function set_currentStageName(value:String):String
   {
     return stageData.name = value;
+  }
+
+  var currentStageId(get, set):String;
+
+  function get_currentStageId():String
+  {
+    return currentStageName.toLowerCamelCase().sanitize();
+  }
+
+  function set_currentStageId(value:Null<String>):String
+  {
+    return value;
   }
 
   /**
@@ -701,18 +715,18 @@ class StageEditorState extends UIState
 
     if (params != null && params.fnfsTargetPath != null)
     {
-      // var result:Null<Array<String>> = this.loadFromFNFSPath(params.fnfsTargetPath);
-      // if (result != null)
-      // {
-      //   if (result.length == 0)
-      //   {
-      //     this.success('Loaded Stage', 'Loaded stage (${params.fnfsTargetPath})');
-      //   }
-      //   else
-      //   {
-      //     this.warning('Loaded Stage', 'Loaded stage with issues (${params.fnfsTargetPath})\n${result.join("\n")}');
-      //   }
-      // }
+      var result:Null<Array<String>> = this.loadFromFNFSPath(params.fnfsTargetPath);
+      if (result != null)
+      {
+        if (result.length == 0)
+        {
+          this.success('Loaded Stage', 'Loaded stage (${params.fnfsTargetPath})');
+        }
+        else
+        {
+          this.warning('Loaded Stage', 'Loaded stage with issues (${params.fnfsTargetPath})\n${result.join("\n")}');
+        }
+      }
     }
     else if (params != null && params.targetStageId != null)
     {

@@ -1,11 +1,16 @@
 package funkin.ui.debug.stageeditor.handlers;
 
-import funkin.util.SortUtil;
+import funkin.util.DateUtil;
 import funkin.util.FileUtil;
+import funkin.util.SortUtil;
+import haxe.io.Bytes;
+import haxe.io.Path;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageRegistry;
 import funkin.play.stage.Stage;
+import funkin.play.character.BaseCharacter;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
+import openfl.display.BitmapData;
 
 /**
  * Contains functions for importing, loading, saving, and exporting stages.
@@ -28,7 +33,7 @@ class StageEditorImportExportHandler
 
     if (stageData == null) return;
 
-    loadStage(state, stageData);
+    loadStage(state, stageData, stageId);
 
     state.isHaxeUIDialogOpen = false;
     state.currentWorkingFilePath = null; // New file, so no path.
@@ -44,26 +49,18 @@ class StageEditorImportExportHandler
    * Loads the stage from given stage data into the editor.
    * @param newStageData The stage data to load.
    */
-  public static function loadStage(state:StageEditorState, newStageData:StageData):Void
+  public static function loadStage(state:StageEditorState, newStageData:StageData, stageId:String):Void
   {
     state.stageData = newStageData;
+    state.clearAssets();
+    StageEditorAssetDataHandler.bitmaps.clear();
 
     Paths.setCurrentLevel(state.currentStageDirectory);
 
+    // Load characters
     loadCharacters(state, state.stageData.characters);
 
-    // add characters
-
-    for (prop in state.spriteArray)
-    {
-      state.spriteArray.remove(prop);
-
-      state.remove(prop, true);
-      state.selectedProp?.destroy();
-      state.selectedProp = null;
-    }
-    state.spriteArray.clear();
-
+    // Load props
     if (state.stageData.props != null)
     {
       for (propData in state.stageData.props)
@@ -101,10 +98,115 @@ class StageEditorImportExportHandler
       state.sortObjects();
     }
 
-    // Clear the undo and redo history
-    state.undoHistory = [];
-    state.redoHistory = [];
-    state.commandHistoryDirty = true;
+    var gf:Null<BaseCharacter> = state.characters.get('gf');
+    var gfData:Null<StageDataCharacter> = state.stageData.characters.gf;
+    if (state.stageData.cameraZoom == null || gf == null || gfData == null) return;
+    FlxG.camera.zoom = state.stageData.cameraZoom ?? 1.0;
+    state.cameraFollowPoint.x = gf.cameraFocusPoint.x + (gfData.cameraOffsets != null ? gfData.cameraOffsets[0] : 0.0);
+    state.cameraFollowPoint.y = gf.cameraFocusPoint.y + (gfData.cameraOffsets != null ? gfData.cameraOffsets[1] : 0.0);
+  }
+
+  /**
+   * Load stage data from an FNFS file path.
+   * @param state
+   * @param path
+   * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
+   */
+  public static function loadFromFNFSPath(state:StageEditorState, path:String):Null<Array<String>>
+  {
+    var bytes:Null<Bytes> = FileUtil.readBytesFromPath(path);
+    if (bytes == null) return null;
+
+    trace('Loaded ${bytes.length} bytes from $path');
+
+    var result:Null<Array<String>> = loadFromFNFS(state, bytes);
+    if (result != null)
+    {
+      state.currentWorkingFilePath = path;
+      state.saveDataDirty = false; // Just loaded file!
+    }
+
+    return result;
+  }
+
+  public static function loadFromFNFS(state:StageEditorState, bytes: Bytes):Null<Array<String>>
+  {
+    state.clearAssets();
+    StageEditorAssetDataHandler.bitmaps.clear();
+
+    var output:Array<String> = [];
+
+    var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
+    var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
+    var xmls:Map<String, String> = [];
+
+    for (entry in mappedFileEntries)
+    {
+      if (entry == null || entry.data == null || entry.fileName == null) continue;
+      var extension:Null<String> = entry.fileName.split('.').pop();
+      if (extension == null) continue;
+
+      switch (extension)
+      {
+        case "png", "jpg", "jpeg", "gif", "bmp":
+          var bitmapData:BitmapData = BitmapData.fromBytes(entry.data);
+          StageEditorAssetDataHandler.bitmaps.set(Path.withoutExtension(entry.fileName), bitmapData);
+
+        case "xml":
+          xmls.set(Path.withoutExtension(entry.fileName), entry.data.toString());
+
+        case "json":
+          state.stageData = StageRegistry.instance.parseEntryDataRaw(entry.data.toString(), entry.fileName.replace(extension, '')) ?? null;
+      }
+    }
+
+    if (state.stageData == null)
+    {
+      state.failure('Failed to Load Stage', 'No valid stage data found in the provided file.');
+      return null;
+    }
+
+    // Load characters
+    loadCharacters(state, state.stageData.characters);
+
+    // Load props
+    if (state.stageData.props != null)
+    {
+      for (propData in state.stageData.props)
+      {
+        var prop = new StageEditorObject();
+
+        prop.fromData({
+          name: propData.name ?? 'Unnamed',
+          assetPath: propData.assetPath,
+          animations: propData.animations?.copy(),
+          scale: propData.scale,
+          position: propData.position,
+          alpha: propData.alpha,
+          angle: propData.angle,
+          zIndex: propData.zIndex,
+          danceEvery: propData.danceEvery,
+          isPixel: propData.isPixel,
+          scroll: propData.scroll?.copy(),
+          color: propData.color,
+          blend: propData.blend,
+          flipX: propData.flipX,
+          flipY: propData.flipY,
+          startingAnimation: propData.startingAnimation,
+          animData: xmls[propData.assetPath] ?? ''
+        });
+
+        state.add(prop);
+      }
+
+      state.sortObjects();
+    }
+    else
+    {
+      output.push('No props found in stage data.');
+    }
+
+    return output;
   }
 
   public static function loadCharacters(state:StageEditorState, characterDatas:StageDataCharacters):Void
@@ -166,5 +268,93 @@ class StageEditorImportExportHandler
     #else
     return null;
     #end
+  }
+
+  /**
+   * @param force Whether to export without prompting. `false` will prompt the user for a location.
+   * @param targetPath where to export if `force` is `true`. If `null`, will export to the `backups` folder.
+   * @param onSaveCb Callback for when the file is saved.
+   * @param onCancelCb Callback for when saving is cancelled.
+   */
+  public static function exportAllStageData(state:StageEditorState, force:Bool = false, targetPath:Null<String>, ?onSaveCb:String->Void,
+    ?onCancelCb:Void->Void):Void
+  {
+    var zipEntries:Array<haxe.zip.Entry> = [];
+
+    // add entries stuff
+
+    if (force)
+    {
+      var targetMode:FileWriteMode = Force;
+      if (targetPath == null)
+      {
+        // Force writing to a generic path (autosave or crash recovery)
+        targetMode = Skip;
+        targetPath= Path.join([
+          'stage-editor-${state.currentStageId}-${DateUtil.generateTimestamp()}.${Constants.EXT_STAGE}'
+        ]);
+        // We have to force write because the program will die before the save dialog is closed.
+        trace('Force exporting to $targetPath...');
+        try
+        {
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          // On success.
+          if (onSaveCb != null) onSaveCb(targetPath);
+        }
+        catch (e)
+        {
+          // On failure.
+          if (onCancelCb != null) onCancelCb();
+        }
+      }
+      else
+      {
+        // Force write since we know what file the user wants to overwrite.
+        trace('Force exporting to $targetPath...');
+        try
+        {
+          // On success.
+          FileUtil.saveFilesAsZIPToPath(zipEntries, targetPath, targetMode);
+          state.saveDataDirty = false;
+          if (onSaveCb != null) onSaveCb(targetPath);
+        }
+        catch (e)
+        {
+          // On failure.
+          if (onCancelCb != null) onCancelCb();
+        }
+      }
+    }
+    else
+    {
+      // Prompt and save.
+      var onSave:Array<String>->Void = function(paths:Array<String>) {
+        if (paths.length != 1)
+        {
+          trace('[WARN] Could not get save path.');
+          state.applyWindowTitle();
+        }
+        else
+        {
+          trace('Saved to "${paths[0]}"');
+          state.currentWorkingFilePath = paths[0];
+          state.applyWindowTitle();
+          if (onSaveCb != null) onSaveCb(paths[0]);
+        }
+      };
+
+      var onCancel:Void->Void = function() {
+        trace('Export cancelled.');
+        if (onCancelCb != null) onCancelCb();
+      };
+
+      trace('Exporting to user-defined location...');
+      try
+      {
+        FileUtil.saveStageAsFNFS(zipEntries, onSave, onCancel, '${state.currentStageId}.${Constants.EXT_STAGE}');
+        state.saveDataDirty = false;
+      }
+      catch (e) {}
+    }
   }
 }

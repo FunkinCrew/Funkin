@@ -173,7 +173,7 @@ class StageEditorToolboxHandler
     // Initialize the toolbox without showing it.
     if (toolbox == null) toolbox = initToolbox(state, id);
 
-    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolbox() - Could not retrieve or build toolbox: $id';
+    if (toolbox == null) throw 'StageEditorToolboxHandler.getToolbox() - Could not retrieve or build toolbox: $id';
 
     return cast toolbox;
   }

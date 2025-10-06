@@ -447,6 +447,24 @@ class FileUtil
     return true;
   }
 
+  public static function saveStageAsFNFS(resources:Array<Entry>, ?onSave:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
+      force:Bool = false):Bool
+  {
+    // Create a ZIP file.
+    var zipBytes:Bytes = createZIPFromEntries(resources);
+    var onSave:(String) -> Void = function(path:String) {
+      trace('Saved FNFS file to "$path"');
+
+      if (onSave != null)
+      {
+        onSave([path]);
+      }
+    };
+    // Prompt the user to save the ZIP file.
+    saveFile(zipBytes, [FILE_FILTER_FNFS], onSave, onCancel, defaultPath, 'Save stage as FNFS...');
+    return true;
+  }
+
   /**
    * Takes an array of file entries and forcibly writes a ZIP to the given path.
    * Only works on native, because HTML5 doesn't allow you to write files to arbitrary paths.
