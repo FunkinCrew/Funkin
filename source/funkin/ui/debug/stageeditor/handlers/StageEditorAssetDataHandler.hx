@@ -1,14 +1,14 @@
 package funkin.ui.debug.stageeditor.handlers;
 
 import flixel.graphics.frames.FlxAtlasFrames;
-import openfl.display.BitmapData;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
-import openfl.display.BlendMode;
 import funkin.data.stage.StageData.StageDataProp;
 import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
 import lime.utils.UInt8Array;
+import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 
 using StringTools;
 
@@ -286,6 +286,7 @@ class StageEditorAssetDataHandler
 
     state.undoHistory = [];
     state.redoHistory = [];
+    state.commandHistoryDirty = true;
     state.sortObjects();
     state.removeUnusedBitmaps();
   }

@@ -27,13 +27,12 @@ import haxe.ui.RuntimeComponentBuilder;
 
 /**
  * Handles dialogs for the new Stage Editor.
-*/
+ */
 @:nullSafety
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
 class StageEditorDialogHandler
 {
   // Paths to HaxeUI layout files for each dialog.
-
   public static function openAboutDialog(state:StageEditorState, closable:Bool = true):Null<Dialog>
   {
     var dialog = StageEditorAboutDialog.build(state, closable);

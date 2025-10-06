@@ -6,10 +6,12 @@ import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.FileUtil;
 import funkin.util.SortUtil;
+import haxe.io.Path;
 import haxe.ui.components.Label;
 import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import haxe.ui.events.MouseEvent;
 
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/stage-editor/dialogs/welcome.xml"))
@@ -21,7 +23,7 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
     super(state2, params2);
 
     // this.buttonNew.onClick = - -> ;
-    this.boxDrag.onClick = _ -> onClickBoxDrag();
+    this.stageBox.onClick = _ -> onClickStageBox();
 
     // Add items to the Recent Stages list
     #if sys
@@ -35,10 +37,10 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
     #end
 
     #if FILE_DROP_SUPPORTED
-    state.addDropHandler(
+    stageEditorState.addDropHandler(
       {
-        component: this.boxDrag,
-        handler: onFileOpenStage
+        component: this.stageBox,
+        handler: this.onDropFileStageBox
       });
     #end
 
@@ -85,16 +87,16 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
       this.hideDialog(DialogButton.CANCEL);
 
       // Load stage from file
-      // var result:Null<Array<String>> = StageEditorImportExportHandler.loadFromFNFSPath(state, stagePath);
-      // if (result != null)
-      // {
-      //   stageEditorState.success('Loaded Stage',
-      //     result.length == 0 ? 'Loaded stage (${stagePath.toString()})' : 'Loaded stage (${stagePath.toString()})\n${result.join("\n")}');
-      // }
-      // else
-      // {
-      //   stageEditorState.error('Failed to Load Stage', 'Failed to load stage (${stagePath.toString()})');
-      // }
+      var result:Null<Array<String>> = StageEditorImportExportHandler.loadFromFNFSPath(state, stagePath);
+      if (result != null)
+      {
+        stageEditorState.success('Loaded Stage',
+          result.length == 0 ? 'Loaded stage (${stagePath.toString()})' : 'Loaded stage (${stagePath.toString()})\n${result.join("\n")}');
+      }
+      else
+      {
+        stageEditorState.error('Failed to Load Stage', 'Failed to load stage (${stagePath.toString()})');
+      }
     }
 
     if (!FileUtil.fileExists(stagePath))
@@ -113,28 +115,84 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
   public function addHTML5RecentFileMessage():Void
   {
     var webLoadLabel:Label = new Label();
-    webLoadLabel.text = 'Click the button below to load a chart file (.fnfc) from your computer.';
+    webLoadLabel.text = 'Click the button below to load a stage file (.fnfs) from your computer.';
 
     splashRecentContainer.addComponent(webLoadLabel);
   }
 
 
-  public function onClickBoxDrag():Void
+  public function onClickStageBox():Void
   {
-    FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], onFileOpenStage, null, null, 'Open Stage Data');
+    this.lock();
+    // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
+    #if !mac
+    FileUtil.browseForBinaryFile('Open Stage', [FileUtil.FILE_EXTENSION_INFO_FNFS], onSelectFile, onCancelBrowse);
+    #else
+    FileUtil.browseForBinaryFile('Open Stage', null, onSelectFile, onCancelBrowse);
+    #end
+  }
+
+  /**
+   * Called when a file is selected by dropping a file onto the Upload Stage box.
+   */
+  function onDropFileStageBox(pathStr:String):Void
+  {
+    var path:Path = new Path(pathStr);
+    trace('Dropped file (${path})');
+
+    try
+    {
+      var result:Null<Array<String>> = StageEditorImportExportHandler.loadFromFNFSPath(stageEditorState, path.toString());
+      if (result != null)
+      {
+        stageEditorState.success('Loaded Stage',
+          result.length == 0 ? 'Loaded stage (${path.toString()})' : 'Loaded stage (${path.toString()})\n${result.join("\n")}');
+        this.hideDialog(DialogButton.APPLY);
+      }
+      else
+      {
+        stageEditorState.failure('Failed to Load Stage', 'Failed to load stage (${path.toString()})');
+      }
+    }
+    catch (err)
+    {
+      stageEditorState.failure('Failed to Load Stage', 'Failed to load stage (${path.toString()}): ${err}');
+    }
+  }
+
+  /**
+   * Called when a file is selected by the dialog displayed when clicking the Upload Stage box.
+   */
+  function onSelectFile(selectedFile:SelectedFileInfo):Void
+  {
+    this.unlock();
+
+    if (selectedFile != null && selectedFile.bytes != null)
+    {
+      try
+      {
+        var result:Null<Array<String>> = StageEditorImportExportHandler.loadFromFNFS(stageEditorState, selectedFile.bytes);
+        if (result != null)
+        {
+          stageEditorState.success('Loaded Stage',
+            result.length == 0 ? 'Loaded stage (${selectedFile.name})' : 'Loaded stage (${selectedFile.name})\n${result.join("\n")}');
+
+          if (selectedFile.fullPath != null) stageEditorState.currentWorkingFilePath = selectedFile.fullPath;
+          this.hideDialog(DialogButton.APPLY);
+        }
+      }
+      catch (err)
+      {
+        stageEditorState.failure('Failed to Load Stage', 'Failed to load stage (${selectedFile.name}): ${err}');
+      }
+    }
   }
 
   public function onClickButtonNew(state:StageEditorState):Void {}
 
-  public function onFileOpenStage(file:String)
+  function onCancelBrowse():Void
   {
-    var bytes = FileUtil.readBytesFromPath(file);
-
-    if (bytes == null)
-    {
-      // notify
-      return;
-    }
+    this.unlock();
   }
 
   public function buildTemplateStageList(state:StageEditorState):Void
@@ -155,16 +213,16 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
         continue;
       }
 
-      this.addTemplateStage(stageName, stageId, (_) -> {
+      this.addTemplateStage(stageName, _ -> {
         this.hideDialog(DialogButton.CANCEL);
 
         // Load song from template
-        chartEditorState.loadSongAsTemplate(targetStageId);
+        stageEditorState.loadStageAsTemplate(targetStageId);
       });
     }
   }
 
-  public function addTemplateStage(stageName:String, stageId:String, onClickCb:(MouseEvent) -> Void):Void
+  public function addTemplateStage(stageName:String, onClickCb:(MouseEvent) -> Void):Void
   {
     var linkTemplateStage:Link = new Link();
     linkTemplateStage.text = stageName;
