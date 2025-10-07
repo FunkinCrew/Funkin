@@ -63,14 +63,14 @@ enum abstract ScriptEventType(String) from String to String
    *
    * This event is not cancelable.
    */
-  var SONG_BEAT_HIT = 'BEAT_HIT';
+  var SONG_BEAT_HIT = 'SONG_BEAT_HIT';
 
   /**
    * Called once per step in the song. This happens 16 times per measure.
    *
    * This event is not cancelable.
    */
-  var SONG_STEP_HIT = 'STEP_HIT';
+  var SONG_STEP_HIT = 'SONG_STEP_HIT';
 
   /**
    * Called when a note comes on screen and starts approaching the strumline.

@@ -549,7 +549,8 @@ class CapsuleScriptEvent extends ScriptEvent
 
   public override function toString():String
   {
-    return 'CapsuleScriptEvent(type=' + type + ')';
+    var songName = this.capsule.freeplayData?.fullSongName ?? 'Random';
+    return 'CapsuleScriptEvent(type=$type, capsule=$songName)';
   }
 }
 
