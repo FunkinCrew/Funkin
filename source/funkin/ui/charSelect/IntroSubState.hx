@@ -12,6 +12,7 @@ import funkin.save.Save;
 /**
  * When you first enter the character select state, it will play an introductory video opening up the lights
  */
+@:nullSafety
 class IntroSubState extends MusicBeatSubState
 {
   #if html5
@@ -33,6 +34,7 @@ class IntroSubState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       FlxG.sound.music.destroy();
+      @:nullSafety(Off)
       FlxG.sound.music = null;
     }
 
@@ -77,7 +79,7 @@ class IntroSubState extends MusicBeatSubState
   #end
 
   #if hxvlc
-  var vid:FunkinVideoSprite;
+  var vid:Null<FunkinVideoSprite>;
 
   function playVideoNative(filePath:String):Void
   {
@@ -90,15 +92,15 @@ class IntroSubState extends MusicBeatSubState
     {
       vid.zIndex = 0;
       vid.active = false;
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+      vid.bitmap?.onEncounteredError.add(function(msg:String):Void {
         trace('[VLC] Encountered an error: $msg');
 
         onLightsEnd();
       });
-      vid.bitmap.onEndReached.add(onLightsEnd);
-      vid.bitmap.onFormatSetup.add(() -> {
-        vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
-        vid.updateHitbox();
+      vid.bitmap?.onEndReached.add(onLightsEnd);
+      vid.bitmap?.onFormatSetup.add(() -> {
+        vid?.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid?.updateHitbox();
         vid.screenCenter();
       });
 
@@ -140,6 +142,7 @@ class IntroSubState extends MusicBeatSubState
       #end
       remove(vid);
       vid.destroy();
+      @:nullSafety(Off)
       vid = null;
     }
     #end
