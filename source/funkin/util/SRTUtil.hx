@@ -33,6 +33,12 @@ class SubtitleEntry
 class SRTParser
 {
   /**
+   * If true, replaces all `{` and `}` in subtitle text with `<` and `>`.
+   * @default `true`
+   */
+  public static var convertBracesToAngles:Bool = true;
+
+  /**
    * Parse SRT content from a raw string
    */
   public static function parseFromString(s:String):Array<SubtitleEntry>
@@ -41,8 +47,7 @@ class SRTParser
     // normalize newlines
     var normalized = s.replace("\r\n", "\n").replace("\r", "\n");
     // strip BOM if present (this fixes the case when the very first line contains invisible U+FEFF)
-    if (normalized.length > 0 && normalized.charCodeAt(0) == 0xFEFF)
-      normalized = normalized.substr(1);
+    if (normalized.length > 0 && normalized.charCodeAt(0) == 0xFEFF) normalized = normalized.substr(1);
 
     // split by double newlines
     final blocks = normalized.split("\n\n");
@@ -78,6 +83,11 @@ class SRTParser
 
       var textLines = _lines.slice(idx, _lines.length);
       var text = textLines.join("\n");
+
+      if (convertBracesToAngles)
+      {
+        text = text.replace("{", "<").replace("}", ">");
+      }
 
       out.push(new SubtitleEntry(number, times.start, times.end, text));
 
