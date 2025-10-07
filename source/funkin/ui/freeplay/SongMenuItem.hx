@@ -21,8 +21,6 @@ import flixel.addons.effects.FlxTrail;
 import funkin.play.scoring.Scoring.ScoringRank;
 import flixel.util.FlxColor;
 import funkin.ui.PixelatedIcon;
-import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
 
 using StringTools;
 
@@ -403,7 +401,7 @@ class SongMenuItem extends FlxSpriteGroup
     FlxTween.tween(evilTrail, {alpha: 0}, 0.6,
       {
         ease: FlxEase.quadOut,
-        onComplete: function(_) {
+        onComplete: (_) -> {
           remove(evilTrail);
         }
       });
@@ -500,12 +498,12 @@ class SongMenuItem extends FlxSpriteGroup
     songText.scale.x = 1.7;
     songText.scale.y = 0.2;
 
-    new FlxTimer().start(1 / 24, function(_) {
+    new FlxTimer().start(1 / 24, (_) -> {
       songText.scale.x = 0.4;
       songText.scale.y = 1.4;
     });
 
-    new FlxTimer().start(2 / 24, function(_) {
+    new FlxTimer().start(2 / 24, (_) -> {
       songText.scale.x = songText.scale.y = 1;
     });
   }
@@ -581,7 +579,7 @@ class SongMenuItem extends FlxSpriteGroup
   {
     frameInTypeBeat = 0;
 
-    new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
+    new FlxTimer().start((1 / 24) * maxTimer, (doShit) -> {
       doJumpIn = true;
       doLerp = true;
     });
@@ -594,7 +592,7 @@ class SongMenuItem extends FlxSpriteGroup
     }
     else
     {
-      new FlxTimer().start((xFrames.length / 24) * 2.5, function(_) {
+      new FlxTimer().start((xFrames.length / 24) * 2.5, (_) -> {
         visible = true;
         capsule.alpha = 1;
         setVisibleGrp(true);
@@ -629,7 +627,7 @@ class SongMenuItem extends FlxSpriteGroup
     setVisibleGrp(true);
   }
 
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     if (impactThing != null) impactThing.angle = capsule.angle;
 

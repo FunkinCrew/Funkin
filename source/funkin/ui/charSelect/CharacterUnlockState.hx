@@ -6,7 +6,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import funkin.graphics.FunkinSprite;
 import flixel.util.FlxColor;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
@@ -97,7 +96,7 @@ class CharacterUnlockState extends MusicBeatState
     FlxTween.num(0.0, 1.0, 0.75,
       {
         ease: FlxEase.elasticOut,
-      }, function(curScale) {
+      }, (curScale) -> {
         dialogContainer.scale.set(curScale, curScale);
         healthIcon.size.set(0.5 * curScale, 0.5 * curScale);
       });

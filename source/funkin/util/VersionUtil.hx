@@ -49,11 +49,11 @@ class VersionUtil
       // This is so jank but it should work.
       var buildData:Dynamic<String> = cast versionData.build;
       var buildDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(buildData)
-        .map(function(d:Dynamic) return StringId(d.toString()));
+        .map((d:Dynamic) -> return StringId(d.toString()));
       versionData.build = buildDataFixed;
 
       var preData:Dynamic<String> = cast versionData.pre;
-      var preDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(preData).map(function(d:Dynamic) return StringId(d.toString()));
+      var preDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(preData).map((d:Dynamic) -> return StringId(d.toString()));
       versionData.pre = preDataFixed;
 
       var fixedVersion:thx.semver.Version = versionData;
@@ -115,7 +115,7 @@ class VersionUtil
   {
     if (input == null) return null;
 
-    if (Std.isOfType(input, String))
+    if (input is String)
     {
       var inputStr:String = input;
       var version:thx.semver.Version = inputStr;

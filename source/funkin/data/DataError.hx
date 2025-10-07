@@ -1,7 +1,6 @@
 package funkin.data;
 
 import json2object.Position;
-import json2object.Position.Line;
 import json2object.Error;
 
 @:nullSafety
@@ -30,7 +29,7 @@ class DataError
         trace('  Parsing error: ${message}');
         printPos(pos);
       case CustomFunctionException(e, pos):
-        if (Std.isOfType(e, String))
+        if (e is String)
         {
           trace('  ${e}');
         }

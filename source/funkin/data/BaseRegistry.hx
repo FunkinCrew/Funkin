@@ -109,7 +109,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // UNSCRIPTED ENTRIES
     //
     var entryIdList:Array<String> = DataAssets.listDataFilesInPath('${dataFilePath}/');
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
+    var unscriptedEntryIds:Array<String> = entryIdList.filter((entryId:String) -> {
       return !entries.exists(entryId);
     });
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
@@ -234,7 +234,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     return {
       fileName: entryFilePath,
       contents: rawJson
-    };
+    }
   }
 
   function clearEntries():Void

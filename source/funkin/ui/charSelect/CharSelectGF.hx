@@ -1,7 +1,6 @@
 package funkin.ui.charSelect;
 
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import flixel.math.FlxMath;
 import funkin.util.FramesJSFLParser;
 import funkin.util.FramesJSFLParser.FramesJSFLInfo;
 import funkin.util.FramesJSFLParser.FramesJSFLFrame;
@@ -71,7 +70,6 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     // danceEvery isn't necessary if that gets fixed.
     if (getCurrentAnimation() == "idle" && (event.beat % danceEvery == 0))
     {
-      trace('GF beat hit');
       playAnimation("idle", true, false, false);
     }
   };

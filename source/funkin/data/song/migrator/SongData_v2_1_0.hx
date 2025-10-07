@@ -33,7 +33,7 @@ class SongMetadata_v2_1_0
 
   @:optional
   @:default(96)
-  public var divisions:Null<Int>; // Optional field
+  public var divisions:Null<Int>;
 
   @:optional
   @:default(false)

@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
 import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 
 /**

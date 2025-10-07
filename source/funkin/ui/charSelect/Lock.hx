@@ -21,7 +21,7 @@ class Lock extends FlxAtlasSprite
 
     var arr:Array<String> = ["lock", "lock top 1", "lock top 2", "lock top 3", "lock base fuck it"];
 
-    var func = function(name) {
+    var func = (name) -> {
       var symbol = anim.symbolDictionary[name];
       if (symbol != null && symbol.timeline.get("color") != null) {
         var color = symbol.timeline.get("color").get(0);

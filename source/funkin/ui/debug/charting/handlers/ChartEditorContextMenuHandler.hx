@@ -9,7 +9,6 @@ import haxe.ui.containers.menus.Menu;
 import haxe.ui.core.Screen;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
-import haxe.ui.events.UIEvent;
 
 /**
  * Handles context menus (the little menus that appear when you right click on stuff) for the new Chart Editor.

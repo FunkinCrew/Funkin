@@ -81,7 +81,7 @@ class HitboxShowcase extends FlxSpriteGroup
     add(bg);
 
     final hitbox:FunkinHitbox = new FunkinHitbox(controlsScheme, false);
-    hitbox.forEachAlive(function(hint:FunkinHint):Void {
+    hitbox.forEachAlive((hint:FunkinHint) -> {
       if (controlsScheme != FunkinHitbox.FunkinHitboxControlSchemes.FourLanes) hint.alpha = 0.3;
     });
     hitbox.active = false;
@@ -99,7 +99,7 @@ class HitboxShowcase extends FlxSpriteGroup
 
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
 
-      FlxFlicker.flicker(this, 1, 0.06, true, false, function(_) {
+      FlxFlicker.flicker(this, 1, 0.06, true, false, (_) -> {
         busy = false;
         onSelect.dispatch();
       });

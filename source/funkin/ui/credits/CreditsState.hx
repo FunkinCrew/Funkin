@@ -221,7 +221,7 @@ class CreditsState extends MusicBeatState
 
   function killOffScreenLines():Void
   {
-    creditsGroup.forEachExists(function(creditsLine:FlxSprite) {
+    creditsGroup.forEachExists((creditsLine:FlxSprite) -> {
       if (creditsLine.y + creditsLine.height <= 0)
       {
         creditsLine.kill();
@@ -300,11 +300,6 @@ class CreditsState extends MusicBeatState
   {
     FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
-  }
-
-  public override function destroy():Void
-  {
-    super.destroy();
   }
 }
 

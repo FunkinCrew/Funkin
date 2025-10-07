@@ -1,7 +1,6 @@
 package funkin.play.character;
 
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterData.CharacterRenderType;
@@ -24,7 +23,7 @@ class MultiSparrowCharacter extends BaseCharacter
     super(id, CharacterRenderType.MultiSparrow);
   }
 
-  override function onCreate(event:ScriptEvent):Void
+  override public function onCreate(event:ScriptEvent):Void
   {
     // Display a custom scope for debugging purposes.
     #if FEATURE_DEBUG_TRACY
@@ -125,10 +124,5 @@ class MultiSparrowCharacter extends BaseCharacter
 
     var animNames = this.animation.getNameList();
     trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
-  }
-
-  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
-  {
-    super.playAnimation(name, restart, ignoreOther, reverse);
   }
 }

@@ -69,7 +69,7 @@ class SchemeMenuButton extends FlxSpriteGroup
 
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
 
-      FlxFlicker.flicker(this, 1, 0.06, true, false, function(_) {
+      FlxFlicker.flicker(this, 1, 0.06, true, false, (_) -> {
         busy = false;
         onSelect.dispatch();
       });

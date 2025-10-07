@@ -1,17 +1,13 @@
 package funkin.input;
 
 import flixel.input.gamepad.FlxGamepad;
-import flixel.util.FlxDirectionFlags;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
-import flixel.input.android.FlxAndroidKey;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 
 /**
@@ -365,7 +361,7 @@ class Controls extends FlxActionSet
 
     for (action in digitalActions)
     {
-      if (Std.isOfType(action, FunkinAction))
+      if (action is FunkinAction)
       {
         var funkinAction:FunkinAction = cast action;
         byName[funkinAction.name] = funkinAction;
@@ -377,11 +373,6 @@ class Controls extends FlxActionSet
     if (scheme == null) scheme = None;
 
     setKeyboardScheme(scheme, false);
-  }
-
-  override function update():Void
-  {
-    super.update();
   }
 
   public function check(name:Action, trigger:FlxInputState = JUST_PRESSED, gamepadOnly:Bool = false):Bool
@@ -599,10 +590,10 @@ class Controls extends FlxActionSet
     switch (device)
     {
       case Keys:
-        forEachBound(control, function(action, state) replaceKey(action, toAdd, toRemove, state));
+        forEachBound(control, (action, state) -> replaceKey(action, toAdd, toRemove, state));
 
       case Gamepad(id):
-        forEachBound(control, function(action, state) replaceButton(action, id, toAdd, toRemove, state));
+        forEachBound(control, (action, state) -> replaceButton(action, id, toAdd, toRemove, state));
     }
   }
 
@@ -737,7 +728,7 @@ class Controls extends FlxActionSet
    */
   public function bindKeys(control:Control, keys:Array<FlxKey>)
   {
-    forEachBound(control, function(action, state) addKeys(action, keys, state));
+    forEachBound(control, (action, state) -> addKeys(action, keys, state));
   }
 
   /**
@@ -746,7 +737,7 @@ class Controls extends FlxActionSet
    */
   public function unbindKeys(control:Control, keys:Array<FlxKey>)
   {
-    forEachBound(control, function(action, _) removeKeys(action, keys));
+    forEachBound(control, (action, _) -> removeKeys(action, keys));
   }
 
   static function addKeys(action:FlxActionDigital, keys:Array<FlxKey>, state:FlxInputState)
@@ -1094,7 +1085,7 @@ class Controls extends FlxActionSet
    */
   public function bindButtons(control:Control, id, buttons)
   {
-    forEachBound(control, function(action, state) addButtons(action, buttons, state, id));
+    forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
   }
 
   /**
@@ -1103,7 +1094,7 @@ class Controls extends FlxActionSet
    */
   public function unbindButtons(control:Control, gamepadID:Int, buttons)
   {
-    forEachBound(control, function(action, _) removeButtons(action, gamepadID, buttons));
+    forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
   }
 
   inline static function addButtons(action:FlxActionDigital, buttons:Array<FlxGamepadInputID>, state, id)
@@ -1217,7 +1208,7 @@ class Controls extends FlxActionSet
   public function createSaveData(device:Device):Dynamic
   {
     var isEmpty = true;
-    var data = {};
+    var data = {}
     for (control in Control.createAll())
     {
       var inputs = getInputsFor(control, device);
@@ -1257,7 +1248,7 @@ typedef SaveInputLists =
 {
   ?keys:Array<Int>,
   ?pad:Array<Int>
-};
+}
 
 typedef Swipes =
 {
@@ -1265,7 +1256,7 @@ typedef Swipes =
   ?touchAngle:Float,
   ?touchLength:Float,
   ?curTouchPos:FlxPoint
-};
+}
 
 /**
  * An FlxActionDigital with additional functionality, including:

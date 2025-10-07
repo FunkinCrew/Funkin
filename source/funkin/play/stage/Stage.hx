@@ -17,7 +17,6 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.IRegistryEntry;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageData.StageDataCharacter;
-import funkin.data.stage.StageRegistry;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
 
@@ -263,14 +262,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
           {
             propSprite.animation.add(propAnim.name, propAnim.frameIndices);
 
-            if (Std.isOfType(propSprite, Bopper))
+            if (propSprite is Bopper)
             {
               cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
             }
           }
         default: // 'sparrow'
           FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
-          if (Std.isOfType(propSprite, Bopper))
+          if (propSprite is Bopper)
           {
             for (propAnim in dataProp.animations)
             {
@@ -279,14 +278,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
           }
       }
 
-      if (Std.isOfType(propSprite, Bopper))
+      if (propSprite is Bopper)
       {
         for (propAnim in dataProp.animations)
         {
           cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
         }
 
-        if (!Std.isOfType(propSprite, BaseCharacter))
+        if (!(propSprite is BaseCharacter))
         {
           cast(propSprite, Bopper).originalPosition.x = dataProp.position[0];
           cast(propSprite, Bopper).originalPosition.y = dataProp.position[1];
@@ -298,11 +297,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         propSprite.animation.play(dataProp.startingAnimation);
       }
 
-      if (Std.isOfType(propSprite, BaseCharacter))
+      if (propSprite is BaseCharacter)
       {
         // Character stuff.
       }
-      else if (Std.isOfType(propSprite, Bopper))
+      else if (propSprite is Bopper)
       {
         addBopper(cast propSprite, dataProp.name);
       }
@@ -354,7 +353,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function setShader(shader:FlxShader):Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive((prop:FlxSprite) -> {
       prop.shader = shader;
     });
   }
@@ -620,7 +619,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function pause():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive((prop:FlxSprite) -> {
       if (prop.animation != null) prop.animation.pause();
     });
   }
@@ -630,7 +629,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function resume():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive((prop:FlxSprite) -> {
       if (prop.animation != null) prop.animation.resume();
     });
   }
@@ -808,7 +807,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     return Sprite;
   }
 
-  override function draw():Void
+  override public function draw():Void
   {
     if (frameBufferMan != null)
     {
@@ -841,9 +840,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param applyFilters if this is `true`, the filters set to the camera will be applied to the resulting bitmap
    * @return the grabbed screen
    */
-  function grabScreen(applyFilters:Bool):BitmapData
+  function grabScreen(applyFilters:Bool):Null<BitmapData>
   {
-    if (Std.isOfType(FlxG.camera, FunkinCamera))
+    if (FlxG.camera is FunkinCamera)
     {
       final cam:FunkinCamera = cast FlxG.camera;
       return cam.grabScreen(applyFilters);

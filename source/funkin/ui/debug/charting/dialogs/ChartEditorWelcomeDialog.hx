@@ -9,7 +9,6 @@ import funkin.util.SortUtil;
 import haxe.ui.components.Label;
 import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
-import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.events.MouseEvent;
 
 /**
@@ -66,11 +65,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     return dialog;
   }
 
-  public override function onClose(event:DialogEvent):Void
-  {
-    super.onClose(event);
-  }
-
   /**
    * Add a file path to the "Open Recent" scroll box on the left.
    * @param path
@@ -90,7 +84,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     linkRecentChart.tooltip += "\n" + lastModified;
     #end
 
-    linkRecentChart.onClick = function(_event) {
+    linkRecentChart.onClick = (_event) -> {
       linkRecentChart.hide();
 
       this.hideDialog(DialogButton.CANCEL);

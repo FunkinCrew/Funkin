@@ -37,7 +37,7 @@ typedef PauseSubStateParams =
    * Which mode to start in. Dictates what entries are displayed.
    */
   ?mode:PauseMode,
-};
+}
 
 /**
  * The menu displayed when the Play State is paused.
@@ -746,7 +746,6 @@ class PauseSubState extends MusicBeatSubState
     // If targetMode is null, keep the current mode.
     if (targetMode == null) targetMode = this.currentMode;
 
-    var previousMode:PauseMode = this.currentMode;
     this.currentMode = targetMode;
 
     resetSelection();
@@ -1204,4 +1203,4 @@ typedef PauseMenuEntry =
    * The text object currently displaying this entry.
    */
   var ?sprite:AtlasText;
-};
+}

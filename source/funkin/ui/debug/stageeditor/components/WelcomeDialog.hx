@@ -22,7 +22,7 @@ class WelcomeDialog extends Dialog
 
     stageEditorState = state;
 
-    buttonNew.onClick = function(_) {
+    buttonNew.onClick = (_) -> {
       stageEditorState.clearAssets();
       stageEditorState.loadDummyData();
       stageEditorState.currentFile = "";
@@ -40,7 +40,7 @@ class WelcomeDialog extends Dialog
       var fileText = new Link();
       fileText.percentWidth = 100;
       fileText.text = patj.file + "." + patj.ext;
-      fileText.onClick = function(_) {
+      fileText.onClick = (_) -> {
         fileText.hide();
         loadFromFilePath(file);
       };
@@ -55,7 +55,7 @@ class WelcomeDialog extends Dialog
       contentRecent.addComponent(fileText);
     }
 
-    boxDrag.onClick = function(_) FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], loadFromFilePath, null, null, "Open Stage Data");
+    boxDrag.onClick = (_) -> FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], loadFromFilePath, null, null, "Open Stage Data");
 
     var defaultStages:Array<String> = StageRegistry.instance.listEntryIds();
     defaultStages.sort(funkin.util.SortUtil.alphabetically);
@@ -69,7 +69,7 @@ class WelcomeDialog extends Dialog
       link.percentWidth = 100;
       link.text = baseStage.name;
 
-      link.onClick = function(_) loadFromPreset(baseStage);
+      link.onClick = (_) -> loadFromPreset(baseStage);
 
       contentPresets.addComponent(link);
     }
@@ -84,7 +84,7 @@ class WelcomeDialog extends Dialog
     if (!stageEditorState.saved)
     {
       Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
-        function(btn:DialogButton) {
+        (btn:DialogButton) -> {
           if (btn == DialogButton.YES)
           {
             stageEditorState.saved = true;
@@ -106,7 +106,7 @@ class WelcomeDialog extends Dialog
     if (!stageEditorState.saved)
     {
       Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
-        function(btn:DialogButton) {
+        (btn:DialogButton) -> {
           if (btn == DialogButton.YES)
           {
             stageEditorState.saved = true;

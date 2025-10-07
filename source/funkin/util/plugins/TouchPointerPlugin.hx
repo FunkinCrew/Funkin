@@ -85,7 +85,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 
     FlxG.cameras.cameraAdded.add(moveCameraToTop);
 
-    FlxG.cameras.cameraRemoved.add(function(camera:FlxCamera) {
+    FlxG.cameras.cameraRemoved.add((camera:FlxCamera) -> {
       if (camera == pointerCamera)
       {
         if (!camera.exists) // The camera got destroyed, we make a new one!
@@ -106,7 +106,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       }
     });
 
-    FlxG.signals.preStateSwitch.add(function() {
+    FlxG.signals.preStateSwitch.add(() -> {
       instance.removeAll();
     });
   }
@@ -142,7 +142,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
         FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 0.9),
           {
             ease: FlxEase.cubeIn,
-            onComplete: function(_) {
+            onComplete: (_) -> {
               remove(pointer, true);
             }
           });
@@ -213,7 +213,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 1),
         {
           ease: FlxEase.quadIn,
-          onComplete: function(_) {
+          onComplete: (_) -> {
             remove(pointer, true);
           }
         });

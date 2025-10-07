@@ -57,7 +57,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
   function initialize():Void
   {
-    toolboxNotesNoteKind.onChange = function(event:UIEvent) {
+    toolboxNotesNoteKind.onChange = (event:UIEvent) -> {
       var noteKind:Null<String> = event?.data?.id ?? null;
       if (noteKind == '') noteKind = null;
 
@@ -114,7 +114,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, '');
     toolboxNotesNoteKind.value = startingValueNoteKind;
 
-    toolboxNotesCustomKind.onChange = function(event:UIEvent) {
+    toolboxNotesCustomKind.onChange = (event:UIEvent) -> {
       var customKind:Null<String> = event?.target?.text;
       chartEditorState.noteKindToPlace = customKind;
 
@@ -222,7 +222,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         continue;
       }
 
-      paramComponent.onChange = function(event:UIEvent) {
+      paramComponent.onChange = (event:UIEvent) -> {
         chartEditorState.noteParamsToPlace[i].value = paramComponent.value;
 
         for (note in chartEditorState.currentNoteSelection)
@@ -273,7 +273,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     this.height = DIALOG_HEIGHT;
   }
 
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

@@ -151,7 +151,7 @@ class AssetDataHandler
 
     object.playAnim(object.startingAnimation);
 
-    flixel.util.FlxTimer.wait(StageEditorState.TIME_BEFORE_ANIM_STOP, function() {
+    flixel.util.FlxTimer.wait(StageEditorState.TIME_BEFORE_ANIM_STOP, () -> {
       if (object?.animation?.curAnim != null) object.animation.stop();
     });
 

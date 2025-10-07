@@ -281,7 +281,7 @@ class BaseCharacter extends Bopper
     return _data.cameraOffsets;
   }
 
-  override function onCreate(event:ScriptEvent):Void
+  override public function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
 
@@ -446,7 +446,7 @@ class BaseCharacter extends Bopper
     return currentAnimation.startsWith('sing') && !currentAnimation.endsWith(Constants.ANIMATION_END_SUFFIX);
   }
 
-  override function dance(force:Bool = false):Void
+  override public function dance(force:Bool = false):Void
   {
     // Prevent default dancing behavior.
     if (isDead) return;
@@ -690,11 +690,6 @@ class BaseCharacter extends Bopper
     // trace('Playing ${anim}...');
 
     playAnimation(anim, true);
-  }
-
-  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
-  {
-    super.playAnimation(name, restart, ignoreOther, reversed);
   }
 
   public function getDeathQuote():Null<String>

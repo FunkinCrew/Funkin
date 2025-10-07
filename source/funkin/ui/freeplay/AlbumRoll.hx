@@ -41,18 +41,6 @@ class AlbumRoll extends FlxSpriteGroup
 
   var albumData:Null<Album> = null;
 
-  final animNames:Map<String, String> = [
-    "volume1-active" => "ENTRANCE",
-    "volume2-active" => "ENTRANCE VOL2",
-    "volume3-active" => "ENTRANCE VOL3",
-    "volume1-trans" => "VOL1 TRANS",
-    "volume2-trans" => "VOL2 TRANS",
-    "volume3-trans" => "VOL3 TRANS",
-    "volume1-idle" => "VOL1 STILL",
-    "volume2-idle" => "VOL2 STILL",
-    "volume3-idle" => "VOL3 STILL",
-  ];
-
   public function new()
   {
     super();
@@ -104,7 +92,7 @@ class AlbumRoll extends FlxSpriteGroup
     {
       FlxG.log.warn('Could not find album data for album ID: ${albumId}');
       return;
-    };
+    }
 
     // Update the album art.
     var albumGraphic = Paths.image(albumData.getAlbumArtAssetKey());
@@ -163,8 +151,6 @@ class AlbumRoll extends FlxSpriteGroup
       });
   }
 
-  var titleTimer:Null<FlxTimer> = null;
-
   /**
    * Play the intro animation on the album art.
    */
@@ -179,7 +165,7 @@ class AlbumRoll extends FlxSpriteGroup
     difficultyStars.visible = false;
     difficultyStars.flameCheck();
 
-    new FlxTimer().start(0.75, function(_) {
+    new FlxTimer().start(0.75, (_) -> {
       showTitle();
       showStars();
       if (albumTitle != null) albumTitle.animation.play('switch');
@@ -218,7 +204,7 @@ class AlbumRoll extends FlxSpriteGroup
     albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);
     add(albumTitle);
 
-    albumTitle.animation.onFinish.add(function(name) {
+    albumTitle.animation.onFinish.add((name) -> {
       if (name == 'switch' && albumTitle != null) albumTitle.animation.play('idle');
     });
     albumTitle.animation.play('idle');

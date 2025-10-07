@@ -27,7 +27,7 @@ class FindObjDialog extends Dialog
     this.checkWord = wordCheck;
     this.checkCaps = capsCheck;
 
-    field.onChange = function(_) updateIndicator();
+    field.onChange = (_) -> updateIndicator();
     indicator.hide();
 
     top = 20;

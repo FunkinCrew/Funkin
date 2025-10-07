@@ -13,8 +13,6 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.play.notes.NoteDirection;
 import funkin.util.FlxGamepadUtil;
 import haxe.Int64;
-import lime.ui.Gamepad as LimeGamepad;
-import lime.ui.GamepadAxis as LimeGamepadAxis;
 import lime.ui.GamepadButton as LimeGamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
@@ -119,7 +117,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       case NoteDirection.DOWN: controls.getKeysForAction(NOTE_DOWN);
       case NoteDirection.UP: controls.getKeysForAction(NOTE_UP);
       case NoteDirection.RIGHT: controls.getKeysForAction(NOTE_RIGHT);
-    };
+    }
   }
 
   public static function getButtonsForDirection(controls:Controls, noteDirection:NoteDirection)
@@ -130,7 +128,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       case NoteDirection.DOWN: controls.getButtonsForAction(NOTE_DOWN);
       case NoteDirection.UP: controls.getButtonsForAction(NOTE_UP);
       case NoteDirection.RIGHT: controls.getButtonsForAction(NOTE_RIGHT);
-    };
+    }
   }
 
   /**
@@ -196,7 +194,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       {
         onButtonDown: handleButtonDown.bind(gamepad),
         onButtonUp: handleButtonUp.bind(gamepad)
-      };
+      }
     limeGamepad.onButtonDownPrecise.add(callbacks.onButtonDown);
     limeGamepad.onButtonUpPrecise.add(callbacks.onButtonUp);
 
@@ -491,4 +489,4 @@ typedef PreciseInputEvent =
    * The timestamp of the input. Measured in nanoseconds.
    */
   timestamp:Int64,
-};
+}

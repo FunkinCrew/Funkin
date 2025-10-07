@@ -140,7 +140,7 @@ class SortUtil
     {
       // Sort by index in defaultValues
       return defaultValues.indexOf(a) - defaultValues.indexOf(b);
-    };
+    }
     if (defaultValues.contains(a)) return -1;
     if (defaultValues.contains(b)) return 1;
     return alphabetically(a, b);

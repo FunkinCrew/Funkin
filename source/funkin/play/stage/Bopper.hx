@@ -216,7 +216,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    * @param name The animation name to attempt to correct.
    * @param fallback Instead of failing to play, try to play this animation instead.
    */
-  function correctAnimationName(name:String, ?fallback:String):String
+  function correctAnimationName(name:String, ?fallback:String):Null<String>
   {
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;
@@ -349,7 +349,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
-  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  override public function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
     output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;

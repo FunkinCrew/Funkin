@@ -1,7 +1,6 @@
 package funkin.ui;
 
 import flixel.FlxSprite;
-import flixel.util.FlxColor;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -74,7 +73,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     }
 
     touchBuddy = new FlxSprite().makeGraphic(10, 10);
-    _isMainMenuState = Std.isOfType(FlxG.state, funkin.ui.mainmenu.MainMenuState);
+    _isMainMenuState = FlxG.state is funkin.ui.mainmenu.MainMenuState;
 
     super();
   }
@@ -288,7 +287,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     {
       busy = true;
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_) {
+      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, _ -> {
         busy = false;
         menuItem.callback();
       });

@@ -247,7 +247,7 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
-    toolbox.onDialogClosed = function(_) {
+    toolbox.onDialogClosed = (_) -> {
       state.menubarItemToggleToolboxPlaytestProperties.selected = false;
     }
 
@@ -348,7 +348,7 @@ class ChartEditorToolboxHandler
     toolbox.x = 200;
     toolbox.y = 350;
 
-    toolbox.onDialogClosed = function(event:DialogEvent) {
+    toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
     }
 

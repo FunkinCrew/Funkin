@@ -348,7 +348,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function getNotesMayHit():Array<NoteSprite>
   {
-    return notes.members.filter(function(note:NoteSprite) {
+    return notes.members.filter((note:NoteSprite) -> {
       return note != null && note.alive && !note.hasBeenHit && note.mayHit;
     });
   }
@@ -359,7 +359,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function getHoldNotesHitOrMissed():Array<SustainTrail>
   {
-    return holdNotes.members.filter(function(holdNote:SustainTrail) {
+    return holdNotes.members.filter((holdNote:SustainTrail) -> {
       return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
     });
   }
@@ -424,7 +424,7 @@ class Strumline extends FlxSpriteGroup
       FlxTween.tween(note, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,
-          onComplete: function(twn) {
+          onComplete: (twn) -> {
             note.kill();
             notesVwoosh.remove(note, true);
             note.destroy();
@@ -445,7 +445,7 @@ class Strumline extends FlxSpriteGroup
       FlxTween.tween(holdNote, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,
-          onComplete: function(twn) {
+          onComplete: (twn) -> {
             holdNote.kill();
             holdNotesVwoosh.remove(holdNote, true);
             holdNote.destroy();
@@ -460,7 +460,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function enterMiniMode(scale:Float = 1)
   {
-    forEach(function(obj:flixel.FlxObject):Void {
+    forEach((obj:flixel.FlxObject) -> {
       if (obj != strumlineNotes) obj.visible = false;
     });
 
@@ -469,7 +469,7 @@ class Strumline extends FlxSpriteGroup
 
   public function strumlineScaleCallback(Scale:FlxPoint)
   {
-    strumlineNotes.forEach(function(note:StrumlineNote):Void {
+    strumlineNotes.forEach((note:StrumlineNote) -> {
       var styleScale = noteStyle.getStrumlineScale();
       note.scale.set(styleScale * Scale.x, styleScale * Scale.y);
     });
@@ -519,7 +519,7 @@ class Strumline extends FlxSpriteGroup
       FlxTween.tween(note, {yOffset: 0}, vwooshTime,
         {
           ease: FlxEase.expoOut,
-          onComplete: function(twn) {
+          onComplete: (twn) -> {
             note.yOffset = 0;
           }
         });
@@ -538,7 +538,7 @@ class Strumline extends FlxSpriteGroup
       FlxTween.tween(holdNote, {yOffset: 0}, vwooshTime,
         {
           ease: FlxEase.expoOut,
-          onComplete: function(twn) {
+          onComplete: (twn) -> {
             holdNote.yOffset = 0;
           }
         });
@@ -768,7 +768,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function getNotesOnScreen():Array<NoteSprite>
   {
-    return notes.members.filter(function(note:NoteSprite) {
+    return notes.members.filter((note:NoteSprite) -> {
       return note != null && note.alive && !note.hasBeenHit;
     });
   }

@@ -69,7 +69,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     if (fr != null) fr.name = "START"; // woerkaround
     // fr.add(() -> FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.));
 
-    medal.anim.getFrameLabel("show").add(function() {
+    medal.anim.getFrameLabel("show").add(() -> {
       points.visible = true;
       name.visible = true;
       if (name.width > name.clipRect.width)
@@ -84,7 +84,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
     // medal.anim.getFrameLabel("idle").add(() -> medal.anim.pause());
     medal.anim.getFrameLabel("fade").add(() -> FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.));
 
-    medal.anim.getFrameLabel("hide").add(function() {
+    medal.anim.getFrameLabel("hide").add(() -> {
       points.visible = false;
       name.visible = false;
       tween = false;
@@ -120,7 +120,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 
     // instance is defined above so there's no need to worry about null safety here
     @:nullSafety(Off)
-    instance.medal.anim?.onComplete.add(function() {
+    instance.medal.anim?.onComplete.add(() -> {
       if (instance.funcs.length > 0)
       {
         instance.funcs.shift()();
@@ -131,7 +131,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
   public static function play(points:Int = 100, name:String = "I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM", ?graphic:FlxGraphic)
   {
     if (instance == null) return;
-    var func = function() {
+    var func = () -> {
       instance.points.visible = false;
       instance.name.visible = false;
       instance.points.text = Std.string(points);

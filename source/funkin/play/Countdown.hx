@@ -33,8 +33,6 @@ class Countdown
 
   static var noteStyle:NoteStyle;
 
-  static var fallbackNoteStyle:Null<NoteStyle>;
-
   /**
    * The currently running countdown. This will be null if there is no countdown running.
    */
@@ -67,7 +65,7 @@ class Countdown
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
-    countdownTimer.start(Conductor.instance.beatLengthMs / 1000, function(tmr:FlxTimer) {
+    countdownTimer.start(Conductor.instance.beatLengthMs / 1000, (tmr:FlxTimer) -> {
       if (PlayState.instance == null)
       {
         tmr.cancel();
@@ -232,7 +230,7 @@ class Countdown
     FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000,
       {
         ease: fadeEase,
-        onComplete: function(twn:FlxTween) {
+        onComplete: (twn:FlxTween) -> {
           countdownSprite.destroy();
         }
       });
@@ -249,7 +247,7 @@ class Countdown
   /**
    * Retrieves the sound file to use for this step of the countdown.
    */
-  public static function playCountdownSound(step:CountdownStep):FunkinSound
+  public static function playCountdownSound(step:CountdownStep):Null<FunkinSound>
   {
     fetchNoteStyle();
     var path = noteStyle.getCountdownSoundPath(step);

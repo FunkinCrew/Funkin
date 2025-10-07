@@ -126,7 +126,7 @@ class DataParse
     switch (json.value)
     {
       case JObject(fields):
-        var result:Dynamic = {};
+        var result:Dynamic = {}
         var backdropType:String = '';
 
         for (field in fields)
@@ -157,7 +157,7 @@ class DataParse
     switch (json.value)
     {
       case JObject(fields):
-        var result:Dynamic = {};
+        var result:Dynamic = {}
         var outroType:String = '';
 
         for (field in fields)
@@ -209,7 +209,7 @@ class DataParse
    */
   static function jsonFieldsToDynamicObject(fields:Array<JObjectField>):Dynamic
   {
-    var result:Dynamic = {};
+    var result:Dynamic = {}
     for (field in fields)
     {
       Reflect.setField(result, field.name, Tools.getValue(field.value));
@@ -247,7 +247,7 @@ class DataParse
           {
             mustHitSection: false,
             sectionNotes: [],
-          };
+          }
         for (field in fields)
         {
           switch (field.name)
@@ -278,7 +278,7 @@ class DataParse
     switch (json.value)
     {
       case JObject(fields):
-        var result = {};
+        var result = {}
         for (field in fields)
         {
           Reflect.setField(result, field.name, legacyNoteSectionArray(field.value, field.name));

@@ -8,7 +8,6 @@ import funkin.audio.FunkinSound;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.modding.module.ModuleHandler;
-import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import flixel.util.FlxSort;
@@ -112,7 +111,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     subStateClosed.add(onCloseSubStateComplete);
   }
 
-  override function create():Void
+  override public function create():Void
   {
     super.create();
 
@@ -136,7 +135,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     Conductor.stepHit.remove(this.stepHit);
   }
 
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -154,14 +153,14 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
-  override function onFocus():Void
+  override public function onFocus():Void
   {
     super.onFocus();
 
     dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
   }
 
-  override function onFocusLost():Void
+  override public function onFocusLost():Void
   {
     super.onFocusLost();
 
@@ -169,14 +168,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   }
 
   public function initConsoleHelpers():Void {}
-
-  function reloadAssets()
-  {
-    PolymodHandler.forceReloadAssets();
-
-    // Restart the current state, so old data is cleared.
-    FlxG.resetState();
-  }
 
   /**
    * Refreshes the state, by redoing the render order of all sprites.
@@ -253,7 +244,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   }
 
   @:nullSafety(Off)
-  override function startOutro(onComplete:() -> Void):Void
+  override public function startOutro(onComplete:() -> Void):Void
   {
     var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
 

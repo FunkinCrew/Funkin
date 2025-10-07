@@ -16,7 +16,6 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuCut:MenuItem;
   var contextmenuCopy:MenuItem;
-  var contextmenuPaste:MenuItem;
   var contextmenuDelete:MenuItem;
   var contextmenuFlip:MenuItem;
   var contextmenuSelectAll:MenuItem;
@@ -57,17 +56,17 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
       }
     };
 
-    contextmenuFlip.onClick = function(_) {
+    contextmenuFlip.onClick = (_) -> {
       chartEditorState.performCommand(new FlipNotesCommand(chartEditorState.currentNoteSelection));
     }
 
-    contextmenuSelectAll.onClick = function(_) {
+    contextmenuSelectAll.onClick = (_) -> {
       chartEditorState.performCommand(new SelectAllItemsCommand(true, false));
     }
-    contextmenuSelectInverse.onClick = function(_) {
+    contextmenuSelectInverse.onClick = (_) -> {
       chartEditorState.performCommand(new InvertSelectedItemsCommand());
     }
-    contextmenuSelectNone.onClick = function(_) {
+    contextmenuSelectNone.onClick = (_) -> {
       chartEditorState.performCommand(new DeselectAllItemsCommand());
     }
   }

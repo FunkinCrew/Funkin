@@ -8,13 +8,11 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxSpriteUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
 
 /**
@@ -161,14 +159,14 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
 
     FlxTween.color(instance.backingImage, 0.5, 0xFFA8A8A8, 0xFF646464,
       {
-        onUpdate: function(_) {
+        onUpdate: (_) -> {
           instance.angleMaskShader.extraColor = instance.backingImage.color;
         }
       });
     FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33,
       {
         ease: FlxEase.quadOut,
-        onComplete: function(_) {
+        onComplete: (_) -> {
           confirmGlow2.alpha = 0.6;
           confirmGlow.alpha = 1;
           confirmTextGlow.visible = true;
@@ -178,7 +176,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
           FlxTween.color(instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555,
             {
               ease: FlxEase.expoOut,
-              onUpdate: function(_) {
+              onUpdate: (_) -> {
                 instance.angleMaskShader.extraColor = instance.backingImage.color;
               }
             });

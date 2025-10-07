@@ -5,7 +5,6 @@ import flixel.FlxCamera;
 import flixel.FlxBasic;
 import flixel.util.FlxSignal;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
-import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
 import funkin.util.assets.FlxAnimationUtil;
@@ -85,7 +84,6 @@ class BaseFreeplayDJ extends FlxAtlasSprite
   final playableCharData:Null<PlayerFreeplayDJData>;
 
   var timeIdling:Float = 0;
-  var lowPumpLoopPoint:Int = 4;
 
   public function new(x:Float, y:Float, characterId:String)
   {
@@ -96,8 +94,6 @@ class BaseFreeplayDJ extends FlxAtlasSprite
 
     super(x, y, null, null, false);
   }
-
-  function onFinishAnim(name:String):Void {}
 
   public function onCharSelectComplete():Void
   {
@@ -226,9 +222,7 @@ class BaseFreeplayDJ extends FlxAtlasSprite
   function applyAnimOffset()
   {
     var animName = getCurrentAnimation();
-    trace(animName);
     var daOffset = playableCharData?.getAnimationOffsetsByPrefix(animName);
-    trace(daOffset);
     if (daOffset != null)
     {
       final xValue = daOffset[0];
@@ -305,7 +299,7 @@ class FlixelFramedFreeplayDJ extends BaseFreeplayDJ
     return animation?.curAnim?.name ?? "";
   }
 
-  override function updateAnimation(elapsed:Float):Void
+  override public function updateAnimation(elapsed:Float):Void
   {
     animation.update(elapsed);
   }

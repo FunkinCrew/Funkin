@@ -11,8 +11,6 @@ import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
-import openfl.system.System;
-import funkin.FunkinMemory;
 
 using StringTools;
 
@@ -101,7 +99,7 @@ class FunkinSprite extends FlxSprite
     trace('[ASYNC] Start loading image (${key})');
     graphic.persist = true;
     openfl.Assets.loadBitmapData(key)
-      .onComplete(function(bitmapData:openfl.display.BitmapData) {
+      .onComplete((bitmapData:BitmapData) -> {
         trace('[ASYNC] Finished loading image');
         var cache:Bool = false;
         loadBitmapData(bitmapData, cache);
@@ -112,7 +110,7 @@ class FunkinSprite extends FlxSprite
           FlxTween.tween(this, {alpha: 1.0}, 0.25);
         }
       })
-      .onError(function(error:Dynamic) {
+      .onError((error:Dynamic) -> {
         trace('[ASYNC] Failed to load image: ${error}');
         if (fadeTween != null)
         {
@@ -120,7 +118,7 @@ class FunkinSprite extends FlxSprite
           this.alpha = 1.0;
         }
       })
-      .onProgress(function(progress:Int, total:Int) {
+      .onProgress((progress:Int, total:Int) -> {
         trace('[ASYNC] Loading image progress: ${progress}/${total}');
       });
   }
@@ -201,42 +199,6 @@ class FunkinSprite extends FlxSprite
   public static function isTextureCached(key:String):Bool
   {
     return FlxG.bitmap.get(key) != null;
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cacheTexture(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.permanentCacheTexture() instead")
-  public static function permanentCacheTexture(key:String):Void
-  {
-    @:privateAccess FunkinMemory.permanentCacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cacheSparrow(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cachePacker(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.preparePurgeTextureCache() instead")
-  public static function preparePurgeCache():Void
-  {
-    FunkinMemory.preparePurgeTextureCache();
-  }
-
-  @:deprecated("Use FunkinMemory.purgeCache() instead")
-  public static function purgeCache():Void
-  {
-    FunkinMemory.purgeCache();
   }
 
   static function isGraphicCached(graphic:FlxGraphic):Bool

@@ -42,16 +42,16 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
     DropDownBuilder.HANDLER_MAP.set("objTint", Type.getClassName(ObjectTintHandler));
 
     // Numeric callbacks.
-    objPosX.onChange = function(_) {
+    objPosX.onChange = (_) -> {
       if (linkedObj != null) linkedObj.x = objPosX.pos;
     }
 
-    objPosY.onChange = function(_) {
+    objPosY.onChange = (_) -> {
       if (linkedObj != null) linkedObj.y = objPosY.pos;
     }
 
     objZIdx.max = StageEditorState.MAX_Z_INDEX;
-    objZIdx.onChange = function(_) {
+    objZIdx.onChange = (_) -> {
       if (linkedObj != null)
       {
         linkedObj.zIndex = Std.int(objZIdx.pos);
@@ -59,15 +59,15 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
       }
     }
 
-    objAlpha.onChange = function(_) {
+    objAlpha.onChange = (_) -> {
       if (linkedObj != null) linkedObj.alpha = objAlpha.pos;
     }
 
-    objAngle.onChange = function(_) {
+    objAngle.onChange = (_) -> {
       if (linkedObj != null) linkedObj.angle = objAngle.pos;
     }
 
-    objScaleX.onChange = function(_) {
+    objScaleX.onChange = (_) -> {
       if (linkedObj != null)
       {
         linkedObj.scale.x = objScaleX.pos;
@@ -75,7 +75,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
       }
     }
 
-    objScaleY.onChange = function(_) {
+    objScaleY.onChange = (_) -> {
       if (linkedObj != null)
       {
         linkedObj.scale.y = objScaleY.pos;
@@ -83,39 +83,39 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
       }
     }
 
-    objScrollX.onChange = function(_) {
+    objScrollX.onChange = (_) -> {
       if (linkedObj != null) linkedObj.scrollFactor.x = objScrollX.pos;
     }
 
-    objScrollY.onChange = function(_) {
+    objScrollY.onChange = (_) -> {
       if (linkedObj != null) linkedObj.scrollFactor.y = objScrollY.pos;
     }
 
-    objDance.onChange = function(_) {
+    objDance.onChange = (_) -> {
       if (linkedObj != null) linkedObj.danceEvery = Std.int(objDance.pos);
     }
 
     // Boolean callbacks.
-    objPixel.onChange = function(_) {
+    objPixel.onChange = (_) -> {
       if (linkedObj != null) linkedObj.antialiasing = objPixel.selected; // Kind of misleading, but objPixel has the 'Antialiasing' label attached to it!
     }
 
-    objFlipX.onChange = function(_) {
+    objFlipX.onChange = (_) -> {
       if (linkedObj != null) linkedObj.flipX = objFlipX.selected;
     }
 
-    objFlipY.onChange = function(_) {
+    objFlipY.onChange = (_) -> {
       if (linkedObj != null) linkedObj.flipY = objFlipY.selected;
     }
 
-    objBlend.onChange = function(_) {
+    objBlend.onChange = (_) -> {
       if (linkedObj != null)
       {
         linkedObj.blend = (objBlend.selectedItem?.text ?? "NONE") == "NONE" ? null : AssetDataHandler.blendFromString(objBlend.selectedItem.text);
       }
     }
 
-    objTint.onChange = function(_) {
+    objTint.onChange = (_) -> {
       if (linkedObj != null)
       {
         linkedObj.color = FlxColor.fromString(_.value) ?? 0xFFFFFFFF;

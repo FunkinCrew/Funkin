@@ -120,7 +120,7 @@ class RuntimePostEffectShader extends FlxRuntimeShader
     uFrameBounds.value = [frame.uv.x, frame.uv.y, frame.uv.width, frame.uv.height];
   }
 
-  override function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
+  override function __createGLProgram(vertexSource:String, fragmentSource:String):Null<GLProgram>
   {
     try
     {

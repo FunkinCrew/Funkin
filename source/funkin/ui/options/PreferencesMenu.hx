@@ -7,7 +7,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxPoint;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
@@ -24,7 +23,6 @@ import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
-import funkin.util.HapticUtil;
 import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
@@ -72,7 +70,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     menuCamera.minScrollY = 0;
 
-    items.onChange.add(function(selected) {
+    items.onChange.add((selected) -> {
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
@@ -109,16 +107,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   function createPrefItems():Void
   {
     #if FEATURE_NAUGHTYNESS
-    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
+    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', (value:Bool) -> {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
     #end
-    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', (value:Bool) -> {
       Preferences.downscroll = value;
     },
       Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
       || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
-    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
+    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', (value:Int) -> {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
     #if FEATURE_HAPTICS
@@ -139,10 +137,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
     #end
     createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
-      function(value:Bool):Void {
+      (value:Bool) -> {
         Preferences.flashingLights = value;
       }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', (value:Bool) -> {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
     #if FEATURE_VIDEO_SUBTITLES
@@ -160,13 +158,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
 
-    createPrefItemPercentage('Debug Display BG', "Change debug display's background opacity", function(value:Int):Void {
+    createPrefItemPercentage('Debug Display BG', "Change debug display's background opacity", (value:Int) -> {
       Preferences.debugDisplayBGOpacity = value;
     }, Preferences.debugDisplayBGOpacity);
-    createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', (value:Bool) -> {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
+    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', (value:Bool) -> {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
     #end
@@ -183,7 +181,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       "Off" => WindowVSyncMode.OFF,
       "On" => WindowVSyncMode.ON,
       "Adaptive" => WindowVSyncMode.ADAPTIVE,
-    ], function(key:String, value:WindowVSyncMode):Void {
+    ], (key:String, value:WindowVSyncMode) -> {
       trace("Setting vsync mode to " + key);
       Preferences.vsyncMode = value;
     }, switch (Preferences.vsyncMode)
@@ -194,7 +192,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       });
     #end
     #if !mobile
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', (value:Float) -> {
       Preferences.framerate = Std.int(value);
     }, null, Preferences.framerate, 30, 500, 5, 0);
     #end
@@ -221,7 +219,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     if (items != null) camFollow.y = items.selectedItem.y;
 
     // Indent the selected item.
-    items.forEach(function(daItem:TextMenuItem) {
+    items.forEach((daItem:TextMenuItem) -> {
       var thyOffset:Int = 0;
       // Initializing thy text width (if thou text present)
       var thyTextWidth:Int = 0;
@@ -266,7 +264,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1),
       defaultValue, available);
 
-    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, function() {
+    items.createItem(0, (120 * items.length) + 30, prefName, AtlasFont.BOLD, () -> {
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
@@ -305,10 +303,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItemPercentage(prefName:String, prefDesc:String, onChange:Int->Void, defaultValue:Int, min:Int = 0, max:Int = 100):Void
   {
-    var newCallback = function(value:Float) {
+    var newCallback = (value:Float) -> {
       onChange(Std.int(value));
     };
-    var formatter = function(value:Float) {
+    var formatter = (value:Float) -> {
       return '${value}%';
     };
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0,

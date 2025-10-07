@@ -7,7 +7,6 @@ import funkin.data.character.CharacterData;
 import funkin.util.SortUtil;
 import funkin.save.Save;
 import haxe.ui.components.Button;
-import haxe.ui.components.Slider;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.core.Screen;
 import flixel.tweens.FlxTween;
@@ -40,40 +39,40 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
     super(state);
 
     // Numeric callbacks.
-    charPosX.onChange = charPosY.onChange = function(_) {
+    charPosX.onChange = charPosY.onChange = (_) -> {
       repositionCharacter();
     }
 
     charZIdx.max = StageEditorState.MAX_Z_INDEX;
-    charZIdx.onChange = function(_) {
+    charZIdx.onChange = (_) -> {
       state.charGroups[state.selectedChar.characterType].zIndex = Std.int(charZIdx.pos);
       state.sortAssets();
     }
 
-    charCamX.onChange = charCamY.onChange = function(_) {
+    charCamX.onChange = charCamY.onChange = (_) -> {
       state.charCamOffsets[state.selectedChar.characterType] = [charCamX.pos, charCamY.pos];
       state.updateMarkerPos();
     }
 
-    charScale.onChange = function(_) {
+    charScale.onChange = (_) -> {
       state.selectedChar.setScale(state.selectedChar.getBaseScale() * charScale.pos);
       repositionCharacter();
     }
 
-    charAlpha.onChange = function(_) {
+    charAlpha.onChange = (_) -> {
       state.selectedChar.alpha = charAlpha.pos;
     }
 
-    charAngle.onChange = function(_) {
+    charAngle.onChange = (_) -> {
       state.selectedChar.angle = charAngle.pos;
     }
 
-    charScrollX.onChange = charScrollY.onChange = function(_) {
+    charScrollX.onChange = charScrollY.onChange = (_) -> {
       state.selectedChar.scrollFactor.set(charScrollX.pos, charScrollY.pos);
     }
 
     // character button
-    charType.onClick = function(_) {
+    charType.onClick = (_) -> {
       charMenu = new StageEditorCharacterMenu(state, this);
       Screen.instance.addComponent(charMenu);
     }

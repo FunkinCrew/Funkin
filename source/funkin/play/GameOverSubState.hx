@@ -188,7 +188,7 @@ class GameOverSubState extends MusicBeatSubState
     HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION);
 
     // Allow input a second later to prevent accidental gameover skips.
-    new FlxTimer().start(1, function(tmr:FlxTimer) {
+    new FlxTimer().start(1, (tmr:FlxTimer) -> {
       canInput = true;
     });
   }
@@ -343,7 +343,7 @@ class GameOverSubState extends MusicBeatSubState
     // Start music at lower volume
     startDeathMusic(0.2, false);
     boyfriend.playAnimation('deathLoop' + animationSuffix);
-    deathQuoteSound = FunkinSound.playOnce(deathQuote, function() {
+    deathQuoteSound = FunkinSound.playOnce(deathQuote, () -> {
       // Once the quote ends, fade in the game over music.
       if (!isEnding && gameOverMusic != null)
       {
@@ -378,12 +378,12 @@ class GameOverSubState extends MusicBeatSubState
       }
 
       // After the animation finishes...
-      new FlxTimer().start(0.7, function(tmr:FlxTimer) {
+      new FlxTimer().start(0.7, (tmr:FlxTimer) -> {
         // ...fade out the graphics. Then after that happens...
 
-        var resetPlaying = function(pixel:Bool = false) {
+        var resetPlaying = (pixel:Bool = false) -> {
           // ...close the GameOverSubState.
-          if (pixel) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
+          if (pixel == true) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
           else
             FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           if (parentPlayState != null) parentPlayState.needsReset = true;
@@ -426,7 +426,7 @@ class GameOverSubState extends MusicBeatSubState
         }
         else
         {
-          FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+          FlxG.camera.fade(FlxColor.BLACK, 2, false, () -> {
             #if FEATURE_MOBILE_ADVERTISEMENTS
             if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
             {
@@ -494,7 +494,7 @@ class GameOverSubState extends MusicBeatSubState
       }
       else
       {
-        onComplete = function() {
+        onComplete = () -> {
           isStarting = true;
           // We need to force to ensure that the non-starting music plays.
           startDeathMusic(0.0, true);

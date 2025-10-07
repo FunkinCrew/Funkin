@@ -34,7 +34,7 @@ class ScriptEventDispatcher
         target.onCreate(event);
         return;
       case STATE_CREATE:
-        if (Std.isOfType(target, Module))
+        if (target is Module)
         {
           var t:Module = cast(target, Module);
           t.onStateCreate(event);
@@ -49,7 +49,7 @@ class ScriptEventDispatcher
       default: // Continue;
     }
 
-    if (Std.isOfType(target, IStateStageProp))
+    if (target is IStateStageProp)
     {
       var t:IStateStageProp = cast(target, IStateStageProp);
       switch (event.type)
@@ -61,7 +61,7 @@ class ScriptEventDispatcher
       }
     }
 
-    if (Std.isOfType(target, IDialogueScriptedClass))
+    if (target is IDialogueScriptedClass)
     {
       var t:IDialogueScriptedClass = cast(target, IDialogueScriptedClass);
       switch (event.type)
@@ -85,7 +85,7 @@ class ScriptEventDispatcher
       }
     }
 
-    if (Std.isOfType(target, INoteScriptedClass))
+    if (target is INoteScriptedClass)
     {
       var t:INoteScriptedClass = cast(target, INoteScriptedClass);
       switch (event.type)
@@ -106,7 +106,7 @@ class ScriptEventDispatcher
       }
     }
 
-    if (Std.isOfType(target, IBPMSyncedScriptedClass))
+    if (target is IBPMSyncedScriptedClass)
     {
       var t:IBPMSyncedScriptedClass = cast(target, IBPMSyncedScriptedClass);
       switch (event.type)
@@ -121,7 +121,7 @@ class ScriptEventDispatcher
       }
     }
 
-    if (Std.isOfType(target, IPlayStateScriptedClass))
+    if (target is IPlayStateScriptedClass)
     {
       var t:IPlayStateScriptedClass = cast(target, IPlayStateScriptedClass);
       switch (event.type)
@@ -166,7 +166,7 @@ class ScriptEventDispatcher
       }
     }
 
-    if (Std.isOfType(target, IStateChangingScriptedClass))
+    if (target is IStateChangingScriptedClass)
     {
       var t = cast(target, IStateChangingScriptedClass);
       switch (event.type)
@@ -212,7 +212,7 @@ class ScriptEventDispatcher
   {
     if (targets == null || event == null) return;
 
-    if (Std.isOfType(targets, Array))
+    if (targets is Array)
     {
       var t = cast(targets, Array<Dynamic>);
       if (t.length == 0) return;

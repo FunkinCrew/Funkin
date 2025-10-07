@@ -10,7 +10,6 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
-import funkin.graphics.FunkinSprite;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -170,7 +169,7 @@ class InitState extends FlxState
       FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
         new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
-      FlxG.signals.gameResized.add(function(width:Int, height:Int) {
+      FlxG.signals.gameResized.add((width:Int, height:Int) -> {
         FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
           new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
         FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
@@ -202,9 +201,7 @@ class InitState extends FlxState
       #if FEATURE_DISCORD_RPC
       DiscordClient.instance.init();
 
-      lime.app.Application.current.onExit.add(function(exitCode) {
-        DiscordClient.instance.shutdown();
-      });
+      lime.app.Application.current.onExit.add(exitCode -> DiscordClient.instance.shutdown());
       #end
 
       //

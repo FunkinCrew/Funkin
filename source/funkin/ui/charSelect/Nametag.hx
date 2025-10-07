@@ -3,7 +3,7 @@ package funkin.ui.charSelect;
 import flixel.FlxSprite;
 import funkin.graphics.shaders.MosaicEffect;
 import flixel.util.FlxTimer;
-import funkin.util.TimerUtil;
+import funkin.util.TimerUtil.Sequence;
 
 @:nullSafety
 class Nametag extends FlxSprite

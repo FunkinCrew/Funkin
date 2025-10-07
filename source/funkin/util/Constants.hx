@@ -1,6 +1,5 @@
 package funkin.util;
 
-import flixel.system.FlxBasePreloader;
 import flixel.util.FlxColor;
 import funkin.data.song.SongData.SongTimeFormat;
 import lime.app.Application;

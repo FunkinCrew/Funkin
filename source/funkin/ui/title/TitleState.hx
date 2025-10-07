@@ -10,8 +10,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
-import flixel.util.typeLimit.NextState;
-import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
@@ -20,19 +18,10 @@ import funkin.graphics.shaders.TitleOutline;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 import openfl.Assets;
-import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
-import openfl.events.MouseEvent;
-import openfl.events.NetStatusEvent;
-import openfl.media.Video;
-import openfl.net.NetStream;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
-import funkin.ui.freeplay.FreeplayState;
-import openfl.display.BlendMode;
-import funkin.save.Save;
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
@@ -64,7 +53,7 @@ class TitleState extends MusicBeatState
 
     // DEBUG BULLSHIT
 
-    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
+    if (!initialized) new FlxTimer().start(1, (tmr:FlxTimer) -> {
       startIntro();
     });
     else
@@ -181,7 +170,6 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
-    trace('Starting attract timer');
     attractTimer = new FlxTimer().start(Constants.TITLE_ATTRACT_DELAY, (_:FlxTimer) -> moveToAttract());
   }
 
@@ -191,7 +179,7 @@ class TitleState extends MusicBeatState
   function moveToAttract():Void
   {
     FlxG.sound.music.fadeOut(2.0, 0);
-    FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function() {
+    FlxG.camera.fade(FlxColor.BLACK, 2.0, false, () -> {
       FlxG.switchState(() -> new AttractState());
     });
   }
@@ -217,7 +205,7 @@ class TitleState extends MusicBeatState
     var fullText:String = Assets.getText(Paths.txt('introText'));
 
     // Split into lines and remove empty lines
-    var firstArray:Array<String> = fullText.split('\n').filter(function(s:String) return s != '');
+    var firstArray:Array<String> = fullText.split('\n').filter((s:String) -> return s != '');
     var swagGoodArray:Array<Array<String>> = [];
 
     for (i in firstArray)
@@ -311,7 +299,7 @@ class TitleState extends MusicBeatState
       funkin.api.newgrounds.Events.logStartGame();
       #end
 
-      new FlxTimer().start(2, function(tmr:FlxTimer) {
+      new FlxTimer().start(2, (tmr:FlxTimer) -> {
         moveToMainMenu();
       });
     }
@@ -341,11 +329,6 @@ class TitleState extends MusicBeatState
     FlxG.switchState(() -> new MainMenuState());
   }
 
-  override function draw()
-  {
-    super.draw();
-  }
-
   var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
   var curCheatPos:Int = 0;
   var cheatActive:Bool = false;
@@ -367,15 +350,11 @@ class TitleState extends MusicBeatState
     }
     else
       curCheatPos = 0;
-
-    trace(input);
   }
 
   function startCheat():Void
   {
     cheatActive = true;
-
-    var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
 
     FunkinSound.playMusic('girlfriendsRingtone',
       {

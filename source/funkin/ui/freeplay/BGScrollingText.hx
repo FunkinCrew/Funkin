@@ -57,7 +57,7 @@ class BGScrollingText extends FlxSpriteGroup
     {
       @:privateAccess
       sourceText.regenGraphic();
-      grpTexts.forEach(function(txt:FlxSprite) {
+      grpTexts.forEach((txt:FlxSprite) -> {
         txt.loadGraphic(sourceText.graphic);
         txt.updateHitbox();
       });
@@ -112,12 +112,12 @@ class BGScrollingText extends FlxSpriteGroup
 
   function sortTextShit():Void
   {
-    grpTexts.sort(function(Order:Int, Obj1:FlxObject, Obj2:FlxObject) {
+    grpTexts.sort((Order:Int, Obj1:FlxObject, Obj2:FlxObject) -> {
       return FlxSort.byValues(Order, Obj1.x, Obj2.x);
     });
   }
 
-  override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
     sourceText = FlxDestroyUtil.destroy(sourceText);

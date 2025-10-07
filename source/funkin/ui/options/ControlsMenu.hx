@@ -175,7 +175,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     var margin = 100;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     menuCamera.minScrollY = 0;
-    controlGrid.onChange.add(function(selected) {
+    controlGrid.onChange.add((selected) -> {
       camFollow.y = selected.y;
 
       labels.forEach((label) -> label.alpha = 0.6);
@@ -265,7 +265,6 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     for (item in controlGrid.members)
       item.updateDevice(currentDevice);
 
-    var inputName = device == Keys ? "key" : "button";
     var cancel = device == Keys ? "Escape" : "Back";
     // todo: alignment
     if (device == Keys)

@@ -25,7 +25,6 @@ import haxe.ui.containers.Grid;
 class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
-  var toolboxEventsDataFrame:Frame;
   var toolboxEventsDataGrid:Grid;
 
   var _initializing:Bool = true;
@@ -48,7 +47,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
   function initialize():Void
   {
-    toolboxEventsEventKind.onChange = function(event:UIEvent) {
+    toolboxEventsEventKind.onChange = (event:UIEvent) -> {
       if (event.data == null)
       {
         trace('ChartEditorEventDataToolbox: Event data is null');
@@ -89,7 +88,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     toolboxEventsEventKind.pauseEvent(UIEvent.CHANGE, true);
 
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
-    trace('ChartEditorEventDataToolbox - Starting event kind: ${startingEventValue}');
     toolboxEventsEventKind.value = startingEventValue;
 
     toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);
@@ -142,16 +140,16 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       {
         switch (field)
         {
-          case Std.isOfType(_, NumberStepper) => true:
+          case (_ is NumberStepper) => true:
             var numberStepper:NumberStepper = cast field;
             numberStepper.value = value;
-          case Std.isOfType(_, CheckBox) => true:
+          case (_ is CheckBox) => true:
             var checkBox:CheckBox = cast field;
             checkBox.selected = value;
-          case Std.isOfType(_, DropDown) => true:
+          case (_ is DropDown) => true:
             var dropDown:DropDown = cast field;
             dropDown.value = value;
-          case Std.isOfType(_, TextField) => true:
+          case (_ is TextField) => true:
             var textField:TextField = cast field;
             textField.text = value;
           default:
@@ -263,7 +261,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       target.addComponent(inputBox);
 
       // Update the value of the event data.
-      input.onChange = function(event:UIEvent) {
+      input.onChange = (event:UIEvent) -> {
         var value = event.target.value;
         if (field.type == ENUM)
         {
@@ -275,8 +273,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           var chk:CheckBox = cast event.target;
           value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
         }
-
-        trace('ChartEditorToolboxHandler.buildEventDataFormFromSchema() - ${event.target.id} = ${value}');
 
         // Edit the event data to place.
         if (value == null)

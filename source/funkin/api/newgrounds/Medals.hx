@@ -5,8 +5,6 @@ import io.newgrounds.objects.Medal as MedalData;
 import funkin.util.plugins.NewgroundsMedalPlugin;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
-import io.newgrounds.utils.MedalList;
-import haxe.Json;
 
 @:nullSafety
 class Medals
@@ -55,7 +53,7 @@ class Medals
         // We have to use a medal image from the game files. We use a Base64 encoded image that NG spits out.
         // TODO: Wait, don't they give us the medal icon?
 
-        var localMedalData:Null<MedalJSON> = medalJSON.filter(function(jsonMedal) {
+        var localMedalData:Null<MedalJSON> = medalJSON.filter((jsonMedal) -> {
           #if FEATURE_NEWGROUNDS_TESTING_MEDALS
           return medal == jsonMedal.idTest;
           #else

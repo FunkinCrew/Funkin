@@ -27,7 +27,6 @@ import flixel.FlxObject;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 /*
@@ -41,7 +40,7 @@ typedef ArrowData =
   // var debugText:FlxText;
   var beat:Float;
   var direction:Int; // 0 = left, 1 = down, 2 = up, 3 = right
-};
+}
 
 class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 {
@@ -162,7 +161,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     @param beat The beat at which to get the arrow.
     @return The ArrowData object containing the sprite and beat, or null if no arrow is found.
    */
-  public function getArrowAtBeat(beat:Float):ArrowData
+  public function getArrowAtBeat(beat:Float):Null<ArrowData>
   {
     for (arrow in arrows)
     {
@@ -284,14 +283,14 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     add(items = new TextMenuList());
     add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
 
-    offsetItem = createPrefItemNumber('Offset (Global)', 'Offset (Global)', function(value:Float) {
+    offsetItem = createPrefItemNumber('Offset (Global)', 'Offset (Global)', (value:Float) -> {
       Preferences.globalOffset = Std.int(value);
     }, null, Preferences.globalOffset, -1500, 1500, 1.0, 2, 5);
-    createButtonItem('Reset Offset', function() {
+    createButtonItem('Reset Offset', () -> {
       Preferences.globalOffset = 0;
       offsetItem.currentValue = Preferences.globalOffset;
     });
-    createButtonItem('Offset Calibration', function() {
+    createButtonItem('Offset Calibration', () -> {
       // Reset calibration state and start another one.
 
       @:privateAccess
@@ -326,7 +325,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       _gotMad = false;
     });
-    createButtonItem('Test', function() {
+    createButtonItem('Test', () -> {
       // Reset testing state and start another one.
       // We do not reset the offset here, so the player can test their current offset.
 
@@ -857,7 +856,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     var ind = 0;
     // Indent the selected item.
-    items.forEach(function(daItem:TextMenuItem) {
+    items.forEach((daItem:TextMenuItem) -> {
       // Initializing thy text width (if thou text present)
       var thyTextWidth:Int = 0;
       switch (Type.typeof(daItem))

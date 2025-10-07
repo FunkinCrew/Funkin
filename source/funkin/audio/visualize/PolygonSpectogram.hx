@@ -45,7 +45,7 @@ class PolygonSpectogram extends MeshRender
     vis = new VisShit(daSound);
   }
 
-  override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
 

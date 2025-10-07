@@ -1,12 +1,9 @@
 package funkin.play.components;
 
 import funkin.data.character.CharacterData;
-import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.graphics.FunkinSprite;
 import funkin.util.MathUtil;
 
@@ -23,7 +20,7 @@ import funkin.util.MathUtil;
  * 	 - Set `autoUpdate` to false to prevent the health icon from changing its own animations.
  *   - Once `autoUpdate` is false, you can manually call `playAnimation()` to play a specific animation.
  *     - i.e. `PlayState.instance.iconP1.playAnimation("losing")`
- *   - Scripts can also utilize all functionality that a normal FlxSprite would have access to, such as adding supplimental animations.
+ *   - Scripts can also utilize all functionality that a normal `FunkinSprite` would have access to, such as adding supplimental animations.
  *     - i.e. `PlayState.instance.iconP1.animation.addByPrefix("jumpscare", "jumpscare", 24, false);`
  * @author EliteMasterEric
  */
@@ -218,7 +215,7 @@ class HealthIcon extends FunkinSprite
   /**
    * Called by Flixel every frame. Includes logic to manage the currently playing animation.
    */
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

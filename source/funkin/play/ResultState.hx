@@ -738,7 +738,7 @@ class ResultState extends MusicBeatSubState
   var movingSongStuff:Bool = false;
   var speedOfTween:FlxPoint = FlxPoint.get(-1, 1);
 
-  override function draw():Void
+  override public function draw():Void
   {
     super.draw();
 
@@ -949,7 +949,7 @@ class ResultState extends MusicBeatSubState
       FlxTween.tween(rankBg, {alpha: 1}, 0.5,
         {
           ease: FlxEase.expoOut,
-          onComplete: function(_) {
+          onComplete: (_) -> {
             requestReview();
 
             if (targetStateFactory != null)
@@ -963,7 +963,7 @@ class ResultState extends MusicBeatSubState
             }
             else
             {
-              FlxG.signals.preStateSwitch.addOnce(function() {
+              FlxG.signals.preStateSwitch.addOnce(() -> {
                 #if ios
                 trace(DeviceUtil.iPhoneNumber);
                 if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
@@ -993,7 +993,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        FlxG.signals.preStateSwitch.addOnce(function() {
+        FlxG.signals.preStateSwitch.addOnce(() -> {
           #if ios
           trace(DeviceUtil.iPhoneNumber);
           if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
@@ -1081,4 +1081,4 @@ typedef ResultsStateParams =
    * The previous score data, used for rank comparision.
    */
   var ?prevScoreData:SaveScoreData;
-};
+}

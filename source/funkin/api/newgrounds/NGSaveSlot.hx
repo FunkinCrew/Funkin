@@ -1,7 +1,6 @@
 package funkin.api.newgrounds;
 
 #if FEATURE_NEWGROUNDS
-import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.objects.SaveSlot;
 import io.newgrounds.Call.CallError;
 import io.newgrounds.objects.events.Outcome;
@@ -63,7 +62,7 @@ class NGSaveSlot
 
     try
     {
-      ngSaveSlot?.save(encodedData, function(outcome:Outcome<CallError>) {
+      ngSaveSlot?.save(encodedData, (outcome:Outcome<CallError>) -> {
         switch (outcome)
         {
           case SUCCESS:
@@ -85,7 +84,7 @@ class NGSaveSlot
   {
     try
     {
-      ngSaveSlot?.load(function(outcome:SaveSlotOutcome):Void {
+      ngSaveSlot?.load((outcome:SaveSlotOutcome) -> {
         switch (outcome)
         {
           case SUCCESS(value):
@@ -127,7 +126,7 @@ class NGSaveSlot
   {
     try
     {
-      ngSaveSlot?.clear(function(outcome:Outcome<CallError>) {
+      ngSaveSlot?.clear((outcome:Outcome<CallError>) -> {
         switch (outcome)
         {
           case SUCCESS:

@@ -227,7 +227,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     FlxTween.tween(hsv, {hue: 0, saturation: 0, value: 0.5}, 0.5);
 
-    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+    hitboxShowcases.forEach((hitboxShowcase:HitboxShowcase) -> {
       hitboxShowcase.visible = false;
     });
 
@@ -237,7 +237,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     addHitbox(true, false, availableSchemes[currentIndex]);
 
-    hitbox.forEachAlive(function(hint:FunkinHint) {
+    hitbox.forEachAlive((hint:FunkinHint) -> {
       if (availableSchemes[currentIndex] == FunkinHitboxControlSchemes.Arrows) hint.alpha = 1;
 
       if (!hint.deadZones.contains(cast(currentButton.body, FunkinSprite))) hint.deadZones.push(cast(currentButton.body, FunkinSprite));
@@ -253,7 +253,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     FlxTween.tween(hsv, {hue: -0.6, saturation: 0.9, value: 3.6}, 0.5);
 
-    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+    hitboxShowcases.forEach((hitboxShowcase:HitboxShowcase) -> {
       hitboxShowcase.visible = true;
     });
 
@@ -285,7 +285,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
 
     schemeNameText.text = availableSchemes[currentIndex];
 
-    hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase) {
+    hitboxShowcases.forEach((hitboxShowcase:HitboxShowcase) -> {
       hitboxShowcase.selectionIndex = currentIndex;
     });
   }

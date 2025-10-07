@@ -6,7 +6,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup;
-import flixel.util.FlxColor;
 
 enum DotType
 {
@@ -63,7 +62,7 @@ class DifficultyDot extends FlxSpriteGroup
     pulse.visible = false;
     add(pulse);
 
-    pulse.animation.onFrameChange.add(function(animName:String, frameNumber:Int, frameIndex:Int) {
+    pulse.animation.onFrameChange.add((animName:String, frameNumber:Int, frameIndex:Int) -> {
       interpolateColor();
     });
   }
@@ -224,10 +223,5 @@ class DifficultyDot extends FlxSpriteGroup
 
     fadeTween = FlxTween.tween(dot, {alpha: 0}, 0.25, {ease: FlxEase.quartOut});
     pulse.alpha = 0;
-  }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
   }
 }

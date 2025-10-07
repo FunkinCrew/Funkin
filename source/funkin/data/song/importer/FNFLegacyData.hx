@@ -50,7 +50,7 @@ typedef LegacyScrollSpeeds =
   public var ?easy:Float;
   public var ?normal:Float;
   public var ?hard:Float;
-};
+}
 
 typedef LegacyNoteData =
 {
@@ -68,7 +68,7 @@ typedef LegacyNoteData =
    * The hard difficulty.
    */
   public var ?hard:Array<LegacyNoteSection>;
-};
+}
 
 typedef LegacyNoteSection =
 {

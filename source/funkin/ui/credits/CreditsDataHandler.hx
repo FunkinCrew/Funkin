@@ -61,7 +61,7 @@ class CreditsDataHandler
           ]
         }
       ]
-    };
+    }
   }
 
   public static function fetchBackerEntries():Array<String>
@@ -103,12 +103,12 @@ class CreditsDataHandler
     return {
       fileName: CREDITS_DATA_PATH,
       contents: rawJson
-    };
+    }
     #else
     return {
       fileName: CREDITS_DATA_PATH,
       contents: null
-    };
+    }
     #end
   }
 

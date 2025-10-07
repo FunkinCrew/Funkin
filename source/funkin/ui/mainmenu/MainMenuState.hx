@@ -14,7 +14,6 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
-import funkin.util.SwipeUtil;
 import funkin.util.InputUtil;
 import flixel.tweens.FlxTween;
 import funkin.ui.MusicBeatState;
@@ -31,7 +30,6 @@ import funkin.ui.Prompt;
 import funkin.util.WindowUtil;
 import funkin.mobile.ui.FunkinButton;
 import funkin.util.MathUtil;
-import funkin.util.TouchUtil;
 import funkin.api.newgrounds.Referral;
 import funkin.ui.mainmenu.UpgradeSparkle;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -156,7 +154,7 @@ class MainMenuState extends MusicBeatState
       startExitState(() -> new StoryMenuState());
     });
 
-    createMenuItem('freeplay', 'mainmenu/freeplay', function() {
+    createMenuItem('freeplay', 'mainmenu/freeplay', () -> {
       persistentDraw = true;
       persistentUpdate = false;
       rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
@@ -202,7 +200,7 @@ class MainMenuState extends MusicBeatState
     {
       add(upgradeSparkles);
 
-      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
+      createMenuItem('upgrade', 'mainmenu/upgrade', () -> {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
         uiStateMachine.transition(Idle);
@@ -212,12 +210,12 @@ class MainMenuState extends MusicBeatState
 
     if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
     {
-      createMenuItem('options', 'mainmenu/options', function() {
+      createMenuItem('options', 'mainmenu/options', () -> {
         startExitState(() -> new funkin.ui.options.OptionsState());
       });
     }
 
-    createMenuItem('credits', 'mainmenu/credits', function() {
+    createMenuItem('credits', 'mainmenu/credits', () -> {
       startExitState(() -> new funkin.ui.credits.CreditsState());
     });
 
@@ -266,11 +264,9 @@ class MainMenuState extends MusicBeatState
     subStateClosed.add(_ -> resetCamStuff(false));
 
     subStateOpened.add((sub:FlxSubState) -> {
-      if (Std.isOfType(sub, FreeplayState))
+      if (sub is FreeplayState)
       {
-        FlxTimer.wait(0.5, () -> {
-          magenta.visible = false;
-        });
+        FlxTimer.wait(0.5, () -> magenta.visible = false);
       }
     });
 
@@ -363,7 +359,7 @@ class MainMenuState extends MusicBeatState
     buttonGrp.push(item);
   }
 
-  override function closeSubState():Void
+  override public function closeSubState():Void
   {
     magenta.visible = false;
 
@@ -412,7 +408,7 @@ class MainMenuState extends MusicBeatState
     uiStateMachine.transition(Interacting);
     persistentUpdate = false;
 
-    prompt.closeCallback = function() {
+    prompt.closeCallback = () -> {
       // in our closeSubstate override, we set the uiStateMachine, so no need to set here
       if (onClose != null) onClose();
     }

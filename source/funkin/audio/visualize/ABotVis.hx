@@ -44,7 +44,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
       volumes.push(0.0);
 
       // Sum the offsets up to the current index
-      var sum = function(num:Float, total:Float) return total += num;
+      var sum = (num:Float, total:Float) -> return total += num;
       var posX:Float = positionX.slice(0, index).fold(sum, 0);
       var posY:Float = positionY.slice(0, index).fold(sum, 0);
 
@@ -89,20 +89,12 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     analyzer = null;
   }
 
-  var visTimer:Float = -1;
-  var visTimeMax:Float = 1 / 30;
-
-  override function update(elapsed:Float)
-  {
-    super.update(elapsed);
-  }
-
   static inline function min(x:Int, y:Int):Int
   {
     return x > y ? y : x;
   }
 
-  override function draw()
+  override public function draw()
   {
     super.draw();
     drawFFT();

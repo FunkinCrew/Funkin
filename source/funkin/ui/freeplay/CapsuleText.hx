@@ -4,7 +4,6 @@ import openfl.filters.BitmapFilterQuality;
 import flixel.text.FlxText;
 import flixel.group.FlxSpriteGroup;
 import funkin.graphics.shaders.GaussianBlurShader;
-import funkin.graphics.shaders.LeftMaskShader;
 import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
@@ -20,8 +19,6 @@ class CapsuleText extends FlxSpriteGroup
   var whiteText:FlxText;
 
   public var text(default, set):Null<String>;
-
-  var maskShaderSongName:LeftMaskShader = new LeftMaskShader();
 
   public var clipWidth(default, set):Int = 255;
 
@@ -138,12 +135,12 @@ class CapsuleText extends FlxSpriteGroup
     var distToMove:Float = whiteText.width - clipWidth;
     moveTween = FlxTween.tween(whiteText.offset, {x: distToMove}, 2,
       {
-        onUpdate: function(_) {
+        onUpdate: (_) -> {
           whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
           blurredText.offset = whiteText.offset;
           blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
         },
-        onComplete: function(_) {
+        onComplete: (_) -> {
           moveTimer.start(0.3, (timer) -> {
             moveTextLeft();
           });
@@ -156,12 +153,12 @@ class CapsuleText extends FlxSpriteGroup
   {
     moveTween = FlxTween.tween(whiteText.offset, {x: 0}, 2,
       {
-        onUpdate: function(_) {
+        onUpdate: (_) -> {
           whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
           blurredText.offset = whiteText.offset;
           blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
         },
-        onComplete: function(_) {
+        onComplete: (_) -> {
           moveTimer.start(0.3, (timer) -> {
             moveTextRight();
           });
@@ -213,10 +210,5 @@ class CapsuleText extends FlxSpriteGroup
       ];
     }
     flickerState = !flickerState;
-  }
-
-  override function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
   }
 }

@@ -154,7 +154,7 @@ class CLIUtil
           shouldLoadSong: false,
           songPath: null
         }
-    };
+    }
   }
 
   /**
@@ -168,11 +168,11 @@ class CLIUtil
 
     if (args == null || args.length == 0) return result;
 
-    return args.map(function(arg:String):String {
+    return args.map((arg:String) -> {
       if (arg == null) return '';
 
       return arg.trim();
-    }).filter(function(arg:String):Bool {
+    }).filter((arg:String) -> {
       return arg != null && arg != '';
     });
   }
@@ -191,16 +191,16 @@ typedef CLIChartParams =
 {
   var shouldLoadChart:Bool;
   var chartPath:Null<String>;
-};
+}
 
 typedef CLIStageParams =
 {
   var shouldLoadStage:Bool;
   var stagePath:Null<String>;
-};
+}
 
 typedef CLISongParams =
 {
   var shouldLoadSong:Bool;
   var songPath:Null<String>;
-};
+}

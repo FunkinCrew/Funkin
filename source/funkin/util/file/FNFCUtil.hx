@@ -97,7 +97,7 @@ class FNFCUtil
         startTimestamp: 0,
         playbackRate: 1,
         overrideMusic: true,
-      }, false, true, function(targetState) {
+      }, false, true, (targetState) -> {
         // Apply the instrumental and the vocals manually after the state loads.
         // overrideMusic ensures that the game doesn't attempt to load music from the game's assets folder.
         @:nullSafety(Off)
