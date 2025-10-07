@@ -54,6 +54,19 @@ class InputUtil
     return keyArray.exists(isKeyNotPressed);
   }
 
+  /**
+   * Returns a `FlxKey` based on the given key name.
+   *
+   * @param name The name of the key in string format
+   * @return The matching `FlxKey` value, or `FlxKey.NONE` if the string is invalid.
+   *
+   * TODO: Remove this once Polymod supports any abstract class besides specific ones.
+   */
+  public static function getKeyByName(name:String):Null<FlxKey>
+  {
+    return FlxKey.fromString(name) ?? FlxKey.NONE;
+  }
+
   public static function getKeyName(id:Int):String
   {
     return switch (id)
