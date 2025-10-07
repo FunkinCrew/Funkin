@@ -520,7 +520,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     if (variationIds.length == 0) return [];
 
-    var diffFiltered:Array<String> = variationIds.map(function(variationId:String):Array<String> {
+    var diffFiltered:Array<String> = variationIds.map((variationId:String) -> {
       var metadata = _metadata.get(variationId);
       return metadata?.playData?.difficulties ?? [];
     })

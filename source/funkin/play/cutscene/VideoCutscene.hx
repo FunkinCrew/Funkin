@@ -160,7 +160,7 @@ class VideoCutscene
 
       vid.active = false;
 
-      vid.bitmap.onFormatSetup.add(function():Void {
+      vid.bitmap.onFormatSetup.add(() -> {
         if (vid.bitmap != null && vid.bitmap.bitmapData != null)
         {
           final scale:Float = Math.min(FlxG.width / vid.bitmap.bitmapData.width, FlxG.height / vid.bitmap.bitmapData.height);
@@ -171,7 +171,7 @@ class VideoCutscene
         }
       });
 
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+      vid.bitmap.onEncounteredError.add((msg:String) -> {
         finishVideo(0.5);
       });
 
@@ -342,7 +342,7 @@ class VideoCutscene
     FlxTween.tween(blackScreen, {alpha: 0}, transitionTime,
       {
         ease: FlxEase.quadInOut,
-        onComplete: function(twn:FlxTween) {
+        onComplete: (twn:FlxTween) -> {
           PlayState.instance.remove(blackScreen);
           blackScreen = null;
         }
@@ -350,7 +350,7 @@ class VideoCutscene
     FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime,
       {
         ease: FlxEase.quadInOut,
-        onComplete: function(twn:FlxTween) {
+        onComplete: (twn:FlxTween) -> {
           onVideoEnded.dispatch();
           onCutsceneFinish(cutsceneType);
         }
