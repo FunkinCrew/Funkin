@@ -697,7 +697,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var wasCursorOverHaxeUI:Bool = false;
 
   /**
-   * Set by ChartEditorDialogHandler, used to prevent background interaction while the dialog is open.
+   * Set by ChartEditorDialogHandler, used to prevent background interaction while a dialog is open.
    */
   var isHaxeUIDialogOpen:Bool = false;
 
@@ -2377,6 +2377,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
       this.loadSongAsTemplate(params.targetSongId, targetSongDifficulty, targetSongVariation);
+
+      // Set the scroll position to the current song time.
+      scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
+      currentScrollEase = scrollPositionInPixels;
+      moveSongToScrollPosition();
     }
     else
     {
@@ -3051,7 +3056,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
     menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null);
-    menubarItemExit.onClick = _ -> quitChartEditor();
+    menubarItemExit.onClick = _ -> quitChartEditor(true);
 
     // Edit
     menubarItemUndo.onClick = _ -> undoLastCommand();
@@ -5750,20 +5755,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // CTRL + Q = Quit to Menu
     if (pressingControl() && FlxG.keys.justPressed.Q)
     {
-      quitChartEditor();
+      quitChartEditor(true);
     }
   }
 
   @:nullSafety(Off)
-  function quitChartEditor():Void
+  function quitChartEditor(exitPrompt:Bool = false):Void
   {
-    if (saveDataDirty)
+    if (saveDataDirty && exitPrompt)
     {
       this.openLeaveConfirmationDialog();
       return;
     }
 
-    writePreferences(false);
+    autoSave();
 
     this.hideAllToolboxes();
 
@@ -6126,7 +6131,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     PlayStatePlaylist.reset();
-    
+
     // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
@@ -7060,6 +7065,11 @@ typedef ChartEditorParams =
    * If non-null, load this variation immediately instead of the default variation.
    */
   var ?targetSongVariation:String;
+
+  /**
+   * If non-null, set this as the song position immediately instead of the default song position.
+   */
+  var ?targetSongPosition:Float;
 };
 
 /**

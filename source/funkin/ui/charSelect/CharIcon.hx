@@ -2,6 +2,7 @@ package funkin.ui.charSelect;
 
 import flixel.FlxSprite;
 
+@:nullSafety
 class CharIcon extends FlxSprite
 {
   public var locked:Bool = false;
