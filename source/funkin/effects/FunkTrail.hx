@@ -33,7 +33,7 @@ class FunkTrail extends FlxTrail
    */
   public final frameOffset:FlxPoint = FlxPoint.get();
 
-  override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 

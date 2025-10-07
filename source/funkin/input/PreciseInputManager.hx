@@ -13,8 +13,6 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.play.notes.NoteDirection;
 import funkin.util.FlxGamepadUtil;
 import haxe.Int64;
-import lime.ui.Gamepad as LimeGamepad;
-import lime.ui.GamepadAxis as LimeGamepadAxis;
 import lime.ui.GamepadButton as LimeGamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;

@@ -1,12 +1,5 @@
 package funkin.graphics.shaders;
 
-import flixel.system.FlxAssets.FlxShader;
-import flixel.util.FlxColor;
-import flixel.FlxSprite;
-import flixel.math.FlxAngle;
-import flixel.graphics.frames.FlxFrame;
-import openfl.display.BitmapData;
-
 /*
   A screenspace version of the DropShadowShader.. currently the only way to use this effect with
   FlxAnimate :(

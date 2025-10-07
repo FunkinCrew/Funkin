@@ -1,17 +1,13 @@
 package funkin.input;
 
 import flixel.input.gamepad.FlxGamepad;
-import flixel.util.FlxDirectionFlags;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
-import flixel.input.android.FlxAndroidKey;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 
 /**

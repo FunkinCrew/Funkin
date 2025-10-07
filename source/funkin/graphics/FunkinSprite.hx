@@ -11,7 +11,6 @@ import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.FlxCamera;
-import funkin.FunkinMemory;
 
 using StringTools;
 
@@ -200,42 +199,6 @@ class FunkinSprite extends FlxSprite
   public static function isTextureCached(key:String):Bool
   {
     return FlxG.bitmap.get(key) != null;
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cacheTexture(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.permanentCacheTexture() instead")
-  public static function permanentCacheTexture(key:String):Void
-  {
-    @:privateAccess FunkinMemory.permanentCacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cacheSparrow(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cachePacker(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.preparePurgeTextureCache() instead")
-  public static function preparePurgeCache():Void
-  {
-    FunkinMemory.preparePurgeTextureCache();
-  }
-
-  @:deprecated("Use FunkinMemory.purgeCache() instead")
-  public static function purgeCache():Void
-  {
-    FunkinMemory.purgeCache();
   }
 
   static function isGraphicCached(graphic:FlxGraphic):Bool

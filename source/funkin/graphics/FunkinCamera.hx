@@ -1,6 +1,5 @@
 package funkin.graphics;
 
-import flash.geom.ColorTransform;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
@@ -16,6 +15,7 @@ import openfl.display.BlendMode;
 import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
 import openfl.filters.ShaderFilter;
+import openfl.geom.ColorTransform;
 
 /**
  * A FlxCamera with additional powerful features:
@@ -185,7 +185,7 @@ class FunkinCamera extends FlxCamera
     }
   }
 
-  override function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
+  override public function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
       ?shader:FlxShader):Void
   {
     if (!shouldDraw) return;
@@ -215,7 +215,7 @@ class FunkinCamera extends FlxCamera
     }
   }
 
-  override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
     disposeTextures();
