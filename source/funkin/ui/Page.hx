@@ -2,7 +2,6 @@ package funkin.ui;
 
 import flixel.group.FlxGroup;
 import flixel.FlxG;
-import flixel.FlxSubState;
 import flixel.util.FlxSignal;
 import funkin.input.Controls;
 import funkin.audio.FunkinSound;
@@ -27,8 +26,6 @@ class Page<T:PageName> extends FlxGroup
   inline function get_controls()
     return PlayerSettings.player1.controls;
 
-  var subState:FlxSubState;
-
   inline function switchPage(name:T)
   {
     onSwitch.dispatch(name);
@@ -39,7 +36,7 @@ class Page<T:PageName> extends FlxGroup
     onExit.dispatch();
   }
 
-  override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
 
@@ -71,7 +68,7 @@ class Page<T:PageName> extends FlxGroup
     FlxG.state.openSubState(prompt);
   }
 
-  override function destroy()
+  override public function destroy()
   {
     super.destroy();
     onSwitch.removeAll();

@@ -613,9 +613,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     {
       var targetScrollPos:Float = waveformMusic.waveform.waveformData.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
       // waveformScrollview.hscrollPos = targetScrollPos;
-      var prevPlayheadAbsolutePos = playheadAbsolutePos;
       playheadAbsolutePos = targetScrollPos;
-      var playheadDiff = playheadAbsolutePos - prevPlayheadAbsolutePos;
 
       // BEHAVIOR C.
       // Copy Audacity!

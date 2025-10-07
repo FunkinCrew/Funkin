@@ -31,7 +31,7 @@ class Prompt extends flixel.FlxSubState
     field.scrollFactor.set(0, 0);
   }
 
-  override function create()
+  override public function create()
   {
     super.create();
 

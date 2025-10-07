@@ -115,7 +115,6 @@ class Cursor
       offsetX: 0,
       offsetY: 0,
     };
-  static var assetCursorTextVertical:Null<BitmapData> = null;
 
   public static final CURSOR_ZOOM_IN_PARAMS:CursorParams =
     {

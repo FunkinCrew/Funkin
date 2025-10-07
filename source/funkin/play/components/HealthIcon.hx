@@ -215,7 +215,7 @@ class HealthIcon extends FunkinSprite
   /**
    * Called by Flixel every frame. Includes logic to manage the currently playing animation.
    */
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

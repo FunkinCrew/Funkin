@@ -8,13 +8,11 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxSpriteUtil;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
-import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
 import flixel.group.FlxSpriteGroup;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
 import funkin.modding.events.ScriptEvent;
-import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
 
 /**

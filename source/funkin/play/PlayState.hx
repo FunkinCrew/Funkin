@@ -47,8 +47,6 @@ import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.NoteSprite;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.Strumline;
-import funkin.play.notes.SustainTrail;
-import funkin.play.notes.NoteVibrationsHandler;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
@@ -58,13 +56,10 @@ import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.LoadingState;
-import funkin.util.SerializerUtil;
-import funkin.util.HapticUtil;
 import funkin.util.GRhythmUtil;
 import haxe.Int64;
 #if mobile
 import funkin.util.TouchUtil;
-import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #if FEATURE_MOBILE_ADVERTISEMENTS
@@ -434,11 +429,6 @@ class PlayState extends MusicBeatSubState
    * Used to provide smooth animations based on linear interpolation of the player's health.
    */
   var healthLerp:Float = Constants.HEALTH_STARTING;
-
-  /**
-   * How long the user has held the "Skip Video Cutscene" button for.
-   */
-  var skipHeldTimer:Float = 0;
 
   /**
    * Whether the PlayState was started with instrumentals and vocals already provided.
@@ -1724,7 +1714,7 @@ class PlayState extends MusicBeatSubState
     LoadingState.loadPlayState(lastParams);
   }
 
-  override function stepHit():Bool
+  override public function stepHit():Bool
   {
     if (criticalFailure || !initialized) return false;
 
@@ -1742,7 +1732,7 @@ class PlayState extends MusicBeatSubState
     return true;
   }
 
-  override function beatHit():Bool
+  override public function beatHit():Bool
   {
     if (criticalFailure || !initialized) return false;
 

@@ -93,7 +93,7 @@ class LetterSort extends FlxSpriteGroup
   inline function get_controls():Controls
     return PlayerSettings.player1.controls;
 
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
     #if FEATURE_TOUCH_CONTROLS

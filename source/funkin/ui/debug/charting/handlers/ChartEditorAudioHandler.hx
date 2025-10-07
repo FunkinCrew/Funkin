@@ -7,7 +7,6 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
 import funkin.util.assets.SoundUtil;
 import funkin.audio.waveform.WaveformData;
-import funkin.audio.waveform.WaveformDataParser;
 import funkin.audio.waveform.WaveformSprite;
 import flixel.util.FlxColor;
 import haxe.io.Bytes;
@@ -337,7 +336,6 @@ class ChartEditorAudioHandler
   {
     var zipEntries = [];
 
-    var vocalTrackIds = state.audioVocalTrackData.keys().array();
     for (key in state.audioVocalTrackData.keys())
     {
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);

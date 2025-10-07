@@ -2,7 +2,6 @@ package funkin.ui.debug.charting.components;
 
 import funkin.data.event.SongEventRegistry;
 import flixel.graphics.frames.FlxAtlasFrames;
-import openfl.display.BitmapData;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -27,11 +26,6 @@ class ChartEditorEventSprite extends FlxSprite
    * You can set this to null to kill the sprite and flag it for recycling.
    */
   public var eventData(default, set):Null<SongEventData> = null;
-
-  /**
-   * The image used for all song events. Cached for performance.
-   */
-  static var eventSpriteBasic:Null<BitmapData> = null;
 
   public var overrideStepTime(default, set):Null<Float> = null;
 

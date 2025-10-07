@@ -33,8 +33,6 @@ class Countdown
 
   static var noteStyle:NoteStyle;
 
-  static var fallbackNoteStyle:Null<NoteStyle>;
-
   /**
    * The currently running countdown. This will be null if there is no countdown running.
    */
@@ -249,7 +247,7 @@ class Countdown
   /**
    * Retrieves the sound file to use for this step of the countdown.
    */
-  public static function playCountdownSound(step:CountdownStep):FunkinSound
+  public static function playCountdownSound(step:CountdownStep):Null<FunkinSound>
   {
     fetchNoteStyle();
     var path = noteStyle.getCountdownSoundPath(step);

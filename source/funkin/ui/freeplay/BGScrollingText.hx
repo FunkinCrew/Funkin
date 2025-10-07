@@ -117,7 +117,7 @@ class BGScrollingText extends FlxSpriteGroup
     });
   }
 
-  override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
     sourceText = FlxDestroyUtil.destroy(sourceText);

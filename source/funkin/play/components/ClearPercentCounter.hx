@@ -53,7 +53,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
 
   var tmr:Float = 0;
 
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

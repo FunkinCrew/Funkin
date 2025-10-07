@@ -359,7 +359,7 @@ class MainMenuState extends MusicBeatState
     buttonGrp.push(item);
   }
 
-  override function closeSubState():Void
+  override public function closeSubState():Void
   {
     magenta.visible = false;
 

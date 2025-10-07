@@ -25,7 +25,6 @@ import haxe.ui.containers.Grid;
 class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
-  var toolboxEventsDataFrame:Frame;
   var toolboxEventsDataGrid:Grid;
 
   var _initializing:Bool = true;

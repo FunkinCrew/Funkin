@@ -21,7 +21,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
    */
   var offsets:Array<Int> = [0, 0];
 
-  override public function new(noteStyle:NoteStyle)
+  public function new(noteStyle:NoteStyle)
   {
     super();
 

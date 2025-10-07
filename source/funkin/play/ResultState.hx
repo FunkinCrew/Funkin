@@ -738,7 +738,7 @@ class ResultState extends MusicBeatSubState
   var movingSongStuff:Bool = false;
   var speedOfTween:FlxPoint = FlxPoint.get(-1, 1);
 
-  override function draw():Void
+  override public function draw():Void
   {
     super.draw();
 

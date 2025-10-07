@@ -627,7 +627,7 @@ class SongMenuItem extends FlxSpriteGroup
     setVisibleGrp(true);
   }
 
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     if (impactThing != null) impactThing.angle = capsule.angle;
 

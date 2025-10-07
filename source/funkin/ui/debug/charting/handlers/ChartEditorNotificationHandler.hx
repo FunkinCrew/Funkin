@@ -105,8 +105,6 @@ class ChartEditorNotificationHandler
   static function sendNotification(state:ChartEditorState, title:String, body:String, ?type:NotificationType,
       ?actions:Array<NotificationActionData>):Notification
   {
-    var actionNames:Array<String> = actions == null ? [] : actions.map(action -> action.text);
-
     var notif = NotificationManager.instance.addNotification(
       {
         title: title,

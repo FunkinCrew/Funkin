@@ -9,7 +9,6 @@ import funkin.util.SortUtil;
 import haxe.ui.components.Label;
 import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
-import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.events.MouseEvent;
 
 /**

@@ -746,7 +746,6 @@ class PauseSubState extends MusicBeatSubState
     // If targetMode is null, keep the current mode.
     if (targetMode == null) targetMode = this.currentMode;
 
-    var previousMode:PauseMode = this.currentMode;
     this.currentMode = targetMode;
 
     resetSelection();

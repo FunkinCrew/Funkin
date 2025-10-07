@@ -1,8 +1,5 @@
 package funkin.ui.debug.charting.commands;
 
-import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongDataUtils;
-
 /**
  * Command that sets the start time or end time of the Freeplay preview.
  */

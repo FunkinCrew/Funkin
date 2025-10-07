@@ -2301,7 +2301,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
-  override function create():Void
+  override public function create():Void
   {
     // super.create() must be called first, the HaxeUI components get created here.
     super.create();

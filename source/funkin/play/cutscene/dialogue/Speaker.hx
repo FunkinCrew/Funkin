@@ -203,7 +203,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
    * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
    * @param name
    */
-  function correctAnimationName(name:String):String
+  function correctAnimationName(name:String):<String>
   {
     // If the animation exists, we're good.
     if (hasAnimation(name)) return name;

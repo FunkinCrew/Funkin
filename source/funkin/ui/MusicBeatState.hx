@@ -1,18 +1,15 @@
 package funkin.ui;
 
 import funkin.modding.IScriptedClass.IEventHandler;
-import funkin.ui.mainmenu.MainMenuState;
 import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxSort;
-import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
-import funkin.util.WindowUtil;
 import funkin.input.Controls;
 #if mobile
 import funkin.graphics.FunkinCamera;
@@ -155,31 +152,21 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     Conductor.stepHit.remove(this.stepHit);
   }
 
-  function handleFunctionControls():Void
-  {
-    // Emergency exit button.
-    if (FlxG.keys.justPressed.F4)
-    {
-      FlxG.switchState(() -> new MainMenuState());
-      WindowUtil.setWindowTitle('Friday Night Funkin\'');
-    }
-  }
-
-  override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
   }
 
-  override function onFocus():Void
+  override public function onFocus():Void
   {
     super.onFocus();
 
     dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
   }
 
-  override function onFocusLost():Void
+  override public function onFocusLost():Void
   {
     super.onFocusLost();
 
@@ -209,14 +196,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public function dispatchEvent(event:ScriptEvent)
   {
     ModuleHandler.callEvent(event);
-  }
-
-  function reloadAssets()
-  {
-    PolymodHandler.forceReloadAssets();
-
-    // Create a new instance of the current state, so old data is cleared.
-    FlxG.resetState();
   }
 
   public function stepHit():Bool

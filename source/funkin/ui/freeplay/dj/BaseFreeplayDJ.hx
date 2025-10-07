@@ -84,7 +84,6 @@ class BaseFreeplayDJ extends FlxAtlasSprite
   final playableCharData:Null<PlayerFreeplayDJData>;
 
   var timeIdling:Float = 0;
-  var lowPumpLoopPoint:Int = 4;
 
   public function new(x:Float, y:Float, characterId:String)
   {
@@ -95,8 +94,6 @@ class BaseFreeplayDJ extends FlxAtlasSprite
 
     super(x, y, null, null, false);
   }
-
-  function onFinishAnim(name:String):Void {}
 
   public function onCharSelectComplete():Void
   {
@@ -302,7 +299,7 @@ class FlixelFramedFreeplayDJ extends BaseFreeplayDJ
     return animation?.curAnim?.name ?? "";
   }
 
-  override function updateAnimation(elapsed:Float):Void
+  override public function updateAnimation(elapsed:Float):Void
   {
     animation.update(elapsed);
   }

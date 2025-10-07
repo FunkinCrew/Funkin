@@ -161,7 +161,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     @param beat The beat at which to get the arrow.
     @return The ArrowData object containing the sprite and beat, or null if no arrow is found.
    */
-  public function getArrowAtBeat(beat:Float):ArrowData
+  public function getArrowAtBeat(beat:Float):Null<ArrowData>
   {
     for (arrow in arrows)
     {

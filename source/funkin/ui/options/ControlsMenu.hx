@@ -265,7 +265,6 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     for (item in controlGrid.members)
       item.updateDevice(currentDevice);
 
-    var inputName = device == Keys ? "key" : "button";
     var cancel = device == Keys ? "Escape" : "Back";
     // todo: alignment
     if (device == Keys)

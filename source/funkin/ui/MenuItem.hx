@@ -36,7 +36,7 @@ class MenuItem extends FlxSpriteGroup
     isFlashing = true;
   }
 
-  override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
     y = MathUtil.smoothLerpPrecision(y, (targetY * 120) + 480, elapsed, 0.451);

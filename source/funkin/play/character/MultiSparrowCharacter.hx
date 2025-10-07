@@ -23,7 +23,7 @@ class MultiSparrowCharacter extends BaseCharacter
     super(id, CharacterRenderType.MultiSparrow);
   }
 
-  override function onCreate(event:ScriptEvent):Void
+  override public function onCreate(event:ScriptEvent):Void
   {
     // Display a custom scope for debugging purposes.
     #if FEATURE_DEBUG_TRACY

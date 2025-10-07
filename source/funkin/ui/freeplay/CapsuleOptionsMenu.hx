@@ -170,7 +170,7 @@ class InstrumentalSelector extends FunkinSprite
     updateHitbox();
   }
 
-  override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     if (flipX && controls.UI_RIGHT_P) moveShitDown();
     if (!flipX && controls.UI_LEFT_P) moveShitDown();

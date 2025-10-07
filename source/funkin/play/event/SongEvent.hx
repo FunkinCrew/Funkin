@@ -32,7 +32,7 @@ class SongEvent
    * Retrieves the chart editor schema for this song event type.
    * @return The schema, or null if this event type does not have a schema.
    */
-  public function getEventSchema():SongEventSchema
+  public function getEventSchema():Null<SongEventSchema>
   {
     return null;
   }

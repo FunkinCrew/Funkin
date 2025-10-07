@@ -807,7 +807,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     return Sprite;
   }
 
-  override function draw():Void
+  override public function draw():Void
   {
     if (frameBufferMan != null)
     {
@@ -840,7 +840,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param applyFilters if this is `true`, the filters set to the camera will be applied to the resulting bitmap
    * @return the grabbed screen
    */
-  function grabScreen(applyFilters:Bool):BitmapData
+  function grabScreen(applyFilters:Bool):Null<BitmapData>
   {
     if (FlxG.camera is FunkinCamera)
     {

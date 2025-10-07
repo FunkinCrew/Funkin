@@ -74,12 +74,12 @@ class AtlasMenuItem extends MenuListItem
     }
   }
 
-  override function idle()
+  override public function idle()
   {
     changeAnim('idle');
   }
 
-  override function select()
+  override public function select()
   {
     changeAnim('selected');
   }
@@ -89,7 +89,7 @@ class AtlasMenuItem extends MenuListItem
     return animation.curAnim != null && animation.curAnim.name == "selected";
   }
 
-  override function destroy()
+  override public function destroy()
   {
     super.destroy();
     atlas = null;
