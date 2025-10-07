@@ -3,7 +3,7 @@ package funkin.ui.debug.stageeditor;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxObject;
-import flixel.addons.display.FlxTiledSprite;
+import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.shapes.FlxShapeCircle;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
@@ -78,6 +78,36 @@ class StageEditorState extends UIState
    * The base grid size for the stage editor.
    */
   public static final GRID_SIZE:Int = 10;
+
+  /**
+   * Step value you can change the object position with.
+   */
+  public static final BASE_STEPS:Array<Int> = [1, 2, 3, 5, 10, 25, 50, 100];
+
+  /**
+   * The default object step value.
+   */
+  public static final BASE_STEP:Int = 1;
+
+  /**
+   * The index of thet default object step value in the `BASE_STEPS` array.
+   */
+  public static final BASE_STEP_INDEX:Int = 0;
+
+  /**
+   * Angle step value you can change the object angle with.
+   */
+  public static final BASE_ANGLES:Array<Float> = [0.5, 1, 2, 5, 10, 15, 45, 75, 90, 180];
+
+  /**
+   * The default object angle change value.
+   */
+  public static final BASE_ANGLE:Float = 15;
+
+  /**
+   * The index of thet default object angle change value in the `BASE_ANGLES` array.
+   */
+  public static final BASE_ANGLE_INDEX:Int = 5;
 
   /**
    * Default positions of characters when creating a blank new stage.
@@ -177,16 +207,45 @@ class StageEditorState extends UIState
   var redoHistory:Array<StageEditorCommand> = [];
 
   /**
+   * The current move mode which detects which objects to move in the editor;
+   * `StageEditorMoveMode.OBJECTS` -> `Objects/Props`
+   * `StageEditorMoveMode.CHARACTERS` -> `Characters`
+   */
+  var currentMoveMode:StageEditorMoveMode = StageEditorMoveMode.OBJECTS;
+
+  /**
+   * The internal index what what object step is in use.
+   * Increment to make the object move more and decrement to make object move less.
+   */
+  var moveStepIndex:Int = BASE_STEP_INDEX;
+
+  /**
    * The step at which an object or character is moved.
    * E.g., if `moveStep` is 5, pressing the arrow keys will move the object by 5 pixels.
    */
-  var moveStep:Int = 1;
+  var moveStep(get, never):Int;
+
+  function get_moveStep():Int
+  {
+    return BASE_STEPS[moveStepIndex];
+  }
+
+  /**
+   * The internal index what what object value change is in use.
+   * Increment to make the object turn more and decrement to make object turn less.
+   */
+  var angleStepIndex:Int = BASE_ANGLE_INDEX;
 
   /**
    * The step at which an object or character is rotated.
    * E.g., if `angleStep` is 5, pressing the rotate buttons will rotate the object by 5 degrees.
    */
-  var angleStep:Float = 5.0;
+  var angleStep(get, never):Float;
+
+  function get_angleStep():Float
+  {
+    return BASE_ANGLES[angleStepIndex];
+  }
 
   /**
    * ==============================
@@ -680,11 +739,7 @@ class StageEditorState extends UIState
   override public function create():Void
   {
     super.create();
-    // WindowManager.instance.reset();
     if (FlxG.sound.music != null) FlxG.sound.music?.stop();
-    // WindowUtil.setWindowTitle("Friday Night Funkin\' Stage Editor");
-
-    // new StageEditorAssetDataHandler(this);
 
     // Show the mouse cursor.
     Cursor.show();
@@ -701,8 +756,8 @@ class StageEditorState extends UIState
 
     buildDefaultStageData();
 
-    this.updateTheme();
     buildGrid();
+    this.updateTheme();
 
     initCharacters();
     initVisuals();
@@ -751,11 +806,9 @@ class StageEditorState extends UIState
     {
       previousWorkingFilePaths = [currentWorkingFilePath].concat(save.stageEditorPreviousFiles);
     }
-    trace(previousWorkingFilePaths);
-    trace(currentWorkingFilePath);
 
-    moveStep = Std.parseInt(StringTools.replace(save.stageEditorMoveStep, "px", ""));
-    angleStep = save.stageEditorAngleStep;
+    moveStepIndex = BASE_STEPS.indexOf(Std.parseInt(StringTools.replace(save.stageEditorMoveStep, "px", "")));
+    angleStepIndex = BASE_ANGLES.indexOf(save.stageEditorAngleStep);
     currentTheme = save.stageEditorTheme;
   }
 
@@ -796,7 +849,8 @@ class StageEditorState extends UIState
         trace('Previously loaded stage file (${stagePath.toString()}) does not exist, disabling link...');
         menuItemRecentStage.disabled = true;
       }
-      else menuItemRecentStage.disabled = false;
+      else
+        menuItemRecentStage.disabled = false;
 
       menubarItemOpenRecent.addComponent(menuItemRecentStage);
     }
@@ -833,9 +887,7 @@ class StageEditorState extends UIState
    */
   function buildGrid():Void
   {
-    if (gridBitmap == null) throw 'ERROR: Tried to build grid, but gridBitmap is null! Check StageEditorThemeHandler.updateTheme().';
-
-    gridTiledSprite = new FlxTiledSprite(gridBitmap, gridBitmap.width, gridBitmap.height, true, true);
+    gridTiledSprite = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, FlxG.width, FlxG.height, true);
     gridTiledSprite.scrollFactor.set();
     add(gridTiledSprite);
   }
@@ -897,7 +949,7 @@ class StageEditorState extends UIState
       var floorLine = new FlxSprite().makeGraphic(FlxG.width * 10, 15, color);
       floorLine.screenCenter(X);
 
-      var positionMarker = new FlxShapeCircle(0, 0, 30, cast {thickness: 2, color: color }, color);
+      var positionMarker = new FlxShapeCircle(0, 0, 30, cast {thickness: 2, color: color}, color);
 
       var cameraBound = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, color);
 
@@ -936,6 +988,7 @@ class StageEditorState extends UIState
     }
 
     handleMenubar();
+    handleBottomBar();
 
     handleFileKeybinds();
     handleEditKeybinds();
@@ -943,15 +996,81 @@ class StageEditorState extends UIState
 
   function setupUIListeners():Void
   {
+    /**
+     * FILE
+     */
     menubarItemNewStage.onClick = _ -> this.openWelcomeDialog(true);
-    // other stuff here
+
+    /**
+     * EDIT
+     */
     menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
     menubarItemDelete.onClick = _ -> {
       if (selectedProp != null) performCommand(new RemoveObjectCommand(selectedProp));
-      else this.error('No Object Selected', 'Please select an object to delete.');
+      else
+        this.error('No Object Selected', 'Please select an object to delete.');
     };
+
+    /**
+     * VIEW
+     */
+    menubarItemThemeLight.onChange = function(event:UIEvent) {
+      if (event.target.value) currentTheme = StageEditorTheme.Light;
+    };
+    menubarItemThemeLight.selected = currentTheme == StageEditorTheme.Light;
+
+    menubarItemThemeDark.onChange = function(event:UIEvent) {
+      if (event.target.value) currentTheme = StageEditorTheme.Dark;
+    };
+    menubarItemThemeDark.selected = currentTheme == StageEditorTheme.Dark;
+
+    /**
+     * WINDOWS
+     */
     menubarItemWindowStage.onChange = event -> this.setToolboxState(STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
+
+    /**
+     * HELP
+     */
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
+
+    /**
+     * BOTTOM BAR
+     */
+    bottomBarModeText.onClick = _ -> {
+      currentMoveMode = currentMoveMode == StageEditorMoveMode.OBJECTS ? StageEditorMoveMode.CHARACTERS : StageEditorMoveMode.OBJECTS;
+    }
+
+    bottomBarMoveStepText.onClick = _ -> {
+      if (FlxG.keys.pressed.SHIFT)
+      {
+        moveStepIndex = BASE_STEP_INDEX;
+      }
+      else
+      {
+        moveStepIndex++;
+        if (moveStepIndex >= BASE_STEPS.length) moveStepIndex = 0;
+      }
+    }
+    bottomBarMoveStepText.onRightClick = _ -> {
+      moveStepIndex--;
+      if (moveStepIndex < 0) moveStepIndex = BASE_STEPS.length - 1;
+    }
+    bottomBarAngleStepText.onClick = _ -> {
+      if (FlxG.keys.pressed.SHIFT)
+      {
+        angleStepIndex = BASE_ANGLE_INDEX;
+      }
+      else
+      {
+        angleStepIndex++;
+        if (angleStepIndex >= BASE_ANGLES.length) angleStepIndex = 0;
+      }
+    }
+    bottomBarAngleStepText.onRightClick = _ -> {
+      angleStepIndex--;
+      if (angleStepIndex < 0) angleStepIndex = BASE_ANGLES.length - 1;
+    }
   }
 
   /**
@@ -1063,6 +1182,13 @@ class StageEditorState extends UIState
     }
   }
 
+  function handleBottomBar():Void
+  {
+    bottomBarModeText.text = currentMoveMode.toTitleCase();
+    bottomBarMoveStepText.text = '${moveStep}px';
+    bottomBarAngleStepText.text = '$angleStep';
+  }
+
   /**
    * Small helper for MacOS, "WINDOWS" is keycode 15, which maps to "COMMAND" on Mac, which is more often used than "CONTROL"
    * Everywhere else, it just returns `FlxG.keys.pressed.CONTROL`
@@ -1132,7 +1258,7 @@ class StageEditorState extends UIState
    * Automatically cleans up after itself and recycles previous FlxSound instances if available, for performance.
    * @param path The path to the sound effect. Use `Paths` to build this.
    */
-  function playSound( path:String, volume:Float = 1.0):Void
+  function playSound(path:String, volume:Float = 1.0):Void
   {
     var asset:Null<FlxSoundAsset> = FlxG.sound.cache(path);
     if (asset == null)
@@ -1195,4 +1321,17 @@ enum abstract StageEditorTheme(String)
    * A theme which introduces darker colors.
    */
   var Dark;
+}
+
+enum abstract StageEditorMoveMode(String) from String to String
+{
+  /**
+   * Modifying objects, aka the props that are currently present in the stage.
+   */
+  var OBJECTS = 'objects';
+
+  /**
+   * Modifying the characters that are currently present in the stage.
+   */
+  var CHARACTERS = 'characters';
 }

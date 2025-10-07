@@ -40,9 +40,7 @@ class StageEditorThemeHandler
       default: GRID_COLOR_2_LIGHT;
     };
 
-    var gridWidth = Std.int(FlxG.width / FlxG.camera.zoom);
-    var gridHeight = Std.int(FlxG.height / FlxG.camera.zoom);
-    state.gridBitmap = FlxGridOverlay.createGrid(StageEditorState.GRID_SIZE, StageEditorState.GRID_SIZE, gridWidth, gridHeight, true, gridColor1, gridColor2);
+    state.gridBitmap = FlxGridOverlay.createGrid(StageEditorState.GRID_SIZE, StageEditorState.GRID_SIZE, FlxG.width, FlxG.height, true, gridColor1, gridColor2);
 
     if (state.gridTiledSprite != null) state.gridTiledSprite.loadGraphic(state.gridBitmap);
   }
@@ -51,8 +49,7 @@ class StageEditorThemeHandler
   {
     if (state.gridTiledSprite != null)
     {
-      state.gridTiledSprite.width = FlxG.width / FlxG.camera.zoom;
-      state.gridTiledSprite.height = FlxG.height / FlxG.camera.zoom;
+      state.gridTiledSprite.scale.set(1 / FlxG.camera.zoom, 1 / FlxG.camera.zoom);
       state.gridTiledSprite.scrollFactor.set();
       state.gridTiledSprite.screenCenter();
     }
