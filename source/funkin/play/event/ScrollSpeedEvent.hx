@@ -111,7 +111,8 @@ class ScrollSpeedEvent extends SongEvent
         min: 0.1,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
-        units: 'x'
+        units: 'x',
+        tooltip: "The speed multiplier"
       },
       {
         name: 'duration',
@@ -120,13 +121,15 @@ class ScrollSpeedEvent extends SongEvent
         min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
-        units: 'steps'
+        units: 'steps',
+        tooltip: "The duration in steps",
       },
       {
         name: 'ease',
         title: 'Easing Type',
         defaultValue: 'linear',
         type: SongEventFieldType.ENUM,
+        tooltip: "The easing type to use",
         keys: [
           'Linear' => 'linear',
           'Instant (Ignores Duration)' => 'INSTANT',
@@ -173,13 +176,15 @@ class ScrollSpeedEvent extends SongEvent
         title: 'Target Strumline',
         defaultValue: 'both',
         type: SongEventFieldType.ENUM,
-        keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
+        keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent'],
+        tooltip: "The target strumline to change the speed in",
       },
       {
         name: 'absolute',
         title: 'Absolute',
         defaultValue: false,
         type: SongEventFieldType.BOOL,
+        tooltip: "Wheter to set the scroll speed or use as additive to the previous one",
       }
     ]);
   }

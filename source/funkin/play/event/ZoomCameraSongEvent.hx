@@ -113,7 +113,8 @@ class ZoomCameraSongEvent extends SongEvent
         min: 0,
         step: 0.05,
         type: SongEventFieldType.FLOAT,
-        units: 'x'
+        units: 'x',
+        tooltip: "The zoom multiplier",
       },
       {
         name: 'duration',
@@ -122,19 +123,22 @@ class ZoomCameraSongEvent extends SongEvent
         min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
-        units: 'steps'
+        units: 'steps',
+        tooltip: "The duration in steps",
       },
       {
         name: 'mode',
         title: 'Mode',
         defaultValue: 'stage',
         type: SongEventFieldType.ENUM,
-        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct'],
+        tooltip: "The mode to change the zoom",
       },
       {
         name: 'ease',
         title: 'Easing Type',
         defaultValue: 'linear',
+        tooltip: "The easing type to use",
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',

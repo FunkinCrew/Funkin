@@ -164,7 +164,8 @@ class FocusCameraSongEvent extends SongEvent
         title: "Target",
         defaultValue: 0,
         type: SongEventFieldType.ENUM,
-        keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
+        keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2],
+        tooltip: "The character to focus the camera on",
       },
       {
         name: "x",
@@ -172,7 +173,8 @@ class FocusCameraSongEvent extends SongEvent
         defaultValue: 0,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
-        units: "px"
+        units: "px",
+        tooltip: "The X offset of the camera",
       },
       {
         name: "y",
@@ -180,7 +182,8 @@ class FocusCameraSongEvent extends SongEvent
         defaultValue: 0,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
-        units: "px"
+        units: "px",
+        tooltip: "The Y offset of the camera",
       },
       {
         name: 'duration',
@@ -189,13 +192,15 @@ class FocusCameraSongEvent extends SongEvent
         min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
-        units: 'steps'
+        units: 'steps',
+        tooltip: "The duration in steps the event will take",
       },
       {
         name: 'ease',
         title: 'Easing Type',
         defaultValue: 'linear',
         type: SongEventFieldType.ENUM,
+        tooltip: "The easing type to use",
         keys: [
           'Linear' => 'linear',
           'Sine In' => 'sineIn',

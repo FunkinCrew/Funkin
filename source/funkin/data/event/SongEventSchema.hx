@@ -1,6 +1,12 @@
 package funkin.data.event;
 
-@:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
+import funkin.play.event.SongEvent;
+import funkin.data.event.SongEventSchema;
+import funkin.data.song.SongData.SongEventData;
+import funkin.util.macro.ClassMacro;
+import funkin.play.event.ScriptedSongEvent;
+
+@:forward(name, title, type, keys, min, max, step, units, tooltip, defaultValue, iterator)
 abstract SongEventSchema(SongEventSchemaRaw)
 {
   /**
@@ -101,6 +107,11 @@ typedef SongEventSchemaField =
    * The type of the field.
    */
   type:SongEventFieldType,
+
+  /**
+   * The tooltip to display when the field is hovered
+   */
+  tooltip:String,
 
   /**
    * Used only for ENUM values.

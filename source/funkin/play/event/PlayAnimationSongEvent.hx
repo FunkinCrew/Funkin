@@ -81,18 +81,21 @@ class PlayAnimationSongEvent extends SongEvent
         title: 'Target',
         type: SongEventFieldType.STRING,
         defaultValue: 'boyfriend',
+        tooltip: "The name of the target",
       },
       {
         name: 'anim',
         title: 'Animation',
         type: SongEventFieldType.STRING,
         defaultValue: 'idle',
+        tooltip: "The name of the animation",
       },
       {
         name: 'force',
         title: 'Force',
         type: SongEventFieldType.BOOL,
-        defaultValue: false
+        defaultValue: false,
+        tooltip: "Wheter to play the animaton forcefully",
       }
     ]);
   }
