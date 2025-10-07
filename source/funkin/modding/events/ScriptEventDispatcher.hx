@@ -60,6 +60,11 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([ScriptEventType.ADDED].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, IDialogueScriptedClass))
     {
@@ -84,6 +89,17 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.DIALOGUE_START,
+        ScriptEventType.DIALOGUE_LINE,
+        ScriptEventType.DIALOGUE_COMPLETE_LINE,
+        ScriptEventType.DIALOGUE_SKIP,
+        ScriptEventType.DIALOGUE_END
+      ].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, INoteScriptedClass))
     {
@@ -105,6 +121,16 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.NOTE_INCOMING,
+        ScriptEventType.NOTE_HIT,
+        ScriptEventType.NOTE_MISS,
+        ScriptEventType.NOTE_HOLD_DROP
+      ].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, IBPMSyncedScriptedClass))
     {
@@ -119,6 +145,11 @@ class ScriptEventDispatcher
           return;
         default: // Continue;
       }
+    }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([ScriptEventType.SONG_BEAT_HIT, ScriptEventType.SONG_STEP_HIT].contains(event.type)) return;
     }
 
     if (Std.isOfType(target, IPlayStateScriptedClass))
@@ -165,6 +196,24 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.NOTE_GHOST_MISS,
+        ScriptEventType.SONG_START,
+        ScriptEventType.SONG_END,
+        ScriptEventType.SONG_RETRY,
+        ScriptEventType.GAME_OVER,
+        ScriptEventType.PAUSE,
+        ScriptEventType.RESUME,
+        ScriptEventType.SONG_EVENT,
+        ScriptEventType.COUNTDOWN_START,
+        ScriptEventType.COUNTDOWN_STEP,
+        ScriptEventType.COUNTDOWN_END,
+        ScriptEventType.SONG_LOADED
+      ].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, IStateChangingScriptedClass))
     {
@@ -200,8 +249,17 @@ class ScriptEventDispatcher
     }
     else
     {
-      // Prevent "NO HELPER error."
-      return;
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.STATE_CHANGE_BEGIN,
+        ScriptEventType.STATE_CHANGE_END,
+        ScriptEventType.SUBSTATE_OPEN_BEGIN,
+        ScriptEventType.SUBSTATE_OPEN_END,
+        ScriptEventType.SUBSTATE_CLOSE_BEGIN,
+        ScriptEventType.SUBSTATE_CLOSE_END,
+        ScriptEventType.FOCUS_LOST,
+        ScriptEventType.FOCUS_GAINED
+      ].contains(event.type)) return;
     }
 
     if (Std.isOfType(target, IFreeplayScriptedClass))
@@ -230,6 +288,18 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.CAPSULE_SELECTED,
+        ScriptEventType.DIFFICULTY_SWITCH,
+        ScriptEventType.SONG_SELECTED,
+        ScriptEventType.FREEPLAY_INTRO,
+        ScriptEventType.FREEPLAY_OUTRO,
+        ScriptEventType.FREEPLAY_CLOSE
+      ].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, ICharacterSelectScriptedClass))
     {
@@ -248,9 +318,19 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.CHARACTER_SELECTED,
+        ScriptEventType.CHARACTER_DESELECTED,
+        ScriptEventType.CHARACTER_CONFIRMED
+      ].contains(event.type)) return;
+    }
 
-    // If you get a crash on this line, that means ERIC FUCKED UP!
-    // throw 'No function called for event type: ${event.type}';
+    // If we reach this line, it means a script event was dispatched while not being properly handled.
+    // Throw an error so we know to add additional fallbacks.
+    throw 'No corresponding function called for dispatched event type: ${event.type}';
   }
 
   public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>, event:ScriptEvent):Void

@@ -861,10 +861,19 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  override public function dispatchEvent(event:ScriptEvent)
+  /**
+   * Dispatches script events to all relevant scripted classes.
+   * @param event
+   */
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
+    // Dispatch to scripted modules.
     super.dispatchEvent(event);
+
+    // Dispatch to scripted backing cards, behind the DJ.
     if (backingCard != null) ScriptEventDispatcher.callEvent(backingCard, event);
+
+    // Dispatch to scripted Freeplay DJs.
     if (dj != null) ScriptEventDispatcher.callEvent(dj, event);
   }
 
