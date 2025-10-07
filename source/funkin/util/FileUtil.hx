@@ -339,7 +339,7 @@ class FileUtil
   {
     #if desktop
     // Prompt the user for a directory, then write all of the files to there.
-    var onSelectDir:(String) -> Void = function(targetPath:String):Void {
+    var onSelectDir:(String) -> Void = (targetPath:String) -> {
       var paths:Array<String> = new Array<String>();
       for (resource in resources)
       {

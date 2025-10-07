@@ -168,12 +168,12 @@ class WaveformData
     if (ratio == 1) return result;
     if (ratio < 1) trace('[WARNING] Downsampling will result in a low precision.');
 
-    var inputSampleCount = this.lenSamples();
+/*    var inputSampleCount = this.lenSamples();
     var outputSampleCount = Std.int(inputSampleCount * ratio);
 
     var inputPointCount = this.length;
     var outputPointCount = Std.int(inputPointCount / ratio);
-    var outputChannelCount = this.channels;
+    var outputChannelCount = this.channels;*/
 
     // TODO: Actually figure out the dumbass logic for this.
 

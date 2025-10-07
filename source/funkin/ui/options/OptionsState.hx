@@ -171,8 +171,8 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     //   FlxG.state.openSubState(new ControlsSchemeMenu());
     // });
     #if FEATURE_LAG_ADJUSTMENT
-    createItem("LAG ADJUSTMENT", function() {
-      FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
+    createItem("LAG ADJUSTMENT", () -> {
+      FlxG.sound.music.fadeOut(0.5, 0, (tw) -> {
         FunkinSound.playMusic('offsetsLoop',
           {
             startingVolume: 0,

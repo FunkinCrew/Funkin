@@ -25,28 +25,6 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     super();
   }
 
-  @:deprecated("Create sound files and call add() instead")
-  public static function build(song:String, ?files:Array<String> = null):SoundGroup
-  {
-    var result = new SoundGroup();
-
-    if (files == null)
-    {
-      // Add an empty voice.
-      result.add(new FunkinSound());
-      return result;
-    }
-
-    @:nullSafety(Off)
-    for (sndFile in files)
-    {
-      var snd:FunkinSound = FunkinSound.load(Paths.voices(song, '$sndFile'));
-      result.add(snd); // adds it to main group for other shit
-    }
-
-    return result;
-  }
-
   /**
    * Finds the largest deviation from the desired time inside this SoundGroup.
    *

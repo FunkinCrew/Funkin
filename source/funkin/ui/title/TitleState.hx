@@ -10,7 +10,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
-import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
@@ -351,15 +350,11 @@ class TitleState extends MusicBeatState
     }
     else
       curCheatPos = 0;
-
-    trace(input);
   }
 
   function startCheat():Void
   {
     cheatActive = true;
-
-    var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
 
     FunkinSound.playMusic('girlfriendsRingtone',
       {

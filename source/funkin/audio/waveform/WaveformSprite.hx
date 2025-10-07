@@ -188,8 +188,6 @@ class WaveformSprite extends MeshRender
     // Center point of the waveform. When horizontal this is half the height, when vertical this is half the width.
     var waveformCenterPos:Int = orientation == HORIZONTAL ? Std.int(this.height / 2) : Std.int(this.width / 2);
 
-    var oneSecondInIndices:Int = waveformData.secondsToIndex(1);
-
     var startTime:Float = time;
     var endTime:Float = time + duration;
 

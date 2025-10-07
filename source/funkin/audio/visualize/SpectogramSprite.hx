@@ -54,7 +54,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
   public var wavOptimiz:Int = 10;
 
-  override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     switch (visType)
     {

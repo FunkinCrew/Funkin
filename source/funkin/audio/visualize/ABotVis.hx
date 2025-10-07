@@ -94,7 +94,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     return x > y ? y : x;
   }
 
-  override function draw()
+  override public function draw()
   {
     super.draw();
     drawFFT();
