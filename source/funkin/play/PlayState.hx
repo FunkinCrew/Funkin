@@ -545,7 +545,7 @@ class PlayState extends MusicBeatSubState
   public var debugUnbindCameraZoom:Bool = false;
 
   /**
-   * The camera which contains, and controls visibility of, a video cutscene, dialogue, pause menu and sticker transition.
+   * The camera which contains, and controls visibility of, a video cutscene, dialogue.
    */
   public var camCutscene:FlxCamera;
 
@@ -553,6 +553,11 @@ class PlayState extends MusicBeatSubState
    * The camera which contains, and controls visibility of menus when there are fake cutouts added.
    */
   public var camCutouts:FlxCamera;
+
+  /**
+   * The camera which contains, and controls visibility of, pause menu.
+   */
+  public var camPause:FlxCamera;
 
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
@@ -715,6 +720,7 @@ class PlayState extends MusicBeatSubState
     camHUD = new FlxCamera();
     camCutscene = new FlxCamera();
     camCutouts = new FlxCamera();
+    camPause = new FlxCamera();
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
     var noteStyleId:Null<String> = currentChart?.noteStyle;
@@ -1278,11 +1284,11 @@ class PlayState extends MusicBeatSubState
     {
       case Conversation:
         preparePauseUI();
-        openPauseSubState(Conversation, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> currentConversation?.pauseMusic());
+        openPauseSubState(Conversation, camPause, () -> currentConversation?.pauseMusic());
 
       case Cutscene:
         preparePauseUI();
-        openPauseSubState(Cutscene, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> VideoCutscene.pauseVideo());
+        openPauseSubState(Cutscene, camPause, () -> VideoCutscene.pauseVideo());
 
       default: // also known as standard
         if (!isInCountdown || isInCutscene) return;
@@ -1313,7 +1319,7 @@ class PlayState extends MusicBeatSubState
               boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
             }
 
-            openPauseSubState(isChartingMode ? Charting : Standard, camCutscene);
+            openPauseSubState(isChartingMode ? Charting : Standard, camPause);
           }
 
           #if FEATURE_DISCORD_RPC
@@ -1843,11 +1849,13 @@ class PlayState extends MusicBeatSubState
     camCutouts.setPosition((FlxG.width - FlxG.initialWidth) / 2, (FlxG.height - FlxG.initialHeight) / 2);
     camCutouts.setSize(FlxG.initialWidth, FlxG.initialHeight);
     camCutouts.bgColor.alpha = 0; // Show the game scene behind the camera.
+    camPause.bgColor.alpha = 0; // Show the game scene behind the camera.
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
     FlxG.cameras.add(camCutscene, false);
     FlxG.cameras.add(camCutouts, false);
+    FlxG.cameras.add(camPause, false);
 
     // Configure camera follow point.
     if (previousCameraFollowPoint != null)
@@ -3082,24 +3090,23 @@ class PlayState extends MusicBeatSubState
     if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
       && iconP1 != null) iconP1.toggleOldIcon();
 
-    #if FEATURE_DEBUG_FUNCTIONS
-    // PAGEUP: Skip forward two sections.
-    // SHIFT+PAGEUP: Skip forward twenty sections.
-    if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
-    // PAGEDOWN: Skip backward two section. Doesn't replace notes.
-    // SHIFT+PAGEDOWN: Skip backward twenty sections.
-    if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
-    #else
-    if (isChartingMode)
+    final isDebug:Bool = #if FEATURE_DEBUG_FUNCTIONS true #else false #end;
+    if (isChartingMode || isDebug)
     {
       // PAGEUP: Skip forward two sections.
       // SHIFT+PAGEUP: Skip forward twenty sections.
-      if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
+      if (FlxG.keys.justPressed.PAGEUP)
+      {
+        changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2, true);
+      }
+
       // PAGEDOWN: Skip backward two section. Doesn't replace notes.
       // SHIFT+PAGEDOWN: Skip backward twenty sections.
-      if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
+      if (FlxG.keys.justPressed.PAGEDOWN)
+      {
+        changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2, true);
+      }
     }
-    #end
   }
 
   /**
@@ -3885,10 +3892,11 @@ class PlayState extends MusicBeatSubState
 
   /**
      * Jumps forward or backward a number of sections in the song.
-     * Accounts for BPM changes, does not prevent death from skipped notes.
+     * Accounts for BPM changes.
      * @param sections The number of sections to jump, negative to go backwards.
+     * @param preventDeath Decides if time skip should prevent player from dying.
      */
-  function changeSection(sections:Int):Void
+  function changeSection(sections:Int, preventDeath:Bool = false):Void
   {
     // FlxG.sound.music.pause();
 
@@ -3905,7 +3913,7 @@ class PlayState extends MusicBeatSubState
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-    // regenNoteData(FlxG.sound.music.time);
+    if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 
