@@ -471,6 +471,13 @@ class Project extends HXProject
    */
   static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
 
+  /**
+   * `-DFEATURE_VIDEO_SUBTITLES`
+   * If this flag is enabled, the game will be able to show subtitles on video cutscenes.
+   * This requires the hxvlc library on desktop platforms.
+   */
+  static final FEATURE_VIDEO_SUBTITLES:FeatureFlag = "FEATURE_VIDEO_SUBTITLES";
+
   //
   // CONFIGURATION FUNCTIONS
   //
@@ -807,7 +814,14 @@ class Project extends HXProject
 
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
-    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator());
+    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator() && !isHashLink());
+
+    // Video subtitles only work via using hxvlc.
+    FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK.isEnabled(this) && !isWeb());
+
+    // Should be true on debug builds or if GITHUB_BUILD is enabled.
+    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
@@ -948,10 +962,10 @@ class Project extends HXProject
 
     setHaxedef("safeMode");
 
-    // If we aren't using the Flixel debugger, strip it out.
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
     {
-      setHaxedef("FLX_NO_DEBUG");
+      setHaxedef("FLX_NO_DEBUG"); // If we aren't using the Flixel debugger, strip it out.
+      setHaxedef("analyzer-optimize"); // Optimize haxe code when not in debug to improve performance.
     }
 
     if (FEATURE_LOG_TRACE.isDisabled(this))
@@ -1179,6 +1193,11 @@ class Project extends HXProject
       addHaxelib('extension-androidtools'); // Android Functions
     }
 
+    if (isLinux())
+    {
+      addHaxelib('hxgamemode'); // FeralInteractive gamemode
+    }
+
     if (FEATURE_DISCORD_RPC.isEnabled(this))
     {
       addHaxelib('hxdiscord_rpc'); // Discord API
@@ -1223,6 +1242,9 @@ class Project extends HXProject
 
   function configureAssets()
   {
+    // Delete the assets folder from the export folder before adding anything.
+    clearAssets();
+
     var exclude = EXCLUDE_ASSETS.concat(isWeb() ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
     var shouldPreload = PRELOAD_ALL.isEnabled(this);
     var shouldEmbed = EMBED_ASSETS.isEnabled(this);
@@ -1304,6 +1326,62 @@ class Project extends HXProject
     }
   }
 
+  function clearAssets():Void
+  {
+    var exportPath:Null<String> = app.path ?? "";
+
+    // mac target uses `macos` for the export folder instead of `mac`
+    var platform:String = (!isMacHost() ? System.hostPlatform : 'macos');
+    var basePath:String = Path.join([exportPath, platform, "bin"]);
+    var assetsPath:String = "";
+
+    if (isMacHost())
+    {
+      assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
+    }
+    else
+    {
+      assetsPath = Path.join([basePath, "assets"]);
+    }
+
+    if (sys.FileSystem.exists(assetsPath))
+    {
+      info('Deleting assets folder from export folder ($assetsPath)');
+
+      // this is fucking shitty i know but you can't just delete the whole assets folder with `sys.FileSystem.deleteDirectory`
+      // this is because the assets folder is usually not empty.....deleting a folder that isn't empty throws an error i fucking hate lime......grrr......
+      deleteDirectoryRecursive(assetsPath);
+    }
+    else
+    {
+      info('Assets folder does not exist ($assetsPath)');
+    }
+  }
+
+  /**
+   * Recursively delete a directory and its contents.
+   * @param path The path to the directory to delete.
+   */
+  function deleteDirectoryRecursive(path:String):Void
+  {
+    if (!sys.FileSystem.exists(path)) return;
+
+    for (file in sys.FileSystem.readDirectory(path))
+    {
+      var fullPath:String = Path.join([path, file]);
+      if (sys.FileSystem.isDirectory(fullPath))
+      {
+        deleteDirectoryRecursive(fullPath);
+      }
+      else
+      {
+        sys.FileSystem.deleteFile(fullPath);
+      }
+    }
+
+    sys.FileSystem.deleteDirectory(path);
+  }
+
   /**
    * Configure the application's favicon and executable icon.
    */
@@ -1373,12 +1451,16 @@ class Project extends HXProject
   {
     if (envConfig == null) return;
 
-    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this)) {
+    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
+    {
       var appId:Null<String> = Std.string(envConfig.get('ADMOB_APP_ID'));
 
-      if (appId != null && appId != "null") {
+      if (appId != null && appId != "null")
+      {
         setenv("ADMOB_APPID", appId);
-      } else {
+      }
+      else
+      {
         error("ADMOB_APP_ID is not defined in the environment. Populate the .env file in your project root or build with -DNO_FEATURE_MOBILE_ADVERTISEMENTS");
       }
     }
@@ -1758,8 +1840,7 @@ class Project extends HXProject
           {
             var commitHash:String = readLibraryGitCommitHash(libraryName);
 
-            if (commitHash != library.ref && commitHash != "")
-              outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            if (commitHash != library.ref && commitHash != "") outdatedLibraries.set(libraryName, [commitHash, library.ref]);
           }
       }
     }
@@ -1791,8 +1872,7 @@ class Project extends HXProject
   {
     var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
 
-    if (sys.FileSystem.exists(path))
-      return sys.io.File.getContent(path);
+    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
     return '';
   }
@@ -1801,8 +1881,7 @@ class Project extends HXProject
   {
     var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
 
-    if (sys.FileSystem.exists(path))
-      return sys.io.File.getContent(path);
+    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
     return '';
   }

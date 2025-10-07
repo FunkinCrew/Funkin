@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "96385202f6f951b2bde0cbe836c5da21dde1f36e",
+      "ref": "cb921a591bdb2dba604decf44cd8f5c3fbbe969b",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -71,14 +71,14 @@
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "1966f8fbbbc509ed90d4b520f3c49c084fc92fd6",
+      "ref": "02bada154b474c2554709b9d12aef0cbf0da3ec9",
       "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
       "name": "grig.audio",
       "type": "git",
       "dir": "src",
-      "ref": "8567c4dad34cfeaf2ff23fe12c3796f5db80685e",
+      "ref": "6409f3c6d1b4c52176813d3ede86c0d34e8af2c1",
       "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
@@ -136,6 +136,11 @@
       "url": "https://github.com/nadako/hxjsonast/"
     },
     {
+      "name": "hxgamemode",
+      "type": "haxelib",
+      "version": "1.0.1"
+    },
+    {
       "name": "hxp",
       "type": "haxelib",
       "version": "1.3.0"
@@ -170,7 +175,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "f109a083023a9e5622342257993fc745d9bbb959",
+      "ref": "93acc1bdb26661ec66eed0aaf2a4df785238dd63",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -191,7 +196,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "47d9a2775e3fd8f6dd17d6f4b99b8798709da435",
+      "ref": "57ceb6317cc0765e1f563a8c99441f302c8562fc",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

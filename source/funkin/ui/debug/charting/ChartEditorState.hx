@@ -697,7 +697,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var wasCursorOverHaxeUI:Bool = false;
 
   /**
-   * Set by ChartEditorDialogHandler, used to prevent background interaction while the dialog is open.
+   * Set by ChartEditorDialogHandler, used to prevent background interaction while a dialog is open.
    */
   var isHaxeUIDialogOpen:Bool = false;
 
@@ -3051,7 +3051,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
     menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null);
-    menubarItemExit.onClick = _ -> quitChartEditor();
+    menubarItemExit.onClick = _ -> quitChartEditor(true);
 
     // Edit
     menubarItemUndo.onClick = _ -> undoLastCommand();
@@ -3534,7 +3534,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
-    Cursor.show();
+    if (this.subState == null) Cursor.show();
 
     return true;
   }
@@ -5750,18 +5750,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // CTRL + Q = Quit to Menu
     if (pressingControl() && FlxG.keys.justPressed.Q)
     {
-      quitChartEditor();
+      quitChartEditor(true);
     }
   }
 
   @:nullSafety(Off)
-  function quitChartEditor():Void
+  function quitChartEditor(exitPrompt:Bool = false):Void
   {
-    if (saveDataDirty)
+    if (saveDataDirty && exitPrompt)
     {
       this.openLeaveConfirmationDialog();
       return;
     }
+
+    autoSave();
 
     this.hideAllToolboxes();
 
@@ -6123,6 +6125,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
+    PlayStatePlaylist.reset();
+    
     // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
@@ -6178,6 +6182,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.persistentUpdate = false;
     this.persistentDraw = false;
     stopWelcomeMusic();
+
+    Cursor.hide();
 
     LoadingState.loadPlayState(targetStateParams, false, true, function(targetState) {
       targetState.vocals = audioVocalTrackGroup;
@@ -6580,6 +6586,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     moveSongToScrollPosition();
 
     fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+
+    Cursor.show();
 
     // Reapply the volume and playback rate.
     var instTargetVolume:Float = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;

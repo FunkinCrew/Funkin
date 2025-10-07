@@ -93,7 +93,7 @@ class ChartEditorDropdowns
     var returnValue:DropDownEntry =
       {
         id: "0",
-        text: '${timeChanges[0].timeStamp} : BPM: ${timeChanges[0].bpm} in ${timeChanges[0].timeSignatureNum}/${timeChanges[0].timeSignatureDen}'
+        text: '${timeChanges[0].timeStamp} ms : BPM: ${timeChanges[0].bpm} in ${timeChanges[0].timeSignatureNum}/${timeChanges[0].timeSignatureDen}'
       };
 
     for (index in 0...timeChanges.length)
@@ -101,7 +101,7 @@ class ChartEditorDropdowns
       var value =
         {
           id: '$index',
-          text: '${timeChanges[index].timeStamp} : BPM: ${timeChanges[index].bpm} in ${timeChanges[index].timeSignatureNum}/${timeChanges[index].timeSignatureDen}'
+          text: '${timeChanges[index].timeStamp} ms : BPM: ${timeChanges[index].bpm} in ${timeChanges[index].timeSignatureNum}/${timeChanges[index].timeSignatureDen}'
         };
       if (startingTimeChange == index) returnValue = value;
 

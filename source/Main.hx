@@ -1,5 +1,6 @@
 package;
 
+import lime.system.System;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -79,6 +80,25 @@ class Main extends Sprite
     if (hasEventListener(Event.ADDED_TO_STAGE))
     {
       removeEventListener(Event.ADDED_TO_STAGE, init);
+    }
+
+    // Manually crash the game when using a software renderer in order to give a nicer error message.
+    var context = stage.window.context.type;
+    if (context != WEBGL && context != OPENGL && context != OPENGLES)
+    {
+      var tech:String = #if web "WebGL" #elseif desktop "OpenGL" #else "OpenGL ES" #end;
+      var requiredVersion:String = #if web '$tech 1.0 or newer' #elseif desktop '$tech 3.0 or newer' #else '$tech 2.0 or newer' #end;
+      var desc:String = 'Failed to initialize the $tech rendering context!\n\n';
+      #if web
+      desc += 'Make sure your graphics card supports $requiredVersion, your graphics drivers are up to date, and hardware acceleration is enabled on your browser.';
+      #elseif desktop
+      desc += 'Make sure your graphics card supports $requiredVersion, and your graphics drivers are up to date.';
+      #else
+      desc += 'Make sure your device supports $requiredVersion.';
+      #end
+
+      WindowUtil.showError('Failed to initialize $tech', desc);
+      System.exit(1);
     }
 
     setupGame();
@@ -164,6 +184,8 @@ class Main extends Sprite
 
   function initHaxeUI():Void
   {
+    // This has to come before Toolkit.init since locales get initialized there
+    haxe.ui.locale.LocaleManager.instance.autoSetLocale = false;
     // Calling this before any HaxeUI components get used is important:
     // - It initializes the theme styles.
     // - It scans the class path and registers any HaxeUI components.
