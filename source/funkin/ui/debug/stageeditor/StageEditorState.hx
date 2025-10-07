@@ -17,6 +17,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.math.FlxMath;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
@@ -64,6 +65,7 @@ using StringTools;
  * @author anysad (refactored code)
  */
 // @:nullSafety // stupid haxe-ui having non-null safe macros
+
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/stage-editor/main-view.xml"))
 class StageEditorState extends UIState
 {
@@ -72,8 +74,8 @@ class StageEditorState extends UIState
    * CONSTANTS
    * ==============================
    */
-
   public static final STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('stage-editor/toolboxes/stage-settings');
+
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-properties');
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_ANIMATIONS_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-anims');
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-graphic');
@@ -155,7 +157,6 @@ class StageEditorState extends UIState
    * INSTANCE DATA
    * ==============================
    */
-
   /**
    * A timer used to auto-save the stage after a period of inactivity.
    */
@@ -212,10 +213,10 @@ class StageEditorState extends UIState
 
   /**
    * The current move mode which detects which objects to move in the editor;
-   * `StageEditorMoveMode.OBJECTS` -> `Objects/Props`
-   * `StageEditorMoveMode.CHARACTERS` -> `Characters`
+   * `StageEditorSelectionMode.OBJECTS` -> `Objects/Props`
+   * `StageEditorSelectionMode.CHARACTERS` -> `Characters`
    */
-  var currentMoveMode:StageEditorMoveMode = StageEditorMoveMode.OBJECTS;
+  var currentSelectionMode:StageEditorSelectionMode = StageEditorSelectionMode.OBJECTS;
 
   /**
    * The internal index what what object step is in use.
@@ -256,7 +257,6 @@ class StageEditorState extends UIState
    * INPUT
    * ==============================
    */
-
   /**
    * Handler used to track how long the user has been holding the undo keybind.
    */
@@ -272,7 +272,6 @@ class StageEditorState extends UIState
    * DIRTY FLAGS
    * ==============================
    */
-
   /**
    * Whether the stage has been modified since it was last saved.
    * Used to determine whether to auto-save, etc.
@@ -396,7 +395,6 @@ class StageEditorState extends UIState
    * HAXEUI
    * ==============================
    */
-
   /**
    * Whether the user is focused on an input in the Haxe UI, and inputs are being fed into it.
    * If the user clicks off the input, focus will leave.
@@ -441,7 +439,6 @@ class StageEditorState extends UIState
    * CAMERA RELATED ITEMS
    * ==============================
    */
-
   /**
    * The UI camera component we're using for this state to show UI components.
    */
@@ -466,7 +463,6 @@ class StageEditorState extends UIState
    * HAXEUI COMPONENTS
    * ==============================
    */
-
   /**
    * The menubar at the top of the screen.
    */
@@ -582,7 +578,6 @@ class StageEditorState extends UIState
    * STAGE DATA
    * ==============================
    */
-
   /**
    * The data representing the current stage.
    */
@@ -686,7 +681,6 @@ class StageEditorState extends UIState
    * RENDERED OBJECTS
    * ==============================
    */
-
   /**
    * A map of all loaded characters.
    */
@@ -768,7 +762,7 @@ class StageEditorState extends UIState
 
     setupUIListeners();
 
-    stageCamera.follow(cameraFollowPoint);
+    stageCamera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
 
     refresh();
 
@@ -994,6 +988,7 @@ class StageEditorState extends UIState
     handleMenubar();
     handleBottomBar();
 
+    handleMouse();
     handleFileKeybinds();
     handleEditKeybinds();
   }
@@ -1042,7 +1037,18 @@ class StageEditorState extends UIState
      * BOTTOM BAR
      */
     bottomBarModeText.onClick = _ -> {
-      currentMoveMode = currentMoveMode == StageEditorMoveMode.OBJECTS ? StageEditorMoveMode.CHARACTERS : StageEditorMoveMode.OBJECTS;
+      // I'm too lazy to make another array and index shit.
+      switch (currentSelectionMode)
+      {
+        case StageEditorSelectionMode.NONE:
+          currentSelectionMode = StageEditorSelectionMode.OBJECTS;
+        case StageEditorSelectionMode.OBJECTS:
+          currentSelectionMode = StageEditorSelectionMode.CHARACTERS;
+        case StageEditorSelectionMode.CHARACTERS:
+          currentSelectionMode = StageEditorSelectionMode.NONE;
+        default:
+          currentSelectionMode = StageEditorSelectionMode.NONE;
+      }
     }
 
     bottomBarMoveStepText.onClick = _ -> {
@@ -1082,7 +1088,6 @@ class StageEditorState extends UIState
    * COMMAND FUNCTIONS
    * ==============================
    */
-
   /**
    * Perform (or redo) a command, then add it to the undo stack.
    *
@@ -1146,7 +1151,6 @@ class StageEditorState extends UIState
    * STATIC FUNCTIONS
    * ==============================
    */
-
   /**
    * Handles passive behavior of the menu bar, such as updating labels or enabled/disabled status.
    * Does not handle onClick ACTIONS of the menubar.
@@ -1188,7 +1192,7 @@ class StageEditorState extends UIState
 
   function handleBottomBar():Void
   {
-    bottomBarModeText.text = currentMoveMode.toTitleCase();
+    bottomBarModeText.text = currentSelectionMode.toTitleCase();
     bottomBarMoveStepText.text = '${moveStep}px';
     bottomBarAngleStepText.text = '$angleStep';
   }
@@ -1205,6 +1209,35 @@ class StageEditorState extends UIState
     #else
     return FlxG.keys.pressed.CONTROL;
     #end
+  }
+
+  /**
+   * Handles the display and the functionality of the mouse.
+   */
+  function handleMouse():Void
+  {
+    // Mouse sounds
+    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
+    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+
+    var shouldHandleCursor:Bool = (!isHaxeUIFocused || isHaxeUIDialogOpen);
+
+    if (shouldHandleCursor)
+    {
+      var targetCursorMode:Null<CursorMode> = null;
+
+      if (FlxG.mouse.pressed && currentSelectionMode == StageEditorSelectionMode.NONE)
+      {
+        // Player is moving their camera in the stage editor.
+        targetCursorMode = Grabbing;
+        var safeZoom:Float = FlxMath.bound(stageCamera.zoom, 0.6);
+        cameraFollowPoint.x -= Math.round(FlxG.mouse.deltaX / 2 / safeZoom);
+        cameraFollowPoint.y -= Math.round(FlxG.mouse.deltaY / 2 / safeZoom);
+      }
+
+      // Actually set the cursor mode to the one we specified earlier.
+      Cursor.cursorMode = targetCursorMode ?? Default;
+    }
   }
 
   /**
@@ -1280,15 +1313,15 @@ class StageEditorState extends UIState
   function applyWindowTitle():Void
   {
     var inner:String = 'New Stage';
-    // var cwfp:Null<String> = currentWorkingFilePath;
-    // if (cwfp != null)
-    // {
-    //   inner = cwfp;
-    // }
-    // if (currentWorkingFilePath == null || saveDataDirty)
-    // {
-    //   inner += '*';
-    // }
+    var cwfp:Null<String> = currentWorkingFilePath;
+    if (cwfp != null)
+    {
+      inner = cwfp;
+    }
+    if (currentWorkingFilePath == null || saveDataDirty)
+    {
+      inner += '*';
+    }
     WindowUtil.setWindowTitle('Friday Night Funkin\' Stage Editor - ${inner}');
   }
 
@@ -1327,15 +1360,20 @@ enum abstract StageEditorTheme(String)
   var Dark;
 }
 
-enum abstract StageEditorMoveMode(String) from String to String
+enum abstract StageEditorSelectionMode(String) from String to String
 {
+  /**
+   * Moving around the stage.
+   */
+  var NONE;
+
   /**
    * Modifying objects, aka the props that are currently present in the stage.
    */
-  var OBJECTS = 'objects';
+  var OBJECTS;
 
   /**
    * Modifying the characters that are currently present in the stage.
    */
-  var CHARACTERS = 'characters';
+  var CHARACTERS;
 }
