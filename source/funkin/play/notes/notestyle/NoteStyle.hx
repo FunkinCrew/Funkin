@@ -510,7 +510,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     // library:path
     var parts = getCountdownSoundPath(step, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
     if (parts.length == 0) return null;
-    if (parts.length == 1) return Paths.image(parts[0]);
+    if (parts.length == 1) return Paths.sound(parts[0]);
     return Paths.sound(parts[1], parts[0]);
   }
 

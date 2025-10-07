@@ -143,6 +143,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', (value:Bool) -> {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+    #if FEATURE_VIDEO_SUBTITLES
+    createPrefItemCheckbox('Video Subtitles', 'If enabled, subtitles will be shown on video cutscenes.', function(value:Bool):Void {
+      Preferences.videoSubtitles = value;
+    }, Preferences.videoSubtitles);
+    #end
     #if !mobile
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
     createPrefItemEnum('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', [

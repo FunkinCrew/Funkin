@@ -247,15 +247,15 @@ class StickerSubState extends MusicBeatSubState
   override public function close():Void
   {
     if (switchingState) return;
-    super.close();
     transitionSprite?.clear();
+    super.close();
   }
 
   override public function destroy():Void
   {
+    transitionSprite?.clear();
     if (switchingState) return;
     super.destroy();
-    transitionSprite?.clear();
   }
 }
 
@@ -284,8 +284,8 @@ class StickerTransitionSprite extends openfl.display.Sprite
     grpStickers?.update(elapsed);
     stickersCamera.update(elapsed);
 
-    stickersCamera.clearDrawStack();
-    stickersCamera.canvas.graphics.clear();
+    stickersCamera?.clearDrawStack();
+    stickersCamera?.canvas?.graphics.clear();
 
     grpStickers?.draw();
 
@@ -294,7 +294,7 @@ class StickerTransitionSprite extends openfl.display.Sprite
 
   public function insert():Void
   {
-    FlxG.addChildBelowMouse(this);
+    FlxG.addChildBelowMouse(this, 9999);
     visible = true;
     onResize();
   }
@@ -304,6 +304,8 @@ class StickerTransitionSprite extends openfl.display.Sprite
     FlxG.removeChild(this);
     visible = false;
     grpStickers = null;
+    stickersCamera?.clearDrawStack();
+    stickersCamera?.canvas?.graphics.clear();
   }
 
   public function onResize():Void

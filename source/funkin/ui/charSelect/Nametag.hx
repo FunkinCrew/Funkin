@@ -5,6 +5,7 @@ import funkin.graphics.shaders.MosaicEffect;
 import flixel.util.FlxTimer;
 import funkin.util.TimerUtil.Sequence;
 
+@:nullSafety
 class Nametag extends FlxSprite
 {
   @:allow(funkin.ui.charSelect.CharSelectSubState)
@@ -13,7 +14,7 @@ class Nametag extends FlxSprite
   var midpointY(default, set):Float = 100;
   var mosaicShader:MosaicEffect;
 
-  var currentMosaicSequence:Sequence;
+  var currentMosaicSequence:Null<Sequence>;
 
   public function new(?x:Float = 0, ?y:Float = 0, character:String)
   {
@@ -67,6 +68,7 @@ class Nametag extends FlxSprite
       // Forcibly reset the shader to prevent overlapping blur sequences
       mosaicShader.setBlockSize(1, 1);
       currentMosaicSequence.destroy();
+      @:nullSafety(Off)
       currentMosaicSequence = null;
     }
 

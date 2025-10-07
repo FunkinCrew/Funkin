@@ -340,6 +340,9 @@ class StoryMenuState extends MusicBeatState
 
   function handleKeyPresses():Void
   {
+    @:privateAccess
+    if ((stickerSubState?.switchingState ?? false)) return;
+
     if (!exitingMenu)
     {
       if (!selectedLevel)
@@ -723,7 +726,8 @@ class StoryMenuState extends MusicBeatState
 
   function goBack():Void
   {
-    if (exitingMenu || selectedLevel) return;
+    @:privateAccess
+    if (exitingMenu || selectedLevel || (stickerSubState?.switchingState ?? false)) return;
 
     exitingMenu = true;
     FlxG.keys.enabled = false;

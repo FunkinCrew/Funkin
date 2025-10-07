@@ -122,6 +122,7 @@ class Save implements ConsoleClass
           hapticsMode: 'All',
           hapticsIntensityMultiplier: 1,
           autoPause: true,
+          videoSubtitles: true,
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
@@ -1629,6 +1630,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * If enabled, subtitles will be shown on video cutscenes.
+   * @default `true`
+   */
+  var videoSubtitles:Bool;
 
   /**
    * If enabled, the game will utilize VSync (or adaptive VSync) on startup.

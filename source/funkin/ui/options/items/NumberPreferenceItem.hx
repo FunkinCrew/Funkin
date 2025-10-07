@@ -1,5 +1,6 @@
 package funkin.ui.options.items;
 
+import flixel.math.FlxMath;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
@@ -123,12 +124,16 @@ class NumberPreferenceItem extends TextMenuItem
     {
       var isBelowMin:Bool = currentValue - step * valueChangeMultiplier < min;
       currentValue = (currentValue - step * valueChangeMultiplier).clamp(min, max);
+      if (precision != 0) currentValue = FlxMath.roundDecimal(currentValue, precision);
+
       if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
     }
     else if (shouldIncrease)
     {
       var isAboveMax:Bool = currentValue + step * valueChangeMultiplier > max;
       currentValue = (currentValue + step * valueChangeMultiplier).clamp(min, max);
+      if (precision != 0) currentValue = FlxMath.roundDecimal(currentValue, precision);
+
       if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
     }
   }

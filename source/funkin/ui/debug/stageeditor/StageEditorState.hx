@@ -498,18 +498,35 @@ class StageEditorState extends UIState
         FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
         var files = sys.FileSystem.readDirectory(BACKUPS_PATH);
-
+        var filestats:Array<sys.FileStat> = [];
         if (files.length > 0)
         {
-          // ensures that the top most file is a backup
-          files.sort(funkin.util.SortUtil.alphabetically);
-
           while (!files[files.length - 1].endsWith(FileUtil.FILE_EXTENSION_INFO_FNFS.extension)
             || !files[files.length - 1].startsWith("stage-editor-"))
+          {
+            if (files.length == 0) break;
             files.pop();
+          }
         }
 
-        if (files.length != 0) new BackupAvailableDialog(this, haxe.io.Path.join([BACKUPS_PATH, files[files.length - 1]])).showDialog(true);
+        var latestBackupPath:Null<String> = files[0];
+
+        for (file in files)
+        {
+          filestats.push(sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, file])));
+        }
+
+        var latestFileIndex:Int = 0;
+        for (index in 0...filestats.length)
+        {
+          if (filestats[latestFileIndex].mtime.getTime() < filestats[index].mtime.getTime())
+          {
+            latestFileIndex = index;
+            latestBackupPath = files[index];
+          }
+        }
+
+        if (latestBackupPath != null) new BackupAvailableDialog(this, haxe.io.Path.join([BACKUPS_PATH, latestBackupPath])).showDialog(true);
       }
       #end
     }
