@@ -104,6 +104,11 @@ class Paths
     return getPath('data/$key.json', TEXT, library);
   }
 
+  public static function srt(key:String, ?library:String, ?directory:String = "data/"):String
+  {
+    return getPath('$directory$key.srt', TEXT, library);
+  }
+
   public static function sound(key:String, ?library:String):String
   {
     return getPath('sounds/$key.${Constants.EXT_SOUND}', SOUND, library);
