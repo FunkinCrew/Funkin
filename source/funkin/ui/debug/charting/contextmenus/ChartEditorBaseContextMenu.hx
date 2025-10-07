@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.Menu;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -17,3 +18,4 @@ class ChartEditorBaseContextMenu extends Menu
     this.top = yPos;
   }
 }
+#end

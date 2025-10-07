@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.MenuItem;
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
@@ -32,3 +33,4 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
     }
   }
 }
+#end

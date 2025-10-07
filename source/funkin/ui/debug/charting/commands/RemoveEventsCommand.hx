@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
@@ -68,3 +69,4 @@ class RemoveEventsCommand implements ChartEditorCommand
     return 'Remove ${events.length} Events';
   }
 }
+#end

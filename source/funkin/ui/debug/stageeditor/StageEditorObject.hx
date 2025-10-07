@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor;
 
+#if FEATURE_STAGE_EDITOR
 import funkin.data.animation.AnimationData;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.InverseDotsShader;
@@ -122,3 +123,4 @@ class StageEditorObject extends FunkinSprite
     }
   }
 }
+#end

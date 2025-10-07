@@ -380,17 +380,25 @@ class InitState extends FlxState
 
     if (params.chart.shouldLoadChart)
     {
+      #if FEATURE_CHART_EDITOR
       FlxG.switchState(() -> new ChartEditorState(
         {
           fnfcTargetPath: params.chart.chartPath,
         }));
+      #else
+      FlxG.switchState(() -> new TitleState());
+      #end
     }
     else if (params.stage.shouldLoadStage)
     {
+      #if FEATURE_STAGE_EDITOR
       FlxG.switchState(() -> new StageEditorState(
         {
           fnfsTargetPath: params.stage.stagePath,
         }));
+      #else
+      FlxG.switchState(() -> new TitleState());
+      #end
     }
     else if (params.song.shouldLoadSong && params.song.songPath != null)
     {

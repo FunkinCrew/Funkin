@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import funkin.play.notes.Strumline;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
@@ -284,3 +285,4 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     this.x += this.offset.x;
   }
 }
+#end

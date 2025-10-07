@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
 import funkin.data.song.importer.ChartManifestData;
@@ -388,3 +389,4 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     return new ChartEditorMetadataToolbox(chartEditorState);
   }
 }
+#end

@@ -1,5 +1,6 @@
 package funkin.ui.debug.stage;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.group.FlxGroup;
 
 class StagetoolBar extends FlxGroup
@@ -12,3 +13,4 @@ class StagetoolBar extends FlxGroup
     super();
   }
 }
+#end

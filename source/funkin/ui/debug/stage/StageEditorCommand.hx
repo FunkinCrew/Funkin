@@ -1,5 +1,6 @@
 package funkin.ui.debug.stage;
 
+#if FEATURE_STAGE_EDITOR
 import funkin.ui.debug.stage.StageOffsetSubState;
 import flixel.FlxSprite;
 
@@ -80,3 +81,4 @@ class SelectPropCommand implements StageEditorCommand
     return "Selected" + prop;
   }
 }
+#end

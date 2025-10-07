@@ -1,5 +1,6 @@
 package funkin.ui.debug.anim;
 
+#if FEATURE_ANIMATION_EDITOR
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.FlxCamera;
@@ -639,3 +640,4 @@ enum abstract ANIMDEBUGVIEW(String)
   var SPRITESHEET;
   var ANIMATIONS;
 }
+#end

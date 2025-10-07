@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.haxeui.components.CharacterPlayer;
@@ -396,3 +397,4 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 }
+#end

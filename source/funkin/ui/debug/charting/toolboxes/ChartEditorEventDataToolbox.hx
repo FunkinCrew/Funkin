@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.event.SongEventSchema;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.CheckBox;
@@ -312,3 +313,4 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     return new ChartEditorEventDataToolbox(chartEditorState);
   }
 }
+#end

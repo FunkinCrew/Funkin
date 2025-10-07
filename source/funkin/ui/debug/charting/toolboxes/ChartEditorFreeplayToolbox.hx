@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxTiledSprite;
 import flixel.math.FlxMath;
 import funkin.audio.SoundGroup;
@@ -683,3 +684,4 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     return new ChartEditorFreeplayToolbox(chartEditorState);
   }
 }
+#end

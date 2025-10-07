@@ -434,6 +434,13 @@ class Project extends HXProject
   static final FEATURE_SCREENSHOTS:FeatureFlag = "FEATURE_SCREENSHOTS";
 
   /**
+   * `-DFEATURE_HAXEUI`
+   * If this flag is enabled, the game will enable the HaxeUI interface layer.
+   * This can be used to provide menus, dialogs, and other UI components via HaxeUI.
+   */
+  static final FEATURE_HAXEUI:FeatureFlag = "FEATURE_HAXEUI";
+
+  /**
    * `-FEATURE_DEBUG_MENU`
    * If this flag is enabled, a debug menu will be accessible.
    */
@@ -846,10 +853,11 @@ class Project extends HXProject
 
     // Should be true except on web and mobile builds.
     // Debug editors aren't built to work on web or mobile right now.
-    FEATURE_DEBUG_MENU.apply(this, !(isWeb() || isMobile()));
-    FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
-    FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
-    FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_HAXEUI.apply(this, !(isWeb() || isMobile()));
+    FEATURE_DEBUG_MENU.apply(this, FEATURE_HAXEUI.isEnabled(this));
+    FEATURE_ANIMATION_EDITOR.apply(this, FEATURE_HAXEUI.isEnabled(this));
+    FEATURE_CHART_EDITOR.apply(this, FEATURE_HAXEUI.isEnabled(this));
+    FEATURE_STAGE_EDITOR.apply(this, FEATURE_HAXEUI.isEnabled(this));
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
@@ -1024,21 +1032,42 @@ class Project extends HXProject
 
     // Forcibly include all Funkin' classes in builds.
     // This prevents classes that are unused by the base game from being unavailable to HScript.
-    addHaxeMacro("include('funkin', true, ['funkin.mobile.*'])");
+    addHaxeMacro("include('funkin', true, ['funkin.mobile.*', 'funkin.ui.debug.anim.*', 'funkin.ui.debug.charting.*', 'funkin.ui.debug.stage.*', 'funkin.ui.debug.stageeditor.*', 'funkin.ui.haxeui.*'])");
 
     if (isMobile())
     {
       addHaxeMacro("include('funkin.mobile')");
     }
 
-    // Ensure all HaxeUI components are available at runtime.
-    addHaxeMacro("include('haxe.ui.backend.flixel.components')");
-    addHaxeMacro("include('haxe.ui.core')");
-    addHaxeMacro("include('haxe.ui.components')");
-    addHaxeMacro("include('haxe.ui.containers')");
-    addHaxeMacro("include('haxe.ui.containers.dialogs')");
-    addHaxeMacro("include('haxe.ui.containers.menus')");
-    addHaxeMacro("include('haxe.ui.containers.properties')");
+    if (FEATURE_HAXEUI.isEnabled(this))
+    {
+      if (FEATURE_ANIMATION_EDITOR.isEnabled(this))
+      {
+        addHaxeMacro("include('funkin.ui.debug.anim')");
+      }
+
+      if (FEATURE_CHART_EDITOR.isEnabled(this))
+      {
+        addHaxeMacro("include('funkin.ui.debug.charting')");
+      }
+
+      if (FEATURE_STAGE_EDITOR.isEnabled(this))
+      {
+        addHaxeMacro("include('funkin.ui.debug.stage')");
+        addHaxeMacro("include('funkin.ui.debug.stageeditor')");
+      }
+
+      addHaxeMacro("include('funkin.ui.haxeui')");
+
+      // Ensure all HaxeUI components are available at runtime.
+      addHaxeMacro("include('haxe.ui.backend.flixel.components')");
+      addHaxeMacro("include('haxe.ui.core')");
+      addHaxeMacro("include('haxe.ui.components')");
+      addHaxeMacro("include('haxe.ui.containers')");
+      addHaxeMacro("include('haxe.ui.containers.dialogs')");
+      addHaxeMacro("include('haxe.ui.containers.menus')");
+      addHaxeMacro("include('haxe.ui.containers.properties')");
+    }
 
     // Ensure all Flixel classes are available at runtime.
     // Explicitly ignore packages which require additional dependencies.
@@ -1244,9 +1273,12 @@ class Project extends HXProject
 
     addHaxelib('flixel-addons'); // Additional utilities for Flixel
     addHaxelib('hscript'); // Scripting
-    // addHaxelib('flixel-ui'); // UI framework (DEPRECATED)
-    addHaxelib('haxeui-core'); // UI framework
-    addHaxelib('haxeui-flixel'); // Integrate HaxeUI with Flixel
+
+    if (FEATURE_HAXEUI.isEnabled(this))
+    {
+      addHaxelib('haxeui-core'); // UI framework
+      addHaxelib('haxeui-flixel'); // Integrate HaxeUI with Flixel
+    }
 
     addHaxelib('polymod'); // Modding framework
     addHaxelib('flxanimate'); // Texture atlas rendering
@@ -1352,6 +1384,15 @@ class Project extends HXProject
     var shouldPreloadDefault = true;
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
     addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
+
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
+      removeAssetPath('assets/preload/data/ui/animation-editor', "default");
+
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
+      removeAssetPath('assets/preload/data/ui/chart-editor', "default");
+
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
+      removeAssetPath('assets/preload/data/ui/stage-editor', "default");
 
     // Font assets
     var shouldEmbedFonts = true;
@@ -1777,6 +1818,25 @@ class Project extends HXProject
   }
 
   /**
+	 * Remove an asset from the game build.
+	 * @param path The path the asset is located at.
+	 */
+	public function removeAsset(path:String, ?library:String):Void
+  {
+		for (asset in this.assets)
+    {
+			if (asset.sourcePath == path)
+      {
+				if (library != null && asset.library != library) continue;
+
+				this.assets.remove(asset);
+				// info("Removed asset: " + path);
+				break;
+			}
+		}
+	}
+
+  /**
    * Add an entire path of assets to the game build.
    * @param path The path the assets are located at.
    * @param rename The path the assets should be placed.
@@ -1832,6 +1892,41 @@ class Project extends HXProject
       }
     }
   }
+
+  /**
+	 * Remove all assets in a path recursively from the game build.
+	 * @param path The path the assets are located at.
+	 * @param library (optional) The asset library to remove the assets from. Defaults to all libraries.
+	 */
+	public function removeAssetPath(path:String, ?library:String):Void {
+		// Argument parsing.
+		if (path == "")
+			return;
+
+		// Validate path.
+		if (!sys.FileSystem.exists(path)) {
+			error('Could not find asset path "${path}".');
+		} else if (!sys.FileSystem.isDirectory(path)) {
+			error('Could not parse asset path "${path}", expected a directory.');
+		} else {
+			// info('  Found asset path "${path}".');
+		}
+
+		for (exclude in EXCLUDE_ASSETS)
+		{
+			// Surely Eric got a better way to solve this.
+			if (path.contains(exclude.replace('*', ''))) return;
+		}
+
+		for (file in sys.FileSystem.readDirectory(path)) {
+			if (sys.FileSystem.isDirectory('${path}/${file}')) {
+				// Attempt to recursively remove all assets in the directory.
+				removeAssetPath('${path}/${file}', library);
+			} else {
+				removeAsset('${path}/${file}', library);
+			}
+		}
+	}
 
   /**
    * Add an asset library to the game build.

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.Box;
 
 /**
@@ -14,3 +15,4 @@ class ChartEditorPlaybarHead extends Box
   // Auto-populated.
   // public function new() { }
 }
+#end

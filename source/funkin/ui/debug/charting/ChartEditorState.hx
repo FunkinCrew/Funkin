@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -6590,7 +6591,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       displayAutosavePopup = false;
       #if sys
-      Toolkit.callLater(() -> {
+      haxe.ui.Toolkit.callLater(() -> {
         var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
         this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
           {
@@ -7038,6 +7039,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return params;
   }
 }
+#end
 
 /**
  * Available input modes for the chart editor state. Numbers/arrows/WASD available for other keybinds.

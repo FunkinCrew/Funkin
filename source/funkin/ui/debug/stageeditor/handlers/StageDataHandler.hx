@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.handlers;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.io.Bytes;
 import funkin.util.FileUtil;
 import openfl.display.BitmapData;
@@ -384,3 +385,4 @@ class StageDataHandler
     state.updateMarkerPos();
   }
 }
+#end

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 /**
  * Switch the current difficulty (and possibly variation) of the chart in the chart editor.
  */
@@ -49,3 +50,4 @@ class SwitchDifficultyCommand implements ChartEditorCommand
     return 'Switch Difficulty';
   }
 }
+#end
