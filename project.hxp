@@ -1915,36 +1915,9 @@ class Project extends HXProject
 
   public function getGitModified():Bool
   {
-    var branchProcess = new sys.io.Process('git', ['status', '--porcelain']);
+    var branchProcess = new sys.io.Process('git', ['diff', '--quiet']);
 
-    if (branchProcess.exitCode() != 0)
-    {
-      var message = branchProcess.stderr.readAll().toString();
-      error('Could not determine current git status; is this a proper Git repository?');
-    }
-
-    var output:String = '';
-    try
-    {
-      output = branchProcess.stdout.readLine();
-    }
-    catch (e)
-    {
-      if (e.message == 'Eof')
-      {
-        // Do nothing.
-        // Eof = No output.
-      }
-      else
-      {
-        // Rethrow other exceptions.
-        throw e;
-      }
-    }
-
-    branchProcess.close();
-
-    return output.length > 0;
+    return branchProcess.exitCode(true) == 1;
   }
 
   //
