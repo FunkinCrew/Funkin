@@ -95,7 +95,7 @@ class ResultState extends MusicBeatSubState
 
   var introMusicAudio:Null<FunkinSound> = null;
 
-  var bg:FlxSprite;
+  var bg:Null<FlxSprite>;
   var rankBg:FunkinSprite;
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;

@@ -51,6 +51,7 @@ class Strumline extends FlxSpriteGroup
 
   static final KEY_COUNT:Int = 4;
   static final NOTE_SPLASH_CAP:Int = 6;
+  static final HOLD_COVERS_CAP:Int = 4;
 
   var renderDistanceMs(get, never):Float;
 
@@ -219,7 +220,7 @@ class Strumline extends FlxSpriteGroup
     this.notesVwoosh.zIndex = 31;
     this.add(this.notesVwoosh);
 
-    this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>(0, 0, 4);
+    this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>(0, 0, HOLD_COVERS_CAP);
     this.noteHoldCovers.zIndex = 40;
     this.add(this.noteHoldCovers);
 
