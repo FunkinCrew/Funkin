@@ -3,6 +3,9 @@ package funkin.ui.debug.stageeditor.handlers;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.input.mouse.FlxMouse;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import funkin.data.stage.StageData.StageDataProp;
 import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
@@ -15,10 +18,9 @@ using StringTools;
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
 @:access(funkin.ui.debug.stageeditor.components.StageEditorObject)
 @:nullSafety
-class StageEditorAssetDataHandler
+class StageEditorAssetHandler
 {
   // public var state:StageEditorState;
-
   // public function new(state:StageEditorState)
   // {
   //   this.state = state;
@@ -34,26 +36,29 @@ class StageEditorAssetDataHandler
   public static function toData(object:StageEditorObject, useBitmaps:Bool = false):StageEditorObjectData
   {
     var output:StageEditorObjectData =
-    {
-      name: object.name,
-      assetPath: "",
-      position: [object.x, object.y],
-      zIndex: object.zIndex,
-      isPixel: !object.antialiasing,
-      scale: object.scale.x == object.scale.y ? Left(object.scale.x) : Right([object.scale.x, object.scale.y]),
-      alpha: object.alpha,
-      danceEvery: object.animation.getNameList().length > 0 ? object.danceEvery : 0,
-      scroll: [object.scrollFactor.x, object.scrollFactor.y],
-      animations: [for (n => d in object.animData) d],
-      startingAnimation: object.startingAnimation,
-      animType: "sparrow", // We're automatically making sparrow atlases, yeah...
-      angle: object.angle,
-      flipX: object.flipX,
-      flipY: object.flipY,
-      blend: object.blend == null ? "" : Std.string(object.blend),
-      color: object.color.toWebString(),
-      animData: ""
-    }
+      {
+        name: object.name,
+        assetPath: "",
+        position: [object.x, object.y],
+        zIndex: object.zIndex,
+        isPixel: !object.antialiasing,
+        scale:
+          (object.scale == null)
+          ? Left(1.0)
+          : object.scale.x == object.scale.y ? Left(object.scale.x) : Right([object.scale.x, object.scale.y]),
+        alpha: object.alpha,
+        danceEvery: object.animation.getNameList().length > 0 ? object.danceEvery : 0,
+        scroll: [object.scrollFactor.x, object.scrollFactor.y],
+        animations: [for (n => d in object.animData) d],
+        startingAnimation: object.startingAnimation,
+        animType: "sparrow", // We're automatically making sparrow atlases, yeah...
+        angle: object.angle,
+        flipX: object.flipX,
+        flipY: object.flipY,
+        blend: object.blend == null ? "" : Std.string(object.blend),
+        color: object.color.toWebString(),
+        animData: ""
+      }
 
     if (useBitmaps)
     {
@@ -108,9 +113,8 @@ class StageEditorAssetDataHandler
       if (hasAnimations)
       {
         var bitmapData = bitmap?.clone();
-        if (bitmapData != null) object.frames = data.animData.contains('<TextureAtlas')
-          ? FlxAtlasFrames.fromSparrow(bitmapData, data.animData)
-          : FlxAtlasFrames.fromSpriteSheetPacker(bitmapData, data.animData);
+        if (bitmapData != null) object.frames = data.animData.contains('<TextureAtlas') ? FlxAtlasFrames.fromSparrow(bitmapData,
+          data.animData) : FlxAtlasFrames.fromSpriteSheetPacker(bitmapData, data.animData);
       }
       else if (isSolidColor)
       {
@@ -137,22 +141,16 @@ class StageEditorAssetDataHandler
 
     for (anim in data.animations ?? [])
     {
-      object.addAnimation(
-        anim.name ?? 'Unknown',
-        anim.prefix ?? '',
-        anim.offsets ?? [0, 0],
-        anim.frameIndices ?? [],
-        anim.frameRate ?? 24,
-        anim.looped ?? false,
-        anim.flipX ?? false,
-        anim.flipY ?? false
-      );
+      object.addAnimation(anim.name ?? 'Unknown', anim.prefix ?? '', anim.offsets ?? [0, 0], anim.frameIndices ?? [], anim.frameRate ?? 24,
+        anim.looped ?? false, anim.flipX ?? false, anim.flipY ?? false);
     }
 
     switch (data.scale ?? Left(1.0))
     {
-        case Left(value): object.scale.set(value, value);
-        case Right(values): object.scale.set(values[0], values[1]);
+      case Left(value):
+        object.scale.set(value, value);
+      case Right(values):
+        object.scale.set(values[0], values[1]);
     }
     object.updateHitbox();
 
@@ -247,7 +245,8 @@ class StageEditorAssetDataHandler
     }
 
     var id:Int = 0;
-    while (bitmaps.exists("image" + id)) id++;
+    while (bitmaps.exists("image" + id))
+      id++;
 
     bitmaps.set("image" + id, newBitmap);
     return "image" + id;
@@ -289,6 +288,26 @@ class StageEditorAssetDataHandler
     state.commandHistoryDirty = true;
     state.sortObjects();
     state.removeUnusedBitmaps();
+  }
+
+  public static function pixelPerfectCheck(mouse:FlxMouse, sprite:FlxSprite):Bool
+  {
+    if (sprite == null || mouse == null) return false;
+
+    if (!mouse.overlaps(sprite)) return false;
+
+    var mouseX:Float = FlxG.mouse.x - sprite.x;
+    var mouseY:Float = FlxG.mouse.y - sprite.y;
+
+    if (mouseX < 0 || mouseY < 0 || mouseX >= sprite.frameWidth || mouseY >= sprite.frameHeight) return false;
+
+    if (sprite.framePixels == null) sprite.drawFrame();
+    var currentFramePixels:BitmapData = sprite.framePixels;
+
+    var pixelColor:Int = currentFramePixels.getPixel32(Std.int(mouseX), Std.int(mouseY));
+    if (((pixelColor >> 24) & 0xFF) > 0) return true;
+
+    return false;
   }
 }
 

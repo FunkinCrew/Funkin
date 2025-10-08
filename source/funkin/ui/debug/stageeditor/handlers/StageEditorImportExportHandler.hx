@@ -53,7 +53,7 @@ class StageEditorImportExportHandler
   {
     state.stageData = newStageData;
     state.clearAssets();
-    StageEditorAssetDataHandler.bitmaps.clear();
+    StageEditorAssetHandler.bitmaps.clear();
 
     Paths.setCurrentLevel(state.currentStageDirectory);
 
@@ -66,31 +66,32 @@ class StageEditorImportExportHandler
       for (propData in state.stageData.props)
       {
         var prop = new StageEditorObject();
-        if (!propData.assetPath.startsWith('#')) StageEditorAssetDataHandler.bitmaps.set(propData.assetPath, Assets.getBitmapData(Paths.image(propData.assetPath)));
+        if (!propData.assetPath.startsWith('#')) StageEditorAssetHandler.bitmaps.set(propData.assetPath, Assets.getBitmapData(Paths.image(propData.assetPath)));
 
         var usePacker:Bool = propData.animType == "packer";
         var animPath:String = Paths.file("images/" + propData.assetPath + (usePacker ? ".txt" : ".xml"));
         var animText:String = Assets.exists(animPath) ? Assets.getText(animPath) : "";
 
-        prop.fromData({
-          name: propData.name ?? 'Unnamed',
-          assetPath: propData.assetPath,
-          animations: propData.animations?.copy(),
-          scale: propData.scale,
-          position: propData.position,
-          alpha: propData.alpha,
-          angle: propData.angle,
-          zIndex: propData.zIndex,
-          danceEvery: propData.danceEvery,
-          isPixel: propData.isPixel,
-          scroll: propData.scroll?.copy(),
-          color: propData.color,
-          blend: propData.blend,
-          flipX: propData.flipX,
-          flipY: propData.flipY,
-          startingAnimation: propData.startingAnimation,
-          animData: animText,
-        });
+        prop.fromData(
+          {
+            name: propData.name ?? 'Unnamed',
+            assetPath: propData.assetPath,
+            animations: propData.animations?.copy(),
+            scale: propData.scale,
+            position: propData.position,
+            alpha: propData.alpha,
+            angle: propData.angle,
+            zIndex: propData.zIndex,
+            danceEvery: propData.danceEvery,
+            isPixel: propData.isPixel,
+            scroll: propData.scroll?.copy(),
+            color: propData.color,
+            blend: propData.blend,
+            flipX: propData.flipX,
+            flipY: propData.flipY,
+            startingAnimation: propData.startingAnimation,
+            animData: animText,
+          });
 
         state.add(prop);
       }
@@ -129,10 +130,10 @@ class StageEditorImportExportHandler
     return result;
   }
 
-  public static function loadFromFNFS(state:StageEditorState, bytes: Bytes):Null<Array<String>>
+  public static function loadFromFNFS(state:StageEditorState, bytes:Bytes):Null<Array<String>>
   {
     state.clearAssets();
-    StageEditorAssetDataHandler.bitmaps.clear();
+    StageEditorAssetHandler.bitmaps.clear();
 
     var output:Array<String> = [];
 
@@ -150,7 +151,7 @@ class StageEditorImportExportHandler
       {
         case "png", "jpg", "jpeg", "gif", "bmp":
           var bitmapData:BitmapData = BitmapData.fromBytes(entry.data);
-          StageEditorAssetDataHandler.bitmaps.set(Path.withoutExtension(entry.fileName), bitmapData);
+          StageEditorAssetHandler.bitmaps.set(Path.withoutExtension(entry.fileName), bitmapData);
 
         case "xml":
           xmls.set(Path.withoutExtension(entry.fileName), entry.data.toString());
@@ -176,25 +177,26 @@ class StageEditorImportExportHandler
       {
         var prop = new StageEditorObject();
 
-        prop.fromData({
-          name: propData.name ?? 'Unnamed',
-          assetPath: propData.assetPath,
-          animations: propData.animations?.copy(),
-          scale: propData.scale,
-          position: propData.position,
-          alpha: propData.alpha,
-          angle: propData.angle,
-          zIndex: propData.zIndex,
-          danceEvery: propData.danceEvery,
-          isPixel: propData.isPixel,
-          scroll: propData.scroll?.copy(),
-          color: propData.color,
-          blend: propData.blend,
-          flipX: propData.flipX,
-          flipY: propData.flipY,
-          startingAnimation: propData.startingAnimation,
-          animData: xmls[propData.assetPath] ?? ''
-        });
+        prop.fromData(
+          {
+            name: propData.name ?? 'Unnamed',
+            assetPath: propData.assetPath,
+            animations: propData.animations?.copy(),
+            scale: propData.scale,
+            position: propData.position,
+            alpha: propData.alpha,
+            angle: propData.angle,
+            zIndex: propData.zIndex,
+            danceEvery: propData.danceEvery,
+            isPixel: propData.isPixel,
+            scroll: propData.scroll?.copy(),
+            color: propData.color,
+            blend: propData.blend,
+            flipX: propData.flipX,
+            flipY: propData.flipY,
+            startingAnimation: propData.startingAnimation,
+            animData: xmls[propData.assetPath] ?? ''
+          });
 
         state.add(prop);
       }
@@ -240,10 +242,32 @@ class StageEditorImportExportHandler
     #if sys
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
-    entries.sort(SortUtil.alphabetically);
+    var files:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
+    var filestats:Array<sys.FileStat> = [];
+    if (files.length > 0)
+    {
+      while (!files[files.length - 1].endsWith(Constants.EXT_CHART) || !files[files.length - 1].startsWith("stage-editor-"))
+      {
+        if (files.length == 0) break;
+        files.pop();
+      }
+    }
 
-    var latestBackupPath:Null<String> = entries[(entries.length - 1)];
+    var latestBackupPath:Null<String> = files[0];
+    for (file in files)
+    {
+      filestats.push(sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH + file])));
+    }
+
+    var latestFileIndex:Int = 0;
+    for (index in 0...filestats.length)
+    {
+      if (filestats[latestFileIndex].mtime.getTime() < filestats[index].mtime.getTime())
+      {
+        latestFileIndex = index;
+        latestBackupPath = files[index];
+      }
+    }
 
     if (latestBackupPath == null) return null;
     return haxe.io.Path.join([BACKUPS_PATH, latestBackupPath]);
@@ -277,7 +301,7 @@ class StageEditorImportExportHandler
    * @param onCancelCb Callback for when saving is cancelled.
    */
   public static function exportAllStageData(state:StageEditorState, force:Bool = false, targetPath:Null<String>, ?onSaveCb:String->Void,
-    ?onCancelCb:Void->Void):Void
+      ?onCancelCb:Void->Void):Void
   {
     var zipEntries:Array<haxe.zip.Entry> = [];
 
@@ -290,7 +314,7 @@ class StageEditorImportExportHandler
       {
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
-        targetPath= Path.join([
+        targetPath = Path.join([
           'stage-editor-${state.currentStageId}-${DateUtil.generateTimestamp()}.${Constants.EXT_STAGE}'
         ]);
         // We have to force write because the program will die before the save dialog is closed.
