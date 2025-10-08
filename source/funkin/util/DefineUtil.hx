@@ -15,7 +15,7 @@ class DefineUtil
    */
   public static var defines(get, never):Map<String, String>;
 
-  // Manualy without macro for scripts.
+  // Manually, without macro for scripts.
   public static function isDefined(define:String):Bool
     return defines.exists(define);
 
