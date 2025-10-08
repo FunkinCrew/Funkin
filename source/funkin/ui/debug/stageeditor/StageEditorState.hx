@@ -23,9 +23,10 @@ import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.save.Save;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
-import funkin.ui.debug.stageeditor.commands.SelectObjectCommand;
+import funkin.ui.debug.stageeditor.commands.FlipObjectCommand;
 import funkin.ui.debug.stageeditor.commands.DeselectObjectCommand;
 import funkin.ui.debug.stageeditor.commands.RemoveObjectCommand;
+import funkin.ui.debug.stageeditor.commands.SelectObjectCommand;
 import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.character.BaseCharacter;
@@ -1089,11 +1090,9 @@ class StageEditorState extends UIState
     menubarItemUndo.onClick = _ -> undoLastCommand();
     menubarItemRedo.onClick = _ -> redoLastCommand();
     menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
-    menubarItemDelete.onClick = _ -> {
-      if (selectedProp != null) performCommand(new RemoveObjectCommand(selectedProp));
-      else
-        this.error('No Object Selected', 'Please select an object to delete.');
-    };
+    menubarItemFlipX.onClick = _ -> performCommand(new FlipObjectCommand(selectedProp, true));
+    menubarItemFlipY.onClick = _ -> performCommand(new FlipObjectCommand(selectedProp, false));
+    menubarItemDelete.onClick = _ -> performCommand(new RemoveObjectCommand(selectedProp));
 
     /**
      * VIEW
@@ -1266,7 +1265,8 @@ class StageEditorState extends UIState
    */
   function handleMenubar():Void
   {
-    for (item in menubarSpriteDependent) item.disabled = (selectedProp == null || currentSelectionMode != OBJECTS);
+    for (item in menubarSpriteDependent)
+      item.disabled = (selectedProp == null || currentSelectionMode != OBJECTS);
 
     if (commandHistoryDirty)
     {
@@ -1474,6 +1474,24 @@ class StageEditorState extends UIState
     if (redoKeyHandler.activated)
     {
       redoLastCommand();
+    }
+
+    // CTRL + H = Flip Horizontally
+    if (pressingControl() && FlxG.keys.justPressed.H)
+    {
+      if (selectedProp != null) performCommand(new FlipObjectCommand(selectedProp, true));
+    }
+
+    // CTRL + G = Flip Vertically
+    if (pressingControl() && FlxG.keys.justPressed.G)
+    {
+      if (selectedProp != null) performCommand(new FlipObjectCommand(selectedProp, false));
+    }
+
+    // CTRL + Delete = Delete
+    if (pressingControl() && FlxG.keys.justPressed.DELETE)
+    {
+      performCommand(new RemoveObjectCommand(selectedProp));
     }
   }
 

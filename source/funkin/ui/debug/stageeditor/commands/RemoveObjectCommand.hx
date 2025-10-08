@@ -25,6 +25,8 @@ class RemoveObjectCommand implements StageEditorCommand
     state.selectedProp?.destroy();
     state.selectedProp = null;
 
+    state.playSound(Paths.sound('chartingSounds/noteErase'));
+
     state.saveDataDirty = true;
 
     state.sortObjects();

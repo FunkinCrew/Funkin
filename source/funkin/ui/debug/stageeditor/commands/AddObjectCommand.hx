@@ -47,9 +47,13 @@ class AddObjectCommand implements StageEditorCommand
     state.playSound(Paths.sound('chartingSounds/undo'));
 
     if (addedObject == null) return;
-    
+
     state.spriteArray.remove(addedObject);
     state.remove(addedObject, true);
+
+    state.playSound(Paths.sound('chartingSounds/undo'));
+
+    state.saveDataDirty = true;
 
     state.sortObjects();
   }
