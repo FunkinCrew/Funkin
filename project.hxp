@@ -853,11 +853,11 @@ class Project extends HXProject
 
     // Should be true except on web and mobile builds.
     // Debug editors aren't built to work on web or mobile right now.
-    FEATURE_HAXEUI.apply(this, !(isWeb() || isMobile()));
-    FEATURE_DEBUG_MENU.apply(this, FEATURE_HAXEUI.isEnabled(this));
-    FEATURE_ANIMATION_EDITOR.apply(this, FEATURE_HAXEUI.isEnabled(this));
-    FEATURE_CHART_EDITOR.apply(this, FEATURE_HAXEUI.isEnabled(this));
-    FEATURE_STAGE_EDITOR.apply(this, FEATURE_HAXEUI.isEnabled(this));
+    FEATURE_DEBUG_MENU.apply(this, !(isWeb() || isMobile()));
+    FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this) || FEATURE_CHART_EDITOR.isEnabled(this) || FEATURE_STAGE_EDITOR.isEnabled(this));
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
