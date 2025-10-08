@@ -55,7 +55,7 @@ class IntroSubState extends MusicBeatSubState
   }
 
   #if html5
-  var vid:FlxVideo;
+  var vid:Null<FlxVideo>;
 
   function playVideoHTML5(filePath:String):Void
   {
