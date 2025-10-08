@@ -45,6 +45,11 @@ class Project extends HXProject
   static final TITLE:String = "Friday Night Funkin'";
 
   /**
+   * The game's name on mobile. Used as the title for the game on the home screen.
+   */
+  static final TITLE_MOBILE:String = "FNF";
+
+  /**
    * A package name used for identifying the app on various app stores.
    */
   static final PACKAGE_NAME:String = "me.funkin.fnf";
@@ -551,10 +556,12 @@ class Project extends HXProject
    */
   function configureApp()
   {
-    this.meta.title = TITLE;
+    this.meta.title = isMobile() ? TITLE_MOBILE : TITLE;
 
     // ios uses this character code instead of spaces...
-    if (isIOS()) this.meta.title = ~/ /ig.replace(TITLE, "\u2002");
+    // We don't have spaces in our title for mobile anymore
+    // But keeping incase anybody source-modding ever does add spaces
+    if (isIOS()) this.meta.title = ~/ /ig.replace(TITLE_MOBILE, "\u2002");
 
     this.meta.version = VERSION;
     this.meta.packageName = PACKAGE_NAME;
@@ -814,7 +821,7 @@ class Project extends HXProject
 
     // Video playback should be enabled on desktop, web, and mobile.
     // HXCPP has trouble with iOS simulator builds though...
-    FEATURE_VIDEO_PLAYBACK.apply(this, !isIOSSimulator() && !isHashLink());
+    FEATURE_VIDEO_PLAYBACK.apply(this, !(isIOSSimulator() || isHashLink()));
 
     // Video subtitles only work via using hxvlc.
     FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK.isEnabled(this) && !isWeb());
