@@ -6356,12 +6356,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     // TODO: .insertionSort()
     currentSongChartNoteData.sort(function(a:SongNoteData, b:SongNoteData):Int {
-      return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
+      return SortUtil.noteDataByTime(FlxSort.ASCENDING, a, b);
     });
 
     // TODO: .insertionSort()
     currentSongChartEventData.sort(function(a:SongEventData, b:SongEventData):Int {
-      return FlxSort.byValues(FlxSort.ASCENDING, a.time, b.time);
+      return SortUtil.eventDataByTime(FlxSort.ASCENDING, a, b);
     });
   }
 

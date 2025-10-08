@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.util.ClipboardUtil;
+import funkin.util.SortUtil;
 
 using Lambda;
 
@@ -176,7 +177,7 @@ class SongDataUtils
   {
     // TODO: Modifies the array in place. Is this okay?
     notes.sort(function(a:SongNoteData, b:SongNoteData):Int {
-      return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.time, b.time);
+      return SortUtil.noteDataByTime(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a, b);
     });
     return notes;
   }
@@ -188,19 +189,19 @@ class SongDataUtils
   {
     // TODO: Modifies the array in place. Is this okay?
     events.sort(function(a:SongEventData, b:SongEventData):Int {
-      return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.time, b.time);
+      return SortUtil.eventDataByTime(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a, b);
     });
     return events;
   }
 
   /**
-   * Sort an array of notes by strum time.
+   * Sort an array of time changes by strum time.
    */
   public static function sortTimeChanges(timeChanges:Array<SongTimeChange>, desc:Bool = false):Array<SongTimeChange>
   {
     // TODO: Modifies the array in place. Is this okay?
     timeChanges.sort(function(a:SongTimeChange, b:SongTimeChange):Int {
-      return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.timeStamp, b.timeStamp);
+      return SortUtil.timeChangeByTime(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a, b);
     });
     return timeChanges;
   }
