@@ -8,6 +8,7 @@ import openfl.display.BitmapData;
 class AddObjectCommand implements StageEditorCommand
 {
   var objectID:String;
+  var addedObject:Null<StageEditorObject>;
   var bitmap:Null<BitmapData> = null;
 
   public function new(objectID:String, ?bitmap:BitmapData = null)
@@ -22,7 +23,7 @@ class AddObjectCommand implements StageEditorCommand
 
     if (bitmap != null) {}
     else
-      sprite.loadGraphic(StageEditorAssetDataHandler.getDefaultGraphic());
+      sprite.loadGraphic(StageEditorAssetHandler.getDefaultGraphic());
 
     sprite.name = objectID;
     sprite.screenCenter();
@@ -34,11 +35,24 @@ class AddObjectCommand implements StageEditorCommand
 
     state.add(sprite);
     state.sortObjects();
+    this.addedObject = sprite;
+
+    state.saveDataDirty = true;
 
     state.success('Object Creating Successfully', 'Successfully created an object with the name $objectID!');
   }
 
-  public function undo(state:StageEditorState):Void {}
+  public function undo(state:StageEditorState):Void
+  {
+    state.playSound(Paths.sound('chartingSounds/undo'));
+
+    if (addedObject == null) return;
+    
+    state.spriteArray.remove(addedObject);
+    state.remove(addedObject, true);
+
+    state.sortObjects();
+  }
 
   public function shouldAddToHistory(state:StageEditorState):Bool
   {

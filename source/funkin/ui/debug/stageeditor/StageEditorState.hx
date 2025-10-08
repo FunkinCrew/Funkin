@@ -17,19 +17,24 @@ import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.shaders.Grayscale;
 import funkin.input.Cursor;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.save.Save;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
+import funkin.ui.debug.stageeditor.commands.SelectObjectCommand;
+import funkin.ui.debug.stageeditor.commands.DeselectObjectCommand;
 import funkin.ui.debug.stageeditor.commands.RemoveObjectCommand;
 import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.stage.StageData;
 import funkin.util.WindowUtil;
 import funkin.util.FileUtil;
+import haxe.io.Path;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -148,6 +153,8 @@ class StageEditorState extends UIState
    */
   public static final TIME_BEFORE_ANIM_STOP:Float = 3.0;
 
+  var CHARACTER_DESELECT_SHADER:Grayscale = new Grayscale();
+
   /**
    * ==============================
    * INSTANCE DATA
@@ -192,7 +199,10 @@ class StageEditorState extends UIState
 
   function set_selectedCharacter(value:Null<BaseCharacter>):BaseCharacter
   {
+    if (selectedCharacter != null) selectedCharacter.shader = CHARACTER_DESELECT_SHADER;
     this.selectedCharacter = value;
+
+    if (selectedCharacter != null) selectedCharacter.shader = null;
     // update dialog
     return selectedCharacter;
   }
@@ -247,6 +257,8 @@ class StageEditorState extends UIState
   {
     return BASE_ANGLES[angleStepIndex];
   }
+
+  var selectedItemName:String = 'None';
 
   /**
    * ==============================
@@ -410,7 +422,7 @@ class StageEditorState extends UIState
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    return Screen.instance.hasSolidComponentUnderPoint(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
   }
 
   /**
@@ -420,7 +432,7 @@ class StageEditorState extends UIState
   var wasCursorOverHaxeUI:Bool = false;
 
   /**
-   * Set by StageEditorDialogHandler, used to prevent background interaction while the dialog is open.
+   * Set by StageEditorDialogHandler, used to prevent background interaction while a dialog is open.
    */
   var isHaxeUIDialogOpen:Bool = false;
 
@@ -542,7 +554,7 @@ class StageEditorState extends UIState
   /**
    * The `View -> View Characters` menu check box.
    */
-  var menubarItemViewChars:MenuCheckBox;
+  var menubarItemViewCharacters:MenuCheckBox;
 
   /**
    * The `View -> View Name Text` menu check box.
@@ -568,6 +580,19 @@ class StageEditorState extends UIState
    * The `Test Stage` menubar button.
    */
   var menubarButtonText:Button;
+
+  var menubarSpriteDependent(get, never):Array<MenuItem>;
+
+  function get_menubarSpriteDependent():Array<MenuItem>
+  {
+    return [
+      menubarItemCopy,
+      menubarItemCut,
+      menubarItemFlipX,
+      menubarItemFlipY,
+      menubarItemDelete
+    ];
+  }
 
   /**
    * ==============================
@@ -757,8 +782,9 @@ class StageEditorState extends UIState
     initVisuals();
 
     setupUIListeners();
+    setupTurboKeyHandlers();
 
-    stageCamera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
+    stageCamera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE * 4);
 
     refresh();
 
@@ -969,24 +995,85 @@ class StageEditorState extends UIState
     add(objectNameText);
   }
 
+  /**
+   * ==============================
+   * UPDATE FUNCTIONS
+   * ==============================
+   */
+  function autoSave():Void
+  {
+    var needsAutoSave:Bool = saveDataDirty;
+
+    saveDataDirty = false;
+
+    // Auto-save preferences.
+    writePreferences(needsAutoSave);
+
+    // Auto-save the stage.
+    #if html5
+    // Auto-save to local storage.
+    // TODO: Implement this.
+    #else
+    // Auto-save to temp file.
+    if (needsAutoSave)
+    {
+      // this.exportAllStageData(true, null);
+      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorImportExportHandler.BACKUPS_PATH]);
+      this.infoWithActions('Auto-Save', 'Stage auto-saved to ${absoluteBackupsPath}.', [
+        {
+          text: "Take Me There",
+          callback: openBackupsFolder,
+        }
+      ]);
+    }
+    #end
+  }
+
+  /**
+   * Open the backups folder in the file explorer.
+   * Don't call this on HTML5.
+   */
+  function openBackupsFolder(?_):Bool
+  {
+    #if sys
+    // TODO: Is there a way to open a folder and highlight a file in it?
+    var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorImportExportHandler.BACKUPS_PATH]);
+    FileUtil.openFolder(absoluteBackupsPath);
+    return true;
+    #else
+    trace('No file system access, cannot open backups folder.');
+    return false;
+    #end
+  }
+
   public override function update(elapsed:Float):Void
   {
+    // Override F4 behavior to include the autosave.
+    if (FlxG.keys.justPressed.F4 && !criticalFailure)
+    {
+      quitStageEditor();
+      return;
+    }
+
     super.update(elapsed);
 
-    stageCamera.follow(cameraFollowPoint);
+    if (criticalFailure) return;
 
-    if ((FlxG.mouse.wheel > 0 || (FlxG.mouse.wheel < 0 && stageCamera.zoom > 0.11)) && !isCursorOverHaxeUI)
-    {
-      stageCamera.zoom += FlxG.mouse.wheel / 10;
-      this.updateGridBitmapSize();
-    }
+    if ((selectedProp == null && currentSelectionMode == OBJECTS)
+      || (selectedCharacter == null && currentSelectionMode == CHARACTERS)
+      || currentSelectionMode == NONE) selectedItemName = "None";
+
+    objectNameText.text = '';
 
     handleMenubar();
     handleBottomBar();
 
     handleMouse();
     handleFileKeybinds();
-    handleEditKeybinds();
+    if (!(isHaxeUIFocused || isCursorOverHaxeUI))
+    {
+      handleEditKeybinds();
+    }
   }
 
   function setupUIListeners():Void
@@ -999,6 +1086,8 @@ class StageEditorState extends UIState
     /**
      * EDIT
      */
+    menubarItemUndo.onClick = _ -> undoLastCommand();
+    menubarItemRedo.onClick = _ -> redoLastCommand();
     menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
     menubarItemDelete.onClick = _ -> {
       if (selectedProp != null) performCommand(new RemoveObjectCommand(selectedProp));
@@ -1019,6 +1108,13 @@ class StageEditorState extends UIState
     };
     menubarItemThemeDark.selected = currentTheme == StageEditorTheme.Dark;
 
+    menubarItemViewCharacters.onChange = _ -> {
+      for (charType => character in characters)
+        character.visible = menubarItemViewCharacters.selected;
+    }
+
+    menubarItemViewNameText.onChange = _ -> objectNameText.visible = menubarItemViewNameText.selected;
+
     /**
      * WINDOWS
      */
@@ -1033,17 +1129,23 @@ class StageEditorState extends UIState
      * BOTTOM BAR
      */
     bottomBarModeText.onClick = _ -> {
-      // I'm too lazy to make another array and index shit.
+      // This is by far the worst code that I have ever written.
       switch (currentSelectionMode)
       {
-        case StageEditorSelectionMode.NONE:
-          currentSelectionMode = StageEditorSelectionMode.OBJECTS;
-        case StageEditorSelectionMode.OBJECTS:
-          currentSelectionMode = StageEditorSelectionMode.CHARACTERS;
-        case StageEditorSelectionMode.CHARACTERS:
-          currentSelectionMode = StageEditorSelectionMode.NONE;
+        case NONE:
+          currentSelectionMode = OBJECTS;
+        case OBJECTS:
+          if (selectedProp != null) selectedProp = null;
+          currentSelectionMode = CHARACTERS;
+          for (charType => character in characters)
+            if (character != null) character.shader = CHARACTER_DESELECT_SHADER;
+        case CHARACTERS:
+          currentSelectionMode = NONE;
+          if (selectedCharacter != null) selectedCharacter = null;
+          for (charType => character in characters)
+            if (character != null) character.shader = null;
         default:
-          currentSelectionMode = StageEditorSelectionMode.NONE;
+          currentSelectionMode = NONE;
       }
     }
 
@@ -1077,6 +1179,17 @@ class StageEditorState extends UIState
       angleStepIndex--;
       if (angleStepIndex < 0) angleStepIndex = BASE_ANGLES.length - 1;
     }
+  }
+
+  /**
+   * Initialize TurboKeyHandlers and add them to the state (so `update()` is called)
+   * We can then probe `keyHandler.activated` to see if the key combo's action should be taken.
+   */
+  function setupTurboKeyHandlers():Void
+  {
+    // Keyboard shortcuts
+    add(undoKeyHandler);
+    add(redoKeyHandler);
   }
 
   /**
@@ -1153,6 +1266,8 @@ class StageEditorState extends UIState
    */
   function handleMenubar():Void
   {
+    for (item in menubarSpriteDependent) item.disabled = (selectedProp == null || currentSelectionMode != OBJECTS);
+
     if (commandHistoryDirty)
     {
       commandHistoryDirty = false;
@@ -1189,6 +1304,7 @@ class StageEditorState extends UIState
   function handleBottomBar():Void
   {
     bottomBarModeText.text = currentSelectionMode.toTitleCase();
+    bottomBarSelectText.text = selectedItemName;
     bottomBarMoveStepText.text = '${moveStep}px';
     bottomBarAngleStepText.text = '$angleStep';
   }
@@ -1216,7 +1332,10 @@ class StageEditorState extends UIState
     if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
     if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
 
-    var shouldHandleCursor:Bool = (!isHaxeUIFocused || isHaxeUIDialogOpen);
+    objectNameText.x = FlxG.mouse.getViewPosition(uiCamera).x;
+    objectNameText.y = FlxG.mouse.getViewPosition(uiCamera).y - objectNameText.height;
+
+    var shouldHandleCursor:Bool = !isHaxeUIFocused && !isHaxeUIDialogOpen && !isCursorOverHaxeUI;
 
     if (shouldHandleCursor)
     {
@@ -1229,6 +1348,66 @@ class StageEditorState extends UIState
         var safeZoom:Float = FlxMath.bound(stageCamera.zoom, 0.6);
         cameraFollowPoint.x -= Math.round(FlxG.mouse.deltaX / 2 / safeZoom);
         cameraFollowPoint.y -= Math.round(FlxG.mouse.deltaY / 2 / safeZoom);
+      }
+
+      if ((FlxG.mouse.wheel > 0 || (FlxG.mouse.wheel < 0 && stageCamera.zoom > 0.11)) && !isCursorOverHaxeUI)
+      {
+        stageCamera.zoom += FlxG.mouse.wheel / 10;
+        this.updateGridBitmapSize();
+      }
+
+      switch (currentSelectionMode)
+      {
+        case StageEditorSelectionMode.OBJECTS:
+          if (selectedProp != null
+            && !FlxG.mouse.pixelPerfectCheck(selectedProp)
+            && FlxG.mouse.justPressed) performCommand(new DeselectObjectCommand(selectedProp));
+
+          for (prop in spriteArray)
+          {
+            if (prop == null || !prop.visible) continue;
+
+            var isOverlapping:Bool = FlxG.mouse.pixelPerfectCheck(prop);
+
+            if (isOverlapping && !FlxG.keys.pressed.SHIFT)
+            {
+              targetCursorMode = Pointer;
+              objectNameText.text = prop.name;
+              if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) performCommand(new SelectObjectCommand(prop));
+            }
+
+            if (prop == selectedProp)
+            {
+              selectedItemName = prop.name;
+              if (FlxG.keys.pressed.SHIFT) objectNameText.text = prop.name + ' (LOCKED)';
+            }
+          }
+        case StageEditorSelectionMode.CHARACTERS:
+          if (selectedCharacter != null
+            && !FlxG.mouse.pixelPerfectCheck(selectedCharacter)
+            && FlxG.mouse.justPressed) selectedCharacter = null;
+
+          for (charType => character in characters)
+          {
+            if (character == null || !character.visible) continue;
+
+            var isOverlapping:Bool = FlxG.mouse.pixelPerfectCheck(character);
+
+            if (isOverlapping && !FlxG.keys.pressed.SHIFT)
+            {
+              targetCursorMode = Pointer;
+              objectNameText.text = Std.string(character.characterType);
+              if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) selectedCharacter = character;
+            }
+
+            if (character == selectedCharacter)
+            {
+              selectedItemName = Std.string(character.characterType);
+              if (FlxG.keys.pressed.SHIFT) objectNameText.text = Std.string(character.characterType) + ' (LOCKED)';
+            }
+          }
+        default:
+          // nothing
       }
 
       // Actually set the cursor mode to the one we specified earlier.
@@ -1248,10 +1427,36 @@ class StageEditorState extends UIState
     }
 
     // CTRL + O = Open Stage
-    //
+    // if (pressingControl() && FlxG.keys.justPressed.O && !isHaxeUIDialogOpen)
+    // {
+
+    // }
+
+    if (pressingControl() && FlxG.keys.justPressed.S && !isHaxeUIDialogOpen)
+    {
+      if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
+      {
+        // CTRL + SHIFT + S = Save As
+        this.exportAllStageData(false, null, function(path:String) {
+          // CTRL + SHIFT + S Successful
+          this.success('Saved Stage', 'Stage saved successfully to ${path}.');
+        }, function() {
+          // CTRL + SHIFT + S Cancelled
+        });
+      }
+      else
+      {
+        // CTRL + S = Save Stage
+        this.exportAllStageData(true, currentWorkingFilePath);
+        this.success('Saved Stage', 'Stage saved successfully to ${currentWorkingFilePath}.');
+      }
+    }
 
     // CTRL + Q = Quit to Menu
-    //
+    if (pressingControl() && FlxG.keys.justPressed.Q)
+    {
+      this.quitStageEditor(true);
+    }
   }
 
   /**
@@ -1270,6 +1475,26 @@ class StageEditorState extends UIState
     {
       redoLastCommand();
     }
+  }
+
+  function quitStageEditor(exitPrompt:Bool = false):Void
+  {
+    // if (saveDataDirty && exitPrompt)
+    // {
+    //   // this.openLeaveConfirmationDialog();
+    //   return;
+    // }
+
+    autoSave();
+
+    this.hideAllToolboxes();
+
+    // stopWelcomeMusic();
+    FlxG.switchState(() -> new MainMenuState());
+
+    resetWindowTitle();
+
+    criticalFailure = true;
   }
 
   function applyCanQuickSave():Void
