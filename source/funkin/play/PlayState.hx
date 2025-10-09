@@ -1892,11 +1892,11 @@ class PlayState extends MusicBeatSubState
      */
   function initHealthBar():Void
   {
-    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
-    #end
+    final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && !ControlsHandler.usingExternalInputDevice)
+      || #end Preferences.downscroll;
+
+    var healthBarYPos:Float = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
 
     healthBarBG.y = healthBarYPos;
     healthBarBG.screenCenter(X);
@@ -1929,7 +1929,12 @@ class PlayState extends MusicBeatSubState
     // Create subtitles if they are enabled.
     if (Preferences.subtitles)
     {
-      subtitles = new Subtitles(healthBarBG.y * 0.85);
+      final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+        && !ControlsHandler.usingExternalInputDevice)
+        || #end Preferences.downscroll;
+
+      var subtitlesYPos:Float = isDownscroll ? healthBarBG.y * 1.85 : healthBarBG.y * 0.85;
+      subtitles = new Subtitles(subtitlesYPos);
       subtitles.zIndex = 10000;
       add(subtitles);
 
