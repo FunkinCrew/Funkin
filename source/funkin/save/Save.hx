@@ -120,6 +120,7 @@ class Save implements ConsoleClass
           framerate: #if mobile refreshRate #else 60 #end,
           naughtyness: true,
           downscroll: false,
+          vramCaching: true,
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: 'Off',
@@ -1593,6 +1594,12 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var downscroll:Bool;
+
+  /**
+   * If enabled, sprites will load into VRAM.
+   * @default `true`
+   */
+  var vramCaching:Bool;
 
   /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.

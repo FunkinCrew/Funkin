@@ -16,6 +16,33 @@ import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 class Preferences
 {
   /**
+   * VRAM Caching allows to decrease some used RAM memory for optimization and better use.
+   * @default `true` on desktop, otherwise `false`
+   */
+  public static var vramCaching(get, set):Bool;
+
+  static function get_vramCaching():Bool
+  {
+    #if desktop
+    return Save?.instance?.options?.vramCaching ?? true;
+    #else
+    return false;
+    #end
+  }
+
+  static function set_vramCaching(value:Bool):Bool
+  {
+    #if desktop
+    Save.instance.options.vramCaching = value;
+    openfl.utils.Assets.allowUncompressedTextures = FunkinMemory.allowVRAMCaching = value;
+    Save.instance.flush();
+    return value;
+    #else
+    return false;
+    #end
+  }
+
+  /**
    * FPS
    * Always the refresh rate of the display on mobile, or 60 on web.
    * @default `60`
@@ -512,6 +539,10 @@ class Preferences
     #if mobile
     // Apply the allowScreenTimeout setting.
     lime.system.System.allowScreenTimeout = Preferences.screenTimeout;
+    #end
+
+    #if desktop
+    openfl.utils.Assets.allowUncompressedTextures = FunkinMemory.allowVRAMCaching = Preferences.vramCaching;
     #end
   }
 

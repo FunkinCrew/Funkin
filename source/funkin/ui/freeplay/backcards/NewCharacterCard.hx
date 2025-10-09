@@ -130,7 +130,8 @@ class NewCharacterCard extends BackingCard
     friendFoe2 = new BGScrollingText(0, 402, 'COULD IT BE A NEW FRIEND? OR FOE??', FlxG.width, true, 43);
     newUnlock3 = new BGScrollingText(0, 458, 'NEW UNLOCK!', FlxG.width / 2, true, 80);
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/darkback')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/darkback'), false, false, false),
+      FreeplayState.CUTOUT_WIDTH);
     darkBg = new FlxSprite(0, 0).loadGraphic(bitmap);
     add(darkBg);
 
@@ -158,7 +159,8 @@ class NewCharacterCard extends BackingCard
     newUnlock3.speed = 2;
     add(newUnlock3);
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/multiplyBar')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/multiplyBar'), false, false, false),
+      FreeplayState.CUTOUT_WIDTH);
     multiplyBar = new FlxSprite(-10, 440).loadGraphic(bitmap);
     multiplyBar.blend = BlendMode.MULTIPLY;
     add(multiplyBar);
@@ -168,7 +170,8 @@ class NewCharacterCard extends BackingCard
     lightLayer.blend = BlendMode.ADD;
     add(lightLayer);
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/red')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/red'), false, false, false),
+      FreeplayState.CUTOUT_WIDTH);
     multiply1 = new FlxSprite(-15, -125).loadGraphic(bitmap);
     multiply1.blend = BlendMode.MULTIPLY;
     add(multiply1);
@@ -182,7 +185,7 @@ class NewCharacterCard extends BackingCard
     lightLayer2.blend = BlendMode.ADD;
     add(lightLayer2);
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/yellow bg piece')),
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/backingCards/newCharacter/yellow bg piece'), false, false, false),
       FreeplayState.CUTOUT_WIDTH);
     yellow = new FlxSprite(0, 0).loadGraphic(bitmap);
     yellow.blend = BlendMode.MULTIPLY;

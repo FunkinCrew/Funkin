@@ -28,6 +28,8 @@ class FunkinMemory
 
   static var purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
 
+  public static var allowVRAMCaching:Bool = #if desktop true #else false #end;
+
   /**
    * Caches textures that are always required.
    */
