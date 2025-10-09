@@ -123,10 +123,8 @@
     },
     {
       "name": "hxdiscord_rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "82c47ecc1a454b7dd644e4fcac7e91155f176dec",
-      "url": "https://github.com/FunkinCrew/hxdiscord_rpc"
+      "type": "haxelib",
+      "version": "1.3.0"
     },
     {
       "name": "hxjsonast",
