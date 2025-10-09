@@ -144,6 +144,8 @@ class ChartEditorAudioHandler
 
     state.hardRefreshFreeplayToolbox();
 
+    state.loadSubtitles();
+
     return true;
   }
 

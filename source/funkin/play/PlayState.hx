@@ -2498,7 +2498,7 @@ class PlayState extends MusicBeatSubState
 
     if (Preferences.subtitles)
     {
-      var subtitlesFile = 'songs/${currentSong.id}/subtitles/song-lyrics';
+      var subtitlesFile:String = 'songs/${currentSong.id}/subtitles/song-lyrics';
       if (currentVariation != Constants.DEFAULT_VARIATION)
       {
         subtitlesFile += '-${currentVariation}';

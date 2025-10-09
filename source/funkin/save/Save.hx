@@ -379,6 +379,23 @@ class Save implements ConsoleClass
     return data.optionsChartEditor.showNoteKinds;
   }
 
+  public var chartEditorShowSubtitles(get, set):Bool;
+
+  function get_chartEditorShowSubtitles():Bool
+  {
+    if (data.optionsChartEditor.showSubtitles == null) data.optionsChartEditor.showSubtitles = true;
+
+    return data.optionsChartEditor.showSubtitles;
+  }
+
+  function set_chartEditorShowSubtitles(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.showSubtitles = value;
+    flush();
+    return data.optionsChartEditor.showSubtitles;
+  }
+
   public var chartEditorPlaytestStartTime(get, set):Bool;
 
   function get_chartEditorPlaytestStartTime():Bool
@@ -1885,6 +1902,12 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?showNoteKinds:Bool;
+
+  /**
+   * Show Subtitles in the Chart Editor.
+   * @default `true`
+   */
+  var ?showSubtitles:Bool;
 
   /**
    * Metronome volume in the Chart Editor.
