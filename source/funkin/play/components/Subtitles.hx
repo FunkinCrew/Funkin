@@ -27,8 +27,6 @@ class Subtitles extends FlxSpriteGroup
 
     yOrigin = y;
 
-    if (!Preferences.subtitles) return;
-
     background = new FlxSprite(0, 0);
     background.alpha = 0.5;
     add(background);
@@ -43,7 +41,7 @@ class Subtitles extends FlxSpriteGroup
   {
     super.update(elapsed);
 
-    if (!Preferences.subtitles || assignedSound == null || subtitlesData == null) return;
+    if (assignedSound == null || subtitlesData == null) return;
 
     var currentLines:Array<String> = [];
     var hasRefreshedText:Bool = false;
@@ -74,8 +72,6 @@ class Subtitles extends FlxSpriteGroup
    */
   public function assignSubtitles(filePath:String, sound:FlxSound):Void
   {
-    if (!Preferences.subtitles) return;
-
     setText([], true);
 
     if (!Assets.exists(Paths.srt(filePath)) || sound == null) return;
@@ -89,8 +85,6 @@ class Subtitles extends FlxSpriteGroup
 
   function setText(lines:Array<String>, hide:Bool = false):Void
   {
-    if (!Preferences.subtitles) return;
-
     visible = !hide;
 
     var targetText:String = '';
