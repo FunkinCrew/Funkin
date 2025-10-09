@@ -154,7 +154,7 @@
       "name": "json2object",
       "type": "git",
       "dir": null,
-      "ref": "a8c26f18463c98da32f744c214fe02273e1823fa",
+      "ref": "589cad78fe2ff91eb3253a673071293ba0233c2c",
       "url": "https://github.com/FunkinCrew/json2object"
     },
     {
@@ -196,7 +196,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "57ceb6317cc0765e1f563a8c99441f302c8562fc",
+      "ref": "39b1d179b0ebabb43234fb02604d7a91250d7fc4",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
