@@ -521,7 +521,7 @@ class Preferences
   }
 
   /**
-   * If enabled, subtitles will appear.
+   * If enabled, subtitles will appear during some songs and cutscenes.
    * @default `true`
    */
   public static var subtitles(get, set):Bool;
