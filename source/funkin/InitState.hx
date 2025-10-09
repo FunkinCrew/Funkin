@@ -44,6 +44,10 @@ import funkin.api.discord.DiscordClient;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
+#if FEATURE_LOST_FOCUS_VOLUME
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+#end
 
 /**
  * A core class which performs initialization of the game.
@@ -212,6 +216,10 @@ class InitState extends FlxState
       });
       #end
 
+      #if FEATURE_LOST_FOCUS_VOLUME
+      FlxG.signals.focusLost.add(onLostFocus);
+      FlxG.signals.focusGained.add(onGainFocus);
+      #end
       //
       // ANDROID SETUP
       //
@@ -286,6 +294,50 @@ class InitState extends FlxState
     funkin.FunkinMemory.initialCache();
     #end
   }
+
+  #if FEATURE_LOST_FOCUS_VOLUME
+  @:noCompletion var _lastFocusVolume:Null<Float>;
+  @:noCompletion var _lostFocusVolumeTween:Null<FlxTween>;
+
+  function onLostFocus()
+  {
+    if (FlxG.sound.muted || FlxG.sound.volume == 0 || Preferences.lostVolumeFocusMode == "Off" || FlxG.autoPause) return;
+    _lostFocusVolumeTween?.cancel();
+    _lastFocusVolume = FlxG.sound.volume;
+
+    if (Preferences.lostVolumeFocusMode == "Instant")
+    {
+      FlxG.sound.volume *= Constants.LOST_FOCUS_VOLUME_MULTIPLIER;
+    }
+    else if (Preferences.lostVolumeFocusMode == "Delayed")
+    {
+      _lostFocusVolumeTween = FlxTween.num(FlxG.sound.volume, FlxG.sound.volume * Constants.LOST_FOCUS_VOLUME_MULTIPLIER, Constants.LOST_FOCUS_VOLUME_DURATION,
+        {
+          startDelay: Constants.LOST_FOCUS_VOLUME_DELAY,
+          ease: FlxEase.smootherStepOut
+        }, (volume:Float) -> FlxG.sound.volume = volume);
+    }
+  }
+
+  function onGainFocus()
+  {
+    if (FlxG.sound.muted || Preferences.lostVolumeFocusMode == "Off" || FlxG.autoPause) return;
+    _lostFocusVolumeTween?.cancel();
+
+    if (_lastFocusVolume != null)
+    {
+      if (Preferences.lostVolumeFocusMode == "Instant")
+      {
+        FlxG.sound.volume = _lastFocusVolume;
+      }
+      else if (Preferences.lostVolumeFocusMode == "Delayed")
+      {
+        _lostFocusVolumeTween = FlxTween.num(FlxG.sound.volume, _lastFocusVolume, Math.max(0.15, FlxG.sound.volume / _lastFocusVolume * .5),
+          {ease: FlxEase.smootherStepInOut}, (volume:Float) -> FlxG.sound.volume = volume);
+      }
+    }
+  }
+  #end
 
   /**
    * Start the game.

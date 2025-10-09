@@ -570,6 +570,23 @@ class Constants
   public static final GHOST_TAP_DELAY:Float = 3 / 8;
   #end
 
+  #if FEATURE_LOST_FOCUS_VOLUME
+  /**
+   * How much volume should be reduced on Application Focus Lost.
+   */
+  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.15;
+
+  /**
+   * Duration, in seconds, how long should volume reduce.
+   */
+  public static final LOST_FOCUS_VOLUME_DURATION:Float = 0.85;
+
+  /**
+   * Delay how long should game wait before fading volume with `Delayed` volume fade option.
+   */
+  public static final LOST_FOCUS_VOLUME_DELAY:Float = 0.15;
+  #end
+
   /**
    * Otherwise known as "The FuckCunt Variable"
    */
