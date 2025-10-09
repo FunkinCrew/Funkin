@@ -217,6 +217,10 @@ class InitState extends FlxState
       });
       #end
 
+      #if FEATURE_LOST_FOCUS_VOLUME
+      FlxG.signals.focusLost.add(onLostFocus);
+      FlxG.signals.focusGained.add(onGainFocus);
+      #end
       //
       // ANDROID SETUP
       //
@@ -291,6 +295,23 @@ class InitState extends FlxState
     funkin.FunkinMemory.initialCache();
     #end
   }
+
+  #if FEATURE_LOST_FOCUS_VOLUME
+  @:noCompletion var _lastFocusVolume:Null<Float>;
+
+  function onLostFocus()
+  {
+    if (FlxG.sound.muted || FlxG.sound.volume == 0 || FlxG.autoPause) return;
+    _lastFocusVolume = FlxG.sound.volume;
+    FlxG.sound.volume *= Constants.LOST_FOCUS_VOLUME_MULTIPLIER;
+  }
+
+  function onGainFocus()
+  {
+    if (FlxG.sound.muted || FlxG.autoPause) return;
+    if (_lastFocusVolume != null) FlxG.sound.volume = _lastFocusVolume;
+  }
+  #end
 
   /**
    * Start the game.
