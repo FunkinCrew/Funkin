@@ -25,6 +25,7 @@ import funkin.save.Save;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
 import funkin.ui.debug.stageeditor.commands.FlipObjectCommand;
 import funkin.ui.debug.stageeditor.commands.DeselectObjectCommand;
+import funkin.ui.debug.stageeditor.commands.MoveItemCommand;
 import funkin.ui.debug.stageeditor.commands.RemoveObjectCommand;
 import funkin.ui.debug.stageeditor.commands.SelectObjectCommand;
 import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
@@ -167,6 +168,11 @@ class StageEditorState extends UIState
   var autoSaveTimer:Null<FlxTimer> = null;
 
   /**
+   * Whether or not the player is currently testing the stage at how it would look in-game.
+   */
+  var isInTestMode:Bool = false;
+
+  /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
    * Currently hardcoded to just Light and Dark.
@@ -186,12 +192,12 @@ class StageEditorState extends UIState
 
   function set_selectedProp(value:Null<StageEditorObject>):StageEditorObject
   {
-    selectedProp?.selectedShader.setAmount(0);
+    if (selectedProp != null) selectedProp.selectedShader.amount = 0;
     this.selectedProp = value;
 
     // update dialogs
 
-    selectedProp?.selectedShader.setAmount(1);
+    if (selectedProp != null) selectedProp.selectedShader.amount = 0.135;
 
     return selectedProp;
   }
@@ -259,7 +265,30 @@ class StageEditorState extends UIState
     return BASE_ANGLES[angleStepIndex];
   }
 
+  /**
+   * The name of the current selected item that is being displayed in the bottom bar.
+   */
   var selectedItemName:String = 'None';
+
+  /**
+   * The item that is currently being dragged.
+   */
+  var dragTargetItem:Null<FlxSprite> = null;
+
+  /**
+   * The start position of the dragged item.
+   */
+  var dragStartPositions:Array<Float> = [];
+
+  /**
+   * The offset by how much the object has been moved.
+   */
+  var dragOffset:Array<Float> = [];
+
+  /**
+   * Whether or not the item has just been dragged.
+   */
+  var dragWasMoving:Bool = false;
 
   /**
    * ==============================
@@ -1060,10 +1089,6 @@ class StageEditorState extends UIState
 
     if (criticalFailure) return;
 
-    if ((selectedProp == null && currentSelectionMode == OBJECTS)
-      || (selectedCharacter == null && currentSelectionMode == CHARACTERS)
-      || currentSelectionMode == NONE) selectedItemName = "None";
-
     objectNameText.text = '';
 
     handleMenubar();
@@ -1145,6 +1170,42 @@ class StageEditorState extends UIState
             if (character != null) character.shader = null;
         default:
           currentSelectionMode = NONE;
+      }
+    }
+
+    bottomBarSelectText.onClick = _ -> {
+      if (isInTestMode)
+      {
+
+      }
+      else
+      {
+        switch (currentSelectionMode)
+        {
+          case StageEditorSelectionMode.OBJECTS:
+            if (selectedProp == null) return;
+
+            var index = spriteArray.indexOf(selectedProp) + 1;
+            if (index >= spriteArray.length) index = 0;
+
+            var prop = spriteArray[index];
+            if (prop == null) index++;
+
+            selectedProp = prop;
+            selectedItemName = prop.name;
+          case StageEditorSelectionMode.CHARACTERS:
+            var charList = [for (c in characters) c];
+            var index = charList.indexOf(selectedCharacter) + 1;
+            if (index >= charList.length) index = 0;
+
+            var character:Null<BaseCharacter> = charList[index];
+            if (character == null) return;
+
+            selectedCharacter = character;
+            selectedItemName = Std.string(character.characterType);
+          default:
+            // nothing
+        }
       }
     }
 
@@ -1304,9 +1365,12 @@ class StageEditorState extends UIState
   function handleBottomBar():Void
   {
     bottomBarModeText.text = currentSelectionMode.toTitleCase();
+    if ((selectedProp == null && currentSelectionMode == OBJECTS)
+      || (selectedCharacter == null && currentSelectionMode == CHARACTERS)
+      || currentSelectionMode == NONE) selectedItemName = "None";
     bottomBarSelectText.text = selectedItemName;
     bottomBarMoveStepText.text = '${moveStep}px';
-    bottomBarAngleStepText.text = '$angleStep';
+    bottomBarAngleStepText.text = '${angleStep}°';
   }
 
   /**
@@ -1341,11 +1405,11 @@ class StageEditorState extends UIState
     {
       var targetCursorMode:Null<CursorMode> = null;
 
-      if (FlxG.mouse.pressed && currentSelectionMode == StageEditorSelectionMode.NONE)
+      if ((FlxG.mouse.pressed && currentSelectionMode == NONE) || FlxG.mouse.pressedMiddle)
       {
         // Player is moving their camera in the stage editor.
         targetCursorMode = Grabbing;
-        var safeZoom:Float = FlxMath.bound(stageCamera.zoom, 0.6);
+        var safeZoom:Float = FlxMath.bound(stageCamera.zoom, 0.3);
         cameraFollowPoint.x -= Math.round(FlxG.mouse.deltaX / 2 / safeZoom);
         cameraFollowPoint.y -= Math.round(FlxG.mouse.deltaY / 2 / safeZoom);
       }
@@ -1369,17 +1433,55 @@ class StageEditorState extends UIState
 
             var isOverlapping:Bool = FlxG.mouse.pixelPerfectCheck(prop);
 
-            if (isOverlapping && !FlxG.keys.pressed.SHIFT)
-            {
-              targetCursorMode = Pointer;
-              objectNameText.text = prop.name;
-              if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) performCommand(new SelectObjectCommand(prop));
-            }
-
             if (prop == selectedProp)
             {
               selectedItemName = prop.name;
               if (FlxG.keys.pressed.SHIFT) objectNameText.text = prop.name + ' (LOCKED)';
+
+              if (FlxG.mouse.justPressed && isOverlapping && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+              {
+                dragTargetItem = selectedProp;
+                dragStartPositions = [selectedProp.x, selectedProp.y];
+                dragOffset = [
+                  FlxG.mouse.getWorldPosition().x - selectedProp.x,
+                  FlxG.mouse.getWorldPosition().y - selectedProp.y
+                ];
+                dragWasMoving = false;
+              }
+
+              if (dragTargetItem == selectedProp && FlxG.mouse.pressed && (FlxG.mouse.deltaX != 0 || FlxG.mouse.deltaY != 0))
+              {
+                var mousePos = FlxG.mouse.getWorldPosition();
+                prop.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
+                prop.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
+                // updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
+
+                dragWasMoving = true;
+                targetCursorMode = Grabbing;
+              }
+
+              if (dragTargetItem == selectedProp && FlxG.mouse.justReleased)
+              {
+                if (dragWasMoving)
+                {
+                  var endPoints:Array<Float> = [selectedProp.x, selectedProp.y];
+                  if (endPoints[0] != dragStartPositions[0] || endPoints[1] != dragStartPositions[1])
+                  {
+                    performCommand(new MoveItemCommand(selectedProp, dragStartPositions, endPoints));
+                  }
+                }
+                dragTargetItem = null;
+                dragOffset = [];
+                dragStartPositions = [];
+                dragWasMoving = false;
+              }
+            }
+
+            if (isOverlapping && !FlxG.keys.pressed.SHIFT)
+            {
+              if (dragTargetItem == null) targetCursorMode = Pointer;
+              objectNameText.text = prop.name;
+              if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) performCommand(new SelectObjectCommand(prop));
             }
           }
         case StageEditorSelectionMode.CHARACTERS:
@@ -1393,17 +1495,55 @@ class StageEditorState extends UIState
 
             var isOverlapping:Bool = FlxG.mouse.pixelPerfectCheck(character);
 
-            if (isOverlapping && !FlxG.keys.pressed.SHIFT)
-            {
-              targetCursorMode = Pointer;
-              objectNameText.text = Std.string(character.characterType);
-              if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) selectedCharacter = character;
-            }
-
             if (character == selectedCharacter)
             {
               selectedItemName = Std.string(character.characterType);
               if (FlxG.keys.pressed.SHIFT) objectNameText.text = Std.string(character.characterType) + ' (LOCKED)';
+
+              if (FlxG.mouse.justPressed && isOverlapping && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+              {
+                dragTargetItem = selectedCharacter;
+                dragStartPositions = [selectedCharacter.x, selectedCharacter.y];
+                dragOffset = [
+                  FlxG.mouse.getWorldPosition().x - selectedCharacter.x,
+                  FlxG.mouse.getWorldPosition().y - selectedCharacter.y
+                ];
+                dragWasMoving = false;
+              }
+
+              if (dragTargetItem == selectedCharacter && FlxG.mouse.pressed && (FlxG.mouse.deltaX != 0 || FlxG.mouse.deltaY != 0))
+              {
+                var mousePos = FlxG.mouse.getWorldPosition();
+                character.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
+                character.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
+                // updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
+
+                dragWasMoving = true;
+                targetCursorMode = Grabbing;
+              }
+
+              if (dragTargetItem == selectedCharacter && FlxG.mouse.justReleased)
+              {
+                if (dragWasMoving)
+                {
+                  var endPoints:Array<Float> = [selectedCharacter.x, selectedCharacter.y];
+                  if (endPoints[0] != dragStartPositions[0] || endPoints[1] != dragStartPositions[1])
+                  {
+                    performCommand(new MoveItemCommand(selectedCharacter, dragStartPositions, endPoints));
+                  }
+                }
+                dragTargetItem = null;
+                dragOffset = [];
+                dragStartPositions = [];
+                dragWasMoving = false;
+              }
+            }
+
+            if (isOverlapping && !FlxG.keys.pressed.SHIFT)
+            {
+              if (dragTargetItem == null) targetCursorMode = Pointer;
+              objectNameText.text = Std.string(character.characterType);
+              if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) selectedCharacter = character;
             }
           }
         default:

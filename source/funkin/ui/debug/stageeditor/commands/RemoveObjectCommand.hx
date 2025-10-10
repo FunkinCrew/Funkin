@@ -57,6 +57,6 @@ class RemoveObjectCommand implements StageEditorCommand
   public function toString():String
   {
     var objectID = (object != null) ? object.name : 'Unknown';
-    return 'Remove Object with ID $objectID';
+    return 'Remove $objectID';
   }
 }

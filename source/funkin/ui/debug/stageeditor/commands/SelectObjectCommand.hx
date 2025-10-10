@@ -33,6 +33,6 @@ class SelectObjectCommand implements StageEditorCommand
   public function toString():String
   {
     var objectID = (object != null) ? object.name : 'Unknown';
-    return 'Select Object with ID $objectID';
+    return 'Select $objectID';
   }
 }
