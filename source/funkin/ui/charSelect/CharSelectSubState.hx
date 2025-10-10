@@ -729,6 +729,13 @@ class CharSelectSubState extends MusicBeatSubState
     allowInput = false;
     autoFollow = false;
 
+    #if mobile
+    if (backButton != null)
+    {
+      FlxTween.tween(backButton, {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
+    }
+    #end
+
     FlxTween.tween(cursor, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
     FlxTween.tween(cursorBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
     FlxTween.tween(cursorDarkBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
@@ -1099,7 +1106,6 @@ class CharSelectSubState extends MusicBeatSubState
     #if mobile
     if (backButton != null)
     {
-      FlxTween.tween(backButton, {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
       backButton.animation.play("confirm");
     }
     #end
