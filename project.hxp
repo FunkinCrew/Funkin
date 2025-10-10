@@ -493,6 +493,13 @@ class Project extends HXProject
    */
   static final FEATURE_VIDEO_SUBTITLES:FeatureFlag = "FEATURE_VIDEO_SUBTITLES";
 
+  /**
+   * `-DFEATURE_DEBUG_DISPLAY`
+   * If this flag is enabled, the game will be able to show a framerate counter with the memory and current FPS
+   * This flag is disabled on non debug mobile builds
+   */
+  static final FEATURE_DEBUG_DISPLAY:FeatureFlag = "FEATURE_DEBUG_DISPLAY";
+
   //
   // CONFIGURATION FUNCTIONS
   //
@@ -891,6 +898,10 @@ class Project extends HXProject
     // Since mobile is pretty memory safe (I'm looking at you Apple...) we need them BADLY to have the game run properly.
     // It's kept off for desktop due to the low ASTC support on desktop GPUs (which seem to be only among Intergrated Graphics).
     FEATURE_COMPRESSED_TEXTURES.apply(this, isMobile() && isRelease() && !isIOSSimulator());
+
+    // Turns the debug display off if you are on a non debug mobile build
+    // Desktop (Native and Web) always has it | Used for mobile debugging purposes
+    FEATURE_DEBUG_DISPLAY.apply(this, !isMobile() || FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
     renderFlagsTable();
   }

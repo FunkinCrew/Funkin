@@ -150,7 +150,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.videoSubtitles = value;
     }, Preferences.videoSubtitles);
     #end
-    #if !mobile
+    #if FEATURE_DEBUG_DISPLAY
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
     createPrefItemEnum('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', [
       "Advanced" => DebugDisplayMode.Advanced,
@@ -163,6 +163,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemPercentage('Debug Display BG', "Change debug display's background opacity", function(value:Int):Void {
       Preferences.debugDisplayBGOpacity = value;
     }, Preferences.debugDisplayBGOpacity);
+    #end
+    #if !mobile
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
