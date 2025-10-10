@@ -1049,7 +1049,7 @@ class CharSelectSubState extends MusicBeatSubState
     if (backButton != null && !wentBackToFreeplay)
     {
       backButton.enabled = allowInput && !pressedSelect;
-      backButton.visible = backButton.enabled;
+      // backButton.visible = backButton.enabled;
     }
     #end
   }
