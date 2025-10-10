@@ -1457,13 +1457,21 @@ class Project extends HXProject
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 
-    if (isMacHost())
+    switch(platformType)
     {
-      assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
-    }
-    else
-    {
-      assetsPath = Path.join([basePath, "assets"]);
+      case PlatformType.DESKTOP:
+        if (isMacHost())
+        {
+          assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
+        }
+        else
+        {
+          assetsPath = Path.join([basePath, "assets"]);
+        }
+
+      default:
+        // Don't do this for other platform types yet.
+        return;
     }
 
     if (sys.FileSystem.exists(assetsPath))
