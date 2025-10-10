@@ -28,6 +28,7 @@ import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 import funkin.ui.FullScreenScaleMode;
+import flixel.FlxState;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -44,6 +45,9 @@ class StoryMenuState extends MusicBeatState
   var currentLevelTitle:LevelTitle;
   var highScore:Int = 42069420;
   var highScoreLerp:Int = 12345678;
+
+  public var exitState:()->FlxState = exitCallback;
+
   var exitingMenu:Bool = false;
   var selectedLevel:Bool = false;
   //
@@ -721,9 +725,14 @@ class StoryMenuState extends MusicBeatState
     if (exitingMenu || selectedLevel || (stickerSubState?.switchingState ?? false)) return;
 
     exitingMenu = true;
-    FlxG.keys.enabled = false;
-    FlxG.switchState(() -> new MainMenuState());
+    FlxG.switchState(exitState);
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
+  }
+
+  static function exitCallback():FlxState
+  {
+    FlxG.keys.enabled = false;
+    return new MainMenuState();
   }
 
   /**
