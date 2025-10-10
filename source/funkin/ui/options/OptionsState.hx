@@ -1,17 +1,11 @@
 package funkin.ui.options;
 
 import funkin.ui.Page.PageName;
-import funkin.ui.transition.LoadingState;
-import funkin.ui.TextMenuList;
-import funkin.ui.TextMenuList.TextMenuItem;
-import flixel.math.FlxPoint;
 import funkin.ui.TextMenuList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.group.FlxGroup;
-import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatState;
@@ -21,7 +15,6 @@ import funkin.input.Controls;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
-import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.options.ControlsSchemeMenu;
@@ -29,7 +22,6 @@ import funkin.mobile.ui.options.ControlsSchemeMenu;
 #if FEATURE_MOBILE_IAP
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
-import flixel.util.FlxColor;
 
 /**
  * The main options menu
@@ -42,6 +34,22 @@ class OptionsState extends MusicBeatState
    * Instance of the OptionsState
    */
   public static var instance:OptionsState;
+
+  @:isVar public var exitState(get, set):()->FlxState;
+
+  function set_exitState(value:()->FlxState):()->FlxState {
+    return this.exitState = value;
+  }
+
+  function get_exitState():()->FlxState {
+    if (this.exitState == null) {
+      return () -> {
+        FlxG.keys.enabled = false;
+        return new MainMenuState();
+      };
+    }
+    return this.exitState;
+  }
 
   var optionsCodex:Codex<OptionsMenuPageName>;
 
@@ -82,7 +90,7 @@ class OptionsState extends MusicBeatState
 
     if (options.hasMultipleOptions())
     {
-      options.onExit.add(exitToMainMenu);
+      options.onExit.add(exitOptions);
       controls.onExit.add(exitControls);
       preferences.onExit.add(optionsCodex.switchPage.bind(Options));
       #if FEATURE_LAG_ADJUSTMENT
@@ -94,10 +102,10 @@ class OptionsState extends MusicBeatState
     {
       // No need to show Options page
       #if mobile
-      preferences.onExit.add(exitToMainMenu);
+      preferences.onExit.add(exitOptions);
       optionsCodex.setPage(Preferences);
       #else
-      controls.onExit.add(exitToMainMenu);
+      controls.onExit.add(exitOptions);
       optionsCodex.setPage(Controls);
       #end
     }
@@ -137,12 +145,11 @@ class OptionsState extends MusicBeatState
     optionsCodex.switchPage(Options);
   }
 
-  function exitToMainMenu()
+  function exitOptions()
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
-    FlxG.keys.enabled = false;
-    FlxG.switchState(() -> new MainMenuState());
+    FlxG.switchState(exitState);
   }
 }
 
