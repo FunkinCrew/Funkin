@@ -143,7 +143,7 @@ class Preferences
 
   static function get_debugDisplay():DebugDisplayMode
   {
-    #if !FEATURE_DEBUG_DISPLAY
+    #if NO_FEATURE_DEBUG_DISPLAY
     return DebugDisplayMode.Off;
     #end
 
