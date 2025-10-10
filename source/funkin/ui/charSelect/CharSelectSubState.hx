@@ -86,15 +86,14 @@ class CharSelectSubState extends MusicBeatSubState
   var staticSound:FunkinSound = new FunkinSound();
 
   // var charSelectCam:FunkinCamera;
-
   var selectedBizz:Array<BitmapFilter> = [
     new DropShadowFilter(0, 0, 0xFFFFFF, 1, 2, 2, 19, 1, false, false, false),
     new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)
   ];
 
   var bopInfo:Null<Null<FramesJSFLInfo>>;
-  // var blackScreen:FunkinSprite;
 
+  // var blackScreen:FunkinSprite;
   var charHitbox:FlxObject = new FlxObject();
 
   var cutoutSize:Float = 0;
@@ -458,6 +457,10 @@ class CharSelectSubState extends MusicBeatSubState
 
       Save.instance.oldChar = true;
     });
+
+    #if mobile
+    addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.3, true);
+    #end
   }
 
   function checkNewChar():Void
@@ -896,10 +899,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       if (controls.BACK)
       {
-        wentBackToFreeplay = true;
-        FunkinSound.playOnce(Paths.sound('cancelMenu'));
-        FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
-        goToFreeplay();
+        goBack();
       }
     }
 
@@ -1044,6 +1044,14 @@ class CharSelectSubState extends MusicBeatSubState
 
     cursorDenied.x = cursor.x - 2;
     cursorDenied.y = cursor.y - 4;
+
+    #if mobile
+    if (backButton != null && !wentBackToFreeplay)
+    {
+      backButton.enabled = allowInput && !pressedSelect;
+      backButton.visible = backButton.enabled;
+    }
+    #end
   }
 
   var bopTimer:Float = 0;
@@ -1082,6 +1090,24 @@ class CharSelectSubState extends MusicBeatSubState
 
       bopFr++;
     }
+  }
+
+  function goBack():Void
+  {
+    if (!allowInput || pressedSelect) return;
+
+    #if mobile
+    if (backButton != null)
+    {
+      FlxTween.tween(backButton, {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
+      backButton.animation.play("confirm");
+    }
+    #end
+
+    wentBackToFreeplay = true;
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
+    goToFreeplay();
   }
 
   public override function dispatchEvent(event:ScriptEvent):Void
