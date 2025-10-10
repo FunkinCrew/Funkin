@@ -574,7 +574,7 @@ class Constants
   /**
    * How much volume should be reduced on Application Focus Lost.
    */
-  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.15;
+  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.1;
 
   /**
    * Duration, in seconds, how long should volume reduce.
