@@ -31,6 +31,6 @@ class DeselectObjectCommand implements StageEditorCommand
   public function toString():String
   {
     var objectID = (object != null) ? object.name : 'Unknown';
-    return 'Deselect Object with ID $objectID';
+    return 'Deselect $objectID';
   }
 }

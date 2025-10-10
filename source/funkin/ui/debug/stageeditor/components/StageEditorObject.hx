@@ -2,7 +2,7 @@ package funkin.ui.debug.stageeditor.components;
 
 import funkin.data.animation.AnimationData;
 import funkin.graphics.FunkinSprite;
-import funkin.graphics.shaders.InverseDotsShader;
+import funkin.graphics.shaders.GlowPulseShader;
 
 @:nullSafety
 class StageEditorObject extends FunkinSprite
@@ -15,7 +15,7 @@ class StageEditorObject extends FunkinSprite
   /**
    * The shader applied to this object.
    */
-  public var selectedShader:InverseDotsShader;
+  public var selectedShader:GlowPulseShader;
 
   /**
    * The animation this object starts with.
@@ -57,7 +57,7 @@ class StageEditorObject extends FunkinSprite
   {
     super(x, y);
 
-    selectedShader = new InverseDotsShader(0);
+    selectedShader = new GlowPulseShader(0, 1.5);
     shader = selectedShader;
   }
 
@@ -139,4 +139,12 @@ class StageEditorObject extends FunkinSprite
         });
     }
   }
+
+  public override function update(elapsed:Float)
+  {
+    super.update(elapsed);
+    selectedShader.update(elapsed);
+  }
+
+
 }
