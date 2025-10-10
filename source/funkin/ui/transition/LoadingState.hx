@@ -95,6 +95,7 @@ class LoadingState extends MusicBeatSubState
       }
 
       checkLibrary('shared');
+      checkLibrary('videos');
       checkLibrary(stageDirectory);
       checkLibrary('tutorial');
 
