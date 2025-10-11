@@ -1933,8 +1933,8 @@ class PlayState extends MusicBeatSubState
         && !ControlsHandler.usingExternalInputDevice)
         || #end Preferences.downscroll;
 
-      var subtitlesYPos:Float = isDownscroll ? healthBarBG.y * 1.85 : healthBarBG.y * 0.85;
-      subtitles = new Subtitles(subtitlesYPos);
+      final subtitlesAlignment:SubtitlesAlignment = isDownscroll ? SubtitlesAlignment.SUBTITLES_TOP : SubtitlesAlignment.SUBTITLES_BOTTOM;
+      subtitles = new Subtitles(0, 139, subtitlesAlignment);
       subtitles.zIndex = 10000;
       add(subtitles);
 

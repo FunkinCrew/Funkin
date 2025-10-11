@@ -19,9 +19,15 @@ class Subtitles extends FlxSpriteGroup
   var subtitlesData:Array<SubtitleEntry>;
   var assignedSound:FlxSound;
 
-  public function new(y:Float = 0)
+  public var offsets(default, set):Array<Float> = [0, 0];
+  public var alignment(default, set):SubtitlesAlignment = SubtitlesAlignment.SUBTITLES_BOTTOM;
+
+  public function new(x:Float = 0, y:Float = 0, alignment:SubtitlesAlignment = SubtitlesAlignment.SUBTITLES_BOTTOM)
   {
-    super(0, y);
+    super(0, 0);
+
+    this.offsets = [x, y];
+    this.alignment = alignment;
 
     background = new FlxSprite(0, 0);
     background.alpha = 0.5;
@@ -97,7 +103,37 @@ class Subtitles extends FlxSpriteGroup
 
     background.makeGraphic(Math.ceil(subtitleText.width), Math.ceil(subtitleText.height), FlxColor.BLACK, true);
 
+    updatePosition();
+  }
+
+  function updatePosition():Void
+  {
     screenCenter(X);
+    x += offsets[0];
+
+    switch (alignment)
+    {
+      case SubtitlesAlignment.SUBTITLES_TOP:
+        y = 0 + offsets[1];
+      case SubtitlesAlignment.SUBTITLES_BOTTOM:
+        y = FlxG.height - this.height - offsets[1];
+    }
+  }
+
+  function set_alignment(value:SubtitlesAlignment):SubtitlesAlignment
+  {
+    alignment = value;
+    updatePosition();
+
+    return alignment;
+  }
+
+  function set_offsets(value:Array<Float>):Array<Float>
+  {
+    offsets = value;
+    updatePosition();
+
+    return offsets;
   }
 }
 
@@ -129,4 +165,20 @@ class SubtitlesText extends FlxText
     }
     return Text;
   }
+}
+
+/**
+ * An abstract for subtitles alignment.
+ */
+enum abstract SubtitlesAlignment(String) from String to String
+{
+  /**
+   * Subtitles will be aligned at the top.
+   */
+  var SUBTITLES_TOP:String = 'top';
+
+  /**
+   * Subtitles will be aligned at the bottom.
+   */
+  var SUBTITLES_BOTTOM:String = 'bottom';
 }
