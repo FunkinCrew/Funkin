@@ -19,7 +19,6 @@ import funkin.ui.debug.charting.dialogs.ChartEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorUploadVocalsDialog;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.util.Constants;
-import funkin.util.DateUtil;
 import funkin.util.FileUtil;
 import funkin.util.VersionUtil;
 import haxe.io.Path;
@@ -655,6 +654,24 @@ class ChartEditorDialogHandler
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, newSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
+    var inputAlbum:Null<DropDown> = dialog.findComponent('inputAlbum', DropDown);
+    if (inputAlbum == null) throw 'Could not locate inputAlbum DropDown in Song Metadata dialog';
+    inputAlbum.onChange = (event:UIEvent) -> {
+      if (event.data?.id == null) return;
+      newSongMetadata.playData.album = event.data.id;
+    };
+    var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(inputAlbum, newSongMetadata.playData.album);
+    inputAlbum.value = startingValueAlbum;
+
+    var inputStickerPack:Null<DropDown> = dialog.findComponent('inputStickerPack', DropDown);
+    if (inputStickerPack == null) throw 'Could not locate inputStickerPack DropDown in Song Metadata dialog';
+    inputStickerPack.onChange = (event:UIEvent) -> {
+      if (event.data?.id == null) return;
+      newSongMetadata.playData.stickerPack = event.data.id;
+    };
+    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(inputStickerPack, newSongMetadata.playData.stickerPack);
+    inputStickerPack.value = startingValueStickerPack;
+
     var inputCharacterPlayer:Null<DropDown> = dialog.findComponent('inputCharacterPlayer', DropDown);
     if (inputCharacterPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxMetadataLayout() - Could not find inputCharacterPlayer component.';
     inputCharacterPlayer.onChange = function(event:UIEvent) {
@@ -1208,6 +1225,16 @@ class ChartEditorDialogHandler
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(dialogNoteStyle, state.currentSongMetadata.playData.noteStyle);
     dialogNoteStyle.value = startingValueNoteStyle;
 
+    var dialogAlbum:Null<DropDown> = dialog.findComponent('dialogAlbum', DropDown);
+    if (dialogAlbum == null) throw 'Could not locate dialogAlbum DropDown in Add Variation dialog';
+    var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(dialogAlbum, state.currentSongMetadata.playData.album);
+    dialogAlbum.value = startingValueAlbum;
+
+    var dialogStickerPack:Null<DropDown> = dialog.findComponent('dialogStickerPack', DropDown);
+    if (dialogStickerPack == null) throw 'Could not locate dialogStickerPack DropDown in Add Variation dialog';
+    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(dialogStickerPack, state.currentSongMetadata.playData.stickerPack);
+    dialogAlbum.value = startingValueStickerPack;
+
     var dialogCharacterPlayer:Null<DropDown> = dialog.findComponent('dialogCharacterPlayer', DropDown);
     if (dialogCharacterPlayer == null) throw 'Could not locate dialogCharacterPlayer DropDown in Add Variation dialog';
     dialogCharacterPlayer.value = ChartEditorDropdowns.populateDropdownWithCharacters(dialogCharacterPlayer, CharacterType.BF,
@@ -1243,6 +1270,8 @@ class ChartEditorDialogHandler
 
       pendingVariation.playData.stage = dialogStage.value.id;
       pendingVariation.playData.noteStyle = dialogNoteStyle.value.id;
+      pendingVariation.playData.album = dialogAlbum.value.id;
+      pendingVariation.playData.stickerPack = dialogStickerPack.value.id;
       pendingVariation.timeChanges[0].bpm = dialogBPM.value;
 
       state.songMetadata.set(pendingVariation.variation, pendingVariation);

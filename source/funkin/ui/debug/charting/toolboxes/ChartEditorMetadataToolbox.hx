@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.toolboxes;
 #if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -11,6 +12,7 @@ import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
 import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.ui.freeplay.Album;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
@@ -20,6 +22,8 @@ import haxe.ui.components.TextField;
 import funkin.play.stage.Stage;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
+import funkin.ui.freeplay.Album;
+import funkin.data.freeplay.album.AlbumRegistry;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
@@ -35,6 +39,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
+  var inputAlbum:DropDown;
+  var inputStickerPack:DropDown;
   var buttonCharacterPlayer:Button;
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
@@ -147,6 +153,28 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     };
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
+
+    inputAlbum.onChange = (event:UIEvent) -> {
+      var valid:Bool = event.data != null && event.data.id != null;
+
+      if (valid)
+      {
+        chartEditorState.currentSongAlbum = event.data.id;
+      }
+    }
+    var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(inputAlbum, chartEditorState.currentSongMetadata.playData?.album);
+    inputAlbum.value = startingValueAlbum;
+
+    inputStickerPack.onChange = (event:UIEvent) -> {
+      var valid:Bool = event.data != null && event.data.id != null;
+
+      if (valid)
+      {
+        chartEditorState.currentSongStickerPack = event.data.id;
+      }
+    }
+    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(inputStickerPack, chartEditorState.currentSongMetadata.playData?.stickerPack);
+    inputStickerPack.value = startingValueStickerPack;
 
     inputTimeChange.onChange = function(event:UIEvent) {
       var currentTimeChange = refreshTimeChangeInputs();
@@ -319,6 +347,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
+    inputAlbum.value = chartEditorState.currentSongMetadata.playData.album;
     inputDifficultyRating.value = chartEditorState.currentSongChartDifficultyRating;
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
@@ -343,6 +372,15 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       inputNoteStyle.value = (noteStyle != null) ?
         {id: noteStyle.id, text: noteStyle.getName()} :
           {id: "Funkin", text: "Funkin'"};
+    }
+
+    var albumId:String = chartEditorState.currentSongAlbum;
+    var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
+    if (inputAlbum != null)
+    {
+      inputAlbum.value = (album != null) ?
+        {id: album.id, text: album.getAlbumName()} :
+          {id: "volume1", text: "Volume 1"};
     }
 
     var LIMIT = 6;

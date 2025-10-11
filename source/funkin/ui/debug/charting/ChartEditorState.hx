@@ -1527,6 +1527,44 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return currentSongMetadata.playData.noteStyle = value;
   }
 
+  var currentSongAlbum(get, set):Null<String>;
+
+  function get_currentSongAlbum():Null<String>
+  {
+    if (currentSongMetadata.playData.album == null
+    || currentSongMetadata.playData.album == ''
+    || currentSongMetadata.playData.album == 'item')
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.playData.album = Constants.DEFAULT_ALBUM_ID;
+    }
+    return currentSongMetadata.playData.album;
+  }
+
+  function set_currentSongAlbum(value:String):Null<String>
+  {
+    return currentSongMetadata.playData.album = value;
+  }
+
+  var currentSongStickerPack(get, set):Null<String>;
+
+  function get_currentSongStickerPack():Null<String>
+  {
+    if (currentSongMetadata.playData.stickerPack == null
+    || currentSongMetadata.playData.stickerPack == ''
+    || currentSongMetadata.playData.stickerPack == 'item')
+    {
+      // Initialize to the default value if not set.
+      currentSongMetadata.playData.stickerPack = Constants.DEFAULT_STICKER_PACK;
+    }
+    return currentSongMetadata.playData.stickerPack;
+  }
+
+  function set_currentSongStickerPack(value:String):Null<String>
+  {
+    return currentSongMetadata.playData.stickerPack = value;
+  }
+
   var currentSongFreeplayPreviewStart(get, set):Int;
 
   function get_currentSongFreeplayPreviewStart():Int
