@@ -45,7 +45,7 @@ class MoveNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(movedNotes);
     state.currentNoteSelection = movedNotes;
 
-    state.playSound(Paths.sound('chartingSounds/noteLay'));
+    state.playSound(Paths.sound('chartingSounds/noteLay'), 1.0, 1.0, 0.1);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

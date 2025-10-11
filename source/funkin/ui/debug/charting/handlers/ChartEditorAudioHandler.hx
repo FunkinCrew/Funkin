@@ -264,9 +264,17 @@ class ChartEditorAudioHandler
    * Play a sound effect.
    * Automatically cleans up after itself and recycles previous FlxSound instances if available, for performance.
    * @param path The path to the sound effect. Use `Paths` to build this.
+   * @param volume The volume of the sound effect.
+   * @param pitch The pitch and speed the sound effect is played at.
+   * @param pitchRandom The total random variation of the pitch.
    */
-  public static function playSound(_state:ChartEditorState, path:String, volume:Float = 1.0):Void
+  public static function playSound(_state:ChartEditorState, path:String, volume:Float = 1.0, pitch:Float = 1.0, pitchRandom:Float = 0):Void
   {
+    if (volume == 0) return;
+    if (funkin.save.Save.instance.chartEditorRandomPitch /* _state.menubarItemRandomPitch.selected */ && pitchRandom != 0)
+    {
+      pitch = FlxG.random.float(pitch - pitchRandom / 2, pitch + pitchRandom / 2);
+    }
     var asset:Null<FlxSoundAsset> = FlxG.sound.cache(path);
     if (asset == null)
     {
@@ -278,6 +286,9 @@ class ChartEditorAudioHandler
     snd.autoDestroy = true;
     snd.play(true);
     snd.volume = volume;
+    #if FLX_PITCH
+    snd.pitch = pitch;
+    #end
   }
 
   public static function wipeInstrumentalData(state:ChartEditorState):Void
