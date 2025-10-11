@@ -5,6 +5,7 @@ import funkin.input.Controls.Device;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
+import funkin.play.notes.notesound.NoteSoundType;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
@@ -117,6 +118,10 @@ class Save implements ConsoleClass
       options:
         {
           // Reasonable defaults.
+          noteHighlights: true,
+          noteSplashes: true,
+          noteSoundType: NoteSoundType.None,
+          noteSoundVolume: 100,
           framerate: #if mobile refreshRate #else 60 #end,
           naughtyness: true,
           downscroll: false,
@@ -1576,6 +1581,30 @@ typedef SaveScoreTallyData =
  */
 typedef SaveDataOptions =
 {
+  /**
+   * The type of sound to play when hitting a note
+   * @default `NoteSoundType.None`
+   */
+  var noteSoundType:NoteSoundType;
+
+  /**
+   * A value ranging from 0 to 100 representing the volume for note hit sounds
+   * @default `100`
+   */
+  var noteSoundVolume:Int;
+
+  /**
+   * If enabled, plays a highlight animation when notes are hit.
+   * @default `true`
+   */
+  var noteHighlights:Bool;
+
+  /**
+   * If enabled, plays a splash particle effect when sick notes are hit.
+   * @default `true`
+   */
+  var noteSplashes:Bool;
+
   /**
    * FPS
    * @default `60`

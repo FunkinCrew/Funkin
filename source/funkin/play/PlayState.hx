@@ -2949,6 +2949,9 @@ class PlayState extends MusicBeatSubState
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
     if (vocals != null) vocals.playerVolume = 1;
 
+    // Play a note hit sound
+    playerStrumline.noteSoundPlayer.begin(note.isHoldNote);
+
     // Display the combo meter and add the calculation to the score.
     if (note.scoreable)
     {

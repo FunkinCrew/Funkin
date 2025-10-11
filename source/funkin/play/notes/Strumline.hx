@@ -19,6 +19,7 @@ import funkin.util.SortUtil;
 import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notesound.NoteSoundPlayer;
 import flixel.math.FlxPoint;
 #if mobile
 import funkin.mobile.input.ControlsHandler;
@@ -189,6 +190,8 @@ class Strumline extends FlxSpriteGroup
 
   var heldKeys:Array<Bool> = [];
 
+  public var noteSoundPlayer:NoteSoundPlayer;
+
   static final BACKGROUND_PAD:Int = 16;
 
   public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float)
@@ -247,6 +250,8 @@ class Strumline extends FlxSpriteGroup
     strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
 
     this.refresh();
+
+    this.noteSoundPlayer = new NoteSoundPlayer();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
     resetScrollSpeed(scrollSpeed);
@@ -1042,7 +1047,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function playNoteSplash(direction:NoteDirection):Void
   {
-    if (!showNotesplash) return;
+    if (!Preferences.noteSplashes || !showNotesplash) return;
     if (!noteStyle.isNoteSplashEnabled()) return;
 
     var splash:NoteSplash = this.constructNoteSplash();
@@ -1068,7 +1073,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function playNoteHoldCover(holdNote:SustainTrail):Void
   {
-    if (!showNotesplash) return;
+    if (!Preferences.noteSplashes || !showNotesplash) return;
     if (!noteStyle.isHoldNoteCoverEnabled()) return;
 
     var cover:NoteHoldCover = this.constructNoteHoldCover();

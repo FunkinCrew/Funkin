@@ -5,6 +5,7 @@ import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
 import funkin.save.Save;
+import funkin.play.notes.notesound.NoteSoundType;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
@@ -15,6 +16,82 @@ import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 @:nullSafety
 class Preferences
 {
+  /**
+   * The type of sound to play when hitting a note
+   * @default `NoteSoundType.None`
+   */
+  public static var noteSoundType(get, set):NoteSoundType;
+
+  static function get_noteSoundType():NoteSoundType
+  {
+    return Save?.instance?.options?.noteSoundType;
+  }
+
+  static function set_noteSoundType(value:NoteSoundType):NoteSoundType
+  {
+    var save:Save = Save.instance;
+    save.options.noteSoundType = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * A value ranging from 0 to 100 representing the volume for note hit sounds
+   * @default `100`
+   */
+  public static var noteSoundVolume(get, set):Int;
+
+  static function get_noteSoundVolume():Int
+  {
+    return Save?.instance?.options?.noteSoundVolume;
+  }
+
+  static function set_noteSoundVolume(value:Int):Int
+  {
+    var save:Save = Save.instance;
+    save.options.noteSoundVolume = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, plays a highlight animation when notes are hit.
+   * @default `true`
+   */
+  public static var noteHighlights(get, set):Bool;
+
+  static function get_noteHighlights():Bool
+  {
+    return Save?.instance?.options?.noteHighlights;
+  }
+
+  static function set_noteHighlights(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.noteHighlights = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, plays a splash particle effect when sick notes are hit.
+   * @default `true`
+   */
+  public static var noteSplashes(get, set):Bool;
+
+  static function get_noteSplashes():Bool
+  {
+    return Save?.instance?.options?.noteSplashes;
+  }
+
+  static function set_noteSplashes(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.noteSplashes = value;
+    save.flush();
+    return value;
+  }
+
   /**
    * FPS
    * Always the refresh rate of the display on mobile, or 60 on web.

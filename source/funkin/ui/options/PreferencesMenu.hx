@@ -16,6 +16,8 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.audio.FunkinSound;
+import funkin.play.notes.notesound.NoteSoundType;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 #if mobile
 import funkin.mobile.ui.FunkinBackButton;
@@ -118,6 +120,26 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     },
       Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
       || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
+    createPrefItemCheckbox('Note Highlights', 'If enabled, this will show a highlight effect while hitting a note', function(value:Bool):Void {
+      Preferences.noteHighlights = value;
+    }, Preferences.noteHighlights);
+    createPrefItemCheckbox('Note Splashes', 'If enabled, this will show a splash particle effect when hitting a note', function(value:Bool):Void {
+      Preferences.noteSplashes = value;
+    }, Preferences.noteSplashes);
+    createPrefItemEnum('Note Sound', 'If enabled, plays a sound effect when a note is hit', [
+      NoteSoundType.None => 'None',
+      NoteSoundType.PingPong => 'Ping Pong',
+      NoteSoundType.PoolBall => 'Pool Ball',
+    ], function(value:String):Void {
+      Preferences.noteSoundType = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'));
+    }, Preferences.noteSoundType);
+    createPrefItemPercentage('Note Sound Volume', 'The volume to play the note hit sound effects at', function(value:Int) {
+      Preferences.noteSoundVolume = value;
+      if (Preferences.noteSoundType == NoteSoundType.None) return;
+      FunkinSound.playOnce(Paths.sound('noteSounds/${Preferences.noteSoundType}/begin'), Preferences.noteSoundVolume / 100.0);
+    }, Preferences.noteSoundVolume);
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
