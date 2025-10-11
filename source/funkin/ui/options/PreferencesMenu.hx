@@ -124,6 +124,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
+    createPrefItemEnum('Separated Score', 'If enabled, the score will be formatted using thousands separators based on the given mode.', [
+      "Period" => "Period",
+      "Comma" => "Comma",
+      "Off" => "Off"
+    ], (key:String, value:String) -> {
+      Preferences.separatedScore = value;
+    }, Preferences.separatedScore);
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.', [
       "All" => HapticsMode.ALL,

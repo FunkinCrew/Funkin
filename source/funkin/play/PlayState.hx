@@ -2750,9 +2750,10 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
+      final COMMA_SEPARATED:Bool = Preferences.separatedScore == "Comma";
       final SHOW_DECIMALS:Bool = false;
-      final COMMA_SEPARATED:Bool = true;
-      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, SHOW_DECIMALS, COMMA_SEPARATED)}';
+      final SCORE:String = Preferences.separatedScore != "Off" ? FlxStringUtil.formatMoney(songScore, SHOW_DECIMALS, COMMA_SEPARATED) : '${Std.int(songScore)}';
+      scoreText.text = 'Score: ${SCORE}';
     }
   }
 

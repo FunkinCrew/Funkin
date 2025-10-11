@@ -110,6 +110,7 @@ class Save implements ConsoleClass
         autoPause: true,
         vsyncMode: 'Off',
         strumlineBackgroundOpacity: 0,
+        separatedScore: "Comma",
         autoFullscreen: false,
         globalOffset: 0,
         audioVisualOffset: 0,
@@ -1181,6 +1182,16 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var strumlineBackgroundOpacity:Int;
+
+  /**
+   * Determines the thousands separators type for the score:
+   * - `"Comma"` -> uses commas, e.g. `1,000`
+   * - `"Period"` -> uses periods, e.g. `1.000`
+   * - `"Off"` -> no separator, e.g. `1000`
+   *
+   * @default `"Comma"`
+   */
+  var separatedScore:String;
 
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.

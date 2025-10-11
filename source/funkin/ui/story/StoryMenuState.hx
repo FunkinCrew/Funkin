@@ -315,8 +315,10 @@ class StoryMenuState extends MusicBeatState
 
     highScoreLerp = Std.int(MathUtil.snap(MathUtil.smoothLerpPrecision(highScoreLerp, highScore, elapsed, 0.307), highScore, 1));
 
-    var commaSeparated:Bool = true;
-    scoreText.text = 'LEVEL SCORE: ${FlxStringUtil.formatMoney(highScoreLerp, false, commaSeparated)}';
+    final COMMA_SEPARATED:Bool = Preferences.separatedScore == "Comma";
+    final SHOW_DECIMALS:Bool = false;
+    final SCORE:String = Preferences.separatedScore != "Off" ? FlxStringUtil.formatMoney(highScoreLerp, SHOW_DECIMALS, COMMA_SEPARATED) : '${Std.int(highScoreLerp)}';
+    scoreText.text = 'LEVEL SCORE: ${SCORE}';
 
     levelTitleText.text = currentLevel.getTitle();
 
