@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxObject;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.shapes.FlxShapeCircle;
+import flixel.addons.display.shapes.FlxShapeBox;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.FlxGraphic;
@@ -29,13 +30,15 @@ import funkin.ui.debug.stageeditor.commands.MoveItemCommand;
 import funkin.ui.debug.stageeditor.commands.RemoveObjectCommand;
 import funkin.ui.debug.stageeditor.commands.SelectObjectCommand;
 import funkin.ui.debug.stageeditor.commands.StageEditorCommand;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.stage.StageData;
-import funkin.util.WindowUtil;
 import funkin.util.FileUtil;
+import funkin.util.logging.CrashHandler;
+import funkin.util.WindowUtil;
 import haxe.io.Path;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
@@ -171,6 +174,11 @@ class StageEditorState extends UIState
    * Whether or not the player is currently testing the stage at how it would look in-game.
    */
   var isInTestMode:Bool = false;
+
+  /**
+   * Currently previewed character in the test mode.
+   */
+  var currentPreviewedCharacter:Int = 0;
 
   /**
    * The current theme used by the editor.
@@ -746,7 +754,7 @@ class StageEditorState extends UIState
   /**
    * A group of showing camera bounds for each character.
    */
-  var cameraBounds:FlxTypedGroup<FlxSprite>;
+  var cameraBounds:FlxTypedGroup<FlxShapeBox>;
 
   /**
    * A list of position markers for each character.
@@ -790,6 +798,9 @@ class StageEditorState extends UIState
     super.create();
     if (FlxG.sound.music != null) FlxG.sound.music?.stop();
 
+    // Play the music.
+    playWelcomeMusic();
+
     // Show the mouse cursor.
     Cursor.show();
 
@@ -808,13 +819,19 @@ class StageEditorState extends UIState
     buildGrid();
     this.updateTheme();
 
+    buildAdditionalUI();
+    populateOpenRecentMenu();
+    // this.applyPlatformShortcutText();
+
     initCharacters();
     initVisuals();
 
     setupUIListeners();
     setupTurboKeyHandlers();
 
-    stageCamera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE * 4);
+    stageCamera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
+
+    setupAutoSave();
 
     refresh();
 
@@ -842,6 +859,12 @@ class StageEditorState extends UIState
       var welcomeDialog = this.openWelcomeDialog(false);
       // if (shouldShowBackupAvailableDialog) this.openBackupAvailableDialog(welcomeDialog);
     }
+  }
+
+  function playWelcomeMusic():Void
+  {
+    FunkinSound.playMusic('chartEditorLoop', { startingVolume: 0.0 });
+    FlxG.sound.music.fadeIn(10, 0, 1);
   }
 
   public function loadPreferences():Void
@@ -942,6 +965,13 @@ class StageEditorState extends UIState
     add(gridTiledSprite);
   }
 
+  function buildAdditionalUI():Void
+  {
+    if (Preferences.debugDisplay == DebugDisplayMode.Off) menubar.paddingLeft = null;
+
+    this.setupNotifications();
+  }
+
   function initCharacters():Void
   {
     var girlfriend = CharacterDataParser.fetchCharacter(Save.instance.stageGirlfriendChar, true);
@@ -989,7 +1019,7 @@ class StageEditorState extends UIState
 
   function initVisuals():Void
   {
-    cameraBounds = new FlxTypedGroup<FlxSprite>();
+    cameraBounds = new FlxTypedGroup<FlxShapeBox>();
     cameraBounds.visible = false;
     cameraBounds.zIndex = MAX_Z_INDEX + CHARACTER_COLORS.size() + 1;
 
@@ -1001,9 +1031,9 @@ class StageEditorState extends UIState
 
       var positionMarker = new FlxShapeCircle(0, 0, 30, cast {thickness: 2, color: color}, color);
 
-      var cameraBound = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, color);
+      var cameraBound = new FlxShapeBox(0, 0, FlxG.width, FlxG.height, cast {thickness: 5, color: color}, FlxColor.TRANSPARENT);
 
-      positionMarker.alpha = floorLine.alpha = cameraBound.alpha = 0.35;
+      positionMarker.alpha = floorLine.alpha = 0.35;
       positionMarker.ID = floorLine.ID = cameraBound.ID = i;
       positionMarker.visible = floorLine.visible = false;
       positionMarker.zIndex = floorLine.zIndex = MAX_Z_INDEX + 1 + i;
@@ -1015,14 +1045,16 @@ class StageEditorState extends UIState
       characterPositionMarkers.push(positionMarker);
 
       cameraBounds.add(cameraBound);
-
-      add(cameraBounds);
     }
+
+    add(cameraBounds);
 
     objectNameText = new FlxText(0, 0, 0, "", 24);
     objectNameText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     objectNameText.cameras = [uiCamera];
     add(objectNameText);
+
+    updateVisuals();
   }
 
   /**
@@ -1076,6 +1108,88 @@ class StageEditorState extends UIState
     #end
   }
 
+  /**
+   * Called when the window was closed, to save a backup of the stage.
+   * @param exitCode The exit code of the window. We use `-1` when calling the function due to a game crash.
+   */
+  function onWindowClose(exitCode:Int):Void
+  {
+    trace('Window exited with exit code: $exitCode');
+    trace('Should save stage? $saveDataDirty');
+
+    var needsAutoSave:Bool = saveDataDirty;
+
+    writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportAllStageData(true, null);
+    }
+  }
+
+  function onWindowCrash(message:String):Void
+  {
+    trace('Stage editor intercepted crash:');
+    trace('${message}');
+
+    trace('Should save stage? $saveDataDirty');
+
+    var needsAutoSave:Bool = saveDataDirty;
+
+    writePreferences(needsAutoSave);
+
+    if (needsAutoSave)
+    {
+      this.exportAllStageData(true, null);
+    }
+  }
+
+  /**
+   * Setup timers and listerners to handle auto-save.
+   */
+  function setupAutoSave():Void
+  {
+    // Called when clicking the X button on the window.
+    WindowUtil.windowExit.add(onWindowClose);
+
+    // Called when the game crashes.
+    CrashHandler.errorSignal.add(onWindowCrash);
+    CrashHandler.criticalErrorSignal.add(onWindowCrash);
+
+    saveDataDirty = false;
+  }
+
+  function cleanupAutoSave():Void
+  {
+    WindowUtil.windowExit.remove(onWindowClose);
+    CrashHandler.errorSignal.remove(onWindowCrash);
+    CrashHandler.criticalErrorSignal.remove(onWindowCrash);
+  }
+
+  override public function beatHit()
+  {
+    if (isInTestMode)
+    {
+      if (conductorInUse.currentBeat % 2 == 0)
+      {
+        for (characterType => character in characters)
+          character.dance(true);
+      }
+
+      for (prop in spriteArray)
+      {
+        if (prop.danceEvery > 0 && conductorInUse.currentBeat % prop.danceEvery == 0) prop.dance(true);
+      }
+
+      if (conductorInUse.currentBeat % 8 == 0 && !FlxG.keys.pressed.SHIFT) {
+        currentPreviewedCharacter++;
+        if (currentPreviewedCharacter >= [for (c in characters) c].length) currentPreviewedCharacter = 0;
+      }
+    }
+
+    return super.beatHit();
+  }
+
   public override function update(elapsed:Float):Void
   {
     // Override F4 behavior to include the autosave.
@@ -1086,6 +1200,7 @@ class StageEditorState extends UIState
     }
 
     super.update(elapsed);
+    conductorInUse.update();
 
     if (criticalFailure) return;
 
@@ -1100,6 +1215,8 @@ class StageEditorState extends UIState
     {
       handleEditKeybinds();
     }
+
+    if (isInTestMode) handleStageTest();
   }
 
   function setupUIListeners():Void
@@ -1139,6 +1256,18 @@ class StageEditorState extends UIState
 
     menubarItemViewNameText.onChange = _ -> objectNameText.visible = menubarItemViewNameText.selected;
 
+    menubarItemViewFloorLines.onChange = _ -> {
+      for (floorLine in characterFloorLines)
+        floorLine.visible = menubarItemViewFloorLines.selected;
+    }
+
+    menubarItemViewPosMarkers.onChange = _ -> {
+      for (positionMarker in characterPositionMarkers)
+        positionMarker.visible = menubarItemViewPosMarkers.selected;
+    }
+
+    menubarItemViewCamBounds.onChange = _ -> cameraBounds.visible = menubarItemViewCamBounds.selected;
+
     /**
      * WINDOWS
      */
@@ -1150,10 +1279,16 @@ class StageEditorState extends UIState
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
 
     /**
+     * TEST STAGE
+     */
+    menubarButtonText.onClick = _ -> toggleStageTest();
+
+    /**
      * BOTTOM BAR
      */
     bottomBarModeText.onClick = _ -> {
       // This is by far the worst code that I have ever written.
+      if (isInTestMode) return;
       switch (currentSelectionMode)
       {
         case NONE:
@@ -1176,7 +1311,7 @@ class StageEditorState extends UIState
     bottomBarSelectText.onClick = _ -> {
       if (isInTestMode)
       {
-
+        currentPreviewedCharacter++;
       }
       else
       {
@@ -1373,6 +1508,30 @@ class StageEditorState extends UIState
     bottomBarAngleStepText.text = '${angleStep}°';
   }
 
+  function updateVisuals(redraw:Bool = true):Void
+  {
+    for (charType => character in characters)
+    {
+      var i = CHARACTER_COLORS.keyValues().indexOf(character.characterType);
+
+      characterFloorLines[i].y = (character.feetPosition.y - character.globalOffsets[1]) - characterFloorLines[i].height / 2;
+
+      characterPositionMarkers[i].x = (character.feetPosition.x - character.globalOffsets[0]) - characterPositionMarkers[i].width;
+      characterPositionMarkers[i].y = (character.feetPosition.y - character.globalOffsets[1]) - characterPositionMarkers[i].height;
+
+      if (redraw)
+      {
+        cameraBounds.members[i].shapeWidth = FlxG.width / currentStageZoom;
+        cameraBounds.members[i].shapeHeight = FlxG.height / currentStageZoom;
+        cameraBounds.members[i].updateHitbox();
+        cameraBounds.members[i].redrawShape();
+      }
+
+      cameraBounds.members[i].x = character.cameraFocusPoint.x + Reflect.field(currentCharacters, charType).cameraOffsets[0] - cameraBounds.members[i].shapeWidth / 2;
+      cameraBounds.members[i].y = character.cameraFocusPoint.y + Reflect.field(currentCharacters, charType).cameraOffsets[1] - cameraBounds.members[i].shapeHeight / 2;
+    }
+  }
+
   /**
    * Small helper for MacOS, "WINDOWS" is keycode 15, which maps to "COMMAND" on Mac, which is more often used than "CONTROL"
    * Everywhere else, it just returns `FlxG.keys.pressed.CONTROL`
@@ -1399,7 +1558,7 @@ class StageEditorState extends UIState
     objectNameText.x = FlxG.mouse.getViewPosition(uiCamera).x;
     objectNameText.y = FlxG.mouse.getViewPosition(uiCamera).y - objectNameText.height;
 
-    var shouldHandleCursor:Bool = !isHaxeUIFocused && !isHaxeUIDialogOpen && !isCursorOverHaxeUI;
+    var shouldHandleCursor:Bool = !isHaxeUIFocused && !isHaxeUIDialogOpen && !isCursorOverHaxeUI && !isInTestMode;
 
     if (shouldHandleCursor)
     {
@@ -1454,7 +1613,7 @@ class StageEditorState extends UIState
                 var mousePos = FlxG.mouse.getWorldPosition();
                 prop.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
                 prop.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
-                // updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
+                // this.refreshToolbox(); // pass the toolbox
 
                 dragWasMoving = true;
                 targetCursorMode = Grabbing;
@@ -1516,7 +1675,8 @@ class StageEditorState extends UIState
                 var mousePos = FlxG.mouse.getWorldPosition();
                 character.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
                 character.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
-                // updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
+                // this.refreshToolbox(); // pass the toolbox
+                updateVisuals(false); // We do not want to redraw the camera bounds each time, as we are just moving the character.
 
                 dragWasMoving = true;
                 targetCursorMode = Grabbing;
@@ -1635,6 +1795,24 @@ class StageEditorState extends UIState
     }
   }
 
+  function handleStageTest():Void
+  {
+    if (FlxG.keys.justPressed.TAB && !FlxG.keys.pressed.SHIFT) currentPreviewedCharacter++;
+
+    var charList = [for (c in characters) c];
+    var character:Null<BaseCharacter> = charList[currentPreviewedCharacter];
+    if (character == null) return;
+
+    bottomBarSelectText.text = Std.string(character.characterType);
+
+    cameraFollowPoint.x = character.cameraFocusPoint.x + Reflect.field(currentCharacters, Std.string(character.characterType).toLowerCase()).cameraOffsets[0];
+    cameraFollowPoint.y = character.cameraFocusPoint.y + Reflect.field(currentCharacters, Std.string(character.characterType).toLowerCase()).cameraOffsets[1];
+
+    if (FlxG.keys.justPressed.ENTER) toggleStageTest();
+
+    return;
+  }
+
   function quitStageEditor(exitPrompt:Bool = false):Void
   {
     // if (saveDataDirty && exitPrompt)
@@ -1647,7 +1825,6 @@ class StageEditorState extends UIState
 
     this.hideAllToolboxes();
 
-    // stopWelcomeMusic();
     FlxG.switchState(() -> new MainMenuState());
 
     resetWindowTitle();
@@ -1669,6 +1846,31 @@ class StageEditorState extends UIState
     }
   }
 
+  function toggleStageTest():Void
+  {
+    if (isHaxeUIFocused) return;
+
+    cameraFollowPoint.velocity.set();
+
+    stageCamera.zoom = currentStageZoom;
+
+    for (prop in spriteArray)
+    {
+      prop.active = true;
+      prop.isDebugged = isInTestMode;
+    }
+
+    if (selectedProp != null) selectedProp.selectedShader.amount = isInTestMode ? (currentSelectionMode == OBJECTS ? 0.135 : 0) : 0;
+    for (charType => character in characters)
+    {
+      if (character == selectedCharacter) continue;
+
+      character.shader = isInTestMode? (currentSelectionMode == CHARACTERS ? CHARACTER_DESELECT_SHADER : null) : null;
+    }
+    isInTestMode = !isInTestMode;
+    menubarMenuFile.disabled = menubarMenuEdit.disabled = bottomBarModeText.disabled = menubarMenuWindow.disabled = isInTestMode;
+  }
+
   /**
    * Play a sound effect.
    * Automatically cleans up after itself and recycles previous FlxSound instances if available, for performance.
@@ -1687,6 +1889,16 @@ class StageEditorState extends UIState
     snd.autoDestroy = true;
     snd.play(true);
     snd.volume = volume;
+  }
+
+  override function destroy():Void
+  {
+    super.destroy();
+
+    cleanupAutoSave();
+
+    // Hide the mouse cursor on other states.
+    Cursor.hide();
   }
 
   function applyWindowTitle():Void

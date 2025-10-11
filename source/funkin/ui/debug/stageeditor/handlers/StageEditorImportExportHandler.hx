@@ -226,14 +226,14 @@ class StageEditorImportExportHandler
       character.zIndex = characterData.zIndex ?? 0;
 
       character.setScale(character.getBaseScale() * (characterData.scale ?? 1.0));
-      character.cameraFocusPoint.x += (characterData.cameraOffsets != null ? characterData.cameraOffsets[0] : 0.0);
-      character.cameraFocusPoint.y += (characterData.cameraOffsets != null ? characterData.cameraOffsets[1] : 0.0);
+      // character.cameraFocusPoint.x += (characterData.cameraOffsets != null ? characterData.cameraOffsets[0] : 0.0);
+      // character.cameraFocusPoint.y += (characterData.cameraOffsets != null ? characterData.cameraOffsets[1] : 0.0);
 
       character.alpha = characterData.alpha ?? 1.0;
       character.angle = characterData.angle ?? 0.0;
       character.scrollFactor.set(characterData.scroll != null ? characterData.scroll[0] : 1.0, characterData.scroll != null ? characterData.scroll[1] : 1.0);
 
-      //  = characterData.cameraOffsets.copy();
+      state.updateVisuals();
     }
   }
 

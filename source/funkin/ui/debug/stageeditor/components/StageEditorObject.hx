@@ -1,5 +1,7 @@
 package funkin.ui.debug.stageeditor.components;
 
+import flixel.FlxCamera;
+import flixel.math.FlxPoint;
 import funkin.data.animation.AnimationData;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.GlowPulseShader;
@@ -81,6 +83,35 @@ class StageEditorObject extends FunkinSprite
     return value;
   }
 
+  /**
+   * The offset of the character relative to the position specified by the stage.
+   */
+  public var globalOffsets(default, set):Array<Float> = [0, 0];
+
+  function set_globalOffsets(value:Array<Float>):Array<Float>
+  {
+    if (globalOffsets == null) globalOffsets = [0, 0];
+    if (globalOffsets == value) return value;
+
+    return globalOffsets = value;
+  }
+  var animOffsets(default, set):Array<Float> = [0, 0];
+
+  function set_animOffsets(value:Array<Float>):Array<Float>
+  {
+    if (animOffsets == null) animOffsets = [0, 0];
+    if ((animOffsets[0] == value[0]) && (animOffsets[1] == value[1])) return value;
+
+    return animOffsets = value;
+  }
+
+  function applyAnimationOffsets(name:String):Void
+  {
+    var data = animData[name];
+    if (data == null || data.offsets == null) return;
+    this.animOffsets = data.offsets;
+  }
+
   public function playAnimation(name:String, restart:Bool = false, reversed:Bool = false):Void
   {
     if (!animation.getNameList().contains(name)) return;
@@ -89,11 +120,8 @@ class StageEditorObject extends FunkinSprite
 
     if (animData.exists(name) && animData[name] != null)
     {
-      var data = animData[name];
-      if (data != null && data.offsets != null) offset.set(data.offsets[0], data.offsets[1]);
+      applyAnimationOffsets(name);
     }
-    else
-      offset.set();
   }
 
   public function dance(restart:Bool = false):Void
@@ -140,11 +168,17 @@ class StageEditorObject extends FunkinSprite
     }
   }
 
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
+    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
+    return output;
+  }
+
   public override function update(elapsed:Float)
   {
     super.update(elapsed);
     selectedShader.update(elapsed);
   }
-
-
 }

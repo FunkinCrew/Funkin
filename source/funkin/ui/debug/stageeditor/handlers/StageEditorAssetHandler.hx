@@ -42,10 +42,7 @@ class StageEditorAssetHandler
         position: [object.x, object.y],
         zIndex: object.zIndex,
         isPixel: !object.antialiasing,
-        scale:
-          (object.scale == null)
-          ? Left(1.0)
-          : object.scale.x == object.scale.y ? Left(object.scale.x) : Right([object.scale.x, object.scale.y]),
+        scale: (object.scale == null) ? Left(1.0) : object.scale.x == object.scale.y ? Left(object.scale.x) : Right([object.scale.x, object.scale.y]),
         alpha: object.alpha,
         danceEvery: object.animation.getNameList().length > 0 ? object.danceEvery : 0,
         scroll: [object.scrollFactor.x, object.scrollFactor.y],

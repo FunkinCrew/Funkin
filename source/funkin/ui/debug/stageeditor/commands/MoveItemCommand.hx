@@ -42,6 +42,8 @@ class MoveItemCommand implements StageEditorCommand
     sprite.x = initialPosition[0];
     sprite.y = initialPosition[1];
 
+    state.updateVisuals(false); // We do not want to redraw the camera bounds each time, as we are just moving the character.
+
     state.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
