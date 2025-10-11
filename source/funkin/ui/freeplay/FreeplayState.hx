@@ -350,7 +350,7 @@ class FreeplayState extends MusicBeatSubState
 
     FlxG.state.persistentUpdate = false;
     FlxTransitionableState.skipNextTransIn = true;
-    grpCapsules.onRandomSelected.add(capsuleOnConfirmRandom);
+    grpCapsules.onRandomSelected.add(capsuleOnOpenRandom);
     grpCapsules.onSongSelected.add(capsuleOnOpenDefault);
 
     var fadeShaderFilter:ShaderFilter = new ShaderFilter(fadeShader);
@@ -953,8 +953,6 @@ class FreeplayState extends MusicBeatSubState
     curSelected = 0;
 
     grpCapsules.generateFullSongList(tempSongs, fromCharSelect || forceSkipIntro || noJumpIn, force);
-    grpCapsules.onRandomSelected.add(capsuleOnOpenRandom);
-
     FlxG.console.registerFunction('changeSelection', changeSelection);
 
     rememberSelection();
@@ -962,19 +960,6 @@ class FreeplayState extends MusicBeatSubState
     refreshCapsuleDisplays();
 
     dispatchEvent(new CapsuleScriptEvent(DIFFICULTY_SWITCH, currentCapsule, currentDifficulty, currentVariation));
-  }
-
-  /**
-   * Plays the "jumpIn" animation on all active song cards
-   * @param force Used by the animation
-   */
-  function playJumpInAnimation(force:Bool):Void
-  {
-    for (capsule in grpCapsules.activeSongItems)
-    {
-      capsule.initPosition(FlxG.width, 0);
-      capsule.initJumpIn(0, force);
-    }
   }
 
   /**
