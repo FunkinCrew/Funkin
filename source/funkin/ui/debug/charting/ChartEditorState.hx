@@ -1608,8 +1608,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_currentSongAlbum():Null<String>
   {
     if (currentSongMetadata.playData.album == null
-      || currentSongMetadata.playData.album == ''
-      || currentSongMetadata.playData.album == 'item')
+    || currentSongMetadata.playData.album == ''
+    || currentSongMetadata.playData.album == 'item')
     {
       // Initialize to the default value if not set.
       currentSongMetadata.playData.album = Constants.DEFAULT_ALBUM_ID;
@@ -1627,8 +1627,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_currentSongStickerPack():Null<String>
   {
     if (currentSongMetadata.playData.stickerPack == null
-      || currentSongMetadata.playData.stickerPack == ''
-      || currentSongMetadata.playData.stickerPack == 'item')
+    || currentSongMetadata.playData.stickerPack == ''
+    || currentSongMetadata.playData.stickerPack == 'item')
     {
       // Initialize to the default value if not set.
       currentSongMetadata.playData.stickerPack = Constants.DEFAULT_STICKER_PACK;

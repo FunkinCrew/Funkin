@@ -4,6 +4,7 @@ package funkin.ui.debug.charting.toolboxes;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
 import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -12,6 +13,7 @@ import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
 import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.ui.freeplay.Album;
 import funkin.ui.freeplay.Album;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -36,6 +38,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
+  var inputAlbum:DropDown;
+  var inputStickerPack:DropDown;
   var inputAlbum:DropDown;
   var inputStickerPack:DropDown;
   var buttonCharacterPlayer:Button;
@@ -157,8 +161,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
-    inputAlbum.onChange = (event:UIEvent) ->
-    {
+    inputAlbum.onChange = (event:UIEvent) -> {
       var valid:Bool = event.data != null && event.data.id != null;
 
       if (valid)
@@ -169,8 +172,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(inputAlbum, chartEditorState.currentSongMetadata.playData?.album);
     inputAlbum.value = startingValueAlbum;
 
-    inputStickerPack.onChange = (event:UIEvent) ->
-    {
+    inputStickerPack.onChange = (event:UIEvent) -> {
       var valid:Bool = event.data != null && event.data.id != null;
 
       if (valid)
@@ -178,8 +180,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
         chartEditorState.currentSongStickerPack = event.data.id;
       }
     }
-    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(inputStickerPack,
-      chartEditorState.currentSongMetadata.playData?.stickerPack);
+    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(inputStickerPack, chartEditorState.currentSongMetadata.playData?.stickerPack);
     inputStickerPack.value = startingValueStickerPack;
 
     inputTimeChange.onChange = function(event:UIEvent)
@@ -397,7 +398,18 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
     if (inputAlbum != null)
     {
-      inputAlbum.value = (album != null) ? {id: album.id, text: album.getAlbumName()} : {id: 'volume1', text: 'Volume 1'};
+      inputAlbum.value = (album != null) ?
+        {id: album.id, text: album.getAlbumName()} :
+          {id: "volume1", text: "Volume 1"};
+    }
+
+    var albumId:String = chartEditorState.currentSongAlbum;
+    var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
+    if (inputAlbum != null)
+    {
+      inputAlbum.value = (album != null) ?
+        {id: album.id, text: album.getAlbumName()} :
+          {id: "volume1", text: "Volume 1"};
     }
 
     var LIMIT = 6;
