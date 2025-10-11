@@ -1827,9 +1827,7 @@ class FreeplayState extends MusicBeatSubState
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true, false);
-    }
-
-    if (rightPressed)
+    } else if (rightPressed)
     {
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(1);
