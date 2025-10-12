@@ -1664,7 +1664,7 @@ class FreeplayState extends MusicBeatSubState
     }
     #end // ^<-- FEATURE_DEBUG_FUNCTIONS
 
-    if ((controls.FREEPLAY_CHAR_SELECT #if FEATURE_TOUCH_CONTROLS
+    if ((controls.FREEPLAY_CHAR_SELECT && !fromCharSelect #if FEATURE_TOUCH_CONTROLS
       || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
       && controls.active)
     {
