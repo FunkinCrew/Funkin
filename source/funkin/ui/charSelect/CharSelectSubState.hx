@@ -460,7 +460,7 @@ class CharSelectSubState extends MusicBeatSubState
     add(blackScreen);
 
     introSound = new FunkinSound();
-    introSound.loadEmbedded(Paths.sound('CS_lights'));
+    introSound.loadEmbedded(Paths.sound('CS_Lights'));
     introSound.pitch = 1;
     introSound.volume = 0;
 
