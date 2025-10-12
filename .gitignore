@@ -13,6 +13,11 @@ shitAudio/
 .swp
 NewgroundsCredentials.hx
 
+# Exclude IntelliJ IDEA stuff
+.idea/
+Funkin.iml
+tests/unit/unit.iml
+
 # Mobile signing stuff
 .apple/
 .env
