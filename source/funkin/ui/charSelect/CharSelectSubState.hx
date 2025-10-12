@@ -411,6 +411,24 @@ class CharSelectSubState extends MusicBeatSubState
     Conductor.stepHit.add(spamOnStep);
     // FlxG.debugger.track(temp, "tempBG");
 
+    #if FEATURE_TOUCH_CONTROLS
+    addBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack, 0.3, true);
+
+    if (backButton != null)
+    {
+      backButton.enabled = false;
+      backButton.cameras = [FlxG.camera];
+    }
+
+    FlxTween.tween(backButton, {x: FlxG.width - 230}, 0.5,
+      {
+        ease: FlxEase.expoOut,
+        onComplete: (_) -> {
+          if (backButton != null) backButton.enabled = true;
+        }
+      });
+    #end
+
     transitionGradient.loadGraphic(Paths.image('freeplay/transitionGradient'));
     transitionGradient.scale.set(1280, 1);
     transitionGradient.flipY = true;
@@ -725,6 +743,13 @@ class CharSelectSubState extends MusicBeatSubState
     allowInput = false;
     autoFollow = false;
 
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null)
+    {
+      FlxTween.tween(backButton, {alpha: 0}, 0.2);
+    }
+    #end
+
     FlxTween.tween(cursor, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
     FlxTween.tween(cursorBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
     FlxTween.tween(cursorDarkBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
@@ -893,13 +918,7 @@ class CharSelectSubState extends MusicBeatSubState
         selectSound.play(true);
       }
 
-      if (controls.BACK)
-      {
-        wentBackToFreeplay = true;
-        FunkinSound.playOnce(Paths.sound('cancelMenu'));
-        FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
-        goToFreeplay();
-      }
+      if (controls.BACK) goBack();
     }
 
     if (cursorX < -1)
@@ -932,6 +951,13 @@ class CharSelectSubState extends MusicBeatSubState
         grpCursors.visible = true;
 
         dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_DESELECTED, curChar));
+
+        #if FEATURE_TOUCH_CONTROLS
+        if (backButton != null)
+        {
+          backButton.enabled = true;
+        }
+        #end
 
         FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
         FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
@@ -969,19 +995,19 @@ class CharSelectSubState extends MusicBeatSubState
 
         dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_CONFIRMED, curChar));
 
+        #if FEATURE_TOUCH_CONTROLS
+        if (backButton != null)
+        {
+          backButton.enabled = false;
+        }
+        #end
+
         FlxTween.tween(FlxG.sound.music, {pitch: 0.1}, 1, {ease: FlxEase.quadInOut});
         FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 1.5, {ease: FlxEase.quadInOut});
         playerChill.playAnimation("select");
         gfChill.playAnimation("confirm", true, false, true);
         pressedSelect = true;
         selectTimer.start(1.5, (_) -> {
-          // pressedSelect = false;
-          // FlxG.switchState(FreeplayState.build(
-          //   {
-          //     {
-          //       character: curChar
-          //     }
-          //   }));
           goToFreeplay();
         });
       }
@@ -1043,6 +1069,23 @@ class CharSelectSubState extends MusicBeatSubState
 
     cursorDenied.x = cursor.x - 2;
     cursorDenied.y = cursor.y - 4;
+  }
+
+  function goBack():Void
+  {
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null)
+    {
+      backButton.enabled = false;
+      backButton.alpha = 1;
+      backButton.animation.play("confirm");
+    }
+    #end
+
+    wentBackToFreeplay = true;
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
+    goToFreeplay();
   }
 
   var bopTimer:Float = 0;
