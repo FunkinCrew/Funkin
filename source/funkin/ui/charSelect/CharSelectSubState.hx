@@ -86,15 +86,14 @@ class CharSelectSubState extends MusicBeatSubState
   var staticSound:FunkinSound = new FunkinSound();
 
   // var charSelectCam:FunkinCamera;
-
   var selectedBizz:Array<BitmapFilter> = [
     new DropShadowFilter(0, 0, 0xFFFFFF, 1, 2, 2, 19, 1, false, false, false),
     new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)
   ];
 
   var bopInfo:Null<Null<FramesJSFLInfo>>;
-  // var blackScreen:FunkinSprite;
 
+  // var blackScreen:FunkinSprite;
   var charHitbox:FlxObject = new FlxObject();
 
   var cutoutSize:Float = 0;
@@ -195,12 +194,12 @@ class CharSelectSubState extends MusicBeatSubState
       add(gfChill);
 
       playerChillOut = new CharSelectPlayer(cutoutSize, 0);
-      playerChillOut.switchChar(character);
+      playerChillOut.switchChar(character, false);
       playerChillOut.visible = false;
       add(playerChillOut);
 
       playerChill = new CharSelectPlayer(cutoutSize, 0);
-      playerChill.switchChar(character);
+      playerChill.switchChar(character, false);
       add(playerChill);
     }
 
