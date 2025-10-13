@@ -1887,7 +1887,7 @@ class PlayState extends MusicBeatSubState
     healthBarBG.y = healthBarYPos;
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
+    healthBarBG.zIndex = 1002;
     add(healthBarBG);
 
     healthBar.x = healthBarBG.x + 4;
@@ -1896,7 +1896,7 @@ class PlayState extends MusicBeatSubState
     healthBar.parentVariable = 'healthLerp';
     healthBar.scrollFactor.set();
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    healthBar.zIndex = 801;
+    healthBar.zIndex = 1003;
     add(healthBar);
 
     // The score text below the health bar.
@@ -1904,13 +1904,8 @@ class PlayState extends MusicBeatSubState
     scoreText.y = healthBarBG.y + 30;
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
-    scoreText.zIndex = 802;
+    scoreText.zIndex = 1004;
     add(scoreText);
-
-    // Move the health bar to the HUD camera.
-    healthBar.cameras = [camHUD];
-    healthBarBG.cameras = [camHUD];
-    scoreText.cameras = [camHUD];
   }
 
   /**
@@ -2059,6 +2054,48 @@ class PlayState extends MusicBeatSubState
     // ADD CHARACTERS TO SCENE
     //
 
+    // Set the opponent character based on the chart data.
+    var dad = CharacterDataParser.fetchCharacter(currentCharacterData.opponent);
+
+    // Set the player character based on the chart data.
+    var boyfriend = CharacterDataParser.fetchCharacter(currentCharacterData.player);
+
+    //
+    // HEALTH ICONS
+    //
+
+    // Opponent
+    if (dad != null)
+      {
+        iconP2 = new HealthIcon('dad', 1);
+        dad.initHealthIcon(true); // Apply the character ID here
+        iconP2.y = healthBar.y - (iconP2.height / 2);
+        iconP2.zIndex = 1050;
+        add(iconP2);
+        iconP2.cameras = [camHUD];
+
+        #if FEATURE_DISCORD_RPC
+        discordRPCAlbum = 'album-${currentChart.album}';
+        discordRPCIcon = 'icon-${currentCharacterData.opponent}';
+        #end
+      }
+
+      // Player
+      if (boyfriend != null)
+      {
+        iconP1 = new HealthIcon('bf', 0);
+        boyfriend.initHealthIcon(false); // Apply the character ID here
+        iconP1.y = healthBar.y - (iconP1.height / 2);
+        iconP1.zIndex = 1051;
+        add(iconP1);
+        iconP1.cameras = [camHUD];
+      }
+
+      // Move the health bar to the HUD camera.
+      healthBar.cameras = [camHUD];
+      healthBarBG.cameras = [camHUD];
+      scoreText.cameras = [camHUD];
+
     if (currentStage != null)
     {
       // Characters get added to the stage, not the main scene.
@@ -2110,16 +2147,15 @@ class PlayState extends MusicBeatSubState
     // Position the player strumline on the right half of the screen
     playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
-
-    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
-
+    playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET
+     - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
     playerStrumline.zIndex = 1001;
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
-    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
-    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
-
+    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET;
+    opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET
+     - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
 
@@ -2203,7 +2239,8 @@ class PlayState extends MusicBeatSubState
   function initPopups():Void
   {
     // Initialize the judgements and combo meter.
-    comboPopUps.zIndex = 900;
+    comboPopUps = new PopUpStuff(noteStyle);
+    comboPopUps.zIndex = 1100;
     add(comboPopUps);
     comboPopUps.cameras = [camHUD];
   }
