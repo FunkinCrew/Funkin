@@ -1466,6 +1466,9 @@ class Project extends HXProject
 
   function clearAssets():Void
   {
+	// We don't want the haxe compilation server deleting our assets, do we?
+	if (!isDisplay()) return;
+
     var exportPath:Null<String> = app.path ?? "";
 
     // mac target uses `macos` for the export folder instead of `mac`
