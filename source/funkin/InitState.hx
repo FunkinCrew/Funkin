@@ -402,7 +402,11 @@ class InitState extends FlxState
     }
     else if (params.song.shouldLoadSong && params.song.songPath != null)
     {
+      #if sys
       FlxG.switchState(() -> new ChartPlaytestMenu(params.song.songPath));
+      #else
+      FlxG.switchState(() -> new TitleState());
+      #end
     }
     else
     {
