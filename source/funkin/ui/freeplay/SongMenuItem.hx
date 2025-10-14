@@ -86,12 +86,12 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var curSelected:Int;
 
-  public function new(x:Float, y:Float)
+  public function new(x:Float, y:Float, ?styleData:FreeplayStyle = null)
   {
     super(x, y);
 
     capsule = new FlxSprite();
-    capsule.frames = Paths.getSparrowAtlas('freeplay/freeplayCapsule/capsule/freeplayCapsule');
+    capsule.frames = Paths.getSparrowAtlas(styleData == null ? 'freeplay/freeplayCapsule/capsule/freeplayCapsule' : styleData.getCapsuleAssetKey());
     capsule.animation.addByPrefix('selected', 'mp3 capsule w backing0', 24);
     capsule.animation.addByPrefix('unselected', 'mp3 capsule w backing NOT SELECTED', 24);
     // capsule.animation
@@ -532,9 +532,6 @@ class SongMenuItem extends FlxSpriteGroup
 
     if (index != null) this.index = index;
 
-    // im so mad i have to do this but im pretty sure with the capsules recycling i cant call the new function properly :/
-    // if thats possible someone Please change the new function to be something like
-    // capsule.frames = Paths.getSparrowAtlas(styleData == null ? 'freeplay/freeplayCapsule/capsule/freeplayCapsule' : styleData.getCapsuleAssetKey()); thank u luv u
     if (styleData != null)
     {
       capsule.frames = Paths.getSparrowAtlas(styleData.getCapsuleAssetKey());
@@ -544,12 +541,20 @@ class SongMenuItem extends FlxSpriteGroup
     }
 
     updateScoringRank(freeplayData?.scoringRank);
-    favIcon.animation.curAnim.curFrame = favIcon.animation.curAnim.numFrames - 1;
-    favIconBlurred.animation.curAnim.curFrame = favIconBlurred.animation.curAnim.numFrames - 1;
 
+    updateFavAnim();
     refreshDisplay();
 
     checkWeek(freeplayData?.data.id);
+  }
+
+  /**
+   * Moves the favIcon animation to the last frame
+   */
+  public function updateFavAnim():Void
+  {
+    favIcon.animation.curAnim.curFrame = favIcon.animation.curAnim.numFrames - 1;
+    favIconBlurred.animation.curAnim.curFrame = favIconBlurred.animation.curAnim.numFrames - 1;
   }
 
   public function initRandom(?styleData:FreeplayStyle = null):Void
