@@ -546,6 +546,11 @@ class Project extends HXProject
       configureIOS();
     }
 
+    if (isCPlusPlus())
+    {
+      buildHxCppTools();
+    }
+
     if (!isDisplay())
     {
       checkLibraries();
@@ -1717,6 +1722,12 @@ class Project extends HXProject
     return this.targetFlags.exists("cs");
   }
 
+  public function isCPlusPlus():Bool
+  {
+    // since there is no direct way of knowing if its C++, this is the next best option.
+    return !(isHashLink() && isNeko() && isJava() && isNodeJS() && isCSharp());
+  }
+
   public function isDisplay():Bool
   {
     return this.command == "display";
@@ -2095,6 +2106,21 @@ class Project extends HXProject
     return gitProccess.stdout.readAll().toString().trim();
   }
 
+  static function getLibraryPath(libraryName:String):String
+  {
+    var libraryDev:String = readLibraryDev(libraryName);
+    var libraryCurrentVersion:String = readLibraryCurrentVersion(libraryName);
+
+    if(libraryDev != "")
+    {
+      return haxe.io.Path.addTrailingSlash(libraryDev);
+    }
+    else
+    {
+      return haxe.io.Path.addTrailingSlash(haxe.io.Path.join([Sys.getCwd(), '.haxelib', libraryName, libraryCurrentVersion]));
+    }
+  }
+
   public function getGitBranch():String
   {
     // Cannibalized from GitCommit.hx
@@ -2118,6 +2144,42 @@ class Project extends HXProject
     var branchProcess = new sys.io.Process('git', ['diff', '--quiet']);
 
     return branchProcess.exitCode(true) == 1;
+  }
+
+  public function buildHxCppTools():Void
+  {
+    var path:String = getLibraryPath("hxcpp");
+    var dotNPath:String = haxe.io.Path.join([path, 'hxcpp.n']);
+    var toolsPath:String = haxe.io.Path.join([path, 'tools/hxcpp']);
+
+    if (!sys.FileSystem.exists(path)) error('HXCPP could not be found while on C++ target.');
+
+    // Build Tools are compiled, no need for us to do it.
+    if (sys.FileSystem.exists(dotNPath))
+    {
+      return;
+    }
+
+    info('Compiling the HXCPP Build Tool...');
+
+    var oldDir:String = Sys.getCwd();
+    info(toolsPath);
+    Sys.setCwd(toolsPath);
+
+    var compileProcess = new sys.io.Process('haxe', ['compile.hxml']);
+
+    if (compileProcess.exitCode() != 0)
+    {
+      info('Could not compile the Build Tool. Is HXCPP installed correctly? Continuing...');
+    }
+    else
+    {
+      info('Compiled the HXCPP Build Tool successfully!');
+    }
+
+    compileProcess.close();
+
+    Sys.setCwd(oldDir);
   }
 
   //
