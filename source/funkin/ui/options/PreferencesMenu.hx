@@ -109,20 +109,20 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   function createPrefItems():Void
   {
     #if FEATURE_NAUGHTYNESS
-    createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
+    createPrefItemCheckbox('Naughtyness', 'When enabled, raunchy content (such as swearing, etc.) is displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
     #end
-    createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
+    createPrefItemCheckbox('Downscroll', 'When enabled, notes move downwards toward the strumline at the bottom of the screen.', function(value:Bool):Void {
       Preferences.downscroll = value;
     },
       Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
       || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
-    createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
+    createPrefItemPercentage('Strumline Background', 'Show a semi-transparent background behind the strumline.', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
     #if FEATURE_HAPTICS
-    createPrefItemEnum('Haptics', 'If enabled, game will use haptic feedback effects.', [
+    createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.', [
       "All" => HapticsMode.ALL,
       "Notes Only" => HapticsMode.NOTES_ONLY,
       "None" => HapticsMode.NONE,
@@ -134,25 +134,23 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case HapticsMode.NONE: "None";
         default: "All";
       });
-    createPrefItemNumber('Haptics Intensity', 'Multiplier of intensity for all the haptic feedback effects.', function(value:Float) {
+    createPrefItemNumber('Haptics Intensity', 'Intensity multiplier for all haptic feedback effects.', function(value:Float) {
       Preferences.hapticsIntensityMultiplier = value;
     }, null, Preferences.hapticsIntensityMultiplier, 0.1, 5, 0.1, 1);
     #end
-    createPrefItemCheckbox('Flashing Lights', 'If disabled, it will dampen flashing effects. Useful for people with photosensitive epilepsy.',
+    createPrefItemCheckbox('Flashing Lights', 'When disabled, flashing effects are dampened. Useful for people with photosensitive epilepsy.',
       function(value:Bool):Void {
         Preferences.flashingLights = value;
       }, Preferences.flashingLights);
-    createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
+    createPrefItemCheckbox('Camera Zooms', 'When enabled, the camera bounces during songs.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
-    #if FEATURE_VIDEO_SUBTITLES
-    createPrefItemCheckbox('Video Subtitles', 'If enabled, subtitles will be shown on video cutscenes.', function(value:Bool):Void {
-      Preferences.videoSubtitles = value;
-    }, Preferences.videoSubtitles);
-    #end
+    createPrefItemCheckbox('Subtitles', 'When enabled, subtitles appear during some songs and cutscenes.', function(value:Bool):Void {
+      Preferences.subtitles = value;
+    }, Preferences.subtitles);
     #if FEATURE_DEBUG_DISPLAY
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
-    createPrefItemEnum('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', [
+    createPrefItemEnum('Debug Display', 'When enabled, FPS and other debug stats are displayed.', [
       "Advanced" => DebugDisplayMode.Advanced,
       "Simple" => DebugDisplayMode.Simple,
       "Off" => DebugDisplayMode.Off
@@ -160,28 +158,28 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
 
-    createPrefItemPercentage('Debug Display BG', "Change debug display's background opacity", function(value:Int):Void {
+    createPrefItemPercentage('Debug Display BG', "Adjust the debug display's background opacity.", function(value:Int):Void {
       Preferences.debugDisplayBGOpacity = value;
     }, Preferences.debugDisplayBGOpacity);
     #end
     #if !mobile
-    createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
+    createPrefItemCheckbox('Pause on Unfocus', 'When enabled, the game automatically pauses when losing focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
-    createPrefItemCheckbox('Launch in Fullscreen', 'Automatically launch the game in fullscreen on startup.', function(value:Bool):Void {
+    createPrefItemCheckbox('Launch in Fullscreen', 'When enabled, the game automatically starts up in fullscreen mode.', function(value:Bool):Void {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
     #end
 
     #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'If enabled, the framerate will be unlocked.', function(value:Bool):Void {
+    createPrefItemCheckbox('Unlocked Framerate', 'When enabled, the framerate is unlocked.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #else
     // disabled on macos due to "error: Late swap tearing currently unsupported"
     // disable on mobile since it barely has any effect
     #if !(mac || mobile)
-    createPrefItemEnum('VSync', 'If enabled, game will attempt to match framerate with your monitor.', [
+    createPrefItemEnum('VSync', "When enabled, the game attempts to match the framerate with your monitor's refresh rate.", [
       "Off" => WindowVSyncMode.OFF,
       "On" => WindowVSyncMode.ON,
       "Adaptive" => WindowVSyncMode.ADAPTIVE,
@@ -203,13 +201,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     #end
 
     #if FEATURE_SCREENSHOTS
-    createPrefItemCheckbox('Hide Mouse', 'If enabled, the mouse will be hidden when taking a screenshot.', function(value:Bool):Void {
+    createPrefItemCheckbox('Hide Mouse', 'When enabled, the mouse is hidden while taking a screenshot.', function(value:Bool):Void {
       Preferences.shouldHideMouse = value;
     }, Preferences.shouldHideMouse);
-    createPrefItemCheckbox('Fancy Preview', 'If enabled, a preview will be shown after taking a screenshot.', function(value:Bool):Void {
+    createPrefItemCheckbox('Fancy Preview', 'When enabled, a preview is shown after taking a screenshot.', function(value:Bool):Void {
       Preferences.fancyPreview = value;
     }, Preferences.fancyPreview);
-    createPrefItemCheckbox('Preview on save', 'If enabled, the preview will be shown only after a screenshot is saved.', function(value:Bool):Void {
+    createPrefItemCheckbox('Preview on Save', 'When enabled, the preview is only shown after a screenshot is saved.', function(value:Bool):Void {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
     #end

@@ -45,6 +45,7 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
+import funkin.play.components.Subtitles;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
@@ -639,6 +640,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Whether to show an indicator if a note is of a non-default kind.
    */
   var showNoteKindIndicators:Bool = false;
+
+  /**
+   * Toggles the subtitles.
+   */
+  var showSubtitles(default, set):Bool = false;
+
+  function set_showSubtitles(value:Bool):Bool
+  {
+    showSubtitles = value;
+
+    if (subtitles != null)
+    {
+      subtitles.exists = showSubtitles;
+    }
+
+    return showSubtitles;
+  }
 
   /**
    * The current theme used by the editor.
@@ -1916,6 +1934,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemViewIndicators:MenuCheckBox;
 
   /**
+   * The `View -> Subtitles` menu item.
+   */
+  var menubarItemViewSubtitles:MenuCheckBox;
+
+  /**
    * The `View -> Increase Difficulty` menu item.
    */
   var menubarItemDifficultyUp:MenuItem;
@@ -2227,6 +2250,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menuBG:Null<FlxSprite> = null;
 
   /**
+   * The subtitles to display song's lyrics.
+   */
+  var subtitles:Null<Subtitles> = null;
+
+  /**
    * The sprite group containing the note graphics.
    * Only displays a subset of the data from `currentSongChartNoteData`,
    * and kills notes that are off-screen to be recycled later.
@@ -2338,6 +2366,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     populateOpenRecentMenu();
     this.applyPlatformShortcutText();
 
+    createSubtitles();
+
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
     setupContextMenu();
@@ -2435,6 +2465,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentLiveInputStyle = save.chartEditorLiveInputStyle;
     isViewDownscroll = save.chartEditorDownscroll;
     showNoteKindIndicators = save.chartEditorShowNoteKinds;
+    showSubtitles = save.chartEditorShowSubtitles;
     playtestStartTime = save.chartEditorPlaytestStartTime;
     currentTheme = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
@@ -2652,6 +2683,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.zIndex = 30;
 
     add(audioWaveforms);
+  }
+
+  function createSubtitles():Void
+  {
+    subtitles = new Subtitles(0, -78);
+    subtitles.zIndex = 100;
+    subtitles.cameras = [uiCamera];
+    add(subtitles);
   }
 
   function buildMeasureTicks():Void
@@ -3178,6 +3217,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemViewIndicators.onClick = event -> showNoteKindIndicators = menubarItemViewIndicators.selected;
     menubarItemViewIndicators.selected = showNoteKindIndicators;
+
+    menubarItemViewSubtitles.onClick = event -> showSubtitles = menubarItemViewSubtitles.selected;
+    menubarItemViewSubtitles.selected = showSubtitles;
 
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
@@ -6864,6 +6906,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
+  }
+
+  public function loadSubtitles():Void
+  {
+    var subtitlesFile:String = 'songs/${currentSongId}/subtitles/song-lyrics';
+    if (selectedVariation != Constants.DEFAULT_VARIATION)
+    {
+      subtitlesFile += '-${selectedVariation}';
+    }
+    subtitles.assignSubtitles(subtitlesFile, audioInstTrack);
   }
 
   public function postLoadVocals():Void

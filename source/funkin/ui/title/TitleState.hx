@@ -305,6 +305,10 @@ class TitleState extends MusicBeatState
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
 
+      #if FEATURE_HAPTICS
+      HapticUtil.vibrate(0.1, 0.5, 0.5);
+      #end
+
       #if FEATURE_NEWGROUNDS
       // Award the "Start Game" medal.
       Medals.award(Medal.StartGame);

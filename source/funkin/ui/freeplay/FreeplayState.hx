@@ -1827,9 +1827,7 @@ class FreeplayState extends MusicBeatSubState
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true, false);
-    }
-
-    if (rightPressed)
+    } else if (rightPressed)
     {
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(1);
@@ -2499,6 +2497,7 @@ class FreeplayState extends MusicBeatSubState
     #end
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
+    #if !mobile
     capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.targetPos.x + 175, randomCapsule.targetPos.y + 115, instrumentalChoices);
     capsuleOptionsMenu.cameras = [funnyCam];
     capsuleOptionsMenu.zIndex = 10000;
@@ -2507,6 +2506,9 @@ class FreeplayState extends MusicBeatSubState
     capsuleOptionsMenu.onConfirm = function(instChoice:String) {
       capsuleOnConfirmRandom(availableSongCapsules, instChoice);
     }
+    #else
+    capsuleOnConfirmRandom(availableSongCapsules, instrumentalChoices[0]);
+    #end
   }
 
   /**

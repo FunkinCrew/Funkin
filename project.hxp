@@ -1396,6 +1396,11 @@ class Project extends HXProject
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
     addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
 
+    if (!HARDCODED_CREDITS.isEnabled(this))
+    {
+      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
+    }
+
     if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
       removeAssetPath('assets/preload/data/ui/animation-editor', "default");
 
@@ -1468,13 +1473,21 @@ class Project extends HXProject
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 
-    if (isMacHost())
+    switch(platformType)
     {
-      assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
-    }
-    else
-    {
-      assetsPath = Path.join([basePath, "assets"]);
+      case PlatformType.DESKTOP:
+        if (isMacHost())
+        {
+          assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
+        }
+        else
+        {
+          assetsPath = Path.join([basePath, "assets"]);
+        }
+
+      default:
+        // Don't do this for other platform types yet.
+        return;
     }
 
     if (sys.FileSystem.exists(assetsPath))

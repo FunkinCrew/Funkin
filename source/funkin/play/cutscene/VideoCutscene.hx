@@ -186,7 +186,7 @@ class VideoCutscene
       final fileOptions:Array<String> = [];
 
       #if FEATURE_VIDEO_SUBTITLES
-      if (Preferences.videoSubtitles)
+      if (Preferences.subtitles)
       {
         fileOptions.push(':sub-language=$DEFAULT_LANGUAGE');
       }
