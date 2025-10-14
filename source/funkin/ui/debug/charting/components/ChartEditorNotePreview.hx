@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import flixel.math.FlxMath;
@@ -210,3 +211,4 @@ enum NotePreviewType
   Selection;
   Overlapping;
 }
+#end

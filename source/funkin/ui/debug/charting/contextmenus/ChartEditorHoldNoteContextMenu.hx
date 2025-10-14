@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.MenuItem;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
@@ -39,3 +40,4 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
     }
   }
 }
+#end

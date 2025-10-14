@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxRect;
@@ -86,3 +87,4 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 }
+#end

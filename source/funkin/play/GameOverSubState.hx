@@ -377,8 +377,12 @@ class GameOverSubState extends MusicBeatSubState
         boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
       }
 
+      // confirm music length divided by 7000
+      // this is here so mods with longer confirm sounds don't have it cut off!!!
+      final FADE_TIMER:Float = (gameOverMusic?.length ?? 0) / 7000;
+
       // After the animation finishes...
-      new FlxTimer().start(0.7, function(tmr:FlxTimer) {
+      new FlxTimer().start(FADE_TIMER, function(tmr:FlxTimer) {
         // ...fade out the graphics. Then after that happens...
 
         var resetPlaying = function(pixel:Bool = false) {

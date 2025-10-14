@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
@@ -142,6 +143,8 @@ class ChartEditorAudioHandler
     state.hardRefreshOffsetsToolbox();
 
     state.hardRefreshFreeplayToolbox();
+
+    state.loadSubtitles();
 
     return true;
   }
@@ -352,3 +355,4 @@ class ChartEditorAudioHandler
     return zipEntries;
   }
 }
+#end

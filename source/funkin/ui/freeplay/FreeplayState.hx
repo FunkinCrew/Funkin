@@ -713,6 +713,8 @@ class FreeplayState extends MusicBeatSubState
     var onDJIntroDone:Void->Void = () -> {
       controls.active = true;
 
+      dispatchEvent(new FreeplayScriptEvent(FREEPLAY_INTRO));
+
       // when boyfriend hits dat shiii
 
       albumRoll.playIntro();
@@ -861,10 +863,20 @@ class FreeplayState extends MusicBeatSubState
     }
   }
 
-  override public function dispatchEvent(event:ScriptEvent)
+  /**
+   * Dispatches script events to all relevant scripted classes.
+   * @param event
+   */
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
+    // Dispatch to scripted modules.
     super.dispatchEvent(event);
+
+    // Dispatch to scripted backing cards, behind the DJ.
     if (backingCard != null) ScriptEventDispatcher.callEvent(backingCard, event);
+
+    // Dispatch to scripted Freeplay DJs.
+    if (dj != null) ScriptEventDispatcher.callEvent(dj, event);
   }
 
   /**
@@ -1001,6 +1013,8 @@ class FreeplayState extends MusicBeatSubState
     rememberSelection();
     changeSelection();
     refreshCapsuleDisplays();
+
+    dispatchEvent(new CapsuleScriptEvent(DIFFICULTY_SWITCH, currentCapsule, currentDifficulty, currentVariation));
   }
 
   /**
@@ -1815,9 +1829,7 @@ class FreeplayState extends MusicBeatSubState
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true, false);
-    }
-
-    if (rightPressed)
+    } else if (rightPressed)
     {
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(1);
@@ -2137,6 +2149,8 @@ class FreeplayState extends MusicBeatSubState
     FlxTimer.globalManager.clear();
     dj?.onIntroDone.removeAll();
 
+    dispatchEvent(new FreeplayScriptEvent(FREEPLAY_OUTRO));
+
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
     var longestTimer:Float = 0;
@@ -2197,6 +2211,7 @@ class FreeplayState extends MusicBeatSubState
             persist: true
           });
         FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+        dispatchEvent(new FreeplayScriptEvent(FREEPLAY_CLOSE));
         close();
       }
       else
@@ -2484,6 +2499,7 @@ class FreeplayState extends MusicBeatSubState
     #end
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
+    #if !mobile
     capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.targetPos.x + 175, randomCapsule.targetPos.y + 115, instrumentalChoices);
     capsuleOptionsMenu.cameras = [funnyCam];
     capsuleOptionsMenu.zIndex = 10000;
@@ -2492,6 +2508,9 @@ class FreeplayState extends MusicBeatSubState
     capsuleOptionsMenu.onConfirm = function(instChoice:String) {
       capsuleOnConfirmRandom(availableSongCapsules, instChoice);
     }
+    #else
+    capsuleOnConfirmRandom(availableSongCapsules, instrumentalChoices[0]);
+    #end
   }
 
   /**
@@ -2652,6 +2671,8 @@ class FreeplayState extends MusicBeatSubState
     #if NO_FEATURE_TOUCH_CONTROLS
     letterSort.inputEnabled = false;
     #end
+
+    dispatchEvent(new CapsuleScriptEvent(SONG_SELECTED, currentCapsule, currentDifficulty, currentVariation));
 
     PlayStatePlaylist.isStoryMode = false;
 
@@ -2879,6 +2900,8 @@ class FreeplayState extends MusicBeatSubState
 
     // Small vibrations every selection change.
     if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
+
+    dispatchEvent(new CapsuleScriptEvent(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation));
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

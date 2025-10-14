@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.components.Button;
 import haxe.ui.containers.HBox;
 import haxe.ui.notifications.Notification;
@@ -152,3 +153,4 @@ typedef NotificationAction =
   text:String,
   callback:Void->Void
 }
+#end

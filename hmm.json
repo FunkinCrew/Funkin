@@ -4,7 +4,7 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "4e86b724ca43489a59ea465a46ffc12598e5df15",
+      "ref": "26ed20b9c181a576f4cbe18ccdea38912c01476e",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
@@ -154,7 +154,7 @@
       "name": "json2object",
       "type": "git",
       "dir": null,
-      "ref": "a8c26f18463c98da32f744c214fe02273e1823fa",
+      "ref": "a7e4cef3d444bea8d8244d6e59ab82f5a593f597",
       "url": "https://github.com/FunkinCrew/json2object"
     },
     {
@@ -175,7 +175,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "93acc1bdb26661ec66eed0aaf2a4df785238dd63",
+      "ref": "27092822abf7b8c2ec2905053cf5435be4de838e",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -196,7 +196,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "57ceb6317cc0765e1f563a8c99441f302c8562fc",
+      "ref": "39b1d179b0ebabb43234fb02604d7a91250d7fc4",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

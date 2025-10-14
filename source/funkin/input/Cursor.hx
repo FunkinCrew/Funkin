@@ -1,6 +1,8 @@
 package funkin.input;
 
+#if FEATURE_HAXEUI
 import haxe.ui.backend.flixel.CursorHelper;
+#end
 import lime.app.Future;
 import openfl.display.BitmapData;
 
@@ -542,6 +544,7 @@ class Cursor
     trace("Failed to load cursor graphic for cursor mode " + cursorMode + ": " + error);
   }
 
+  #if FEATURE_HAXEUI
   public static function registerHaxeUICursors():Void
   {
     CursorHelper.useCustomCursors = true;
@@ -564,6 +567,7 @@ class Cursor
   {
     CursorHelper.registerCursor(id, params.graphic, params.scale, params.offsetX, params.offsetY);
   }
+  #end
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/cursor

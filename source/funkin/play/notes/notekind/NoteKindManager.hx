@@ -91,7 +91,9 @@ class NoteKindManager
           var script:NoteKind = ScriptedNoteKind.init(scriptedClass, "unknown");
           trace(' Initialized scripted note kind: ${script.noteKind}');
           noteKinds.set(script.noteKind, script);
+          #if FEATURE_CHART_EDITOR
           ChartEditorDropdowns.NOTE_KINDS.set(script.noteKind, script.description);
+          #end
         }
         catch (e)
         {

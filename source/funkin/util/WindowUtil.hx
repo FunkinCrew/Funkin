@@ -117,10 +117,12 @@ class WindowUtil
 
     #if (desktop || html5)
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
+      #if FEATURE_HAXEUI
       if (haxe.ui.focus.FocusManager.instance.focus != null)
       {
         return;
       }
+      #end
 
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {

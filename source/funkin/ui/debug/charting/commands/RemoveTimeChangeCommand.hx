@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 
@@ -83,8 +84,9 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
   public function toString():String
   {
     if (removedTimeChange != null && removedTimeChange.length > 0) return
-    'TimeChange ${timeChangeIndex} : ${removedTimeChange[0].timeStamp} ms : BPM: ${removedTimeChange[0].bpm} in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed'
+      'TimeChange ${timeChangeIndex} : ${removedTimeChange[0].timeStamp} ms : BPM: ${removedTimeChange[0].bpm} in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed'
     else
       return 'huh?';
   }
 }
+#end

@@ -4,7 +4,6 @@ package funkin.external.android;
 /**
  * A Utility class to manage the Application's Data folder on Android.
  */
-@:unreflective
 class DataFolderUtil
 {
   /**

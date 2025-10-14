@@ -932,6 +932,8 @@ class CharSelectSubState extends MusicBeatSubState
         cursorConfirmed.visible = false;
         grpCursors.visible = true;
 
+        dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_DESELECTED, curChar));
+
         FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
         FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
         playerChill.playAnimation("deselect");
@@ -965,6 +967,8 @@ class CharSelectSubState extends MusicBeatSubState
         grpCursors.visible = false;
 
         FlxG.sound.play(Paths.sound('CS_confirm'));
+
+        dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_CONFIRMED, curChar));
 
         FlxTween.tween(FlxG.sound.music, {pitch: 0.1}, 1, {ease: FlxEase.quadInOut});
         FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 1.5, {ease: FlxEase.quadInOut});
@@ -1226,6 +1230,8 @@ class CharSelectSubState extends MusicBeatSubState
     if (value == "locked") staticSound.play();
     else
       staticSound.stop();
+
+    dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_SELECTED, value));
 
     nametag.switchChar(value);
     gfChill.visible = false;

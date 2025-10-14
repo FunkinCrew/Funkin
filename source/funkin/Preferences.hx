@@ -252,7 +252,7 @@ class Preferences
   static function get_autoPause():Bool
   {
     #if mobile
-    return true;
+    return false;
     #end
     return Save?.instance?.options?.autoPause ?? true;
   }
@@ -266,27 +266,6 @@ class Preferences
     save.flush();
     return value;
   }
-
-  #if FEATURE_VIDEO_SUBTITLES
-  /**
-   * If enabled, subtitles will be shown on video cutscenes.
-   * @default `true`
-   */
-  public static var videoSubtitles(get, set):Bool;
-
-  static function get_videoSubtitles():Bool
-  {
-    return Save?.instance?.options?.videoSubtitles ?? true;
-  }
-
-  static function set_videoSubtitles(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.videoSubtitles = value;
-    save.flush();
-    return value;
-  }
-  #end
 
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.
@@ -539,6 +518,25 @@ class Preferences
     if (Main.debugDisplay == null) return;
 
     Main.debugDisplay.backgroundOpacity = value;
+  }
+
+  /**
+   * If enabled, subtitles will appear during some songs and cutscenes.
+   * @default `true`
+   */
+  public static var subtitles(get, set):Bool;
+
+  static function get_subtitles():Bool
+  {
+    return Save?.instance?.options?.subtitles ?? true;
+  }
+
+  static function set_subtitles(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.subtitles = value;
+    save.flush();
+    return value;
   }
 
   #if mobile

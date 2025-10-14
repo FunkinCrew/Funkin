@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.util;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.song.SongData.SongTimeChange;
@@ -294,3 +295,5 @@ typedef DropDownEntry =
   id:String,
   text:String
 };
+
+#end

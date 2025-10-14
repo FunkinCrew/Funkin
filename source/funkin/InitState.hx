@@ -37,7 +37,7 @@ import funkin.util.macro.MacroUtil;
 import funkin.util.TrackerUtil;
 import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
-import funkin.ui.debug.ChartPlaytestState;
+import funkin.ui.debug.playtest.ChartPlaytestMenu;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -127,6 +127,11 @@ class InitState extends FlxState
       #if ios
       // Setup Audio session
       funkin.external.apple.AudioSession.initialize();
+      #end
+
+      #if mobile
+      // Setup Mobile FNFC launcher.
+      funkin.mobile.util.FNFCUtil.init();
       #end
 
       // This ain't a pixel art game! (most of the time)
@@ -375,38 +380,61 @@ class InitState extends FlxState
 
     if (params.chart.shouldLoadChart)
     {
+      #if FEATURE_CHART_EDITOR
       FlxG.switchState(() -> new ChartEditorState(
         {
           fnfcTargetPath: params.chart.chartPath,
         }));
+      #else
+      FlxG.switchState(() -> new TitleState());
+      #end
     }
     else if (params.stage.shouldLoadStage)
     {
+      #if FEATURE_STAGE_EDITOR
       FlxG.switchState(() -> new StageEditorState(
         {
           fnfsTargetPath: params.stage.stagePath,
         }));
+      #else
+      FlxG.switchState(() -> new TitleState());
+      #end
     }
-    #if sys
     else if (params.song.shouldLoadSong && params.song.songPath != null)
     {
-      FlxG.switchState(() -> new ChartPlaytestState(
+      FlxG.switchState(() -> new ChartPlaytestMenu(params.song.songPath));
+    }
+    else
+    {
+      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      #if mobile
+      funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(fnfcFile:String) {
+        flixel.tweens.FlxTween.globalManager.clear();
+        flixel.util.FlxTimer.globalManager.clear();
+        @:nullSafety(Off)
+        if (FlxG.sound.music != null)
         {
-          fnfcFilePath: params.song.songPath,
-        }));
-    }
-    else
-    {
-      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+          FlxG.sound.music.destroy();
+          FlxG.sound.music = null;
+        }
+
+        FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
+      });
+
+      final fnfcFile = funkin.mobile.util.FNFCUtil.queryFNFC();
+      if (fnfcFile != null)
+      {
+        trace('launching FNFC from $fnfcFile');
+        FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
+      }
+      else
+      {
+        FlxG.switchState(() -> new TitleState());
+      }
+      #else
       FlxG.switchState(() -> new TitleState());
+      #end
     }
-    #else
-    else
-    {
-      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
-      FlxG.switchState(() -> new TitleState());
-    }
-    #end
   }
 
   /**

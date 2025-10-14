@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 
@@ -45,3 +46,4 @@ class DeselectAllItemsCommand implements ChartEditorCommand
     return 'Deselect All Items';
   }
 }
+#end

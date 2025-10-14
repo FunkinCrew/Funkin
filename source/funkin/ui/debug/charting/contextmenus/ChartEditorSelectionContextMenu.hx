@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.MenuItem;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
@@ -72,3 +73,4 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
     }
   }
 }
+#end

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.animation.AnimationBuilder;
@@ -112,3 +113,4 @@ typedef DialogDropTarget =
   component:Component,
   handler:String->Void
 }
+#end

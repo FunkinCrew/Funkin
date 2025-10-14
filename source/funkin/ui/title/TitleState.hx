@@ -143,11 +143,6 @@ class TitleState extends MusicBeatState
     textGroup = new FlxGroup();
 
     blackScreen = bg.clone();
-    if (credGroup != null)
-    {
-      credGroup.add(blackScreen);
-      credGroup.add(textGroup);
-    }
 
     ngSpr = new FlxSprite(0, FlxG.height * 0.52);
 
@@ -169,8 +164,13 @@ class TitleState extends MusicBeatState
       ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
     }
 
-    add(ngSpr);
     ngSpr.visible = false;
+    if (credGroup != null)
+    {
+      credGroup.add(blackScreen);
+      credGroup.add(ngSpr);
+      credGroup.add(textGroup);
+    }
 
     ngSpr.updateHitbox();
     ngSpr.screenCenter(X);
@@ -304,6 +304,10 @@ class TitleState extends MusicBeatState
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
+
+      #if FEATURE_HAPTICS
+      HapticUtil.vibrate(0.1, 0.5, 0.5);
+      #end
 
       #if FEATURE_NEWGROUNDS
       // Award the "Start Game" medal.

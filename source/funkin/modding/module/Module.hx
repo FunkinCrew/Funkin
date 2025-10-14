@@ -2,6 +2,8 @@ package funkin.modding.module;
 
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
+import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
+import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 /**
@@ -21,7 +23,8 @@ typedef ModuleParams =
  * You may have the module active at all times, or only when another script enables it.
  */
 @:nullSafety
-class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass
+class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass
+    implements ICharacterSelectScriptedClass
 {
   /**
    * Whether the module is currently active.
@@ -74,7 +77,7 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
     }
   }
 
-  public function toString()
+  public function toString():String
   {
     return 'Module(' + this.moduleId + ')';
   }
@@ -234,8 +237,54 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
    * Called when the song has been restarted.
    */
   public function onSongRetry(event:SongRetryEvent) {}
+
   /**
    * Called when any state is created.
    */
   public function onStateCreate(event:ScriptEvent) {}
+
+  /**
+   * Called when a capsule is selected.
+   */
+  public function onCapsuleSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the current difficulty is changed.
+   */
+  public function onDifficultySwitch(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when a song is selected.
+   */
+  public function onSongSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the intro for Freeplay finishes.
+   */
+  public function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when the Freeplay outro begins.
+   */
+  public function onFreeplayOutro(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when Freeplay is closed.
+   */
+  public function onFreeplayClose(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when a character is selected.
+   */
+  public function onCharacterSelect(event:CharacterSelectScriptEvent):Void {}
+
+  /**
+   * Called when the user presses BACK after confirming a character.
+   */
+  public function onCharacterDeselect(event:CharacterSelectScriptEvent):Void {}
+
+  /**
+   * Called when a character has been confirmed.
+   */
+  public function onCharacterConfirm(event:CharacterSelectScriptEvent):Void {}
 }

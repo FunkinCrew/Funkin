@@ -11,7 +11,6 @@ import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.save.Save;
-import haxe.ui.Toolkit;
 #if hxvlc
 import hxvlc.util.Handle;
 #end
@@ -111,7 +110,9 @@ class Main extends Sprite
 
   function setupGame():Void
   {
+    #if FEATURE_HAXEUI
     initHaxeUI();
+    #end
 
     // addChild gets called by the user settings code.
     debugDisplay = new FunkinDebugDisplay(10, 10, 0xFFFFFF);
@@ -182,6 +183,7 @@ class Main extends Sprite
     #end
   }
 
+  #if FEATURE_HAXEUI
   function initHaxeUI():Void
   {
     // This has to come before Toolkit.init since locales get initialized there
@@ -189,15 +191,16 @@ class Main extends Sprite
     // Calling this before any HaxeUI components get used is important:
     // - It initializes the theme styles.
     // - It scans the class path and registers any HaxeUI components.
-    Toolkit.init();
-    Toolkit.theme = 'dark'; // don't be cringe
-    // Toolkit.theme = 'light'; // embrace cringe
-    Toolkit.autoScale = false;
+    haxe.ui.Toolkit.init();
+    haxe.ui.Toolkit.theme = 'dark'; // don't be cringe
+    // haxe.ui.Toolkit.theme = 'light'; // embrace cringe
+    haxe.ui.Toolkit.autoScale = false;
     // Don't focus on UI elements when they first appear.
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
     funkin.input.Cursor.registerHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
   }
+  #end
 
   function handleDebugDisplayKeys():Void
   {

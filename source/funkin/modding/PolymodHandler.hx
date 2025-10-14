@@ -445,6 +445,11 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+
+    // External classes for android that bridge to private JNI methods & callbacks
+    Polymod.blacklistImport('funkin.external.android.CallbackUtil');
+    Polymod.blacklistImport('funkin.external.android.DataFolderUtil');
+    Polymod.blacklistImport('funkin.external.android.JNIUtil');
   }
 
   /**

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 
@@ -93,3 +94,4 @@ class AddNewTimeChangeCommand implements ChartEditorCommand
     return 'Added new TimeChange ${timeChangeIndex + 1} at ${targetTimeStamp}';
   }
 }
+#end

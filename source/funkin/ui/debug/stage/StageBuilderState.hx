@@ -1,5 +1,6 @@
 package funkin.ui.debug.stage;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -430,3 +431,4 @@ enum TOOLS
   GRABBING;
   BOYFRIEND;
 }
+#end

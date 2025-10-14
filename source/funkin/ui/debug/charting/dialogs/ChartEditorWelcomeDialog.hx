@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongRegistry;
 import funkin.play.song.Song;
 import funkin.ui.debug.charting.ChartEditorState;
@@ -242,3 +243,4 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     chartEditorState.openImportChartWizard('legacy', false);
   }
 }
+#end

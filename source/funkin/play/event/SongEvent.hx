@@ -10,6 +10,14 @@ import funkin.data.event.SongEventSchema;
 class SongEvent
 {
   /**
+   * These variables are used in two different events (and may be in more), and in order not to create unnecessary variables, we store them here
+   */
+  public static final DEFAULT_EASE:String = 'linear';
+
+  public static final DEFAULT_EASE_DIR:String = 'in';
+  public static final EASE_TYPE_DIR_REGEX:EReg = ~/(In|Out|InOut)$/i;
+
+  /**
    * The internal song event ID that this handler is responsible for.
    */
   public var id:String;

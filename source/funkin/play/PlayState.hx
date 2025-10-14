@@ -38,6 +38,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
+import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
@@ -382,7 +383,11 @@ class PlayState extends MusicBeatSubState
 
   function get_isChartingMode():Bool
   {
+    #if FEATURE_CHART_EDITOR
     return this._parentState != null && Std.isOfType(this._parentState, ChartEditorState);
+    #else
+    return false;
+    #end
   }
 
   /**
@@ -509,6 +514,11 @@ class PlayState extends MusicBeatSubState
   public var healthBarBG:FunkinSprite;
 
   /**
+   * A sprite group for subtitle display.
+   */
+  public var subtitles:Null<Subtitles>;
+
+  /**
    * The health icon representing the player.
    */
   public var iconP1:Null<HealthIcon>;
@@ -553,6 +563,11 @@ class PlayState extends MusicBeatSubState
    * The camera which contains, and controls visibility of menus when there are fake cutouts added.
    */
   public var camCutouts:FlxCamera;
+
+  /**
+   * The camera which contains, and controls visibility of, the subtitles.
+   */
+  public var camSubtitles:FlxCamera;
 
   /**
    * The camera which contains, and controls visibility of, pause menu.
@@ -720,6 +735,7 @@ class PlayState extends MusicBeatSubState
     camHUD = new FlxCamera();
     camCutscene = new FlxCamera();
     camCutouts = new FlxCamera();
+    camSubtitles = new FlxCamera();
     camPause = new FlxCamera();
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
@@ -1200,7 +1216,10 @@ class PlayState extends MusicBeatSubState
         Events.logFailSong(currentSong.id, currentVariation);
         #end
 
-        dispatchEvent(new ScriptEvent(GAME_OVER));
+        var event:ScriptEvent = new ScriptEvent(GAME_OVER, true);
+        dispatchEvent(event);
+
+        if (event.eventCanceled) return;
 
         // Disable updates, preventing animations in the background from playing.
         persistentUpdate = false;
@@ -1623,7 +1642,7 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocus():Void
   {
-    if (VideoCutscene.isPlaying() && Preferences.autoPause && isGamePaused) VideoCutscene.pauseVideo();
+    if (VideoCutscene.isPlaying() #if !mobile && Preferences.autoPause #end && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
     else if (Preferences.autoPause) VideoCutscene.resumeVideo();
     #end
@@ -1685,7 +1704,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
-    if (!isGamePaused && Preferences.autoPause)
+    if (!isGamePaused #if !mobile && Preferences.autoPause #end)
     {
       if (currentConversation != null)
       {
@@ -1849,12 +1868,14 @@ class PlayState extends MusicBeatSubState
     camCutouts.setPosition((FlxG.width - FlxG.initialWidth) / 2, (FlxG.height - FlxG.initialHeight) / 2);
     camCutouts.setSize(FlxG.initialWidth, FlxG.initialHeight);
     camCutouts.bgColor.alpha = 0; // Show the game scene behind the camera.
+    if (Preferences.subtitles) camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
     camPause.bgColor.alpha = 0; // Show the game scene behind the camera.
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
     FlxG.cameras.add(camCutscene, false);
     FlxG.cameras.add(camCutouts, false);
+    if (Preferences.subtitles) FlxG.cameras.add(camSubtitles, false);
     FlxG.cameras.add(camPause, false);
 
     // Configure camera follow point.
@@ -1871,11 +1892,11 @@ class PlayState extends MusicBeatSubState
      */
   function initHealthBar():Void
   {
-    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
-    #end
+    final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && !ControlsHandler.usingExternalInputDevice)
+      || #end Preferences.downscroll;
+
+    var healthBarYPos:Float = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
 
     healthBarBG.y = healthBarYPos;
     healthBarBG.screenCenter(X);
@@ -1904,6 +1925,21 @@ class PlayState extends MusicBeatSubState
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
+
+    // Create subtitles if they are enabled.
+    if (Preferences.subtitles)
+    {
+      final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+        && !ControlsHandler.usingExternalInputDevice)
+        || #end Preferences.downscroll;
+
+      final subtitlesAlignment:SubtitlesAlignment = isDownscroll ? SubtitlesAlignment.SUBTITLES_TOP : SubtitlesAlignment.SUBTITLES_BOTTOM;
+      subtitles = new Subtitles(0, 139, subtitlesAlignment);
+      subtitles.zIndex = 10000;
+      add(subtitles);
+
+      subtitles.cameras = [camSubtitles];
+    }
   }
 
   /**
@@ -2464,6 +2500,16 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.pause();
     FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
+
+    if (Preferences.subtitles)
+    {
+      var subtitlesFile:String = 'songs/${currentSong.id}/subtitles/song-lyrics';
+      if (currentVariation != Constants.DEFAULT_VARIATION)
+      {
+        subtitlesFile += '-${currentVariation}';
+      }
+      if (subtitles != null) subtitles.assignSubtitles(subtitlesFile, FlxG.sound.music);
+    }
 
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;

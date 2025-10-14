@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import openfl.display.BitmapData;
@@ -1560,6 +1561,7 @@ class StageEditorState extends UIState
     loadUrlDialog.showDialog();
   }
 }
+#end
 
 /**
  * Available themes for the stage editor state.
